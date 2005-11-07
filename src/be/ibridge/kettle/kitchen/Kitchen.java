@@ -25,13 +25,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.Encr;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleJobException;
-import be.ibridge.kettle.core.license.License;
-import be.ibridge.kettle.core.license.Licenses;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.repository.RepositoriesMeta;
@@ -72,7 +69,6 @@ public class Kitchen
 		    System.out.println("  -listdir  : List the directories in the repository");
 		    System.out.println("  -listjobs : List the jobs in the specified directory");
 		    System.out.println("  -listrep  : List the defined repositories");
-		    System.out.println("  -license  : Show the specified licenses");
 		    System.out.println("");
 		    
 		    return;
@@ -89,7 +85,6 @@ public class Kitchen
 		String listdir   = Const.getCommandlineOption(args, "-listdir");
 		String listjobs  = Const.getCommandlineOption(args, "-listjobs");
 		String listrep   = Const.getCommandlineOption(args, "-listrep");
-		String license   = Const.getCommandlineOption(args, "-license");
 
 		// System.out.println("Level="+loglevel);
         LogWriter log;
@@ -107,34 +102,6 @@ public class Kitchen
             log.setLogLevel(loglevel);
             log.logBasic(STRING_KITCHEN, "Logging is at level : "+log.getLogLevelDesc());
         } 
-        
-        // List the licenses...
-        if ("Y".equalsIgnoreCase(license))
-        {
-            Licenses licenses = Licenses.getInstance();
-            for (int i=0;i<licenses.getNrLicenses();i++)
-            {
-                License lic = licenses.getLicense(i);
-                System.out.println("#"+i+" : "+lic.getUserName()+" - "+lic.getCompany()+" - "+lic.getProducts()+" - "+lic.getMacAddress()+" - "+Encr.getSignatureShort( lic.getLicenseCode() ));
-                return;
-            }
-        }
-
-		// Check license info!
-        Licenses licenses = Licenses.getInstance();
-        int license_nr = licenses.checkLicense(Licenses.PRODUCT_KITCHEN);
-		if (license_nr<0)
-		{
-			System.out.println("Sorry, I couldn't find a license for Kitchen.");
-			System.out.println("Contact us at info@kettle.be for a valid license.");
-			System.out.println("Note: A valid license for Kitchen or any other Kettle product can be entered using Spoon or Chef.");
-			try
-			{
-				Thread.sleep(10000);
-			}
-			catch(Exception e) {}
-			return;
-		}
 		
 		log.logBasic(STRING_KITCHEN, "Start of run.");
 		

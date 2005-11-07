@@ -25,11 +25,8 @@ import java.util.Calendar;
 import java.util.Date;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.Encr;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.license.License;
-import be.ibridge.kettle.core.license.Licenses;
 import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -84,21 +81,8 @@ public class Pan
 		String listdir   = Const.getCommandlineOption(args, "-listdir");
 		String listtrans = Const.getCommandlineOption(args, "-listtrans");
 		String listrep   = Const.getCommandlineOption(args, "-listrep");
-		String license   = Const.getCommandlineOption(args, "-license");
 		
 		// if (args.length==1 && filename==null && listrep==null) filename=args[1]; // try to load first argument...
-
-        // List licenses?
-		if ("Y".equalsIgnoreCase(license))
-		{
-            Licenses licenses = Licenses.getInstance();
-            for (int i=0;i<licenses.getNrLicenses();i++)
-		    {
-                License lic = licenses.getLicense(i);
-		        System.out.println("#"+i+" : "+lic.getUserName()+" - "+lic.getCompany()+" - "+lic.getProducts()+" - "+lic.getMacAddress()+" - "+Encr.getSignatureShort( lic.getLicenseCode() ));
-		        return;
-		    }
-		}
         
         LogWriter log;
         if (logfile==null)
@@ -117,24 +101,6 @@ public class Pan
         }
         
         log.logBasic("Pan", "Start of run.");
-
-		// Check license info!
-        Licenses licenses = Licenses.getInstance();
-        int license_nr = licenses.checkLicense(Licenses.PRODUCT_PAN);
-		if (license_nr<0)
-		{
-			System.out.println("Sorry, I couldn't find a license for Pan.");
-			System.out.println("Contact us at info@kettle.be for a valid license.");
-			System.out.println("Note: A valid license for Pan or any other Kettle product can be entered using Spoon.");
-			try
-			{
-				Thread.sleep(10000);
-			}
-			catch(Exception e) {}
-			return;
-		}
-		
-
 		
 		/* Load the plugins etc.*/
 		StepLoader steploader = StepLoader.getInstance();

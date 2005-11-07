@@ -95,7 +95,6 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.core.license.Licenses;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPage1;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPage2;
@@ -127,8 +126,6 @@ import be.ibridge.kettle.repository.dialog.RepositoriesDialog;
 import be.ibridge.kettle.repository.dialog.RepositoryExplorerDialog;
 import be.ibridge.kettle.repository.dialog.SelectObjectDialog;
 import be.ibridge.kettle.repository.dialog.UserDialog;
-import be.ibridge.kettle.spoon.dialog.ShowDemoDialog;
-import be.ibridge.kettle.spoon.dialog.ShowLicenseDialog;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.TransHopMeta;
 import be.ibridge.kettle.trans.TransMeta;
@@ -465,17 +462,6 @@ public class Chef
 		miRepExplore    .addListener (SWT.Selection, lsRepExplore   );
 		miRepUser       .addListener (SWT.Selection, lsRepUser      );
 
-        /*
-         * Disable repository menu in case we don't have an enterprise license 
-         */
-        Licenses licenses = Licenses.getInstance();
-        if (licenses.checkLicense(Licenses.PRODUCT_CHEF_ENTERPRISE)<0)
-        {
-            miRepConnect.setEnabled(false);
-            miRepDisconnect.setEnabled(false);
-            miRepExplore.setEnabled(false);
-            miRepUser.setEnabled(false);
-        }
 		/*
 		 * Job menu
 		 * 
@@ -1708,25 +1694,10 @@ public class Chef
 	{
 		MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION | SWT.CENTER);
 		String mess = "Kettle - Chef version "+Const.VERSION+Const.CR+Const.CR+Const.CR;
-		mess+="(c) 2001-2004 i-Bridge bvba"+Const.CR+"         www.ibridge.be"+Const.CR;
-		
-        Licenses licenses = Licenses.getInstance();
-        if (licenses.checkLicense(Licenses.PRODUCT_CHEF)>=0)
-        {
-            mess+=Const.CR+Const.CR;
-            mess+="Chef is licensed."+Const.CR;
-        }
-        else
-        {
-            mess+=Const.CR+Const.CR;
-            mess+="      *******************************"+Const.CR;
-            mess+="        THIS IS NOT A LICENSED COPY."+Const.CR;
-            mess+="      *******************************"+Const.CR+Const.CR;
-            mess+="Please get a license code by mailing to info@kettle.be"+Const.CR+Const.CR;
-        }
-        
+		mess+="(c) 2001-2004 i-Bridge bvba"+Const.CR+"         www.kettle.be"+Const.CR;
+		        
         mb.setMessage(mess);
-		mb.setText(Licenses.PRODUCT_CHEF);
+		mb.setText("Chef");
 		mb.open();
 	}
 	
@@ -3032,52 +3003,8 @@ public class Chef
 		log.logDetailed(APP_NAME, "Main window is created.");
         
         // Check license info!
-        Licenses licenses = Licenses.getInstance();
-        win.license_nr = licenses.checkLicense(Licenses.PRODUCT_CHEF);
-		if (win.license_nr<0)
-		{
-            log.logDetailed(APP_NAME, "Demo mode activated.");
-			win.demo_mode=true;
-		}
-		else
-		{
-            log.logDetailed(APP_NAME, "Licence verified.");
-			win.demo_mode=false;
-		}
+		win.demo_mode=false;
 		
-		int retval=SWT.YES;
-		if (win.demo_mode)
-		{
-			splash.hide();
-			ShowLicenseDialog ld = new ShowLicenseDialog(log, win.props, win.disp, "Chef");
-			ld.shell.setImage(win.chefgraph.images[JobEntryInterface.TYPE_JOBENTRY_JOB]);
-			retval = ld.open();
-			if (retval==SWT.YES)
-			{
-				win.demo_mode=false;
-				win.license_nr = licenses.getNrLicenses();
-
-                log.logDetailed(APP_NAME, "Licence verified.");
-			}
-			else
-			if (retval==SWT.CANCEL)
-			{
-				splash.dispose();
-				win.quitFile();
-				return;
-			}
-			else
-			{
-				ShowDemoDialog sdd = new ShowDemoDialog(win.shell, win.props, GUIResource.getInstance().getImageKettle());
-				if (!sdd.open()) 
-				{
-					win.quitFile();
-					return;
-				} 
-			}
-			splash.show();
-		}
-
 		RepositoryMeta repinfo = null;
 		UserInfo userinfo = null;
 		

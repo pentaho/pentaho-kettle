@@ -98,7 +98,6 @@ import be.ibridge.kettle.core.dialog.SQLStatementsDialog;
 import be.ibridge.kettle.core.dialog.Splash;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.license.Licenses;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPage1;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPage2;
@@ -121,8 +120,6 @@ import be.ibridge.kettle.spoon.dialog.AnalyseImpactProgressDialog;
 import be.ibridge.kettle.spoon.dialog.CheckTransProgressDialog;
 import be.ibridge.kettle.spoon.dialog.GetSQLProgressDialog;
 import be.ibridge.kettle.spoon.dialog.ShowCreditsDialog;
-import be.ibridge.kettle.spoon.dialog.ShowDemoDialog;
-import be.ibridge.kettle.spoon.dialog.ShowLicenseDialog;
 import be.ibridge.kettle.spoon.dialog.TipsDialog;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage1;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage2;
@@ -339,10 +336,7 @@ public class Spoon
 					
 					// CTRL-I --> Import from XML file         && (e.keyCode&SWT.CONTROL)!=0
 					if ((int)e.character ==  9 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { openFile(true); spoongraph.clearSettings(); };
-					
-					// CTRL-L --> License dialog
-					if ((int)e.character == 12) { showLicense(); spoongraph.clearSettings(); }
-					
+										
 					// CTRL-N --> new
 					if ((int)e.character == 14) { newFile();     spoongraph.clearSettings(); }
 					    
@@ -638,18 +632,6 @@ public class Spoon
 		miRepExplore    .addListener (SWT.Selection, lsRepExplore   );
 		miRepUser       .addListener (SWT.Selection, lsRepUser      );
         
-        /*
-         * Disable repository menu in case we don't have an enterprise license 
-         */
-        Licenses licenses = Licenses.getInstance();
-        if (licenses.checkLicense(Licenses.PRODUCT_SPOON_ENTERPRISE)<0)
-        {
-            miRepConnect.setEnabled(false);
-            miRepDisconnect.setEnabled(false);
-            miRepExplore.setEnabled(false);
-            miRepUser.setEnabled(false);
-        }
-
 		// main Transformation menu...
 		MenuItem mTrans = new MenuItem(mBar, SWT.CASCADE); mTrans.setText("&Transformation");
 		  Menu msTrans = new Menu(shell, SWT.DROP_DOWN );
@@ -720,20 +702,6 @@ public class Spoon
 		MenuItem miHelpCredit       = new MenuItem(msHelp, SWT.CASCADE); miHelpCredit.setText("&Credits");
 		Listener lsHelpCredit = new Listener() { public void handleEvent(Event e) { ShowCreditsDialog scd = new ShowCreditsDialog(shell, props, GUIResource.getInstance().getImageCredits()); scd.open();     } };
 		miHelpCredit.addListener (SWT.Selection, lsHelpCredit  );
-		MenuItem miHelpLicense       = new MenuItem(msHelp, SWT.CASCADE); miHelpLicense.setText("&License");
-		Listener lsHelpLicense = new Listener() { public void handleEvent(Event e) 
-			{ 
-				ShowLicenseDialog sld = new ShowLicenseDialog(log, props, disp, Licenses.PRODUCT_SPOON); 
-				int result = sld.open();
-				if (result==SWT.NO) // Demo mode!
-				{
-					demo_mode=true;
-					refreshGraph();
-				}
-			} 
-		};
-		miHelpLicense.addListener (SWT.Selection, lsHelpLicense  );
-
 		MenuItem miHelpTOTD       = new MenuItem(msHelp, SWT.CASCADE); miHelpTOTD.setText("&Tip of the day");
 		Listener lsHelpTOTD = new Listener() { public void handleEvent(Event e) 
 			{ 
@@ -2700,20 +2668,6 @@ public class Spoon
 		String mess = "Kettle - Spoon version "+Const.VERSION+Const.CR+Const.CR+Const.CR;
 		mess+="(c) 2001-2004 i-Bridge bvba"+Const.CR+"         www.kettle.be"+Const.CR;
 		
-        Licenses licenses = Licenses.getInstance();
-		if (licenses.checkLicense(Licenses.PRODUCT_SPOON)>=0)
-		{
-			mess+=Const.CR+Const.CR;
-			mess+="Spoon is licensed."+Const.CR;
-		}
-		else
-		{
-			mess+=Const.CR+Const.CR;
-			mess+="      *******************************"+Const.CR;
-			mess+="        THIS IS NOT A LICENSED COPY."+Const.CR;
-			mess+="      *******************************"+Const.CR+Const.CR;
-			mess+="Please get a license code by mailing to info@kettle.be"+Const.CR+Const.CR;
-		}
 		mb.setMessage(mess);
 		mb.setText(APP_NAME);
 		mb.open();
@@ -3854,12 +3808,6 @@ public class Spoon
 			}
 		}
 	}
-
-	public void showLicense()
-	{
-		ShowLicenseDialog ld = new ShowLicenseDialog(log, props, disp, Licenses.PRODUCT_SPOON);
-		ld.open();
-	}
 	
 	public void analyseImpact()
 	{
@@ -4292,52 +4240,7 @@ public class Spoon
 		
         log.logBasic(APP_NAME, "Main window is created.");
         
-		// Check license info!
-        Licenses licenses = Licenses.getInstance();
-		win.license_nr = licenses.checkLicense(Licenses.PRODUCT_SPOON);
-		if (win.license_nr<0)
-		{
-            log.logBasic(APP_NAME, "Demo mode activated.");
-			win.demo_mode=true;
-		}
-		else
-		{
-            log.logBasic(APP_NAME, "License verified.");
-			win.demo_mode=false;
-		}
-
-		int retval=SWT.YES;
-		if (win.demo_mode)
-		{
-			splash.hide();
-			ShowLicenseDialog ld = new ShowLicenseDialog(log, win.props, win.disp, Licenses.PRODUCT_SPOON);
-			ld.shell.setImage(GUIResource.getInstance().getImageSpoon());
-			retval = ld.open();
-			if (retval==SWT.YES)
-			{
-				win.demo_mode=false;
-				win.license_nr = licenses.getNrLicenses();
-				// System.out.println("Licence nr = "+win.license_nr);
-
-                log.logBasic(APP_NAME, "License verified.");
-			}
-			else
-			if (retval==SWT.CANCEL)
-			{
-				win.quitFile();
-				return;
-			}
-			else
-			{
-				ShowDemoDialog sdd = new ShowDemoDialog(win.shell, win.props, GUIResource.getInstance().getImageKettle());
-				if (!sdd.open()) 
-				{
-					splash.dispose();
-					win.quitFile();
-					return;
-				} 
-			}
-		}
+		win.demo_mode=false;
 
 		RepositoryMeta repinfo = null;
 		UserInfo userinfo = null;

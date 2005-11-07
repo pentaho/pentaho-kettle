@@ -14,8 +14,6 @@
  **********************************************************************/
  
 package be.ibridge.kettle.repository.dialog;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.DisposeEvent;
@@ -47,7 +45,6 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.license.Licenses;
 import be.ibridge.kettle.repository.PermissionMeta;
 import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
@@ -135,32 +132,6 @@ public class RepositoriesDialog
 
 	public boolean open()
 	{
-        // DON'T SHOW THIS DIALOG IF THERE IS NO VALID LICENSE PRESENT!
-        Licenses licenses = Licenses.getInstance();
-        if (licenses.checkLicense(Licenses.PRODUCT_SPOON_ENTERPRISE)<0  && 
-            licenses.checkLicense(Licenses.PRODUCT_CHEF_ENTERPRISE)<0
-           )
-        {
-            // Show license dialog
-            if (props.showRepositoriesDialogAtStartup())
-            {
-               MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                        "Warning!", 
-                        null,
-                        "There is no license available to use enterprise features such as the central repository."+Const.CR,
-                        MessageDialog.WARNING,
-                        new String[] { "I understand" },
-                        0,
-                        "Please, don't show this warning anymore.",
-                        !props.showRepositoriesDialogAtStartup()
-               );
-               md.open();
-               props.setRepositoriesDialogAtStartupShown(!md.getToggleState());
-               props.saveProps();
-            }
-            return false;
-        }
-
 		props.setLook(shell);
 
 		FormLayout formLayout = new FormLayout();

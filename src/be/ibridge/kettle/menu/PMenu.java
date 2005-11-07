@@ -87,7 +87,6 @@ import be.ibridge.kettle.core.dialog.DatabaseExplorerDialog;
 import be.ibridge.kettle.core.dialog.EnterOptionsDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.license.Licenses;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.schema.RelationshipMeta;
@@ -99,7 +98,6 @@ import be.ibridge.kettle.schema.dialog.RelationshipDialog;
 import be.ibridge.kettle.schema.dialog.SelectFieldDialog;
 import be.ibridge.kettle.schema.dialog.TableDialog;
 import be.ibridge.kettle.spoon.Spoon;
-import be.ibridge.kettle.spoon.dialog.ShowLicenseDialog;
 import be.ibridge.kettle.spoon.dialog.TipsDialog;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.TransHopMeta;
@@ -1543,23 +1541,8 @@ public class PMenu
 		String mess = "Kettle - Spoon version "+Const.VERSION+Const.CR+Const.CR+Const.CR;
 		mess+="(c) 2001-2004 i-Bridge bvba"+Const.CR+"         www.ibridge.be"+Const.CR;
 		
-        Licenses licenses = Licenses.getInstance();
-        if (licenses.checkLicense(Licenses.PRODUCT_MENU)>=0)
-        {
-            mess+=Const.CR+Const.CR;
-            mess+="Menu is licensed."+Const.CR;
-        }
-        else
-        {
-            mess+=Const.CR+Const.CR;
-            mess+="      *******************************"+Const.CR;
-            mess+="        THIS IS NOT A LICENSED COPY."+Const.CR;
-            mess+="      *******************************"+Const.CR+Const.CR;
-            mess+="Please get a license code by mailing to info@kettle.be"+Const.CR+Const.CR;
-        }		
-        
         mb.setMessage(mess);
-		mb.setText(Licenses.PRODUCT_MENU);
+		mb.setText("Menu");
 		mb.open();
 	}
 
@@ -2693,37 +2676,8 @@ public class PMenu
 		final PMenu win = new PMenu(log, stloader);
 		
 		// Check licence info!
-        // Check license info!
-        Licenses licenses = Licenses.getInstance();
-        win.licence_nr = licenses.checkLicense(Licenses.PRODUCT_MENU);
-		if (win.licence_nr<0)
-		{
-			win.demo_mode=true;
-		}
-		else
-		{
-			win.demo_mode=false;
-		}
+		win.demo_mode=false;
 		
-		int retval=SWT.YES;
-		if (win.demo_mode)
-		{
-			ShowLicenseDialog ld = new ShowLicenseDialog(log, win.schema.props, win.disp, "Menu");
-			ld.shell.setImage(win.menu_image);
-			retval = ld.open();
-			if (retval==SWT.YES)
-			{
-				win.demo_mode=false;
-                win.licence_nr = licenses.getNrLicenses();
-			}
-		}
-
-		if (retval==SWT.CANCEL)
-		{
-			win.dispose();
-			return;
-		}
-
 		// Read kettle transformation specified on command-line?
 		if (args.length==1)
 		{
