@@ -1,0 +1,1035 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>Large test transformation</name>
+    <directory>\directory</directory>
+    <log>
+      <read>ARCH_DYN_EQ_CNT_LANE</read>
+      <write>F_COUNTERLANES_RAW</write>
+      <input>ARCH_DYN_EQ_CNT_LANE</input>
+      <output>F_COUNTERLANES_RAW</output>
+      <update>F_COUNTERLANES_RAW</update>
+      <connection>TIC</connection>
+      <table>L_ETL</table>
+      <use_batchid>N</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection>TCC</connection>
+      <table>ARCH_DYN_EQ_CNT_LANE</table>
+      <field>TIME_MEASUREMENT</field>
+      <offset>-300.0</offset>
+      <maxdiff>7200.0</maxdiff>
+      </maxdate>
+    <size_rowset>350</size_rowset>
+    <dependencies>
+      </dependencies>
+    </info>
+  <notepads>
+    </notepads>
+  <connection>
+    <name>TIC</name>
+    <server>hercules</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>TIC</database>
+    <port>1521</port>
+    <username>tic</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10be86a6d9</password>
+    <servername></servername>
+    <data_tablespace>TS_DATA</data_tablespace>
+    <index_tablespace>TS_INDEX</index_tablespace>
+    <attributes>
+      <attribute><code>SAPClient</code><attribute></attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute></attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute></attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>TCC</name>
+    <server>planck</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>TCC</database>
+    <port>1521</port>
+    <username>tcc_adm</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce60d19fa2df</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+      <attribute><code>SAPClient</code><attribute></attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute></attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute></attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>guest</name>
+    <server>hercules</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>TIC</database>
+    <port>1521</port>
+    <username>guest</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce77cb97bcce</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+      <attribute><code>SAPClient</code><attribute></attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute></attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute></attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>TIC-Repository</name>
+    <server>hercules</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>TIC</database>
+    <port>1521</port>
+    <username>kettlerep</username>
+    <password>Encrypted 2be98afc86aa7f28fae0dba7cdb80aaca</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+      <attribute><code>SAPClient</code><attribute></attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute></attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute></attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>TCC with TCC_ADM</name>
+    <server>planck</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>TCC</database>
+    <port>1521</port>
+    <username>TCC_ADM</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce60d19fa2df</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+      <attribute><code>SAPClient</code><attribute></attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute></attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute></attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Hercules</name>
+    <server>hercules</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>TIC</database>
+    <port>1521</port>
+    <username>guest</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce77cb97bcce</password>
+    <servername></servername>
+    <data_tablespace>TS_DATA</data_tablespace>
+    <index_tablespace>TS_INDEX</index_tablespace>
+    <attributes>
+      <attribute><code>SAPClient</code><attribute></attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute></attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute></attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>MySQL Test @ Localhost</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+    </attributes>
+  </connection>
+  <connection>
+    <name>MySQL Test @ bolletje</name>
+    <server>bolletje</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+    </attributes>
+  </connection>
+  <connection>
+    <name>TCC guest</name>
+    <server>planck</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>TCC</database>
+    <port>1521</port>
+    <username>guest</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce77cb97bcce</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+      <attribute><code>SAPClient</code><attribute></attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute></attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute></attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>TIC guest</name>
+    <server>hercules</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>TIC</database>
+    <port>1521</port>
+    <username>guest</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce77cb97bcce</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+      <attribute><code>SAPClient</code><attribute></attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute></attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute></attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>TIC PTV</name>
+    <server>hercules</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>TIC</database>
+    <port>1521</port>
+    <username>PTV</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10bea29bec</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+      <attribute><code>SAPClient</code><attribute></attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute></attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute></attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>TCCDEV</name>
+    <server>newton</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>TCC</database>
+    <port>1521</port>
+    <username>tcc_adm</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce60d19fa2df</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+      <attribute><code>SAPClient</code><attribute></attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute></attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute></attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Oracle boven</name>
+    <server>192.168.1.2</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>ORCL</database>
+    <port>1521</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+    </attributes>
+  </connection>
+  <connection>
+    <name>MySQL Localhost</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+    </attributes>
+  </connection>
+  <connection>
+    <name>DB2 Localhost - TEST</name>
+    <server>localhost</server>
+    <type>DB2</type>
+    <access>Native</access>
+    <database>Test</database>
+    <port>50000</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+    </attributes>
+  </connection>
+  <connection>
+    <name>aca_reporting</name>
+    <server>myaca1.back.liveworld.com</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>aca_reporting</database>
+    <port>3306</port>
+    <username>acatools</username>
+    <password>Encrypted 2be98afc802ee88d5ad16fc45f39f88ce</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+    </attributes>
+  </connection>
+  <connection>
+    <name>orcl-boven matt</name>
+    <server>192.168.1.2</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>ORCL</database>
+    <port>1521</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Sybase boven</name>
+    <server>192.168.1.2</server>
+    <type>SYBASE</type>
+    <access>Native</access>
+    <database>repository</database>
+    <port>5001</port>
+    <username>repuser</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb0bab60cb81aac8</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+    </attributes>
+  </connection>
+  <connection>
+    <name>MySQL repository</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>repository</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+    </attributes>
+  </connection>
+  <connection>
+    <name>Postgres TEST</name>
+    <server>localhost</server>
+    <type>POSTGRESQL</type>
+    <access>Native</access>
+    <database>Test</database>
+    <port>5432</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+    </attributes>
+  </connection>
+  <connection>
+    <name>SAP DB Boven</name>
+    <server>192.168.1.2</server>
+    <type>SAPDB</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>0</port>
+    <username>dba</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10be96addb</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+    </attributes>
+  </connection>
+  <connection>
+    <name>SAP R/3 test connection</name>
+    <server>hostname</server>
+    <type>SAPR3</type>
+    <access>Plugin</access>
+    <database>DBname</database>
+    <port>0</port>
+    <username>user</username>
+    <password>Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+      <attribute><code>SAPClient</code><attribute>Client</attribute></attribute>
+      <attribute><code>SAPSystemID</code><attribute>12304</attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute>DE</attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute>05</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>test-connection A</name>
+    <server>TESTSERVER</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>TESTDB</database>
+    <port>3306</port>
+    <username>TESTUSER</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb2d8b43eaa298fe</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+    </attributes>
+  </connection>
+  <connection>
+    <name>JENS MS-Access</name>
+    <server></server>
+    <type>MSACCESS</type>
+    <access>ODBC</access>
+    <database>JENS</database>
+    <port>0</port>
+    <username></username>
+    <password>Encrypted </password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+      <attribute><code>SAPClient</code><attribute></attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute></attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute></attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>SAP System</name>
+    <server>10.1.1.16</server>
+    <type>SAPR3</type>
+    <access>Plugin</access>
+    <database></database>
+    <port>0</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb798555eaa683ff</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+      <attribute><code>SAPClient</code><attribute>0</attribute></attribute>
+      <attribute><code>Debug</code><attribute>true</attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute>EN</attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute>0</attribute></attribute>
+    </attributes>
+  </connection>
+  <connection>
+    <name>TIC ODBC</name>
+    <server></server>
+    <type>ORACLE</type>
+    <access>ODBC</access>
+    <database>TIC</database>
+    <port>0</port>
+    <username>tic</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10be86a6d9</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+      <attribute><code>SAPClient</code><attribute></attribute></attribute>
+      <attribute><code>SAPLanguage</code><attribute></attribute></attribute>
+      <attribute><code>SAPSystemNumber</code><attribute></attribute></attribute>
+    </attributes>
+  </connection>
+  <order>
+  <hop> <from>LOS Lookup</from><to>Unique rows</to><enabled>Y</enabled> </hop>  <hop> <from>Unique rows</from><to>Select table fields!</to><enabled>Y</enabled> </hop>  <hop> <from>get date range</from><to>Java Script Value</to><enabled>Y</enabled> </hop>  <hop> <from>Java Script Value</from><to>ARCH_DYN_EQ_CNT_LANE</to><enabled>Y</enabled> </hop>  <hop> <from>lookup DATE_TK</from><to>get EQUIPMENT_TK</to><enabled>Y</enabled> </hop>  <hop> <from>ARCH_DYN_EQ_CNT_LANE</from><to>lookup TIME_TK</to><enabled>Y</enabled> </hop>  <hop> <from>get date range</from><to>ARCH_DYN_EQ_CNT</to><enabled>Y</enabled> </hop>  <hop> <from>Select table fields!</from><to>Null if...</to><enabled>Y</enabled> </hop>  <hop> <from>lookup TIME_TK</from><to>lookup DATE_TK</to><enabled>Y</enabled> </hop>  <hop> <from>Null if...</from><to>F_COUNTERLANES_RAW</to><enabled>Y</enabled> </hop>  <hop> <from>get EQUIPMENT_TK</from><to>lookup PLACE_TK</to><enabled>Y</enabled> </hop>  <hop> <from>ARCH_DYN_EQ_CNT</from><to>Junk update D_DATA_STATUS</to><enabled>Y</enabled> </hop>  <hop> <from>lookup PLACE_TK</from><to>LOS Lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Junk update D_DATA_STATUS</from><to>LOS Lookup</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>ARCH_DYN_EQ_CNT</name>
+    <type>TableInput</type>
+    <description>Read LOS information from F_COUNTER</description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>TCC</connection>
+    <sql>SELECT   TIME_MEASUREMENT, ID_REF_EQ,
+         VALID_FLOW, VALID_SPEED, VALID_OCCUPANCY, 
+         LOS_VALUE, LOS_VALUE_CNT_1
+FROM     ARCH_DYN_EQ_CNT
+WHERE    time_measurement &gt;= ?
+AND      time_measurement &lt;  ?
+</sql>
+    <limit>0</limit>
+    <lookup>get date range</lookup>
+    <GUI>
+      <xloc>293</xloc>
+      <yloc>250</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>ARCH_DYN_EQ_CNT_LANE</name>
+    <type>TableInput</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>TCC</connection>
+    <sql>SELECT   /*+INDEX(ARCH_DYN_EQ_CNT_LANE, I_ARCH_DYN_EQ_CNT_LANE) */
+         A.*, 
+         to_char(A.time_measurement, &apos;YYYY/MM/DD&apos;) as DATE_ONLY,
+         to_char(A.time_measurement, &apos;HH24:MI:SS&apos;) as TIME_ONLY,
+         R.ID_REF_EQ,
+         R.ID_REF_SECTION_LANE
+FROM     ARCH_DYN_EQ_CNT_LANE A,
+         REF_EQ_LANE R
+WHERE    time_measurement &gt;= to_date(?, &apos;YYYY/MM/DD HH24:MI:SS&apos;)
+AND      time_measurement &lt;  to_date(?, &apos;YYYY/MM/DD HH24:MI:SS&apos;)
+AND      A.ID_REF_EQ_LANE = R.ID_REF_EQ_LANE
+ORDER BY A.TIME_MEASUREMENT, R.ID_REF_SECTION_LANE, R.ID_REF_EQ
+</sql>
+    <limit>0</limit>
+    <lookup>Java Script Value</lookup>
+    <GUI>
+      <xloc>73</xloc>
+      <yloc>39</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>F_COUNTERLANES_RAW</name>
+    <type>TableOutput</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>TIC</connection>
+    <table>F_COUNTERLANES_RAW</table>
+    <commit>250</commit>
+    <truncate>N</truncate>
+    <ignore_errors>Y</ignore_errors>
+    <use_batch>N</use_batch>
+    <GUI>
+      <xloc>725</xloc>
+      <yloc>741</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Java Script Value</name>
+    <type>ScriptValue</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <script>
+start_date.dat2str(&quot;yyyy/MM/dd HH:mm:ss&quot;);
+end_date.dat2str(&quot;yyyy/MM/dd HH:mm:ss&quot;);
+</script>
+    <fields>      </fields>    <GUI>
+      <xloc>75</xloc>
+      <yloc>140</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Junk update D_DATA_STATUS</name>
+    <type>CombinationLookup</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+      <table>D_DATA_STATUS</table>
+      <connection>TIC</connection>
+      <commit>100</commit>
+      <replace>Y</replace>
+      <crc>N</crc>
+      <crcfield>hashcode</crcfield>
+      <fields>
+        <key>
+          <name>LOS_VALUE_CNT_1</name>
+          <lookup>LOS_VALUE_CNT_1</lookup>
+          </key>
+        <key>
+          <name>LOS_VALUE</name>
+          <lookup>LOS_VALUE</lookup>
+          </key>
+        <key>
+          <name>VALID_OCCUPANCY</name>
+          <lookup>VALID_OCCUPANCY</lookup>
+          </key>
+        <key>
+          <name>VALID_SPEED</name>
+          <lookup>VALID_SPEED</lookup>
+          </key>
+        <key>
+          <name>VALID_FLOW</name>
+          <lookup>VALID_FLOW</lookup>
+          </key>
+        <return>
+          <name>DATA_STATUS_TK</name>
+          <use_autoinc>Y</use_autoinc>
+        </return>
+      </fields>
+      <sequence>SEQ_DATA_STATUS</sequence>
+    <GUI>
+      <xloc>509</xloc>
+      <yloc>250</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>LOS Lookup</name>
+    <type>StreamLookup</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <from>Junk update D_DATA_STATUS</from>
+    <input_sorted>N</input_sorted>
+    <lookup>
+      <key>
+        <name>TIME_MEASUREMENT</name>
+        <field>TIME_MEASUREMENT</field>
+      </key>
+      <key>
+        <name>ID_REF_EQ</name>
+        <field>ID_REF_EQ</field>
+      </key>
+      <value>
+        <name>DATA_STATUS_TK</name>
+        <rename>DATA_STATUS_TK</rename>
+        <default>0</default>
+        <type>Integer</type>
+      </value>
+    </lookup>
+    <GUI>
+      <xloc>725</xloc>
+      <yloc>250</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Null if...</name>
+    <type>NullIf</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>FLOW_CLS1_1MIN</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>FLOW_CLS2_1MIN</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>FLOW_CLS3_1MIN</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>FLOW_CLS4_1MIN</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>FLOW_CLS5_1MIN</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>FLOW_ALL</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>AVG_SPEED_CLS1_1MIN</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>AVG_SPEED_CLS2_1MIN</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>AVG_SPEED_CLS3_1MIN</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>AVG_SPEED_CLS4_1MIN</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>AVG_SPEED_CLS5_1MIN</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>AVG_SPEED_ALL</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>FLOW_ALL_PROB</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>FLOW_ALL_CNT</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>AVG_SPEED_ALL_PROB</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>AVG_SPEED_ALL_CNT</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>AVG_SPEED_ALL_CNT_2</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>OCCUPANCY</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>OCCUPANCY_PROB</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>OCCUPANCY_CNT</name>
+        <value>-1</value>
+        </field>
+      <field>
+        <name>VOLUME</name>
+        <value>-1</value>
+        </field>
+      </fields>
+    <GUI>
+      <xloc>725</xloc>
+      <yloc>621</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Select table fields!</name>
+    <type>SelectValues</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>      <remove>        <name>ID_REF_EQ_LANE</name>
+        </remove>      <remove>        <name>DT_INSERT</name>
+        </remove>      <remove>        <name>DT_LAST_UPD</name>
+        </remove>      <remove>        <name>UID_INSERT</name>
+        </remove>      <remove>        <name>UID_LAST_UPD</name>
+        </remove>      <remove>        <name>LOG_STATE</name>
+        </remove>      <remove>        <name>DATE_ONLY</name>
+        </remove>      <remove>        <name>TIME_ONLY</name>
+        </remove>      <remove>        <name>ID_REF_EQ</name>
+        </remove>      <remove>        <name>LOG_DATE</name>
+        </remove>      <remove>        <name>ID_REF_SECTION_LANE</name>
+        </remove>      <remove>        <name>occurances</name>
+        </remove>      <meta>        <name>FLOW_CLS1_1MIN</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>FLOW_CLS2_1MIN</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>FLOW_CLS3_1MIN</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>FLOW_CLS4_1MIN</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>FLOW_CLS5_1MIN</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>FLOW_ALL</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>AVG_SPEED_CLS1_1MIN</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>AVG_SPEED_CLS2_1MIN</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>AVG_SPEED_CLS3_1MIN</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>AVG_SPEED_CLS4_1MIN</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>AVG_SPEED_CLS5_1MIN</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>AVG_SPEED_ALL</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>FLOW_ALL_PROB</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>FLOW_ALL_CNT</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>AVG_SPEED_ALL_PROB</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>AVG_SPEED_ALL_CNT</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>AVG_SPEED_ALL_CNT_2</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>OCCUPANCY</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>OCCUPANCY_PROB</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>OCCUPANCY_CNT</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      <meta>        <name>VOLUME</name>
+        <rename></rename>
+        <type>5</type>
+        <length>-2</length>
+        <precision>-2</precision>
+        </meta>      </fields>    <GUI>
+      <xloc>725</xloc>
+      <yloc>509</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Unique rows</name>
+    <type>Unique</type>
+    <description></description>
+    <distribute>N</distribute>
+    <copies>1</copies>
+      <count_rows>Y</count_rows>
+      <count_field>occurances</count_field>
+    <fields>      <field>        <name>TIME_MEASUREMENT</name>
+        </field>      <field>        <name>PLACE_TK</name>
+        </field>      <field>        <name>EQUIPMENT_TK</name>
+        </field>      </fields>    <GUI>
+      <xloc>725</xloc>
+      <yloc>370</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>get EQUIPMENT_TK</name>
+    <type>DimensionLookup</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+      <table>D_EQUIPMENT</table>
+      <connection>TIC</connection>
+      <commit>0</commit>
+      <update>N</update>
+      <fields>
+        <key>
+          <name>ID_REF_EQ</name>
+          <lookup>ID_REF_EQ</lookup>
+          </key>
+        <date>
+          <name>TIME_MEASUREMENT</name>
+          <from>DATE_FROM</from>
+          <to>DATE_TO</to>
+          </date>
+        <return>
+          <name>EQUIPMENT_TK</name>
+          <rename></rename>
+          <use_autoinc>Y</use_autoinc>
+          <version>VERSION</version>
+        </return>
+      </fields>
+      <sequence></sequence>
+      <min_year>1900</min_year>
+      <max_year>2199</max_year>
+    <GUI>
+      <xloc>562</xloc>
+      <yloc>39</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>get date range</name>
+    <type>SystemInfo</type>
+    <description>Haal de datum-range op vanuit de tabel L_ETL</description>
+    <distribute>N</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>start_date</name>
+        <type>start date range</type>
+        </field>
+      <field>
+        <name>end_date</name>
+        <type>end date range</type>
+        </field>
+      </fields>
+    <GUI>
+      <xloc>75</xloc>
+      <yloc>250</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>lookup DATE_TK</name>
+    <type>DBLookup</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>TIC</connection>
+    <cache>Y</cache>
+    <cache_size>0</cache_size>
+    <lookup>
+      <table>D_DATE</table>
+      <orderby></orderby>
+      <key>
+        <name>DATE_ONLY</name>
+        <field>YEAR_MONTH_DAY</field>
+        <condition>=</condition>
+        <name2></name2>
+        </key>
+      <value>
+        <name>DATE_TK</name>
+        <rename>DATE_TK</rename>
+        <default>0</default>
+        <type>Number</type>
+        </value>
+      </lookup>
+    <GUI>
+      <xloc>397</xloc>
+      <yloc>39</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>lookup PLACE_TK</name>
+    <type>DBLookup</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>TIC</connection>
+    <cache>Y</cache>
+    <cache_size>0</cache_size>
+    <lookup>
+      <table>D_PLACE</table>
+      <orderby></orderby>
+      <key>
+        <name>ID_REF_SECTION_LANE</name>
+        <field>ID_REF_SECTION_LANE</field>
+        <condition>=</condition>
+        <name2></name2>
+        </key>
+      <value>
+        <name>PLACE_TK</name>
+        <rename>PLACE_TK</rename>
+        <default>0</default>
+        <type>Number</type>
+        </value>
+      </lookup>
+    <GUI>
+      <xloc>725</xloc>
+      <yloc>39</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>lookup TIME_TK</name>
+    <type>DBLookup</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>TIC</connection>
+    <cache>Y</cache>
+    <cache_size>0</cache_size>
+    <lookup>
+      <table>D_TIME</table>
+      <orderby></orderby>
+      <key>
+        <name>TIME_ONLY</name>
+        <field>HMS</field>
+        <condition>=</condition>
+        <name2></name2>
+        </key>
+      <value>
+        <name>TIME_TK</name>
+        <rename>TIME_TK</rename>
+        <default>0</default>
+        <type>Number</type>
+        </value>
+      </lookup>
+    <GUI>
+      <xloc>235</xloc>
+      <yloc>39</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>

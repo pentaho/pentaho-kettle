@@ -1,0 +1,317 @@
+<project name="Kettle" default="default" basedir=".">
+
+	  <description>
+	      Kettle build file
+	    </description>
+
+	  <tstamp prefix="start"/>
+
+	  <!-- system properties to use -->
+	  <property name="cr" value="${line.separator}"/> 
+		
+	  <!-- set global properties for this build -->
+	
+	  <property name="src"        			location="src"/> 
+	  <property name="classes"        		location="classes"/> 
+	  <property name="bin"    				location="bin"/>
+	  <property name="build"      			location="build"/>
+	  <property name="lib"        			location="lib"/>
+	  <property name="plugins"        		location="plugins"/>
+	  <property name="libext"     			location="libext"/>
+	  <property name="libswt"     			location="libswt"/>
+	  <property name="distrib"				location="distrib"/>
+	  <property name="docs"					location="docs"/>
+	  <property name="api"					location="${docs}/api/"/>
+	  <property name="web"					location="web"/>
+	  <property name="extra"        		location="extra"/>
+	  <property name="webstart"				location="webstart"/>
+	  <property name="keystore"				location="keystore"/>
+	  <property name="keystorePassword"		location="abcd1234"/>
+	
+	  <target name="init" description="create timestamp and directories">
+    	<echo>Init...</echo>
+	  	
+	    <tstamp/>
+	    <mkdir dir="${build}"/>
+	    <mkdir dir="${classes}"/>
+	    <mkdir dir="${lib}"/>
+		<mkdir dir="${distrib}"/>
+		<mkdir dir="${docs}"/>
+		<mkdir dir="${api}"/>
+		<mkdir dir="${webstart}"/>
+	  </target>
+
+	  <!--
+	       ==========================
+	            Compile the code
+	       ==========================
+	  -->
+
+	  <target name="compile" depends="init" description="compile the source " >
+	  	<echo>Compiling Kettle...</echo>
+	    <javac srcdir="${src}" 
+	    	   destdir="${classes}">
+
+	    	<classpath id="cp-kettle">
+				<fileset dir="${libext}" 		includes="*.jar"/>
+				<fileset dir="${libswt}" 		includes="*.jar"/>
+				<fileset dir="${libswt}/win32/" includes="*.jar"/>
+		  		</classpath>
+	    </javac>
+	  </target>
+	
+	  <!--
+	       ==========================
+	          Copy additional files
+	       ==========================
+	  -->
+
+	  <target name="copy" depends="compile" description="copy images etc to classes directory" >
+	  	<echo>Copying images etc to classes directory...</echo>
+	    <copy todir="${classes}">
+	    	<fileset 
+	    		dir="${src}" 
+	    		includes="**/*.png,**/*.xml"/>
+	  	    </copy>
+	  </target>
+	
+	
+	  <!--
+	       ==========================
+	         javadoc of the source
+	       ==========================
+	  -->
+
+	  <target name="javadoc" depends="compile" description="compile the javadoc api" >
+	  	<echo>Compiling the Kettle API javadocs...</echo>
+        <javadoc 
+        	destdir="${api}" 
+        	access="public" 
+        	source="1.4" 
+        	use="true" 
+        	notree="false" 
+        	nonavbar="false" 
+        	noindex="false" 
+        	splitindex="true" 
+        	author="true" 
+        	version="true" 
+        	excludepackagenames="be.ibridge.kettle.code.license"
+        	nodeprecatedlist="false" 
+        	nodeprecated="false" 
+        	packagenames ="be.ibridge.kettle.*" 
+        	sourcepath="${src}" 
+        	doctitle="Kettle API documentation">
+            <link href="http://java.sun.com/j2se/1.4.2/docs/api/"/>
+
+        	<classpath refid="cp-kettle"/>
+
+        </javadoc>
+	
+	  </target>
+	
+		
+	  <!--
+	       ==========================
+	             Kettle library
+	       ==========================
+	  -->
+		
+	  <target name="kettle" depends="compile, copy" description="generate the kettle library kettle.jar">
+	  	<echo>Generating the Kettle library kettle.jar ...</echo>
+	  	<jar jarfile="${lib}/kettle.jar" 
+	    	 basedir="${classes}" 
+	    	 includes="**/*"
+	  	     excludes="**/Thumbs.db"
+	  		/>
+	  </target>
+	
+	
+
+	<!--
+	       ==========================
+	        Distribution jar package
+	       ==========================
+	  -->
+	  <target name="distrib" depends="kettle" description="copy jar file to distribution directory" >
+	  	<echo>Construct the distribution package...</echo>
+	  	
+	        <!-- root directory -->
+	  		<mkdir dir="${distrib}"/>
+	  		<copy todir="${distrib}">
+	  			<fileset dir="${bin}" includes="**/*" excludes="**/.vpn .project .classpath"/>
+	  			</copy>
+
+	  		<!-- base lib -->
+	  		<mkdir dir="${distrib}/lib"/>
+	  		<copy todir="${distrib}/lib"  file="${lib}/kettle.jar"/>
+
+  	        <!-- external libs (jdbc etc) -->
+	  		<mkdir dir="${distrib}/libext"/>
+	  		<copy todir="${distrib}/libext">
+	  			<fileset dir="${libext}" includes="*.jar" excludes="**/.vpn"/>
+	  			</copy>
+
+	        <!-- swt libs (jdbc etc) -->
+	  		<mkdir dir="${distrib}/libswt"/>
+	  		<copy todir="${distrib}/libswt">
+	  			<fileset dir="${libswt}" includes="**/*" excludes="**/.vpn **/sapjco*.dll"/>
+	  			</copy>
+
+	        <!-- plugins -->
+	  		<mkdir dir="${distrib}/plugins"/>
+	  		<copy todir="${distrib}/plugins">
+	  			<fileset dir="${plugins}" includes="**/*" excludes="**/.vpn **/sapjco.jar **/VTVLInput **/VTVLInput/*"/>
+	  			</copy>
+
+	        <!-- documentation -->
+	  		<mkdir dir="${distrib}/docs"/>
+	  		<copy todir="${distrib}/docs">
+	  			<fileset dir="${docs}" includes="**/*.pdf"
+	  			excludes="**/Spoon-2.0.pdf **/*.dot **/*.sxw  **/*.vpn" />
+	  			</copy>
+	  	
+	        <!-- extra stuff -->
+	  		<mkdir dir="${distrib}/extra"/>
+	  		<copy todir="${distrib}/extra">
+	  			<fileset dir="${extra}" includes="**/*"/>
+	  			</copy>
+
+
+	  </target>
+
+	<!--
+	       ==========================
+	            Webstart part...
+	       ==========================
+	  -->
+
+	<target name="copy2webstart" depends="init, kettle" description="Copy resources to webstart">
+    	<echo>Copying resources to webstart...</echo>
+
+		<copy todir="${webstart}/libext">
+			<fileset dir="${libext}" includes="**/*.jar"/>
+			</copy>
+
+		<copy todir="${webstart}/libswt">
+			<fileset dir="${libswt}" includes="**/*.jar"/>
+		</copy>
+
+		<copy todir="${webstart}/">
+			<fileset dir="${bin}" includes="**/*.xml"/>
+		</copy>
+
+		<copy todir="${webstart}/lib">
+			<fileset dir="${lib}" includes="**/*.jar"/>
+		</copy>
+	
+		<copy todir="${webstart}/plugins">
+			<fileset dir="${plugins}" includes="**/*"/>
+		</copy>
+
+		<copy todir="${webstart}">
+			<fileset dir="${src}/be/ibridge/kettle/images/" includes="kettle_logo.png"/>
+		</copy>
+
+		<jar destfile="${webstart}/libswt/win32/libs.jar">
+			<fileset dir="${libswt}/win32" includes="**/*.dll"/>
+			<fileset dir="${libswt}/win32" includes="**/*.manifest"/>
+		</jar>
+			
+		<jar destfile="${webstart}/libswt/linux/libs.jar">
+			<fileset dir="${libswt}/linux" includes="**/*.so"/>
+		</jar>
+
+		<jar destfile="${webstart}/libswt/solaris/libs.jar">
+			<fileset dir="${libswt}/solaris" includes="**/*.so"/>
+		</jar>
+
+		<jar destfile="${webstart}/libswt/aix/libs.jar">
+			<fileset dir="${libswt}/aix" includes="**/*.a"/>
+		</jar>
+
+		<jar destfile="${webstart}/libswt/osx/libs.jar">
+			<fileset dir="${libswt}/osx" includes="**/*.jnilib"/>
+			<fileset dir="${libswt}/osx" includes="**/java_swt"/>
+		</jar>
+
+		<jar destfile="${webstart}/libswt/hpux/libs.jar">
+			<fileset dir="${libswt}/hpux" includes="**/*.sl"/>
+		</jar>
+
+	</target>
+
+	<target name="keystore" depends="copy2webstart" description="Create the keystore...">
+    	<echo>Create the keystore...</echo>
+
+		<exec executable="keytool" inputstring="${keystorePassword}${cr}Matt Casters${cr}i-Bridge bvba${cr}Kettle${cr}Okegem${cr}OVL${cr}BE${cr}yes${cr}${cr}${keystorePassword}">
+			<arg line="-genkey -keyalg RSA -keystore ${keystore} -alias kettle"/>
+		</exec>
+	</target>
+	
+    <target name="sign-jars" depends="keystore" description="Sign all used jars">
+    	<echo>Signing JARS...</echo>
+    	
+    	<signjar keystore="${keystore}" alias="kettle" storepass="${keystorePassword}">
+    		<fileset dir="${webstart}" includes="**/*.jar"/>
+	    </signjar>
+    </target> 
+
+    <target name="webstart" depends="sign-jars" description="Package WAR">
+    	<echo>Create the webstart WAR file...</echo>
+
+        <war destfile="${webstart}/kettle.war" webxml="${web}/web.xml" compress="true">
+            
+        	<fileset dir="${web}">
+		      <include name="**/*.html"/>
+		      <include name="**/*.jnlp"/>
+		      <exclude name="**/*.xml"/>
+	    	</fileset>
+
+            <fileset dir="${webstart}">
+			  <include name="**/*.jar"/>
+			  <include name="**/repositories.xml"/>
+  			  <include name="kettle_logo.png"/>
+              <exclude name="${keystore}"/>
+              <exclude name="kettle.war"/>
+	    	</fileset>
+        	
+        </war>
+	</target>
+
+	<target name="ftpkettle" depends="kettle" description="ftp kettle lib to www.kettle.be">
+		<ftp server="www.kettle.be" 
+			 remotedir="webstart"
+			 userid="www.kettle.be"
+			 password="wout1234">
+		    <fileset dir="${lib}"/>
+		  </ftp>
+		</target>
+	
+	<!--
+	       ==========================
+	          Default target: all
+	       ==========================
+	  -->
+
+	<target name="default" depends="distrib,webstart" description="default = build all"/>
+
+	<!--
+	       ==========================
+	              C L E A N
+	       ==========================
+	  -->
+
+	  <target name="cleandirs" description="clean up generated files">
+	    <delete dir="${classes}"/>
+	    <delete dir="${lib}"/>
+	    <delete dir="${distrib}"/>
+	  	<delete dir="${api}"/>
+	  	<delete dir="${webstart}"/>
+	  </target>
+
+	  <target name="clean" depends="cleandirs"/>
+
+	  <target name="matt">
+    	<echo>This is the test target MATT</echo>
+	  </target>
+</project>

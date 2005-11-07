@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="DummyPlugin"
+   iconfile="DPL.png"
+   description="Dummy Plugin"
+   tooltip="This is a dummy plugin test step"
+   category="Transform"
+   classname="be.ibridge.kettle.dummy.DummyPluginMeta">
+   <libraries>
+    <library name="dummy.jar"/>
+    </libraries>
+</plugin>

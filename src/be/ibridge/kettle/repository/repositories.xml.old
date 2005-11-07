@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<repositories>
+  <connection>
+    <name>TIC-Repository</name>
+    <server>hercules</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>TIC</database>
+    <port>1521</port>
+    <username>kettlerep</username>
+    <password>Encrypted 2be98afc86aa7f28fae0dba7cdb80aaca</password>
+    <servername></servername>
+  </connection>
+  <connection>
+    <name>PTVRep Oracle</name>
+    <server>hercules</server>
+    <type>ORACLE</type>
+    <access>Native</access>
+    <database>TIC</database>
+    <port>1521</port>
+    <username>ptvrep</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79be64c880aaca</password>
+    <servername></servername>
+  </connection>
+  <repository>
+    <name>TIC-Repository</name>
+    <description>TIC-Repository</description>
+    <connection>TIC-Repository</connection>
+    </repository>
+  <repository>
+    <name>PTVRep Oracle</name>
+    <description>PTV Repositorory on Hercules (TIC)</description>
+    <connection>PTVRep Oracle</connection>
+    </repository>
+  </repositories>

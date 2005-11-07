@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<jnlp spec="1.0+" codebase="http://www.kettle.be/webstart" href="chef.jnlp">
+
+ <information>
+  <title>Kettle Chef</title>
+  <vendor>i-Bridge bvba</vendor>
+  <homepage href="index.html"/>
+  <description>Kettle - Chef : The Visual Job Editor</description>
+  <description kind="short">Chef Job Editor</description>
+ </information>
+
+  <security>
+     <all-permissions/>
+  </security>
+
+ <icon href="kettle_logo.png" kind="splash"/> 
+
+ <resources>
+  <j2se version="1.4+" java-vm-args="-Xmx256M"/>
+  <jar href="lib/kettle.jar"/>
+  <jar href="libext/activation.jar"/>
+  <jar href="libext/CacheDB.jar"/>
+  <jar href="libext/db2jcc.jar"/>
+  <jar href="libext/db2jcc_license_c.jar"/>
+  <jar href="libext/edtftpj-1.4.5.jar"/> 
+  <jar href="libext/firebirdsql-full.jar"/>
+  <jar href="libext/firebirdsql.jar"/>
+  <jar href="libext/hsqldb.jar"/>
+  <jar href="libext/gis-shape.jar"/>
+  <jar href="libext/hsqldb.jar"/>
+  <jar href="libext/ifxjdbc.jar"/>
+  <jar href="libext/javadbf-0.4.1.jar"/>
+  <jar href="libext/jconn2.jar"/>
+  <jar href="libext/js.jar"/>
+  <jar href="libext/jt400.jar"/>
+  <jar href="libext/jtds-0.9.1.jar"/>
+  <jar href="libext/jxl.jar"/>
+  <jar href="libext/ktable.jar"/>
+  <jar href="libext/log4j-1.2.8.jar"/>
+  <jar href="libext/mail.jar"/>
+  <jar href="libext/mysql-connector-java-3.0.14-production-bin.jar"/>
+  <jar href="libext/ojdbc14.jar"/>
+  <jar href="libext/orai18n.jar"/>
+  <jar href="libext/pg74.215.jdbc3.jar"/>
+  <jar href="libext/SQLBaseJDBC.jar"/>
+  <jar href="libswt/jface.jar"/>
+  <jar href="libswt/runtime.jar"/>
+ </resources>
+
+ <resources os="Windows"> 
+	<jar href="libswt/win32/swt.jar"/>
+	<nativelib href="libswt/win32/libs.jar"/>
+ </resources>
+
+ <resources os="Linux"> 
+	<jar href="libswt/linux/swt-mozilla.jar"/>
+	<jar href="libswt/linux/swt-pi.jar"/>
+	<jar href="libswt/linux/swt.jar"/>
+	<nativelib href="libswt/linux/libs.jar"/>
+ </resources>
+
+ <resources os="Sun">
+ 	<jar href="libswt/solaris/swt.jar"/>
+	<nativelib href="libswt/solaris/libs.jar"/>
+ </resources>
+
+ <resources os="AIX">
+ 	<jar href="libswt/aix/swt.jar"/>
+	<nativelib href="libswt/aix/libs.jar"/>
+ </resources>
+
+ <resources os="HPUX">
+ 	<jar href="libswt/hpux/swt.jar"/>
+	<nativelib href="libswt/hpux/libs.jar"/>
+ </resources>
+
+ <resources os="Mac OS X">
+ 	<jar href="libswt/osx/swt.jar"/>
+ 	<nativelib href="libswt/osx/libs.jar"/>
+ </resources>
+
+ <application-desc main-class="be.ibridge.kettle.chef.Chef"/>
+
+</jnlp>
+

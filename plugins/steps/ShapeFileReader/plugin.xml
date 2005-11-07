@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+   id="ShapeFileReader"
+   iconfile="SFR.png"
+   description="ESRI Shapefile Reader"
+   tooltip="Reads shape file data from an ESRI shape file and linked DBF file"
+   category="Input"
+   classname="be.kettle.shapefilereader.ShapeFileReaderMeta">
+   <libraries>
+    <library name="shapefilereader.jar"/>
+    </libraries>
+</plugin>

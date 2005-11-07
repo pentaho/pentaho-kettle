@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin
+   id="ProSAPCONN"
+   iconfile="ProSAPCONN.png"
+   description="ProSAPCONN - PRORATIO SAP Connector"
+   tooltip="This step allows you to retrieve data from an SAP system"
+   category="Input"
+   classname="de.proratio.sapconn.kettle.SapconnMeta">
+   <libraries>
+    <library name="ProSAPCONN.jar"/>
+    <library name="ProSAPCONN-Kettle.jar"/>
+    <library name="sapjco.jar"/>
+    </libraries>
+</plugin>

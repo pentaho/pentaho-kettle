@@ -1,0 +1,21 @@
+The insert/update problem:
+There are several ways to tackle this:
+  A) do an insert, in case it fails retry with an update
+  B) do an update, in case it fails retry with an insert
+  C) do a lookup, compare and insert/update accordingly (Kettle 2.1)
+  
+All three have performance problems determining whether or not the value is in the database.
+You need to do the lookup, whether using primary keys or selects.
+
+Possible solution/performance enhancement:
+
+--> Store the hash-values representing the keys of the rows in memory.
+--> If you find the hash-value in memory it's either:
+    1) The key you're looking for
+    2) a hash-mis (2 rows with the same hash-key)
+	In any case, the number of times the update fails is VERY LOW. (% hash-misses is usually low)
+	So, we loose little to no time
+--> One drawback is that we need to save the hash-table every time after loading and load it before working.
+--> Another is the memory consumption: 8 bytes Long (hash-key) x 10M rows = 80Mb.
+    This means that for VERY large tables, we can't use this system.
+    
