@@ -278,14 +278,6 @@
         </war>
 	</target>
 
-	<target name="ftpkettle" depends="kettle" description="ftp kettle lib to www.kettle.be">
-		<ftp server="www.kettle.be" 
-			 remotedir="webstart"
-			 userid="www.kettle.be"
-			 password="wout1234">
-		    <fileset dir="${lib}"/>
-		  </ftp>
-		</target>
 	
 	<!--
 	       ==========================
