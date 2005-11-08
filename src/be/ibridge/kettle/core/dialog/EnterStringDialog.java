@@ -55,17 +55,17 @@ public class EnterStringDialog extends Dialog
 	private SelectionAdapter lsDef;
 	
 	private String string;
-	private String shell_text;
-	private String line_text;
+	private String shellText;
+	private String lineText;
 	private Props props;
 		
-	public EnterStringDialog(Shell parent, Props props, String string, String shell_text, String line_text)
+	public EnterStringDialog(Shell parent, Props props, String string, String shellText, String lineText)
 	{
 		super(parent, SWT.NONE);
 		this.props      = props;
 		this.string     = string;
-		this.shell_text = shell_text;
-		this.line_text  = line_text;
+		this.shellText  = shellText;
+		this.lineText   = lineText;
 	}
 
 	public String open()
@@ -81,13 +81,13 @@ public class EnterStringDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(shell_text);
+		shell.setText(shellText);
 		int length = Const.LENGTH;
 		int margin = Const.MARGIN;
 
 		// The String line...
 		wlString=new Label(shell, SWT.NONE);
-		wlString.setText(line_text);
+		wlString.setText(lineText);
  		props.setLook(wlString);
 		fdlString=new FormData();
 		fdlString.left = new FormAttachment(0, 0);

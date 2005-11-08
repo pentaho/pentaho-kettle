@@ -92,11 +92,11 @@ public class RepositoriesDialog
 	private RepositoriesMeta input;
 	private RepositoryMeta   repinfo;
 	private UserInfo         userinfo;
-	private String           pref_repname;
+	private String           prefRepositoryName;
 	private boolean          cancelled;
 	private String   		 toolName;
 	
-	private int tools_permissions[];
+	private int toolsPermissions[];
 	private StepLoader steploader;
 
     /** @deprecated */
@@ -108,7 +108,7 @@ public class RepositoriesDialog
 	public RepositoriesDialog(Display disp, int style, int perm[], String toolName)
 	{
 		display = disp;
-		tools_permissions = perm;
+		toolsPermissions = perm;
 		steploader = StepLoader.getInstance();
 		this.toolName = toolName;
 		
@@ -127,7 +127,7 @@ public class RepositoriesDialog
 	
 	public void setRepositoryName(String repname)
 	{
-		pref_repname = repname;
+		prefRepositoryName = repname;
 	}
 
 	public boolean open()
@@ -382,9 +382,9 @@ public class RepositoriesDialog
 		}
 
 		//Do we have a preferred repository name to select
-		if (pref_repname!=null)
+		if (prefRepositoryName!=null)
 		{
-			int idx = wRepository.indexOf(pref_repname);
+			int idx = wRepository.indexOf(prefRepositoryName);
 			if (idx>=0) wRepository.select(idx);
 		}
 
@@ -456,9 +456,9 @@ public class RepositoriesDialog
 			// Check the permissions of the user
 			boolean ok = true;
 			String mess = "";
-			for (int i=0;i<tools_permissions.length;i++)
+			for (int i=0;i<toolsPermissions.length;i++)
 			{
-				switch(tools_permissions[i])
+				switch(toolsPermissions[i])
 				{
 				case PermissionMeta.TYPE_PERMISSION_TRANSFORMATION:
 					ok = ok && userinfo.useTransformations();

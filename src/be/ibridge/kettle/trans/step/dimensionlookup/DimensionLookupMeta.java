@@ -64,9 +64,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	public final static int		TYPE_UPDATE_DIM_UPDATE			= 1;
 	public final static int		TYPE_UPDATE_DIM_PUNCHTHROUGH	= 2;
 
-	public final static String	type_desc[]						= { "Insert", "Update", "Punch through" };
+	public final static String	typeDesc[]						= { "Insert", "Update", "Punch through" };
 
-	public final static String	type_desc_lookup[]				= Value.getTypes();
+	public final static String	typeDescLookup[]				= Value.getTypes();
 
 	/** The lookup table*/
 	private String             tableName;
@@ -503,9 +503,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		if (upd)
 		{
-			for (int i = 0; i < type_desc.length; i++)
+			for (int i = 0; i < typeDesc.length; i++)
 			{
-				if (type_desc[i].equalsIgnoreCase(ty))
+				if (typeDesc[i].equalsIgnoreCase(ty))
 					return i;
 			}
 			if ("Y".equalsIgnoreCase(ty))
@@ -527,7 +527,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		if (!upd)
 			return Value.getTypeDesc(t);
 		else
-			return type_desc[t];
+			return typeDesc[t];
 	}
 
 	private void readData(Node stepnode, ArrayList databases) throws KettleXMLException

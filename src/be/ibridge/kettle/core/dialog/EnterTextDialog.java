@@ -59,7 +59,7 @@ public class EnterTextDialog extends Dialog
 	
 	private String description;
 	private boolean fixed;
-	private boolean readonly, modal, single_line;
+	private boolean readonly, modal, singleLine;
 	
 	public EnterTextDialog(Shell parent, Props pr, String t, String m, String desc, boolean fi)
 	{
@@ -76,7 +76,7 @@ public class EnterTextDialog extends Dialog
 		description=desc;
 		fixed=false;
 		readonly=false;
-		single_line=false;
+		singleLine=false;
 	}
 	
 	public void setReadOnly()
@@ -91,7 +91,7 @@ public class EnterTextDialog extends Dialog
 	
 	public void setSingleLine()
 	{
-		single_line=true;
+		singleLine=true;
 	}
 
 	public String open()
@@ -120,7 +120,7 @@ public class EnterTextDialog extends Dialog
 		fdlDesc.top  = new FormAttachment(0, margin);
 		wlDesc.setLayoutData(fdlDesc);
 		
-		if (single_line)
+		if (singleLine)
 			 wDesc=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER  );
 		else wDesc=new Text(shell, SWT.MULTI  | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL );
 		

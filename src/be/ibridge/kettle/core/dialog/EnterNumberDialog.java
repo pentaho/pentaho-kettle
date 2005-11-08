@@ -56,8 +56,8 @@ public class EnterNumberDialog extends Dialog
 	private SelectionAdapter lsDef;
 	
 	private int samples;
-	private String shell_text;
-	private String line_text;
+	private String shellText;
+	private String lineText;
 	private Props props;
 		
 	public EnterNumberDialog(Shell parent, Props pr, int s, String st, String lt)
@@ -65,8 +65,8 @@ public class EnterNumberDialog extends Dialog
 		super(parent, SWT.NONE);
 		props=pr;
 		samples=s;
-		shell_text = st;
-		line_text = lt;
+		shellText = st;
+		lineText = lt;
 	}
 
 	public int open()
@@ -82,14 +82,14 @@ public class EnterNumberDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(shell_text);
+		shell.setText(shellText);
 
 		int length = Const.LENGTH;
 		int margin = Const.MARGIN;
 
 		// From step line
 		wlNumber=new Label(shell, SWT.NONE);
-		wlNumber.setText(line_text);
+		wlNumber.setText(lineText);
  		props.setLook(wlNumber);
 		fdlNumber=new FormData();
 		fdlNumber.left = new FormAttachment(0, 0);

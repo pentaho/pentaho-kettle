@@ -260,9 +260,9 @@ public class TableDialog extends Dialog
 		wType.setText("Select the table type");
  		props.setLook(wType);
 
-		for (int i=0;i<TableMeta.type_table_desc.length;i++)
+		for (int i=0;i<TableMeta.typeTableDesc.length;i++)
 		{
-			wType.add(TableMeta.type_table_desc[i]);
+			wType.add(TableMeta.typeTableDesc[i]);
 		}
 		wType.addModifyListener(lsMod);
 
@@ -304,8 +304,8 @@ public class TableDialog extends Dialog
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
 		colinf[0]=new ColumnInfo("Fieldname",   ColumnInfo.COLUMN_TYPE_TEXT, "", false, false);
 		colinf[1]=new ColumnInfo("DB Formula",  ColumnInfo.COLUMN_TYPE_TEXT, "", false, false);
-		colinf[2]=new ColumnInfo("Field Type",  ColumnInfo.COLUMN_TYPE_CCOMBO, "", TableField.type_field_desc);
-		colinf[3]=new ColumnInfo("Aggr. Type",  ColumnInfo.COLUMN_TYPE_CCOMBO, "", TableField.type_aggregation_desc);
+		colinf[2]=new ColumnInfo("Field Type",  ColumnInfo.COLUMN_TYPE_CCOMBO, "", TableField.typeFieldDesc);
+		colinf[3]=new ColumnInfo("Aggr. Type",  ColumnInfo.COLUMN_TYPE_CCOMBO, "", TableField.typeAggregationDesc);
 		colinf[4]=new ColumnInfo("Hidden?",     ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "N", "Y" } );
 		colinf[5]=new ColumnInfo("Exact?",      ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "N", "Y" } );
 		colinf[6]=new ColumnInfo("Description", ColumnInfo.COLUMN_TYPE_BUTTON, "", "...");
@@ -626,10 +626,10 @@ public class TableDialog extends Dialog
 	
 		DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, schema.props, SWT.NONE, inf, schema.databases);
 		std.setSelectedTable(wTable.getText());
-		String table_name = (String)std.open();
-		if (table_name != null)
+		String tableName = (String)std.open();
+		if (tableName != null)
 		{
-			wTable.setText(table_name);
+			wTable.setText(tableName);
 		}
 	}
 

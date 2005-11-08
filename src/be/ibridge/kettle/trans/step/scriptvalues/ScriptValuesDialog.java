@@ -452,7 +452,7 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 	{
 		boolean retval=true;
 		String scr = wScript.getText();
-		String error_message = "";
+		String errorMessage = "";
 		
 		Context jscx;
 		Scriptable jsscope;
@@ -574,24 +574,24 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 					}
 					catch(JavaScriptException jse)
 					{
-						error_message="Coundln't execute this script! Error:"+Const.CR+jse.toString();
+						errorMessage="Coundln't execute this script! Error:"+Const.CR+jse.toString();
 						retval=false;
 					}
 					catch(Exception e)
 					{
-						error_message="General error executing script:"+Const.CR+e.toString();
+						errorMessage="General error executing script:"+Const.CR+e.toString();
 						retval=false;
 					}
 				}
 				catch(Exception e)
 				{
-					error_message = "Coundln't compile this script! Error:"+Const.CR+e.toString();
+					errorMessage = "Coundln't compile this script! Error:"+Const.CR+e.toString();
 					retval=false;
 				}
 			}
 			else
 			{
-				error_message = "Coundln't get fields from previous steps, please connect all needed hops!";
+				errorMessage = "Coundln't get fields from previous steps, please connect all needed hops!";
 				retval=false;
 			}
 	
@@ -610,7 +610,7 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage(error_message);
+					mb.setMessage(errorMessage);
 					mb.setText("ERROR");
 					mb.open(); 
 				}

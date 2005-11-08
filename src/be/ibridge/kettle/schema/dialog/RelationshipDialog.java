@@ -98,7 +98,7 @@ public class RelationshipDialog extends Dialog
 		
 	private ModifyListener lsMod;
 	
-	private boolean changed, backup_complex;
+	private boolean changed, backupComplex;
 	
 	public RelationshipDialog(Shell parent, int style, LogWriter l, RelationshipMeta in, SchemaMeta sch)
 	{
@@ -127,7 +127,7 @@ public class RelationshipDialog extends Dialog
 			}
 		};
 		changed = input.hasChanged();
-		backup_complex = input.isComplex();
+		backupComplex = input.isComplex();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -260,9 +260,9 @@ public class RelationshipDialog extends Dialog
 		wRelation=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wRelation);
 
-		for (int i=0;i<RelationshipMeta.type_relationship_desc.length;i++)
+		for (int i=0;i<RelationshipMeta.typeRelationshipDesc.length;i++)
 		{
-			wRelation.add(RelationshipMeta.type_relationship_desc[i]);
+			wRelation.add(RelationshipMeta.typeRelationshipDesc[i]);
 		}
 		wRelation.addModifyListener(lsMod);
 
@@ -439,7 +439,7 @@ public class RelationshipDialog extends Dialog
 	private void cancel()
 	{
 		input.setChanged(changed);
-		input.setComplex(backup_complex);
+		input.setComplex(backupComplex);
 		input=null;
 		dispose();
 	}

@@ -48,7 +48,7 @@ public class PermissionMeta
 			"SCHEMA"
 		};
 
-	public static final String permission_type_desc_long[] =
+	public static final String permissionTypeLongDesc[] =
 		{
 			"-",
 			"Read only access",
@@ -112,9 +112,9 @@ public class PermissionMeta
 			if (permission_type_desc[i].equalsIgnoreCase(str)) return i;
 		}
 		
-		for (int i=0;i<permission_type_desc_long.length;i++)
+		for (int i=0;i<permissionTypeLongDesc.length;i++)
 		{
-			if (permission_type_desc_long[i].equalsIgnoreCase(str)) return i;
+			if (permissionTypeLongDesc[i].equalsIgnoreCase(str)) return i;
 		}
 		
 		return TYPE_PERMISSION_NONE;

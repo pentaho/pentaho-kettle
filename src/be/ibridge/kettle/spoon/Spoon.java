@@ -1645,9 +1645,9 @@ public class Spoon
 				StepDialogInterface dialog = stepint.getDialog(shell, stepMeta.getStepMetaInterface(), transMeta, name);
 				stepname = dialog.open();
 			}
-			catch(Exception e)
+			catch(Throwable e)
 			{
-				new ErrorDialog(shell, props, "Oops!", "Unable to open dialog for this step", e);
+				new ErrorDialog(shell, props, "Oops!", "Unable to open dialog for this step", new Exception(e));
 			}
 
 			if (stepname!=null)
@@ -3013,6 +3013,11 @@ public class Spoon
 		    new ErrorDialog(shell, props, "Error creating step", "I was unable to create a new step", e);
 			return null;
 		}
+        catch(Throwable e)
+        {
+            new ErrorDialog(shell, props, "Error creating step", "I was unable to create a new step", new Exception(e));
+            return null;
+        }
 				
 		return inf;
 	}

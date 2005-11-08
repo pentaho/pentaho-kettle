@@ -174,25 +174,25 @@ public class JobDialog extends Dialog
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				RepositoryDirectory directory_from = jobMeta.getDirectory();
-				long id_directory_from  = directory_from.getID();
+				RepositoryDirectory directoryFrom = jobMeta.getDirectory();
+				long idDirectoryFrom  = directoryFrom.getID();
 				
 				SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
 				RepositoryDirectory rd = sdd.open();
 				if (rd!=null)
 				{
-					if (id_directory_from!=rd.getID())
+					if (idDirectoryFrom!=rd.getID())
 					{
 					 	try
 						{
-					 		rep.moveJob(jobMeta.getName(), id_directory_from, rd.getID() );
+					 		rep.moveJob(jobMeta.getName(), idDirectoryFrom, rd.getID() );
 					 		log.logDetailed(getClass().getName(), "Moved directory to ["+rd.getPath()+"]");
 							jobMeta.setDirectory( rd );
 							wDirectory.setText(jobMeta.getDirectory().getPath());
 						}
 					 	catch(KettleDatabaseException dbe)
 					 	{
-					 		jobMeta.setDirectory( directory_from );
+					 		jobMeta.setDirectory( directoryFrom );
 					 		
 							MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
 							mb.setText("Error!");
@@ -368,7 +368,7 @@ public class JobDialog extends Dialog
 		DatabaseMeta ci = jobMeta.getLogConnection();
 		if (ci!=null)
 		{
-			Row r = Database.getJobLogrecordFields(false, false); // TODO: add job_id & logfield to Jobs too!!
+			Row r = Database.getJobLogrecordFields(false, false); // TODO: add job id & logfield to Jobs too!!
 			if (r!=null && r.size()>0)
 			{
 				String tablename = wLogtable.getText();
@@ -377,10 +377,10 @@ public class JobDialog extends Dialog
 					Database db = new Database(ci);
 					try
 					{
-						String cr_table = db.getDDL(tablename, r);
-						log.logBasic(toString(), cr_table);
+						String createTable = db.getDDL(tablename, r);
+						log.logBasic(toString(), createTable);
 	
-						SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, ci, null, cr_table);
+						SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, ci, null, createTable);
 						sqledit.open();
 					}
 					catch(KettleDatabaseException dbe)

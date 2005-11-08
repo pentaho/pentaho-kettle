@@ -64,16 +64,16 @@ public class SelectObjectDialog extends Dialog
 	private Shell  shell;
 	private SelectionAdapter lsDef;
 	
-	private String shell_text;
-	private String line_text;
+	private String shellText;
+	private String lineText;
 	private Props props;
 	
 	private boolean trans, job, schema;
 	private Color dircolor;
 	private Repository rep;
 
-	private String 			    object_name;
-	private RepositoryDirectory object_directory;
+	private String 			    objectName;
+	private RepositoryDirectory objectDirectory;
 		
 	public SelectObjectDialog(Shell parent, Props props, Repository rep, boolean trans, boolean job, boolean schema)
 	{
@@ -85,16 +85,16 @@ public class SelectObjectDialog extends Dialog
 		this.job            = job;
 		this.schema         = schema;
 		
-		shell_text = "Select repository object";
-		line_text = (trans?"Select the transformation:":
+		shellText = "Select repository object";
+		lineText = (trans?"Select the transformation:":
 			                (job?"Select the job:":
 			                	  (schema?"Select the schema:":
 			                	  	      "Select the object"
 			                	  )
 			                )
 					);
-		object_name = null;
-		object_directory = null;
+		objectName = null;
+		objectDirectory = null;
 	}
 	
 	public String open()
@@ -110,13 +110,13 @@ public class SelectObjectDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(shell_text);
+		shell.setText(shellText);
 		
 		int margin = Const.MARGIN;
 
 		// From step line
 		wlTree=new Label(shell, SWT.NONE);
-		wlTree.setText(line_text);
+		wlTree.setText(lineText);
  		props.setLook(wlTree);
 		fdlTree=new FormData();
 		fdlTree.left = new FormAttachment(0, 0);
@@ -177,7 +177,7 @@ public class SelectObjectDialog extends Dialog
 		{
 				if (!shell.getDisplay().readAndDispatch()) shell.getDisplay().sleep();
 		}
-		return object_name;
+		return objectName;
 	}
 
 	public void dispose()
@@ -199,7 +199,7 @@ public class SelectObjectDialog extends Dialog
 	
 	private void cancel()
 	{
-		object_name=null;
+		objectName=null;
 		dispose();
 	}
 	
@@ -217,10 +217,10 @@ public class SelectObjectDialog extends Dialog
 				if (level>0)
 				{
 					String path[] = Const.getTreeStrings(ti.getParentItem());
-					object_name = ti.getText();
-					object_directory = rep.getDirectoryTree().findDirectory(path);
+					objectName = ti.getText();
+					objectDirectory = rep.getDirectoryTree().findDirectory(path);
 					
-					if (object_directory!=null)
+					if (objectDirectory!=null)
 					{
 						dispose();
 					}
@@ -238,6 +238,6 @@ public class SelectObjectDialog extends Dialog
 	
 	public RepositoryDirectory getDirectory()
 	{
-		return object_directory;
+		return objectDirectory;
 	}
 }

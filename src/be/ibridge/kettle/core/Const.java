@@ -396,7 +396,7 @@ public class Const
 	/**
 	 * An array of date conversion formats
 	 */
-	public static final String date_formats[] = new String[] 
+	public static final String dateFormats[] = new String[] 
 		{
 			"yyyy/MM/dd HH:mm:ss.SSS", 
 			"yyyy/MM/dd HH:mm:ss",
@@ -417,7 +417,7 @@ public class Const
 	/**
 	 * An array of number conversion formats
 	 */
-	public static final String number_formats[] = new String[] 
+	public static final String numberFormats[] = new String[] 
 	{
 		DEFAULT_NUMBER_FORMAT,
 		"0.00",

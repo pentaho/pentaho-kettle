@@ -127,7 +127,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 	private SelectionAdapter lsDef;
 	
 	private JobEntryTrans jobentry;
-	private boolean  backupChanged, backup_logfile, backup_date, backup_time;
+	private boolean  backupChanged, backupLogfile, backupDate, backupTime;
 	private Props    props;
 	private Display  display;
 	private Repository rep;
@@ -157,9 +157,9 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 			}
 		};
 		backupChanged = jobentry.hasChanged();
-		backup_logfile = jobentry.set_logfile;
-		backup_date    = jobentry.add_date;
-		backup_time    = jobentry.add_time;
+		backupLogfile = jobentry.setLogfile;
+		backupDate    = jobentry.addDate;
+		backupTime    = jobentry.addTime;
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -298,7 +298,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobentry.set_logfile=!jobentry.set_logfile;
+					jobentry.setLogfile=!jobentry.setLogfile;
 					jobentry.setChanged();
 					setActive();
 				}
@@ -361,7 +361,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobentry.add_date=!jobentry.add_date;
+					jobentry.addDate=!jobentry.addDate;
 					jobentry.setChanged();
 				}
 			}
@@ -387,7 +387,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobentry.add_time=!jobentry.add_time;
+					jobentry.addTime=!jobentry.addTime;
 					jobentry.setChanged();
 				}
 			}
@@ -402,8 +402,8 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		fdlLoglevel.top  = new FormAttachment(wlAddTime, margin);
 		wlLoglevel.setLayoutData(fdlLoglevel);
 		wLoglevel=new CCombo(wLogging, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
-		for (int i=0;i<LogWriter.log_level_desc.length;i++) 
-			wLoglevel.add(LogWriter.log_level_desc[i]);
+		for (int i=0;i<LogWriter.logLevelDescription.length;i++) 
+			wLoglevel.add(LogWriter.logLevelDescription[i]);
 		wLoglevel.select( jobentry.loglevel+1); //+1: starts at -1	
 		
  		props.setLook(wLoglevel);
@@ -432,7 +432,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		wlPrevious.setLayoutData(fdlPrevious);
 		wPrevious=new Button(shell, SWT.CHECK );
  		props.setLook(wPrevious);
-		wPrevious.setSelection(jobentry.arg_from_previous);
+		wPrevious.setSelection(jobentry.argFromPrevious);
 		wPrevious.setToolTipText("Check this to pass the results of the previous entry to the arguments of this entry.");
 		fdPrevious=new FormData();
 		fdPrevious.left = new FormAttachment(middle, 0);
@@ -443,10 +443,10 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobentry.arg_from_previous=!jobentry.arg_from_previous;
+					jobentry.argFromPrevious=!jobentry.argFromPrevious;
 					jobentry.setChanged();
-					wlFields.setEnabled(!jobentry.arg_from_previous);
-					wFields.setEnabled(!jobentry.arg_from_previous);
+					wlFields.setEnabled(!jobentry.argFromPrevious);
+					wFields.setEnabled(!jobentry.argFromPrevious);
 				}
 			}
 		);
@@ -482,8 +482,8 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		fdFields.bottom = new FormAttachment(100, -50);
 		wFields.setLayoutData(fdFields);
 
-		wlFields.setEnabled(!jobentry.arg_from_previous);
-		wFields.setEnabled(!jobentry.arg_from_previous);
+		wlFields.setEnabled(!jobentry.argFromPrevious);
+		wFields.setEnabled(!jobentry.argFromPrevious);
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -586,21 +586,21 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 	
 	public void setActive()
 	{
-		wlLogfile.setEnabled(jobentry.set_logfile);
-		wLogfile.setEnabled(jobentry.set_logfile);
+		wlLogfile.setEnabled(jobentry.setLogfile);
+		wLogfile.setEnabled(jobentry.setLogfile);
 		
-		wlLogext.setEnabled(jobentry.set_logfile);
-		wLogext.setEnabled(jobentry.set_logfile);
+		wlLogext.setEnabled(jobentry.setLogfile);
+		wLogext.setEnabled(jobentry.setLogfile);
 
-		wlAddDate.setEnabled(jobentry.set_logfile);
-		wAddDate.setEnabled(jobentry.set_logfile);
+		wlAddDate.setEnabled(jobentry.setLogfile);
+		wAddDate.setEnabled(jobentry.setLogfile);
 
-		wlAddTime.setEnabled(jobentry.set_logfile);
-		wAddTime.setEnabled(jobentry.set_logfile);
+		wlAddTime.setEnabled(jobentry.setLogfile);
+		wAddTime.setEnabled(jobentry.setLogfile);
 
-		wlLoglevel.setEnabled(jobentry.set_logfile);
-		wLoglevel.setEnabled(jobentry.set_logfile);
-		if (jobentry.set_logfile)
+		wlLoglevel.setEnabled(jobentry.setLogfile);
+		wLoglevel.setEnabled(jobentry.setLogfile);
+		if (jobentry.setLogfile)
 		{
 			wLoglevel.setForeground(display.getSystemColor(SWT.COLOR_BLACK));
 		}
@@ -626,12 +626,12 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 			wFields.setRowNums();
 			wFields.optWidth(true);
 		}
-		wPrevious.setSelection(jobentry.arg_from_previous);
-		wSetLogfile.setSelection(jobentry.set_logfile);
+		wPrevious.setSelection(jobentry.argFromPrevious);
+		wSetLogfile.setSelection(jobentry.setLogfile);
 		if (jobentry.logfile!=null) wLogfile.setText(jobentry.logfile);
 		if (jobentry.logext!=null) wLogext.setText(jobentry.logext);
-		wAddDate.setSelection(jobentry.add_date);
-		wAddTime.setSelection(jobentry.add_time);
+		wAddDate.setSelection(jobentry.addDate);
+		wAddTime.setSelection(jobentry.addTime);
 
 		wLoglevel.select(jobentry.loglevel+1);
 	}
@@ -639,9 +639,9 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 	private void cancel()
 	{
 		jobentry.setChanged(backupChanged);
-		jobentry.set_logfile = backup_logfile;
-		jobentry.add_date = backup_date;
-		jobentry.add_time = backup_time;
+		jobentry.setLogfile = backupLogfile;
+		jobentry.addDate = backupDate;
+		jobentry.addTime = backupTime;
 		
 		jobentry=null;
 		dispose();

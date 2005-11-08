@@ -49,7 +49,7 @@ public class CalculatorMetaFunction implements Cloneable
             "CONSTANT"
         };
     
-    public static final String calc_desc_long[] = 
+    public static final String calcLongDesc[] = 
         { 
             "-", 
             "A + B", 
@@ -180,7 +180,7 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int getCalcFunctionType(String desc)
     {
         for (int i=1;i<calc_desc.length;i++) if (calc_desc[i].equalsIgnoreCase(desc)) return i;
-        for (int i=1;i<calc_desc_long.length;i++) if (calc_desc_long[i].equalsIgnoreCase(desc)) return i;
+        for (int i=1;i<calcLongDesc.length;i++) if (calcLongDesc[i].equalsIgnoreCase(desc)) return i;
         
         return CALC_NONE;
     }
@@ -193,8 +193,8 @@ public class CalculatorMetaFunction implements Cloneable
 
     public static final String getCalcFunctionLongDesc(int type)
     {
-        if (type<0 || type>=calc_desc_long.length) return null;
-        return calc_desc_long[type];
+        if (type<0 || type>=calcLongDesc.length) return null;
+        return calcLongDesc[type];
     }
 
     

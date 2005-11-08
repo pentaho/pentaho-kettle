@@ -35,7 +35,7 @@ public class TableField implements XMLInterface
 	public static final int TYPE_FIELD_FACT      = 2;
 	public static final int TYPE_FIELD_KEY       = 3;
 	
-	public static final String type_field_desc[] = 
+	public static final String typeFieldDesc[] = 
 		{ 
 			"", "Dimension", "Fact", "Key"
 		};
@@ -47,7 +47,7 @@ public class TableField implements XMLInterface
 	public static final int TYPE_AGGREGATION_COUNT     = 4;
 	public static final int TYPE_AGGREGATION_SUM       = 5;
 	
-	public static final String type_aggregation_desc[] = 
+	public static final String typeAggregationDesc[] = 
 		{ 
 			"none", "average", "minimum", "maximum", "count", "sum" 
 		};
@@ -154,33 +154,33 @@ public class TableField implements XMLInterface
 
 	public String getAggregationDesc()
 	{
-		return type_aggregation_desc[aggr_type];
+		return typeAggregationDesc[aggr_type];
 	}
 
 	public static final String getFieldTypeDesc(int i)
 	{
-		return type_field_desc[i];
+		return typeFieldDesc[i];
 	}
 	
 	public static final int getFieldType(String typedesc)
 	{
-		for (int i=0;i<type_field_desc.length;i++)
+		for (int i=0;i<typeFieldDesc.length;i++)
 		{
-			if (type_field_desc[i].equalsIgnoreCase(typedesc)) return i;
+			if (typeFieldDesc[i].equalsIgnoreCase(typedesc)) return i;
 		}
 		return TYPE_FIELD_NONE;
 	}
 
 	public static final String getAggregationTypeDesc(int i)
 	{
-		return type_aggregation_desc[i];
+		return typeAggregationDesc[i];
 	}
 
 	public static final int getAggregationType(String aggdesc)
 	{
-		for (int i=0;i<type_aggregation_desc.length;i++)
+		for (int i=0;i<typeAggregationDesc.length;i++)
 		{
-			if (type_aggregation_desc[i].equalsIgnoreCase(aggdesc)) return i;
+			if (typeAggregationDesc[i].equalsIgnoreCase(aggdesc)) return i;
 		}
 		return TYPE_AGGREGATION_NONE;
 	}

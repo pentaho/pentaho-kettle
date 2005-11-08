@@ -31,16 +31,16 @@ public class CheckTransProgressDialog
 	private Shell shell;
 	private TransMeta transMeta;
 	private ArrayList remarks;
-	private boolean only_selected;
+	private boolean onlySelected;
 	/**
 	 * Creates a new dialog that will handle the wait while checking a transformation...
 	 */
-	public CheckTransProgressDialog(LogWriter log, Props props, Shell shell, TransMeta transMeta, ArrayList remarks, boolean only_selected)
+	public CheckTransProgressDialog(LogWriter log, Props props, Shell shell, TransMeta transMeta, ArrayList remarks, boolean onlySelected)
 	{
 		this.props = props;
 		this.shell = shell;
 		this.transMeta = transMeta;
-		this.only_selected = only_selected;
+		this.onlySelected = onlySelected;
 		this.remarks = remarks;
 	}
 	
@@ -54,7 +54,7 @@ public class CheckTransProgressDialog
 			{
 				try
 				{
-					transMeta.checkSteps(remarks, only_selected, monitor);
+					transMeta.checkSteps(remarks, onlySelected, monitor);
 				}
 				catch(Exception e)
 				{

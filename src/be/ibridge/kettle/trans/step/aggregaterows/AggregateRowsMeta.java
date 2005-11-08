@@ -55,7 +55,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 	public final static int TYPE_AGGREGATE_FIRST   = 6;
 	public final static int TYPE_AGGREGATE_LAST    = 7;
 	 
-	public final static String aggregate_type_desc[] =
+	public final static String aggregateTypeDesc[] =
 		{
 			"NONE(=first value)",
 			"SUM", "AVERAGE", "COUNT", "MIN", "MAX", "FIRST", "LAST"
@@ -134,17 +134,17 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public static final String getTypeDesc(int t)
 	{
-		if (t<0 || t>=aggregate_type_desc.length) return null;
-		return aggregate_type_desc[t];
+		if (t<0 || t>=aggregateTypeDesc.length) return null;
+		return aggregateTypeDesc[t];
 	}
 
 	
 	public final static int getType(String at)
 	{
 		int i;
-		for (i=0;i<aggregate_type_desc.length;i++)
+		for (i=0;i<aggregateTypeDesc.length;i++)
 		{
-			if (aggregate_type_desc[i].equalsIgnoreCase(at)) 
+			if (aggregateTypeDesc[i].equalsIgnoreCase(at)) 
 			{
 				//if (i==0) return TYPE_AGGREGATE_FIRST;
 				return i;

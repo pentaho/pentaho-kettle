@@ -689,7 +689,7 @@ public class SpoonLog extends Composite
 		log.logDetailed(toString(), "PREVIEW!!!");
 		PreviewSelectDialog psd = new PreviewSelectDialog(shell, SWT.NONE, log, spoon.props, spoon.transMeta);
 		psd.open();
-		if (psd.preview_steps!=null)
+		if (psd.previewSteps!=null)
 		{
             Row arguments = getArguments(spoon.transMeta);
             if (arguments!=null)
@@ -697,7 +697,7 @@ public class SpoonLog extends Composite
                 String args[] = convertArguments(arguments);
                 
     			spoon.tabfolder.setSelection(1);
-    			trans=new Trans(log, spoon.transMeta, psd.preview_steps, psd.preview_sizes);
+    			trans=new Trans(log, spoon.transMeta, psd.previewSteps, psd.previewSizes);
     			trans.execute(args);
     			preview=true;
     			readLog();

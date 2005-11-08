@@ -63,7 +63,7 @@ public class BaseStepDialog extends Dialog
 	protected SelectionAdapter lsDef;
 	protected Listener lsResize;
 	protected boolean changed, backupChanged;
-	protected BaseStepMeta base_input;
+	protected BaseStepMeta baseInput;
 	protected Props props;
 	
 	public BaseStepDialog(Shell parent, BaseStepMeta in, TransMeta transMeta, String sname)
@@ -72,7 +72,7 @@ public class BaseStepDialog extends Dialog
 		log=LogWriter.getInstance();
 		this.transMeta=transMeta;
 		stepname=sname;
-		base_input=in;
+		baseInput=in;
 		backupChanged=in.hasChanged();
 		this.props = Props.getInstance();
 	}

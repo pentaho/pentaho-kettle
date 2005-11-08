@@ -203,7 +203,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private static final String STRING_PREVIEW_ROWS    = "  &Preview rows   "; 
 	private static final String STRING_PREVIEW_REFRESH = " &Preview refresh "; 
 
-	public static final int date_lengths[] = new int[]
+	public static final int dateLengths[] = new int[]
 		{
 			23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6
 		}
@@ -777,8 +777,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		final int FieldsRows=input.getInputFields().length;
 		
 		// Prepare a list of possible formats...
-		String dats[] = Const.date_formats;
-		String nums[] = Const.number_formats;
+		String dats[] = Const.dateFormats;
+		String nums[] = Const.numberFormats;
 		int totsize = dats.length + nums.length;
 		String formats[] = new String[totsize];
 		for (int x=0;x<dats.length;x++) formats[x] = dats[x];
@@ -797,7 +797,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			 new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
 			 new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
 			 new ColumnInfo("Null if",    ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  "", TextFileInputMeta.type_trim_desc, true ),
+			 new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  "", TextFileInputMeta.trimTypeDesc, true ),
 			 new ColumnInfo("Repeat",     ColumnInfo.COLUMN_TYPE_CCOMBO,  "", new String[] { "Y", "N" }, true )
             };
 		
@@ -1371,9 +1371,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     }
 
                     // Sample a few lines to determine the correct type of the fields...
-                    String shell_text = "Nr of lines to sample.  0 means all lines.";
-                    String line_text = "Number of sample lines (0=all lines)";
-                    EnterNumberDialog end = new EnterNumberDialog(shell, props, 100, shell_text, line_text);
+                    String shellText = "Nr of lines to sample.  0 means all lines.";
+                    String lineText = "Number of sample lines (0=all lines)";
+                    EnterNumberDialog end = new EnterNumberDialog(shell, props, 100, shellText, lineText);
                     int samples = end.open();
                     if (samples >= 0)
                     {
@@ -1501,38 +1501,38 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		debug="gef files";
 		String files[] = info.getFiles();
 		
-		Row previous_row=null;
-		int nr_repeats=0;
+		Row previousRow=null;
+		int nrRepeats=0;
 		long rownumber=1;
 		
 		if (files!=null && files.length>0)
 		{
-			int max_lines;
+			int maxNrLines;
 			if (previewlimit>=0) 
 			{
-				max_lines = previewlimit;
+				maxNrLines = previewlimit;
 			} 
 			else
 			{
-				String shell_text = "Number of preview rows";
-				String line_text  = "How many lines do you want to preview?";
-				EnterNumberDialog end = new EnterNumberDialog(shell, props, 100, shell_text, line_text);
-				max_lines = end.open();
+				String shellText = "Number of preview rows";
+				String lineText  = "How many lines do you want to preview?";
+				EnterNumberDialog end = new EnterNumberDialog(shell, props, 100, shellText, lineText);
+				maxNrLines = end.open();
 			}
 			
-			boolean stop_preview=false;
-			if (max_lines>=0 && !stop_preview)
+			boolean stopPreview=false;
+			if (maxNrLines>=0 && !stopPreview)
 			{
 				debug="A";
 
 				// How many repeats?
-				for (int i=0;i<info.getInputFields().length;i++) if (info.getInputFields()[i].isRepeated()) nr_repeats++;
+				for (int i=0;i<info.getInputFields().length;i++) if (info.getInputFields()[i].isRepeated()) nrRepeats++;
 				
 				try
 				{
 					int linenr = 0;
 					ArrayList rowbuffer = new ArrayList();
-					for (int x=0;x<files.length && (linenr<max_lines || max_lines==0) && !stop_preview;x++)
+					for (int x=0;x<files.length && (linenr<maxNrLines || maxNrLines==0) && !stopPreview;x++)
 					{
 						debug="B";
 						//System.out.println("Opening file: "+files[x]);
@@ -1556,8 +1556,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 						
 						debug="D";
 
-						// Now read max_lines lines
-						while (line!=null && (linenr<max_lines || max_lines==0))
+						// Now read maxNrLines lines
+						while (line!=null && (linenr<maxNrLines || maxNrLines==0))
 						{
 							StringBuffer error = new StringBuffer();
 							Row r = TextFileInput.convertLineToRow(log, line, info, true, df, dfs, daf, dafs, files[x], rownumber);
@@ -1565,17 +1565,17 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 							{
 								rownumber++;
 								// See if the previous values need to be repeated!
-								if (nr_repeats>0)
+								if (nrRepeats>0)
 								{
-									if (previous_row==null) // First invocation...
+									if (previousRow==null) // First invocation...
 									{
-										previous_row=new Row();
+										previousRow=new Row();
 										for (int i=0;i<info.getInputFields().length;i++)
 										{
 											if (info.getInputFields()[i].isRepeated())
 											{
 												Value value    = r.getValue(i);
-												previous_row.addValue(new Value(value)); // Copy the first row
+												previousRow.addValue(new Value(value)); // Copy the first row
 											}
 										}
 									}
@@ -1589,14 +1589,14 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 												Value value = r.getValue(i);
 												if (value.isNull()) // if it is empty: take the previous value!
 												{
-													Value prev = previous_row.getValue(repnr);
+													Value prev = previousRow.getValue(repnr);
 													r.removeValue(i);
 													r.addValue(i, prev);
 												}
-												else // not empty: change the previous_row entry!
+												else // not empty: change the previousRow entry!
 												{
-													previous_row.removeValue(repnr);
-													previous_row.addValue(repnr, new Value(value));
+													previousRow.removeValue(repnr);
+													previousRow.addValue(repnr, new Value(value));
 												}
 												repnr++;
 											}
@@ -1624,7 +1624,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 								mb.setMessage("Error previewing file on line "+linenr+" : "+error);
 								mb.setText("ERROR");
 								int answer = mb.open();
-								if (answer == SWT.CANCEL) stop_preview = true;
+								if (answer == SWT.CANCEL) stopPreview = true;
 	
 								line = null;
 							}
@@ -1656,7 +1656,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 					}
 					else
 					{
-						previewlimit=max_lines;
+						previewlimit=maxNrLines;
 					}
 
 					debug="F";
@@ -1730,9 +1730,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 					f=new BufferedInputStream(fi);
 				}
 
-				String shell_text = "Nr of lines to view.  0 means all lines.";
-				String line_text = "Number of lines (0=all lines)";
-				EnterNumberDialog end = new EnterNumberDialog(shell, props, 100, shell_text, line_text);
+				String shellText = "Nr of lines to view.  0 means all lines.";
+				String lineText = "Number of lines (0=all lines)";
+				EnterNumberDialog end = new EnterNumberDialog(shell, props, 100, shellText, lineText);
 				int nrlines = end.open();
 				if (nrlines>=0)
 				{
@@ -1938,7 +1938,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			if (len>maxsize) maxsize=len;
 		}
 
-		int prev_end = 0;
+		int prevEnd = 0;
 		int dummynr = 1;
 
 		for (int i=0;i<info.getInputFields().length;i++)
@@ -1946,9 +1946,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		    TextFileInputField f = info.getInputFields()[i];
 		    
 			// See if positions are skipped, if this is the case, add dummy fields...
-			if (f.getPosition()!=prev_end) // gap
+			if (f.getPosition()!=prevEnd) // gap
 			{
-				TextFileInputField field = new TextFileInputField("Dummy"+dummynr, prev_end, f.getPosition()-prev_end);
+				TextFileInputField field = new TextFileInputField("Dummy"+dummynr, prevEnd, f.getPosition()-prevEnd);
 				field.setIgnored(true); // don't include in result by default.
 				fields.add(field);
 				dummynr++;
@@ -1968,7 +1968,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			
 			fields.add(field);
 			
-			prev_end = field.getPosition()+field.getLength();
+			prevEnd = field.getPosition()+field.getLength();
 		}
 		
 		if (info.getInputFields().length==0)

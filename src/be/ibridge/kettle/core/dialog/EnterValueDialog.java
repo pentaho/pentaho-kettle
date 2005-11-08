@@ -284,11 +284,11 @@ public class EnterValueDialog extends Dialog
 		
 		if (value.isNumber())
 		{
-			wFormat.setText(Const.number_formats[0]);
+			wFormat.setText(Const.numberFormats[0]);
 		}
 		if (value.isDate())
 		{
-			wFormat.setText(Const.date_formats[0]);
+			wFormat.setText(Const.dateFormats[0]);
 		}
 		
 		wLength.setText(""+value.getLength());
@@ -306,12 +306,12 @@ public class EnterValueDialog extends Dialog
 		{
 		case Value.VALUE_TYPE_NUMBER:
 			
-			for (int i=0;i<Const.number_formats.length;i++) 
-				wFormat.add(Const.number_formats[i]);
+			for (int i=0;i<Const.numberFormats.length;i++) 
+				wFormat.add(Const.numberFormats[i]);
 			break;
 		case Value.VALUE_TYPE_DATE:
-			for (int i=0;i<Const.date_formats.length;i++) 
-				wFormat.add(Const.date_formats[i]);
+			for (int i=0;i<Const.dateFormats.length;i++) 
+				wFormat.add(Const.dateFormats[i]);
 			break;
 		case Value.VALUE_TYPE_STRING  : 
 		case Value.VALUE_TYPE_BOOLEAN : 

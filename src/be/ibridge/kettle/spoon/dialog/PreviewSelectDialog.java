@@ -58,8 +58,8 @@ public class PreviewSelectDialog extends Dialog
 	private Shell         shell;
 	private TransMeta     trans;
 	
-	public String preview_steps[];
-	public int    preview_sizes[];
+	public String previewSteps[];
+	public int    previewSizes[];
 	
 	private Props props;
 	
@@ -68,8 +68,8 @@ public class PreviewSelectDialog extends Dialog
 		super(parent, style);
 		trans=tr;
 		this.props=props;
-		preview_steps=null;
-		preview_sizes=null;
+		previewSteps=null;
+		previewSizes=null;
 	}
 
 	public void open()
@@ -168,8 +168,8 @@ public class PreviewSelectDialog extends Dialog
 	{	
 		int i;
 		
-		String pr_steps[] = props.getLastPreview();
-		int    pr_sizes[] = props.getLastPreviewSize();
+		String prSteps[] = props.getLastPreview();
+		int    prSizes[] = props.getLastPreviewSize();
 		String name;
 		
 		if (trans.nrSelectedSteps()==0)
@@ -184,11 +184,11 @@ public class PreviewSelectDialog extends Dialog
 				item.setText(2, "0");
 	
 				// Remember the last time...?
-				for (int x=0;x<pr_steps.length;x++)
+				for (int x=0;x<prSteps.length;x++)
 				{
-					if (pr_steps[x].equalsIgnoreCase(name)) 
+					if (prSteps[x].equalsIgnoreCase(name)) 
 					{
-						item.setText(2, ""+pr_sizes[x]);
+						item.setText(2, ""+prSizes[x]);
 					} 
 				}
 			}
@@ -234,8 +234,8 @@ public class PreviewSelectDialog extends Dialog
 			} 
 		}
 		
-		preview_steps=new String[sels];
-		preview_sizes=new int   [sels];
+		previewSteps=new String[sels];
+		previewSizes=new int   [sels];
 
 		sels=0;		
 		for (int i=0;i<wFields.table.getItemCount();i++)
@@ -245,14 +245,14 @@ public class PreviewSelectDialog extends Dialog
 
 			if (size > 0) 
 			{
-				preview_steps[sels]=ti.getText(1);
-				preview_sizes[sels]=size;
+				previewSteps[sels]=ti.getText(1);
+				previewSizes[sels]=size;
 
 				sels++;
 			} 
 		}
 		
-		props.setLastPreview(preview_steps, preview_sizes);
+		props.setLastPreview(previewSteps, previewSizes);
 
 		dispose();
 	}

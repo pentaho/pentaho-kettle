@@ -603,8 +603,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		int FieldsHeight=150;
 		
 		// Prepare a list of possible formats...
-		String dats[] = Const.date_formats;
-		String nums[] = Const.number_formats;
+		String dats[] = Const.dateFormats;
+		String nums[] = Const.numberFormats;
 		int totsize = dats.length + nums.length;
 		String formats[] = new String[totsize];
 		for (int x=0;x<dats.length;x++) formats[x] = dats[x];
@@ -616,7 +616,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		colinf[ 1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO,  "", Value.getTypes() );
 		colinf[ 2]=new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,    "", false);
 		colinf[ 3]=new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,    "", false);
-		colinf[ 4]=new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  "", TextFileInputMeta.type_trim_desc );
+		colinf[ 4]=new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  "", TextFileInputMeta.trimTypeDesc );
 		colinf[ 5]=new ColumnInfo("Repeat",     ColumnInfo.COLUMN_TYPE_CCOMBO,  "", new String[] { "Y", "N" } );
 		
 		colinf[ 5].setToolTip("set this field to Y if you want to repeat values when the next are empty");

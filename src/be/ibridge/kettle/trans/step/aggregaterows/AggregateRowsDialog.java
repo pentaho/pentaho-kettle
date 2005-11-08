@@ -139,7 +139,7 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
 		colinf[0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
 		colinf[1]=new ColumnInfo("New name",   ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[2]=new ColumnInfo("Aggr Type",  ColumnInfo.COLUMN_TYPE_CCOMBO, "", AggregateRowsMeta.aggregate_type_desc);
+		colinf[2]=new ColumnInfo("Aggr Type",  ColumnInfo.COLUMN_TYPE_CCOMBO, "", AggregateRowsMeta.aggregateTypeDesc);
 		
 		wFields=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -215,7 +215,7 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 			if (input.getFieldName()[i]  !=null) ti.setText(1, input.getFieldName()[i]);
 			if (input.getFieldNewName()[i]!=null && !input.getFieldNewName()[i].equals(input.getFieldNewName()[i])) 
 				ti.setText(2, input.getFieldNewName()[i]);
-			ti.setText(3, AggregateRowsMeta.aggregate_type_desc[input.getAggregateType()[i]]);
+			ti.setText(3, AggregateRowsMeta.aggregateTypeDesc[input.getAggregateType()[i]]);
 		}
 		if (table.getItemCount()==0)
 		{

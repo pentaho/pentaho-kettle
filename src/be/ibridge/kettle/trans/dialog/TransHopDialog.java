@@ -268,15 +268,15 @@ public class TransHopDialog extends Dialog
 	
 	private void ok()
 	{
-		StepMeta fr_backup = input.getFromStep();
-		StepMeta to_backup = input.getToStep(); 
+		StepMeta fromBackup = input.getFromStep();
+		StepMeta toBackup = input.getToStep(); 
 		input.setFromStep( transMeta.findStep( wFrom.getText() ));
 		input.setToStep  ( transMeta.findStep( wTo.getText()   ));
 		
 		if (transMeta.hasLoop(input.getFromStep()))
 		{
-			input.setFromStep(fr_backup);
-			input.setToStep(to_backup);
+			input.setFromStep(fromBackup);
+			input.setToStep(toBackup);
 			MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
 			mb.setMessage("This hop causes a loop in the transformation.  Loops are not allowed!");
 			mb.setText("Warning!");

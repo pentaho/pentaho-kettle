@@ -50,11 +50,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	private RepositoryDirectory directory;
 	
 	public  String  arguments[];
-	public  boolean arg_from_previous;
+	public  boolean argFromPrevious;
 
-	public  boolean set_logfile;
+	public  boolean setLogfile;
 	public  String  logfile, logext;
-	public  boolean add_date, add_time;
+	public  boolean addDate, addTime;
 	public  int     loglevel;
 	
 	public  boolean parallel;
@@ -109,16 +109,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	public String getLogFilename()
 	{
 		String retval="";
-		if (set_logfile)
+		if (setLogfile)
 		{
 			retval+=logfile;
 			Calendar cal = Calendar.getInstance();
-			if (add_date)
+			if (addDate)
 			{
 				SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd");
 				retval+="_"+sdf.format(cal.getTime());
 			}
-			if (add_time)
+			if (addTime)
 			{
 				SimpleDateFormat sdf = new SimpleDateFormat("HHmmss");
 				retval+="_"+sdf.format(cal.getTime());
@@ -140,12 +140,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		retval+="      "+XMLHandler.addTagValue("filename",          filename);
 		retval+="      "+XMLHandler.addTagValue("transname",         transname);
 		retval+="      "+XMLHandler.addTagValue("directory",         directory.getPath());
-		retval+="      "+XMLHandler.addTagValue("arg_from_previous", arg_from_previous);
-		retval+="      "+XMLHandler.addTagValue("set_logfile",       set_logfile);
+		retval+="      "+XMLHandler.addTagValue("arg_from_previous", argFromPrevious);
+		retval+="      "+XMLHandler.addTagValue("set_logfile",       setLogfile);
 		retval+="      "+XMLHandler.addTagValue("logfile",           logfile);
 		retval+="      "+XMLHandler.addTagValue("logext",            logext);
-		retval+="      "+XMLHandler.addTagValue("add_date",          add_date);
-		retval+="      "+XMLHandler.addTagValue("add_time",          add_time);
+		retval+="      "+XMLHandler.addTagValue("add_date",          addDate);
+		retval+="      "+XMLHandler.addTagValue("add_time",          addTime);
 		retval+="      "+XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel));
 
 		if (arguments!=null)
@@ -166,10 +166,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			
 			setFileName( XMLHandler.getTagValue(entrynode, "filename") );
 			setTransname( XMLHandler.getTagValue(entrynode, "transname") );
-			arg_from_previous = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
-			set_logfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
-			add_date = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_date") );
-			add_time = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_time") );
+			argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
+			setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
+			addDate = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_date") );
+			addTime = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_time") );
 			logfile = XMLHandler.getTagValue(entrynode, "logfile");
 			logext = XMLHandler.getTagValue(entrynode, "logext");
 			loglevel = LogWriter.getLogLevel( XMLHandler.getTagValue(entrynode, "loglevel"));
@@ -218,11 +218,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			}
 			
 			filename          = rep.getJobEntryAttributeString(id_jobentry, "filename");
-			arg_from_previous = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
+			argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
 	
-			set_logfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
-			add_date          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
-			add_time          = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_time");
+			setLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
+			addDate          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
+			addTime          = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_time");
 			logfile           = rep.getJobEntryAttributeString(id_jobentry, "logfile");
 			logext            = rep.getJobEntryAttributeString(id_jobentry, "logext");
 			loglevel          = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
@@ -255,10 +255,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			long id_transformation = rep.getTransformationID(transname, directory.getID());
 			rep.saveJobEntryAttribute(id_job, getID(), "id_transformation", id_transformation);
 			rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
-			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", arg_from_previous);
-			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", set_logfile);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_date", add_date);
-			rep.saveJobEntryAttribute(id_job, getID(), "add_time", add_time);
+			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
+			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
+			rep.saveJobEntryAttribute(id_job, getID(), "add_date", addDate);
+			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
 			rep.saveJobEntryAttribute(id_job, getID(), "logfile", logfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "logext", logext);
 			rep.saveJobEntryAttribute(id_job, getID(), "loglevel", LogWriter.getLogLevelDesc(loglevel));
@@ -286,12 +286,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		filename=null;
 		directory = new RepositoryDirectory();
 		arguments=null;
-		arg_from_previous=false;
-		add_date=false;
-		add_time=false;
+		argFromPrevious=false;
+		addDate=false;
+		addTime=false;
 		logfile=null;
 		logext=null;
-		set_logfile=false;
+		setLogfile=false;
 	}
 
 	
@@ -308,7 +308,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		result.setEntryNr( nr );
 
 		LogWriter logwriter = log;
-		if (set_logfile) logwriter = LogWriter.getInstance(getLogFilename(), true, loglevel);
+		if (setLogfile) logwriter = LogWriter.getInstance(getLogFilename(), true, loglevel);
 		
 		log.logDetailed(toString(), "Starting transformation...(file="+getFileName()+", name="+getName()+"), repinfo="+getDescription());
 		Trans trans = new Trans(logwriter, getFileName(), getTransname(), arguments);
@@ -360,7 +360,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			result.setNrErrors(1);
 		}
 		
-		if (set_logfile) logwriter.close();
+		if (setLogfile) logwriter.close();
 		
 		if (result.getNrErrors()==0)
 		{

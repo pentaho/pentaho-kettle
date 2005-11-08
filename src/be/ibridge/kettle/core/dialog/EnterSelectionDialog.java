@@ -59,13 +59,13 @@ public class EnterSelectionDialog extends Dialog
 	
 	private String list[];
 	private String selection;
-	private int    selection_nr;
-	private String shell_text;
-	private String line_text;
+	private int    selectionNr;
+	private String shellText;
+	private String lineText;
 	private Props props;
 	
-	private boolean view_only, modal;
-	private int selected_nr;
+	private boolean viewOnly, modal;
+	private int selectedNr;
 		
 	/**
 	 * Create a new dialog allow someone to pick one value out of a list of values
@@ -80,17 +80,17 @@ public class EnterSelectionDialog extends Dialog
 		super(parent, SWT.NONE);
 		props=pr;
 		list = lst;
-		shell_text = st;
-		line_text = lt;
+		shellText = st;
+		lineText = lt;
 		selection = null;
-		view_only = false;
+		viewOnly = false;
 		modal = true;
-		selected_nr = -1;
+		selectedNr = -1;
 	}
 	
 	public void setViewOnly()
 	{
-		view_only = true;
+		viewOnly = true;
 	}
 	
 	public void clearModal()
@@ -100,7 +100,7 @@ public class EnterSelectionDialog extends Dialog
 	
 	public String open(int nr)
 	{
-		selected_nr = nr;
+		selectedNr = nr;
 		return open();
 	}
 
@@ -117,13 +117,13 @@ public class EnterSelectionDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText(shell_text);
+		shell.setText(shellText);
 		
 		int margin = Const.MARGIN;
 
 		// From step line
 		wlSelection=new Label(shell, SWT.NONE);
-		wlSelection.setText(line_text);
+		wlSelection.setText(lineText);
  		props.setLook(wlSelection);
 		fdlSelection=new FormData();
 		fdlSelection.left = new FormAttachment(0, 0);
@@ -131,9 +131,9 @@ public class EnterSelectionDialog extends Dialog
 		wlSelection.setLayoutData(fdlSelection);
 		wSelection=new List(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
 		for (int i=0;i<list.length;i++) wSelection.add(list[i]);
-		if (selected_nr>=0)
+		if (selectedNr>=0)
 		{
-			wSelection.select(selected_nr);
+			wSelection.select(selectedNr);
 			wSelection.showSelection();
 		}
  		props.setLook(wSelection);
@@ -147,7 +147,7 @@ public class EnterSelectionDialog extends Dialog
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		fdOK=new FormData();
-		if (view_only) 
+		if (viewOnly) 
 		{
 			wOK.setText(" Cl&ose ");
 			fdOK.left       = new FormAttachment(50, 0);
@@ -163,7 +163,7 @@ public class EnterSelectionDialog extends Dialog
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		wOK.addListener    (SWT.Selection, lsOK     );
 		
-		if (!view_only)
+		if (!viewOnly)
 		{
 			wCancel=new Button(shell, SWT.PUSH);
 			wCancel.setText("  &Cancel  ");
@@ -224,12 +224,12 @@ public class EnterSelectionDialog extends Dialog
 		if (wSelection.getSelectionCount()>0)
 		{
 			selection    = wSelection.getSelection()[0];
-			selection_nr = wSelection.getSelectionIndices()[0];
+			selectionNr = wSelection.getSelectionIndices()[0];
 		}
 		else
 		{
 			selection = null;
-			selection_nr = -1;
+			selectionNr = -1;
 		}
 		dispose();
 	}
@@ -245,6 +245,6 @@ public class EnterSelectionDialog extends Dialog
 	
 	public int getSelectionNr()
 	{
-		return selection_nr;
+		return selectionNr;
 	}
 }

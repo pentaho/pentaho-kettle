@@ -57,10 +57,10 @@ public class ShowImageDialog extends Dialog
 	private Shell  shell;
 	private Props props;
 	
-	private int pref_width = -1;
-	private int pref_height = -1;
+	private int prefWidth = -1;
+	private int prefHeight = -1;
 	
-	private int button_height = 30;
+	private int buttonHeight = 30;
 	
     /**
      * @deprecated
@@ -73,8 +73,8 @@ public class ShowImageDialog extends Dialog
 		super(parent, SWT.NONE);
 		props=pr;
 		image  = img;
-		pref_width = -1;
-		pref_height = -1;
+		prefWidth = -1;
+		prefHeight = -1;
 	}
     
     public ShowImageDialog(Shell parent, Image img)
@@ -82,8 +82,8 @@ public class ShowImageDialog extends Dialog
         super(parent, SWT.NONE);
         props=Props.getInstance();
         image  = img;
-        pref_width = -1;
-        pref_height = -1;
+        prefWidth = -1;
+        prefHeight = -1;
     }
 
     /**
@@ -97,15 +97,15 @@ public class ShowImageDialog extends Dialog
 	public ShowImageDialog(Shell parent, Props pr, Image img, int w, int h)
 	{
 		this(parent, pr, img);
-		pref_width = w + 20;
-		pref_height = h + button_height + 20; // OK Button
+		prefWidth = w + 20;
+		prefHeight = h + buttonHeight + 20; // OK Button
 	}
     
     public ShowImageDialog(Shell parent, Image img, int w, int h)
     {
         this(parent, img);
-        pref_width = w + 20;
-        pref_height = h + button_height + 20; // OK Button
+        prefWidth = w + 20;
+        prefHeight = h + buttonHeight + 20; // OK Button
     }
 
 
@@ -142,7 +142,7 @@ public class ShowImageDialog extends Dialog
 		fdCanvas.left  = new FormAttachment(0, 0);
 		fdCanvas.top   = new FormAttachment(0, margin);
 		fdCanvas.right = new FormAttachment(100, 0);
-		fdCanvas.bottom= new FormAttachment(100, -button_height);
+		fdCanvas.bottom= new FormAttachment(100, -buttonHeight);
 		wCanvas.setLayoutData(fdCanvas);
 
 		// Some buttons
@@ -163,13 +163,13 @@ public class ShowImageDialog extends Dialog
 
 
 		//shell.pack();
-		if (pref_width>0 && pref_height>0)
+		if (prefWidth>0 && prefHeight>0)
 		{
-			shell.setSize(pref_width, pref_height);
+			shell.setSize(prefWidth, prefHeight);
 			Rectangle r = shell.getClientArea();
-			int diffx = pref_width - r.width;
-			int diffy = pref_height - r.height;
-			shell.setSize(pref_width+diffx, pref_height+diffy);
+			int diffx = prefWidth - r.width;
+			int diffy = prefHeight - r.height;
+			shell.setSize(prefWidth+diffx, prefHeight+diffy);
 		}
 		else
 		{
@@ -203,7 +203,7 @@ public class ShowImageDialog extends Dialog
 	{
 		ImageData imd = image.getImageData();
 		
-		if (pref_height<0 || pref_width<0)
+		if (prefHeight<0 || prefWidth<0)
 		{
 			gc.drawImage(image, 0, 0, imd.width, imd.height,
 							  0, 0, width, height

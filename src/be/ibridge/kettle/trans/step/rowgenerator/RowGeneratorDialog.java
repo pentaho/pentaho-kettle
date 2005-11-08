@@ -233,7 +233,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 			{
 				TableItem item = wFields.table.getItem(i);
 				item.setText(1, input.getFieldName()[i]);
-				log.logDebug(toString(), "field #"+i+" --> field_type[i]="+input.getFieldType()[i]);
+				log.logDebug(toString(), "field #"+i+" --> fieldType[i]="+input.getFieldType()[i]);
 				String type   = input.getFieldType()[i];
 				String format = input.getFieldFormat()[i];
 				String length = ""+input.getFieldLength()[i];

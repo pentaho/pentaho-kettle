@@ -46,7 +46,7 @@ public class LogWriter
 	public static final int LOG_LEVEL_DEBUG      =  5;
 	public static final int LOG_LEVEL_ROWLEVEL   =  6;
 	
-	public static final String log_level_desc[] = 
+	public static final String logLevelDescription[] = 
 		{
 			"Error",
 			"Nothing",
@@ -241,7 +241,7 @@ public class LogWriter
 
 	public String getLogLevelDesc()
 	{
-		return log_level_desc[level];
+		return logLevelDescription[level];
 	}
 	
 	public void enableTime()
@@ -363,9 +363,9 @@ public class LogWriter
 	public static final int getLogLevel(String lvl)
 	{
 		if (lvl==null) return LOG_LEVEL_ERROR;
-		for (int i=0;i<log_level_desc.length;i++)
+		for (int i=0;i<logLevelDescription.length;i++)
 		{
-			if (log_level_desc[i].equalsIgnoreCase(lvl)) return i;
+			if (logLevelDescription[i].equalsIgnoreCase(lvl)) return i;
 		}
 		for (int i=0;i<log_level_desc_long.length;i++)
 		{
@@ -377,8 +377,8 @@ public class LogWriter
 
 	public static final String getLogLevelDesc(int l)
 	{
-		if (l<0 || l>=log_level_desc.length) return log_level_desc[LOG_LEVEL_BASIC];
-		return log_level_desc[l];
+		if (l<0 || l>=logLevelDescription.length) return logLevelDescription[LOG_LEVEL_BASIC];
+		return logLevelDescription[l];
 	}
 	
 	public FileInputStream getFileInputStream() throws IOException

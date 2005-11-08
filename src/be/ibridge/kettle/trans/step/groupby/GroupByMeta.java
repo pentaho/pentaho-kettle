@@ -59,7 +59,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 			"-", "SUM", "AVERAGE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA"	
 		};
 
-	public static final String type_group_desc_long[] = 
+	public static final String typeGroupLongDesc[] = 
 		{
 			"-", "Sum", "Average", "Minimum", "Maximum", "Number of Values", "Concatinate strings separated by ,"	
 		};
@@ -285,9 +285,9 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (type_group_desc[i].equalsIgnoreCase(desc)) return i;
 		}
-		for (int i=0;i<type_group_desc_long.length;i++)
+		for (int i=0;i<typeGroupLongDesc.length;i++)
 		{
-			if (type_group_desc_long[i].equalsIgnoreCase(desc)) return i;
+			if (typeGroupLongDesc[i].equalsIgnoreCase(desc)) return i;
 		}
 		return 0;
 	}
@@ -300,8 +300,8 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 
 	public static final String getTypeDescLong(int i)
 	{
-		if (i<0 || i>=type_group_desc_long.length) return null;
-		return type_group_desc_long[i];
+		if (i<0 || i>=typeGroupLongDesc.length) return null;
+		return typeGroupLongDesc[i];
 	}
 	
 	public void setDefault()

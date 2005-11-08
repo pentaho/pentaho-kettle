@@ -140,21 +140,21 @@ public class TextFileCSVImportProgressDialog
         boolean firststr[] = new boolean[nrfields]; // first occ. of string?
 
         // Date info
-        boolean isdate[] = new boolean[nrfields]; // is the field perhaps a Date?
-        int datefmt_cnt[] = new int[nrfields]; // How many date formats work?
-        boolean datefmt[][] = new boolean[nrfields][Const.date_formats.length]; // What are the date formats that
+        boolean isDate[] = new boolean[nrfields]; // is the field perhaps a Date?
+        int dateFormatCount[] = new int[nrfields]; // How many date formats work?
+        boolean dateFormat[][] = new boolean[nrfields][Const.dateFormats.length]; // What are the date formats that
         // work?
-        Date mindat[][] = new Date[nrfields][Const.date_formats.length]; // min date value
-        Date maxdat[][] = new Date[nrfields][Const.date_formats.length]; // max date value
+        Date minDate[][] = new Date[nrfields][Const.dateFormats.length]; // min date value
+        Date maxDate[][] = new Date[nrfields][Const.dateFormats.length]; // max date value
 
         // Number info
-        boolean isnumber[] = new boolean[nrfields]; // is the field perhaps a Number?
-        int numfmt_cnt[] = new int[nrfields]; // How many number formats work?
-        boolean numfmt[][] = new boolean[nrfields][Const.number_formats.length]; // What are the number format that work?
-        double minval[][] = new double[nrfields][Const.date_formats.length]; // min number value
-        double maxval[][] = new double[nrfields][Const.date_formats.length]; // max number value
-        int numprec[][] = new int[nrfields][Const.number_formats.length]; // remember the precision?
-        int numleng[][] = new int[nrfields][Const.number_formats.length]; // remember the length?
+        boolean isNumber[] = new boolean[nrfields]; // is the field perhaps a Number?
+        int numberFormatCount[] = new int[nrfields]; // How many number formats work?
+        boolean numberFormat[][] = new boolean[nrfields][Const.numberFormats.length]; // What are the number format that work?
+        double minValue[][] = new double[nrfields][Const.dateFormats.length]; // min number value
+        double maxValue[][] = new double[nrfields][Const.dateFormats.length]; // max number value
+        int numberPrecision[][] = new int[nrfields][Const.numberFormats.length]; // remember the precision?
+        int numberLength[][] = new int[nrfields][Const.numberFormats.length]; // remember the length?
 
         for (int i = 0; i < nrfields; i++)
         {
@@ -182,26 +182,26 @@ public class TextFileCSVImportProgressDialog
             firststr[i] = true;
 
             // Init data guess
-            isdate[i] = true;
-            for (int j = 0; j < Const.date_formats.length; j++)
+            isDate[i] = true;
+            for (int j = 0; j < Const.dateFormats.length; j++)
             {
-                datefmt[i][j] = true;
-                mindat[i][j] = Const.MAX_DATE;
-                maxdat[i][j] = Const.MIN_DATE;
+                dateFormat[i][j] = true;
+                minDate[i][j] = Const.MAX_DATE;
+                maxDate[i][j] = Const.MIN_DATE;
             }
-            datefmt_cnt[i] = Const.date_formats.length;
+            dateFormatCount[i] = Const.dateFormats.length;
 
             // Init number guess
-            isnumber[i] = true;
-            for (int j = 0; j < Const.number_formats.length; j++)
+            isNumber[i] = true;
+            for (int j = 0; j < Const.numberFormats.length; j++)
             {
-                numfmt[i][j] = true;
-                minval[i][j] = Double.MAX_VALUE;
-                maxval[i][j] = -Double.MAX_VALUE;
-                numprec[i][j] = -1;
-                numleng[i][j] = -1;
+                numberFormat[i][j] = true;
+                minValue[i][j] = Double.MAX_VALUE;
+                maxValue[i][j] = -Double.MAX_VALUE;
+                numberPrecision[i][j] = -1;
+                numberLength[i][j] = -1;
             }
-            numfmt_cnt[i] = Const.number_formats.length;
+            numberFormatCount[i] = Const.numberFormats.length;
         }
 
         TextFileInputMeta strinfo = (TextFileInputMeta) meta.clone();
@@ -210,8 +210,6 @@ public class TextFileCSVImportProgressDialog
 
         // Sample <samples> rows...
         debug = "get first line";
-
-        // if ( nr_non_empty==0 && !info.header)
 
         // If the file has a header we overwrite the first line
         // However, if it doesn't have a header, take a new line
@@ -223,8 +221,8 @@ public class TextFileCSVImportProgressDialog
         DecimalFormatSymbols dfs2 = new DecimalFormatSymbols();
         SimpleDateFormat daf2 = new SimpleDateFormat();
 
-        boolean error_found = false;
-        while (!error_found && line != null && (linenr <= samples || samples == 0) && !monitor.isCanceled())
+        boolean errorFound = false;
+        while (!errorFound && line != null && (linenr <= samples || samples == 0) && !monitor.isCanceled())
         {
             monitor.subTask("Scanning line "+linenr);
             if (samples>0) monitor.worked(1);
@@ -246,13 +244,13 @@ public class TextFileCSVImportProgressDialog
 
                     int trimthis = TextFileInputMeta.TYPE_TRIM_NONE;
 
-                    boolean spaces_before = Const.nrSpacesBefore(fieldValue) > 0;
-                    boolean spaces_after = Const.nrSpacesAfter(fieldValue) > 0;
+                    boolean spacesBefore = Const.nrSpacesBefore(fieldValue) > 0;
+                    boolean spacesAfter = Const.nrSpacesAfter(fieldValue) > 0;
 
                     fieldValue = Const.trim(fieldValue);
 
-                    if (spaces_before) trimthis |= TextFileInputMeta.TYPE_TRIM_LEFT;
-                    if (spaces_after) trimthis |= TextFileInputMeta.TYPE_TRIM_RIGHT;
+                    if (spacesBefore) trimthis |= TextFileInputMeta.TYPE_TRIM_LEFT;
+                    if (spacesAfter) trimthis |= TextFileInputMeta.TYPE_TRIM_RIGHT;
 
                     debug = "change trim type[" + i + "]";
                     field.setTrimType(field.getTrimType() | trimthis);
@@ -260,12 +258,12 @@ public class TextFileCSVImportProgressDialog
                     debug = "Field #" + i + " has type : " + Value.getTypeDesc(field.getType());
 
                     // See if the field has only numeric fields
-                    if (isnumber[i])
+                    if (isNumber[i])
                     {
                         debug = "Number checking of [" + fieldValue.toString() + "] on line #" + linenr;
 
-                        boolean contains_dot = false;
-                        boolean contains_comma = false;
+                        boolean containsDot = false;
+                        boolean containsComma = false;
 
                         for (int x = 0; x < fieldValue.length() && field.getType() == Value.VALUE_TYPE_NUMBER; x++)
                         {
@@ -273,36 +271,36 @@ public class TextFileCSVImportProgressDialog
                             if (!Character.isDigit(ch) && ch != '.' && ch != ',' && (ch != '-' || x > 0) && ch != 'E' && ch != 'e' // exponential
                             )
                             {
-                                isnumber[i] = false;
+                                isNumber[i] = false;
                             } else
                             {
-                                if (ch == '.') contains_dot = true;
-                                if (ch == ',') contains_comma = true;
+                                if (ch == '.') containsDot = true;
+                                if (ch == ',') containsComma = true;
                             }
                         }
                         // If it's still a number, try to parse it as a double
-                        if (isnumber[i])
+                        if (isNumber[i])
                         {
-                            if (contains_dot && !contains_comma) // american 174.5
+                            if (containsDot && !containsComma) // american 174.5
                             {
                                 dfs2.setDecimalSeparator('.');
                                 field.setDecimalSymbol(".");
                                 dfs2.setGroupingSeparator(',');
                                 field.setGroupSymbol(",");
                             } else
-                                if (!contains_dot && contains_comma) // Belgian 174,5
+                                if (!containsDot && containsComma) // Belgian 174,5
                                 {
                                     dfs2.setDecimalSeparator(',');
                                     field.setDecimalSymbol(",");
                                     dfs2.setGroupingSeparator('.');
                                     field.setGroupSymbol(".");
                                 } else
-                                    if (contains_dot && contains_comma) // Both appear!
+                                    if (containsDot && containsComma) // Both appear!
                                     {
                                         // What's the last occurance: decimal point!
-                                        int idx_dot = fieldValue.indexOf(".");
-                                        int idx_com = fieldValue.indexOf(",");
-                                        if (idx_dot > idx_com)
+                                        int indexDot = fieldValue.indexOf(".");
+                                        int indexComma = fieldValue.indexOf(",");
+                                        if (indexDot > indexComma)
                                         {
                                             dfs2.setDecimalSeparator('.');
                                             field.setDecimalSymbol(".");
@@ -318,45 +316,43 @@ public class TextFileCSVImportProgressDialog
                                     }
 
                             // Try the remaining possible number formats!
-                            for (int x = 0; x < Const.number_formats.length; x++)
+                            for (int x = 0; x < Const.numberFormats.length; x++)
                             {
-                                if (numfmt[i][x])
+                                if (numberFormat[i][x])
                                 {
                                     try
                                     {
                                         df2.setDecimalFormatSymbols(dfs2);
-                                        df2.applyPattern(Const.number_formats[x]);
-                                        // if (x==0) System.out.println("Def. Number format :
-                                        // ["+number_formats[x]+"]");
+                                        df2.applyPattern(Const.numberFormats[x]);
                                         double d = df2.parse(fieldValue.toString()).doubleValue();
 
                                         // System.out.println("("+i+","+x+") : Converted ["+field.toString()+"]
-                                        // to ["+d+"] with format ["+number_formats[x]+"] and dfs2
+                                        // to ["+d+"] with format ["+numberFormats[x]+"] and dfs2
                                         // ["+dfs2.getDecimalSeparator()+dfs2.getGroupingSeparator()+"]");
 
                                         // After everything, still a number?
                                         // Then guess the precision
                                         int prec = TextFileInputDialog.guessPrecision(d);
-                                        if (prec > numprec[i][x]) numprec[i][x] = prec;
+                                        if (prec > numberPrecision[i][x]) numberPrecision[i][x] = prec;
 
                                         int leng = TextFileInputDialog.guessLength(d) + prec; // add precision!
-                                        if (leng > numleng[i][x]) numleng[i][x] = leng;
+                                        if (leng > numberLength[i][x]) numberLength[i][x] = leng;
 
-                                        if (d < minval[i][x]) minval[i][x] = d;
-                                        if (d > maxval[i][x]) maxval[i][x] = d;
+                                        if (d < minValue[i][x]) minValue[i][x] = d;
+                                        if (d > maxValue[i][x]) maxValue[i][x] = d;
                                     }
                                     catch (Exception e)
                                     {
-                                        numfmt[i][x] = false; // Don't try it again in the future.
-                                        numfmt_cnt[i]--; // One less that works..
+                                        numberFormat[i][x] = false; // Don't try it again in the future.
+                                        numberFormatCount[i]--; // One less that works..
                                     }
                                 }
                             }
 
                             // Still not found: just a string
-                            if (numfmt_cnt[i] == 0)
+                            if (numberFormatCount[i] == 0)
                             {
-                                isnumber[i] = false;
+                                isNumber[i] = false;
                             }
                         }
                     }
@@ -367,15 +363,15 @@ public class TextFileCSVImportProgressDialog
 
                     // So is it really a string or a date field?
                     // Check it as long as we found a format that works...
-                    if (isdate[i])
+                    if (isDate[i])
                     {
-                        for (int x = 0; x < Const.date_formats.length; x++)
+                        for (int x = 0; x < Const.dateFormats.length; x++)
                         {
-                            if (datefmt[i][x])
+                            if (dateFormat[i][x])
                             {
                                 try
                                 {
-                                    daf2.applyPattern(Const.date_formats[x]);
+                                    daf2.applyPattern(Const.dateFormats[x]);
                                     Date date = daf2.parse(fieldValue.toString());
 
                                     Calendar cal = Calendar.getInstance();
@@ -384,30 +380,30 @@ public class TextFileCSVImportProgressDialog
 
                                     if (year < 1800 || year > 2200)
                                     {
-                                        datefmt[i][x] = false; // Don't try it again in the future.
-                                        datefmt_cnt[i]--; // One less that works..
-                                        // System.out.println("Field #"+i+", pattern ["+date_formats[x]+"],
+                                        dateFormat[i][x] = false; // Don't try it again in the future.
+                                        dateFormatCount[i]--; // One less that works..
+                                        // System.out.println("Field #"+i+", pattern ["+dateFormats[x]+"],
                                         // year="+year+", field=["+field+"] : year<1800 or year>2200!! not a
                                         // date!");
                                     }
 
-                                    if (mindat[i][x].compareTo(date) > 0) mindat[i][x] = date;
-                                    if (maxdat[i][x].compareTo(date) < 0) maxdat[i][x] = date;
+                                    if (minDate[i][x].compareTo(date) > 0) minDate[i][x] = date;
+                                    if (maxDate[i][x].compareTo(date) < 0) maxDate[i][x] = date;
                                 }
                                 catch (Exception e)
                                 {
-                                    datefmt[i][x] = false; // Don't try it again in the future.
-                                    datefmt_cnt[i]--; // One less that works..
+                                    dateFormat[i][x] = false; // Don't try it again in the future.
+                                    dateFormatCount[i]--; // One less that works..
                                     // System.out.println("field ["+field+"] is not a date,
-                                    // format=["+date_formats[x]+", x="+x+", error: ("+e.toString()+")");
+                                    // format=["+dateFormats[x]+", x="+x+", error: ("+e.toString()+")");
                                 }
                             }
                         }
 
                         // Still not found: just a string
-                        if (datefmt_cnt[i] == 0)
+                        if (dateFormatCount[i] == 0)
                         {
-                            isdate[i] = false;
+                            isDate[i] = false;
                             // System.out.println("Field #"+i+" is not a date!");
                         }
                     }
@@ -451,29 +447,29 @@ public class TextFileCSVImportProgressDialog
 
             if (field.getType() == Value.VALUE_TYPE_STRING)
             {
-                if (isdate[i])
+                if (isDate[i])
                 {
                     field.setType(Value.VALUE_TYPE_DATE);
-                    for (int x = Const.date_formats.length - 1; x >= 0; x--)
+                    for (int x = Const.dateFormats.length - 1; x >= 0; x--)
                     {
-                        if (datefmt[i][x])
+                        if (dateFormat[i][x])
                         {
-                            field.setFormat(Const.date_formats[x]);
-                            field.setLength(TextFileInputDialog.date_lengths[x]);
+                            field.setFormat(Const.dateFormats[x]);
+                            field.setLength(TextFileInputDialog.dateLengths[x]);
                             field.setPrecision(-1);
                         }
                     }
                 } else
-                    if (isnumber[i])
+                    if (isNumber[i])
                     {
                         field.setType(Value.VALUE_TYPE_NUMBER);
-                        for (int x = Const.number_formats.length - 1; x >= 0; x--)
+                        for (int x = Const.numberFormats.length - 1; x >= 0; x--)
                         {
-                            if (numfmt[i][x])
+                            if (numberFormat[i][x])
                             {
-                                field.setFormat(Const.number_formats[x]);
-                                field.setLength(numleng[i][x]);
-                                field.setPrecision(numprec[i][x]);
+                                field.setFormat(Const.numberFormats[x]);
+                                field.setLength(numberLength[i][x]);
+                                field.setPrecision(numberPrecision[i][x]);
 
                                 if (field.getPrecision() == 0 && field.getLength() < 18)
                                 {
@@ -511,35 +507,35 @@ public class TextFileCSVImportProgressDialog
                 message += "  Estimated length     : " + (field.getLength() < 0 ? "-" : "" + field.getLength()) + Const.CR;
                 message += "  Estimated precision  : " + (field.getPrecision() < 0 ? "-" : "" + field.getPrecision()) + Const.CR;
                 message += "  Number format        : " + field.getFormat() + Const.CR;
-                if (numfmt_cnt[i] > 1)
+                if (numberFormatCount[i] > 1)
                 {
                     message += "    WARNING: More then 1 number format seems to match all sampled records:" + Const.CR;
                 }
-                for (int x = 0; x < Const.number_formats.length; x++)
+                for (int x = 0; x < Const.numberFormats.length; x++)
                 {
-                    if (numfmt[i][x])
+                    if (numberFormat[i][x])
                     {
-                        message += "    Number format        : " + Const.number_formats[x] + Const.CR;
-                        Value minnum = new Value("minnum", minval[i][x]);
-                        Value maxnum = new Value("maxnum", maxval[i][x]);
-                        minnum.setLength(numleng[i][x], numprec[i][x]);
-                        maxnum.setLength(numleng[i][x], numprec[i][x]);
+                        message += "    Number format        : " + Const.numberFormats[x] + Const.CR;
+                        Value minnum = new Value("minnum", minValue[i][x]);
+                        Value maxnum = new Value("maxnum", maxValue[i][x]);
+                        minnum.setLength(numberLength[i][x], numberPrecision[i][x]);
+                        maxnum.setLength(numberLength[i][x], numberPrecision[i][x]);
                         message += "      Minimum value      : " + minnum.toString() + Const.CR;
                         message += "      Maximum value      : " + maxnum.toString() + Const.CR;
 
                         try
                         {
-                            df2.applyPattern(Const.number_formats[x]);
+                            df2.applyPattern(Const.numberFormats[x]);
                             df2.setDecimalFormatSymbols(dfs2);
                             double mn = df2.parse(minstr[i]).doubleValue();
                             Value val = new Value("min", mn);
-                            val.setLength(numleng[i][x], numprec[i][x]);
-                            message += "      Example            : " + Const.number_formats[x] + ", number [" + minstr[i] + "] gives "
+                            val.setLength(numberLength[i][x], numberPrecision[i][x]);
+                            message += "      Example            : " + Const.numberFormats[x] + ", number [" + minstr[i] + "] gives "
                                     + val.toString() + Const.CR;
                         }
                         catch (Exception e)
                         {
-                            log.logBasic(toString(), "This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.number_formats[x]
+                            log.logBasic(toString(), "This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.numberFormats[x]
                                     + "] did not work.");
                         }
                     }
@@ -555,32 +551,32 @@ public class TextFileCSVImportProgressDialog
             case Value.VALUE_TYPE_DATE:
                 message += "  Maximum length       : " + (field.getLength() < 0 ? "-" : "" + field.getLength()) + Const.CR;
                 message += "  Date format          : " + field.getFormat() + Const.CR;
-                if (datefmt_cnt[i] > 1)
+                if (dateFormatCount[i] > 1)
                 {
                     message += "    WARNING: More then 1 date format seems to match all sampled records:" + Const.CR;
                 }
-                for (int x = 0; x < Const.date_formats.length; x++)
+                for (int x = 0; x < Const.dateFormats.length; x++)
                 {
-                    if (datefmt[i][x])
+                    if (dateFormat[i][x])
                     {
-                        message += "    Date format          : " + Const.date_formats[x] + Const.CR;
-                        Value mindate = new Value("mindate", mindat[i][x]);
-                        Value maxdate = new Value("maxdate", maxdat[i][x]);
+                        message += "    Date format          : " + Const.dateFormats[x] + Const.CR;
+                        Value mindate = new Value("mindate", minDate[i][x]);
+                        Value maxdate = new Value("maxdate", maxDate[i][x]);
                         message += "      Minimum value      : " + mindate.toString() + Const.CR;
                         message += "      Maximum value      : " + maxdate.toString() + Const.CR;
 
-                        daf2.applyPattern(Const.date_formats[x]);
+                        daf2.applyPattern(Const.dateFormats[x]);
                         try
                         {
                             Date md = daf2.parse(minstr[i]);
                             Value val = new Value("min", md);
                             val.setLength(field.getLength());
-                            message += "      Example            : " + Const.date_formats[x] + ", date [" + minstr[i] + "] gives " + val.toString()
+                            message += "      Example            : " + Const.dateFormats[x] + ", date [" + minstr[i] + "] gives " + val.toString()
                                     + Const.CR;
                         }
                         catch (Exception e)
                         {
-                            log.logError(toString(), "This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.date_formats[x]
+                            log.logError(toString(), "This is unexpected: parsing [" + minstr[i] + "] with format [" + Const.dateFormats[x]
                                     + "] did not work.");
                         }
                     }

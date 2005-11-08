@@ -100,7 +100,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 	private SelectionAdapter lsDef;
 	
 	private JobEntryMail  jobmail;
-	private boolean  backup_date, backupChanged;
+	private boolean  backupDate, backupChanged;
 	private Props    props;
 	private Display  display;
 	
@@ -127,7 +127,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 			}
 		};
 		backupChanged = jobmail.hasChanged();
-		backup_date    = jobmail.getIncludeDate();
+		backupDate    = jobmail.getIncludeDate();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -382,7 +382,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 	private void cancel()
 	{
 		jobmail.setChanged(backupChanged);
-		jobmail.setIncludeDate(backup_date);
+		jobmail.setIncludeDate(backupDate);
 		
 		jobmail=null;
 		dispose();

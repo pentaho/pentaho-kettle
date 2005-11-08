@@ -141,7 +141,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	private Listener lsGet, lsCreate;
 
 	private DimensionLookupMeta input;
-	private boolean backup_update, backup_autoinc;
+	private boolean backupUpdate, backupAutoInc;
 	
 	private DatabaseMeta ci;
 
@@ -167,8 +167,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			}
 		};
 		backupChanged = input.hasChanged();
-		backup_update = input.isUpdate();
-		backup_autoinc = input.isAutoIncrement();
+		backupUpdate = input.isUpdate();
+		backupAutoInc = input.isAutoIncrement();
 		ci = input.getDatabase();
 
 		FormLayout formLayout = new FormLayout ();
@@ -605,7 +605,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		final ColumnInfo[] ciUpIns=new ColumnInfo[UpInsCols];
 		ciUpIns[0]=new ColumnInfo("Dimension field",              ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
 		ciUpIns[1]=new ColumnInfo("Stream field",                 ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciUpIns[2]=new ColumnInfo("Type of dimension update",     ColumnInfo.COLUMN_TYPE_CCOMBO, "", input.isUpdate()?DimensionLookupMeta.type_desc:DimensionLookupMeta.type_desc_lookup );
+		ciUpIns[2]=new ColumnInfo("Type of dimension update",     ColumnInfo.COLUMN_TYPE_CCOMBO, "", input.isUpdate()?DimensionLookupMeta.typeDesc:DimensionLookupMeta.typeDescLookup );
 		
 		wUpIns=new TableView(wFieldsComp, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -739,8 +739,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	{
 		ColumnInfo colinf =new ColumnInfo("Type",      ColumnInfo.COLUMN_TYPE_CCOMBO, "", 
 			  input.isUpdate()?
-				 DimensionLookupMeta.type_desc:
-				 DimensionLookupMeta.type_desc_lookup 
+				 DimensionLookupMeta.typeDesc:
+				 DimensionLookupMeta.typeDescLookup 
 		);
 		wUpIns.setColumnInfo(2, colinf);
 
@@ -826,8 +826,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	{
 		stepname=null;
 		input.setChanged(backupChanged);
-		input.setUpdate( backup_update );
-		input.setAutoIncrement( backup_autoinc );
+		input.setUpdate( backupUpdate );
+		input.setAutoIncrement( backupAutoInc );
 		dispose();
 	}
 	
@@ -873,8 +873,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			in.getFieldUpdate()[i]  = DimensionLookupMeta.getUpdateType(in.isUpdate(), item.getText(3));
 		}
 		
-		//in.update       = "Y".equalsIgnoreCase(wUpdate.getText());
-		//in.output_log   = "Y".equalsIgnoreCase(wOutputLog.getText());
 		in.setTableName( wTable.getText() ); 
 		in.setKeyField( wTk.getText() );
 		in.setKeyRename( wTkRename.getText() );
@@ -907,10 +905,10 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	
 		DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, props, SWT.NONE, inf, transMeta.getDatabases());
 		std.setSelectedTable(wTable.getText());
-		String table_name = (String)std.open();
-		if (table_name != null)
+		String tableName = (String)std.open();
+		if (tableName != null)
 		{
-			wTable.setText(table_name);
+			wTable.setText(tableName);
 		}
 	}
 

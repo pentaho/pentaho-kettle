@@ -130,9 +130,9 @@ public class RepositoryExplorerDialog extends Dialog
 	private Repository     rep;
 	private UserInfo       userinfo;
 
-	private String              object_name;   // Return this object to do something with it...
-	private RepositoryDirectory object_dir;    // The directory to which it belongs. 
-	private String              object_type;   // Type of return object
+	private String              objectName;   // Return this object to do something with it...
+	private RepositoryDirectory objectDir;    // The directory to which it belongs. 
+	private String              objectType;   // Type of return object
 	
 	private Color dircolor;
 	
@@ -152,7 +152,7 @@ public class RepositoryExplorerDialog extends Dialog
 		this.rep=rep;
 		this.userinfo=ui;
 
-		object_name = null;
+		objectName = null;
 	}
 
 	public String open() 
@@ -322,7 +322,6 @@ public class RepositoryExplorerDialog extends Dialog
     			public void dragLeave(DropTargetEvent event) 
     			{ 
                     debug="drag leave";
-                    // props.setLook(    				if (last_item!=null) last_item);
     			}
     			
     			public void dragOperationChanged(DropTargetEvent event) 
@@ -331,26 +330,7 @@ public class RepositoryExplorerDialog extends Dialog
     			
     			public void dragOver(DropTargetEvent event) 
     			{ 
-                    debug="drag over";
-                    // if (last_item!=null) last_item);
-    				
-    				/*
-    				TreeItem ti = (TreeItem)event.item;
-    				if (ti!=null)
-    				{
-    					int category = getItemCategory(ti);
-    					if (category==ITEM_CATEGORY_TRANSFORMATION_DIRECTORY)
-    					{
-    						RepositoryDirectory repdir = getDirectory(ti);
-    						if (repdir!=null)
-    						{
-    							ti.setBackground(gray);
-    							last_item=ti;
-    						}
-    					}
-    				}
-    				*/
-    				
+                    debug="drag over";    				
     			}
     			public void drop(DropTargetEvent event) 
     			{
@@ -402,7 +382,6 @@ public class RepositoryExplorerDialog extends Dialog
                                 mb.open();
                             }
         				}
-        				// props.setLook(        				if (last_item!=null) last_item);
                     }
                     catch(Throwable e)
                     {
@@ -413,7 +392,6 @@ public class RepositoryExplorerDialog extends Dialog
     			public void dropAccept(DropTargetEvent event) 
     			{
                     debug="drop accept";
-                    // props.setLook(    				if (last_item!=null) last_item);
     			}
     		});
     
@@ -446,7 +424,7 @@ public class RepositoryExplorerDialog extends Dialog
         {
             new ErrorDialog(shell, props, "Unexpected error", "An unexpected error occurred in the repository explorer in part ["+debug+"]"+Const.CR+"Please contact support for a software update."+Const.CR+"We appoligize for the unconvenience.", new Exception(e));
         }
-		return object_name;
+		return objectName;
 
 	}
 	
@@ -1019,9 +997,9 @@ public class RepositoryExplorerDialog extends Dialog
 	
 	public void openTransformation(String name, RepositoryDirectory repdir)
 	{
-		object_name =  name;
-		object_dir  =  repdir;
-		object_type =  STRING_TRANSFORMATIONS;
+		objectName =  name;
+		objectDir  =  repdir;
+		objectType =  STRING_TRANSFORMATIONS;
 		handleOK();
 	}
 	
@@ -1536,10 +1514,10 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long id_user = rep.getUserID(login);
-			if (id_user>0)
+			long isUser = rep.getUserID(login);
+			if (isUser>0)
 			{
-				rep.delUser(id_user);
+				rep.delUser(isUser);
 			}
 		}
 		catch(KettleException e)
@@ -1750,8 +1728,8 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long id_database = rep.getDatabaseID(databasename);
-			DatabaseMeta dbinfo = new DatabaseMeta(rep, id_database);
+			long idDatabase = rep.getDatabaseID(databasename);
+			DatabaseMeta dbinfo = new DatabaseMeta(rep, idDatabase);
 
 			DatabaseDialog dd = new DatabaseDialog(shell, SWT.NONE, log, dbinfo, props);
 			String name = dd.open();
@@ -1787,8 +1765,8 @@ public class RepositoryExplorerDialog extends Dialog
 			if (name!=null)
 			{
 				// See if this user already exists...
-				long id_database = rep.getDatabaseID(name);
-				if (id_database<=0)
+				long idDatabase = rep.getDatabaseID(name);
+				if (idDatabase<=0)
 				{
 					dbinfo.saveRep(rep);
 				}
@@ -1813,10 +1791,10 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long id_database = rep.getDatabaseID(databasename);
-			if (id_database>0)
+			long idDatabase = rep.getDatabaseID(databasename);
+			if (idDatabase>0)
 			{
-				rep.delDatabase(id_database);
+				rep.delDatabase(idDatabase);
 			}
 	
 			refreshTree();
@@ -2070,8 +2048,8 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long id_profile = rep.getProfileID(profilename);
-			ProfileMeta profinfo = new ProfileMeta(rep, id_profile);
+			long idProfile = rep.getProfileID(profilename);
+			ProfileMeta profinfo = new ProfileMeta(rep, idProfile);
 			
 			// System.out.println("editProfile, nrPermissions = "+profinfo.nrPermissions());
 	
@@ -2100,8 +2078,8 @@ public class RepositoryExplorerDialog extends Dialog
 			if (name!=null)
 			{
 				// See if this user already exists...
-				long id_profile = rep.getProfileID(name);
-				if (id_profile<=0)
+				long idProfile = rep.getProfileID(name);
+				if (idProfile<=0)
 				{
 					profinfo.saveRep(rep);
 				}
@@ -2128,10 +2106,10 @@ public class RepositoryExplorerDialog extends Dialog
 	{
 		try
 		{
-			long id_profile = rep.getProfileID(profilename);
-			if (id_profile>0)
+			long idProfile = rep.getProfileID(profilename);
+			if (idProfile>0)
 			{
-				rep.delProfile(id_profile);
+				rep.delProfile(idProfile);
 			}
 	
 			refreshTree();
@@ -2331,12 +2309,12 @@ public class RepositoryExplorerDialog extends Dialog
 
 	public String getObjectType()
 	{
-		return object_type;
+		return objectType;
 	}
 	
 	public RepositoryDirectory getObjectDirectory()
 	{
-		return object_dir;
+		return objectDir;
 	}
 	
 	private int getItemCategory(TreeItem ti)

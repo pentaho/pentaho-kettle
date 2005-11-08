@@ -46,7 +46,7 @@ public class RelationshipMeta implements Cloneable, XMLInterface
 	public final static int TYPE_RELATIONSHIP_1_0       = 7;
 	public final static int TYPE_RELATIONSHIP_N_N       = 8;
 	
-	public final static String type_relationship_desc[] = 
+	public final static String typeRelationshipDesc[] = 
 		{
 			"undefined", "1:N", "N:1", "1:1", "0:N", "N:0", "0:1", "1:0", "N:N"
 		};
@@ -253,14 +253,14 @@ public class RelationshipMeta implements Cloneable, XMLInterface
 	
 	public static final String getType(int i)
 	{
-		return type_relationship_desc[i];
+		return typeRelationshipDesc[i];
 	}
 
 	public static final int getType(String typedesc)
 	{
-		for (int i=0;i<type_relationship_desc.length;i++)
+		for (int i=0;i<typeRelationshipDesc.length;i++)
 		{
-			if (type_relationship_desc[i].equalsIgnoreCase(typedesc)) return i;
+			if (typeRelationshipDesc[i].equalsIgnoreCase(typedesc)) return i;
 		}
 		return TYPE_RELATIONSHIP_UNDEFINED;
 	}

@@ -278,9 +278,9 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 		wlTrimtype.setLayoutData(fdlTrimtype);
 		wTrimtype=new CCombo(composite, SWT.BORDER | SWT.READ_ONLY);
         props.setLook(wTrimtype);
-		for (int i=0;i< TextFileInputMeta.type_trim_desc.length;i++)
+		for (int i=0;i< TextFileInputMeta.trimTypeDesc.length;i++)
 		{
-			wTrimtype.add( TextFileInputMeta.type_trim_desc[i] );
+			wTrimtype.add( TextFileInputMeta.trimTypeDesc[i] );
 		}		
 		fdTrimtype=new FormData();
 		fdTrimtype.left = new FormAttachment(middle, margin);

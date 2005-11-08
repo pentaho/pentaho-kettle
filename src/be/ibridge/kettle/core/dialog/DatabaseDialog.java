@@ -89,20 +89,20 @@ public class DatabaseDialog extends Dialog
 
 	private Button    wOK, wTest, wExp, wList, wCancel;
 	
-	private String connection_name;
+	private String connectionName;
 	
 	private ModifyListener lsMod;
 
 	private boolean changed;
 	private Props   props;
-	private String previous_dbtype;
+	private String previousDatabaseType;
     private ArrayList databases;
 
 	public DatabaseDialog(Shell par, int style, LogWriter lg, DatabaseMeta conn, Props pr)
 	{
 		super(par, style);
 		connection=conn;
-		connection_name=conn.getName();
+		connectionName=conn.getName();
 		props=pr;
         this.databases = null;
 	}
@@ -641,7 +641,7 @@ public class DatabaseDialog extends Dialog
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
 		}
-		return connection_name;
+		return connectionName;
 	}
 	
 	public void dispose()
@@ -660,7 +660,7 @@ public class DatabaseDialog extends Dialog
 		wConn.setText( NVL(connection==null?"":connection.getName(), "") );
 		wConnType.select( connection.getDatabaseType() - 1);
 		wConnType.showSelection();
-		previous_dbtype = DatabaseMeta.getDBTypeDesc(wConnType.getSelectionIndex()+1);
+		previousDatabaseType = DatabaseMeta.getDBTypeDesc(wConnType.getSelectionIndex()+1);
 		
 		setAccessList();
 		
@@ -690,8 +690,8 @@ public class DatabaseDialog extends Dialog
 	{
 		// See if we need to refresh the access list...
 		String type = DatabaseMeta.getDBTypeDesc(wConnType.getSelectionIndex()+1);
-		if (!type.equalsIgnoreCase(previous_dbtype)) setAccessList();
-		previous_dbtype=type;
+		if (!type.equalsIgnoreCase(previousDatabaseType)) setAccessList();
+		previousDatabaseType=type;
 		
 		// If the type is not Informix: disable the servername field!
 		int idx = wConnType.getSelectionIndex();
@@ -753,7 +753,7 @@ public class DatabaseDialog extends Dialog
 	
 	private void cancel()
 	{
-		connection_name=null;
+		connectionName=null;
 		connection.setChanged(changed);
 		dispose();
 	}
@@ -821,7 +821,7 @@ public class DatabaseDialog extends Dialog
 		try
 		{
 			getInfo(connection);
-			connection_name = connection.getName(); 
+			connectionName = connection.getName(); 
             dispose();
 		}
 		catch(KettleException e)

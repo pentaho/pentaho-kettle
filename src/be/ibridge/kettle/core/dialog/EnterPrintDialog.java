@@ -101,7 +101,7 @@ public class EnterPrintDialog extends Dialog
 	public  int nrcols, nrrows, scale;
 	public  Point page;
 	public  double factorx, factory;
-	public  double margin_left, margin_right, margin_top, margin_bottom; 
+	public  double leftMargin, rightMargin, topMargin, bottomMargin; 
 		
 	public EnterPrintDialog(Shell parent, Props pr, int c, int r, int s, double fx, double fy, Rectangle m, double ml, double mr, double mt, double mb, Image img)
 	{
@@ -113,10 +113,10 @@ public class EnterPrintDialog extends Dialog
 		image  = img;
 		factorx = fx;
 		factory = fy;
-		margin_left   = ml;
-		margin_right  = mr;
-		margin_top    = mt;
-		margin_bottom = mb;
+		leftMargin   = ml;
+		rightMargin  = mr;
+		topMargin    = mt;
+		bottomMargin = mb;
 		
 		page = new Point(m.width, m.height);
 	}
@@ -276,7 +276,7 @@ public class EnterPrintDialog extends Dialog
 				public void modifyText(ModifyEvent e) 
 				{
 					Text w = (Text)e.widget;
-					margin_left = Const.toDouble(w.getText(), 0.00);
+					leftMargin = Const.toDouble(w.getText(), 0.00);
 				}
 			}
 		);
@@ -303,7 +303,7 @@ public class EnterPrintDialog extends Dialog
 				public void modifyText(ModifyEvent e) 
 				{
 					Text w = (Text)e.widget;
-					margin_right = Const.toDouble(w.getText(), 0.00);
+					rightMargin = Const.toDouble(w.getText(), 0.00);
 				}
 			}
 		);
@@ -329,7 +329,7 @@ public class EnterPrintDialog extends Dialog
 				public void modifyText(ModifyEvent e) 
 				{
 					Text w = (Text)e.widget;
-					margin_top = Const.toDouble(w.getText(), 0.00);
+					topMargin = Const.toDouble(w.getText(), 0.00);
 				}
 			}
 		);
@@ -355,7 +355,7 @@ public class EnterPrintDialog extends Dialog
 				public void modifyText(ModifyEvent e) 
 				{
 					Text w = (Text)e.widget;
-					margin_bottom = Const.toDouble(w.getText(), 0.00);
+					bottomMargin = Const.toDouble(w.getText(), 0.00);
 				}
 			}
 		);
@@ -415,10 +415,10 @@ public class EnterPrintDialog extends Dialog
 		wCols.setSelection(nrcols);
 		wRows.setSelection(nrrows);
 		wScale.setSelection(scale);
-		wLeft  .setText(Double.toString(margin_left  ));
-		wRight .setText(Double.toString(margin_right ));
-		wTop   .setText(Double.toString(margin_top   ));
-		wBottom.setText(Double.toString(margin_bottom));
+		wLeft  .setText(Double.toString(leftMargin  ));
+		wRight .setText(Double.toString(rightMargin ));
+		wTop   .setText(Double.toString(topMargin   ));
+		wBottom.setText(Double.toString(bottomMargin));
 	}
 	
 	private void cancel()
@@ -439,18 +439,18 @@ public class EnterPrintDialog extends Dialog
 	{
 		ImageData imd = image.getImageData();
 		
-		double size_on_paperx = imd.width * factorx;
-		double size_on_papery = imd.height * factory;
-		double actual_sizex   = size_on_paperx * scale / 100;
-		double actual_sizey   = size_on_papery * scale / 100;
+		double sizeOnPaperX = imd.width * factorx;
+		double sizeOnPaperY = imd.height * factory;
+		double actualSizeX   = sizeOnPaperX * scale / 100;
+		double actualSizeY   = sizeOnPaperY * scale / 100;
 		
 		// What % of the screen is filled?
 		// The canvas is nrcols * nrrows nr of pages large.
-		double pct_screen_x = actual_sizex / (page.x * nrcols);
-		double pct_screen_y = actual_sizey / (page.y * nrrows);
+		double percentScreenX = actualSizeX / (page.x * nrcols);
+		double percentScreenY = actualSizeY / (page.y * nrrows);
 				
 		gc.drawImage(image, 0, 0, imd.width, imd.height,
-		                  0, 0, (int)(width*pct_screen_x), (int)(height*pct_screen_y)
+		                  0, 0, (int)(width*percentScreenX), (int)(height*percentScreenY)
 		            );
 		gc.drawText( ""+nrcols+"x"+nrrows+"@"+scale+"%", 0, 0);
 		for (int c=1;c<nrcols;c++)

@@ -121,7 +121,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 			"command line argument 10"
 		};
 
-	public final static String type_desc_long[] = 
+	public final static String typeLongDesc[] = 
 		{
 			"-",
 			"system date (variable)",
@@ -261,7 +261,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 		for (int i=0;i<type_desc.length;i++)
 		{
 			if (type_desc[i].equalsIgnoreCase(type)) return i;
-			if (type_desc_long[i].equalsIgnoreCase(type)) return i;
+			if (typeLongDesc[i].equalsIgnoreCase(type)) return i;
 		}
 		return 0;
 	}

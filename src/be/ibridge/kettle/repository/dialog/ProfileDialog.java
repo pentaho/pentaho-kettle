@@ -57,7 +57,7 @@ public class ProfileDialog extends Dialog
 	
 	private Button    wOK, wCancel;
 	
-	private String profile_name;
+	private String profileName;
 	
 	private Props   props;
 
@@ -65,7 +65,7 @@ public class ProfileDialog extends Dialog
 	{
 		super(par, style);
 		profile=prof;
-		profile_name=prof.getName();
+		profileName=prof.getName();
 		props=pr;
 	}
 	
@@ -198,7 +198,7 @@ public class ProfileDialog extends Dialog
 		while (!shell.isDisposed()) {
 			if (!display.readAndDispatch()) display.sleep();
 		}
-		return profile_name;
+		return profileName;
 	}
 	
 	public void dispose()
@@ -212,9 +212,9 @@ public class ProfileDialog extends Dialog
 		if (profile.getName()!=null) wName.setText(profile.getName());
 		if (profile.getDescription()!=null) wDesc.setText(profile.getDescription());
 		
-		for (int i=1;i<PermissionMeta.permission_type_desc_long.length;i++)
+		for (int i=1;i<PermissionMeta.permissionTypeLongDesc.length;i++)
 		{
-			wPermission.add(PermissionMeta.permission_type_desc_long[i]);
+			wPermission.add(PermissionMeta.permissionTypeLongDesc[i]);
 		}
 		
 		int sel[] = new int[profile.nrPermissions()];
@@ -230,7 +230,7 @@ public class ProfileDialog extends Dialog
 
 	private void cancel()
 	{
-		profile_name=null;
+		profileName=null;
 		dispose();
 	}
 	
@@ -238,7 +238,7 @@ public class ProfileDialog extends Dialog
 	{		
 		if (wName.getText().length()>0) // At LEAST we need a name!
 		{
-			profile_name = wName.getText();
+			profileName = wName.getText();
 			profile.setName(wName.getText());
 			profile.setDescription(wDesc.getText());
 			

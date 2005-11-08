@@ -88,10 +88,10 @@ public class DatabaseExplorerDialog extends Dialog
 	private Button    wCancel;
 	
 	/** This is the return value*/
-	private String    table_name; 
+	private String    tableName; 
 	
-	private boolean just_look;
-	private String selected_table;
+	private boolean justLook;
+	private String selectTable;
 	private ArrayList databases;
 	
 	public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList databases)
@@ -102,25 +102,25 @@ public class DatabaseExplorerDialog extends Dialog
 		dbMeta=conn;
 		dbcache = DBCache.getInstance();
 		this.databases = databases;
-		just_look=false;
-		selected_table=null;
+		justLook=false;
+		selectTable=null;
 	}
 
 	public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList databases, boolean look)
 	{
 		this(par, pr, style, conn, databases);
-		just_look=look;
+		justLook=look;
 	}
 
-	public void setSelectedTable(String selected_table)
+	public void setSelectedTable(String selectedTable)
 	{
-		// System.out.println("Table to select: "+selected_table);
-		this.selected_table = selected_table;
+		// System.out.println("Table to select: "+selectedTable);
+		this.selectTable = selectedTable;
 	}
 	
 	public Object open() 
 	{
-		table_name = null;
+		tableName = null;
 
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
@@ -146,7 +146,7 @@ public class DatabaseExplorerDialog extends Dialog
 		wRefresh = new Button(shell, SWT.PUSH); 
 		wRefresh.setText("  &Refresh  ");
 		
-		if (!just_look) 
+		if (!justLook) 
 		{
 			wCancel = new Button(shell, SWT.PUSH);
 			wCancel.setText("  &Cancel  ");
@@ -162,7 +162,7 @@ public class DatabaseExplorerDialog extends Dialog
 		fdTree.bottom = new FormAttachment(100, -50);
 		wTree.setLayoutData(fdTree);
 
-		if (!just_look) 
+		if (!justLook) 
 		{
 			BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wRefresh, wCancel}, margin, null);
 
@@ -238,7 +238,7 @@ public class DatabaseExplorerDialog extends Dialog
 		{
 			if (!display.readAndDispatch()) display.sleep();
 		}
-		return table_name;
+		return tableName;
 	}
 	
 	private boolean getData()
@@ -268,10 +268,10 @@ public class DatabaseExplorerDialog extends Dialog
 					
 					for (int j=0;j<catalogs[i].getItems().length;j++)
 					{
-						String table_name = catalogs[i].getItems()[j];
+						String tableName = catalogs[i].getItems()[j];
 	
 						TreeItem ti = new TreeItem(newCat, SWT.NONE);
-						ti.setText(table_name);
+						ti.setText(tableName);
 					}
 				}
 			}
@@ -290,10 +290,10 @@ public class DatabaseExplorerDialog extends Dialog
 					
 					for (int j=0;j<schemas[i].getItems().length;j++)
 					{
-						String table_name = schemas[i].getItems()[j];
+						String tableName = schemas[i].getItems()[j];
 	
 						TreeItem ti = new TreeItem(newSch, SWT.NONE);
-						ti.setText(table_name);
+						ti.setText(tableName);
 					}
 				}
 			}
@@ -345,12 +345,12 @@ public class DatabaseExplorerDialog extends Dialog
 				
 			// Make sure the selected table is shown...
 			// System.out.println("Selecting table "+k);
-			if (selected_table!=null)
+			if (selectTable!=null)
 			{
-				TreeItem ti = Const.findTreeItem(tiTab,  selected_table);
-				if (ti==null) Const.findTreeItem(tiView, selected_table);
-				if (ti==null) Const.findTreeItem(tiTree, selected_table);
-				if (ti==null) Const.findTreeItem(tiSyn,  selected_table);
+				TreeItem ti = Const.findTreeItem(tiTab,  selectTable);
+				if (ti==null) Const.findTreeItem(tiView, selectTable);
+				if (ti==null) Const.findTreeItem(tiTree, selectTable);
+				if (ti==null) Const.findTreeItem(tiSyn,  selectTable);
 				
 				if (ti!=null)
 				{
@@ -359,7 +359,7 @@ public class DatabaseExplorerDialog extends Dialog
 					wTree.showSelection();
 				}
 				
-				selected_table=null;
+				selectTable=null;
 			}
 			
 			tiTree.setExpanded(true);
@@ -383,23 +383,23 @@ public class DatabaseExplorerDialog extends Dialog
 			TreeItem parent = ti[0].getParentItem();
 			if (parent!=null)
 			{
-				String schema_name = parent.getText();
-				String table_name  = ti[0].getText();
+				String schemaName = parent.getText();
+				String tableName  = ti[0].getText();
 
 				if (ti[0].getItemCount()==0) // No children, only the tables themselves...
 				{
 					String tab = null;
-					if (schema_name.equalsIgnoreCase(STRING_TABLES) ||
-						schema_name.equalsIgnoreCase(STRING_VIEWS) ||
-						schema_name.equalsIgnoreCase(STRING_SYNONYMS) ||
-						( schema_name!=null && schema_name.length()==0 )
+					if (schemaName.equalsIgnoreCase(STRING_TABLES) ||
+						schemaName.equalsIgnoreCase(STRING_VIEWS) ||
+						schemaName.equalsIgnoreCase(STRING_SYNONYMS) ||
+						( schemaName!=null && schemaName.length()==0 )
 						)
 					{
-						tab = table_name;
+						tab = tableName;
 					}
 					else
 					{
-						tab = dbMeta.getSchemaTableCombination(schema_name, table_name);
+						tab = dbMeta.getSchemaTableCombination(schemaName, tableName);
 					}
 					final String table = tab;
 					
@@ -429,26 +429,26 @@ public class DatabaseExplorerDialog extends Dialog
 		wTree.setMenu(mTree);
 	}
 
-	public void previewTable(String table_name, boolean asklimit)
+	public void previewTable(String tableName, boolean asklimit)
 	{
 		int limit = 100;
 		if (asklimit)
 		{
 			// Ask how many lines we should preview.
-			String shell_text = "Preview limit";
-			String line_text = "Number of lines to preview (0=all lines)";
-			EnterNumberDialog end = new EnterNumberDialog(shell, props, limit, shell_text, line_text);
+			String shellText = "Preview limit";
+			String lineText = "Number of lines to preview (0=all lines)";
+			EnterNumberDialog end = new EnterNumberDialog(shell, props, limit, shellText, lineText);
 			int samples = end.open();
 			if (samples>=0) limit=samples;
 		}
 
-	    GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(log, props, shell, dbMeta, table_name, limit);
+	    GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(log, props, shell, dbMeta, tableName, limit);
 	    ArrayList rows = pd.open();
 	    if (rows!=null) // otherwise an already shown error...
 	    {
 			if (rows.size()>0)
 			{
-				PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, table_name, rows);
+				PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, tableName, rows);
 				prd.open();
 			}
 			else
@@ -461,9 +461,9 @@ public class DatabaseExplorerDialog extends Dialog
 	    }
 	}
 
-	public void editTable(String table_name)
+	public void editTable(String tableName)
 	{
-		EditDatabaseTable edt = new EditDatabaseTable(shell, SWT.NONE, props, dbMeta, table_name, 20);
+		EditDatabaseTable edt = new EditDatabaseTable(shell, SWT.NONE, props, dbMeta, tableName, 20);
 		edt.open();
 	}
 
@@ -479,27 +479,27 @@ public class DatabaseExplorerDialog extends Dialog
 		}
 	}
 
-	public void showCount(String table_name)
+	public void showCount(String tableName)
 	{
-	    GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(log, props, shell, dbMeta, table_name);
+	    GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(log, props, shell, dbMeta, tableName);
 		Row r = pd.open();
 		if (r!=null)
 		{
-			String result = "Table ["+table_name+"] has "+r.getValue(0).getInteger()+" rows.";
+			String result = "Table ["+tableName+"] has "+r.getValue(0).getInteger()+" rows.";
 			
-			EnterTextDialog etd = new EnterTextDialog(shell, props, "Count", "# rows in "+table_name, result, true);
+			EnterTextDialog etd = new EnterTextDialog(shell, props, "Count", "# rows in "+tableName, result, true);
 			etd.open();
 		}
 	}
 
-	public void getDDL(String table_name)
+	public void getDDL(String tableName)
 	{
 		Database db = new Database(dbMeta);
 		try
 		{
 			db.connect();
-			Row r = db.getTableFields(table_name);
-			String sql = db.getCreateTableStatement(table_name, r, null, false, null, true);
+			Row r = db.getTableFields(tableName);
+			String sql = db.getCreateTableStatement(tableName, r, null, false, null, true);
 			SQLEditor se = new SQLEditor(shell, SWT.NONE, dbMeta, dbcache, sql);
 			se.open();
 		}
@@ -513,7 +513,7 @@ public class DatabaseExplorerDialog extends Dialog
 		}
 	}
 	
-	public void getDDLForOther(String table_name)
+	public void getDDLForOther(String tableName)
 	{
         if (databases!=null)
         {
@@ -522,7 +522,7 @@ public class DatabaseExplorerDialog extends Dialog
     		{
     			db.connect();
     			
-    			Row r = db.getTableFields(table_name);
+    			Row r = db.getTableFields(tableName);
     
     			// Now select the other connection...
                 
@@ -541,7 +541,7 @@ public class DatabaseExplorerDialog extends Dialog
     				DatabaseMeta targetdbi = Const.findDatabase(dbs, target);
     				Database targetdb = new Database(targetdbi);
     
-    				String sql = targetdb.getCreateTableStatement(table_name, r, null, false, null, true);
+    				String sql = targetdb.getCreateTableStatement(tableName, r, null, false, null, true);
     				SQLEditor se = new SQLEditor(shell, SWT.NONE, dbMeta, dbcache, sql);
     				se.open();
     			}
@@ -565,9 +565,9 @@ public class DatabaseExplorerDialog extends Dialog
 	}
 
 	
-	public void getSQL(String table_name)
+	public void getSQL(String tableName)
 	{
-		SQLEditor sql = new SQLEditor(shell, SWT.NONE, dbMeta, dbcache, "SELECT * FROM "+table_name);
+		SQLEditor sql = new SQLEditor(shell, SWT.NONE, dbMeta, dbcache, "SELECT * FROM "+tableName);
 		sql.open();
 	}
 
@@ -579,7 +579,7 @@ public class DatabaseExplorerDialog extends Dialog
 	
 	public void handleOK()
 	{
-		if (just_look) 
+		if (justLook) 
 		{
 			dispose();
 			return;
@@ -591,19 +591,19 @@ public class DatabaseExplorerDialog extends Dialog
 			TreeItem parent = ti[0].getParentItem();
 			if (parent!=null)
 			{
-				String schema_name = parent.getText();
-				String table_part  = ti[0].getText();
+				String schemaName = parent.getText();
+				String tablePart  = ti[0].getText();
 				
 				String tab = null;
-				if (schema_name.equalsIgnoreCase(STRING_TABLES))
+				if (schemaName.equalsIgnoreCase(STRING_TABLES))
 				{
-					tab = table_part;
+					tab = tablePart;
 				}
 				else
 				{
-					tab = dbMeta.getSchemaTableCombination(schema_name, table_part);
+					tab = dbMeta.getSchemaTableCombination(schemaName, tablePart);
 				}
-				table_name = tab;
+				tableName = tab;
 								
 				dispose();
 			}
@@ -625,9 +625,9 @@ public class DatabaseExplorerDialog extends Dialog
 				TreeItem up3 = up2.getParentItem();
 				if (up3 != null)
 				{
-					table_name = sel.getText();
-					if (!just_look) handleOK();
-					else previewTable(table_name, false);
+					tableName = sel.getText();
+					if (!justLook) handleOK();
+					else previewTable(tableName, false);
 				}
 			}
 		}

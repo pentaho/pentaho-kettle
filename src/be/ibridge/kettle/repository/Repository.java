@@ -3742,7 +3742,7 @@ public class Repository
 			//
 			// Populate with data...
 			//
-			code = LogWriter.log_level_desc;
+			code = LogWriter.logLevelDescription;
 			desc = LogWriter.log_level_desc_long;
 
 			database.prepareInsert(table, tablename);
@@ -4211,7 +4211,7 @@ public class Repository
 			// Populate with data...
 			//
 			code = PermissionMeta.permission_type_desc;
-			desc = PermissionMeta.permission_type_desc_long;
+			desc = PermissionMeta.permissionTypeLongDesc;
 
 			database.prepareInsert(table, tablename);
 

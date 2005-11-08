@@ -129,7 +129,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         final ColumnInfo[] colinf=new ColumnInfo[]
                {
                     new ColumnInfo("New field",     ColumnInfo.COLUMN_TYPE_TEXT,   "", false),
-                    new ColumnInfo("Calculation",   ColumnInfo.COLUMN_TYPE_CCOMBO, "", CalculatorMetaFunction.calc_desc_long ),
+                    new ColumnInfo("Calculation",   ColumnInfo.COLUMN_TYPE_CCOMBO, "", CalculatorMetaFunction.calcLongDesc ),
                     new ColumnInfo("Field A",       ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "" }, false),
                     new ColumnInfo("Field B",       ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "" }, false),
                     new ColumnInfo("Field C",       ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "" }, false),
@@ -144,7 +144,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, CalculatorMetaFunction.calc_desc_long, "Select the calculation type", "Select the calculation type to perform");
+                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, CalculatorMetaFunction.calcLongDesc, "Select the calculation type", "Select the calculation type to perform");
                     String string = esd.open();
                     if (string!=null)
                     {

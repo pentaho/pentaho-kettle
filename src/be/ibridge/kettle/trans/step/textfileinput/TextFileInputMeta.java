@@ -56,7 +56,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	public final static int TYPE_TRIM_RIGHT = 2;
 	public final static int TYPE_TRIM_BOTH  = 3;
 	
-	public final static String type_trim_desc[] = { "none", "left", "right", "both" };
+	public final static String trimTypeDesc[] = { "none", "left", "right", "both" };
 	
 	
 	
@@ -779,17 +779,17 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		if (tt==null) return 0;
 		
-		for (int i=0;i<type_trim_desc.length;i++)
+		for (int i=0;i<trimTypeDesc.length;i++)
 		{
-			if (type_trim_desc[i].equalsIgnoreCase(tt)) return i;
+			if (trimTypeDesc[i].equalsIgnoreCase(tt)) return i;
 		}
 		return 0;
 	}
 
 	public final static String getTrimTypeDesc(int i)
 	{
-		if (i<0 || i>=type_trim_desc.length) return type_trim_desc[0];
-		return type_trim_desc[i];	
+		if (i<0 || i>=trimTypeDesc.length) return trimTypeDesc[0];
+		return trimTypeDesc[i];	
 	}
 	
 	public String[] getFiles()

@@ -288,14 +288,14 @@ public class TransDialog extends Dialog
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				RepositoryDirectory directory_from = transMeta.getDirectory();
-				long id_directory_from  = directory_from.getID();
+				RepositoryDirectory directoryFrom = transMeta.getDirectory();
+				long idDirectoryFrom  = directoryFrom.getID();
 				
 				SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
 				RepositoryDirectory rd = sdd.open();
 				if (rd!=null)
 				{
-					if (id_directory_from!=rd.getID())
+					if (idDirectoryFrom!=rd.getID())
 					{
 						// We need to change this in the repository as well!!
 					    // We do this when the user pressed OK
@@ -1115,13 +1115,12 @@ public class TransDialog extends Dialog
 					{
 						db.connect();
 
-						String cr_table = db.getDDL(tablename, r);
-						
-						if (cr_table!=null && cr_table.length()>0)
+						String createTable = db.getDDL(tablename, r);
+						if (createTable!=null && createTable.length()>0)
 						{
-							log.logBasic(toString(), cr_table);
+							log.logBasic(toString(), createTable);
 		
-							SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, ci, transMeta.getDbCache(), cr_table);
+							SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, ci, transMeta.getDbCache(), createTable);
 							sqledit.open();
 						}
 						else

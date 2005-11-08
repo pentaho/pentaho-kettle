@@ -127,10 +127,10 @@ public class PrintSpool
 				);
 			if (epd.open()==SWT.OK)
 			{
-				double page_left      = (double)epd.margin_left*dpi_printer.x;
-				double page_right     = (double)epd.margin_right *dpi_printer.x;
-				double page_top       = (double)epd.margin_top *dpi_printer.y;
-				double page_bottom    = (double)epd.margin_bottom*dpi_printer.y;
+				double page_left      = (double)epd.leftMargin*dpi_printer.x;
+				double page_right     = (double)epd.rightMargin *dpi_printer.x;
+				double page_top       = (double)epd.topMargin *dpi_printer.y;
+				double page_bottom    = (double)epd.bottomMargin*dpi_printer.y;
 				double page_sizex     = (double)page.width - page_left - page_right;
 				double page_sizey     = (double)page.height- page_top  - page_bottom;
 				

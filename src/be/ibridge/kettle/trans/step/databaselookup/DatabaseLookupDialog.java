@@ -489,10 +489,10 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, props, SWT.NONE, inf, transMeta.getDatabases());
 			std.setSelectedTable(wTable.getText());
-			String table_name = (String)std.open();
-			if (table_name != null)
+			String tableName = (String)std.open();
+			if (tableName != null)
 			{
-				wTable.setText(table_name);
+				wTable.setText(tableName);
 			}
 		}
 		else

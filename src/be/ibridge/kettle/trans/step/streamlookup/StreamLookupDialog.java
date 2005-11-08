@@ -407,10 +407,10 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 	{
 		try
 		{
-			String step_from = wStep.getText();
-			if (step_from!=null)
+			String stepFrom = wStep.getText();
+			if (stepFrom!=null)
 			{
-				Row r = transMeta.getStepFields(step_from);
+				Row r = transMeta.getStepFields(stepFrom);
 				if (r!=null)
 				{
 					Table table=wReturn.table;

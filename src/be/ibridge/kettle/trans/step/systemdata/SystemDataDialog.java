@@ -126,13 +126,13 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
 		colinf[0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, "", SystemDataMeta.type_desc_long );
+		colinf[1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, "", SystemDataMeta.typeLongDesc );
 		colinf[1].setSelectionAdapter(
 		    new SelectionAdapter()
 	        {
 	            public void widgetSelected(SelectionEvent e)
 	            {
-	                EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, SystemDataMeta.type_desc_long, "Select info type", "Select the information type to retrieve");
+	                EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, SystemDataMeta.typeLongDesc, "Select info type", "Select the information type to retrieve");
 	                String string = esd.open();
 	                if (string!=null)
 	                {
@@ -207,7 +207,7 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 		{
 			TableItem item = wFields.table.getItem(i);
 			String name = input.getFieldName()[i];
-			String type = SystemDataMeta.type_desc_long[input.getFieldType()[i]];
+			String type = SystemDataMeta.typeLongDesc[input.getFieldType()[i]];
 			
 			if (name!=null) item.setText(1, name);
 			if (type!=null) item.setText(2, type);

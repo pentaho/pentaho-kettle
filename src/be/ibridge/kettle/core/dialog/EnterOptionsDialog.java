@@ -76,16 +76,16 @@ public class EnterOptionsDialog extends Dialog
 	private Composite    wLookComp, wGeneralComp;
 	private FormData     fdLookComp, fdGeneralComp;
 
-	private FontData     fixed_font_data, var_font_data, graph_font_data, grid_font_data, note_font_data;
-	private Font         fixed_font, var_font, graph_font, grid_font, note_font;
+	private FontData     fixedFontData, varFontData, graphFontData, gridFontData, noteFontData;
+	private Font         fixedFont, varFont, graphFont, gridFont, noteFont;
 	private int          iconsize;
 	private int          linewidth;
 	private int          shadowsize;
-	private int          max_undo; 
-	private int          middle_pct;    
+	private int          maxUndo; 
+	private int          middlePercent;    
 
-	private RGB          background_rgb, graphcol_rgb, tabcol_rgb;	
-	private Color        background, graphcol, tabcol;
+	private RGB          backgroundRGB, graphColorRGB, tabColorRGB;	
+	private Color        background, graphColor, tabColor;
 
 	private Label        wlFFont;
 	private Canvas       wFFont;
@@ -253,7 +253,7 @@ public class EnterOptionsDialog extends Dialog
 		fdlMaxUndo.top  = new FormAttachment(0, 0);
 		wlMaxUndo.setLayoutData(fdlMaxUndo);
 		wMaxUndo=new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wMaxUndo.setText(""+max_undo);
+		wMaxUndo.setText(""+maxUndo);
         props.setLook(wMaxUndo);
 		fdMaxUndo=new FormData();
 		fdMaxUndo.left = new FormAttachment(middle, 0);
@@ -488,9 +488,9 @@ public class EnterOptionsDialog extends Dialog
 			{
 				public void paintControl(PaintEvent pe) 
 				{
-					pe.gc.setFont(fixed_font);
+					pe.gc.setFont(fixedFont);
 					Rectangle max = wFFont.getBounds();
-					String name = fixed_font_data.getName();
+					String name = fixedFontData.getName();
 					Point size = pe.gc.textExtent(name);
 					
 					pe.gc.drawText(name, (max.width-size.x)/2, (max.height-size.y)/2 );
@@ -517,13 +517,12 @@ public class EnterOptionsDialog extends Dialog
 				public void widgetSelected(SelectionEvent arg0) 
 				{
 					FontDialog fd = new FontDialog(shell);
-					//fd.setFontData(fixed_font_data);
 					FontData newfd = fd.open();
 					if (newfd!=null)
 					{
-						fixed_font_data = newfd;
-						fixed_font.dispose();
-						fixed_font = new Font(display, fixed_font_data);
+						fixedFontData = newfd;
+						fixedFont.dispose();
+						fixedFont = new Font(display, fixedFontData);
 						wFFont.redraw();
 					}
 				}
@@ -546,10 +545,10 @@ public class EnterOptionsDialog extends Dialog
 			{
 				public void paintControl(PaintEvent pe) 
 				{
-					pe.gc.setFont(var_font);
+					pe.gc.setFont(varFont);
 					Rectangle max = wVFont.getBounds();
 					String name = "Kettle";
-                    if (var_font_data!=null) name = var_font_data.getName();
+                    if (varFontData!=null) name = varFontData.getName();
                     else name = display.getSystemFont().getFontData()[0].getName();
                     
 					Point size = pe.gc.textExtent(name);
@@ -578,13 +577,12 @@ public class EnterOptionsDialog extends Dialog
 				public void widgetSelected(SelectionEvent arg0) 
 				{
 					FontDialog fd = new FontDialog(shell);
-					//fd.setFontData(var_font_data);
 					FontData newfd = fd.open();
 					if (newfd!=null)
 					{
-						var_font_data = newfd;
-						var_font.dispose();
-						var_font = new Font(display, var_font_data);
+						varFontData = newfd;
+						varFont.dispose();
+						varFont = new Font(display, varFontData);
 						wVFont.redraw();
 					}
 				}
@@ -607,9 +605,9 @@ public class EnterOptionsDialog extends Dialog
 			{
 				public void paintControl(PaintEvent pe) 
 				{
-					pe.gc.setFont(graph_font);
+					pe.gc.setFont(graphFont);
 					Rectangle max = wGFont.getBounds();
-					String name = graph_font_data.getName();
+					String name = graphFontData.getName();
 					Point size = pe.gc.textExtent(name);
 					
 					pe.gc.drawText(name, (max.width-size.x)/2, (max.height-size.y)/2 );
@@ -639,9 +637,9 @@ public class EnterOptionsDialog extends Dialog
 					FontData newfd = fd.open();
 					if (newfd!=null)
 					{
-						graph_font_data = newfd;
-						graph_font.dispose();
-						graph_font = new Font(display, graph_font_data);
+						graphFontData = newfd;
+						graphFont.dispose();
+						graphFont = new Font(display, graphFontData);
 						wGFont.redraw();
 					}
 				}
@@ -664,9 +662,9 @@ public class EnterOptionsDialog extends Dialog
 		{
 				public void paintControl(PaintEvent pe) 
 				{
-					pe.gc.setFont(grid_font);
+					pe.gc.setFont(gridFont);
 					Rectangle max = wDFont.getBounds();
-					String name = grid_font_data.getName();
+					String name = gridFontData.getName();
 					Point size = pe.gc.textExtent(name);
 	
 					pe.gc.drawText(
@@ -699,9 +697,9 @@ public class EnterOptionsDialog extends Dialog
 					FontData newfd = fd.open();
 					if (newfd != null) 
 					{
-						grid_font_data = newfd;
-						grid_font.dispose();
-						grid_font = new Font(display, grid_font_data);
+						gridFontData = newfd;
+						gridFont.dispose();
+						gridFont = new Font(display, gridFontData);
 						wDFont.redraw();
 					}
 				}
@@ -724,9 +722,9 @@ public class EnterOptionsDialog extends Dialog
 		{
 				public void paintControl(PaintEvent pe) 
 				{
-					pe.gc.setFont(note_font);
+					pe.gc.setFont(noteFont);
 					Rectangle max = wNFont.getBounds();
-					String name = note_font_data.getName();
+					String name = noteFontData.getName();
 					Point size = pe.gc.textExtent(name);
 	
 					pe.gc.drawText(
@@ -759,9 +757,9 @@ public class EnterOptionsDialog extends Dialog
 					FontData newfd = fd.open();
 					if (newfd != null) 
 					{
-						note_font_data = newfd;
-						note_font.dispose();
-						note_font = new Font(display, note_font_data);
+						noteFontData = newfd;
+						noteFont.dispose();
+						noteFont = new Font(display, noteFontData);
 						wNFont.redraw();
 					}
 				}
@@ -805,9 +803,9 @@ public class EnterOptionsDialog extends Dialog
 					RGB newbg = cd.open();
 					if (newbg != null) 
 					{
-						background_rgb = newbg;
+						backgroundRGB = newbg;
 						background.dispose();
-						background=new Color(display, background_rgb);
+						background=new Color(display, backgroundRGB);
 						wBGColor.setBackground(background);
 						wBGColor.redraw();
 					}
@@ -827,7 +825,7 @@ public class EnterOptionsDialog extends Dialog
 
 		wGrColor = new Canvas(wLookComp, SWT.BORDER);
         props.setLook(wGrColor);
-        wGrColor.setBackground(graphcol);
+        wGrColor.setBackground(graphColor);
 		fdGrColor = new FormData();
 		fdGrColor.left = new FormAttachment(middle, 0);
 		fdGrColor.right = new FormAttachment(100, -75);
@@ -852,10 +850,10 @@ public class EnterOptionsDialog extends Dialog
 					RGB newbg = cd.open();
 					if (newbg != null) 
 					{
-						graphcol_rgb = newbg;
-						graphcol.dispose();
-						graphcol=new Color(display, graphcol_rgb);
-						wGrColor.setBackground(graphcol);
+						graphColorRGB = newbg;
+						graphColor.dispose();
+						graphColor=new Color(display, graphColorRGB);
+						wGrColor.setBackground(graphColor);
 						wGrColor.redraw();
 					}
 				}
@@ -874,7 +872,7 @@ public class EnterOptionsDialog extends Dialog
 
 		wTabColor = new Canvas(wLookComp, SWT.BORDER);
         props.setLook(wTabColor);
-        wTabColor.setBackground(tabcol);
+        wTabColor.setBackground(tabColor);
 		fdTabColor = new FormData();
 		fdTabColor.left = new FormAttachment(middle, 0);
 		fdTabColor.right = new FormAttachment(100, -75);
@@ -899,10 +897,10 @@ public class EnterOptionsDialog extends Dialog
 					RGB newbg = cd.open();
 					if (newbg != null) 
 					{
-						tabcol_rgb = newbg;
-						tabcol.dispose();
-						tabcol=new Color(display, tabcol_rgb);
-						wTabColor.setBackground(tabcol);
+						tabColorRGB = newbg;
+						tabColor.dispose();
+						tabColor=new Color(display, tabColorRGB);
+						wTabColor.setBackground(tabColor);
 						wTabColor.redraw();
 					}
 				}
@@ -974,7 +972,7 @@ public class EnterOptionsDialog extends Dialog
 		fdlMiddlePct.top  = new FormAttachment(wShadowSize, margin);
 		wlMiddlePct.setLayoutData(fdlMiddlePct);
 		wMiddlePct=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wMiddlePct.setText(""+middle_pct);
+		wMiddlePct.setText(""+middlePercent);
         props.setLook(wMiddlePct);
 		fdMiddlePct=new FormData();
 		fdMiddlePct.left = new FormAttachment(middle, 0);
@@ -1077,13 +1075,13 @@ public class EnterOptionsDialog extends Dialog
 			{
 				public void widgetDisposed(DisposeEvent arg0) 
 				{
-					fixed_font.dispose();
-					var_font.dispose();
-					graph_font.dispose();
-					grid_font.dispose();
-					note_font.dispose();
+					fixedFont.dispose();
+					varFont.dispose();
+					graphFont.dispose();
+					gridFont.dispose();
+					noteFont.dispose();
 					background.dispose();
-					graphcol.dispose();
+					graphColor.dispose();
 				}
 			}
 		);
@@ -1108,37 +1106,37 @@ public class EnterOptionsDialog extends Dialog
 	
 	public void getData()
 	{
-		fixed_font_data = props.getFixedFont();
-		fixed_font = new Font(display, fixed_font_data);
+		fixedFontData = props.getFixedFont();
+		fixedFont = new Font(display, fixedFontData);
 		
-		var_font_data = props.getDefaultFont();
-		if (var_font_data!=null) var_font = new Font(display, var_font_data);
-        else var_font = display.getSystemFont();
+		varFontData = props.getDefaultFont();
+		if (varFontData!=null) varFont = new Font(display, varFontData);
+        else varFont = display.getSystemFont();
 		
-		graph_font_data = props.getGraphFont();
-		graph_font = new Font(display, graph_font_data);
+		graphFontData = props.getGraphFont();
+		graphFont = new Font(display, graphFontData);
 		
-		grid_font_data = props.getGridFont();
-		grid_font = new Font(display, grid_font_data);
+		gridFontData = props.getGridFont();
+		gridFont = new Font(display, gridFontData);
 		
-		note_font_data = props.getNoteFont();
-		note_font = new Font(display, note_font_data);
+		noteFontData = props.getNoteFont();
+		noteFont = new Font(display, noteFontData);
 		
-		background_rgb = props.getBackgroundRGB();
-		if (background_rgb!=null) background = new Color(display, background_rgb);
+		backgroundRGB = props.getBackgroundRGB();
+		if (backgroundRGB!=null) background = new Color(display, backgroundRGB);
         else background = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
 
-		graphcol_rgb = props.getGraphColorRGB();
-		graphcol = new Color(display, graphcol_rgb);
+		graphColorRGB = props.getGraphColorRGB();
+		graphColor = new Color(display, graphColorRGB);
 
-		tabcol_rgb = props.getTabColorRGB();
-		tabcol = new Color(display, tabcol_rgb);
+		tabColorRGB = props.getTabColorRGB();
+		tabColor = new Color(display, tabColorRGB);
 
 		iconsize = props.getIconSize();
 		linewidth = props.getLineWidth();
 		shadowsize = props.getShadowSize();
-		max_undo = props.getMaxUndo();
-		middle_pct = props.getMiddlePct();
+		maxUndo = props.getMaxUndo();
+		middlePercent = props.getMiddlePct();
 	}
 	
 	private void cancel()
@@ -1153,23 +1151,23 @@ public class EnterOptionsDialog extends Dialog
 		iconsize   = Const.toInt(wIconsize.getText(), Const.ICON_SIZE);
 		linewidth  = Const.toInt(wLineWidth.getText(), Const.LINE_WIDTH);
 		shadowsize = Const.toInt(wShadowSize.getText(), Const.SHADOW_SIZE);
-		max_undo   = Const.toInt(wMaxUndo.getText(), Const.MAX_UNDO);		
-		middle_pct = Const.toInt(wMiddlePct.getText(), Const.MIDDLE_PCT);
+		maxUndo   = Const.toInt(wMaxUndo.getText(), Const.MAX_UNDO);		
+		middlePercent = Const.toInt(wMiddlePct.getText(), Const.MIDDLE_PCT);
 		
-		props.setFixedFont     ( fixed_font_data );
-		props.setDefaultFont   ( var_font_data   );
-		props.setGraphFont     ( graph_font_data );
-		props.setGridFont      ( grid_font_data  );
-		props.setNoteFont      ( note_font_data  );
-		props.setBackgroundRGB ( background_rgb  );
-		props.setGraphColorRGB ( graphcol_rgb    );
-		props.setTabColorRGB   ( tabcol_rgb      );
+		props.setFixedFont     ( fixedFontData );
+		props.setDefaultFont   ( varFontData   );
+		props.setGraphFont     ( graphFontData );
+		props.setGridFont      ( gridFontData  );
+		props.setNoteFont      ( noteFontData  );
+		props.setBackgroundRGB ( backgroundRGB  );
+		props.setGraphColorRGB ( graphColorRGB    );
+		props.setTabColorRGB   ( tabColorRGB      );
 		props.setIconSize      ( iconsize        );
 		props.setLineWidth     ( linewidth       );
 		props.setShadowSize    ( shadowsize      );
-		props.setMiddlePct     ( middle_pct      );
+		props.setMiddlePct     ( middlePercent      );
 
-		props.setMaxUndo                         ( max_undo                    );
+		props.setMaxUndo                         ( maxUndo                    );
 		props.setShowTips                        ( wShowTips.getSelection()    );
 		props.setUseDBCache                      ( wUseCache.getSelection()    );
 		props.setOpenLastFile                    ( wOpenLast.getSelection()    );

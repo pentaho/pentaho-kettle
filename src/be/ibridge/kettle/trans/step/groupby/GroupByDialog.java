@@ -82,7 +82,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 	private Listener lsGet, lsGetAgg;
 
 	private GroupByMeta input;
-	private boolean backup_all_rows;
+	private boolean backupAllRows;
 
 	public GroupByDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -106,7 +106,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 			}
 		};
 		backupChanged = input.hasChanged();
-		backup_all_rows = input.passAllRows();
+		backupAllRows = input.passAllRows();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -233,7 +233,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
 		ciReturn[0]=new ColumnInfo("Name",     ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
 		ciReturn[1]=new ColumnInfo("Subject",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciReturn[2]=new ColumnInfo("Type",     ColumnInfo.COLUMN_TYPE_CCOMBO, "", GroupByMeta.type_group_desc_long);
+		ciReturn[2]=new ColumnInfo("Type",     ColumnInfo.COLUMN_TYPE_CCOMBO, "", GroupByMeta.typeGroupLongDesc);
 		
 		wAgg=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -337,17 +337,14 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		stepname=null;
 		input.setChanged(backupChanged);
-		input.setPassAllRows(  backup_all_rows );
+		input.setPassAllRows(  backupAllRows );
 		dispose();
 	}
 	
 	private void ok()
 	{
 		input.setPassFlagField( wFlagField.getText() );
-		
-		//ignore_aggregate 
-		//field_ignore    
-		
+				
 		int sizegroup = wGroup.nrNonEmpty();
 		int nrfields = wAgg.nrNonEmpty();
 		

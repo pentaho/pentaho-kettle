@@ -52,7 +52,7 @@ public class TableMeta implements Cloneable, XMLInterface
 	public static final int TYPE_TABLE_DIMENSION = 1;
 	public static final int TYPE_TABLE_FACT      = 2;
 	
-	public static final String type_table_desc[] = { "Other", "Dimension", "Fact" };
+	public static final String typeTableDesc[] = { "Other", "Dimension", "Fact" };
 	
 	public TableMeta(String name, String dbname, DatabaseMeta dbinfo, ArrayList fields, ArrayList conditions)
 	{
@@ -492,14 +492,14 @@ public class TableMeta implements Cloneable, XMLInterface
 	
 	public static final String getType(int i)
 	{
-		return type_table_desc[i];
+		return typeTableDesc[i];
 	}
 
 	public static final int getType(String typedesc)
 	{
-		for (int i=0;i<type_table_desc.length;i++)
+		for (int i=0;i<typeTableDesc.length;i++)
 		{
-			if (type_table_desc[i].equalsIgnoreCase(typedesc)) return i;
+			if (typeTableDesc[i].equalsIgnoreCase(typedesc)) return i;
 		}
 		return TYPE_TABLE_OTHER;
 	}
