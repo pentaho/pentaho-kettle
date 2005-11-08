@@ -13,7 +13,6 @@
  **                                                                   **
  **********************************************************************/
 
-//TODO: convert all parameters to private, used via getters/setters
 //TODO: add custom header & footer fields in different Tab on dialog.
 
 package be.ibridge.kettle.trans.step.textfileoutput;
@@ -52,73 +51,363 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterface
 {
     /** The base name of the output file */
-	public  String fileName;
+	private  String fileName;
 
 	/** The file extention in case of a generated filename */
-	public  String  extension;
+	private  String  extension;
 
 	/** The separator to choose for the CSV file */
-	public  String separator;
+	private  String separator;
 	
 	/** The enclosure to use in case the separator is part of a field's value */
-	public  String enclosure;
+    private  String enclosure;
 	
 	/** Add a header at the top of the file? */
-	public  boolean header;
+    private  boolean headerEnabled;
 	
 	/** Add a footer at the bottom of the file? */
-	public  boolean footer;
+    private  boolean footerEnabled;
 	
 	/** The file format: DOS or Unix */
-	public  String fileFormat;
+    private  String fileFormat;
 	
 	/** if this value is larger then 0, the text file is split up into parts of this number of lines */
-	public  int    splitEvery;
+    private  int    splitEvery;
 
 	/** Flag to indicate the we want to append to the end of an existing file (if it exists) */
-	public  boolean fileAppended;
+    private  boolean fileAppended;
 
 	/** Flag: add the stepnr in the filename */
-	public  boolean stepNrInFilename;
+    private  boolean stepNrInFilename;
 	
 	/** Flag: add the date in the filename */
-	public  boolean dateInFilename;
+    private  boolean dateInFilename;
 	
 	/** Flag: add the time in the filename */
-	public  boolean timeInFilename;
+    private  boolean timeInFilename;
 	
 	/** Flag: put the destination file in a zip archive */
-	public  boolean zipped;
+    private  boolean zipped;
 	
 	/** Flag: pad fields to their specified length */
-	public  boolean padded;
+    private  boolean padded;
 
 	/* THE FIELD SPECIFICATIONS ... */
 	
 	/** The output fields */
-	public  TextFileField outputFields[];
-	
-	/*
-	public  String fieldName[];
-	public  String fieldType[];
-	public  String fieldFormat[];
-	public  int    fieldLength[];
-	public  int    fieldPrecision[];
-	public  String fieldCurrencySymbol[];
-	public  String fieldDecimalSymbol[];
-	public  String fieldGroupingSymbol[];
-	public  String fieldNullString[];
-	*/
+    private  TextFileField outputFields[];
 	
 	/** Calculated value ... */
-	public  String newline;
+    private  String newline;
 
 	public TextFileOutputMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
+    
+    
 	
 	/**
+     * @return Returns the dateInFilename.
+     */
+    public boolean isDateInFilename()
+    {
+        return dateInFilename;
+    }
+
+
+
+    /**
+     * @param dateInFilename The dateInFilename to set.
+     */
+    public void setDateInFilename(boolean dateInFilename)
+    {
+        this.dateInFilename = dateInFilename;
+    }
+
+
+
+    /**
+     * @return Returns the enclosure.
+     */
+    public String getEnclosure()
+    {
+        return enclosure;
+    }
+
+
+
+    /**
+     * @param enclosure The enclosure to set.
+     */
+    public void setEnclosure(String enclosure)
+    {
+        this.enclosure = enclosure;
+    }
+
+
+
+    /**
+     * @return Returns the extension.
+     */
+    public String getExtension()
+    {
+        return extension;
+    }
+
+
+
+    /**
+     * @param extension The extension to set.
+     */
+    public void setExtension(String extension)
+    {
+        this.extension = extension;
+    }
+
+
+
+    /**
+     * @return Returns the fileAppended.
+     */
+    public boolean isFileAppended()
+    {
+        return fileAppended;
+    }
+
+
+
+    /**
+     * @param fileAppended The fileAppended to set.
+     */
+    public void setFileAppended(boolean fileAppended)
+    {
+        this.fileAppended = fileAppended;
+    }
+
+
+
+    /**
+     * @return Returns the fileFormat.
+     */
+    public String getFileFormat()
+    {
+        return fileFormat;
+    }
+
+
+
+    /**
+     * @param fileFormat The fileFormat to set.
+     */
+    public void setFileFormat(String fileFormat)
+    {
+        this.fileFormat = fileFormat;
+    }
+
+
+
+    /**
+     * @return Returns the fileName.
+     */
+    public String getFileName()
+    {
+        return fileName;
+    }
+
+
+
+    /**
+     * @param fileName The fileName to set.
+     */
+    public void setFileName(String fileName)
+    {
+        this.fileName = fileName;
+    }
+
+
+
+    /**
+     * @return Returns the footer.
+     */
+    public boolean isFooterEnabled()
+    {
+        return footerEnabled;
+    }
+
+
+
+    /**
+     * @param footer The footer to set.
+     */
+    public void setFooterEnabled(boolean footer)
+    {
+        this.footerEnabled = footer;
+    }
+
+
+
+    /**
+     * @return Returns the header.
+     */
+    public boolean isHeaderEnabled()
+    {
+        return headerEnabled;
+    }
+
+
+
+    /**
+     * @param header The header to set.
+     */
+    public void setHeaderEnabled(boolean header)
+    {
+        this.headerEnabled = header;
+    }
+
+
+
+    /**
+     * @return Returns the newline.
+     */
+    public String getNewline()
+    {
+        return newline;
+    }
+
+
+
+    /**
+     * @param newline The newline to set.
+     */
+    public void setNewline(String newline)
+    {
+        this.newline = newline;
+    }
+
+
+
+    /**
+     * @return Returns the padded.
+     */
+    public boolean isPadded()
+    {
+        return padded;
+    }
+
+
+
+    /**
+     * @param padded The padded to set.
+     */
+    public void setPadded(boolean padded)
+    {
+        this.padded = padded;
+    }
+
+
+
+    /**
+     * @return Returns the separator.
+     */
+    public String getSeparator()
+    {
+        return separator;
+    }
+
+
+
+    /**
+     * @param separator The separator to set.
+     */
+    public void setSeparator(String separator)
+    {
+        this.separator = separator;
+    }
+
+
+
+    /**
+     * @return Returns the splitEvery.
+     */
+    public int getSplitEvery()
+    {
+        return splitEvery;
+    }
+
+
+
+    /**
+     * @param splitEvery The splitEvery to set.
+     */
+    public void setSplitEvery(int splitEvery)
+    {
+        this.splitEvery = splitEvery;
+    }
+
+
+
+    /**
+     * @return Returns the stepNrInFilename.
+     */
+    public boolean isStepNrInFilename()
+    {
+        return stepNrInFilename;
+    }
+
+
+
+    /**
+     * @param stepNrInFilename The stepNrInFilename to set.
+     */
+    public void setStepNrInFilename(boolean stepNrInFilename)
+    {
+        this.stepNrInFilename = stepNrInFilename;
+    }
+
+
+
+    /**
+     * @return Returns the timeInFilename.
+     */
+    public boolean isTimeInFilename()
+    {
+        return timeInFilename;
+    }
+
+
+
+    /**
+     * @param timeInFilename The timeInFilename to set.
+     */
+    public void setTimeInFilename(boolean timeInFilename)
+    {
+        this.timeInFilename = timeInFilename;
+    }
+
+
+
+    /**
+     * @return Returns the zipped.
+     */
+    public boolean isZipped()
+    {
+        return zipped;
+    }
+
+
+
+    /**
+     * @param zipped The zipped to set.
+     */
+    public void setZipped(boolean zipped)
+    {
+        this.zipped = zipped;
+    }
+
+
+
+    /**
      * @return Returns the outputFields.
      */
     public TextFileField[] getOutputFields()
@@ -183,8 +472,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			enclosure=XMLHandler.getTagValue(stepnode, "enclosure");
 			if (enclosure==null) enclosure="";
 			
-			header    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
-			footer    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
+			headerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
+			footerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
 			fileFormat    = XMLHandler.getTagValue(stepnode, "format");
 			fileName  = XMLHandler.getTagValue(stepnode, "file", "name");
 			extension = XMLHandler.getTagValue(stepnode, "file", "extention");
@@ -249,8 +538,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	{
 		separator  = ";";
 		enclosure  = "\"";
-		header     = true;
-		footer     = false;
+		headerEnabled     = true;
+		footerEnabled     = false;
 		fileFormat = "DOS";
 		fileName   = "file";
 		extension  = "txt";
@@ -406,8 +695,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		
 		retval+="    "+XMLHandler.addTagValue("separator", separator);
 		retval+="    "+XMLHandler.addTagValue("enclosure", enclosure);
-		retval+="    "+XMLHandler.addTagValue("header",    header);
-		retval+="    "+XMLHandler.addTagValue("footer",    footer);
+		retval+="    "+XMLHandler.addTagValue("header",    headerEnabled);
+		retval+="    "+XMLHandler.addTagValue("footer",    footerEnabled);
 		retval+="    "+XMLHandler.addTagValue("format",    fileFormat);
 		retval+="    <file>"+Const.CR;
 		retval+="      "+XMLHandler.addTagValue("name",       fileName);
@@ -452,8 +741,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		{
 			separator       =      rep.getStepAttributeString (id_step, "separator");
 			enclosure       =      rep.getStepAttributeString (id_step, "enclosure");
-			header          =      rep.getStepAttributeBoolean(id_step, "header");
-			footer          =      rep.getStepAttributeBoolean(id_step, "footer");   
+			headerEnabled          =      rep.getStepAttributeBoolean(id_step, "header");
+			footerEnabled          =      rep.getStepAttributeBoolean(id_step, "footer");   
 			fileFormat      =      rep.getStepAttributeString (id_step, "format");  
 			
 			fileName        =      rep.getStepAttributeString (id_step, "file_name");  
@@ -500,8 +789,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "separator",       separator);
 			rep.saveStepAttribute(id_transformation, id_step, "enclosure",       enclosure);
-			rep.saveStepAttribute(id_transformation, id_step, "header",          header);
-			rep.saveStepAttribute(id_transformation, id_step, "footer",          footer);
+			rep.saveStepAttribute(id_transformation, id_step, "header",          headerEnabled);
+			rep.saveStepAttribute(id_transformation, id_step, "footer",          footerEnabled);
 			rep.saveStepAttribute(id_transformation, id_step, "format",          fileFormat);
 			
 			rep.saveStepAttribute(id_transformation, id_step, "file_name",       fileName);

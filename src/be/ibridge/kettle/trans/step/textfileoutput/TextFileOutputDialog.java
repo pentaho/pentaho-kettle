@@ -846,21 +846,21 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	 */ 
 	public void getData()
 	{
-		if (input.fileName  !=null) wFilename.setText(input.fileName);
-		if (input.extension !=null) wExtension.setText(input.extension);
-		if (input.separator !=null) wSeparator.setText(input.separator);
-		if (input.enclosure !=null) wEnclosure.setText(input.enclosure);
-		if (input.fileFormat!=null) wFormat.setText(input.fileFormat);
-		wSplitEvery.setText(""+input.splitEvery);
+		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
+		if (input.getExtension() != null) wExtension.setText(input.getExtension());
+		if (input.getSeparator() !=null) wSeparator.setText(input.getSeparator());
+		if (input.getEnclosure() !=null) wEnclosure.setText(input.getEnclosure());
+		if (input.getFileFormat()!=null) wFormat.setText(input.getFileFormat());
+		wSplitEvery.setText(""+input.getSplitEvery());
 
-		wHeader.setSelection(input.header);
-		wFooter.setSelection(input.footer);
-		wZipped.setSelection(input.zipped);
-		wAddDate.setSelection(input.dateInFilename);
-		wAddTime.setSelection(input.timeInFilename);
-		wAppend.setSelection(input.fileAppended);
-		wAddStepnr.setSelection(input.stepNrInFilename);
-		wPad.setSelection(input.padded);
+		wHeader.setSelection(input.isHeaderEnabled());
+		wFooter.setSelection(input.isFooterEnabled());
+		wZipped.setSelection(input.isZipped());
+		wAddDate.setSelection(input.isDateInFilename());
+		wAddTime.setSelection(input.isTimeInFilename());
+		wAppend.setSelection(input.isFileAppended());
+		wAddStepnr.setSelection(input.isStepNrInFilename());
+		wPad.setSelection(input.isPadded());
 		
 		log.logDebug(toString(), "getting fields info...");
 		
@@ -895,21 +895,21 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	
 	private void getInfo(TextFileOutputMeta tfoi)
 	{
-		tfoi.fileName   = wFilename.getText();
-		tfoi.fileFormat = wFormat.getText();
-		tfoi.separator  = wSeparator.getText();
-		tfoi.enclosure  = wEnclosure.getText();
-		tfoi.extension  = wExtension.getText();
-		tfoi.splitEvery = Const.toInt(wSplitEvery.getText(), 0);
+		tfoi.setFileName(   wFilename.getText() );
+		tfoi.setFileFormat( wFormat.getText() );
+		tfoi.setSeparator(  wSeparator.getText() );
+		tfoi.setEnclosure(  wEnclosure.getText() );
+		tfoi.setExtension(  wExtension.getText() );
+		tfoi.setSplitEvery( Const.toInt(wSplitEvery.getText(), 0) );
 
-		tfoi.header    = wHeader.getSelection(); 
-		tfoi.footer    = wFooter.getSelection();
-		tfoi.fileAppended    = wAppend.getSelection();
-		tfoi.stepNrInFilename= wAddStepnr.getSelection();
-		tfoi.dateInFilename  = wAddDate.getSelection();
-		tfoi.timeInFilename  = wAddTime.getSelection();
-		tfoi.zipped    = wZipped.getSelection();
-		tfoi.padded       = wPad.getSelection();
+		tfoi.setHeaderEnabled( wHeader.getSelection() ); 
+		tfoi.setFooterEnabled( wFooter.getSelection() );
+		tfoi.setFileAppended( wAppend.getSelection() );
+		tfoi.setStepNrInFilename( wAddStepnr.getSelection() );
+		tfoi.setDateInFilename( wAddDate.getSelection() );
+		tfoi.setTimeInFilename( wAddTime.getSelection() );
+		tfoi.setZipped( wZipped.getSelection() );
+		tfoi.setPadded( wPad.getSelection() );
 
 		int i;
 		//Table table = wFields.table;

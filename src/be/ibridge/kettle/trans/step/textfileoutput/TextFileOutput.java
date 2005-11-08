@@ -61,8 +61,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		
 		r=getRow();       // This also waits for a row to be finished.
 		
-		if ( ( r==null && data.headerrow!=null && meta.footer ) ||
-		     ( r!=null && linesOutput>0 && meta.splitEvery>0 && (linesOutput%meta.splitEvery)==0)
+		if ( ( r==null && data.headerrow!=null && meta.isFooterEnabled() ) ||
+		     ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && (linesOutput%meta.getSplitEvery())==0)
 		   )
 		{
 			if (writeHeader()) linesOutput++;
@@ -80,7 +80,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					return false;
 				}
 
-				if (meta.header && data.headerrow!=null) if (writeHeader()) linesOutput++;
+				if (meta.isHeaderEnabled() && data.headerrow!=null) if (writeHeader()) linesOutput++;
 			}
 		
 		}
@@ -117,10 +117,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			if (first)
 			{
 				first=false;
-				if (!meta.fileAppended && ( meta.header || meta.footer)) // See if we have to write a header-line)
+				if (!meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled())) // See if we have to write a header-line)
 				{
 					data.headerrow=new Row(r); // copy the row for the footer!
-					if (meta.header)
+					if (meta.isHeaderEnabled())
 					{
 						if (writeHeader()) return false;
 					}
@@ -151,7 +151,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				for (int i=0;i<r.size();i++)
 				{
 					debug="start for loop";
-					if (i>0) data.fw.write(meta.separator.getBytes());
+					if (i>0) data.fw.write(meta.getSeparator().getBytes());
 	
 					debug="Get value "+i+" of "+r.size();
 					v=r.getValue(i);
@@ -159,7 +159,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					debug="Write field to output stream: ["+v.toString()+"] of type ["+v.toStringMeta()+"]";
 					writeField(v, -1);
 				}
-				data.fw.write(meta.newline.getBytes());
+				data.fw.write(meta.getNewline().getBytes());
 			}
 			else
 			{
@@ -171,7 +171,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
 					debug="start for loop";
-					if (i>0) data.fw.write(meta.separator.getBytes());
+					if (i>0) data.fw.write(meta.getSeparator().getBytes());
 	
 					debug="Get value "+data.fieldnrs[i]+" of row ";
 					v=r.getValue(data.fieldnrs[i]);
@@ -179,7 +179,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					
 					writeField(v, i);
 				}
-				data.fw.write(meta.newline.getBytes());
+				data.fw.write(meta.getNewline().getBytes());
 			}
 		}
 		catch(Exception e)
@@ -277,10 +277,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				// Any separators in string?
 				// example: 123.4;"a;b;c";Some name
 				// 
-				int seppos = v.toString().indexOf(meta.separator);
+				int seppos = v.toString().indexOf(meta.getSeparator());
 				
 				if (seppos<0) retval=v.toString();
-				else          retval=meta.enclosure+v.toString()+meta.enclosure;
+				else          retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
 			}
 		}
 		else // Boolean
@@ -296,7 +296,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			}
 		}
 		
-		if (meta.padded) // maybe we need to rightpad to field length?
+		if (meta.isPadded()) // maybe we need to rightpad to field length?
 		{
 			// What's the field length?
 			int length, precision;
@@ -355,13 +355,13 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				String header = "";
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
-					if (i>0 && meta.separator!=null && meta.separator.length()>0)
+					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
 					{
-						header+=meta.separator;
+						header+=meta.getSeparator();
 					}
 					header+=meta.getOutputFields()[i].getName();
 				}
-				header+=meta.newline;
+				header+=meta.getNewline();
 				data.fw.write(header.getBytes());
 			}
 			else
@@ -369,7 +369,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			{
 				for (int i=0;i<r.size();i++)
 				{
-					if (i>0) data.fw.write(meta.separator.getBytes());
+					if (i>0) data.fw.write(meta.getSeparator().getBytes());
 					Value v = r.getValue(i);
 					
 					// Header-value contains the name of the value
@@ -392,7 +392,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					//header_value.setLength( fmt.length() );
 					data.fw.write(header_value.toString().getBytes());
 				}
-				data.fw.write(meta.newline.getBytes());
+				data.fw.write(meta.getNewline().getBytes());
 			}
 			else
 			{
@@ -423,9 +423,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		{
 			File file = new File(buildFilename(true));
 
-			if (meta.zipped)
+			if (meta.isZipped())
 			{
-				FileOutputStream fos = new FileOutputStream(file, meta.fileAppended);
+				FileOutputStream fos = new FileOutputStream(file, meta.isFileAppended());
 				data.zip = new ZipOutputStream(fos);
 				File entry = new File(buildFilename(false));
 				ZipEntry zipentry = new ZipEntry(entry.getName());
@@ -435,7 +435,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				FileOutputStream fos=new FileOutputStream(file, meta.fileAppended);
+				FileOutputStream fos=new FileOutputStream(file, meta.isFileAppended());
 				data.fw=fos;
 			}
 						
@@ -458,7 +458,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		
 		try
 		{
-			if (meta.zipped)
+			if (meta.isZipped())
 			{
 				//System.out.println("close zip entry ");
 				data.zip.closeEntry();
@@ -498,7 +498,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				logError("Couldn't open file "+meta.fileName+" ["+debug+"]");
+				logError("Couldn't open file "+meta.getFileName()+" ["+debug+"]");
 				setErrors(1L);
 				stopAll();
 			}
