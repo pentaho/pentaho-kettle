@@ -2,17 +2,17 @@
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
- ** It belongs to, is maintained by and is copyright 1999-2005 by     **
+ ** Kettle, from version 2.2 on, is released into the public domain   **
+ ** under the Lesser GNU Public License (LGPL).                       **
  **                                                                   **
- **      i-Bridge bvba                                                **
- **      Fonteinstraat 70                                             **
- **      9400 OKEGEM                                                  **
- **      Belgium                                                      **
- **      http://www.kettle.be                                         **
- **      info@kettle.be                                               **
+ ** For more details, please read the document LICENSE.txt, included  **
+ ** in this project                                                   **
+ **                                                                   **
+ ** http://www.kettle.be                                              **
+ ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 /**
  * Reads a micro-cube type of data-file from disk.
  * It's just a binary (compressed) representation of a buch of rows.
