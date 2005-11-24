@@ -1,6 +1,5 @@
 package be.ibridge.kettle.core;
 
-import java.util.Enumeration;
 import java.util.Hashtable;
 
 import org.eclipse.swt.SWT;
@@ -75,7 +74,7 @@ public class GUIResource
     {
         this.display = display;
         
-        getResources();
+        getResources(false);
         
         display.addListener(SWT.Dispose, new Listener()
             {
@@ -97,10 +96,10 @@ public class GUIResource
     public void reload()
     {
         dispose();
-        getResources();
+        getResources(true);
     }
     
-    private void getResources()
+    private void getResources(boolean reload)
     {
         Props props = Props.getInstance();
         
@@ -134,7 +133,7 @@ public class GUIResource
         fontDemoSmall   = new Font(display, "Arial", 12, SWT.BOLD);
         
         // Load all images from files...
-        loadStepImages();
+        if (!reload) loadStepImages();
     }
     
     private void dispose()
@@ -172,7 +171,7 @@ public class GUIResource
         fontDemoSmall.dispose();
         
         // Images
-        
+        /*
         Enumeration en = imagesStepsSmall.elements();
         while (en.hasMoreElements())
         {
@@ -195,6 +194,7 @@ public class GUIResource
         imageStart.dispose();
         imageDummy.dispose();
         imageSpoon.dispose();
+        */
     }
     
     /**

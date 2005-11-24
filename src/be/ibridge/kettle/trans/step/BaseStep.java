@@ -52,6 +52,9 @@ import be.ibridge.kettle.trans.step.filterrows.FilterRowsMeta;
 import be.ibridge.kettle.trans.step.groupby.GroupByMeta;
 import be.ibridge.kettle.trans.step.insertupdate.InsertUpdateMeta;
 import be.ibridge.kettle.trans.step.joinrows.JoinRowsMeta;
+import be.ibridge.kettle.trans.step.mapping.MappingMeta;
+import be.ibridge.kettle.trans.step.mappinginput.MappingInputMeta;
+import be.ibridge.kettle.trans.step.mappingoutput.MappingOutputMeta;
 import be.ibridge.kettle.trans.step.normaliser.NormaliserMeta;
 import be.ibridge.kettle.trans.step.nullif.NullIfMeta;
 import be.ibridge.kettle.trans.step.rowgenerator.RowGeneratorMeta;
@@ -111,7 +114,10 @@ public class BaseStep extends Thread
 			ExcelInputMeta.class,
 			NullIfMeta.class,
             CalculatorMeta.class,
-            ExecSQLMeta.class
+            ExecSQLMeta.class,
+            MappingMeta.class,
+            MappingInputMeta.class,
+            MappingOutputMeta.class
 		};
 	
 	public static final String type_desc[] = 
@@ -151,7 +157,10 @@ public class BaseStep extends Thread
 			"ExcelInput",
 			"NullIf",
             "Calculator",
-            "ExecSQL"
+            "ExecSQL",
+            "Mapping",
+            "MappingInput",
+            "MappingOutput"
 		};
 
 	public static final String type_long_desc[] = 
@@ -191,7 +200,10 @@ public class BaseStep extends Thread
 			"Excel Input",
 			"Null if...",
             "Calculator",
-            "Execute SQL script"
+            "Execute SQL script",
+            "Mapping (sub-transformation)",
+            "Mapping input specification",
+            "Mapping output specification"
 		};
 
 	public static final String type_tooltip_desc[] = 
@@ -231,7 +243,10 @@ public class BaseStep extends Thread
 			"Read data from a Microsoft Excel Workbook.  This works with Excel sheets of Excel 95, 97 and 2000.",
 			"Sets a field value to null if it is equal to a constant value",
             "Create new fields by performing simple calculations",
-            "Execute an SQL script, optionally parameterized using input rows"
+            "Execute an SQL script, optionally parameterized using input rows",
+            "Run a mapping (sub-transformation), use MappingInput and MappingOutput to specify the fields interface",
+            "Specify the input interface of a mapping",
+            "Specify the output interface of a mapping"
 		};
 
 	public static final String image_filename[] =
@@ -271,7 +286,10 @@ public class BaseStep extends Thread
 			"XLI.png",
 			"NUI.png",
             "CLC.png",
-            "SQL.png"
+            "SQL.png",
+            "MAP.png",
+            "MPI.png",
+            "MPO.png"
 		};
 	
 	public static final String category[] = 
@@ -311,7 +329,10 @@ public class BaseStep extends Thread
 			"Input",            // "ExcelInput"
 			"Extra",            // "NullIf"
             "Transform",        // "Calculator"
-            "Extra"             // "ExecSQL"
+            "Extra",            // "ExecSQL"
+            "Extra",            // "Mapping"
+            "Extra",            // "MappingInput"
+            "Extra"             // "MappingOutput"
 		};
 
     public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra" };
@@ -989,13 +1010,10 @@ public class BaseStep extends Thread
 	//
 	public void setOutputDone()
 	{
-		int i;
-		RowSet rs;
-		
 		logDebug("Signaling 'output done' to "+output.size()+" output rowsets.");
-		for (i=0;i<output.size();i++)
+		for (int i=0;i<output.size();i++)
 		{
-			rs=(RowSet)output.get(i);
+			RowSet rs=(RowSet)output.get(i);
 			rs.setDone();
 		}
 	}
@@ -1354,4 +1372,10 @@ public class BaseStep extends Thread
 	{
 		logBasic("Finished processing (I="+linesInput+", O="+linesOutput+", R="+linesRead+", W="+linesWritten+", U="+linesUpdated+", E="+getErrors());
 	}
+    
+    public String getStepID()
+    {
+        if (stepMeta!=null) return stepMeta.getStepID();
+        return null;
+    }
 }

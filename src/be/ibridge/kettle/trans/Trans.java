@@ -36,6 +36,8 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.mappinginput.MappingInput;
+import be.ibridge.kettle.trans.step.mappingoutput.MappingOutput;
 
 
 /**
@@ -1213,7 +1215,33 @@ public class Trans
 	{
 		return this.getClass().getName();
 	}
-	
+
+    public MappingInput findMappingInput()
+    {
+        // Look in threads and find the MappingInput step thread...
+        for (int i=0;i<steps.size();i++)
+        {
+            StepMetaDataCombi smdc = (StepMetaDataCombi) steps.get(i);
+            StepInterface step = smdc.step;
+            if (step.getStepID().equalsIgnoreCase("MappingInput"))
+                return (MappingInput)step;
+        }
+        return null;
+    }
+
+    public MappingOutput findMappingOutput()
+    {
+        // Look in threads and find the MappingInput step thread...
+        for (int i=0;i<steps.size();i++)
+        {
+            StepMetaDataCombi smdc = (StepMetaDataCombi) steps.get(i);
+            StepInterface step = smdc.step;
+            if (step.getStepID().equalsIgnoreCase("MappingOutput"))
+                return (MappingOutput)step;
+        }
+        return null;
+    }
+
 }
 
 

@@ -13,20 +13,29 @@
  **                                                                   **
  **********************************************************************/
  
-package be.ibridge.kettle.trans.step;
 
-import be.ibridge.kettle.repository.Repository;
+package be.ibridge.kettle.trans.step.mappingoutput;
+
+import be.ibridge.kettle.trans.step.BaseStepData;
+import be.ibridge.kettle.trans.step.StepDataInterface;
+import be.ibridge.kettle.trans.step.mapping.Mapping;
 
 /**
- * This interface is used to launch Step Dialogs.
- * All dialogs that implement this simple interface can be opened by Spoon.
- * 
  * @author Matt
- * @since 4-aug-2004
- * 
+ * @since 24-jan-2005
+ *
  */
-public interface StepDialogInterface 
+public class MappingOutputData extends BaseStepData implements StepDataInterface
 {
-	public String open();
-    public void setRepository(Repository repository);
+
+	public Mapping mapping;
+
+    /**
+	 * 
+	 */
+	public MappingOutputData()
+	{
+		super();
+	}
+
 }

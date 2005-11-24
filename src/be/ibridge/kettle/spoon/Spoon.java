@@ -1643,6 +1643,7 @@ public class Spoon
 			try
 			{
 				StepDialogInterface dialog = stepint.getDialog(shell, stepMeta.getStepMetaInterface(), transMeta, name);
+                dialog.setRepository(rep);
 				stepname = dialog.open();
 			}
 			catch(Throwable e)

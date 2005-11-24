@@ -15,6 +15,7 @@
  
 package be.ibridge.kettle.trans.step;
 
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 
 /*
@@ -91,6 +92,11 @@ public interface StepInterface
 	 * @return the name of the step
 	 */
 	public String   getName();
+    
+    /**
+     * @return the type ID of the step...
+     */
+    public String getStepID();
 	
 	/**
 	 * Get the number of errors
@@ -137,4 +143,20 @@ public interface StepInterface
 	 * @throws KettleException
 	 */
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException;
+    
+    /**
+     * Put a row on the destination rowsets.
+     * @param row The row to send to the destinations steps
+     */
+    public void putRow(Row row);
+    
+    /**
+     * @return a row from the source step(s).
+     */
+    public Row getRow();
+    
+    /**
+     * Signal output done to destination steps
+     */
+    public void setOutputDone();
 }

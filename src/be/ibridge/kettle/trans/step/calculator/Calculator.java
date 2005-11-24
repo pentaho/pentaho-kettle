@@ -219,6 +219,12 @@ public class Calculator extends BaseStep implements StepInterface
                         value.add_days((int)fieldB.getInteger());
                     }
                     break;
+                case CalculatorMetaFunction.CALC_NVL                : // Replace null values with another value
+                    {
+                        value = new Value(fn.getFieldName(), fieldA);
+                        value.nvl(fieldB);
+                    }
+                    break;
                 default:
                     throw new KettleValueException("Unknown calculation type #"+fn.getCalcType());
                 }

@@ -42,6 +42,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseDialog;
+import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.TransMeta;
 
 
@@ -66,6 +67,7 @@ public class BaseStepDialog extends Dialog
 	protected boolean changed, backupChanged;
 	protected BaseStepMeta baseInput;
 	protected Props props;
+    protected Repository repository;
 	
 	public BaseStepDialog(Shell parent, BaseStepMeta in, TransMeta transMeta, String sname)
 	{
@@ -194,7 +196,8 @@ public class BaseStepDialog extends Dialog
 	
 	public CCombo addConnectionLine(Composite parent, 
 									Control previous, 
-									int middle, int margin // TODO: put in base
+									int middle, 
+                                    int margin
 									)
 	{
 		final Label        wlConnection;
@@ -294,4 +297,20 @@ public class BaseStepDialog extends Dialog
 	{
 		return this.getClass().getName();
 	}
+
+    /**
+     * @return Returns the repository.
+     */
+    public Repository getRepository()
+    {
+        return repository;
+    }
+
+    /**
+     * @param repository The repository to set.
+     */
+    public void setRepository(Repository repository)
+    {
+        this.repository = repository;
+    }
 }

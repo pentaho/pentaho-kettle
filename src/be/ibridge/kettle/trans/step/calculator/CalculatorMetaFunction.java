@@ -27,7 +27,8 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_ROUND_1            = 12;
     public static final int CALC_ROUND_2            = 13;
     public static final int CALC_ADD_DAYS           = 14;
-    public static final int CALC_CONSTANT           = 15;
+    public static final int CALC_NVL                = 15;
+    public static final int CALC_CONSTANT           = 16;
     
     public static final String calc_desc[] = 
         { 
@@ -46,6 +47,7 @@ public class CalculatorMetaFunction implements Cloneable
             "ROUND_1",
             "ROUND_2",
             "ADD_DAYS",
+            "NVL",
             "CONSTANT"
         };
     
@@ -66,7 +68,8 @@ public class CalculatorMetaFunction implements Cloneable
             "ROUND( A )",
             "ROUND( A , B )",
             "Date A + B Days",
-            "Set field to constant value A",
+            "NVL( A, B )",
+            "Set field to constant value A"
         };
    
     private String fieldName;

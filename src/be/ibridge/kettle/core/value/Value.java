@@ -2227,7 +2227,7 @@ public class Value implements Cloneable, XMLInterface
 	// implement the NVL function, arguments in args[]
 	public Value nvl(Value alt)
 	{
-		if (isNull()) return alt;
+		if (isNull()) setValue(alt);
 		return this;
 	}
 
