@@ -277,13 +277,16 @@ public class StepMeta implements Cloneable, Comparable
 	{
 		try
 		{
-			StepMeta retval   = (StepMeta)super.clone();
-			
+ 			StepMeta retval   = (StepMeta)super.clone();
+			boolean changed = hasChanged();
+            
 			retval.setLocation(getLocation().x, getLocation().y);
-			
 			if (stepMetaInterface!=null) retval.stepMetaInterface = (StepMetaInterface)stepMetaInterface.clone();
 			else retval.stepMetaInterface=null;
-				
+
+            retval.setChanged( changed );
+            setChanged(changed );
+
 			return retval;
 		}
 		catch(CloneNotSupportedException e)
