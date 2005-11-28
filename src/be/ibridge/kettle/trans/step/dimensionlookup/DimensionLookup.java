@@ -254,13 +254,15 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				add.addValue(technicalKey);
 				logRowlevel("added dimension entry with key="+add.toString());
 			}
-			else  // The entry was found: do we need to insert or update?
+			else  // The entry was found: do we need to insert, update or both?
 			{
 				logRowlevel("Dimension entry found : "+add);
 				debug = "update";
+                
 				// What's the key?  The first value of the return row
 				technicalKey     = add.getValue(0);
 				val_version = add.getValue(1); 
+                
 				// Date range: ]-oo,+oo[ 
 				val_datfrom = new Value("MIN", meta.getMinDate());
 				val_datto   = new Value("MAX", meta.getMaxDate());
@@ -286,12 +288,14 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					  
 					  // Not the same and update = 'N' --> insert
 					  if (cmp!=0) identical=false;
+                      
+                      // Field flagged for insert: insert
 					  if (cmp!=0 && meta.getFieldUpdate()[i]==DimensionLookupMeta.TYPE_UPDATE_DIM_INSERT)
 					  { 
-					  	// System.out.println("v1.getDate() --> "+v1.getDate().toString()+", row="+row);
-					  	// logRowlevel("CMP("+v1.toString()+", "+v2.toString()+") = "+cmp+", fieldupdate["+i+"]="+info.fieldupdate[i]);
 					  	insert=true;
 					  }
+                      
+                      // Field flagged for punchthrough
 					  if (cmp!=0 && meta.getFieldUpdate()[i]==DimensionLookupMeta.TYPE_UPDATE_DIM_PUNCHTHROUGH) 
                       {
                             punch=true;
