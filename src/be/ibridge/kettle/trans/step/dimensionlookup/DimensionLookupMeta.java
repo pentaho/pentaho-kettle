@@ -1094,16 +1094,15 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 				// Check sequence
 				if (database.supportsSequences() && sequenceName != null && sequenceName.length() != 0)
 				{
-					Value last = db.checkSequence(sequenceName);
-					if (last != null)
+					if (db.checkSequenceExists(sequenceName))
 					{
-						error_message = "No problem reading sequence " + sequenceName + ", it's at value " + last;
+						error_message = "Sequence " + sequenceName + " exists.";
 						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepinfo);
 						remarks.add(cr);
 					}
 					else
 					{
-						error_message += "Error reading sequence " + sequenceName + "!";
+						error_message += "Sequence " + sequenceName + " couldn't be found!";
 						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 						remarks.add(cr);
 					}
