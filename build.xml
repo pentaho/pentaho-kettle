@@ -125,7 +125,12 @@
 	  		/>
 	  	
 		  <!-- Make the kettle.jar file available on javaForge -->
-		 <CBRelease file="${lib}/kettle.jar" />
+		 <CBRelease 
+		 	file="${lib}/kettle.jar" 
+ 		    description="kettle base library" 
+ 	 		keywords="Kettle, library, Spoon, Chef" 
+ 		    comments="Can be used to program Kettle meta-data or update you Kettle distribution package"
+		 />
 	  </target>
 	
 	
@@ -196,7 +201,11 @@
 	  		/>
 	  	
 		  <!-- Make the kettle.zip file available on javaForge -->
-		 <CBRelease file="kettle.zip" />
+		 <CBRelease file="kettle.zip" 
+		 		    description="This zip file contains the binaries to run Kettle (Spoon, Chef) on all platforms" 
+		 	 		keywords="Kettle, binary, Spoon, Chef" 
+		 		    comments="Also contains JDBC drivers, libs etc which explains the large size"
+		 />
 	  </target>
 
 	<!--
