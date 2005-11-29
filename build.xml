@@ -123,6 +123,9 @@
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
 	  		/>
+	  	
+		  <!-- Make the kettle.jar file available on javaForge -->
+		 <CBRelease file="${lib}/kettle.jar" />
 	  </target>
 	
 	
