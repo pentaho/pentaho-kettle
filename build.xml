@@ -179,7 +179,24 @@
 	  			<fileset dir="${extra}" includes="**/*"/>
 	  			</copy>
 
+	  </target>
 
+	  <!--
+	       ==========================
+	             zipfile
+	       ==========================
+	  -->
+		
+	  <target name="zip" depends="distrib" description="generate the kettle.zip file">
+	  	<echo>Generating the Kettle distribution package kettle.zip ...</echo>
+	  	<jar jarfile="kettle.zip" 
+	    	 basedir="${distrib}" 
+	    	 includes="**/*"
+	  	     excludes="**/Thumbs.db"
+	  		/>
+	  	
+		  <!-- Make the kettle.zip file available on javaForge -->
+		 <CBRelease file="kettle.zip" />
 	  </target>
 
 	<!--
@@ -188,6 +205,7 @@
 	       ==========================
 	  -->
 
+	
 	<target name="copy2webstart" depends="init, kettle" description="Copy resources to webstart">
     	<echo>Copying resources to webstart...</echo>
 
