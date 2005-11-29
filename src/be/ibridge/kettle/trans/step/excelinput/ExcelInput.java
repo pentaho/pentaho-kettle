@@ -84,6 +84,13 @@ public class ExcelInput extends BaseStep implements StepInterface
 			if (cell.getType().equals(CellType.LABEL))
 			{
 				v.setValue( ((LabelCell)cell).getString() );
+                switch(meta.getFieldTrimType()[rowcolumn])
+                {
+                case ExcelInputMeta.TYPE_TRIM_LEFT: v.ltrim(); break;
+                case ExcelInputMeta.TYPE_TRIM_RIGHT: v.rtrim(); break;
+                case ExcelInputMeta.TYPE_TRIM_BOTH: v.trim(); break;
+                default: break;
+                }
 			}
 			else
 			if (cell.getType().equals(CellType.NUMBER))
