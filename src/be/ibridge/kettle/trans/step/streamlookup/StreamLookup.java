@@ -212,22 +212,29 @@ public class StreamLookup extends BaseStep implements StepInterface
 		if (stopped) return false;
 		
 		// Copy value references to lookup table.
-		debug = "Copy value references to lookup table (meta==null? "+(meta==null)+")";
-		for (int i=0;i<meta.getKeystream().length;i++) lu.addValue( row.getValue(data.keynrs[i]) );
-		//logDetailed("Looking for key in hashtable: "+lu.toString()+", look="+look);
-        
-        // Handle conflicting types (Number-Integer-String conversion to lookup type in hashtable)
-        debug = "lookup size="+lu.size()+", keyTypes size="+data.keyTypes.size();
-        for (int i=0;i<lu.size();i++)
+		debug = "Copy value references to lookup table";
+		for (int i=0;i<meta.getKeystream().length;i++) 
         {
-            Value inputValue  = lu.getValue(i);
-            Value lookupValue = data.keyTypes.getValue(i);
-            if (inputValue.getType()!=lookupValue.getType())
+            int valueNr = data.keynrs[i];
+            Value value = row.getValue(valueNr); 
+            lu.addValue( value );
+        }
+        debug="Handle conflicting types";
+        // Handle conflicting types (Number-Integer-String conversion to lookup type in hashtable)
+        debug = "lookup size="+lu.size();
+        if (data.keyTypes!=null)
+        {
+            for (int i=0;i<lu.size();i++)
             {
-                // Change the type for the lookup only!
-                Value newValue = new Value(inputValue);
-                newValue.setType(lookupValue.getType());
-                lu.setValue(i, newValue);
+                Value inputValue  = lu.getValue(i);
+                Value lookupValue = data.keyTypes.getValue(i);
+                if (inputValue.getType()!=lookupValue.getType())
+                {
+                    // Change the type for the lookup only!
+                    Value newValue = new Value(inputValue);
+                    newValue.setType(lookupValue.getType());
+                    lu.setValue(i, newValue);
+                }
             }
         }
         
