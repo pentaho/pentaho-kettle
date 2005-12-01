@@ -111,7 +111,7 @@ public class Row implements XMLInterface, Comparable
      */
     public void addValue(int idx, Value v)
     {
-        list.add(v);
+        list.add(idx, v);
     }
     
     /**
