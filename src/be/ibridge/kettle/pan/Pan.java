@@ -64,7 +64,6 @@ public class Pan
 		    System.out.println("  -logfile   : The logging file to write to");
 		    System.out.println("  -listdir   : List the directories in the repository");
 		    System.out.println("  -listtrans : List the transformations in the specified directory");
-		    System.out.println("  -license   : Show the specified licenses");
 		    System.out.println("");
 		    
 		    return;
