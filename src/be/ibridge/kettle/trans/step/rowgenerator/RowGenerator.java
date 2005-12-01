@@ -15,6 +15,8 @@
  
 package be.ibridge.kettle.trans.step.rowgenerator;
 
+import java.math.BigDecimal;
+
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -58,7 +60,7 @@ public class RowGenerator extends BaseStep implements StepInterface
 			if (meta.getFieldName()[i]!=null)
 			{
 				value=new Value(meta.getFieldName()[i], valtype); // build a value!
-				String def_value = meta.getValue()[i];
+				String stringValue = meta.getValue()[i];
 				
 				if (value.isNumber())
 				{
@@ -76,11 +78,11 @@ public class RowGenerator extends BaseStep implements StepInterface
 							data.df.setDecimalFormatSymbols(data.dfs);
 						}
 						
-						value.setValue( data.nf.parse(def_value).doubleValue() );
+						value.setValue( data.nf.parse(stringValue).doubleValue() );
 					}
 					catch(Exception e)
 					{
-						logError("Couldn't parse number field ["+value.getName()+"] with value ["+def_value+"] -->"+e.toString());
+						logError("Couldn't parse number field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString());
 						setErrors(1);
 						stopAll();
 						return null;
@@ -89,7 +91,7 @@ public class RowGenerator extends BaseStep implements StepInterface
 				else
 				if (value.isString())
 				{
-					value.setValue(def_value);
+					value.setValue(stringValue);
 				}
 				else
 				if (value.isDate())
@@ -102,16 +104,54 @@ public class RowGenerator extends BaseStep implements StepInterface
 							data.daf.setDateFormatSymbols(data.dafs);
 						}
 						
-						value.setValue( data.daf.parse(def_value) );
+						value.setValue( data.daf.parse(stringValue) );
 					}
 					catch(Exception e)
 					{
-						logError("Couldn't parse date field ["+value.getName()+"] with value ["+def_value+"] -->"+e.toString());
+						logError("Couldn't parse date field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString());
 						setErrors(1);
 						stopAll();
 						return null;
 					}
 				}
+                else
+                if (value.isInteger())
+                {
+                    try
+                    {
+                        value.setValue( Long.parseLong(stringValue) );
+                    }
+                    catch(Exception e)
+                    {
+                        logError("Couldn't parse Integer field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString());
+                        setErrors(1);
+                        stopAll();
+                        return null;
+                    }
+                }
+                else
+                if (value.isBigNumber())
+                {
+                    try
+                    {
+                        value.setValue( new BigDecimal(stringValue) );
+                    }
+                    catch(Exception e)
+                    {
+                        logError("Couldn't parse BigNumber field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString());
+                        setErrors(1);
+                        stopAll();
+                        return null;
+                    }
+                }
+                else
+                {
+                    logError("Please specify the value type of field ["+value.getName()+"] with value ["+stringValue+"] -->");
+                    setErrors(1);
+                    stopAll();
+                    return null;
+                }
+
 				// Now add value to the row!
 				// This is in fact a copy from the fields row, but now with data.
 				r.addValue(value); 
