@@ -117,7 +117,7 @@ public class Update extends BaseStep implements StepInterface
 		debug="setValues()";
 		data.dblup.setValuesLookup(lu);
 		
-		logDebug("Values set for lookup: "+lu.toString());
+		logDebug("Values set for lookup: "+lu.toString()+", input row: "+row);
 		debug="getLookup()";
 		add=data.dblup.getLookup();  // Got back the complete row!
 		linesInput++;
@@ -141,7 +141,7 @@ public class Update extends BaseStep implements StepInterface
 		}
 		else
 		{
-			logRowlevel("Found row: !"+row.toString());
+			logRowlevel("Found row: !"+add.toString());
 			/* Row was found:
 			 *  
 			 * UPDATE row or do nothing?
@@ -246,6 +246,17 @@ public class Update extends BaseStep implements StepInterface
 		meta=(UpdateMeta)smi;
 		data=(UpdateData)sdi;
 		
+        try
+        {
+            data.dbupd.commit();
+            data.dbupd.closeUpdate();
+        }
+        catch(KettleDatabaseException e)
+        {
+            log.logError(toString(), "Unable to commit Update connection ["+data.dbupd+"] :"+e.toString());
+            setErrors(1);
+        }
+        
 		data.dblup.disconnect();
 		data.dbupd.disconnect();
 
