@@ -335,6 +335,11 @@ public class Repository
 	    
 	    int nr = 1;
 	    int offset = 1;
+        
+        if (idx+offset>=stepAttributesBuffer.size())
+        {
+            return 1; // Only 1, the last of the attributes buffer.
+        }
 	    Row look = (Row)stepAttributesBuffer.get(idx+offset);
 	    long lookID = look.getValue(0).getInteger();
 	    String lookCode = look.getValue(1).getString();
