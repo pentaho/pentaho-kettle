@@ -16,6 +16,7 @@
  
 
 package be.ibridge.kettle.core;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
 
@@ -56,7 +57,7 @@ public class WindowProperty
 	
 	public void setShell(Shell shell)
 	{
-		boolean notsized=true;
+		boolean sized=false;
 		
 		shell.setMaximized(maximized);
 		Rectangle r = rectangle;
@@ -65,38 +66,67 @@ public class WindowProperty
 			if (r.x>0 && r.y>0) shell.setSize(r.width, r.height);
 			if (r.width>0 && r.height>0) shell.setLocation(r.x, r.y);
 			
-			notsized=false;
+			sized=true;
 		}
 		
-		if (notsized)
+		if (!sized)
 		{
 			shell.pack();
-			
-			// Sometimes the size of the shell is WAY too great!
-			// What's the maximum size for this window?
-			// Let's say the size of the Display...
-			
-			Rectangle shRect = shell.getBounds();
-			Rectangle diRect = shell.getDisplay().getBounds();
-			
-			boolean resize=false;
-			if (shRect.width>diRect.width)
-			{
-				shRect.width = diRect.width;
-				resize=true;
-			}
-			
-			if (shRect.height > diRect.height)
-			{
-				shRect.height = diRect.height;
-				resize=true;
-			}
-			
-			if (resize)
-			{
-				shell.setSize(shRect.width, shRect.height);
-			}
 		}
+        
+        // Sometimes the size of the shell is WAY too great!
+        // What's the maximum size for this window?
+        // Let's say the size of the Display...
+        
+        Point     shLoc  = shell.getLocation();
+        Rectangle shRect = shell.getBounds();
+        Rectangle diRect = shell.getDisplay().getBounds();
+        
+        boolean resizex=false;
+        boolean resizey=false;
+        if (shRect.width>diRect.width)
+        {
+            shRect.width = diRect.width;
+            resizex=true;
+        }
+        
+        if (shRect.height > diRect.height)
+        {
+            shRect.height = diRect.height;
+            resizey=true;
+        }
+        
+        if (resizex || resizey)
+        {
+            // Make the shell smaller
+            shell.setSize(shRect.width, shRect.height);
+            
+            // re-set the position
+            if (resizex) shLoc.x=0;
+            if (resizey) shLoc.y=0;
+            shell.setLocation(shLoc.x, shLoc.y);
+        }
+
+        // Sometimes it happens that Windows places part of a Window outside the viewing area.
+        // Perhaps we can correct this too?
+        boolean moveLeft=false;
+        boolean moveUp  =false;
+        if (shLoc.x + shRect.width > diRect.width)
+        {
+            shLoc.x = diRect.width - shRect.width - 50; // Move left...
+            if (shLoc.x<0) shLoc.x = 0;
+            moveLeft=true;
+        }
+        if (shLoc.y + shRect.height > diRect.height)
+        {
+            shLoc.y = diRect.height- shRect.height - 50; // Move up...
+            if (shLoc.y<0) shLoc.y = 0;
+            moveUp=true;
+        }
+        if (moveLeft||moveUp)
+        {
+            shell.setLocation(shLoc.x, shLoc.y);
+        }
 	}
 
 	public String getName()
