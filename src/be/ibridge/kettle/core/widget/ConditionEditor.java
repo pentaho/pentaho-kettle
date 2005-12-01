@@ -967,7 +967,7 @@ public class ConditionEditor extends Composite
 			String re = rightex==null?"":rightex;
 			String stype = "";
 			Value v = condition.getRightExact();
-			if (v!=null) stype=" ("+v.getTypeDesc()+")";
+			if (v!=null) stype=" ("+v.getTypeDesc()+")"; // TODO: Bug - [# 1288] Filter: BigNumber maps to String
 			
 			if (condition.getRightValuename()!=null) 
 			{

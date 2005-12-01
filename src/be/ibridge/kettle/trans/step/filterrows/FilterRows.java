@@ -48,7 +48,7 @@ public class FilterRows extends BaseStep implements StepInterface
 	{
 		debug="before evaluate condition";
 		boolean ret=meta.getCondition().evaluate(row);
-		debug="after evaluate condition";
+        debug="after evaluate condition";
 		return ret;
 	}
 	
