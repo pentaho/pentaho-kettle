@@ -1307,7 +1307,7 @@ public class Database
 				else
 				{
 				    debug="insertRow normal commit";
-					commit();
+                    commit();
 				}
 			}
 		}
