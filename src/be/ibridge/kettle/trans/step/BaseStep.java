@@ -330,12 +330,12 @@ public class BaseStep extends Thread
 			"Extra",            // "NullIf"
             "Transform",        // "Calculator"
             "Extra",            // "ExecSQL"
-            "Extra",            // "Mapping"
-            "Extra",            // "MappingInput"
-            "Extra"             // "MappingOutput"
+            "Experimental",     // "Mapping"
+            "Experimental",     // "MappingInput"
+            "Experimental"      // "MappingOutput"
 		};
 
-    public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra" };
+    public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Experimental" };
     
 	private static final int MIN_PRIORITY    =  1;
 	private static final int LOW_PRIORITY    =  3;
