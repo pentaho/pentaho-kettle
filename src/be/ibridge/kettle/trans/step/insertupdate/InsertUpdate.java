@@ -18,6 +18,7 @@ package be.ibridge.kettle.trans.step.insertupdate;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.database.Database;
+import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.value.Value;
@@ -268,6 +269,17 @@ public class InsertUpdate extends BaseStep implements StepInterface
 	    meta = (InsertUpdateMeta)smi;
 	    data = (InsertUpdateData)sdi;
 	
+        try
+        {
+            data.dbupd.commit();  data.dbupd.closeUpdate();
+            data.dbins.commit();  data.dbins.closeInsert();
+        }
+        catch(KettleDatabaseException e)
+        {
+            log.logError(toString(), "Unable to commit connection(s) :"+e.toString());
+            setErrors(1);
+        }
+
 		data.dblup.disconnect();
 		data.dbins.disconnect();
 		data.dbupd.disconnect();
