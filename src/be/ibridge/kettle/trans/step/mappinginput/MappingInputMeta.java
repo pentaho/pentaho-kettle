@@ -26,6 +26,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
@@ -121,7 +122,7 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.fieldType = fieldType;
     }
-
+    
     public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
     {
         readData(stepnode);
@@ -219,6 +220,23 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
             fieldPrecision[i] = -1;
         }
     }
+    
+    public Row getFields(Row row, String name, Row info) throws KettleStepException
+    {
+        for (int i=0;i<fieldName.length;i++)
+        {
+            if (fieldName[i]!=null && fieldName[i].length()!=0)
+            {
+                Value v=new Value(fieldName[i], fieldType[i]);
+                if (v.getType()==Value.VALUE_TYPE_NONE) v.setType(Value.VALUE_TYPE_STRING);
+                v.setLength(fieldLength[i], fieldPrecision[i]);
+                v.setOrigin(name);
+                row.addValue(v);
+            }
+        }
+        return row;
+    }
+    
 
     public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
     {

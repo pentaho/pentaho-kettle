@@ -22,10 +22,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.CheckResult;
-import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -51,9 +51,10 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 {
     private TransMeta mappingTransMeta;
     
+    private String transName;
     private String fileName;
-    private long   transformationID;
-    
+    private String directoryPath;
+
 	public MappingMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -75,8 +76,6 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         this.mappingTransMeta = mappingTransMeta;
     }
 
-
-
     public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
 		throws KettleXMLException
 	{
@@ -88,7 +87,6 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         {
             throw new KettleXMLException("Error loading transformation step from XML", e);
         }
-        
 	}
 
 	public Object clone()
@@ -99,8 +97,9 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 	
 	private void readData(Node stepnode) throws KettleException
 	{
-        transformationID = Const.toLong( XMLHandler.getTagValue(stepnode, "id_transformation"), -1L);
-        fileName         = XMLHandler.getTagValue(stepnode, "filename");
+        transName      = XMLHandler.getTagValue(stepnode, "trans_name");
+        fileName       = XMLHandler.getTagValue(stepnode, "filename");
+        directoryPath  = XMLHandler.getTagValue(stepnode, "directory_path");
         
         loadMappingMeta(null);
 	}
@@ -111,8 +110,15 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         
         if (mappingTransMeta!=null)
         {
-            retval+="    "+XMLHandler.addTagValue("id_transformation", mappingTransMeta.getID());
-            retval+="    "+XMLHandler.addTagValue("filename", mappingTransMeta.getFilename());
+            retval+="    "+XMLHandler.addTagValue("trans_name", mappingTransMeta.getName());
+            if (mappingTransMeta.getDirectory()!=null)
+            {
+                retval+="    "+XMLHandler.addTagValue("directory_path", mappingTransMeta.getDirectory().getPath());
+            }
+            if (mappingTransMeta.getFilename()!=null)
+            {
+                retval+="    "+XMLHandler.addTagValue("filename", mappingTransMeta.getFilename());
+            }
         }
 
         return retval;
@@ -120,19 +126,49 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-        transformationID = -1L;
-        fileName = null;
 	}
+    
+    public Row getFields(Row r, String name, Row info) throws KettleStepException
+    {
+        if (mappingTransMeta!=null)
+        {
+            StepMeta stepMeta = mappingTransMeta.getMappingOutputStep();
+            return stepMeta.getStepMetaInterface().getFields(r, name, info);
+        }
+        else
+        {
+            throw new KettleStepException("Unable to get fields from Mapping: no mapping is selected.");
+        }
+    }
 
-	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
-		throws KettleException
+	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
 	{
-        transformationID = rep.getStepAttributeInteger(id_step, "id_transformation");
+        transName        = rep.getStepAttributeString(id_step, "trans_name");
         fileName         = rep.getStepAttributeString(id_step, "filename");
+        directoryPath    = rep.getStepAttributeString(id_step, "directory_path");
         
         loadMappingMeta(rep);
 	}
     
+    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
+    {
+        if (mappingTransMeta!=null)
+        {
+            if (mappingTransMeta.getFilename()!=null)
+            {
+                rep.saveStepAttribute(id_transformation, id_step, "filename", mappingTransMeta.getFilename());
+            }
+            else
+            {
+                rep.saveStepAttribute(id_transformation, id_step, "trans_name", mappingTransMeta.getName());
+                if (mappingTransMeta.getDirectory()!=null)
+                {
+                    rep.saveStepAttribute(id_transformation, id_step, "directory_path", mappingTransMeta.getDirectory().getPath());
+                }
+            }
+        }
+    }
+
     private void loadMappingMeta(Repository rep) throws KettleException
     {
         // OK, load the meta-data from file...
@@ -141,30 +177,26 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         {
             mappingTransMeta = new TransMeta(fileName);
         }
-        
-        // OK, load the meta-data from the repository...
-        // NOTE: filename is saved, but is useless in this context...
-        if (transformationID>0 && rep!=null)
+        else
         {
-            Row transRow = rep.getTransformation(transformationID);
-            String transName = transRow.getString("NAME", null);
-            long directoryID = transRow.getInteger("ID_DIRECTORY", -1L);
-            RepositoryDirectory repositoryDirectory = rep.getDirectoryTree().findDirectory(directoryID);
-            
-            mappingTransMeta = new TransMeta(rep, transName, repositoryDirectory);
+            // OK, load the meta-data from the repository...
+            // NOTE: filename is saved, but is useless in this context...
+            if (transName!=null && directoryPath!=null && rep!=null)
+            {
+                RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(directoryPath);
+                if (repdir!=null)
+                {
+                    mappingTransMeta = new TransMeta(rep, transName, repdir);
+                }
+                else
+                {
+                    throw new KettleException("Unable to load transformation ["+transName+"] : can't find directory "+directoryPath);
+                }
+            }
         }
     }
 	
-	public void saveRep(Repository rep, long id_transformation, long id_step)
-		throws KettleException
-	{
-        if (mappingTransMeta!=null)
-        {
-            rep.saveStepAttribute(id_transformation, id_step, "id_transformation", mappingTransMeta.getID());
-            rep.saveStepAttribute(id_transformation, id_step, "filename", mappingTransMeta.getFilename());
-        }
-	}
-	
+
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
 	{
 		CheckResult cr;

@@ -85,7 +85,7 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Dummy Transformation");
+		shell.setText("Mapping Input Specification");
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -111,7 +111,7 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		
         
         wlFields=new Label(shell, SWT.NONE);
-        wlFields.setText("Fields :");
+        wlFields.setText("The required input fields for this mapping (sub-transformation) :");
         props.setLook(wlFields);
         fdlFields=new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -181,11 +181,11 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		return stepname;
 	}
 	
-	/**
-	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
-	public void getData()
-	{
+    /**
+     * Copy information from the meta-data input to the dialog fields.
+     */
+    public void getData()
+    {
         for (int i=0;i<input.getFieldName().length;i++)
         {
             if (input.getFieldName()[i]!=null)
@@ -193,19 +193,19 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
                 TableItem item = wFields.table.getItem(i);
                 item.setText(1, input.getFieldName()[i]);
                 String type   = Value.getTypeDesc(input.getFieldType()[i]);
-                String length = ""+input.getFieldLength()[i];
-                String prec   = ""+input.getFieldPrecision()[i];
-                if (type  !=null) item.setText(2, type  ); else item.setText(2, "");
-                if (length!=null) item.setText(3, length); else item.setText(3, "");
-                if (prec  !=null) item.setText(4, prec  ); else item.setText(4, "");
+                int length    = input.getFieldLength()[i];
+                int prec      = input.getFieldPrecision()[i];
+                if (type  !=null) item.setText(2, type  );
+                if (length>=0   ) item.setText(3, ""+length);
+                if (prec>=0     ) item.setText(4, ""+prec  );
             }
         }
         
         wFields.setRowNums();
         wFields.optWidth(true);
         
-		wStepname.selectAll();
-	}
+        wStepname.selectAll();
+    }
 	
 	private void cancel()
 	{

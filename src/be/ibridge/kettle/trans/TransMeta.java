@@ -4147,4 +4147,16 @@ public class TransMeta implements XMLInterface
                 
         return args;
     }
+    
+    public StepMeta getMappingOutputStep()
+    {
+        for (int i=0;i<nrSteps();i++)
+        {
+            if (getStep(i).getStepID().equalsIgnoreCase("MappingOutput"))
+            {
+                return getStep(i);
+            }
+        }
+        return null;
+    }
 }
