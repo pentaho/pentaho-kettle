@@ -126,10 +126,10 @@
 	  		/>
 	  </target>
 	  	
+	  <!-- Make the kettle.jar file available on javaForge -->
 	  <target name="kettle_javaforge" depends="kettle" description="make the kettle.jar archive available on Javaforge">
 		<echo>Putting kettle.jar on javaforge...</echo>
 		
-		  <!-- Make the kettle.jar file available on javaForge -->
 		  <CBRelease 
 		 	file="${lib}/kettle.jar" 
 		    description="kettle base library" 
@@ -204,13 +204,17 @@
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
 	  		/>
-	  	
-		  <!-- Make the kettle.zip file available on javaForge -->
+	  </target>
+
+	  <!-- Make the kettle.zip file available on javaForge -->
+	  <target name="zip_javaforge" depends="zip" description="Put the Kettle zip file on javaforge">
+	  	<echo>Putting the kettle distribution on javaforge...</echo>
 		 <CBRelease file="Kettle-${version}.zip" 
 		 		    description="This zip file contains the binaries to run Kettle (Spoon, Chef) on all platforms" 
 		 	 		keywords="Kettle, binary, Spoon, Chef" 
 		 		    comments="Also contains JDBC drivers, libs etc which explains the large size"
 		 />
+
 	  </target>
 
 	<!--
