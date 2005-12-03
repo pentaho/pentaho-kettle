@@ -91,7 +91,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Dummy Transformation");
+		shell.setText("Mapping (excute sub-transformation)");
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
