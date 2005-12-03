@@ -8,6 +8,7 @@
 
 	  <!-- system properties to use -->
 	  <property name="cr" value="${line.separator}"/> 
+	  <property name="version" value="2.2.0"/>      
 		
 	  <!-- set global properties for this build -->
 	
@@ -123,15 +124,20 @@
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
 	  		/>
-	  	
-		  <!-- Make the kettle.jar file available on javaForge -->
-		 <CBRelease 
-		 	file="${lib}/kettle.jar" 
- 		    description="kettle base library" 
- 	 		keywords="Kettle, library, Spoon, Chef" 
- 		    comments="Can be used to program Kettle meta-data or update you Kettle distribution package"
-		 />
 	  </target>
+	  	
+	  <target name="kettle_javaforge" depends="kettle" description="make the kettle.jar archive available on Javaforge">
+		<echo>Putting kettle.jar on javaforge...</echo>
+		
+		  <!-- Make the kettle.jar file available on javaForge -->
+		  <CBRelease 
+		 	file="${lib}/kettle.jar" 
+		    description="kettle base library" 
+			keywords="Kettle, library, Spoon, Chef" 
+		    comments="Can be used to program Kettle meta-data or update you Kettle distribution package"
+		  />
+	  </target>
+
 	
 	
 	<!--
@@ -193,14 +199,14 @@
 		
 	  <target name="zip" depends="distrib" description="generate the kettle.zip file">
 	  	<echo>Generating the Kettle distribution package kettle.zip ...</echo>
-	  	<jar jarfile="kettle.zip" 
+	  	<jar jarfile="Kettle-${version}.zip" 
 	    	 basedir="${distrib}" 
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
 	  		/>
 	  	
 		  <!-- Make the kettle.zip file available on javaForge -->
-		 <CBRelease file="kettle.zip" 
+		 <CBRelease file="Kettle-${version}.zip" 
 		 		    description="This zip file contains the binaries to run Kettle (Spoon, Chef) on all platforms" 
 		 	 		keywords="Kettle, binary, Spoon, Chef" 
 		 		    comments="Also contains JDBC drivers, libs etc which explains the large size"
