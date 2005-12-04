@@ -256,7 +256,19 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
                 
                 if (fieldAdded[i])
                 {
-                    r.addValue(v);
+                    // Before adding, see it it's not already there...
+                    //
+                    int idx = r.searchValueIndex(fieldName[i]);
+                    if (idx>=0)
+                    {
+                        // Replace this version
+                        r.setValue(idx, v);
+                    }
+                    else
+                    {
+                        // Just add it!
+                        r.addValue(v);
+                    }
                 }
                 else
                 {

@@ -54,6 +54,12 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     private String transName;
     private String fileName;
     private String directoryPath;
+    
+    // Also specify the required fields: tell which fields to use: make the mapping REALLY generic
+    private String inputField[];
+    private String mappingField[];
+    private String outputField[];
+    private String outputRename[];
 
 	public MappingMeta()
 	{
@@ -74,6 +80,70 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     public void setMappingTransMeta(TransMeta mappingTransMeta)
     {
         this.mappingTransMeta = mappingTransMeta;
+    }
+
+    /**
+     * @return Returns the inputField.
+     */
+    public String[] getInputField()
+    {
+        return inputField;
+    }
+
+    /**
+     * @param inputField The inputField to set.
+     */
+    public void setInputField(String[] inputField)
+    {
+        this.inputField = inputField;
+    }
+
+    /**
+     * @return Returns the mappingField.
+     */
+    public String[] getMappingField()
+    {
+        return mappingField;
+    }
+
+    /**
+     * @param mappingField The mappingField to set.
+     */
+    public void setMappingField(String[] mappingField)
+    {
+        this.mappingField = mappingField;
+    }
+
+    /**
+     * @return Returns the outputField.
+     */
+    public String[] getOutputField()
+    {
+        return outputField;
+    }
+
+    /**
+     * @param outputField The outputField to set.
+     */
+    public void setOutputField(String[] outputField)
+    {
+        this.outputField = outputField;
+    }
+
+    /**
+     * @return Returns the outputRename.
+     */
+    public String[] getOutputRename()
+    {
+        return outputRename;
+    }
+
+    /**
+     * @param outputRename The outputRename to set.
+     */
+    public void setOutputRename(String[] outputRename)
+    {
+        this.outputRename = outputRename;
     }
 
     public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
@@ -101,6 +171,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         fileName       = XMLHandler.getTagValue(stepnode, "filename");
         directoryPath  = XMLHandler.getTagValue(stepnode, "directory_path");
         
+        // TODO: add code for mapping translation
         loadMappingMeta(null);
 	}
     
@@ -120,6 +191,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
                 retval+="    "+XMLHandler.addTagValue("filename", mappingTransMeta.getFilename());
             }
         }
+        
+        // TODO: add code for mapping translation
 
         return retval;
     }
@@ -134,6 +207,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         {
             StepMeta stepMeta = mappingTransMeta.getMappingOutputStep();
             return stepMeta.getStepMetaInterface().getFields(r, name, info);
+            
+            // TODO: add code for mapping translation
         }
         else
         {
@@ -147,6 +222,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         fileName         = rep.getStepAttributeString(id_step, "filename");
         directoryPath    = rep.getStepAttributeString(id_step, "directory_path");
         
+        // TODO: add code for mapping translation
+
         loadMappingMeta(rep);
 	}
     
@@ -167,6 +244,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
                 }
             }
         }
+        
+        // TODO: add code for mapping translation
     }
 
     private void loadMappingMeta(Repository rep) throws KettleException
@@ -234,6 +313,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepinfo);
 			remarks.add(cr);
 		}
+        
+        // TODO: add code for mapping translation, verify correctness.
 	}
 	
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
