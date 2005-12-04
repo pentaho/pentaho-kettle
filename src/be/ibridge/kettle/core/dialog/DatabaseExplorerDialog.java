@@ -346,12 +346,13 @@ public class DatabaseExplorerDialog extends Dialog
 				
 			// Make sure the selected table is shown...
 			// System.out.println("Selecting table "+k);
-			if (selectTable!=null)
+			if (selectTable!=null && selectTable.length()>0)
 			{
-				TreeItem ti = Const.findTreeItem(tiTab,  selectTable);
-				if (ti==null) Const.findTreeItem(tiView, selectTable);
-				if (ti==null) Const.findTreeItem(tiTree, selectTable);
-				if (ti==null) Const.findTreeItem(tiSyn,  selectTable);
+				TreeItem ti = null;
+                if (ti==null && tiTab!=null) Const.findTreeItem(tiTab,  selectTable);
+				if (ti==null && tiView!=null) Const.findTreeItem(tiView, selectTable);
+				if (ti==null && tiTree!=null) Const.findTreeItem(tiTree, selectTable);
+				if (ti==null && tiSyn!=null) Const.findTreeItem(tiSyn,  selectTable);
 				
 				if (ti!=null)
 				{
