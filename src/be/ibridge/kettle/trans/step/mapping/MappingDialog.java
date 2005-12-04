@@ -36,17 +36,23 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.repository.dialog.SelectObjectDialog;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.StepMeta;
+import be.ibridge.kettle.trans.step.mappinginput.MappingInputMeta;
+import be.ibridge.kettle.trans.step.mappingoutput.MappingOutputMeta;
 
 
 public class MappingDialog extends BaseStepDialog implements StepDialogInterface
@@ -56,11 +62,22 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     private Label wlTransformation;
     private FormData fdlTransformation, fdTransformation;
     private Text wTransformation;
-
     private Button wbTransformation;
-
     private FormData fdbTransformation;
 
+    
+    private TableView    wInputFields;
+    private FormData     fdInputFields;
+
+    private Button       wbInput;
+    private FormData     fdbInput;
+
+    private TableView    wOutputFields;
+    private FormData     fdOutputFields;
+    
+    private Button       wbOutput;
+    private FormData     fdbOutput;
+    
     TransMeta mappingTransMeta = null;
     
 	public MappingDialog(Shell parent, Object in, TransMeta tr, String sname)
@@ -178,13 +195,93 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             }
         );
 		
+        /*
+         * INPUT MAPPING CONNECTORS
+         */
+        
+        ColumnInfo[] colinfo=new ColumnInfo[]
+        {
+            new ColumnInfo("Input Field",    ColumnInfo.COLUMN_TYPE_TEXT,    "", false ),
+            new ColumnInfo("Input Mapping",  ColumnInfo.COLUMN_TYPE_TEXT,    "", false )
+        };
+        colinfo[ 1].setToolTip("Enter a regular expression here and a directory in the first column.");
+        
+        wInputFields = new TableView(shell, 
+                              SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
+                              colinfo, 
+                              input.getInputField()!=null?input.getInputField().length:1,  
+                              lsMod,
+                              props
+                              );
+        props.setLook(wInputFields);
+        fdInputFields=new FormData();
+        fdInputFields.left   = new FormAttachment(0, 0);
+        fdInputFields.right  = new FormAttachment(50, -margin);
+        fdInputFields.top    = new FormAttachment(wbTransformation, margin);
+        fdInputFields.bottom = new FormAttachment(100, -75);
+        wInputFields.setLayoutData(fdInputFields);
+        
+        wbInput = new Button(shell, SWT.PUSH);
+        wbInput.setText("Get from mapping");
+        fdbInput=new FormData();
+        fdbInput.left   = new FormAttachment(0, 0);
+        fdbInput.right  = new FormAttachment(50, -margin);
+        fdbInput.top    = new FormAttachment(wInputFields, margin);
+        wbInput.setLayoutData(fdbInput);
+        wbInput.addSelectionListener(new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent e)
+                {
+                    getInput();
+                }            
+            }
+        );
+       
+
+        /*
+         * OUTPUT MAPPING CONNECTORS
+         */
+        
+        ColumnInfo[] colinfoOutput = new ColumnInfo[] 
+        { 
+            new ColumnInfo("Output Mapping", ColumnInfo.COLUMN_TYPE_TEXT, "", false),
+            new ColumnInfo("Output Field",   ColumnInfo.COLUMN_TYPE_TEXT, "", false) 
+        };
+
+        wOutputFields = new TableView(shell, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfoOutput, input.getOutputField() != null ? input
+                .getOutputField().length : 1, lsMod, props);
+        props.setLook(wOutputFields);
+        fdOutputFields = new FormData();
+        fdOutputFields.left = new FormAttachment(50, 0);
+        fdOutputFields.right = new FormAttachment(100, 0);
+        fdOutputFields.top = new FormAttachment(wbTransformation, margin);
+        fdOutputFields.bottom = new FormAttachment(100, -75);
+        wOutputFields.setLayoutData(fdOutputFields);
+
+        wbOutput = new Button(shell, SWT.PUSH);
+        wbOutput.setText("Get from mapping");
+        fdbOutput=new FormData();
+        fdbOutput.left   = new FormAttachment(50, 0);
+        fdbOutput.right  = new FormAttachment(100, 0);
+        fdbOutput.top    = new FormAttachment(wOutputFields, margin);
+        wbOutput.setLayoutData(fdbOutput);
+        wbOutput.addSelectionListener(new SelectionAdapter()
+                {
+                    public void widgetSelected(SelectionEvent e)
+                    {
+                        getOutput();
+                    }            
+                }
+            );
+
+
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText("  &OK  ");
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText("  &Cancel  ");
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTransformation);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, wbInput);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -214,7 +311,56 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		return stepname;
 	}
 	
-	/**
+    private void getInput()
+    {
+        // Get the fields from the mapping...
+        if (mappingTransMeta!=null)
+        {
+            StepMeta inputStepMeta  = mappingTransMeta.getMappingInputStep();
+            
+            if (inputStepMeta!=null)
+            {
+                MappingInputMeta mappingInputMeta = (MappingInputMeta) inputStepMeta.getStepMetaInterface();
+                for (int i=0;i<mappingInputMeta.getFieldName().length;i++)
+                {
+                    TableItem item = new TableItem(wInputFields.table, SWT.NONE);
+                    item.setText(2, mappingInputMeta.getFieldName()[i]);
+                }
+            }
+            
+            wInputFields.removeEmptyRows();
+            wInputFields.setRowNums();
+            wInputFields.optWidth(true);
+        }
+    }
+
+    private void getOutput()
+    {
+        // Get the fields from the mapping...
+        if (mappingTransMeta!=null)
+        {
+            StepMeta outputStepMeta  = mappingTransMeta.getMappingOutputStep();
+            
+            if (outputStepMeta!=null)
+            {
+                MappingOutputMeta mappingOutputMeta = (MappingOutputMeta) outputStepMeta.getStepMetaInterface();
+                for (int i=0;i<mappingOutputMeta.getFieldName().length;i++)
+                {
+                    if (mappingOutputMeta.getFieldAdded()[i]) // We can only map added fields!
+                    {
+                        TableItem item = new TableItem(wOutputFields.table, SWT.NONE);
+                        item.setText(1, mappingOutputMeta.getFieldName()[i]);
+                    }
+                }
+            }
+            
+            wOutputFields.removeEmptyRows();
+            wOutputFields.setRowNums();
+            wOutputFields.optWidth(true);
+        }
+    }
+
+    /**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
 	public void getData()
@@ -225,6 +371,28 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         {
             updateTransformationPath(mappingTransMeta);
         }
+        
+        for (int i=0;i<input.getInputField().length;i++)
+        {
+            TableItem item = new TableItem(wInputFields.table, SWT.NONE);
+            if (input.getInputField()[i]!=null) item.setText(1, input.getInputField()[i]);
+            if (input.getInputMapping()[i]!=null) item.setText(2, input.getInputMapping()[i]);
+        }
+        
+        for (int i=0;i<input.getOutputField().length;i++)
+        {
+            TableItem item = new TableItem(wOutputFields.table, SWT.NONE);
+            if (input.getOutputMapping()[i]!=null) item.setText(1, input.getOutputMapping()[i]);
+            if (input.getOutputField()[i]!=null) item.setText(2, input.getOutputField()[i]);
+        }
+
+        wInputFields.removeEmptyRows();
+        wInputFields.setRowNums();
+        wInputFields.optWidth(true);
+
+        wOutputFields.removeEmptyRows();
+        wOutputFields.setRowNums();
+        wOutputFields.optWidth(true);
 	}
     
     private void updateTransformationPath(TransMeta tm )
@@ -263,6 +431,25 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		
         input.setMappingTransMeta(mappingTransMeta);
         
+        int nrInput  = wInputFields.nrNonEmpty();
+        int nrOutput = wOutputFields.nrNonEmpty();
+        
+        input.allocate(nrInput, nrOutput);
+        
+        for (int i=0;i<nrInput;i++)
+        {
+            TableItem item = wInputFields.getNonEmpty(i);
+            input.getInputField()[i] = item.getText(1);
+            input.getInputMapping()[i] = item.getText(2);
+        }
+
+        for (int i=0;i<nrOutput;i++)
+        {
+            TableItem item = wOutputFields.getNonEmpty(i);
+            input.getOutputMapping()[i] = item.getText(1);
+            input.getOutputField()[i] = item.getText(2);
+        }
+
 		dispose();
 	}
 }

@@ -18,6 +18,8 @@ package be.ibridge.kettle.trans.step.mappingoutput;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleStepException;
+import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -39,6 +41,7 @@ public class MappingOutput extends BaseStep implements StepInterface
 {
 	private MappingOutputMeta meta;
 	private MappingOutputData data;
+
 
 	public MappingOutput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
@@ -71,6 +74,27 @@ public class MappingOutput extends BaseStep implements StepInterface
                 try { Thread.sleep(10); } catch(InterruptedException e) { stopAll(); }
             }
         }
+        
+        System.out.println("r = "+r);
+
+        // Change the output fields that are specified...
+        // TODO: use indexes to speed up the lookups, no time for this at the moment...
+        for (int i=0;i<data.outputMapping.length;i++)
+        {
+            Value v = r.searchValue(data.outputMapping[i]);
+            if (v!=null)
+            {
+                v.setName(data.outputField[i]);
+            }
+            else
+            {
+                throw new KettleStepException("Mapping output field specified couldn't be found: "+data.outputMapping[i]);
+            }
+        }
+        
+
+        
+        
 		data.mapping.putRow(r);     // copy row to possible alternate rowset(s).
 
 		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesRead);
@@ -118,5 +142,17 @@ public class MappingOutput extends BaseStep implements StepInterface
     public synchronized void setConnectorStep(Mapping mapping)
     {
         data.mapping = mapping;
+    }
+
+    public void setOutputField(String[] outputField)
+    {
+        data.outputField = outputField;
+        
+    }
+
+    public void setOutputMapping(String[] outputMapping)
+    {
+        data.outputMapping = outputMapping;
+        
     }
 }

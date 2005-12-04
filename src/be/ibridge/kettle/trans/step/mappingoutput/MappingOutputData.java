@@ -29,7 +29,9 @@ public class MappingOutputData extends BaseStepData implements StepDataInterface
 {
 
 	public Mapping mapping;
-
+    public String[] outputField;
+    public String[] outputMapping;
+    
     /**
 	 * 
 	 */

@@ -22,11 +22,13 @@ import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.CheckResult;
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.trans.Trans;
@@ -57,9 +59,9 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     
     // Also specify the required fields: tell which fields to use: make the mapping REALLY generic
     private String inputField[];
-    private String mappingField[];
+    private String inputMapping[];
     private String outputField[];
-    private String outputRename[];
+    private String outputMapping[];
 
 	public MappingMeta()
 	{
@@ -101,17 +103,17 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @return Returns the mappingField.
      */
-    public String[] getMappingField()
+    public String[] getInputMapping()
     {
-        return mappingField;
+        return inputMapping;
     }
 
     /**
      * @param mappingField The mappingField to set.
      */
-    public void setMappingField(String[] mappingField)
+    public void setInputMapping(String[] mappingField)
     {
-        this.mappingField = mappingField;
+        this.inputMapping = mappingField;
     }
 
     /**
@@ -133,17 +135,17 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @return Returns the outputRename.
      */
-    public String[] getOutputRename()
+    public String[] getOutputMapping()
     {
-        return outputRename;
+        return outputMapping;
     }
 
     /**
      * @param outputRename The outputRename to set.
      */
-    public void setOutputRename(String[] outputRename)
+    public void setOutputMapping(String[] outputRename)
     {
-        this.outputRename = outputRename;
+        this.outputMapping = outputRename;
     }
 
     public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
@@ -171,10 +173,39 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         fileName       = XMLHandler.getTagValue(stepnode, "filename");
         directoryPath  = XMLHandler.getTagValue(stepnode, "directory_path");
         
-        // TODO: add code for mapping translation
+        Node inputNode  = XMLHandler.getSubNode(stepnode, "input");
+        Node outputNode = XMLHandler.getSubNode(stepnode, "output");
+
+        int nrInput  = XMLHandler.countNodes(inputNode, "field");
+        int nrOutput = XMLHandler.countNodes(outputNode, "field");
+
+        allocate(nrInput, nrOutput);
+        
+        for (int i=0;i<nrInput;i++)
+        {
+            Node inputConnector = XMLHandler.getSubNodeByNr(inputNode, "connector", i);
+            inputField[i]   = XMLHandler.getTagValue(inputConnector, "field");
+            inputMapping[i] = XMLHandler.getTagValue(inputConnector, "mapping");
+        }
+        
+        for (int i=0;i<nrOutput;i++)
+        {
+            Node outputConnector = XMLHandler.getSubNodeByNr(outputNode, "connector", i);
+            outputField[i]   = XMLHandler.getTagValue(outputConnector, "field");
+            outputMapping[i] = XMLHandler.getTagValue(outputConnector, "mapping");
+        }
+        
         loadMappingMeta(null);
 	}
     
+    public void allocate(int nrInput, int nrOutput)
+    {
+        inputField   = new String[nrInput];
+        inputMapping = new String[nrInput];
+        outputField  = new String[nrOutput];
+        outputMapping = new String[nrOutput];
+    }
+
     public String getXML()
     {
         String retval="";
@@ -192,8 +223,20 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             }
         }
         
-        // TODO: add code for mapping translation
-
+        retval+="  <input>"+Const.CR;
+        for (int i=0;i<inputField.length;i++)
+        {
+            retval+="    <connector>"+XMLHandler.addTagValue("field", inputField[i], false)+"  "+XMLHandler.addTagValue("mapping", inputMapping[i], false)+"</connector>"+Const.CR;
+        }
+        retval+="    </input>"+Const.CR;
+        
+        retval+="  <output>"+Const.CR;
+        for (int i=0;i<inputField.length;i++)
+        {
+            retval+="    <connector>"+XMLHandler.addTagValue("field", outputField[i], false)+"  "+XMLHandler.addTagValue("mapping", outputMapping[i], false)+"</connector>"+Const.CR;
+        }
+        retval+="    </output>"+Const.CR;
+        
         return retval;
     }
 
@@ -206,9 +249,25 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         if (mappingTransMeta!=null)
         {
             StepMeta stepMeta = mappingTransMeta.getMappingOutputStep();
-            return stepMeta.getStepMetaInterface().getFields(r, name, info);
             
-            // TODO: add code for mapping translation
+            stepMeta.getStepMetaInterface().getFields(r, name, info);
+
+            // Change the output fields that are specified...
+            for (int i=0;i<outputMapping.length;i++)
+            {
+                Value v = r.searchValue(outputMapping[i]);
+                if (v!=null)
+                {
+                    v.setName(outputField[i]);
+                    v.setOrigin(name);
+                }
+                else
+                {
+                    throw new KettleStepException("Mapping output field specified couldn't be found: "+outputMapping[i]);
+                }
+            }
+            
+            return r;
         }
         else
         {
@@ -222,7 +281,22 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         fileName         = rep.getStepAttributeString(id_step, "filename");
         directoryPath    = rep.getStepAttributeString(id_step, "directory_path");
         
-        // TODO: add code for mapping translation
+        int nrInput  = rep.countNrStepAttributes(id_step, "input_field");
+        int nrOutput = rep.countNrStepAttributes(id_step, "output_field");
+
+        allocate(nrInput, nrOutput);
+        
+        for (int i=0;i<nrInput;i++)
+        {
+            inputField[i]   = rep.getStepAttributeString(id_step, i, "input_field");
+            inputMapping[i] = rep.getStepAttributeString(id_step, i, "input_mapping");
+        }
+
+        for (int i=0;i<nrOutput;i++)
+        {
+            outputField[i]   = rep.getStepAttributeString(id_step, i, "output_field");
+            outputMapping[i] = rep.getStepAttributeString(id_step, i, "output_mapping");
+        }
 
         loadMappingMeta(rep);
 	}
@@ -245,7 +319,17 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             }
         }
         
-        // TODO: add code for mapping translation
+        for (int i=0;i<inputField.length;i++)
+        {
+            rep.saveStepAttribute(id_transformation, id_step, i, "input_field",   inputField[i]);
+            rep.saveStepAttribute(id_transformation, id_step, i, "input_mapping", inputMapping[i]);
+        }
+        
+        for (int i=0;i<outputField.length;i++)
+        {
+            rep.saveStepAttribute(id_transformation, id_step, i, "output_field",   outputField[i]);
+            rep.saveStepAttribute(id_transformation, id_step, i, "output_mapping", outputMapping[i]);
+        }
     }
 
     private void loadMappingMeta(Repository rep) throws KettleException

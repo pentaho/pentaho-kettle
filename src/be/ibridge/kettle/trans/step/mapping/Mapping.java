@@ -19,6 +19,8 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleStepException;
+import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -73,6 +75,7 @@ public class Mapping extends BaseStep implements StepInterface
         // We do this by looking up the MappingInput step in the transformation.
         // We give the row to this step ...
         //
+        
         data.mappingInput.putRow(r);     // copy row to possible alternate rowset(s) in the mapping.
         
         if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesRead);
@@ -125,6 +128,8 @@ public class Mapping extends BaseStep implements StepInterface
                 
                 // OK, now tell the MappingOutput step to send records over here!!
                 data.mappingOutput.setConnectorStep(this);
+                data.mappingOutput.setOutputField(meta.getOutputField());
+                data.mappingOutput.setOutputMapping(meta.getOutputMapping());
             }
             
 		    return true;
