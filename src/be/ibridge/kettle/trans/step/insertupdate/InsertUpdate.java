@@ -271,8 +271,10 @@ public class InsertUpdate extends BaseStep implements StepInterface
 	
         try
         {
-            data.dbupd.commit();  data.dbupd.closeUpdate();
-            data.dbins.commit();  data.dbins.closeInsert();
+            if (!data.dbupd.isAutoCommit()) data.dbupd.commit();  
+            data.dbupd.closeUpdate();
+            if (!data.dbins.isAutoCommit()) data.dbins.commit();  
+            data.dbins.closeInsert();
         }
         catch(KettleDatabaseException e)
         {

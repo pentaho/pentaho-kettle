@@ -248,7 +248,7 @@ public class Update extends BaseStep implements StepInterface
 		
         try
         {
-            data.dbupd.commit();
+            if (!data.dbupd.isAutoCommit()) data.dbupd.commit();
             data.dbupd.closeUpdate();
         }
         catch(KettleDatabaseException e)
