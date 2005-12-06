@@ -51,7 +51,8 @@
 	  <target name="compile" depends="init" description="compile the source " >
 	  	<echo>Compiling Kettle...</echo>
 	    <javac srcdir="${src}" 
-	    	   destdir="${classes}">
+	    	   destdir="${classes}"
+	    	   target="1.4">
 
 	    	<classpath id="cp-kettle">
 				<fileset dir="${libext}" 		includes="*.jar"/>
@@ -342,7 +343,4 @@
 
 	  <target name="clean" depends="cleandirs"/>
 
-	  <target name="matt">
-    	<echo>This is the test target MATT</echo>
-	  </target>
 </project>
