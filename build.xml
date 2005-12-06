@@ -52,7 +52,8 @@
 	  	<echo>Compiling Kettle...</echo>
 	    <javac srcdir="${src}" 
 	    	   destdir="${classes}"
-	    	   target="1.4">
+	    	   target="1.4"
+	    	   source="1.4">
 
 	    	<classpath id="cp-kettle">
 				<fileset dir="${libext}" 		includes="*.jar"/>
