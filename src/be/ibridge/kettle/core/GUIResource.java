@@ -52,10 +52,8 @@ public class GUIResource
     /* * * Fonts * * */
     private Font fontGraph;
     private Font fontNote;
-    private Font fontDemo;
-    private Font fontDemoSmall;
-    private Font fontGrid;
-    private Font fontDefault;
+    // private Font fontGrid;
+    // private Font fontDefault;
     private Font fontFixed;
 
     /* * * Images * * */
@@ -125,12 +123,9 @@ public class GUIResource
         
         if (props.getGraphFont()   != null) fontGraph   = new Font(display, props.getGraphFont());
         if (props.getNoteFont()    != null) fontNote    = new Font(display, props.getNoteFont());
-        if (props.getGridFont()    != null) fontGrid    = new Font(display, props.getGridFont());
-        if (props.getDefaultFont() != null) fontDefault = new Font(display, props.getDefaultFont());
+        // if (props.getGridFont()    != null) fontGrid    = new Font(display, props.getGridFont());
+        // if (props.getDefaultFont() != null) fontDefault = new Font(display, props.getDefaultFont());
         if (props.getFixedFont()   != null) fontFixed   = new Font(display, props.getFixedFont());
-        
-        fontDemo        = new Font(display, "Arial", 48, SWT.BOLD | SWT.ITALIC);
-        fontDemoSmall   = new Font(display, "Arial", 12, SWT.BOLD);
         
         // Load all images from files...
         if (!reload) loadStepImages();
@@ -163,12 +158,9 @@ public class GUIResource
         
         if (fontGraph  !=null) fontGraph  .dispose();
         if (fontNote   !=null) fontNote   .dispose();
-        if (fontGrid   !=null) fontGrid   .dispose();
-        if (fontDefault!=null) fontDefault.dispose();
+        // if (fontGrid   !=null) fontGrid   .dispose();
+        // if (fontDefault!=null) fontDefault.dispose();
         if (fontFixed  !=null) fontFixed  .dispose();
-        
-        fontDemo     .dispose();
-        fontDemoSmall.dispose();
         
         // Images
         /*
@@ -423,31 +415,17 @@ public class GUIResource
         return display;
     }
 
-    /**
+    
+    /*
      * @return Returns the fontDefault.
-     */
+     *
     public Font getFontDefault()
     {
         if (fontDefault==null) return display.getSystemFont();
         return fontDefault;
     }
-
-    /**
-     * @return Returns the fontDemo.
-     */
-    public Font getFontDemo()
-    {
-        return fontDemo;
-    }
-
-    /**
-     * @return Returns the fontDemoSmall.
-     */
-    public Font getFontDemoSmall()
-    {
-        return fontDemoSmall;
-    }
-
+    */
+    
     /**
      * @return Returns the fontFixed.
      */
@@ -466,14 +444,15 @@ public class GUIResource
         return fontGraph;
     }
 
-    /**
+    /*
      * @return Returns the fontGrid.
-     */
+     *
     public Font getFontGrid()
     {
         if (fontGrid==null) return display.getSystemFont();
         return fontGrid;
     }
+    */
 
     /**
      * @return Returns the fontNote.

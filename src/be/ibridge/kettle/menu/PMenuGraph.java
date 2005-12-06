@@ -1020,8 +1020,6 @@ public class PMenuGraph extends Canvas
 	{
 		int i, j, h;
 
-		drawDemo(gc);
-
 		gc.setFont(GUIResource.getInstance().getFontGraph());
 		gc.setBackground(GUIResource.getInstance().getColorBackground());
 
@@ -1074,28 +1072,6 @@ public class PMenuGraph extends Canvas
 	private void drawRelationship(GC gc, RelationshipMeta hi)
 	{
 		drawRelationship(gc, hi, false);
-	}
-
-	private void drawDemo(GC gc)
-	{
-		if (spoon.demo_mode)
-		{
-			gc.setFont(GUIResource.getInstance().getFontDemo());
-			for (int i = 0; i < 8; i++)
-			{
-				gc.setForeground(GUIResource.getInstance().getColorLightGray());
-				gc.drawText("Demo mode", i * 25, i * 100, true);
-				gc.setForeground(GUIResource.getInstance().getColorGray());
-				gc.drawText("Demo mode", i * 25 + 25, i * 100 + 25, true);
-			}
-
-			gc.setFont(GUIResource.getInstance().getFontDemoSmall());
-			gc.setForeground(GUIResource.getInstance().getColorGray());
-			for (int i = 0; i < 8; i++)
-			{
-				gc.drawText("This software is unlicenced", i * 25 + 25, i * 100 + 100, true);
-			}
-		}
 	}
 
 	private void drawNote(GC gc, NotePadMeta ni)

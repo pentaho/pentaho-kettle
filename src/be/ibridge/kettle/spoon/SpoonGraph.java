@@ -1645,8 +1645,6 @@ public class SpoonGraph extends Canvas
         
         shadowsize = spoon.props.getShadowSize();
 
-        drawDemo(gc);
-
         Point area = getArea();
         Point max = spoon.transMeta.getMaximum();
         Point thumb = getThumb(area, max);
@@ -1707,28 +1705,6 @@ public class SpoonGraph extends Canvas
     private void drawHop(GC gc, TransHopMeta hi)
     {
         drawHop(gc, hi, false);
-    }
-
-    private void drawDemo(GC gc)
-    {
-        if (spoon.demo_mode)
-        {
-            gc.setFont(GUIResource.getInstance().getFontDemo());
-            for (int i = 0; i < 8; i++)
-            {
-                gc.setForeground(GUIResource.getInstance().getColorDemoGray());
-                gc.drawText("Demo mode", i * 25, i * 100, true);
-                gc.setForeground(GUIResource.getInstance().getColorLightGray());
-                gc.drawText("Demo mode", i * 25 + 25, i * 100 + 25, true);
-            }
-
-            gc.setFont(GUIResource.getInstance().getFontDemoSmall());
-            gc.setForeground(GUIResource.getInstance().getColorLightGray());
-            for (int i = 0; i < 8; i++)
-            {
-                gc.drawText("This software is unlicensed", i * 25 + 25, i * 100 + 100, true);
-            }
-        }
     }
 
     private void drawNote(GC gc, NotePadMeta ni)

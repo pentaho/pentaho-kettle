@@ -1200,7 +1200,7 @@ public class Props implements Cloneable
         {
         case WIDGET_STYLE_DEFAULT :
             background = GUIResource.getInstance().getColorBackground(); 
-            font       = GUIResource.getInstance().getFontDefault();
+            font       = null; // GUIResource.getInstance().getFontDefault();
             break;
         case WIDGET_STYLE_FIXED   : 
             background = GUIResource.getInstance().getColorBackground(); 
@@ -1208,7 +1208,7 @@ public class Props implements Cloneable
             break;
         case WIDGET_STYLE_TABLE   : 
             background = GUIResource.getInstance().getColorBackground(); 
-            font       = GUIResource.getInstance().getFontGrid();
+            font       = null; // GUIResource.getInstance().getFontGrid();
             break;
         case WIDGET_STYLE_NOTEPAD : 
             background = GUIResource.getInstance().getColorBackground(); 
@@ -1228,7 +1228,7 @@ public class Props implements Cloneable
             break;
         default                   : 
             background = GUIResource.getInstance().getColorBackground(); 
-            font       = GUIResource.getInstance().getFontDefault();
+            font       = null; // GUIResource.getInstance().getFontDefault();
             break;
         }
 
@@ -1247,7 +1247,7 @@ public class Props implements Cloneable
     {
         if (!Const.getOS().startsWith("Windows")) return;
         
-        Font gridFont    = GUIResource.getInstance().getFontGrid();
+        Font gridFont    = null; // GUIResource.getInstance().getFontGrid();
         Color background = GUIResource.getInstance().getColorBackground();
         if (gridFont!=null)
         {

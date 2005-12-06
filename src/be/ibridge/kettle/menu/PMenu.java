@@ -214,7 +214,7 @@ public class PMenu
 		// Load settings in the props
 		loadSettings();
 		
-		shell.setFont(GUIResource.getInstance().getFontDefault());
+		// shell.setFont(GUIResource.getInstance().getFontDefault());
 		menu_image = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"spoon32.png"));
 		shell.setImage(menu_image);
 		
@@ -269,7 +269,7 @@ public class PMenu
 		tBar.setLayoutData(fdBar);
 
 		sashform = new SashForm(shell, SWT.HORIZONTAL);
-		sashform.setFont(GUIResource.getInstance().getFontDefault());
+		// sashform.setFont(GUIResource.getInstance().getFontDefault());
 
 		FormData fdSash = new FormData();
 		fdSash.left = new FormAttachment(0, 0);
@@ -472,7 +472,7 @@ public class PMenu
 	private void addBar()
 	{
 		tBar = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT );
-		tBar.setFont(GUIResource.getInstance().getFontDefault());
+		// tBar.setFont(GUIResource.getInstance().getFontDefault());
 		
 		//tBar.setSize(200, 20);
 		final ToolItem tiFileNew = new ToolItem(tBar, SWT.PUSH);
@@ -547,7 +547,7 @@ public class PMenu
 					
 		// Now set up the main CSH tree
 		tCSH = new Tree(cCSH, SWT.MULTI | SWT.BORDER);
-		tCSH.setFont(GUIResource.getInstance().getFontDefault());
+		// tCSH.setFont(GUIResource.getInstance().getFontDefault());
 		tiConn = new TreeItem(tCSH, SWT.NONE); tiConn.setText(STRING_CONNECTIONS);
 		tiStep = new TreeItem(tCSH, SWT.NONE); tiStep.setText(STRING_TABLES);
 		tiTrns = new TreeItem(tCSH, SWT.NONE); tiTrns.setText(STRING_RELATIONSHIPS);
@@ -661,7 +661,7 @@ public class PMenu
 		
 		// Now set up the main CSH tree
 		tGroup = new Tree(cGroup, SWT.MULTI | SWT.BORDER);
-		tGroup.setFont(GUIResource.getInstance().getFontDefault());
+		// tGroup.setFont(GUIResource.getInstance().getFontDefault());
 		TreeItem tiGroup = new TreeItem(tGroup, SWT.NONE); 
 		tiGroup.setText(STRING_GROUPS);
 			
@@ -843,7 +843,7 @@ public class PMenu
 		child.setLayout(new FillLayout());
 		
 		tabfolder= new CTabFolder(child, SWT.BORDER);
-		tabfolder.setFont(GUIResource.getInstance().getFontDefault());
+		// tabfolder.setFont(GUIResource.getInstance().getFontDefault());
 		tabfolder.setBackground(GUIResource.getInstance().getColorBackground());
 		tabfolder.setSimple(false);
 		tabfolder.setSelectionBackground(GUIResource.getInstance().getColorTab());
@@ -1881,10 +1881,10 @@ public class PMenu
 	
 	public void changeLooks()
 	{
-		tCSH.setFont(GUIResource.getInstance().getFontDefault());
+		// tCSH.setFont(GUIResource.getInstance().getFontDefault());
 		tCSH.setBackground(GUIResource.getInstance().getColorBlack());
 
-		tabfolder.setFont(GUIResource.getInstance().getFontDefault());
+		// tabfolder.setFont(GUIResource.getInstance().getFontDefault());
 		
 		pmenugraph.newProps();
 

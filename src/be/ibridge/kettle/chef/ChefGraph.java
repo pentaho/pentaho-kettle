@@ -1452,8 +1452,6 @@ public class ChefGraph extends Canvas
         
 		shadowsize = chef.props.getShadowSize();
 
-		drawDemo(gc);
-
 		gc.setBackground(GUIResource.getInstance().getColorBackground());
 
 		Point area = getArea();
@@ -1604,28 +1602,6 @@ public class ChefGraph extends Canvas
 		gc.setForeground(GUIResource.getInstance().getColorLightGray());
 		int s = shadowsize;
 		gc.fillRectangle(screen.x + s, screen.y + s, iconsize, iconsize);
-	}
-
-	private void drawDemo(GC gc)
-	{
-		if (chef.demo_mode)
-		{
-			gc.setFont(GUIResource.getInstance().getFontDemo());
-			for (int i = 0; i < 8; i++)
-			{
-				gc.setForeground(GUIResource.getInstance().getColorLightGray());
-				gc.drawText("Demo mode", i * 25, i * 100, true);
-				gc.setForeground(GUIResource.getInstance().getColorGray());
-				gc.drawText("Demo mode", i * 25 + 25, i * 100 + 25, true);
-			}
-
-			gc.setFont(GUIResource.getInstance().getFontDemoSmall());
-			gc.setForeground(GUIResource.getInstance().getColorGray());
-			for (int i = 0; i < 8; i++)
-			{
-				gc.drawText("This software is unlicensed", i * 25 + 25, i * 100 + 100, true);
-			}
-		}
 	}
 
 	private void drawNote(GC gc, NotePadMeta ni)

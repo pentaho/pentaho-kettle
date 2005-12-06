@@ -462,6 +462,9 @@ public class Spoon
 		{
 			refreshTree(true);  // Do a complete refresh then...
 		}
+        
+        transMeta.clearChanged(); // Clear changed: they were artificial (databases loaded, etc.)
+        setShellText();
 		
 		if (props.showTips()) 
 		{

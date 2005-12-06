@@ -29,7 +29,6 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -53,7 +52,7 @@ public class TableDraw extends Canvas
 {
 	private Display   display;
 	private Color     bg;
-	private Font      font;
+	// private Font      font;
 	private Color     black, red, blue, lgray;
 	private Point     offset;
 	private ScrollBar hori;
@@ -100,7 +99,7 @@ public class TableDraw extends Canvas
 		
 		display    = parent.getDisplay();
 		bg         = GUIResource.getInstance().getColorBackground();		
-		font       = GUIResource.getInstance().getFontGrid();
+		// font       = GUIResource.getInstance().getFontGrid();
 		fontheight = props.getGridFont().getHeight();
 
 		black   = GUIResource.getInstance().getColorBlack();
@@ -114,12 +113,12 @@ public class TableDraw extends Canvas
 		// Determine font width...
 		dummy_image = new Image(display, 1, 1);
 		dummy_gc = new GC(dummy_image);
-		dummy_gc.setFont(font);
+		// dummy_gc.setFont(font);
 		String teststring = "ABCDEF";
 		fontwidth  = Math.round( dummy_gc.textExtent(teststring).x / teststring.length() );
 			
 		setBackground(bg);
-		setFont(font);
+		// setFont(font);
 		
 		addPaintListener(new PaintListener()
 		{
@@ -351,7 +350,7 @@ public class TableDraw extends Canvas
 	
 			// We draw in black...
 			gc.setForeground(black);
-			gc.setFont(font);
+			// gc.setFont(font);
 	
 			// Draw the text
 			// 

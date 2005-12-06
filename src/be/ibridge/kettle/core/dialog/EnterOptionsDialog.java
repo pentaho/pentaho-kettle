@@ -77,8 +77,8 @@ public class EnterOptionsDialog extends Dialog
 	private Composite    wLookComp, wGeneralComp;
 	private FormData     fdLookComp, fdGeneralComp;
 
-	private FontData     fixedFontData, varFontData, graphFontData, gridFontData, noteFontData;
-	private Font         fixedFont, varFont, graphFont, gridFont, noteFont;
+	private FontData     fixedFontData, graphFontData, noteFontData;
+	private Font         fixedFont, graphFont, noteFont;
 	private int          iconsize;
 	private int          linewidth;
 	private int          shadowsize;
@@ -93,20 +93,10 @@ public class EnterOptionsDialog extends Dialog
 	private Button       wbFFont;
     private FormData     fdlFFont, fdbFFont, fdFFont;
 
-	private Label        wlVFont;
-	private Canvas       wVFont;
-	private Button       wbVFont;
-	private FormData     fdlVFont, fdbVFont, fdVFont;
-
 	private Label        wlGFont;
 	private Canvas       wGFont;
 	private Button       wbGFont;
 	private FormData     fdlGFont, fdbGFont, fdGFont;
-
-	private Label        wlDFont;
-	private Canvas       wDFont;
-	private Button       wbDFont;
-	private FormData     fdlDFont, fdbDFont, fdDFont;
 
 	private Label        wlNFont;
 	private Canvas       wNFont;
@@ -472,7 +462,6 @@ public class EnterOptionsDialog extends Dialog
 		lookLayout.marginHeight = 3;
 		wLookComp.setLayout(lookLayout);
 
-
 		// Fixed font
 		wlFFont=new Label(wLookComp, SWT.RIGHT);
 		wlFFont.setText("Fixed width font");
@@ -530,66 +519,6 @@ public class EnterOptionsDialog extends Dialog
 			}
 		);
 
-		// Variable font
-		wlVFont=new Label(wLookComp, SWT.RIGHT);
-		wlVFont.setText("Default font");
-        props.setLook(wlVFont);
-		fdlVFont=new FormData();
-		fdlVFont.left  = new FormAttachment(0, 0);
-		fdlVFont.right = new FormAttachment(middle, -margin);
-		fdlVFont.top   = new FormAttachment(0, h+margin+10);
-		wlVFont.setLayoutData(fdlVFont);
-		
-		wVFont = new Canvas(wLookComp, SWT.BORDER );
-        props.setLook(wVFont);
-		wVFont.addPaintListener(new PaintListener() 
-			{
-				public void paintControl(PaintEvent pe) 
-				{
-					pe.gc.setFont(varFont);
-					Rectangle max = wVFont.getBounds();
-					String name = "Kettle";
-                    if (varFontData!=null) name = varFontData.getName();
-                    else name = display.getSystemFont().getFontData()[0].getName();
-                    
-					Point size = pe.gc.textExtent(name);
-					
-					pe.gc.drawText(name, (max.width-size.x)/2, (max.height-size.y)/2 );
-				}
-			}
-		);
-		fdVFont=new FormData();
-		fdVFont.left   = new FormAttachment(middle, 0);
-		fdVFont.right  = new FormAttachment(100, -75);
-		fdVFont.top    = new FormAttachment(0, h+margin);
-		fdVFont.bottom = new FormAttachment(0, 2*h+margin );
-		wVFont.setLayoutData(fdVFont);
-		
-		wbVFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
-		wbVFont.setText("change");
-        props.setLook(wbVFont);
-		fdbVFont=new FormData();
-		fdbVFont.left = new FormAttachment(wVFont, margin);
-		fdbVFont.right= new FormAttachment(100, 0);
-		fdbVFont.top  = new FormAttachment(0, h+margin);
-		wbVFont.setLayoutData(fdbVFont);
-		wbVFont.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent arg0) 
-				{
-					FontDialog fd = new FontDialog(shell);
-					FontData newfd = fd.open();
-					if (newfd!=null)
-					{
-						varFontData = newfd;
-						varFont.dispose();
-						varFont = new Font(display, varFontData);
-						wVFont.redraw();
-					}
-				}
-			}
-		);
-
 		// Graph font
 		wlGFont=new Label(wLookComp, SWT.RIGHT);
 		wlGFont.setText("Graph font");
@@ -597,7 +526,7 @@ public class EnterOptionsDialog extends Dialog
 		fdlGFont=new FormData();
 		fdlGFont.left  = new FormAttachment(0, 0);
 		fdlGFont.right = new FormAttachment(middle, -margin);
-		fdlGFont.top   = new FormAttachment(0, 2*h+margin+10);
+		fdlGFont.top   = new FormAttachment(0, h+margin+10);
 		wlGFont.setLayoutData(fdlGFont);
 		
 		wGFont = new Canvas(wLookComp, SWT.BORDER );
@@ -618,8 +547,8 @@ public class EnterOptionsDialog extends Dialog
 		fdGFont=new FormData();
 		fdGFont.left   = new FormAttachment(middle, 0);
 		fdGFont.right  = new FormAttachment(100, -75);
-		fdGFont.top    = new FormAttachment(0, 2*h+margin);
-		fdGFont.bottom = new FormAttachment(0, 3*h+margin );
+		fdGFont.top    = new FormAttachment(0, 1*h+margin);
+		fdGFont.bottom = new FormAttachment(0, 2*h+margin );
 		wGFont.setLayoutData(fdGFont);
 		
 		wbGFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
@@ -628,7 +557,7 @@ public class EnterOptionsDialog extends Dialog
 		fdbGFont=new FormData();
 		fdbGFont.left = new FormAttachment(wGFont, margin);
 		fdbGFont.right= new FormAttachment(100, 0);
-		fdbGFont.top  = new FormAttachment(0, 2*h+margin);
+		fdbGFont.top  = new FormAttachment(0, 1*h+margin);
 		wbGFont.setLayoutData(fdbGFont);
 		wbGFont.addSelectionListener(new SelectionAdapter() 
 			{
@@ -647,66 +576,6 @@ public class EnterOptionsDialog extends Dialog
 			}
 		);
 
-		// Grid font
-		wlDFont = new Label(wLookComp, SWT.RIGHT);
-		wlDFont.setText("Grid font");
-        props.setLook(wlDFont);
-		fdlDFont = new FormData();
-		fdlDFont.left = new FormAttachment(0, 0);
-		fdlDFont.right = new FormAttachment(middle, - margin);
-		fdlDFont.top = new FormAttachment(0, 3*h + margin + 10);
-		wlDFont.setLayoutData(fdlDFont);
-
-		wDFont = new Canvas(wLookComp, SWT.BORDER);
-        props.setLook(wDFont);
-		wDFont.addPaintListener(new PaintListener() 
-		{
-				public void paintControl(PaintEvent pe) 
-				{
-					pe.gc.setFont(gridFont);
-					Rectangle max = wDFont.getBounds();
-					String name = gridFontData.getName();
-					Point size = pe.gc.textExtent(name);
-	
-					pe.gc.drawText(
-						name,
-						(max.width - size.x) / 2,
-						(max.height - size.y) / 2);
-				}
-			}
-		);
-		fdDFont = new FormData();
-		fdDFont.left = new FormAttachment(middle, 0);
-		fdDFont.right = new FormAttachment(100, -75);
-		fdDFont.top = new FormAttachment(0, 3*h + margin);
-		fdDFont.bottom = new FormAttachment(0, 4*h + margin);
-		wDFont.setLayoutData(fdDFont);
-
-		wbDFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
-        wbDFont.setText("change");
-        props.setLook(wbDFont);
-		fdbDFont = new FormData();
-		fdbDFont.left = new FormAttachment(wDFont, margin);
-		fdbDFont.right = new FormAttachment(100, 0);
-		fdbDFont.top = new FormAttachment(0, 3*h + margin);
-		wbDFont.setLayoutData(fdbDFont);
-		wbDFont.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent arg0) 
-				{
-					FontDialog fd = new FontDialog(shell);
-					FontData newfd = fd.open();
-					if (newfd != null) 
-					{
-						gridFontData = newfd;
-						gridFont.dispose();
-						gridFont = new Font(display, gridFontData);
-						wDFont.redraw();
-					}
-				}
-			}
-		);
-
 		// Note font
 		wlNFont = new Label(wLookComp, SWT.RIGHT);
 		wlNFont.setText("Note font");
@@ -714,7 +583,7 @@ public class EnterOptionsDialog extends Dialog
 		fdlNFont = new FormData();
 		fdlNFont.left  = new FormAttachment(0, 0);
 		fdlNFont.right = new FormAttachment(middle, -margin);
-		fdlNFont.top   = new FormAttachment(0, 4*h + margin + 10);
+		fdlNFont.top   = new FormAttachment(0, 2*h + margin + 10);
 		wlNFont.setLayoutData(fdlNFont);
 
 		wNFont = new Canvas(wLookComp, SWT.BORDER);
@@ -738,8 +607,8 @@ public class EnterOptionsDialog extends Dialog
 		fdNFont = new FormData();
 		fdNFont.left = new FormAttachment(middle, 0);
 		fdNFont.right = new FormAttachment(100, -75);
-		fdNFont.top = new FormAttachment(0, 4*h + margin);
-		fdNFont.bottom = new FormAttachment(0, 5*h + margin);
+		fdNFont.top    = new FormAttachment(0, 2*h + margin);
+		fdNFont.bottom = new FormAttachment(0, 3*h + margin);
 		wNFont.setLayoutData(fdNFont);
 
 		wbNFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
@@ -748,7 +617,7 @@ public class EnterOptionsDialog extends Dialog
 		fdbNFont = new FormData();
 		fdbNFont.left = new FormAttachment(wNFont, margin);
 		fdbNFont.right = new FormAttachment(100, 0);
-		fdbNFont.top = new FormAttachment(0, 4*h + margin);
+		fdbNFont.top = new FormAttachment(0, 2*h + margin);
 		wbNFont.setLayoutData(fdbNFont);
 		wbNFont.addSelectionListener(new SelectionAdapter() 
 			{
@@ -774,7 +643,7 @@ public class EnterOptionsDialog extends Dialog
 		fdlBGColor = new FormData();
 		fdlBGColor.left = new FormAttachment(0, 0);
 		fdlBGColor.right = new FormAttachment(middle, -margin);
-		fdlBGColor.top = new FormAttachment(0, 5*h + margin + 10);
+		fdlBGColor.top = new FormAttachment(0, 3*h + margin + 10);
 		wlBGColor.setLayoutData(fdlBGColor);
 
 		wBGColor = new Canvas(wLookComp, SWT.BORDER);
@@ -783,8 +652,8 @@ public class EnterOptionsDialog extends Dialog
 		fdBGColor = new FormData();
 		fdBGColor.left = new FormAttachment(middle, 0);
 		fdBGColor.right = new FormAttachment(100, -75);
-		fdBGColor.top = new FormAttachment(0, 5*h + margin);
-		fdBGColor.bottom = new FormAttachment(0, 6*h + margin);
+		fdBGColor.top    = new FormAttachment(0, 3*h + margin);
+		fdBGColor.bottom = new FormAttachment(0, 4*h + margin);
 		wBGColor.setLayoutData(fdBGColor);
 
 		wbBGColor = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
@@ -793,7 +662,7 @@ public class EnterOptionsDialog extends Dialog
 		fdbBGColor = new FormData();
 		fdbBGColor.left = new FormAttachment(wBGColor, margin);
 		fdbBGColor.right = new FormAttachment(100, 0);
-		fdbBGColor.top = new FormAttachment(0, 5*h + margin);
+		fdbBGColor.top = new FormAttachment(0, 3*h + margin);
 		wbBGColor.setLayoutData(fdbBGColor);
 		wbBGColor.addSelectionListener(new SelectionAdapter() 
 			{
@@ -821,7 +690,7 @@ public class EnterOptionsDialog extends Dialog
 		fdlGrColor = new FormData();
 		fdlGrColor.left = new FormAttachment(0, 0);
 		fdlGrColor.right = new FormAttachment(middle, -margin);
-		fdlGrColor.top = new FormAttachment(0, 6*h + margin + 10);
+		fdlGrColor.top = new FormAttachment(0, 4*h + margin + 10);
 		wlGrColor.setLayoutData(fdlGrColor);
 
 		wGrColor = new Canvas(wLookComp, SWT.BORDER);
@@ -830,8 +699,8 @@ public class EnterOptionsDialog extends Dialog
 		fdGrColor = new FormData();
 		fdGrColor.left = new FormAttachment(middle, 0);
 		fdGrColor.right = new FormAttachment(100, -75);
-		fdGrColor.top = new FormAttachment(0, 6*h + margin);
-		fdGrColor.bottom = new FormAttachment(0, 7*h + margin);
+		fdGrColor.top    = new FormAttachment(0, 4*h + margin);
+		fdGrColor.bottom = new FormAttachment(0, 5*h + margin);
 		wGrColor.setLayoutData(fdGrColor);
 
 		wbGrColor = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
@@ -840,7 +709,7 @@ public class EnterOptionsDialog extends Dialog
 		fdbGrColor = new FormData();
 		fdbGrColor.left = new FormAttachment(wGrColor, margin);
 		fdbGrColor.right = new FormAttachment(100, 0);
-		fdbGrColor.top = new FormAttachment(0, 6*h + margin);
+		fdbGrColor.top = new FormAttachment(0, 4*h + margin);
 		wbGrColor.setLayoutData(fdbGrColor);
 		wbGrColor.addSelectionListener(new SelectionAdapter() 
 			{
@@ -868,7 +737,7 @@ public class EnterOptionsDialog extends Dialog
 		fdlTabColor = new FormData();
 		fdlTabColor.left = new FormAttachment(0, 0);
 		fdlTabColor.right = new FormAttachment(middle, -margin);
-		fdlTabColor.top = new FormAttachment(0, 7*h + margin + 10);
+		fdlTabColor.top = new FormAttachment(0, 5*h + margin + 10);
 		wlTabColor.setLayoutData(fdlTabColor);
 
 		wTabColor = new Canvas(wLookComp, SWT.BORDER);
@@ -877,8 +746,8 @@ public class EnterOptionsDialog extends Dialog
 		fdTabColor = new FormData();
 		fdTabColor.left = new FormAttachment(middle, 0);
 		fdTabColor.right = new FormAttachment(100, -75);
-		fdTabColor.top = new FormAttachment(0, 7*h + margin);
-		fdTabColor.bottom = new FormAttachment(0, 8*h + margin);
+		fdTabColor.top    = new FormAttachment(0, 5*h + margin);
+		fdTabColor.bottom = new FormAttachment(0, 6*h + margin);
 		wTabColor.setLayoutData(fdTabColor);
 
 		wbTabColor = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
@@ -887,7 +756,7 @@ public class EnterOptionsDialog extends Dialog
 		fdbTabColor = new FormData();
 		fdbTabColor.left = new FormAttachment(wTabColor, margin);
 		fdbTabColor.right = new FormAttachment(100, 0);
-		fdbTabColor.top = new FormAttachment(0, 7*h + margin);
+		fdbTabColor.top = new FormAttachment(0, 5*h + margin);
 		wbTabColor.setLayoutData(fdbTabColor);
 		wbTabColor.addSelectionListener(new SelectionAdapter() 
 			{
@@ -1077,9 +946,7 @@ public class EnterOptionsDialog extends Dialog
 				public void widgetDisposed(DisposeEvent arg0) 
 				{
 					fixedFont.dispose();
-					varFont.dispose();
 					graphFont.dispose();
-					gridFont.dispose();
 					noteFont.dispose();
 					background.dispose();
 					graphColor.dispose();
@@ -1110,15 +977,8 @@ public class EnterOptionsDialog extends Dialog
 		fixedFontData = props.getFixedFont();
 		fixedFont = new Font(display, fixedFontData);
 		
-		varFontData = props.getDefaultFont();
-		if (varFontData!=null) varFont = new Font(display, varFontData);
-        else varFont = display.getSystemFont();
-		
 		graphFontData = props.getGraphFont();
 		graphFont = new Font(display, graphFontData);
-		
-		gridFontData = props.getGridFont();
-		gridFont = new Font(display, gridFontData);
 		
 		noteFontData = props.getNoteFont();
 		noteFont = new Font(display, noteFontData);
@@ -1156,9 +1016,7 @@ public class EnterOptionsDialog extends Dialog
 		middlePercent = Const.toInt(wMiddlePct.getText(), Const.MIDDLE_PCT);
 		
 		props.setFixedFont     ( fixedFontData );
-		props.setDefaultFont   ( varFontData   );
 		props.setGraphFont     ( graphFontData );
-		props.setGridFont      ( gridFontData  );
 		props.setNoteFont      ( noteFontData  );
 		props.setBackgroundRGB ( backgroundRGB  );
 		props.setGraphColorRGB ( graphColorRGB    );

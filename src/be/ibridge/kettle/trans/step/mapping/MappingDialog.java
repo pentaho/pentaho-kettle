@@ -35,17 +35,20 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.repository.dialog.SelectObjectDialog;
+import be.ibridge.kettle.spoon.Spoon;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
@@ -62,8 +65,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     private Label wlTransformation;
     private FormData fdlTransformation, fdTransformation;
     private Text wTransformation;
-    private Button wbTransformation;
-    private FormData fdbTransformation;
+    private Button wbTransformation, weTransformation;
+    private FormData fdbTransformation, fdeTransformation;
 
     
     private TableView    wInputFields;
@@ -141,12 +144,20 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         fdlTransformation.right= new FormAttachment(middle, -margin);
         fdlTransformation.top  = new FormAttachment(wStepname, margin);
         wlTransformation.setLayoutData(fdlTransformation);
-        
+
+        weTransformation=new Button(shell, SWT.PUSH );
+        weTransformation.setText(" Edit ");
+        props.setLook(weTransformation);
+        fdeTransformation=new FormData();
+        fdeTransformation.right= new FormAttachment(100, 0);
+        fdeTransformation.top  = new FormAttachment(wStepname, margin);
+        weTransformation.setLayoutData(fdeTransformation);
+
         wbTransformation=new Button(shell, SWT.PUSH );
-        wbTransformation.setText("...");
+        wbTransformation.setText(" Select ");
         props.setLook(wbTransformation);
         fdbTransformation=new FormData();
-        fdbTransformation.right= new FormAttachment(100, 0);
+        fdbTransformation.right= new FormAttachment(weTransformation, 0);
         fdbTransformation.top  = new FormAttachment(wStepname, margin);
         wbTransformation.setLayoutData(fdbTransformation);
         
@@ -164,34 +175,19 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    if (repository!=null)
-                    {
-                        try
-                        {
-                            SelectObjectDialog sod = new SelectObjectDialog(shell, props, repository, true, false, false);
-                            String transName = sod.open();
-                            RepositoryDirectory repdir = sod.getDirectory();
-                            if (transName!=null && repdir!=null)
-                            {
-                                // Read the transformation...
-                                //
-                                mappingTransMeta = new TransMeta(repository, transName, repdir);
-                                System.out.println("transformation id: "+transMeta.getID());
-                                
-                                updateTransformationPath(mappingTransMeta);
-                            }
-                        }
-                        catch(KettleException ke)
-                        {
-                            new ErrorDialog(shell, props, "Error", "Error selecting object from repository", ke);
-                        }
-                    }
-                    else
-                    {
-                        // TODO: get the filename with a FileDialog
-                        new ErrorDialog(shell, props, "Sorry", "XML Files are not yet supported", new KettleException("XML Files are not yet accepted"));
-                    }
+                    selectTrans();
                 }
+            }
+        );
+        
+        weTransformation.addSelectionListener(new SelectionAdapter()
+            {
+            
+                public void widgetSelected(SelectionEvent e)
+                {
+                    editTrans();
+                }
+            
             }
         );
 		
@@ -311,6 +307,55 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		return stepname;
 	}
 	
+    private void selectTrans()
+    {
+        if (repository!=null)
+        {
+            try
+            {
+                SelectObjectDialog sod = new SelectObjectDialog(shell, props, repository, true, false, false);
+                String transName = sod.open();
+                RepositoryDirectory repdir = sod.getDirectory();
+                if (transName!=null && repdir!=null)
+                {
+                    // Read the transformation...
+                    //
+                    mappingTransMeta = new TransMeta(repository, transName, repdir);
+                    mappingTransMeta.clearChanged();
+                    System.out.println("transformation id: "+transMeta.getID());
+                    
+                    updateTransformationPath(mappingTransMeta);
+                }
+            }
+            catch(KettleException ke)
+            {
+                new ErrorDialog(shell, props, "Error", "Error selecting object from repository", ke);
+            }
+        }
+        else
+        {
+            // TODO: get the filename with a FileDialog
+            new ErrorDialog(shell, props, "Sorry", "XML Files are not yet supported", new KettleException("XML Files are not yet accepted"));
+        }
+    }
+
+    private void editTrans()
+    {
+        LogWriter log = LogWriter.getInstance();
+        if (mappingTransMeta!=null)
+        {
+            Spoon spoon = new Spoon(log, shell.getDisplay(), mappingTransMeta, repository);
+            spoon.open();
+        }
+        else
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+            mb.setMessage("Please select a transformation first!");
+            mb.setText("Sorry");
+            mb.open();
+        }
+    }
+
     private void getInput()
     {
         // Get the fields from the mapping...
@@ -321,16 +366,32 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             if (inputStepMeta!=null)
             {
                 MappingInputMeta mappingInputMeta = (MappingInputMeta) inputStepMeta.getStepMetaInterface();
+                
+                System.out.println("Getting input fields... ("+mappingInputMeta.getFieldName().length+")");
                 for (int i=0;i<mappingInputMeta.getFieldName().length;i++)
                 {
                     TableItem item = new TableItem(wInputFields.table, SWT.NONE);
                     item.setText(2, mappingInputMeta.getFieldName()[i]);
                 }
+                
+                wInputFields.removeEmptyRows();
+                wInputFields.setRowNums();
+                wInputFields.optWidth(true);
             }
-            
-            wInputFields.removeEmptyRows();
-            wInputFields.setRowNums();
-            wInputFields.optWidth(true);
+            else
+            {
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                mb.setMessage("You need to add a MappingInput step to the selected mapping (sub-transformation)!");
+                mb.setText("Sorry");
+                mb.open();
+            }
+        }
+        else
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+            mb.setMessage("Sorry, no mapping is specified, I can't get the input fields!");
+            mb.setText("Sorry");
+            mb.open();
         }
     }
 
@@ -344,6 +405,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             if (outputStepMeta!=null)
             {
                 MappingOutputMeta mappingOutputMeta = (MappingOutputMeta) outputStepMeta.getStepMetaInterface();
+                System.out.println("Getting input fields... ("+mappingOutputMeta.getFieldName().length+")");
+
                 for (int i=0;i<mappingOutputMeta.getFieldName().length;i++)
                 {
                     if (mappingOutputMeta.getFieldAdded()[i]) // We can only map added fields!
@@ -352,11 +415,25 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
                         item.setText(1, mappingOutputMeta.getFieldName()[i]);
                     }
                 }
+                
+                wOutputFields.removeEmptyRows();
+                wOutputFields.setRowNums();
+                wOutputFields.optWidth(true);
             }
-            
-            wOutputFields.removeEmptyRows();
-            wOutputFields.setRowNums();
-            wOutputFields.optWidth(true);
+            else
+            {
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                mb.setMessage("You need to add a MappingOutput step to the selected mapping (sub-transformation)!");
+                mb.setText("Sorry");
+                mb.open();
+            }
+        }
+        else
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+            mb.setMessage("Sorry, no mapping is specified, I can't get the output fields!");
+            mb.setText("Sorry");
+            mb.open();
         }
     }
 
@@ -372,6 +449,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             updateTransformationPath(mappingTransMeta);
         }
         
+        if (input.getInputField()!=null)
         for (int i=0;i<input.getInputField().length;i++)
         {
             TableItem item = new TableItem(wInputFields.table, SWT.NONE);
@@ -379,6 +457,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             if (input.getInputMapping()[i]!=null) item.setText(2, input.getInputMapping()[i]);
         }
         
+        if (input.getOutputField()!=null)
         for (int i=0;i<input.getOutputField().length;i++)
         {
             TableItem item = new TableItem(wOutputFields.table, SWT.NONE);

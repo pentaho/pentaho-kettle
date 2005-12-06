@@ -82,8 +82,6 @@ public class TransPainter
         this.vert          = vert;
         this.noteFont      = GUIResource.getInstance().getFontNote();
         this.graphFont     = GUIResource.getInstance().getFontGraph();
-        this.demoFont      = GUIResource.getInstance().getFontDemo();
-        this.demoFontSmall = GUIResource.getInstance().getFontDemoSmall();
         this.images        = GUIResource.getInstance().getImagesSteps();
         this.candidate     = candidate;
         this.selrect       = selrect;
