@@ -1121,6 +1121,11 @@ public class Spoon
                             data+="#CONNECTION#"+ti[i].getText()+Const.CR;
                         }
                         else
+                        if (ts!=null && ts.length > 0 && ts[0].equalsIgnoreCase(STRING_HOPS))
+                        {
+                            data+="#HOP#"+ti[i].getText()+Const.CR;;
+                        }
+                        else
                         {
                             data+=ti[i].getText()+Const.CR;
                         }

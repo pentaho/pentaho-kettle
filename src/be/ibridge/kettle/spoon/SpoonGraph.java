@@ -676,9 +676,7 @@ public class SpoonGraph extends Canvas
                         String steptype = step.substring(11);
                         stepMeta = spoon.newStep(steptype, steptype, false, true);
                         if (stepMeta == null) return;
-                    } else if (step.startsWith("#CONNECTION#")) // Create new
-                    // table input
-                    // step...
+                    } else if (step.startsWith("#CONNECTION#")) // Create new table input step...
                     {
                         newstep = true;
                         String connectionName = step.substring(12);
@@ -697,6 +695,19 @@ public class SpoonGraph extends Canvas
                             spoon.refreshTree(true);
                             spoon.refreshGraph();
                         }
+                    }
+                    else if (step.startsWith("#HOP#")) // Create new hop
+                    {
+                        newHop();
+                        return;
+                    }
+                    else
+                    {
+                        MessageBox mb = new MessageBox(shell, SWT.OK);
+                        mb.setMessage("This item can not be placed onto the canvas.");
+                        mb.setText("Warning!");
+                        mb.open();
+                        return;
                     }
 
                     if (stepMeta.isDrawn() || spoon.transMeta.isStepUsedInTransHops(stepMeta))
