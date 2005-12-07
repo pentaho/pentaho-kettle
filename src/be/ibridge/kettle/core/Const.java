@@ -374,7 +374,10 @@ public class Const
 			
             "You can define a new hop between 2 steps by using the middle or scrollwheel button."+Const.CR+
             "Middle-click on the first step and drag onto the second."+Const.CR+
-            "You can also use CTRL+Click and drag from one step to another.",
+            "You can also: "+Const.CR+
+            " - use SHIFT+Click and drag from one step to another"+Const.CR+
+            " - Select 2 steps and right click on one of them, then select 'new hop'"+Const.CR+
+            " - Drag 'Hops' onto the canvas",
             
 			"Inserting a step between 2 steps that are already connected with a hop:"+Const.CR+
             "simply move the step over the arrow until the arrow becomes drawn in bold."+Const.CR+
