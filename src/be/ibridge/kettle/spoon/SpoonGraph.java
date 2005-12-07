@@ -1,4 +1,4 @@
- /**********************************************************************
+/**********************************************************************
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
@@ -71,34 +71,42 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
 
 /**
- * This class handles the display of the transformations in a graphical way
- * using icons, arrows, etc.
+ * This class handles the display of the transformations in a graphical way using icons, arrows, etc.
  * 
  * @author Matt
  * @since 17-mei-2003
- *  
+ * 
  */
 
 public class SpoonGraph extends Canvas
 {
     private static final int HOP_SEL_MARGIN = 9;
+
     private Shell            shell;
+
     private SpoonGraph       canvas;
+
     private LogWriter        log;
+
     private int              iconsize;
+
     private int              linewidth;
+
     private Point            lastclick;
+
     private Point            lastMove;
 
     private Point            previous_step_locations[];
+
     private Point            previous_note_locations[];
 
     private StepMeta         selected_steps[];
-    private StepMeta         selected_step;
-    
-    private NotePadMeta      selected_notes[];
-    private NotePadMeta      selected_note;
 
+    private StepMeta         selected_step;
+
+    private NotePadMeta      selected_notes[];
+
+    private NotePadMeta      selected_note;
 
     private TransHopMeta     candidate;
 
@@ -122,8 +130,7 @@ public class SpoonGraph extends Canvas
 
     private Rectangle        selrect;
 
-    private int shadowsize;
-    
+    private int              shadowsize;
 
     public SpoonGraph(Composite par, int style, LogWriter l, Spoon sp)
     {
@@ -199,14 +206,16 @@ public class SpoonGraph extends Canvas
                         editStep(stepMeta);
                     else
                         editDescription(stepMeta);
-                } else
+                }
+                else
                 {
                     // Check if point lies on one of the many hop-lines...
                     TransHopMeta online = findHop(real.x, real.y);
                     if (online != null)
                     {
                         editHop(online);
-                    } else
+                    }
+                    else
                     {
                         NotePadMeta ni = spoon.transMeta.getNote(real.x, real.y);
                         if (ni != null)
@@ -247,7 +256,7 @@ public class SpoonGraph extends Canvas
 
                     Point p = stepMeta.getLocation();
                     iconoffset = new Point(real.x - p.x, real.y - p.y);
-                } 
+                }
                 else
                 {
                     // Dit we hit a note?
@@ -261,7 +270,7 @@ public class SpoonGraph extends Canvas
                         previous_note_locations = spoon.transMeta.getSelectedNoteLocations();
 
                         noteoffset = new Point(real.x - loc.x, real.y - loc.y);
-                    } 
+                    }
                     else
                     {
                         if (!control) selrect = new Rectangle(real.x, real.y, 0, 0);
@@ -297,7 +306,7 @@ public class SpoonGraph extends Canvas
                             int idx = spoon.transMeta.indexOfTransHop(candidate);
                             spoon.transMeta.removeTransHop(idx);
                             spoon.refreshTree();
-                        } 
+                        }
                         else
                         {
                             spoon.addUndoNew(new TransHopMeta[] { candidate }, new int[] { spoon.transMeta.indexOfTransHop(candidate) });
@@ -311,146 +320,156 @@ public class SpoonGraph extends Canvas
                 // Did we select a region on the screen? Mark steps in region as
                 // selected
                 //
-                else if (selrect != null)
-                {
-                    selrect.width = real.x - selrect.x;
-                    selrect.height = real.y - selrect.y;
-
-                    spoon.transMeta.unselectAll();
-                    spoon.transMeta.selectInRect(selrect);
-                    selrect = null;
-                    redraw();
-                }
-                // Clicked on an icon?
-                //
-                else if (selected_step != null)
-                {
-                    if (e.button == 1)
+                else
+                    if (selrect != null)
                     {
-                        if (lastclick.x == e.x && lastclick.y == e.y)
+                        selrect.width = real.x - selrect.x;
+                        selrect.height = real.y - selrect.y;
+
+                        spoon.transMeta.unselectAll();
+                        spoon.transMeta.selectInRect(selrect);
+                        selrect = null;
+                        redraw();
+                    }
+                    // Clicked on an icon?
+                    //
+                    else
+                        if (selected_step != null)
                         {
-                            // Flip selection when control is pressed!
-                            if (control)
+                            if (e.button == 1)
                             {
-                                selected_step.flipSelected();
-                            } 
-                            else
-                            {
-                                // Otherwise, select only the icon clicked on!
-                                spoon.transMeta.unselectAll();
-                                selected_step.setSelected(true);
+                                if (lastclick.x == e.x && lastclick.y == e.y)
+                                {
+                                    // Flip selection when control is pressed!
+                                    if (control)
+                                    {
+                                        selected_step.flipSelected();
+                                    }
+                                    else
+                                    {
+                                        // Otherwise, select only the icon clicked on!
+                                        spoon.transMeta.unselectAll();
+                                        selected_step.setSelected(true);
+                                    }
+                                }
+                                else
+                                {
+                                    // Find out which Steps & Notes are selected
+                                    selected_steps = spoon.transMeta.getSelectedSteps();
+                                    selected_notes = spoon.transMeta.getSelectedNotes();
+
+                                    // We moved around some items: store undo info...
+                                    boolean also = false;
+                                    if (selected_notes != null && previous_note_locations != null)
+                                    {
+                                        int indexes[] = spoon.transMeta.getNoteIndexes(selected_notes);
+                                        spoon.addUndoPosition(selected_notes, indexes, previous_note_locations, spoon.transMeta
+                                                .getSelectedNoteLocations(), also);
+                                        also = selected_steps != null && selected_steps.length > 0;
+                                    }
+                                    if (selected_steps != null && previous_step_locations != null)
+                                    {
+                                        int indexes[] = spoon.transMeta.getStepIndexes(selected_steps);
+                                        spoon.addUndoPosition(selected_steps, indexes, previous_step_locations, spoon.transMeta
+                                                .getSelectedStepLocations(), also);
+                                    }
+                                }
                             }
-                        } 
+
+                            // OK, we moved the step, did we move it across a hop?
+                            // If so, ask to split the hop!
+                            if (split_hop)
+                            {
+                                TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2);
+                                if (hi != null)
+                                {
+                                    int id = 0;
+                                    if (!spoon.props.getAutoSplit())
+                                    {
+                                        MessageDialogWithToggle md = new MessageDialogWithToggle(shell, "Split hop?", null,
+                                                "Do you want to split this hop?" + Const.CR + hi.toString(), MessageDialog.QUESTION, new String[] {
+                                                        "Yes", "No" }, 0, "Don't ask again", spoon.props.getAutoSplit());
+                                        id = md.open();
+                                        spoon.props.setAutoSplit(md.getToggleState());
+                                    }
+
+                                    if (id == 0) // Means: "Yes" button clicked!
+                                    {
+                                        TransHopMeta newhop1 = new TransHopMeta(hi.getFromStep(), selected_step);
+                                        spoon.transMeta.addTransHop(newhop1);
+                                        spoon
+                                                .addUndoNew(new TransHopMeta[] { newhop1 }, new int[] { spoon.transMeta.indexOfTransHop(newhop1) },
+                                                        true);
+                                        TransHopMeta newhop2 = new TransHopMeta(selected_step, hi.getToStep());
+                                        spoon.transMeta.addTransHop(newhop2);
+                                        spoon
+                                                .addUndoNew(new TransHopMeta[] { newhop2 }, new int[] { spoon.transMeta.indexOfTransHop(newhop2) },
+                                                        true);
+                                        int idx = spoon.transMeta.indexOfTransHop(hi);
+                                        spoon.addUndoDelete(new TransHopMeta[] { hi }, new int[] { idx }, true);
+                                        spoon.transMeta.removeTransHop(idx);
+                                        spoon.refreshTree();
+                                    }
+                                }
+                                split_hop = false;
+                            }
+
+                            selected_steps = null;
+                            selected_notes = null;
+                            selected_step = null;
+                            selected_note = null;
+                            redraw();
+                        }
+
+                        // Notes?
                         else
-                        {
-                            // Find out which Steps & Notes are selected
-                            selected_steps = spoon.transMeta.getSelectedSteps();
-                            selected_notes = spoon.transMeta.getSelectedNotes();
-                            
-                            // We moved around some items: store undo info...
-	                        boolean also = false;
-                            if (selected_notes != null && previous_note_locations != null)
-	                        {
-	                            int indexes[] = spoon.transMeta.getNoteIndexes(selected_notes);
-	                            spoon.addUndoPosition(selected_notes, indexes, previous_note_locations, spoon.transMeta.getSelectedNoteLocations(), also);
-	                            also = selected_steps!=null && selected_steps.length>0;
-	                        }
-                            if (selected_steps != null && previous_step_locations != null)
+                            if (selected_note != null)
                             {
-                                int indexes[] = spoon.transMeta.getStepIndexes(selected_steps);
-                                spoon.addUndoPosition(selected_steps, indexes, previous_step_locations, spoon.transMeta.getSelectedStepLocations(), also);
+                                if (e.button == 1)
+                                {
+                                    if (lastclick.x == e.x && lastclick.y == e.y)
+                                    {
+                                        // Flip selection when control is pressed!
+                                        if (control)
+                                        {
+                                            selected_note.flipSelected();
+                                        }
+                                        else
+                                        {
+                                            // Otherwise, select only the note clicked on!
+                                            spoon.transMeta.unselectAll();
+                                            selected_note.setSelected(true);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        // Find out which Steps & Notes are selected
+                                        selected_steps = spoon.transMeta.getSelectedSteps();
+                                        selected_notes = spoon.transMeta.getSelectedNotes();
+
+                                        // We moved around some items: store undo info...
+                                        boolean also = false;
+                                        if (selected_notes != null && previous_note_locations != null)
+                                        {
+                                            int indexes[] = spoon.transMeta.getNoteIndexes(selected_notes);
+                                            spoon.addUndoPosition(selected_notes, indexes, previous_note_locations, spoon.transMeta
+                                                    .getSelectedNoteLocations(), also);
+                                            also = selected_steps != null && selected_steps.length > 0;
+                                        }
+                                        if (selected_steps != null && previous_step_locations != null)
+                                        {
+                                            int indexes[] = spoon.transMeta.getStepIndexes(selected_steps);
+                                            spoon.addUndoPosition(selected_steps, indexes, previous_step_locations, spoon.transMeta
+                                                    .getSelectedStepLocations(), also);
+                                        }
+                                    }
+                                }
+
+                                selected_notes = null;
+                                selected_steps = null;
+                                selected_step = null;
+                                selected_note = null;
                             }
-                        }
-                    }
-
-                    // OK, we moved the step, did we move it across a hop?
-                    // If so, ask to split the hop!
-                    if (split_hop)
-                    {
-                        TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2);
-                        if (hi != null)
-                        {
-                            int id = 0;
-                            if (!spoon.props.getAutoSplit())
-                            {
-                                MessageDialogWithToggle md = new MessageDialogWithToggle(shell, "Split hop?", null, "Do you want to split this hop?"
-                                        + Const.CR + hi.toString(), MessageDialog.QUESTION, new String[] { "Yes", "No" }, 0, "Don't ask again",
-                                        spoon.props.getAutoSplit());
-                                id = md.open();
-                                spoon.props.setAutoSplit(md.getToggleState());
-                            }
-
-                            if (id == 0) // Means: "Yes" button clicked!
-                            {
-                                TransHopMeta newhop1 = new TransHopMeta(hi.getFromStep(), selected_step);
-                                spoon.transMeta.addTransHop(newhop1);
-                                spoon.addUndoNew(new TransHopMeta[] { newhop1 }, new int[] { spoon.transMeta.indexOfTransHop(newhop1) }, true);
-                                TransHopMeta newhop2 = new TransHopMeta(selected_step, hi.getToStep());
-                                spoon.transMeta.addTransHop(newhop2);
-                                spoon.addUndoNew(new TransHopMeta[] { newhop2 }, new int[] { spoon.transMeta.indexOfTransHop(newhop2) }, true);
-                                int idx = spoon.transMeta.indexOfTransHop(hi);
-                                spoon.addUndoDelete(new TransHopMeta[] { hi }, new int[] { idx }, true);
-                                spoon.transMeta.removeTransHop(idx);
-                                spoon.refreshTree();
-                            }
-                        }
-                        split_hop = false;
-                    }
-
-                    selected_steps = null;
-                    selected_notes = null;
-                    selected_step = null;
-                    selected_note = null;
-                    redraw();
-                }
-
-                // Notes?
-                else 
-                if (selected_note != null)
-                {
-                    if (e.button == 1)
-                    {
-                        if (lastclick.x == e.x && lastclick.y == e.y)
-                        {
-                            // Flip selection when control is pressed!
-                            if (control)
-                            {
-                                selected_note.flipSelected();
-                            } 
-                            else
-                            {
-                                // Otherwise, select only the note clicked on!
-                                spoon.transMeta.unselectAll();
-                                selected_note.setSelected(true);
-                            }
-                        } 
-                        else
-                        {
-                            // Find out which Steps & Notes are selected
-                            selected_steps = spoon.transMeta.getSelectedSteps();
-                            selected_notes = spoon.transMeta.getSelectedNotes();
-
-                            // We moved around some items: store undo info...
-	                        boolean also = false;
-                            if (selected_notes != null && previous_note_locations != null)
-	                        {
-	                            int indexes[] = spoon.transMeta.getNoteIndexes(selected_notes);
-	                            spoon.addUndoPosition(selected_notes, indexes, previous_note_locations, spoon.transMeta.getSelectedNoteLocations(), also);
-	                            also = selected_steps!=null && selected_steps.length>0;
-	                        }
-                            if (selected_steps != null && previous_step_locations != null)
-                            {
-                                int indexes[] = spoon.transMeta.getStepIndexes(selected_steps);
-                                spoon.addUndoPosition(selected_steps, indexes, previous_step_locations, spoon.transMeta.getSelectedStepLocations(), also);
-                            }
-                        }
-                    }
-
-                    selected_notes = null;
-                    selected_steps = null;
-                    selected_step = null;
-                    selected_note = null;
-                }
             }
         });
 
@@ -461,13 +480,13 @@ public class SpoonGraph extends Canvas
                 // Remember the last position of the mouse for paste with keyboard
                 lastMove = new Point(e.x, e.y);
                 Point real = screen2real(e.x, e.y);
-                
+
                 if (iconoffset == null) iconoffset = new Point(0, 0);
                 Point icon = new Point(real.x - iconoffset.x, real.y - iconoffset.y);
-                
+
                 if (noteoffset == null) noteoffset = new Point(0, 0);
                 Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
-                
+
                 setToolTip(real.x, real.y);
 
                 // 
@@ -477,7 +496,7 @@ public class SpoonGraph extends Canvas
                 // selected and move only the one icon
                 if (selected_step != null && !selected_step.isSelected())
                 {
-                    //System.out.println("STEPS: Unselected all");
+                    // System.out.println("STEPS: Unselected all");
                     spoon.transMeta.unselectAll();
                     selected_step.setSelected(true);
                     selected_steps = new StepMeta[] { selected_step };
@@ -485,7 +504,7 @@ public class SpoonGraph extends Canvas
                 }
                 if (selected_note != null && !selected_note.isSelected())
                 {
-                    //System.out.println("NOTES: Unselected all");
+                    // System.out.println("NOTES: Unselected all");
                     spoon.transMeta.unselectAll();
                     selected_note.setSelected(true);
                     selected_notes = new NotePadMeta[] { selected_note };
@@ -500,118 +519,118 @@ public class SpoonGraph extends Canvas
                     redraw();
                 }
                 // Move around steps & notes
-                else if (selected_step != null)
-                {
-                    if (last_button == 1 && !shift)
+                else
+                    if (selected_step != null)
                     {
-                        /*
-                         * One or more icons are selected and moved around...
-                         * 
-                         * new : new position of the ICON (not the mouse
-                         * pointer) dx : difference with previous position
-                         */
-                        int dx = icon.x - selected_step.getLocation().x;
-                        int dy = icon.y - selected_step.getLocation().y;
-
-                        // See if we have a hop-split candidate
-                        //
-                        TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2);
-                        if (hi != null)
+                        if (last_button == 1 && !shift)
                         {
-                            
-                            if (!hi.getFromStep().equals(selected_step) && !hi.getToStep().equals(selected_step))
+                            /*
+                             * One or more icons are selected and moved around...
+                             * 
+                             * new : new position of the ICON (not the mouse pointer) dx : difference with previous
+                             * position
+                             */
+                            int dx = icon.x - selected_step.getLocation().x;
+                            int dy = icon.y - selected_step.getLocation().y;
+
+                            // See if we have a hop-split candidate
+                            //
+                            TransHopMeta hi = findHop(icon.x + iconsize / 2, icon.y + iconsize / 2);
+                            if (hi != null)
                             {
-                                split_hop = true;
-                                last_hop_split = hi;
-                                hi.split = true;
+
+                                if (!hi.getFromStep().equals(selected_step) && !hi.getToStep().equals(selected_step))
+                                {
+                                    split_hop = true;
+                                    last_hop_split = hi;
+                                    hi.split = true;
+                                }
                             }
-                        } 
+                            else
+                            {
+                                if (last_hop_split != null)
+                                {
+                                    last_hop_split.split = false;
+                                    last_hop_split = null;
+                                    split_hop = false;
+                                }
+                            }
+
+                            selected_notes = spoon.transMeta.getSelectedNotes();
+                            selected_steps = spoon.transMeta.getSelectedSteps();
+
+                            // Adjust location of selected steps...
+                            if (selected_steps != null) for (int i = 0; i < selected_steps.length; i++)
+                            {
+                                StepMeta stepMeta = selected_steps[i];
+                                stepMeta.setLocation(stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
+                            }
+                            // Adjust location of selected hops...
+                            if (selected_notes != null) for (int i = 0; i < selected_notes.length; i++)
+                            {
+                                NotePadMeta ni = selected_notes[i];
+                                ni.setLocation(ni.getLocation().x + dx, ni.getLocation().y + dy);
+                            }
+
+                            redraw();
+                        }
+                        // The middle button perhaps?
                         else
-                        {
-                            if (last_hop_split != null)
+                            if (last_button == 2 || (last_button == 1 && shift))
                             {
-                                last_hop_split.split = false;
-                                last_hop_split = null;
-                                split_hop = false;
+                                StepMeta stepMeta = spoon.transMeta.getStep(real.x, real.y, iconsize);
+                                if (stepMeta != null && !selected_step.equals(stepMeta))
+                                {
+                                    if (candidate == null)
+                                    {
+                                        candidate = new TransHopMeta(selected_step, stepMeta);
+                                        redraw();
+                                    }
+                                }
+                                else
+                                {
+                                    if (candidate != null)
+                                    {
+                                        candidate = null;
+                                        redraw();
+                                    }
+                                }
                             }
-                        }
-
-                        selected_notes = spoon.transMeta.getSelectedNotes();
-                        selected_steps = spoon.transMeta.getSelectedSteps();
-
-                        // Adjust location of selected steps...
-                        if (selected_steps!=null)
-                       for (int i = 0; i < selected_steps.length; i++)
-                        {
-                            StepMeta stepMeta = selected_steps[i];
-                            stepMeta.setLocation(stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
-                        }
-                        // Adjust location of selected hops...
-                        if (selected_notes!=null)
-                        for (int i = 0; i < selected_notes.length; i++)
-                        {
-                            NotePadMeta ni = selected_notes[i];
-                            ni.setLocation(ni.getLocation().x + dx, ni.getLocation().y + dy);
-                        }
-
-                        redraw();
                     }
-                    // The middle button perhaps?
-                    else if (last_button == 2 || (last_button == 1 && shift))
-                    {
-                        StepMeta stepMeta = spoon.transMeta.getStep(real.x, real.y, iconsize);
-                        if (stepMeta != null && !selected_step.equals(stepMeta))
+                    // Move around notes & steps
+                    else
+                        if (selected_note != null)
                         {
-                            if (candidate == null)
+                            if (last_button == 1 && !shift)
                             {
-                                candidate = new TransHopMeta(selected_step, stepMeta);
+                                /*
+                                 * One or more notes are selected and moved around...
+                                 * 
+                                 * new : new position of the note (not the mouse pointer) dx : difference with previous
+                                 * position
+                                 */
+                                int dx = note.x - selected_note.getLocation().x;
+                                int dy = note.y - selected_note.getLocation().y;
+
+                                selected_notes = spoon.transMeta.getSelectedNotes();
+                                selected_steps = spoon.transMeta.getSelectedSteps();
+
+                                // Adjust location of selected steps...
+                                if (selected_steps != null) for (int i = 0; i < selected_steps.length; i++)
+                                {
+                                    StepMeta stepMeta = selected_steps[i];
+                                    stepMeta.setLocation(stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
+                                }
+                                // Adjust location of selected hops...
+                                if (selected_notes != null) for (int i = 0; i < selected_notes.length; i++)
+                                {
+                                    NotePadMeta ni = selected_notes[i];
+                                    ni.setLocation(ni.getLocation().x + dx, ni.getLocation().y + dy);
+                                }
+
                                 redraw();
                             }
-                        } else
-                        {
-                            if (candidate != null)
-                            {
-                                candidate = null;
-                                redraw();
-                            }
                         }
-                    }
-                } 
-                // Move around notes & steps
-                else if (selected_note != null)
-                {
-                    if (last_button == 1 && !shift)
-                    {
-                        /*
-                         * One or more notes are selected and moved around...
-                         * 
-                         * new : new position of the note (not the mouse
-                         * pointer) dx : difference with previous position
-                         */
-                        int dx = note.x - selected_note.getLocation().x;
-                        int dy = note.y - selected_note.getLocation().y;
-
-                        selected_notes = spoon.transMeta.getSelectedNotes();
-                        selected_steps = spoon.transMeta.getSelectedSteps();
-
-                        // Adjust location of selected steps...
-                        if (selected_steps!=null)
-                        for (int i = 0; i < selected_steps.length; i++)
-                        {
-                            StepMeta stepMeta = selected_steps[i];
-                            stepMeta.setLocation(stepMeta.getLocation().x + dx, stepMeta.getLocation().y + dy);
-                        }
-                        // Adjust location of selected hops...
-                        if (selected_notes!=null)
-                        for (int i = 0; i < selected_notes.length; i++)
-                        {
-                            NotePadMeta ni = selected_notes[i];
-                            ni.setLocation(ni.getLocation().x + dx, ni.getLocation().y + dy);
-                        }
-
-                        redraw();
-                    }
-                }
             }
         });
 
@@ -656,7 +675,7 @@ public class SpoonGraph extends Canvas
                     return;
                 }
 
-                //System.out.println("Dropping a step!!");
+                // System.out.println("Dropping a step!!");
 
                 // What's the real drop position?
                 Point p = getRealPosition(canvas, event.x, event.y);
@@ -676,39 +695,48 @@ public class SpoonGraph extends Canvas
                         String steptype = step.substring(11);
                         stepMeta = spoon.newStep(steptype, steptype, false, true);
                         if (stepMeta == null) return;
-                    } else if (step.startsWith("#CONNECTION#")) // Create new table input step...
-                    {
-                        newstep = true;
-                        String connectionName = step.substring(12);
-                        TableInputMeta tii = new TableInputMeta();
-                        tii.setDatabaseMeta(spoon.transMeta.findDatabase(connectionName));
-
-                        StepLoader steploader = StepLoader.getInstance();
-                        String stepID = steploader.getStepPluginID(tii);
-                        StepPlugin stepPlugin = steploader.findStepPluginWithID(stepID);
-                        String stepName = spoon.transMeta.getAlternativeStepname(stepPlugin.getDescription());
-                        stepMeta = new StepMeta(log, stepID, stepName, tii);
-
-                        if (spoon.editStepInfo(stepMeta) != null)
-                        {
-                            spoon.transMeta.addStep(stepMeta);
-                            spoon.refreshTree(true);
-                            spoon.refreshGraph();
-                        }
-                    }
-                    else if (step.startsWith("#HOP#")) // Create new hop
-                    {
-                        newHop();
-                        return;
                     }
                     else
-                    {
-                        MessageBox mb = new MessageBox(shell, SWT.OK);
-                        mb.setMessage("This item can not be placed onto the canvas.");
-                        mb.setText("Warning!");
-                        mb.open();
-                        return;
-                    }
+                        if (step.startsWith("#CONNECTION#")) // Create new table input step...
+                        {
+                            newstep = true;
+                            String connectionName = step.substring(12);
+                            TableInputMeta tii = new TableInputMeta();
+                            tii.setDatabaseMeta(spoon.transMeta.findDatabase(connectionName));
+
+                            StepLoader steploader = StepLoader.getInstance();
+                            String stepID = steploader.getStepPluginID(tii);
+                            StepPlugin stepPlugin = steploader.findStepPluginWithID(stepID);
+                            String stepName = spoon.transMeta.getAlternativeStepname(stepPlugin.getDescription());
+                            stepMeta = new StepMeta(log, stepID, stepName, tii);
+
+                            if (spoon.editStepInfo(stepMeta) != null)
+                            {
+                                spoon.transMeta.addStep(stepMeta);
+                                spoon.refreshTree(true);
+                                spoon.refreshGraph();
+                            }
+                        }
+                        else
+                            if (step.startsWith("#HOP#")) // Create new hop
+                            {
+                                newHop();
+                                return;
+                            }
+                            else
+                            {
+                                // Check if this is a step that needs to be put back on the canvas
+                                // (hidden step)
+                                //
+                                if (spoon.transMeta.findStep(step) == null)
+                                {
+                                    MessageBox mb = new MessageBox(shell, SWT.OK);
+                                    mb.setMessage("This item can not be placed onto the canvas.");
+                                    mb.setText("Warning!");
+                                    mb.open();
+                                    return;
+                                }
+                            }
 
                     if (stepMeta.isDrawn() || spoon.transMeta.isStepUsedInTransHops(stepMeta))
                     {
@@ -730,7 +758,8 @@ public class SpoonGraph extends Canvas
                     if (newstep)
                     {
                         spoon.addUndoNew(new StepMeta[] { stepMeta }, new int[] { spoon.transMeta.indexOfStep(stepMeta) });
-                    } else
+                    }
+                    else
                     {
                         spoon.addUndoChange(new StepMeta[] { before }, new StepMeta[] { (StepMeta) stepMeta.clone() }, new int[] { spoon.transMeta
                                 .indexOfStep(stepMeta) });
@@ -771,7 +800,7 @@ public class SpoonGraph extends Canvas
                         }
                     }
 
-                    //spoon.pasteSteps( );
+                    // spoon.pasteSteps( );
                 }
                 if (e.keyCode == SWT.ESC)
                 {
@@ -782,7 +811,7 @@ public class SpoonGraph extends Canvas
                 if (e.keyCode == SWT.DEL)
                 {
                     StepMeta stepMeta[] = spoon.transMeta.getSelectedSteps();
-                    if (stepMeta!=null && stepMeta.length > 0)
+                    if (stepMeta != null && stepMeta.length > 0)
                     {
                         delSelected(null);
                     }
@@ -823,9 +852,9 @@ public class SpoonGraph extends Canvas
                 {
                     snaptogrid(Const.GRID_SIZE);
                 }
-                
+
                 // SPACE : over a step: show output fields...
-                if (e.character == ' ' && lastMove!=null)
+                if (e.character == ' ' && lastMove != null)
                 {
                     Point real = screen2real(lastMove.x, lastMove.y);
 
@@ -834,7 +863,7 @@ public class SpoonGraph extends Canvas
 
                     // Set the pop-up menu
                     StepMeta stepMeta = spoon.transMeta.getStep(real.x, real.y, iconsize);
-                    if (stepMeta!=null)
+                    if (stepMeta != null)
                     {
                         // OK, we found a step, show the output fields...
                         inputOutputFields(stepMeta, false);
@@ -882,7 +911,8 @@ public class SpoonGraph extends Canvas
         if (offset != null)
         {
             real = new Point(x - offset.x, y - offset.y);
-        } else
+        }
+        else
         {
             real = new Point(x, y);
         }
@@ -954,13 +984,11 @@ public class SpoonGraph extends Canvas
     }
 
     /**
-     * This sets the popup-menu on the background of the canvas based on the xy
-     * coordinate of the mouse. This method is called after a mouse-click.
+     * This sets the popup-menu on the background of the canvas based on the xy coordinate of the mouse. This method is
+     * called after a mouse-click.
      * 
-     * @param x
-     *            X-coordinate on screen
-     * @param y
-     *            Y-coordinate on screen
+     * @param x X-coordinate on screen
+     * @param y Y-coordinate on screen
      */
     private void setMenu(int x, int y)
     {
@@ -984,28 +1012,30 @@ public class SpoonGraph extends Canvas
             miEditStep.setText("Edit step");
             MenuItem miEditDesc = new MenuItem(mPop, SWT.CASCADE);
             miEditDesc.setText("Edit step description");
-            
+
             new MenuItem(mPop, SWT.SEPARATOR);
-            //---------------------------------------
-  
+            // ---------------------------------------
+
             MenuItem miPopDC = new MenuItem(mPop, SWT.CASCADE);
             miPopDC.setText("Data movement...");
 
             Menu mPopDC = new Menu(miPopDC);
             MenuItem miStepDist = new MenuItem(mPopDC, SWT.CASCADE | SWT.CHECK);
             miStepDist.setText("Distribute data to next steps");
-            MenuItem miStepCopy= new MenuItem(mPopDC, SWT.CASCADE | SWT.CHECK);
+            MenuItem miStepCopy = new MenuItem(mPopDC, SWT.CASCADE | SWT.CHECK);
             miStepCopy.setText("Copy data to next steps");
             miPopDC.setMenu(mPopDC);
 
-            if (stepMeta.distributes) miStepDist.setSelection(true);
-            else                miStepCopy.setSelection(true);
+            if (stepMeta.distributes)
+                miStepDist.setSelection(true);
+            else
+                miStepCopy.setSelection(true);
 
             MenuItem miCopies = new MenuItem(mPop, SWT.CASCADE);
             miCopies.setText("Change number of copies to start...");
 
             new MenuItem(mPop, SWT.SEPARATOR);
-            //---------------------------------------
+            // ---------------------------------------
 
             // Clipboard operations...
             MenuItem miCopyStep = new MenuItem(mPop, SWT.CASCADE);
@@ -1056,7 +1086,7 @@ public class SpoonGraph extends Canvas
             }
 
             new MenuItem(mPop, SWT.SEPARATOR);
-            //---------------------------------------
+            // ---------------------------------------
 
             MenuItem miPopFieldsBef = new MenuItem(mPop, SWT.CASCADE);
             miPopFieldsBef.setText("Show input fields");
@@ -1229,7 +1259,7 @@ public class SpoonGraph extends Canvas
                     if (spoon.transMeta.nrSelectedSteps() <= 1)
                     {
                         spoon.dupeStep(stepMeta.getName());
-                    } 
+                    }
                     else
                     {
                         for (int i = 0; i < spoon.transMeta.nrSteps(); i++)
@@ -1278,7 +1308,8 @@ public class SpoonGraph extends Canvas
                 }
             });
             setMenu(mPop);
-        } else
+        }
+        else
         {
             final TransHopMeta hi = findHop(x, y);
             if (hi != null) // We clicked on a HOP!
@@ -1322,7 +1353,8 @@ public class SpoonGraph extends Canvas
 
                             hi.flip();
                             spoon.refreshGraph();
-                        } else
+                        }
+                        else
                         {
                             hi.setChanged();
                             spoon.refreshGraph();
@@ -1345,7 +1377,8 @@ public class SpoonGraph extends Canvas
                             mb.setMessage("I couldn't enable the hop because it would cause a loop in the transformation.");
                             mb.setText("Loop warning!");
                             mb.open();
-                        } else
+                        }
+                        else
                         {
                             TransHopMeta after = (TransHopMeta) hi.clone();
                             spoon.addUndoChange(new TransHopMeta[] { before }, new TransHopMeta[] { after }, new int[] { spoon.transMeta
@@ -1368,7 +1401,8 @@ public class SpoonGraph extends Canvas
                     }
                 });
                 setMenu(mPop);
-            } else
+            }
+            else
             {
                 // Clicked on the background: maybe we hit a note?
                 final NotePadMeta ni = spoon.transMeta.getNote(x, y);
@@ -1407,7 +1441,8 @@ public class SpoonGraph extends Canvas
                     });
 
                     setMenu(mPop);
-                } else
+                }
+                else
                 // No step, hop or note: clicked on the background....
                 {
                     // The popup-menu...
@@ -1499,18 +1534,21 @@ public class SpoonGraph extends Canvas
                 {
                     setToolTipText(tip);
                 }
-            } else
+            }
+            else
             {
                 setToolTipText(stepMeta.getName());
             }
-        } else
+        }
+        else
         {
             final TransHopMeta hi = findHop(x, y);
             if (hi != null) // We clicked on a HOP!
             {
                 // Set the tooltip for the hop:
                 setToolTipText(hi.toString());
-            } else
+            }
+            else
             {
                 setToolTipText(null);
             }
@@ -1523,7 +1561,8 @@ public class SpoonGraph extends Canvas
         if (nrsels == 0)
         {
             spoon.delStep(stMeta.getName());
-        } else
+        }
+        else
         {
             if (stMeta == null || !stMeta.isSelected()) nrsels++;
 
@@ -1567,12 +1606,9 @@ public class SpoonGraph extends Canvas
     /**
      * Display the input- or outputfields for a step.
      * 
-     * @param stepMeta
-     *            The step (it's metadata) to query
-     * @param before
-     *            set to true if you want to have the fields going INTO the
-     *            step, false if you want to see all the fields that exit the
-     *            step.
+     * @param stepMeta The step (it's metadata) to query
+     * @param before set to true if you want to have the fields going INTO the step, false if you want to see all the
+     * fields that exit the step.
      */
     private void inputOutputFields(StepMeta stepMeta, boolean before)
     {
@@ -1607,7 +1643,8 @@ public class SpoonGraph extends Canvas
                     editStep(esi);
                 }
             }
-        } else
+        }
+        else
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
             mb.setMessage("I couldn't find any fields!");
@@ -1623,26 +1660,27 @@ public class SpoonGraph extends Canvas
         if (area.x == 0 || area.y == 0) return; // nothing to do!
 
         Display disp = shell.getDisplay();
-        
+
         Image img = getTransformationImage(disp, area.x, area.y);
         e.gc.drawImage(img, 0, 0);
         img.dispose();
 
         spoon.setShellText();
     }
-        
+
     public Image getTransformationImage(Display disp, int x, int y)
     {
-        TransPainter transPainter = new TransPainter(spoon.transMeta, new Point(x,y), hori, vert, candidate, drop_candidate, selrect, spoon.demo_mode);
+        TransPainter transPainter = new TransPainter(spoon.transMeta, new Point(x, y), hori, vert, candidate, drop_candidate, selrect,
+                spoon.demo_mode);
         Image img = transPainter.getTransformationImage();
-        
+
         return img;
     }
 
     public void drawTrans(GC gc)
     {
         if (spoon.props.isAntiAliasingEnabled() && Const.getOS().startsWith("Windows")) gc.setAntialias(SWT.ON);
-        
+
         shadowsize = spoon.props.getShadowSize();
 
         Point area = getArea();
@@ -1654,7 +1692,7 @@ public class SpoonGraph extends Canvas
         vert.setThumb(thumb.y);
 
         gc.setFont(GUIResource.getInstance().getFontNote());
-        
+
         // First the notes
         for (int i = 0; i < spoon.transMeta.nrNotes(); i++)
         {
@@ -1711,9 +1749,12 @@ public class SpoonGraph extends Canvas
     {
         int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT;
 
-        if (ni.isSelected()) gc.setLineWidth(2); else gc.setLineWidth(1);
-        
-        org.eclipse.swt.graphics.Point ext = gc.textExtent(ni.getNote(), flags); 
+        if (ni.isSelected())
+            gc.setLineWidth(2);
+        else
+            gc.setLineWidth(1);
+
+        org.eclipse.swt.graphics.Point ext = gc.textExtent(ni.getNote(), flags);
         Point p = new Point(ext.x, ext.y);
         Point loc = ni.getLocation();
         Point note = real2screen(loc.x, loc.y);
@@ -1753,15 +1794,18 @@ public class SpoonGraph extends Canvas
 
         gc.fillPolygon(noteshape);
         gc.drawPolygon(noteshape);
-        //gc.fillRectangle(ni.xloc, ni.yloc, width+2*margin, heigth+2*margin);
-        //gc.drawRectangle(ni.xloc, ni.yloc, width+2*margin, heigth+2*margin);
+        // gc.fillRectangle(ni.xloc, ni.yloc, width+2*margin, heigth+2*margin);
+        // gc.drawRectangle(ni.xloc, ni.yloc, width+2*margin, heigth+2*margin);
         gc.setForeground(GUIResource.getInstance().getColorBlack());
         gc.drawText(ni.getNote(), note.x + margin, note.y + margin, flags);
 
         ni.width = width; // Save for the "mouse" later on...
         ni.height = height;
 
-        if (ni.isSelected()) gc.setLineWidth(1); else gc.setLineWidth(2);
+        if (ni.isSelected())
+            gc.setLineWidth(1);
+        else
+            gc.setLineWidth(2);
     }
 
     private void drawHop(GC gc, TransHopMeta hi, boolean is_candidate)
@@ -1787,7 +1831,8 @@ public class SpoonGraph extends Canvas
         {
             x = pt.x;
             y = pt.y;
-        } else
+        }
+        else
         {
             x = 50;
             y = 50;
@@ -1813,7 +1858,8 @@ public class SpoonGraph extends Canvas
         {
             x = pt.x;
             y = pt.y;
-        } else
+        }
+        else
         {
             x = 50;
             y = 50;
@@ -1839,7 +1885,7 @@ public class SpoonGraph extends Canvas
         }
         gc.setBackground(GUIResource.getInstance().getColorBackground());
         gc.drawRectangle(screen.x - 1, screen.y - 1, iconsize + 1, iconsize + 1);
-        //gc.setXORMode(true);
+        // gc.setXORMode(true);
         org.eclipse.swt.graphics.Point textsize = gc.textExtent(name);
 
         int xpos = screen.x + (iconsize / 2) - (textsize.x / 2);
@@ -1870,7 +1916,7 @@ public class SpoonGraph extends Canvas
             line[i] += s;
 
         gc.setLineWidth(linewidth);
-        
+
         gc.setForeground(GUIResource.getInstance().getColorLightGray());
 
         drawArrow(gc, line);
@@ -2020,7 +2066,7 @@ public class SpoonGraph extends Canvas
         if (n != null)
         {
             ni.setChanged();
-            ni.setNote( n );
+            ni.setNote(n);
             ni.width = Const.NOTE_MIN_SIZE;
             ni.height = Const.NOTE_MIN_SIZE;
 
@@ -2095,9 +2141,9 @@ public class SpoonGraph extends Canvas
         y4 = (int) (my + Math.sin(angle + theta) * size);
 
         // draw arrowhead
-        //gc.drawLine( mx, my, x3, y3 );
-        //gc.drawLine( mx, my, x4, y4 );
-        //gc.drawLine( x3, y3, x4, y4 );
+        // gc.drawLine( mx, my, x3, y3 );
+        // gc.drawLine( mx, my, x4, y4 );
+        // gc.drawLine( x3, y3, x4, y4 );
 
         Color fore = gc.getForeground();
         Color back = gc.getBackground();
@@ -2144,15 +2190,15 @@ public class SpoonGraph extends Canvas
 
     private void snaptogrid(int size)
     {
-        if (spoon.transMeta.nrSelectedSteps()==0) return;
+        if (spoon.transMeta.nrSelectedSteps() == 0) return;
 
         // First look for the minimum x coordinate...
-        
+
         StepMeta steps[] = new StepMeta[spoon.transMeta.nrSelectedSteps()];
-        Point before[]   = new Point[spoon.transMeta.nrSelectedSteps()];
-        Point after[]    = new Point[spoon.transMeta.nrSelectedSteps()];
+        Point before[] = new Point[spoon.transMeta.nrSelectedSteps()];
+        Point after[] = new Point[spoon.transMeta.nrSelectedSteps()];
         int nr = 0;
-        
+
         for (int i = 0; i < spoon.transMeta.nrSteps(); i++)
         {
             StepMeta stepMeta = spoon.transMeta.getStep(i);
@@ -2161,7 +2207,7 @@ public class SpoonGraph extends Canvas
                 steps[nr] = stepMeta;
                 Point p = stepMeta.getLocation();
                 before[nr] = new Point(p.x, p.y);
-                
+
                 // What's the modulus ?
                 int dx = p.x % size;
                 int dy = p.y % size;
@@ -2184,19 +2230,19 @@ public class SpoonGraph extends Canvas
                 nr++;
             }
         }
-        
-        spoon.addUndoPosition(steps, spoon.transMeta.getStepIndexes(steps), before, after );
-        
+
+        spoon.addUndoPosition(steps, spoon.transMeta.getStepIndexes(steps), before, after);
+
         redraw();
     }
 
     private void allignleft()
     {
-        if (spoon.transMeta.nrSelectedSteps()==0) return;
+        if (spoon.transMeta.nrSelectedSteps() == 0) return;
 
         StepMeta steps[] = new StepMeta[spoon.transMeta.nrSelectedSteps()];
-        Point before[]   = new Point[spoon.transMeta.nrSelectedSteps()];
-        Point after[]    = new Point[spoon.transMeta.nrSelectedSteps()];
+        Point before[] = new Point[spoon.transMeta.nrSelectedSteps()];
+        Point after[] = new Point[spoon.transMeta.nrSelectedSteps()];
         int nr = 0;
 
         int min = 99999;
@@ -2225,17 +2271,17 @@ public class SpoonGraph extends Canvas
                 nr++;
             }
         }
-        spoon.addUndoPosition(steps, spoon.transMeta.getStepIndexes(steps), before, after );
+        spoon.addUndoPosition(steps, spoon.transMeta.getStepIndexes(steps), before, after);
         redraw();
     }
 
     private void allignright()
     {
-        if (spoon.transMeta.nrSelectedSteps()==0) return;
+        if (spoon.transMeta.nrSelectedSteps() == 0) return;
 
         StepMeta steps[] = new StepMeta[spoon.transMeta.nrSelectedSteps()];
-        Point before[]   = new Point[spoon.transMeta.nrSelectedSteps()];
-        Point after[]    = new Point[spoon.transMeta.nrSelectedSteps()];
+        Point before[] = new Point[spoon.transMeta.nrSelectedSteps()];
+        Point after[] = new Point[spoon.transMeta.nrSelectedSteps()];
         int nr = 0;
 
         int max = -99999;
@@ -2262,21 +2308,21 @@ public class SpoonGraph extends Canvas
                 stepMeta.setLocation(max, p.y);
                 after[nr] = new Point(max, p.y);
                 nr++;
-           }
+            }
         }
-        spoon.addUndoPosition(steps, spoon.transMeta.getStepIndexes(steps), before, after );
+        spoon.addUndoPosition(steps, spoon.transMeta.getStepIndexes(steps), before, after);
         redraw();
     }
 
     private void alligntop()
     {
-        if (spoon.transMeta.nrSelectedSteps()==0) return;
-        
+        if (spoon.transMeta.nrSelectedSteps() == 0) return;
+
         StepMeta steps[] = new StepMeta[spoon.transMeta.nrSelectedSteps()];
-        Point before[]   = new Point[spoon.transMeta.nrSelectedSteps()];
-        Point after[]    = new Point[spoon.transMeta.nrSelectedSteps()];
+        Point before[] = new Point[spoon.transMeta.nrSelectedSteps()];
+        Point after[] = new Point[spoon.transMeta.nrSelectedSteps()];
         int nr = 0;
-        
+
         int min = 99999;
 
         // First look for the minimum y coordinate...
@@ -2301,21 +2347,21 @@ public class SpoonGraph extends Canvas
                 stepMeta.setLocation(p.x, min);
                 after[nr] = new Point(p.x, min);
                 nr++;
-           }
+            }
         }
-        spoon.addUndoPosition(steps, spoon.transMeta.getStepIndexes(steps), before, after );
+        spoon.addUndoPosition(steps, spoon.transMeta.getStepIndexes(steps), before, after);
         redraw();
     }
 
     private void allignbottom()
     {
-        if (spoon.transMeta.nrSelectedSteps()==0) return;
+        if (spoon.transMeta.nrSelectedSteps() == 0) return;
 
         StepMeta steps[] = new StepMeta[spoon.transMeta.nrSelectedSteps()];
-        Point before[]   = new Point[spoon.transMeta.nrSelectedSteps()];
-        Point after[]    = new Point[spoon.transMeta.nrSelectedSteps()];
+        Point before[] = new Point[spoon.transMeta.nrSelectedSteps()];
+        Point after[] = new Point[spoon.transMeta.nrSelectedSteps()];
         int nr = 0;
-        
+
         int max = -99999;
 
         // First look for the maximum y coordinate...
@@ -2342,18 +2388,18 @@ public class SpoonGraph extends Canvas
                 nr++;
             }
         }
-        spoon.addUndoPosition(steps, spoon.transMeta.getStepIndexes(steps), before, after );
+        spoon.addUndoPosition(steps, spoon.transMeta.getStepIndexes(steps), before, after);
         redraw();
     }
 
     private void distributehorizontal()
     {
-        if (spoon.transMeta.nrSelectedSteps()==0) return;
+        if (spoon.transMeta.nrSelectedSteps() == 0) return;
 
         StepMeta steps[] = new StepMeta[spoon.transMeta.nrSelectedSteps()];
-        Point before[]   = new Point[spoon.transMeta.nrSelectedSteps()];
-        Point after[]    = new Point[spoon.transMeta.nrSelectedSteps()];
-        
+        Point before[] = new Point[spoon.transMeta.nrSelectedSteps()];
+        Point after[] = new Point[spoon.transMeta.nrSelectedSteps()];
+
         int min = 99999;
         int max = -99999;
         int sels = spoon.transMeta.nrSelectedSteps();
@@ -2406,20 +2452,20 @@ public class SpoonGraph extends Canvas
             p.x = min + (i * distance);
             after[i] = new Point(p.x, p.y);
         }
-        
+
         // Undo!
-        spoon.addUndoPosition(steps, spoon.transMeta.getStepIndexes(steps), before, after );
+        spoon.addUndoPosition(steps, spoon.transMeta.getStepIndexes(steps), before, after);
 
         redraw();
     }
 
     public void distributevertical()
     {
-        if (spoon.transMeta.nrSelectedSteps()==0) return;
+        if (spoon.transMeta.nrSelectedSteps() == 0) return;
 
         StepMeta steps[] = new StepMeta[spoon.transMeta.nrSelectedSteps()];
-        Point before[]   = new Point[spoon.transMeta.nrSelectedSteps()];
-        Point after[]    = new Point[spoon.transMeta.nrSelectedSteps()];
+        Point before[] = new Point[spoon.transMeta.nrSelectedSteps()];
+        Point after[] = new Point[spoon.transMeta.nrSelectedSteps()];
 
         int min = 99999;
         int max = -99999;
@@ -2475,8 +2521,8 @@ public class SpoonGraph extends Canvas
         }
 
         // Undo!
-        spoon.addUndoPosition(steps, spoon.transMeta.getStepIndexes(steps), before, after );
-        
+        spoon.addUndoPosition(steps, spoon.transMeta.getStepIndexes(steps), before, after);
+
         redraw();
     }
 
@@ -2562,7 +2608,7 @@ public class SpoonGraph extends Canvas
     public void newProps()
     {
         GUIResource.getInstance().reload();
-        
+
         iconsize = spoon.props.getIconSize();
         linewidth = spoon.props.getLineWidth();
     }
