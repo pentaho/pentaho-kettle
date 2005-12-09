@@ -216,11 +216,6 @@ public class Spoon
     public static final String STRING_HISTORY     = "Step creation history";
 
 	private static final String APPL_TITLE         = APP_NAME;
-	
-	private static final String STRING_DEFAULT_EXT    = ".ktr";
-	private static final String STRING_FILTER_EXT[]   = new String[] { "*.ktr;*.xml", "*.xml", "*.*" };
-	private static final String STRING_FILTER_NAMES[] = new String[] { "Kettle Transformations", "XML Files", "All files" };
-
 	 		
 	public  KeyAdapter defKeys;
 	public  KeyAdapter modKeys;
@@ -2327,9 +2322,9 @@ public class Spoon
 			if (rep==null || importfile)  // Load from XML
 			{
 				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-				dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
-				dialog.setFilterExtensions(STRING_FILTER_EXT);
-				dialog.setFilterNames(STRING_FILTER_NAMES);
+				// dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
+				dialog.setFilterExtensions(Const.STRING_TRANS_FILTER_EXT);
+				dialog.setFilterNames(Const.STRING_TRANS_FILTER_NAMES);
 				String fname = dialog.open();
 				if (fname!=null)
 				{
@@ -2606,24 +2601,24 @@ public class Spoon
     {
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
-		dialog.setFilterExtensions(STRING_FILTER_EXT);
-		dialog.setFilterNames(STRING_FILTER_NAMES);
+		dialog.setFilterExtensions(Const.STRING_TRANS_FILTER_EXT);
+		dialog.setFilterNames(Const.STRING_TRANS_FILTER_NAMES);
 		String fname = dialog.open();
 		if (fname!=null) 
 		{
 			// Is the filename ending on .ktr, .xml?
 			boolean ending=false;
-			for (int i=0;i<STRING_FILTER_EXT.length-1;i++)
+			for (int i=0;i<Const.STRING_TRANS_FILTER_EXT.length-1;i++)
 			{
-				if (fname.endsWith(STRING_FILTER_EXT[i].substring(1))) 
+				if (fname.endsWith(Const.STRING_TRANS_FILTER_EXT[i].substring(1))) 
 				{
 					ending=true;
 				} 
 			}
-			if (fname.endsWith(STRING_DEFAULT_EXT)) ending=true;
+			if (fname.endsWith(Const.STRING_TRANS_DEFAULT_EXT)) ending=true;
 			if (!ending)
 			{
-				fname+=STRING_DEFAULT_EXT;
+				fname+=Const.STRING_TRANS_DEFAULT_EXT;
 			}
 			// See if the file already exists...
 			File f = new File(fname);

@@ -438,7 +438,14 @@ public class Const
      */
     public static final String XML_ENCODING = "UTF-8";
 
+    /** The extention of a Kettle transformation XML file */
+    public static final String STRING_TRANS_DEFAULT_EXT    = ".ktr";
+    
+    /** The possible extentions a transformation XML file can have. */
+    public static final String STRING_TRANS_FILTER_EXT[]   = new String[] { "*.ktr;*.xml", "*.xml", "*.*" };
 
+    /** The discriptions of the possible extentions a transformation XML file can have. */
+    public static final String STRING_TRANS_FILTER_NAMES[] = new String[] { "Kettle Transformations", "XML Files", "All files" };
 
 
 

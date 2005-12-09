@@ -47,7 +47,7 @@ import be.ibridge.kettle.repository.RepositoryDirectory;
 
 
 /**
- * Allows the user to make a selection from a list of values.
+ * Allows the user to make a selection of an Object in the repository
  * 
  * @author Matt
  * @since 19-06-2003

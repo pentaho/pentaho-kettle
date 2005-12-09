@@ -33,6 +33,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.FileDialog;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -322,8 +323,6 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
                     //
                     mappingTransMeta = new TransMeta(repository, transName, repdir);
                     mappingTransMeta.clearChanged();
-                    System.out.println("transformation id: "+transMeta.getID());
-                    
                     updateTransformationPath(mappingTransMeta);
                 }
             }
@@ -334,8 +333,23 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         }
         else
         {
-            // TODO: get the filename with a FileDialog
-            new ErrorDialog(shell, props, "Sorry", "XML Files are not yet supported", new KettleException("XML Files are not yet accepted"));
+            FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+            dialog.setFilterExtensions(Const.STRING_TRANS_FILTER_EXT);
+            dialog.setFilterNames(Const.STRING_TRANS_FILTER_NAMES);
+            String fname = dialog.open();
+            if (fname!=null)
+            {
+                try
+                {
+                    mappingTransMeta = new TransMeta(fname);
+                    mappingTransMeta.clearChanged();                    
+                    updateTransformationPath(mappingTransMeta);
+                }
+                catch(KettleException e)
+                {
+                    new ErrorDialog(shell, props, "Error loading transformation", "There was an error loading the transformation from XML file:", e);
+                }
+            }
         }
     }
 
@@ -444,10 +458,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		wStepname.selectAll();
         mappingTransMeta = input.getMappingTransMeta();
-        if (repository!=null)
-        {
-            updateTransformationPath(mappingTransMeta);
-        }
+        updateTransformationPath(mappingTransMeta);
         
         if (input.getInputField()!=null)
         for (int i=0;i<input.getInputField().length;i++)
@@ -482,17 +493,15 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             RepositoryDirectory repdir = tm.getDirectory();
             String fileName = tm.getFilename();
             
+            if (fileName!=null)
+            {
+                wTransformation.setText(fileName);
+            }
+            else
             if (repdir!=null)
             {
                 if (repdir.isRoot()) wTransformation.setText( repdir+transName ); 
                 else wTransformation.setText( repdir+Const.FILE_SEPARATOR+transName );
-            }
-            else
-            {
-                if (fileName!=null)
-                {
-                    wTransformation.setText(fileName);
-                }
             }
         }
     }
