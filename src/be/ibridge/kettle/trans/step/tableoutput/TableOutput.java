@@ -98,7 +98,7 @@ public class TableOutput extends BaseStep implements StepInterface
 
         PreparedStatement insertStatement = null;
         
-        String tableName = meta.getTablename();
+        String tableName = Const.replEnv( meta.getTablename() );     
         if (  meta.isPartitioningEnabled() && 
             ( meta.isPartitioningDaily() || meta.isPartitioningMonthly()) &&
             ( meta.getPartitioningField()!=null && meta.getPartitioningField().length()>0 )
@@ -154,7 +154,7 @@ public class TableOutput extends BaseStep implements StepInterface
 		{
 			data.db.clearBatch(insertStatement);
 		    data.db.rollback();
-			throw new KettleException("Error batch inserting rows into table ["+meta.getTablename()+"]", be);
+			throw new KettleException("Error batch inserting rows into table ["+tableName+"]", be);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -176,7 +176,7 @@ public class TableOutput extends BaseStep implements StepInterface
 		    {
 		        setErrors(getErrors()+1);
 		        data.db.rollback();
-		        throw new KettleException("Error inserting row into table ["+meta.getTablename()+"] with values: "+r, dbe);
+		        throw new KettleException("Error inserting row into table ["+tableName+"] with values: "+r, dbe);
 		    }
 		}
 		
@@ -204,7 +204,7 @@ public class TableOutput extends BaseStep implements StepInterface
 				
                 if (meta.truncateTable() && getCopy()==0) // Only the first one truncates!!!
 				{
-					data.db.truncateTable(meta.getTablename());
+					data.db.truncateTable(Const.replEnv( meta.getTablename() ));
 				}
             
 				return true;
