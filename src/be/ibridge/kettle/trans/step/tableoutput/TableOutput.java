@@ -99,6 +99,7 @@ public class TableOutput extends BaseStep implements StepInterface
         PreparedStatement insertStatement = null;
         
         String tableName = null;
+        Value removedValue = null;
         
         if ( meta.isTableNameInField() )
         {
@@ -114,6 +115,11 @@ public class TableOutput extends BaseStep implements StepInterface
                 }
             }
             tableName = r.getValue(data.indexOfTableNameField).getString();
+            if (!meta.isTableNameInTable())
+            {
+                removedValue = r.getValue(data.indexOfTableNameField);
+                r.removeValue(data.indexOfTableNameField);
+            }
         }
         else
         if (  meta.isPartitioningEnabled() && 
@@ -206,6 +212,11 @@ public class TableOutput extends BaseStep implements StepInterface
 		    }
 		}
 		
+        if (!meta.isTableNameInTable())
+        {
+            r.addValue(data.indexOfTableNameField, removedValue);
+        }
+
 	    debug="end";
 		return true;
 	}

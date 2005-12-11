@@ -109,6 +109,10 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     private Text         wNameField;
     private FormData     fdlNameField, fdNameField;
 	
+    private Label        wlNameInTable;
+    private Button       wNameInTable;
+    private FormData     fdlNameInTable, fdNameInTable;
+
     
     private TableOutputMeta input;
 	
@@ -406,7 +410,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         );
 
         
-        // NameInField table
+        // NameInField
         wlNameInField=new Label(shell, SWT.RIGHT);
         wlNameInField.setText("Is the name of the table defined in a field? ");
         props.setLook(wlNameInField);
@@ -450,7 +454,32 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         fdNameField.right= new FormAttachment(100, 0);
         wNameField.setLayoutData(fdNameField);
 
-        
+        // NameInTable
+        wlNameInTable=new Label(shell, SWT.RIGHT);
+        wlNameInTable.setText("Store the tablename field ");
+        props.setLook(wlNameInTable);
+        fdlNameInTable=new FormData();
+        fdlNameInTable.left  = new FormAttachment(0, 0);
+        fdlNameInTable.top   = new FormAttachment(wNameField, margin);
+        fdlNameInTable.right = new FormAttachment(middle, -margin);
+        wlNameInTable.setLayoutData(fdlNameInTable);
+        wNameInTable=new Button(shell, SWT.CHECK);
+        props.setLook(wNameInTable);
+        fdNameInTable=new FormData();
+        fdNameInTable.left  = new FormAttachment(middle, 0);
+        fdNameInTable.top   = new FormAttachment(wNameField, margin);
+        fdNameInTable.right = new FormAttachment(100, 0);
+        wNameInTable.setLayoutData(fdNameInTable);
+        wNameInTable.addSelectionListener(
+            new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent arg0)
+                {
+                    setFlags();
+                }
+            }
+        );
+   
         
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -460,7 +489,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText("  &Cancel  ");
 		
-		setButtonPositions(new Button[] { wOK, wCreate, wCancel }, margin, wNameField);
+		setButtonPositions(new Button[] { wOK, wCreate, wCancel }, margin, wNameInTable);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -545,7 +574,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         wIgnore.setEnabled(!wBatch.getSelection());
         wlIgnore.setEnabled(!wBatch.getSelection());
         
-        boolean usePartitioning    = wUsePart.getSelection() && !wNameInField.getSelection();
+        boolean usePartitioning    = wUsePart.getSelection() && !wNameInTable.getSelection();
         boolean isTableNameInField = wNameInField.getSelection();
         
         wUsePart.setSelection(usePartitioning);
@@ -559,6 +588,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         wNameInField.setSelection(isTableNameInField);
         wlNameField.setEnabled(isTableNameInField);
         wNameField.setEnabled(isTableNameInField);
+        wlNameInTable.setEnabled(isTableNameInField);
+        wNameInTable.setEnabled(isTableNameInField);
         
         wlTable.setEnabled(!isTableNameInField);
         wTable.setEnabled(!isTableNameInField);
@@ -585,6 +616,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         
         wNameInField.setSelection( input.isTableNameInField());
         if (input.getTableNameField()!=null) wNameField.setText( input.getTableNameField() );
+        wNameInTable.setSelection( input.isTableNameInTable());
         
 		setFlags();
 		
@@ -612,6 +644,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         info.setPartitioningMonthly( wPartMonthly.getSelection() );
         info.setTableNameInField( wNameInField.getSelection() );
         info.setTableNameField( wNameField.getText() );
+        info.setTableNameInTable( wNameInTable.getSelection() );
 	}
 	
 	private void ok()
@@ -668,6 +701,11 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 			TableOutputMeta info = new TableOutputMeta();
 			getInfo(info);
 			Row prev = transMeta.getPrevStepFields(stepname);
+            if (info.isTableNameInField() && !info.isTableNameInTable() && info.getTableNameField().length()>0)
+            {
+                int idx = prev.searchValueIndex(info.getTableNameField());
+                if (idx>=0) prev.removeValue(idx);
+            }
 			StepMeta stepMeta = transMeta.findStep(stepname);
 			
 			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev);
