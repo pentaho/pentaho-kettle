@@ -32,5 +32,6 @@
 	<classpathentry kind="lib" path="libext/edbc.jar"/>
 	<classpathentry sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.1.0/src/org.junit_3.8.1/junitsrc.zip" kind="var" path="JUNIT_HOME/junit.jar"/>
 	<classpathentry kind="src" path="extra"/>
+	<classpathentry kind="lib" path="libext/ehcache-1.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

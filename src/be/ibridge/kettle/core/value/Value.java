@@ -20,6 +20,9 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
@@ -52,9 +55,11 @@ import be.ibridge.kettle.repository.Repository;
  * @since Beginning 2003
  */
 
-public class Value implements Cloneable, XMLInterface
+public class Value implements Cloneable, XMLInterface, Serializable
 {
-	/**
+    private static final long serialVersionUID = -6310073485210258622L;
+    
+    /**
 	 * Value type indicating that the value has no type set.
 	 */
 	public static final int VALUE_TYPE_NONE       = 0;
@@ -1186,138 +1191,173 @@ public class Value implements Cloneable, XMLInterface
 	{
 		return NULL;
 	}
+    
+    /**
+     * Write the object to an ObjectOutputStream
+     * @param out
+     * @throws IOException
+     */
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException
+    {
+        writeObj(new DataOutputStream(out));
+    }
+    
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        readObj(new DataInputStream(in));
+    }
+
+    public void writeObj(DataOutputStream dos) throws IOException
+    {
+        int type=getType();
+
+        // Handle type
+        dos.writeInt( getType() );
+        
+        // Handle name-length
+        dos.writeInt( name.length() );  
+        
+        // Write name
+        dos.writeChars( name );
+
+        // length & precision
+        dos.writeInt( getLength() );
+        dos.writeInt( getPrecision() );
+
+        // NULL?
+        dos.writeBoolean(isNull());
+        
+        // Handle Content -- only when not NULL
+        if (!isNull())
+        {
+            switch(type)
+            {
+            case VALUE_TYPE_STRING : 
+            case VALUE_TYPE_BIGNUMBER:
+                if (getString()!=null && getString().getBytes().length>0) 
+                {
+                    dos.writeInt(getString().getBytes().length);
+                    dos.writeChars(getString());
+                }
+                else
+                {
+                    dos.writeInt(0);
+                }
+                break;
+            case VALUE_TYPE_DATE   : 
+                dos.writeBoolean(getDate()!=null);
+                if (getDate()!=null)   
+                {
+                    dos.writeLong(getDate().getTime());
+                }
+                break;
+            case VALUE_TYPE_NUMBER : 
+                dos.writeDouble(getNumber()); 
+                break;
+            case VALUE_TYPE_BOOLEAN: 
+                dos.writeBoolean(getBoolean()); 
+                break;
+            case VALUE_TYPE_INTEGER: 
+                dos.writeLong(getInteger()); 
+                break;
+            default: break; // nothing
+            }
+        }
+    }
 	
 	/**
 	 * Write the value, including the meta-data to a DataOutputStream
 	 * @param dos the DataOutputStream to write to .
 	 * @return true if all went well, false if something went wrong.
 	 */
-	public void write(DataOutputStream dos) throws KettleFileException
+	public void write(OutputStream dos) throws KettleFileException
 	{
-		int type=getType();
-		
 		try
 		{
-			// Handle type
-			dos.writeInt( getType() );
-			
-			// Handle name-length
-			dos.writeInt( name.length() );  
-			
-			// Write name
-			dos.writeChars( name );
-
-			// length & precision
-			dos.writeInt( getLength() );
-			dos.writeInt( getPrecision() );
-
-			// NULL?
-			dos.writeBoolean(isNull());
-			
-			// Handle Content -- only when not NULL
-			if (!isNull())
-			{
-				switch(type)
-				{
-				case VALUE_TYPE_STRING : 
-                case VALUE_TYPE_BIGNUMBER:
-					if (getString()!=null && getString().getBytes().length>0) 
-					{
-						dos.writeInt(getString().getBytes().length);
-						dos.writeChars(getString());
-					}
-					else
-					{
-						dos.writeInt(0);
-					}
-					break;
-				case VALUE_TYPE_DATE   : 
-					dos.writeBoolean(getDate()!=null);
-					if (getDate()!=null)   
-					{
-						dos.writeLong(getDate().getTime());
-					}
-					break;
-				case VALUE_TYPE_NUMBER : 
-					dos.writeDouble(getNumber()); 
-					break;
-				case VALUE_TYPE_BOOLEAN: 
-					dos.writeBoolean(getBoolean()); 
-					break;
-				case VALUE_TYPE_INTEGER: 
-					dos.writeLong(getInteger()); 
-					break;
-				default: break; // nothing
-				}
-			}
+            writeObj(new DataOutputStream(dos));
 		}
 		catch(Exception e)
 		{
 			throw new KettleFileException("Unable to write value to output stream", e);
 		}
 	}
+    
+    public void readObj(DataInputStream dis) throws IOException
+    {
+        // type
+        int theType = dis.readInt(); 
+        newValue(theType);
+        
+        // name-length
+        int nameLength=dis.readInt();  
+        
+        // name
+        StringBuffer nameBuffer=new StringBuffer();
+        for (int i=0;i<nameLength;i++) nameBuffer.append( dis.readChar() );
+        setName(new String(nameBuffer));
+        
+        // length & precision
+        setLength( dis.readInt(), dis.readInt() ); 
+        
+        // Null?
+        setNull( dis.readBoolean() );
+        
+        // Read the values
+        if (!isNull())
+        {
+            switch(getType())
+            {
+            case VALUE_TYPE_STRING:
+            case VALUE_TYPE_BIGNUMBER:
+                // Handle lengths
+                int dataLength=dis.readInt();
+                if (dataLength>0)
+                {
+                    StringBuffer   val_string=new StringBuffer();
+                    for (int i=0;i<dataLength;i++) val_string.append(dis.readChar());
+                    setValue( val_string.toString() );
+                }
+                if (theType==VALUE_TYPE_BIGNUMBER) 
+                {
+                    try
+                    {
+                        convertString(theType);
+                    }
+                    catch(KettleValueException e)
+                    {
+                        throw new IOException("Unable to convert String to BigNumber while reading from data input stream ["+getString()+"]");
+                    }
+                }
+                break;
+            case VALUE_TYPE_DATE:
+                if (dis.readBoolean())
+                {
+                    setValue(new Date(dis.readLong()));
+                }
+                break;
+            case VALUE_TYPE_NUMBER:
+                setValue( dis.readDouble() ); 
+                break;
+            case VALUE_TYPE_INTEGER:
+                setValue( dis.readLong() );
+                break;
+            case VALUE_TYPE_BOOLEAN:
+                setValue( dis.readBoolean() );
+                break;
+            }
+        }
+    }
 
     /**
      * Read the Value, including meta-data from a DataInputStream
      * @param dis The DataInputStream to read the value from
      * @throws Exception when the Value couldn't be created by reading it from the DataInputStream.
      */
-	public Value(DataInputStream dis) throws KettleFileException
+	public Value(InputStream is) throws KettleFileException
 	{
 		try
 		{
-			// type
-            int theType = dis.readInt(); 
-			newValue(theType);
-			
-			// name-length
-			int nameLength=dis.readInt();  
-			
-			// name
-			StringBuffer nameBuffer=new StringBuffer();
-			for (int i=0;i<nameLength;i++) nameBuffer.append( dis.readChar() );
-			setName(new String(nameBuffer));
-			
-			// length & precision
-			setLength( dis.readInt(), dis.readInt() ); 
-			
-			// Null?
-			setNull( dis.readBoolean() );
-			
-			// Read the values
-			if (!isNull())
-			{
-				switch(getType())
-				{
-				case VALUE_TYPE_STRING:
-                case VALUE_TYPE_BIGNUMBER:
-					// Handle lengths
-					int dataLength=dis.readInt();
-					if (dataLength>0)
-					{
-						StringBuffer   val_string=new StringBuffer();
-						for (int i=0;i<dataLength;i++) val_string.append(dis.readChar());
-						setValue( val_string.toString() );
-					}
-                    if (theType==VALUE_TYPE_BIGNUMBER) convertString(theType);
-					break;
-				case VALUE_TYPE_DATE:
-					if (dis.readBoolean())
-					{
-						setValue(new Date(dis.readLong()));
-					}
-					break;
-				case VALUE_TYPE_NUMBER:
-					setValue( dis.readDouble() ); 
-					break;
-				case VALUE_TYPE_INTEGER:
-					setValue( dis.readLong() );
-					break;
-				case VALUE_TYPE_BOOLEAN:
-					setValue( dis.readBoolean() );
-					break;
-				}
-			}
+            readObj(new DataInputStream(is));
 		}
 		catch(EOFException e)
 		{

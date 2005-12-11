@@ -19,6 +19,8 @@ package be.ibridge.kettle.core;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
+import java.io.IOException;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -36,7 +38,7 @@ import be.ibridge.kettle.core.value.Value;
  * @since Beginning 2003.
  * 
  */
-public class Row implements XMLInterface, Comparable
+public class Row implements XMLInterface, Comparable, Serializable
 {
     private final List list = new ArrayList();
     
@@ -355,7 +357,32 @@ public class Row implements XMLInterface, Comparable
 	{
 		return ignore;
 	}
+    
+    /**
+     * Write the object to an ObjectOutputStream
+     * @param out
+     * @throws IOException
+     */
+    private void writeObject(java.io.ObjectOutputStream out) throws IOException
+    {
+        writeObj(new DataOutputStream(out));
+    }
+    
+    private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
+    {
+        readObj(new DataInputStream(in));
+    }
+    
 	
+    private void writeObj(DataOutputStream dos) throws IOException
+    {
+        // First handle the number of fields in a row
+        dos.writeInt(size());
+    
+        // Write all values in the row
+        for (int i=0;i<size();i++) getValue(i).writeObj(dos);
+    }
+    
 	/**
 	 * Write the content of the row to a DataOutputStream
 	 * @param dos The DataOutputStream to write to
@@ -365,17 +392,27 @@ public class Row implements XMLInterface, Comparable
 	{
 		try
 		{
-			// First handle the number of fields in a row
-			dos.writeInt(size());
-		
-			// Write all values in the row
-			for (int i=0;i<size();i++) getValue(i).write(dos);
+            writeObj(dos);
 		}
 		catch(Exception e)
 		{
 			throw new KettleFileException("Error writing row to output stream", e);
 		}
 	}
+    
+    private void readObj(DataInputStream dis) throws IOException
+    {
+        // First handle the number of fields in a row
+        int size=dis.readInt();
+        
+        // get all values in the row
+        for (int i=0;i<size;i++) 
+        {
+            Value v = new Value();
+            v.readObj(dis);
+            addValue(v);
+        }
+    }
 	
 	/**
 	 * Read a row of Values from an input-stream
@@ -385,17 +422,9 @@ public class Row implements XMLInterface, Comparable
 	{
 		try
 		{
-			// First handle the number of fields in a row
-			int size=dis.readInt();
-			
-			// get all values in the row
-			for (int i=0;i<size;i++) addValue(new Value(dis));
+            readObj(dis);
 		}
 		catch(EOFException e)
-		{
-			throw new KettleEOFException("End of file reached", e);
-		}
-		catch(KettleEOFException e)
 		{
 			throw new KettleEOFException("End of file reached", e);
 		}
