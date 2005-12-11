@@ -98,7 +98,24 @@ public class TableOutput extends BaseStep implements StepInterface
 
         PreparedStatement insertStatement = null;
         
-        String tableName = Const.replEnv( meta.getTablename() );     
+        String tableName = null;
+        
+        if ( meta.isTableNameInField() )
+        {
+            // Cache the position of the table name field
+            if (data.indexOfTableNameField<0)
+            {
+                data.indexOfTableNameField = r.searchValueIndex(meta.getTableNameField());
+                if (data.indexOfTableNameField<0)
+                {
+                    String message = "Unable to find table name field ["+meta.getTableNameField()+"] in input row";
+                    log.logError(toString(), message);
+                    throw new KettleStepException(message);
+                }
+            }
+            tableName = r.getValue(data.indexOfTableNameField).getString();
+        }
+        else
         if (  meta.isPartitioningEnabled() && 
             ( meta.isPartitioningDaily() || meta.isPartitioningMonthly()) &&
             ( meta.getPartitioningField()!=null && meta.getPartitioningField().length()>0 )
@@ -130,6 +147,15 @@ public class TableOutput extends BaseStep implements StepInterface
             }
             
             tableName+="_"+data.dateFormater.format(partitioningValue.getDate());
+        }
+        else
+        {
+            tableName = Const.replEnv( meta.getTablename() );
+        }
+        
+        if (tableName==null || tableName.length()==0)
+        {
+            throw new KettleStepException("The tablename is not defined (empty)");
         }
 
         insertStatement = (PreparedStatement) data.preparedStatements.get(tableName);
@@ -206,7 +232,7 @@ public class TableOutput extends BaseStep implements StepInterface
 				{
 					data.db.truncateTable(Const.replEnv( meta.getTablename() ));
 				}
-            
+                
 				return true;
 			}
 			catch(KettleException e)

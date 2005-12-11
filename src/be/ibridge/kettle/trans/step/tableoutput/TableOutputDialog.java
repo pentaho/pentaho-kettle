@@ -21,6 +21,9 @@
 
 package be.ibridge.kettle.trans.step.tableoutput;
 
+import java.util.Enumeration;
+import java.util.Properties;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -46,6 +49,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.SQLStatement;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseExplorerDialog;
+import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -61,9 +65,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	private CCombo       wConnection;
 
 	private Label        wlTable;
-	private Button       wbTable;
+	private Button       wbTable, wbcTable;
 	private Text         wTable;
-	private FormData     fdlTable, fdbTable, fdTable;
+	private FormData     fdlTable, fdbTable, fdbcTable, fdTable;
 
 	private Label        wlCommit;
 	private Text         wCommit;
@@ -97,8 +101,16 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     private Button       wPartDaily;
     private FormData     fdlPartDaily, fdPartDaily;
 
+    private Label        wlNameInField;
+    private Button       wNameInField;
+    private FormData     fdlNameInField, fdNameInField;
 
-	private TableOutputMeta input;
+    private Label        wlNameField;
+    private Text         wNameField;
+    private FormData     fdlNameField, fdNameField;
+	
+    
+    private TableOutputMeta input;
 	
 	public TableOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -175,13 +187,21 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdbTable.top  = new FormAttachment(wConnection, margin);
 		wbTable.setLayoutData(fdbTable);
 
+        wbcTable=new Button(shell, SWT.PUSH| SWT.CENTER);
+        props.setLook(wbcTable);
+        wbcTable.setText("&Variable...");
+        fdbcTable=new FormData();
+        fdbcTable.right= new FormAttachment(wbTable, 0);
+        fdbcTable.top  = new FormAttachment(wConnection, margin);
+        wbcTable.setLayoutData(fdbcTable);
+
 		wTable=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
 		fdTable=new FormData();
 		fdTable.top  = new FormAttachment(wConnection, margin*2);
 		fdTable.left = new FormAttachment(middle, 0);
-		fdTable.right= new FormAttachment(wbTable, -margin);
+		fdTable.right= new FormAttachment(wbcTable, -margin);
 		wTable.setLayoutData(fdTable);
 
 		// Commit size ...
@@ -386,6 +406,52 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         );
 
         
+        // NameInField table
+        wlNameInField=new Label(shell, SWT.RIGHT);
+        wlNameInField.setText("Is the name of the table defined in a field? ");
+        props.setLook(wlNameInField);
+        fdlNameInField=new FormData();
+        fdlNameInField.left  = new FormAttachment(0, 0);
+        fdlNameInField.top   = new FormAttachment(wPartDaily, margin);
+        fdlNameInField.right = new FormAttachment(middle, -margin);
+        wlNameInField.setLayoutData(fdlNameInField);
+        wNameInField=new Button(shell, SWT.CHECK);
+        props.setLook(wNameInField);
+        fdNameInField=new FormData();
+        fdNameInField.left  = new FormAttachment(middle, 0);
+        fdNameInField.top   = new FormAttachment(wPartDaily, margin);
+        fdNameInField.right = new FormAttachment(100, 0);
+        wNameInField.setLayoutData(fdNameInField);
+        wNameInField.addSelectionListener(
+            new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent arg0)
+                {
+                    setFlags();
+                }
+            }
+        );
+        
+        // NameField size ...
+        wlNameField=new Label(shell, SWT.RIGHT);
+        wlNameField.setText("Field that contains name of table: ");
+        props.setLook(wlNameField);
+        fdlNameField=new FormData();
+        fdlNameField.left = new FormAttachment(0, 0);
+        fdlNameField.right= new FormAttachment(middle, -margin);
+        fdlNameField.top  = new FormAttachment(wNameInField, margin);
+        wlNameField.setLayoutData(fdlNameField);
+        wNameField=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wNameField);
+        wNameField.addModifyListener(lsMod);
+        fdNameField=new FormData();
+        fdNameField.left = new FormAttachment(middle, 0);
+        fdNameField.top  = new FormAttachment(wNameInField, margin);
+        fdNameField.right= new FormAttachment(100, 0);
+        wNameField.setLayoutData(fdNameField);
+
+        
+        
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText("  &OK  ");
@@ -394,7 +460,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText("  &Cancel  ");
 		
-		setButtonPositions(new Button[] { wOK, wCreate, wCancel }, margin, wPartDaily);
+		setButtonPositions(new Button[] { wOK, wCreate, wCancel }, margin, wNameField);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -421,6 +487,41 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 				}
 			}
 		);
+        
+        // Listen to the Variable... button
+        wbcTable.addSelectionListener
+        (
+            new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    Properties sp = System.getProperties();
+                    Enumeration keys = sp.keys();
+                    int size = sp.values().size();
+                    String key[] = new String[size];
+                    String val[] = new String[size];
+                    String str[] = new String[size];
+                    int i=0;
+                    while (keys.hasMoreElements())
+                    {
+                        key[i] = (String)keys.nextElement();
+                        val[i] = sp.getProperty(key[i]);
+                        str[i] = key[i]+"  ["+val[i]+"]";
+                        i++;
+                    }
+                    
+                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, "Select an Environment Variable", "Select an Environment Variable");
+                    if (esd.open()!=null)
+                    {
+                        int nr = esd.getSelectionNr();
+                        wTable.insert("%%"+key[nr]+"%%");
+                        wTable.setToolTipText(Const.replEnv( wTable.getText() ) );
+                    }
+                }
+                
+            }
+        );
+
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -444,12 +545,23 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         wIgnore.setEnabled(!wBatch.getSelection());
         wlIgnore.setEnabled(!wBatch.getSelection());
         
-        wlPartMonthly.setEnabled(wUsePart.getSelection());
-        wPartMonthly.setEnabled(wUsePart.getSelection());
-        wlPartDaily.setEnabled(wUsePart.getSelection());
-        wPartDaily.setEnabled(wUsePart.getSelection());
-        wlPartField.setEnabled(wUsePart.getSelection());
-        wPartField.setEnabled(wUsePart.getSelection());
+        boolean usePartitioning    = wUsePart.getSelection() && !wNameInField.getSelection();
+        boolean isTableNameInField = wNameInField.getSelection();
+        
+        wUsePart.setSelection(usePartitioning);
+        wlPartMonthly.setEnabled(usePartitioning);
+        wPartMonthly.setEnabled(usePartitioning);
+        wlPartDaily.setEnabled(usePartitioning);
+        wPartDaily.setEnabled(usePartitioning);
+        wlPartField.setEnabled(usePartitioning);
+        wPartField.setEnabled(usePartitioning);
+        
+        wNameInField.setSelection(isTableNameInField);
+        wlNameField.setEnabled(isTableNameInField);
+        wNameField.setEnabled(isTableNameInField);
+        
+        wlTable.setEnabled(!isTableNameInField);
+        wTable.setEnabled(!isTableNameInField);
     }
 
 	/**
@@ -460,7 +572,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		if (input.getTablename()      != null) wTable.setText(input.getTablename());
 		if (input.getDatabase() != null) wConnection.setText(input.getDatabase().getName());
 		
-		wTruncate.setSelection(input.truncateTable());
+		wNameInField.setSelection(input.truncateTable());
 		wIgnore.setSelection(input.ignoreErrors());
 		wBatch.setSelection(input.useBatchUpdate());
 
@@ -470,6 +582,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         wPartDaily.setSelection(input.isPartitioningDaily());
         wPartMonthly.setSelection(input.isPartitioningMonthly());
         if (input.getPartitioningField()!=null) wPartField.setText(input.getPartitioningField());
+        
+        wNameInField.setSelection( input.isTableNameInField());
+        if (input.getTableNameField()!=null) wNameField.setText( input.getTableNameField() );
         
 		setFlags();
 		
@@ -495,6 +610,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         info.setPartitioningField( wPartField.getText() );
         info.setPartitioningDaily( wPartDaily.getSelection() );
         info.setPartitioningMonthly( wPartMonthly.getSelection() );
+        info.setTableNameInField( wNameInField.getSelection() );
+        info.setTableNameField( wNameField.getText() );
 	}
 	
 	private void ok()

@@ -63,6 +63,40 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
     private boolean      partitioningDaily;
     private boolean      partitioningMonthly;
     	
+    private boolean      tableNameInField;
+    private String       tableNameField;
+
+    /**
+     * @return Returns the tableNameField.
+     */
+    public String getTableNameField()
+    {
+        return tableNameField;
+    }
+
+    /**
+     * @param tableNameField The tableNameField to set.
+     */
+    public void setTableNameField(String tableNameField)
+    {
+        this.tableNameField = tableNameField;
+    }
+
+    /**
+     * @return Returns the tableNameInField.
+     */
+    public boolean isTableNameInField()
+    {
+        return tableNameInField;
+    }
+
+    /**
+     * @param tableNameInField The tableNameInField to set.
+     */
+    public void setTableNameInField(boolean tableNameInField)
+    {
+        this.tableNameInField = tableNameInField;
+    }
 
     /**
      * @return Returns the partitioningDaily.
@@ -265,6 +299,9 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
             partitioningField    = XMLHandler.getTagValue(stepnode, "partitioning_field");
             partitioningDaily    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "partitioning_daily"));
             partitioningMonthly  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "partitioning_monthly"));
+            
+            tableNameInField = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "tablename_in_field"));
+            tableNameField   = XMLHandler.getTagValue(stepnode, "tablename_field");
         }
 		catch(Exception e)
 		{
@@ -298,6 +335,9 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
         retval+="    "+XMLHandler.addTagValue("partitioning_daily",     partitioningDaily);
         retval+="    "+XMLHandler.addTagValue("partitioning_monthly",   partitioningMonthly);
         
+        retval+="    "+XMLHandler.addTagValue("tablename_in_field", tableNameInField);
+        retval+="    "+XMLHandler.addTagValue("tablename_field", tableNameField);
+        
 		return retval;
 	}
 
@@ -318,7 +358,9 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
             partitioningField     = rep.getStepAttributeString (id_step, "partitioning_field"); 
             partitioningDaily     = rep.getStepAttributeBoolean(id_step, "partitioning_daily"); 
             partitioningMonthly   = rep.getStepAttributeBoolean(id_step, "partitioning_monthly"); 
-            
+
+            tableNameInField      = rep.getStepAttributeBoolean(id_step, "tablename_in_field"); 
+            tableNameField        = rep.getStepAttributeString (id_step, "tablename_field"); 
 		}
 		catch(Exception e)
 		{
@@ -343,6 +385,9 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "partitioning_daily",   partitioningDaily);
             rep.saveStepAttribute(id_transformation, id_step, "partitioning_monthly", partitioningMonthly);
             
+            rep.saveStepAttribute(id_transformation, id_step, "tablename_in_field", tableNameInField);
+            rep.saveStepAttribute(id_transformation, id_step, "tablename_field" ,   tableNameField);
+
 			// Also, save the step-database relationship!
 			if (database!=null) rep.insertStepDatabase(id_transformation, id_step, database.getID());
 		}

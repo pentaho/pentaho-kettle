@@ -47,6 +47,7 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
 
     /** Use batch mode or not? */
     public boolean batchMode;
+    public int indexOfTableNameField;
     
 	public TableOutputData()
 	{
@@ -58,6 +59,7 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
         preparedStatements = new Hashtable(); 
         
         indexOfPartitioningField = -1;
+        indexOfTableNameField = -1;
 	}
 
 }
