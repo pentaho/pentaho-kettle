@@ -308,14 +308,14 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         props.setLook(wlUsePart);
         fdlUsePart=new FormData();
         fdlUsePart.left  = new FormAttachment(0, 0);
-        fdlUsePart.top   = new FormAttachment(wBatch, margin*3);
+        fdlUsePart.top   = new FormAttachment(wBatch, margin*5);
         fdlUsePart.right = new FormAttachment(middle, -margin);
         wlUsePart.setLayoutData(fdlUsePart);
         wUsePart=new Button(shell, SWT.CHECK);
         props.setLook(wUsePart);
         fdUsePart=new FormData();
         fdUsePart.left  = new FormAttachment(middle, 0);
-        fdUsePart.top   = new FormAttachment(wBatch, margin*3);
+        fdUsePart.top   = new FormAttachment(wBatch, margin*5);
         fdUsePart.right = new FormAttachment(100, 0);
         wUsePart.setLayoutData(fdUsePart);
         wUsePart.addSelectionListener(lsSelMod);
@@ -325,6 +325,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
             {
                 public void widgetSelected(SelectionEvent arg0)
                 {
+                    if (wNameInField.getSelection()) wNameInField.setSelection(false);
                     setFlags();
                 }
             }
@@ -416,14 +417,14 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         props.setLook(wlNameInField);
         fdlNameInField=new FormData();
         fdlNameInField.left  = new FormAttachment(0, 0);
-        fdlNameInField.top   = new FormAttachment(wPartDaily, margin);
+        fdlNameInField.top   = new FormAttachment(wPartDaily, margin*5);
         fdlNameInField.right = new FormAttachment(middle, -margin);
         wlNameInField.setLayoutData(fdlNameInField);
         wNameInField=new Button(shell, SWT.CHECK);
         props.setLook(wNameInField);
         fdNameInField=new FormData();
         fdNameInField.left  = new FormAttachment(middle, 0);
-        fdNameInField.top   = new FormAttachment(wPartDaily, margin);
+        fdNameInField.top   = new FormAttachment(wPartDaily, margin*5);
         fdNameInField.right = new FormAttachment(100, 0);
         wNameInField.setLayoutData(fdNameInField);
         wNameInField.addSelectionListener(
@@ -431,6 +432,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
             {
                 public void widgetSelected(SelectionEvent arg0)
                 {
+                    if (wUsePart.getSelection()) wUsePart.setSelection(false);
                     setFlags();
                 }
             }
@@ -571,12 +573,16 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	
     public void setFlags()
     {
-        wIgnore.setEnabled(!wBatch.getSelection());
-        wlIgnore.setEnabled(!wBatch.getSelection());
-        
+        boolean useIgnore          = !wBatch.getSelection();
+        boolean useTruncate        = !( wUsePart.getSelection() || wNameInField.getSelection() );
+        boolean useTablename       = !( wNameInField.getSelection() );
         boolean usePartitioning    = wUsePart.getSelection() && !wNameInTable.getSelection();
         boolean isTableNameInField = wNameInField.getSelection();
+
         
+        wIgnore.setEnabled( useIgnore );
+        wlIgnore.setEnabled( useIgnore );
+
         wUsePart.setSelection(usePartitioning);
         wlPartMonthly.setEnabled(usePartitioning);
         wPartMonthly.setEnabled(usePartitioning);
@@ -591,8 +597,11 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         wlNameInTable.setEnabled(isTableNameInField);
         wNameInTable.setEnabled(isTableNameInField);
         
-        wlTable.setEnabled(!isTableNameInField);
-        wTable.setEnabled(!isTableNameInField);
+        wlTable.setEnabled( useTablename );
+        wTable.setEnabled( useTablename );
+        
+        wlTruncate.setEnabled(useTruncate);
+        wTruncate.setEnabled(useTruncate);
     }
 
 	/**

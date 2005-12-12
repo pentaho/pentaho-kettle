@@ -239,10 +239,13 @@ public class TableOutput extends BaseStep implements StepInterface
 				logBasic("Connected to database ["+meta.getDatabase()+"] (commit="+meta.getCommitSize()+")");
 				data.db.setCommit(meta.getCommitSize());
 				
-                if (meta.truncateTable() && getCopy()==0) // Only the first one truncates!!!
-				{
-					data.db.truncateTable(Const.replEnv( meta.getTablename() ));
-				}
+                if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())
+                {
+                    if (meta.truncateTable() && getCopy()==0) // Only the first one truncates!!!
+    				{
+    					data.db.truncateTable(Const.replEnv( meta.getTablename() ));
+    				}
+                }
                 
 				return true;
 			}
