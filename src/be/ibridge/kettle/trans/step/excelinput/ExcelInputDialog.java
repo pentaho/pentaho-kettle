@@ -1179,6 +1179,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 									fieldname = cell.getContents();
 								}
 								
+                                // System.out.println("Fieldname = "+fieldname);
+                                
 								Cell below = sheet.getCell(colnr, rownr+1);
 								if (below.getType().equals(CellType.BOOLEAN))
 								{
@@ -1199,6 +1201,11 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 								{
 									fieldtype = Value.VALUE_TYPE_NUMBER;
 								}
+                                
+                                if (fieldname!=null && fieldtype==Value.VALUE_TYPE_NONE)
+                                {
+                                    fieldtype = Value.VALUE_TYPE_STRING;
+                                }
 								
 								if (fieldname!=null && fieldtype!=Value.VALUE_TYPE_NONE)
 								{
@@ -1212,6 +1219,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 							}
 							catch(ArrayIndexOutOfBoundsException aioobe)
 							{
+                                // System.out.println("index out of bounds at column "+colnr+" : "+aioobe.toString());
 								stop=true;
 							}
 						}

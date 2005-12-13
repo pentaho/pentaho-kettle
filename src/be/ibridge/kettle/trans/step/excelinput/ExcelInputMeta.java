@@ -725,7 +725,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			
 			allocate(nrfiles, nrsheets, nrfields);
 
-            System.out.println("Counted "+nrfiles+" files to read and "+nrsheets+" sheets, "+nrfields+" fields.");
+            // System.out.println("Counted "+nrfiles+" files to read and "+nrsheets+" sheets, "+nrfields+" fields.");
 			for (int i=0;i<nrfiles;i++)
 			{
 				fileName[i] =      rep.getStepAttributeString (id_step, i, "file_name"    );
