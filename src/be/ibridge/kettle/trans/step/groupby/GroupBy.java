@@ -498,7 +498,7 @@ public class GroupBy extends BaseStep implements StepInterface
 		}
 		finally
 		{
-            data.tempFile.delete();
+            if (data.tempFile!=null) data.tempFile.delete();
 			dispose(meta, data);
 			logSummary();
 			markStop();
