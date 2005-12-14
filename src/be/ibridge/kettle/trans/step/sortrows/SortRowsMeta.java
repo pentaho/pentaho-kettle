@@ -47,10 +47,14 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
  
 public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 {
-	private String  fieldName[];     // order by which fields?
-	private boolean ascending[];     // false : descending, true=ascending
+    /** order by which fields? */
+	private String  fieldName[];
+    /** false : descending, true=ascending */
+	private boolean ascending[];
 	
+    /** Directory to store the temp files */
 	private String  directory;
+    /** Temp files prefix... */
 	private String  prefix;
 
 	public SortRowsMeta()

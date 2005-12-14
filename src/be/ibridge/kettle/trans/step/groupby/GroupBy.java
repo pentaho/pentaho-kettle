@@ -15,11 +15,19 @@
  
 package be.ibridge.kettle.trans.step.groupby;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
@@ -57,25 +65,40 @@ public class GroupBy extends BaseStep implements StepInterface
 		Row r=getRow();    // get row!
 		if (r==null)  // no more input to be expected...
 		{
-			// Don't forget the last set of rows...
-			if (data.previous!=null) 
-			{
-				if (meta.passAllRows())
-				{
-					Row normal = buildRegular(data.previous);
-					putRow(normal);
-				}
-				
-				calcAggregate(data.previous);
-				
-				Row result = buildResult(data.previous);
-				putRow(result);				
-			} 
+            if (meta.passAllRows())  // ALL ROWS
+            {
+                if (data.previous!=null)
+                {
+                    calcAggregate(data.previous);
+                    addToBuffer(data.previous);
+                }
+                data.groupResult = getAggregateResult();
+
+                Row row = getRowFromBuffer();
+                while (row!=null)
+                {
+                    row.addRow(data.groupResult);
+                    putRow(row);
+                    row = getRowFromBuffer();
+                }
+                closeInput();
+            }
+            else   // JUST THE GROUP + AGGREGATE
+            {
+    			// Don't forget the last set of rows...
+    			if (data.previous!=null) 
+    			{
+    				calcAggregate(data.previous);
+    				
+    				Row result = buildResult(data.previous);
+    				putRow(result);
+    			} 
+    		}
 			setOutputDone();
 			return false;
 		}
 		
-		// System.out.println("r = "+r);
+		//System.out.println("r = "+r);
 		
 		if (first)
 		{
@@ -109,7 +132,7 @@ public class GroupBy extends BaseStep implements StepInterface
 			newAggregate(r);         // Create a new group aggregate (init)
 			
 			// System.out.println("FIRST, agg="+agg);
-			
+
 			first=false;
 		}
 		else
@@ -119,21 +142,49 @@ public class GroupBy extends BaseStep implements StepInterface
 
 			if (meta.passAllRows())
 			{
-				Row normal = buildRegular(data.previous);
-				putRow(normal);
+                addToBuffer(data.previous);
 			}
 		}
-
 				
-		
+		// System.out.println("Check for same group...");
+        
 		if (!sameGroup(data.previous, r))
 		{
-			Row result = buildResult(data.previous);
-			putRow(result);        // copy row to possible alternate rowset(s).
-			newAggregate(r);       // Create a new group aggregate (init)
+            // System.out.println("Different group!");
+            
+            if (meta.passAllRows())
+            {
+                // System.out.println("Close output...");
+                
+                // Not the same group: close output (if any)
+                closeOutput();
+
+                // System.out.println("getAggregateResult()");
+
+                // Get all rows from the buffer!
+                data.groupResult = getAggregateResult();
+
+                // System.out.println("dump rows from the buffer");
+
+                Row row = getRowFromBuffer();
+                while (row!=null)
+                {
+                    row.addRow(data.groupResult);
+                    putRow(row);
+                    row = getRowFromBuffer();
+                }
+                closeInput();
+            }
+            else
+            {
+    			Row result = buildResult(data.previous);
+    			putRow(result);        // copy row to possible alternate rowset(s).
+            }
+            newAggregate(r);       // Create a new group aggregate (init)
 		}
 
 		data.previous=new Row(r);
+        
 
 		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesRead);
 			
@@ -260,31 +311,35 @@ public class GroupBy extends BaseStep implements StepInterface
 			result.addValue(gr);
 		}
 		debug="buildResult 2";
-		for (int i=0;i<data.subjectnrs.length;i++)
-		{
-			Value ag = data.agg.getValue(i);
-			switch(meta.getAggregateType()[i])
-			{
-				case GroupByMeta.TYPE_GROUP_SUM            : break; 
-				case GroupByMeta.TYPE_GROUP_AVERAGE        : ag.divide(new Value("c", data.counts[i])); break; 
-				case GroupByMeta.TYPE_GROUP_COUNT_ALL      : ag.setValue(data.counts[i]); break;
-				case GroupByMeta.TYPE_GROUP_MIN            : break; 
-				case GroupByMeta.TYPE_GROUP_MAX            : break; 
-				default: break;
-			}
-			result.addValue(ag);
-		}
-		debug="buildResult 3";
-		// At the end, add the flag?
-		if (meta.getPassFlagField()!=null && meta.getPassFlagField().length()>0)
-		{
-			Value flag = new Value(meta.getPassFlagField(), Value.VALUE_TYPE_BOOLEAN);
-			flag.setValue(true);
-			result.addValue(flag);
-		}
+        
+        result.addRow(getAggregateResult());
+        
 		debug="buildResult end";
 		return result;
 	}
+    
+    private Row getAggregateResult() throws KettleValueException
+    {
+        Row result = new Row();
+
+        for (int i=0;i<data.subjectnrs.length;i++)
+        {
+            Value ag = data.agg.getValue(i);
+            switch(meta.getAggregateType()[i])
+            {
+                case GroupByMeta.TYPE_GROUP_SUM            : break; 
+                case GroupByMeta.TYPE_GROUP_AVERAGE        : ag.divide(new Value("c", data.counts[i])); break; 
+                case GroupByMeta.TYPE_GROUP_COUNT_ALL      : ag.setValue(data.counts[i]); break;
+                case GroupByMeta.TYPE_GROUP_MIN            : break; 
+                case GroupByMeta.TYPE_GROUP_MAX            : break; 
+                default: break;
+            }
+            result.addValue(ag);
+        }
+
+        return result;
+
+    }
 
 	private Row buildRegular(Row r)
 	{
@@ -307,20 +362,108 @@ public class GroupBy extends BaseStep implements StepInterface
 			ag.setName(meta.getAggregateField()[i]);
 			result.addValue(ag);
 		}
-                
-		// At the end, add the flag?
-
-		if (meta.getPassFlagField()!=null && meta.getPassFlagField().length()>0)
-		{
-			Value flag = new Value(meta.getPassFlagField(), Value.VALUE_TYPE_BOOLEAN);
-			flag.setValue(false);
-			result.addValue(flag);
-		}
 
 		debug="buildRegular end";
 		return result;
 	}
 		
+    private void addToBuffer(Row row) throws KettleFileException
+    {
+        //System.out.println("Add to buffer: "+row);
+        
+        data.bufferList.add(row);
+        if (data.bufferList.size()>5000)
+        {
+            if (data.rowsOnFile==0)
+            {
+                try
+                {
+                    data.tempFile = File.createTempFile(meta.getPrefix(), ".tmp", new File(Const.replEnv(meta.getDirectory())));
+                    data.fos=new FileOutputStream(data.tempFile);
+                    data.dos=new DataOutputStream(data.fos);
+                    data.firstRead = true;
+                }
+                catch(IOException e)
+                {
+                    throw new KettleFileException("Unable to create temporary file", e);
+                }
+            }
+            // OK, save the oldest rows to disk!
+            Row oldest = (Row) data.bufferList.get(0);
+            oldest.write(data.dos);
+            data.bufferList.remove(0);
+            data.rowsOnFile++;
+        }
+    }
+    
+    private Row getRowFromBuffer() throws KettleFileException
+    {
+        if (data.rowsOnFile>0)
+        {
+            if (data.firstRead)
+            {
+                // Open the inputstream first...
+                try
+                {
+                    data.fis=new FileInputStream( data.tempFile );
+                    data.dis=new DataInputStream( data.fis );
+                    data.firstRead = false;
+                }
+                catch(IOException e)
+                {
+                    throw new KettleFileException("Unable to read back row from temporary file!", e);
+                }
+            }
+            
+            // Read one row from the file!
+            Row row = new Row(data.dis);
+            data.rowsOnFile--;
+            
+            return row;
+        }
+        else
+        {
+            if (data.bufferList.size()>0)
+            {
+                Row row = (Row)data.bufferList.get(0);
+                data.bufferList.remove(0);
+                return row;
+            }
+            else
+            {
+                return null; // Nothing left!
+            }
+        }
+    }
+    
+    private void closeOutput() throws KettleFileException
+    {
+        try
+        {
+            if (data.dos!=null) { data.dos.close(); data.dos=null; }
+            if (data.fos!=null) { data.fos.close(); data.fos=null; }
+            data.firstRead = true;
+        }
+        catch(IOException e)
+        {
+            throw new KettleFileException("Unable to close input stream!", e);
+        }
+    }
+    
+    private void closeInput() throws KettleFileException
+    {
+        try
+        {
+            if (data.fis!=null) { data.fis.close(); data.fis=null; }
+            if (data.dis!=null) { data.dis.close(); data.dis=null; }
+        }
+        catch(IOException e)
+        {
+            throw new KettleFileException("Unable to close input stream!", e);
+        }
+    }
+
+    
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(GroupByMeta)smi;
@@ -328,8 +471,11 @@ public class GroupBy extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-		    // Add init code here.
-		    return true;
+            data.bufferList = new ArrayList();
+            
+            data.rowsOnFile = 0;
+            
+            return true;
 		}
 		return false;
 	}
@@ -352,6 +498,7 @@ public class GroupBy extends BaseStep implements StepInterface
 		}
 		finally
 		{
+            data.tempFile.delete();
 			dispose(meta, data);
 			logSummary();
 			markStop();

@@ -15,6 +15,13 @@
 
 package be.ibridge.kettle.trans.step.groupby;
 
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
+
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
@@ -34,7 +41,25 @@ public class GroupByData extends BaseStepData implements StepDataInterface
 	public int  subjectnrs[];
 	public long counts[];
 
+    public ArrayList bufferList;
 
+    public File tempFile;
+
+    public FileOutputStream fos;
+
+    public DataOutputStream dos;
+
+    public int rowsOnFile;
+
+    public boolean firstRead;
+
+    public FileInputStream fis;
+    public DataInputStream dis;
+
+    public Row groupResult;
+
+    public boolean hasOutput;
+    
 	/**
 	 * 
 	 */

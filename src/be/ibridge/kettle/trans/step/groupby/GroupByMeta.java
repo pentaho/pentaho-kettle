@@ -68,9 +68,15 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 	
 	/** All rows need to pass, adding an extra row at the end of each group/block. */
 	private boolean passAllRows;
-	/** name of the boolean field indicating that the row is an aggragate */
-	private String  passFlagField; 
-
+	/** name of the boolean field indicating that the row is an aggragate 
+     *  @deprecated */
+	private String  passFlagField;
+    
+    /** Directory to store the temp files */
+    private String  directory;
+    /** Temp files prefix... */
+    private String  prefix;
+    
 	/** Indicate that some rows don't need to be considered : TODO: make work in GUI & worker */
 	private boolean aggregateIgnored; 
 	/** name of the boolean field that indicates we need to ignore the row : TODO: make work in GUI & worker */
@@ -189,6 +195,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
     
     /**
      * @return Returns the passFlagField.
+     * @deprecated
      */
     public String getPassFlagField()
     {
@@ -197,6 +204,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
     
     /**
      * @param passFlagField The passFlagField to set.
+     * @deprecated
      */
     public void setPassFlagField(String passFlagField)
     {
@@ -247,10 +255,12 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			passAllRows    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "all_rows"));
-			passFlagField  = XMLHandler.getTagValue(stepnode, "flag_field");
 			aggregateIgnored = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "ignore_aggregate"));
 			aggregateIgnoredField     = XMLHandler.getTagValue(stepnode, "field_ignore");
 	
+            directory = XMLHandler.getTagValue(stepnode, "directory");
+            prefix    = XMLHandler.getTagValue(stepnode, "prefix");
+
 			Node groupn = XMLHandler.getSubNode(stepnode, "group");
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
 			
@@ -306,8 +316,10 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void setDefault()
 	{
+        directory="%%java.io.tmpdir%%";
+        prefix="grp";
+        
 		passAllRows    = false;
-		passFlagField  = null;
 		aggregateIgnored = false;
 		aggregateIgnoredField     = null;
 
@@ -323,18 +335,21 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 		// Keep the fields to group over and the aggregates
 		Row row = new Row(r);
 		
-		// Remove those that are not in group[] (or subject in case we want all rows...)
-		for (int i=r.size()-1;i>=0;i--)
-		{
-            String fieldName = row.getValue(i).getName();
-            
-			boolean found=false;
-			for (int j=0;j<groupField.length && !found;j++)
-			{
-				if (fieldName.equalsIgnoreCase(groupField[j])) found=true;
-			}
-			if (!found) r.removeValue(i);
-		}
+        if (!passAllRows)
+        {
+    		// Remove those that are not in group[] (or subject in case we want all rows...)
+    		for (int i=r.size()-1;i>=0;i--)
+    		{
+                String fieldName = row.getValue(i).getName();
+                
+    			boolean found=false;
+    			for (int j=0;j<groupField.length && !found;j++)
+    			{
+    				if (fieldName.equalsIgnoreCase(groupField[j])) found=true;
+    			}
+    			if (!found) r.removeValue(i);
+    		}
+        }
 		
 		// Re-add aggregates
 		for (int i=0;i<subjectField.length;i++)
@@ -375,13 +390,6 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 			}
 		}
 
-		if (passFlagField!=null && passFlagField.length()!=0) 
-		{
-			Value v= new Value(passFlagField, Value.VALUE_TYPE_BOOLEAN);
-			v.setOrigin(name);
-			r.addValue(v);
-		}
-
 		return row;
 	}
 
@@ -390,9 +398,10 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 		String retval="";
 
 		retval+="      "+XMLHandler.addTagValue("all_rows",  passAllRows);
-		retval+="      "+XMLHandler.addTagValue("flag_field", passFlagField);
 		retval+="      "+XMLHandler.addTagValue("ignore_aggregate",  aggregateIgnored);
 		retval+="      "+XMLHandler.addTagValue("field_ignore", aggregateIgnoredField);
+        retval+="      "+XMLHandler.addTagValue("directory", directory);
+        retval+="      "+XMLHandler.addTagValue("prefix",    prefix);
 
 		retval+="      <group>"+Const.CR;
 		for (int i=0;i<groupField.length;i++)
@@ -423,10 +432,11 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			passAllRows         = rep.getStepAttributeBoolean(id_step, "all_rows");
-			passFlagField       = rep.getStepAttributeString (id_step, "flag_field");
 			aggregateIgnored = rep.getStepAttributeBoolean(id_step, "ignore_aggregate");
 			aggregateIgnoredField     = rep.getStepAttributeString (id_step, "field_ignore");
-	
+            directory        =      rep.getStepAttributeString (id_step, "directory");
+            prefix           =      rep.getStepAttributeString (id_step, "prefix");
+
 			int groupsize = rep.countNrStepAttributes(id_step, "group_name");
 			int nrvalues  = rep.countNrStepAttributes(id_step, "aggregate_name");
 			
@@ -456,10 +466,11 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "all_rows", passAllRows);
-			rep.saveStepAttribute(id_transformation, id_step, "flag_field",  passFlagField);
 			rep.saveStepAttribute(id_transformation, id_step, "ignore_aggregate",  aggregateIgnored);
 			rep.saveStepAttribute(id_transformation, id_step, "field_ignore",  aggregateIgnoredField);
-	
+            rep.saveStepAttribute(id_transformation, id_step, "directory",       directory);
+            rep.saveStepAttribute(id_transformation, id_step, "prefix",          prefix);
+
 			for (int i=0;i<groupField.length;i++)
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "group_name",       groupField[i]);
@@ -509,5 +520,37 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new GroupByData();
 	}
+
+    /**
+     * @return Returns the directory.
+     */
+    public String getDirectory()
+    {
+        return directory;
+    }
+
+    /**
+     * @param directory The directory to set.
+     */
+    public void setDirectory(String directory)
+    {
+        this.directory = directory;
+    }
+
+    /**
+     * @return Returns the prefix.
+     */
+    public String getPrefix()
+    {
+        return prefix;
+    }
+
+    /**
+     * @param prefix The prefix to set.
+     */
+    public void setPrefix(String prefix)
+    {
+        this.prefix = prefix;
+    }
 
 }

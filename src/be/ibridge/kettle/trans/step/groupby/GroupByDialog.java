@@ -24,6 +24,9 @@
 
 package be.ibridge.kettle.trans.step.groupby;
 
+import java.util.Enumeration;
+import java.util.Properties;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -37,6 +40,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -49,6 +53,7 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
@@ -74,9 +79,15 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 	private Button       wAllRows;
 	private FormData     fdlAlllRows, fdAllRows;
 
-	private Label        wlFlagField;
-	private Text         wFlagField;
-	private FormData     fdlFlagField, fdFlagField;
+    private Label        wlSortDir;
+    private Button       wbSortDir;
+    private Button       wbcSortDir;
+    private Text         wSortDir;
+    private FormData     fdlSortDir, fdbSortDir, fdbcSortDir, fdSortDir;
+
+    private Label        wlPrefix;
+    private Text         wPrefix;
+    private FormData     fdlPrefix, fdPrefix;
 
 	private Button wGet, wGetAgg;
 	private FormData fdGet, fdGetAgg;
@@ -163,32 +174,122 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 				}
 			}
 		);
+        
+        wlSortDir=new Label(shell, SWT.RIGHT);
+        wlSortDir.setText("Sort directory ");
+        props.setLook(wlSortDir);
+        fdlSortDir=new FormData();
+        fdlSortDir.left = new FormAttachment(0, 0);
+        fdlSortDir.right= new FormAttachment(middle, -margin);
+        fdlSortDir.top  = new FormAttachment(wAllRows, margin);
+        wlSortDir.setLayoutData(fdlSortDir);
 
-		// Flag field size line
-		wlFlagField=new Label(shell, SWT.RIGHT);
-		wlFlagField.setText("Flag fieldname ");
- 		props.setLook(wlFlagField);
-		fdlFlagField=new FormData();
-		fdlFlagField.left   = new FormAttachment(0, 0);
-		fdlFlagField.right  = new FormAttachment(middle, -margin);
-		fdlFlagField.top    = new FormAttachment(wAllRows, margin);
-		wlFlagField.setLayoutData(fdlFlagField);
-		wFlagField=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wFlagField);
-		wFlagField.addModifyListener(lsMod);
-		fdFlagField=new FormData();
-		fdFlagField.left   = new FormAttachment(middle, 0);
-		fdFlagField.right  = new FormAttachment(100, 0);
-		fdFlagField.top    = new FormAttachment(wAllRows, margin);
-		wFlagField.setLayoutData(fdFlagField);
+        wbSortDir=new Button(shell, SWT.PUSH| SWT.CENTER);
+        props.setLook(wbSortDir);
+        wbSortDir.setText("&Browse...");
+        fdbSortDir=new FormData();
+        fdbSortDir.right= new FormAttachment(100, 0);
+        fdbSortDir.top  = new FormAttachment(wAllRows, margin);
+        wbSortDir.setLayoutData(fdbSortDir);
 
+        wbcSortDir=new Button(shell, SWT.PUSH| SWT.CENTER);
+        props.setLook(wbcSortDir);
+        wbcSortDir.setText("&Variable...");
+        fdbcSortDir=new FormData();
+        fdbcSortDir.right= new FormAttachment(wbSortDir, -margin);
+        fdbcSortDir.top  = new FormAttachment(wAllRows, margin);
+        wbcSortDir.setLayoutData(fdbcSortDir);
+
+        wSortDir=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wSortDir);
+        wSortDir.addModifyListener(lsMod);
+        fdSortDir=new FormData();
+        fdSortDir.left = new FormAttachment(middle, 0);
+        fdSortDir.top  = new FormAttachment(wAllRows, margin);
+        fdSortDir.right= new FormAttachment(wbcSortDir, -margin);
+        wSortDir.setLayoutData(fdSortDir);
+        
+        wbSortDir.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                DirectoryDialog dd = new DirectoryDialog(shell, SWT.NONE);
+                dd.setFilterPath(wSortDir.getText());
+                String dir = dd.open();
+                if (dir!=null)
+                {
+                    wSortDir.setText(dir);
+                }
+            }
+        });
+
+        // Whenever something changes, set the tooltip to the expanded version:
+        wSortDir.addModifyListener(new ModifyListener()
+            {
+                public void modifyText(ModifyEvent e)
+                {
+                    wSortDir.setToolTipText(Const.replEnv( wSortDir.getText() ) );
+                }
+            }
+        );
+
+        // Listen to the Variable... button
+        wbcSortDir.addSelectionListener
+        (
+            new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    Properties sp = System.getProperties();
+                    Enumeration keys = sp.keys();
+                    int size = sp.values().size();
+                    String key[] = new String[size];
+                    String val[] = new String[size];
+                    String str[] = new String[size];
+                    int i=0;
+                    while (keys.hasMoreElements())
+                    {
+                        key[i] = (String)keys.nextElement();
+                        val[i] = sp.getProperty(key[i]);
+                        str[i] = key[i]+"  ["+val[i]+"]";
+                        i++;
+                    }
+                    
+                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, "Select an Environment Variable", "Select an Environment Variable");
+                    if (esd.open()!=null)
+                    {
+                        int nr = esd.getSelectionNr();
+                        wSortDir.insert("%%"+key[nr]+"%%");
+                    }
+                }
+                
+            }
+        );
+
+        // Table line...
+        wlPrefix=new Label(shell, SWT.RIGHT);
+        wlPrefix.setText("TMP-file prefix ");
+        props.setLook(wlPrefix);
+        fdlPrefix=new FormData();
+        fdlPrefix.left = new FormAttachment(0, 0);
+        fdlPrefix.right= new FormAttachment(middle, -margin);
+        fdlPrefix.top  = new FormAttachment(wbSortDir, margin*2);
+        wlPrefix.setLayoutData(fdlPrefix);
+        wPrefix=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wPrefix);
+        wPrefix.addModifyListener(lsMod);
+        fdPrefix=new FormData();
+        fdPrefix.left  = new FormAttachment(middle, 0);
+        fdPrefix.top   = new FormAttachment(wbSortDir, margin*2);
+        fdPrefix.right = new FormAttachment(100, 0);
+        wPrefix.setLayoutData(fdPrefix);
 
 		wlGroup=new Label(shell, SWT.NONE);
 		wlGroup.setText("The fields that make up the group: ");
  		props.setLook(wlGroup);
 		fdlGroup=new FormData();
 		fdlGroup.left  = new FormAttachment(0, 0);
-		fdlGroup.top   = new FormAttachment(wFlagField, margin);
+		fdlGroup.top   = new FormAttachment(wPrefix, margin);
 		wlGroup.setLayoutData(fdlGroup);
 
 		int nrKeyCols=1;
@@ -309,8 +410,10 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		log.logDebug(toString(), "getting key info...");
 		
 		wAllRows.setSelection(input.passAllRows());
-		if (input.getPassFlagField()!=null) wFlagField.setText(input.getPassFlagField());
 		
+        if (input.getPrefix() != null) wPrefix.setText(input.getPrefix());
+        if (input.getDirectory() != null) wSortDir.setText(input.getDirectory());
+
 		if (input.getGroupField()!=null)
 		for (i=0;i<input.getGroupField().length;i++)
 		{
@@ -344,11 +447,11 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 	
 	private void ok()
 	{
-		input.setPassFlagField( wFlagField.getText() );
-				
 		int sizegroup = wGroup.nrNonEmpty();
 		int nrfields = wAgg.nrNonEmpty();
-		
+        input.setPrefix( wPrefix.getText() );
+        input.setDirectory( wSortDir.getText() );
+
 		input.allocate(sizegroup, nrfields);
 				
 		for (int i=0;i<sizegroup;i++)
