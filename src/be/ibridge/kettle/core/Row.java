@@ -473,6 +473,18 @@ public class Row implements XMLInterface, Comparable, Serializable
 		return true;
 	}
 	
+    /**
+     * Compare 2 rows with each other using certain values in the rows and also considering an ascending clause.
+     * @param r The row to compare with
+     * @param fieldnrs The indexes of the values to compare
+     * @param ascending an entry for each value to compare where true means and normal compare, false the reverse.
+     * @return -1 if the row is smaller, 0 if they are equal and 1 if the row is larger.
+     */
+    public int compare(Row r, int fieldnrs[], boolean ascending[])
+    {
+        return compare(r, fieldnrs, ascending, null);
+    }
+    
 	/**
 	 * Compare 2 rows with each other using certain values in the rows and also considering an ascending clause.
 	 * @param r The row to compare with
@@ -480,7 +492,7 @@ public class Row implements XMLInterface, Comparable, Serializable
 	 * @param ascending an entry for each value to compare where true means and normal compare, false the reverse.
 	 * @return -1 if the row is smaller, 0 if they are equal and 1 if the row is larger.
 	 */
-	public int compare(Row r, int fieldnrs[], boolean ascending[])
+	public int compare(Row r, int fieldnrs[], boolean ascending[], boolean caseInsensitive[])
 	{
 		int retval=0;
 		int i;
@@ -492,7 +504,10 @@ public class Row implements XMLInterface, Comparable, Serializable
 			v1=  getValue(fieldnrs[i]);
 			v2=r.getValue(fieldnrs[i]);
 			
-			retval=v1.compare(v2);
+            if (caseInsensitive!=null) 
+                retval=v1.compare(v2, caseInsensitive[i]);
+            else 
+                retval=v1.compare(v2);
 			
 			if (!ascending[i]) 
 			{
@@ -530,12 +545,23 @@ public class Row implements XMLInterface, Comparable, Serializable
 		return retval;
 	}
 
+    /**
+     *  Compare 2 complete rows of values with each other.
+     *  Strings are compare case insensitive
+     *  @param r the row to compare with
+     *  @return -1 if the row is smaller, 0 if both rows are equal, 1 if the row is larger.
+     */
+    public int compare(Row r)
+    {
+        return compare(r, true);
+    }
+
 	/**
 	 *  Compare 2 complete rows of values with each other
 	 *  @param r the row to compare with
 	 *  @return -1 if the row is smaller, 0 if both rows are equal, 1 if the row is larger.
 	 */
-	public int compare(Row r)
+	public int compare(Row r, boolean caseInsensitive)
 	{
 		int retval=0;
 		int i;
@@ -547,7 +573,7 @@ public class Row implements XMLInterface, Comparable, Serializable
 			v1=  getValue(i);
 			v2=r.getValue(i);
 			
-			retval=v1.compare(v2);
+			retval=v1.compare(v2, caseInsensitive);
 			
 			if (retval!=0) return retval;
 		}

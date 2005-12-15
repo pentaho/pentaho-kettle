@@ -2548,15 +2548,27 @@ public class Repository
 		return r.searchValue("VALUE_STR").getString();
 	}
 
-	public boolean getStepAttributeBoolean(long id_step, int nr, String code) throws KettleDatabaseException
+	public boolean getStepAttributeBoolean(long id_step, int nr, String code, boolean def) throws KettleDatabaseException
 	{
 		Row r = null;
 		if (stepAttributesBuffer!=null) r = searchStepAttributeInBuffer(id_step, code, (long)nr);
 		else                            r = getStepAttributeRow(id_step, nr, code);
 		if (r == null)
-			return false;
-		return r.searchValue("VALUE_STR").getBoolean();
+			return def;
+        Value v = r.searchValue("VALUE_STR");
+        if (v==null) return def;
+		return v.getBoolean();
 	}
+
+    public boolean getStepAttributeBoolean(long id_step, int nr, String code) throws KettleDatabaseException
+    {
+        Row r = null;
+        if (stepAttributesBuffer!=null) r = searchStepAttributeInBuffer(id_step, code, (long)nr);
+        else                            r = getStepAttributeRow(id_step, nr, code);
+        if (r == null)
+            return false;
+        return r.searchValue("VALUE_STR").getBoolean();
+    }
 
 	public double getStepAttributeNumber(long id_step, String code) throws KettleDatabaseException
 	{

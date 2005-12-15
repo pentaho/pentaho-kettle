@@ -76,10 +76,13 @@ public class UniqueRows extends BaseStep implements StepInterface
 			// Cache lookup of fields
 			data.fieldnrs=new int[meta.getCompareFields().length];
 			data.ascending=new boolean[meta.getCompareFields().length];
+            data.caseInsensitive=new boolean[meta.getCaseInsensitive().length];
+            
 			for (int i=0;i<meta.getCompareFields().length;i++)
 			{
 			    data.ascending[i] = false;
 				data.fieldnrs[i] = r.searchValueIndex(meta.getCompareFields()[i]);
+                data.caseInsensitive[i] = meta.getCaseInsensitive()[i];
 				if (data.fieldnrs[i]<0)
 				{
 					logError("Couldn't find field ["+meta.getCompareFields()[i]+" in row!");
@@ -96,11 +99,11 @@ public class UniqueRows extends BaseStep implements StepInterface
 		if (meta.getCompareFields()==null || meta.getCompareFields().length==0)
 		{
 		    // Compare the complete row...
-		    isEqual = data.previous.equals(r);
+		    isEqual = data.previous.compare(r)==0;
 		}
 		else
 		{
-		    isEqual = data.previous.compare(r, data.fieldnrs, data.ascending)==0;
+		    isEqual = data.previous.compare(r, data.fieldnrs, data.ascending, data.caseInsensitive)==0;
 		}
 		if (!isEqual)
 		{

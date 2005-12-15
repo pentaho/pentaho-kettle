@@ -30,6 +30,7 @@ public class UniqueRowsData extends BaseStepData implements StepDataInterface
 	public Row	previous;
 	public int  fieldnrs[];
 	public boolean ascending[];
+    public boolean[] caseInsensitive;
 	
 	/**
 	 * 

@@ -52,7 +52,10 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 	
 	/**The fields to compare for double, null means all*/
 	private String compareFields[];
-	
+
+    /**The fields to compare for double, null means all*/
+    private boolean caseInsensitive[];
+
 	public UniqueRowsMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -109,6 +112,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 	public void allocate(int nrfields)
 	{
 		compareFields = new String[nrfields];
+        caseInsensitive = new boolean[nrfields];
 	}
 
 	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
@@ -128,6 +132,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 		for (int i=0;i<nrfields;i++)
 		{
 			retval.getCompareFields()[i] = compareFields[i]; 
+            retval.getCaseInsensitive()[i] = caseInsensitive[i];
 		}
 
 		return retval;
@@ -151,6 +156,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
 				
 				compareFields[i] = XMLHandler.getTagValue(fnode, "name");
+                caseInsensitive[i] = !"N".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "name") );
 			}
 
 		}
@@ -172,6 +178,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 		for (int i=0;i<nrfields;i++)
 		{
 			compareFields[i] = "field"+i;
+            caseInsensitive[i] = true;
 		}
 	}
 
@@ -204,6 +211,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			retval+="      <field>";
 			retval+="        "+XMLHandler.addTagValue("name",  compareFields[i]);
+            retval+="        "+XMLHandler.addTagValue("case_insensitive",  caseInsensitive[i]);
 			retval+="        </field>";
 		}
 		retval+="      </fields>";
@@ -226,6 +234,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 			for (int i=0;i<nrfields;i++)
 			{
 				compareFields[i] = rep.getStepAttributeString (id_step, i, "field_name");
+                caseInsensitive[i] = rep.getStepAttributeBoolean(id_step, i, "case_insensitive", true);
 			}
 		}
 		catch(Exception e)
@@ -245,6 +254,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 			for (int i=0;i<compareFields.length;i++)
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", compareFields[i]);
+                rep.saveStepAttribute(id_transformation, id_step, i, "case_insensitive", caseInsensitive[i]);
 			}
 		}
 		catch(KettleException e)
@@ -284,5 +294,21 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new UniqueRowsData();
 	}
+
+    /**
+     * @return Returns the caseInsensitive.
+     */
+    public boolean[] getCaseInsensitive()
+    {
+        return caseInsensitive;
+    }
+
+    /**
+     * @param caseInsensitive The caseInsensitive to set.
+     */
+    public void setCaseInsensitive(boolean[] caseInsensitive)
+    {
+        this.caseInsensitive = caseInsensitive;
+    }
 
 }

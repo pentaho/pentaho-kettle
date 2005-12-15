@@ -341,6 +341,7 @@ public class GroupBy extends BaseStep implements StepInterface
 
     }
 
+    /*
 	private Row buildRegular(Row r)
 	{
 		debug="buildRegular start";
@@ -366,6 +367,7 @@ public class GroupBy extends BaseStep implements StepInterface
 		debug="buildRegular end";
 		return result;
 	}
+    */
 		
     private void addToBuffer(Row row) throws KettleFileException
     {

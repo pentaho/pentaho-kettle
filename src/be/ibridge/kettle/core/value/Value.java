@@ -1484,13 +1484,25 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			throw new KettleEOFException("Error reading value data from stream", e);
 		}
 	}
-	
+
+    /**
+     * Compare 2 values of the same or different type!
+     * The comparison of Strings is case insensitive
+     * @param v the value to compare with.
+     * @return -1 if The value was smaller, 1 bigger and 0 if both values are equal.
+     */
+    public int compare(Value v)
+    {
+        return compare(v, true);
+    }
+
 	/**
 	 * Compare 2 values of the same or different type!
 	 * @param v the value to compare with.
+     * @param caseInsensitive True if you want the comparison to be case insensitive
 	 * @return -1 if The value was smaller, 1 bigger and 0 if both values are equal.
 	 */
-	public int compare(Value v)
+	public int compare(Value v, boolean caseInsensitive)
 	{
 		boolean n1 =   isNull() || (  isString() && (   getString()==null ||   getString().length()==0 )) || (  isDate() &&   getDate()==null);
 		boolean n2 = v.isNull() || (v.isString() && ( v.getString()==null || v.getString().length()==0 )) || (v.isDate() && v.getDate()==null);
@@ -1517,7 +1529,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		case VALUE_TYPE_STRING:
 			String one = Const.rtrim(getString());
 			String two = Const.rtrim(v.getString());
-			return one.compareToIgnoreCase(two);
+            if (caseInsensitive) 
+                return one.compareToIgnoreCase(two);
+            else 
+                return one.compareTo(two); 
 
 		case VALUE_TYPE_INTEGER:
 			return Double.compare(getNumber(), v.getNumber());

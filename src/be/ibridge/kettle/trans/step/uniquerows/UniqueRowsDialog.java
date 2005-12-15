@@ -187,11 +187,13 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		fdlFields.top  = new FormAttachment(wCountField, margin);
 		wlFields.setLayoutData(fdlFields);
 
-		final int FieldsCols=1;
 		final int FieldsRows=input.getCompareFields()==null?0:input.getCompareFields().length;
 		
-		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Fieldname",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
+		ColumnInfo[] colinf=new ColumnInfo[]
+        {
+		  new ColumnInfo("Fieldname",    ColumnInfo.COLUMN_TYPE_TEXT,   "", false ),
+          new ColumnInfo("Ignore case",  ColumnInfo.COLUMN_TYPE_CCOMBO,  "", new String[] {"Y", "N"}, true )
+        };
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -258,6 +260,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		{
 			TableItem item = wFields.table.getItem(i);
 			if (input.getCompareFields()[i]!=null) item.setText(1, input.getCompareFields()[i]);
+            item.setText(2, input.getCaseInsensitive()[i]?"Y":"N");
 		}
 		wFields.setRowNums();
 		wFields.optWidth(true);
@@ -281,6 +284,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		{
 			TableItem item = wFields.getNonEmpty(i);
 			input.getCompareFields()[i] = item.getText(1);
+            input.getCaseInsensitive()[i] = "Y".equalsIgnoreCase(item.getText(2));
 		}
 		
 		input.setCountField(wCountField.getText());
