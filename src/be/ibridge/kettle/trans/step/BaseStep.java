@@ -73,6 +73,7 @@ import be.ibridge.kettle.trans.step.textfileoutput.TextFileOutputMeta;
 import be.ibridge.kettle.trans.step.uniquerows.UniqueRowsMeta;
 import be.ibridge.kettle.trans.step.update.UpdateMeta;
 import be.ibridge.kettle.trans.step.xbaseinput.XBaseInputMeta;
+import be.ibridge.kettle.trans.step.xmlinput.XMLInputMeta;
 
 
 public class BaseStep extends Thread 
@@ -117,7 +118,8 @@ public class BaseStep extends Thread
             ExecSQLMeta.class,
             MappingMeta.class,
             MappingInputMeta.class,
-            MappingOutputMeta.class
+            MappingOutputMeta.class,
+            XMLInputMeta.class
 		};
 	
 	public static final String type_desc[] = 
@@ -160,7 +162,8 @@ public class BaseStep extends Thread
             "ExecSQL",
             "Mapping",
             "MappingInput",
-            "MappingOutput"
+            "MappingOutput",
+            "XMLInput"
 		};
 
 	public static final String type_long_desc[] = 
@@ -203,7 +206,8 @@ public class BaseStep extends Thread
             "Execute SQL script",
             "Mapping (sub-transformation)",
             "Mapping input specification",
-            "Mapping output specification"
+            "Mapping output specification",
+            "XML Input"
 		};
 
 	public static final String type_tooltip_desc[] = 
@@ -246,7 +250,8 @@ public class BaseStep extends Thread
             "Execute an SQL script, optionally parameterized using input rows",
             "Run a mapping (sub-transformation), use MappingInput and MappingOutput to specify the fields interface",
             "Specify the input interface of a mapping",
-            "Specify the output interface of a mapping"
+            "Specify the output interface of a mapping",
+            "Read data from an XML file"
 		};
 
 	public static final String image_filename[] =
@@ -289,7 +294,8 @@ public class BaseStep extends Thread
             "SQL.png",
             "MAP.png",
             "MPI.png",
-            "MPO.png"
+            "MPO.png",
+            "XIN.png"
 		};
 	
 	public static final String category[] = 
@@ -330,12 +336,13 @@ public class BaseStep extends Thread
 			"Extra",            // "NullIf"
             "Transform",        // "Calculator"
             "Extra",            // "ExecSQL"
-            "Experimental",     // "Mapping"
-            "Experimental",     // "MappingInput"
-            "Experimental"      // "MappingOutput"
+            "Mapping",          // "Mapping"
+            "Mapping",          // "MappingInput"
+            "Mapping",          // "MappingOutput"
+            "Experimental"      // "XMLInput"
 		};
 
-    public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Experimental" };
+    public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Mapping", "Experimental" };
     
 	private static final int MIN_PRIORITY    =  1;
 	private static final int LOW_PRIORITY    =  3;
