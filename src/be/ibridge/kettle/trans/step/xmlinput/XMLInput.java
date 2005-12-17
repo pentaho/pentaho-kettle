@@ -18,9 +18,11 @@ package be.ibridge.kettle.trans.step.xmlinput;
 
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -59,45 +61,96 @@ public class XMLInput extends BaseStep implements StepInterface
 		}
 		
 		logRowlevel("Read row: "+row.toString());
-		putRow(row);
+        
+        putRow(row);
 
+        debug="end of processRow()";
+        
 		return true;
 	}
 		
-	private Row getRowFromXML()
+	private Row getRowFromXML() throws KettleValueException
     {
+        debug="start of getRowFromXML()";
+
+        if (data.itemPosition>=data.itemCount) // finished reading the file, read the next file!
+        {
+            data.filename=null;
+        }
+        
         // First, see if we need to open a new file
         if (data.filename==null)
         {
-            openNextFile();
-            positionInFile();
+            if (!openNextFile())
+            {
+                return null;
+            }
         }
         
+        debug="getRowFromXML: buildEmptyRow()";
+
         Row row = buildEmptyRow();
         
         // Get the item in the XML file...
         
         // First get the appropriate node
-        
-        Node node = XMLHandler.getSubNodeByNr(data.section, data.itemElement, data.itemPosition);
+
+        debug="getRowFromXML: getSubNodeByNr";
+
+        Node itemNode = XMLHandler.getSubNodeByNr(data.section, data.itemElement, data.itemPosition);
         data.itemPosition++;
-        
+
+        debug="getRowFromXML: read from the selected node";
+
         // Read from the Node...
         for (int i=0;i<meta.getInputFields().length;i++)
         {
-            XMLInputField xmlInputField = meta.getInputFields()[i];
+            Node node = itemNode;
             
+            XMLInputField xmlInputField = meta.getInputFields()[i];
+
+            debug="getRowFromXML: read from the selected node: field #"+i+" : "+xmlInputField.getName()+" - "+xmlInputField.getFieldPositionsCode();
+
             String value = null;
             
-            for (int p=0; (value==null) && p<xmlInputField.getXmlInputFieldPositions().length;p++)
+            for (int p=0; (value==null) && node!=null && p<xmlInputField.getFieldPosition().length;p++)
             {
-                XMLInputFieldPosition pos = xmlInputField.getXmlInputFieldPositions()[i];
+                XMLInputFieldPosition pos = xmlInputField.getFieldPosition()[p];
+                debug="getRowFromXML: read from the selected node: field #"+i+" : position #"+p+": "+pos.toString();
+
                 if (pos.getType()==XMLInputFieldPosition.XML_ELEMENT)
                 {
-                    node = XMLHandler.getSubNode(node, pos.getName());
-                    if (p==xmlInputField.getXmlInputFieldPositions().length-1) // last level
+                    if (pos.getElementNr()<=1)
                     {
-                        value = XMLHandler.getNodeValue(node);
+                        Node subNode = XMLHandler.getSubNode(node, pos.getName());
+                        if (subNode!=null)
+                        {
+                            if (p==xmlInputField.getFieldPosition().length-1) // last level
+                            {
+                                value = XMLHandler.getNodeValue(subNode);
+                            }
+                        }
+                        else
+                        {
+                            logDebug("Unable to find position '"+pos.toString()+"' in node "+Const.CR+node);
+                        }
+                        node=subNode;
+                    }
+                    else // Multiple possible values: get number pos.getElementNr()!
+                    {
+                        Node subNode = XMLHandler.getSubNodeByNr(node, pos.getName(), pos.getElementNr()-1);
+                        if (subNode!=null)
+                        {
+                            if (p==xmlInputField.getFieldPosition().length-1) // last level
+                            {
+                                value = XMLHandler.getNodeValue(subNode);
+                            }
+                        }
+                        else
+                        {
+                            logDebug("Unable to find position '"+pos.toString()+"' in node "+Const.CR+node);
+                        }
+                        node=subNode;
                     }
                 }
                 else
@@ -108,16 +161,97 @@ public class XMLInput extends BaseStep implements StepInterface
             
             // OK, we have the string...
             Value v = row.getValue(i);
-            v.setValue(value);
-        }
-        
-        return row;
-    }
+            
+            if (value!=null) v.setValue(value); else v.setNull();
+            
+            // DO Trimming!
+            switch(xmlInputField.getTrimType())
+            {
+            case XMLInputField.TYPE_TRIM_LEFT  : v.ltrim(); break;
+            case XMLInputField.TYPE_TRIM_RIGHT : v.rtrim(); break;
+            case XMLInputField.TYPE_TRIM_BOTH  : v.trim(); break;
+            default: break;
+            }
+            
+            // System.out.println("after trim, field #"+i+" : "+v);
+            
+            // DO CONVERSIONS...
+            switch(xmlInputField.getType())
+            {
+            case Value.VALUE_TYPE_STRING:
+                // System.out.println("Convert value to String :"+v);
+                break;
+            case Value.VALUE_TYPE_NUMBER:
+                // System.out.println("Convert value to Number :"+v);
+                if (xmlInputField.getFormat()!=null && xmlInputField.getFormat().length()>0)
+                {
+                    if (xmlInputField.getDecimalSymbol()!=null && xmlInputField.getDecimalSymbol().length()>0)
+                    {
+                        if (xmlInputField.getGroupSymbol()!=null && xmlInputField.getGroupSymbol().length()>0)
+                        {
+                            if (xmlInputField.getCurrencySymbol()!=null && xmlInputField.getCurrencySymbol().length()>0)
+                            {
+                                v.str2num(xmlInputField.getFormat(), xmlInputField.getGroupSymbol(), xmlInputField.getGroupSymbol(), xmlInputField.getCurrencySymbol());
+                            }
+                            else
+                            {
+                                v.str2num(xmlInputField.getFormat(), xmlInputField.getGroupSymbol(), xmlInputField.getGroupSymbol());
+                            }
+                        }
+                        else
+                        {
+                            v.str2num(xmlInputField.getFormat(), xmlInputField.getGroupSymbol());
+                        }
+                    }
+                    else
+                    {
+                        v.str2num(xmlInputField.getFormat()); // just a format mask
+                   }
+                }
+                else
+                {
+                    v.str2num();
+                }
+                break;
+            case Value.VALUE_TYPE_INTEGER:
+                // System.out.println("Convert value to integer :"+v);
+                v.setValue(v.getInteger());
+                break;
+            case Value.VALUE_TYPE_BIGNUMBER:
+                // System.out.println("Convert value to BigNumber :"+v);
+                v.setValue(v.getBigNumber());
+                break;
+            case Value.VALUE_TYPE_DATE:
+                // System.out.println("Convert value to Date :"+v);
 
-    private void positionInFile()
-    {
+                if (xmlInputField.getFormat()!=null && xmlInputField.getFormat().length()>0)
+                {
+                    v.str2dat(xmlInputField.getFormat());
+                }
+                else
+                {
+                    v.setValue(v.getDate());
+                }
+                break;
+            case Value.VALUE_TYPE_BOOLEAN:
+                v.setValue(v.getBoolean());
+                break;
+            default: break;
+            }
+            
+            // Do we need to repeat this field if it is null?
+            if (v.isNull() && data.previousRow!=null)
+            {
+                Value previous = data.previousRow.getValue(i);
+                v.setValue(previous);
+            }
+            
+        } // End of loop over fields...
         
+        data.previousRow = row;
         
+        debug="end of getRowFromXML()";
+        return row;
     }
 
     /**
@@ -147,6 +281,12 @@ public class XMLInput extends BaseStep implements StepInterface
 	{
 		try
 		{
+            if (data.filenr>=data.files.length) // finished processing!
+            {
+                logDetailed("Finished processing files.");
+                return false;
+            }
+            
 		    // Is this the last file?
 			data.last_file = ( data.filenr==data.files.length-1);
 			data.filename = data.files[data.filenr];

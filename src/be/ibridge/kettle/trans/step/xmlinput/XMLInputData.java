@@ -40,7 +40,7 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 public class XMLInputData extends BaseStepData implements StepDataInterface 
 {
 	public String thisline, nextline, lastline;
-	public Row previous_row;
+	public Row previousRow;
 	public int nr_repeats;
 	
 	public NumberFormat nf;
@@ -79,7 +79,7 @@ public class XMLInputData extends BaseStepData implements StepDataInterface
 		dafs= new DateFormatSymbols();
 
 		nr_repeats=0;
-		previous_row=null;
+		previousRow=null;
 		filenr = 0;
 		
 		fr=null;

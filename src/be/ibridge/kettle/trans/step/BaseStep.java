@@ -369,15 +369,16 @@ public class BaseStep extends Thread
 	public  long get_sleeps;    // # total get sleep time in nano-seconds
 	public  long put_sleeps;    // # total put sleep time in nano-seconds
 
-	private boolean distribute;
+	private boolean distributed;
 	private long errors;
 	
 	private StepMeta next[];
 	private StepMeta prev[];
 	private int     in_handling, out_handling;
-	public  ArrayList thr;
-	protected ArrayList input;
-	protected ArrayList output;
+	public    ArrayList thr;
+    
+	protected ArrayList inputRowSets;
+	protected ArrayList outputRowSets;
 	
 	public boolean stopped;
 	public boolean waiting;
@@ -430,8 +431,8 @@ public class BaseStep extends Thread
 		get_sleeps=0L;
 		put_sleeps=0L;
 		
-		input=null;
-		output=null;
+		inputRowSets=null;
+		outputRowSets=null;
 		next=null;
 		
 		terminator      = stepMeta.hasTerminator();
@@ -450,9 +451,9 @@ public class BaseStep extends Thread
 		start_time = null;
 		stop_time  = null;
 		
-		distribute = stepMeta.distributes;
+		distributed = stepMeta.distributes;
 		
-		if (distribute)	logDetailed("distribution activated");
+		if (distributed)	logDetailed("distribution activated");
 		else 			logDetailed("distribution de-activated");
 		
 		dispatch();
@@ -680,6 +681,7 @@ public class BaseStep extends Thread
 
         if (previewSize>0 && previewBuffer.size()<previewSize) 
 		{
+            System.out.println("Add to preview buffer: "+in);
 			previewBuffer.add(new Row(in));
 		}
 		
@@ -689,15 +691,19 @@ public class BaseStep extends Thread
 			terminator_rows.add(new Row(in));
 		}
 		
-		if (output.size()==0) return; // nothing to do here!
+		if (outputRowSets.size()==0) 
+        {
+            // No more output rowsets!
+            return; // we're done here!
+        }
 		
 		//logDebug("putRow() start, output:"+output.size()+", line="+lines_read);
 
 		// Before we copy this row to output, wait for room...
-		for (i=0;i<output.size();i++)  // Wait for all rowsets: keep synchronised!
+		for (i=0;i<outputRowSets.size();i++)  // Wait for all rowsets: keep synchronised!
 		{
 			sleeptime=Const.SLEEP_FULL_NANOS;
-			rs=(RowSet)output.get(i);
+			rs=(RowSet)outputRowSets.get(i);
 
 			try
 			{
@@ -725,6 +731,7 @@ public class BaseStep extends Thread
 				if (sleeptime<500) sleeptime*=1.2; else sleeptime=500;
 			}
 		}
+        
 		if (stopped)
 		{
 			logDebug("Stopped while putting a row on the buffer");
@@ -732,33 +739,33 @@ public class BaseStep extends Thread
 			return;
 		}
 		
-		if (distribute)
+		if (distributed)
 		{
 			// Copy the row to the "next" output rowset.
 			// We keep the next one in out_handling
-			rs=(RowSet)output.get(out_handling);
+			rs=(RowSet)outputRowSets.get(out_handling);
 			rs.putRow(in);
 			linesWritten++;
 			
 			// Now determine the next output rowset!
 			// Only if we have more then one output...
-			if (output.size()>1)
+			if (outputRowSets.size()>1)
 			{
 				out_handling++;
-				if (out_handling>=output.size()) out_handling=0;
+				if (out_handling>=outputRowSets.size()) out_handling=0;
 			}
 		}
 		else // Copy the row to all output rowsets!
 		{
-			// set row in first output rowset
-			rs=(RowSet)output.get(0);
+            // set row in first output rowset
+			rs=(RowSet)outputRowSets.get(0);
 			rs.putRow(in);
 			linesWritten++;
 			
 			// Copy to the row in the other output rowsets...		
-			for (i=1;i<output.size();i++)  // start at 1, 0==input rowset
+			for (i=1;i<outputRowSets.size();i++)  // start at 1, 0==input rowset
 			{
-				rs=(RowSet)output.get(i);
+				rs=(RowSet)outputRowSets.get(i);
 				rs.putRow(new Row(in));
 			}
 		}
@@ -808,9 +815,9 @@ public class BaseStep extends Thread
 			terminator_rows.add(new Row(in));
 		}
 		
-		if (output.size()==0) return; // nothing to do here!
+		if (outputRowSets.size()==0) return; // nothing to do here!
 	
-		RowSet rs = (RowSet) output.get(output_rowset_nr);
+		RowSet rs = (RowSet) outputRowSets.get(output_rowset_nr);
 		
 		sleeptime=Const.SLEEP_FULL_NANOS;
 		while(rs.isFull() && !stopped) 
@@ -841,7 +848,7 @@ public class BaseStep extends Thread
     
 	private synchronized RowSet currentInputStream()
 	{
-		return (RowSet)input.get(in_handling);
+		return (RowSet)inputRowSets.get(in_handling);
 	}
 	
 	/**
@@ -850,14 +857,14 @@ public class BaseStep extends Thread
 	**/
 	private synchronized void nextInputStream()
 	{
-		int streams=input.size();
+		int streams=inputRowSets.size();
 		
 		// No more streams left: exit!
 		if (streams==0) return;
 		
 		// If we have some left: take the next!
 		in_handling++;
-		if (in_handling >= input.size()) in_handling=0;		
+		if (in_handling >= inputRowSets.size()) in_handling=0;		
 		//logDebug("nextInputStream advanced to in_handling="+in_handling);	
 	}
 	
@@ -882,8 +889,8 @@ public class BaseStep extends Thread
 			// in : empty
 			if (/*in.isEmpty() &&*/ in.isDone()) // nothing more here: remove it from input
 			{
-				input.remove(in_handling);
-				if (input.size()==0) // nothing more to be found! 
+				inputRowSets.remove(in_handling);
+				if (inputRowSets.size()==0) // nothing more to be found! 
 				{
 					return null;
 				}
@@ -891,7 +898,7 @@ public class BaseStep extends Thread
 			nextInputStream();
 			in=currentInputStream();
 			switches++;
-			if (switches>=input.size()) // every n looks, wait a bit! Don't use too much CPU!
+			if (switches>=inputRowSets.size()) // every n looks, wait a bit! Don't use too much CPU!
 			{
 				switches=0;
 				try { sleep(0, sleeptime); } catch(Exception e) 
@@ -946,7 +953,7 @@ public class BaseStep extends Thread
 		//
 		int sleeptime=Const.SLEEP_EMPTY_NANOS;
 
-		RowSet in=(RowSet)input.get(input_rowset_nr);
+		RowSet in=(RowSet)inputRowSets.get(input_rowset_nr);
 		while (in.isEmpty() && !in.isDone() && !stopped) 
 		{
 			try { sleep(0, sleeptime); } catch(Exception e) 
@@ -968,7 +975,7 @@ public class BaseStep extends Thread
 
 		if (in.isEmpty() && in.isDone())
 		{
-			input.remove(input_rowset_nr);
+			inputRowSets.remove(input_rowset_nr);
 			return null;
 		}
 
@@ -981,9 +988,9 @@ public class BaseStep extends Thread
 	private synchronized int findInputRowSetNumber(String from, int fromcopy, String to, int tocopy)
 	{
 		int i;
-		for (i=0; i<input.size();i++)
+		for (i=0; i<inputRowSets.size();i++)
 		{
-			RowSet rs = (RowSet)input.get(i);
+			RowSet rs = (RowSet)inputRowSets.get(i);
 			if (rs.getOriginStepName().equalsIgnoreCase(from) &&
 				rs.getDestinationStepName().equalsIgnoreCase(to) &&
 				rs.getOriginStepCopy() == fromcopy && 
@@ -998,9 +1005,9 @@ public class BaseStep extends Thread
 	private synchronized int findOutputRowSetNumber(String from, int fromcopy, String to, int tocopy)
 	{
 		int i;
-		for (i=0; i<output.size();i++)
+		for (i=0; i<outputRowSets.size();i++)
 		{
-			RowSet rs = (RowSet)output.get(i);
+			RowSet rs = (RowSet)outputRowSets.get(i);
 			if (rs.getOriginStepName().equalsIgnoreCase(from) &&
 				rs.getDestinationStepName().equalsIgnoreCase(to) &&
 				rs.getOriginStepCopy() == fromcopy && 
@@ -1017,10 +1024,10 @@ public class BaseStep extends Thread
 	//
 	public void setOutputDone()
 	{
-		logDebug("Signaling 'output done' to "+output.size()+" output rowsets.");
-		for (int i=0;i<output.size();i++)
+		logDebug("Signaling 'output done' to "+outputRowSets.size()+" output rowsets.");
+		for (int i=0;i<outputRowSets.size();i++)
 		{
-			RowSet rs=(RowSet)output.get(i);
+			RowSet rs=(RowSet)outputRowSets.get(i);
 			rs.setDone();
 		}
 	}
@@ -1036,6 +1043,12 @@ public class BaseStep extends Thread
 		int nrinput, nroutput;
 		int nrcopies, prevcopies, nextcopies;
 		int disptype;
+        
+        if (transMeta==null) // for preview reasons, no dispatching is done!
+        {
+            return;
+        }
+        
 		StepMeta stepMeta = transMeta.findStep(stepname);
 
 		logDetailed("Starting allocation of buffers & new threads...");
@@ -1045,8 +1058,8 @@ public class BaseStep extends Thread
 		nrinput  = transMeta.findNrPrevSteps(stepMeta, true);
 		nroutput = transMeta.findNrNextSteps(stepMeta);
 		
-		input   = new ArrayList(); // new RowSet[nrinput];
-		output  = new ArrayList(); // new RowSet[nroutput+out_copies];
+		inputRowSets   = new ArrayList(); // new RowSet[nrinput];
+		outputRowSets  = new ArrayList(); // new RowSet[nroutput+out_copies];
 		prev    = new StepMeta[nrinput];
 		next    = new StepMeta[nroutput];
 
@@ -1088,7 +1101,7 @@ public class BaseStep extends Thread
 				}
 				if (rs!=null) 
 				{
-					input.add(rs);
+					inputRowSets.add(rs);
 					logDetailed("Found input rowset ["+rs.getName()+"]");
 				} 
 				else
@@ -1134,7 +1147,7 @@ public class BaseStep extends Thread
 				}
 				if (rs!=null) 
 				{
-					output.add(rs);
+					outputRowSets.add(rs);
 					logDetailed("Found output rowset ["+rs.getName()+"]");
 				} 
 				else
@@ -1194,12 +1207,12 @@ public class BaseStep extends Thread
 		RowSet rs;
 		int i;
 		
-		for (i=0;i<output.size();i++)
+		for (i=0;i<outputRowSets.size();i++)
 		{
-			rs=(RowSet)output.get(i);
+			rs=(RowSet)outputRowSets.get(i);
 			if (rs.isDone()) nrstopped++; 
 		}
-		return nrstopped>=output.size();
+		return nrstopped>=outputRowSets.size();
 	}
 	
 	public void stopAll()
@@ -1328,9 +1341,9 @@ public class BaseStep extends Thread
 	{
 		int size=0;
 		int i;
-		for (i=0;i<output.size();i++)
+		for (i=0;i<outputRowSets.size();i++)
 		{
-			size+=((RowSet)output.get(i)).size();
+			size+=((RowSet)outputRowSets.get(i)).size();
 		}
 		
 		return size;
@@ -1340,9 +1353,9 @@ public class BaseStep extends Thread
 	{
 		int size=0;
 		int i;
-		for (i=0;i<input.size();i++)
+		for (i=0;i<inputRowSets.size();i++)
 		{
-			size+=((RowSet)input.get(i)).size();
+			size+=((RowSet)inputRowSets.get(i)).size();
 		}
 		
 		return size;
@@ -1384,5 +1397,53 @@ public class BaseStep extends Thread
     {
         if (stepMeta!=null) return stepMeta.getStepID();
         return null;
+    }
+
+    /**
+     * @return Returns the inputRowSets.
+     */
+    public ArrayList getInputRowSets()
+    {
+        return inputRowSets;
+    }
+
+    /**
+     * @param inputRowSets The inputRowSets to set.
+     */
+    public void setInputRowSets(ArrayList inputRowSets)
+    {
+        this.inputRowSets = inputRowSets;
+    }
+
+    /**
+     * @return Returns the outputRowSets.
+     */
+    public ArrayList getOutputRowSets()
+    {
+        return outputRowSets;
+    }
+
+    /**
+     * @param outputRowSets The outputRowSets to set.
+     */
+    public void setOutputRowSets(ArrayList outputRowSets)
+    {
+        this.outputRowSets = outputRowSets;
+    }
+
+    /**
+     * @return Returns the distributed.
+     */
+    public boolean isDistributed()
+    {
+        return distributed;
+    }
+
+    /**
+     * @param distributed The distributed to set.
+     */
+    public void setDistributed(boolean distributed)
+    {
+        this.distributed = distributed;
     }
 }

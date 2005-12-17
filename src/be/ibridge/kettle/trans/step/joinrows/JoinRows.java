@@ -75,40 +75,40 @@ public class JoinRows extends BaseStep implements StepInterface
 				data.filenr=1;
 				
 				// See if a main step is supplied: in that case move the corresponding rowset to position 0
-				for (int i=0;i<input.size();i++)
+				for (int i=0;i<inputRowSets.size();i++)
 				{
-				    RowSet rs = (RowSet) input.get(i);
+				    RowSet rs = (RowSet) inputRowSets.get(i);
 				    if (rs.getOriginStepName().equalsIgnoreCase(meta.getMainStepname()))
 				    {
 				        // swap this one and position 0...
-				        RowSet zero = (RowSet)input.get(0);
-				        input.set(0, rs);
-				        input.set(i, zero);
+				        RowSet zero = (RowSet)inputRowSets.get(0);
+				        inputRowSets.set(0, rs);
+				        inputRowSets.set(i, zero);
 				    }
 				}
 				
 				//** INPUT SIDE **
-				data.file             = new File            [input.size()];
-				data.fileInputStream  = new FileInputStream [input.size()];
-				data.dataInputStream  = new DataInputStream [input.size()];
-				data.size             = new int             [input.size()];
-				data.row              = new Row             [input.size()];
-				data.joinrow          = new Row             [input.size()];
-				data.rs               = new RowSet          [input.size()];
-				data.cache            = new ArrayList       [input.size()];
-				data.position         = new int             [input.size()];
-				data.fileOutputStream = new FileOutputStream[input.size()];
-				data.dataOutputStream = new DataOutputStream[input.size()];
-				data.restart          = new boolean         [input.size()];
+				data.file             = new File            [inputRowSets.size()];
+				data.fileInputStream  = new FileInputStream [inputRowSets.size()];
+				data.dataInputStream  = new DataInputStream [inputRowSets.size()];
+				data.size             = new int             [inputRowSets.size()];
+				data.row              = new Row             [inputRowSets.size()];
+				data.joinrow          = new Row             [inputRowSets.size()];
+				data.rs               = new RowSet          [inputRowSets.size()];
+				data.cache            = new ArrayList       [inputRowSets.size()];
+				data.position         = new int             [inputRowSets.size()];
+				data.fileOutputStream = new FileOutputStream[inputRowSets.size()];
+				data.dataOutputStream = new DataOutputStream[inputRowSets.size()];
+				data.restart          = new boolean         [inputRowSets.size()];
 				
-				for (int i=1;i<input.size();i++)
+				for (int i=1;i<inputRowSets.size();i++)
 				{
                     String directoryName = Const.replEnv(meta.getDirectory());
 					data.file[i]=File.createTempFile(meta.getPrefix(), ".tmp", new File(directoryName));
 					data.file[i].deleteOnExit();
 					
 					data.size[i]     = 0;
-					data.rs[i]       = (RowSet)input.get(i);
+					data.rs[i]       = (RowSet)inputRowSets.get(i);
 					data.cache[i]    = null;
 					data.row[i]      = null;
 					data.position[i] = 0;

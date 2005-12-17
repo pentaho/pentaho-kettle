@@ -1,0 +1,27 @@
+<Items>
+
+ <Item id="101001">
+  <Type value="type1"/>
+  <Attribute name="height" info="in meters unless specified otherwise">10 ft</Attribute>
+  <Attribute name="weight" info="in kilograms unless specified otherwise">100</Attribute>
+  <SubType>
+   <SubTypeDescription>This is a description</SubTypeDescription>
+  </SubType>
+  <SubType>
+   <SubTypeDescription>This is another description</SubTypeDescription>
+  </SubType>
+ </Item>
+ 
+ <Item id="101002">
+  <Type value="type2"/>
+  <Attribute name="height">20 ft</Attribute>
+  <Attribute name="weight">102</Attribute>
+  <SubType>
+   <SubTypeDescription>This is not a description</SubTypeDescription>
+  </SubType>
+  <SubType>
+   <SubTypeDescription>This is not another description</SubTypeDescription>
+  </SubType>
+ </Item>
+ 
+</Items> 

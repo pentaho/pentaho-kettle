@@ -1242,6 +1242,21 @@ public class Trans
         return null;
     }
 
+    /**
+     * Return the preview rows buffer of a step 
+     * @param stepname
+     * @return
+     */
+    public ArrayList getPreviewRows(String stepname, int copyNr)
+    {
+        BaseStep baseStep = getRunThread(stepname, copyNr);
+        if (baseStep!=null)
+        {
+            return baseStep.previewBuffer;
+        }
+        return null;
+    }
+
 }
 
 

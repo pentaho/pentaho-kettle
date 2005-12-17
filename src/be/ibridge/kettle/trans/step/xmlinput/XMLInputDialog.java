@@ -53,12 +53,21 @@ import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
+import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
+import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.spoon.Spoon;
+import be.ibridge.kettle.trans.StepLoader;
+import be.ibridge.kettle.trans.Trans;
+import be.ibridge.kettle.trans.TransHopMeta;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.StepMeta;
+import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
 
 
 public class XMLInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -112,10 +121,10 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 	private Text         wLimit;
 	private FormData     fdlLimit, fdLimit;
 
-    private Label        wlLocation;
-    private Text         wLocation;
-    private FormData     fdlLocation, fdLocation;
-
+    private Label        wlPosition;
+    private TableView    wPosition;
+    private FormData     fdlPosition, fdPosition;
+    
 	private TableView    wFields;
 	private FormData     fdFields;
 
@@ -439,22 +448,30 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 
-        wlLocation=new Label(wContentComp, SWT.RIGHT);
-        wlLocation.setText("Location ");
-        props.setLook(wlLocation);
-        fdlLocation=new FormData();
-        fdlLocation.left = new FormAttachment(0, 0);
-        fdlLocation.top  = new FormAttachment(wLimit, margin);
-        fdlLocation.right= new FormAttachment(middle, -margin);
-        wlLocation.setLayoutData(fdlLocation);
-        wLocation=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wLocation);
-        wLocation.addModifyListener(lsMod);
-        fdLocation=new FormData();
-        fdLocation.left = new FormAttachment(middle, 0);
-        fdLocation.top  = new FormAttachment(wLimit, margin);
-        fdLocation.right= new FormAttachment(100, 0);
-        wLocation.setLayoutData(fdLocation);
+        wlPosition=new Label(wContentComp, SWT.RIGHT);
+        wlPosition.setText("Location ");
+        props.setLook(wlPosition);
+        fdlPosition=new FormData();
+        fdlPosition.left = new FormAttachment(0, 0);
+        fdlPosition.top  = new FormAttachment(wLimit, margin);
+        fdlPosition.right= new FormAttachment(middle, -margin);
+        wlPosition.setLayoutData(fdlPosition);
+        
+        ColumnInfo[] locationColumns = new ColumnInfo[] 
+        { 
+            new ColumnInfo("Elements", ColumnInfo.COLUMN_TYPE_TEXT, "", false)
+        };
+        
+        int nrElements = input.getInputPosition()!=null ? input.getInputPosition().length : 0;
+
+        wPosition = new TableView(wContentComp, SWT.FULL_SELECTION | SWT.MULTI, locationColumns, nrElements, lsMod, props);
+        wPosition.addModifyListener(lsMod);
+        fdPosition=new FormData();
+        fdPosition.left   = new FormAttachment(middle, 0);
+        fdPosition.top    = new FormAttachment(wLimit, margin);
+        fdPosition.bottom = new FormAttachment(100, -50);
+        fdPosition.right  = new FormAttachment(100, 0);
+        wPosition.setLayoutData(fdPosition);
 
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
@@ -467,9 +484,9 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wContentTab.setControl(wContentComp);
 
 
-		/////////////////////////////////////////////////////////////
-		/// END OF CONTENT TAB
-		/////////////////////////////////////////////////////////////
+		// ///////////////////////////////////////////////////////////
+		// / END OF CONTENT TAB
+		// ///////////////////////////////////////////////////////////
 
 
 		// Fields tab...
@@ -513,7 +530,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			 new ColumnInfo("Currency",   ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
 			 new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
 			 new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  "", XMLInputMeta.trimTypeDesc, true ),
+			 new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  "", XMLInputField.trimTypeDesc, true ),
 			 new ColumnInfo("Repeat",     ColumnInfo.COLUMN_TYPE_CCOMBO,  "", new String[] { "Y", "N" }, true ),
              new ColumnInfo("Position",   ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
             };
@@ -632,22 +649,29 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					XMLInputMeta tfii = new XMLInputMeta();
-					getInfo(tfii);
-					String files[] = tfii.getFiles();
-					if (files!=null && files.length>0)
-					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, "Files read", "Files read:");
-						esd.setViewOnly();
-						esd.open();
-					}
-					else
-					{
-						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage("No files found!  Please check the filename/directory and regular expression options.");
-						mb.setText("ERROR");
-						mb.open(); 
-					}
+                    try
+                    {
+    					XMLInputMeta tfii = new XMLInputMeta();
+    					getInfo(tfii);
+    					String files[] = tfii.getFiles();
+    					if (files!=null && files.length>0)
+    					{
+    						EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, "Files read", "Files read:");
+    						esd.setViewOnly();
+    						esd.open();
+    					}
+    					else
+    					{
+    						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+    						mb.setMessage("No files found!  Please check the filename/directory and regular expression options.");
+    						mb.setText("ERROR");
+    						mb.open(); 
+    					}
+                    }
+                    catch(KettleException ex)
+                    {
+                        new ErrorDialog(shell, props, "Error parsing input data", "An error occurred while parsing the input data on this dialog", ex);
+                    }
 				}
 			}
 		);
@@ -830,29 +854,49 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		{
 		    XMLInputField field = in.getInputFields()[i];
 		    
-			TableItem item = wFields.table.getItem(i);
-			item.setText(1, field.getName());
-			String type     = field.getTypeDesc();
-			String format   = field.getFormat();
-			String length   = ""+field.getLength();
-			String prec     = ""+field.getPrecision();
-			String curr     = field.getCurrencySymbol();
-			String group    = field.getGroupSymbol();
-			String decim    = field.getDecimalSymbol();
-			String trim     = field.getTrimTypeDesc();
-			String rep      = field.isRepeated()?"Y":"N";
-			
-			if (type    !=null) item.setText( 2, type    );
-			if (format  !=null) item.setText( 3, format  );
-			if (length  !=null && !"-1".equals(length  )) item.setText( 5, length  );
-			if (prec    !=null && !"-1".equals(prec    )) item.setText( 6, prec    );
-			if (curr    !=null) item.setText( 7, curr    );
-			if (decim   !=null) item.setText( 8, decim   );
-			if (group   !=null) item.setText( 9, group   );
-			if (trim    !=null) item.setText(11, trim    );
-			if (rep     !=null) item.setText(12, rep     );
+            if (field!=null)
+            {
+    			TableItem item = wFields.table.getItem(i);
+    			String name     = field.getName();
+    			String type     = field.getTypeDesc();
+    			String format   = field.getFormat();
+    			String length   = ""+field.getLength();
+    			String prec     = ""+field.getPrecision();
+    			String curr     = field.getCurrencySymbol();
+    			String group    = field.getGroupSymbol();
+    			String decim    = field.getDecimalSymbol();
+    			String trim     = field.getTrimTypeDesc();
+    			String rep      = field.isRepeated()?"Y":"N";
+    			
+                if (name    !=null) item.setText( 1, name);
+    			if (type    !=null) item.setText( 2, type    );
+    			if (format  !=null) item.setText( 3, format  );
+    			if (length  !=null && !"-1".equals(length  )) item.setText( 4, length  );
+    			if (prec    !=null && !"-1".equals(prec    )) item.setText( 5, prec    );
+    			if (curr    !=null) item.setText( 6, curr    );
+    			if (decim   !=null) item.setText( 7, decim   );
+    			if (group   !=null) item.setText( 8, group   );
+    			if (trim    !=null) item.setText( 9, trim    );
+    			if (rep     !=null) item.setText(10, rep     );
+                
+                item.setText(11, field.getFieldPositionsCode());
+            }
 		}
-		
+        
+        for (int i=0;i<input.getInputPosition().length;i++)
+        {
+            TableItem item = wPosition.table.getItem(i);
+            if (input.getInputPosition()[i]!=null) item.setText(1, input.getInputPosition()[i]);
+        }
+        
+        wFields.removeEmptyRows();
+        wFields.setRowNums();
+        wFields.optWidth(true);
+
+        wPosition.removeEmptyRows();
+        wPosition.setRowNums();
+        wPosition.optWidth(true);
+
 		setMultiple();
 		setIncludeFilename();
 		setIncludeRownum();
@@ -869,11 +913,18 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	private void ok()
 	{
-		getInfo(input);
+        try
+        {
+            getInfo(input);
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, props, "Error parsing input data", "An error occurred while parsing the input data on this dialog", e);
+        }
 		dispose();
 	}
 	
-	private void getInfo(XMLInputMeta in)
+	private void getInfo(XMLInputMeta in) throws KettleException
 	{
 		stepname = wStepname.getText(); // return value
 
@@ -885,33 +936,41 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		in.setIncludeFilename( wInclFilename.getSelection() );
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
 		
-		//Table table = wFields.table;
-		
-		int nrfiles    = wFilenameList.getItemCount();
-		int nrfields   = wFields.nrNonEmpty();
-		in.allocate(nrfiles, nrfields);
+		int nrFiles     = wFilenameList.getItemCount();
+		int nrFields    = wFields.nrNonEmpty();
+        int nrPositions = wPosition.nrNonEmpty();
+        
+		in.allocate(nrFiles, nrFields, nrPositions);
 
 		in.setFileName( wFilenameList.getItems(0) );
 		in.setFileMask( wFilenameList.getItems(1) );
 
-		for (int i=0;i<nrfields;i++)
+		for (int i=0;i<nrFields;i++)
 		{
 		    XMLInputField field = new XMLInputField();
 		    
 			TableItem item  = wFields.getNonEmpty(i);
+            
 			field.setName( item.getText(1) );
 			field.setType( Value.getType(item.getText(2)) );
 			field.setFormat( item.getText(3) );
-			field.setLength( Const.toInt(item.getText(5), -1) );
-			field.setPrecision( Const.toInt(item.getText(6), -1) );
-			field.setCurrencySymbol( item.getText(7) );
-			field.setDecimalSymbol( item.getText(8) );
-			field.setGroupSymbol( item.getText(9) );
-			field.setTrimType( XMLInputMeta.getTrimType(item.getText(11)) );
-			field.setRepeated( "Y".equalsIgnoreCase(item.getText(12)) );		
-			
+			field.setLength( Const.toInt(item.getText(4), -1) );
+			field.setPrecision( Const.toInt(item.getText(5), -1) );
+			field.setCurrencySymbol( item.getText(6) );
+			field.setDecimalSymbol( item.getText(7) );
+			field.setGroupSymbol( item.getText(8) );
+			field.setTrimType( XMLInputField.getTrimType(item.getText(9)) );
+			field.setRepeated( "Y".equalsIgnoreCase(item.getText(10)) );		
+			field.setFieldPosition( item.getText(11) );
+            
 			in.getInputFields()[i] = field;
 		}		
+        
+        for (int i=0;i<nrPositions;i++)
+        {
+            TableItem item  = wPosition.getNonEmpty(i);
+            input.getInputPosition()[i] = item.getText(1);
+        }
 	}
 	
 	private void get()
@@ -922,13 +981,64 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 	// Get the data layout
 	private void getXML()
 	{
-		XMLInputMeta meta = new XMLInputMeta();
-		getInfo(meta);
+        try
+        {
+    		XMLInputMeta meta = new XMLInputMeta();
+    		getInfo(meta);
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, props, "Error parsing input data", "An error occurred while parsing the input data on this dialog", e);
+        }
 	}
 	
 	// Preview the data
 	private void preview()
 	{
+        new ErrorDialog(shell, props, "Not yet finished!", "Sorry dude, this is not yet completely implemented!", new KettleException("Try linking it to a dummy and do a preview on that!"));
+        
+        try
+        {
+            StepLoader stepLoader = StepLoader.getInstance();
+            
+            
+            TransMeta previewMeta = new TransMeta();
+            
+            // Create the XML input step
+            
+            XMLInputMeta oneMeta = new XMLInputMeta();
+            getInfo(oneMeta);
+            StepMeta one = new StepMeta(log, stepLoader.getStepPluginID(oneMeta), wStepname.getText(), oneMeta);
+            one.setLocation(50,50);
+            one.setDraw(true);
+            previewMeta.addStep(one);
+            
+            
+            DummyTransMeta twoMeta = new DummyTransMeta();
+            StepMeta two = new StepMeta(log, stepLoader.getStepPluginID(twoMeta), "dummy", twoMeta);
+            two.setLocation(250,50);
+            two.setDraw(true);
+            previewMeta.addStep(two);
+            
+            TransHopMeta hop = new TransHopMeta(one, two);
+            previewMeta.addTransHop(hop);
+
+            // This transformation is ready to run in preview!
+            Trans trans = new Trans(log, previewMeta, new String[] { wStepname.getText() }, new int[] { 100 } );
+            trans.execute(null);
+            trans.waitUntilFinished();
+            
+            PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), trans.getPreviewRows(wStepname.getText(), 0));
+            prd.open();
+            
+            Spoon spoon = new Spoon(log, shell.getDisplay(), previewMeta, null);
+            spoon.open();
+            
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, props, "Error displaying preview data", "An error occurred while trying to preview XML data", e);
+       }
 	}
 
 	// Get the first x lines

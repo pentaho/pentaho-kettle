@@ -15,6 +15,12 @@
  
 
 package be.ibridge.kettle.trans.step.xmlinput;
+import org.w3c.dom.Node;
+
+import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.value.Value;
 
 /**
@@ -26,59 +32,39 @@ import be.ibridge.kettle.core.value.Value;
  */
 public class XMLInputField implements Cloneable
 {
+    public final static int TYPE_TRIM_NONE  = 0;
+    public final static int TYPE_TRIM_LEFT  = 1;
+    public final static int TYPE_TRIM_RIGHT = 2;
+    public final static int TYPE_TRIM_BOTH  = 3;
+    
+    public final static String trimTypeDesc[] = { "none", "left", "right", "both" };
+    
+    public final static String POSITION_MARKER  = ",";
+    
 	private String 	  name;
-	private XMLInputFieldPosition[] xmlInputFieldPositions;
-	private int 	  type;
-	private int 	  trimtype;
+	private XMLInputFieldPosition[] fieldPosition;
+	
+    private int 	  type;
     private int       length;
-	private int 	  precision;
     private String    format;
-	private String 	  currencySymbol;
+    private int       trimtype;
+    private int       precision;
+    private String 	  currencySymbol;
 	private String 	  decimalSymbol;
 	private String 	  groupSymbol;
 	private boolean   repeat;
 
     private String    samples[];
-    /*
-	private static final String date_formats[] = new String[] 
-		{
-			"yyyy/MM/dd HH:mm:ss.SSS", 
-			"yyyy/MM/dd HH:mm:ss",
-			"dd/MM/yyyy",
-			"dd-MM-yyyy",
-			"yyyy/MM/dd",
-			"yyyy-MM-dd",
-			"yyyyMMdd",
-			"ddMMyyyy",
-			"d-M-yyyy",
-			"d/M/yyyy",
-			"d-M-yy",
-			"d/M/yy",
-		}
-		;
 
-	private static final String number_formats[] = new String[] 
-		{
-			"",
-			"#",
-			Const.DEFAULT_NUMBER_FORMAT,
-			"0.00",
-			"0000000000000",
-			"###,###,###.#######", 
-			"###############.###############",
-			"#####.###############%",
-		}
-		;
-	*/
     
 	public XMLInputField(String fieldname, XMLInputFieldPosition[] xmlInputFieldPositions)
 	{
 		this.name                     = fieldname;
-		this.xmlInputFieldPositions   = xmlInputFieldPositions;
+		this.fieldPosition   = xmlInputFieldPositions;
 		this.length         = -1;
 		this.type           = Value.VALUE_TYPE_STRING;
 		this.format         = "";
-		this.trimtype       = XMLInputMeta.TYPE_TRIM_NONE;
+		this.trimtype       = TYPE_TRIM_NONE;
 		this.groupSymbol   = "";
 		this.decimalSymbol = "";
 		this.currencySymbol= "";
@@ -91,18 +77,93 @@ public class XMLInputField implements Cloneable
         this(null, null);
     }
 
-	
-	public Object clone()
+
+    public String getXML()
+    {
+        String retval="";
+        
+        retval+="      <field>"+Const.CR;
+        retval+="        "+XMLHandler.addTagValue("name",         getName());
+        retval+="        "+XMLHandler.addTagValue("type",         getTypeDesc());
+        retval+="        "+XMLHandler.addTagValue("format",       getFormat());
+        retval+="        "+XMLHandler.addTagValue("currency",     getCurrencySymbol());
+        retval+="        "+XMLHandler.addTagValue("decimal",      getDecimalSymbol());
+        retval+="        "+XMLHandler.addTagValue("group",        getGroupSymbol());
+        retval+="        "+XMLHandler.addTagValue("length",       getLength());
+        retval+="        "+XMLHandler.addTagValue("precision",    getPrecision());
+        retval+="        "+XMLHandler.addTagValue("trim_type",    getTrimTypeDesc());
+        retval+="        "+XMLHandler.addTagValue("repeat",       isRepeated());
+        
+        retval+="        <positions>";
+        for (int i=0;i<fieldPosition.length;i++)
+        {
+            retval+=XMLHandler.addTagValue("position", fieldPosition[i].toString(), false);
+        }
+        retval+="        </positions>"+Const.CR;
+
+        retval+="        </field>"+Const.CR;
+        
+        return retval;
+    }
+
+	public XMLInputField(Node fnode) throws KettleValueException
+    {
+        setName( XMLHandler.getTagValue(fnode, "name") );
+        setType( Value.getType(XMLHandler.getTagValue(fnode, "type")) );
+        setFormat( XMLHandler.getTagValue(fnode, "format") );
+        setCurrencySymbol( XMLHandler.getTagValue(fnode, "currency") );
+        setDecimalSymbol( XMLHandler.getTagValue(fnode, "decimal") );
+        setGroupSymbol( XMLHandler.getTagValue(fnode, "group") );
+        setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
+        setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
+        setTrimType( getTrimType(XMLHandler.getTagValue(fnode, "trim_type")) );
+        setRepeated( !"N".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "repeat")) ); 
+        
+        Node positions = XMLHandler.getSubNode(fnode, "positions");
+        int nrPositions = XMLHandler.countNodes(positions, "position");
+        
+        fieldPosition = new XMLInputFieldPosition[nrPositions];
+        
+        for (int i=0;i<nrPositions;i++)
+        {
+            Node positionnode = XMLHandler.getSubNodeByNr(positions, "position", i); 
+            String encoded = XMLHandler.getNodeValue(positionnode);
+            fieldPosition[i] = new XMLInputFieldPosition(encoded);
+        }
+    }
+
+    public final static int getTrimType(String tt)
+    {
+        if (tt==null) return 0;
+        
+        for (int i=0;i<trimTypeDesc.length;i++)
+        {
+            if (trimTypeDesc[i].equalsIgnoreCase(tt)) return i;
+        }
+        return 0;
+    }
+
+    public final static String getTrimTypeDesc(int i)
+    {
+        if (i<0 || i>=trimTypeDesc.length) return trimTypeDesc[0];
+        return trimTypeDesc[i]; 
+    }
+    
+    public Object clone()
 	{
 		try
 		{
 			XMLInputField retval = (XMLInputField) super.clone();
-            XMLInputFieldPosition[] positions = new XMLInputFieldPosition[xmlInputFieldPositions.length];
-            for (int i=0;i<xmlInputFieldPositions.length;i++)
+            
+            if (fieldPosition!=null)
             {
-                positions[i] = (XMLInputFieldPosition)xmlInputFieldPositions[i].clone();
+                XMLInputFieldPosition[] positions = new XMLInputFieldPosition[fieldPosition.length];
+                for (int i=0;i<fieldPosition.length;i++)
+                {
+                    positions[i] = (XMLInputFieldPosition)fieldPosition[i].clone();
+                }
+                retval.setFieldPosition(positions);
             }
-            retval.setXmlInputFieldPositions(positions);
             
 			return retval;
 		}
@@ -116,17 +177,17 @@ public class XMLInputField implements Cloneable
 	/**
      * @return Returns the xmlInputFieldPositions.
      */
-    public XMLInputFieldPosition[] getXmlInputFieldPositions()
+    public XMLInputFieldPosition[] getFieldPosition()
     {
-        return xmlInputFieldPositions;
+        return fieldPosition;
     }
 
     /**
      * @param xmlInputFieldPositions The xmlInputFieldPositions to set.
      */
-    public void setXmlInputFieldPositions(XMLInputFieldPosition[] xmlInputFieldPositions)
+    public void setFieldPosition(XMLInputFieldPosition[] xmlInputFieldPositions)
     {
-        this.xmlInputFieldPositions = xmlInputFieldPositions;
+        this.fieldPosition = xmlInputFieldPositions;
     }
 
     public int getLength()
@@ -191,7 +252,7 @@ public class XMLInputField implements Cloneable
 
 	public String getTrimTypeDesc()
 	{
-		return XMLInputMeta.getTrimTypeDesc(trimtype);
+		return getTrimTypeDesc(trimtype);
 	}
 	
 	public void setTrimType(int trimtype)
@@ -254,14 +315,14 @@ public class XMLInputField implements Cloneable
 		repeat = !repeat;		
 	}
     
-    public String encodePosition()
+    public String getFieldPositionsCode()
     {
         String enc="";
         
-        for (int i=0;i<xmlInputFieldPositions.length;i++)
+        for (int i=0;i<fieldPosition.length;i++)
         {
-            XMLInputFieldPosition pos = xmlInputFieldPositions[i];
-            if (i>0) enc+=", ";
+            XMLInputFieldPosition pos = fieldPosition[i];
+            if (i>0) enc+=POSITION_MARKER;
             enc+=pos.toString();
         }
         
@@ -271,4 +332,21 @@ public class XMLInputField implements Cloneable
 	public void guess()
 	{
 	}
+
+    public void setFieldPosition(String encoded) throws KettleException
+    {
+        try
+        {
+            String codes[] = encoded.split(POSITION_MARKER);
+            fieldPosition = new XMLInputFieldPosition[codes.length];
+            for (int i=0;i<codes.length;i++)
+            {
+                fieldPosition[i] = new XMLInputFieldPosition(codes[i]);
+            }
+        }
+        catch(Exception e)
+        {
+            throw new KettleException("Unable to parse the field positions because of an error"+Const.CR+"Please use E=element or A=attribute in a comma separated list (code: "+encoded+")", e);
+        }
+    }
 }

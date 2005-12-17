@@ -49,17 +49,7 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 
 public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
-{
-	public final static int TYPE_TRIM_NONE  = 0;
-	public final static int TYPE_TRIM_LEFT  = 1;
-	public final static int TYPE_TRIM_RIGHT = 2;
-	public final static int TYPE_TRIM_BOTH  = 3;
-	
-	public final static String trimTypeDesc[] = { "none", "left", "right", "both" };
-	
-	
-	
-	
+{	
 	/** Array of filenames */
 	private  String  fileName[]; 
 
@@ -232,21 +222,68 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		XMLInputMeta retval = (XMLInputMeta)super.clone();
 		
-		int nrfiles  = fileName.length;
-		int nrfields = inputFields.length;
+		int nrFiles  = fileName.length;
+		int nrFields = inputFields.length;
+        int nrPositions = inputPosition.length;
 
-		retval.allocate(nrfiles, nrfields);
+		retval.allocate(nrFiles, nrFields, nrPositions);
 		
-		for (int i=0;i<nrfields;i++)
+		for (int i=0;i<nrFields;i++)
 		{
-			retval.inputFields[i] = (XMLInputField)inputFields[i].clone();
+            if (inputFields[i]!=null)
+            {
+                retval.inputFields[i] = (XMLInputField)inputFields[i].clone();
+            }
 		}
+        
+        for (int i=0;i<nrPositions;i++)
+        {
+            retval.inputPosition[i] = inputPosition[i];
+        }
 		
 		return retval;
 	}
 
-	private void readData(Node stepnode)
-		throws KettleXMLException
+    
+    public String getXML()
+    {
+        String retval="";
+        
+        retval+="    "+XMLHandler.addTagValue("include",         includeFilename);
+        retval+="    "+XMLHandler.addTagValue("include_field",   filenameField);
+        retval+="    "+XMLHandler.addTagValue("rownum",          includeRowNumber);
+        retval+="    "+XMLHandler.addTagValue("rownum_field",    rowNumberField);
+        
+        retval+="    <file>"+Const.CR;
+        for (int i=0;i<fileName.length;i++)
+        {
+            retval+="      "+XMLHandler.addTagValue("name",     fileName[i]);
+            retval+="      "+XMLHandler.addTagValue("filemask", fileMask[i]);
+        }
+        retval+="      </file>"+Const.CR;
+        
+        retval+="    <fields>"+Const.CR;
+        for (int i=0;i<inputFields.length;i++)
+        {
+            XMLInputField field = inputFields[i];
+            retval+=field.getXML();
+        }
+        retval+="      </fields>"+Const.CR;
+        
+        retval+="    <positions>"+Const.CR;
+        for (int i=0;i<inputPosition.length;i++)
+        {
+            retval+="      "+XMLHandler.addTagValue("position", inputPosition[i]);
+        }
+        
+        retval+="      </positions>"+Const.CR;
+
+        retval+="    "+XMLHandler.addTagValue("limit", rowLimit);
+
+        return retval;
+    }
+
+	private void readData(Node stepnode) throws KettleXMLException
 	{
 		try
 		{
@@ -257,14 +294,16 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 			includeRowNumber          = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 	
-			Node filenode = XMLHandler.getSubNode(stepnode, "file");
-			Node fields   = XMLHandler.getSubNode(stepnode, "fields");
-			int nrfiles  = XMLHandler.countNodes(filenode, "name");
-			int nrfields = XMLHandler.countNodes(fields, "field");
+			Node filenode  = XMLHandler.getSubNode(stepnode,   "file");
+			Node fields    = XMLHandler.getSubNode(stepnode,   "fields");
+            Node positions = XMLHandler.getSubNode(stepnode,   "positions");
+			int nrFiles     = XMLHandler.countNodes(filenode,  "name");
+			int nrFields    = XMLHandler.countNodes(fields,    "field");
+            int nrPositions = XMLHandler.countNodes(positions, "position");
 	
-			allocate(nrfiles, nrfields);
+			allocate(nrFiles, nrFields, nrPositions);
 			
-			for (int i=0;i<nrfiles;i++)
+			for (int i=0;i<nrFiles;i++)
 			{
 				Node filenamenode = XMLHandler.getSubNodeByNr(filenode, "name", i); 
 				Node filemasknode = XMLHandler.getSubNodeByNr(filenode, "filemask", i); 
@@ -272,27 +311,18 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 				fileMask[i] = XMLHandler.getNodeValue(filemasknode);
 			}
 			
-			for (int i=0;i<nrfields;i++)
+			for (int i=0;i<nrFields;i++)
 			{
 				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
-				XMLInputField field = new XMLInputField();
-				
-				field.setName( XMLHandler.getTagValue(fnode, "name") );
-				field.setType( Value.getType(XMLHandler.getTagValue(fnode, "type")) );
-				field.setFormat( XMLHandler.getTagValue(fnode, "format") );
-				field.setCurrencySymbol( XMLHandler.getTagValue(fnode, "currency") );
-				field.setDecimalSymbol( XMLHandler.getTagValue(fnode, "decimal") );
-				field.setGroupSymbol( XMLHandler.getTagValue(fnode, "group") );
-				field.setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
-				field.setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
-				field.setTrimType( getTrimType(XMLHandler.getTagValue(fnode, "trim_type")) );
-				
-				String srepeat = XMLHandler.getTagValue(fnode, "repeat");
-				if (srepeat!=null) field.setRepeated( "Y".equalsIgnoreCase(srepeat) ); 
-				else               field.setRepeated( false );
-				
+				XMLInputField field = new XMLInputField(fnode);
 				inputFields[i] = field;
 			}
+            
+            for (int i=0;i<nrPositions;i++)
+            {
+                Node positionnode = XMLHandler.getSubNodeByNr(positions, "position", i); 
+                inputPosition[i] = XMLHandler.getNodeValue(positionnode);
+            }
 			
 			// Is there a limit on the number of rows we process?
 			lim=XMLHandler.getTagValue(stepnode, "limit");
@@ -304,12 +334,14 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public void allocate(int nrfiles, int nrfields)
+	public void allocate(int nrfiles, int nrfields, int nrPositions)
 	{
 		fileName   = new String [nrfiles];
 		fileMask   = new String [nrfiles];
 		
 		inputFields = new XMLInputField[nrfields];
+        
+        inputPosition = new String[nrPositions];
 	}
 	
 	public void setDefault()
@@ -319,22 +351,28 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		includeRowNumber    = false;
 		rowNumberField = "";
 		
-		int nrfiles=0;
-		int nrfields=0;
+		int nrFiles=0;
+		int nrFields=0;
+        int nrPositions=0;
 
-		allocate(nrfiles, nrfields);	
+		allocate(nrFiles, nrFields, nrPositions);	
 		
-		for (int i=0;i<nrfiles;i++) 
+		for (int i=0;i<nrFiles;i++) 
 		{
 			fileName[i]="filename"+(i+1);
 			fileMask[i]="";
 		}
 		
-		for (int i=0;i<nrfields;i++)
+		for (int i=0;i<nrFields;i++)
 		{
 		    inputFields[i] = new XMLInputField("field"+(i+1), null);
 		}
-			
+
+        for (int i=0;i<nrPositions;i++)
+        {
+            inputPosition[i] = "position"+(i+1);
+        }
+
 		rowLimit=0L;
 	}
 	
@@ -373,72 +411,31 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		return row;
 	}
 	
-	public String getXML()
-	{
-		String retval="";
-		
-		retval+="    "+XMLHandler.addTagValue("include",         includeFilename);
-		retval+="    "+XMLHandler.addTagValue("include_field",   filenameField);
-		retval+="    "+XMLHandler.addTagValue("rownum",          includeRowNumber);
-		retval+="    "+XMLHandler.addTagValue("rownum_field",    rowNumberField);
-		
-        retval+="    <file>"+Const.CR;
-		for (int i=0;i<fileName.length;i++)
-		{
-			retval+="      "+XMLHandler.addTagValue("name",     fileName[i]);
-			retval+="      "+XMLHandler.addTagValue("filemask", fileMask[i]);
-		}
-		
-		retval+="      </file>"+Const.CR;
-		retval+="    <fields>"+Const.CR;
-		
-		for (int i=0;i<inputFields.length;i++)
-		{
-		    XMLInputField field = inputFields[i];
-		    
-			retval+="      <field>"+Const.CR;
-			retval+="        "+XMLHandler.addTagValue("name",      field.getName());
-			retval+="        "+XMLHandler.addTagValue("type",      field.getTypeDesc());
-			retval+="        "+XMLHandler.addTagValue("format",    field.getFormat());
-			retval+="        "+XMLHandler.addTagValue("currency",  field.getCurrencySymbol());
-			retval+="        "+XMLHandler.addTagValue("decimal",   field.getDecimalSymbol());
-			retval+="        "+XMLHandler.addTagValue("group",     field.getGroupSymbol());
-			retval+="        "+XMLHandler.addTagValue("length",    field.getLength());
-			retval+="        "+XMLHandler.addTagValue("precision", field.getPrecision());
-			retval+="        "+XMLHandler.addTagValue("trim_type", field.getTrimTypeDesc());
-			retval+="        "+XMLHandler.addTagValue("repeat",    field.isRepeated());
-			retval+="        </field>"+Const.CR;
-		}
-		retval+="      </fields>"+Const.CR;
-		retval+="    "+XMLHandler.addTagValue("limit", rowLimit);
-
-		return retval;
-	}
-	
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
 		throws KettleException
 	{
 		try
 		{
-			includeFilename         =      rep.getStepAttributeBoolean(id_step, "include");  
-			filenameField   =      rep.getStepAttributeString (id_step, "include_field");
+			includeFilename   =      rep.getStepAttributeBoolean(id_step, "include");  
+			filenameField     =      rep.getStepAttributeString (id_step, "include_field");
 	
-			includeRowNumber          =      rep.getStepAttributeBoolean(id_step, "rownum");
+			includeRowNumber  =      rep.getStepAttributeBoolean(id_step, "rownum");
 			rowNumberField    =      rep.getStepAttributeString (id_step, "rownum_field");
-			rowLimit           = (int)rep.getStepAttributeInteger(id_step, "limit");
+			rowLimit          = (int)rep.getStepAttributeInteger(id_step, "limit");
 	
-			int nrfiles     = rep.countNrStepAttributes(id_step, "file_name");
-			int nrfields    = rep.countNrStepAttributes(id_step, "field_name");
+			int nrFiles     = rep.countNrStepAttributes(id_step, "file_name");
+			int nrFields    = rep.countNrStepAttributes(id_step, "field_name");
+            int nrPositions = rep.countNrStepAttributes(id_step, "input_position");
 			
-			allocate(nrfiles, nrfields);
+			allocate(nrFiles, nrFields, nrPositions);
 
-			for (int i=0;i<nrfiles;i++)
+			for (int i=0;i<nrFiles;i++)
 			{
 				fileName[i] =      rep.getStepAttributeString (id_step, i, "file_name"    );
 				fileMask[i] =      rep.getStepAttributeString (id_step, i, "file_mask"    );
 			}
 
-			for (int i=0;i<nrfields;i++)
+			for (int i=0;i<nrFields;i++)
 			{
 			    XMLInputField field = new XMLInputField();
 			    
@@ -450,11 +447,23 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 				field.setGroupSymbol( rep.getStepAttributeString (id_step, i, "field_group") );
 				field.setLength( (int)rep.getStepAttributeInteger(id_step, i, "field_length") );
 				field.setPrecision( (int)rep.getStepAttributeInteger(id_step, i, "field_precision") );
-				field.setTrimType( getTrimType( rep.getStepAttributeString (id_step, i, "field_trim_type") ));
+				field.setTrimType( XMLInputField.getTrimType( rep.getStepAttributeString (id_step, i, "field_trim_type") ));
 				field.setRepeated( rep.getStepAttributeBoolean(id_step, i, "field_repeat") );
-				
+
+                String fieldPositionCode = rep.getStepAttributeString(id_step, i, "field_position_code"); 
+                if (fieldPositionCode!=null)
+                {
+                    field.setFieldPosition( fieldPositionCode );
+                }
+                
 				inputFields[i] = field;
-			}		
+			}
+            
+            for (int i=0;i<nrPositions;i++)
+            {
+                inputPosition[i] = rep.getStepAttributeString (id_step, i, "input_position"    );
+            }
+
 		}
 		catch(Exception e)
 		{
@@ -483,17 +492,23 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 			    XMLInputField field = inputFields[i];
 			    
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      field.getName());
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      field.getTypeDesc());
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",    field.getFormat());
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",  field.getCurrencySymbol());
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal",   field.getDecimalSymbol());
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_group",     field.getGroupSymbol());
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    field.getLength());
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", field.getPrecision());
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type", field.getTrimTypeDesc());
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",    field.isRepeated());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",          field.getName());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",          field.getTypeDesc());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",        field.getFormat());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",      field.getCurrencySymbol());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal",       field.getDecimalSymbol());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_group",         field.getGroupSymbol());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",        field.getLength());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision",     field.getPrecision());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type",     field.getTrimTypeDesc());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",        field.isRepeated());
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_position_code", field.getFieldPositionsCode());
 			}
+            
+            for (int i=0;i<inputPosition.length;i++)
+            {
+                rep.saveStepAttribute(id_transformation, id_step, i, "input_position",  inputPosition[i]);
+            }
 		}
 		catch(Exception e)
 		{
@@ -501,23 +516,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public final static int getTrimType(String tt)
-	{
-		if (tt==null) return 0;
-		
-		for (int i=0;i<trimTypeDesc.length;i++)
-		{
-			if (trimTypeDesc[i].equalsIgnoreCase(tt)) return i;
-		}
-		return 0;
-	}
 
-	public final static String getTrimTypeDesc(int i)
-	{
-		if (i<0 || i>=trimTypeDesc.length) return trimTypeDesc[0];
-		return trimTypeDesc[i];	
-	}
-	
 	public String[] getFiles()
 	{
 		String files[]=null;
@@ -532,8 +531,6 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			final String onefile = realfile[i];
 			final String onemask = realmask[i];
-			
-			// System.out.println("Checking file ["+onefile+"] mask ["+onemask+"]");
 			
 			if (onemask!=null && onemask.length()>0) // A directory & a wildcard
 			{
@@ -574,8 +571,6 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 				}
 			}
 
-			// System.out.println(" --> found "+(files==null?0:files.length)+" files");
-
 			// Add to our list...
 			if (files!=null)
 			for (int x=0;x<files.length;x++)
@@ -583,6 +578,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 				filelist.add(files[x]);
 			}
 		}
+        
 		// OK, return the list in filelist...
 		files = (String[])filelist.toArray(new String[filelist.size()]);
 

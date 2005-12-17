@@ -4057,10 +4057,10 @@ public class Spoon
 		}
 	}
 
-	public boolean copyTable(String transname, RepositoryDirectory repdir, 
-						  DatabaseMeta sourceDBInfo, DatabaseMeta targetDBInfo,
-						  String tablename
-						  )
+	public boolean copyTable( String transname, RepositoryDirectory repdir, 
+						      DatabaseMeta sourceDBInfo, DatabaseMeta targetDBInfo,
+						      String tablename
+						    )
 	{
 		try
 		{
