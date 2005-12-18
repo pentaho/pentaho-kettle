@@ -1,5 +1,7 @@
 package be.ibridge.kettle.trans.step.xmlinput;
 
+import java.util.ArrayList;
+
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.exception.KettleValueException;
 
@@ -8,7 +10,7 @@ public class XMLInputFieldPosition
     public static final int XML_ELEMENT   = 1;
     public static final int XML_ATTRIBUTE = 2;
     
-    private static final String NR_MARKER = "/";
+    public static final String NR_MARKER = "/";
     
     private String name;
     private int    type;
@@ -22,8 +24,23 @@ public class XMLInputFieldPosition
      */
     public XMLInputFieldPosition(String name, int type)
     {
+        this.name      = name;
+        this.type      = type;
+        this.elementNr = 1;
+    }
+    
+    /**
+     * Create a new XML Input Field position.
+     * 
+     * @param name the name of the element or attribute
+     * @param type Element or Attribute (XML_ELEMENT, XML_ATTRIBUTE)
+     * @param elementNr the element number to pick.
+     */
+    public XMLInputFieldPosition(String name, int type, int elementNr)
+    {
         this.name = name;
         this.type = type;
+        this.elementNr = elementNr;
     }
     
     public String toString()
@@ -152,6 +169,25 @@ public class XMLInputFieldPosition
     public void setElementNr(int elementNr)
     {
         this.elementNr = elementNr;
+    }
+    
+    /**
+     * Encode the path to an XML element or attribute
+     * @param path An ArrayList of XMLInputFieldPosition
+     * @return the path encoded
+     */
+    public static final String encodePath(ArrayList path)
+    {
+        String encoded = "";
+        for (int p=0;p<path.size();p++) 
+        {
+            XMLInputFieldPosition pos = (XMLInputFieldPosition)path.get(p); 
+            String elementName = pos.toString();
+            if (p>0) encoded+=XMLInputField.POSITION_MARKER;
+            encoded+=elementName;
+        }
+        
+        return encoded;
     }
 
 }

@@ -2,17 +2,16 @@
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
- ** Kettle, from version 2.2 on, is released into the public domain   **
- ** under the Lesser GNU Public License (LGPL).                       **
+ ** It belongs to, is maintained by and is copyright 1999-2005 by     **
  **                                                                   **
- ** For more details, please read the document LICENSE.txt, included  **
- ** in this project                                                   **
- **                                                                   **
- ** http://www.kettle.be                                              **
- ** info@kettle.be                                                    **
+ **      i-Bridge bvba                                                **
+ **      Fonteinstraat 70                                             **
+ **      9400 OKEGEM                                                  **
+ **      Belgium                                                      **
+ **      http://www.kettle.be                                         **
+ **      info@kettle.be                                               **
  **                                                                   **
  **********************************************************************/
-
  
 /*
  * Created on 18-mei-2003
@@ -115,6 +114,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private Button       wbShowFiles;
 	private FormData     fdbShowFiles;
 
+    private Button       wFirst;
+    private FormData     fdFirst;
+    private Listener     lsFirst;
 
 	private Label        wlFiletype;
 	private CCombo       wFiletype;

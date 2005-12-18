@@ -249,10 +249,13 @@ public class XMLInput extends BaseStep implements StepInterface
             }
             
             // Do we need to repeat this field if it is null?
-            if (v.isNull() && data.previousRow!=null)
+            if (meta.getInputFields()[i].isRepeated())
             {
-                Value previous = data.previousRow.getValue(i);
-                v.setValue(previous);
+                if (v.isNull() && data.previousRow!=null)
+                {
+                    Value previous = data.previousRow.getValue(i);
+                    v.setValue(previous);
+                }
             }
             
         } // End of loop over fields...

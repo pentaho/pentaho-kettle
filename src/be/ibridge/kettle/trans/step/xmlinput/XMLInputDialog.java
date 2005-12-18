@@ -21,6 +21,7 @@
 
 package be.ibridge.kettle.trans.step.xmlinput;
 
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -48,10 +49,13 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
+import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
+import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
@@ -306,14 +310,6 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
-		wFirst=new Button(wFileComp, SWT.PUSH);
-		wFirst.setText(" View &file content ");
-		fdFirst=new FormData();
-		fdFirst.left=new FormAttachment(wbShowFiles, margin*2);
-		fdFirst.bottom =new FormAttachment(100, 0);
-		wFirst.setLayoutData(fdFirst);
-
-		
 		ColumnInfo[] colinfo=new ColumnInfo[2];
 		colinfo[ 0]=new ColumnInfo("File/Directory",  ColumnInfo.COLUMN_TYPE_TEXT,    "", false);
 		colinfo[ 1]=new ColumnInfo("Wildcard",        ColumnInfo.COLUMN_TYPE_TEXT,    "", false );
@@ -579,13 +575,11 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		lsFirst    = new Listener() { public void handleEvent(Event e) { first();   } };
 		lsGet      = new Listener() { public void handleEvent(Event e) { get();      } };
 		lsPreview  = new Listener() { public void handleEvent(Event e) { preview();   } };
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();     } };
 		
 		wOK.addListener     (SWT.Selection, lsOK     );
-		wFirst.addListener  (SWT.Selection, lsFirst  );
 		wGet.addListener    (SWT.Selection, lsGet    );
 		wPreview.addListener(SWT.Selection, lsPreview);
 		wCancel.addListener (SWT.Selection, lsCancel );
@@ -975,22 +969,153 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	private void get()
 	{
-	    getXML();
-	}
-	
-	// Get the data layout
-	private void getXML()
-	{
         try
         {
     		XMLInputMeta meta = new XMLInputMeta();
     		getInfo(meta);
+            
+            // OK, let's try to walk through the complete tree
+            Row row = new Row(); // no fields found...
+            
+            // Keep the list of positions
+            ArrayList path = new ArrayList(); // ArrayList of XMLInputFieldPosition
+            
+            for (int f=0;f<meta.getFiles().length;f++)
+            {
+                // Open the file...
+                Node rootNode = XMLHandler.loadXMLFile(meta.getFiles()[f]);
+                
+                // Position to the repeating item
+                for (int p=0;rootNode!=null && p<meta.getInputPosition().length-1;p++)
+                {
+                    rootNode = XMLHandler.getSubNode(rootNode, meta.getInputPosition()[p]);
+                }
+                
+                if (rootNode==null)
+                {
+                    // Specified node not found: return!
+                    return;
+                }
+                
+                // Count the number of rootnodes
+                String itemElement = meta.getInputPosition()[meta.getInputPosition().length-1];
+                int nrItems = XMLHandler.countNodes(rootNode, itemElement);
+                for (int i=0;i<nrItems;i++)
+                {
+                    Node itemNode = XMLHandler.getSubNodeByNr(rootNode, itemElement, i);
+                    getValues(itemNode, row, path);
+                }
+            }
+            
+            // System.out.println("Values found: "+row);
+            
+            // add the values to the grid...
+            for (int i=0;i<row.size();i++)
+            {
+                Value v = row.getValue(i);
+                TableItem item = new TableItem(wFields.table, SWT.NONE);
+                item.setText(1, v.getName());
+                item.setText(2, v.getTypeDesc());
+                item.setText(11, v.getOrigin());
+            }
+            
+            wFields.removeEmptyRows();
+            wFields.setRowNums();
+            wFields.optWidth(true);
         }
         catch(KettleException e)
         {
             new ErrorDialog(shell, props, "Error parsing input data", "An error occurred while parsing the input data on this dialog", e);
         }
 	}
+    
+    /**
+     * Get all the values defined in a Node
+     * @param node The node to examine
+     * @param row The 
+     */
+    private void getValues(Node node, Row row, ArrayList path) throws KettleException
+    {
+        String baseName = "";
+        for (int p=0;p<path.size();p++) 
+        {
+            XMLInputFieldPosition pos = (XMLInputFieldPosition)path.get(p); 
+            String elementName = pos.getName()+pos.getElementNr();
+            if (!elementName.startsWith("#"))
+            {
+                baseName+= new Value("p", elementName).initcap().getString();
+            }
+        }
+        
+        // First check out the attributes...
+        String attributes[] = XMLHandler.getNodeAttributes(node);
+        if (attributes!=null)
+        {
+            for (int i=0;i<attributes.length;i++)
+            {
+                XMLInputFieldPosition attrPos = new XMLInputFieldPosition(attributes[i], XMLInputFieldPosition.XML_ATTRIBUTE);
+                path.add(attrPos);
+                   
+                String attribute = new Value("a", attributes[i]).initcap().getString();
+                String fieldName = baseName+attribute;
+                
+                // See if this fieldname already exists in Row...
+                if (row.searchValueIndex(fieldName)<0)
+                {
+                    // Add the fieldname...
+                    Value field = new Value(fieldName, Value.VALUE_TYPE_STRING);
+                    
+                    // Add the path to this attribute to the origin of the field...
+                    String encoded = XMLInputFieldPosition.encodePath(path);
+                    field.setOrigin(encoded);
+                    
+                    row.addValue(field);
+                }
+                
+                path.remove(path.size()-1);
+            }
+        }
+        
+        // Then get the elements
+        String elements[] = XMLHandler.getNodeElements(node);
+        if (elements!=null)
+        {
+            for (int e=0;e<elements.length;e++)
+            {
+                // Count the number of occurences of this element...
+                int occurences = XMLHandler.countNodes(node, elements[e]);
+                for (int o=0;o<occurences;o++)
+                {
+                    Node itemNode = XMLHandler.getSubNodeByNr(node, elements[e], o);
+                    XMLInputFieldPosition xmlPos = new XMLInputFieldPosition(elements[e], XMLInputFieldPosition.XML_ELEMENT, o+1);
+                    
+                    path.add(xmlPos);
+                    getValues(itemNode, row, path);
+                    path.remove(path.size()-1); // remove the last one again
+                }
+            }
+        }
+        else  // No child nodes left: this is a value we want to grab
+        {
+            int idxLast = path.size()-1;
+            XMLInputFieldPosition last = (XMLInputFieldPosition) path.get(idxLast);
+            path.remove(idxLast);
+            
+            if (path.size()>0)
+            {
+                String encoded = XMLInputFieldPosition.encodePath(path);
+                if (row.searchValueIndex(baseName)<0)
+                {
+                    Value value = new Value(baseName, Value.VALUE_TYPE_STRING);
+                    value.setOrigin(encoded);
+                    
+                    row.addValue(value);
+                }
+            }
+            
+            path.add(last);
+        }
+    }
 	
 	// Preview the data
 	private void preview()
@@ -1041,11 +1166,6 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
        }
 	}
 
-	// Get the first x lines
-	private void first()
-	{
-	}
-	
 
 	public String toString()
 	{

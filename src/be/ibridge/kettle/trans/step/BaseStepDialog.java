@@ -55,9 +55,9 @@ public class BaseStepDialog extends Dialog
 	protected Text         wStepname;
 	protected FormData     fdlStepname, fdStepname;
 
-	protected Button wOK, wFirst, wGet, wPreview, wSQL, wCreate, wCancel;
-	protected FormData fdOK, fdFirst, fdGet, fdPreview, fdSQL, fdCreate, fdCancel;
-	protected Listener lsOK, lsFirst, lsGet, lsPreview, lsSQL, lsCreate, lsCancel;
+	protected Button wOK, wGet, wPreview, wSQL, wCreate, wCancel;
+	protected FormData fdOK, fdGet, fdPreview, fdSQL, fdCreate, fdCancel;
+	protected Listener lsOK, lsGet, lsPreview, lsSQL, lsCreate, lsCancel;
 
 	protected TransMeta transMeta;
 	protected Shell  shell;

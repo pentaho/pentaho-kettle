@@ -18,6 +18,7 @@
 package be.ibridge.kettle.core;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Date;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -703,6 +704,46 @@ public class XMLHandler
 		Value v = new Value("date", date);
 		return addTagValue(tag, v.getString(), cr);
 	}
+
+    /**
+     * Get all the attributes in a certain node (on the root level)
+     * @param node The node to examine
+     * @return an array of strings containing the names of the attributes.
+     */
+    public static String[] getNodeAttributes(Node node)
+    {
+        NamedNodeMap nnm = node.getAttributes();
+        if (nnm!=null)
+        {
+            String attributes[] = new String[nnm.getLength()];
+            for (int i=0;i<nnm.getLength();i++)
+            {
+                Node attr   = nnm.item(i);
+                attributes[i] = attr.getNodeName();
+            }
+            return attributes;
+        }
+        return null;
+
+    }
+
+    public static String[] getNodeElements(Node node)
+    {
+        ArrayList elements = new ArrayList(); // List of String 
+        
+        NodeList nodeList = node.getChildNodes();
+        if (nodeList==null) return null;
+        
+        for (int i=0;i<nodeList.getLength();i++)
+        {
+            String nodeName = nodeList.item(i).getNodeName();
+            if (elements.indexOf(nodeName)<0) elements.add(nodeName); 
+        }
+        
+        if (elements.size()==0) return null;
+        
+        return (String[])elements.toArray(new String[elements.size()]);
+    }
 
 }
 	
