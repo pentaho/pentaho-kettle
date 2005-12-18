@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+ <steps>
+  <step>
+    <name>XML Input</name>
+    <type>XMLInput</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <include>N</include>
+    <include_field></include_field>
+    <rownum>N</rownum>
+    <rownum_field></rownum_field>
+    <file>
+      <name>D:\Projects\SVN\javaForge\Kettle\trunk\testfiles\xmlinput testfile.xml</name>
+      <filemask></filemask>
+      </file>
+    <fields>
+      <field>
+        <name>id</name>
+        <type>String</type>
+        <format></format>
+        <currency></currency>
+        <decimal></decimal>
+        <group></group>
+        <length>10</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <positions><position>A=id</position>        </positions>
+        </field>
+      </fields>
+    <positions>
+      <position>Items</position>
+      <position>Item</position>
+      </positions>
+    <limit>0</limit>
+    <GUI>
+      <xloc>230</xloc>
+      <yloc>236</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+    </steps>
+<order>
+  </order>
+  <notepads>
+   </notepads>
+ </transformation>

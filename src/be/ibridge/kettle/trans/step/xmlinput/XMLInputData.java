@@ -62,6 +62,7 @@ public class XMLInputData extends BaseStepData implements StepDataInterface
     public String itemElement;
     public int itemCount;
     public int itemPosition;
+    public long rownr;
 
 	/**
 	 * 

@@ -681,8 +681,7 @@ public class BaseStep extends Thread
 
         if (previewSize>0 && previewBuffer.size()<previewSize) 
 		{
-            System.out.println("Add to preview buffer: "+in);
-			previewBuffer.add(new Row(in));
+            previewBuffer.add(new Row(in));
 		}
 		
 		// Keep adding to terminator_rows buffer...

@@ -58,7 +58,6 @@ import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
-import be.ibridge.kettle.spoon.Spoon;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransHopMeta;
@@ -969,7 +968,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         for (int i=0;i<nrPositions;i++)
         {
             TableItem item  = wPosition.getNonEmpty(i);
-            input.getInputPosition()[i] = item.getText(1);
+            in.getInputPosition()[i] = item.getText(1);
+            // System.out.println("Input Position #"+i+" : "+input.getInputPosition());
         }
 	}
 	
@@ -995,12 +995,9 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 	// Preview the data
 	private void preview()
 	{
-        new ErrorDialog(shell, props, "Not yet finished!", "Sorry dude, this is not yet completely implemented!", new KettleException("Try linking it to a dummy and do a preview on that!"));
-        
         try
         {
             StepLoader stepLoader = StepLoader.getInstance();
-            
             
             TransMeta previewMeta = new TransMeta();
             
@@ -1008,6 +1005,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
             
             XMLInputMeta oneMeta = new XMLInputMeta();
             getInfo(oneMeta);
+            
             StepMeta one = new StepMeta(log, stepLoader.getStepPluginID(oneMeta), wStepname.getText(), oneMeta);
             one.setLocation(50,50);
             one.setDraw(true);
@@ -1031,8 +1029,10 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
             PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), trans.getPreviewRows(wStepname.getText(), 0));
             prd.open();
             
+            /*
             Spoon spoon = new Spoon(log, shell.getDisplay(), previewMeta, null);
             spoon.open();
+            */
             
         }
         catch(KettleException e)

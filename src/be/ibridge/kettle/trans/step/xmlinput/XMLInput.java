@@ -63,6 +63,12 @@ public class XMLInput extends BaseStep implements StepInterface
 		logRowlevel("Read row: "+row.toString());
         
         putRow(row);
+        
+        if (meta.getRowLimit()>0 && data.rownr>=meta.getRowLimit())  // limit has been reached: stop now.
+        {
+            setOutputDone();
+            return false;
+        }
 
         debug="end of processRow()";
         
@@ -212,14 +218,17 @@ public class XMLInput extends BaseStep implements StepInterface
                 {
                     v.str2num();
                 }
+                v.setLength(xmlInputField.getLength(), xmlInputField.getPrecision());
                 break;
             case Value.VALUE_TYPE_INTEGER:
                 // System.out.println("Convert value to integer :"+v);
                 v.setValue(v.getInteger());
+                v.setLength(xmlInputField.getLength(), xmlInputField.getPrecision());
                 break;
             case Value.VALUE_TYPE_BIGNUMBER:
                 // System.out.println("Convert value to BigNumber :"+v);
                 v.setValue(v.getBigNumber());
+                v.setLength(xmlInputField.getLength(), xmlInputField.getPrecision());
                 break;
             case Value.VALUE_TYPE_DATE:
                 // System.out.println("Convert value to Date :"+v);
@@ -248,7 +257,22 @@ public class XMLInput extends BaseStep implements StepInterface
             
         } // End of loop over fields...
         
-        data.previousRow = row;
+        // See if we need to add the filename to the row...  
+        if (meta.includeFilename() && meta.getFilenameField()!=null && meta.getFilenameField().length()>0)
+        {
+            Value fn = new Value( meta.getFilenameField(), data.filename );
+            row.addValue(fn);
+        }
+        
+        // See if we need to add the row number to the row...  
+        if (meta.includeRowNumber() && meta.getRowNumberField()!=null && meta.getRowNumberField().length()>0)
+        {
+            Value fn = new Value( meta.getRowNumberField(), data.rownr );
+            row.addValue(fn);
+        }
+        
+        data.previousRow = new Row(row); // copy it to make sure the next step doesn't change it in between... 
+        data.rownr++;
         
         debug="end of getRowFromXML()";
         return row;
@@ -335,6 +359,8 @@ public class XMLInput extends BaseStep implements StepInterface
 				logError("No file(s) specified! Stop processing.");
 				return false;
 			}
+            
+            data.rownr = 1L;
 			
 		    return true;
 		}
