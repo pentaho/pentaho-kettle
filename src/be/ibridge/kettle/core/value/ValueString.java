@@ -158,6 +158,7 @@ public class ValueString implements ValueInterface, Cloneable
     
     public BigDecimal getBigNumber()
     {
+        if (string==null) return null;
         return new BigDecimal(string);
     }
     
