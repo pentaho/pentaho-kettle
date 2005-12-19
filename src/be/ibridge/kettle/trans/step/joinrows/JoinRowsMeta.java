@@ -211,7 +211,7 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-		directory  = System.getProperty("java.io.tmpdir");
+		directory = "%%java.io.tmpdir%%";;
 		prefix     = "out";
 		cacheSize = 500;
 
