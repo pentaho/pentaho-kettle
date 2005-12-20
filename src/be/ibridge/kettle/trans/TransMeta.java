@@ -692,11 +692,12 @@ public class TransMeta implements XMLInterface
      */
     public StepMeta findStep(String name, StepMeta exclude)
     {
-        int i;
+        if (name==null) return null;
+        
         int excl = -1;
         if (exclude != null) excl = indexOfStep(exclude);
 
-        for (i = 0; i < nrSteps(); i++)
+        for (int i = 0; i < nrSteps(); i++)
         {
             StepMeta stepMeta = getStep(i);
             if (i != excl && stepMeta.getName().equalsIgnoreCase(name)) { return stepMeta; }
