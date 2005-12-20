@@ -17,6 +17,7 @@ package be.ibridge.kettle.trans.step.mergerows;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -59,6 +60,34 @@ public class MergeRows extends BaseStep implements StepInterface
             first = false;
     		data.one=getRowFrom(meta.getReferenceStepName());
             data.two=getRowFrom(meta.getCompareStepName());
+            
+            // Find the key indexes:
+            data.keyNrs = new int[meta.getKeyFields().length];
+            data.keyAsc = new boolean[meta.getKeyFields().length];
+            for (int i=0;i<data.keyNrs.length;i++)
+            {
+                data.keyNrs[i] = data.one.searchValueIndex(meta.getKeyFields()[i]);
+                if (data.keyNrs[i]<0)
+                {
+                    String message = "Unable to find field ["+meta.getKeyFields()[i]+"] in reference stream."; 
+                    logError(message);
+                    throw new KettleStepException(message);
+                }
+                data.keyAsc[i] = true;
+            }
+            data.valueNrs = new int[meta.getValueFields().length];
+            data.valueAsc = new boolean[meta.getValueFields().length];
+            for (int i=0;i<data.valueNrs.length;i++)
+            {
+                data.valueNrs[i] = data.one.searchValueIndex(meta.getValueFields()[i]);
+                if (data.valueNrs[i]<0)
+                {
+                    String message = "Unable to find field ["+meta.getValueFields()[i]+"] in reference stream."; 
+                    logError(message);
+                    throw new KettleStepException(message);
+                }
+                data.valueAsc[i] = true;
+            }
         }
 
         if (data.one==null && data.two==null)
@@ -84,19 +113,28 @@ public class MergeRows extends BaseStep implements StepInterface
             // Also get a next row from reference rowset...
             data.one=getRowFrom(meta.getReferenceStepName());
         }
-        else
+        else  // OK, Here is the real start of the compare code!
         {
-            int compare = data.one.compare(data.two); // TODO: add compare on keys, add keys to meta-data...
-            if (compare==0)
+            int compare = data.one.compare(data.two, data.keyNrs, data.keyAsc);
+            if (compare==0)  // The Key matches, we CAN compare the two rows...
             {
-                data.one.addValue(VALUE_IDENTICAL);
-                putRow(data.one);
+                int compareValues = data.one.compare(data.two, data.valueNrs, data.valueAsc);
+                if (compareValues==0)
+                {
+                    data.one.addValue(VALUE_IDENTICAL);
+                    putRow(data.one);
+                }
+                else
+                {
+                    data.two.addValue(VALUE_CHANGED);
+                    putRow(data.two);
+                }
                 
                 // Get a new row from both streams...
                 data.one=getRowFrom(meta.getReferenceStepName());
                 data.two=getRowFrom(meta.getCompareStepName());
             }
-            else
+            else  // TODO: finish this up here!
             {
                 if (compare<0) // one < two
                 {

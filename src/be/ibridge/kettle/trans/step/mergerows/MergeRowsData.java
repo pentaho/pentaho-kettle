@@ -28,6 +28,12 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 public class MergeRowsData extends BaseStepData implements StepDataInterface
 {
     public Row one, two;
+    public int[] keyNrs;
+    public int[] valueNrs;
+    
+    public boolean keyAsc[];
+    public boolean valueAsc[];
+    
 	/**
 	 * 
 	 */

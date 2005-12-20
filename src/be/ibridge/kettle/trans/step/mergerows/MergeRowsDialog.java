@@ -38,9 +38,15 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
+import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
@@ -50,13 +56,27 @@ import be.ibridge.kettle.trans.step.StepMeta;
 
 public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterface
 {
-	private Label        wlTrueTo;
-	private CCombo       wTrueTo;
-	private FormData     fdlTrueTo, fdTrueTo;
+	private Label        wlReference;
+	private CCombo       wReference;
+	private FormData     fdlReference, fdReference;
 
-	private Label        wlFalseTo;
-	private CCombo       wFalseTo;
-	private FormData     fdlFalseTo, fdFalseFrom;
+	private Label        wlCompare;
+	private CCombo       wCompare;
+	private FormData     fdlCompare, fdCompare;
+    
+    private Label        wlFlagfield;
+    private Text         wFlagfield;
+    private FormData     fdlFlagfield, fdFlagfield;
+    
+    private Label        wlKeys;
+    private TableView    wKeys;
+    private Button       wbKeys;
+    private FormData     fdlKeys, fdKeys, fdbKeys;
+
+    private Label        wlValues;
+    private TableView    wValues;
+    private Button       wbValues;
+    private FormData     fdlValues, fdValues, fdbValues;
 
 	private MergeRowsMeta input;
 	
@@ -113,71 +133,180 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 
+        // Get the previous steps...
+        String previousSteps[] = transMeta.getPrevStepNames(stepname);
+        
 		// Send 'True' data to...
-		wlTrueTo=new Label(shell, SWT.RIGHT);
-		wlTrueTo.setText("Send 'True' data to step:");
- 		props.setLook(wlTrueTo);
-		fdlTrueTo=new FormData();
-		fdlTrueTo.left = new FormAttachment(0, 0);
-		fdlTrueTo.right= new FormAttachment(middle, -margin);
-		fdlTrueTo.top  = new FormAttachment(wStepname, margin);
-		wlTrueTo.setLayoutData(fdlTrueTo);
-		wTrueTo=new CCombo(shell, SWT.BORDER );
- 		props.setLook(wTrueTo);
+		wlReference=new Label(shell, SWT.RIGHT);
+		wlReference.setText("Send 'True' data to step:");
+ 		props.setLook(wlReference);
+		fdlReference=new FormData();
+		fdlReference.left = new FormAttachment(0, 0);
+		fdlReference.right= new FormAttachment(middle, -margin);
+		fdlReference.top  = new FormAttachment(wStepname, margin);
+		wlReference.setLayoutData(fdlReference);
+		wReference=new CCombo(shell, SWT.BORDER );
+ 		props.setLook(wReference);
 
-		StepMeta stepinfo = transMeta.findStep(stepname);
-		if (stepinfo!=null)
+		if (previousSteps!=null)
 		{
-			for (int i=0;i<transMeta.findNrNextSteps(stepinfo);i++)
-			{
-				StepMeta stepMeta = transMeta.findNextStep(stepinfo, i);
-				wTrueTo.add(stepMeta.getName());
-			}
+			wReference.setItems( previousSteps );
 		}
 		
-		wTrueTo.addModifyListener(lsMod);
-		fdTrueTo=new FormData();
-		fdTrueTo.left = new FormAttachment(middle, 0);
-		fdTrueTo.top  = new FormAttachment(wStepname, margin);
-		fdTrueTo.right= new FormAttachment(100, 0);
-		wTrueTo.setLayoutData(fdTrueTo);
+		wReference.addModifyListener(lsMod);
+		fdReference=new FormData();
+		fdReference.left = new FormAttachment(middle, 0);
+		fdReference.top  = new FormAttachment(wStepname, margin);
+		fdReference.right= new FormAttachment(100, 0);
+		wReference.setLayoutData(fdReference);
 
 		// Send 'False' data to...
-		wlFalseTo=new Label(shell, SWT.RIGHT);
-		wlFalseTo.setText("Send 'false' data to step:");
- 		props.setLook(wlFalseTo);
-		fdlFalseTo=new FormData();
-		fdlFalseTo.left = new FormAttachment(0, 0);
-		fdlFalseTo.right= new FormAttachment(middle, -margin);
-		fdlFalseTo.top  = new FormAttachment(wTrueTo, margin);
-		wlFalseTo.setLayoutData(fdlFalseTo);
-		wFalseTo=new CCombo(shell, SWT.BORDER );
- 		props.setLook(wFalseTo);
+		wlCompare=new Label(shell, SWT.RIGHT);
+		wlCompare.setText("Send 'false' data to step:");
+ 		props.setLook(wlCompare);
+		fdlCompare=new FormData();
+		fdlCompare.left = new FormAttachment(0, 0);
+		fdlCompare.right= new FormAttachment(middle, -margin);
+		fdlCompare.top  = new FormAttachment(wReference, margin);
+		wlCompare.setLayoutData(fdlCompare);
+		wCompare=new CCombo(shell, SWT.BORDER );
+ 		props.setLook(wCompare);
 
-		stepinfo = transMeta.findStep(stepname);
-		if (stepinfo!=null)
-		{
-			for (int i=0;i<transMeta.findNrNextSteps(stepinfo);i++)
-			{
-				StepMeta stepMeta = transMeta.findNextStep(stepinfo, i);
-				wFalseTo.add(stepMeta.getName());
-			}
-		}
-		
-		wFalseTo.addModifyListener(lsMod);
-		fdFalseFrom=new FormData();
-		fdFalseFrom.left = new FormAttachment(middle, 0);
-		fdFalseFrom.top  = new FormAttachment(wTrueTo, margin);
-		fdFalseFrom.right= new FormAttachment(100, 0);
-		wFalseTo.setLayoutData(fdFalseFrom);
+        if (previousSteps!=null)
+        {
+            wCompare.setItems( previousSteps );
+        }	
+        
+		wCompare.addModifyListener(lsMod);
+		fdCompare=new FormData();
+        fdCompare.top  = new FormAttachment(wReference, margin);
+		fdCompare.left = new FormAttachment(middle, 0);
+		fdCompare.right= new FormAttachment(100, 0);
+		wCompare.setLayoutData(fdCompare);
 
+        
+        // Stepname line
+        wlFlagfield=new Label(shell, SWT.RIGHT);
+        wlFlagfield.setText("Flag fieldname ");
+        props.setLook(wlFlagfield);
+        fdlFlagfield=new FormData();
+        fdlFlagfield.left = new FormAttachment(0, 0);
+        fdlFlagfield.right= new FormAttachment(middle, -margin);
+        fdlFlagfield.top  = new FormAttachment(wCompare, margin);
+        wlFlagfield.setLayoutData(fdlFlagfield);
+        wFlagfield=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wFlagfield);
+        wFlagfield.addModifyListener(lsMod);
+        fdFlagfield=new FormData();
+        fdFlagfield.top  = new FormAttachment(wCompare, margin);
+        fdFlagfield.left = new FormAttachment(middle, 0);
+        fdFlagfield.right= new FormAttachment(100, 0);
+        wFlagfield.setLayoutData(fdFlagfield);
+
+        
+        // THE KEYS TO MATCH...
+        wlKeys=new Label(shell, SWT.NONE);
+        wlKeys.setText("Keys to match :");
+        props.setLook(wlKeys);
+        fdlKeys=new FormData();
+        fdlKeys.left  = new FormAttachment(0, 0);
+        fdlKeys.top   = new FormAttachment(wFlagfield, margin);
+        wlKeys.setLayoutData(fdlKeys);
+        
+        int nrKeyRows= (input.getKeyFields()!=null?input.getKeyFields().length:1);
+        
+        ColumnInfo[] ciKeys=new ColumnInfo[] {
+            new ColumnInfo("Key field", ColumnInfo.COLUMN_TYPE_TEXT, "", false),
+        };
+            
+        wKeys=new TableView(shell, 
+                              SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
+                              ciKeys, 
+                              nrKeyRows,  
+                              lsMod,
+                              props
+                              );
+
+        fdKeys = new FormData();
+        fdKeys.top    = new FormAttachment(wlKeys, margin);
+        fdKeys.left   = new FormAttachment(0,   0);
+        fdKeys.bottom = new FormAttachment(100, -70);
+        fdKeys.right  = new FormAttachment(50, -margin);
+        wKeys.setLayoutData(fdKeys);
+
+        wbKeys=new Button(shell, SWT.PUSH);
+        wbKeys.setText(" Get &key fields ");
+        fdbKeys = new FormData();
+        fdbKeys.top   = new FormAttachment(wKeys, margin);
+        fdbKeys.left  = new FormAttachment(0, 0);
+        fdbKeys.right = new FormAttachment(50, -margin);
+        wbKeys.setLayoutData(fdbKeys);
+        wbKeys.addSelectionListener(new SelectionAdapter()
+            {
+            
+                public void widgetSelected(SelectionEvent e)
+                {
+                    getKeys();
+                }
+            }
+        );
+
+
+        // VALUES TO COMPARE
+        wlValues=new Label(shell, SWT.NONE);
+        wlValues.setText("Values to compare :");
+        props.setLook(wlValues);
+        fdlValues=new FormData();
+        fdlValues.left  = new FormAttachment(50, 0);
+        fdlValues.top   = new FormAttachment(wFlagfield, margin);
+        wlValues.setLayoutData(fdlValues);
+        
+        int nrValueRows= (input.getKeyFields()!=null?input.getKeyFields().length:1);
+        
+        ColumnInfo[] ciValues=new ColumnInfo[] {
+            new ColumnInfo("Value field", ColumnInfo.COLUMN_TYPE_TEXT, "", false),
+        };
+            
+        wValues=new TableView(shell, 
+                              SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
+                              ciValues, 
+                              nrValueRows,  
+                              lsMod,
+                              props
+                              );
+
+        fdValues = new FormData();
+        fdValues.top    = new FormAttachment(wlValues, margin);
+        fdValues.left   = new FormAttachment(50,  0);
+        fdValues.bottom = new FormAttachment(100, -70);
+        fdValues.right  = new FormAttachment(100, 0);
+        wValues.setLayoutData(fdValues);
+
+        
+        wbValues=new Button(shell, SWT.PUSH);
+        wbValues.setText(" Get &value fields ");
+        fdbValues = new FormData();
+        fdbValues.top   = new FormAttachment(wValues, margin);
+        fdbValues.left  = new FormAttachment(50,  0);
+        fdbValues.right = new FormAttachment(100, 0);
+        wbValues.setLayoutData(fdbValues);
+        wbValues.addSelectionListener(new SelectionAdapter()
+                {
+                
+                    public void widgetSelected(SelectionEvent e)
+                    {
+                        getValues();
+                    }
+                }
+            );
+        
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText("  &OK  ");
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText("  &Cancel  ");
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, wbKeys);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -213,9 +342,22 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 	 */ 
 	public void getData()
 	{
-		if (input.getReferenceStepName() != null) wTrueTo.setText(input.getReferenceStepName());
-		if (input.getCompareStepName() != null) wFalseTo.setText(input.getCompareStepName());
-		wStepname.selectAll();
+		if (input.getReferenceStepName() != null) wReference.setText(input.getReferenceStepName());
+		if (input.getCompareStepName() != null) wCompare.setText(input.getCompareStepName());
+        if (input.getFlagField() !=null ) wFlagfield.setText(input.getFlagField() ); 
+        
+        for (int i=0;i<input.getKeyFields().length;i++)
+        {
+            TableItem item = wKeys.table.getItem(i);
+            if (input.getKeyFields()[i]!=null) item.setText(1, input.getKeyFields()[i]);
+        }
+        for (int i=0;i<input.getValueFields().length;i++)
+        {
+            TableItem item = wValues.table.getItem(i);
+            if (input.getValueFields()[i]!=null) item.setText(1, input.getValueFields()[i]);
+        }
+        
+        wStepname.selectAll();
 	}
 	
 	private void cancel()
@@ -227,10 +369,83 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 	
 	private void ok()
 	{		
-		input.setReferenceStepMeta( transMeta.findStep( wTrueTo.getText() ) );
-		input.setCompareStepMeta( transMeta.findStep( wFalseTo.getText() ) );
+		input.setReferenceStepMeta( transMeta.findStep( wReference.getText() ) );
+		input.setCompareStepMeta( transMeta.findStep( wCompare.getText() ) );
+        input.setFlagField( wFlagfield.getText());
+
+        int nrKeys   = wKeys.nrNonEmpty();
+        int nrValues = wValues.nrNonEmpty();
+
+        input.allocate(nrKeys, nrValues );
+        
+        for (int i=0;i<nrKeys;i++)
+        {
+            TableItem item = wKeys.getNonEmpty(i);
+            input.getKeyFields()[i] = item.getText(1);
+        }
+
+        for (int i=0;i<nrValues;i++)
+        {
+            TableItem item = wValues.getNonEmpty(i);
+            input.getValueFields()[i] = item.getText(1);
+        }
+
 		stepname = wStepname.getText(); // return value
 		
 		dispose();
 	}
+    
+    private void getKeys()
+    {
+        try
+        {
+            StepMeta stepMeta = transMeta.findStep(input.getReferenceStepName());
+            if (stepMeta!=null)
+            {
+                Row prev = transMeta.getStepFields(stepMeta);
+                if (prev!=null)
+                {
+                    for (int i=0;i<prev.size();i++)
+                    {
+                        TableItem item = new TableItem(wKeys.table, SWT.NONE);
+                        item.setText(1, prev.getValue(i).getName());
+                    }
+                    wKeys.removeEmptyRows();
+                    wKeys.setRowNums();
+                    wKeys.optWidth(true);
+                }
+            }
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, props, "Error getting fields", "Unable to get the fields because of an error: ", e);
+        }
+    }
+    
+    private void getValues()
+    {
+        try
+        {
+            StepMeta stepMeta = transMeta.findStep(input.getReferenceStepName());
+            if (stepMeta!=null)
+            {
+                Row prev = transMeta.getStepFields(stepMeta);
+                if (prev!=null)
+                {
+                    for (int i=0;i<prev.size();i++)
+                    {
+                        TableItem item = new TableItem(wValues.table, SWT.NONE);
+                        item.setText(1, prev.getValue(i).getName());
+                    }
+                    wValues.removeEmptyRows();
+                    wValues.setRowNums();
+                    wValues.optWidth(true);
+                }
+            }
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, props, "Error getting fields", "Unable to get the fields because of an error: ", e);
+        }
+    }
 }

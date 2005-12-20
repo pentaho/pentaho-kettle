@@ -26,7 +26,9 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -49,7 +51,9 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 	private String compareStepName;  
 	private StepMeta compareStepMeta;
-    
+
+    private String flagField;
+
     private String   keyFields[];
     private String   valueFields[];
 
@@ -171,6 +175,24 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
         this.referenceStepMeta = sendTrueStep;
     }
 	
+    /**
+     * @return Returns the flagField.
+     */
+    public String getFlagField()
+    {
+        return flagField;
+    }
+
+    /**
+     * @param flagField The flagField to set.
+     */
+    public void setFlagField(String flagField)
+    {
+        this.flagField = flagField;
+    }
+
+    
+    
 	public void allocate(int nrKeys, int nrValues)
 	{
         keyFields = new String[nrKeys];
@@ -202,6 +224,8 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
         }
         retval+="    </values>"+Const.CR;
 
+        retval+=XMLHandler.addTagValue("flag_field", flagField);        
+
 		retval+=XMLHandler.addTagValue("reference", getReferenceStepName());		
 		retval+=XMLHandler.addTagValue("compare", getCompareStepName());		
 		retval+="    <compare>"+Const.CR;
@@ -216,7 +240,29 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{ 
-		    // TODO: add code to read XML back
+            
+            Node keysnode   = XMLHandler.getSubNode(stepnode, "keys");
+            Node valuesnode = XMLHandler.getSubNode(stepnode, "values");
+            
+		    int nrKeys   = XMLHandler.countNodes(keysnode, "key");
+            int nrValues = XMLHandler.countNodes(valuesnode, "value");
+            
+            allocate(nrKeys, nrValues);
+            
+            for (int i=0;i<nrKeys;i++) 
+            {
+                Node keynode = XMLHandler.getSubNodeByNr(keysnode, "key", i);
+                keyFields[i] = XMLHandler.getNodeValue(keynode);
+            }
+            
+            for (int i=0;i<nrValues;i++) 
+            {
+                Node valuenode = XMLHandler.getSubNodeByNr(valuesnode, "value", i);
+                valueFields[i] = XMLHandler.getNodeValue(valuenode);
+            }
+            
+            flagField = XMLHandler.getTagValue(stepnode, "flag_field");
+            
 			compareStepName = XMLHandler.getTagValue(stepnode, "compare");
 			referenceStepName = XMLHandler.getTagValue(stepnode, "reference");
 		}
@@ -228,7 +274,13 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void setDefault()
 	{
+        allocate(0,0);
 	}
+    
+    public String[] getInfoSteps()
+    {
+        return new String[] { referenceStepName, compareStepName }; 
+    }
 
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
@@ -250,6 +302,8 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
                 valueFields[i] = rep.getStepAttributeString(id_step, i, "value_field");
             }
 
+            flagField  =   rep.getStepAttributeString (id_step, "flag_field"); 
+
 			referenceStepName  =   rep.getStepAttributeString (id_step, "reference"); 
 			compareStepName =      rep.getStepAttributeString (id_step, "compare"); 
 		}
@@ -268,10 +322,14 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
             {
                 rep.saveStepAttribute(id_transformation, id_step, i, "key_field", keyFields[i]);
             }
+
             for (int i=0;i<valueFields.length;i++)
             {
                 rep.saveStepAttribute(id_transformation, id_step, i, "value_field", valueFields[i]);
             }
+
+            rep.saveStepAttribute(id_transformation, id_step, "flag_field", flagField);
+
 			rep.saveStepAttribute(id_transformation, id_step, "reference", getReferenceStepName());
 			rep.saveStepAttribute(id_transformation, id_step, "compare", getCompareStepName());
 		}
@@ -289,17 +347,23 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 	public boolean chosesTargetSteps()
 	{
-	    return referenceStepMeta!=null && compareStepMeta!=null;
+	    return false;
 	}
 
 	public String[] getTargetSteps()
 	{
-	    if (chosesTargetSteps())
-	    {
-	        return new String[] { getReferenceStepName(), getCompareStepName() };
-	    }
 	    return null;
 	}
+    
+    public Row getFields(Row r, String name, Row info) throws KettleStepException
+    {
+        Value flagFieldValue = new Value(flagField, Value.VALUE_TYPE_STRING);
+        flagFieldValue.setOrigin(name);
+        
+        r.addValue(flagFieldValue);
+        
+        return r;
+    }
 
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
 	{
