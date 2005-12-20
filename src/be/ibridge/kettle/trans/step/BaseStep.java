@@ -55,6 +55,7 @@ import be.ibridge.kettle.trans.step.joinrows.JoinRowsMeta;
 import be.ibridge.kettle.trans.step.mapping.MappingMeta;
 import be.ibridge.kettle.trans.step.mappinginput.MappingInputMeta;
 import be.ibridge.kettle.trans.step.mappingoutput.MappingOutputMeta;
+import be.ibridge.kettle.trans.step.mergerows.MergeRowsMeta;
 import be.ibridge.kettle.trans.step.normaliser.NormaliserMeta;
 import be.ibridge.kettle.trans.step.nullif.NullIfMeta;
 import be.ibridge.kettle.trans.step.rowgenerator.RowGeneratorMeta;
@@ -119,7 +120,8 @@ public class BaseStep extends Thread
             MappingMeta.class,
             MappingInputMeta.class,
             MappingOutputMeta.class,
-            XMLInputMeta.class
+            XMLInputMeta.class,
+            MergeRowsMeta.class
 		};
 	
 	public static final String type_desc[] = 
@@ -163,7 +165,8 @@ public class BaseStep extends Thread
             "Mapping",
             "MappingInput",
             "MappingOutput",
-            "XMLInput"
+            "XMLInput",
+            "MergeRows"
 		};
 
 	public static final String type_long_desc[] = 
@@ -207,7 +210,8 @@ public class BaseStep extends Thread
             "Mapping (sub-transformation)",
             "Mapping input specification",
             "Mapping output specification",
-            "XML Input"
+            "XML Input",
+            "Merge Rows"
 		};
 
 	public static final String type_tooltip_desc[] = 
@@ -251,7 +255,8 @@ public class BaseStep extends Thread
             "Run a mapping (sub-transformation), use MappingInput and MappingOutput to specify the fields interface",
             "Specify the input interface of a mapping",
             "Specify the output interface of a mapping",
-            "Read data from an XML file"
+            "Read data from an XML file",
+            "Merge two streams of rows, sorted on a certain key.  The two streams are compared and the equals, changed, deleted and new rows are flagged."
 		};
 
 	public static final String image_filename[] =
@@ -295,7 +300,8 @@ public class BaseStep extends Thread
             "MAP.png",
             "MPI.png",
             "MPO.png",
-            "XIN.png"
+            "XIN.png",
+            "MRG.png"
 		};
 	
 	public static final String category[] = 
@@ -339,7 +345,8 @@ public class BaseStep extends Thread
             "Mapping",          // "Mapping"
             "Mapping",          // "MappingInput"
             "Mapping",          // "MappingOutput"
-            "Experimental"      // "XMLInput"
+            "Experimental",     // "XMLInput"
+            "Experimental"      // "MergRows"
 		};
 
     public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Mapping", "Experimental" };
