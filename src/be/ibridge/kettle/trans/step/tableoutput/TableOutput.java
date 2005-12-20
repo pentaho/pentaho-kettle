@@ -212,8 +212,9 @@ public class TableOutput extends BaseStep implements StepInterface
 		    }
 		}
 		
-        if (!meta.isTableNameInTable())
+        if (meta.isTableNameInField() && !meta.isTableNameInTable())
         {
+            debug="add value of table name field";
             r.addValue(data.indexOfTableNameField, removedValue);
         }
 
@@ -303,7 +304,7 @@ public class TableOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error encountered: "+e.toString());
+			logError("Unexpected error encountered ["+debug+"] : "+e.toString());
 			setErrors(1);
 			stopAll();
 		}

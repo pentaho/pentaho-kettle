@@ -336,7 +336,10 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
         
         partitioningEnabled = false;
         partitioningMonthly = true;
+        partitioningField   = "";
         tableNameInTable    = true;
+        tableNameField      = "";
+        
 	}
 
 	public String getXML()
