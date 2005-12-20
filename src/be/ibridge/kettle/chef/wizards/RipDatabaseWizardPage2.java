@@ -32,14 +32,10 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -67,9 +63,6 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 public class RipDatabaseWizardPage2 extends WizardPage
 {
 	private Props props;
-	
-	private Color bg ;		
-	private Font  font;
 	 
 	private String    input[];
 	
@@ -106,8 +99,7 @@ public class RipDatabaseWizardPage2 extends WizardPage
 		
 		// create the composite to hold the widgets
 		Composite composite = new Composite(parent, SWT.NONE);
-	    composite.setBackground(bg);
-	    composite.setFont(font);
+        props.setLook(composite);
 	    
 	    FormLayout compLayout = new FormLayout();
 	    compLayout.marginHeight = Const.FORM_MARGIN;
@@ -130,7 +122,7 @@ public class RipDatabaseWizardPage2 extends WizardPage
 		fdTop.right  = new FormAttachment(100, 0);
 		fdTop.bottom = new FormAttachment(100, -50);
 		top.setLayoutData(fdTop);
-		top.setBackground(bg);
+        props.setLook(top);
 		
 		Composite bottom = new Composite(composite, SWT.NONE);
 		bottom.setLayout(new FormLayout());
@@ -140,8 +132,8 @@ public class RipDatabaseWizardPage2 extends WizardPage
 		fdBottom.right  = new FormAttachment(100, 0);
 		fdBottom.bottom = new FormAttachment(100, 0);
 		bottom.setLayoutData(fdBottom);
-		bottom.setBackground(bg);
-		
+		props.setLook(bottom);
+
 		
 		////////////////////////////////////////////////////
 		// Sashform
@@ -167,22 +159,21 @@ public class RipDatabaseWizardPage2 extends WizardPage
 		fdLeftsplit.right  = new FormAttachment(100, 0);
 		fdLeftsplit.bottom = new FormAttachment(100, 0);
 		leftsplit.setLayoutData(fdLeftsplit);
-		leftsplit.setBackground(bg);
+        props.setLook(leftsplit);
 
  		// Source list to the left...
 		wlListSource  = new Label(leftsplit, SWT.NONE);
 		wlListSource.setText("Available items:");
-		wlListSource.setBackground(bg);
-		wlListSource.setFont(font);
+        props.setLook(wlListSource);
+
  		FormData fdlListSource = new FormData();
 		fdlListSource.left   = new FormAttachment(0, 0); 
 		fdlListSource.top    = new FormAttachment(0, 0);
 		wlListSource.setLayoutData(fdlListSource);
 		
  		wListSource = new List(leftsplit, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
- 		wListSource.setBackground(bg);
- 		wListSource.setFont(font);
- 		
+        props.setLook(wListSource);
+
  		FormData fdListSource = new FormData();
 		fdListSource.left   = new FormAttachment(0, 0); 
 		fdListSource.top    = new FormAttachment(wlListSource, 0);
@@ -202,7 +193,7 @@ public class RipDatabaseWizardPage2 extends WizardPage
 		fdCompMiddle.right  = new FormAttachment(100, 0);
 		fdCompMiddle.bottom = new FormAttachment(100, 0);
 		compmiddle.setLayoutData(fdCompMiddle);
-		compmiddle.setBackground(bg);
+        props.setLook(compmiddle);
 
 		wAddOne    = new Button(compmiddle, SWT.PUSH); wAddOne   .setText(" > ");  wAddOne   .setToolTipText("Add the selected items on the left.");
 		wAddAll    = new Button(compmiddle, SWT.PUSH); wAddAll   .setText(" >> "); wAddAll   .setToolTipText("Add all items on the left.");
@@ -242,21 +233,20 @@ public class RipDatabaseWizardPage2 extends WizardPage
 		fdRightsplit .right  = new FormAttachment(100, 0);
 		fdRightsplit .bottom = new FormAttachment(100, 0);
 		rightsplit.setLayoutData(fdRightsplit );
-		rightsplit.setBackground(bg);
-				
+        props.setLook(rightsplit);
+
 		wlListDest = new Label(rightsplit, SWT.NONE);
 		wlListDest.setText("Your selection:");
-		wlListDest.setBackground(bg);
-		wlListDest.setFont(font);
+        props.setLook(wlListDest);
+
  		FormData fdlListDest = new FormData();
 		fdlListDest.left   = new FormAttachment(0, 0); 
 		fdlListDest.top    = new FormAttachment(0, 0);
 		wlListDest.setLayoutData(fdlListDest);
 
 		wListDest = new List(rightsplit, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
-		wListDest.setBackground(bg);
-		wListDest.setFont(font);
-	
+        props.setLook(wListDest);
+
 		FormData fdListDest = new FormData(); 
 		fdListDest .left   = new FormAttachment(0, 0); 
 		fdListDest .top    = new FormAttachment(wlListDest, 0);
@@ -264,19 +254,7 @@ public class RipDatabaseWizardPage2 extends WizardPage
 		fdListDest .bottom = new FormAttachment(100, 0);
 		wListDest.setLayoutData(fdListDest );
 
-		sashform.setWeights(new int[] { 46, 8, 46 });
-
-
-		// Clean up used resources!
-		composite.addDisposeListener(new DisposeListener() 
-			{
-				public void widgetDisposed(DisposeEvent arg0) 
-				{
-					bg.dispose();
-					font.dispose();
-				}
-			}
-		);
+		sashform.setWeights(new int[] { 45, 10, 45 });
 
 		// Drag & Drop for steps
 		Transfer[] ttypes = new Transfer[] {TextTransfer.getInstance() };
