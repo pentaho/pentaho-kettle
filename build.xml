@@ -234,7 +234,7 @@
 	  	<jar jarfile="${sourcezipfile}" 
 	  		 basedir="."
 	    	 includes="**/*"
-	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* ${homepage}/**/* Licenses/**/* ${lib}/**/* ${webstart}/**/*"
+	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* homepage/**/* Licenses/**/* ${lib}/**/* ${webstart}/**/*"
 	  		/>
 	  </target>
 
