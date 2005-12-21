@@ -237,7 +237,7 @@
 	  </target>
 
 	  <!-- Make the kettle-src.zip file available on javaForge -->
-	  <target name="sourcezip_javaforge" depends="zip" description="Put the Kettle source zip file on javaforge">
+	  <target name="sourcezip_javaforge" depends="sourcezip" description="Put the Kettle source zip file on javaforge">
 	  	<echo>Putting the kettle source zip file on javaforge (Kettle-src-${version}.zip)...</echo>
 		 <CBRelease file="Kettle-src-${version}.zip" 
 		 		    description="This zip file contains the source files and libraries and everything to compile Kettle" 
