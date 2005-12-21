@@ -31,8 +31,6 @@
 	  <property name="keystorePassword"		location="abcd1234"/>
 	
 	  <property name="sourcezipfile"        location="Kettle-src-${version}.zip"/>
-	  <property name="distzipfile"          location="Kettle-${version}.zip"/>
-	  <property name="kettlejar"            location="kettle.jar"/>
 		  
 	  <target name="init" description="create timestamp and directories">
     	<echo>Init...</echo>
@@ -124,9 +122,9 @@
 	       ==========================
 	  -->
 		
-	  <target name="kettle" depends="compile, copy" description="generate the kettle library ${kettlejar}">
-	  	<echo>Generating the Kettle library ${kettlejar} ...</echo>
-	  	<jar jarfile="${lib}/${kettlejar}" 
+	  <target name="kettle" depends="compile, copy" description="generate the kettle library kettle.jar">
+	  	<echo>Generating the Kettle library kettle.jar ...</echo>
+	  	<jar jarfile="${lib}/kettle.jar" 
 	    	 basedir="${classes}" 
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
@@ -135,10 +133,10 @@
 	  	
 	  <!-- Make the kettle.jar file available on javaForge -->
 	  <target name="kettle_javaforge" depends="kettle" description="make the ${kettlejar} archive available on Javaforge">
-		<echo>Putting ${kettlejar} on javaforge...</echo>
+		<echo>Putting kettle.jar on javaforge...</echo>
 		
 		  <CBRelease 
-		 	file="${lib}/${kettlejar}" 
+		 	file="${lib}/kettle.jar" 
 		    description="kettle base library" 
 			keywords="Kettle, library, Spoon, Chef" 
 		    comments="Can be used to program Kettle meta-data or update you Kettle distribution package"
@@ -204,9 +202,9 @@
 	       ==========================
 	  -->
 		
-	  <target name="zip" depends="distrib" description="generate the ${distzipfile} file">
-	  	<echo>Generating the Kettle distribution package ${distzipfile} ...</echo>
-	  	<jar jarfile="${distzipfile}" 
+	  <target name="zip" depends="distrib" description="generate the Kettle-${version}.zip file">
+	  	<echo>Generating the Kettle distribution packageKettle-${version}.zip ...</echo>
+	  	<jar jarfile="Kettle-${version}.zip" 
 	    	 basedir="${distrib}" 
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
@@ -216,7 +214,7 @@
 	  <!-- Make the kettle.zip file available on javaForge -->
 	  <target name="zip_javaforge" depends="zip" description="Put the Kettle zip file on javaforge">
 	  	<echo>Putting the kettle distribution on javaforge...</echo>
-		 <CBRelease file="${distzipfile}" 
+		 <CBRelease file="Kettle-${version}.zip" 
 		 		    description="This zip file contains the binaries to run Kettle (Spoon, Chef) on all platforms" 
 		 	 		keywords="Kettle, binary, Spoon, Chef" 
 		 		    comments="Also contains JDBC drivers, libs etc which explains the large size"
@@ -229,9 +227,9 @@
 	       ==========================
 	  -->
 		
-	  <target name="sourcezip" depends="" description="generate the ${sourcezipfile} file">
-	  	<echo>Generating the Kettle source packge zip file (${sourcezipfile}) ...</echo>
-	  	<jar jarfile="${sourcezipfile}" 
+	  <target name="sourcezip" depends="" description="generate the Kettle-src-${version}.zip file">
+	  	<echo>Generating the Kettle source packge zip file (Kettle-src-${version}.zip) ...</echo>
+	  	<jar jarfile="Kettle-src-${version}.zip" 
 	  		 basedir="."
 	    	 includes="**/*"
 	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* homepage/**/* Licenses/**/* ${lib}/**/* ${webstart}/**/*"
@@ -240,8 +238,8 @@
 
 	  <!-- Make the kettle-src.zip file available on javaForge -->
 	  <target name="sourcezip_javaforge" depends="zip" description="Put the Kettle source zip file on javaforge">
-	  	<echo>Putting the kettle source zip file on javaforge (${sourcezipfile})...</echo>
-		 <CBRelease file="${sourcezipfile}" 
+	  	<echo>Putting the kettle source zip file on javaforge (Kettle-src-${version}.zip)...</echo>
+		 <CBRelease file="Kettle-src-${version}.zip" 
 		 		    description="This zip file contains the source files and libraries and everything to compile Kettle" 
 		 	 		keywords="Kettle, binary, Spoon, Chef source files" 
 		 		    comments="Also contains JDBC drivers, libs etc which explains the large size"
