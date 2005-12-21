@@ -90,6 +90,8 @@ public class MergeRows extends BaseStep implements StepInterface
             }
         }
 
+        logRowlevel("ONE: "+data.one+" / TWO: "+data.two);
+        
         if (data.one==null && data.two==null)
         {
             setOutputDone();
@@ -138,13 +140,15 @@ public class MergeRows extends BaseStep implements StepInterface
             {
                 if (compare<0) // one < two
                 {
-                    data.one.addValue(VALUE_CHANGED);
-                    putRow(data.one); // This is not correct as we are going to lose track, we need a key to compare!
+                    data.one.addValue(VALUE_DELETED);
+                    putRow(data.one);
                     data.one=getRowFrom(meta.getReferenceStepName());
                 }
                 else
                 {
-                    
+                    data.two.addValue(VALUE_NEW);
+                    putRow(data.two);
+                    data.two=getRowFrom(meta.getReferenceStepName());
                 }
             }
         }
