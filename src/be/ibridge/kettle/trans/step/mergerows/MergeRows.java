@@ -29,10 +29,11 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 
 /**
- * Filters input rows base on conditions.
+ * Merge rows from 2 sorted streams to detect changes.
+ * Use this as feed for a dimension in case you have no time stamps in your source system.
  * 
  * @author Matt
- * @since 16-apr-2003, 07-nov-2004 (rewrite)
+ * @since 19-dec-2005
  */
 
 public class MergeRows extends BaseStep implements StepInterface
@@ -136,7 +137,7 @@ public class MergeRows extends BaseStep implements StepInterface
                 data.one=getRowFrom(meta.getReferenceStepName());
                 data.two=getRowFrom(meta.getCompareStepName());
             }
-            else  // TODO: finish this up here!
+            else 
             {
                 if (compare<0) // one < two
                 {
