@@ -18,6 +18,7 @@
 	  <property name="build"      			location="build"/>
 	  <property name="lib"        			location="lib"/>
 	  <property name="plugins"        		location="plugins"/>
+	  <property name="homepage"        		location="homepage"/>
 	  <property name="libext"     			location="libext"/>
 	  <property name="libswt"     			location="libswt"/>
 	  <property name="distrib"				location="distrib"/>
@@ -29,6 +30,10 @@
 	  <property name="keystore"				location="keystore"/>
 	  <property name="keystorePassword"		location="abcd1234"/>
 	
+	  <property name="sourcezipfile"        location="Kettle-src-${version}.zip"/>
+	  <property name="distzipfile"          location="Kettle-${version}.zip"/>
+	  <property name="kettlejar"            location="kettle.jar"/>
+		  
 	  <target name="init" description="create timestamp and directories">
     	<echo>Init...</echo>
 	  	
@@ -119,9 +124,9 @@
 	       ==========================
 	  -->
 		
-	  <target name="kettle" depends="compile, copy" description="generate the kettle library kettle.jar">
-	  	<echo>Generating the Kettle library kettle.jar ...</echo>
-	  	<jar jarfile="${lib}/kettle.jar" 
+	  <target name="kettle" depends="compile, copy" description="generate the kettle library ${kettlejar}">
+	  	<echo>Generating the Kettle library ${kettlejar} ...</echo>
+	  	<jar jarfile="${lib}/${kettlejar}" 
 	    	 basedir="${classes}" 
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
@@ -129,11 +134,11 @@
 	  </target>
 	  	
 	  <!-- Make the kettle.jar file available on javaForge -->
-	  <target name="kettle_javaforge" depends="kettle" description="make the kettle.jar archive available on Javaforge">
-		<echo>Putting kettle.jar on javaforge...</echo>
+	  <target name="kettle_javaforge" depends="kettle" description="make the ${kettlejar} archive available on Javaforge">
+		<echo>Putting ${kettlejar} on javaforge...</echo>
 		
 		  <CBRelease 
-		 	file="${lib}/kettle.jar" 
+		 	file="${lib}/${kettlejar}" 
 		    description="kettle base library" 
 			keywords="Kettle, library, Spoon, Chef" 
 		    comments="Can be used to program Kettle meta-data or update you Kettle distribution package"
@@ -199,9 +204,9 @@
 	       ==========================
 	  -->
 		
-	  <target name="zip" depends="distrib" description="generate the kettle.zip file">
-	  	<echo>Generating the Kettle distribution package kettle.zip ...</echo>
-	  	<jar jarfile="Kettle-${version}.zip" 
+	  <target name="zip" depends="distrib" description="generate the ${distzipfile} file">
+	  	<echo>Generating the Kettle distribution package ${distzipfile} ...</echo>
+	  	<jar jarfile="${distzipfile}" 
 	    	 basedir="${distrib}" 
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
@@ -211,9 +216,34 @@
 	  <!-- Make the kettle.zip file available on javaForge -->
 	  <target name="zip_javaforge" depends="zip" description="Put the Kettle zip file on javaforge">
 	  	<echo>Putting the kettle distribution on javaforge...</echo>
-		 <CBRelease file="Kettle-${version}.zip" 
+		 <CBRelease file="${distzipfile}" 
 		 		    description="This zip file contains the binaries to run Kettle (Spoon, Chef) on all platforms" 
 		 	 		keywords="Kettle, binary, Spoon, Chef" 
+		 		    comments="Also contains JDBC drivers, libs etc which explains the large size"
+		 />
+	  </target>
+
+	  <!--
+	       ==========================
+	             Source zipfile
+	       ==========================
+	  -->
+		
+	  <target name="sourcezip" depends="" description="generate the ${sourcezipfile} file">
+	  	<echo>Generating the Kettle source packge zip file (${sourcezipfile}) ...</echo>
+	  	<jar jarfile="${sourcezipfile}" 
+	  		 basedir="."
+	    	 includes="**/*"
+	  	     excludes="*.zip ${classes}/**/* ${distrib}/**/* ${homepage}/**/* Licenses/**/* ${lib}/**/* ${webstart}/**/*"
+	  		/>
+	  </target>
+
+	  <!-- Make the kettle-src.zip file available on javaForge -->
+	  <target name="sourcezip_javaforge" depends="zip" description="Put the Kettle source zip file on javaforge">
+	  	<echo>Putting the kettle source zip file on javaforge (${sourcezipfile})...</echo>
+		 <CBRelease file="${sourcezipfile}" 
+		 		    description="This zip file contains the source files and libraries and everything to compile Kettle" 
+		 	 		keywords="Kettle, binary, Spoon, Chef source files" 
 		 		    comments="Also contains JDBC drivers, libs etc which explains the large size"
 		 />
 
