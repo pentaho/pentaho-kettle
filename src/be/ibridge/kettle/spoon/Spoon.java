@@ -17,6 +17,7 @@ package be.ibridge.kettle.spoon;
 
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -95,6 +96,7 @@ import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
 import be.ibridge.kettle.core.dialog.SQLStatementsDialog;
+import be.ibridge.kettle.core.dialog.ShowBrowserDialog;
 import be.ibridge.kettle.core.dialog.Splash;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -2958,13 +2960,15 @@ public class Spoon
 			name=newname;
 		}
 
+        StepLoader steploader = StepLoader.getInstance();
+        StepPlugin stepPlugin = null;
+        
 		try
 		{
-			StepLoader steploader = StepLoader.getInstance();
-			StepPlugin sp = steploader.findStepPluginWithDescription(description);
-			if (sp!=null)
+			stepPlugin = steploader.findStepPluginWithDescription(description);
+			if (stepPlugin!=null)
 			{
-				StepMetaInterface info = BaseStep.getStepInfo(sp, steploader);
+				StepMetaInterface info = BaseStep.getStepInfo(stepPlugin, steploader);
 	
 				info.setDefault();
 				
@@ -2973,7 +2977,7 @@ public class Spoon
 					StepDialogInterface dialog = info.getDialog(shell, info, transMeta, name);
 					name = dialog.open();
 				}
-				inf=new StepMeta(log, sp.getID(), name, info);
+				inf=new StepMeta(log, stepPlugin.getID(), name, info);
 	
 				if (name!=null) // OK pressed in the dialog: we have a step-name
 				{
@@ -3005,7 +3009,7 @@ public class Spoon
 					}
                     
                     // Also store it in the pluginHistory list...
-                    props.addPluginHistory(sp.getID());
+                    props.addPluginHistory(stepPlugin.getID());
 		
 					refreshTree();
 				}
@@ -3014,8 +3018,37 @@ public class Spoon
 		}
 		catch(KettleException e)
 		{
-		    new ErrorDialog(shell, props, "Error creating step", "I was unable to create a new step", e);
-			return null;
+            String filename = stepPlugin.getErrorHelpFile();
+            if (stepPlugin!=null && filename!=null)
+            {
+                // OK, in stead of a normal error message, we give back the content of the error help file... (HTML)
+                try
+                {
+                    StringBuffer content=new StringBuffer();
+                    
+                    System.out.println("Filename = "+filename);
+                    FileInputStream fis = new FileInputStream(new File(filename));
+                    int ch = fis.read();
+                    while (ch>=0)
+                    {
+                        content.append( (char)ch);
+                        ch = fis.read();
+                    }
+
+                    System.out.println("Content = "+content);
+                    ShowBrowserDialog sbd = new ShowBrowserDialog(shell, "Error help text", content.toString());
+                    sbd.open();
+                }
+                catch(Exception ex)
+                {
+                    new ErrorDialog(shell, props, "Error showing help text", "I was unable to display error help text!", ex);
+                }
+            }
+            else
+            {
+    		    new ErrorDialog(shell, props, "Error creating step", "I was unable to create a new step", e);
+            }
+    		return null;
 		}
         catch(Throwable e)
         {

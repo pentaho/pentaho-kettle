@@ -5,7 +5,8 @@
    description="ProSAPCONN - PRORATIO SAP Connector"
    tooltip="This step allows you to retrieve data from an SAP system"
    category="Input"
-   classname="de.proratio.sapconn.kettle.SapconnMeta">
+   classname="de.proratio.sapconn.kettle.SapconnMeta"
+   errorhelpfile="help.html">
    <libraries>
     <library name="ProSAPCONN.jar"/>
     <library name="ProSAPCONN-Kettle.jar"/>

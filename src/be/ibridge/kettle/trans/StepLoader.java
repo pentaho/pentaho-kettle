@@ -96,7 +96,7 @@ public class StepLoader
             String jarfiles[] = null; // Not used
             String category = BaseStep.category[i];
 
-            StepPlugin sp = new StepPlugin(StepPlugin.TYPE_NATIVE, id, long_desc, tooltip, directory, jarfiles, iconfile, classname, category);
+            StepPlugin sp = new StepPlugin(StepPlugin.TYPE_NATIVE, id, long_desc, tooltip, directory, jarfiles, iconfile, classname, category, null);
             pluginList.add(sp);
         }
 
@@ -146,6 +146,7 @@ public class StepLoader
 		                            String tooltip = XMLHandler.getTagAttribute(plugin, "tooltip");
 		                            String category = XMLHandler.getTagAttribute(plugin, "category");
 		                            String classname = XMLHandler.getTagAttribute(plugin, "classname");
+                                    String errorHelpfile = XMLHandler.getTagAttribute(plugin, "errorhelpfile");
 		
 		                            // String jarfile =
 		                            // InfoHandler.getTagAttribute(plugin, "jarfile");
@@ -168,8 +169,8 @@ public class StepLoader
 		                            }
 		                            
 		                            String iconFilename = pi.toString() + Const.FILE_SEPARATOR + iconfile;
-		
-		                            StepPlugin sp = new StepPlugin(StepPlugin.TYPE_PLUGIN, id, description, tooltip, dirs[i], jarfiles, iconFilename, classname, category);
+                                    
+		                            StepPlugin sp = new StepPlugin(StepPlugin.TYPE_PLUGIN, id, description, tooltip, dirs[i], jarfiles, iconFilename, classname, category, pi.getPath()+Const.FILE_SEPARATOR+errorHelpfile);
 		                            
 		                            /*
 		                             * If the step plugin is not yet in the list with the specified ID, just add it.

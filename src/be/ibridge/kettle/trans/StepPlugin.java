@@ -1,4 +1,4 @@
- /**********************************************************************
+/**********************************************************************
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
@@ -12,7 +12,7 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 /*
  * Created on 6-okt-2004
  *
@@ -25,113 +25,128 @@ package be.ibridge.kettle.trans;
  */
 public class StepPlugin
 {
-	public static final int TYPE_ALL    = 0;
+    public static final int TYPE_ALL    = 0;
+
     public static final int TYPE_NATIVE = 1;
+
     public static final int TYPE_PLUGIN = 2;
 
-      private int type;
-      private String id;
-      private String description;
-      private String tooltip;
-      private String directory;
-      private String jarfiles[];
-      private String icon_filename;
-      private String classname;
-      private String category;
+    private int             type;
 
-      public StepPlugin(int type, 
-      					String id, 
-						String description, 
-      					String tooltip, 
-						String directory, 
-						String jarfiles[], 
-						String icon_filename, 
-						String classname,
-						String category
-						)
-      {
-            this.type         		= type;
-            this.id         		= id;
-            this.description        = description;
-            this.tooltip            = tooltip;
-            this.directory          = directory;
-            this.jarfiles           = jarfiles;
-            this.icon_filename      = icon_filename;
-            this.classname          = classname;
-            this.category           = category;
-      }
+    private String          id;
 
-      public int getType()
-      {
-            return type;
-      }
-      
-      public boolean isNative()
-      {
-      	return type==TYPE_NATIVE;
-      }
-      
-      public boolean isPlugin()
-      {
-      	return type==TYPE_PLUGIN;
-      }
+    private String          description;
 
-      /**
-       * @return The ID (code String) of the step or plugin. (TextFileInput, DatabaseLookup, ...)
-       */
-      public String getID()
-      {
-            return id;
-      }
+    private String          tooltip;
 
-      public String getDescription()
-      {
-            return description;
-      }
+    private String          directory;
 
-      public String getTooltip()
-      {
-            return tooltip;
-      }
+    private String          jarfiles[];
 
-      public String getDirectory()
-      {
-            return directory;
-      }
+    private String          icon_filename;
 
-      public String[] getJarfiles()
-      {
-            return jarfiles;
-      }
+    private String          classname;
 
-      public String getIconFilename()
-      {
-            return icon_filename;
-      }
+    private String          category;
 
-      public String getClassname()
-      {
-            return classname;
-      }
-      
-      public String getCategory()
-      {
-      	if (category==null) return "General";
-      	return category;
-      }
-      
-      public void setCategory(String category)
-      {
-      	this.category = category;
-      }
+    private String          errorHelpFile;
 
-      public int hashCode()
-      {
-            return id.hashCode();
-      }
+    public StepPlugin(int type, String id, String description, String tooltip, String directory, String jarfiles[], String icon_filename,
+            String classname, String category, String errorHelpFile)
+    {
+        this.type = type;
+        this.id = id;
+        this.description = description;
+        this.tooltip = tooltip;
+        this.directory = directory;
+        this.jarfiles = jarfiles;
+        this.icon_filename = icon_filename;
+        this.classname = classname;
+        this.category = category;
+        this.errorHelpFile = errorHelpFile;
+    }
 
-      public boolean equals(Object obj)
-      {
-            return getID().equals( ((StepPlugin)obj).getID() );
-      }
+    public int getType()
+    {
+        return type;
+    }
+
+    public boolean isNative()
+    {
+        return type == TYPE_NATIVE;
+    }
+
+    public boolean isPlugin()
+    {
+        return type == TYPE_PLUGIN;
+    }
+
+    /**
+     * @return The ID (code String) of the step or plugin. (TextFileInput, DatabaseLookup, ...)
+     */
+    public String getID()
+    {
+        return id;
+    }
+
+    public String getDescription()
+    {
+        return description;
+    }
+
+    public String getTooltip()
+    {
+        return tooltip;
+    }
+
+    public String getDirectory()
+    {
+        return directory;
+    }
+
+    public String[] getJarfiles()
+    {
+        return jarfiles;
+    }
+
+    public String getIconFilename()
+    {
+        return icon_filename;
+    }
+
+    public String getClassname()
+    {
+        return classname;
+    }
+
+    public String getCategory()
+    {
+        if (category == null) return "General";
+        return category;
+    }
+
+    public void setCategory(String category)
+    {
+        this.category = category;
+    }
+
+    public int hashCode()
+    {
+        return id.hashCode();
+    }
+
+    public boolean equals(Object obj)
+    {
+        return getID().equals(((StepPlugin) obj).getID());
+    }
+    
+    public void setErrorHelpFile(String errorHelpText)
+    {
+        this.errorHelpFile = errorHelpText;
+    }
+
+    public String getErrorHelpFile()
+    {
+        return errorHelpFile;
+    }
 }
