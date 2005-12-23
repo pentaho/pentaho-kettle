@@ -138,7 +138,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         
 		// Send 'True' data to...
 		wlReference=new Label(shell, SWT.RIGHT);
-		wlReference.setText("Send 'True' data to step:");
+		wlReference.setText("Reference rows origin:");
  		props.setLook(wlReference);
 		fdlReference=new FormData();
 		fdlReference.left = new FormAttachment(0, 0);
@@ -162,7 +162,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Send 'False' data to...
 		wlCompare=new Label(shell, SWT.RIGHT);
-		wlCompare.setText("Send 'false' data to step:");
+		wlCompare.setText("Compare rows origin:");
  		props.setLook(wlCompare);
 		fdlCompare=new FormData();
 		fdlCompare.left = new FormAttachment(0, 0);
