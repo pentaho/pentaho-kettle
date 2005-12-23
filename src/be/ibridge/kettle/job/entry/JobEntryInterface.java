@@ -27,6 +27,7 @@ import be.ibridge.kettle.job.entry.fileexists.JobEntryFileExists;
 import be.ibridge.kettle.job.entry.ftp.JobEntryFTP;
 import be.ibridge.kettle.job.entry.job.JobEntryJob;
 import be.ibridge.kettle.job.entry.mail.JobEntryMail;
+import be.ibridge.kettle.job.entry.sftp.JobEntrySFTP;
 import be.ibridge.kettle.job.entry.shell.JobEntryShell;
 import be.ibridge.kettle.job.entry.special.JobEntrySpecial;
 import be.ibridge.kettle.job.entry.sql.JobEntrySQL;
@@ -56,15 +57,16 @@ public interface JobEntryInterface
 	public final static int TYPE_JOBENTRY_FILE_EXISTS    =  8;
 	public final static int TYPE_JOBENTRY_EVALUATION     =  9;
 	public final static int TYPE_JOBENTRY_SPECIAL        = 10;
-	
+    public static final int TYPE_JOBENTRY_SFTP           = 11;
+
 	public final static String type_desc[] =
 		{
-			"-", "TRANS", "JOB", "SHELL", "MAIL", "SQL", "FTP", "TABLE_EXISTS", "FILE_EXISTS", "EVAL", "SPECIAL"
+			"-", "TRANS", "JOB", "SHELL", "MAIL", "SQL", "FTP", "TABLE_EXISTS", "FILE_EXISTS", "EVAL", "SPECIAL", "SFTP"
 		};
 
 	public final static String type_desc_long[] =
 		{
-			"-", "Transformation", "Job", "Shell", "Mail", "SQL", "FTP files", "Table exists", "File exists", "Evaluation", "Special entries"
+			"-", "Transformation", "Job", "Shell", "Mail", "SQL", "FTP files", "Table exists", "File exists", "Evaluation", "Special entries", "SFTP files"
 		};
 
 	public final static String icon_filename[] = 
@@ -79,7 +81,8 @@ public interface JobEntryInterface
 			"TEX.png",
 			"FEX.png",
 			"RES.png",
-            ""
+            "",
+            "SFT.png"
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -94,7 +97,8 @@ public interface JobEntryInterface
 			"Checks if a table exists on a database connection", 
 			"Checks if a file exists", 
 			"Evaluates the result of the execution of a previous job entry", 
-			"Special entries: start and dummy"
+			"Special entries: start and dummy",
+            "Get files using SFTP (Secure File Transfer Protocol)"
 		};
 	
 	public final static Class type_classname[] = 
@@ -109,7 +113,8 @@ public interface JobEntryInterface
 	        JobEntryTableExists.class,
 	        JobEntryFileExists.class,
 	        JobEntryEval.class,
-	        JobEntrySpecial.class
+	        JobEntrySpecial.class,
+            JobEntrySFTP.class
 		};
     
 

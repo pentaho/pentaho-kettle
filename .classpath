@@ -33,5 +33,6 @@
 	<classpathentry kind="src" path="extra"/>
 	<classpathentry kind="lib" path="libext/ehcache-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/jtds-1.2.jar"/>
+	<classpathentry kind="lib" path="libext/jsch-0.1.24.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

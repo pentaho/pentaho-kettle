@@ -35,6 +35,8 @@ import be.ibridge.kettle.job.entry.job.JobEntryJob;
 import be.ibridge.kettle.job.entry.job.JobEntryJobDialog;
 import be.ibridge.kettle.job.entry.mail.JobEntryMail;
 import be.ibridge.kettle.job.entry.mail.JobEntryMailDialog;
+import be.ibridge.kettle.job.entry.sftp.JobEntrySFTP;
+import be.ibridge.kettle.job.entry.sftp.JobEntrySFTPDialog;
 import be.ibridge.kettle.job.entry.shell.JobEntryShell;
 import be.ibridge.kettle.job.entry.shell.JobEntryShellDialog;
 import be.ibridge.kettle.job.entry.special.JobEntrySpecial;
@@ -216,6 +218,11 @@ public class JobEntryBase implements Cloneable
 	{
 		return getType()==JobEntryInterface.TYPE_JOBENTRY_FTP;
 	}
+    
+    public boolean isSFTP()
+    {
+        return getType()==JobEntryInterface.TYPE_JOBENTRY_SFTP;
+    }
 
 	public String getXML()
 	{
@@ -304,6 +311,7 @@ public class JobEntryBase implements Cloneable
 		case JobEntryInterface.TYPE_JOBENTRY_FILE_EXISTS    : jei = new JobEntryFileExists(); break;
 		case JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION : jei = new JobEntryTrans(); break;
 		case JobEntryInterface.TYPE_JOBENTRY_FTP            : jei = new JobEntryFTP(); break;
+        case JobEntryInterface.TYPE_JOBENTRY_SFTP           : jei = new JobEntrySFTP(); break;
 		default: 
 			throw new KettleException("Unknown job entry type : "+type);
 		}
@@ -348,6 +356,7 @@ public class JobEntryBase implements Cloneable
 		case JobEntryInterface.TYPE_JOBENTRY_TABLE_EXISTS   : d = new JobEntryTableExistsDialog(parent, (JobEntryTableExists)jei, rep, jobinfo); break;
 		case JobEntryInterface.TYPE_JOBENTRY_FILE_EXISTS    : d = new JobEntryFileExistsDialog(parent, (JobEntryFileExists)jei, rep, jobinfo); break;
 		case JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION : d = new JobEntryTransDialog(parent, (JobEntryTrans)jei, rep); break;
+        case JobEntryInterface.TYPE_JOBENTRY_SFTP           : d = new JobEntrySFTPDialog(parent, (JobEntrySFTP)jei, rep, jobinfo); break;
 		default:
             throw new KettleException("Unable to find dialog for job interface: "+jei.getName());
 		}
