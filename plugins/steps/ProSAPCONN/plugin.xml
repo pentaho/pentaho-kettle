@@ -3,10 +3,10 @@
    id="ProSAPCONN"
    iconfile="ProSAPCONN.png"
    description="ProSAPCONN - PRORATIO SAP Connector"
+   errorhelpfile="ClassLoadError.html"
    tooltip="This step allows you to retrieve data from an SAP system"
    category="Input"
-   classname="de.proratio.sapconn.kettle.SapconnMeta"
-   errorhelpfile="help.html">
+   classname="de.proratio.sapconn.kettle.SapconnMeta">
    <libraries>
     <library name="ProSAPCONN.jar"/>
     <library name="ProSAPCONN-Kettle.jar"/>
