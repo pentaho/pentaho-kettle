@@ -50,6 +50,8 @@ public class StepPlugin
     private String          category;
 
     private String          errorHelpFile;
+    
+    private boolean         separateClassloaderNeeded;
 
     public StepPlugin(int type, String id, String description, String tooltip, String directory, String jarfiles[], String icon_filename,
             String classname, String category, String errorHelpFile)
@@ -64,6 +66,7 @@ public class StepPlugin
         this.classname = classname;
         this.category = category;
         this.errorHelpFile = errorHelpFile;
+        this.separateClassloaderNeeded = false;
     }
 
     public int getType()
@@ -148,5 +151,21 @@ public class StepPlugin
     public String getErrorHelpFile()
     {
         return errorHelpFile;
+    }
+
+    /**
+     * @return Returns the separateClassloaderNeeded.
+     */
+    public boolean isSeparateClassloaderNeeded()
+    {
+        return separateClassloaderNeeded;
+    }
+
+    /**
+     * @param separateClassloaderNeeded The separateClassloaderNeeded to set.
+     */
+    public void setSeparateClassloaderNeeded(boolean separateClassloaderNeeded)
+    {
+        this.separateClassloaderNeeded = separateClassloaderNeeded;
     }
 }

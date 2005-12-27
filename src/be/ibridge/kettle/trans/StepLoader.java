@@ -97,6 +97,8 @@ public class StepLoader
             String category = BaseStep.category[i];
 
             StepPlugin sp = new StepPlugin(StepPlugin.TYPE_NATIVE, id, long_desc, tooltip, directory, jarfiles, iconfile, classname, category, null);
+            if (id.equalsIgnoreCase("ScriptValues")) sp.setSeparateClassloaderNeeded(true); 
+
             pluginList.add(sp);
         }
 
@@ -250,12 +252,20 @@ public class StepLoader
                     //
                     ClassLoader classLoader = getClass().getClassLoader(); 
                     
-                     // Construct a new URLClassLoader based on this one...
-                    URLClassLoader ucl = (URLClassLoader) classLoaders.get(sp.getID()); 
-                    if (ucl==null)
+                    URLClassLoader ucl = null;
+                    if (sp.isSeparateClassloaderNeeded())
                     {
                         ucl = new URLClassLoader(urls, classLoader);
-                        classLoaders.put(sp.getID(), ucl); // save for later use...
+                    }
+                    else
+                    {
+                         // Construct a new URLClassLoader based on this one...
+                        ucl = (URLClassLoader) classLoaders.get(sp.getID()); 
+                        if (ucl==null)
+                        {
+                            ucl = new URLClassLoader(urls, classLoader);
+                            classLoaders.put(sp.getID(), ucl); // save for later use...
+                        }
                     }
                   
                     // What's the protection domain of this class?
