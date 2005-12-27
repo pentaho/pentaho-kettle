@@ -816,6 +816,15 @@ public class Props implements Cloneable
 		
 		return rgb;
 	}
+    
+    /**
+     * @deprecated
+     * @return The background RGB color.
+     */
+    public RGB getBackupgroundRGB()
+    {
+        return getBackgroundRGB();
+    }
 
 	public void setGraphColorRGB(RGB c)
 	{
