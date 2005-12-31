@@ -112,10 +112,31 @@
         	<classpath refid="cp-kettle"/>
 
         </javadoc>
-	
 	  </target>
 	
+	  <target name="javadoc_zip" depends="javadoc" description="generate a zip file containing the Kettle javadoc">
+	  	<echo>Generating the Kettle javadoc zip file ...</echo>
+	  	<jar jarfile="Kettle-javadoc-${version}.zip" 
+	    	 basedir="${api}" 
+	    	 includes="**/*"
+	  	     excludes="**/Thumbs.db"
+	  		/>
+	  </target>
+	
+	  <!-- Make the javadoc zip file available on javaForge -->
+	  <target name="javadoc_zip_javaforge" depends="javadoc_zip" description="make the javadoc zip archive available on Javaforge">
+		<echo>Putting javadoc zip file on javaforge...</echo>
 		
+		  <CBRelease 
+		  	file="Kettle-javadoc-${version}.zip" 
+		  	todir="Development packages"
+		    description="kettle javadoc for version ${version}" 
+			keywords="Kettle, library, Spoon, Chef" 
+		    comments="Can be used to program the Kettle API"
+		  />
+	  </target>
+
+	
 	  <!--
 	       ==========================
 	             Kettle library
@@ -373,6 +394,7 @@
 	    <delete dir="${distrib}"/>
 	  	<delete dir="${api}"/>
 	  	<delete dir="${webstart}"/>
+	  	<delete files="*.zip"/>
 	  </target>
 
 	  <target name="clean" depends="cleandirs"/>
