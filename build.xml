@@ -136,7 +136,8 @@
 		<echo>Putting kettle.jar on javaforge...</echo>
 		
 		  <CBRelease 
-		 	file="${lib}/kettle.jar" 
+		  	file="${lib}/kettle.jar" 
+		  	todir="Development packages"
 		    description="kettle base library" 
 			keywords="Kettle, library, Spoon, Chef" 
 		    comments="Can be used to program Kettle meta-data or update you Kettle distribution package"
@@ -214,10 +215,12 @@
 	  <!-- Make the kettle.zip file available on javaForge -->
 	  <target name="zip_javaforge" depends="zip" description="Put the Kettle zip file on javaforge">
 	  	<echo>Putting the kettle distribution on javaforge...</echo>
-		 <CBRelease file="Kettle-${version}.zip" 
-		 		    description="This zip file contains the binaries to run Kettle (Spoon, Chef) on all platforms" 
-		 	 		keywords="Kettle, binary, Spoon, Chef" 
-		 		    comments="Also contains JDBC drivers, libs etc which explains the large size"
+		 <CBRelease 
+		 	file="Kettle-${version}.zip" 
+		  	todir="Development packages"
+ 		    description="This zip file contains the binaries to run Kettle (Spoon, Chef) on all platforms" 
+ 	 		keywords="Kettle, binary, Spoon, Chef" 
+ 		    comments="Also contains JDBC drivers, libs etc which explains the large size"
 		 />
 	  </target>
 
@@ -239,10 +242,12 @@
 	  <!-- Make the kettle-src.zip file available on javaForge -->
 	  <target name="sourcezip_javaforge" depends="sourcezip" description="Put the Kettle source zip file on javaforge">
 	  	<echo>Putting the kettle source zip file on javaforge (Kettle-src-${version}.zip)...</echo>
-		 <CBRelease file="Kettle-src-${version}.zip" 
-		 		    description="This zip file contains the source files and libraries and everything to compile Kettle" 
-		 	 		keywords="Kettle, binary, Spoon, Chef source files" 
-		 		    comments="Also contains JDBC drivers, libs etc which explains the large size"
+		 <CBRelease 
+		 	file="Kettle-src-${version}.zip" 
+		 	todir="Development packages"
+ 		    description="This zip file contains the source files and libraries and everything to compile Kettle" 
+ 	 		keywords="Kettle, binary, Spoon, Chef source files" 
+ 		    comments="Also contains JDBC drivers, libs etc which explains the large size"
 		 />
 
 	  </target>
