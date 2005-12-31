@@ -131,6 +131,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private Text         wEnclosure;
 	private FormData     fdlEnclosure, fdEnclosure;
 
+    private Label        wlEscape;
+    private Text         wEscape;
+    private FormData     fdlEscape, fdEscape;
+
 	private Label        wlHeader;
 	private Button       wHeader;
 	private FormData     fdlHeader, fdHeader;
@@ -520,20 +524,38 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		fdEnclosure.right= new FormAttachment(100, 0);
 		wEnclosure.setLayoutData(fdEnclosure);
 
+        // Escape
+        wlEscape=new Label(wContentComp, SWT.RIGHT);
+        wlEscape.setText("Escape ");
+        props.setLook(wlEscape);
+        fdlEscape=new FormData();
+        fdlEscape.left = new FormAttachment(0, 0);
+        fdlEscape.top  = new FormAttachment(wEnclosure, margin);
+        fdlEscape.right= new FormAttachment(middle, -margin);
+        wlEscape.setLayoutData(fdlEscape);
+        wEscape=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wEscape);
+        wEscape.addModifyListener(lsMod);
+        fdEscape=new FormData();
+        fdEscape.left = new FormAttachment(middle, 0);
+        fdEscape.top  = new FormAttachment(wEnclosure, margin);
+        fdEscape.right= new FormAttachment(100, 0);
+        wEscape.setLayoutData(fdEscape);
+
 		// Header checkbox
 		wlHeader=new Label(wContentComp, SWT.RIGHT);
 		wlHeader.setText("Header ");
  		props.setLook(wlHeader);
 		fdlHeader=new FormData();
 		fdlHeader.left = new FormAttachment(0, 0);
-		fdlHeader.top  = new FormAttachment(wEnclosure, margin);
+		fdlHeader.top  = new FormAttachment(wEscape, margin);
 		fdlHeader.right= new FormAttachment(middle, -margin);
 		wlHeader.setLayoutData(fdlHeader);
 		wHeader=new Button(wContentComp, SWT.CHECK);
  		props.setLook(wHeader);
 		fdHeader=new FormData();
 		fdHeader.left = new FormAttachment(middle, 0);
-		fdHeader.top  = new FormAttachment(wEnclosure, margin);
+		fdHeader.top  = new FormAttachment(wEscape, margin);
 		fdHeader.right= new FormAttachment(100, 0);
 		wHeader.setLayoutData(fdHeader);
 
@@ -1152,6 +1174,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		if (in.getFileType() !=null) wFiletype.setText(in.getFileType());
 		if (in.getSeparator()!=null) wSeparator.setText(in.getSeparator());
 		if (in.getEnclosure()!=null) wEnclosure.setText(in.getEnclosure());
+        if (in.getEscapeCharacter()!=null) wEscape.setText(in.getEscapeCharacter());
 		wHeader.setSelection(in.hasHeader());
 		wFooter.setSelection(in.hasFooter());
 		wZipped.setSelection(in.isZipped());
@@ -1230,6 +1253,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		in.setFileFormat( wFormat.getText() );
 		in.setSeparator( wSeparator.getText() );
 		in.setEnclosure( wEnclosure.getText() );
+        in.setEscapeCharacter( wEscape.getText() );
 		in.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
 		in.setFilenameField( wInclFilenameField.getText() );
 		in.setRowNumberField( wInclRownumField.getText() );

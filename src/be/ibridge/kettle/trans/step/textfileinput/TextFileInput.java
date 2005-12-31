@@ -116,7 +116,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 					int from=pos;
 					int next;
 					int len_encl = (inf.getEnclosure()==null?0:inf.getEnclosure().length());
+                    int len_esc  = (inf.getEscapeCharacter()==null?0:inf.getEscapeCharacter().length());
 					boolean encl_found;
+                    boolean contains_escaped_chars = false;
 					
 					// Is the field beginning with an enclosure?  "aa;aa";123;"aaa-aaa";000;...
 					if ( len_encl>0 && line.substring(from, from+len_encl).equalsIgnoreCase(inf.getEnclosure()))
@@ -126,9 +128,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 						encl_found=true;
 						int p=from+len_encl;
 						
-						boolean is_enclosure = p<length && line.substring(p, p+len_encl).equalsIgnoreCase(inf.getEnclosure());
-						boolean enclosure_after = false;
-						if (is_enclosure && p<length-1) // Is it really an enclosure, see if it's not repeated twice
+						boolean is_enclosure = p+len_encl<length && line.substring(p, p+len_encl).equalsIgnoreCase(inf.getEnclosure());
+                        boolean is_escape    = p+len_esc <length && line.substring(p, p+len_esc).equalsIgnoreCase(inf.getEscapeCharacter());
+                        boolean enclosure_after = false;
+						if ( (is_enclosure || is_escape) && p<length-1) // Is it really an enclosure, see if it's not repeated twice or escaped
 						{
 							String strnext = line.substring(p+len_encl, p+2*len_encl); 
 							if (strnext.equalsIgnoreCase(inf.getEnclosure()))
@@ -136,23 +139,28 @@ public class TextFileInput extends BaseStep implements StepInterface
 								p++;
 								enclosure_after=true;
 								dencl=true; 
+                                
+                                if (is_escape) contains_escaped_chars=true; // remember to replace them later on!
 							}
 						}
-	
-						while ( !is_enclosure || enclosure_after)
+                        while ( !is_enclosure || enclosure_after)
 						{
 							debug = "convertLineToStrings start while enclosure";
 							p++;
 							enclosure_after=false;
-							is_enclosure = p<length && line.substring(p, p+len_encl).equalsIgnoreCase(inf.getEnclosure());
-							if (is_enclosure && p<length-1) // Is it really an enclosure, see if it's not repeated twice
+							is_enclosure = len_encl>0 && p+len_encl<length && line.substring(p, p+len_encl).equals(inf.getEnclosure());
+                            is_escape    = len_esc >0 && p+len_esc <length && line.substring(p, p+len_esc).equals(inf.getEscapeCharacter());
+                            
+							if ((is_enclosure || is_escape ) && p<length-1) // Is it really an enclosure, see if it's not repeated twice
 							{
 								String strnext = line.substring(p+len_encl, p+2*len_encl); 
-								if (strnext.equalsIgnoreCase(inf.getEnclosure()))
+								if (strnext.equals(inf.getEnclosure()))
 								{
 									p++;
 									enclosure_after=true;
-									dencl=true; 
+									dencl=true;
+                                    
+                                    if (is_escape) contains_escaped_chars=true; // remember to replace them later on!
 								}
 							}
 						}
@@ -192,6 +200,16 @@ public class TextFileInput extends BaseStep implements StepInterface
 						}
 						pol=sbpol.toString();
 					}
+                    
+                    if (contains_escaped_chars) // replace the escaped enclosures with enclosures...
+                    {
+                        String replace = inf.getEscapeCharacter()+inf.getEnclosure();
+                        String replaceWith = inf.getEnclosure();
+                        
+                        System.out.println("Replace ["+replace+"] with ["+replaceWith+"] in ["+pol+"]");
+                        
+                        pol = Const.replace(pol, replace, replaceWith);
+                    }
 					
 					// Now add pol to the strings found!
 					debug = "convertLineToStrings add pol";
