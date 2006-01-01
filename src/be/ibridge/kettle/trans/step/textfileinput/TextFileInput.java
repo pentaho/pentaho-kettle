@@ -117,8 +117,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 					int next;
 					int len_encl = (inf.getEnclosure()==null?0:inf.getEnclosure().length());
                     int len_esc  = (inf.getEscapeCharacter()==null?0:inf.getEscapeCharacter().length());
+                    
 					boolean encl_found;
-                    boolean contains_escaped_chars = false;
+                    boolean contains_escaped_enclosures = false;
+                    boolean contains_escaped_separators = false;
 					
 					// Is the field beginning with an enclosure?  "aa;aa";123;"aaa-aaa";000;...
 					if ( len_encl>0 && line.substring(from, from+len_encl).equalsIgnoreCase(inf.getEnclosure()))
@@ -130,6 +132,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						
 						boolean is_enclosure = p+len_encl<length && line.substring(p, p+len_encl).equalsIgnoreCase(inf.getEnclosure());
                         boolean is_escape    = p+len_esc <length && line.substring(p, p+len_esc).equalsIgnoreCase(inf.getEscapeCharacter());
+
                         boolean enclosure_after = false;
 						if ( (is_enclosure || is_escape) && p<length-1) // Is it really an enclosure, see if it's not repeated twice or escaped
 						{
@@ -140,7 +143,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 								enclosure_after=true;
 								dencl=true; 
                                 
-                                if (is_escape) contains_escaped_chars=true; // remember to replace them later on!
+                                if (is_escape) contains_escaped_enclosures=true; // remember to replace them later on!
 							}
 						}
                         while ( !is_enclosure || enclosure_after)
@@ -160,7 +163,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 									enclosure_after=true;
 									dencl=true;
                                     
-                                    if (is_escape) contains_escaped_chars=true; // remember to replace them later on!
+                                    if (is_escape) contains_escaped_enclosures=true; // remember to replace them later on!
 								}
 							}
 						}
@@ -172,7 +175,38 @@ public class TextFileInput extends BaseStep implements StepInterface
 					else
 					{
 						encl_found=false;
-						next=line.indexOf(inf.getSeparator(), from);
+                        boolean found = false;
+                        int startpoint = from;
+                        int tries=1;
+                        do
+                        {
+    						next=line.indexOf(inf.getSeparator(), startpoint);
+                            
+                            // System.out.println("tries="+tries+", startpoint="+startpoint+", next="+next+", ["+line.substring(next-len_esc, next+5));
+                            
+                            // See if this position is preceded by an escape character.
+                            if (len_esc>0 && next-len_esc>0)
+                            {
+                                String before = line.substring(next-len_esc, next);
+                                // System.out.println("before string: ["+before+"]");
+                                if (inf.getEscapeCharacter().equals(before)) 
+                                {
+                                    // System.out.println("ESCAPED SEPARATOR FOUND");
+                                    startpoint=next+1; // take the next separator, this one is escaped...
+                                    tries++;
+                                    contains_escaped_separators=true;
+                                }
+                                else
+                                {
+                                    found=true;
+                                }
+                            }
+                            else
+                            {
+                                found=true;
+                            }
+                        }
+                        while(!found && next>=0);
 					}
 					if (next==-1) next=length;
 					
@@ -201,19 +235,31 @@ public class TextFileInput extends BaseStep implements StepInterface
 						pol=sbpol.toString();
 					}
                     
-                    if (contains_escaped_chars) // replace the escaped enclosures with enclosures...
+                    if (contains_escaped_enclosures) // replace the escaped enclosures with enclosures...
                     {
                         String replace = inf.getEscapeCharacter()+inf.getEnclosure();
                         String replaceWith = inf.getEnclosure();
                         
-                        System.out.println("Replace ["+replace+"] with ["+replaceWith+"] in ["+pol+"]");
+                        // System.out.println("Replace ["+replace+"] with ["+replaceWith+"] in ["+pol+"]");
                         
                         pol = Const.replace(pol, replace, replaceWith);
                     }
-					
+
+                    if (contains_escaped_separators) // replace the escaped separators with separators...
+                    {
+                        String replace = inf.getEscapeCharacter()+inf.getSeparator();
+                        String replaceWith = inf.getSeparator();
+                        
+                        // System.out.println("Replace ["+replace+"] with ["+replaceWith+"] in ["+pol+"]");
+                        
+                        pol = Const.replace(pol, replace, replaceWith);
+                    }
+
 					// Now add pol to the strings found!
 					debug = "convertLineToStrings add pol";
 					strings.add(pol); 
+                    
+                    // System.out.println("Found new field: ["+pol+"]");
 		
 					pos=next+1;
 					fieldnr++;
