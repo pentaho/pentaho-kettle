@@ -2270,9 +2270,23 @@ public class ChefGraph extends Canvas
             if (png[i]!=null && png[i].length()>0)
             {
                 // System.out.println("Loading image: "+png[i]);
-                final Image image = new Image(getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + png[i])); 
-                images[i] = image;
-                shell.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { image.dispose(); } });
+                try
+                {
+                    final Image image = new Image(getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + png[i])); 
+                    images[i] = image;
+                    shell.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { image.dispose(); } });
+                    
+                }
+                catch(Exception e)
+                {
+                    log.logError(toString(), "Unable to find required image file ["+(Const.IMAGE_DIRECTORY + png[i])+" : "+e.toString());
+                    images[i] = new Image(shell.getDisplay(), Const.ICON_SIZE, Const.ICON_SIZE);
+                    GC gc = new GC(images[i]);
+                    gc.drawRectangle(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
+                    gc.drawLine(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
+                    gc.drawLine(Const.ICON_SIZE, 0, 0, Const.ICON_SIZE);
+                    gc.dispose();
+                }
             }
 		}
 	}
