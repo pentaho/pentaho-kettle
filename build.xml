@@ -77,7 +77,7 @@
 	    <copy todir="${classes}">
 	    	<fileset 
 	    		dir="${src}" 
-	    		includes="**/*.png,**/*.xml"/>
+	    		includesfile="**/*.png **/*.xml"/>
 	  	    </copy>
 	  </target>
 	
