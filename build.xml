@@ -394,7 +394,11 @@
 	    <delete dir="${distrib}"/>
 	  	<delete dir="${api}"/>
 	  	<delete dir="${webstart}"/>
-	  	<delete files="*.zip"/>
+	  	<delete>
+	        <fileset dir=".">
+			  <include name="*.zip"/>
+	    	</fileset>
+	  	</delete>
 	  </target>
 
 	  <target name="clean" depends="cleandirs"/>
