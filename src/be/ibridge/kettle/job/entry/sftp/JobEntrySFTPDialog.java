@@ -224,7 +224,8 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		wlPassword.setLayoutData(fdlPassword);
 		wPassword=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wPassword);
-		wPassword.addModifyListener(lsMod);
+        wPassword.setEchoChar('*');
+        wPassword.addModifyListener(lsMod);
 		fdPassword=new FormData();
 		fdPassword.left = new FormAttachment(middle, 0);
 		fdPassword.top  = new FormAttachment(wUserName, margin);
@@ -319,7 +320,13 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
 		wName.addSelectionListener( lsDef );
-			
+        wServerName.addSelectionListener( lsDef );
+        wUserName.addSelectionListener( lsDef );
+        wPassword.addSelectionListener( lsDef );
+        wScpDirectory.addSelectionListener( lsDef );
+        wTargetDirectory.addSelectionListener( lsDef );
+        wWildcard.addSelectionListener( lsDef );
+        			
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 				
