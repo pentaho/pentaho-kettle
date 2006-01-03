@@ -1906,9 +1906,9 @@ public class Chef
 				return null;
 			}
 		}
-		catch(KettleException e)
+		catch(Throwable e)
 		{
-			new ErrorDialog(shell, props, "Severe error creating resources.", "Error creating new chefgraphentry",e); 
+			new ErrorDialog(shell, props, "Severe error creating resources.", "Error creating new chefgraphentry",new Exception(e)); 
 			return null;
 		}
 	}
@@ -2964,6 +2964,10 @@ public class Chef
 		String filename  = Const.getCommandlineOption(args, "-file");
 		String dirname   = Const.getCommandlineOption(args, "-dir");
         String logfile   = Const.getCommandlineOption(args, "-log");
+
+        repname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", repname);
+        username = Const.getEnvironmentVariable("KETTLE_USER",       username);
+        password = Const.getEnvironmentVariable("KETTLE_PASSWORD",   password);
 
 		// if (args.length==1 && filename==null) filename=args[1]; // try to load first argument...
 

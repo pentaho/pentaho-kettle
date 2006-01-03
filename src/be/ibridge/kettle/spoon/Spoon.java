@@ -4238,6 +4238,10 @@ public class Spoon
 		String logfile   = Const.getCommandlineOption(args, "-log");
 		String loglevel  = Const.getCommandlineOption(args, "-level");
 
+        repname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", repname);
+        username = Const.getEnvironmentVariable("KETTLE_USER",       username);
+        password = Const.getEnvironmentVariable("KETTLE_PASSWORD",   password);
+        
 		// Before anything else, check the runtime version!!!
 		String version = Const.JAVA_VERSION;
 		if ("1.4".compareToIgnoreCase(version)>0)

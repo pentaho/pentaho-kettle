@@ -86,6 +86,10 @@ public class Kitchen
 		String listjobs  = Const.getCommandlineOption(args, "-listjobs");
 		String listrep   = Const.getCommandlineOption(args, "-listrep");
 
+        repname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", repname);
+        username = Const.getEnvironmentVariable("KETTLE_USER",       username);
+        password = Const.getEnvironmentVariable("KETTLE_PASSWORD",   password);
+
 		// System.out.println("Level="+loglevel);
         LogWriter log;
         if (logfile==null)

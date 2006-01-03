@@ -81,6 +81,10 @@ public class Pan
 		String listtrans = Const.getCommandlineOption(args, "-listtrans");
 		String listrep   = Const.getCommandlineOption(args, "-listrep");
 		
+        repname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", repname);
+        username = Const.getEnvironmentVariable("KETTLE_USER",       username);
+        password = Const.getEnvironmentVariable("KETTLE_PASSWORD",   password);
+
 		// if (args.length==1 && filename==null && listrep==null) filename=args[1]; // try to load first argument...
         
         LogWriter log;

@@ -48,6 +48,7 @@ set CLASSPATH=%CLASSPATH%;libext\ojdbc14.jar
 set CLASSPATH=%CLASSPATH%;libext\orai18n.jar
 set CLASSPATH=%CLASSPATH%;libext\pg74.215.jdbc3.jar
 set CLASSPATH=%CLASSPATH%;libext\edbc.jar
+set CLASSPATH=%CLASSPATH%;libext\jsch-0.1.24.jar
 
 REM *****************
 REM   SWT Libraries
@@ -61,8 +62,8 @@ REM ******************************************************************
 REM ** Set java runtime options                                     **
 REM ** Change 128m to higher values in case you run out of memory.  **
 REM ******************************************************************
-
-set OPT=-Xmx512M -cp %CLASSPATH% -Djava.library.path=libswt\win32\ -DKETTLE_HOME=%KETTLE_HOME%  -DPTV_HOME=%PTV_HOME%
+"
+set OPT=-Xmx512M -cp %CLASSPATH% -Djava.library.path=libswt\win32\ -DKETTLE_REPOSITORY="%KETTLE_REPOSITORY%" -DKETTLE_USER="%KETTLE_USER%" -DKETTLE_PASSWORD="%KETTLE_PASSWORD%"
 
 REM ***************
 REM ** Run...    **
