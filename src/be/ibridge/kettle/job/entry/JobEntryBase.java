@@ -31,6 +31,8 @@ import be.ibridge.kettle.job.entry.fileexists.JobEntryFileExists;
 import be.ibridge.kettle.job.entry.fileexists.JobEntryFileExistsDialog;
 import be.ibridge.kettle.job.entry.ftp.JobEntryFTP;
 import be.ibridge.kettle.job.entry.ftp.JobEntryFTPDialog;
+import be.ibridge.kettle.job.entry.http.JobEntryHTTP;
+import be.ibridge.kettle.job.entry.http.JobEntryHTTPDialog;
 import be.ibridge.kettle.job.entry.job.JobEntryJob;
 import be.ibridge.kettle.job.entry.job.JobEntryJobDialog;
 import be.ibridge.kettle.job.entry.mail.JobEntryMail;
@@ -224,6 +226,11 @@ public class JobEntryBase implements Cloneable
         return getType()==JobEntryInterface.TYPE_JOBENTRY_SFTP;
     }
 
+    public boolean isHTTP()
+    {
+        return getType()==JobEntryInterface.TYPE_JOBENTRY_HTTP;
+    }
+
 	public String getXML()
 	{
 		String retval = "";
@@ -312,6 +319,7 @@ public class JobEntryBase implements Cloneable
 		case JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION : jei = new JobEntryTrans(); break;
 		case JobEntryInterface.TYPE_JOBENTRY_FTP            : jei = new JobEntryFTP(); break;
         case JobEntryInterface.TYPE_JOBENTRY_SFTP           : jei = new JobEntrySFTP(); break;
+        case JobEntryInterface.TYPE_JOBENTRY_HTTP           : jei = new JobEntryHTTP(); break;
 		default: 
 			throw new KettleException("Unknown job entry type : "+type);
 		}
@@ -357,6 +365,7 @@ public class JobEntryBase implements Cloneable
 		case JobEntryInterface.TYPE_JOBENTRY_FILE_EXISTS    : d = new JobEntryFileExistsDialog(parent, (JobEntryFileExists)jei, rep, jobinfo); break;
 		case JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION : d = new JobEntryTransDialog(parent, (JobEntryTrans)jei, rep); break;
         case JobEntryInterface.TYPE_JOBENTRY_SFTP           : d = new JobEntrySFTPDialog(parent, (JobEntrySFTP)jei, rep, jobinfo); break;
+        case JobEntryInterface.TYPE_JOBENTRY_HTTP           : d = new JobEntryHTTPDialog(parent, (JobEntryHTTP)jei, rep, jobinfo); break;
 		default:
             throw new KettleException("Unable to find dialog for job interface: "+jei.getName());
 		}

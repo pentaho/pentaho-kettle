@@ -25,6 +25,7 @@ import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.entry.eval.JobEntryEval;
 import be.ibridge.kettle.job.entry.fileexists.JobEntryFileExists;
 import be.ibridge.kettle.job.entry.ftp.JobEntryFTP;
+import be.ibridge.kettle.job.entry.http.JobEntryHTTP;
 import be.ibridge.kettle.job.entry.job.JobEntryJob;
 import be.ibridge.kettle.job.entry.mail.JobEntryMail;
 import be.ibridge.kettle.job.entry.sftp.JobEntrySFTP;
@@ -58,15 +59,16 @@ public interface JobEntryInterface
 	public final static int TYPE_JOBENTRY_EVALUATION     =  9;
 	public final static int TYPE_JOBENTRY_SPECIAL        = 10;
     public static final int TYPE_JOBENTRY_SFTP           = 11;
+    public static final int TYPE_JOBENTRY_HTTP           = 12;
 
 	public final static String type_desc[] =
 		{
-			"-", "TRANS", "JOB", "SHELL", "MAIL", "SQL", "FTP", "TABLE_EXISTS", "FILE_EXISTS", "EVAL", "SPECIAL", "SFTP"
+			"-", "TRANS", "JOB", "SHELL", "MAIL", "SQL", "FTP", "TABLE_EXISTS", "FILE_EXISTS", "EVAL", "SPECIAL", "SFTP", "HTTP"
 		};
 
 	public final static String type_desc_long[] =
 		{
-			"-", "Transformation", "Job", "Shell", "Mail", "SQL", "FTP files", "Table exists", "File exists", "Evaluation", "Special entries", "SFTP files"
+			"-", "Transformation", "Job", "Shell", "Mail", "SQL", "FTP files", "Table exists", "File exists", "Evaluation", "Special entries", "SFTP files", "Get a file using HTTP"
 		};
 
 	public final static String icon_filename[] = 
@@ -82,7 +84,8 @@ public interface JobEntryInterface
 			"FEX.png",
 			"RES.png",
             "",
-            "SFT.png"
+            "SFT.png",
+            "WEB.png"
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -98,7 +101,8 @@ public interface JobEntryInterface
 			"Checks if a file exists", 
 			"Evaluates the result of the execution of a previous job entry", 
 			"Special entries: start and dummy",
-            "Get files using SFTP (Secure File Transfer Protocol)"
+            "Get files using SFTP (Secure File Transfer Protocol)",
+            "Get a file using the HTTP (HyperText Transfer Protocol)"
 		};
 	
 	public final static Class type_classname[] = 
@@ -114,7 +118,8 @@ public interface JobEntryInterface
 	        JobEntryFileExists.class,
 	        JobEntryEval.class,
 	        JobEntrySpecial.class,
-            JobEntrySFTP.class
+            JobEntrySFTP.class,
+            JobEntryHTTP.class
 		};
     
 
