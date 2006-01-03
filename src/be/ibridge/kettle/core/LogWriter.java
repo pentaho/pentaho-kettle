@@ -18,13 +18,17 @@
 package be.ibridge.kettle.core;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.PipedOutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Hashtable;
+
+import org.apache.log4j.Logger;
+
+import be.ibridge.kettle.core.logging.Log4jConsoleAppender;
+import be.ibridge.kettle.core.logging.Log4jFileAppender;
+import be.ibridge.kettle.core.logging.Log4jKettleLayout;
+import be.ibridge.kettle.core.logging.Log4jMessage;
+import be.ibridge.kettle.core.logging.Log4jStringAppender;
 
 
 /**
@@ -74,26 +78,26 @@ public class LogWriter
 
 	// Stream
 	private OutputStream stream;
-	private PipedOutputStream pstream;
 	
 	// File
 	private String filename;
 	private File file;  // Write to a certain file...
 	
 	// String...
-	private boolean capture_string;
-	private String string;
-
 	private int type;
 	private int level;
 	private String filter;
-	private boolean time_enabled;
     private boolean exact;
+    
+    // Log4j 
+    private Log4jFileAppender    fileAppender;
+    private Log4jConsoleAppender consoleAppender;
+    private Log4jStringAppender  stringAppender;
+    
+    private Log4jKettleLayout    layout;
 
 	private static final String NO_FILE_NAME = "-";
 	
-	private SimpleDateFormat sdf; // Used for date conversion... (optimise: only init once!)
-    
     private File realFilename;
 
 	private static final LogWriter findLogWriter(String filename)
@@ -119,7 +123,7 @@ public class LogWriter
 		
 		return lastLog;
 	}
-	
+
 	// Default: screen --> out
 	private LogWriter(int lvl)
 	{
@@ -127,11 +131,22 @@ public class LogWriter
 		level  = lvl;
 		type   = LOG_TYPE_STREAM;
 		filter = null;
-		time_enabled=true;
-		sdf=null;
-		capture_string = false;
-		string = "";
 	}
+    
+    public static final LogWriter getInstance(int lvl, OutputStream stream)
+    {
+        LogWriter log = findLogWriter(NO_FILE_NAME);
+        
+        if (log != null) return log;
+        
+        lastLog = new LogWriter(lvl);
+        lastLog.stream = stream;
+        lastLog.type = LOG_TYPE_STREAM;
+        logs.put(NO_FILE_NAME, lastLog);
+        
+        return lastLog;
+    }
+
 
 	/**
 	 * Get a new log instance for the specified file if it is not open yet! 
@@ -158,7 +173,7 @@ public class LogWriter
         this.exact = exact;
         
 		type  = LOG_TYPE_STREAM;
-		
+                
 		try
 		{
             if (!exact)
@@ -171,16 +186,29 @@ public class LogWriter
                 file = new File(filename);
             }
             realFilename = file.getAbsoluteFile();
-			stream = new FileOutputStream(file);
+
+            layout = new Log4jKettleLayout(true);
+
+            fileAppender = new Log4jFileAppender(realFilename);
+            consoleAppender = new Log4jConsoleAppender();
+            stringAppender  = new Log4jStringAppender();
+            
+            fileAppender.setLayout(layout);
+            consoleAppender.setLayout(layout);
+            stringAppender.setLayout(layout);
+            
+            fileAppender.setName("AppendToFile");
+            consoleAppender.setName("AppendToConsole");
+            stringAppender.setName("AppendToString");
+            
+            Logger rootLogger = Logger.getRootLogger();
+            rootLogger.addAppender(fileAppender);
+            rootLogger.addAppender(consoleAppender);
 		}
 		catch(Exception e)
 		{
 			System.out.println("ERROR OPENING LOG FILE ["+filename+"] --> "+e.toString());
 		}
-		time_enabled=true;
-		sdf=null;
-		capture_string = false;
-		string="";
 	}
 	
 	public int getType()
@@ -191,16 +219,6 @@ public class LogWriter
 	public void setType(int type)
 	{
 		this.type = type;
-	}
-	
-	public void setStringCapture(boolean capture_string)
-	{
-		this.capture_string = capture_string;
-	}
-	
-	public boolean getStringCapture()
-	{
-		return capture_string;
 	}
 
     public boolean isExact()
@@ -247,22 +265,22 @@ public class LogWriter
 	
 	public void enableTime()
 	{
-		time_enabled=true;
+        layout.setTimeAdded(true);
 	}
 
 	public void disableTime()
 	{
-		time_enabled=false;
+		layout.setTimeAdded(false);
 	}
 	
 	public boolean getTime()
 	{
-		return time_enabled;
+        return layout.isTimeAdded();
 	}
 
 	public void setTime(boolean tim)
 	{
-		time_enabled=tim;
+        layout.setTimeAdded(tim);
 	}
 
 	public String getFilename()
@@ -277,17 +295,6 @@ public class LogWriter
 		}
 	}
 	
-	public String getString()
-	{
-		return string;
-	}
-	
-	public void setString(String string)
-	{
-		this.string = string;
-	}
-
-
 	public void println(int lvl, String msg)
 	{
 		println(lvl, "General", msg);
@@ -296,64 +303,44 @@ public class LogWriter
 	public void println(int lvl, String subject, String msg)
 	{
 		// Are the message filtered?
-		if (filter!=null && 
-		    filter.length()>0 && 
-		    subject.indexOf(filter)<0 && 
-		    msg.indexOf(filter)<0
-		    ) return; // "filter" not found in row: don't show!
+		if (filter!=null && filter.length()>0)
+        {
+            if (subject.indexOf(filter)<0 && msg.indexOf(filter)<0)
+            {
+                return; // "filter" not found in row: don't show!
+            }
+        }
 		    
 		if (level==0) return;  // Nothing, not even errors...
 		if (level<lvl) return; // not for our eyes.
 		
-		String o;
-		String ti="";
-		
-		if (time_enabled)
-		{
-			if (sdf==null) // init
-			{
-				sdf=new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
-			}
-			ti=sdf.format(new Date() )+" - ";
-		}
-				
-		if (lvl!=LOG_LEVEL_ERROR) 
-			o=ti+subject+" - "+msg + Const.CR;
-		else
-			o=ti+subject+" - ERROR: "+msg + Const.CR ;
-
-		if (capture_string) string+=o;
-
-		try
-		{
-			switch(type)
-			{
-			case LOG_TYPE_STREAM: stream.write( o.getBytes() ); stream.flush(); break;
-			case LOG_TYPE_PIPE  : pstream.write( o.getBytes() ); pstream.flush(); break;
-			default: break;
-			}			
-		}
-		catch(Exception e)
-		{
-			System.out.println("ERROR WRITING TO LOG! -> "+e.toString());
-		}
+        Logger logger = Logger.getLogger(subject);
+        
+        Log4jMessage message = new Log4jMessage(msg, subject);
+        
+        switch(level)
+        {
+        case LOG_LEVEL_ERROR:    logger.error(message); break;
+        case LOG_LEVEL_DEBUG:    logger.debug(message); break;
+        default:                 logger.info(message); break;
+        }
 	}
 	
-	public void logBasic(String subject, String message) { println(LOG_LEVEL_BASIC, subject, message) ; }
+	public void logBasic(String subject, String message)    { println(LOG_LEVEL_BASIC, subject, message) ; }
 	public void logDetailed(String subject, String message) { println(LOG_LEVEL_DETAILED, subject, message); }
-	public void logDebug(String subject, String message) { println(LOG_LEVEL_DEBUG, subject, message); }
+	public void logDebug(String subject, String message)    { println(LOG_LEVEL_DEBUG, subject, message); }
 	public void logRowlevel(String subject, String message) { println(LOG_LEVEL_ROWLEVEL, subject, message); }
-	public void logError(String subject, String message) { println(LOG_LEVEL_ERROR, subject, message); }
+	public void logError(String subject, String message)    { println(LOG_LEVEL_ERROR, subject, message); }
 	
+    /** @deprecated */
 	public Object getStream()
 	{
-		if (type == LOG_TYPE_STREAM) return stream;
-		return pstream;
+        return fileAppender.getFileOutputStream();
 	}
 	
-	public void setFilter(String flt)
+	public void setFilter(String filter)
 	{
-		filter=flt;
+		this.filter=filter;
 	}
 	
 	public String getFilter()
@@ -384,7 +371,7 @@ public class LogWriter
 	
 	public FileInputStream getFileInputStream() throws IOException
 	{
-		return new FileInputStream(file);
+		return new FileInputStream(fileAppender.getFile());
 	}
     
     public boolean isBasic()
@@ -424,4 +411,26 @@ public class LogWriter
     }
     
 
+    public void startStringCapture()
+    {
+        Logger logger = Logger.getRootLogger();
+        logger.addAppender(stringAppender);
+    }
+    
+
+    public void endStringCapture()
+    {
+        Logger logger = Logger.getRootLogger();
+        logger.removeAppender(stringAppender);
+    }
+
+    public String getString()
+    {
+        return stringAppender.getBuffer().toString();
+    }
+
+    public void setString(String string)
+    {
+        stringAppender.setBuffer(new StringBuffer(string));
+    }
 }

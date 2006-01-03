@@ -195,7 +195,7 @@ public class Trans
 		 */
 		if (transMeta.isLogfieldUsed())
 		{
-			log.setStringCapture(true);
+			log.startStringCapture();
 			log.setString("START"+Const.CR);
 		}
 		
@@ -986,7 +986,7 @@ public class Trans
 			log_string = log.getString();
 			log_string+=Const.CR+"END";
 			log.setString("");
-			log.setStringCapture(false);
+			log.endStringCapture();
 		}
 		
 		DatabaseMeta logcon = transMeta.getLogConnection();
