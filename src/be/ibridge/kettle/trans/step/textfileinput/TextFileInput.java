@@ -86,6 +86,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 			}
 			return line.toString();
 		}
+        if (line.length()>0) return line.toString();
+        
 		return null;
 	}
 	
