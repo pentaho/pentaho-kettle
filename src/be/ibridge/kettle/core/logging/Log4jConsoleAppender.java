@@ -1,7 +1,5 @@
 package be.ibridge.kettle.core.logging;
 
-import java.io.IOException;
-
 import org.apache.log4j.Appender;
 import org.apache.log4j.Layout;
 import org.apache.log4j.spi.ErrorHandler;
@@ -15,7 +13,7 @@ public class Log4jConsoleAppender implements Appender
     
     private String  name;
     
-    public Log4jConsoleAppender() throws IOException
+    public Log4jConsoleAppender()
     {
     }
     

@@ -44,7 +44,10 @@ public class Pan
 	    ArrayList args = new ArrayList();
 	    for (int i=0;i<a.length;i++) 
 	    {
-	        if (a[i].length()>0) args.add(a[i]);
+	        if (a[i].length()>0) 
+            {
+                args.add(a[i]);
+            }
 	    }
 
 		RepositoryMeta repinfo  = null;
@@ -85,9 +88,18 @@ public class Pan
         username = Const.getEnvironmentVariable("KETTLE_USER",       username);
         password = Const.getEnvironmentVariable("KETTLE_PASSWORD",   password);
 
-		// if (args.length==1 && filename==null && listrep==null) filename=args[1]; // try to load first argument...
+        /*
+        System.out.println("Options:");
+        if (repname!=null)   System.out.println("repository name :        "+repname);
+        if (username!=null)  System.out.println("username :               "+username);
+        if (password!=null)  System.out.println("password is set");
+        if (dirname!=null)   System.out.println("directory :              "+dirname);
+        if (loglevel!=null)  System.out.println("logging level :          "+loglevel);
+        if (listdir!=null)   System.out.println("list directories");
+        if (listtrans!=null) System.out.println("list transformations");
+        */
         
-        LogWriter log;
+		LogWriter log;
         if (logfile==null)
         {
             log=LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );

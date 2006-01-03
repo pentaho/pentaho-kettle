@@ -23,7 +23,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
@@ -48,8 +47,6 @@ import be.ibridge.kettle.repository.Repository;
 
 public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
 {
-	private static Logger log4j = Logger.getLogger(JobEntryHTTP.class);
-	
 	private String url;
 	private String targetFilename;
 	
@@ -167,12 +164,10 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
 	{
 		LogWriter log = LogWriter.getInstance();
 
-        log4j.info("Started HTTP job to "+url);
-        
 		Result result = new Result(nr);
 		result.setResult( false );
 
-		log.logDetailed(toString(), "Start of FTP job entry");
+		log.logBasic(toString(), "Start of HTTP job entry ("+url+")");
 
         URL server = null;
         

@@ -73,8 +73,7 @@ public class LogWriter
 			"Rowlevel (very detailed)"
 		};
 
-	public static final int LOG_TYPE_STREAM      =  1;
-	public static final int LOG_TYPE_PIPE        =  2;
+
 
 	// Stream
 	private OutputStream stream;
@@ -89,7 +88,8 @@ public class LogWriter
 	private String filter;
     private boolean exact;
     
-    // Log4j 
+    // Log4j
+    private Logger               rootLogger;
     private Log4jFileAppender    fileAppender;
     private Log4jConsoleAppender consoleAppender;
     private Log4jStringAppender  stringAppender;
@@ -123,13 +123,30 @@ public class LogWriter
 		
 		return lastLog;
 	}
+    
+    private LogWriter()
+    {
+        rootLogger = Logger.getRootLogger();
+        
+        layout = new Log4jKettleLayout(true);
+
+        consoleAppender = new Log4jConsoleAppender();
+        consoleAppender.setLayout(layout);
+        consoleAppender.setName("AppendToConsole");
+
+        stringAppender  = new Log4jStringAppender();
+        stringAppender.setLayout(layout);
+        stringAppender.setName("AppendToString");
+    }
 
 	// Default: screen --> out
 	private LogWriter(int lvl)
 	{
-		stream = System.out;
+        this();
+        
+        rootLogger.addAppender(consoleAppender);
+        
 		level  = lvl;
-		type   = LOG_TYPE_STREAM;
 		filter = null;
 	}
     
@@ -141,7 +158,6 @@ public class LogWriter
         
         lastLog = new LogWriter(lvl);
         lastLog.stream = stream;
-        lastLog.type = LOG_TYPE_STREAM;
         logs.put(NO_FILE_NAME, lastLog);
         
         return lastLog;
@@ -168,11 +184,11 @@ public class LogWriter
 	
 	private LogWriter(String filename, boolean exact, int level)
 	{
+        this();
+        
 		this.filename = filename;
 		this.level = level;
         this.exact = exact;
-        
-		type  = LOG_TYPE_STREAM;
                 
 		try
 		{
@@ -187,23 +203,11 @@ public class LogWriter
             }
             realFilename = file.getAbsoluteFile();
 
-            layout = new Log4jKettleLayout(true);
-
             fileAppender = new Log4jFileAppender(realFilename);
-            consoleAppender = new Log4jConsoleAppender();
-            stringAppender  = new Log4jStringAppender();
-            
             fileAppender.setLayout(layout);
-            consoleAppender.setLayout(layout);
-            stringAppender.setLayout(layout);
-            
             fileAppender.setName("AppendToFile");
-            consoleAppender.setName("AppendToConsole");
-            stringAppender.setName("AppendToString");
-            
-            Logger rootLogger = Logger.getRootLogger();
+                        
             rootLogger.addAppender(fileAppender);
-            rootLogger.addAppender(consoleAppender);
 		}
 		catch(Exception e)
 		{
@@ -340,7 +344,7 @@ public class LogWriter
 	
 	public void setFilter(String filter)
 	{
-		this.filter=filter;
+        this.filter=filter;
 	}
 	
 	public String getFilter()

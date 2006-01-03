@@ -224,7 +224,6 @@ public class Chef
 		
 		if (!Props.isInitialized()) 
 		{
-			System.out.println("Load properties for Chef...");
 			Props.init(disp, Props.TYPE_PROPERTIES_CHEF);
 		}
 		props=Props.getInstance();
@@ -2523,6 +2522,7 @@ public class Chef
 	public void loadSettings()
 	{
 		log.setLogLevel(props.getLogLevel());
+        log.setFilter(props.getLogFilter());
         
 		jobMeta.setMaxUndo(props.getMaxUndo());
 	}

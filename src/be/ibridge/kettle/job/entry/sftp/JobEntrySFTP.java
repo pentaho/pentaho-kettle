@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
@@ -44,8 +43,6 @@ import be.ibridge.kettle.repository.Repository;
 
 public class JobEntrySFTP extends JobEntryBase implements JobEntryInterface
 {
-	private static Logger log4j = Logger.getLogger(JobEntrySFTP.class);
-	
 	private String serverName;
 	private int 	serverPort;
 	private String userName;
@@ -282,9 +279,7 @@ public class JobEntrySFTP extends JobEntryBase implements JobEntryInterface
 	{
 		LogWriter log = LogWriter.getInstance();
 
-        log4j.info("Started SFTP job to "+serverName);
-        
-		Result result = new Result(nr);
+        Result result = new Result(nr);
 		result.setResult( false );
 		long filesRetrieved = 0;
 
