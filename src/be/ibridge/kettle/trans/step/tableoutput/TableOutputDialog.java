@@ -325,7 +325,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
             {
                 public void widgetSelected(SelectionEvent arg0)
                 {
-                    if (wNameInField.getSelection()) wNameInField.setSelection(false);
+                    if (wUsePart.getSelection()) wNameInField.setSelection(false);
                     setFlags();
                 }
             }
@@ -430,9 +430,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         wNameInField.addSelectionListener(
             new SelectionAdapter()
             {
-                public void widgetSelected(SelectionEvent arg0)
+                public void widgetSelected(SelectionEvent se)
                 {
-                    if (wUsePart.getSelection()) wUsePart.setSelection(false);
+                    if (wNameInField.getSelection()) wUsePart.setSelection(false);
                     setFlags();
                 }
             }
@@ -573,12 +573,13 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	
     public void setFlags()
     {
-        boolean useIgnore          = !wBatch.getSelection();
+        // Can't ignore errors when using batch inserts.
+        boolean useIgnore          = !wBatch.getSelection(); 
+        
         boolean useTruncate        = !( wUsePart.getSelection() || wNameInField.getSelection() );
         boolean useTablename       = !( wNameInField.getSelection() );
-        boolean usePartitioning    = wUsePart.getSelection() && !wNameInTable.getSelection();
+        boolean usePartitioning    = wUsePart.getSelection();
         boolean isTableNameInField = wNameInField.getSelection();
-
         
         wIgnore.setEnabled( useIgnore );
         wlIgnore.setEnabled( useIgnore );
@@ -612,11 +613,11 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		if (input.getTablename()      != null) wTable.setText(input.getTablename());
 		if (input.getDatabase() != null) wConnection.setText(input.getDatabase().getName());
 		
-		wNameInField.setSelection(input.truncateTable());
-		wIgnore.setSelection(input.ignoreErrors());
+        wTruncate.setSelection( input.truncateTable() );
+        wIgnore.setSelection(input.ignoreErrors());
 		wBatch.setSelection(input.useBatchUpdate());
 
-		wCommit.setText(""+(int)input.getCommitSize());
+        wCommit.setText(""+(int)input.getCommitSize());
 
         wUsePart.setSelection(input.isPartitioningEnabled());
         wPartDaily.setSelection(input.isPartitioningDaily());
