@@ -65,11 +65,48 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 	private Label        wlURL;
 	private Text         wURL;
 	private FormData     fdlURL, fdURL;
-	
+
+    private Label        wlRunEveryRow;
+    private Button       wRunEveryRow;
+    private FormData     fdlRunEveryRow, fdRunEveryRow;
+
+    private Label        wlFieldURL;
+    private Text         wFieldURL;
+    private FormData     fdlFieldURL, fdFieldURL;
+    
 	private Label        wlTargetFile;
 	private Text         wTargetFile;
 	private FormData     fdlTargetFile, fdTargetFile;
-		
+
+    private Label        wlAppend;
+    private Button       wAppend;
+    private FormData     fdlAppend, fdAppend;
+
+    
+    
+    private Label        wlUserName;
+    private Text         wUserName;
+    private FormData     fdlUserName, fdUserName;
+    
+    private Label        wlPassword;
+    private Text         wPassword;
+    private FormData     fdlPassword, fdPassword;
+
+    
+    
+    private Label        wlProxyServer;
+    private Text         wProxyServer;
+    private FormData     fdlProxyServer, fdProxyServer;
+
+    private Label        wlProxyPort;
+    private Text         wProxyPort;
+    private FormData     fdlProxyPort, fdProxyPort;
+    
+    private Label        wlNonProxyHosts;
+    private Text         wNonProxyHosts;
+    private FormData     fdlNonProxyHosts, fdNonProxyHosts;
+    
+    
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
@@ -153,13 +190,57 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 		fdURL.right= new FormAttachment(100, 0);
 		wURL.setLayoutData(fdURL);
 
+        // RunEveryRow line
+        wlRunEveryRow=new Label(shell, SWT.RIGHT);
+        wlRunEveryRow.setText("Run for every result row? ");
+        props.setLook(wlRunEveryRow);
+        fdlRunEveryRow=new FormData();
+        fdlRunEveryRow.left = new FormAttachment(0, 0);
+        fdlRunEveryRow.top  = new FormAttachment(wURL, margin);
+        fdlRunEveryRow.right= new FormAttachment(middle, -margin);
+        wlRunEveryRow.setLayoutData(fdlRunEveryRow);
+        wRunEveryRow=new Button(shell, SWT.CHECK);
+        props.setLook(wRunEveryRow);
+        fdRunEveryRow=new FormData();
+        fdRunEveryRow.left = new FormAttachment(middle, 0);
+        fdRunEveryRow.top  = new FormAttachment(wURL, margin);
+        fdRunEveryRow.right= new FormAttachment(100, 0);
+        wRunEveryRow.setLayoutData(fdRunEveryRow);
+        wRunEveryRow.addSelectionListener(new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent e)
+                {
+                    setFlags();
+                }
+            }
+        );
+
+        
+        // FieldURL line
+        wlFieldURL=new Label(shell, SWT.RIGHT);
+        wlFieldURL.setText("Fieldname to get URL from");
+        props.setLook(wlFieldURL);
+        fdlFieldURL=new FormData();
+        fdlFieldURL.left = new FormAttachment(0, 0);
+        fdlFieldURL.top  = new FormAttachment(wRunEveryRow, margin);
+        fdlFieldURL.right= new FormAttachment(middle, -margin);
+        wlFieldURL.setLayoutData(fdlFieldURL);
+        wFieldURL=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wFieldURL);
+        wFieldURL.addModifyListener(lsMod);
+        fdFieldURL=new FormData();
+        fdFieldURL.left = new FormAttachment(middle, 0);
+        fdFieldURL.top  = new FormAttachment(wRunEveryRow, margin);
+        fdFieldURL.right= new FormAttachment(100, 0);
+        wFieldURL.setLayoutData(fdFieldURL);
+
 		// TargetFile line
 		wlTargetFile=new Label(shell, SWT.RIGHT);
 		wlTargetFile.setText("Target filename");
  		props.setLook(wlTargetFile);
 		fdlTargetFile=new FormData();
 		fdlTargetFile.left = new FormAttachment(0, 0);
-		fdlTargetFile.top  = new FormAttachment(wURL, margin);
+		fdlTargetFile.top  = new FormAttachment(wFieldURL, margin);
 		fdlTargetFile.right= new FormAttachment(middle, -margin);
 		wlTargetFile.setLayoutData(fdlTargetFile);
 		wTargetFile=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -167,16 +248,126 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 		wTargetFile.addModifyListener(lsMod);
 		fdTargetFile=new FormData();
 		fdTargetFile.left = new FormAttachment(middle, 0);
-		fdTargetFile.top  = new FormAttachment(wURL, margin);
+		fdTargetFile.top  = new FormAttachment(wFieldURL, margin);
 		fdTargetFile.right= new FormAttachment(100, 0);
 		wTargetFile.setLayoutData(fdTargetFile);
 
+        // Append line
+        wlAppend=new Label(shell, SWT.RIGHT);
+        wlAppend.setText("Append to specified target file? ");
+        props.setLook(wlAppend);
+        fdlAppend=new FormData();
+        fdlAppend.left = new FormAttachment(0, 0);
+        fdlAppend.top  = new FormAttachment(wTargetFile, margin);
+        fdlAppend.right= new FormAttachment(middle, -margin);
+        wlAppend.setLayoutData(fdlAppend);
+        wAppend=new Button(shell, SWT.CHECK);
+        props.setLook(wAppend);
+        fdAppend=new FormData();
+        fdAppend.left = new FormAttachment(middle, 0);
+        fdAppend.top  = new FormAttachment(wTargetFile, margin);
+        fdAppend.right= new FormAttachment(100, 0);
+        wAppend.setLayoutData(fdAppend);
+
+        
+        // UserName line
+        wlUserName=new Label(shell, SWT.RIGHT);
+        wlUserName.setText("Username");
+        props.setLook(wlUserName);
+        fdlUserName=new FormData();
+        fdlUserName.left = new FormAttachment(0, 0);
+        fdlUserName.top  = new FormAttachment(wAppend, margin*5);
+        fdlUserName.right= new FormAttachment(middle, -margin);
+        wlUserName.setLayoutData(fdlUserName);
+        wUserName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wUserName);
+        wUserName.addModifyListener(lsMod);
+        fdUserName=new FormData();
+        fdUserName.left = new FormAttachment(middle, 0);
+        fdUserName.top  = new FormAttachment(wAppend, margin*5);
+        fdUserName.right= new FormAttachment(100, 0);
+        wUserName.setLayoutData(fdUserName);
+
+        // Password line
+        wlPassword=new Label(shell, SWT.RIGHT);
+        wlPassword.setText("Password");
+        props.setLook(wlPassword);
+        fdlPassword=new FormData();
+        fdlPassword.left = new FormAttachment(0, 0);
+        fdlPassword.top  = new FormAttachment(wUserName, margin);
+        fdlPassword.right= new FormAttachment(middle, -margin);
+        wlPassword.setLayoutData(fdlPassword);
+        wPassword=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wPassword);
+        wPassword.setEchoChar('*');
+        wPassword.addModifyListener(lsMod);
+        fdPassword=new FormData();
+        fdPassword.left = new FormAttachment(middle, 0);
+        fdPassword.top  = new FormAttachment(wUserName, margin);
+        fdPassword.right= new FormAttachment(100, 0);
+        wPassword.setLayoutData(fdPassword);
+
+        
+        // ProxyServer line
+        wlProxyServer=new Label(shell, SWT.RIGHT);
+        wlProxyServer.setText("Proxy hostname");
+        props.setLook(wlProxyServer);
+        fdlProxyServer=new FormData();
+        fdlProxyServer.left = new FormAttachment(0, 0);
+        fdlProxyServer.top  = new FormAttachment(wPassword, margin*5);
+        fdlProxyServer.right= new FormAttachment(middle, -margin);
+        wlProxyServer.setLayoutData(fdlProxyServer);
+        wProxyServer=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wProxyServer);
+        wProxyServer.addModifyListener(lsMod);
+        fdProxyServer=new FormData();
+        fdProxyServer.left = new FormAttachment(middle, 0);
+        fdProxyServer.top  = new FormAttachment(wPassword, margin*5);
+        fdProxyServer.right= new FormAttachment(100, 0);
+        wProxyServer.setLayoutData(fdProxyServer);
+        
+        // ProxyPort line
+        wlProxyPort=new Label(shell, SWT.RIGHT);
+        wlProxyPort.setText("Proxy port (usually 8080)");
+        props.setLook(wlProxyPort);
+        fdlProxyPort=new FormData();
+        fdlProxyPort.left = new FormAttachment(0, 0);
+        fdlProxyPort.top  = new FormAttachment(wProxyServer, margin);
+        fdlProxyPort.right= new FormAttachment(middle, -margin);
+        wlProxyPort.setLayoutData(fdlProxyPort);
+        wProxyPort=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wProxyPort);
+        wProxyPort.addModifyListener(lsMod);
+        fdProxyPort=new FormData();
+        fdProxyPort.left = new FormAttachment(middle, 0);
+        fdProxyPort.top  = new FormAttachment(wProxyServer, margin);
+        fdProxyPort.right= new FormAttachment(100, 0);
+        wProxyPort.setLayoutData(fdProxyPort);
+
+        // IgnoreHosts line
+        wlNonProxyHosts=new Label(shell, SWT.RIGHT);
+        wlNonProxyHosts.setText("Ignore proxy for hosts: regexp | separated");
+        props.setLook(wlNonProxyHosts);
+        fdlNonProxyHosts=new FormData();
+        fdlNonProxyHosts.left = new FormAttachment(0, 0);
+        fdlNonProxyHosts.top  = new FormAttachment(wProxyPort, margin);
+        fdlNonProxyHosts.right= new FormAttachment(middle, -margin);
+        wlNonProxyHosts.setLayoutData(fdlNonProxyHosts);
+        wNonProxyHosts=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wNonProxyHosts);
+        wNonProxyHosts.addModifyListener(lsMod);
+        fdNonProxyHosts=new FormData();
+        fdNonProxyHosts.left = new FormAttachment(middle, 0);
+        fdNonProxyHosts.top  = new FormAttachment(wProxyPort, margin);
+        fdNonProxyHosts.right= new FormAttachment(100, 0);
+        wNonProxyHosts.setLayoutData(fdNonProxyHosts);
+        
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(" &OK ");
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(" &Cancel ");
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTargetFile);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -207,7 +398,15 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 		return jobentry;
 	}
 
-	public void dispose()
+	private void setFlags()
+    {
+        wlURL.setEnabled(!wRunEveryRow.getSelection());
+        wURL.setEnabled(!wRunEveryRow.getSelection());
+        wlFieldURL.setEnabled(wRunEveryRow.getSelection());
+        wFieldURL.setEnabled(wRunEveryRow.getSelection());
+    }
+
+    public void dispose()
 	{
 		WindowProperty winprop = new WindowProperty(shell);
 		props.setScreen(winprop);
@@ -223,7 +422,19 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 		wName.selectAll();
 
 		wURL.setText(Const.NVL(jobentry.getUrl(), ""));
+        wRunEveryRow.setSelection( jobentry.isRunForEveryRow() );
+        wFieldURL.setText(Const.NVL(jobentry.getUrlFieldname(), "") );
 		wTargetFile.setText(Const.NVL(jobentry.getTargetFilename(), ""));
+        wAppend.setSelection( jobentry.isFileAppended() );
+        
+        wUserName.setText(Const.NVL(jobentry.getUsername(), ""));
+        wPassword.setText(Const.NVL(jobentry.getPassword(), ""));
+        
+        wProxyServer.setText(Const.NVL(jobentry.getProxyHostname(), ""));
+        wProxyPort.setText(""+jobentry.getProxyPort());
+        wNonProxyHosts.setText(Const.NVL(jobentry.getNonProxyHosts(), ""));
+        
+        setFlags();
 	}
 	
 	private void cancel()
@@ -235,10 +446,20 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 	
 	private void ok()
 	{
-		jobentry.setName(wName.getText());
-		jobentry.setUrl(wURL.getText());
-		jobentry.setTargetFilename(wTargetFile.getText());
-
+		jobentry.setName( wName.getText() );
+		jobentry.setUrl( wURL.getText() );
+        jobentry.setRunForEveryRow( wRunEveryRow.getSelection() );
+        jobentry.setUrlFieldname( wFieldURL.getText() );
+		jobentry.setTargetFilename( wTargetFile.getText() );
+        jobentry.setFileAppended( wAppend.getSelection() );
+        
+		jobentry.setUsername( wUserName.getText() );
+        jobentry.setPassword( wPassword.getText() );
+        
+        jobentry.setProxyHostname( wProxyServer.getText() );
+        jobentry.setProxyPort( Const.toInt(wProxyPort.getText(), 0) );
+        jobentry.setNonProxyHosts( wNonProxyHosts.getText() );
+        
 		dispose();
 	}
 

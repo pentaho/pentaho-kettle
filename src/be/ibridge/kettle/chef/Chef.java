@@ -180,7 +180,7 @@ public class Chef
 	private SelectionAdapter lsEditDef, lsNewDef, lsEditSel;
 
 	public static final String STRING_CONNECTIONS       = "Connections";
-    public static final String STRING_JOBENTRIES   = "Job-entries";
+    public static final String STRING_JOBENTRIES        = "Job-entries";
     public static final String STRING_BASE_JOBENTRIES   = "Base job-entry types";
     public static final String STRING_PLUGIN_JOBENTRIES = "Plugin job-entry types";
     
