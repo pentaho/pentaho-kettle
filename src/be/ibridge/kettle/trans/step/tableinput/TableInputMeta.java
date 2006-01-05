@@ -62,14 +62,33 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	/** The step to lookup from */
 	private StepMeta lookupFromStep;    
 	
+    /** Should I execute once per row? */
+    private boolean executeEachInputRow;
+    
 	public TableInputMeta()
 	{
 		super();
 	}
 	
+    /**
+     * @return Returns true if the step should be run per row
+     */
+    public boolean isExecuteEachInputRow()
+    {
+        return executeEachInputRow;
+    }
+
+    /**
+     * @param oncePerRow true if the step should be run per row
+     */
+    public void setExecuteEachInputRow(boolean oncePerRow)
+    {
+        this.executeEachInputRow = oncePerRow;
+    }
+
 	/**
-	 * @return Returns the database.
-	 */
+     * @return Returns the database.
+     */
 	public DatabaseMeta getDatabaseMeta()
 	{
 		return databaseMeta;
@@ -149,6 +168,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			String limit;
+            String perRow;
 		
 			String con            = XMLHandler.getTagValue(stepnode, "connection");
 			databaseMeta          = Const.findDatabase(databases, con);
@@ -156,6 +176,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			limit                 = XMLHandler.getTagValue(stepnode, "limit");
 			rowLimit              = Const.toInt(limit, 0);
 			lookupFromStepname    = XMLHandler.getTagValue(stepnode, "lookup");
+            perRow                = XMLHandler.getTagValue(stepnode, "execute_each_row");
+            executeEachInputRow   = "Y".equals(perRow);
 		}
 		catch(Exception e)
 		{
@@ -252,6 +274,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		xml+="    "+XMLHandler.addTagValue("sql",        sql);
 		xml+="    "+XMLHandler.addTagValue("limit",      rowLimit);
 		xml+="    "+XMLHandler.addTagValue("lookup",     getLookupStepname());
+        xml+="    "+XMLHandler.addTagValue("execute_each_row",   executeEachInputRow);
 
 		return xml;
 	}
@@ -267,6 +290,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			sql                   =      rep.getStepAttributeString (id_step, "sql");
 			rowLimit              = (int)rep.getStepAttributeInteger(id_step, "limit");
 			lookupFromStepname    =      rep.getStepAttributeString (id_step, "lookup"); 
+            executeEachInputRow   =      rep.getStepAttributeBoolean(id_step, "execute_each_row");
 		}
 		catch(Exception e)
 		{
@@ -279,10 +303,11 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "id_connection",   databaseMeta==null?-1:databaseMeta.getID());
-			rep.saveStepAttribute(id_transformation, id_step, "sql",             sql);
-			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
-			rep.saveStepAttribute(id_transformation, id_step, "lookup",          getLookupStepname());
+			rep.saveStepAttribute(id_transformation, id_step, "id_connection",    databaseMeta==null?-1:databaseMeta.getID());
+			rep.saveStepAttribute(id_transformation, id_step, "sql",              sql);
+			rep.saveStepAttribute(id_transformation, id_step, "limit",            rowLimit);
+			rep.saveStepAttribute(id_transformation, id_step, "lookup",           getLookupStepname());
+            rep.saveStepAttribute(id_transformation, id_step, "execute_each_row", executeEachInputRow);
 			
 			// Also, save the step-database relationship!
 			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());

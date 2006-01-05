@@ -33,7 +33,6 @@ public class TableInputData extends BaseStepData implements StepDataInterface
 	public Row 		nextrow;
 	public Row 		thisrow;
 	public Database db;
-	public Row 		parameters;
 	public ResultSet rs;
 	public String   lookupStep;
 	
@@ -44,7 +43,6 @@ public class TableInputData extends BaseStepData implements StepDataInterface
 		db         = null;
 		thisrow    = null;
 		nextrow    = null;
-		parameters = null;
 		rs         = null;
 		lookupStep = null;
 	}

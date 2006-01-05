@@ -66,10 +66,15 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 	private Label        wlDatefrom;
 	private CCombo       wDatefrom;
 	private FormData     fdlDatefrom, fdDatefrom;
+    private Listener     lsDateform;
 
 	private Label        wlLimit;
 	private Text         wLimit;
 	private FormData     fdlLimit, fdLimit;
+    
+    private Label        wlEachRow;
+    private Button       wEachRow;
+    private FormData     fdlEachRow, fdEachRow; 
 	
 	private Button wbTable;
 	private FormData fdbTable;
@@ -186,6 +191,23 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdDatefrom.right= new FormAttachment(100, 0);
 		wDatefrom.setLayoutData(fdDatefrom);
 
+        // Execute for each row?
+        wlEachRow = new Label(shell, SWT.RIGHT);
+        wlEachRow.setText("Execute for each row? ");
+        props.setLook(wlEachRow);
+        fdlEachRow = new FormData();
+        fdlEachRow.left = new FormAttachment(0, 0);
+        fdlEachRow.right = new FormAttachment(middle, -margin);
+        fdlEachRow.top = new FormAttachment(wDatefrom, margin);
+        wlEachRow.setLayoutData(fdlEachRow);
+        wEachRow = new Button(shell, SWT.CHECK);
+        props.setLook(wEachRow);
+        fdEachRow = new FormData();
+        fdEachRow.left = new FormAttachment(middle, 0);
+        fdEachRow.top = new FormAttachment(wDatefrom, margin);
+        fdEachRow.right = new FormAttachment(100, 0);
+        wEachRow.setLayoutData(fdEachRow);
+
 		// Limit input ...
 		wlLimit=new Label(shell, SWT.RIGHT);
 		wlLimit.setText("Limit size ");
@@ -193,14 +215,14 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
 		fdlLimit.right= new FormAttachment(middle, -margin);
-		fdlLimit.top  = new FormAttachment(wDatefrom, margin);
+		fdlLimit.top  = new FormAttachment(wEachRow, margin);
 		wlLimit.setLayoutData(fdlLimit);
 		wLimit=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wLimit);
 		wLimit.addModifyListener(lsMod);
 		fdLimit=new FormData();
 		fdLimit.left = new FormAttachment(middle, 0);
-		fdLimit.top  = new FormAttachment(wDatefrom, margin);
+		fdLimit.top  = new FormAttachment(wEachRow, margin);
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 
@@ -216,10 +238,14 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		lsbTable   = new Listener() { public void handleEvent(Event e) { getSQL(); } };
-		
-		wCancel.addListener(SWT.Selection, lsCancel);
-		wOK.addListener    (SWT.Selection, lsOK    );
-		wbTable.addListener(SWT.Selection, lsbTable);
+        lsDateform = new Listener() { public void handleEvent(Event e) { updateEachRowCheckbox(); } };
+        
+		wCancel.addListener  (SWT.Selection, lsCancel);
+		wOK.addListener      (SWT.Selection, lsOK    );
+		wbTable.addListener  (SWT.Selection, lsbTable);
+        wDatefrom.addListener(SWT.Selection, lsDateform);
+        wDatefrom.addListener(SWT.FocusOut,  lsDateform);
+
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
@@ -252,8 +278,18 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		if (input.getSQL() != null) wSQL.setText(input.getSQL());
 		if (input.getDatabaseMeta() != null) wConnection.setText(input.getDatabaseMeta().getName());
 		wLimit.setText(""+(int)input.getRowLimit());
-		if (input.getLookupStepname() != null) wDatefrom.setText(input.getLookupStepname());
-
+		
+        if (input.getLookupStepname() != null)
+        {
+            wDatefrom.setText(input.getLookupStepname());
+            wEachRow.setSelection(input.isExecuteEachInputRow());
+        }
+        else
+        {
+            wEachRow.setEnabled(false);
+            wlEachRow.setEnabled(false);
+        }
+               
 		wStepname.selectAll();
 	}
 	
@@ -272,7 +308,8 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		input.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
 		input.setRowLimit( Const.toInt(wLimit.getText(), 0) );
 		input.setLookupFromStep( transMeta.findStep( wDatefrom.getText() ) );
-		
+        input.setExecuteEachInputRow(wEachRow.getSelection());
+        
 		if (input.getDatabaseMeta()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
@@ -355,5 +392,19 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 					
 	}
 	
+    private void updateEachRowCheckbox()
+    {
+        if (wDatefrom.getText() != null && wDatefrom.getText().length() > 0)
+        {
+            wEachRow.setEnabled(true);
+            wlEachRow.setEnabled(true);
+        }
+        else
+        {
+            wEachRow.setEnabled(false);
+            wEachRow.setSelection(false);
+            wlEachRow.setEnabled(false);
+        }
+    }
 
 }

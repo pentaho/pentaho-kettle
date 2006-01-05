@@ -47,81 +47,138 @@ public class TableInput extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private synchronized boolean readStartDate()
-	{
-		logDetailed("Reading from step ["+meta.getLookupStepname()+"]");
-		
-		data.parameters=new Row();
-		
-		Row r=getRowFrom(meta.getLookupStepname()); // rows are originating from "lookup_from"
-		
-		while (r!=null) // Extra values are all parameters!
-		{
-			for (int i=0;i<r.size();i++) // take all values from input row
-			{
-				Value val = r.getValue(i);
-				data.parameters.addValue(val);
-			}
-			r=getRowFrom(meta.getLookupStepname()); // take all input rows if needed!
-		}
-		return true;
-	}	
+	private synchronized Row readStartDate()
+    {
+        logDetailed("Reading from step [" + meta.getLookupStepname() + "]");
+
+        Row parameters = new Row();
+
+        Row r = getRowFrom(meta.getLookupStepname()); // rows are originating from "lookup_from"
+
+        for (int i = 0; i < r.size(); i++) // take all values from input row
+        {
+            Value val = r.getValue(i);
+
+            parameters.addValue(val);
+        }
+        r = getRowFrom(meta.getLookupStepname()); // take all input rows if needed!
+        
+        return parameters;
+    }	
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		if (first) // we just got started
 		{
+            Row parameters;
 			first=false;
+            
+			// Make sure we read data from source steps...
+            if (meta.getInfoSteps() != null)
+            {
+                if (meta.isExecuteEachInputRow())
+                {
+                    logDetailed("Reading single row from stream [" + meta.getLookupStepname() + "]");
+                    parameters = getRowFrom(meta.getLookupStepname());
+                    logDetailed("Query parameters found = " + parameters.toString());
+                }
+                else
+                {
+                    logDetailed("Reading query parameters from stream [" + meta.getLookupStepname() + "]");
+                    parameters = readStartDate(); // Read values in lookup table (look)
+                    logDetailed("Query parameters found = " + parameters.toString());
+                }
+            }
+            else
+            {
+                parameters = new Row();
+			}
+            
+            boolean success = doQuery(parameters);
+            if (!success) 
+            { 
+                return false; 
+            }
+		}
+        else
+        {
+            if (data.thisrow!=null) // We can expect more rows
+            {
+                data.nextrow=data.db.getRow(data.rs); 
+                if (data.nextrow!=null) linesInput++;
+            }
+        }
 
-			// Make sure we read data from source steps... 
-			if (meta.getInfoSteps() != null )
-			{
-				logDetailed("Reading query parameters from stream ["+meta.getLookupStepname()+"]");
-				readStartDate(); // Read values in lookup table (look)
-				logDetailed("Query parameters found = "+data.parameters.toString());
-			}
-		    
-			// Open the query with the optional parameters received from the source steps.
-			data.rs=data.db.openQuery(meta.getSQL(), data.parameters);
-			if (data.rs==null)
-			{
-				logError("Couldn't open Query ["+meta.getSQL()+"]");
-				setErrors(1);
-				stopAll();
-				return false;
-			}
-			
-			// Get the first row...
-			data.thisrow=data.db.getRow(data.rs);
-			if (data.thisrow!=null) 
-			{ 
-				linesInput++; 
-				data.nextrow=data.db.getRow(data.rs); 
-				if (data.nextrow!=null) linesInput++;
-			}
-		}
-		else
-		{
-		    if (data.thisrow!=null)
-		    {
-		        data.nextrow=data.db.getRow(data.rs); 
-		        if (data.nextrow!=null) linesInput++;
-		    }
-		}
+    	if (data.thisrow == null) // Finished reading?
+        {
+            boolean done = false;
+            if (meta.isExecuteEachInputRow()) // Try to get another row from the input stream
+            {
+                Row nextRow = getRowFrom(meta.getLookupStepname());
+                if (nextRow == null) // Nothing more to get!
+                {
+                    done = true;
+                }
+                else
+                {
+                    boolean success = doQuery(nextRow); // OK, perform a new query
+                    if (!success) 
+                    { 
+                        return false; 
+                    }
+                }
+            }
+            else
+            {
+                done = true;
+            }
+
+            if (done)
+            {
+                setOutputDone(); // signal end to receiver(s)
+                return false; // end of data or error.
+            }
+        }
+
+        if (data.thisrow != null)
+        {
+            putRow(data.thisrow); // fill the rowset(s). (wait for empty)
+            data.thisrow = data.nextrow;
+
+            if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic("linenr " + linesInput);
+        }
 		
-		if (data.thisrow==null) 
-		{
-			setOutputDone();  // signal end to receiver(s)
-			return false; // end of data or error.
-		}
-				
-		putRow(data.thisrow);        // fill the rowset(s). (wait for empty)
-		data.thisrow=data.nextrow;
-
-		if ((linesInput>0) && (linesInput%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesInput);
-
 		return true;
 	}
+    
+    private boolean doQuery(Row parameters) throws KettleDatabaseException
+    {
+        boolean success = true;
+
+        // Open the query with the optional parameters received from the source steps.
+        data.rs = data.db.openQuery(meta.getSQL(), parameters);
+        if (data.rs == null)
+        {
+            logError("Couldn't open Query [" + meta.getSQL() + "]");
+            setErrors(1);
+            stopAll();
+            success = false;
+        }
+        else
+        {
+
+            // Get the first row...
+            data.thisrow = data.db.getRow(data.rs);
+            if (data.thisrow != null)
+            {
+                linesInput++;
+                data.nextrow = data.db.getRow(data.rs);
+                if (data.nextrow != null) linesInput++;
+            }
+        }
+        return success;
+    }
+
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
