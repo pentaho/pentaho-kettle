@@ -74,7 +74,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 		}
 		else
 		{
-			return "jdbc:hsqldb:hsql://"+getHostname()+":"+getDatabasePortNumber();
+			return "jdbc:hsqldb:hsql://"+getHostname()+":"+getDatabasePortNumber()+"/"+getDatabaseName();
 		}
 	}
 
