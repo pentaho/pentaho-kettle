@@ -827,7 +827,7 @@ public class SpoonLog extends Composite
 	
 	public String toString()
 	{
-		return this.getClass().getName();
+		return Spoon.APP_NAME;
 	}
 
     /**
