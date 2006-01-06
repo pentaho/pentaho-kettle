@@ -197,6 +197,7 @@ public class GUIResource
     {
         imagesSteps      = new Hashtable();
         imagesStepsSmall = new Hashtable();
+        LogWriter log = LogWriter.getInstance();
 
         ////
         //// STEP IMAGES TO LOAD
@@ -210,11 +211,39 @@ public class GUIResource
 
             if (steps[i].isNative())
             {
-                image = new Image(display, getClass().getResourceAsStream(steps[i].getIconFilename()));
-            } else
+                String filename = steps[i].getIconFilename();
+                try
+                {
+                    image = new Image(display, getClass().getResourceAsStream(filename));
+                }
+                catch(Exception e)
+                {
+                    log.logError("Kettle", "Unable to find required image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
+                    image = new Image(display, Const.ICON_SIZE, Const.ICON_SIZE);
+                    GC gc = new GC(image);
+                    gc.drawRectangle(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
+                    gc.drawLine(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
+                    gc.drawLine(Const.ICON_SIZE, 0, 0, Const.ICON_SIZE);
+                    gc.dispose();
+                }
+            } 
+            else
             {
                 String filename = steps[i].getIconFilename();
-                image = new Image(display, filename);
+                try
+                {
+                    image = new Image(display, filename);
+                }
+                catch(Exception e)
+                {
+                    log.logError("Kettle", "Unable to find required image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
+                    image = new Image(display, Const.ICON_SIZE, Const.ICON_SIZE);
+                    GC gc = new GC(image);
+                    gc.drawRectangle(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
+                    gc.drawLine(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
+                    gc.drawLine(Const.ICON_SIZE, 0, 0, Const.ICON_SIZE);
+                    gc.dispose();
+                }
             }
 
             // Calculate the smaller version of the image @ 16x16...
