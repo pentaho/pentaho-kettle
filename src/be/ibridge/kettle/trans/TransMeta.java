@@ -70,12 +70,8 @@ public class TransMeta implements XMLInterface
 
     private ArrayList           dependencies;
 
-    private Hashtable           variables;                                                                             // Contains
-                                                                                                                        // variables
-                                                                                                                        // set
-                                                                                                                        // for
-                                                                                                                        // the
-                                                                                                                        // transformation
+    /**  variables set for the transformation */
+    private Hashtable           variables;
 
     private RepositoryDirectory directory;
 
@@ -141,6 +137,10 @@ public class TransMeta implements XMLInterface
     private String              createdUser, modifiedUser;
 
     private Value               createdDate, modifiedDate;
+
+    private int                 sleepTimeEmpty;
+
+    private int                 sleepTimeFull;
 
     // //////////////////////////////////////////////////////////////////////////
 
@@ -218,7 +218,10 @@ public class TransMeta implements XMLInterface
         updateStep = null;
         logTable = null;
         logConnection = null;
-        sizeRowset = Const.ROWS_IN_ROWSET;
+        
+        sizeRowset     = Const.ROWS_IN_ROWSET;
+        sleepTimeEmpty = Const.SLEEP_EMPTY_NANOS;
+        sleepTimeFull  = Const.SLEEP_FULL_NANOS;
 
         maxDateConnection = null;
         maxDateTable = null;
@@ -1913,6 +1916,8 @@ public class TransMeta implements XMLInterface
         xml += "      " + XMLHandler.addTagValue("maxdiff", maxDateDifference);
         xml += "      </maxdate>" + Const.CR;
         xml += "    " + XMLHandler.addTagValue("size_rowset", sizeRowset);
+        xml += "    " + XMLHandler.addTagValue("sleep_time_empty", sleepTimeEmpty);
+        xml += "    " + XMLHandler.addTagValue("sleep_time_full", sleepTimeFull);
 
         xml += "    <dependencies>" + Const.CR;
         for (int i = 0; i < nrDependencies(); i++)
@@ -2131,6 +2136,8 @@ public class TransMeta implements XMLInterface
 
             String srowset = XMLHandler.getTagValue(infonode, "size_rowset");
             sizeRowset = Const.toInt(srowset, Const.ROWS_IN_ROWSET);
+            sleepTimeEmpty = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_empty"), Const.SLEEP_EMPTY_NANOS);
+            sleepTimeFull  = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_full"), Const.SLEEP_FULL_NANOS);
 
             log.logDebug(toString(), "nr of steps read : " + nrSteps());
             log.logDebug(toString(), "nr of hops  read : " + nrTransHops());
@@ -4008,5 +4015,37 @@ public class TransMeta implements XMLInterface
             if (getStep(i).getStepID().equalsIgnoreCase("MappingOutput")) { return getStep(i); }
         }
         return null;
+    }
+
+    /**
+     * @return Sleep time waiting when buffer is empty, in nano-seconds
+     */
+    public int getSleepTimeEmpty()
+    {
+        return Const.SLEEP_EMPTY_NANOS;
+    }
+    
+    /**
+     * @return Sleep time waiting when buffer is full, in nano-seconds
+     */
+    public int getSleepTimeFull()
+    {
+        return Const.SLEEP_FULL_NANOS;
+    }
+
+    /**
+     * @param sleepTimeEmpty The sleepTimeEmpty to set.
+     */
+    public void setSleepTimeEmpty(int sleepTimeEmpty)
+    {
+        this.sleepTimeEmpty = sleepTimeEmpty;
+    }
+
+    /**
+     * @param sleepTimeFull The sleepTimeFull to set.
+     */
+    public void setSleepTimeFull(int sleepTimeFull)
+    {
+        this.sleepTimeFull = sleepTimeFull;
     }
 }
