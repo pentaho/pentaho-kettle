@@ -24,6 +24,7 @@ package be.ibridge.kettle.trans.step.xmlinput;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.regex.Pattern;
 
@@ -579,6 +580,9 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 		}
         
+        // Sort the list: quicksort
+        Collections.sort(filelist);
+
 		// OK, return the list in filelist...
 		files = (String[])filelist.toArray(new String[filelist.size()]);
 
