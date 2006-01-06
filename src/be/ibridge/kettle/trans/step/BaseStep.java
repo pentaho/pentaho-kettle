@@ -39,6 +39,7 @@ import be.ibridge.kettle.trans.step.addsequence.AddSequenceMeta;
 import be.ibridge.kettle.trans.step.aggregaterows.AggregateRowsMeta;
 import be.ibridge.kettle.trans.step.calculator.CalculatorMeta;
 import be.ibridge.kettle.trans.step.combinationlookup.CombinationLookupMeta;
+import be.ibridge.kettle.trans.step.constant.ConstantMeta;
 import be.ibridge.kettle.trans.step.cubeinput.CubeInputMeta;
 import be.ibridge.kettle.trans.step.cubeoutput.CubeOutputMeta;
 import be.ibridge.kettle.trans.step.databasejoin.DatabaseJoinMeta;
@@ -121,7 +122,8 @@ public class BaseStep extends Thread
             MappingInputMeta.class,
             MappingOutputMeta.class,
             XMLInputMeta.class,
-            MergeRowsMeta.class
+            MergeRowsMeta.class,
+            ConstantMeta.class
 		};
 	
 	public static final String type_desc[] = 
@@ -166,7 +168,8 @@ public class BaseStep extends Thread
             "MappingInput",
             "MappingOutput",
             "XMLInput",
-            "MergeRows"
+            "MergeRows",
+            "Constant"
 		};
 
 	public static final String type_long_desc[] = 
@@ -211,7 +214,8 @@ public class BaseStep extends Thread
             "Mapping input specification",
             "Mapping output specification",
             "XML Input",
-            "Merge Rows"
+            "Merge Rows",
+            "Add constants"
 		};
 
 	public static final String type_tooltip_desc[] = 
@@ -256,7 +260,8 @@ public class BaseStep extends Thread
             "Specify the input interface of a mapping",
             "Specify the output interface of a mapping",
             "Read data from an XML file",
-            "Merge two streams of rows, sorted on a certain key.  The two streams are compared and the equals, changed, deleted and new rows are flagged."
+            "Merge two streams of rows, sorted on a certain key.  The two streams are compared and the equals, changed, deleted and new rows are flagged.",
+            "Add one or more constants to the input rows"
 		};
 
 	public static final String image_filename[] =
@@ -301,7 +306,8 @@ public class BaseStep extends Thread
             "MPI.png",
             "MPO.png",
             "XIN.png",
-            "MRG.png"
+            "MRG.png",
+            "CST.png"
 		};
 	
 	public static final String category[] = 
@@ -346,7 +352,8 @@ public class BaseStep extends Thread
             "Mapping",          // "MappingInput"
             "Mapping",          // "MappingOutput"
             "Experimental",     // "XMLInput"
-            "Transform"         // "MergRows"
+            "Transform",        // "MergRows"
+            "Transform"         // "Constant"
 		};
 
     public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Mapping", "Experimental" };
@@ -708,7 +715,7 @@ public class BaseStep extends Thread
 		// Before we copy this row to output, wait for room...
 		for (i=0;i<outputRowSets.size();i++)  // Wait for all rowsets: keep synchronised!
 		{
-			sleeptime=Const.SLEEP_FULL_NANOS;
+			sleeptime=transMeta.getSleepTimeFull();
 			rs=(RowSet)outputRowSets.get(i);
 
 			try
@@ -825,7 +832,7 @@ public class BaseStep extends Thread
 	
 		RowSet rs = (RowSet) outputRowSets.get(output_rowset_nr);
 		
-		sleeptime=Const.SLEEP_FULL_NANOS;
+		sleeptime=transMeta.getSleepTimeFull();
 		while(rs.isFull() && !stopped) 
 		{			
 			try{ sleep(sleeptime); } 
@@ -889,7 +896,7 @@ public class BaseStep extends Thread
 		// What's the current input stream?
 		RowSet in=currentInputStream();
 		switches=0;
-		sleeptime=Const.SLEEP_EMPTY_NANOS;
+		sleeptime=transMeta.getSleepTimeEmpty();
 		while (in.isEmpty() && !stopped)
 		{
 			// in : empty
@@ -957,7 +964,7 @@ public class BaseStep extends Thread
 	{
 		// Read from one specific rowset
 		//
-		int sleeptime=Const.SLEEP_EMPTY_NANOS;
+		int sleeptime=transMeta.getSleepTimeEmpty();
 
 		RowSet in=(RowSet)inputRowSets.get(input_rowset_nr);
 		while (in.isEmpty() && !in.isDone() && !stopped) 
