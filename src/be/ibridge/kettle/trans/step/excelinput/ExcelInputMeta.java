@@ -25,6 +25,7 @@ package be.ibridge.kettle.trans.step.excelinput;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Hashtable;
 import java.util.regex.Pattern;
 
@@ -880,6 +881,10 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 				filelist.add(files[x]);
 			}
 		}
+        
+        // Sort the list: quicksort
+        Collections.sort(filelist);
+
 		// OK, return the list in filelist...
 		files = (String[])filelist.toArray(new String[filelist.size()]);
 
