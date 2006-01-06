@@ -484,6 +484,12 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "No input received from other steps.", stepMeta);
 			remarks.add(cr);
 		}
+        
+        // Check the constants...
+        RowGeneratorData data = new RowGeneratorData();
+        RowGeneratorMeta meta = (RowGeneratorMeta) stepMeta.getStepMetaInterface();
+        RowGenerator.buildRow(meta, data, remarks);
+
 	}
 	
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)

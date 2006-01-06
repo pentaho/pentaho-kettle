@@ -21,6 +21,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 
@@ -36,7 +37,8 @@ public class RowGeneratorData extends BaseStepData implements StepDataInterface
 	public DecimalFormatSymbols dfs;
 	public SimpleDateFormat daf;
 	public DateFormatSymbols dafs;
-	
+    public Row constants;
+    
 	/**
 	 * 
 	 */

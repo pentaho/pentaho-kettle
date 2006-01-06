@@ -16,7 +16,9 @@
 package be.ibridge.kettle.trans.step.rowgenerator;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 
+import be.ibridge.kettle.core.CheckResult;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -49,118 +51,107 @@ public class RowGenerator extends BaseStep implements StepInterface
 		data=(RowGeneratorData)stepDataInterface;
 	}
 	
-	private synchronized Row buildRow()
-	{
-		Row r=new Row();
-		Value value;
+    public static final Row buildRow(RowGeneratorMeta meta, RowGeneratorData data, ArrayList remarks)
+    {
+        Row r=new Row();
+        Value value;
 
-		for (int i=0;i<meta.getFieldName().length;i++)
-		{
-			int valtype = Value.getType(meta.getFieldType()[i]); 
-			if (meta.getFieldName()[i]!=null)
-			{
-				value=new Value(meta.getFieldName()[i], valtype); // build a value!
-				String stringValue = meta.getValue()[i];
-				
-				if (value.isNumber())
-				{
-					try
-					{
-						if (meta.getFieldFormat()[i]!=null || meta.getDecimal()[i] !=null ||
-						meta.getGroup()[i]       !=null || meta.getCurrency()[i]!=null    
-						)
-						{
-							if (meta.getFieldFormat()[i]!=null && meta.getFieldFormat()[i].length()>=1) data.df.applyPattern(meta.getFieldFormat()[i]);
-							if (meta.getDecimal()[i] !=null && meta.getDecimal()[i].length()>=1) data.dfs.setDecimalSeparator( meta.getDecimal()[i].charAt(0) );
-							if (meta.getGroup()[i]   !=null && meta.getGroup()[i].length()>=1) data.dfs.setGroupingSeparator( meta.getGroup()[i].charAt(0) );
-							if (meta.getCurrency()[i]!=null && meta.getCurrency()[i].length()>=1) data.dfs.setCurrencySymbol( meta.getCurrency()[i] );
-							
-							data.df.setDecimalFormatSymbols(data.dfs);
-						}
-						
-						value.setValue( data.nf.parse(stringValue).doubleValue() );
-					}
-					catch(Exception e)
-					{
-						logError("Couldn't parse number field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString());
-						setErrors(1);
-						stopAll();
-						return null;
-					}
-				}
-				else
-				if (value.isString())
-				{
-					value.setValue(stringValue);
-				}
-				else
-				if (value.isDate())
-				{
-					try
-					{
-						if (meta.getFieldFormat()[i]!=null)
-						{
-							data.daf.applyPattern(meta.getFieldFormat()[i]);
-							data.daf.setDateFormatSymbols(data.dafs);
-						}
-						
-						value.setValue( data.daf.parse(stringValue) );
-					}
-					catch(Exception e)
-					{
-						logError("Couldn't parse date field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString());
-						setErrors(1);
-						stopAll();
-						return null;
-					}
-				}
-                else
-                if (value.isInteger())
+        for (int i=0;i<meta.getFieldName().length;i++)
+        {
+            int valtype = Value.getType(meta.getFieldType()[i]); 
+            if (meta.getFieldName()[i]!=null)
+            {
+                value=new Value(meta.getFieldName()[i], valtype); // build a value!
+                String stringValue = meta.getValue()[i];
+                
+                switch(value.getType())
                 {
+                case Value.VALUE_TYPE_NUMBER:
+                    try
+                    {
+                        if (meta.getFieldFormat()[i]!=null || meta.getDecimal()[i] !=null ||
+                        meta.getGroup()[i]       !=null || meta.getCurrency()[i]!=null    
+                        )
+                        {
+                            if (meta.getFieldFormat()[i]!=null && meta.getFieldFormat()[i].length()>=1) data.df.applyPattern(meta.getFieldFormat()[i]);
+                            if (meta.getDecimal()[i] !=null && meta.getDecimal()[i].length()>=1) data.dfs.setDecimalSeparator( meta.getDecimal()[i].charAt(0) );
+                            if (meta.getGroup()[i]   !=null && meta.getGroup()[i].length()>=1) data.dfs.setGroupingSeparator( meta.getGroup()[i].charAt(0) );
+                            if (meta.getCurrency()[i]!=null && meta.getCurrency()[i].length()>=1) data.dfs.setCurrencySymbol( meta.getCurrency()[i] );
+                            
+                            data.df.setDecimalFormatSymbols(data.dfs);
+                        }
+                        
+                        value.setValue( data.nf.parse(stringValue).doubleValue() );
+                    }
+                    catch(Exception e)
+                    {
+                        String message = "Couldn't parse number field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
+                        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+                    }
+                    break;
+                case Value.VALUE_TYPE_STRING:
+                    value.setValue(stringValue);
+                    break;
+                case Value.VALUE_TYPE_DATE:
+                    try
+                    {
+                        if (meta.getFieldFormat()[i]!=null)
+                        {
+                            data.daf.applyPattern(meta.getFieldFormat()[i]);
+                            data.daf.setDateFormatSymbols(data.dafs);
+                        }
+                        
+                        value.setValue( data.daf.parse(stringValue) );
+                    }
+                    catch(Exception e)
+                    {
+                        String message = "Couldn't parse date field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
+                        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+                    }
+                    break;
+                    
+                case Value.VALUE_TYPE_INTEGER:
                     try
                     {
                         value.setValue( Long.parseLong(stringValue) );
                     }
                     catch(Exception e)
                     {
-                        logError("Couldn't parse Integer field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString());
-                        setErrors(1);
-                        stopAll();
-                        return null;
+                        String message = "Couldn't parse Integer field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
+                        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
                     }
-                }
-                else
-                if (value.isBigNumber())
-                {
+                    break;
+
+                case Value.VALUE_TYPE_BIGNUMBER:
                     try
                     {
                         value.setValue( new BigDecimal(stringValue) );
                     }
                     catch(Exception e)
                     {
-                        logError("Couldn't parse BigNumber field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString());
-                        setErrors(1);
-                        stopAll();
-                        return null;
+                        String message = "Couldn't parse BigNumber field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
+                        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
                     }
-                }
-                else
-                {
-                    logError("Please specify the value type of field ["+value.getName()+"] with value ["+stringValue+"] -->");
-                    setErrors(1);
-                    stopAll();
-                    return null;
-                }
+                    break;
+                    
+                case Value.VALUE_TYPE_BOOLEAN:
+                    value.setValue( "Y".equalsIgnoreCase(stringValue) || "TRUE".equalsIgnoreCase(stringValue));
+                    break;
+                    
+                default:
+                    String message = "Please specify the value type of field ["+value.getName()+"] with value ["+stringValue+"] -->";
+                    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
 
-				// Now add value to the row!
-				// This is in fact a copy from the fields row, but now with data.
-				r.addValue(value); 
-			}
-		}
-		
-		return r;
-	}
-	
+                }
+                // Now add value to the row!
+                // This is in fact a copy from the fields row, but now with data.
+                r.addValue(value); 
+            }
+        }
+        
+        return r;
+    }
+    	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		Row r=null;
@@ -168,7 +159,7 @@ public class RowGenerator extends BaseStep implements StepInterface
 				
 		if (linesWritten<meta.getRowLimit())
 		{
-			r=buildRow();
+			r.addRow(data.constants);
 		}
 		else
 		{
@@ -182,19 +173,33 @@ public class RowGenerator extends BaseStep implements StepInterface
 		
 		return retval;
 	}
-		
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta=(RowGeneratorMeta)smi;
-		data=(RowGeneratorData)sdi;
-		
-		if (super.init(smi, sdi))
-		{
-		    // Add init code here.
-		    return true;
-		}
-		return false;
-	}
+
+    public boolean init(StepMetaInterface smi, StepDataInterface sdi)
+    {
+        meta=(RowGeneratorMeta)smi;
+        data=(RowGeneratorData)sdi;
+        
+        
+        if (super.init(smi, sdi))
+        {
+            // Create a row (constants) with all the values in it...
+            ArrayList remarks = new ArrayList(); // stores the errors...
+            data.constants = buildRow(meta, data, remarks);
+            if (remarks.size()==0) 
+            { 
+                return true;
+            }
+            else
+            {
+                for (int i=0;i<remarks.size();i++)
+                {
+                    CheckResult cr = (CheckResult) remarks.get(i);
+                    log.logError(getStepname(), cr.getText());
+                }
+            }
+        }
+        return false;
+    }
 
 
 	//
