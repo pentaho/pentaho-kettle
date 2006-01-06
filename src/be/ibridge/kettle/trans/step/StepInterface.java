@@ -91,7 +91,7 @@ public interface StepInterface
 	 * Get the name of the step.
 	 * @return the name of the step
 	 */
-	public String   getName();
+	public String   getStepname();
     
     /**
      * @return the type ID of the step...

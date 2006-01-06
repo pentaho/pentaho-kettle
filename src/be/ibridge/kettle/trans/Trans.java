@@ -368,7 +368,7 @@ public class Trans
 			else
 			{
 			    sid.step.setErrors(1);
-				log.logError(toString(), "Error initializing step ["+sid.step.getName()+"]");
+				log.logError(toString(), "Error initializing step ["+sid.step.getStepname()+"]");
 				ok = false;
 			}
 		}
@@ -427,7 +427,7 @@ public class Trans
 	
 	public void logSummary(StepInterface si)
 	{
-		log.logBasic(si.getName(), "Finished processing (I="+si.getLinesInput()+", O="+si.getLinesOutput()+", R="+si.getLinesRead()+", W="+si.getLinesWritten()+", U="+si.getLinesUpdated()+", E="+si.getErrors());
+		log.logBasic(si.getStepname(), "Finished processing (I="+si.getLinesInput()+", O="+si.getLinesOutput()+", R="+si.getLinesRead()+", W="+si.getLinesWritten()+", U="+si.getLinesUpdated()+", E="+si.getErrors());
 	}
 
 	//
@@ -1213,7 +1213,8 @@ public class Trans
 
 	public String toString()
 	{
-		return this.getClass().getName();
+        if (transMeta==null) return getClass().getName();
+		return transMeta.getName();
 	}
 
     public MappingInput findMappingInput()
