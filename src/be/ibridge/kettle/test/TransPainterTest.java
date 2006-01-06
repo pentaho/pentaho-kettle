@@ -30,7 +30,6 @@ public class TransPainterTest
     
     /**
      * Test the creation, working and destruction of a repository.
-     * @param xml XML describing the database connection
      * @throws Exception in case something goes wrong (unacceptable ;-))
      */
     public void testTransPainter() throws Exception

@@ -1267,14 +1267,14 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	
 	/**
 	 * Write the value, including the meta-data to a DataOutputStream
-	 * @param dos the DataOutputStream to write to .
-	 * @return true if all went well, false if something went wrong.
+	 * @param outputStream the OutputStream to write to .
+	 * @throws KettleFileException if something goes wrong.
 	 */
-	public void write(OutputStream dos) throws KettleFileException
+	public void write(OutputStream outputStream) throws KettleFileException
 	{
 		try
 		{
-            writeObj(new DataOutputStream(dos));
+            writeObj(new DataOutputStream(outputStream));
 		}
 		catch(Exception e)
 		{
@@ -1350,8 +1350,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
     /**
      * Read the Value, including meta-data from a DataInputStream
-     * @param dis The DataInputStream to read the value from
-     * @throws Exception when the Value couldn't be created by reading it from the DataInputStream.
+     * @param is The InputStream to read the value from
+     * @throws KettleFileException when the Value couldn't be created by reading it from the DataInputStream.
      */
 	public Value(InputStream is) throws KettleFileException
 	{

@@ -357,7 +357,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	 * 
 	 * @param rep The repository to save the database into.
 	 * 
-	 * @return true if everything went fine, false if an error occured.
+	 * @throws KettleException if an error occurs.
 	 */
 	public void saveRep(Repository rep)
 		throws KettleException

@@ -1484,7 +1484,7 @@ public class TransMeta implements XMLInterface
      * Saves the transformation to a repository.
      * 
      * @param rep The repository.
-     * @return True if the save went well, false if an error occurred.
+     * @throws KettleException if an error occurrs.
      */
     public void saveRep(Repository rep) throws KettleException
     {
@@ -1495,7 +1495,7 @@ public class TransMeta implements XMLInterface
      * Saves the transformation to a repository.
      * 
      * @param rep The repository.
-     * @return True if the save went well, false if an error occurred.
+     * @throws KettleException if an error occurrs.
      */
     public void saveRep(Repository rep, IProgressMonitor monitor) throws KettleException
     {

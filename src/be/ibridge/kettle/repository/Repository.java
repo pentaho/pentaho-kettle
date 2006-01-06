@@ -4431,7 +4431,7 @@ public class Repository
 	/**
 	 * Update the list in R_STEP_TYPE using the steploader StepPlugin entries
 	 * 
-	 * @return true if the update went OK, false if not.
+	 * @throws KettleDatabaseException if the update didn't go as planned.
 	 */
 	public void updateStepTypes() throws KettleDatabaseException
 	{

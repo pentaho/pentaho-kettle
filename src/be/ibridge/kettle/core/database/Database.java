@@ -153,7 +153,7 @@ public class Database
 	
 	/**
 	 * Open the database connection.
-	 * @return true if the connect was succesfull, false if something went wrong.
+	 * @throws KettleDatabaseException if something went wrong.
 	 */
 	public void connect()
 		throws KettleDatabaseException
@@ -219,7 +219,6 @@ public class Database
 
 	/**
 	 * Disconnect from the database and close all open prepared statements.
-	 * @return true if the connection and the open prepared statements were closed succesfully, false if something went wrong.
 	 */
 	public void disconnect()
 	{	
@@ -328,7 +327,7 @@ public class Database
 	 * Prepare inserting values into a table, using the fields & values in a Row
 	 * @param r The row to determine which values need to be inserted
 	 * @param table The name of the table in which we want to insert rows
-	 * @return true if all went well, false if something went wrong.
+	 * @throws KettleDatabaseException if something went wrong.
 	 */
 	public void prepareInsert(Row r, String table)
 		throws KettleDatabaseException

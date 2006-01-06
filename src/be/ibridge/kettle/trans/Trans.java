@@ -1245,8 +1245,9 @@ public class Trans
 
     /**
      * Return the preview rows buffer of a step 
-     * @param stepname
-     * @return
+     * @param stepname the name of the step to preview
+     * @param copyNr the step copy number
+     * @return an ArrayList of rows
      */
     public ArrayList getPreviewRows(String stepname, int copyNr)
     {

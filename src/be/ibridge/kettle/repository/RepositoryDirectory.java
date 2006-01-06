@@ -554,9 +554,9 @@ public class RepositoryDirectory
 	 * @param trans  Include the transformations in the tree or not
 	 * @param job    Include the jobs in the tree or not
 	 * @param schema Include the schemas in the tree or not
-	 * @return true if all went well, false if something went wrong.
+	 * @throws KettleDatabaseException if something goes wrong.
 	 */
-	public void getTreeWithNames(TreeItem ti, Repository rep, Color dircolor, boolean trans, boolean job, boolean schema)
+	public void getTreeWithNames(TreeItem ti, Repository rep, Color dircolor, boolean trans, boolean job, boolean schema) throws KettleDatabaseException
 	{
 		ti.setText(getDirectoryName());
 		ti.setForeground(dircolor);
@@ -586,6 +586,7 @@ public class RepositoryDirectory
 		}
 		catch(KettleDatabaseException dbe)
 		{
+            throw new KettleDatabaseException("Unable to populate tree with repository objects", dbe);
 		}
 
 		ti.setExpanded(isRoot());

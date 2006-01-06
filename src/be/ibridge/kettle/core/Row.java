@@ -386,7 +386,7 @@ public class Row implements XMLInterface, Comparable, Serializable
 	/**
 	 * Write the content of the row to a DataOutputStream
 	 * @param dos The DataOutputStream to write to
-	 * @return true if everything went well, false if an error occured.
+	 * @throws KettleFileException if an error occurs.
 	 */
 	public void write(DataOutputStream dos) throws KettleFileException
 	{

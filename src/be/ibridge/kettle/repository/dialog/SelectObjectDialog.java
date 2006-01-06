@@ -42,6 +42,8 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
+import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 
@@ -195,7 +197,14 @@ public class SelectObjectDialog extends Dialog
 		TreeItem ti = new TreeItem(wTree, SWT.NONE);
 		ti.setExpanded(true);
 		
-		rep.getDirectoryTree().getTreeWithNames(ti, rep, dircolor, trans, job, schema);
+        try
+        {
+            rep.getDirectoryTree().getTreeWithNames(ti, rep, dircolor, trans, job, schema);
+        }
+        catch(KettleDatabaseException e)
+        {
+            new ErrorDialog(shell, props, "Error constructing directory tree", "There was a database error while constructing the repository directory tree", e);
+        }
 	}
 	
 	private void cancel()
