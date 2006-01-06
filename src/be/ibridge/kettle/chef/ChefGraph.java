@@ -2304,7 +2304,7 @@ public class ChefGraph extends Canvas
 	
 	public String toString()
 	{
-		return "ChefGraph";
+		return Chef.APP_NAME;
 	}
 
 }
