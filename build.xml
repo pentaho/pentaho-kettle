@@ -101,7 +101,7 @@
         	splitindex="true" 
         	author="true" 
         	version="true" 
-        	excludepackagenames="be.ibridge.kettle.code.license"
+        	maxmemory="256M"
         	nodeprecatedlist="false" 
         	nodeprecated="false" 
         	packagenames ="be.ibridge.kettle.*" 
