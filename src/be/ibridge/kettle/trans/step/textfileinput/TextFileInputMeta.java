@@ -117,8 +117,39 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     /** The string to filter on */
     private String             filterString;
 
-    // The fields to import...
+    /** The fields to import... */
     private TextFileInputField inputFields[];
+
+    /** The encoding to use for reading: null or empty string means system default encoding */
+    private String encoding;
+    
+    /** Ignore error : turn into warnings */
+    private boolean errorIgnored;
+    
+    /** The name of the field that will contain the number of errors in the row*/
+    private String  errorCountField;
+    
+    /** The name of the field that will contain the names of the fields that generated errors, separated by , */
+    private String  errorFieldsField;
+    
+    /** The name of the field that will contain the error texts, separated by CR */
+    private String  errorTextField;
+    
+    /**
+     * @return Returns the encoding.
+     */
+    public String getEncoding()
+    {
+        return encoding;
+    }
+
+    /**
+     * @param encoding The encoding to set.
+     */
+    public void setEncoding(String encoding)
+    {
+        this.encoding = encoding;
+    }
 
     public TextFileInputMeta()
     {
@@ -517,6 +548,27 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             v.setOrigin(name);
             row.addValue(v);
         }
+        if (errorIgnored)
+        {
+            if (errorCountField!=null && errorCountField.length()>0)
+            {
+                Value v = new Value(errorCountField, Value.VALUE_TYPE_INTEGER);
+                v.setOrigin(name);
+                row.addValue(v);
+            }
+            if (errorFieldsField!=null && errorFieldsField.length()>0)
+            {
+                Value v = new Value(errorFieldsField, Value.VALUE_TYPE_STRING);
+                v.setOrigin(name);
+                row.addValue(v);
+            }
+            if (errorTextField!=null && errorTextField.length()>0)
+            {
+                Value v = new Value(errorTextField, Value.VALUE_TYPE_STRING);
+                v.setOrigin(name);
+                row.addValue(v);
+            }
+        }
         if (includeFilename)
         {
             Value v = new Value(filenameField, Value.VALUE_TYPE_STRING);
@@ -549,6 +601,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         retval += "    " + XMLHandler.addTagValue("rownum", includeRowNumber);
         retval += "    " + XMLHandler.addTagValue("rownum_field", rowNumberField);
         retval += "    " + XMLHandler.addTagValue("format", fileFormat);
+        retval += "    " + XMLHandler.addTagValue("encoding", encoding);
         retval += "    " + XMLHandler.addTagValue("filter", filter);
         retval += "    " + XMLHandler.addTagValue("filter_position", filterPosition);
         retval += "    " + XMLHandler.addTagValue("filter_string", filterString);
@@ -585,6 +638,12 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         retval += "      </fields>" + Const.CR;
         retval += "    " + XMLHandler.addTagValue("limit", rowLimit);
 
+        // ERROR HANDLING
+        retval += "    " + XMLHandler.addTagValue("error_ignored", errorIgnored);
+        retval += "    " + XMLHandler.addTagValue("error_count_field", errorCountField);
+        retval += "    " + XMLHandler.addTagValue("error_fields_field", errorFieldsField);
+        retval += "    " + XMLHandler.addTagValue("error_text_field", errorTextField);
+
         return retval;
     }
 
@@ -607,6 +666,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             includeRowNumber = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
             rowNumberField = XMLHandler.getTagValue(stepnode, "rownum_field");
             fileFormat = XMLHandler.getTagValue(stepnode, "format");
+            encoding = XMLHandler.getTagValue(stepnode, "encoding");
 
             filter = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filter"));
             filterPosition = Const.toInt(XMLHandler.getTagValue(stepnode, "filter_position"), -1);
@@ -659,6 +719,11 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             // Is there a limit on the number of rows we process?
             lim = XMLHandler.getTagValue(stepnode, "limit");
             rowLimit = Const.toLong(lim, 0L);
+
+            errorIgnored = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "error_ignored") );
+            errorCountField = XMLHandler.getTagValue(stepnode, "error_count_field");
+            errorFieldsField = XMLHandler.getTagValue(stepnode, "error_fields_field");
+            errorTextField = XMLHandler.getTagValue(stepnode, "error_text_field");
         }
         catch (Exception e)
         {
@@ -682,6 +747,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             includeRowNumber = rep.getStepAttributeBoolean(id_step, "rownum");
             rowNumberField = rep.getStepAttributeString(id_step, "rownum_field");
             fileFormat = rep.getStepAttributeString(id_step, "format");
+            encoding = rep.getStepAttributeString(id_step, "encoding");
             filter = rep.getStepAttributeBoolean(id_step, "filter");
             filterPosition = (int) rep.getStepAttributeInteger(id_step, "filter_position");
             filterString = rep.getStepAttributeString(id_step, "filter_string");
@@ -719,6 +785,11 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
                 inputFields[i] = field;
             }
+            
+            errorIgnored = rep.getStepAttributeBoolean(id_step, "error_ignored");
+            errorCountField = rep.getStepAttributeString(id_step, "error_count_field");
+            errorFieldsField = rep.getStepAttributeString(id_step, "error_fields_field");
+            errorTextField = rep.getStepAttributeString(id_step, "error_text_field");
         }
         catch (Exception e)
         {
@@ -741,6 +812,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "rownum", includeRowNumber);
             rep.saveStepAttribute(id_transformation, id_step, "rownum_field", rowNumberField);
             rep.saveStepAttribute(id_transformation, id_step, "format", fileFormat);
+            rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding);
             rep.saveStepAttribute(id_transformation, id_step, "filter", filter);
             rep.saveStepAttribute(id_transformation, id_step, "filter_position", filterPosition);
             rep.saveStepAttribute(id_transformation, id_step, "filter_string", filterString);
@@ -771,6 +843,11 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type", field.getTrimTypeDesc());
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat", field.isRepeated());
             }
+            
+            rep.saveStepAttribute(id_transformation, id_step, "error_ignored", errorIgnored);
+            rep.saveStepAttribute(id_transformation, id_step, "error_count_field", errorCountField);
+            rep.saveStepAttribute(id_transformation, id_step, "error_fields_field", errorFieldsField);
+            rep.saveStepAttribute(id_transformation, id_step, "error_text_field", errorTextField);
         }
         catch (Exception e)
         {
@@ -934,5 +1011,45 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     public void setEscapeCharacter(String escapeCharacter)
     {
         this.escapeCharacter = escapeCharacter;
+    }
+
+    public String getErrorCountField()
+    {
+        return errorCountField;
+    }
+
+    public void setErrorCountField(String errorCountField)
+    {
+        this.errorCountField = errorCountField;
+    }
+
+    public String getErrorFieldsField()
+    {
+        return errorFieldsField;
+    }
+
+    public void setErrorFieldsField(String errorFieldsField)
+    {
+        this.errorFieldsField = errorFieldsField;
+    }
+
+    public boolean isErrorIgnored()
+    {
+        return errorIgnored;
+    }
+
+    public void setErrorIgnored(boolean errorIgnored)
+    {
+        this.errorIgnored = errorIgnored;
+    }
+
+    public String getErrorTextField()
+    {
+        return errorTextField;
+    }
+
+    public void setErrorTextField(String errorTextField)
+    {
+        this.errorTextField = errorTextField;
     }
 }

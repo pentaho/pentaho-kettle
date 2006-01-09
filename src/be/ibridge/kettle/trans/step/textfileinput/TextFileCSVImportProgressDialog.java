@@ -5,7 +5,7 @@
 
 package be.ibridge.kettle.trans.step.textfileinput;
 
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.reflect.InvocationTargetException;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
@@ -44,8 +44,6 @@ public class TextFileCSVImportProgressDialog
 
     private TextFileInputMeta meta;
 
-    private InputStream       inputStream;
-
     private int               samples;
     
     private int               clearFields;
@@ -54,7 +52,9 @@ public class TextFileCSVImportProgressDialog
 
     private String            debug;
     
-    private long              rownumber;  
+    private long              rownumber;
+
+    private InputStreamReader reader;  
     
     /**
      * Creates a new dialog that will handle the wait while we're finding out what tables, views etc we can reach in the
@@ -64,7 +64,7 @@ public class TextFileCSVImportProgressDialog
                                             Props props, 
                                             Shell shell, 
                                             TextFileInputMeta meta, 
-                                            InputStream inputStream, 
+                                            InputStreamReader reader, 
                                             int samples, 
                                             int clearFields
                                           )
@@ -72,7 +72,7 @@ public class TextFileCSVImportProgressDialog
         this.props = props;
         this.shell = shell;
         this.meta = meta;
-        this.inputStream = inputStream;
+        this.reader = reader;
         this.samples       = samples;
         this.clearFields   = clearFields;
 
@@ -213,7 +213,7 @@ public class TextFileCSVImportProgressDialog
 
         // If the file has a header we overwrite the first line
         // However, if it doesn't have a header, take a new line
-        if (meta.hasHeader()) line = TextFileInput.getLine(log, inputStream, meta.getFileFormat());
+        if (meta.hasHeader()) line = TextFileInput.getLine(log, reader, meta.getFileFormat());
         int linenr = 1;
 
         // Allocate number and date parsers
@@ -228,7 +228,7 @@ public class TextFileCSVImportProgressDialog
             if (samples>0) monitor.worked(1);
             
             debug = "convert line #" + linenr + " to row";
-            Row r = TextFileInput.convertLineToRow(log, line, strinfo, true, df, dfs, daf, dafs, meta.getFiles()[0], rownumber);
+            Row r = TextFileInput.convertLineToRow(log, line, strinfo, df, dfs, daf, dafs, meta.getFiles()[0], rownumber);
 
             rownumber++;
             for (int i = 0; i < nrfields && i < r.size(); i++)
@@ -432,7 +432,7 @@ public class TextFileCSVImportProgressDialog
 
             // Grab another line...
             debug = "Grab another line";
-            line = TextFileInput.getLine(log, inputStream, meta.getFileFormat());
+            line = TextFileInput.getLine(log, reader, meta.getFileFormat());
             debug = "End of while loop";
         }
 

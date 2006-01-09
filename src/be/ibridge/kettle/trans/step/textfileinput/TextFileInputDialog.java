@@ -25,13 +25,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.Charset;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.Collections;
 import java.util.Properties;
 import java.util.Vector;
 import java.util.zip.ZipInputStream;
@@ -42,12 +44,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -170,7 +174,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private Label        wlFormat;
 	private CCombo       wFormat;
 	private FormData     fdlFormat, fdFormat;
-	
+
+    private Label        wlEncoding;
+    private CCombo       wEncoding;
+    private FormData     fdlEncoding, fdEncoding;
+
 	private Label        wlLimit;
 	private Text         wLimit;
 	private FormData     fdlLimit, fdLimit;
@@ -186,7 +194,24 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private Label        wlFilterStr;
 	private Text         wFilterStr;
 	private FormData     fdlFilterStr, fdFilterStr;
-	
+
+    // ERROR HANDLING...
+    private Label        wlErrorIgnored;
+    private Button       wErrorIgnored;
+    private FormData     fdlErrorIgnored, fdErrorIgnored;
+
+    private Label        wlErrorCount;
+    private Text         wErrorCount;
+    private FormData     fdlErrorCount, fdErrorCount;
+
+    private Label        wlErrorFields;
+    private Text         wErrorFields;
+    private FormData     fdlErrorFields, fdErrorFields;
+
+    private Label        wlErrorText;
+    private Text         wErrorText;
+    private FormData     fdlErrorText, fdErrorText;
+
 	private TableView    wFields;
 	private FormData     fdFields;
 
@@ -695,12 +720,46 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		fdFormat.right= new FormAttachment(100, 0);
 		wFormat.setLayoutData(fdFormat);
 
+        wlEncoding=new Label(wContentComp, SWT.RIGHT);
+        wlEncoding.setText("Encoding ");
+        props.setLook(wlEncoding);
+        fdlEncoding=new FormData();
+        fdlEncoding.left = new FormAttachment(0, 0);
+        fdlEncoding.top  = new FormAttachment(wFormat, margin);
+        fdlEncoding.right= new FormAttachment(middle, -margin);
+        wlEncoding.setLayoutData(fdlEncoding);
+        wEncoding=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
+        wEncoding.setEditable(true);
+        props.setLook(wEncoding);
+        wEncoding.addModifyListener(lsMod);
+        fdEncoding=new FormData();
+        fdEncoding.left = new FormAttachment(middle, 0);
+        fdEncoding.top  = new FormAttachment(wFormat, margin);
+        fdEncoding.right= new FormAttachment(100, 0);
+        wEncoding.setLayoutData(fdEncoding);
+        wEncoding.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                    shell.setCursor(busy);
+                    setEncodings();
+                    shell.setCursor(null);
+                    busy.dispose();
+                }
+            }
+        );
+
 		wlLimit=new Label(wContentComp, SWT.RIGHT);
 		wlLimit.setText("Limit ");
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
-		fdlLimit.top  = new FormAttachment(wFormat, margin);
+		fdlLimit.top  = new FormAttachment(wEncoding, margin);
 		fdlLimit.right= new FormAttachment(middle, -margin);
 		wlLimit.setLayoutData(fdlLimit);
 		wLimit=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -708,7 +767,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wLimit.addModifyListener(lsMod);
 		fdLimit=new FormData();
 		fdLimit.left = new FormAttachment(middle, 0);
-		fdLimit.top  = new FormAttachment(wFormat, margin);
+		fdLimit.top  = new FormAttachment(wEncoding, margin);
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 
@@ -762,6 +821,77 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		fdFilterStr.top  = new FormAttachment(wLimit, margin);
 		fdFilterStr.right= new FormAttachment(100, 0);
 		wFilterStr.setLayoutData(fdFilterStr);
+        
+        
+        
+        // ERROR HANDLING...
+        // ErrorIgnored?
+        wlErrorIgnored = new Label(wContentComp, SWT.RIGHT);
+        wlErrorIgnored.setText("Ignore errors? ");
+        props.setLook(wlErrorIgnored);
+        fdlErrorIgnored = new FormData();
+        fdlErrorIgnored.left = new FormAttachment(0, 0);
+        fdlErrorIgnored.top = new FormAttachment(wFilterStr, margin);
+        fdlErrorIgnored.right = new FormAttachment(middle, -margin);
+        wlErrorIgnored.setLayoutData(fdlErrorIgnored);
+        wErrorIgnored = new Button(wContentComp, SWT.CHECK);
+        props.setLook(wErrorIgnored);
+        wErrorIgnored.setToolTipText("Ignore parsing errors that occur, optionally log information about the errors.");
+        fdErrorIgnored = new FormData();
+        fdErrorIgnored.left = new FormAttachment(middle, 0);
+        fdErrorIgnored.top = new FormAttachment(wFilterStr, margin);
+        wErrorIgnored.setLayoutData(fdErrorIgnored);
+
+        wlErrorCount=new Label(wContentComp, SWT.RIGHT);
+        wlErrorCount.setText("Error count fieldname ");
+        props.setLook(wlErrorCount);
+        fdlErrorCount=new FormData();
+        fdlErrorCount.left = new FormAttachment(0, 0);
+        fdlErrorCount.top  = new FormAttachment(wErrorIgnored, margin);
+        fdlErrorCount.right= new FormAttachment(middle, -margin);
+        wlErrorCount.setLayoutData(fdlErrorCount);
+        wErrorCount=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wErrorCount);
+        wErrorCount.addModifyListener(lsMod);
+        fdErrorCount=new FormData();
+        fdErrorCount.left = new FormAttachment(middle, 0);
+        fdErrorCount.top  = new FormAttachment(wErrorIgnored, margin);
+        fdErrorCount.right= new FormAttachment(100, 0);
+        wErrorCount.setLayoutData(fdErrorCount);
+
+        wlErrorFields=new Label(wContentComp, SWT.RIGHT);
+        wlErrorFields.setText("Error fields fieldname");
+        props.setLook(wlErrorFields);
+        fdlErrorFields=new FormData();
+        fdlErrorFields.left = new FormAttachment(0, 0);
+        fdlErrorFields.top  = new FormAttachment(wErrorCount, margin);
+        fdlErrorFields.right= new FormAttachment(middle, -margin);
+        wlErrorFields.setLayoutData(fdlErrorFields);
+        wErrorFields=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wErrorFields);
+        wErrorFields.addModifyListener(lsMod);
+        fdErrorFields=new FormData();
+        fdErrorFields.left = new FormAttachment(middle, 0);
+        fdErrorFields.top  = new FormAttachment(wErrorCount, margin);
+        fdErrorFields.right= new FormAttachment(100, 0);
+        wErrorFields.setLayoutData(fdErrorFields);
+
+        wlErrorText=new Label(wContentComp, SWT.RIGHT);
+        wlErrorText.setText("Error text fieldname");
+        props.setLook(wlErrorText);
+        fdlErrorText=new FormData();
+        fdlErrorText.left = new FormAttachment(0, 0);
+        fdlErrorText.top  = new FormAttachment(wErrorFields, margin);
+        fdlErrorText.right= new FormAttachment(middle, -margin);
+        wlErrorText.setLayoutData(fdlErrorText);
+        wErrorText=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wErrorText);
+        wErrorText.addModifyListener(lsMod);
+        fdErrorText=new FormData();
+        fdErrorText.left = new FormAttachment(middle, 0);
+        fdErrorText.top  = new FormAttachment(wErrorFields, margin);
+        fdErrorText.right= new FormAttachment(100, 0);
+        wErrorText.setLayoutData(fdErrorText);
 		
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
@@ -1001,6 +1131,17 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			}
 		);
 
+        // Enable/disable the right fields to allow the error handling fields...
+        wErrorIgnored.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    setErrorIgnored();
+                }
+            }
+        );
+
+
 		// Whenever something changes, set the tooltip to the expanded version of the filename:
 		wFilename.addModifyListener(new ModifyListener()
 			{
@@ -1019,18 +1160,20 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				public void widgetSelected(SelectionEvent e) 
 				{
 					Properties sp = System.getProperties();
-					Enumeration keys = sp.keys();
-					int size = sp.values().size();
+                    System.out.println("sp.keySet().size()="+sp.keySet().size());
+                    ArrayList keys = new ArrayList( sp.keySet() );
+                    Collections.sort(keys);
+                    
+					int size = keys.size();
 					String key[] = new String[size];
 					String val[] = new String[size];
 					String str[] = new String[size];
-					int i=0;
-					while (keys.hasMoreElements())
+                    
+					for (int i=0;i<keys.size();i++)
 					{
-						key[i] = (String)keys.nextElement();
+						key[i] = (String)keys.get(i);
 						val[i] = sp.getProperty(key[i]);
 						str[i] = key[i]+"  ["+val[i]+"]";
-						i++;
 					}
 					
 					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, "Select an Environment Variable", "Select an Environment Variable");
@@ -1150,16 +1293,27 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wFilterPos.setEnabled(wFilter.getSelection());
 		wlFilterStr.setEnabled(wFilter.getSelection());
 		wFilterStr.setEnabled(wFilter.getSelection());
-		
 	}
+    
+    public void setErrorIgnored()
+    {
+        wlErrorCount.setEnabled( wErrorIgnored.getSelection() );
+        wErrorCount.setEnabled( wErrorIgnored.getSelection() );
+        wlErrorFields.setEnabled( wErrorIgnored.getSelection() );
+        wErrorFields.setEnabled( wErrorIgnored.getSelection() );
+        wlErrorText.setEnabled( wErrorIgnored.getSelection() );
+        wErrorText.setEnabled( wErrorIgnored.getSelection() );
+    }
 
 	/**
 	 * Read the data from the TextFileInputMeta object and show it in this dialog.
 	 * 
 	 * @param in The TextFileInputMeta object to obtain the data from.
 	 */
-	public void getData(TextFileInputMeta in)
+	public void getData(TextFileInputMeta meta)
 	{
+        final TextFileInputMeta in = meta;
+        
 		if (in.getFileName() !=null) 
 		{
 			wFilenameList.removeAll();
@@ -1223,15 +1377,44 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			if (rep     !=null) item.setText(12, rep     );
 		}
 		
-		setMultiple();
-		setIncludeFilename();
-		setIncludeRownum();
-		setFilter();		
-
+        if ( in.getEncoding()!=null )
+        {
+            wEncoding.setText( in.getEncoding() );
+        }
+        
+        // Error handling fields...
+        wErrorIgnored.setSelection( in.isErrorIgnored() );
+        if (in.getErrorCountField()!=null) wErrorCount.setText( in.getErrorCountField() );
+        if (in.getErrorFieldsField()!=null) wErrorFields.setText( in.getErrorFieldsField() );
+        if (in.getErrorTextField()!=null) wErrorText.setText( in.getErrorTextField() );
+        
+        setMultiple();
+        setIncludeFilename();
+        setIncludeRownum();
+        setFilter();
+        setErrorIgnored();
+        
 		wStepname.selectAll();
 	}
 	
-	private void cancel()
+	private void setEncodings()
+    {
+        // Encoding of the text file:
+        wEncoding.removeAll();
+        ArrayList values = new ArrayList(Charset.availableCharsets().values());
+        for (int i=0;i<values.size();i++)
+        {
+            Charset charSet = (Charset)values.get(i);
+            wEncoding.add( charSet.displayName() );
+        }
+        
+        // Now select the default!
+        String defEncoding = Const.getEnvironmentVariable("file.encoding", "UTF-8");
+        int idx = Const.indexOfString(defEncoding, wEncoding.getItems() );
+        if (idx>=0) wEncoding.select( idx );
+    }
+
+    private void cancel()
 	{
 		stepname=null;
 		input.setChanged(changed);
@@ -1270,6 +1453,12 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		// in.wildcard= wMultiple.getSelection();
 		in.setNoEmptyLines( wNoempty.getSelection() );
 
+        String encoding = wEncoding.getText();
+        if (encoding.length()>0) 
+        {
+            in.setEncoding(encoding);
+        }
+        
 		int i;
 		//Table table = wFields.table;
 		
@@ -1299,7 +1488,13 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			field.setRepeated( "Y".equalsIgnoreCase(item.getText(12)) );		
 			
 			in.getInputFields()[i] = field;
-		}		
+		}
+        
+        // Error handling fields...
+        in.setErrorIgnored( wErrorIgnored.getSelection() );
+        in.setErrorCountField( wErrorCount.getText() );
+        in.setErrorFieldsField( wErrorFields.getText() );
+        in.setErrorTextField( wErrorText.getText() );
 	}
 	
 	private void get()
@@ -1359,6 +1554,16 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				{
 					inputStream=fileInputStream;
 				}
+                
+                InputStreamReader reader;
+                if (meta.getEncoding()!=null && meta.getEncoding().length()>0)
+                {
+                    reader = new InputStreamReader(inputStream, meta.getEncoding());
+                }
+                else
+                {
+                    reader = new InputStreamReader(inputStream);
+                }
 	
 				if (clearFields == SWT.YES || !meta.hasHeader() || nrInputFields >0)
 				{
@@ -1366,7 +1571,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     String line = null;
                     if (meta.hasHeader() || meta.getInputFields().length == 0)
                     {
-                        line = TextFileInput.getLine(log, inputStream, fileFormat);
+                        line = TextFileInput.getLine(log, reader, fileFormat);
                         if (line != null)
                         {
                             ArrayList fields = TextFileInput.convertLineToStrings(log, line.toString(), meta);
@@ -1406,7 +1611,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     {
                         getInfo(meta);
 
-    			        TextFileCSVImportProgressDialog pd = new TextFileCSVImportProgressDialog(log, props, shell, meta, inputStream, samples, clearFields);
+    			        TextFileCSVImportProgressDialog pd = new TextFileCSVImportProgressDialog(log, props, shell, meta, reader, samples, clearFields);
                         String message = pd.open();
                         if (message!=null)
                         {
@@ -1576,10 +1781,21 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 						{
 							f=fi;
 						}
+                        
+                        InputStreamReader reader;
+                        if (info.getEncoding() != null && info.getEncoding().length() > 0)
+                        {
+                            reader = new InputStreamReader(f, info.getEncoding());
+                        }
+                        else
+                        {
+                            reader = new InputStreamReader(f);
+                        }
+
 						
 						debug="C";
-						String line = TextFileInput.getLine(log, f, wFormat.getText());
-						if (info.hasHeader()) line = TextFileInput.getLine(log, f, wFormat.getText());
+						String line = TextFileInput.getLine(log, reader, wFormat.getText());
+						if (info.hasHeader()) line = TextFileInput.getLine(log, reader, wFormat.getText());
 						
 						debug="D";
 
@@ -1587,7 +1803,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 						while (line!=null && (linenr<maxNrLines || maxNrLines==0))
 						{
 							StringBuffer error = new StringBuffer();
-							Row r = TextFileInput.convertLineToRow(log, line, info, true, df, dfs, daf, dafs, files[x], rownumber);
+							Row r = TextFileInput.convertLineToRow(log, line, info, df, dfs, daf, dafs, files[x], rownumber);
 							if (r!=null) 
 							{
 								rownumber++;
@@ -1643,7 +1859,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 								} 
 								
 								// Get next line...
-								line = TextFileInput.getLine(log, f, wFormat.getText());
+								line = TextFileInput.getLine(log, reader, wFormat.getText());
 							}
 							else
 							{
@@ -1757,6 +1973,16 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 					f=new BufferedInputStream(fi);
 				}
 
+                InputStreamReader reader;
+                if (info.getEncoding()!=null && info.getEncoding().length()>0)
+                {
+                    reader = new InputStreamReader(f, info.getEncoding());
+                }
+                else
+                {
+                    reader = new InputStreamReader(f);
+                }
+                
 				String shellText = "Nr of lines to view.  0 means all lines.";
 				String lineText = "Number of lines (0=all lines)";
 				EnterNumberDialog end = new EnterNumberDialog(shell, props, 100, shellText, lineText);
@@ -1766,12 +1992,12 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 					String firstlines="";
 					int    linenr=0;
 
-					String line = TextFileInput.getLine(log, f, wFormat.getText());
+					String line = TextFileInput.getLine(log, reader, wFormat.getText());
 					while(line!=null && (linenr<nrlines || nrlines==0))
 					{
 						firstlines+=line+Const.CR;
 						linenr++;
-						line = TextFileInput.getLine(log, f, wFormat.getText());
+						line = TextFileInput.getLine(log, reader, wFormat.getText());
 					}
 					EnterTextDialog etd = new EnterTextDialog(shell, props, "File "+filename, (nrlines==0?"All":""+nrlines)+" lines:", firstlines, true);
 					etd.setReadOnly();
@@ -1841,6 +2067,17 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				{
 					f=fi;
 				}
+                
+                InputStreamReader reader;
+                if (info.getEncoding()!=null && info.getEncoding().length()>0)
+                {
+                    reader = new InputStreamReader(f, info.getEncoding());
+                }
+                else
+                {
+                    reader = new InputStreamReader(f);
+                }
+
 
 				String firstlines="";
 				int    linenr=0;
@@ -1848,13 +2085,13 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				
 				// System.out.println("info.header? "+info.header+", info.footer? "+info.footer);
 				
-				String line = TextFileInput.getLine(log, f, wFormat.getText());
+				String line = TextFileInput.getLine(log, reader, wFormat.getText());
 				while(line!=null && (linenr<maxnr || nrlines==0))
 				{
 					if (linenr>0 || (linenr==0 && !info.hasHeader())) retval.add(line);
 					firstlines+=line+Const.CR;
 					linenr++;
-					line = TextFileInput.getLine(log, f, wFormat.getText());
+					line = TextFileInput.getLine(log, reader, wFormat.getText());
 				}
 				// Did we grab the footer as well?
 				if (info.hasFooter() && ( linenr<maxnr || nrlines==0 ))

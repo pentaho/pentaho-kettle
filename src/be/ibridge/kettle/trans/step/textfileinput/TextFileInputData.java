@@ -16,8 +16,8 @@
 
 package be.ibridge.kettle.trans.step.textfileinput;
 
-import java.io.BufferedInputStream;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -53,7 +53,7 @@ public class TextFileInputData extends BaseStepData implements StepDataInterface
 	
 	public FileInputStream fr;
 	public ZipInputStream zi;
-	public BufferedInputStream is;
+    public InputStreamReader isr;
 
 	/**
 	 * 
@@ -76,7 +76,6 @@ public class TextFileInputData extends BaseStepData implements StepDataInterface
 		
 		fr=null;
 		zi=null;
-		is=null;
 	}
 
 }

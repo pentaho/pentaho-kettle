@@ -19,7 +19,7 @@ package be.ibridge.kettle.trans.step.textfileinput;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.math.BigDecimal;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
@@ -59,7 +59,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	public static final String getLine(LogWriter log, InputStream fr, String format)
+	public static final String getLine(LogWriter log, InputStreamReader reader, String format)
 	{
 		StringBuffer line=new StringBuffer();
 		int c=0;
@@ -68,10 +68,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 		{
 			while (c>=0)
 			{
-				c=fr.read();
+				c=reader.read();
 				if (c=='\n' || c=='\r') 
 				{
-					if (format.equalsIgnoreCase("DOS")) c=fr.read(); // skip \n and \r
+					if (format.equalsIgnoreCase("DOS")) c=reader.read(); // skip \n and \r
 					return line.toString();
 				}
 				if (c>=0) line.append((char)c);
@@ -115,6 +115,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				while(pos<length)
 				{
 					debug = "convertLineToStrings while start";
+                    
 					int from=pos;
 					int next;
 					int len_encl = (inf.getEnclosure()==null?0:inf.getEnclosure().length());
@@ -128,6 +129,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					if ( len_encl>0 && line.substring(from, from+len_encl).equalsIgnoreCase(inf.getEnclosure()))
 					{
 						debug = "convertLineToStrings if start";
+                        
 						log.logRowlevel("convert line to row", "encl substring=["+line.substring(from, from+len_encl)+"]");
 						encl_found=true;
 						int p=from+len_encl;
@@ -148,9 +150,12 @@ public class TextFileInput extends BaseStep implements StepInterface
                                 if (is_escape) contains_escaped_enclosures=true; // remember to replace them later on!
 							}
 						}
-                        while ( !is_enclosure || enclosure_after)
+                        
+                        // Look for a closing enclosure!
+                        while ( (!is_enclosure || enclosure_after) && p<line.length() )
 						{
-							debug = "convertLineToStrings start while enclosure";
+							debug = "convertLineToStrings start while enclosure (p="+p+")";
+                            
 							p++;
 							enclosure_after=false;
 							is_enclosure = len_encl>0 && p+len_encl<length && line.substring(p, p+len_encl).equals(inf.getEnclosure());
@@ -169,6 +174,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 								}
 							}
 						}
+                        
 						if (p>=length) next = p; else next = p+len_encl;
 	
 						log.logRowlevel("convert line to row", "End of enclosure @ position "+p);
@@ -303,7 +309,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 												LogWriter log, 
 												String line, 
 												TextFileInputMeta info,
-												boolean limit_size,
 												DecimalFormat ldf, DecimalFormatSymbols ldfs,
 												SimpleDateFormat ldaf, DateFormatSymbols ldafs,
 												String fname,
@@ -314,9 +319,25 @@ public class TextFileInput extends BaseStep implements StepInterface
 		int fieldnr;
 		Row r=new Row();
 		Value value;
-		
+        
+        Value errorCount=null;
+        if (info.isErrorIgnored() && info.getErrorCountField()!=null && info.getErrorCountField().length()>0)
+        {
+            errorCount = new Value(info.getErrorCountField(), 0L);
+        }
+        Value errorFields=null;
+        if (info.isErrorIgnored() && info.getErrorFieldsField()!=null && info.getErrorFieldsField().length()>0)
+        {
+            errorFields = new Value(info.getErrorFieldsField(), "");
+        }
+        Value errorText=null;
+        if (info.isErrorIgnored() && info.getErrorTextField()!=null && info.getErrorTextField().length()>0)
+        {
+            errorText = new Value(info.getErrorTextField(), "");
+        }
+        
 		int  nrfields = info.getInputFields().length;
-		boolean filter = true;
+		boolean filterIsOK = true;
 		
 		// Filter row?
 		boolean check_filter = info.hasFilter() && info.getFilterPosition()>=0 && info.getFilterPosition()<line.length();
@@ -329,22 +350,22 @@ public class TextFileInput extends BaseStep implements StepInterface
 			
 			if (!sub.equalsIgnoreCase(info.getFilterString()))
 			{
-				filter = false;
+				filterIsOK = false;
 				r.setIgnore();
 			}
 		}
-		if (filter)
+        
+		if (filterIsOK)
 		{
 			try
 			{
+                // System.out.println("Convertings line to string ["+line+"]");
 				ArrayList strings = convertLineToStrings(log, line, info);
 				
-				for (fieldnr=0;fieldnr<strings.size() && ( fieldnr<nrfields || !limit_size);fieldnr++)
+				for (fieldnr=0 ; fieldnr<nrfields ; fieldnr++)
 				{
-				    TextFileInputField f = info.getInputFields()[fieldnr];
+                    TextFileInputField f = info.getInputFields()[fieldnr];
 				    
-					String pol = (String)strings.get(fieldnr);
-	
 					String field     = fieldnr<nrfields?f.getName():"empty"+fieldnr;
 					int    type      = fieldnr<nrfields?f.getType():Value.VALUE_TYPE_STRING;
 					String format    = fieldnr<nrfields?f.getFormat():"";
@@ -356,25 +377,72 @@ public class TextFileInput extends BaseStep implements StepInterface
 					String nullif    = fieldnr<nrfields?f.getNullString():"";
 					int    trim_type = fieldnr<nrfields?f.getTrimType():TextFileInputMeta.TYPE_TRIM_NONE;
 	
-					try
-					{
-						value = convertValue
-						(
-							pol, 
-							field, type, format, length, precision,
-							group, decimal, currency, nullif, trim_type,
-							ldf, ldfs,
-							ldaf, ldafs
-						)
-						;
-					}
-					catch(Exception e)
-					{
-                        throw new KettleException("Couldn't parse field ["+f.getName()+"] with value ["+pol+"]", e);
-					}
+                    if ( fieldnr<strings.size() )
+                    {
+                        String pol = (String)strings.get(fieldnr);
+    					try
+    					{
+                            value = convertValue
+    						(
+    							pol, 
+    							field, type, format, length, precision,
+    							group, decimal, currency, nullif, trim_type,
+    							ldf, ldfs,
+    							ldaf, ldafs
+    						)
+    						;
+    					}
+    					catch(Exception e)
+    					{
+                            if (info.isErrorIgnored())
+                            {
+                                // OK, give some feedback!
+                                String message = "Couldn't parse field ["+field+"] with value ["+pol+"] : "+e.getMessage();
+                                log.logBasic(fname, "WARNING: "+message);
+                                
+                                value = new Value(field, type);
+                                value.setNull();
+                                
+                                if (errorCount!=null)
+                                {
+                                    errorCount.plus(1L);
+                                }
+                                if (errorFields!=null)
+                                {
+                                    StringBuffer sb = new StringBuffer(errorFields.getString());
+                                    if (sb.length()>0) sb.append(", ");
+                                    sb.append(field);
+                                    errorFields.setValue(sb);
+                                }
+                                if (errorText!=null)
+                                {
+                                    StringBuffer sb = new StringBuffer(errorText.getString());
+                                    if (sb.length()>0) sb.append(Const.CR);
+                                    sb.append(message);
+                                    errorText.setValue(sb);
+                                }
+                            }
+                            else
+                            {
+                                throw new KettleException("Couldn't parse field ["+f.getName()+"] with value ["+pol+"]", e);
+                            }
+    					}
+                    }
+                    else
+                    {
+                        // No data found:  TRAILING NULLCOLS: add null value...
+                        value = new Value(field, type);
+                        value.setNull();
+                    }
+                    
 					// Now add value to the row!
 					r.addValue(value); 
 				}
+                
+                // Add the error handling fields...
+                if (errorCount !=null) r.addValue(errorCount);
+                if (errorFields!=null) r.addValue(errorFields);
+                if (errorText  !=null) r.addValue(errorText);
 				
 				// Support for trailing nullcols!
 				if (fieldnr<info.getInputFields().length)
@@ -569,20 +637,20 @@ public class TextFileInput extends BaseStep implements StepInterface
 		    }
 		    
 			first=false;
-			data.thisline=getLine(log, data.is, meta.getFileFormat());
+			data.thisline=getLine(log, data.isr, meta.getFileFormat());
 			if (meta.hasHeader() && data.thisline!=null)  // skip first line in this case!
 			{
-				data.thisline=getLine(log, data.is, meta.getFileFormat());
+				data.thisline=getLine(log, data.isr, meta.getFileFormat());
 			} 
 			if (data.thisline!=null) 
 			{ 
 				linesInput++;
-				data.nextline=getLine(log, data.is, meta.getFileFormat()); 
+				data.nextline=getLine(log, data.isr, meta.getFileFormat()); 
 			} 
 			if (data.nextline!=null) 
 			{ 
 				linesInput++;
-				data.lastline=getLine(log, data.is, meta.getFileFormat()); 
+				data.lastline=getLine(log, data.isr, meta.getFileFormat()); 
 			} 
 			if (data.nextline!=null)
 			{
@@ -596,7 +664,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		else
 		{
-			data.lastline=getLine(log, data.is, meta.getFileFormat()); // Get one line of data;
+			data.lastline=getLine(log, data.isr, meta.getFileFormat()); // Get one line of data;
 			if (data.lastline!=null) linesInput++;
 		}
 		
@@ -631,7 +699,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		// If yes: 
 		if (meta.hasFooter())
 		{
-			r=convertLineToRow(log, data.thisline, meta, true, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1);
+			r=convertLineToRow(log, data.thisline, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1);
 			if (data.nextline!=null && data.lastline==null)
 			{
 				retval=false;
@@ -651,7 +719,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		else // normal row.
 		{
-			r=convertLineToRow(log, data.thisline, meta, true, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1);
+			r=convertLineToRow(log, data.thisline, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1);
 			if (meta.getRowLimit()>0 && linesInput>=meta.getRowLimit())
 			{
 				retval=false;
@@ -754,6 +822,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					data.zi.close();
 				}
 				data.fr.close();
+                data.isr.close();
 		    }
 	    }
 	    catch(Exception e)
@@ -776,14 +845,34 @@ public class TextFileInput extends BaseStep implements StepInterface
 			data.filename = data.files[data.filenr];
 			
 			logBasic("Opening file: "+data.filename);
-			data.fr=new FileInputStream(new File(data.filename));
-			data.is=new BufferedInputStream(data.fr);
-			if (meta.isZipped())
-			{
-				data.zi = new ZipInputStream(data.fr);
-				data.zi.getNextEntry();
-				data.is=new BufferedInputStream(data.zi);
-			}
+
+            data.fr=new FileInputStream(new File(data.filename));
+
+            if (meta.isZipped())
+            {
+                data.zi = new ZipInputStream(data.fr);
+                data.zi.getNextEntry();
+                
+                if (meta.getEncoding()!=null && meta.getEnclosure().length()>0)
+                {
+                    data.isr = new InputStreamReader(new BufferedInputStream(data.zi), meta.getEncoding());
+                }
+                else
+                {
+                    data.isr = new InputStreamReader(new BufferedInputStream(data.zi));
+                }
+            }
+            else
+            {
+                if (meta.getEncoding()!=null && meta.getEnclosure().length()>0)
+                {
+                    data.isr = new InputStreamReader(new BufferedInputStream(data.fr), meta.getEncoding());
+                }
+                else
+                {
+                    data.isr = new InputStreamReader(new BufferedInputStream(data.fr));
+                }
+            }
 			
 			// Move file pointer ahead!
 			data.filenr++;
