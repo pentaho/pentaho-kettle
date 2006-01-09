@@ -240,6 +240,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6
 		}
 		;
+    
+    private boolean gotEncodings = false;
 
 	public TextFileInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -1400,18 +1402,23 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private void setEncodings()
     {
         // Encoding of the text file:
-        wEncoding.removeAll();
-        ArrayList values = new ArrayList(Charset.availableCharsets().values());
-        for (int i=0;i<values.size();i++)
+        if (!gotEncodings)
         {
-            Charset charSet = (Charset)values.get(i);
-            wEncoding.add( charSet.displayName() );
+            gotEncodings = true;
+            
+            wEncoding.removeAll();
+            ArrayList values = new ArrayList(Charset.availableCharsets().values());
+            for (int i=0;i<values.size();i++)
+            {
+                Charset charSet = (Charset)values.get(i);
+                wEncoding.add( charSet.displayName() );
+            }
+            
+            // Now select the default!
+            String defEncoding = Const.getEnvironmentVariable("file.encoding", "UTF-8");
+            int idx = Const.indexOfString(defEncoding, wEncoding.getItems() );
+            if (idx>=0) wEncoding.select( idx );
         }
-        
-        // Now select the default!
-        String defEncoding = Const.getEnvironmentVariable("file.encoding", "UTF-8");
-        int idx = Const.indexOfString(defEncoding, wEncoding.getItems() );
-        if (idx>=0) wEncoding.select( idx );
     }
 
     private void cancel()
