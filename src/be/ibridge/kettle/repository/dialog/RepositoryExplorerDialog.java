@@ -2283,7 +2283,7 @@ public class RepositoryExplorerDialog extends Dialog
 			String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
 			System.out.println("Export objects to file ["+filename+"]");
 			
-			RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog(log, props, shell, rep, filename);
+			RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog(shell, rep, filename);
 			repd.open();
 		}
 	}

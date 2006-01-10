@@ -15,6 +15,9 @@
 
 package be.ibridge.kettle.repository;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
@@ -31,15 +34,18 @@ import be.ibridge.kettle.core.Counters;
 import be.ibridge.kettle.core.Encr;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleDependencyException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
+import be.ibridge.kettle.trans.TransMeta;
 
 
 /**
@@ -4539,6 +4545,100 @@ public class Repository
     public void unlockRepository() throws KettleDatabaseException
     {
         database.unlockTables(repositoryTableNames);
+    }
+    
+    public void exportAllObjects(IProgressMonitor monitor, String xmlFilename) throws KettleException
+    {
+            if (monitor!=null) monitor.beginTask("Exporting the repository to XML...", 3);
+            
+            String xml = XMLHandler.getXMLHeader();
+            xml+="<repository>"+Const.CR+Const.CR;
+
+            // Dump the transformations...
+            xml+="<transformations>"+Const.CR;
+            if (monitor!=null) monitor.subTask("Exporting the transformations...");
+            
+            // Loop over all the directory id's
+            long dirids[] = getDirectoryTree().getDirectoryIDs();
+            System.out.println("Going through "+dirids.length+" directories.");
+            
+            for (int d=0;d<dirids.length && (monitor==null || (monitor!=null && !monitor.isCanceled()) );d++)
+            {
+                RepositoryDirectory repdir = getDirectoryTree().findDirectory(dirids[d]);
+
+                String trans[] = getTransformationNames(dirids[d]);
+                for (int i=0;i<trans.length && (monitor==null || (monitor!=null && !monitor.isCanceled()));i++)
+                {
+                    try
+                    {
+                        TransMeta ti = new TransMeta(this, trans[i], repdir);
+                        System.out.println("Loading/Exporting transformation ["+trans[i]+"]");
+                        if (monitor!=null) monitor.subTask("Exporting transformation ["+trans[i]+"]");
+                        
+                        xml+= ti.getXML()+Const.CR;
+                    }
+                    catch(KettleException ke)
+                    {
+                        log.logError(toString(), "An error occurred reading transformation ["+trans[i]+"] from directory ["+repdir+"] : "+ke.getMessage());
+                        log.logError(toString(), "Transformation ["+trans[i]+"] from directory ["+repdir+"] was not exported because of a loading error!");
+                    }
+                }
+            }
+            xml+="</transformations>"+Const.CR;
+            if (monitor!=null) monitor.worked(1);
+
+            // Now dump the jobs...
+            xml+="<jobs>"+Const.CR;
+            
+            if (monitor!=null) monitor.subTask("Exporting the jobs...");
+            
+            for (int d=0;d<dirids.length && (monitor==null || (monitor!=null && !monitor.isCanceled()));d++)
+            {
+                RepositoryDirectory repdir = getDirectoryTree().findDirectory(dirids[d]);
+
+                String jobs[]  = getJobNames(dirids[d]);
+                for (int i=0;i<jobs.length && (monitor==null || (monitor!=null && !monitor.isCanceled()));i++)
+                {
+                    try
+                    {
+                        JobMeta ji = new JobMeta(log, this, jobs[i], repdir);
+                        System.out.println("Loading/Exporting job ["+jobs[i]+"]");
+                        if (monitor!=null) monitor.subTask("Exporting job ["+jobs[i]+"]");
+                        
+                        xml+=ji.getXML()+Const.CR;
+                    }
+                    catch(KettleException ke)
+                    {
+                        log.logError(toString(), "An error occurred reading job ["+jobs[i]+"] from directory ["+repdir+"] : "+ke.getMessage());
+                        log.logError(toString(), "Job ["+jobs[i]+"] from directory ["+repdir+"] was not exported because of a loading error!");
+                    }
+                }
+            }
+            xml+="</jobs>"+Const.CR;
+
+            xml+="</repository>"+Const.CR+Const.CR;
+            
+            if (monitor!=null) monitor.worked(1);
+
+            if (monitor==null || (monitor!=null && !monitor.isCanceled()))
+            {
+                if (monitor!=null) monitor.subTask("Saving XML to file ["+xmlFilename+"]");
+
+                File f = new File(xmlFilename);
+                try
+                {
+                    FileOutputStream fos = new FileOutputStream(f);
+                    fos.write(xml.getBytes(Const.XML_ENCODING));
+                    fos.close();
+                }
+                catch(IOException e)
+                {
+                    System.out.println("Couldn't create file ["+xmlFilename+"]");
+                }
+                if (monitor!=null) monitor.worked(1);
+            }
+            
+            if (monitor!=null) monitor.done();
     }
 
 }

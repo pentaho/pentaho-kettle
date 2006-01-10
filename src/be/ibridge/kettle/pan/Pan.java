@@ -67,6 +67,7 @@ public class Pan
 		    System.out.println("  -logfile   : The logging file to write to");
 		    System.out.println("  -listdir   : List the directories in the repository");
 		    System.out.println("  -listtrans : List the transformations in the specified directory");
+            System.out.println("  -exprep    : Export all repository objects to one XML file");
 		    System.out.println("");
 		    
 		    return;
@@ -83,13 +84,14 @@ public class Pan
 		String listdir   = Const.getCommandlineOption(args, "-listdir");
 		String listtrans = Const.getCommandlineOption(args, "-listtrans");
 		String listrep   = Const.getCommandlineOption(args, "-listrep");
+        String exprep    = Const.getCommandlineOption(args, "-exprep");
 		
         repname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", repname);
         username = Const.getEnvironmentVariable("KETTLE_USER",       username);
         password = Const.getEnvironmentVariable("KETTLE_PASSWORD",   password);
 
-        /*
         System.out.println("Options:");
+        System.out.println("-------------");
         if (repname!=null)   System.out.println("repository name :        "+repname);
         if (username!=null)  System.out.println("username :               "+username);
         if (password!=null)  System.out.println("password is set");
@@ -97,7 +99,7 @@ public class Pan
         if (loglevel!=null)  System.out.println("logging level :          "+loglevel);
         if (listdir!=null)   System.out.println("list directories");
         if (listtrans!=null) System.out.println("list transformations");
-        */
+        if (exprep!=null)    System.out.println("export repository to:    "+exprep);
         
 		LogWriter log;
         if (logfile==null)
@@ -199,6 +201,14 @@ public class Pan
 												System.out.println(dirnames[i]);
 											}
 										}
+                                        else
+                                        // Export the repository
+                                        if (exprep!=null && exprep.length()>0)
+                                        {
+                                            System.out.println("Exporting all objects in the repository to file ["+exprep+"]");
+                                            rep.exportAllObjects(null, exprep);
+                                            System.out.println("Finished exporting all objects in the repository to file ["+exprep+"]");
+                                        }
 										else
 										{
 											System.out.println("ERROR: No transformation name supplied: which one should be run?");
@@ -274,9 +284,13 @@ public class Pan
 
 		if (trans==null)
 		{
-			if (!"Y".equalsIgnoreCase(listtrans) && !"Y".equalsIgnoreCase(listdir) && !"Y".equalsIgnoreCase(listrep))
+			if (!"Y".equalsIgnoreCase(listtrans) && 
+                !"Y".equalsIgnoreCase(listdir) && 
+                !"Y".equalsIgnoreCase(listrep) &&
+                ( exprep==null || exprep.length()==0 )
+               )
             {
-                System.out.println("ERROR: Pan can't continue because the transformation couldn't be loaded.");
+                System.out.println("ERROR: Pan can't continue because the transformation couldn't be loaded : ");
             }
 			return;
 		}
