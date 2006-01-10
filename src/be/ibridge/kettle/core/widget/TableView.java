@@ -107,8 +107,6 @@ public class TableView extends Composite
 	private TableColumn[] tablecolumn;
 	private ArrayList     items;
 	
-	private String        table_name;
-	
 	private Props         props;
 
 	private Text          text;	
@@ -177,8 +175,6 @@ public class TableView extends Composite
 		prev_rownr=-1;
 		
 		lsMod = lsm;
-		
-		table_name = this.getClass().getName();
 		
 		clearUndo();
 		
@@ -903,7 +899,7 @@ public class TableView extends Composite
 	
 				public void dragSetData(DragSourceEvent event) 
 				{
-					event.data = table_name+Const.CR+getSelectedText();					
+					event.data = "TableView"+Const.CR+getSelectedText();					
 				}
 	
 				public void dragFinished(DragSourceEvent event) {}
@@ -988,7 +984,7 @@ public class TableView extends Composite
 		else         table.setSelection(from, to);
 	}
 	
-	public void applyTextChange(TableItem row, int rownr, int colnr)
+	private void applyTextChange(TableItem row, int rownr, int colnr)
 	{
 		row.setText(colnr, text.getText());
 		text.dispose();
@@ -1018,17 +1014,7 @@ public class TableView extends Composite
 		columns[idx].setToolTip(text);
 	}
 	
-	public void setTableName(String name)
-	{
-		table_name = name;
-	}
-	
-	public String getTableName()
-	{
-		return table_name;
-	}
-	
-	public void editSelected()
+	private void editSelected()
 	{
 		int       colnr = cursor.getColumn();
 		TableItem row   = cursor.getRow();
@@ -1243,7 +1229,7 @@ public class TableView extends Composite
 		clipboard.setContents(new String[] { clip }, new Transfer[] { tran });
 	}
 
-	public String getSelectedText()
+	private String getSelectedText()
 	{
 		String selection = "";
 
@@ -1867,7 +1853,7 @@ public class TableView extends Composite
 		removeEmptyRows(-1);
 	}
 	
-	public boolean isEmpty(int rownr, int colnr)
+	private boolean isEmpty(int rownr, int colnr)
 	{
 		boolean empty=false;
 		TableItem item = table.getItem(rownr);
@@ -1953,15 +1939,12 @@ public class TableView extends Composite
 	public ScrollBar getVerticalBar()
 	{
 		return table.getVerticalBar();
-	}
-
-
-
+    }
 
 
 	/** Sort the entire vector, if it is not empty
 	 */
-	public synchronized void quickSort(Vector elements)
+	private synchronized void quickSort(Vector elements)
 	{
 		if (! elements.isEmpty())
 		{ 
@@ -2105,7 +2088,7 @@ public class TableView extends Composite
 		setUndoMenu();
 	}
 
-	public void undoAction()
+	private void undoAction()
 	{
 		TransAction ta = previousUndo();
 		if (ta==null) return;
@@ -2197,7 +2180,7 @@ public class TableView extends Composite
 		selectRows(rownr, rownr);
 	}
 	
-	public void redoAction()
+	private void redoAction()
 	{
 		TransAction ta = nextUndo();
 		if (ta==null) return;
@@ -2286,7 +2269,7 @@ public class TableView extends Composite
 		selectRows(rownr, rownr);
 	}
 	
-	public void setUndoMenu()
+	private void setUndoMenu()
 	{
 		TransAction prev = viewPreviousUndo();
 		TransAction next = viewNextUndo();
@@ -2319,7 +2302,7 @@ public class TableView extends Composite
 	
 
 	// get previous undo, change position
-	public TransAction previousUndo()
+	private TransAction previousUndo()
 	{
 		if (undo.size()==0 || undo_position<0) return null;  // No undo left!
 		
@@ -2331,7 +2314,7 @@ public class TableView extends Composite
 	}
 
 	// View previous undo, don't change position
-	public TransAction viewPreviousUndo()
+	private TransAction viewPreviousUndo()
 	{
 		if (undo.size()==0 || undo_position<0) return null;  // No undo left!
 		
@@ -2340,7 +2323,7 @@ public class TableView extends Composite
 		return retval;
 	}
 
-	public TransAction nextUndo()
+	private TransAction nextUndo()
 	{
 		int size=undo.size();
 		if (size==0 || undo_position>=size-1) return null; // no redo left...
@@ -2352,7 +2335,7 @@ public class TableView extends Composite
 		return retval;
 	}
 
-	public TransAction viewNextUndo()
+	private TransAction viewNextUndo()
 	{
 		int size=undo.size();
 		if (size==0 || undo_position>=size-1) return null; // no redo left...
@@ -2362,14 +2345,14 @@ public class TableView extends Composite
 		return retval;
 	}
 	
-	public void clearUndo()
+	private void clearUndo()
 	{
 		undo = new ArrayList();
 		undo_position = -1;
 	}
 
 
-	public Point getButtonPosition()
+	private Point getButtonPosition()
 	{
 		return new Point(button_colnr, button_rownr);
 	}
