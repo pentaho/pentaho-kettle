@@ -93,12 +93,6 @@ public class PMenuGraph extends Canvas
 	private int last_button;
 	private Rectangle selrect;
 
-    /** @deprecated */
-    public PMenuGraph(Composite par, int style, LogWriter l, SchemaMeta sch, PMenu sp)
-    {
-        this(par, style, sch, sp);
-    }
-
 	public PMenuGraph(Composite par, int style, SchemaMeta sch, PMenu sp)
 	{
 		super(par, style);
@@ -469,7 +463,7 @@ public class PMenuGraph extends Canvas
 					TableMeta ti = schema.findTable(table);
 					boolean newtable=false;
 
-					if (ti.isDrawn() || schema.isTableUsedInRelationships(table))
+					if (ti!=null && ( ti.isDrawn() || schema.isTableUsedInRelationships(table)))
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK);
 						mb.setMessage("Table is allready on canvas!");
@@ -477,6 +471,10 @@ public class PMenuGraph extends Canvas
 						mb.open();
 						return;
 					}
+                    else
+                    {
+                        if (ti==null) return;
+                    }
 
 					schema.unselectAll();
 					
@@ -1003,6 +1001,7 @@ public class PMenuGraph extends Canvas
 		Display disp = shell.getDisplay();
 		Image img = new Image(disp, area.x, area.y);
 		GC gc = new GC(img);
+        
 		// First clear the image in the background color
 		gc.setBackground(GUIResource.getInstance().getColorBackground());
 		gc.fillRectangle(0, 0, area.x, area.y);

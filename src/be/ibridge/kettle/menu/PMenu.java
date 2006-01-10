@@ -844,19 +844,19 @@ public class PMenu
 		
 		tabfolder= new CTabFolder(child, SWT.BORDER);
 		// tabfolder.setFont(GUIResource.getInstance().getFontDefault());
-		tabfolder.setBackground(GUIResource.getInstance().getColorBackground());
+		// tabfolder.setBackground(GUIResource.getInstance().getColorBackground());
 		tabfolder.setSimple(false);
-		tabfolder.setSelectionBackground(GUIResource.getInstance().getColorTab());
+		// tabfolder.setSelectionBackground(GUIResource.getInstance().getColorTab());
 		
-		CTabItem   tiTabsGraph = new CTabItem(tabfolder, SWT.NONE); tiTabsGraph.setText("Graphical view");
-		tiTabsGraph.setToolTipText("Displays the schema graphically.");
+       CTabItem   tiTabsGraph = new CTabItem(tabfolder, SWT.NONE); tiTabsGraph.setText("Graphical view");
+       tiTabsGraph.setToolTipText("Displays the schema graphically.");
 		CTabItem   tiTabsList  = new CTabItem(tabfolder, SWT.NULL); tiTabsList.setText("Log view");
 		tiTabsList.setToolTipText("Displays the log.");
-		
+
 		pmenugraph = new PMenuGraph(tabfolder, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND, schema, this);
 		pmenulog   = new PMenuLog(tabfolder, SWT.NONE, schema, null);
 		
-		tiTabsGraph.setControl(pmenugraph);
+        tiTabsGraph.setControl(pmenugraph);
 		tiTabsList.setControl(pmenulog);
 		
 		tabfolder.setSelection(0);
@@ -2671,8 +2671,7 @@ public class PMenu
 			log.logError("Menu", "Error loading steps... halting Menu!");
 			return;
 		}
-
-
+        
 		final PMenu win = new PMenu(log, stloader);
 		
 		// Check licence info!

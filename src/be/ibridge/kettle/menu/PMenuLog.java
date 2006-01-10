@@ -40,6 +40,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.schema.SchemaMeta;
 import be.ibridge.kettle.spoon.dialog.LogSettingsDialog;
@@ -91,8 +92,7 @@ public class PMenuLog extends Composite
 		setLayout(formLayout);
 		
 		setVisible(true);
-		white = Display.getCurrent().getSystemColor(SWT.COLOR_WHITE);
-		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { white.dispose(); } });
+		white = GUIResource.getInstance().getColorBackground();
 
 		wText = new Text(this, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
 		wText.setBackground(white);
