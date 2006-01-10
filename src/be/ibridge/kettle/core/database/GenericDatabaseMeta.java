@@ -12,6 +12,9 @@ import be.ibridge.kettle.core.value.Value;
  */
 public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
+    public static final String ATRRIBUTE_CUSTOM_URL          = "CUSTOM_URL"; 
+    public static final String ATRRIBUTE_CUSTOM_DRIVER_CLASS = "CUSTOM_DRIVER_CLASS";
+    
 	/**
 	 * Construct a new database connection.
 	 * 
@@ -32,7 +35,7 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
 	public String getDatabaseTypeDescLong()
 	{
-		return "Generic (read-only)";
+		return "Generic database";
 	}
 	
 	/**
@@ -45,7 +48,7 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		
 	public int[] getAccessTypeList()
 	{
-		return new int[] { DatabaseMeta.TYPE_ACCESS_ODBC };
+		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC };
 	}
 	
 	/**
@@ -62,12 +65,27 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 	
 	public String getDriverClass()
 	{
-		return "sun.jdbc.odbc.JdbcOdbcDriver"; // always ODBC!
+        if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
+        {
+            return getAttributes().getProperty(ATRRIBUTE_CUSTOM_DRIVER_CLASS, "");
+        }
+        else
+        {
+            return "sun.jdbc.odbc.JdbcOdbcDriver"; // always ODBC!
+        }
+
 	}
 	
 	public String getURL()
 	{
-		return "jdbc:odbc:"+getDatabaseName();
+        if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
+        {
+            return getAttributes().getProperty(ATRRIBUTE_CUSTOM_URL, "");
+        }
+        else
+        {
+            return "jdbc:odbc:"+getDatabaseName();
+        }
 	}
 
 	/**

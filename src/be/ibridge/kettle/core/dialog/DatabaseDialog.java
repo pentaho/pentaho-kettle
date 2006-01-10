@@ -47,6 +47,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
+import be.ibridge.kettle.core.database.GenericDatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
@@ -68,13 +69,14 @@ public class DatabaseDialog extends Dialog
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wGenTab, wOracleTab, wIfxTab, wSAPTab;
+	private CTabItem     wDbTab, wOracleTab, wIfxTab, wSAPTab, wGenericTab;
 
-	private Composite    wGenComp, wOracleComp, wIfxComp, wSAPComp;
-	private FormData     fdGenComp, fdOracleComp, fdIfxComp, fdSAPComp;
+	private Composite    wDbComp, wOracleComp, wIfxComp, wSAPComp, wGenericComp;
+	private FormData     fdDbComp, fdOracleComp, fdIfxComp, fdSAPComp, fdGenericComp;
 
 	private Shell     shell;
 
+    // DB
 	private Label    wlConn, wlConnType, wlConnAcc, wlHostName, wlDBName, wlPort, wlServername, wlUsername, wlPassword, wlData, wlIndex;
 	private Text     wConn,  wHostName,  wDBName,  wPort,  wServername,  wUsername,  wPassword, wData,  wIndex;
 	private List     wConnType,  wConnAcc;
@@ -82,11 +84,19 @@ public class DatabaseDialog extends Dialog
 	private FormData fdlConn, fdlConnType, fdlConnAcc, fdlPort, fdlHostName, fdlDBName, fdlServername, fdlUsername, fdlPassword, fdlData, fdlIndex;
 	private FormData fdConn,  fdConnType, fdConnAcc, fdPort, fdHostName, fdDBName,  fdServername, fdUsername, fdPassword, fdData, fdIndex;
 
+    // SAP
     private Label    wlSAPLanguage, wlSAPSystemNumber, wlSAPClient;
     private Text     wSAPLanguage, wSAPSystemNumber, wSAPClient;
 
     private FormData fdlSAPLanguage, fdlSAPSystemNumber, fdlSAPClient;
     private FormData fdSAPLanguage, fdSAPSystemNumber, fdSAPClient;
+
+    // Generic
+    private Label    wlURL, wlDriverClass;
+    private Text     wURL, wDriverClass;
+
+    private FormData fdlURL, fdlDriverClass;
+    private FormData fdURL, fdDriverClass;
 
 	private Button    wOK, wTest, wExp, wList, wCancel;
 	
@@ -160,21 +170,21 @@ public class DatabaseDialog extends Dialog
  		props.setLook(wTabFolder, Props.WIDGET_STYLE_TABLE);
 
 		//////////////////////////
-		// START OF Gen TAB   ///
+		// START OF DB TAB   ///
 		//////////////////////////
-		wGenTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGenTab.setText("General");
+		wDbTab=new CTabItem(wTabFolder, SWT.NONE);
+		wDbTab.setText("General");
 		
-		wGenComp = new Composite(wTabFolder, SWT.NONE);
- 		props.setLook(wGenComp);
+		wDbComp = new Composite(wTabFolder, SWT.NONE);
+ 		props.setLook(wDbComp);
 
 		FormLayout GenLayout = new FormLayout();
 		GenLayout.marginWidth  = 3;
 		GenLayout.marginHeight = 3;
-		wGenComp.setLayout(GenLayout);
+		wDbComp.setLayout(GenLayout);
 
 		// What's the connection name?
-		wlConn = new Label(wGenComp, SWT.RIGHT); 
+		wlConn = new Label(wDbComp, SWT.RIGHT); 
  		props.setLook(wlConn);
 		wlConn.setText("Connection name: ");
 		fdlConn = new FormData();
@@ -183,7 +193,7 @@ public class DatabaseDialog extends Dialog
 		fdlConn.right = new FormAttachment(middle, -margin);
 		wlConn.setLayoutData(fdlConn);
 
-		wConn = new Text(wGenComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wConn = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
  		props.setLook(wConn);
 		wConn.addModifyListener(lsMod);
 		fdConn = new FormData();
@@ -193,7 +203,7 @@ public class DatabaseDialog extends Dialog
 		wConn.setLayoutData(fdConn);
 
 		// What types are there?
-		wlConnType = new Label(wGenComp, SWT.RIGHT); 
+		wlConnType = new Label(wDbComp, SWT.RIGHT); 
 		wlConnType.setText("Connection type: "); 
  		props.setLook(wlConnType);
 		fdlConnType = new FormData();
@@ -202,7 +212,7 @@ public class DatabaseDialog extends Dialog
 		fdlConnType.right  = new FormAttachment(middle, -margin);
 		wlConnType.setLayoutData(fdlConnType);
 
-		wConnType = new List(wGenComp, SWT.BORDER | SWT.READ_ONLY | SWT.SINGLE | SWT.V_SCROLL);
+		wConnType = new List(wDbComp, SWT.BORDER | SWT.READ_ONLY | SWT.SINGLE | SWT.V_SCROLL);
  		props.setLook(wConnType);
 		String[] dbtypes=DatabaseMeta.getDBTypeDescLongList();
 		for (int i=0;i<dbtypes.length;i++)
@@ -218,7 +228,7 @@ public class DatabaseDialog extends Dialog
 		wConnType.setLayoutData(fdConnType);
 
 		// What access types are there?
-		wlConnAcc = new Label(wGenComp, SWT.RIGHT); 
+		wlConnAcc = new Label(wDbComp, SWT.RIGHT); 
 		wlConnAcc.setText("Method of access: "); 
  		props.setLook(wlConnAcc);
 		fdlConnAcc = new FormData();
@@ -227,7 +237,7 @@ public class DatabaseDialog extends Dialog
 		fdlConnAcc.right= new FormAttachment(middle, -margin);
 		wlConnAcc.setLayoutData(fdlConnAcc);
 
-		wConnAcc = new List(wGenComp, SWT.BORDER | SWT.READ_ONLY | SWT.SINGLE | SWT.V_SCROLL);
+		wConnAcc = new List(wDbComp, SWT.BORDER | SWT.READ_ONLY | SWT.SINGLE | SWT.V_SCROLL);
  		props.setLook(wConnAcc);
 		props.setLook(wConnAcc);
 		fdConnAcc = new FormData();
@@ -238,7 +248,7 @@ public class DatabaseDialog extends Dialog
 		wConnAcc.setLayoutData(fdConnAcc);
 
 		// Hostname
-		wlHostName = new Label(wGenComp, SWT.RIGHT); 
+		wlHostName = new Label(wDbComp, SWT.RIGHT); 
 		wlHostName.setText("Server host name: "); 
  		props.setLook(wlHostName);
 
@@ -248,7 +258,7 @@ public class DatabaseDialog extends Dialog
 		fdlHostName.right= new FormAttachment(middle, -margin);
 		wlHostName.setLayoutData(fdlHostName);
 
-		wHostName = new Text(wGenComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wHostName = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
  		props.setLook(wHostName);
 		wHostName.addModifyListener(lsMod);
 		fdHostName = new FormData();
@@ -258,7 +268,7 @@ public class DatabaseDialog extends Dialog
 		wHostName.setLayoutData(fdHostName);
 		
 		// DBName
-		wlDBName = new Label(wGenComp, SWT.RIGHT ); 
+		wlDBName = new Label(wDbComp, SWT.RIGHT ); 
 		wlDBName.setText("Database name: "); 
  		props.setLook(wlDBName);
 		fdlDBName = new FormData();
@@ -267,7 +277,7 @@ public class DatabaseDialog extends Dialog
 		fdlDBName.right= new FormAttachment(middle, -margin);
 		wlDBName.setLayoutData(fdlDBName);
 
-		wDBName = new Text(wGenComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wDBName = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
  		props.setLook(wDBName);
 		wDBName.addModifyListener(lsMod);
 		fdDBName = new FormData();
@@ -277,7 +287,7 @@ public class DatabaseDialog extends Dialog
 		wDBName.setLayoutData(fdDBName);
 				
 		// Port
-		wlPort = new Label(wGenComp, SWT.RIGHT ); 
+		wlPort = new Label(wDbComp, SWT.RIGHT ); 
 		wlPort.setText("Port number: "); 
  		props.setLook(wlPort);
 		fdlPort = new FormData();
@@ -286,7 +296,7 @@ public class DatabaseDialog extends Dialog
 		fdlPort.right= new FormAttachment(middle, -margin);
 		wlPort.setLayoutData(fdlPort);
 
-		wPort = new Text(wGenComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wPort = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
  		props.setLook(wPort);
 		wPort.addModifyListener(lsMod);
 		fdPort = new FormData();
@@ -296,7 +306,7 @@ public class DatabaseDialog extends Dialog
 		wPort.setLayoutData(fdPort);
 		
 		// Username
-		wlUsername = new Label(wGenComp, SWT.RIGHT ); 
+		wlUsername = new Label(wDbComp, SWT.RIGHT ); 
 		wlUsername.setText("Username: "); 
  		props.setLook(wlUsername);
 		fdlUsername = new FormData();
@@ -305,7 +315,7 @@ public class DatabaseDialog extends Dialog
 		fdlUsername.right= new FormAttachment(middle, -margin);
 		wlUsername.setLayoutData(fdlUsername);
 
-		wUsername = new Text(wGenComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wUsername = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
  		props.setLook(wUsername);
 		wUsername.addModifyListener(lsMod);
 		fdUsername = new FormData();
@@ -316,7 +326,7 @@ public class DatabaseDialog extends Dialog
 
 		
 		// Password
-		wlPassword = new Label(wGenComp, SWT.RIGHT ); 
+		wlPassword = new Label(wDbComp, SWT.RIGHT ); 
 		wlPassword.setText("Password: "); 
  		props.setLook(wlPassword);
 		fdlPassword = new FormData();
@@ -325,7 +335,7 @@ public class DatabaseDialog extends Dialog
 		fdlPassword.right= new FormAttachment(middle, -margin);
 		wlPassword.setLayoutData(fdlPassword);
 
-		wPassword = new Text(wGenComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wPassword = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
  		props.setLook(wPassword);
 		wPassword.setEchoChar('*');
 		wPassword.addModifyListener(lsMod);
@@ -336,15 +346,15 @@ public class DatabaseDialog extends Dialog
 		wPassword.setLayoutData(fdPassword);
 
 		
-		fdGenComp=new FormData();
-		fdGenComp.left  = new FormAttachment(0, 0);
-		fdGenComp.top   = new FormAttachment(0, 0);
-		fdGenComp.right = new FormAttachment(100, 0);
-		fdGenComp.bottom= new FormAttachment(100, 0);
-		wGenComp.setLayoutData(fdGenComp);
+		fdDbComp=new FormData();
+		fdDbComp.left  = new FormAttachment(0, 0);
+		fdDbComp.top   = new FormAttachment(0, 0);
+		fdDbComp.right = new FormAttachment(100, 0);
+		fdDbComp.bottom= new FormAttachment(100, 0);
+		wDbComp.setLayoutData(fdDbComp);
 	
-		wGenComp.layout();
-		wGenTab.setControl(wGenComp);
+		wDbComp.layout();
+		wDbTab.setControl(wDbComp);
 		
 		/////////////////////////////////////////////////////////////
 		/// END OF GEN TAB
@@ -545,6 +555,71 @@ public class DatabaseDialog extends Dialog
         wSAPComp.layout();
         wSAPTab.setControl(wSAPComp);
 
+        //////////////////////////
+        // START OF DB TAB///
+        ///
+        wGenericTab=new CTabItem(wTabFolder, SWT.NONE);
+        wGenericTab.setText("Generic");
+        wGenericTab.setToolTipText("Settings in case you want to use a generic database with a non-supported JDBC driver");
+
+        FormLayout genericLayout = new FormLayout ();
+        genericLayout.marginWidth  = 3;
+        genericLayout.marginHeight = 3;
+        
+        wGenericComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook( wGenericComp );
+        wGenericComp.setLayout(genericLayout);
+
+        // URL
+        wlURL = new Label(wGenericComp, SWT.RIGHT ); 
+        wlURL.setText("URL "); 
+        props.setLook(wlURL);
+        fdlURL = new FormData();
+        fdlURL.top  = new FormAttachment(0, margin);
+        fdlURL.left = new FormAttachment(0,0);
+        fdlURL.right= new FormAttachment(middle, -margin);
+        wlURL.setLayoutData(fdlURL);
+
+        wURL = new Text(wGenericComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(        wURL);
+        wURL.addModifyListener(lsMod);
+        fdURL = new FormData();
+        fdURL.top  = new FormAttachment(0, margin);
+        fdURL.left = new FormAttachment(middle, 0); 
+        fdURL.right= new FormAttachment(95, 0);
+        wURL.setLayoutData(fdURL);
+   
+        
+        // Driver class
+        wlDriverClass = new Label(wGenericComp, SWT.RIGHT ); 
+        wlDriverClass.setText("Driver class "); 
+        props.setLook(        wlDriverClass);
+        fdlDriverClass = new FormData();
+        fdlDriverClass.top  = new FormAttachment(wURL, margin);
+        fdlDriverClass.left = new FormAttachment(0,0);
+        fdlDriverClass.right= new FormAttachment(middle, -margin);
+        wlDriverClass.setLayoutData(fdlDriverClass);
+
+        wDriverClass = new Text(wGenericComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(        wDriverClass);
+        wDriverClass.addModifyListener(lsMod);
+        fdDriverClass = new FormData();
+        fdDriverClass.top  = new FormAttachment(wURL, margin);
+        fdDriverClass.left = new FormAttachment(middle, 0); 
+        fdDriverClass.right= new FormAttachment(95, 0);
+        wDriverClass.setLayoutData(fdDriverClass);
+
+        
+        fdGenericComp = new FormData();
+        fdGenericComp.left  = new FormAttachment(0, 0);
+        fdGenericComp.top   = new FormAttachment(0, 0);
+        fdGenericComp.right = new FormAttachment(100, 0);
+        fdGenericComp.bottom= new FormAttachment(100, 0);
+        wGenericComp.setLayoutData(fdGenericComp);
+
+        wGenericComp.layout();
+        wGenericTab.setControl(wGenericComp);
+
         
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
@@ -682,7 +757,10 @@ public class DatabaseDialog extends Dialog
         wSAPLanguage.setText( connection.getAttributes().getProperty("SAPLanguage", ""));
         wSAPSystemNumber.setText( connection.getAttributes().getProperty("SAPSystemNumber", ""));
         wSAPClient.setText( connection.getAttributes().getProperty("SAPClient", ""));
-		
+
+        wURL.setText(         connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL, ""));
+        wDriverClass.setText( connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, ""));
+        
 		wConn.setFocus();
 		wConn.selectAll();
 	}
@@ -695,30 +773,49 @@ public class DatabaseDialog extends Dialog
 		previousDatabaseType=type;
 		
 		// If the type is not Informix: disable the servername field!
-		int idx = wConnType.getSelectionIndex();
-		if (idx>=0)
+		int idxDBType = wConnType.getSelectionIndex();
+		if (idxDBType>=0)
 		{
-			int t = DatabaseMeta.getDatabaseType( wConnType.getItem(idx) );
-			wlServername.setEnabled( t==DatabaseMeta.TYPE_DATABASE_INFORMIX );
-			wServername.setEnabled( t==DatabaseMeta.TYPE_DATABASE_INFORMIX );
+			int dbtype = DatabaseMeta.getDatabaseType( wConnType.getItem(idxDBType) );
+            int idxAccType = wConnAcc.getSelectionIndex();
+            int acctype = -1;
+            if (idxAccType>=0)
+            {
+                acctype = DatabaseMeta.getAccessType( wConnAcc.getItem(idxAccType) );    
+            }
+
+			wlServername.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_INFORMIX );
+			wServername.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_INFORMIX );
             
-            wlData.setEnabled( t==DatabaseMeta.TYPE_DATABASE_ORACLE );
-            wData.setEnabled( t==DatabaseMeta.TYPE_DATABASE_ORACLE );
-            wlIndex.setEnabled( t==DatabaseMeta.TYPE_DATABASE_ORACLE );
-            wIndex.setEnabled( t==DatabaseMeta.TYPE_DATABASE_ORACLE );
+            wlData.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_ORACLE );
+            wData.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_ORACLE );
+            wlIndex.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_ORACLE );
+            wIndex.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_ORACLE );
             
-            wlSAPLanguage.setEnabled( t==DatabaseMeta.TYPE_DATABASE_SAPR3 );
-            wSAPLanguage.setEnabled( t==DatabaseMeta.TYPE_DATABASE_SAPR3 );
-            wlSAPSystemNumber.setEnabled( t==DatabaseMeta.TYPE_DATABASE_SAPR3 );
-            wSAPSystemNumber.setEnabled( t==DatabaseMeta.TYPE_DATABASE_SAPR3 );
-            wlSAPClient.setEnabled( t==DatabaseMeta.TYPE_DATABASE_SAPR3 );
-            wSAPClient.setEnabled( t==DatabaseMeta.TYPE_DATABASE_SAPR3 );
-            wlDBName.setEnabled( t!=DatabaseMeta.TYPE_DATABASE_SAPR3 );
-            wDBName.setEnabled( t!=DatabaseMeta.TYPE_DATABASE_SAPR3 );
-            wlPort.setEnabled( t!=DatabaseMeta.TYPE_DATABASE_SAPR3 );
-            wPort.setEnabled( t!=DatabaseMeta.TYPE_DATABASE_SAPR3 );
-            wTest.setEnabled( t!=DatabaseMeta.TYPE_DATABASE_SAPR3 );
-            wExp.setEnabled( t!=DatabaseMeta.TYPE_DATABASE_SAPR3 );
+            wlSAPLanguage.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_SAPR3 );
+            wSAPLanguage.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_SAPR3 );
+            wlSAPSystemNumber.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_SAPR3 );
+            wSAPSystemNumber.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_SAPR3 );
+            wlSAPClient.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_SAPR3 );
+            wSAPClient.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_SAPR3 );
+            wlDBName.setEnabled( dbtype!=DatabaseMeta.TYPE_DATABASE_SAPR3 );
+            wDBName.setEnabled( dbtype!=DatabaseMeta.TYPE_DATABASE_SAPR3 );
+            wlPort.setEnabled( dbtype!=DatabaseMeta.TYPE_DATABASE_SAPR3 );
+            wPort.setEnabled( dbtype!=DatabaseMeta.TYPE_DATABASE_SAPR3 );
+            wTest.setEnabled( dbtype!=DatabaseMeta.TYPE_DATABASE_SAPR3 );
+            wExp.setEnabled( dbtype!=DatabaseMeta.TYPE_DATABASE_SAPR3 );
+            
+            wlHostName.setEnabled(  !(dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE));
+            wHostName.setEnabled(   !(dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE));
+            wlDBName.setEnabled(    !(dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE));
+            wDBName.setEnabled(     !(dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE));
+            wlPort.setEnabled(      !(dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE));
+            wPort.setEnabled(       !(dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE));
+            
+            wlURL.setEnabled(         dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE);
+            wURL.setEnabled(          dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE);
+            wlDriverClass.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE);
+            wDriverClass.setEnabled(  dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE);
   		}
         
         
@@ -807,7 +904,11 @@ public class DatabaseDialog extends Dialog
         info.getAttributes().put("SAPLanguage",     wSAPLanguage.getText());
         info.getAttributes().put("SAPSystemNumber", wSAPSystemNumber.getText());
         info.getAttributes().put("SAPClient",       wSAPClient.getText());
-        
+
+        // Generic settings...
+        info.getAttributes().put(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL,          wURL.getText());
+        info.getAttributes().put(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, wDriverClass.getText());
+
         String[] remarks = info.checkParameters(); 
 		if (remarks.length!=0)
 		{
