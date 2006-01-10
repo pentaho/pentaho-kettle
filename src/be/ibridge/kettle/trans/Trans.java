@@ -1213,7 +1213,7 @@ public class Trans
 
 	public String toString()
 	{
-        if (transMeta==null) return getClass().getName();
+        if (transMeta==null || transMeta.getName()==null) return getClass().getName();
 		return transMeta.getName();
 	}
 

@@ -304,8 +304,11 @@ public class LogWriter
 		println(lvl, "General", msg);
 	}
 	
-	public void println(int lvl, String subject, String msg)
+	public void println(int lvl, String subj, String msg)
 	{
+        String subject = subj;
+        if (subject==null) subject="Kettle";
+        
 		// Are the message filtered?
 		if (filter!=null && filter.length()>0)
         {
@@ -318,6 +321,7 @@ public class LogWriter
 		if (level==0) return;  // Nothing, not even errors...
 		if (level<lvl) return; // not for our eyes.
 		
+        
         Logger logger = Logger.getLogger(subject);
         
         Log4jMessage message = new Log4jMessage(msg, subject);
