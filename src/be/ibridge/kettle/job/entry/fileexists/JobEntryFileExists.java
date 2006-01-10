@@ -19,6 +19,7 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.XMLHandler;
@@ -133,7 +134,7 @@ public class JobEntryFileExists extends JobEntryBase implements JobEntryInterfac
 	
 		if (filename!=null)
 		{
-			File file = new File(filename);
+			File file = new File(Const.replEnv(filename));
 			if (file.exists() && file.canRead())
 			{
 				log.logDetailed(toString(), "File ["+filename+"] exists.");
