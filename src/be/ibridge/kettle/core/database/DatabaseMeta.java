@@ -146,7 +146,12 @@ public class DatabaseMeta implements Cloneable, XMLInterface
      * Connection to an Ingress database
      */
     public static final int TYPE_DATABASE_INGRES     = 18;
-    
+
+    /**
+     * Connection to a Borland Interbase database
+     */
+    public static final int TYPE_DATABASE_INTERBASE  = 19;
+
     
 
 	/**
@@ -1219,7 +1224,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
             remarks.add("Please give this database connection a name");
         }
         
-        if (getDatabaseType()!=TYPE_DATABASE_SAPR3)
+        if (getDatabaseType()!=TYPE_DATABASE_SAPR3 && getDatabaseType()!=TYPE_DATABASE_GENERIC)
         {
             if (getDatabaseName()==null || getDatabaseName().length()==0) 
             {
