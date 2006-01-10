@@ -62,7 +62,7 @@ REM ******************************************************************
 REM ** Set java runtime options                                     **
 REM ** Change 128m to higher values in case you run out of memory.  **
 REM ******************************************************************
-"
+
 set OPT=-Xmx512M -cp %CLASSPATH% -Djava.library.path=libswt\win32\ -DKETTLE_REPOSITORY="%KETTLE_REPOSITORY%" -DKETTLE_USER="%KETTLE_USER%" -DKETTLE_PASSWORD="%KETTLE_PASSWORD%"
 
 REM ***************
