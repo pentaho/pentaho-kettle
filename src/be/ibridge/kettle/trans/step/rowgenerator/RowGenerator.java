@@ -154,12 +154,15 @@ public class RowGenerator extends BaseStep implements StepInterface
     	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
+        meta=(RowGeneratorMeta)smi;
+        data=(RowGeneratorData)sdi;
+
 		Row r=null;
 		boolean retval=true;
-				
+		
 		if (linesWritten<meta.getRowLimit())
 		{
-			r.addRow(data.constants);
+			r=data.constants;
 		}
 		else
 		{
@@ -178,7 +181,6 @@ public class RowGenerator extends BaseStep implements StepInterface
     {
         meta=(RowGeneratorMeta)smi;
         data=(RowGeneratorData)sdi;
-        
         
         if (super.init(smi, sdi))
         {
