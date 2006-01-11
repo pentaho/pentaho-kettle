@@ -443,10 +443,12 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			}
             if (meta.getEncoding()!=null && meta.getEncoding().length()>0)
             {
+                log.logBasic(toString(), "Opening output stream in encoding: "+meta.getEncoding());
                 data.writer = new OutputStreamWriter(outputStream, meta.getEncoding());
             }
             else
             {
+                log.logBasic(toString(), "Opening output stream in default encoding");
                 data.writer = new OutputStreamWriter(outputStream);
             }
 						
