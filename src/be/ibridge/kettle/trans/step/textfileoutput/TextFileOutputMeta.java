@@ -96,7 +96,12 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	
 	/** The output fields */
     private  TextFileField outputFields[];
-	
+
+    /** The encoding to use for reading: null or empty string means system default encoding */
+    private String encoding;
+
+    
+    
 	/** Calculated value ... */
     private  String newline;
 
@@ -474,7 +479,9 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			
 			headerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
 			footerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
-			fileFormat    = XMLHandler.getTagValue(stepnode, "format");
+			fileFormat       = XMLHandler.getTagValue(stepnode, "format");
+            encoding         = XMLHandler.getTagValue(stepnode, "encoding");
+
 			fileName  = XMLHandler.getTagValue(stepnode, "file", "name");
 			extension = XMLHandler.getTagValue(stepnode, "file", "extention");
 			fileAppended    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "append"));
@@ -698,6 +705,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		retval+="    "+XMLHandler.addTagValue("header",    headerEnabled);
 		retval+="    "+XMLHandler.addTagValue("footer",    footerEnabled);
 		retval+="    "+XMLHandler.addTagValue("format",    fileFormat);
+        retval+="    "+XMLHandler.addTagValue("encoding",  encoding);
+
 		retval+="    <file>"+Const.CR;
 		retval+="      "+XMLHandler.addTagValue("name",       fileName);
 		retval+="      "+XMLHandler.addTagValue("extention",  extension);
@@ -741,10 +750,11 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		{
 			separator       =      rep.getStepAttributeString (id_step, "separator");
 			enclosure       =      rep.getStepAttributeString (id_step, "enclosure");
-			headerEnabled          =      rep.getStepAttributeBoolean(id_step, "header");
-			footerEnabled          =      rep.getStepAttributeBoolean(id_step, "footer");   
+			headerEnabled   =      rep.getStepAttributeBoolean(id_step, "header");
+			footerEnabled   =      rep.getStepAttributeBoolean(id_step, "footer");   
 			fileFormat      =      rep.getStepAttributeString (id_step, "format");  
-			
+            encoding        =      rep.getStepAttributeString (id_step, "encoding");
+            
 			fileName        =      rep.getStepAttributeString (id_step, "file_name");  
 			extension       =      rep.getStepAttributeString (id_step, "file_extention");
 			fileAppended          =      rep.getStepAttributeBoolean(id_step, "file_append");
@@ -792,7 +802,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "header",          headerEnabled);
 			rep.saveStepAttribute(id_transformation, id_step, "footer",          footerEnabled);
 			rep.saveStepAttribute(id_transformation, id_step, "format",          fileFormat);
-			
+            rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);
 			rep.saveStepAttribute(id_transformation, id_step, "file_name",       fileName);
 			rep.saveStepAttribute(id_transformation, id_step, "file_extention",  extension);
 			rep.saveStepAttribute(id_transformation, id_step, "file_append",     fileAppended);
@@ -891,5 +901,19 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	{
 		return new TextFileOutputData();
 	}
+
+
+
+    public String getEncoding()
+    {
+        return encoding;
+    }
+
+
+
+    public void setEncoding(String encoding)
+    {
+        this.encoding = encoding;
+    }
 
 }

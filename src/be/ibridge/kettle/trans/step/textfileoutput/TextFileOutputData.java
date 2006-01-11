@@ -16,7 +16,7 @@
 
 package be.ibridge.kettle.trans.step.textfileoutput;
 
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.text.DateFormatSymbols;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
@@ -48,7 +48,8 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 	public DateFormatSymbols dafs;
 
 	public ZipOutputStream zip;
-	public OutputStream fw;
+    
+    public OutputStreamWriter writer;
 
 	/**
 	 * 

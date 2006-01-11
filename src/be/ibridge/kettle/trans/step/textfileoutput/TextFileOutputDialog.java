@@ -21,6 +21,8 @@
 
 package be.ibridge.kettle.trans.step.textfileoutput;
 
+import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Properties;
 
@@ -28,12 +30,14 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -128,7 +132,11 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	private Label        wlFormat;
 	private CCombo       wFormat;
 	private FormData     fdlFormat, fdFormat;
-	
+
+    private Label        wlEncoding;
+    private CCombo       wEncoding;
+    private FormData     fdlEncoding, fdEncoding;
+
 	private Label        wlPad;
 	private Button       wPad;
 	private FormData     fdlPad, fdPad;
@@ -144,6 +152,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	
     private Button       wMinWidth;
     private Listener     lsMinWidth;
+    private boolean      gotEncodings = false; 
     
 	public TextFileOutputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
@@ -586,19 +595,54 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdFormat.right= new FormAttachment(100, 0);
 		wFormat.setLayoutData(fdFormat);
 
+        wlEncoding=new Label(wContentComp, SWT.RIGHT);
+        wlEncoding.setText("Encoding ");
+        props.setLook(wlEncoding);
+        fdlEncoding=new FormData();
+        fdlEncoding.left = new FormAttachment(0, 0);
+        fdlEncoding.top  = new FormAttachment(wFormat, margin);
+        fdlEncoding.right= new FormAttachment(middle, -margin);
+        wlEncoding.setLayoutData(fdlEncoding);
+        wEncoding=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
+        wEncoding.setEditable(true);
+        props.setLook(wEncoding);
+        wEncoding.addModifyListener(lsMod);
+        fdEncoding=new FormData();
+        fdEncoding.left = new FormAttachment(middle, 0);
+        fdEncoding.top  = new FormAttachment(wFormat, margin);
+        fdEncoding.right= new FormAttachment(100, 0);
+        wEncoding.setLayoutData(fdEncoding);
+        wEncoding.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                    shell.setCursor(busy);
+                    setEncodings();
+                    shell.setCursor(null);
+                    busy.dispose();
+                }
+            }
+        );
+
+        
 		wlPad=new Label(wContentComp, SWT.RIGHT);
 		wlPad.setText("Right pad fields");
  		props.setLook(wlPad);
 		fdlPad=new FormData();
 		fdlPad.left = new FormAttachment(0, 0);
-		fdlPad.top  = new FormAttachment(wFormat, margin);
+		fdlPad.top  = new FormAttachment(wEncoding, margin);
 		fdlPad.right= new FormAttachment(middle, -margin);
 		wlPad.setLayoutData(fdlPad);
 		wPad=new Button(wContentComp, SWT.CHECK );
  		props.setLook(wPad);
 		fdPad=new FormData();
 		fdPad.left = new FormAttachment(middle, 0);
-		fdPad.top  = new FormAttachment(wFormat, margin);
+		fdPad.top  = new FormAttachment(wEncoding, margin);
 		fdPad.right= new FormAttachment(100, 0);
 		wPad.setLayoutData(fdPad);
 		wPad.addSelectionListener(new SelectionAdapter() 
@@ -842,7 +886,30 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		return stepname;
 	}
 	
-	/**
+    private void setEncodings()
+    {
+        // Encoding of the text file:
+        if (!gotEncodings)
+        {
+            gotEncodings = true;
+            
+            wEncoding.removeAll();
+            ArrayList values = new ArrayList(Charset.availableCharsets().values());
+            for (int i=0;i<values.size();i++)
+            {
+                Charset charSet = (Charset)values.get(i);
+                wEncoding.add( charSet.displayName() );
+            }
+            
+            // Now select the default!
+            String defEncoding = Const.getEnvironmentVariable("file.encoding", "UTF-8");
+            int idx = Const.indexOfString(defEncoding, wEncoding.getItems() );
+            if (idx>=0) wEncoding.select( idx );
+        }
+    }
+
+
+    /**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
 	public void getData()
@@ -852,6 +919,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		if (input.getSeparator() !=null) wSeparator.setText(input.getSeparator());
 		if (input.getEnclosure() !=null) wEnclosure.setText(input.getEnclosure());
 		if (input.getFileFormat()!=null) wFormat.setText(input.getFileFormat());
+        if (input.getEncoding()  !=null) wEncoding.setText(input.getEncoding());
+        
 		wSplitEvery.setText(""+input.getSplitEvery());
 
 		wHeader.setSelection(input.isHeaderEnabled());
@@ -898,6 +967,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	{
 		tfoi.setFileName(   wFilename.getText() );
 		tfoi.setFileFormat( wFormat.getText() );
+        tfoi.setEncoding( wEncoding.getText() );
 		tfoi.setSeparator(  wSeparator.getText() );
 		tfoi.setEnclosure(  wEnclosure.getText() );
 		tfoi.setExtension(  wExtension.getText() );
