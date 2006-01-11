@@ -501,4 +501,9 @@ public interface DatabaseInterface extends Cloneable
      *         null is returned in case locking is not supported on the target database.
      */
     public String getSQLUnlockTables(String tableNames[]);
+
+    /**
+     * @return true if the database resultsets support getTimeStamp() to retrieve date-time. (Date)
+     */
+    public boolean supportsTimeStampToDateConversion();
 }

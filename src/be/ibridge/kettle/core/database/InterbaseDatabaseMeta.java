@@ -312,4 +312,9 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 				;
 	}
     
+    public boolean supportsTimeStampToDateConversion()
+    {
+        return false;
+    }
+
 }

@@ -39,7 +39,7 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
 	public String getDatabaseTypeDescLong()
 	{
-		return "Intersystems Caché";
+		return "Intersystems Cache";
 	}
 	
 	/**

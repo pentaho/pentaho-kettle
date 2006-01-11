@@ -3066,14 +3066,15 @@ public class Repository
 		tablename = "R_DATABASE_TYPE";
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_DATABASE_TYPE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("CODE",             Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("DESCRIPTION",      Value.VALUE_TYPE_STRING, LEN, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_DATABASE_TYPE", false);
 
 		if (sql != null && sql.length() > 0)
 		{
 			try
 			{
+                log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
                 log.logDetailed(toString(), "Created/altered table " + tablename);
 			}
@@ -3144,6 +3145,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0)
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3209,6 +3211,7 @@ public class Repository
 		sql = database.getDDL(tablename, table, null, false, "ID_NOTE", false);
 		if (sql != null && sql.length() > 0)
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3242,6 +3245,7 @@ public class Repository
 		sql = database.getDDL(tablename, table, null, false, "ID_DATABASE", false);
 		if (sql != null && sql.length() > 0)
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3267,6 +3271,7 @@ public class Repository
         sql = database.getDDL(tablename, table, null, false, "ID_DATABASE_ATTRIBUTE", false);
         if (sql != null && sql.length() > 0)
         {
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
             database.execStatements(sql);
             log.logDetailed(toString(), "Created or altered table " + tablename);
             
@@ -3277,6 +3282,7 @@ public class Repository
                 if (!database.checkIndexExists(tablename, keyfield))
                 {
                     sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
+                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
                     database.execStatements(sql);
                     log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
                 }
@@ -3308,6 +3314,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0)
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 			
@@ -3318,6 +3325,7 @@ public class Repository
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
+                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
 					log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
 				}
@@ -3366,6 +3374,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0)
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3397,6 +3406,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0)
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 
@@ -3409,6 +3419,7 @@ public class Repository
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
 	
+                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
 					log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
 				}
@@ -3441,6 +3452,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0)
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3466,6 +3478,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0)
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3488,6 +3501,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3515,6 +3529,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3539,6 +3554,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3565,6 +3581,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3602,6 +3619,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3630,6 +3648,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 
@@ -3640,6 +3659,7 @@ public class Repository
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
+                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
 					log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
 				}
@@ -3672,6 +3692,7 @@ public class Repository
 		sql = database.getDDL(tablename, table, null, false, null, false);
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 
@@ -3682,6 +3703,7 @@ public class Repository
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, false, false, false);
+                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
 					log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
 				}
@@ -3698,6 +3720,7 @@ public class Repository
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, false, false, false);
+                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
 					log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
 				}
@@ -3727,6 +3750,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3752,6 +3776,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3822,6 +3847,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3850,6 +3876,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3875,6 +3902,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3910,6 +3938,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3940,6 +3969,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -3968,6 +3998,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 
@@ -3980,6 +4011,7 @@ public class Repository
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
 	
+                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
 					log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
 				}
@@ -4015,6 +4047,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -4038,6 +4071,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -4071,6 +4105,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -4142,6 +4177,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -4220,6 +4256,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
@@ -4285,6 +4322,7 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
+            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
 			log.logDetailed(toString(), "Created or altered table " + tablename);
 
@@ -4296,6 +4334,7 @@ public class Repository
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
 	
+                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
 					log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
 				}

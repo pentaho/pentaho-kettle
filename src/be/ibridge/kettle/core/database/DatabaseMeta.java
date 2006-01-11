@@ -1603,4 +1603,12 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         return list;
     }
 
+    /**
+     * @return true if the database resultsets support getTimeStamp() to retrieve date-time. (Date)
+     */
+    public boolean supportsTimeStampToDateConversion()
+    {
+        return databaseInterface.supportsTimeStampToDateConversion();
+    }
+
 }

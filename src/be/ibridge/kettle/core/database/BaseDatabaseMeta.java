@@ -694,6 +694,16 @@ abstract class BaseDatabaseMeta implements Cloneable
     {
         return null;
     }
+    
+
+    /**
+     * @return true if the database supports timestamp to date conversion.
+     * For example Interbase doesn't support this!
+     */
+    public boolean supportsTimeStampToDateConversion()
+    {
+        return true;
+    }
 
 
 }

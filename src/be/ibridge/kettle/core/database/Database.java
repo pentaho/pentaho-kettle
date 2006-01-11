@@ -570,15 +570,16 @@ public class Database
 				if (!v.isNull() && v.getDate()!=null) 
 				{
 					long dat = v.getDate().getTime();
-					switch(v.getPrecision())
+					if(v.getPrecision()==1 || databaseMeta.supportsTimeStampToDateConversion())
+                    {
+                        //       Convert to DATE!
+					    java.sql.Date ddate = new java.sql.Date(dat);
+                        ps.setDate(pos, ddate);
+                    }
+                    else
 					{
-						//       Convert to DATE!
-						case 1:  java.sql.Date ddate = new java.sql.Date(dat);
-						         ps.setDate(pos, ddate);
-						         break;
-						default: java.sql.Timestamp sdate = new java.sql.Timestamp(dat);
-						         ps.setTimestamp(pos, sdate);
-						         break;
+						java.sql.Timestamp sdate = new java.sql.Timestamp(dat);
+						ps.setTimestamp(pos, sdate);
 					}
 				}
 				else
@@ -2303,7 +2304,15 @@ public class Database
                     case Value.VALUE_TYPE_BIGNUMBER : val.setValue( rs.getBigDecimal(i+1) ); break;
 					case Value.VALUE_TYPE_INTEGER   : val.setValue( rs.getLong(i+1) ); break;
 					case Value.VALUE_TYPE_STRING    : val.setValue( rs.getString(i+1) ); break;
-					case Value.VALUE_TYPE_DATE      : val.setValue( rs.getTimestamp(i+1) ); break;
+					case Value.VALUE_TYPE_DATE      :
+                        if (databaseMeta.supportsTimeStampToDateConversion())
+                        {
+                            val.setValue( rs.getTimestamp(i+1) ); break;
+                        }
+                        else
+                        {
+                            val.setValue( rs.getDate(i+1) ); break;
+                        }
 					default: break;
 					}
 					if (rs.wasNull()) val.setNull(); // null value!
