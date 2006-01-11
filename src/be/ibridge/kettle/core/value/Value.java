@@ -3053,14 +3053,15 @@ public class Value implements Cloneable, XMLInterface, Serializable
      * @return The resulting value
      * @throws KettleValueException
      */
-    public Value add_days(int days) throws KettleValueException
+    public Value add_days(long days) throws KettleValueException
     {
         if (getType()==VALUE_TYPE_DATE)
         {
             if (!isNull() && getDate()!=null)
             {
                 Calendar cal = Calendar.getInstance();
-                cal.setTimeInMillis(getDate().getTime() + ((long)days*3600L*24L*1000L));
+                cal.setTime(getDate());
+                cal.add(Calendar.DAY_OF_YEAR, (int)days);
                 
                 setValue( cal.getTime() );
             }
