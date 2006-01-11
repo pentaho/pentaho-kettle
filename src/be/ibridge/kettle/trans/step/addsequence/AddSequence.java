@@ -112,11 +112,14 @@ public class AddSequence extends BaseStep implements StepInterface
 			return false;
 		}
 
+        log.logRowlevel(toString(), "Read row #"+linesRead+" : "+r);
+
 		try
 		{
 			addSequence(r); // add new values to the row in rowset[0].			
 			putRow(r);       // copy row to output rowset(s);
 			
+            log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+r);
 			if ((linesRead>0) && (linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
 		}
 		catch(KettleException e)
