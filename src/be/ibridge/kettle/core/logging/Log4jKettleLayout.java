@@ -34,7 +34,7 @@ public class Log4jKettleLayout extends Layout
                 line+=message.getSubject()+" - ";
             }
 
-            if (event.getLevel().equals(Level.ERROR))  
+            if (message.isError())  
             {
                 line+="ERROR : ";
             }

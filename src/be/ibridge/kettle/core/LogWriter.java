@@ -324,11 +324,12 @@ public class LogWriter
         
         Logger logger = Logger.getLogger(subject);
         
-        Log4jMessage message = new Log4jMessage(msg, subject);
+        Log4jMessage message = new Log4jMessage(msg, subject, lvl);
         
         switch(level)
         {
         case LOG_LEVEL_ERROR:    logger.error(message); break;
+        case LOG_LEVEL_ROWLEVEL: 
         case LOG_LEVEL_DEBUG:    logger.debug(message); break;
         default:                 logger.info(message); break;
         }
