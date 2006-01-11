@@ -155,7 +155,7 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 		int type         = v.getType();
 		switch(type)
 		{
-		case Value.VALUE_TYPE_DATE   : retval+="TIMESTAMP"; break;
+		case Value.VALUE_TYPE_DATE   : retval+="DATE"; break;
         
 		case Value.VALUE_TYPE_BOOLEAN: retval+="CHAR(1)"; break;
         
@@ -166,15 +166,15 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 			    fieldname.equalsIgnoreCase(pk)    // Primary key
 			    ) 
 			{
-				retval+="BIGINT NOT NULL PRIMARY KEY";
+				retval+="INTEGER NOT NULL PRIMARY KEY";
 			} 
 			else
 			{
 				if (length>0)
 				{
-					if (precision>0 || length>18)
+					if (precision>0 || length>9)
 					{
-						retval+="DECIMAL("+length;
+						retval+="NUMERIC("+length;
 						if (precision>0)
 						{
 							retval+=", "+precision;
@@ -183,32 +183,24 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 					}
 					else
 					{
-						if (length>9)
+						if (length<=5)
 						{
-							retval+="BIGINT";
+							retval+="SMALLINT";
 						}
 						else
 						{
-							if (length<=5)
-							{
-								retval+="SMALLINT";
-							}
-							else
-							{
-								retval+="INTEGER";
-							}
+							retval+="INTEGER";
 						}
 					}
-					
 				}
 				else
 				{
-					retval+="DOUBLE";
+					retval+="DOUBLE PRECISION";
 				}
 			}
 			break;
 		case Value.VALUE_TYPE_STRING:
-			if (length<32720)
+			if (length<32664)
 			{
 				retval+="VARCHAR"; 
 				if (length>0)
@@ -234,6 +226,11 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 		
 		return retval;
 	}
+    
+    public String getTruncateTableStatement(String tableName)
+    {
+        return "DELETE FROM "+tableName;
+    }
 	
 	public String [] getReservedWords()
 	{
