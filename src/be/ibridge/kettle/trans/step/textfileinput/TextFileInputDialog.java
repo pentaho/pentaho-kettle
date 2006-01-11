@@ -1379,10 +1379,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			if (rep     !=null) item.setText(12, rep     );
 		}
 		
-        if ( in.getEncoding()!=null )
-        {
-            wEncoding.setText( in.getEncoding() );
-        }
+        if ( in.getEncoding()!=null ) wEncoding.setText( in.getEncoding() );
         
         // Error handling fields...
         wErrorIgnored.setSelection( in.isErrorIgnored() );
