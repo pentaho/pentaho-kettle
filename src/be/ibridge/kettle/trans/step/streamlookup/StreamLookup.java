@@ -174,7 +174,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 				data.keynrs[i]=row.searchValueIndex(meta.getKeystream()[i]);
 				if (data.keynrs[i]<0)
 				{
-					logError("Not a valid field ["+meta.getKeystream()[i]+"]");
+					logError("Field ["+meta.getKeystream()[i]+"] not found in row ["+row+"]");
 					setErrors(1);
 					stopAll();
 					return false;
