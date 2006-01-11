@@ -15,6 +15,8 @@
  
 package be.ibridge.kettle.trans.step.calculator;
 
+import java.util.Calendar;
+
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -58,10 +60,12 @@ public class Calculator extends BaseStep implements StepInterface
 			return false;
 		}
         
-        calcFields(r);
-		
+        log.logRowlevel(toString(), "Read row #"+linesRead+" : "+r);
+
+        calcFields(r);		
 		putRow(r);     // copy row to possible alternate rowset(s).
 
+        log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+r);        
 		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesRead);
 			
 		return true;
@@ -213,16 +217,60 @@ public class Calculator extends BaseStep implements StepInterface
                         value.convertString(fn.getValueType());
                     }
                     break;
-                case CalculatorMetaFunction.CALC_ADD_DAYS           : // Add B days to date field A
-                    {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.add_days((int)fieldB.getInteger());
-                    }
-                    break;
                 case CalculatorMetaFunction.CALC_NVL                : // Replace null values with another value
                     {
                         value = new Value(fn.getFieldName(), fieldA);
                         value.nvl(fieldB);
+                    }
+                    break;                    
+                case CalculatorMetaFunction.CALC_ADD_DAYS           : // Add B days to date field A
+                    {
+                        value = new Value(fn.getFieldName(), fieldA);
+                        value.add_days(fieldB.getInteger());
+                    }
+                    break;
+               case CalculatorMetaFunction.CALC_YEAR_OF_DATE           : // What is the year (Integer) of a date?
+                    {
+                        value = new Value(fn.getFieldName(), fieldA);
+                        value.setValue(fieldA.getDate().getYear()+1900);
+                    }
+                    break;
+                case CalculatorMetaFunction.CALC_MONTH_OF_DATE           : // What is the month (Integer) of a date?
+                    {
+                        value = new Value(fn.getFieldName(), fieldA);
+                        value.setValue(fieldA.getDate().getMonth()+1);
+                    }
+                    break;
+                case CalculatorMetaFunction.CALC_DAY_OF_YEAR           : // What is the day of year (Integer) of a date?
+                    {
+                        value = new Value(fn.getFieldName(), fieldA);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(fieldA.getDate());
+                        value.setValue(calendar.get(Calendar.DAY_OF_YEAR));
+                    }
+                    break;
+                case CalculatorMetaFunction.CALC_DAY_OF_MONTH           : // What is the day of month (Integer) of a date?
+                    {
+                        value = new Value(fn.getFieldName(), fieldA);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(fieldA.getDate());
+                        value.setValue(calendar.get(Calendar.DAY_OF_MONTH));
+                    }
+                    break;
+                case CalculatorMetaFunction.CALC_DAY_OF_WEEK           : // What is the day of week (Integer) of a date?
+                    {
+                        value = new Value(fn.getFieldName(), fieldA);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(fieldA.getDate());
+                        value.setValue(calendar.get(Calendar.DAY_OF_WEEK));
+                    }
+                    break;
+                case CalculatorMetaFunction.CALC_WEEK_OF_YEAR    : // What is the week of year (Integer) of a date?
+                    {
+                        value = new Value(fn.getFieldName(), fieldA);
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(fieldA.getDate());
+                        value.setValue(calendar.get(Calendar.WEEK_OF_YEAR));
                     }
                     break;
                 default:

@@ -145,12 +145,15 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
         for (int i=0;i<calculation.length;i++)
         {
             CalculatorMetaFunction fn = calculation[i];
-            if (fn.getFieldName()!=null && fn.getFieldName().length()>0) // It's a new field!
+            if (!fn.isRemovedFromResult())
             {
-                Value v = new Value(fn.getFieldName(), fn.getValueType());
-                v.setLength(fn.getValueLength(), fn.getValuePrecision());
-                v.setOrigin(name);
-                row.addValue(v);
+                if (fn.getFieldName()!=null && fn.getFieldName().length()>0) // It's a new field!
+                {
+                    Value v = new Value(fn.getFieldName(), fn.getValueType());
+                    v.setLength(fn.getValueLength(), fn.getValuePrecision());
+                    v.setOrigin(name);
+                    row.addValue(v);
+                }
             }
         }
     

@@ -13,26 +13,33 @@ public class CalculatorMetaFunction implements Cloneable
     public static final String XML_TAG = "calculation";  
     
     public static final int CALC_NONE               =  0;
-    public static final int CALC_ADD                =  1;
-    public static final int CALC_SUBTRACT           =  2;
-    public static final int CALC_MULTIPLY           =  3;
-    public static final int CALC_DIVIDE             =  4;
-    public static final int CALC_SQUARE             =  5;
-    public static final int CALC_SQUARE_ROOT        =  6;
-    public static final int CALC_PERCENT_1          =  7;
-    public static final int CALC_PERCENT_2          =  8;
-    public static final int CALC_PERCENT_3          =  9;
-    public static final int CALC_COMBINATION_1      = 10;
-    public static final int CALC_COMBINATION_2      = 11;
-    public static final int CALC_ROUND_1            = 12;
-    public static final int CALC_ROUND_2            = 13;
-    public static final int CALC_ADD_DAYS           = 14;
+    public static final int CALC_CONSTANT           =  1;
+    public static final int CALC_ADD                =  2;
+    public static final int CALC_SUBTRACT           =  3;
+    public static final int CALC_MULTIPLY           =  4;
+    public static final int CALC_DIVIDE             =  5;
+    public static final int CALC_SQUARE             =  6;
+    public static final int CALC_SQUARE_ROOT        =  7;
+    public static final int CALC_PERCENT_1          =  8;
+    public static final int CALC_PERCENT_2          =  9;
+    public static final int CALC_PERCENT_3          = 10;
+    public static final int CALC_COMBINATION_1      = 11;
+    public static final int CALC_COMBINATION_2      = 12;
+    public static final int CALC_ROUND_1            = 13;
+    public static final int CALC_ROUND_2            = 14;
     public static final int CALC_NVL                = 15;
-    public static final int CALC_CONSTANT           = 16;
+    public static final int CALC_ADD_DAYS           = 16;
+    public static final int CALC_YEAR_OF_DATE       = 17;
+    public static final int CALC_MONTH_OF_DATE      = 18;
+    public static final int CALC_DAY_OF_YEAR        = 19;
+    public static final int CALC_DAY_OF_MONTH       = 20;
+    public static final int CALC_DAY_OF_WEEK        = 21;
+    public static final int CALC_WEEK_OF_YEAR       = 22;
     
     public static final String calc_desc[] = 
         { 
             "-", 
+            "CONSTANT",
             "ADD",
             "SUBTRACT",
             "MULTIPLY",
@@ -46,14 +53,20 @@ public class CalculatorMetaFunction implements Cloneable
             "COMBINATION_2",
             "ROUND_1",
             "ROUND_2",
-            "ADD_DAYS",
             "NVL",
-            "CONSTANT"
+            "ADD_DAYS",
+            "YEAR_OF_DATE",
+            "MONTH_OF_DATE",
+            "DAY_OF_YEAR",
+            "DAY_OF_MONTH",
+            "DAY_OF_WEEK",
+            "WEEK_OF_YEAR"
         };
     
     public static final String calcLongDesc[] = 
         { 
             "-", 
+            "Set field to constant value A",
             "A + B", 
             "A - B", 
             "A * B",
@@ -67,9 +80,14 @@ public class CalculatorMetaFunction implements Cloneable
             "SQRT( A*A + B*B )", 
             "ROUND( A )",
             "ROUND( A , B )",
-            "Date A + B Days",
             "NVL( A, B )",
-            "Set field to constant value A"
+            "Date A + B Days",
+            "Year of date A",
+            "Month of date A",
+            "Day of year of date A",
+            "Day of month of date A",
+            "Day of week of date A",
+            "Week of year of date A"
         };
    
     private String fieldName;
