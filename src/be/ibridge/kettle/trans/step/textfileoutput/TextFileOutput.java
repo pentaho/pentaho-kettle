@@ -18,6 +18,8 @@ package be.ibridge.kettle.trans.step.textfileoutput;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -50,7 +52,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
-	
+    
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta=(TextFileOutputMeta)smi;
@@ -151,7 +153,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				for (int i=0;i<r.size();i++)
 				{
 					debug="start for loop";
-					if (i>0) data.fw.write(meta.getSeparator().getBytes());
+					if (i>0) data.writer.write(meta.getSeparator().toCharArray());
 	
 					debug="Get value "+i+" of "+r.size();
 					v=r.getValue(i);
@@ -159,7 +161,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					debug="Write field to output stream: ["+v.toString()+"] of type ["+v.toStringMeta()+"]";
 					writeField(v, -1);
 				}
-				data.fw.write(meta.getNewline().getBytes());
+                data.writer.write(meta.getNewline().toCharArray());
 			}
 			else
 			{
@@ -171,7 +173,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
 					debug="start for loop";
-					if (i>0) data.fw.write(meta.getSeparator().getBytes());
+					if (i>0) data.writer.write(meta.getSeparator().toCharArray());
 	
 					debug="Get value "+data.fieldnrs[i]+" of row ";
 					v=r.getValue(data.fieldnrs[i]);
@@ -179,7 +181,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					
 					writeField(v, i);
 				}
-				data.fw.write(meta.getNewline().getBytes());
+                data.writer.write(meta.getNewline().toCharArray());
 			}
 		}
 		catch(Exception e)
@@ -331,7 +333,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		try
 		{
 			String str = formatField(v, idx);
-			data.fw.write(str.getBytes());
+            data.writer.write(str.toCharArray());
 		}
 		catch(Exception e)
 		{
@@ -362,14 +364,14 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					header+=meta.getOutputFields()[i].getName();
 				}
 				header+=meta.getNewline();
-				data.fw.write(header.getBytes());
+                data.writer.write(header.toCharArray());
 			}
 			else
 			if (r!=null)
 			{
 				for (int i=0;i<r.size();i++)
 				{
-					if (i>0) data.fw.write(meta.getSeparator().getBytes());
+					if (i>0) data.writer.write(meta.getSeparator().toCharArray());
 					Value v = r.getValue(i);
 					
 					// Header-value contains the name of the value
@@ -390,13 +392,13 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					}
 					//String fmt = formatField( v, idx );
 					//header_value.setLength( fmt.length() );
-					data.fw.write(header_value.toString().getBytes());
+                    data.writer.write(header_value.toString().toCharArray());
 				}
-				data.fw.write(meta.getNewline().getBytes());
+                data.writer.write(meta.getNewline().toCharArray());
 			}
 			else
 			{
-				data.fw.write(("no rows selected"+Const.CR).getBytes());
+                data.writer.write(("no rows selected"+Const.CR).toCharArray());
 			}
 		}
 		catch(Exception e)
@@ -417,12 +419,13 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	public boolean openNewFile()
 	{
 		boolean retval=false;
-		data.fw=null;
+		data.writer=null;
 		
 		try
 		{
 			File file = new File(buildFilename(true));
 
+            OutputStream outputStream;
 			if (meta.isZipped())
 			{
 				FileOutputStream fos = new FileOutputStream(file, meta.isFileAppended());
@@ -431,13 +434,21 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				ZipEntry zipentry = new ZipEntry(entry.getName());
 				zipentry.setComment("Compressed by Kettle");
 				data.zip.putNextEntry(zipentry);
-				data.fw=data.zip;
+				outputStream=data.zip;
 			}
 			else
 			{
 				FileOutputStream fos=new FileOutputStream(file, meta.isFileAppended());
-				data.fw=fos;
+				outputStream=fos;
 			}
+            if (meta.getEncoding()!=null && meta.getEncoding().length()>0)
+            {
+                data.writer = new OutputStreamWriter(outputStream, meta.getEncoding());
+            }
+            else
+            {
+                data.writer = new OutputStreamWriter(outputStream);
+            }
 						
 			retval=true;
 		}
@@ -468,7 +479,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				data.fw.close();
+				data.writer.close();
 			}
 
 			//System.out.println("Closed file...");
