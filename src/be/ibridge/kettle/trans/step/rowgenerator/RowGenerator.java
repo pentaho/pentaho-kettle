@@ -162,7 +162,7 @@ public class RowGenerator extends BaseStep implements StepInterface
 		
 		if (linesWritten<meta.getRowLimit())
 		{
-			r=data.constants;
+			r=new Row(data.constants); // Copy the data, otherwise it gets manipulated aferwards.
 		}
 		else
 		{
@@ -172,6 +172,7 @@ public class RowGenerator extends BaseStep implements StepInterface
 		
 		putRow(r);
 
+        log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+r);
 		if ((linesWritten>0) && (linesWritten%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesWritten);
 		
 		return retval;
