@@ -2537,6 +2537,7 @@ public class Database
 								String tk, 
 								String version, 
 								String extra[], 
+                                String extraRename[],
 								String datefrom, 
 								String dateto
 							   )
@@ -2562,8 +2563,18 @@ public class Database
 			for (i=0;i<extra.length;i++)
 			{
 				if (extra[i]!=null && extra[i].length()!=0)
+                {
 					sql+=", "+extra[i];
+                    if (extraRename[i]!=null && 
+                        extraRename[i].length()>0 && 
+                        !extra[i].equals(extraRename[i]))
+                    {
+                        sql+=" AS "+extraRename[i];
+                    }
+                }
+                
 			}
+            
 		}
 		
 		sql+= " FROM "+table+" WHERE ";
@@ -2906,6 +2917,7 @@ public class Database
 			if (currentField!=null)
 			{
                 boolean mod = false;
+                
                 mod |= ( currentField.getLength()    < desiredField.getLength()    ) && desiredField.getLength()>0; 
                 mod |= ( currentField.getPrecision() < desiredField.getPrecision() ) && desiredField.getPrecision()>0;
 				
@@ -2914,7 +2926,7 @@ public class Database
 				
 				if (mod)
 				{
-                    System.out.println("Desired field: ["+desiredField+"], current field: ["+currentField+"]");
+                    // System.out.println("Desired field: ["+desiredField.toStringMeta()+"], current field: ["+currentField.toStringMeta()+"]");
                     modify.addValue(desiredField);
 				}
 			}
