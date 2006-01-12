@@ -392,7 +392,7 @@ public class Const
             "Check the settings of steps by first selecting one or more of them."+Const.CR+
             "Then by using the right-click option 'Check selected steps'",
             
-            "Click right on the first column in any table (grid) for a list of all the options."
+            "Click right on the first column in any dialog table (grid) for a list of all the options."
 		}
 		;
 
