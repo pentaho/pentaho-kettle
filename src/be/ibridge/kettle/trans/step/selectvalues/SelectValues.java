@@ -322,7 +322,8 @@ public class SelectValues extends BaseStep implements StepInterface
 			setOutputDone();
 			return false;
 		}
-		
+        logRowlevel("Got row from previous step: "+r);
+
 		err=true;
 		
 		if (data.select)   err=selectValues(r);
@@ -336,6 +337,7 @@ public class SelectValues extends BaseStep implements StepInterface
 		} 
 
 		putRow(r);      // copy row to possible alternate rowset(s).
+        logRowlevel("Wrote row to next step: "+r);
 
 		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
 			
