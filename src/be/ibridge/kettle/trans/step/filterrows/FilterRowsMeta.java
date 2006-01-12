@@ -354,6 +354,9 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 		sendFalseStep = TransMeta.findStep(steps, sendFalseStepname);
 	}
 
+    /**
+     * @return true if this step chooses both target steps
+     */
 	public boolean chosesTargetSteps()
 	{
 	    return sendTrueStep!=null && sendFalseStep!=null;
