@@ -199,7 +199,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	/**
 	 * Use this length in a String value to indicate that you want to use a CLOB in stead of a normal text field.
 	 */
-	public static final int CLOB_LENGTH = 99999999;
+	public static final int CLOB_LENGTH = 9999999;
 	
 	/**
 	 * Construct a new database connections.  Note that not all these parameters are not allways mandatory.
