@@ -840,8 +840,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
 				if (isNull()) retval=Const.NULL_NUMBER; 
 				else
 				{
-					DecimalFormat form= new DecimalFormat(" ##########0.0########;-#########0.0########");
-					retval=form.format(value.getNumber());
+					DecimalFormat form= new DecimalFormat();
+                    form.applyPattern( " ##########0.0########;-#########0.0########" );
+                    // System.out.println("local.pattern = ["+form.toLocalizedPattern()+"]");
+                    retval=form. format(value.getNumber());
 				} 
 			}
 			else
@@ -1038,7 +1040,15 @@ public class Value implements Cloneable, XMLInterface, Serializable
      */
     private String toStringBigNumber(boolean pad)
     {
+        if (value.getBigNumber()==null) return null;
         String retval = value.getString();
+
+        // Localise . to ,
+        if (Const.DEFAULT_DECIMAL_SEPARATOR!='.')
+        {
+            retval = retval.replace('.', Const.DEFAULT_DECIMAL_SEPARATOR);
+        }
+        
         return retval;
     }
 
