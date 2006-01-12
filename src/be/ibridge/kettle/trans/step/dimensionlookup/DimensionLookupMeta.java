@@ -33,6 +33,7 @@ import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
@@ -72,7 +73,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	private String             tableName;
 
 	/** The database connection */
-	private DatabaseMeta       database;
+	private DatabaseMeta       databaseMeta;
 
 	/** Update the dimension or just lookup? */
     private boolean             update;
@@ -92,10 +93,10 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     /** The 'to' field of the date range in the dimension */
     private String              dateTo;
 
-    /** Fields containing the values to update the dimension with */
+    /** Fields containing the values in the input stream to update the dimension with */
     private String              fieldStream[];
 
-    /** Fields in the dimension to update */
+    /** Fields in the dimension to update or retrieve */
     private String              fieldLookup[];
 
     /** The type of update to perform on the fields: insert, update, punch-through */
@@ -154,18 +155,18 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	/**
      * @return Returns the database.
      */
-	public DatabaseMeta getDatabase()
+	public DatabaseMeta getDatabaseMeta()
 	{
-		return database;
+		return databaseMeta;
 	}
 
 	/**
      * @param database
      *            The database to set.
      */
-	public void setDatabase(DatabaseMeta database)
+	public void setDatabaseMeta(DatabaseMeta database)
 	{
-		this.database = database;
+		this.databaseMeta = database;
 	}
 
 	/**
@@ -266,7 +267,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
     
     /**
-     * @return Returns the fieldLookup.
+     * @return Fields in the dimension to update or retrieve.
      */
     public String[] getFieldLookup()
     {
@@ -274,7 +275,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
     
     /**
-     * @param fieldLookup The fieldLookup to set.
+     * @param fieldLookup sets the fields in the dimension to update or retrieve.
      */
     public void setFieldLookup(String[] fieldLookup)
     {
@@ -282,7 +283,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
     
     /**
-     * @return Returns the fieldStream.
+     * @return Fields containing the values in the input stream to update the dimension with.
      */
     public String[] getFieldStream()
     {
@@ -290,7 +291,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     }
     
     /**
-     * @param fieldStream The fieldStream to set.
+     * @param fieldStream The fields containing the values in the input stream to update the dimension with.
      */
     public void setFieldStream(String[] fieldStream)
     {
@@ -540,7 +541,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 			tableName = XMLHandler.getTagValue(stepnode, "table");
 			String con = XMLHandler.getTagValue(stepnode, "connection");
-			database = Const.findDatabase(databases, con);
+			databaseMeta = Const.findDatabase(databases, con);
 			commit = XMLHandler.getTagValue(stepnode, "commit");
 			commitSize = Const.toInt(commit, 0);
 
@@ -608,7 +609,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		int nrkeys, nrfields;
 
 		tableName = "dim table name";
-		database = null;
+		databaseMeta = null;
 		commitSize = 0;
 		update = true;
 
@@ -646,8 +647,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		versionField = "version";
 	}
 
-	public Row getFields(Row r, String name, Row info)
+	public Row getFields(Row r, String name, Row info) throws KettleStepException
 	{
+        LogWriter log = LogWriter.getInstance();
 		Row row;
 		if (r == null)
 			row = new Row(); // give back values
@@ -663,39 +665,50 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		row.addValue(v);
 
 		// retrieve extra fields on lookup?
-		if (!update)
+        // Don't bother if there are no return values specified.
+		if (!update && fieldLookup.length>0)
 		{
-			if (info != null)
-			{
-				for (int i = 0; i < fieldStream.length; i++)
-				{
-					v = info.searchValue(fieldStream[i]);
-					if (v != null)
-					{
-						if (fieldLookup[i] != null && fieldLookup[i].length() > 0)
-							v.setName(fieldLookup[i]); // Rename!
-						v.setOrigin(name);
-						row.addValue(v);
-					}
-				}
-			}
-			else
-			{
-				for (int i = 0; i < fieldStream.length; i++)
-				{
-					if (fieldLookup[i] != null && fieldLookup[i].length() > 0)
-					{
-						v = new Value(fieldLookup[i], fieldUpdate[i]);
-					}
-					else
-					{
-						v = new Value(fieldStream[i], fieldUpdate[i]);
-					}
-					v.setOrigin(name);
-					row.addValue(v);
-				}
-			}
-		}
+            try
+            {
+                // Get the rows from the table...
+                if (databaseMeta!=null)
+                {
+                    Database db = new Database(databaseMeta);
+                    Row extraFields = db.getTableFields(tableName);
+
+                    for (int i = 0; i < fieldLookup.length; i++)
+                    {
+                        v = extraFields.searchValue(fieldLookup[i]);
+                        if (v==null)
+                        {
+                            String message = "Unable to find return field ["+fieldLookup[i]+"] in the dimension table.";
+                            log.logError(toString(), message);
+                            throw new KettleStepException(message);
+                        }
+                        
+                        // If the field needs to be renamed, rename
+                        if (fieldStream[i] != null && fieldStream[i].length() > 0)
+                        {
+                            v.setName(fieldStream[i]);
+                        }
+                        v.setOrigin(name);
+                        row.addValue(v);
+                    }
+                }
+                else
+                {
+                    String message = "Unable to retrieve data type of return fields because no database connection was specified";
+                    log.logError(toString(), message);
+                    throw new KettleStepException(message);
+                }
+            }
+            catch(Exception e)
+            {
+                String message = "Unable to retrieve data type of return fields because of an unexpected error";
+                log.logError(toString(), message);
+                throw new KettleStepException(message, e);
+            }
+   		}
 
 		return row;
 	}
@@ -706,7 +719,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		int i;
 
 		retval += "      " + XMLHandler.addTagValue("table", tableName);
-		retval += "      " + XMLHandler.addTagValue("connection", database == null ? "" : database.getName());
+		retval += "      " + XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName());
 		retval += "      " + XMLHandler.addTagValue("commit", commitSize);
 		retval += "      " + XMLHandler.addTagValue("update", update);
 
@@ -759,7 +772,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		try
 		{
 			long id_connection = rep.getStepAttributeInteger(id_step, "id_connection");
-			database = Const.findDatabase(databases, id_connection);
+			databaseMeta = Const.findDatabase(databases, id_connection);
 
 			tableName = rep.getStepAttributeString(id_step, "table");
 			commitSize = (int) rep.getStepAttributeInteger(id_step, "commit");
@@ -808,7 +821,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "table", tableName);
 			rep
-					.saveStepAttribute(id_transformation, id_step, "id_connection", database == null ? -1 : database
+					.saveStepAttribute(id_transformation, id_step, "id_connection", databaseMeta == null ? -1 : databaseMeta
 							.getID());
 			rep.saveStepAttribute(id_transformation, id_step, "commit", commitSize);
 			rep.saveStepAttribute(id_transformation, id_step, "update", update);
@@ -845,8 +858,8 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "max_year", maxYear);
 
 			// Also, save the step-database relationship!
-			if (database != null)
-				rep.insertStepDatabase(id_transformation, id_step, database.getID());
+			if (databaseMeta != null)
+				rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
 		}
 		catch (KettleDatabaseException dbe)
 		{
@@ -911,9 +924,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		CheckResult cr;
 		String error_message = "";
 
-		if (database != null)
+		if (databaseMeta != null)
 		{
-			Database db = new Database(database);
+			Database db = new Database(databaseMeta);
 			try
 			{
 				db.connect();
@@ -1092,7 +1105,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 				}
 
 				// Check sequence
-				if (database.supportsSequences() && sequenceName != null && sequenceName.length() != 0)
+				if (databaseMeta.supportsSequences() && sequenceName != null && sequenceName.length() != 0)
 				{
 					if (db.checkSequenceExists(sequenceName))
 					{
@@ -1131,17 +1144,17 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		boolean first;
 		CheckResult cr;
 
-		if (database != null)
+		if (databaseMeta != null)
 		{
-			Database db = new Database(database);
+			Database db = new Database(databaseMeta);
 			try
 			{
 				db.connect();
 
 				if (tableName != null && tableName.length() != 0)
 				{
-					Row r = db.getTableFields(tableName);
-					if (r != null)
+					Row tableFields = db.getTableFields(tableName);
+					if (tableFields != null)
 					{
 						if (prev != null && prev.size() > 0)
 						{
@@ -1167,7 +1180,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 								{
 									// does the field exist in the dimension table?
 									String dimfield = keyLookup[i];
-									Value dimvalue = r.searchValue(dimfield);
+									Value dimvalue = tableFields.searchValue(dimfield);
 									if (dimvalue == null)
 									{
 										if (first)
@@ -1216,16 +1229,15 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 								}
 							remarks.add(cr);
 
-							// In case of lookup, the UpIns table contains in the
-							// first column the table field.
+							// In case of lookup, the first column of the UpIns dialog table contains the table field
 							error_found = false;
-							for (i = 0; i < fieldStream.length; i++)
+							for (i = 0; i < fieldLookup.length; i++)
 							{
-								String lufield = fieldStream[i];
+								String lufield = fieldLookup[i];
 								if (lufield != null && lufield.length() > 0)
 								{
 									// Checking compare field: lufield
-									Value v = r.searchValue(lufield);
+									Value v = tableFields.searchValue(lufield);
 									if (v == null)
 									{
 										if (first)
@@ -1251,7 +1263,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 							remarks.add(cr);
 
 							/* Also, check the fields: tk, version, from-to, ... */
-							if (r.searchValueIndex(keyField) < 0)
+							if (tableFields.searchValueIndex(keyField) < 0)
 							{
 								error_message = "Technical key [" + keyField + "] not found in dimension lookup table."
 												+ Const.CR;
@@ -1265,7 +1277,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 							}
 							remarks.add(cr);
 
-							if (r.searchValueIndex(versionField) < 0)
+							if (tableFields.searchValueIndex(versionField) < 0)
 							{
 								error_message = "Version field [" + versionField
 												+ "] not found in dimension lookup table." + Const.CR;
@@ -1279,7 +1291,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 							}
 							remarks.add(cr);
 
-							if (r.searchValueIndex(dateFrom) < 0)
+							if (tableFields.searchValueIndex(dateFrom) < 0)
 							{
 								error_message = "Start of daterange field [" + dateFrom
 												+ "] not found in dimension lookup table." + Const.CR;
@@ -1293,7 +1305,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 							}
 							remarks.add(cr);
 
-							if (r.searchValueIndex(dateTo) < 0)
+							if (tableFields.searchValueIndex(dateTo) < 0)
 							{
 								error_message = "End of daterange field [" + dateTo
 												+ "] not found in dimension lookup table." + Const.CR;
@@ -1341,9 +1353,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		LogWriter log = LogWriter.getInstance();
 		Row fields = null;
-		if (database != null)
+		if (databaseMeta != null)
 		{
-			Database db = new Database(database);
+			Database db = new Database(databaseMeta);
 			try
 			{
 				db.connect();
@@ -1364,18 +1376,18 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, Row prev)
 	{
 		LogWriter log = LogWriter.getInstance();
-		SQLStatement retval = new SQLStatement(stepMeta.getName(), database, null); // default: nothing to do!
+		SQLStatement retval = new SQLStatement(stepMeta.getName(), databaseMeta, null); // default: nothing to do!
 
 		if (update) // Only bother in case of update, not lookup!
 		{
 			log.logDebug(toString(), "Update!");
-			if (database != null)
+			if (databaseMeta != null)
 			{
 				if (prev != null && prev.size() > 0)
 				{
 					if (tableName != null && tableName.length() > 0)
 					{
-						Database db = new Database(database);
+						Database db = new Database(databaseMeta);
 						try
 						{
 							db.connect();
@@ -1558,7 +1570,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                     DatabaseImpact ii = new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ, 
                             transMeta.getName(),
                             stepMeta.getName(),
-                            database.getDatabaseName(),
+                            databaseMeta.getDatabaseName(),
                             tableName, 
                             keyLookup[i],
                             keyStream[i],
@@ -1577,7 +1589,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                     DatabaseImpact ii = new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ, 
                             transMeta.getName(),
                             stepMeta.getName(),
-                            database.getDatabaseName(),
+                            databaseMeta.getDatabaseName(),
                             tableName,
                             fieldLookup[i],
                             fieldLookup[i],
@@ -1599,7 +1611,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                     DatabaseImpact ii = new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ_WRITE, 
                             transMeta.getName(),
                             stepMeta.getName(),
-                            database.getDatabaseName(),
+                            databaseMeta.getDatabaseName(),
                             tableName, 
                             keyLookup[i],
                             keyStream[i],
@@ -1618,7 +1630,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                     DatabaseImpact ii = new DatabaseImpact( DatabaseImpact.TYPE_IMPACT_READ_WRITE, 
                             transMeta.getName(),
                             stepMeta.getName(),
-                            database.getDatabaseName(),
+                            databaseMeta.getDatabaseName(),
                             tableName,
                             fieldLookup[i],
                             fieldLookup[i],

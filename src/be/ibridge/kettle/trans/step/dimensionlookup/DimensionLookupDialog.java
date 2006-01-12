@@ -170,7 +170,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		backupChanged = input.hasChanged();
 		backupUpdate = input.isUpdate();
 		backupAutoInc = input.isAutoIncrement();
-		ci = input.getDatabase();
+		ci = input.getDatabaseMeta();
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -221,7 +221,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
 		// Connection line
 		wConnection = addConnectionLine(wTableComp, null, middle, margin);
-		if (input.getDatabase()==null && transMeta.nrDatabases()==1) wConnection.select(0);
+		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
 
 		wConnection.addModifyListener(new ModifyListener()
@@ -795,7 +795,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		
 		if (input.getVersionField()!=null)    wVersion.setText(input.getVersionField());
 		if (input.getSequenceName()!=null)        wSeq.setText(input.getSequenceName());
-		if (input.getDatabase()!=null)   wConnection.setText(input.getDatabase().getName());
+		if (input.getDatabaseMeta()!=null)   wConnection.setText(input.getDatabaseMeta().getName());
 		else if (transMeta.nrDatabases()==1)
 		{
 			wConnection.setText( transMeta.getDatabase(0).getName() );
@@ -838,7 +838,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
 		stepname = wStepname.getText(); // return value
 
-		if (input.getDatabase()==null)
+		if (input.getDatabaseMeta()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 			mb.setMessage("Please select a valid connection!");
@@ -884,7 +884,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		
 		in.setVersionField( wVersion.getText() );
 		in.setSequenceName( wSeq.getText() );
-		in.setDatabase( transMeta.findDatabase(wConnection.getText()) );
+		in.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
 		in.setDateField( wDatefield.getText() );
 		in.setDateFrom( wFromdate.getText() );
 		in.setDateTo( wTodate.getText() );
@@ -1018,7 +1018,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			{
 				if (sql.hasSQL())
 				{
-					SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabase(), transMeta.getDbCache(), sql.getSQL());
+					SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabaseMeta(), transMeta.getDbCache(), sql.getSQL());
 					sqledit.open();
 				}
 				else

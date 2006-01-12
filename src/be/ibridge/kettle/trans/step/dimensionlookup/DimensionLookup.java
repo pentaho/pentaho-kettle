@@ -76,6 +76,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				                 meta.getKeyField(), 
 				                 meta.getVersionField(), 
 				                 meta.getFieldLookup(), 
+                                 meta.getFieldStream(),
 				                 meta.getDateFrom(), 
 				                 meta.getDateTo()
 				                );
@@ -115,7 +116,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 
 			debug = "first: notfound field";
 			
-			meta.setNotFound( new Value(meta.getKeyField(), (double)meta.getDatabase().getNotFoundTK(meta.isAutoIncrement())) );
+			meta.setNotFound( new Value(meta.getKeyField(), (double)meta.getDatabaseMeta().getNotFoundTK(meta.isAutoIncrement())) );
 			if (meta.getKeyRename()!=null && meta.getKeyRename().length()>0) meta.getNotFound().setName(meta.getKeyRename());
 
 			if (meta.getDateField()!=null && data.datefieldnr>=0)
@@ -174,9 +175,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					if (meta.getFieldStream()[i]!=null)
 					{
 						debug = "lookup: new value #"+i;
-						if (meta.getFieldLookup()[i]!=null) 
-							  v=new Value(meta.getFieldLookup()[i], meta.getFieldUpdate()[i]);
-						else  v=new Value(meta.getFieldStream()[i], meta.getFieldUpdate()[i]);
+						if (meta.getFieldStream()[i]!=null) // Rename the field?
+							  v=new Value(meta.getFieldStream()[i], meta.getFieldUpdate()[i]);
+						else  v=new Value(meta.getFieldLookup()[i], meta.getFieldUpdate()[i]); // Nope, take the default name
 						v.setNull();
 						add.addValue(v);
 					}
@@ -208,14 +209,14 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				boolean autoinc=false;
                 
                 // First try to use an AUTOINCREMENT field
-				if (meta.getDatabase().supportsAutoinc() && meta.isAutoIncrement())
+				if (meta.getDatabaseMeta().supportsAutoinc() && meta.isAutoIncrement())
 				{
 					autoinc=true;
 					technicalKey=new Value(meta.getKeyField(), 0L); // value to accept new key...
 				}
 				else
 				// Try to get the value by looking at a SEQUENCE (oracle mostly)
-				if (meta.getDatabase().supportsSequences() && meta.getSequenceName()!=null && meta.getSequenceName().length()>0)
+				if (meta.getDatabaseMeta().supportsSequences() && meta.getSequenceName()!=null && meta.getSequenceName().length()>0)
 				{
 					technicalKey=data.db.getNextSequenceValue(meta.getSequenceName(), meta.getKeyField());
 					if (technicalKey!=null) logRowlevel("Found next sequence value: "+technicalKey.toString());
@@ -334,14 +335,14 @@ public class DimensionLookup extends BaseStep implements StepInterface
 
 					boolean autoinc=false;					
 					// First try to use an AUTOINCREMENT field
-					if (meta.getDatabase().supportsAutoinc() && meta.isAutoIncrement())
+					if (meta.getDatabaseMeta().supportsAutoinc() && meta.isAutoIncrement())
 					{
 						autoinc=true;
 						technicalKey=new Value(meta.getKeyField(), 0.0); // value to accept new key...
 					}
 					else
 					// Try to get the value by looking at a SEQUENCE (oracle mostly)
-					if (meta.getDatabase().supportsSequences() && meta.getSequenceName()!=null && meta.getSequenceName().length()>0)
+					if (meta.getDatabaseMeta().supportsSequences() && meta.getSequenceName()!=null && meta.getSequenceName().length()>0)
 					{
 						technicalKey=data.db.getNextSequenceValue(meta.getSequenceName(), meta.getKeyField());
 						if (technicalKey!=null) logRowlevel("Found next sequence value: "+technicalKey.toString());
@@ -454,7 +455,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 			data.min_date = new Value("start_date", meta.getMinDate());
 			data.max_date = new Value("end_date",   meta.getMaxDate());
 
-			data.db=new Database(meta.getDatabase());
+			data.db=new Database(meta.getDatabaseMeta());
 			try
 			{
 				data.db.connect();
