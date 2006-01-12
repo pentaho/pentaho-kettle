@@ -61,7 +61,6 @@ public class FilterRows extends BaseStep implements StepInterface
 		boolean keep;
 		
 		r=getRow();       // Get next useable row from input rowset(s)!
-
 		if (r==null)  // no more input to be expected...
 		{
 			setOutputDone();
