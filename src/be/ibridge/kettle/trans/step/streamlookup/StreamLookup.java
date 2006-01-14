@@ -263,7 +263,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 			add=new Row();
 			for (int i=0;i<meta.getValue().length;i++)
 			{
-				add.addValue(data.nullIf[i]);
+				add.addValue(new Value(data.nullIf[i]));
 			}
 		} 
 		
