@@ -105,7 +105,7 @@ public class TableView extends Composite
 	public  TableCursor   cursor; 
 	private ControlEditor editor;
 	private TableColumn[] tablecolumn;
-	private ArrayList     items;
+	// private ArrayList     items;
 	
 	private Props         props;
 
@@ -158,7 +158,6 @@ public class TableView extends Composite
 		columns = c;
 		rows    = r;
 		props   = pr;
-		items   = new ArrayList();  // rows
 		readonly= ro;
 		clipboard=null;
 				
@@ -240,26 +239,11 @@ public class TableView extends Composite
 		// Set the default values...
 		if (rows > 0)
 		{
-			for (int i=0;i<rows;i++)
-			{
-				TableItem item=new TableItem(table, SWT.NONE);
-				for (int j=0;j<columns.length;j++)
-				{
-					item.setText(j+1, columns[j].getDefault());
-				}
-				items.add(item);
-			}
+            table.setItemCount(rows);
 		}
 		else
 		{
-			TableItem item = new TableItem(table, SWT.NONE);
-			for (int j=0;j<columns.length;j++)
-			{
-				item.setText(j+1, columns[j].getDefault());
-			}
-            Props.setTableItemLook(item, disp);
-            
-			items.add(item);
+            table.setItemCount(1);
 		}
 		
 		setRowNums();
