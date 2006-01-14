@@ -113,7 +113,7 @@ public class SelectRowDialog extends Dialog
 		for (int i=0;i<row.size();i++)
 		{
 			Value v=row.getValue(i);
-			colinf[i]=new ColumnInfo(v.getName(),  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
+			colinf[i]=new ColumnInfo(v.getName(),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
 			colinf[i].setToolTip(v.toStringMeta());
             colinf[i].setReadOnly(true);
 		}

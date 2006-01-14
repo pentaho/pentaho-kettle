@@ -145,18 +145,18 @@ public class SpoonLog extends Composite
 		final int FieldsRows=1;
 		
 		colinf=new ColumnInfo[FieldsCols];
-		colinf[ 0]=new ColumnInfo("Stepname",       ColumnInfo.COLUMN_TYPE_TEXT, "", false, true);
-		colinf[ 1]=new ColumnInfo("Copynr",         ColumnInfo.COLUMN_TYPE_TEXT, "", false, true);
-		colinf[ 2]=new ColumnInfo("Read",           ColumnInfo.COLUMN_TYPE_TEXT, "", false, true);
-		colinf[ 3]=new ColumnInfo("Written",        ColumnInfo.COLUMN_TYPE_TEXT, "", false, true);
-		colinf[ 4]=new ColumnInfo("Input",          ColumnInfo.COLUMN_TYPE_TEXT, "", false, true);
-		colinf[ 5]=new ColumnInfo("Output",         ColumnInfo.COLUMN_TYPE_TEXT, "", false, true);
-		colinf[ 6]=new ColumnInfo("Updated",        ColumnInfo.COLUMN_TYPE_TEXT, "", false, true);
-		colinf[ 7]=new ColumnInfo("Errors",         ColumnInfo.COLUMN_TYPE_TEXT, "", false, true);
-		colinf[ 8]=new ColumnInfo("Active",         ColumnInfo.COLUMN_TYPE_TEXT, "", false, true);
-		colinf[ 9]=new ColumnInfo("Time",           ColumnInfo.COLUMN_TYPE_TEXT, "", false, true);
-		colinf[10]=new ColumnInfo("Speed (r/s)",    ColumnInfo.COLUMN_TYPE_TEXT, "", false, true);
-		colinf[11]=new ColumnInfo("Pri/in/out",     ColumnInfo.COLUMN_TYPE_TEXT, "", false, true);
+		colinf[ 0]=new ColumnInfo("Stepname",       ColumnInfo.COLUMN_TYPE_TEXT, false, true);
+		colinf[ 1]=new ColumnInfo("Copynr",         ColumnInfo.COLUMN_TYPE_TEXT, false, true);
+		colinf[ 2]=new ColumnInfo("Read",           ColumnInfo.COLUMN_TYPE_TEXT, false, true);
+		colinf[ 3]=new ColumnInfo("Written",        ColumnInfo.COLUMN_TYPE_TEXT, false, true);
+		colinf[ 4]=new ColumnInfo("Input",          ColumnInfo.COLUMN_TYPE_TEXT, false, true);
+		colinf[ 5]=new ColumnInfo("Output",         ColumnInfo.COLUMN_TYPE_TEXT, false, true);
+		colinf[ 6]=new ColumnInfo("Updated",        ColumnInfo.COLUMN_TYPE_TEXT, false, true);
+		colinf[ 7]=new ColumnInfo("Errors",         ColumnInfo.COLUMN_TYPE_TEXT, false, true);
+		colinf[ 8]=new ColumnInfo("Active",         ColumnInfo.COLUMN_TYPE_TEXT, false, true);
+		colinf[ 9]=new ColumnInfo("Time",           ColumnInfo.COLUMN_TYPE_TEXT, false, true);
+		colinf[10]=new ColumnInfo("Speed (r/s)",    ColumnInfo.COLUMN_TYPE_TEXT, false, true);
+		colinf[11]=new ColumnInfo("Pri/in/out",     ColumnInfo.COLUMN_TYPE_TEXT, false, true);
 		
 		colinf[ 1].setAllignement(SWT.RIGHT);
 		colinf[ 2].setAllignement(SWT.RIGHT);

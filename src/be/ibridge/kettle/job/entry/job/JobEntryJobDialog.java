@@ -444,7 +444,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
 		final int FieldsRows= rows;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Argument",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
+		colinf[0]=new ColumnInfo("Argument",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wFields=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

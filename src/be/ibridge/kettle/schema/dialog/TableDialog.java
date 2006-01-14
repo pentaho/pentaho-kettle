@@ -303,12 +303,12 @@ public class TableDialog extends Dialog
 		final int FieldsRows=tableinfo.nrFields();
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Fieldname",   ColumnInfo.COLUMN_TYPE_TEXT, "", false, false);
-		colinf[1]=new ColumnInfo("DB Formula",  ColumnInfo.COLUMN_TYPE_TEXT, "", false, false);
-		colinf[2]=new ColumnInfo("Field Type",  ColumnInfo.COLUMN_TYPE_CCOMBO, "", TableField.typeFieldDesc);
-		colinf[3]=new ColumnInfo("Aggr. Type",  ColumnInfo.COLUMN_TYPE_CCOMBO, "", TableField.typeAggregationDesc);
-		colinf[4]=new ColumnInfo("Hidden?",     ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "N", "Y" } );
-		colinf[5]=new ColumnInfo("Exact?",      ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "N", "Y" } );
+		colinf[0]=new ColumnInfo("Fieldname",   ColumnInfo.COLUMN_TYPE_TEXT, false, false);
+		colinf[1]=new ColumnInfo("DB Formula",  ColumnInfo.COLUMN_TYPE_TEXT, false, false);
+		colinf[2]=new ColumnInfo("Field Type",  ColumnInfo.COLUMN_TYPE_CCOMBO, TableField.typeFieldDesc);
+		colinf[3]=new ColumnInfo("Aggr. Type",  ColumnInfo.COLUMN_TYPE_CCOMBO, TableField.typeAggregationDesc);
+		colinf[4]=new ColumnInfo("Hidden?",     ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "N", "Y" } );
+		colinf[5]=new ColumnInfo("Exact?",      ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "N", "Y" } );
 		colinf[6]=new ColumnInfo("Description", ColumnInfo.COLUMN_TYPE_BUTTON, "", "...");
 		
 		wFields=new TableView(wTabfolder, 
@@ -355,10 +355,10 @@ public class TableDialog extends Dialog
 		final int ConditionsRows=tableinfo.nrConditions();
 		
 		colinf=new ColumnInfo[ConditionsCols];
-		colinf[0]=new ColumnInfo("Name",        ColumnInfo.COLUMN_TYPE_TEXT, "", false, false);
-		colinf[1]=new ColumnInfo("Fieldname",   ColumnInfo.COLUMN_TYPE_TEXT, "", false, false);
-		colinf[2]=new ColumnInfo("Comparator",  ColumnInfo.COLUMN_TYPE_CCOMBO, "", WhereCondition.comparators );
-		colinf[3]=new ColumnInfo("DB Formula",  ColumnInfo.COLUMN_TYPE_TEXT, "", false, false);
+		colinf[0]=new ColumnInfo("Name",        ColumnInfo.COLUMN_TYPE_TEXT, false, false);
+		colinf[1]=new ColumnInfo("Fieldname",   ColumnInfo.COLUMN_TYPE_TEXT, false, false);
+		colinf[2]=new ColumnInfo("Comparator",  ColumnInfo.COLUMN_TYPE_CCOMBO, WhereCondition.comparators );
+		colinf[3]=new ColumnInfo("DB Formula",  ColumnInfo.COLUMN_TYPE_TEXT, false, false);
 		colinf[4]=new ColumnInfo("Description", ColumnInfo.COLUMN_TYPE_BUTTON, "", "...");
 		
 		wConditions=new TableView(wTabfolder, 

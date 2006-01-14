@@ -263,8 +263,8 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Fieldname",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[1]=new ColumnInfo("Ascending",  ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "Y", "N" } );
+		colinf[0]=new ColumnInfo("Fieldname",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[1]=new ColumnInfo("Ascending",  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" } );
 		
 		wFields=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

@@ -540,8 +540,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		int nrKeyRows=(input.getKeyStream()!=null?input.getKeyStream().length:1);
 		
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo("Dimension field",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciKey[1]=new ColumnInfo("Field in stream",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
+		ciKey[0]=new ColumnInfo("Dimension field",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciKey[1]=new ColumnInfo("Field in stream",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wKey=new TableView(wKeyComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -604,9 +604,9 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		int UpInsRows= (input.getFieldStream()!=null?input.getFieldStream().length:1);
 		
 		final ColumnInfo[] ciUpIns=new ColumnInfo[UpInsCols];
-		ciUpIns[0]=new ColumnInfo("Dimension field",              ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciUpIns[1]=new ColumnInfo("Stream field",                 ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciUpIns[2]=new ColumnInfo("Type of dimension update",     ColumnInfo.COLUMN_TYPE_CCOMBO, "", input.isUpdate()?DimensionLookupMeta.typeDesc:DimensionLookupMeta.typeDescLookup );
+		ciUpIns[0]=new ColumnInfo("Dimension field",              ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciUpIns[1]=new ColumnInfo("Stream field",                 ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciUpIns[2]=new ColumnInfo("Type of dimension update",     ColumnInfo.COLUMN_TYPE_CCOMBO, input.isUpdate()?DimensionLookupMeta.typeDesc:DimensionLookupMeta.typeDescLookup );
 		
 		wUpIns=new TableView(wFieldsComp, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -738,7 +738,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	
 	public void setUpdate()
 	{
-		ColumnInfo colinf =new ColumnInfo("Type",      ColumnInfo.COLUMN_TYPE_CCOMBO, "", 
+		ColumnInfo colinf =new ColumnInfo("Type",      ColumnInfo.COLUMN_TYPE_CCOMBO, 
 			  input.isUpdate()?
 				 DimensionLookupMeta.typeDesc:
 				 DimensionLookupMeta.typeDescLookup 

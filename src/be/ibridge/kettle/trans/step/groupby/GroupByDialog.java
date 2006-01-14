@@ -296,7 +296,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		int nrKeyRows=(input.getGroupField()!=null?input.getGroupField().length:1);
 		
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo("Group field",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
+		ciKey[0]=new ColumnInfo("Group field",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wGroup=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -333,9 +333,9 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		int UpInsRows= (input.getAggregateField()!=null?input.getAggregateField().length:1);
 		
 		ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
-		ciReturn[0]=new ColumnInfo("Name",     ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciReturn[1]=new ColumnInfo("Subject",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciReturn[2]=new ColumnInfo("Type",     ColumnInfo.COLUMN_TYPE_CCOMBO, "", GroupByMeta.typeGroupLongDesc);
+		ciReturn[0]=new ColumnInfo("Name",     ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciReturn[1]=new ColumnInfo("Subject",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciReturn[2]=new ColumnInfo("Type",     ColumnInfo.COLUMN_TYPE_CCOMBO, GroupByMeta.typeGroupLongDesc);
 		
 		wAgg=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 

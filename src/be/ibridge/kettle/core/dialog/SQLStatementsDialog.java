@@ -115,10 +115,10 @@ public class SQLStatementsDialog extends Dialog
 		int FieldsRows=stats.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Stepname",     ColumnInfo.COLUMN_TYPE_TEXT,   "", false, true);
-		colinf[1]=new ColumnInfo("Connection",   ColumnInfo.COLUMN_TYPE_TEXT,   "", false, true);
-		colinf[2]=new ColumnInfo("SQL",          ColumnInfo.COLUMN_TYPE_TEXT,   "", false, true);
-		colinf[3]=new ColumnInfo("Error",        ColumnInfo.COLUMN_TYPE_TEXT,   "", false, true);
+		colinf[0]=new ColumnInfo("Stepname",     ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[1]=new ColumnInfo("Connection",   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[2]=new ColumnInfo("SQL",          ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[3]=new ColumnInfo("Error",        ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

@@ -122,10 +122,10 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
         
         ColumnInfo[] colinf=new ColumnInfo[]
             {
-                new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   "", false),
-                new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, "", Value.getTypes() ),
-                new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,   "", false),
-                new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false)
+                new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() ),
+                new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,   false)
             };
         
         wFields=new TableView(shell, 

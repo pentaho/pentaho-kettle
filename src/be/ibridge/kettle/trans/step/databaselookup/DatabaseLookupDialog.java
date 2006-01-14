@@ -238,10 +238,10 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		int nrKeyRows=(input.getStreamKeyField1()!=null?input.getStreamKeyField1().length:1);
 		
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo("Table field",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciKey[1]=new ColumnInfo("Comparator",   ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } );
-		ciKey[2]=new ColumnInfo("Field1",       ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciKey[3]=new ColumnInfo("Field2",       ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
+		ciKey[0]=new ColumnInfo("Table field",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciKey[1]=new ColumnInfo("Comparator",   ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } );
+		ciKey[2]=new ColumnInfo("Field1",       ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciKey[3]=new ColumnInfo("Field2",       ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wKey=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -271,10 +271,10 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		int UpInsRows= (input.getReturnValueField()!=null?input.getReturnValueField().length:1);
 		
 		ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
-		ciReturn[0]=new ColumnInfo("Field",    ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciReturn[1]=new ColumnInfo("New name", ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciReturn[2]=new ColumnInfo("Default",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciReturn[3]=new ColumnInfo("Type",     ColumnInfo.COLUMN_TYPE_CCOMBO, "", Value.getTypes());
+		ciReturn[0]=new ColumnInfo("Field",    ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciReturn[1]=new ColumnInfo("New name", ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciReturn[2]=new ColumnInfo("Default",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciReturn[3]=new ColumnInfo("Type",     ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes());
 		
 		wReturn=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 

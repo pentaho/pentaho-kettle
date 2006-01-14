@@ -144,15 +144,15 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, "", Value.getTypes() );
-		colinf[2]=new ColumnInfo("Format",     ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[3]=new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[4]=new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[5]=new ColumnInfo("Currency",   ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[6]=new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[7]=new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[8]=new ColumnInfo("Value",      ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
+		colinf[0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() );
+		colinf[2]=new ColumnInfo("Format",     ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[3]=new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[4]=new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[5]=new ColumnInfo("Currency",   ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[6]=new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[7]=new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[8]=new ColumnInfo("Value",      ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

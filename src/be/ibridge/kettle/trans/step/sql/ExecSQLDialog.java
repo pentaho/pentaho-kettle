@@ -196,7 +196,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
         
         ColumnInfo[] colinf=new ColumnInfo[]
                {
-                new ColumnInfo("Field name to be used as argument",       ColumnInfo.COLUMN_TYPE_TEXT,   "", false)
+                new ColumnInfo("Field name to be used as argument",       ColumnInfo.COLUMN_TYPE_TEXT,   false)
                };
         
         wFields=new TableView(shell, 

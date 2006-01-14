@@ -176,17 +176,17 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		final int FieldsRows=input.getField().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[ 0]=new ColumnInfo("New field",   ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
-		colinf[ 1]=new ColumnInfo("ID",          ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
-		colinf[ 2]=new ColumnInfo("Remove ID?",  ColumnInfo.COLUMN_TYPE_CCOMBO,  "", new String[] { "Y", "N" } );
-		colinf[ 3]=new ColumnInfo("Type",        ColumnInfo.COLUMN_TYPE_CCOMBO,  "", Value.getTypes() );
-		colinf[ 4]=new ColumnInfo("Length",      ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
-		colinf[ 5]=new ColumnInfo("Precision",   ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
-		colinf[ 6]=new ColumnInfo("Format",      ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
-		colinf[ 7]=new ColumnInfo("Group",       ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
-		colinf[ 8]=new ColumnInfo("Decimal",     ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
-		colinf[ 9]=new ColumnInfo("Currency",    ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
-		colinf[10]=new ColumnInfo("Nullif",      ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
+		colinf[ 0]=new ColumnInfo("New field",   ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[ 1]=new ColumnInfo("ID",          ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[ 2]=new ColumnInfo("Remove ID?",  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" } );
+		colinf[ 3]=new ColumnInfo("Type",        ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() );
+		colinf[ 4]=new ColumnInfo("Length",      ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[ 5]=new ColumnInfo("Precision",   ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[ 6]=new ColumnInfo("Format",      ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[ 7]=new ColumnInfo("Group",       ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[ 8]=new ColumnInfo("Decimal",     ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[ 9]=new ColumnInfo("Currency",    ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[10]=new ColumnInfo("Nullif",      ColumnInfo.COLUMN_TYPE_TEXT,   false );
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

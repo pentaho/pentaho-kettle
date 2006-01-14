@@ -102,8 +102,8 @@ public class PreviewSelectDialog extends Dialog
 		final int FieldsRows=trans.nrUsedSteps();
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Stepname",     ColumnInfo.COLUMN_TYPE_TEXT, "", false, true );
-		colinf[1]=new ColumnInfo("Preview size", ColumnInfo.COLUMN_TYPE_TEXT, "", false, false);
+		colinf[0]=new ColumnInfo("Stepname",     ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+		colinf[1]=new ColumnInfo("Preview size", ColumnInfo.COLUMN_TYPE_TEXT, false, false);
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

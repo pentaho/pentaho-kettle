@@ -198,8 +198,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         
         ColumnInfo[] colinfo=new ColumnInfo[]
         {
-            new ColumnInfo("Input Field",    ColumnInfo.COLUMN_TYPE_TEXT,    "", false ),
-            new ColumnInfo("Input Mapping",  ColumnInfo.COLUMN_TYPE_TEXT,    "", false )
+            new ColumnInfo("Input Field",    ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+            new ColumnInfo("Input Mapping",  ColumnInfo.COLUMN_TYPE_TEXT,    false )
         };
         colinfo[ 1].setToolTip("Enter a regular expression here and a directory in the first column.");
         
@@ -241,8 +241,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         
         ColumnInfo[] colinfoOutput = new ColumnInfo[] 
         { 
-            new ColumnInfo("Output Mapping", ColumnInfo.COLUMN_TYPE_TEXT, "", false),
-            new ColumnInfo("Output Field",   ColumnInfo.COLUMN_TYPE_TEXT, "", false) 
+            new ColumnInfo("Output Mapping", ColumnInfo.COLUMN_TYPE_TEXT, false),
+            new ColumnInfo("Output Field",   ColumnInfo.COLUMN_TYPE_TEXT, false) 
         };
 
         wOutputFields = new TableView(shell, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfoOutput, input.getOutputField() != null ? input
@@ -501,7 +501,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             if (repdir!=null)
             {
                 if (repdir.isRoot()) wTransformation.setText( repdir+transName ); 
-                else wTransformation.setText( repdir+Const.FILE_SEPARATOR+transName );
+                else wTransformation.setText( repdir+RepositoryDirectory.DIRECTORY_SEPARATOR+transName );
             }
         }
     }

@@ -126,8 +126,8 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, "", SystemDataMeta.typeLongDesc );
+		colinf[0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, SystemDataMeta.typeLongDesc );
 		colinf[1].setSelectionAdapter(
 		    new SelectionAdapter()
 	        {

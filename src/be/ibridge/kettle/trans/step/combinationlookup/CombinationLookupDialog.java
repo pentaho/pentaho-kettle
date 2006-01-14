@@ -238,8 +238,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		int nrKeyRows=(input.getKeyField()!=null?input.getKeyField().length:1);
 		
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo("Field in stream", ColumnInfo.COLUMN_TYPE_TEXT, "", false);
-		ciKey[1]=new ColumnInfo("Dimension field", ColumnInfo.COLUMN_TYPE_TEXT, "", false);
+		ciKey[0]=new ColumnInfo("Field in stream", ColumnInfo.COLUMN_TYPE_TEXT, false);
+		ciKey[1]=new ColumnInfo("Dimension field", ColumnInfo.COLUMN_TYPE_TEXT, false);
 		
 		wKey=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 

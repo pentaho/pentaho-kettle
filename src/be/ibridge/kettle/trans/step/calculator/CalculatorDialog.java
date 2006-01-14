@@ -129,15 +129,15 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         
         final ColumnInfo[] colinf=new ColumnInfo[]
                {
-                    new ColumnInfo("New field",     ColumnInfo.COLUMN_TYPE_TEXT,   "", false),
-                    new ColumnInfo("Calculation",   ColumnInfo.COLUMN_TYPE_CCOMBO, "", CalculatorMetaFunction.calcLongDesc ),
-                    new ColumnInfo("Field A",       ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "" }, false),
-                    new ColumnInfo("Field B",       ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "" }, false),
-                    new ColumnInfo("Field C",       ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "" }, false),
-                    new ColumnInfo("Value type",    ColumnInfo.COLUMN_TYPE_CCOMBO, "", Value.getTypes() ),
-                    new ColumnInfo("Length",        ColumnInfo.COLUMN_TYPE_TEXT,   "", false),
-                    new ColumnInfo("Precision",     ColumnInfo.COLUMN_TYPE_TEXT,   "", false),
-                    new ColumnInfo("Remove",        ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "N", "Y" } )
+                    new ColumnInfo("New field",     ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo("Calculation",   ColumnInfo.COLUMN_TYPE_CCOMBO, CalculatorMetaFunction.calcLongDesc ),
+                    new ColumnInfo("Field A",       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+                    new ColumnInfo("Field B",       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+                    new ColumnInfo("Field C",       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+                    new ColumnInfo("Value type",    ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() ),
+                    new ColumnInfo("Length",        ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo("Precision",     ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo("Remove",        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "N", "Y" } )
                };
         
         colinf[1].setSelectionAdapter(

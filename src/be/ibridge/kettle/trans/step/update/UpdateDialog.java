@@ -254,10 +254,10 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		int nrKeyRows=(input.getKeyStream()!=null?input.getKeyStream().length:1);
 		
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo("Table field",    ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciKey[1]=new ColumnInfo("Comparator",     ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } );
-		ciKey[2]=new ColumnInfo("Stream field1",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciKey[3]=new ColumnInfo("Stream field2",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
+		ciKey[0]=new ColumnInfo("Table field",    ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciKey[1]=new ColumnInfo("Comparator",     ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "=", "<>", "<", "<=", ">", ">=", "LIKE", "BETWEEN", "IS NULL", "IS NOT NULL" } );
+		ciKey[2]=new ColumnInfo("Stream field1",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciKey[3]=new ColumnInfo("Stream field2",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wKey=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -305,8 +305,8 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		int UpInsRows= (input.getUpdateLookup()!=null?input.getUpdateLookup().length:1);
 		
 		ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
-		ciReturn[0]=new ColumnInfo("Table field",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciReturn[1]=new ColumnInfo("Stream field", ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
+		ciReturn[0]=new ColumnInfo("Table field",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciReturn[1]=new ColumnInfo("Stream field", ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wReturn=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 

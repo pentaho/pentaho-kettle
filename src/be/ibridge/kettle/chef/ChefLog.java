@@ -117,13 +117,13 @@ public class ChefLog extends Composite
 		
 		ColumnInfo colinf[] = 
 			{
-			 new ColumnInfo("Nr",       	  ColumnInfo.COLUMN_TYPE_TEXT, "", false, true),
-			 new ColumnInfo("Icon",           ColumnInfo.COLUMN_TYPE_ICON, ""),
-			 new ColumnInfo("Job name",       ColumnInfo.COLUMN_TYPE_TEXT, "", false, true),
-			 new ColumnInfo("Entry name",     ColumnInfo.COLUMN_TYPE_TEXT, "", false, true),
-			 new ColumnInfo("Result",         ColumnInfo.COLUMN_TYPE_TEXT, "", false, true),
-			 new ColumnInfo("Previous entry", ColumnInfo.COLUMN_TYPE_TEXT, "", false, true),
-			 new ColumnInfo("Comment",        ColumnInfo.COLUMN_TYPE_TEXT, "", false, true)
+			 new ColumnInfo("Nr",       	  ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+			 new ColumnInfo("Icon",           ColumnInfo.COLUMN_TYPE_ICON ),
+			 new ColumnInfo("Job name",       ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+			 new ColumnInfo("Entry name",     ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+			 new ColumnInfo("Result",         ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+			 new ColumnInfo("Previous entry", ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+			 new ColumnInfo("Comment",        ColumnInfo.COLUMN_TYPE_TEXT, false, true)
 			};
 		
 		// Default: empty!

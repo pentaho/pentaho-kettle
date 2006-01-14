@@ -158,9 +158,9 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Fieldname",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
-		colinf[1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
-		colinf[2]=new ColumnInfo("new field",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
+		colinf[0]=new ColumnInfo("Fieldname",  ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[2]=new ColumnInfo("new field",  ColumnInfo.COLUMN_TYPE_TEXT,   false );
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

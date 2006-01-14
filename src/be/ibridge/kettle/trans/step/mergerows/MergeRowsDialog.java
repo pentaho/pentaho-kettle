@@ -216,7 +216,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         int nrKeyRows= (input.getKeyFields()!=null?input.getKeyFields().length:1);
         
         ColumnInfo[] ciKeys=new ColumnInfo[] {
-            new ColumnInfo("Key field", ColumnInfo.COLUMN_TYPE_TEXT, "", false),
+            new ColumnInfo("Key field", ColumnInfo.COLUMN_TYPE_TEXT, false),
         };
             
         wKeys=new TableView(shell, 
@@ -264,7 +264,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         int nrValueRows= (input.getKeyFields()!=null?input.getKeyFields().length:1);
         
         ColumnInfo[] ciValues=new ColumnInfo[] {
-            new ColumnInfo("Value field", ColumnInfo.COLUMN_TYPE_TEXT, "", false),
+            new ColumnInfo("Value field", ColumnInfo.COLUMN_TYPE_TEXT, false),
         };
             
         wValues=new TableView(shell, 

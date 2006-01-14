@@ -133,11 +133,11 @@ public class StepFieldsDialog extends Dialog
 		final int FieldsRows=input.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Fieldname",   ColumnInfo.COLUMN_TYPE_TEXT, "", false, true );
-		colinf[1]=new ColumnInfo("Type",        ColumnInfo.COLUMN_TYPE_TEXT, "", false, true );
-		colinf[2]=new ColumnInfo("Length",      ColumnInfo.COLUMN_TYPE_TEXT, "", false, true );
-		colinf[3]=new ColumnInfo("Precision",   ColumnInfo.COLUMN_TYPE_TEXT, "", false, true );
-		colinf[4]=new ColumnInfo("Step origin", ColumnInfo.COLUMN_TYPE_TEXT, "", false, true );
+		colinf[0]=new ColumnInfo("Fieldname",   ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+		colinf[1]=new ColumnInfo("Type",        ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+		colinf[2]=new ColumnInfo("Length",      ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+		colinf[3]=new ColumnInfo("Precision",   ColumnInfo.COLUMN_TYPE_TEXT, false, true );
+		colinf[4]=new ColumnInfo("Step origin", ColumnInfo.COLUMN_TYPE_TEXT, false, true );
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

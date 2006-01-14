@@ -228,8 +228,8 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		int nrKeyRows=(input.getParameterField()!=null?input.getParameterField().length:1);
 		
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo("Parameter fieldname",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciKey[1]=new ColumnInfo("Parameter Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, "", Value.getTypes() );
+		ciKey[0]=new ColumnInfo("Parameter fieldname",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciKey[1]=new ColumnInfo("Parameter Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() );
 		
 		wParam=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 

@@ -60,19 +60,17 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.dialog.EnterListDialog;
+import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
-import be.ibridge.kettle.trans.Trans;
-import be.ibridge.kettle.trans.TransHopMeta;
 import be.ibridge.kettle.trans.TransMeta;
-import be.ibridge.kettle.trans.step.BaseStep;
+import be.ibridge.kettle.trans.TransPreviewFactory;
+import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
-import be.ibridge.kettle.trans.step.StepMeta;
-import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
 import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 
 
@@ -320,8 +318,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
 		ColumnInfo[] colinfo=new ColumnInfo[2];
-		colinfo[ 0]=new ColumnInfo("File/Directory",  ColumnInfo.COLUMN_TYPE_TEXT,    "", false);
-		colinfo[ 1]=new ColumnInfo("Wildcard",        ColumnInfo.COLUMN_TYPE_TEXT,    "", false );
+		colinfo[ 0]=new ColumnInfo("File/Directory",  ColumnInfo.COLUMN_TYPE_TEXT,    false);
+		colinfo[ 1]=new ColumnInfo("Wildcard",        ColumnInfo.COLUMN_TYPE_TEXT,    false );
 		
 		colinfo[ 1].setToolTip("Enter a regular expression here and a directory in the first column.");
 		
@@ -388,9 +386,9 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wlSheetnameList.setLayoutData(fdlSheetnameList);
 		
 		ColumnInfo[] shinfo=new ColumnInfo[3];
-		shinfo[ 0]=new ColumnInfo("Sheet name",     ColumnInfo.COLUMN_TYPE_TEXT,    "", false);
-		shinfo[ 1]=new ColumnInfo("Start row",      ColumnInfo.COLUMN_TYPE_TEXT,    "", false );
-		shinfo[ 2]=new ColumnInfo("Start column",   ColumnInfo.COLUMN_TYPE_TEXT,    "", false );
+		shinfo[ 0]=new ColumnInfo("Sheet name",     ColumnInfo.COLUMN_TYPE_TEXT,    false);
+		shinfo[ 1]=new ColumnInfo("Start row",      ColumnInfo.COLUMN_TYPE_TEXT,    false );
+		shinfo[ 2]=new ColumnInfo("Start column",   ColumnInfo.COLUMN_TYPE_TEXT,    false );
 		
 		wSheetnameList = new TableView(wSheetComp, 
 						      SWT.FULL_SELECTION | SWT.MULTI | SWT.BORDER, 
@@ -612,12 +610,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[ 0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,    "", false);
-		colinf[ 1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO,  "", Value.getTypes() );
-		colinf[ 2]=new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,    "", false);
-		colinf[ 3]=new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,    "", false);
-		colinf[ 4]=new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  "", TextFileInputMeta.trimTypeDesc );
-		colinf[ 5]=new ColumnInfo("Repeat",     ColumnInfo.COLUMN_TYPE_CCOMBO,  "", new String[] { "Y", "N" } );
+		colinf[ 0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,    false);
+		colinf[ 1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO,  Value.getTypes() );
+		colinf[ 2]=new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,    false);
+		colinf[ 3]=new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,    false);
+		colinf[ 4]=new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  TextFileInputMeta.trimTypeDesc );
+		colinf[ 5]=new ColumnInfo("Repeat",     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { "Y", "N" } );
 		
 		colinf[ 5].setToolTip("set this field to Y if you want to repeat values when the next are empty");
 		
@@ -1028,44 +1026,22 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		// Create the excel reader step...
 		ExcelInputMeta eii = new ExcelInputMeta();
 		getInfo(eii);
-		StepMeta stepMeta1 = new StepMeta(log, "ExcelInput", stepname, eii);
-		
-		// Create a dummy step...
-		DummyTransMeta dti = new DummyTransMeta();
-		StepMeta stepMeta2 = new StepMeta(log, "DummyTrans", "Dummy step", dti);
-		
-		// A hop between the two...
-		TransHopMeta hop = new TransHopMeta(stepMeta1, stepMeta2);
-		
-		// Add it all to a transformation
-		TransMeta ti = new TransMeta((String)null, "Preview run", null);
-		ti.addStep(stepMeta1);
-		ti.addStep(stepMeta2);
-		ti.addTransHop(hop);
-		
-		// new transformation...
-		Trans tr = new Trans(log, ti, new String[] { stepMeta2.getName() }, new int[] { 100 } );
-		
-		// execute the transformation...
-		tr.execute(new String[] { "dummy transMeta" } );
-		
-		// Wait until all is finished...
-		tr.waitUntilFinished();
-		
-		// get the previewed thread:
-		BaseStep bs = tr.findRunThread(stepMeta2.getName());
-		if (bs.previewBuffer!=null && bs.previewBuffer.size()>0)
-		{
-			PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, stepMeta2.getName(), bs.previewBuffer);
-			prd.open();
-		}
-		else
-		{
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("No rows found!.");
-			mb.setText("ERROR");
-			mb.open(); 
-		}
+        
+        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(eii, wStepname.getText());
+        
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, "Enter preview size", "Enter the number of rows you would like to preview:");
+        int previewSize = numberDialog.open();
+        if (previewSize>0)
+        {
+            TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+            progressDialog.open();
+            
+            if (!progressDialog.isCancelled())
+            {
+                PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()));
+                prd.open();
+            }
+        }
 	}
 		
 	

@@ -747,9 +747,9 @@ public class TransDialog extends Dialog
 		final int FieldsRows=transMeta.nrDependencies();
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Connection", ColumnInfo.COLUMN_TYPE_CCOMBO, "", conns);
-		colinf[1]=new ColumnInfo("Table",      ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[2]=new ColumnInfo("Field",      ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
+		colinf[0]=new ColumnInfo("Connection", ColumnInfo.COLUMN_TYPE_CCOMBO, conns);
+		colinf[1]=new ColumnInfo("Table",      ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[2]=new ColumnInfo("Field",      ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wFields=new TableView(wDepComp, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

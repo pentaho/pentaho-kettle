@@ -127,11 +127,11 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
 
         ColumnInfo[] colinf = new ColumnInfo[] 
         { 
-            new ColumnInfo("Name", ColumnInfo.COLUMN_TYPE_TEXT, "", false),
-            new ColumnInfo("Type", ColumnInfo.COLUMN_TYPE_CCOMBO, "", Value.getTypes()),
-            new ColumnInfo("Length", ColumnInfo.COLUMN_TYPE_TEXT, "", false), 
-            new ColumnInfo("Precision", ColumnInfo.COLUMN_TYPE_TEXT, "", false),
-            new ColumnInfo("Added (N=Removed)", ColumnInfo.COLUMN_TYPE_CCOMBO, "Y", new String[] {"Y", "N"}, true) 
+            new ColumnInfo("Name", ColumnInfo.COLUMN_TYPE_TEXT, false),
+            new ColumnInfo("Type", ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes()),
+            new ColumnInfo("Length", ColumnInfo.COLUMN_TYPE_TEXT, false), 
+            new ColumnInfo("Precision", ColumnInfo.COLUMN_TYPE_TEXT, false),
+            new ColumnInfo("Added (N=Removed)", ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y", "N"}, true) 
         };
 
         wFields = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props);

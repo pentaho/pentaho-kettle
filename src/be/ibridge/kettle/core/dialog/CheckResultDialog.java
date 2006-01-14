@@ -119,9 +119,9 @@ public class CheckResultDialog extends Dialog
 		int FieldsRows=remarks.size();
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Stepname", ColumnInfo.COLUMN_TYPE_TEXT,   "", false, true);
-		colinf[1]=new ColumnInfo("Result",   ColumnInfo.COLUMN_TYPE_TEXT,   "", false, true);
-		colinf[2]=new ColumnInfo("Remark",   ColumnInfo.COLUMN_TYPE_TEXT,   "", false, true);
+		colinf[0]=new ColumnInfo("Stepname", ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[1]=new ColumnInfo("Result",   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
+		colinf[2]=new ColumnInfo("Remark",   ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

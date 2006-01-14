@@ -107,8 +107,8 @@ public class EnterStringsDialog extends Dialog
         
         ColumnInfo[] colinf=new ColumnInfo[]
             {
-                new ColumnInfo("String name",  ColumnInfo.COLUMN_TYPE_TEXT, "", false, true),
-                new ColumnInfo("String value", ColumnInfo.COLUMN_TYPE_TEXT, "", false, false)                
+                new ColumnInfo("String name",  ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+                new ColumnInfo("String value", ColumnInfo.COLUMN_TYPE_TEXT, false, false)                
             };
         
         wFields=new TableView(shell, 

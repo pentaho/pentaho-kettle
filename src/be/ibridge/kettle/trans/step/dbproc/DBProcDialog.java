@@ -264,9 +264,9 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		final int FieldsRows=input.getArgument().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[1]=new ColumnInfo("Direction",  ColumnInfo.COLUMN_TYPE_CCOMBO, "", new String[] { "IN", "OUT", "INOUT" } );
-		colinf[2]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, "", Value.getTypes() );
+		colinf[0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[1]=new ColumnInfo("Direction",  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "IN", "OUT", "INOUT" } );
+		colinf[2]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() );
 		
 		wFields=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

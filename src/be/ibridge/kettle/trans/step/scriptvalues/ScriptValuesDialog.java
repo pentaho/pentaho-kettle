@@ -223,11 +223,11 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 		final int FieldsRows=input.getName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Fieldname",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[1]=new ColumnInfo("Rename to",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
-		colinf[2]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, "", Value.getTypes() );
-		colinf[3]=new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		colinf[4]=new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
+		colinf[0]=new ColumnInfo("Fieldname",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[1]=new ColumnInfo("Rename to",  ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[2]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() );
+		colinf[3]=new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[4]=new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wFields=new TableView(wBottom, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

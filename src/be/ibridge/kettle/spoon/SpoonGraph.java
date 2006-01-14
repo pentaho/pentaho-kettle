@@ -1670,8 +1670,7 @@ public class SpoonGraph extends Canvas
 
     public Image getTransformationImage(Display disp, int x, int y)
     {
-        TransPainter transPainter = new TransPainter(spoon.transMeta, new Point(x, y), hori, vert, candidate, drop_candidate, selrect,
-                spoon.demo_mode);
+        TransPainter transPainter = new TransPainter(spoon.transMeta, new Point(x, y), hori, vert, candidate, drop_candidate, selrect);
         Image img = transPainter.getTransformationImage();
 
         return img;

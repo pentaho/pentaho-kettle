@@ -170,10 +170,10 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		final int FieldsRows=input.getSelectName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Fieldname", ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
-		colinf[1]=new ColumnInfo("Rename to", ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
-		colinf[2]=new ColumnInfo("Length",    ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
-		colinf[3]=new ColumnInfo("Precision", ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
+		colinf[0]=new ColumnInfo("Fieldname", ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[1]=new ColumnInfo("Rename to", ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[2]=new ColumnInfo("Length",    ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[3]=new ColumnInfo("Precision", ColumnInfo.COLUMN_TYPE_TEXT,   false );
 		
 		wFields=new TableView(wSelectComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -238,7 +238,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		final int RemoveRows=input.getDeleteName().length;
 		
 		ColumnInfo[] colrem=new ColumnInfo[RemoveCols];
-		colrem[0]=new ColumnInfo("Fieldname", ColumnInfo.COLUMN_TYPE_TEXT,   "", false );
+		colrem[0]=new ColumnInfo("Fieldname", ColumnInfo.COLUMN_TYPE_TEXT,   false );
 		
 		wRemove=new TableView(wRemoveComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -305,11 +305,11 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		final int MetaRows=input.getMetaName().length;
 		
 		ColumnInfo[] colmeta=new ColumnInfo[MetaCols];
-		colmeta[0]=new ColumnInfo("Fieldname",   ColumnInfo.COLUMN_TYPE_TEXT,     "", false );
-		colmeta[1]=new ColumnInfo("Rename to",   ColumnInfo.COLUMN_TYPE_TEXT,     "", false );
-		colmeta[2]=new ColumnInfo("Type",        ColumnInfo.COLUMN_TYPE_CCOMBO,   "", Value.getAllTypes(), true);
-		colmeta[3]=new ColumnInfo("Length",      ColumnInfo.COLUMN_TYPE_TEXT,     "", false );
-		colmeta[4]=new ColumnInfo("Precision",   ColumnInfo.COLUMN_TYPE_TEXT,     "", false );
+		colmeta[0]=new ColumnInfo("Fieldname",   ColumnInfo.COLUMN_TYPE_TEXT,     false );
+		colmeta[1]=new ColumnInfo("Rename to",   ColumnInfo.COLUMN_TYPE_TEXT,     false );
+		colmeta[2]=new ColumnInfo("Type",        ColumnInfo.COLUMN_TYPE_CCOMBO,   Value.getAllTypes(), true);
+		colmeta[3]=new ColumnInfo("Length",      ColumnInfo.COLUMN_TYPE_TEXT,     false );
+		colmeta[4]=new ColumnInfo("Precision",   ColumnInfo.COLUMN_TYPE_TEXT,     false );
 		
 		wMeta=new TableView(wMetaComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 

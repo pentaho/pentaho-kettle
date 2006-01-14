@@ -171,8 +171,8 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		int nrKeyRows=(input.getKeystream()!=null?input.getKeystream().length:1);
 		
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo("Field",        ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciKey[1]=new ColumnInfo("LookupField",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
+		ciKey[0]=new ColumnInfo("Field",        ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciKey[1]=new ColumnInfo("LookupField",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wKey=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -202,10 +202,10 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		int UpInsRows= (input.getValue()!=null?input.getValue().length:1);
 		
 		ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
-		ciReturn[0]=new ColumnInfo("Field",    ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciReturn[1]=new ColumnInfo("New name", ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciReturn[2]=new ColumnInfo("Default",  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
-		ciReturn[3]=new ColumnInfo("Type",     ColumnInfo.COLUMN_TYPE_CCOMBO, "", Value.getTypes() );
+		ciReturn[0]=new ColumnInfo("Field",    ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciReturn[1]=new ColumnInfo("New name", ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciReturn[2]=new ColumnInfo("Default",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciReturn[3]=new ColumnInfo("Type",     ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() );
 		
 		wReturn=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 

@@ -191,8 +191,8 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		ColumnInfo[] colinf=new ColumnInfo[]
         {
-		  new ColumnInfo("Fieldname",    ColumnInfo.COLUMN_TYPE_TEXT,   "", false ),
-          new ColumnInfo("Ignore case",  ColumnInfo.COLUMN_TYPE_CCOMBO,  "", new String[] {"Y", "N"}, true )
+		  new ColumnInfo("Fieldname",    ColumnInfo.COLUMN_TYPE_TEXT,   false ),
+          new ColumnInfo("Ignore case",  ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] {"Y", "N"}, true )
         };
 		
 		wFields=new TableView(shell, 
