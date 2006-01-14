@@ -37,7 +37,7 @@ public class ColumnInfo
 	
 	private int      type;
 	private String   name;
-	private String   defvalue;
+
 	private String[] combovals;
 	private boolean  number; 
 	private String   tooltip;
@@ -49,22 +49,34 @@ public class ColumnInfo
 	private SelectionAdapter selButton;
 
 	// Simple String
+    /** @deprecated */
 	public ColumnInfo(String colname, int coltype, String def)
 	{
-		name=colname;
-		type=coltype;
-		defvalue=def;
-		combovals=null;
-		number=false;
-		tooltip=null;
-		allignement=SWT.LEFT;
-		readonly=false;
-		hide_negative=false;
+        this(colname, coltype);
 	}
-	
-	public ColumnInfo(String colname, int coltype, String def, String[] combo)
+    
+    public ColumnInfo(String colname, int coltype)
+    {
+        name=colname;
+        type=coltype;
+        combovals=null;
+        number=false;
+        tooltip=null;
+        allignement=SWT.LEFT;
+        readonly=false;
+        hide_negative=false;
+    }
+
+    /** @deprecated */
+    public ColumnInfo(String colname, int coltype, String def, String[] combo)
+    {
+        this(colname, coltype, combo);
+    }
+
+    
+	public ColumnInfo(String colname, int coltype, String[] combo)
 	{
-		this(colname, coltype, def);
+		this(colname, coltype);
 		combovals=combo;
 		number=false;
 		tooltip=null;
@@ -73,9 +85,15 @@ public class ColumnInfo
 		hide_negative=false;
 	}
 
-	public ColumnInfo(String colname, int coltype, String def, boolean num)
+    /** @deprecated */
+    public ColumnInfo(String colname, int coltype, String def, boolean num)
+    {
+        this(colname, coltype, num);
+    }
+
+	public ColumnInfo(String colname, int coltype, boolean num)
 	{
-		this(colname, coltype, def);
+		this(colname, coltype);
 		combovals=null;
 		number=num;
 		tooltip=null;
@@ -84,24 +102,36 @@ public class ColumnInfo
 		hide_negative=false;
 	}
 
-	public ColumnInfo(String colname, int coltype, String def, String[] combo, boolean ro)
+    /** @deprecated */
+    public ColumnInfo(String colname, int coltype, String def, String[] combo, boolean ro)
+    {
+        this(colname, coltype, combo, ro);
+    }
+    
+	public ColumnInfo(String colname, int coltype, String[] combo, boolean ro)
 	{
-		this(colname, coltype, def, combo);
+		this(colname, coltype, combo);
 		readonly=ro;
 	}
 
+    /** @deprecated */
 	public ColumnInfo(String colname, int coltype, String def, boolean num, boolean ro)
 	{
-		this(colname, coltype, def, num);
-		readonly=ro;
+		this(colname, coltype, num, ro);
 	}
-	
-	// For buttons:
-	public ColumnInfo(String colname, int coltype, String def, String button)
-	{
-		this(colname, coltype, def);
-		button_text = button;
-	}
+
+    public ColumnInfo(String colname, int coltype, boolean num, boolean ro)
+    {
+        this(colname, coltype, num);
+        readonly=ro;
+    }
+
+    // For buttons:
+    public ColumnInfo(String colname, int coltype, String def, String button)
+    {
+        this(colname, coltype, def);
+        button_text = button;
+    }
 
 	
 	public void     setToolTip(String tip)      { tooltip=tip; }
@@ -112,7 +142,10 @@ public class ColumnInfo
 
 	public String   getName()        { return name;        }
 	public int      getType()        { return type;        }
-	public String   getDefault()     { return defvalue;    }
+    
+    /** @deprecated */
+	public String   getDefault()     { return "";    }
+    
 	public String[] getComboValues() 
 	{
 		String retval[] = combovals; // Copy structure!
