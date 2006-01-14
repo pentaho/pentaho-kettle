@@ -17,6 +17,7 @@
 
 package be.ibridge.kettle.trans.step.xmloutput;
 
+import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -304,6 +305,7 @@ public class XMLOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			
 				outputFields[i] = new XMLField();
 				outputFields[i].setFieldName( XMLHandler.getTagValue(fnode, "name") );
+                outputFields[i].setElementName( XMLHandler.getTagValue(fnode, "element") );
 				outputFields[i].setType( XMLHandler.getTagValue(fnode, "type") );
 				outputFields[i].setFormat( XMLHandler.getTagValue(fnode, "format") );
 				outputFields[i].setCurrencySymbol( XMLHandler.getTagValue(fnode, "currency") );
@@ -415,7 +417,8 @@ public class XMLOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	public String buildFilename(int stepnr, int splitnr, boolean ziparchive)
 	{
 		SimpleDateFormat daf     = new SimpleDateFormat();
-
+		DecimalFormat df = new DecimalFormat("00000"); 
+        
 		// Replace possible environment variables...
 		String retval=Const.replEnv( fileName );
 		
@@ -439,7 +442,7 @@ public class XMLOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		}
 		if (splitEvery>0)
 		{
-			retval+="_"+splitnr;
+			retval+="_"+df.format(splitnr+1);
 		}
 		
 		if (zipped)
@@ -517,6 +520,7 @@ public class XMLOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			{
 				retval+="      <field>"+Const.CR;
 				retval+="        "+XMLHandler.addTagValue("name",      field.getFieldName());
+                retval+="        "+XMLHandler.addTagValue("element",   field.getElementName());
 				retval+="        "+XMLHandler.addTagValue("type",      field.getType());
 				retval+="        "+XMLHandler.addTagValue("format",    field.getFormat());
 				retval+="        "+XMLHandler.addTagValue("currency",  field.getCurrencySymbol());
@@ -558,9 +562,10 @@ public class XMLOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			{
 			    outputFields[i] = new XMLField();
 
-			    outputFields[i].setFieldName(    		rep.getStepAttributeString (id_step, i, "field_name") );
-			    outputFields[i].setType( 			rep.getStepAttributeString (id_step, i, "field_type") );
-			    outputFields[i].setFormat(  		rep.getStepAttributeString (id_step, i, "field_format") );
+			    outputFields[i].setFieldName(    	rep.getStepAttributeString (id_step, i, "field_name") );
+                outputFields[i].setElementName(     rep.getStepAttributeString (id_step, i, "field_element") );
+                outputFields[i].setType(            rep.getStepAttributeString (id_step, i, "field_type") );
+                outputFields[i].setFormat(  		rep.getStepAttributeString (id_step, i, "field_format") );
 			    outputFields[i].setCurrencySymbol(	rep.getStepAttributeString (id_step, i, "field_currency") );
 			    outputFields[i].setDecimalSymbol(	rep.getStepAttributeString (id_step, i, "field_decimal") );
 			    outputFields[i].setGroupingSymbol(	rep.getStepAttributeString (id_step, i, "field_group") );
@@ -596,7 +601,8 @@ public class XMLOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			    XMLField field = outputFields[i];
 			    
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      field.getFieldName());
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      field.getType());
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_element",   field.getElementName());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      field.getTypeDesc());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",    field.getFormat());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",  field.getCurrencySymbol());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal",   field.getDecimalSymbol());

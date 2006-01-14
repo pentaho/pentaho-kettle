@@ -27,6 +27,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -317,7 +318,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 		return retval;
 	}
 	
-	private boolean writeField(Value v, int idx, String element)
+	private void writeField(Value v, int idx, String element) throws KettleStepException
 	{
 		try
 		{
@@ -328,10 +329,8 @@ public class XMLOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Error writing line in ["+debug+"] :"+e.toString());
-			return false;
+			throw new KettleStepException("Error writing line in ["+debug+"] :", e);
 		}
-		return true;
 	}
 	
 	public String buildFilename(boolean ziparchive)
