@@ -190,10 +190,7 @@ public class Spoon
 	public  Props props;
 	
 	public  Repository rep;
-	
-	public  boolean demo_mode;
-	public  int     license_nr;
-	
+		
 	public  TransMeta transMeta;
 
 	private ToolBar  tBar;
@@ -4286,8 +4283,6 @@ public class Spoon
 		
         log.logBasic(APP_NAME, "Main window is created.");
         
-		win.demo_mode=false;
-
 		RepositoryMeta repinfo = null;
 		UserInfo userinfo = null;
 		
@@ -4342,7 +4337,7 @@ public class Spoon
 							win.rep = new Repository(log, repinfo, userinfo);
 							if (win.rep.connect("Spoon"))
 							{
-								if (dirname==null) dirname=Const.FILE_SEPARATOR;
+								if (dirname==null) dirname=RepositoryDirectory.DIRECTORY_SEPARATOR;
 								
 								// Check username, password
 								win.rep.userinfo = new UserInfo(win.rep, username, password);
