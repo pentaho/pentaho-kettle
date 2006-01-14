@@ -85,7 +85,7 @@ public class SelectValues extends BaseStep implements StepInterface
 				cnt[i]=0;
 				for (int j=0;j<meta.getSelectName().length;j++)
 				{
-					if (meta.getSelectName()[i].equalsIgnoreCase(meta.getSelectName()[j])) cnt[i]++;
+					if (meta.getSelectName()[i].equals(meta.getSelectName()[j])) cnt[i]++;
 					
 					if (cnt[i]>1)
 					{
@@ -183,7 +183,7 @@ public class SelectValues extends BaseStep implements StepInterface
 				cnt[i]=0;
 				for (int j=0;j<meta.getDeleteName().length;j++)
 				{
-					if (meta.getDeleteName()[i].equalsIgnoreCase(meta.getDeleteName()[j])) cnt[i]++;
+					if (meta.getDeleteName()[i].equals(meta.getDeleteName()[j])) cnt[i]++;
 					
 					if (cnt[i]>1)
 					{
@@ -272,7 +272,7 @@ public class SelectValues extends BaseStep implements StepInterface
 				cnt[i]=0;
 				for (int j=0;j<meta.getMetaName().length;j++)
 				{
-					if (meta.getMetaName()[i].equalsIgnoreCase(meta.getMetaName()[j])) cnt[i]++;
+					if (meta.getMetaName()[i].equals(meta.getMetaName()[j])) cnt[i]++;
 					
 					if (cnt[i]>1)
 					{

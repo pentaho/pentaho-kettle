@@ -404,7 +404,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 					if (v!=null)  // We found the value
 					{
 						// Do we need to rename ?
-						if (!v.getName().equalsIgnoreCase(selectRename[i]) && selectRename[i]!=null && selectRename[i].length()>0)
+						if (!v.getName().equals(selectRename[i]) && selectRename[i]!=null && selectRename[i].length()>0)
 						{
 							v.setName(selectRename[i]);
 							v.setOrigin(name);
@@ -451,7 +451,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 						Value v = r.getValue(idx);
 						
 						// Do we need to rename ?
-						if (!v.getName().equalsIgnoreCase(metaRename[i]) && metaRename[i]!=null && metaRename[i].length()>0)
+						if (!v.getName().equals(metaRename[i]) && metaRename[i]!=null && metaRename[i].length()>0)
 						{
 							v.setName(metaRename[i]);
 							v.setOrigin(name);
@@ -738,7 +738,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 			cnt[i]=0;
 			for (int j=0;j<selectName.length;j++)
 			{
-				if (selectName[i].equalsIgnoreCase(selectName[j])) cnt[i]++;
+				if (selectName[i].equals(selectName[j])) cnt[i]++;
 			}
 			
 			if (cnt[i]>1)
