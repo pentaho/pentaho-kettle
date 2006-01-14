@@ -195,12 +195,12 @@ public class TableOutput extends BaseStep implements StepInterface
 		    {
 		        if (data.warnings<20)
 		        {
-		            logBasic("WARNING: Coudln't insert row into table: "+r);
+		            logBasic("WARNING: Coudln't insert row into table: "+r+Const.CR+dbe.getMessage());
 		        }
 		        else
 		        if (data.warnings==20)
 		        {
-		            logBasic("FINAL WARNING (no more then 20 displayed): Coudln't insert row into table: "+r);
+		            logBasic("FINAL WARNING (no more then 20 displayed): Coudln't insert row into table: "+r+Const.CR+dbe.getMessage());
 		        }
 		        data.warnings++;
 		    }
