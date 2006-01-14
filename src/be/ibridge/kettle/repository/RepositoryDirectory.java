@@ -41,6 +41,8 @@ import be.ibridge.kettle.core.exception.KettleException;
  */
 public class RepositoryDirectory
 {
+    public static final String DIRECTORY_SEPARATOR = "/";
+    
 	private RepositoryDirectory parent;
 	private ArrayList           children;
 	
@@ -131,7 +133,7 @@ public class RepositoryDirectory
 	 */
 	public String getDirectoryName()
 	{
-		if (directoryname==null) return Const.FILE_SEPARATOR;
+		if (directoryname==null) return DIRECTORY_SEPARATOR;
 		return directoryname;
 	}
 	
@@ -153,17 +155,17 @@ public class RepositoryDirectory
 	{
 		if (getParent()==null) // Root! 
 		{
-			return Const.FILE_SEPARATOR;
+			return DIRECTORY_SEPARATOR;
 		}
 		else
 		{
 			if (getParent().getParent()==null)
 			{
-				return Const.FILE_SEPARATOR + getDirectoryName();
+				return DIRECTORY_SEPARATOR + getDirectoryName();
 			}
 			else
 			{
-				return getParent().getPath() + Const.FILE_SEPARATOR + getDirectoryName();
+				return getParent().getPath() + DIRECTORY_SEPARATOR + getDirectoryName();
 			}
 		}
 	}
@@ -240,7 +242,7 @@ public class RepositoryDirectory
 	public RepositoryDirectory findDirectory(String path[])
 	{ 
 	    // Is it root itself?
-	    if (isRoot() && path.length==1 && path[0].equalsIgnoreCase(Const.FILE_SEPARATOR))
+	    if (isRoot() && path.length==1 && path[0].equalsIgnoreCase(DIRECTORY_SEPARATOR))
 	    {
 	        return this;
 	    }
@@ -248,7 +250,7 @@ public class RepositoryDirectory
 	    String[] directoryPath;
 	    
 	    // Skip the root directory, it doesn't really exist as such.
-	    if (path.length>0 && path[0].equalsIgnoreCase(Const.FILE_SEPARATOR))
+	    if (path.length>0 && path[0].equalsIgnoreCase(DIRECTORY_SEPARATOR))
 	    {
 	        // Copy the path exception the highest level, we go down one... 
 	    	directoryPath = new String[path.length-1];
@@ -260,7 +262,7 @@ public class RepositoryDirectory
 	    }
 	   
 		// The root directory?
-		if (isRoot() && directoryPath.length==1 && directoryPath[0].equalsIgnoreCase(Const.FILE_SEPARATOR))
+		if (isRoot() && directoryPath.length==1 && directoryPath[0].equalsIgnoreCase(DIRECTORY_SEPARATOR))
 		{
 			return this;
 		}
@@ -303,7 +305,7 @@ public class RepositoryDirectory
 	 */
 	public RepositoryDirectory findDirectory(String path)
 	{
-		String newPath[] = Const.splitPath(path, Const.FILE_SEPARATOR);
+		String newPath[] = Const.splitPath(path, DIRECTORY_SEPARATOR);
 		
 		String p[] = null;
 		
@@ -311,7 +313,7 @@ public class RepositoryDirectory
 		{
 			// This doesn't include the root:
 			p = new String[newPath.length+1];
-			p[0] = Const.FILE_SEPARATOR;
+			p[0] = DIRECTORY_SEPARATOR;
 			
 			for (int i=0;i<newPath.length;i++)
 			{
@@ -656,7 +658,7 @@ public class RepositoryDirectory
 	 */
 	public RepositoryDirectory createDirectory(Repository rep, String directoryPath) throws KettleDatabaseException
 	{
-	    String path[] = Const.splitPath(directoryPath, Const.FILE_SEPARATOR);
+	    String path[] = Const.splitPath(directoryPath, DIRECTORY_SEPARATOR);
 
 	    RepositoryDirectory parent = this;
 	    for (int level=1;level<=path.length;level++)

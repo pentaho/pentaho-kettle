@@ -1731,7 +1731,7 @@ public class TransMeta implements XMLInterface
     {
         try
         {
-            String pathAndName = repdir.isRoot() ? repdir + transname : repdir + Const.FILE_SEPARATOR + transname;
+            String pathAndName = repdir.isRoot() ? repdir + transname : repdir + RepositoryDirectory.DIRECTORY_SEPARATOR + transname;
 
             // Clear everything...
             clear();
@@ -1896,7 +1896,7 @@ public class TransMeta implements XMLInterface
         xml += "  <info>" + Const.CR;
 
         xml += "    " + XMLHandler.addTagValue("name", name);
-        xml += "    " + XMLHandler.addTagValue("directory", directory != null ? directory.getPath() : Const.FILE_SEPARATOR);
+        xml += "    " + XMLHandler.addTagValue("directory", directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR);
         xml += "    <log>" + Const.CR;
         xml += "      " + XMLHandler.addTagValue("read", readStep == null ? "" : readStep.getName());
         xml += "      " + XMLHandler.addTagValue("write", writeStep == null ? "" : writeStep.getName());
@@ -3506,7 +3506,7 @@ public class TransMeta implements XMLInterface
         if (getDirectory().isRoot())
             return getDirectory().getPath() + getName();
         else
-            return getDirectory().getPath() + Const.FILE_SEPARATOR + getName();
+            return getDirectory().getPath() + RepositoryDirectory.DIRECTORY_SEPARATOR + getName();
     }
 
     /**
