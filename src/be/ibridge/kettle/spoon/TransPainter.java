@@ -45,22 +45,23 @@ public class TransPainter
 
     private Font         noteFont;
     private Font         graphFont;
-    private Font         demoFont;
-    private Font         demoFontSmall;
 
     private TransHopMeta candidate;
     private Point        drop_candidate;
     private int          iconsize;
     private Rectangle    selrect;
     private int          linewidth;
-    private boolean      demo_mode;
     private Hashtable    images;
+
+    public TransPainter(TransMeta transMeta, Point area)
+    {
+        this(transMeta, area, null, null, null, null, null);
+    }
 
     public TransPainter(TransMeta transMeta, 
                         Point area, 
                         ScrollBar hori, ScrollBar vert, 
-                        TransHopMeta candidate, Point drop_candidate, Rectangle selrect,
-                        boolean demo_mode
+                        TransHopMeta candidate, Point drop_candidate, Rectangle selrect
                         )
     {
         this.transMeta     = transMeta;
@@ -86,7 +87,6 @@ public class TransPainter
         this.candidate     = candidate;
         this.selrect       = selrect;
         this.drop_candidate= drop_candidate;
-        this.demo_mode     = demo_mode;
         
         props = Props.getInstance();
         iconsize = props.getIconSize(); 
@@ -115,8 +115,6 @@ public class TransPainter
         if (props.isAntiAliasingEnabled() && Const.getOS().startsWith("Windows")) gc.setAntialias(SWT.ON);
         
         shadowsize = props.getShadowSize();
-
-        drawDemo(gc);
 
         Point max   = transMeta.getMaximum();
         Point thumb = getThumb(area, max);
@@ -180,28 +178,6 @@ public class TransPainter
     private void drawHop(GC gc, TransHopMeta hi)
     {
         drawHop(gc, hi, false);
-    }
-
-    private void drawDemo(GC gc)
-    {
-        if (demo_mode)
-        {
-            gc.setFont(demoFont);
-            for (int i = 0; i < 8; i++)
-            {
-                gc.setForeground(darkGray);
-                gc.drawText("Demo mode", i * 25, i * 100, true);
-                gc.setForeground(lightGray);
-                gc.drawText("Demo mode", i * 25 + 25, i * 100 + 25, true);
-            }
-            
-            gc.setFont(demoFontSmall);
-            gc.setForeground(lightGray);
-            for (int i = 0; i < 8; i++)
-            {
-                gc.drawText("This software is unlicensed", i * 25 + 25, i * 100 + 100, true);
-            }
-        }
     }
 
     private void drawNote(GC gc, NotePadMeta ni)
