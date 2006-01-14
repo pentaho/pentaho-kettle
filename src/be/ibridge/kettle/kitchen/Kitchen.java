@@ -89,7 +89,7 @@ public class Kitchen
         repname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", repname);
         username = Const.getEnvironmentVariable("KETTLE_USER",       username);
         password = Const.getEnvironmentVariable("KETTLE_PASSWORD",   password);
-
+        
 		// System.out.println("Level="+loglevel);
         LogWriter log;
         if (logfile==null)
@@ -107,6 +107,8 @@ public class Kitchen
             log.logBasic(STRING_KITCHEN, "Logging is at level : "+log.getLogLevelDesc());
         } 
 		
+        if (repname!=null && username!=null) log.logDetailed(STRING_KITCHEN, "Repository and username supplied");
+
 		log.logBasic(STRING_KITCHEN, "Start of run.");
 		
 		/* Load the plugins etc.*/
