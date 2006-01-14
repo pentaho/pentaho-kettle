@@ -59,22 +59,29 @@ public class TextFileInput extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	public static final String getLine(LogWriter log, InputStreamReader reader, String format)
+	public static final String getLine(LogWriter log, InputStreamReader reader, String format, int nrWraps)
 	{
 		StringBuffer line=new StringBuffer();
 		int c=0;
 		
 		try
 		{
+            int wrapNr=0;
+            boolean isCRFound = false;
 			while (c>=0)
 			{
 				c=reader.read();
 				if (c=='\n' || c=='\r') 
 				{
 					if (format.equalsIgnoreCase("DOS")) c=reader.read(); // skip \n and \r
-					return line.toString();
+					isCRFound=true;
 				}
-				if (c>=0) line.append((char)c);
+				if (c>=0 && !isCRFound) line.append((char)c);
+                if (isCRFound) // OK we found a line break, what do we do now?
+                {
+                    wrapNr++;
+                    if (wrapNr>nrWraps) return line.toString(); 
+                }
 			}
 		}
 		catch(Exception e)
@@ -637,20 +644,27 @@ public class TextFileInput extends BaseStep implements StepInterface
 		    }
 		    
 			first=false;
-			data.thisline=getLine(log, data.isr, meta.getFileFormat());
+			data.thisline=getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);
 			if (meta.hasHeader() && data.thisline!=null)  // skip first line in this case!
 			{
-				data.thisline=getLine(log, data.isr, meta.getFileFormat());
+				data.thisline=getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);
+                int skipped=1;
+                while(data.thisline!=null && skipped<meta.getNrHeaderLines())
+                {
+                    linesInput++;
+                    data.thisline=getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);
+                    skipped++;
+                }
 			} 
 			if (data.thisline!=null) 
 			{ 
 				linesInput++;
-				data.nextline=getLine(log, data.isr, meta.getFileFormat()); 
+				data.nextline=getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0); 
 			} 
 			if (data.nextline!=null) 
 			{ 
 				linesInput++;
-				data.lastline=getLine(log, data.isr, meta.getFileFormat()); 
+				data.lastline=getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0); 
 			} 
 			if (data.nextline!=null)
 			{
@@ -664,7 +678,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		else
 		{
-			data.lastline=getLine(log, data.isr, meta.getFileFormat()); // Get one line of data;
+			data.lastline=getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0); // Get one line of data;
 			if (data.lastline!=null) linesInput++;
 		}
 		

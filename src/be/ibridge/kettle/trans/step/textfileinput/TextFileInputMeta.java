@@ -80,9 +80,21 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
     /** Flag indicating that the file contains one header line that should be skipped. */
     private boolean            header;
+    
+    /** The number of header lines, defaults to 1 */
+    private int                nrHeaderLines;
 
     /** Flag indicating that the file contains one footer line that should be skipped. */
     private boolean            footer;
+
+    /** The number of footer lines, defaults to 1 */
+    private int                nrFooterLines;
+
+    /** Flag indicating that a single line is wrapped onto one or more lines in the text file. */
+    private boolean            lineWrapped;
+
+    /** The number of times the line wrapped */
+    private int                nrWraps;
 
     /** Flag indicating that the text file to be read is stored in a ZIP archive */
     private boolean            zipped;
@@ -495,7 +507,11 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         separator = ";";
         enclosure = "\"";
         header = true;
+        nrHeaderLines = 1;
         footer = false;
+        nrFooterLines = 1;
+        lineWrapped = false;
+        nrWraps = 1;
         zipped = false;
         noEmptyLines = true;
         fileFormat = "DOS";
@@ -594,7 +610,11 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         retval += "    " + XMLHandler.addTagValue("enclosure", enclosure);
         retval += "    " + XMLHandler.addTagValue("escapechar", escapeCharacter);
         retval += "    " + XMLHandler.addTagValue("header", header);
+        retval += "    " + XMLHandler.addTagValue("nr_headerlines", nrHeaderLines);
         retval += "    " + XMLHandler.addTagValue("footer", footer);
+        retval += "    " + XMLHandler.addTagValue("nr_footerlines", nrFooterLines);
+        retval += "    " + XMLHandler.addTagValue("line_wrapped", lineWrapped);
+        retval += "    " + XMLHandler.addTagValue("nr_wraps", nrWraps);
         retval += "    " + XMLHandler.addTagValue("noempty", noEmptyLines);
         retval += "    " + XMLHandler.addTagValue("include", includeFilename);
         retval += "    " + XMLHandler.addTagValue("include_field", filenameField);
@@ -658,7 +678,11 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             enclosure = XMLHandler.getTagValue(stepnode, "enclosure");
             escapeCharacter = XMLHandler.getTagValue(stepnode, "escapechar");
             header = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
+            nrHeaderLines = Const.toInt( XMLHandler.getTagValue(stepnode, "nr_headerlines"), 1);
             footer = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
+            nrFooterLines = Const.toInt( XMLHandler.getTagValue(stepnode, "nr_footerlines"), 1);
+            lineWrapped = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "line_wrapped"));
+            nrWraps = Const.toInt( XMLHandler.getTagValue(stepnode, "nr_wraps"), 1);
             String nempty = XMLHandler.getTagValue(stepnode, "noempty");
             noEmptyLines = "Y".equalsIgnoreCase(nempty) || nempty == null;
             includeFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include"));
@@ -739,7 +763,11 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             enclosure = rep.getStepAttributeString(id_step, "enclosure");
             escapeCharacter = rep.getStepAttributeString(id_step, "escapechar");
             header = rep.getStepAttributeBoolean(id_step, "header");
+            nrHeaderLines = (int)rep.getStepAttributeInteger(id_step, "nr_headerlines");
             footer = rep.getStepAttributeBoolean(id_step, "footer");
+            nrFooterLines = (int)rep.getStepAttributeInteger(id_step, "nr_footerlines");
+            lineWrapped = rep.getStepAttributeBoolean(id_step, "line_wrapped");
+            nrWraps = (int)rep.getStepAttributeInteger(id_step, "nr_wraps");
             noEmptyLines = rep.getStepAttributeBoolean(id_step, "noempty");
             includeFilename = rep.getStepAttributeBoolean(id_step, "include");
             filenameField = rep.getStepAttributeString(id_step, "include_field");
@@ -805,7 +833,11 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "enclosure", enclosure);
             rep.saveStepAttribute(id_transformation, id_step, "escapechar", escapeCharacter);
             rep.saveStepAttribute(id_transformation, id_step, "header", header);
+            rep.saveStepAttribute(id_transformation, id_step, "nr_headerlines", nrHeaderLines);
             rep.saveStepAttribute(id_transformation, id_step, "footer", footer);
+            rep.saveStepAttribute(id_transformation, id_step, "nr_footerlines", nrFooterLines);
+            rep.saveStepAttribute(id_transformation, id_step, "line_wrapped", lineWrapped);
+            rep.saveStepAttribute(id_transformation, id_step, "nr_wraps", nrWraps);
             rep.saveStepAttribute(id_transformation, id_step, "noempty", noEmptyLines);
             rep.saveStepAttribute(id_transformation, id_step, "include", includeFilename);
             rep.saveStepAttribute(id_transformation, id_step, "include_field", filenameField);
@@ -1051,5 +1083,69 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     public void setErrorTextField(String errorTextField)
     {
         this.errorTextField = errorTextField;
+    }
+
+    /**
+     * @return Returns the lineWrapped.
+     */
+    public boolean isLineWrapped()
+    {
+        return lineWrapped;
+    }
+
+    /**
+     * @param lineWrapped The lineWrapped to set.
+     */
+    public void setLineWrapped(boolean lineWrapped)
+    {
+        this.lineWrapped = lineWrapped;
+    }
+
+    /**
+     * @return Returns the nrFooterLines.
+     */
+    public int getNrFooterLines()
+    {
+        return nrFooterLines;
+    }
+
+    /**
+     * @param nrFooterLines The nrFooterLines to set.
+     */
+    public void setNrFooterLines(int nrFooterLines)
+    {
+        this.nrFooterLines = nrFooterLines;
+    }
+
+    /**
+     * @return Returns the nrHeaderLines.
+     */
+    public int getNrHeaderLines()
+    {
+        return nrHeaderLines;
+    }
+
+    /**
+     * @param nrHeaderLines The nrHeaderLines to set.
+     */
+    public void setNrHeaderLines(int nrHeaderLines)
+    {
+        this.nrHeaderLines = nrHeaderLines;
+    }
+
+    /**
+     * @return Returns the nrWraps.
+     */
+    public int getNrWraps()
+    {
+        return nrWraps;
+    }
+
+    /**
+     * @param nrWraps The nrWraps to set.
+     */
+    public void setNrWraps(int nrWraps)
+    {
+        this.nrWraps = nrWraps;
     }
 }

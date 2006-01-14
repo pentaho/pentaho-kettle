@@ -213,7 +213,16 @@ public class TextFileCSVImportProgressDialog
 
         // If the file has a header we overwrite the first line
         // However, if it doesn't have a header, take a new line
-        if (meta.hasHeader()) line = TextFileInput.getLine(log, reader, meta.getFileFormat());
+        if (meta.hasHeader()) 
+        {
+            line = TextFileInput.getLine(log, reader, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);
+            int skipped=1;
+            while (line!=null && skipped<meta.getNrHeaderLines())
+            {
+                line = TextFileInput.getLine(log, reader, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);
+                skipped++;
+            }
+        }
         int linenr = 1;
 
         // Allocate number and date parsers
@@ -432,7 +441,7 @@ public class TextFileCSVImportProgressDialog
 
             // Grab another line...
             debug = "Grab another line";
-            line = TextFileInput.getLine(log, reader, meta.getFileFormat());
+            line = TextFileInput.getLine(log, reader, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);
             debug = "End of while loop";
         }
 

@@ -137,11 +137,27 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private Label        wlHeader;
 	private Button       wHeader;
 	private FormData     fdlHeader, fdHeader;
-	
+
+    private Label        wlNrHeader;
+    private Text         wNrHeader;
+    private FormData     fdlNrHeader, fdNrHeader;
+
 	private Label        wlFooter;
 	private Button       wFooter;
 	private FormData     fdlFooter, fdFooter;
-	
+
+    private Label        wlNrFooter;
+    private Text         wNrFooter;
+    private FormData     fdlNrFooter, fdNrFooter;
+
+    private Label        wlWraps;
+    private Button       wWraps;
+    private FormData     fdlWraps, fdWraps;
+
+    private Label        wlNrWraps;
+    private Text         wNrWraps;
+    private FormData     fdlNrWraps, fdNrWraps;
+
 	private Label        wlZipped;
 	private Button       wZipped;
 	private FormData     fdlZipped, fdZipped;
@@ -552,9 +568,25 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		fdHeader=new FormData();
 		fdHeader.left = new FormAttachment(middle, 0);
 		fdHeader.top  = new FormAttachment(wEscape, margin);
-		fdHeader.right= new FormAttachment(100, 0);
 		wHeader.setLayoutData(fdHeader);
 
+        // NrHeader
+        wlNrHeader=new Label(wContentComp, SWT.RIGHT);
+        wlNrHeader.setText("Number of header lines");
+        props.setLook(wlNrHeader);
+        fdlNrHeader=new FormData();
+        fdlNrHeader.left = new FormAttachment(wHeader, margin);
+        fdlNrHeader.top  = new FormAttachment(wEscape, margin);
+        wlNrHeader.setLayoutData(fdlNrHeader);
+        wNrHeader=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wNrHeader.setTextLimit(3);
+        props.setLook(wNrHeader);
+        wNrHeader.addModifyListener(lsMod);
+        fdNrHeader=new FormData();
+        fdNrHeader.left = new FormAttachment(wlNrHeader, margin);
+        fdNrHeader.top  = new FormAttachment(wEscape, margin);
+        wNrHeader.setLayoutData(fdNrHeader);
+        
 		wlFooter=new Label(wContentComp, SWT.RIGHT);
 		wlFooter.setText("Footer ");
  		props.setLook(wlFooter);
@@ -568,8 +600,57 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		fdFooter=new FormData();
 		fdFooter.left = new FormAttachment(middle, 0);
 		fdFooter.top  = new FormAttachment(wHeader, margin);
-		fdFooter.right= new FormAttachment(100, 0);
 		wFooter.setLayoutData(fdFooter);
+
+        // NrFooter
+        wlNrFooter=new Label(wContentComp, SWT.RIGHT);
+        wlNrFooter.setText("Number of footer lines");
+        props.setLook(wlNrFooter);
+        fdlNrFooter=new FormData();
+        fdlNrFooter.left = new FormAttachment(wFooter, margin);
+        fdlNrFooter.top  = new FormAttachment(wHeader, margin);
+        wlNrFooter.setLayoutData(fdlNrFooter);
+        wNrFooter=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wNrFooter.setTextLimit(3);
+        props.setLook(wNrFooter);
+        wNrFooter.addModifyListener(lsMod);
+        fdNrFooter=new FormData();
+        fdNrFooter.left = new FormAttachment(wlNrFooter, margin);
+        fdNrFooter.top  = new FormAttachment(wHeader, margin);
+        wNrFooter.setLayoutData(fdNrFooter);
+
+        // Wraps
+        wlWraps=new Label(wContentComp, SWT.RIGHT);
+        wlWraps.setText("Wrapped lines?");
+        props.setLook(wlWraps);
+        fdlWraps=new FormData();
+        fdlWraps.left = new FormAttachment(0, 0);
+        fdlWraps.top  = new FormAttachment(wFooter, margin);
+        fdlWraps.right= new FormAttachment(middle, -margin);
+        wlWraps.setLayoutData(fdlWraps);
+        wWraps=new Button(wContentComp, SWT.CHECK);
+        props.setLook(wWraps);
+        fdWraps=new FormData();
+        fdWraps.left = new FormAttachment(middle, 0);
+        fdWraps.top  = new FormAttachment(wFooter, margin);
+        wWraps.setLayoutData(fdWraps);
+
+        // NrWraps
+        wlNrWraps=new Label(wContentComp, SWT.RIGHT);
+        wlNrWraps.setText("Number of times wrapped");
+        props.setLook(wlNrWraps);
+        fdlNrWraps=new FormData();
+        fdlNrWraps.left = new FormAttachment(wWraps, margin);
+        fdlNrWraps.top  = new FormAttachment(wFooter, margin);
+        wlNrWraps.setLayoutData(fdlNrWraps);
+        wNrWraps=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wNrWraps.setTextLimit(3);
+        props.setLook(wNrWraps);
+        wNrWraps.addModifyListener(lsMod);
+        fdNrWraps=new FormData();
+        fdNrWraps.left = new FormAttachment(wlNrWraps, margin);
+        fdNrWraps.top  = new FormAttachment(wFooter, margin);
+        wNrWraps.setLayoutData(fdNrWraps);
 
 		// Zipped?
 		wlZipped=new Label(wContentComp, SWT.RIGHT);
@@ -577,7 +658,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
  		props.setLook(wlZipped);
 		fdlZipped=new FormData();
 		fdlZipped.left = new FormAttachment(0, 0);
-		fdlZipped.top  = new FormAttachment(wFooter, margin);
+		fdlZipped.top  = new FormAttachment(wWraps, margin);
 		fdlZipped.right= new FormAttachment(middle, -margin);
 		wlZipped.setLayoutData(fdlZipped);
 		wZipped=new Button(wContentComp, SWT.CHECK );
@@ -585,7 +666,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wZipped.setToolTipText("Only the first entry in the archive is read!");
 		fdZipped=new FormData();
 		fdZipped.left = new FormAttachment(middle, 0);
-		fdZipped.top  = new FormAttachment(wFooter, margin);
+		fdZipped.top  = new FormAttachment(wWraps, margin);
 		fdZipped.right= new FormAttachment(100, 0);
 		wZipped.setLayoutData(fdZipped);
 
@@ -993,6 +1074,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wLimit.addSelectionListener( lsDef );
 		wInclRownumField.addSelectionListener( lsDef );
 		wInclFilenameField.addSelectionListener( lsDef );
+        wNrHeader.addSelectionListener( lsDef );
+        wNrFooter.addSelectionListener( lsDef );
+        wNrWraps.addSelectionListener( lsDef );
 
 		// Add the file to the list of files...
 		SelectionAdapter selA = new SelectionAdapter()
@@ -1301,7 +1385,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		if (in.getEnclosure()!=null) wEnclosure.setText(in.getEnclosure());
         if (in.getEscapeCharacter()!=null) wEscape.setText(in.getEscapeCharacter());
 		wHeader.setSelection(in.hasHeader());
+        wNrHeader.setText( ""+in.getNrHeaderLines() );
 		wFooter.setSelection(in.hasFooter());
+        wNrFooter.setText( ""+in.getNrFooterLines() );
+        wWraps.setSelection(in.isLineWrapped());
+        wNrWraps.setText( ""+in.getNrWraps() );
 		wZipped.setSelection(in.isZipped());
 		wNoempty.setSelection(in.noEmptyLines());
 		wInclFilename.setSelection(in.includeFilename());
@@ -1421,7 +1509,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		in.setIncludeFilename( wInclFilename.getSelection() );
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
 		in.setHeader( wHeader.getSelection() );
+        in.setNrHeaderLines( Const.toInt( wNrHeader.getText(), 1) );
 		in.setFooter( wFooter.getSelection() );
+        in.setNrFooterLines( Const.toInt( wNrFooter.getText(), 1) );
+        in.setLineWrapped( wWraps.getSelection() );
+        in.setNrWraps( Const.toInt( wNrWraps.getText(), 1) );
 		in.setZipped( wZipped.getSelection() );
 		// in.wildcard= wMultiple.getSelection();
 		in.setNoEmptyLines( wNoempty.getSelection() );
@@ -1544,7 +1636,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     String line = null;
                     if (meta.hasHeader() || meta.getInputFields().length == 0)
                     {
-                        line = TextFileInput.getLine(log, reader, fileFormat);
+                        line = TextFileInput.getLine(log, reader, fileFormat, meta.isLineWrapped()?meta.getNrWraps():0);
                         if (line != null)
                         {
                             ArrayList fields = TextFileInput.convertLineToStrings(log, line.toString(), meta);
@@ -1767,12 +1859,27 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 					String firstlines="";
 					int    linenr=0;
 
-					String line = TextFileInput.getLine(log, reader, wFormat.getText());
+                    System.out.println("info.hasHeader()="+info.hasHeader()+", info.getNrHeaderLines="+info.getNrHeaderLines());
+                    System.out.println("info.isWrapped()="+info.isLineWrapped()+", info.getNrWraps="+info.getNrWraps());
+
+                    // Skip the header lines first if more then one, it helps us position
+                    if (info.hasHeader() && info.getNrHeaderLines()>1)
+                    {
+                        int skipped = 0;
+                        String line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
+                        while (line!=null && skipped<info.getNrHeaderLines())
+                        {
+                            skipped++;
+                            line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
+                        }
+                    }
+
+					String line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
 					while(line!=null && (linenr<nrlines || nrlines==0))
 					{
 						firstlines+=line+Const.CR;
 						linenr++;
-						line = TextFileInput.getLine(log, reader, wFormat.getText());
+						line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
 					}
 					EnterTextDialog etd = new EnterTextDialog(shell, props, "File "+filename, (nrlines==0?"All":""+nrlines)+" lines:", firstlines, true);
 					etd.setReadOnly();
@@ -1856,17 +1963,27 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 				String firstlines="";
 				int    linenr=0;
-				int    maxnr = nrlines+(info.hasHeader()?1:0);
+				int    maxnr = nrlines+(info.hasHeader()?info.getNrHeaderLines():0);
 				
-				// System.out.println("info.header? "+info.header+", info.footer? "+info.footer);
-				
-				String line = TextFileInput.getLine(log, reader, wFormat.getText());
+                // Skip the header lines first if more then one, it helps us position
+                if (info.hasHeader() && info.getNrHeaderLines()>1)
+                {
+                    int skipped = 0;
+                    String line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
+                    while (line!=null && skipped<info.getNrHeaderLines())
+                    {
+                        skipped++;
+                        line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
+                    }
+                }
+                
+				String line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
 				while(line!=null && (linenr<maxnr || nrlines==0))
 				{
 					if (linenr>0 || (linenr==0 && !info.hasHeader())) retval.add(line);
 					firstlines+=line+Const.CR;
 					linenr++;
-					line = TextFileInput.getLine(log, reader, wFormat.getText());
+					line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
 				}
 				// Did we grab the footer as well?
 				if (info.hasFooter() && ( linenr<maxnr || nrlines==0 ))
