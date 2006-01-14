@@ -570,7 +570,7 @@ public class Database
 				if (!v.isNull() && v.getDate()!=null) 
 				{
 					long dat = v.getDate().getTime();
-					if(v.getPrecision()==1 || databaseMeta.supportsTimeStampToDateConversion())
+					if(v.getPrecision()==1 || !databaseMeta.supportsTimeStampToDateConversion())
                     {
                         //       Convert to DATE!
 					    java.sql.Date ddate = new java.sql.Date(dat);
