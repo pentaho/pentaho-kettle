@@ -446,23 +446,11 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		
 		retval.allocate(nrfields);
 		
-		for (int i=0;i<nrfields;i++)
-		{
-		    TextFileField field = new TextFileField();
-		    
-			field.setName( outputFields[i].getName() );
-			field.setType( outputFields[i].getType() ); 
-			field.setFormat( outputFields[i].getFormat() );
-			field.setCurrencySymbol( outputFields[i].getCurrencySymbol() );
-			field.setDecimalSymbol( outputFields[i].getDecimalSymbol() );
-			field.setGroupingSymbol( outputFields[i].getGroupingSymbol() );
-			field.setNullString( outputFields[i].getNullString() );
-			field.setLength( outputFields[i].getLength() );
-			field.setPrecision( outputFields[i].getPrecision() );
-			
-			outputFields[i] = field;
-		}
-		
+        for (int i=0;i<nrfields;i++)
+        {
+            retval.outputFields[i] = (TextFileField) outputFields[i].clone();
+        }
+
 		return retval;
 	}
 	

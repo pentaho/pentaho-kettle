@@ -270,19 +270,7 @@ public class XMLOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		
 		for (int i=0;i<nrfields;i++)
 		{
-		    XMLField field = new XMLField();
-		    
-			field.setFieldName( outputFields[i].getFieldName() );
-			field.setType( outputFields[i].getType() ); 
-			field.setFormat( outputFields[i].getFormat() );
-			field.setCurrencySymbol( outputFields[i].getCurrencySymbol() );
-			field.setDecimalSymbol( outputFields[i].getDecimalSymbol() );
-			field.setGroupingSymbol( outputFields[i].getGroupingSymbol() );
-			field.setNullString( outputFields[i].getNullString() );
-			field.setLength( outputFields[i].getLength() );
-			field.setPrecision( outputFields[i].getPrecision() );
-			
-			outputFields[i] = field;
+            retval.outputFields[i] = (XMLField) outputFields[i].clone();
 		}
 		
 		return retval;
