@@ -806,7 +806,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			    TextFileField field = outputFields[i];
 			    
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      field.getName());
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      field.getType());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      field.getTypeDesc());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",    field.getFormat());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_currency",  field.getCurrencySymbol());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal",   field.getDecimalSymbol());
