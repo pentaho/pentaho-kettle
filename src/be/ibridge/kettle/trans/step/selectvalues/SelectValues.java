@@ -46,7 +46,6 @@ public class SelectValues extends BaseStep implements StepInterface
 	}
 	
 	/**
-	   
 	   Only select the values that are still needed...<p>
 	   Put the values in the right order...<p>
 	   Change the meta-data information if needed...<p>
@@ -97,8 +96,6 @@ public class SelectValues extends BaseStep implements StepInterface
 					}
 				}
 			}
-
-
 		}
 
 		debug="get fields values";
