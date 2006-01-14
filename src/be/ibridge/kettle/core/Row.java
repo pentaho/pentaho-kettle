@@ -22,6 +22,8 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -790,4 +792,23 @@ public class Row implements XMLInterface, Comparable, Serializable
 		
 		return retval;
 	}
+    
+    public static final void sortRows(List rows, int fieldNrs[], boolean ascDesc[])
+    {
+        final int fieldNumbers[] = fieldNrs;
+        final boolean ascending[] = ascDesc;
+        
+        Comparator comparator = new Comparator()
+        {
+            public int compare(Object o1, Object o2)
+            {
+                Row one = (Row)o1;
+                Row two = (Row)o2;
+                
+                return one.compare(two, fieldNumbers, ascending);
+            }
+        };
+        
+        Collections.sort(rows, comparator);
+    }
 }
