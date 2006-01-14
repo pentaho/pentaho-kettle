@@ -27,11 +27,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
-import java.text.DateFormatSymbols;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Properties;
@@ -52,7 +47,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -73,7 +67,6 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
-import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
@@ -83,6 +76,8 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.TransMeta;
+import be.ibridge.kettle.trans.TransPreviewFactory;
+import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
@@ -217,24 +212,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 	private TextFileInputMeta input;
 
-	private NumberFormat nf;
-	private DecimalFormat df;
-	private DecimalFormatSymbols dfs;
-	private SimpleDateFormat daf;
-	private DateFormatSymbols dafs;
-
 	// Wizard info...
 	private Vector fields;
-	
-	private PreviewRowsDialog previewdialog;
-	private int               previewlimit;
-	private Rectangle         previewbounds;
-	private int               previewhscroll;
-	private int               previewvscroll;
-	
+		
 	private static final String STRING_PREVIEW_ROWS    = "  &Preview rows   "; 
-	private static final String STRING_PREVIEW_REFRESH = " &Preview refresh "; 
-
+	
 	public static final int dateLengths[] = new int[]
 		{
 			23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6
@@ -247,19 +229,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(TextFileInputMeta)in;
-
-		nf = NumberFormat.getInstance();
-		df = (DecimalFormat)nf;
-		dfs=new DecimalFormatSymbols();
-		daf = new SimpleDateFormat();
-		dafs= new DateFormatSymbols();
-
-        daf.setLenient(false); // Don't be too smart, only accept exact dates.
-
-		previewdialog = null;
-		previewlimit = -1;
-		previewhscroll=-1;
-		previewvscroll=-1;
 	}
 
 	public String open()
@@ -434,8 +403,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 		
 		ColumnInfo[] colinfo=new ColumnInfo[2];
-		colinfo[ 0]=new ColumnInfo("File/Directory",  ColumnInfo.COLUMN_TYPE_TEXT,    "", false);
-		colinfo[ 1]=new ColumnInfo("Wildcard",        ColumnInfo.COLUMN_TYPE_TEXT,    "", false );
+		colinfo[ 0]=new ColumnInfo("File/Directory",  ColumnInfo.COLUMN_TYPE_TEXT,    false);
+		colinfo[ 1]=new ColumnInfo("Wildcard",        ColumnInfo.COLUMN_TYPE_TEXT,    false );
 		
 		colinfo[ 1].setToolTip("Enter a regular expression here and a directory in the first column.");
 		
@@ -944,18 +913,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		ColumnInfo[] colinf=new ColumnInfo[]
             {
-			 new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO,  "", Value.getTypes(), true ),
-			 new ColumnInfo("Format",     ColumnInfo.COLUMN_TYPE_CCOMBO,  "", formats),
-			 new ColumnInfo("Position",   ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Currency",   ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Null if",    ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  "", TextFileInputMeta.trimTypeDesc, true ),
-			 new ColumnInfo("Repeat",     ColumnInfo.COLUMN_TYPE_CCOMBO,  "", new String[] { "Y", "N" }, true )
+			 new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			 new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO,  Value.getTypes(), true ),
+			 new ColumnInfo("Format",     ColumnInfo.COLUMN_TYPE_CCOMBO,  formats),
+			 new ColumnInfo("Position",   ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			 new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			 new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			 new ColumnInfo("Currency",   ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			 new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			 new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			 new ColumnInfo("Null if",    ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			 new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  TextFileInputMeta.trimTypeDesc, true ),
+			 new ColumnInfo("Repeat",     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { "Y", "N" }, true )
             };
 		
 		colinf[11].setToolTip("set this field to Y if you want to repeat values when the next are empty");
@@ -1725,227 +1694,29 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		return length;
 	}
 
-	// Preview the data
-	private void preview()
-	{
-		String debug="Start";
-		
-		// Read dialog information into info
-		TextFileInputMeta info = new TextFileInputMeta();
-		debug="gef info";
-		getInfo(info);
-		debug="gef files";
-		String files[] = info.getFiles();
-		
-		Row previousRow=null;
-		int nrRepeats=0;
-		long rownumber=1;
-		
-		if (files!=null && files.length>0)
-		{
-			int maxNrLines;
-			if (previewlimit>=0) 
-			{
-				maxNrLines = previewlimit;
-			} 
-			else
-			{
-				String shellText = "Number of preview rows";
-				String lineText  = "How many lines do you want to preview?";
-				EnterNumberDialog end = new EnterNumberDialog(shell, props, 100, shellText, lineText);
-				maxNrLines = end.open();
-			}
-			
-			boolean stopPreview=false;
-			if (maxNrLines>=0 && !stopPreview)
-			{
-				debug="A";
+    // Preview the data
+    private void preview()
+    {
+        // Create the XML input step
+        TextFileInputMeta oneMeta = new TextFileInputMeta();
+        getInfo(oneMeta);
 
-				// How many repeats?
-				for (int i=0;i<info.getInputFields().length;i++) if (info.getInputFields()[i].isRepeated()) nrRepeats++;
-				
-				try
-				{
-					int linenr = 0;
-					ArrayList rowbuffer = new ArrayList();
-					for (int x=0;x<files.length && (linenr<maxNrLines || maxNrLines==0) && !stopPreview;x++)
-					{
-						debug="B";
-						//System.out.println("Opening file: "+files[x]);
-						FileInputStream fi = new FileInputStream(new File(files[x]));
-						ZipInputStream zi=null ;
-						InputStream f=null;
-						if (info.isZipped())
-						{
-							zi = new ZipInputStream(fi);
-							zi.getNextEntry();
-							f=zi;
-						}
-						else
-						{
-							f=fi;
-						}
-                        
-                        InputStreamReader reader;
-                        if (info.getEncoding() != null && info.getEncoding().length() > 0)
-                        {
-                            reader = new InputStreamReader(f, info.getEncoding());
-                        }
-                        else
-                        {
-                            reader = new InputStreamReader(f);
-                        }
-
-						
-						debug="C";
-						String line = TextFileInput.getLine(log, reader, wFormat.getText());
-						if (info.hasHeader()) line = TextFileInput.getLine(log, reader, wFormat.getText());
-						
-						debug="D";
-
-						// Now read maxNrLines lines
-						while (line!=null && (linenr<maxNrLines || maxNrLines==0))
-						{
-							StringBuffer error = new StringBuffer();
-							Row r = TextFileInput.convertLineToRow(log, line, info, df, dfs, daf, dafs, files[x], rownumber);
-							if (r!=null) 
-							{
-								rownumber++;
-								// See if the previous values need to be repeated!
-								if (nrRepeats>0)
-								{
-									if (previousRow==null) // First invocation...
-									{
-										previousRow=new Row();
-										for (int i=0;i<info.getInputFields().length;i++)
-										{
-											if (info.getInputFields()[i].isRepeated())
-											{
-												Value value    = r.getValue(i);
-												previousRow.addValue(new Value(value)); // Copy the first row
-											}
-										}
-									}
-									else
-									{
-										int repnr=0;
-										for (int i=0;i<info.getInputFields().length;i++)
-										{
-											if (info.getInputFields()[i].isRepeated())
-											{
-												Value value = r.getValue(i);
-												if (value.isNull()) // if it is empty: take the previous value!
-												{
-													Value prev = previousRow.getValue(repnr);
-													r.removeValue(i);
-													r.addValue(i, prev);
-												}
-												else // not empty: change the previousRow entry!
-												{
-													previousRow.removeValue(repnr);
-													previousRow.addValue(repnr, new Value(value));
-												}
-												repnr++;
-											}
-										}
-									}
-								}
-		
-								// Finally, add the row to the preview buffer!
-								if ( !(input.noEmptyLines() && r.isEmpty()) && !r.isIgnored() ) 
-								{
-									rowbuffer.add(r);
-								} 
-								else 
-								{
-									rownumber--;
-									linenr--;
-								} 
-								
-								// Get next line...
-								line = TextFileInput.getLine(log, reader, wFormat.getText());
-							}
-							else
-							{
-								MessageBox mb = new MessageBox(shell, SWT.OK | SWT.CANCEL | SWT.ICON_ERROR );
-								mb.setMessage("Error previewing file on line "+linenr+" : "+error);
-								mb.setText("ERROR");
-								int answer = mb.open();
-								if (answer == SWT.CANCEL) stopPreview = true;
-	
-								line = null;
-							}
-							linenr++;
-						}
-
-						debug="E";
-						
-						if (info.isZipped())
-						{
-							zi.closeEntry();
-							zi.close();
-						}
-						f.close();
-					}
-					debug="EA";
-					if (previewlimit>=0)
-					{
-						if (!previewdialog.isDisposed())
-						{
-							previewdialog.dispose();
-							debug="EB";
-							previewbounds=previewdialog.getBounds();
-							debug="EC";
-							previewhscroll = previewdialog.getHScroll();
-							debug="ED";
-							previewvscroll = previewdialog.getVScroll();
-						}
-					}
-					else
-					{
-						previewlimit=maxNrLines;
-					}
-
-					debug="F";
-
-					wPreview.setText(STRING_PREVIEW_REFRESH);
-					previewdialog = new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), rowbuffer);
-					previewdialog.setBounds(previewbounds);
-					previewdialog.setHScroll(previewhscroll);
-					previewdialog.setVScroll(previewvscroll);
-					if (previewdialog.open()==null) // Close used in dialog itself!
-					{
-						previewbounds=previewdialog.getBounds();
-						previewhscroll = previewdialog.getHScroll();
-						previewvscroll = previewdialog.getVScroll();
-						previewlimit=-1; // reset limit
-						wPreview.setText(STRING_PREVIEW_ROWS);
-					}
-				}
-				catch(Exception e)
-				{
-					wPreview.setText(STRING_PREVIEW_ROWS);
-					previewdialog=null;
-					previewlimit=-1;
-					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage("The following error occured while trying to preview rows: "+Const.CR+e.toString()+Const.CR+"Part: "+debug);
-					mb.setText("ERROR");
-					mb.open(); 
-				}
-				finally
-				{
-				}
-			}
-			
-		}
-		else
-		{
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("I couldn't find a valid file to work with.  Please check the files, directories & expression.");
-			mb.setText("ERROR");
-			mb.open(); 
-		}
-	}
+        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
+        
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, "Enter preview size", "Enter the number of rows you would like to preview:");
+        int previewSize = numberDialog.open();
+        if (previewSize>0)
+        {
+            TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+            progressDialog.open();
+            
+            if (!progressDialog.isCancelled())
+            {
+                PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()));
+                prd.open();
+            }
+        }
+    }
 
 	// Get the first x lines
 	private void first()
