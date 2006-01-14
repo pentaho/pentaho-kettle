@@ -725,13 +725,14 @@ public class Trans
 			logDate     = new Date();
 			startDate   = Const.MIN_DATE;
 			endDate     = currentDate;
-			
-			DatabaseMeta logcon = transMeta.getLogConnection();
-			if (logcon!=null)
-			{
-				Database ldb = new Database(logcon);
-				try
-				{
+            
+            Database ldb = null;
+            try
+            {
+				DatabaseMeta logcon = transMeta.getLogConnection();
+    			if (logcon!=null)
+    			{
+    			    ldb = new Database(logcon);
 				    log.logDetailed(toString(), "Opening log connection ["+transMeta.getLogConnection()+"]");
 					ldb.connect();
 					
@@ -781,20 +782,6 @@ public class Trans
 									{
 									    log.logDetailed(toString(), "Last date found on the maxDate connection: "+r1);
 										endDate.setTime( (long)( maxvalue.getDate().getTime() + ( transMeta.getMaxDateOffset()*1000 ) ));
-									}
-									
-									// OK, now we have a date-range.  See if we need to set a maximum!
-									if (transMeta.getMaxDateDifference()>0.0 && // Do we have a difference specified? 
-									    startDate.compareTo(Const.MIN_DATE)>0 // Is the startdate > Minimum?
-									    )
-									{
-										// See if the end-date is larger then Start_date + DIFF?
-										Date maxdesired = new Date( startDate.getTime()+((long)transMeta.getMaxDateDifference()*1000) );
-										
-										// If this is the case: lower the end-date. Pick up the next 'region' next time around.
-										// We do this to limit the workload in a single update session (e.g. for large fact tables)
-										// 
-										if ( endDate.compareTo( maxdesired )>0) endDate = maxdesired;
 									}
 								}
 								else
@@ -913,26 +900,47 @@ public class Trans
 						transMeta.setBatchId( id_batch.getInteger() );
 					}
 					
-					ldb.writeLogRecord(transMeta.getLogTable(), 
-									   transMeta.isBatchIdUsed(), 
-									   transMeta.getBatchId(), 
-									   false, 
-									   transMeta.getName(), 
-									   "start", 
-					                   0L, 0L, 0L, 0L, 0L, 0L, 
-					                   startDate, endDate, logDate, depDate,
-									   null
-									   );
 				}
-				catch(KettleException e)
-				{
-					throw new KettleTransException("Error writing log record to table ["+transMeta.getLogTable()+"]", e);
-				}
-				finally
-				{
-					ldb.disconnect();
-				}
+
+                // OK, now we have a date-range.  See if we need to set a maximum!
+                if (transMeta.getMaxDateDifference()>0.0 && // Do we have a difference specified? 
+                    startDate.getTime() > Const.MIN_DATE.getTime() // Is the startdate > Minimum?
+                    )
+                {
+                    // See if the end-date is larger then Start_date + DIFF?
+                    Date maxdesired = new Date( startDate.getTime()+((long)transMeta.getMaxDateDifference()*1000) );
+                    
+                    // If this is the case: lower the end-date. Pick up the next 'region' next time around.
+                    // We do this to limit the workload in a single update session (e.g. for large fact tables)
+                    // 
+                    if ( endDate.compareTo( maxdesired )>0) endDate = maxdesired;
+                }
+
+                if (logcon!=null && transMeta.getLogTable()!=null && transMeta.getName()!=null)
+                {
+                    ldb.writeLogRecord(transMeta.getLogTable(), 
+                               transMeta.isBatchIdUsed(), 
+                               transMeta.getBatchId(), 
+                               false, 
+                               transMeta.getName(), 
+                               "start", 
+                               0L, 0L, 0L, 0L, 0L, 0L, 
+                               startDate, endDate, logDate, depDate,
+                               null
+                             );
+                }
+                
+            }
+			catch(KettleException e)
+			{
+				throw new KettleTransException("Error writing log record to table ["+transMeta.getLogTable()+"]", e);
 			}
+			finally
+			{
+				if (ldb!=null) ldb.disconnect();
+			}
+            
+
 		}
 		catch(KettleException e)
 		{
