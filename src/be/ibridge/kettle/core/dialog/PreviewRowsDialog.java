@@ -17,7 +17,7 @@
 
 package be.ibridge.kettle.core.dialog;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
@@ -63,7 +64,7 @@ public class PreviewRowsDialog extends Dialog
 	private Listener lsClose;
 
 	private Shell         shell;
-	private ArrayList     buffer;
+	private List          buffer;
 	private Props         props;
 	private String        title, message;
 	
@@ -72,12 +73,12 @@ public class PreviewRowsDialog extends Dialog
 	private int           hmax, vmax;
 	
     /** @deprecated */
-    public PreviewRowsDialog(Shell parent, int style, LogWriter l, Props pr, String nam, ArrayList buf)
+    public PreviewRowsDialog(Shell parent, int style, LogWriter l, Props pr, String nam, List buf)
     {
         this(parent, style, nam, buf);
     }
 
-	public PreviewRowsDialog(Shell parent, int style, String nam, ArrayList buf)
+	public PreviewRowsDialog(Shell parent, int style, String nam, List buf)
 	{
 		super(parent, style);
 		stepname=nam;
@@ -134,7 +135,7 @@ public class PreviewRowsDialog extends Dialog
 		for (int i=0;i<row.size();i++)
 		{
 			Value v=row.getValue(i);
-			colinf[i]=new ColumnInfo(v.getName(),  ColumnInfo.COLUMN_TYPE_TEXT,   "", false);
+			colinf[i]=new ColumnInfo(v.getName(),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
 			colinf[i].setToolTip(v.toStringMeta());
 		}
 		
@@ -195,21 +196,26 @@ public class PreviewRowsDialog extends Dialog
 	 */ 
 	private void getData()
 	{
-		int i, c;
-		
-		for (i=0;i<buffer.size();i++)
-		{
-			Row row = (Row)buffer.get(i);
-			
-			for (c=0;c<row.size();c++)
-			{
-				Value v=row.getValue(c);
-				String show;
-				if (v.isNumeric()) show = v.toString(true);
-				else               show = v.toString(false);
-				if (show!=null) wFields.table.getItem(i).setText(c+1, show);
-			}
-		}
+        shell.getDisplay().asyncExec(new Runnable()
+        {
+            public void run()
+            {
+                for (int i=0;i<buffer.size();i++)
+                {
+                    TableItem item = wFields.table.getItem(i);
+                    Row row = (Row)buffer.get(i);
+                    
+                    for (int c=0;c<row.size();c++)
+                    {
+                        Value v=row.getValue(c);
+                        String show;
+                        if (v.isNumeric()) show = v.toString(true);
+                        else               show = v.toString(false);
+                        if (show!=null) item.setText(c+1, show);
+                    }
+                }
+            }
+        });
 		wFields.optWidth(true);
 	}
 	
