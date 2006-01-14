@@ -56,21 +56,19 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
-import be.ibridge.kettle.trans.StepLoader;
-import be.ibridge.kettle.trans.Trans;
-import be.ibridge.kettle.trans.TransHopMeta;
 import be.ibridge.kettle.trans.TransMeta;
+import be.ibridge.kettle.trans.TransPreviewFactory;
+import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
-import be.ibridge.kettle.trans.step.StepMeta;
-import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
 
 
 public class XMLInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -311,8 +309,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
 		ColumnInfo[] colinfo=new ColumnInfo[2];
-		colinfo[ 0]=new ColumnInfo("File/Directory",  ColumnInfo.COLUMN_TYPE_TEXT,    "", false);
-		colinfo[ 1]=new ColumnInfo("Wildcard",        ColumnInfo.COLUMN_TYPE_TEXT,    "", false );
+		colinfo[ 0]=new ColumnInfo("File/Directory",  ColumnInfo.COLUMN_TYPE_TEXT,    false);
+		colinfo[ 1]=new ColumnInfo("Wildcard",        ColumnInfo.COLUMN_TYPE_TEXT,    false );
 		
 		colinfo[ 1].setToolTip("Enter a regular expression here and a directory in the first column.");
 		
@@ -454,7 +452,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         
         ColumnInfo[] locationColumns = new ColumnInfo[] 
         { 
-            new ColumnInfo("Elements", ColumnInfo.COLUMN_TYPE_TEXT, "", false)
+            new ColumnInfo("Elements", ColumnInfo.COLUMN_TYPE_TEXT, false)
         };
         
         int nrElements = input.getInputPosition()!=null ? input.getInputPosition().length : 0;
@@ -517,17 +515,17 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		ColumnInfo[] colinf=new ColumnInfo[]
             {
-			 new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO,  "", Value.getTypes(), true ),
-			 new ColumnInfo("Format",     ColumnInfo.COLUMN_TYPE_CCOMBO,  "", formats),
-			 new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Currency",   ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
-			 new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  "", XMLInputField.trimTypeDesc, true ),
-			 new ColumnInfo("Repeat",     ColumnInfo.COLUMN_TYPE_CCOMBO,  "", new String[] { "Y", "N" }, true ),
-             new ColumnInfo("Position",   ColumnInfo.COLUMN_TYPE_TEXT,    "", false),
+			 new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			 new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO,  Value.getTypes(), true ),
+			 new ColumnInfo("Format",     ColumnInfo.COLUMN_TYPE_CCOMBO,  formats),
+			 new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			 new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			 new ColumnInfo("Currency",   ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			 new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			 new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			 new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  XMLInputField.trimTypeDesc, true ),
+			 new ColumnInfo("Repeat",     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { "Y", "N" }, true ),
+             new ColumnInfo("Position",   ColumnInfo.COLUMN_TYPE_TEXT,    false),
             };
 		
 		wFields=new TableView(wFieldsComp, 
@@ -1122,43 +1120,25 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 	{
         try
         {
-            StepLoader stepLoader = StepLoader.getInstance();
-            
-            TransMeta previewMeta = new TransMeta();
-            
             // Create the XML input step
-            
             XMLInputMeta oneMeta = new XMLInputMeta();
             getInfo(oneMeta);
-            
-            StepMeta one = new StepMeta(log, stepLoader.getStepPluginID(oneMeta), wStepname.getText(), oneMeta);
-            one.setLocation(50,50);
-            one.setDraw(true);
-            previewMeta.addStep(one);
-            
-            
-            DummyTransMeta twoMeta = new DummyTransMeta();
-            StepMeta two = new StepMeta(log, stepLoader.getStepPluginID(twoMeta), "dummy", twoMeta);
-            two.setLocation(250,50);
-            two.setDraw(true);
-            previewMeta.addStep(two);
-            
-            TransHopMeta hop = new TransHopMeta(one, two);
-            previewMeta.addTransHop(hop);
 
-            // This transformation is ready to run in preview!
-            Trans trans = new Trans(log, previewMeta, new String[] { wStepname.getText() }, new int[] { 100 } );
-            trans.execute(null);
-            trans.waitUntilFinished();
+            TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
             
-            PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), trans.getPreviewRows(wStepname.getText(), 0));
-            prd.open();
-            
-            /*
-            Spoon spoon = new Spoon(log, shell.getDisplay(), previewMeta, null);
-            spoon.open();
-            */
-            
+            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, "Enter preview size", "Enter the number of rows you would like to preview:");
+            int previewSize = numberDialog.open();
+            if (previewSize>0)
+            {
+                TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
+                progressDialog.open();
+                
+                if (!progressDialog.isCancelled())
+                {
+                    PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()));
+                    prd.open();
+                }
+            }
         }
         catch(KettleException e)
         {
