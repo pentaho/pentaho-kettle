@@ -28,7 +28,9 @@ import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.w3c.dom.Node;
@@ -67,6 +69,8 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
     private String              url;
     private String              targetFilename;
     private boolean             fileAppended;
+    private boolean             dateTimeAdded;
+    private String              targetFilenameExtention;
 
     // Send file content to server?
     private String              uploadFilename;
@@ -160,6 +164,8 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
         retval += "      " + XMLHandler.addTagValue("url", url);
         retval += "      " + XMLHandler.addTagValue("targetfilename", targetFilename);
         retval += "      " + XMLHandler.addTagValue("file_appended", fileAppended);
+        retval += "      " + XMLHandler.addTagValue("date_time_added", dateTimeAdded);
+        retval += "      " + XMLHandler.addTagValue("targetfilename_extention", targetFilenameExtention);
         retval += "      " + XMLHandler.addTagValue("uploadfilename", uploadFilename);
 
         retval += "      " + XMLHandler.addTagValue("url_fieldname", urlFieldname);
@@ -186,6 +192,9 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
             url = XMLHandler.getTagValue(entrynode, "url");
             targetFilename = XMLHandler.getTagValue(entrynode, "targetfilename");
             fileAppended = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "file_appended"));
+            dateTimeAdded = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "date_time_added") );
+            targetFilenameExtention = XMLHandler.getTagValue(entrynode, "targetfilename_extention");
+
             uploadFilename = XMLHandler.getTagValue(entrynode, "uploadfilename");
 
             urlFieldname = XMLHandler.getTagValue(entrynode, "url_fieldname");
@@ -216,6 +225,9 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
             url = rep.getJobEntryAttributeString(id_jobentry, "url");
             targetFilename = rep.getJobEntryAttributeString(id_jobentry, "targetfilename");
             fileAppended = rep.getJobEntryAttributeBoolean(id_jobentry, "file_appended");
+            dateTimeAdded = "Y".equalsIgnoreCase( rep.getJobEntryAttributeString(id_jobentry, "date_time_added") );
+            targetFilenameExtention = rep.getJobEntryAttributeString(id_jobentry, "targetfilename_extention");
+
             uploadFilename = rep.getJobEntryAttributeString(id_jobentry, "uploadfilename");
 
             urlFieldname = rep.getJobEntryAttributeString(id_jobentry, "url_fieldname");
@@ -246,8 +258,11 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
 
             rep.saveJobEntryAttribute(id_job, getID(), "url", url);
             rep.saveJobEntryAttribute(id_job, getID(), "targetfilename", targetFilename);
-            rep.saveJobEntryAttribute(id_job, getID(), "uploadfilename", uploadFilename);
             rep.saveJobEntryAttribute(id_job, getID(), "file_appended", fileAppended);
+            rep.saveJobEntryAttribute(id_job, getID(), "date_time_added", dateTimeAdded);
+            rep.saveJobEntryAttribute(id_job, getID(), "targetfilename_extention", targetFilenameExtention);
+
+            rep.saveJobEntryAttribute(id_job, getID(), "uploadfilename", uploadFilename);
 
             rep.saveJobEntryAttribute(id_job, getID(), "url_fieldname", urlFieldname);
             rep.saveJobEntryAttribute(id_job, getID(), "run_every_row", runForEveryRow);
@@ -373,8 +388,25 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
                     );
                 }
                 
+                String targetFile = targetFilename;
+                if (dateTimeAdded)
+                {
+                    SimpleDateFormat daf = new SimpleDateFormat();
+                    Date now = new Date();
+                    
+                    daf.applyPattern("yyyMMdd");
+                    targetFile+="_"+daf.format(now);
+                    daf.applyPattern("HHmmss");
+                    targetFile+="_"+daf.format(now);
+                    
+                    if (targetFilenameExtention!=null && targetFilenameExtention.length()>0)
+                    {
+                        targetFile+="."+targetFilenameExtention;
+                    }
+                }
+                
                 // Create the output File...
-                outputFile = new FileOutputStream(new File(targetFilename), fileAppended);
+                outputFile = new FileOutputStream(new File(targetFile), fileAppended);
                 
                 // Get a stream for the specified URL
     		    server = new URL(urlToUse);
@@ -417,7 +449,8 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
                     outputFile.write(line.getBytes());
                 }
                 
-                log.logDetailed(toString(), "Finished writing "+bytesRead+" to result file.");
+                log.logBasic(toString(), "Finished writing "+bytesRead+" bytes to result file ["+targetFile+"]");
+                result.setResult( true );
             }
             catch(MalformedURLException e)
             {
@@ -527,5 +560,37 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
     public void setFileAppended(boolean fileAppended)
     {
         this.fileAppended = fileAppended;
+    }
+
+    /**
+     * @return Returns the dateTimeAdded.
+     */
+    public boolean isDateTimeAdded()
+    {
+        return dateTimeAdded;
+    }
+
+    /**
+     * @param dateTimeAdded The dateTimeAdded to set.
+     */
+    public void setDateTimeAdded(boolean dateTimeAdded)
+    {
+        this.dateTimeAdded = dateTimeAdded;
+    }
+
+    /**
+     * @return Returns the uploadFilenameExtention.
+     */
+    public String getTargetFilenameExtention()
+    {
+        return targetFilenameExtention;
+    }
+
+    /**
+     * @param uploadFilenameExtention The uploadFilenameExtention to set.
+     */
+    public void setTargetFilenameExtention(String uploadFilenameExtention)
+    {
+        this.targetFilenameExtention = uploadFilenameExtention;
     }
 }

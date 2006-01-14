@@ -82,6 +82,20 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
     private Button       wAppend;
     private FormData     fdlAppend, fdAppend;
 
+    private Label        wlDateTimeAdded;
+    private Button       wDateTimeAdded;
+    private FormData     fdlDateTimeAdded, fdDateTimeAdded;
+    
+    private Label        wlTargetExt;
+    private Text         wTargetExt;
+    private FormData     fdlTargetExt, fdTargetExt;
+    
+    
+    private Label        wlUploadFile;
+    private Text         wUploadFile;
+    private FormData     fdlUploadFile, fdUploadFile;
+
+    
     
     
     private Label        wlUserName;
@@ -269,6 +283,70 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         fdAppend.right= new FormAttachment(100, 0);
         wAppend.setLayoutData(fdAppend);
 
+
+        // DateTimeAdded line
+        wlDateTimeAdded=new Label(shell, SWT.RIGHT);
+        wlDateTimeAdded.setText("Add date and time to target file name? ");
+        props.setLook(wlDateTimeAdded);
+        fdlDateTimeAdded=new FormData();
+        fdlDateTimeAdded.left = new FormAttachment(0, 0);
+        fdlDateTimeAdded.top  = new FormAttachment(wAppend, margin);
+        fdlDateTimeAdded.right= new FormAttachment(middle, -margin);
+        wlDateTimeAdded.setLayoutData(fdlDateTimeAdded);
+        wDateTimeAdded=new Button(shell, SWT.CHECK);
+        props.setLook(wDateTimeAdded);
+        fdDateTimeAdded=new FormData();
+        fdDateTimeAdded.left = new FormAttachment(middle, 0);
+        fdDateTimeAdded.top  = new FormAttachment(wAppend, margin);
+        fdDateTimeAdded.right= new FormAttachment(100, 0);
+        wDateTimeAdded.setLayoutData(fdDateTimeAdded);
+        wDateTimeAdded.addSelectionListener(new SelectionAdapter()
+                {
+                    public void widgetSelected(SelectionEvent e)
+                    {
+                        setFlags();
+                    }
+                }
+            );
+        
+        // TargetExt line
+        wlTargetExt=new Label(shell, SWT.RIGHT);
+        wlTargetExt.setText("Target filename extention");
+        props.setLook(wlTargetExt);
+        fdlTargetExt=new FormData();
+        fdlTargetExt.left = new FormAttachment(0, 0);
+        fdlTargetExt.top  = new FormAttachment(wDateTimeAdded, margin);
+        fdlTargetExt.right= new FormAttachment(middle, -margin);
+        wlTargetExt.setLayoutData(fdlTargetExt);
+        wTargetExt=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wTargetExt);
+        wTargetExt.addModifyListener(lsMod);
+        fdTargetExt=new FormData();
+        fdTargetExt.left = new FormAttachment(middle, 0);
+        fdTargetExt.top  = new FormAttachment(wDateTimeAdded, margin);
+        fdTargetExt.right= new FormAttachment(100, 0);
+        wTargetExt.setLayoutData(fdTargetExt);
+
+        
+        
+        // UploadFile line
+        wlUploadFile=new Label(shell, SWT.RIGHT);
+        wlUploadFile.setText("File to upload");
+        props.setLook(wlUploadFile);
+        fdlUploadFile=new FormData();
+        fdlUploadFile.left = new FormAttachment(0, 0);
+        fdlUploadFile.top  = new FormAttachment(wTargetExt, margin*5);
+        fdlUploadFile.right= new FormAttachment(middle, -margin);
+        wlUploadFile.setLayoutData(fdlUploadFile);
+        wUploadFile=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wUploadFile);
+        wUploadFile.addModifyListener(lsMod);
+        fdUploadFile=new FormData();
+        fdUploadFile.left = new FormAttachment(middle, 0);
+        fdUploadFile.top  = new FormAttachment(wTargetExt, margin*5);
+        fdUploadFile.right= new FormAttachment(100, 0);
+        wUploadFile.setLayoutData(fdUploadFile);
+
         
         // UserName line
         wlUserName=new Label(shell, SWT.RIGHT);
@@ -276,7 +354,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         props.setLook(wlUserName);
         fdlUserName=new FormData();
         fdlUserName.left = new FormAttachment(0, 0);
-        fdlUserName.top  = new FormAttachment(wAppend, margin*5);
+        fdlUserName.top  = new FormAttachment(wUploadFile, margin*5);
         fdlUserName.right= new FormAttachment(middle, -margin);
         wlUserName.setLayoutData(fdlUserName);
         wUserName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -284,7 +362,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         wUserName.addModifyListener(lsMod);
         fdUserName=new FormData();
         fdUserName.left = new FormAttachment(middle, 0);
-        fdUserName.top  = new FormAttachment(wAppend, margin*5);
+        fdUserName.top  = new FormAttachment(wUploadFile, margin*5);
         fdUserName.right= new FormAttachment(100, 0);
         wUserName.setLayoutData(fdUserName);
 
@@ -404,6 +482,11 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         wURL.setEnabled(!wRunEveryRow.getSelection());
         wlFieldURL.setEnabled(wRunEveryRow.getSelection());
         wFieldURL.setEnabled(wRunEveryRow.getSelection());
+        
+        wlTargetExt.setEnabled( wDateTimeAdded.getSelection() );
+        wTargetExt.setEnabled( wDateTimeAdded.getSelection() );
+        wlAppend.setEnabled( !wDateTimeAdded.getSelection() );
+        wAppend.setEnabled( !wDateTimeAdded.getSelection() );
     }
 
     public void dispose()
@@ -426,7 +509,14 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         wFieldURL.setText(Const.NVL(jobentry.getUrlFieldname(), "") );
 		wTargetFile.setText(Const.NVL(jobentry.getTargetFilename(), ""));
         wAppend.setSelection( jobentry.isFileAppended() );
-        
+        wDateTimeAdded.setSelection( jobentry.isDateTimeAdded() );
+        wTargetExt.setText(Const.NVL(jobentry.getTargetFilenameExtention(), ""));
+
+        wUploadFile.setText(Const.NVL(jobentry.getUploadFilename(), ""));
+
+        jobentry.setDateTimeAdded( wDateTimeAdded.getSelection() );
+        jobentry.setTargetFilenameExtention( wTargetExt.getText() );
+
         wUserName.setText(Const.NVL(jobentry.getUsername(), ""));
         wPassword.setText(Const.NVL(jobentry.getPassword(), ""));
         
@@ -453,6 +543,11 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 		jobentry.setTargetFilename( wTargetFile.getText() );
         jobentry.setFileAppended( wAppend.getSelection() );
         
+        jobentry.setDateTimeAdded( wDateTimeAdded.getSelection() );
+        jobentry.setTargetFilenameExtention( wTargetExt.getText() );
+
+        jobentry.setUploadFilename( wUploadFile.getText() );
+
 		jobentry.setUsername( wUserName.getText() );
         jobentry.setPassword( wPassword.getText() );
         
@@ -462,6 +557,8 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         
 		dispose();
 	}
+
+
 
 	public String toString()
 	{
