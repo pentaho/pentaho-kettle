@@ -76,6 +76,7 @@ import be.ibridge.kettle.trans.step.uniquerows.UniqueRowsMeta;
 import be.ibridge.kettle.trans.step.update.UpdateMeta;
 import be.ibridge.kettle.trans.step.xbaseinput.XBaseInputMeta;
 import be.ibridge.kettle.trans.step.xmlinput.XMLInputMeta;
+import be.ibridge.kettle.trans.step.xmloutput.XMLOutputMeta;
 
 
 public class BaseStep extends Thread 
@@ -122,6 +123,7 @@ public class BaseStep extends Thread
             MappingInputMeta.class,
             MappingOutputMeta.class,
             XMLInputMeta.class,
+            XMLOutputMeta.class,
             MergeRowsMeta.class,
             ConstantMeta.class
 		};
@@ -168,6 +170,7 @@ public class BaseStep extends Thread
             "MappingInput",
             "MappingOutput",
             "XMLInput",
+            "XMLOutput",
             "MergeRows",
             "Constant"
 		};
@@ -214,6 +217,7 @@ public class BaseStep extends Thread
             "Mapping input specification",
             "Mapping output specification",
             "XML Input",
+            "XML Output",
             "Merge Rows",
             "Add constants"
 		};
@@ -260,6 +264,7 @@ public class BaseStep extends Thread
             "Specify the input interface of a mapping",
             "Specify the output interface of a mapping",
             "Read data from an XML file",
+            "Wite data to an XML file",
             "Merge two streams of rows, sorted on a certain key.  The two streams are compared and the equals, changed, deleted and new rows are flagged.",
             "Add one or more constants to the input rows"
 		};
@@ -306,6 +311,7 @@ public class BaseStep extends Thread
             "MPI.png",
             "MPO.png",
             "XIN.png",
+            "XOU.png",
             "MRG.png",
             "CST.png"
 		};
@@ -352,6 +358,7 @@ public class BaseStep extends Thread
             "Mapping",          // "MappingInput"
             "Mapping",          // "MappingOutput"
             "Experimental",     // "XMLInput"
+            "Experimental",     // "XMLOutut"
             "Transform",        // "MergRows"
             "Transform"         // "Constant"
 		};

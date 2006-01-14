@@ -43,15 +43,25 @@ import be.ibridge.kettle.core.value.Value;
 public class XMLHandler
 {
 	/**
-	 * The default header value for XML to specify encoding in Kettle at ISO-8859-1
+	 * The header string to specify encoding in UTF-8 for XML files
 	 * 
 	 * @return The XML header.
 	 */
 	public static final String getXMLHeader()
 	{
-		return "<?xml version=\"1.0\" encoding=\""+Const.XML_ENCODING+"\"?>"+Const.CR; // "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+Const.CR;
+		return getXMLHeader(Const.XML_ENCODING);
 	}
-	
+
+    /**
+     * The header string to specify encoding in an XML file
+     * @encoding The desired encoding to use in the XML file
+     * @return The XML header.
+     */
+    public static final String getXMLHeader(String encoding)
+    {
+        return "<?xml version=\"1.0\" encoding=\""+encoding+"\"?>"+Const.CR; // "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+Const.CR;
+    }
+
 	/**
 	 * Get the value of a tag in a node
 	 * @param n The node to look in

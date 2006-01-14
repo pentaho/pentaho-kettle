@@ -14,18 +14,18 @@
  **********************************************************************/
  
 
-package be.ibridge.kettle.trans.step.textfileoutput;
+package be.ibridge.kettle.trans.step.xmloutput;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
@@ -38,37 +38,33 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 
 /**
- * Converts input rows to text and then writes this text to one or more files.
+ * Converts input rows to one or more XML files.
  * 
  * @author Matt
- * @since 4-apr-2003
+ * @since 14-jan-2006
  */
-public class TextFileOutput extends BaseStep implements StepInterface
+public class XMLOutput extends BaseStep implements StepInterface
 {
-	private TextFileOutputMeta meta;
-	private TextFileOutputData data;
+	private XMLOutputMeta meta;
+	private XMLOutputData data;
 	 
-	public TextFileOutput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
+	public XMLOutput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
     
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		meta=(TextFileOutputMeta)smi;
-		data=(TextFileOutputData)sdi;
+		meta=(XMLOutputMeta)smi;
+		data=(XMLOutputData)sdi;
 
 		Row r;
 		boolean result=true;
 		
 		r=getRow();       // This also waits for a row to be finished.
 		
-		if ( ( r==null && data.headerrow!=null && meta.isFooterEnabled() ) ||
-		     ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && (linesOutput%meta.getSplitEvery())==0)
-		   )
+		if ( ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && (linesOutput%meta.getSplitEvery())==0) )
 		{
-			if (writeHeader()) linesOutput++;
-			
 			// Done with this part or with everything.
 			closeFile();
 			
@@ -81,10 +77,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					setErrors(1);
 					return false;
 				}
-
-				if (meta.isHeaderEnabled() && data.headerrow!=null) if (writeHeader()) linesOutput++;
 			}
-		
 		}
 		
 		if (r==null)  // no more input to be expected...
@@ -119,23 +112,15 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			if (first)
 			{
 				first=false;
-				if (!meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled())) // See if we have to write a header-line)
-				{
-					data.headerrow=new Row(r); // copy the row for the footer!
-					if (meta.isHeaderEnabled())
-					{
-						if (writeHeader()) return false;
-					}
-				}
 				
 				data.fieldnrs=new int[meta.getOutputFields().length];
 				debug="Get fieldnrs... field_name.length="+meta.getOutputFields().length;
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
-					data.fieldnrs[i]=r.searchValueIndex(meta.getOutputFields()[i].getName());
+					data.fieldnrs[i]=r.searchValueIndex(meta.getOutputFields()[i].getFieldName());
 					if (data.fieldnrs[i]<0)
 					{
-						logError("Field ["+meta.getOutputFields()[i].getName()+"] couldn't be found in the input stream!");
+						logError("Field ["+meta.getOutputFields()[i].getFieldName()+"] couldn't be found in the input stream!");
 						setErrors(1);
 						stopAll();
 						return false;
@@ -148,45 +133,72 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				/*
 				 * Write all values in stream to text file.
 				 */
+                
+                // OK, write a new row to the XML file:
+                data.writer.write((" <"+meta.getRepeatElement()+">").toCharArray());
+                
 				debug="Loop fields 0.."+r.size();
 	
 				for (int i=0;i<r.size();i++)
 				{
 					debug="start for loop";
-					if (i>0) data.writer.write(meta.getSeparator().toCharArray());
+					if (i>0) data.writer.write(' '); // put a space between the XML elements of the row.
 	
 					debug="Get value "+i+" of "+r.size();
 					v=r.getValue(i);
 	
 					debug="Write field to output stream: ["+v.toString()+"] of type ["+v.toStringMeta()+"]";
-					writeField(v, -1);
+					writeField(v, -1, v.getName());
+                    
+                    debug="Finished writing field #"+i+" ["+v+"/"+v.toStringMeta()+"] of row nr "+linesInput;
 				}
-                data.writer.write(meta.getNewline().toCharArray());
 			}
 			else
 			{
 				/*
 				 * Only write the fields specified!
 				 */
+                
+                // Write a new row to the XML file:
+                data.writer.write((" <"+meta.getRepeatElement()+">").toCharArray());
+
 				debug="Loop fields 0.."+meta.getOutputFields().length;
 	
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
+                    XMLField outputField = meta.getOutputFields()[i];
+                    
 					debug="start for loop";
-					if (i>0) data.writer.write(meta.getSeparator().toCharArray());
+					if (i>0) data.writer.write(' '); // a space between elements
 	
 					debug="Get value "+data.fieldnrs[i]+" of row ";
 					v=r.getValue(data.fieldnrs[i]);
-					v.setLength(meta.getOutputFields()[i].getLength(), meta.getOutputFields()[i].getPrecision());
+                    
+					v.setLength(outputField.getLength(), outputField.getPrecision());
 					
-					writeField(v, i);
+                    String element;
+                    if (outputField.getElementName()!=null && outputField.getElementName().length()>0)
+                    {
+                        element=outputField.getElementName();
+                    }
+                    else
+                    {
+                        element=v.getName();
+                    }
+					writeField(v, i, element);
+                    
+                    debug="Finished writing field #"+i+" ["+v+"/"+v.toStringMeta()+"] of row nr "+linesInput;
 				}
-                data.writer.write(meta.getNewline().toCharArray());
 			}
+
+            data.writer.write((" </"+meta.getRepeatElement()+">").toCharArray());
+            data.writer.write(Const.CR.toCharArray());
+
+            debug="Finished writing row #"+linesInput;
 		}
 		catch(Exception e)
 		{
-			logError("Error writing line in ["+debug+"] :"+e.toString());
+			logError("Error writing XML row in ["+debug+"] :"+e.toString()+Const.CR+"Row: "+r);
 			return false;
 		}
 
@@ -199,7 +211,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	{
 		String retval="";
 
-		TextFileField field = null;
+		XMLField field = null;
 		if (idx>=0) field = meta.getOutputFields()[idx];
 		
         if (v.isBigNumber())
@@ -212,8 +224,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			debug="Number is formatted?";
 			if (idx>=0 && field!=null && field.getFormat()!=null)
 			{
+                debug="Number formatted!";
 				if (v.isNull())
 				{
+                    debug="Number null";
 					if (field.getNullString()!=null) retval=field.getNullString();
 				}
 				else
@@ -256,9 +270,15 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			}
 			else
 			{
+                debug="Date is not formatted";
 				if (v.isNull() || v.getDate()==null) 
 				{
-					if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
+                    debug="nulliff date (field==null? "+(field==null)+", idx="+idx+")";
+					if (idx>=0 && field!=null && field.getNullString()!=null)
+                    {
+                        retval=field.getNullString();
+                    }
+                    debug="nulliff date finished";
 				}
 				else
 				{
@@ -276,13 +296,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				// Any separators in string?
-				// example: 123.4;"a;b;c";Some name
-				// 
-				int seppos = v.toString().indexOf(meta.getSeparator());
-				
-				if (seppos<0) retval=v.toString();
-				else          retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
+				retval=v.toString();
 			}
 		}
 		else // Boolean
@@ -297,46 +311,20 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				retval=v.toString();
 			}
 		}
+        
+        debug="End of formatField";
 		
-		if (meta.isPadded()) // maybe we need to rightpad to field length?
-		{
-			// What's the field length?
-			int length, precision;
-			
-			if (idx<0 || field==null) // Nothing specified: get it from the values themselves.
-			{
-				length   =v.getLength()<0?0:v.getLength();
-				precision=v.getPrecision()<0?0:v.getPrecision();
-			}
-			else // Get the info from the specified lengths & precision...
-			{
-				length   =field.getLength()   <0?0:field.getLength();
-				precision=field.getPrecision()<0?0:field.getPrecision();
-			}
-
-			if (v.isNumber())
-			{
-				length++; // for the sign...
-				if (precision>0) length++; // for the decimal point... 
-			}
-			if (v.isDate()) { length=23; precision=0; }
-			if (v.isBoolean()) { length=5; precision=0; }
-			
-			retval=Const.rightPad(new StringBuffer(retval), length+precision);
-		}
-		
-        debug="end of formatField";
 		return retval;
 	}
 	
-	private boolean writeField(Value v, int idx)
+	private boolean writeField(Value v, int idx, String element)
 	{
 		try
 		{
-			String str = formatField(v, idx);
+            String str = XMLHandler.addTagValue( element, formatField(v, idx), false);
             if (str!=null) data.writer.write(str.toCharArray());
-
-            debug="end of writeField";
+            
+            debug="End of writeField";
 		}
 		catch(Exception e)
 		{
@@ -346,74 +334,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		return true;
 	}
 	
-	private boolean writeHeader()
-	{
-		debug="header";
-		boolean retval=false;
-		Row r=data.headerrow;
-		
-		try
-		{
-			// If we have fields specified: list them in this order!
-			if (meta.getOutputFields()!=null && meta.getOutputFields().length>0)
-			{
-				String header = "";
-				for (int i=0;i<meta.getOutputFields().length;i++)
-				{
-					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
-					{
-						header+=meta.getSeparator();
-					}
-					header+=meta.getOutputFields()[i].getName();
-				}
-				header+=meta.getNewline();
-                data.writer.write(header.toCharArray());
-			}
-			else
-			if (r!=null)
-			{
-				for (int i=0;i<r.size();i++)
-				{
-					if (i>0) data.writer.write(meta.getSeparator().toCharArray());
-					Value v = r.getValue(i);
-					
-					// Header-value contains the name of the value
-					Value header_value = new Value(v.getName(), Value.VALUE_TYPE_STRING);
-					header_value.setValue(v.getName());
-					
-					// What's the fields index?
-					int idx=-1;
-					for (int x=0;x<meta.getOutputFields().length && idx<0; x++)
-					{
-						if (meta.getOutputFields()[x].getName().equalsIgnoreCase(v.getName())) idx=x;
-					}
-					switch(v.getType())
-					{
-					case Value.VALUE_TYPE_DATE:   v.setValue(new Date()); break;
-					case Value.VALUE_TYPE_STRING: v.setValue("a"); break;
-					default: break; 
-					}
-					//String fmt = formatField( v, idx );
-					//header_value.setLength( fmt.length() );
-                    data.writer.write(header_value.toString().toCharArray());
-				}
-                data.writer.write(meta.getNewline().toCharArray());
-			}
-			else
-			{
-                data.writer.write(("no rows selected"+Const.CR).toCharArray());
-			}
-		}
-		catch(Exception e)
-		{
-			logError("Error writing header line: "+e.toString());
-			e.printStackTrace();
-			retval=true;
-		}
-		linesOutput++;
-		return retval;
-	}
-
 	public String buildFilename(boolean ziparchive)
 	{
 		return meta.buildFilename(getCopy(), data.splitnr, ziparchive);
@@ -431,7 +351,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
             OutputStream outputStream;
 			if (meta.isZipped())
 			{
-				FileOutputStream fos = new FileOutputStream(file, meta.isFileAppended());
+				FileOutputStream fos = new FileOutputStream(file);
 				data.zip = new ZipOutputStream(fos);
 				File entry = new File(buildFilename(false));
 				ZipEntry zipentry = new ZipEntry(entry.getName());
@@ -441,19 +361,24 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				FileOutputStream fos=new FileOutputStream(file, meta.isFileAppended());
+				FileOutputStream fos=new FileOutputStream(file);
 				outputStream=fos;
 			}
             if (meta.getEncoding()!=null && meta.getEncoding().length()>0)
             {
                 log.logBasic(toString(), "Opening output stream in encoding: "+meta.getEncoding());
                 data.writer = new OutputStreamWriter(outputStream, meta.getEncoding());
+                data.writer.write( XMLHandler.getXMLHeader(meta.getEncoding()).toCharArray());
             }
             else
             {
-                log.logBasic(toString(), "Opening output stream in default encoding");
+                log.logBasic(toString(), "Opening output stream in default encoding : "+Const.XML_ENCODING);
                 data.writer = new OutputStreamWriter(outputStream);
+                data.writer.write( XMLHandler.getXMLHeader(Const.XML_ENCODING).toCharArray());
             }
+            
+            // OK, write the header & the parent element:
+            data.writer.write( ("<"+meta.getMainElement()+">"+Const.CR).toCharArray());
 						
 			retval=true;
 		}
@@ -474,6 +399,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		
 		try
 		{
+            // Close the parent element
+            data.writer.write( ("</"+meta.getMainElement()+">"+Const.CR).toCharArray());
+            
 			if (meta.isZipped())
 			{
 				//System.out.println("close zip entry ");
@@ -500,8 +428,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		meta=(TextFileOutputMeta)smi;
-		data=(TextFileOutputData)sdi;
+		meta=(XMLOutputMeta)smi;
+		data=(XMLOutputData)sdi;
 
 		if (super.init(smi, sdi))
 		{
@@ -524,8 +452,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		meta=(TextFileOutputMeta)smi;
-		data=(TextFileOutputData)sdi;
+		meta=(XMLOutputMeta)smi;
+		data=(XMLOutputData)sdi;
 		
 		super.dispose(smi, sdi);
 		
