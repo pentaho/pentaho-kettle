@@ -189,7 +189,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			{
 				if (data.nullif[i]!=null)
 				{
-					add.addValue(data.nullif[i]);
+					add.addValue(new Value(data.nullif[i]));
 				}
 				else
 				{
