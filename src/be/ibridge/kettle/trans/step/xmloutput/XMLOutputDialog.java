@@ -312,7 +312,6 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 				public void widgetSelected(SelectionEvent e) 
 				{
 					input.setChanged();
-					// System.out.println("wAddDate.getSelection()="+wAddDate.getSelection());
 				}
 			}
 		);
@@ -776,13 +775,10 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		for (int i=0;i<input.getOutputFields().length;i++)
 		{
 		    XMLField field = input.getOutputFields()[i];
-            System.out.println("line #"+i+" : "+field.getElementName());
 
 			TableItem item = wFields.table.getItem(i);
 			if (field.getFieldName()!=null) item.setText(1, field.getFieldName());
             if (field.getElementName()!=null) item.setText(2, field.getElementName());
-            System.out.println("line #"+i+" : "+field.getElementName());
-
 			item.setText(3, field.getTypeDesc());
 			if (field.getFormat()!=null) item.setText(4, field.getFormat());
 			if (field.getLength()!=-1) item.setText(5, ""+field.getLength());
@@ -833,6 +829,9 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			TableItem item = wFields.getNonEmpty(i);
 			field.setFieldName( item.getText(1) );
             field.setElementName( item.getText(2) );
+            
+            if (field.getFieldName().equals(field.getElementName())) field.setElementName("");
+            
 			field.setType( item.getText(3) );
 			field.setFormat( item.getText(4) );
 			field.setLength( Const.toInt(item.getText(5), -1) );
