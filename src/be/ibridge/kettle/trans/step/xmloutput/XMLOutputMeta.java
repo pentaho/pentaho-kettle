@@ -345,27 +345,28 @@ public class XMLOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	public void setDefault()
 	{
 		fileName   = "file";
-		extension  = "txt";
-		stepNrInFilename      = false;
+		extension  = "xml";
+		stepNrInFilename = false;
 		dateInFilename   = false;
 		timeInFilename   = false;
-		zipped     = false;
-		splitEvery = 0;
-        encoding = Const.XML_ENCODING;
+		zipped           = false;
+		splitEvery       = 0;
+        encoding         = Const.XML_ENCODING;
         
         mainElement      = "Rows";
         repeatElement    = "Row";
 
 
-		int i, nrfields=0;
+		int nrfields=0;
 		
 		allocate(nrfields);
 					
-		for (i=0;i<nrfields;i++)
+		for (int i=0;i<nrfields;i++)
 		{
 			outputFields[i] = new XMLField();
 
 			outputFields[i].setFieldName( "field"+i );				
+            outputFields[i].setElementName( "field"+i );              
 			outputFields[i].setType( "Number" );
 			outputFields[i].setFormat( " 0,000,000.00;-0,000,000.00" );
 			outputFields[i].setCurrencySymbol( "" );
