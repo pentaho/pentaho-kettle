@@ -23,6 +23,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.zip.ZipInputStream;
 
 import be.ibridge.kettle.core.Row;
@@ -36,9 +37,15 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
  */
 public class TextFileInputData extends BaseStepData implements StepDataInterface 
 {
+    /** @deprecated */
 	public String thisline, nextline, lastline;
+    
+    public ArrayList lineBuffer;
+    
 	public Row previous_row;
 	public int nr_repeats;
+    
+    public int nrLinesOnPage;
 	
 	public NumberFormat nf;
 	public DecimalFormat df;
@@ -55,6 +62,16 @@ public class TextFileInputData extends BaseStepData implements StepDataInterface
 	public ZipInputStream zi;
     public InputStreamReader isr;
 
+    public boolean doneReading;
+
+    public int headerLinesRead;
+
+    public int footerLinesRead;
+
+    public int pageLinesRead;
+
+    public boolean doneWithHeader;
+
 	/**
 	 * 
 	 */
@@ -64,6 +81,8 @@ public class TextFileInputData extends BaseStepData implements StepDataInterface
 
 		thisline=null;
 		nextline=null;
+        
+        lineBuffer = new ArrayList();
 		nf = NumberFormat.getInstance();
 		df = (DecimalFormat)nf;
 		dfs=new DecimalFormatSymbols();
@@ -73,6 +92,8 @@ public class TextFileInputData extends BaseStepData implements StepDataInterface
 		nr_repeats=0;
 		previous_row=null;
 		filenr = 0;
+        
+        nrLinesOnPage=0;
 		
 		fr=null;
 		zi=null;

@@ -97,7 +97,7 @@ public class TextFileInput extends BaseStep implements StepInterface
         
 		return null;
 	}
-	
+    
 	public static final ArrayList convertLineToStrings(LogWriter log, String line, TextFileInputMeta inf)
         throws KettleException
 	{
@@ -323,7 +323,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 											) 
         throws KettleException
 	{
-		int fieldnr;
+        if (line==null || line.length()==0) return null;
+        
+        int fieldnr;
 		Row r=new Row();
 		Value value;
         
@@ -344,148 +346,128 @@ public class TextFileInput extends BaseStep implements StepInterface
         }
         
 		int  nrfields = info.getInputFields().length;
-		boolean filterIsOK = true;
 		
-		// Filter row?
-		boolean check_filter = info.hasFilter() && info.getFilterPosition()>=0 && info.getFilterPosition()<line.length();
-		//System.out.println("check_filter = "+check_filter+", filter="+info.filter+", filter_position="+info.filter_position+", line length="+line.length());
-		if (check_filter)
+		try
 		{
-			int from = info.getFilterPosition();
-			int to   = from + info.getFilterString().length();
-			String sub = line.substring(info.getFilterPosition(), to);
+            // System.out.println("Convertings line to string ["+line+"]");
+			ArrayList strings = convertLineToStrings(log, line, info);
 			
-			if (!sub.equalsIgnoreCase(info.getFilterString()))
+			for (fieldnr=0 ; fieldnr<nrfields ; fieldnr++)
 			{
-				filterIsOK = false;
-				r.setIgnore();
+                TextFileInputField f = info.getInputFields()[fieldnr];
+			    
+				String field     = fieldnr<nrfields?f.getName():"empty"+fieldnr;
+				int    type      = fieldnr<nrfields?f.getType():Value.VALUE_TYPE_STRING;
+				String format    = fieldnr<nrfields?f.getFormat():"";
+				int    length    = fieldnr<nrfields?f.getLength():-1;
+				int    precision = fieldnr<nrfields?f.getPrecision():-1;
+				String group     = fieldnr<nrfields?f.getGroupSymbol():"";
+				String decimal   = fieldnr<nrfields?f.getDecimalSymbol():"";
+				String currency  = fieldnr<nrfields?f.getCurrencySymbol():"";
+				String nullif    = fieldnr<nrfields?f.getNullString():"";
+				int    trim_type = fieldnr<nrfields?f.getTrimType():TextFileInputMeta.TYPE_TRIM_NONE;
+
+                if ( fieldnr<strings.size() )
+                {
+                    String pol = (String)strings.get(fieldnr);
+					try
+					{
+                        value = convertValue
+						(
+							pol, 
+							field, type, format, length, precision,
+							group, decimal, currency, nullif, trim_type,
+							ldf, ldfs,
+							ldaf, ldafs
+						)
+						;
+					}
+					catch(Exception e)
+					{
+                        if (info.isErrorIgnored())
+                        {
+                            // OK, give some feedback!
+                            String message = "Couldn't parse field ["+field+"] with value ["+pol+"] : "+e.getMessage();
+                            log.logBasic(fname, "WARNING: "+message);
+                            
+                            value = new Value(field, type);
+                            value.setNull();
+                            
+                            if (errorCount!=null)
+                            {
+                                errorCount.plus(1L);
+                            }
+                            if (errorFields!=null)
+                            {
+                                StringBuffer sb = new StringBuffer(errorFields.getString());
+                                if (sb.length()>0) sb.append(", ");
+                                sb.append(field);
+                                errorFields.setValue(sb);
+                            }
+                            if (errorText!=null)
+                            {
+                                StringBuffer sb = new StringBuffer(errorText.getString());
+                                if (sb.length()>0) sb.append(Const.CR);
+                                sb.append(message);
+                                errorText.setValue(sb);
+                            }
+                        }
+                        else
+                        {
+                            throw new KettleException("Couldn't parse field ["+f.getName()+"] with value ["+pol+"]", e);
+                        }
+					}
+                }
+                else
+                {
+                    // No data found:  TRAILING NULLCOLS: add null value...
+                    value = new Value(field, type);
+                    value.setNull();
+                }
+                
+				// Now add value to the row!
+				r.addValue(value); 
+			}
+            
+            // Add the error handling fields...
+            if (errorCount !=null) r.addValue(errorCount);
+            if (errorFields!=null) r.addValue(errorFields);
+            if (errorText  !=null) r.addValue(errorText);
+			
+			// Support for trailing nullcols!
+			if (fieldnr<info.getInputFields().length)
+			{
+				for (int i=fieldnr;i<info.getInputFields().length;i++)
+				{
+				    TextFileInputField f = info.getInputFields()[i];
+				    
+					value=new Value(f.getName(), f.getType()); // build a value!
+					value.setLength(f.getLength(), f.getPrecision());
+					value.setNull();
+					r.addValue(value);
+				}
 			}
 		}
-        
-		if (filterIsOK)
+		catch(Exception e)
 		{
-			try
-			{
-                // System.out.println("Convertings line to string ["+line+"]");
-				ArrayList strings = convertLineToStrings(log, line, info);
-				
-				for (fieldnr=0 ; fieldnr<nrfields ; fieldnr++)
-				{
-                    TextFileInputField f = info.getInputFields()[fieldnr];
-				    
-					String field     = fieldnr<nrfields?f.getName():"empty"+fieldnr;
-					int    type      = fieldnr<nrfields?f.getType():Value.VALUE_TYPE_STRING;
-					String format    = fieldnr<nrfields?f.getFormat():"";
-					int    length    = fieldnr<nrfields?f.getLength():-1;
-					int    precision = fieldnr<nrfields?f.getPrecision():-1;
-					String group     = fieldnr<nrfields?f.getGroupSymbol():"";
-					String decimal   = fieldnr<nrfields?f.getDecimalSymbol():"";
-					String currency  = fieldnr<nrfields?f.getCurrencySymbol():"";
-					String nullif    = fieldnr<nrfields?f.getNullString():"";
-					int    trim_type = fieldnr<nrfields?f.getTrimType():TextFileInputMeta.TYPE_TRIM_NONE;
-	
-                    if ( fieldnr<strings.size() )
-                    {
-                        String pol = (String)strings.get(fieldnr);
-    					try
-    					{
-                            value = convertValue
-    						(
-    							pol, 
-    							field, type, format, length, precision,
-    							group, decimal, currency, nullif, trim_type,
-    							ldf, ldfs,
-    							ldaf, ldafs
-    						)
-    						;
-    					}
-    					catch(Exception e)
-    					{
-                            if (info.isErrorIgnored())
-                            {
-                                // OK, give some feedback!
-                                String message = "Couldn't parse field ["+field+"] with value ["+pol+"] : "+e.getMessage();
-                                log.logBasic(fname, "WARNING: "+message);
-                                
-                                value = new Value(field, type);
-                                value.setNull();
-                                
-                                if (errorCount!=null)
-                                {
-                                    errorCount.plus(1L);
-                                }
-                                if (errorFields!=null)
-                                {
-                                    StringBuffer sb = new StringBuffer(errorFields.getString());
-                                    if (sb.length()>0) sb.append(", ");
-                                    sb.append(field);
-                                    errorFields.setValue(sb);
-                                }
-                                if (errorText!=null)
-                                {
-                                    StringBuffer sb = new StringBuffer(errorText.getString());
-                                    if (sb.length()>0) sb.append(Const.CR);
-                                    sb.append(message);
-                                    errorText.setValue(sb);
-                                }
-                            }
-                            else
-                            {
-                                throw new KettleException("Couldn't parse field ["+f.getName()+"] with value ["+pol+"]", e);
-                            }
-    					}
-                    }
-                    else
-                    {
-                        // No data found:  TRAILING NULLCOLS: add null value...
-                        value = new Value(field, type);
-                        value.setNull();
-                    }
-                    
-					// Now add value to the row!
-					r.addValue(value); 
-				}
-                
-                // Add the error handling fields...
-                if (errorCount !=null) r.addValue(errorCount);
-                if (errorFields!=null) r.addValue(errorFields);
-                if (errorText  !=null) r.addValue(errorText);
-				
-				// Support for trailing nullcols!
-				if (fieldnr<info.getInputFields().length)
-				{
-					for (int i=fieldnr;i<info.getInputFields().length;i++)
-					{
-					    TextFileInputField f = info.getInputFields()[i];
-					    
-						value=new Value(f.getName(), f.getType()); // build a value!
-						value.setLength(f.getLength(), f.getPrecision());
-						value.setNull();
-						r.addValue(value);
-					}
-				}
-			}
-			catch(Exception e)
-			{
-                throw new KettleException("Error converting line", e);
-			}
-				
-			// Possibly add a filename...
-			if (info.includeFilename() && r!=null)
-			{
-				Value inc = new Value(info.getFilenameField(), fname);
-				inc.setLength(100);
-				r.addValue(inc);
-			}
-	
-			// Possibly add a row number...
-			if (info.includeRowNumber() && r!=null)
-			{
-				Value inc = new Value(info.getRowNumberField(), Value.VALUE_TYPE_INTEGER);
-				inc.setValue(linenr);
-				inc.setLength(9);
-				r.addValue(inc);
-			}
+            throw new KettleException("Error converting line", e);
+		}
+			
+		// Possibly add a filename...
+		if (info.includeFilename() && r!=null)
+		{
+			Value inc = new Value(info.getFilenameField(), fname);
+			inc.setLength(100);
+			r.addValue(inc);
+		}
+
+		// Possibly add a row number...
+		if (info.includeRowNumber() && r!=null)
+		{
+			Value inc = new Value(info.getRowNumberField(), Value.VALUE_TYPE_INTEGER);
+			inc.setValue(linenr);
+			inc.setLength(9);
+			r.addValue(inc);
 		}
 
 		return r;
@@ -631,45 +613,24 @@ public class TextFileInput extends BaseStep implements StepInterface
 		Row r=null;
 		boolean retval=true;
 		boolean putrow = false;
-		StringBuffer error = new StringBuffer();
 		
 		debug="start of readRowOfData";
 		
 		if (first) // we just got started
 		{
-		    // Open the first file, stop if it fails...
+            debug="first";
+
+            first=false;
+
+		    // Open the first file & read the required rows in the buffer, stop if it fails...
 		    if (!openNextFile()) 
 		    {
+                closeLastFile();
+                setOutputDone();
 		        return false;
 		    }
-		    
-			first=false;
-			data.thisline=getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);
-			if (meta.hasHeader() && data.thisline!=null)  // skip first line in this case!
-			{
-				data.thisline=getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);
-                int skipped=1;
-                while(data.thisline!=null && skipped<meta.getNrHeaderLines())
-                {
-                    linesInput++;
-                    data.thisline=getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);
-                    skipped++;
-                }
-			} 
-			if (data.thisline!=null) 
-			{ 
-				linesInput++;
-				data.nextline=getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0); 
-			} 
-			if (data.nextline!=null) 
-			{ 
-				linesInput++;
-				data.lastline=getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0); 
-			} 
-			if (data.nextline!=null)
-			{
-				linesInput++;
-			}
+            
+            debug="first repeat fields";
 			// Count the number of repeat fields...
 			for (int i=0;i<meta.getInputFields().length;i++)
 			{
@@ -678,146 +639,206 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		else
 		{
-			data.lastline=getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0); // Get one line of data;
-			if (data.lastline!=null) linesInput++;
-		}
-		
-		if (data.thisline==null) // everything is finished, empty file or incomplete line!
-		{
-			if (data.last_file) 
-			{
-			    closeLastFile();
-			    setOutputDone();  // signal end to receiver(s)
-			    return false;     // This is the end of this step.
-			}
-			else
-			{
-			    openNextFile();
-			}
-			return true; // Nothing is being output, but processRows will be called again!
-		}
-		
-		// Now we have 3 lines: this line, the next and last line
-		// These are the case:
-		//    No footer:
-		//      nextline==null : thisline is the last line!!!
-		//    With footer:
-		//      lastline==null : thisline is the last line!!!
-		//
-		//    No header:
-		//      nextline==null : thisline is the last line!!!
-		//    With header:
-		//      lastline==null : nextline is the last line!!!
-		
-		// Look for footer?
-		// If yes: 
-		if (meta.hasFooter())
-		{
-			r=convertLineToRow(log, data.thisline, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1);
-			if (data.nextline!=null && data.lastline==null)
-			{
-				retval=false;
-			}
-			if (meta.getRowLimit()>0 && linesInput>=meta.getRowLimit())
-			{
-				retval=false;  // stop processing after this one!
-			}
-			if (error.length()!=0)
-			{
-				setErrors(1);
-				stopAll();
-				return false;
-			}
-			// Check
-			if ( !(meta.noEmptyLines() && r.isEmpty()) && !r.isIgnored() ) putrow=true;
-		}
-		else // normal row.
-		{
-			r=convertLineToRow(log, data.thisline, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1);
-			if (meta.getRowLimit()>0 && linesInput>=meta.getRowLimit())
-			{
-				retval=false;
-			}
-			if (error.length()!=0)
-			{
-				setErrors(1);
-				stopAll();
-				return false;
-			}
-			if (!meta.noEmptyLines() || !r.isEmpty()) putrow=true;
-		}
-		
-		if (putrow)
-		{
-			// See if the previous values need to be repeated!
-			if (data.nr_repeats>0)
-			{
-				debug = "repeats";
-
-				if (data.previous_row==null) // First invocation...
-				{
-					debug = "init repeats";
-
-					data.previous_row=new Row();
-					for (int i=0;i<meta.getInputFields().length;i++)
-					{
-						if (meta.getInputFields()[i].isRepeated())
-						{
-							Value value    = r.getValue(i);
-							data.previous_row.addValue(new Value(value)); // Copy the first row
-						}
-					}
-				}
-				else
-				{
-					debug = "check repeats";
-
-					int repnr=0;
-					for (int i=0;i<meta.getInputFields().length;i++)
-					{
-						if (meta.getInputFields()[i].isRepeated())
-						{
-							Value value = r.getValue(i);
-							if (value.isNull()) // if it is empty: take the previous value!
-							{
-								Value prev = data.previous_row.getValue(repnr);
-								r.removeValue(i);
-								r.addValue(i, prev);
-							}
-							else // not empty: change the previous_row entry!
-							{
-								data.previous_row.removeValue(repnr);
-								data.previous_row.addValue(repnr, new Value(value));
-							}
-							repnr++;
-						}
-					}
-				}
-			}
-			logRowlevel("Putting row: "+r.toString());
-			putRow(r);
+            if (!data.doneReading)
+            {
+                debug="get a new line of data";
+                String line = getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0); // Get one line of data;
+                if (line!=null)
+                {
+                    // logRowlevel("LINE READ: "+line);
+                    linesInput++;
+                    data.lineBuffer.add(line);
+                }
+            }
 		}
 
-		data.thisline=data.nextline;
-		data.nextline=data.lastline;
+        // If the buffer is empty: open the next file. (if nothing in there, open the next, etc.)
+        while (data.lineBuffer.size()==0)
+        {
+            debug="empty buffer: open next file";
+            if (!openNextFile())  // Open fails: done processing!
+            {
+                closeLastFile();
+                setOutputDone();  // signal end to receiver(s)
+                return false;
+            }
+        }
+
+        // Take the first line available in the buffer & remove the line from the buffer
+        debug="take first line of buffer";
+        String line = (String) data.lineBuffer.get(0);
+        data.lineBuffer.remove(0);
+        
+        // Do we filter out this one?
+        boolean filterOK = true;
+        
+        // Filter row?
+        boolean check_filter = meta.hasFilter() && meta.getFilterPosition()>=0 && meta.getFilterPosition()<line.length();
+        if (check_filter)
+        {
+            int from = meta.getFilterPosition();
+            int to   = from + meta.getFilterString().length();
+            String sub = line.substring(meta.getFilterPosition(), to);
+            if (sub.equalsIgnoreCase(meta.getFilterString()))
+            {
+                filterOK=false; // skip this one!
+                
+                if (meta.isFilterLastLine())
+                {
+                    closeLastFile();
+                    setOutputDone();
+                    return false; //
+                }
+            }
+        }
+        
+
+        if (filterOK) // Not filtered out: go for it!
+        {
+            if (meta.isLayoutPaged()) 
+            {
+                debug="paged layout";
+    
+                // Different rules apply: on each page: 
+                //   a header
+                //   a number of data lines 
+               //   a footer
+                // 
+                if (!data.doneWithHeader && data.pageLinesRead==0) // We are reading header lines
+                {
+                    debug="paged layout : header line "+data.headerLinesRead;
+                    logRowlevel("P-HEADER ("+data.headerLinesRead+") : "+line);
+                    data.headerLinesRead++;
+                    if (data.headerLinesRead>=meta.getNrHeaderLines())
+                    {
+                        data.doneWithHeader=true;
+                    }
+                }
+                else // data lines or footer on a page
+                {
+                    debug="paged layout : data or footer";
+                    if (data.pageLinesRead<meta.getNrLinesPerPage())
+                    {
+                        debug="paged layout : data line";
+                        logRowlevel("P-DATA: "+line);
+                        // Read a normal line on a page of data.
+                        data.pageLinesRead++;
+                        r = convertLineToRow(log, line, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1);
+                        if (r!=null) putrow = true;
+                    }
+                    else // done reading the data lines, skip the footer lines
+                    {
+                        debug="paged layout : footer line";
+                        if (meta.hasFooter() && data.footerLinesRead<meta.getNrFooterLines())
+                        {
+                            logRowlevel("P-FOOTER: "+line);
+                            data.footerLinesRead++;
+                        }
+                        
+                        if (!meta.hasFooter() || data.footerLinesRead>=meta.getNrFooterLines())
+                        {
+                            debug="paged layout : end of page: restart";
+                            
+                            // OK, we are done reading the footer lines, start again on 'next page' with the header
+                            data.doneWithHeader=false;
+                            data.headerLinesRead=0;
+                            data.pageLinesRead=0;
+                            data.footerLinesRead=0;
+                            logRowlevel("RESTART PAGE");
+                        }
+                    }
+                }
+            }
+            else // A normal data line, can also be a header or a footer line
+            {
+                debug="normal";
+    
+                if (!data.doneWithHeader) // We are reading header lines
+                {
+                    debug="normal : header line";
+                    data.headerLinesRead++;
+                    if (data.headerLinesRead>meta.getNrHeaderLines())
+                    {
+                        data.doneWithHeader=true;
+                    }
+                }
+                else
+                {
+                    debug="normal : data and footer";
+                    // IF we are done reading and we have a footer 
+                    // AND the number of lines in the buffer is smaller or equal to the number of footer lines
+                    // THEN we can remove the remaining rows from the buffer: they are all footer rows.
+                    if (data.doneReading && meta.hasFooter() && data.lineBuffer.size()<= meta.getNrFooterLines()) 
+                    {
+                        debug="normal : footer";
+                        data.lineBuffer.clear();
+                    }
+                    else // Not yet a footer line: it's a normal data line.
+                    {
+                        debug="normal : data";
+                        r = convertLineToRow(log, line, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1);
+                        if (r!=null) putrow = true;
+                    }
+                }
+            }
+        }
+		
+        if (putrow && r!=null && !r.isIgnored())
+        {
+    		// See if the previous values need to be repeated!
+    		if (data.nr_repeats>0)
+    		{
+    			debug = "repeats";
+    
+    			if (data.previous_row==null) // First invocation...
+    			{
+    				debug = "init repeats";
+    
+    				data.previous_row=new Row();
+    				for (int i=0;i<meta.getInputFields().length;i++)
+    				{
+    					if (meta.getInputFields()[i].isRepeated())
+    					{
+    						Value value    = r.getValue(i);
+    						data.previous_row.addValue(new Value(value)); // Copy the first row
+    					}
+    				}
+    			}
+    			else
+    			{
+    				debug = "check repeats";
+    
+    				int repnr=0;
+    				for (int i=0;i<meta.getInputFields().length;i++)
+    				{
+    					if (meta.getInputFields()[i].isRepeated())
+    					{
+    						Value value = r.getValue(i);
+    						if (value.isNull()) // if it is empty: take the previous value!
+    						{
+    							Value prev = data.previous_row.getValue(repnr);
+    							r.removeValue(i);
+    							r.addValue(i, prev);
+    						}
+    						else // not empty: change the previous_row entry!
+    						{
+    							data.previous_row.removeValue(repnr);
+    							data.previous_row.addValue(repnr, new Value(value));
+    						}
+    						repnr++;
+    					}
+    				}
+    			}
+    		}
+            
+            logRowlevel("Putting row: "+r.toString());
+            putRow(r);
+
+        }
+
 		
 		if ((linesInput>0) && (linesInput%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesInput);
 		
-		if (!retval) 
-		{
-			if (data.last_file) 
-			{
-			    closeLastFile();
-			    setOutputDone();  // signal end to receiver(s)
-			    return false;     // This is the end of this step.
-			}
-			else
-			{
-			    openNextFile();
-			}
-			return true; // processRows will be called again to process the next file...
-		}
-
 		debug="end of readRowOfData";
 
 		return retval;
@@ -890,6 +911,56 @@ public class TextFileInput extends BaseStep implements StepInterface
 			
 			// Move file pointer ahead!
 			data.filenr++;
+            
+            ///////////////////////////////////////////////////////////////////////////////
+            // Read the first lines...
+            
+            // Keep track of the status of the file: are there any lines left to read?
+            data.doneReading = false;
+            
+            // OK, read a number of lines in the buffer:
+            // The header rows
+            // The nr rows in the page : optional
+            // The footer rows
+            int bufferSize = 1; // try to read at least one line.
+            bufferSize += meta.hasHeader() ? meta.getNrHeaderLines() : 0;
+            bufferSize += meta.isLayoutPaged() ? meta.getNrLinesPerPage() : 0;
+            bufferSize += meta.hasFooter() ? meta.getNrFooterLines() : 0;
+            
+            
+            // See if we need to skip the document header lines...
+            if (meta.isLayoutPaged())
+            {
+                for (int i=0;i<meta.getNrLinesDocHeader();i++)
+                {
+                    // Just skip these...
+                    getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);   
+                }
+            }
+
+            String line;
+            for (int i=0;i<bufferSize && !data.doneReading;i++)
+            {
+                line = getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);
+                if (line!=null)
+                {
+                    // logRowlevel("LINE READ: "+line);
+                    linesInput++;
+                    data.lineBuffer.add(line); // Store it in the line buffer...
+                }
+                else
+                {
+                    data.doneReading = true;
+                }
+            }
+            
+            // Reset counters etc.
+            data.headerLinesRead = 0;
+            data.footerLinesRead = 0;
+            data.pageLinesRead   = 0;
+            
+            // Set a flags
+            data.doneWithHeader = !meta.hasHeader();
 		}
 		catch(Exception e)
 		{

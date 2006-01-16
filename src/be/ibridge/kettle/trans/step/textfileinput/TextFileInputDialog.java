@@ -75,6 +75,7 @@ import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.TransPreviewFactory;
 import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
@@ -158,6 +159,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private Text         wNrWraps;
     private FormData     fdlNrWraps, fdNrWraps;
 
+    private Label        wlLayoutPaged;
+    private Button       wLayoutPaged;
+    private FormData     fdlLayoutPaged, fdLayoutPaged;
+
+    private Label        wlNrLinesPerPage;
+    private Text         wNrLinesPerPage;
+    private FormData     fdlNrLinesPerPage, fdNrLinesPerPage;
+
+    private Label        wlNrLinesDocHeader;
+    private Text         wNrLinesDocHeader;
+    private FormData     fdlNrLinesDocHeader, fdNrLinesDocHeader;
+
 	private Label        wlZipped;
 	private Button       wZipped;
 	private FormData     fdlZipped, fdZipped;
@@ -205,6 +218,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private Label        wlFilterStr;
 	private Text         wFilterStr;
 	private FormData     fdlFilterStr, fdFilterStr;
+
+    private Label        wlFilterLast;
+    private Button       wFilterLast;
+    private FormData     fdlFilterLast, fdFilterLast;
 
     // ERROR HANDLING...
     private Label        wlErrorIgnored;
@@ -652,13 +669,63 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdNrWraps.top  = new FormAttachment(wFooter, margin);
         wNrWraps.setLayoutData(fdNrWraps);
 
+        // Pages
+        wlLayoutPaged=new Label(wContentComp, SWT.RIGHT);
+        wlLayoutPaged.setText("Paged layout (printout)?");
+        props.setLook(wlLayoutPaged);
+        fdlLayoutPaged=new FormData();
+        fdlLayoutPaged.left = new FormAttachment(0, 0);
+        fdlLayoutPaged.top  = new FormAttachment(wWraps, margin);
+        fdlLayoutPaged.right= new FormAttachment(middle, -margin);
+        wlLayoutPaged.setLayoutData(fdlLayoutPaged);
+        wLayoutPaged=new Button(wContentComp, SWT.CHECK);
+        props.setLook(wLayoutPaged);
+        fdLayoutPaged=new FormData();
+        fdLayoutPaged.left = new FormAttachment(middle, 0);
+        fdLayoutPaged.top  = new FormAttachment(wWraps, margin);
+        wLayoutPaged.setLayoutData(fdLayoutPaged);
+
+        // Nr of lines per page
+        wlNrLinesPerPage=new Label(wContentComp, SWT.RIGHT);
+        wlNrLinesPerPage.setText("Number lines per page");
+        props.setLook(wlNrLinesPerPage);
+        fdlNrLinesPerPage=new FormData();
+        fdlNrLinesPerPage.left = new FormAttachment(wLayoutPaged, margin);
+        fdlNrLinesPerPage.top  = new FormAttachment(wWraps, margin);
+        wlNrLinesPerPage.setLayoutData(fdlNrLinesPerPage);
+        wNrLinesPerPage=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wNrLinesPerPage.setTextLimit(3);
+        props.setLook(wNrLinesPerPage);
+        wNrLinesPerPage.addModifyListener(lsMod);
+        fdNrLinesPerPage=new FormData();
+        fdNrLinesPerPage.left = new FormAttachment(wlNrLinesPerPage, margin);
+        fdNrLinesPerPage.top  = new FormAttachment(wWraps, margin);
+        wNrLinesPerPage.setLayoutData(fdNrLinesPerPage);
+
+        // NrPages
+        wlNrLinesDocHeader=new Label(wContentComp, SWT.RIGHT);
+        wlNrLinesDocHeader.setText("Document header lines ");
+        props.setLook(wlNrLinesDocHeader);
+        fdlNrLinesDocHeader=new FormData();
+        fdlNrLinesDocHeader.left = new FormAttachment(wNrLinesPerPage, margin);
+        fdlNrLinesDocHeader.top  = new FormAttachment(wWraps, margin);
+        wlNrLinesDocHeader.setLayoutData(fdlNrLinesDocHeader);
+        wNrLinesDocHeader=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wNrLinesDocHeader.setTextLimit(3);
+        props.setLook(wNrLinesDocHeader);
+        wNrLinesDocHeader.addModifyListener(lsMod);
+        fdNrLinesDocHeader=new FormData();
+        fdNrLinesDocHeader.left = new FormAttachment(wlNrLinesDocHeader, margin);
+        fdNrLinesDocHeader.top  = new FormAttachment(wWraps, margin);
+        wNrLinesDocHeader.setLayoutData(fdNrLinesDocHeader);
+
 		// Zipped?
 		wlZipped=new Label(wContentComp, SWT.RIGHT);
 		wlZipped.setText("Zipped ");
  		props.setLook(wlZipped);
 		fdlZipped=new FormData();
 		fdlZipped.left = new FormAttachment(0, 0);
-		fdlZipped.top  = new FormAttachment(wWraps, margin);
+		fdlZipped.top  = new FormAttachment(wNrLinesDocHeader, margin);
 		fdlZipped.right= new FormAttachment(middle, -margin);
 		wlZipped.setLayoutData(fdlZipped);
 		wZipped=new Button(wContentComp, SWT.CHECK );
@@ -666,7 +733,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wZipped.setToolTipText("Only the first entry in the archive is read!");
 		fdZipped=new FormData();
 		fdZipped.left = new FormAttachment(middle, 0);
-		fdZipped.top  = new FormAttachment(wWraps, margin);
+		fdZipped.top  = new FormAttachment(wNrLinesDocHeader, margin);
 		fdZipped.right= new FormAttachment(100, 0);
 		wZipped.setLayoutData(fdZipped);
 
@@ -866,14 +933,30 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		fdlFilterStr.top  = new FormAttachment(wLimit, margin);
 		wlFilterStr.setLayoutData(fdlFilterStr);
 		wFilterStr=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wFilterStr);
+        props.setLook(wFilterStr);
 		wFilterStr.addModifyListener(lsMod);
 		fdFilterStr=new FormData();
 		fdFilterStr.left = new FormAttachment(wlFilterStr, margin);
 		fdFilterStr.top  = new FormAttachment(wLimit, margin);
-		fdFilterStr.right= new FormAttachment(100, 0);
+        fdFilterStr.right= new FormAttachment(wlFilterStr, 200);
 		wFilterStr.setLayoutData(fdFilterStr);
         
+        // Is Filter Last Line?
+        wlFilterLast=new Label(wContentComp, SWT.RIGHT);
+        wlFilterLast.setText("Stop on filter? ");
+        props.setLook(wlFilterLast);
+        fdlFilterLast=new FormData();
+        fdlFilterLast.left = new FormAttachment(wFilterStr, margin);
+        fdlFilterLast.top  = new FormAttachment(wLimit, margin);
+        wlFilterLast.setLayoutData(fdlFilterLast);
+        wFilterLast=new Button(wContentComp, SWT.CHECK );
+        props.setLook(wFilterLast);
+        wFilterLast.setToolTipText("Check this to stop processing when the filter string is encountered in the specified position");
+        fdFilterLast=new FormData();
+        fdFilterLast.left = new FormAttachment(wlFilterLast, margin);
+        fdFilterLast.top  = new FormAttachment(wLimit, margin);
+        wFilterLast.setLayoutData(fdFilterLast);
+
         
         
         // ERROR HANDLING...
@@ -1157,44 +1240,24 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				}
 			}
 		);
-		// Enable/disable the right fields to allow a filename to be added to each row...
-		wInclFilename.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					setIncludeFilename();
-				}
-			}
-		);
-		
-		// Enable/disable the right fields to allow a row number to be added to each row...
-		wInclRownum.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					setIncludeRownum();
-				}
-			}
-		);
-		// Enable/disable the right fields to allow a simple filter to be entered
-		wFilter.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					setFilter();
-				}
-			}
-		);
-
-        // Enable/disable the right fields to allow the error handling fields...
-        wErrorIgnored.addSelectionListener(new SelectionAdapter() 
+        
+        SelectionAdapter lsFlags = new SelectionAdapter() 
+        {
+            public void widgetSelected(SelectionEvent e) 
             {
-                public void widgetSelected(SelectionEvent e) 
-                {
-                    setErrorIgnored();
-                }
+                setFlags();
             }
-        );
+        };
+        
+		// Enable/disable the right fields...
+        wInclFilename.addSelectionListener( lsFlags );
+        wInclRownum.addSelectionListener( lsFlags );
+		wFilter.addSelectionListener( lsFlags);
+        wErrorIgnored.addSelectionListener(lsFlags);
+        wHeader.addSelectionListener(lsFlags);
+        wFooter.addSelectionListener(lsFlags);
+        wWraps.addSelectionListener(lsFlags);
+        wLayoutPaged.addSelectionListener(lsFlags);
 
 
 		// Whenever something changes, set the tooltip to the expanded version of the filename:
@@ -1320,44 +1383,40 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		}
 		return stepname;
 	}
-	
-	public void setMultiple()
-	{
-		/*
-		wlFilemask.setEnabled(wMultiple.getSelection());
-		wFilemask.setEnabled(wMultiple.getSelection());
-		wlFilename.setText(wMultiple.getSelection()?"Directory":"Filename ");
-		*/
-	}
-	
-	public void setIncludeFilename()
-	{
-		wlInclFilenameField.setEnabled(wInclFilename.getSelection());
-		wInclFilenameField.setEnabled(wInclFilename.getSelection());
-	}
 
-	public void setIncludeRownum()
+	public void setFlags()
 	{
-		wlInclRownumField.setEnabled(wInclRownum.getSelection());
-		wInclRownumField.setEnabled(wInclRownum.getSelection());
-	}
+        wlInclFilenameField.setEnabled(wInclFilename.getSelection());
+        wInclFilenameField.setEnabled(wInclFilename.getSelection());
 
-	public void setFilter()
-	{
+        wlInclRownumField.setEnabled(wInclRownum.getSelection());
+        wInclRownumField.setEnabled(wInclRownum.getSelection());
+
 		wlFilterPos.setEnabled(wFilter.getSelection());
 		wFilterPos.setEnabled(wFilter.getSelection());
 		wlFilterStr.setEnabled(wFilter.getSelection());
 		wFilterStr.setEnabled(wFilter.getSelection());
-	}
-    
-    public void setErrorIgnored()
-    {
+        wlFilterLast.setEnabled(wFilter.getSelection());
+        wFilterLast.setEnabled(wFilter.getSelection());
+
         wlErrorCount.setEnabled( wErrorIgnored.getSelection() );
         wErrorCount.setEnabled( wErrorIgnored.getSelection() );
         wlErrorFields.setEnabled( wErrorIgnored.getSelection() );
         wErrorFields.setEnabled( wErrorIgnored.getSelection() );
         wlErrorText.setEnabled( wErrorIgnored.getSelection() );
         wErrorText.setEnabled( wErrorIgnored.getSelection() );
+        
+        wlNrHeader.setEnabled( wHeader.getSelection() );
+        wNrHeader.setEnabled( wHeader.getSelection() );
+        wlNrFooter.setEnabled( wFooter.getSelection() );
+        wNrFooter.setEnabled( wFooter.getSelection() );
+        wlNrWraps.setEnabled( wWraps.getSelection() );
+        wNrWraps.setEnabled( wWraps.getSelection() );
+
+        wlNrLinesPerPage.setEnabled( wLayoutPaged.getSelection() );
+        wNrLinesPerPage.setEnabled( wLayoutPaged.getSelection() );
+        wlNrLinesDocHeader.setEnabled( wLayoutPaged.getSelection() );
+        wNrLinesDocHeader.setEnabled( wLayoutPaged.getSelection() );
     }
 
 	/**
@@ -1390,12 +1449,16 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wNrFooter.setText( ""+in.getNrFooterLines() );
         wWraps.setSelection(in.isLineWrapped());
         wNrWraps.setText( ""+in.getNrWraps() );
+        wLayoutPaged.setSelection(in.isLayoutPaged());
+        wNrLinesPerPage.setText( ""+in.getNrLinesPerPage() );
+        wNrLinesDocHeader.setText( ""+in.getNrLinesDocHeader() );
 		wZipped.setSelection(in.isZipped());
 		wNoempty.setSelection(in.noEmptyLines());
 		wInclFilename.setSelection(in.includeFilename());
 		wInclRownum.setSelection(in.includeRowNumber());
 		//wMultiple.setSelection(in.wildcard);
 		wFilter.setSelection(in.hasFilter());
+        wFilterLast.setSelection(in.isFilterLastLine());
 		if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
 		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
 		if (in.getFileFormat()   !=null) wFormat.setText(in.getFileFormat());
@@ -1444,11 +1507,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         if (in.getErrorFieldsField()!=null) wErrorFields.setText( in.getErrorFieldsField() );
         if (in.getErrorTextField()!=null) wErrorText.setText( in.getErrorTextField() );
         
-        setMultiple();
-        setIncludeFilename();
-        setIncludeRownum();
-        setFilter();
-        setErrorIgnored();
+        setFlags();
         
 		wStepname.selectAll();
 	}
@@ -1505,6 +1564,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		in.setFilter( wFilter.getSelection() );
 		in.setFilterPosition( Const.toInt(wFilterPos.getText(), -1) );
 		in.setFilterString( wFilterStr.getText() );
+        in.setFilterLastLine( wFilterLast.getSelection() );
 		
 		in.setIncludeFilename( wInclFilename.getSelection() );
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
@@ -1514,8 +1574,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         in.setNrFooterLines( Const.toInt( wNrFooter.getText(), 1) );
         in.setLineWrapped( wWraps.getSelection() );
         in.setNrWraps( Const.toInt( wNrWraps.getText(), 1) );
+        in.setLayoutPaged( wLayoutPaged.getSelection() );
+        in.setNrLinesPerPage( Const.toInt( wNrLinesPerPage.getText(), 80) );
+        in.setNrLinesDocHeader( Const.toInt( wNrLinesDocHeader.getText(), 0) );
 		in.setZipped( wZipped.getSelection() );
-		// in.wildcard= wMultiple.getSelection();
+
 		in.setNoEmptyLines( wNoempty.getSelection() );
 
         String encoding = wEncoding.getText();
@@ -1686,7 +1749,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                             wFields.setRowNums();
                             wFields.optWidth(true);
     
-        					EnterTextDialog etd = new EnterTextDialog(shell, props, "Scan results", "Result:", message, true);
+        					EnterTextDialog etd = new EnterTextDialog(shell, "Scan results", "Result:", message, true);
         					etd.setReadOnly();
         					etd.open();
                         }
@@ -1804,7 +1867,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             
             if (!progressDialog.isCancelled())
             {
-                PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()));
+                Trans trans = progressDialog.getTrans();
+                String loggingText = progressDialog.getLoggingText();
+                
+                if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
+                {
+                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                    mb.setMessage("One or more errors occured during preview!  Examine the logfile to see what went wrong.");
+                    mb.setText("ERROR");
+                    mb.open(); 
+                }
+                
+                PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
                 prd.open();
             }
         }
@@ -1859,9 +1933,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 					String firstlines="";
 					int    linenr=0;
 
-                    System.out.println("info.hasHeader()="+info.hasHeader()+", info.getNrHeaderLines="+info.getNrHeaderLines());
-                    System.out.println("info.isWrapped()="+info.isLineWrapped()+", info.getNrWraps="+info.getNrWraps());
-
                     // Skip the header lines first if more then one, it helps us position
                     if (info.hasHeader() && info.getNrHeaderLines()>1)
                     {
@@ -1881,7 +1952,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 						linenr++;
 						line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
 					}
-					EnterTextDialog etd = new EnterTextDialog(shell, props, "File "+filename, (nrlines==0?"All":""+nrlines)+" lines:", firstlines, true);
+					EnterTextDialog etd = new EnterTextDialog(shell, "File "+filename, (nrlines==0?"All":""+nrlines)+" lines:", firstlines, true);
 					etd.setReadOnly();
 					etd.open();
 				}

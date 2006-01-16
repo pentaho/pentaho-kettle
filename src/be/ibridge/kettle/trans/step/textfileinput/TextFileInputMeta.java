@@ -96,6 +96,16 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     /** The number of times the line wrapped */
     private int                nrWraps;
 
+    /** Flag indicating that the text-file has a paged layout. */
+    private boolean            layoutPaged;
+
+    /** The number of lines in the document header */
+    private int                nrLinesDocHeader;
+
+    /** The number of lines to read per page */
+    private int                nrLinesPerPage;
+
+    
     /** Flag indicating that the text file to be read is stored in a ZIP archive */
     private boolean            zipped;
 
@@ -129,6 +139,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     /** The string to filter on */
     private String             filterString;
 
+    /** True if we want to stop when we reach a filter line */
+    private boolean            filterLastLine;
+    
     /** The fields to import... */
     private TextFileInputField inputFields[];
 
@@ -512,6 +525,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         nrFooterLines = 1;
         lineWrapped = false;
         nrWraps = 1;
+        layoutPaged = false;
+        nrLinesPerPage = 80;
+        nrLinesDocHeader = 0;
         zipped = false;
         noEmptyLines = true;
         fileFormat = "DOS";
@@ -524,6 +540,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         filter = false;
         filterPosition = -1;
         filterString = "";
+        filterLastLine = false;
 
         int nrfiles = 0;
         int nrfields = 0;
@@ -615,6 +632,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         retval += "    " + XMLHandler.addTagValue("nr_footerlines", nrFooterLines);
         retval += "    " + XMLHandler.addTagValue("line_wrapped", lineWrapped);
         retval += "    " + XMLHandler.addTagValue("nr_wraps", nrWraps);
+        retval += "    " + XMLHandler.addTagValue("layout_paged", layoutPaged);
+        retval += "    " + XMLHandler.addTagValue("nr_lines_per_page", nrLinesPerPage);
+        retval += "    " + XMLHandler.addTagValue("nr_lines_doc_header", nrLinesDocHeader);
         retval += "    " + XMLHandler.addTagValue("noempty", noEmptyLines);
         retval += "    " + XMLHandler.addTagValue("include", includeFilename);
         retval += "    " + XMLHandler.addTagValue("include_field", filenameField);
@@ -625,6 +645,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         retval += "    " + XMLHandler.addTagValue("filter", filter);
         retval += "    " + XMLHandler.addTagValue("filter_position", filterPosition);
         retval += "    " + XMLHandler.addTagValue("filter_string", filterString);
+        retval += "    " + XMLHandler.addTagValue("filter_is_last_line", filterLastLine);
         retval += "    <file>" + Const.CR;
         for (int i = 0; i < fileName.length; i++)
         {
@@ -683,6 +704,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             nrFooterLines = Const.toInt( XMLHandler.getTagValue(stepnode, "nr_footerlines"), 1);
             lineWrapped = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "line_wrapped"));
             nrWraps = Const.toInt( XMLHandler.getTagValue(stepnode, "nr_wraps"), 1);
+            layoutPaged = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "layout_paged"));
+            nrLinesPerPage = Const.toInt( XMLHandler.getTagValue(stepnode, "nr_lines_per_page"), 1);
+            nrLinesDocHeader = Const.toInt( XMLHandler.getTagValue(stepnode, "nr_lines_doc_header"), 1);
+
             String nempty = XMLHandler.getTagValue(stepnode, "noempty");
             noEmptyLines = "Y".equalsIgnoreCase(nempty) || nempty == null;
             includeFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include"));
@@ -695,6 +720,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             filter = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filter"));
             filterPosition = Const.toInt(XMLHandler.getTagValue(stepnode, "filter_position"), -1);
             filterString = XMLHandler.getTagValue(stepnode, "filter_string");
+            filterLastLine = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filter_is_last_line"));
 
             Node filenode = XMLHandler.getSubNode(stepnode, "file");
             Node fields = XMLHandler.getSubNode(stepnode, "fields");
@@ -768,6 +794,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             nrFooterLines = (int)rep.getStepAttributeInteger(id_step, "nr_footerlines");
             lineWrapped = rep.getStepAttributeBoolean(id_step, "line_wrapped");
             nrWraps = (int)rep.getStepAttributeInteger(id_step, "nr_wraps");
+            layoutPaged = rep.getStepAttributeBoolean(id_step, "layout_paged");
+            nrLinesPerPage = (int)rep.getStepAttributeInteger(id_step, "nr_lines_per_page");
+            nrLinesDocHeader = (int)rep.getStepAttributeInteger(id_step, "nr_lines_doc_header");
             noEmptyLines = rep.getStepAttributeBoolean(id_step, "noempty");
             includeFilename = rep.getStepAttributeBoolean(id_step, "include");
             filenameField = rep.getStepAttributeString(id_step, "include_field");
@@ -779,6 +808,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             filter = rep.getStepAttributeBoolean(id_step, "filter");
             filterPosition = (int) rep.getStepAttributeInteger(id_step, "filter_position");
             filterString = rep.getStepAttributeString(id_step, "filter_string");
+            filterLastLine = rep.getStepAttributeBoolean(id_step, "filter_is_last_line");
+
             rowLimit = (int) rep.getStepAttributeInteger(id_step, "limit");
 
             int nrfiles = rep.countNrStepAttributes(id_step, "file_name");
@@ -838,6 +869,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "nr_footerlines", nrFooterLines);
             rep.saveStepAttribute(id_transformation, id_step, "line_wrapped", lineWrapped);
             rep.saveStepAttribute(id_transformation, id_step, "nr_wraps", nrWraps);
+            rep.saveStepAttribute(id_transformation, id_step, "layout_paged", layoutPaged);
+            rep.saveStepAttribute(id_transformation, id_step, "nr_lines_per_page", nrLinesPerPage);
+            rep.saveStepAttribute(id_transformation, id_step, "nr_lines_doc_header", nrLinesDocHeader);
+
             rep.saveStepAttribute(id_transformation, id_step, "noempty", noEmptyLines);
             rep.saveStepAttribute(id_transformation, id_step, "include", includeFilename);
             rep.saveStepAttribute(id_transformation, id_step, "include_field", filenameField);
@@ -848,6 +883,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "filter", filter);
             rep.saveStepAttribute(id_transformation, id_step, "filter_position", filterPosition);
             rep.saveStepAttribute(id_transformation, id_step, "filter_string", filterString);
+            rep.saveStepAttribute(id_transformation, id_step, "filter_is_last_line", filterLastLine);
+
             rep.saveStepAttribute(id_transformation, id_step, "limit", rowLimit);
 
             for (int i = 0; i < fileName.length; i++)
@@ -1148,4 +1185,70 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.nrWraps = nrWraps;
     }
+
+    /**
+     * @return Returns the layoutPaged.
+     */
+    public boolean isLayoutPaged()
+    {
+        return layoutPaged;
+    }
+
+    /**
+     * @param layoutPaged The layoutPaged to set.
+     */
+    public void setLayoutPaged(boolean layoutPaged)
+    {
+        this.layoutPaged = layoutPaged;
+    }
+
+    /**
+     * @return Returns the nrLinesPerPage.
+     */
+    public int getNrLinesPerPage()
+    {
+        return nrLinesPerPage;
+    }
+
+    /**
+     * @param nrLinesPerPage The nrLinesPerPage to set.
+     */
+    public void setNrLinesPerPage(int nrLinesPerPage)
+    {
+        this.nrLinesPerPage = nrLinesPerPage;
+    }
+
+    /**
+     * @return Returns the nrLinesDocHeader.
+     */
+    public int getNrLinesDocHeader()
+    {
+        return nrLinesDocHeader;
+    }
+
+    /**
+     * @param nrLinesDocHeader The nrLinesDocHeader to set.
+     */
+    public void setNrLinesDocHeader(int nrLinesDocHeader)
+    {
+        this.nrLinesDocHeader = nrLinesDocHeader;
+    }
+
+    /**
+     * @return Returns the filterLastLine.
+     */
+    public boolean isFilterLastLine()
+    {
+        return filterLastLine;
+    }
+
+    /**
+     * @param filterLastLine The filterLastLine to set.
+     */
+    public void setFilterLastLine(boolean filterLastLine)
+    {
+        this.filterLastLine = filterLastLine;
+    }
+    
+    
 }
