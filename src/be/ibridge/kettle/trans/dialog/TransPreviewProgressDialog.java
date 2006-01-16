@@ -36,6 +36,7 @@ public class TransPreviewProgressDialog
     private Trans trans;
     
     private boolean cancelled;
+    private String loggingText;
 	
 	/**
 	 * Creates a new dialog that will handle the wait while previewing a transformation...
@@ -118,6 +119,9 @@ public class TransPreviewProgressDialog
         
         progressMonitor.beginTask("Starting transformation in preview...", 100);
         
+        // Log preview activity to a String:
+        log.startStringCapture();
+        
         // This transformation is ready to run in preview!
         trans = new Trans(log, transMeta, previewStepNames, previewSize);
         trans.execute(null);
@@ -155,16 +159,45 @@ public class TransPreviewProgressDialog
         
         trans.stopAll();
         
+        // Log preview activity to a String:
+        log.startStringCapture();
+        loggingText = log.getString();
+        log.setString("");
+        
         progressMonitor.done();
     }
     
+    /**
+     * @param stepname the name of the step to get the preview rows for
+     * @return A list of rows as the result of the preview run.
+     */
     public List getPreviewRows(String stepname)
     {
         return trans.getPreviewRows(stepname, 0);
     }
 
+    /**
+     * @return true is the preview was cancelled by the user
+     */
     public boolean isCancelled()
     {
         return cancelled;
+    }
+    
+    /**
+     * @return The logging text from the latest preview run
+     */
+    public String getLoggingText()
+    {
+        return loggingText;
+    }
+    
+    /**
+     * 
+     * @return The transformation object that executed the preview TransMeta
+     */
+    public Trans getTrans()
+    {
+       return trans; 
     }
 }

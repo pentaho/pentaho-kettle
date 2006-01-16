@@ -167,7 +167,7 @@ public class ReportTable
         
         int xAxisFieldNrs[]   = getFieldNrs(xAxisFields,   firstRow);
         int yAxisFieldNrs[]   = getFieldNrs(yAxisFields,   firstRow);
-        int measureFieldNrs[] = getFieldNrs(measureFields, firstRow);
+        // int measureFieldNrs[] = getFieldNrs(measureFields, firstRow);
         
         List sortFieldNrsList  = new ArrayList();
         List ascendingList     = new ArrayList();
@@ -192,7 +192,7 @@ public class ReportTable
             // Loop over the x-fields
             for (int x=0;x<xAxisFieldNrs.length;x++)
             {
-                ReportTableField xField = (ReportTableField) xAxisFields.get(x);
+               //  ReportTableField xField = (ReportTableField) xAxisFields.get(x);
                 Value xValue = row.getValue( xAxisFieldNrs[x] );
                 
                 System.out.print(" ["+xValue.toString()+"]");
@@ -201,7 +201,7 @@ public class ReportTable
             // Loop over the y-fields
             for (int y=0;y<yAxisFieldNrs.length;y++)
             {
-                ReportTableField yField = (ReportTableField) yAxisFields.get(y);
+                // ReportTableField yField = (ReportTableField) yAxisFields.get(y);
                 Value yValue = row.getValue( yAxisFieldNrs[y] );
                 
                 System.out.print(" ["+yValue.toString()+"]");

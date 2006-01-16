@@ -1457,7 +1457,7 @@ public class SpoonGraph extends Canvas
                             selrect = null;
                             String title = "Notes";
                             String message = "Note text:";
-                            EnterTextDialog dd = new EnterTextDialog(shell, spoon.props, title, message, "");
+                            EnterTextDialog dd = new EnterTextDialog(shell, title, message, "");
                             String n = dd.open();
                             if (n != null)
                             {
@@ -1598,7 +1598,7 @@ public class SpoonGraph extends Canvas
     {
         String title = "Step description dialog";
         String message = "Step description:";
-        EnterTextDialog dd = new EnterTextDialog(shell, spoon.props, title, message, stepMeta.getDescription());
+        EnterTextDialog dd = new EnterTextDialog(shell, title, message, stepMeta.getDescription());
         String d = dd.open();
         if (d != null) stepMeta.setDescription(d);
     }
@@ -2060,7 +2060,7 @@ public class SpoonGraph extends Canvas
 
         String title = "Notes";
         String message = "Note text:";
-        EnterTextDialog dd = new EnterTextDialog(shell, spoon.props, title, message, ni.getNote());
+        EnterTextDialog dd = new EnterTextDialog(shell, title, message, ni.getNote());
         String n = dd.open();
         if (n != null)
         {

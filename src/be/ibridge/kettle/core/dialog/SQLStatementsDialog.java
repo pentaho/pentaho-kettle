@@ -263,7 +263,7 @@ public class SQLStatementsDialog extends Dialog
 	private void view()
 	{
 		String sql = getSQL();
-		EnterTextDialog etd = new EnterTextDialog(shell, props, "View SQL statements", "Statements:", sql, true);
+		EnterTextDialog etd = new EnterTextDialog(shell, "View SQL statements", "Statements:", sql, true);
 		etd.setReadOnly();
 		etd.open();
 	}

@@ -43,6 +43,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
 /**
@@ -60,8 +61,10 @@ public class PreviewRowsDialog extends Dialog
 	private FormData     fdlFields, fdFields;
 
 	private Button wClose;
-	private FormData fdClose;
 	private Listener lsClose;
+
+    private Button wLog;
+    private Listener lsLog;
 
 	private Shell         shell;
 	private List          buffer;
@@ -71,19 +74,28 @@ public class PreviewRowsDialog extends Dialog
 	private Rectangle     bounds;
 	private int           hscroll, vscroll;
 	private int           hmax, vmax;
+
+    private String loggingText;
 	
     /** @deprecated */
-    public PreviewRowsDialog(Shell parent, int style, LogWriter l, Props pr, String nam, List buf)
+    public PreviewRowsDialog(Shell parent, int style, LogWriter l, Props pr, String stepName, List rowBuffer)
     {
-        this(parent, style, nam, buf);
+        this(parent, style, stepName, rowBuffer, null);
     }
 
-	public PreviewRowsDialog(Shell parent, int style, String nam, List buf)
+    public PreviewRowsDialog(Shell parent, int style, String stepName, List rowBuffer)
+    {
+        this(parent, style, stepName, rowBuffer, null);
+    }
+
+	public PreviewRowsDialog(Shell parent, int style, String stepName, List rowBuffer, String loggingText)
 	{
 		super(parent, style);
-		stepname=nam;
-		buffer=buf;
-		props=Props.getInstance();
+		this.stepname=stepName;
+		this.buffer=rowBuffer;
+        this.loggingText=loggingText;
+
+        props=Props.getInstance();
 		bounds=null;
 		hscroll=-1;
 		vscroll=-1;
@@ -156,15 +168,21 @@ public class PreviewRowsDialog extends Dialog
 
 		wClose=new Button(shell, SWT.PUSH);
 		wClose.setText(" &Close ");
-		fdClose=new FormData();
-		fdClose.left=new FormAttachment(wFields, 0, SWT.CENTER);
-		fdClose.top =new FormAttachment(wFields, 30);
-		wClose.setLayoutData(fdClose);
+
+        wLog=new Button(shell, SWT.PUSH);
+        wLog.setText(" Show &Log ");
+        
+        if (loggingText==null  || loggingText.length()==0) wLog.setEnabled(false);
 
 		// Add listeners
 		lsClose = new Listener() { public void handleEvent(Event e) { close(); } };
-		wClose.addListener(SWT.Selection, lsClose    );
+        lsLog   = new Listener() { public void handleEvent(Event e) { log(); } };
+        
+        wClose.addListener(SWT.Selection, lsClose    );
+        wLog.addListener(SWT.Selection, lsLog );
 		
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wClose, wLog }, margin, null);
+        
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { close(); } } );
 
@@ -224,6 +242,18 @@ public class PreviewRowsDialog extends Dialog
 		stepname=null;
 		dispose();
 	}
+
+    /**
+     * Show the logging of the preview (in case errors occurred
+     */
+    private void log()
+    {
+        if (loggingText!=null)
+        {
+            EnterTextDialog etd = new EnterTextDialog(shell, "Logging text", "The logging text", loggingText);
+            etd.open();
+        }
+    };
 	
 	public boolean isDisposed()
 	{

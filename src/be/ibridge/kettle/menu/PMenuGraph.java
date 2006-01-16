@@ -930,7 +930,7 @@ public class PMenuGraph extends Canvas
 							selrect = null;
 							String title = "Notes";
 							String message = "Note text:";
-							EnterTextDialog dd = new EnterTextDialog(shell, schema.props, title, message, "");
+							EnterTextDialog dd = new EnterTextDialog(shell, title, message, "");
 							String n = dd.open();
 							if (n != null)
 							{
@@ -988,7 +988,7 @@ public class PMenuGraph extends Canvas
 	{	
 		String title = "Table description dialog";
 		String message = "Table description:";
-		EnterTextDialog dd = new EnterTextDialog(shell, schema.props, title, message, si.description);
+		EnterTextDialog dd = new EnterTextDialog(shell, title, message, si.description);
 		String d = dd.open();
 		if (d != null) si.description = d;
 	}
@@ -1271,7 +1271,7 @@ public class PMenuGraph extends Canvas
 		
 		String title = "Notes";
 		String message = "Note text:";
-		EnterTextDialog dd = new EnterTextDialog(shell, schema.props, title, message, ni.getNote());
+		EnterTextDialog dd = new EnterTextDialog(shell, title, message, ni.getNote());
 		String n = dd.open();
 		if (n != null)
 		{

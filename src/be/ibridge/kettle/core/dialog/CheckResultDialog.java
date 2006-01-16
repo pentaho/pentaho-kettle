@@ -230,7 +230,7 @@ public class CheckResultDialog extends Dialog
 			message+="  "+item[i].getText(3)+Const.CR+Const.CR;
 		}
 		
-		EnterTextDialog etd = new EnterTextDialog(shell, props, "View message", "Message"+(item.length!=1?"s":"")+" : ", message);
+		EnterTextDialog etd = new EnterTextDialog(shell, "View message", "Message"+(item.length!=1?"s":"")+" : ", message);
 		etd.setReadOnly();
 		etd.open();
 	}

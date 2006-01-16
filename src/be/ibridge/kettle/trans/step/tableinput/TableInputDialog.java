@@ -50,6 +50,7 @@ import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.TransPreviewFactory;
 import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
@@ -443,7 +444,18 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
             
             if (!progressDialog.isCancelled())
             {
-                PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()));
+                Trans trans = progressDialog.getTrans();
+                String loggingText = progressDialog.getLoggingText();
+                
+                if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
+                {
+                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                    mb.setMessage("One or more errors occured during preview!  Examine the logfile to see what went wrong.");
+                    mb.setText("ERROR");
+                    mb.open(); 
+                }
+                
+                PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
                 prd.open();
             }
         }

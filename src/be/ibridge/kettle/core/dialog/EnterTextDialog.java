@@ -58,23 +58,54 @@ public class EnterTextDialog extends Dialog
 	private SelectionAdapter lsDef;
 	private Props props;
 	
-	private String description;
+	private String text;
 	private boolean fixed;
 	private boolean readonly, modal, singleLine;
-	
-	public EnterTextDialog(Shell parent, Props pr, String t, String m, String desc, boolean fi)
+
+    /**
+     * @deprecated Please use the constructor without Props parameter 
+     */
+    public EnterTextDialog(Shell parent, Props pr, String t, String m, String desc, boolean fi)
+    {
+        this(parent, t, m, desc, fi);
+    }
+
+    /**
+     * @deprecated Please use the constructor without Props parameter 
+     */
+    public EnterTextDialog(Shell parent, Props pr, String t, String m, String desc)
+    {
+        this(parent, t, m, desc);
+    }
+
+    /**
+     * Dialog to allow someone to show or enter a text
+     * @param parent The parent shell to use
+     * @param title The dialog title
+     * @param message The message to display
+     * @param text The text to display or edit
+     * @param fi true if you want the font to be in fixed-width
+     */
+	public EnterTextDialog(Shell parent, String title, String message, String text, boolean fi)
 	{
-		this(parent, pr, t, m, desc);
+		this(parent, title, message, text);
 		fixed=fi;
 	}
 
-	public EnterTextDialog(Shell parent, Props pr, String t, String m, String desc)
+     /**
+     * Dialog to allow someone to show or enter a text in variable width font
+     * @param parent The parent shell to use
+     * @param title The dialog title
+     * @param message The message to display
+     * @param text The text to display or edit
+     */
+	public EnterTextDialog(Shell parent, String title, String message, String text)
 	{
 		super(parent, SWT.NONE);
-		props=pr;
-		title=t;
-		message=m;
-		description=desc;
+		props=Props.getInstance();
+		this.title=title;
+		this.message=message;
+		this.text=text;
 		fixed=false;
 		readonly=false;
 		singleLine=false;
@@ -180,7 +211,7 @@ public class EnterTextDialog extends Dialog
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-		return description;
+		return text;
 	}
 
 	public void dispose()
@@ -191,18 +222,18 @@ public class EnterTextDialog extends Dialog
 	
 	public void getData()
 	{
-		if (description!=null) wDesc.setText(description);
+		if (text!=null) wDesc.setText(text);
 	}
 	
 	private void cancel()
 	{
-		description=null;
+		text=null;
 		dispose();
 	}
 	
 	private void ok()
 	{
-		description = wDesc.getText();
+		text = wDesc.getText();
 		dispose();
 	}
 }

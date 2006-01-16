@@ -325,7 +325,7 @@ public class TableDialog extends Dialog
 			public void widgetSelected(SelectionEvent e) 
 			{
 				String str = wFields.getButtonString();
-				EnterTextDialog etd = new EnterTextDialog(shell, schema.props, "Button", "enter text", str);
+				EnterTextDialog etd = new EnterTextDialog(shell, "Button", "enter text", str);
 				etd.setModal();
 				String res = etd.open();
 				if (res!=null)
@@ -375,7 +375,7 @@ public class TableDialog extends Dialog
 			public void widgetSelected(SelectionEvent e) 
 			{
 				String str = wConditions.getButtonString();
-				EnterTextDialog etd = new EnterTextDialog(shell, schema.props, "Button", "enter text", str);
+				EnterTextDialog etd = new EnterTextDialog(shell, "Button", "enter text", str);
 				etd.setModal();
 				String res = etd.open();
 				if (res!=null)

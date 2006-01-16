@@ -489,7 +489,7 @@ public class DatabaseExplorerDialog extends Dialog
 		{
 			String result = "Table ["+tableName+"] has "+r.getValue(0).getInteger()+" rows.";
 			
-			EnterTextDialog etd = new EnterTextDialog(shell, props, "Count", "# rows in "+tableName, result, true);
+			EnterTextDialog etd = new EnterTextDialog(shell, "Count", "# rows in "+tableName, result, true);
 			etd.open();
 		}
 	}

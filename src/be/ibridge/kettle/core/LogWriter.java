@@ -433,6 +433,9 @@ public class LogWriter
         logger.removeAppender(stringAppender);
     }
 
+    /**
+     * @return The logging text from since startStringCapture() is called until endStringCapture().
+     */
     public String getString()
     {
         return stringAppender.getBuffer().toString();

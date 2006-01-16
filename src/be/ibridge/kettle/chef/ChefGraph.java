@@ -1011,7 +1011,7 @@ public class ChefGraph extends Canvas
 				{
 					String title = "Step description dialog";
 					String message = "Step description:";
-					EnterTextDialog dd = new EnterTextDialog(shell, chef.props, title, message, je.getDescription());
+					EnterTextDialog dd = new EnterTextDialog(shell, title, message, je.getDescription());
 					String des = dd.open();
 					if (des != null) je.setDescription(des);
 				}
@@ -1249,7 +1249,7 @@ public class ChefGraph extends Canvas
 								selrect=null;
 								String title = "Notes";
 								String message = "Note text:";
-								EnterTextDialog dd = new EnterTextDialog(shell, chef.props, title, message, "");
+								EnterTextDialog dd = new EnterTextDialog(shell, title, message, "");
 								String n = dd.open();
 								if (n!=null) 
 								{
@@ -1782,7 +1782,7 @@ public class ChefGraph extends Canvas
 		NotePadMeta before = (NotePadMeta)ni.clone();
 		String title = "Notes";
 		String message = "Note text:";
-		EnterTextDialog dd = new EnterTextDialog(shell, chef.props, title, message, ni.getNote());
+		EnterTextDialog dd = new EnterTextDialog(shell, title, message, ni.getNote());
 		String n = dd.open();
 		if (n!=null) 
 		{
