@@ -133,7 +133,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     /** Flag indicating that we want to filter the input based on the occurance of a string on a certain position */
     private boolean            filter;
 
-    /** The position on which the filter is taking place */
+    /** The position on which the filter is taking place
+     * TODO Add support for multiple positions, string and lastLine flags 
+     * */
     private int                filterPosition;
 
     /** The string to filter on */

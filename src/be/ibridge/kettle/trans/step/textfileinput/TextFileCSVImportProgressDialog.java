@@ -215,11 +215,11 @@ public class TextFileCSVImportProgressDialog
         // However, if it doesn't have a header, take a new line
         if (meta.hasHeader()) 
         {
-            line = TextFileInput.getLine(log, reader, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);
+            line = TextFileInput.getLine(log, reader, meta.getFileFormat());
             int skipped=1;
             while (line!=null && skipped<meta.getNrHeaderLines())
             {
-                line = TextFileInput.getLine(log, reader, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);
+                line = TextFileInput.getLine(log, reader, meta.getFileFormat());
                 skipped++;
             }
         }
@@ -441,7 +441,7 @@ public class TextFileCSVImportProgressDialog
 
             // Grab another line...
             debug = "Grab another line";
-            line = TextFileInput.getLine(log, reader, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);
+            line = TextFileInput.getLine(log, reader, meta.getFileFormat());
             debug = "End of while loop";
         }
 

@@ -59,29 +59,22 @@ public class TextFileInput extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	public static final String getLine(LogWriter log, InputStreamReader reader, String format, int nrWraps)
+	public static final String getLine(LogWriter log, InputStreamReader reader, String format)
 	{
 		StringBuffer line=new StringBuffer();
 		int c=0;
 		
 		try
 		{
-            int wrapNr=0;
-            boolean isCRFound = false;
 			while (c>=0)
 			{
 				c=reader.read();
 				if (c=='\n' || c=='\r') 
 				{
 					if (format.equalsIgnoreCase("DOS")) c=reader.read(); // skip \n and \r
-					isCRFound=true;
+                    return line.toString();
 				}
-				if (c>=0 && !isCRFound) line.append((char)c);
-                if (isCRFound) // OK we found a line break, what do we do now?
-                {
-                    wrapNr++;
-                    if (wrapNr>nrWraps) return line.toString(); 
-                }
+				if (c>=0) line.append((char)c);
 			}
 		}
 		catch(Exception e)
@@ -282,12 +275,14 @@ public class TextFileInput extends BaseStep implements StepInterface
 			}
 			else
 			{
+			    debug="convertLineToStrings : Fixed";
                 // Fixed file format:
 				//   Simply get the strings at the required positions...
 				
 				for (int i=0;i<inf.getInputFields().length;i++)			
 				{
 				    TextFileInputField field = inf.getInputFields()[i];
+                    debug="convertLineToStrings : Fixed, field ["+field.getName()+"]";
 				    
 					int length = line.length();
 					
@@ -297,7 +292,14 @@ public class TextFileInput extends BaseStep implements StepInterface
 					}
 					else
 					{
-						strings.add(line.substring(field.getPosition()));
+                        if (field.getPosition() < length)
+                        {
+                            strings.add(line.substring(field.getPosition()));
+                        }
+                        else
+                        {
+                            strings.add("");
+                        }
 					}
 				}
 			}
@@ -641,13 +643,64 @@ public class TextFileInput extends BaseStep implements StepInterface
 		{
             if (!data.doneReading)
             {
-                debug="get a new line of data";
-                String line = getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0); // Get one line of data;
-                if (line!=null)
+                int repeats = 1;
+                if (meta.isLineWrapped()) repeats=  meta.getNrWraps()>0  ?  meta.getNrWraps() :repeats;
+                
+                for (int i=0;i<repeats && !data.doneReading;i++)
                 {
-                    // logRowlevel("LINE READ: "+line);
-                    linesInput++;
-                    data.lineBuffer.add(line);
+                    debug="get a new line of data";
+                    String line = getLine(log, data.isr, meta.getFileFormat()); // Get one line of data;
+                    if (line!=null)
+                    {
+                        linesInput++;
+                        boolean filterOK=true;
+                        
+                        // Filter row?
+                        if (meta.hasFilter() && meta.getFilterString()!=null && meta.getFilterString().length()>0)
+                        {
+                            int from = meta.getFilterPosition();
+                            if (from>=0)
+                            {
+                                int to   = from + meta.getFilterString().length();
+                                debug="verify filter : get substring("+from+", "+to+") line length="+line.length();
+                                if (line.length()>=from && line.length()>=to)
+                                {
+                                    String sub = line.substring(meta.getFilterPosition(), to);
+                                    if (sub.equalsIgnoreCase(meta.getFilterString()))
+                                    {
+                                        filterOK=false; // skip this one!
+                                    }
+                                }
+                            }
+                            else // anywhere on the line
+                            {
+                                int idx = line.indexOf(meta.getFilterString());
+                                if (idx>=0)
+                                {
+                                    filterOK=false;
+                                }
+                            }
+                            
+                            if (!filterOK)
+                            {
+                                if (meta.isFilterLastLine())
+                                {
+                                    data.doneReading=true;
+                                }
+                                repeats++; // grab another line, this one got filtered
+                            }
+                        }
+
+                        if (filterOK)
+                        {
+                            // logRowlevel("LINE READ: "+line);
+                            data.lineBuffer.add(line);
+                        }
+                    }
+                    else
+                    {
+                        data.doneReading = true;
+                    }
                 }
             }
 		}
@@ -658,6 +711,7 @@ public class TextFileInput extends BaseStep implements StepInterface
             debug="empty buffer: open next file";
             if (!openNextFile())  // Open fails: done processing!
             {
+                debug="empty buffer: close last file";
                 closeLastFile();
                 setOutputDone();  // signal end to receiver(s)
                 return false;
@@ -667,117 +721,125 @@ public class TextFileInput extends BaseStep implements StepInterface
         // Take the first line available in the buffer & remove the line from the buffer
         debug="take first line of buffer";
         String line = (String) data.lineBuffer.get(0);
+
+        debug="remove first line of buffer";
         data.lineBuffer.remove(0);
         
-        // Do we filter out this one?
-        boolean filterOK = true;
-        
-        // Filter row?
-        boolean check_filter = meta.hasFilter() && meta.getFilterPosition()>=0 && meta.getFilterPosition()<line.length();
-        if (check_filter)
+        if (meta.isLayoutPaged()) 
         {
-            int from = meta.getFilterPosition();
-            int to   = from + meta.getFilterString().length();
-            String sub = line.substring(meta.getFilterPosition(), to);
-            if (sub.equalsIgnoreCase(meta.getFilterString()))
+            debug="paged layout";
+
+            // Different rules apply: on each page: 
+            //   a header
+            //   a number of data lines 
+           //   a footer
+            // 
+            if (!data.doneWithHeader && data.pageLinesRead==0) // We are reading header lines
             {
-                filterOK=false; // skip this one!
-                
-                if (meta.isFilterLastLine())
+                debug="paged layout : header line "+data.headerLinesRead;
+                logRowlevel("P-HEADER ("+data.headerLinesRead+") : "+line);
+                data.headerLinesRead++;
+                if (data.headerLinesRead>=meta.getNrHeaderLines())
                 {
-                    closeLastFile();
-                    setOutputDone();
-                    return false; //
+                    data.doneWithHeader=true;
+                }
+            }
+            else // data lines or footer on a page
+            {
+                debug="paged layout : data or footer";
+                if (data.pageLinesRead<meta.getNrLinesPerPage())
+                {
+                    // See if we are dealing with wrapped lines:
+                    if (meta.isLineWrapped())
+                    {
+                        for (int i=0;i<meta.getNrWraps();i++)
+                        {
+                            String extra="";
+                            if (data.lineBuffer.size()>0)
+                            {
+                                extra = (String)data.lineBuffer.get(0);
+                                data.lineBuffer.remove(0);
+                            }
+                            line+=extra;
+                        }
+                    }
+
+                    debug="paged layout : data line";
+                    logRowlevel("P-DATA: "+line);
+                    // Read a normal line on a page of data.
+                    data.pageLinesRead++;
+                    r = convertLineToRow(log, line, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1);
+                    if (r!=null) putrow = true;
+                }
+                else // done reading the data lines, skip the footer lines
+                {
+                    debug="paged layout : footer line";
+                    if (meta.hasFooter() && data.footerLinesRead<meta.getNrFooterLines())
+                    {
+                        logRowlevel("P-FOOTER: "+line);
+                        data.footerLinesRead++;
+                    }
+                    
+                    if (!meta.hasFooter() || data.footerLinesRead>=meta.getNrFooterLines())
+                    {
+                        debug="paged layout : end of page: restart";
+                        
+                        // OK, we are done reading the footer lines, start again on 'next page' with the header
+                        data.doneWithHeader=false;
+                        data.headerLinesRead=0;
+                        data.pageLinesRead=0;
+                        data.footerLinesRead=0;
+                        logRowlevel("RESTART PAGE");
+                    }
                 }
             }
         }
-        
-
-        if (filterOK) // Not filtered out: go for it!
+        else // A normal data line, can also be a header or a footer line
         {
-            if (meta.isLayoutPaged()) 
+            debug="normal";
+
+            if (!data.doneWithHeader) // We are reading header lines
             {
-                debug="paged layout";
-    
-                // Different rules apply: on each page: 
-                //   a header
-                //   a number of data lines 
-               //   a footer
-                // 
-                if (!data.doneWithHeader && data.pageLinesRead==0) // We are reading header lines
+                debug="normal : header line";
+                data.headerLinesRead++;
+                if (data.headerLinesRead>=meta.getNrHeaderLines())
                 {
-                    debug="paged layout : header line "+data.headerLinesRead;
-                    logRowlevel("P-HEADER ("+data.headerLinesRead+") : "+line);
-                    data.headerLinesRead++;
-                    if (data.headerLinesRead>=meta.getNrHeaderLines())
-                    {
-                        data.doneWithHeader=true;
-                    }
-                }
-                else // data lines or footer on a page
-                {
-                    debug="paged layout : data or footer";
-                    if (data.pageLinesRead<meta.getNrLinesPerPage())
-                    {
-                        debug="paged layout : data line";
-                        logRowlevel("P-DATA: "+line);
-                        // Read a normal line on a page of data.
-                        data.pageLinesRead++;
-                        r = convertLineToRow(log, line, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1);
-                        if (r!=null) putrow = true;
-                    }
-                    else // done reading the data lines, skip the footer lines
-                    {
-                        debug="paged layout : footer line";
-                        if (meta.hasFooter() && data.footerLinesRead<meta.getNrFooterLines())
-                        {
-                            logRowlevel("P-FOOTER: "+line);
-                            data.footerLinesRead++;
-                        }
-                        
-                        if (!meta.hasFooter() || data.footerLinesRead>=meta.getNrFooterLines())
-                        {
-                            debug="paged layout : end of page: restart";
-                            
-                            // OK, we are done reading the footer lines, start again on 'next page' with the header
-                            data.doneWithHeader=false;
-                            data.headerLinesRead=0;
-                            data.pageLinesRead=0;
-                            data.footerLinesRead=0;
-                            logRowlevel("RESTART PAGE");
-                        }
-                    }
+                    data.doneWithHeader=true;
                 }
             }
-            else // A normal data line, can also be a header or a footer line
+            else
             {
-                debug="normal";
-    
-                if (!data.doneWithHeader) // We are reading header lines
+                debug="normal : data and footer";
+                // IF we are done reading and we have a footer 
+                // AND the number of lines in the buffer is smaller or equal to the number of footer lines
+                // THEN we can remove the remaining rows from the buffer: they are all footer rows.
+                if (data.doneReading && meta.hasFooter() && data.lineBuffer.size()<= meta.getNrFooterLines()) 
                 {
-                    debug="normal : header line";
-                    data.headerLinesRead++;
-                    if (data.headerLinesRead>meta.getNrHeaderLines())
-                    {
-                        data.doneWithHeader=true;
-                    }
+                    debug="normal : footer";
+                    data.lineBuffer.clear();
                 }
-                else
+                else // Not yet a footer line: it's a normal data line.
                 {
-                    debug="normal : data and footer";
-                    // IF we are done reading and we have a footer 
-                    // AND the number of lines in the buffer is smaller or equal to the number of footer lines
-                    // THEN we can remove the remaining rows from the buffer: they are all footer rows.
-                    if (data.doneReading && meta.hasFooter() && data.lineBuffer.size()<= meta.getNrFooterLines()) 
+                    // See if we are dealing with wrapped lines:
+                    if (meta.isLineWrapped())
                     {
-                        debug="normal : footer";
-                        data.lineBuffer.clear();
+                        for (int i=0;i<meta.getNrWraps();i++)
+                        {
+                            String extra="";
+                            if (data.lineBuffer.size()>0)
+                            {
+                                extra = (String)data.lineBuffer.get(0);
+                                data.lineBuffer.remove(0);
+                            }
+                            line+=extra;
+                        }
                     }
-                    else // Not yet a footer line: it's a normal data line.
+                    debug="normal : data";
+                    r = convertLineToRow(log, line, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1);
+                    if (r!=null) 
                     {
-                        debug="normal : data";
-                        r = convertLineToRow(log, line, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1);
-                        if (r!=null) putrow = true;
+                        // System.out.println("Found data row: "+r);
+                        putrow = true;
                     }
                 }
             }
@@ -848,6 +910,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 	{
 	    try
 	    {
+            debug="closeLastFile: close";
 		    // Close previous file!
 		    if (data.filename!=null)
 		    {
@@ -858,6 +921,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				}
 				data.fr.close();
                 data.isr.close();
+                data.filename=null; // send it down the next time.
 		    }
 	    }
 	    catch(Exception e)
@@ -867,18 +931,24 @@ public class TextFileInput extends BaseStep implements StepInterface
 			setErrors(1);
 			return false;
 	    }
-	    return true;
+        
+        debug="closeLastFile: end.";
+        
+	    return !data.isLastFile;
 	}
 	
 	private boolean openNextFile()
 	{
 		try
 		{
+            debug="openNextFile : close last file";
 		    if (!closeLastFile()) return false;
+            
 		    // Is this the last file?
-			data.last_file = ( data.filenr==data.files.length-1);
+			data.isLastFile = ( data.filenr==data.files.length-1);
 			data.filename = data.files[data.filenr];
-			
+
+            debug="openNextFile : open file";
 			logBasic("Opening file: "+data.filename);
 
             data.fr=new FileInputStream(new File(data.filename));
@@ -909,6 +979,8 @@ public class TextFileInput extends BaseStep implements StepInterface
                 }
             }
 			
+            debug="openNextFile : set all kinds of parameters";
+
 			// Move file pointer ahead!
 			data.filenr++;
             
@@ -934,14 +1006,14 @@ public class TextFileInput extends BaseStep implements StepInterface
                 for (int i=0;i<meta.getNrLinesDocHeader();i++)
                 {
                     // Just skip these...
-                    getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);   
+                    getLine(log, data.isr, meta.getFileFormat()); // header and footer: not wrapped   
                 }
             }
 
             String line;
             for (int i=0;i<bufferSize && !data.doneReading;i++)
             {
-                line = getLine(log, data.isr, meta.getFileFormat(), meta.isLineWrapped()?meta.getNrWraps():0);
+                line = getLine(log, data.isr, meta.getFileFormat());
                 if (line!=null)
                 {
                     // logRowlevel("LINE READ: "+line);
@@ -964,7 +1036,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Couldn't open file #"+data.filenr+" : "+data.filename+" --> "+e.toString());
+			logError("Couldn't open file #"+data.filenr+" : "+data.filename+" ("+debug+") --> "+e.toString());
 			stopAll();
 			setErrors(1);
 			return false;

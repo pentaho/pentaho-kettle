@@ -20,7 +20,6 @@
 
 package be.ibridge.kettle.trans.step.textfileinput;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -117,6 +116,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private Button       wFirst;
     private FormData     fdFirst;
     private Listener     lsFirst;
+
+    private Button       wFirstHeader;
+    private FormData     fdFirstHeader;
+    private Listener     lsFirstHeader;
 
 	private Label        wlFiletype;
 	private CCombo       wFiletype;
@@ -428,11 +431,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
 		wFirst=new Button(wFileComp, SWT.PUSH);
-		wFirst.setText(" View &file content ");
+		wFirst.setText(" Show &file content ");
 		fdFirst=new FormData();
 		fdFirst.left=new FormAttachment(wbShowFiles, margin*2);
 		fdFirst.bottom =new FormAttachment(100, 0);
 		wFirst.setLayoutData(fdFirst);
+
+        wFirstHeader=new Button(wFileComp, SWT.PUSH);
+        wFirstHeader.setText(" Show &content from first data line");
+        fdFirstHeader=new FormData();
+        fdFirstHeader.left=new FormAttachment(wFirst, margin*2);
+        fdFirstHeader.bottom =new FormAttachment(100, 0);
+        wFirstHeader.setLayoutData(fdFirstHeader);
 
 		
 		ColumnInfo[] colinfo=new ColumnInfo[2];
@@ -1067,13 +1077,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		final int FieldsRows=input.getInputFields().length;
 		
 		// Prepare a list of possible formats...
-		String dats[] = Const.dateFormats;
-		String nums[] = Const.numberFormats;
-		int totsize = dats.length + nums.length;
-		String formats[] = new String[totsize];
-		for (int x=0;x<dats.length;x++) formats[x] = dats[x];
-		for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
-		
+		String formats[] = Const.getConversionFormats();
 		
 		ColumnInfo[] colinf=new ColumnInfo[]
             {
@@ -1137,17 +1141,19 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
 
 		// Add listeners
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		lsFirst    = new Listener() { public void handleEvent(Event e) { first();   } };
-		lsGet      = new Listener() { public void handleEvent(Event e) { get();      } };
-		lsPreview  = new Listener() { public void handleEvent(Event e) { preview();   } };
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();     } };
+		lsOK          = new Listener() { public void handleEvent(Event e) { ok();           } };
+		lsFirst       = new Listener() { public void handleEvent(Event e) { first(false);   } };
+        lsFirstHeader = new Listener() { public void handleEvent(Event e) { first(true);    } };
+		lsGet         = new Listener() { public void handleEvent(Event e) { get();          } };
+		lsPreview     = new Listener() { public void handleEvent(Event e) { preview();      } };
+		lsCancel      = new Listener() { public void handleEvent(Event e) { cancel();       } };
 		
-		wOK.addListener     (SWT.Selection, lsOK     );
-		wFirst.addListener  (SWT.Selection, lsFirst  );
-		wGet.addListener    (SWT.Selection, lsGet    );
-		wPreview.addListener(SWT.Selection, lsPreview);
-		wCancel.addListener (SWT.Selection, lsCancel );
+		wOK.addListener           (SWT.Selection, lsOK          );
+		wFirst.addListener        (SWT.Selection, lsFirst       );
+        wFirstHeader.addListener  (SWT.Selection, lsFirstHeader );
+		wGet.addListener          (SWT.Selection, lsGet         );
+		wPreview.addListener      (SWT.Selection, lsPreview     );
+		wCancel.addListener       (SWT.Selection, lsCancel      );
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
@@ -1699,7 +1705,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     String line = null;
                     if (meta.hasHeader() || meta.getInputFields().length == 0)
                     {
-                        line = TextFileInput.getLine(log, reader, fileFormat, meta.isLineWrapped()?meta.getNrWraps():0);
+                        line = TextFileInput.getLine(log, reader, fileFormat);
                         if (line != null)
                         {
                             ArrayList fields = TextFileInput.convertLineToStrings(log, line.toString(), meta);
@@ -1885,113 +1891,59 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     }
 
 	// Get the first x lines
-	private void first()
+	private void first(boolean skipHeaders)
 	{
 		TextFileInputMeta info = new TextFileInputMeta();
 		getInfo(info);
-		String files[] = info.getFiles();
-		String debug="Start";
-		MessageBox mb;
-		FileInputStream        fi = null;
-		ZipInputStream         zi = null ;
-		BufferedInputStream     f  = null;
-		
-		if (files!=null && files.length>0)
-		{
-			String filename = files[0];
-			try
-			{
-				fi = new FileInputStream(new File(filename));
-				
-                if (input.isZipped())
-				{
-					zi = new ZipInputStream(fi);
-					zi.getNextEntry();
-					f=new BufferedInputStream(zi);
-				}
-				else
-				{
-					f=new BufferedInputStream(fi);
-				}
 
-                InputStreamReader reader;
-                if (info.getEncoding()!=null && info.getEncoding().length()>0)
-                {
-                    reader = new InputStreamReader(f, info.getEncoding());
-                }
-                else
-                {
-                    reader = new InputStreamReader(f);
-                }
-                
-				String shellText = "Nr of lines to view.  0 means all lines.";
-				String lineText = "Number of lines (0=all lines)";
-				EnterNumberDialog end = new EnterNumberDialog(shell, props, 100, shellText, lineText);
-				int nrlines = end.open();
-				if (nrlines>=0)
-				{
-					String firstlines="";
-					int    linenr=0;
-
-                    // Skip the header lines first if more then one, it helps us position
-                    if (info.hasHeader() && info.getNrHeaderLines()>1)
+        try
+        {
+    		if (info.getFiles()!=null && info.getFiles().length>0)
+    		{
+    			String shellText = "Nr of lines to view.  0 means all lines.";
+    			String lineText = "Number of lines (0=all lines)";
+    			EnterNumberDialog end = new EnterNumberDialog(shell, props, 100, shellText, lineText);
+    			int nrLines = end.open();
+    			if (nrLines>=0)
+    			{
+                    ArrayList linesList = getFirst(nrLines, skipHeaders);
+                    if (linesList!=null && linesList.size()>0)
                     {
-                        int skipped = 0;
-                        String line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
-                        while (line!=null && skipped<info.getNrHeaderLines())
+                        String firstlines="";
+                        for (int i=0;i<linesList.size();i++)
                         {
-                            skipped++;
-                            line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
+                            firstlines+=(String)linesList.get(i)+Const.CR;
                         }
+                        EnterTextDialog etd = new EnterTextDialog(shell, "Content of first file", (nrLines==0?"All":""+nrLines)+" lines:", firstlines, true);
+                        etd.setReadOnly();
+                        etd.open();
                     }
-
-					String line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
-					while(line!=null && (linenr<nrlines || nrlines==0))
-					{
-						firstlines+=line+Const.CR;
-						linenr++;
-						line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
-					}
-					EnterTextDialog etd = new EnterTextDialog(shell, "File "+filename, (nrlines==0?"All":""+nrlines)+" lines:", firstlines, true);
-					etd.setReadOnly();
-					etd.open();
-				}
-			}
-			catch(Exception e)
-			{
-				mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("Error opening file : "+e.toString()+Const.CR+"--> "+debug);
-				mb.setText("ERROR");
-				mb.open(); 
-			}
-			finally
-			{
-				try
-				{
-					if (input.isZipped() && zi!=null)
-					{
-						zi.closeEntry();
-						zi.close();
-					}
-					f.close();
-				}
-				catch(Exception e)
-				{					
-				}
-			}
-		}
-		else
+                    else
+                    {
+                        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                        mb.setMessage("I couldn't read any lines from the specified files.");
+                        mb.setText("Sorry");
+                        mb.open(); 
+    				}
+    			}
+            }
+            else
+            {
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                mb.setMessage("I couldn't find a valid file to work with.  Please check the files, directories & expressions.");
+                mb.setText("ERROR");
+                mb.open(); 
+            }
+        }
+		catch(KettleException e)
 		{
-			mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("I couldn't find a valid file to work with.  Please check the files, directories & expression.");
-			mb.setText("ERROR");
-			mb.open(); 
+            new ErrorDialog(shell, props, "Error", "Error getting data from file", e);
 		}
 	}
 	
 
 	// Get the first x lines
-	private ArrayList getFirst(int nrlines)
+	private ArrayList getFirst(int nrlines, boolean skipHeaders) throws KettleException
 	{
 		TextFileInputMeta info = new TextFileInputMeta();
 		getInfo(info);
@@ -2036,35 +1988,45 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				int    linenr=0;
 				int    maxnr = nrlines+(info.hasHeader()?info.getNrHeaderLines():0);
 				
-                // Skip the header lines first if more then one, it helps us position
-                if (info.hasHeader() && info.getNrHeaderLines()>1)
+                if (skipHeaders)
                 {
-                    int skipped = 0;
-                    String line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
-                    while (line!=null && skipped<info.getNrHeaderLines())
+                    // Skip the header lines first if more then one, it helps us position
+                    if (info.isLayoutPaged() && info.getNrLinesDocHeader()>0)
                     {
-                        skipped++;
-                        line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
+                        int skipped = 0;
+                        String line = TextFileInput.getLine(log, reader, wFormat.getText());
+                        while (line!=null && skipped<info.getNrLinesDocHeader()-1)
+                        {
+                            skipped++;
+                            line = TextFileInput.getLine(log, reader, wFormat.getText());
+                        }
+                    }
+                    
+                    // Skip the header lines first if more then one, it helps us position
+                    if (info.hasHeader() && info.getNrHeaderLines()>0)
+                    {
+                        int skipped = 0;
+                        String line = TextFileInput.getLine(log, reader, wFormat.getText());
+                        while (line!=null && skipped<info.getNrHeaderLines()-1)
+                        {
+                            skipped++;
+                            line = TextFileInput.getLine(log, reader, wFormat.getText());
+                        }
                     }
                 }
                 
-				String line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
+				String line = TextFileInput.getLine(log, reader, wFormat.getText());
 				while(line!=null && (linenr<maxnr || nrlines==0))
 				{
-					if (linenr>0 || (linenr==0 && !info.hasHeader())) retval.add(line);
+					retval.add(line);
 					firstlines+=line+Const.CR;
 					linenr++;
-					line = TextFileInput.getLine(log, reader, wFormat.getText(), info.isLineWrapped()?info.getNrWraps():0);
-				}
-				// Did we grab the footer as well?
-				if (info.hasFooter() && ( linenr<maxnr || nrlines==0 ))
-				{
-					// Remove the last line...
-					if (retval.size()>0) retval.remove(retval.size()-1);
+					line = TextFileInput.getLine(log, reader, wFormat.getText());
 				}
 			}
 			catch(Exception e)
 			{
+                throw new KettleException("Error getting first "+nrlines+" from file "+filename, e);
 			}
 			finally
 			{
@@ -2095,63 +2057,70 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		Shell sh = new Shell(shell, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
 
-		ArrayList rows = getFirst(25);
-		fields = getFields(info, rows);
-		
-		final TextFileImportWizardPage1 page1 = new TextFileImportWizardPage1("1", props, rows, fields);
-		page1.createControl(sh);
-		final TextFileImportWizardPage2 page2 = new TextFileImportWizardPage2("2", props, rows, fields);
-		page2.createControl(sh);
-
-		Wizard wizard = new Wizard() 
-		{
-			public boolean performFinish() 
-			{
-				wFields.clearAll(false);
-				
-				for (int i=0;i<fields.size();i++)
-				{
-					TextFileInputField field = (TextFileInputField)fields.get(i);
-					if (!field.isIgnored() && field.getLength()>0)
-					{
-						TableItem item = new TableItem(wFields.table, SWT.NONE);
-						item.setText( 1,   field.getName());
-						item.setText( 2,""+field.getTypeDesc());
-						item.setText( 3,""+field.getFormat());
-						item.setText( 4,""+field.getPosition());
-						item.setText( 5,""+field.getLength());
-						item.setText( 6,""+field.getPrecision());
-						item.setText( 7,""+field.getCurrencySymbol());
-						item.setText( 8,""+field.getDecimalSymbol());
-						item.setText( 9,""+field.getGroupSymbol());
-						item.setText(10,""+field.getNullString());
-						item.setText(11,""+field.getTrimTypeDesc());
-						item.setText(12,   field.isRepeated()?"Y":"N");
-					}
-					
-				}
-				int size = wFields.table.getItemCount(); 
-				if (size==0)
-				{
-					new TableItem(wFields.table, SWT.NONE);
-				}
-
-				wFields.removeEmptyRows();				
-				wFields.setRowNums();
-				wFields.optWidth(true);
-				
-				input.setChanged();
-				
-				return true;
-			}
-		};
-				
-		wizard.addPage(page1);
-		wizard.addPage(page2);
-				
-		WizardDialog wd = new WizardDialog(shell, wizard);
-		wd.setMinimumPageSize(700,375);
-		wd.open();
+        try
+        {
+    		ArrayList rows = getFirst(50, false);
+    		fields = getFields(info, rows);
+    		
+    		final TextFileImportWizardPage1 page1 = new TextFileImportWizardPage1("1", props, rows, fields);
+    		page1.createControl(sh);
+    		final TextFileImportWizardPage2 page2 = new TextFileImportWizardPage2("2", props, rows, fields);
+    		page2.createControl(sh);
+    
+    		Wizard wizard = new Wizard() 
+    		{
+    			public boolean performFinish() 
+    			{
+    				wFields.clearAll(false);
+    				
+    				for (int i=0;i<fields.size();i++)
+    				{
+    					TextFileInputField field = (TextFileInputField)fields.get(i);
+    					if (!field.isIgnored() && field.getLength()>0)
+    					{
+    						TableItem item = new TableItem(wFields.table, SWT.NONE);
+    						item.setText( 1,   field.getName());
+    						item.setText( 2,""+field.getTypeDesc());
+    						item.setText( 3,""+field.getFormat());
+    						item.setText( 4,""+field.getPosition());
+    						item.setText( 5,""+field.getLength());
+    						item.setText( 6,""+field.getPrecision());
+    						item.setText( 7,""+field.getCurrencySymbol());
+    						item.setText( 8,""+field.getDecimalSymbol());
+    						item.setText( 9,""+field.getGroupSymbol());
+    						item.setText(10,""+field.getNullString());
+    						item.setText(11,""+field.getTrimTypeDesc());
+    						item.setText(12,   field.isRepeated()?"Y":"N");
+    					}
+    					
+    				}
+    				int size = wFields.table.getItemCount(); 
+    				if (size==0)
+    				{
+    					new TableItem(wFields.table, SWT.NONE);
+    				}
+    
+    				wFields.removeEmptyRows();				
+    				wFields.setRowNums();
+    				wFields.optWidth(true);
+    				
+    				input.setChanged();
+    				
+    				return true;
+    			}
+    		};
+    				
+    		wizard.addPage(page1);
+    		wizard.addPage(page2);
+    				
+    		WizardDialog wd = new WizardDialog(shell, wizard);
+    		wd.setMinimumPageSize(700,375);
+    		wd.open();
+        }
+        catch(Exception e)
+        {
+            new ErrorDialog(shell, props, "Error showing fixed wizard", "An unexpected error occured showing the fixed field width wizard", e);
+        }
 	}
 	
 	private Vector getFields(TextFileInputMeta info, ArrayList rows)

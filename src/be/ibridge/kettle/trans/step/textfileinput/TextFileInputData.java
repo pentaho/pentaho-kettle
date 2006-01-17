@@ -54,7 +54,7 @@ public class TextFileInputData extends BaseStepData implements StepDataInterface
 	public DateFormatSymbols dafs;
 	
 	public String  files[];
-	public boolean last_file;
+	public boolean isLastFile;
 	public String  filename;
 	public int     filenr;
 	
