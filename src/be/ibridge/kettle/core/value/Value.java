@@ -2825,10 +2825,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
 	// implement the TO_NUMBER function, arguments in args[]
 	public Value str2num() throws KettleValueException { return str2num(null, null, null, null); }
-	public Value str2num(String arg0) throws KettleValueException { return str2num(arg0, null, null, null); }
-	public Value str2num(String arg0, String arg1) throws KettleValueException { return str2num(arg0, arg1, null, null); }
-	public Value str2num(String arg0, String arg1, String arg2) throws KettleValueException { return str2num(arg0, arg1, arg2, null); }
-	public Value str2num(String arg0, String arg1, String arg2, String arg3) throws KettleValueException
+	public Value str2num(String pattern) throws KettleValueException { return str2num(pattern, null, null, null); }
+	public Value str2num(String pattern, String decimal) throws KettleValueException { return str2num(pattern, decimal, null, null); }
+	public Value str2num(String pattern, String decimal, String grouping) throws KettleValueException { return str2num(pattern, decimal, grouping, null); }
+	public Value str2num(String pattern, String decimal, String grouping, String currency) throws KettleValueException
 	{
 		// 0 : pattern
 		// 1 : Decimal separator
@@ -2854,10 +2854,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
 					DecimalFormat        df  = (DecimalFormat)nf;
 					DecimalFormatSymbols dfs =new DecimalFormatSymbols();
 						
-					if (arg3!=null) dfs.setCurrencySymbol( arg3 );
-					if (arg2!=null) dfs.setGroupingSeparator( arg2.charAt(0) );
-					if (arg1!=null) dfs.setDecimalSeparator( arg1.charAt(0) );
-		            if (arg0!=null) df.applyPattern(arg0);
+					if (currency!=null) dfs.setCurrencySymbol( currency );
+					if (grouping!=null) dfs.setGroupingSeparator( grouping.charAt(0) );
+					if (decimal!=null) dfs.setDecimalSeparator( decimal.charAt(0) );
+		            if (pattern!=null) df.applyPattern(pattern);
 					try
 					{
 						setValue( nf.parse(getString()).doubleValue() );
