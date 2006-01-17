@@ -1597,4 +1597,19 @@ public class Const
 		}
 	  }
 
+    /**
+     * @return An array of all default conversion formats, to be used in dialogs etc.
+     */
+    public static String[] getConversionFormats()
+    {
+        String dats[] = Const.dateFormats;
+        String nums[] = Const.numberFormats;
+        int totsize = dats.length + nums.length;
+        String formats[] = new String[totsize];
+        for (int x=0;x<dats.length;x++) formats[x] = dats[x];
+        for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
+        
+        return formats;
+    }
+
 }
