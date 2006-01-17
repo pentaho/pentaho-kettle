@@ -32,6 +32,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 
@@ -139,6 +140,18 @@ public class PreviewRowsDialog extends Dialog
 		fdlFields.top  = new FormAttachment(0, margin);
 		wlFields.setLayoutData(fdlFields);
 		
+        // Mmm, if we don't get any rows in the buffer: show a dialog box.
+        if (buffer==null || buffer.size()==0)
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING );
+            mb.setMessage("Sorry, no rows can be found to preview.");
+            mb.setText("Sorry");
+            mb.open(); 
+            
+            shell.dispose();
+            return null;
+        }
+        
 		Row row = (Row)buffer.get(0);
 		
 		int FieldsRows=buffer.size();
@@ -232,9 +245,9 @@ public class PreviewRowsDialog extends Dialog
                         if (show!=null) item.setText(c+1, show);
                     }
                 }
+                wFields.optWidth(true);
             }
         });
-		wFields.optWidth(true);
 	}
 	
 	private void close()
