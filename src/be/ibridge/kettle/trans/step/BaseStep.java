@@ -73,6 +73,7 @@ import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
 import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 import be.ibridge.kettle.trans.step.textfileoutput.TextFileOutputMeta;
 import be.ibridge.kettle.trans.step.uniquerows.UniqueRowsMeta;
+import be.ibridge.kettle.trans.step.unpivot.UnpivotMeta;
 import be.ibridge.kettle.trans.step.update.UpdateMeta;
 import be.ibridge.kettle.trans.step.xbaseinput.XBaseInputMeta;
 import be.ibridge.kettle.trans.step.xmlinput.XMLInputMeta;
@@ -125,7 +126,8 @@ public class BaseStep extends Thread
             XMLInputMeta.class,
             XMLOutputMeta.class,
             MergeRowsMeta.class,
-            ConstantMeta.class
+            ConstantMeta.class,
+            UnpivotMeta.class
 		};
 	
 	public static final String type_desc[] = 
@@ -172,7 +174,8 @@ public class BaseStep extends Thread
             "XMLInput",
             "XMLOutput",
             "MergeRows",
-            "Constant"
+            "Constant",
+            "Unpivot"
 		};
 
 	public static final String type_long_desc[] = 
@@ -219,7 +222,8 @@ public class BaseStep extends Thread
             "XML Input",
             "XML Output",
             "Merge Rows",
-            "Add constants"
+            "Add constants",
+            "Unpivot"
 		};
 
 	public static final String type_tooltip_desc[] = 
@@ -266,7 +270,8 @@ public class BaseStep extends Thread
             "Read data from an XML file",
             "Wite data to an XML file",
             "Merge two streams of rows, sorted on a certain key.  The two streams are compared and the equals, changed, deleted and new rows are flagged.",
-            "Add one or more constants to the input rows"
+            "Add one or more constants to the input rows",
+            "Looks up key-value pairs and assigns them to new fields in the output rows."+Const.CR+"This method aggregates and needs the input rows to be sorted on the grouping fields"
 		};
 
 	public static final String image_filename[] =
@@ -313,7 +318,8 @@ public class BaseStep extends Thread
             "XIN.png",
             "XOU.png",
             "MRG.png",
-            "CST.png"
+            "CST.png",
+            "UNP.png"
 		};
 	
 	public static final String category[] = 
@@ -360,7 +366,8 @@ public class BaseStep extends Thread
             "Experimental",     // "XMLInput"
             "Experimental",     // "XMLOutut"
             "Transform",        // "MergRows"
-            "Transform"         // "Constant"
+            "Transform",        // "Constant"
+            "Experimental",     // "Unpivot"
 		};
 
     public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Mapping", "Experimental" };
