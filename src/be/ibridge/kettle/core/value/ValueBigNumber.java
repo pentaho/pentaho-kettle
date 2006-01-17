@@ -112,7 +112,7 @@ public class ValueBigNumber implements ValueInterface, Cloneable
 	
 	public void    setInteger(long number)
 	{
-		this.number = new BigDecimal( number );
+		this.number = new BigDecimal( (double) number );
 	}
 
 	
