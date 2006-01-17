@@ -231,14 +231,18 @@ public class Calculator extends BaseStep implements StepInterface
                     break;
                case CalculatorMetaFunction.CALC_YEAR_OF_DATE           : // What is the year (Integer) of a date?
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.setValue(fieldA.getDate().getYear()+1900);
+                       value = new Value(fn.getFieldName(), fieldA);
+                       Calendar calendar = Calendar.getInstance();
+                       calendar.setTime(fieldA.getDate());
+                       value.setValue(calendar.get(Calendar.YEAR));
                     }
                     break;
                 case CalculatorMetaFunction.CALC_MONTH_OF_DATE           : // What is the month (Integer) of a date?
                     {
-                        value = new Value(fn.getFieldName(), fieldA);
-                        value.setValue(fieldA.getDate().getMonth()+1);
+                    value = new Value(fn.getFieldName(), fieldA);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTime(fieldA.getDate());
+                    value.setValue(calendar.get(Calendar.MONTH)+1);
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DAY_OF_YEAR           : // What is the day of year (Integer) of a date?
