@@ -2957,17 +2957,21 @@ public class Chef
 		Splash splash = new Splash(display);
 		
 		// System.out.println("Welcome to Chef!");
-		String repname   = Const.getCommandlineOption(args, "-rep");
-		String username  = Const.getCommandlineOption(args, "-user");
-		String password  = Const.getCommandlineOption(args, "-pass");
-		String jobname   = Const.getCommandlineOption(args, "-job");
-		String filename  = Const.getCommandlineOption(args, "-file");
-		String dirname   = Const.getCommandlineOption(args, "-dir");
-        String logfile   = Const.getCommandlineOption(args, "-log");
+		String repname   = Const.getCommandlineOption(args, "rep");
+		String username  = Const.getCommandlineOption(args, "user");
+		String password  = Const.getCommandlineOption(args, "pass");
+		String jobname   = Const.getCommandlineOption(args, "job");
+		String filename  = Const.getCommandlineOption(args, "file");
+		String dirname   = Const.getCommandlineOption(args, "dir");
+        String logfile   = Const.getCommandlineOption(args, "log");
 
-        repname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", repname);
-        username = Const.getEnvironmentVariable("KETTLE_USER",       username);
-        password = Const.getEnvironmentVariable("KETTLE_PASSWORD",   password);
+        String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
+        String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
+        String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);
+        
+        if (kettleRepname !=null && kettleRepname .length()>0) repname  = kettleRepname;
+        if (kettleUsername!=null && kettleUsername.length()>0) username = kettleUsername;
+        if (kettlePassword!=null && kettlePassword.length()>0) password = kettlePassword;
 
 		// if (args.length==1 && filename==null) filename=args[1]; // try to load first argument...
 
