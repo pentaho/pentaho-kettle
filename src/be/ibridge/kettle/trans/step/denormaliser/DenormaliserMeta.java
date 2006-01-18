@@ -46,7 +46,7 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
  * @author Matt
  */
 
-public class UnpivotMeta extends BaseStepMeta implements StepMetaInterface
+public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
 {
     /** Fields to group over */
     private String             groupField[];
@@ -55,9 +55,9 @@ public class UnpivotMeta extends BaseStepMeta implements StepMetaInterface
     private String             keyField;
 
     /** The fields to unpivot */
-    private UnpivotTargetField[] pivotTargetField;
+    private DenormaliserTargetField[] denormaliserTargetField;
 
-    public UnpivotMeta()
+    public DenormaliserMeta()
     {
         super(); // allocate BaseStepMeta
     }
@@ -97,17 +97,17 @@ public class UnpivotMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @return Returns the pivotField.
      */
-    public UnpivotTargetField[] getPivotTargetField()
+    public DenormaliserTargetField[] getDenormaliserTargetField()
     {
-        return pivotTargetField;
+        return denormaliserTargetField;
     }
 
     /**
      * @param pivotField The pivotField to set.
      */
-    public void setPivotTargetField(UnpivotTargetField[] pivotField)
+    public void setDenormaliserTargetField(DenormaliserTargetField[] pivotField)
     {
-        this.pivotTargetField = pivotField;
+        this.denormaliserTargetField = pivotField;
     }
 
     public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
@@ -118,7 +118,7 @@ public class UnpivotMeta extends BaseStepMeta implements StepMetaInterface
     public void allocate(int sizegroup, int nrfields)
     {
         groupField = new String[sizegroup];
-        pivotTargetField = new UnpivotTargetField[nrfields];
+        denormaliserTargetField = new DenormaliserTargetField[nrfields];
     }
 
     public Object clone()
@@ -157,9 +157,9 @@ public class UnpivotMeta extends BaseStepMeta implements StepMetaInterface
         
         // Remove all field value(s) (there will be different entries for each output row)
         //
-        for (int i=0;i<pivotTargetField.length;i++)
+        for (int i=0;i<denormaliserTargetField.length;i++)
         {
-            String fieldname = pivotTargetField[i].getFieldName();
+            String fieldname = denormaliserTargetField[i].getFieldName();
             if (fieldname!=null && fieldname.length()>0)
             {
                 int idx = row.searchValueIndex(fieldname);
@@ -175,9 +175,9 @@ public class UnpivotMeta extends BaseStepMeta implements StepMetaInterface
         }
         
         // Re-add the target fields
-        for (int i = 0; i < pivotTargetField.length ; i++)
+        for (int i = 0; i < denormaliserTargetField.length ; i++)
         {
-            UnpivotTargetField field = pivotTargetField[i];
+            DenormaliserTargetField field = denormaliserTargetField[i];
             Value target = new Value(field.getTargetName(), field.getTargetType());
             target.setLength(field.getTargetLength(), field.getTargetPrecision());
             target.setOrigin(name);
@@ -210,18 +210,18 @@ public class UnpivotMeta extends BaseStepMeta implements StepMetaInterface
             for (int i = 0; i < nrfields; i++)
             {
                 Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
-                pivotTargetField[i] = new UnpivotTargetField();
-                pivotTargetField[i].setFieldName( XMLHandler.getTagValue(fnode, "field_name") );
-                pivotTargetField[i].setKeyValue( XMLHandler.getTagValue(fnode, "key_value") );
-                pivotTargetField[i].setTargetName( XMLHandler.getTagValue(fnode, "target_name") );
-                pivotTargetField[i].setTargetType( XMLHandler.getTagValue(fnode, "target_type") );
-                pivotTargetField[i].setTargetLength( Const.toInt(XMLHandler.getTagValue(fnode, "target_length"), -1) );
-                pivotTargetField[i].setTargetPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "target_precision"), -1) );
-                pivotTargetField[i].setTargetDecimalSymbol( XMLHandler.getTagValue(fnode, "target_decimal_symbol") );
-                pivotTargetField[i].setTargetGroupingSymbol( XMLHandler.getTagValue(fnode, "target_grouping_symbol") );
-                pivotTargetField[i].setTargetCurrencySymbol( XMLHandler.getTagValue(fnode, "target_currency_symbol") );
-                pivotTargetField[i].setTargetNullString( XMLHandler.getTagValue(fnode, "target_null_string") );
-                pivotTargetField[i].setTargetAggregationType( XMLHandler.getTagValue(fnode, "target_aggregation_type") );
+                denormaliserTargetField[i] = new DenormaliserTargetField();
+                denormaliserTargetField[i].setFieldName( XMLHandler.getTagValue(fnode, "field_name") );
+                denormaliserTargetField[i].setKeyValue( XMLHandler.getTagValue(fnode, "key_value") );
+                denormaliserTargetField[i].setTargetName( XMLHandler.getTagValue(fnode, "target_name") );
+                denormaliserTargetField[i].setTargetType( XMLHandler.getTagValue(fnode, "target_type") );
+                denormaliserTargetField[i].setTargetLength( Const.toInt(XMLHandler.getTagValue(fnode, "target_length"), -1) );
+                denormaliserTargetField[i].setTargetPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "target_precision"), -1) );
+                denormaliserTargetField[i].setTargetDecimalSymbol( XMLHandler.getTagValue(fnode, "target_decimal_symbol") );
+                denormaliserTargetField[i].setTargetGroupingSymbol( XMLHandler.getTagValue(fnode, "target_grouping_symbol") );
+                denormaliserTargetField[i].setTargetCurrencySymbol( XMLHandler.getTagValue(fnode, "target_currency_symbol") );
+                denormaliserTargetField[i].setTargetNullString( XMLHandler.getTagValue(fnode, "target_null_string") );
+                denormaliserTargetField[i].setTargetAggregationType( XMLHandler.getTagValue(fnode, "target_aggregation_type") );
             }
         }
         catch (Exception e)
@@ -246,9 +246,9 @@ public class UnpivotMeta extends BaseStepMeta implements StepMetaInterface
         retval += "        </group>" + Const.CR;
 
         retval += "      <fields>" + Const.CR;
-        for (int i = 0; i < pivotTargetField.length; i++)
+        for (int i = 0; i < denormaliserTargetField.length; i++)
         {
-            UnpivotTargetField field = pivotTargetField[i];
+            DenormaliserTargetField field = denormaliserTargetField[i];
             
             retval += "        <field>" + Const.CR;
             retval += "          "+XMLHandler.addTagValue("field_name",              field.getFieldName() );
@@ -287,18 +287,18 @@ public class UnpivotMeta extends BaseStepMeta implements StepMetaInterface
 
             for (int i = 0; i < nrvalues; i++)
             {
-                pivotTargetField[i] = new UnpivotTargetField();
-                pivotTargetField[i].setFieldName( rep.getStepAttributeString(id_step, i, "field_name") );
-                pivotTargetField[i].setKeyValue( rep.getStepAttributeString(id_step, i, "key_value") );
-                pivotTargetField[i].setTargetName( rep.getStepAttributeString(id_step, i, "target_name") );
-                pivotTargetField[i].setTargetType( rep.getStepAttributeString(id_step, i, "target_type") );
-                pivotTargetField[i].setTargetLength( (int)rep.getStepAttributeInteger(id_step, i, "target_length") );
-                pivotTargetField[i].setTargetPrecision( (int)rep.getStepAttributeInteger(id_step, i, "target_precision") );
-                pivotTargetField[i].setTargetDecimalSymbol( rep.getStepAttributeString(id_step, i, "target_decimal_symbol") );
-                pivotTargetField[i].setTargetGroupingSymbol( rep.getStepAttributeString(id_step, i, "target_grouping_symbol") );
-                pivotTargetField[i].setTargetCurrencySymbol( rep.getStepAttributeString(id_step, i, "target_currency_symbol") );
-                pivotTargetField[i].setTargetNullString( rep.getStepAttributeString(id_step, i, "target_null_string") );
-                pivotTargetField[i].setTargetAggregationType( rep.getStepAttributeString(id_step, i, "target_aggregation_type") );
+                denormaliserTargetField[i] = new DenormaliserTargetField();
+                denormaliserTargetField[i].setFieldName( rep.getStepAttributeString(id_step, i, "field_name") );
+                denormaliserTargetField[i].setKeyValue( rep.getStepAttributeString(id_step, i, "key_value") );
+                denormaliserTargetField[i].setTargetName( rep.getStepAttributeString(id_step, i, "target_name") );
+                denormaliserTargetField[i].setTargetType( rep.getStepAttributeString(id_step, i, "target_type") );
+                denormaliserTargetField[i].setTargetLength( (int)rep.getStepAttributeInteger(id_step, i, "target_length") );
+                denormaliserTargetField[i].setTargetPrecision( (int)rep.getStepAttributeInteger(id_step, i, "target_precision") );
+                denormaliserTargetField[i].setTargetDecimalSymbol( rep.getStepAttributeString(id_step, i, "target_decimal_symbol") );
+                denormaliserTargetField[i].setTargetGroupingSymbol( rep.getStepAttributeString(id_step, i, "target_grouping_symbol") );
+                denormaliserTargetField[i].setTargetCurrencySymbol( rep.getStepAttributeString(id_step, i, "target_currency_symbol") );
+                denormaliserTargetField[i].setTargetNullString( rep.getStepAttributeString(id_step, i, "target_null_string") );
+                denormaliserTargetField[i].setTargetAggregationType( rep.getStepAttributeString(id_step, i, "target_aggregation_type") );
             }
         }
         catch (Exception e)
@@ -318,9 +318,9 @@ public class UnpivotMeta extends BaseStepMeta implements StepMetaInterface
                 rep.saveStepAttribute(id_transformation, id_step, i, "group_name", groupField[i]);
             }
 
-            for (int i = 0; i < pivotTargetField.length; i++)
+            for (int i = 0; i < denormaliserTargetField.length; i++)
             {
-                UnpivotTargetField field = pivotTargetField[i];
+                DenormaliserTargetField field = denormaliserTargetField[i];
                 
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_name",  field.getFieldName());
                 rep.saveStepAttribute(id_transformation, id_step, i, "key_value", field.getKeyValue());
@@ -359,17 +359,17 @@ public class UnpivotMeta extends BaseStepMeta implements StepMetaInterface
 
     public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)
     {
-        return new UnpivotDialog(shell, info, transMeta, name);
+        return new DenormaliserDialog(shell, info, transMeta, name);
     }
 
     public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)
     {
-        return new Unpivot(stepMeta, stepDataInterface, cnr, transMeta, trans);
+        return new Denormaliser(stepMeta, stepDataInterface, cnr, transMeta, trans);
     }
 
     public StepDataInterface getStepData()
     {
-        return new UnpivotData();
+        return new DenormaliserData();
     }
 
 }

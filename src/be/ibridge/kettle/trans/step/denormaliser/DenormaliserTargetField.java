@@ -2,7 +2,7 @@ package be.ibridge.kettle.trans.step.denormaliser;
 
 import be.ibridge.kettle.core.value.Value;
 
-public class UnpivotTargetField
+public class DenormaliserTargetField
 {
     private String  fieldName;
     private String  keyValue;
@@ -71,7 +71,7 @@ public class UnpivotTargetField
     /**
      * Create an empty pivot target field
      */
-    public UnpivotTargetField()
+    public DenormaliserTargetField()
     {
     }
 

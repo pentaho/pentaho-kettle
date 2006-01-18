@@ -40,17 +40,17 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
  * @author Matt
  * @since 17-jan-2006
  */
-public class Unpivot extends BaseStep implements StepInterface
+public class Denormaliser extends BaseStep implements StepInterface
 {
-	private UnpivotMeta meta;
-	private UnpivotData data;
+	private DenormaliserMeta meta;
+	private DenormaliserData data;
 	
-	public Unpivot(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
+	public Denormaliser(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 		
-		meta=(UnpivotMeta)getStepMeta().getStepMetaInterface();
-		data=(UnpivotData)stepDataInterface;
+		meta=(DenormaliserMeta)getStepMeta().getStepMetaInterface();
+		data=(DenormaliserData)stepDataInterface;
 	}
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
@@ -84,10 +84,10 @@ public class Unpivot extends BaseStep implements StepInterface
             }
             
             Hashtable subjects = new Hashtable();
-            data.fieldNameIndex = new int[meta.getPivotTargetField().length];
-            for (int i=0;i<meta.getPivotTargetField().length;i++)
+            data.fieldNameIndex = new int[meta.getDenormaliserTargetField().length];
+            for (int i=0;i<meta.getDenormaliserTargetField().length;i++)
 			{
-                UnpivotTargetField field = meta.getPivotTargetField()[i];
+                DenormaliserTargetField field = meta.getDenormaliserTargetField()[i];
 				int idx = r.searchValueIndex(field.getFieldName());
 				if (idx<0)
 				{
@@ -175,10 +175,10 @@ public class Unpivot extends BaseStep implements StepInterface
         for (int i=0;i<data.targetResult.size();i++)
         {
             Value resultValue = data.targetResult.getValue(i);
-            UnpivotTargetField field = meta.getPivotTargetField()[i];
+            DenormaliserTargetField field = meta.getDenormaliserTargetField()[i];
             switch(field.getTargetAggregationType())
             {
-            case UnpivotTargetField.TYPE_AGGR_AVERAGE :
+            case DenormaliserTargetField.TYPE_AGGR_AVERAGE :
                 long count = data.counters[i];
                 Value sum  = data.sum[i];
                 if (count>0)
@@ -215,9 +215,9 @@ public class Unpivot extends BaseStep implements StepInterface
 		debug="newAggregate";
         
         data.targetResult = new Row();
-        for (int i=0;i<meta.getPivotTargetField().length;i++)
+        for (int i=0;i<meta.getDenormaliserTargetField().length;i++)
         {
-            UnpivotTargetField field = meta.getPivotTargetField()[i];
+            DenormaliserTargetField field = meta.getDenormaliserTargetField()[i];
             Value defaultTarget = new Value(field.getTargetName(), field.getTargetType());
             defaultTarget.setLength(field.getTargetLength(), field.getTargetPrecision());
             data.targetResult.addValue(defaultTarget);
@@ -236,7 +236,7 @@ public class Unpivot extends BaseStep implements StepInterface
             // keyNr is the field in UnpivotTargetField[]
             //
             int idx = keyNr.intValue();
-            UnpivotTargetField field = meta.getPivotTargetField()[idx];
+            DenormaliserTargetField field = meta.getDenormaliserTargetField()[idx];
             
             Value targetValue = r.getValue(data.fieldNameIndex[idx]);
             
@@ -264,26 +264,26 @@ public class Unpivot extends BaseStep implements StepInterface
             Value prevTarget = data.targetResult.getValue(idx);
             switch(field.getTargetAggregationType())
             {
-            case UnpivotTargetField.TYPE_AGGR_SUM:
+            case DenormaliserTargetField.TYPE_AGGR_SUM:
                 prevTarget.plus(targetValue);
                 break;
-            case UnpivotTargetField.TYPE_AGGR_MIN:
+            case DenormaliserTargetField.TYPE_AGGR_MIN:
                 if (targetValue.compare(prevTarget)<0) prevTarget.setValue(targetValue);
                 break;
-            case UnpivotTargetField.TYPE_AGGR_MAX:
+            case DenormaliserTargetField.TYPE_AGGR_MAX:
                 if (targetValue.compare(prevTarget)>0) prevTarget.setValue(targetValue);
                 break;
-            case UnpivotTargetField.TYPE_AGGR_COUNT_ALL:
+            case DenormaliserTargetField.TYPE_AGGR_COUNT_ALL:
                 if (!targetValue.isNull()) prevTarget.setValue(prevTarget.getInteger()+1);
                 break;
-            case UnpivotTargetField.TYPE_AGGR_AVERAGE:
+            case DenormaliserTargetField.TYPE_AGGR_AVERAGE:
                 if (!targetValue.isNull()) 
                 {
                     data.counters[idx]++;
                     data.sum[idx].plus(targetValue);
                 }
                 break;
-            case UnpivotTargetField.TYPE_AGGR_NONE:
+            case DenormaliserTargetField.TYPE_AGGR_NONE:
             default:
                 prevTarget.setValue(targetValue); // Overwrite the previous
                 break;
@@ -295,13 +295,13 @@ public class Unpivot extends BaseStep implements StepInterface
     
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		meta=(UnpivotMeta)smi;
-		data=(UnpivotData)sdi;
+		meta=(DenormaliserMeta)smi;
+		data=(DenormaliserData)sdi;
 		
 		if (super.init(smi, sdi))
 		{
-            data.counters = new long[meta.getPivotTargetField().length];
-            data.sum      = new Value[meta.getPivotTargetField().length];
+            data.counters = new long[meta.getDenormaliserTargetField().length];
+            data.sum      = new Value[meta.getDenormaliserTargetField().length];
 
             return true;
 		}

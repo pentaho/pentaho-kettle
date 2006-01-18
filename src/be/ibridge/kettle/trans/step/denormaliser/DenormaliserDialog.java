@@ -59,7 +59,7 @@ import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 
 
-public class UnpivotDialog extends BaseStepDialog implements StepDialogInterface
+public class DenormaliserDialog extends BaseStepDialog implements StepDialogInterface
 {
     public static final String STRING_SORT_WARNING_PARAMETER = "PivotSortWarning";
     
@@ -79,12 +79,12 @@ public class UnpivotDialog extends BaseStepDialog implements StepDialogInterface
 	private FormData fdGet, fdGetAgg;
 	private Listener lsGet, lsGetAgg;
 
-	private UnpivotMeta input;
+	private DenormaliserMeta input;
 
-	public UnpivotDialog(Shell parent, Object in, TransMeta transMeta, String sname)
+	public DenormaliserDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
-		input=(UnpivotMeta)in;
+		input=(DenormaliserMeta)in;
 	}
 
 	public String open()
@@ -197,7 +197,7 @@ public class UnpivotDialog extends BaseStepDialog implements StepDialogInterface
 		fdlTarget.top   = new FormAttachment(wGroup, margin);
 		wlTarget.setLayoutData(fdlTarget);
 		
-		int UpInsRows= (input.getPivotTargetField()!=null?input.getPivotTargetField().length:1);
+		int UpInsRows= (input.getDenormaliserTargetField()!=null?input.getDenormaliserTargetField().length:1);
 		
         String formats[] = Const.getConversionFormats();
         
@@ -300,10 +300,10 @@ public class UnpivotDialog extends BaseStepDialog implements StepDialogInterface
 			if (input.getGroupField()[i]   !=null) item.setText(1, input.getGroupField()[i]);
 		}
 		
-		if (input.getPivotTargetField()!=null)
-		for (i=0;i<input.getPivotTargetField().length;i++)
+		if (input.getDenormaliserTargetField()!=null)
+		for (i=0;i<input.getDenormaliserTargetField().length;i++)
 		{
-            UnpivotTargetField field = input.getPivotTargetField()[i];
+            DenormaliserTargetField field = input.getDenormaliserTargetField()[i];
             
 			TableItem item = wTarget.table.getItem(i);
             
@@ -351,7 +351,7 @@ public class UnpivotDialog extends BaseStepDialog implements StepDialogInterface
 		
 		for (int i=0;i<nrfields;i++)
 		{
-            UnpivotTargetField field = new UnpivotTargetField();
+            DenormaliserTargetField field = new DenormaliserTargetField();
             
 			TableItem item      = wTarget.getNonEmpty(i);
             field.setTargetName( item.getText(1) );
@@ -367,7 +367,7 @@ public class UnpivotDialog extends BaseStepDialog implements StepDialogInterface
             field.setTargetNullString( item.getText(11) );
             field.setTargetAggregationType( item.getText(12) );
             
-            input.getPivotTargetField()[i] = field;
+            input.getDenormaliserTargetField()[i] = field;
 		}
 		
 		stepname = wStepname.getText();

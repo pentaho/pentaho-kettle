@@ -28,7 +28,7 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
  * @since 24-jan-2005
  *
  */
-public class UnpivotData extends BaseStepData implements StepDataInterface
+public class DenormaliserData extends BaseStepData implements StepDataInterface
 {
 	public Row previous;
 	
@@ -51,7 +51,7 @@ public class UnpivotData extends BaseStepData implements StepDataInterface
 	/**
 	 * 
 	 */
-	public UnpivotData()
+	public DenormaliserData()
 	{
 		super();
 
