@@ -166,7 +166,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			
 			setFileName( XMLHandler.getTagValue(entrynode, "filename") );
 			setTransname( XMLHandler.getTagValue(entrynode, "transname") );
-			argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
+            directory = directory_tree.findDirectory( XMLHandler.getTagValue(entrynode, "directory") );
+
+            argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
 			setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
 			addDate = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_date") );
 			addTime = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_time") );
@@ -174,8 +176,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			logext = XMLHandler.getTagValue(entrynode, "logext");
 			loglevel = LogWriter.getLogLevel( XMLHandler.getTagValue(entrynode, "loglevel"));
 
-			// The directory...
-		    directory = directory_tree.findDirectory( XMLHandler.getTagValue(entrynode, "directory") );
 
 			// How many arguments?
 			int argnr = 0;
@@ -192,8 +192,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	}
 	
 	// Load the jobentry from repository
-	public void loadRep(Repository rep, long id_jobentry, ArrayList databases)
-		throws KettleException
+	public void loadRep(Repository rep, long id_jobentry, ArrayList databases) throws KettleException
 	{
 		try
 		{
