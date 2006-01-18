@@ -45,6 +45,7 @@ import be.ibridge.kettle.trans.step.cubeoutput.CubeOutputMeta;
 import be.ibridge.kettle.trans.step.databasejoin.DatabaseJoinMeta;
 import be.ibridge.kettle.trans.step.databaselookup.DatabaseLookupMeta;
 import be.ibridge.kettle.trans.step.dbproc.DBProcMeta;
+import be.ibridge.kettle.trans.step.denormaliser.DenormaliserMeta;
 import be.ibridge.kettle.trans.step.dimensionlookup.DimensionLookupMeta;
 import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
 import be.ibridge.kettle.trans.step.excelinput.ExcelInputMeta;
@@ -73,7 +74,6 @@ import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
 import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 import be.ibridge.kettle.trans.step.textfileoutput.TextFileOutputMeta;
 import be.ibridge.kettle.trans.step.uniquerows.UniqueRowsMeta;
-import be.ibridge.kettle.trans.step.unpivot.UnpivotMeta;
 import be.ibridge.kettle.trans.step.update.UpdateMeta;
 import be.ibridge.kettle.trans.step.xbaseinput.XBaseInputMeta;
 import be.ibridge.kettle.trans.step.xmlinput.XMLInputMeta;
@@ -127,7 +127,7 @@ public class BaseStep extends Thread
             XMLOutputMeta.class,
             MergeRowsMeta.class,
             ConstantMeta.class,
-            UnpivotMeta.class
+            DenormaliserMeta.class
 		};
 	
 	public static final String type_desc[] = 
@@ -175,7 +175,7 @@ public class BaseStep extends Thread
             "XMLOutput",
             "MergeRows",
             "Constant",
-            "Unpivot"
+            "De-Normaliser"
 		};
 
 	public static final String type_long_desc[] = 
@@ -223,7 +223,7 @@ public class BaseStep extends Thread
             "XML Output",
             "Merge Rows",
             "Add constants",
-            "Unpivot"
+            "Row de-normaliser"
 		};
 
 	public static final String type_tooltip_desc[] = 
@@ -271,7 +271,7 @@ public class BaseStep extends Thread
             "Wite data to an XML file",
             "Merge two streams of rows, sorted on a certain key.  The two streams are compared and the equals, changed, deleted and new rows are flagged.",
             "Add one or more constants to the input rows",
-            "Looks up key-value pairs and assigns them to new fields in the output rows."+Const.CR+"This method aggregates and needs the input rows to be sorted on the grouping fields"
+            "Denormalises rows by looking up key-value pairs and by assigning them to new fields in the output rows."+Const.CR+"This method aggregates and needs the input rows to be sorted on the grouping fields"
 		};
 
 	public static final String image_filename[] =
