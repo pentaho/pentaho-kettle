@@ -56,7 +56,9 @@
 	    <javac srcdir="${src}" 
 	    	   destdir="${classes}"
 	    	   target="1.4"
-	    	   source="1.4">
+	    	   source="1.4"
+	           deprecation="true"
+	    	>
 
 	    	<classpath id="cp-kettle">
 				<fileset dir="${libext}" 		includes="*.jar"/>
