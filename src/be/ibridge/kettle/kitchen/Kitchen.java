@@ -69,26 +69,32 @@ public class Kitchen
 		    System.out.println("  -listdir  : List the directories in the repository");
 		    System.out.println("  -listjobs : List the jobs in the specified directory");
 		    System.out.println("  -listrep  : List the defined repositories");
+            System.out.println("  -norep    : Don't log into the repository");
 		    System.out.println("");
 		    
 		    return;
 		}
 
-		String repname   = Const.getCommandlineOption(args, "-rep");
-		String username  = Const.getCommandlineOption(args, "-user");
-		String password  = Const.getCommandlineOption(args, "-pass");
-		String jobname   = Const.getCommandlineOption(args, "-job");
-		String dirname   = Const.getCommandlineOption(args, "-dir");
-		String filename  = Const.getCommandlineOption(args, "-file");
-		String loglevel  = Const.getCommandlineOption(args, "-level");
-		String logfile   = Const.getCommandlineOption(args, "-log");
-		String listdir   = Const.getCommandlineOption(args, "-listdir");
-		String listjobs  = Const.getCommandlineOption(args, "-listjobs");
-		String listrep   = Const.getCommandlineOption(args, "-listrep");
+		String repname   = Const.getCommandlineOption(args, "rep");
+		String username  = Const.getCommandlineOption(args, "user");
+		String password  = Const.getCommandlineOption(args, "pass");
+		String jobname   = Const.getCommandlineOption(args, "job");
+		String dirname   = Const.getCommandlineOption(args, "dir");
+		String filename  = Const.getCommandlineOption(args, "file");
+		String loglevel  = Const.getCommandlineOption(args, "level");
+		String logfile   = Const.getCommandlineOption(args, "log");
+		String listdir   = Const.getCommandlineOption(args, "listdir");
+		String listjobs  = Const.getCommandlineOption(args, "listjobs");
+		String listrep   = Const.getCommandlineOption(args, "listrep");
+        String norep     = Const.getCommandlineOption(args, "norep");
 
-        repname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", repname);
-        username = Const.getEnvironmentVariable("KETTLE_USER",       username);
-        password = Const.getEnvironmentVariable("KETTLE_PASSWORD",   password);
+        String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
+        String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
+        String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);
+        
+        if (kettleRepname !=null && kettleRepname .length()>0) repname  = kettleRepname;
+        if (kettleUsername!=null && kettleUsername.length()>0) username = kettleUsername;
+        if (kettlePassword!=null && kettlePassword.length()>0) password = kettlePassword;
         
 		// System.out.println("Level="+loglevel);
         LogWriter log;
@@ -138,7 +144,7 @@ public class Kitchen
 			if (repname!=null || filename!=null)
 			{
 				log.logDebug(STRING_KITCHEN, "Parsing command line options.");
-				if (repname!=null)
+				if (repname!=null && !"Y".equalsIgnoreCase(norep))
 				{
 					log.logDebug(STRING_KITCHEN, "Loading available repositories.");
 					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
@@ -228,8 +234,9 @@ public class Kitchen
 						System.out.println("ERROR: No repositories defined on this system.");
 					}
 				}
-				else
-				if (filename!=null)
+				
+                // Try to load if from file anyway.
+				if (filename!=null && job==null)
 				{
 					jobinfo = new JobMeta(log, filename);
 					job = new Job(log, steploader, null, jobinfo);
