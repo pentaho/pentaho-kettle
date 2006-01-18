@@ -300,7 +300,7 @@ public class Database
 			}
 			else
 			{
-			    System.out.println("No commit possible on database connection ["+toString()+"]");
+			    log.logDetailed(toString(), "No commit possible on database connection ["+toString()+"]");
 			}
 		}
 		catch(Exception e)
@@ -315,7 +315,15 @@ public class Database
 	{
 		try
 		{
-			connection.rollback();
+            if (getDatabaseMetaData().supportsTransactions())
+            {
+                connection.rollback();
+            }
+            else
+            {
+                log.logDetailed(toString(), "No rollback possible on database connection ["+toString()+"]");
+            }
+			
 		}
 		catch(SQLException e)
 		{
@@ -584,7 +592,14 @@ public class Database
 				}
 				else
                 {
-                    ps.setNull(pos, java.sql.Types.TIME);
+                    if(v.getPrecision()==1 || !databaseMeta.supportsTimeStampToDateConversion())
+                    {
+                        ps.setNull(pos, java.sql.Types.DATE);
+                    }
+                    else
+                    {
+                        ps.setNull(pos, java.sql.Types.TIME);
+                    }
                 }
 				break;
 			case Value.VALUE_TYPE_BOOLEAN:
@@ -1265,7 +1280,7 @@ public class Database
 	    String debug="insertRow start";
 		try
 		{
-            boolean useBatchInsert = batch && getDatabaseMetaData().supportsBatchUpdates();  
+            boolean useBatchInsert = batch && getDatabaseMetaData().supportsBatchUpdates() && databaseMeta.supportsBatchUpdates();  
 			//
 			// Add support for batch inserts...
 			//
@@ -1330,6 +1345,11 @@ public class Database
 		}
 	}
 	
+    /**
+     * Clears batch of insert prepared statement
+     * @deprecated
+     * @throws KettleDatabaseException
+     */
 	public void clearInsertBatch() throws KettleDatabaseException
 	{
         clearBatch(prepStatementInsert);

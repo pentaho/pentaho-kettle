@@ -317,4 +317,9 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
         return false;
     }
 
+    
+    public boolean supportsBatchUpdates()
+    {
+        return false;
+    }
 }

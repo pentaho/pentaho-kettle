@@ -506,4 +506,10 @@ public interface DatabaseInterface extends Cloneable
      * @return true if the database resultsets support getTimeStamp() to retrieve date-time. (Date)
      */
     public boolean supportsTimeStampToDateConversion();
+
+    /**
+     * @return true if the database JDBC driver supports batch updates
+     * For example Interbase doesn't support this!
+     */
+    public boolean supportsBatchUpdates();
 }

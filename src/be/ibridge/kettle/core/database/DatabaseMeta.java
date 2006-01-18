@@ -1598,6 +1598,10 @@ public class DatabaseMeta implements Cloneable, XMLInterface
             r = new Row(); r.addValue(new Value(par, "SQL: truncate table")); r.addValue(new Value(val, getTruncateTableStatement("TABLE"))); list.add(r);
             // supports float rounding on update?
             r = new Row(); r.addValue(new Value(par, "supports floating point rounding on update/insert")); r.addValue(new Value(val, supportsFloatRoundingOnUpdate())); list.add(r);
+            // supports time stamp to date conversion
+            r = new Row(); r.addValue(new Value(par, "supports timestamp-date conversion")); r.addValue(new Value(val, supportsTimeStampToDateConversion())); list.add(r);
+            // supports batch updates
+            r = new Row(); r.addValue(new Value(par, "supports batch updates")); r.addValue(new Value(val, supportsBatchUpdates())); list.add(r);
         }
         
         return list;
@@ -1610,5 +1614,15 @@ public class DatabaseMeta implements Cloneable, XMLInterface
     {
         return databaseInterface.supportsTimeStampToDateConversion();
     }
+    
+    /**
+     * @return true if the database JDBC driver supports batch updates
+     * For example Interbase doesn't support this!
+     */
+    public boolean supportsBatchUpdates()
+    {
+        return databaseInterface.supportsBatchUpdates();
+    }
+
 
 }

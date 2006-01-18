@@ -705,5 +705,14 @@ abstract class BaseDatabaseMeta implements Cloneable
         return true;
     }
 
+    /**
+     * @return true if the database JDBC driver supports batch updates
+     * For example Interbase doesn't support this!
+     */
+    public boolean supportsBatchUpdates()
+    {
+        return true;
+    }
+
 
 }
