@@ -367,7 +367,7 @@ public class BaseStep extends Thread
             "Experimental",     // "XMLOutut"
             "Transform",        // "MergRows"
             "Transform",        // "Constant"
-            "Experimental",     // "Unpivot"
+            "Experimental",     // "Denormaliser"
 		};
 
     public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Mapping", "Experimental" };
