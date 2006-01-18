@@ -1175,27 +1175,41 @@ public class Const
 	 */
 	public static final String getCommandlineOption(ArrayList args, String option)
 	{
-		String retval=null;
+		String optionStart[] = new String[] { "-", "/" };
+        String optionDelim[] = new String[] { "=", ":" };
 		
-		String optstr = option+"=";
-		
-		for (int i=args.size()-1;i>=0;i--)
-		{
-		    String arg = (String)args.get(i);
-			if (arg!=null && arg.toUpperCase().startsWith(optstr.toUpperCase()) ) 
-			{
-				retval=arg.substring(optstr.length());
-				
-				// remove this options from the arguments list...
-				// This is why we go from back to front...
-				args.remove(i);
-			}
-		}
-		
-        // if (retval!=null) System.out.println("option ["+option+"] : "+retval);
-        
-		return retval;
+        for (int s=0;s<optionStart.length;s++)
+        {
+            for (int d=0;d<optionDelim.length;d++)
+            {
+                String optstr = optionStart[s]+option+optionDelim[d];
+                String retval=searchCommandLineOption(args, optstr);
+                if (retval!=null) return retval;
+            }
+        }
+        return null;
 	}
+    
+    private static final String searchCommandLineOption(ArrayList args, String prefix)
+    {
+        String retval=null;
+        
+        for (int i=args.size()-1;i>=0;i--)
+        {
+            String arg = (String)args.get(i);
+            if (arg!=null && arg.toUpperCase().startsWith(prefix.toUpperCase()) ) 
+            {
+                retval=arg.substring(prefix.length());
+                
+                // remove this options from the arguments list...
+                // This is why we go from back to front...
+                args.remove(i);
+                
+                // System.out.println("Option ["+prefix+"] found: ["+retval+"]");
+            }
+        }
+        return retval;
+    }
 
 	/**
 	 * Retrieves the content of an environment variable
