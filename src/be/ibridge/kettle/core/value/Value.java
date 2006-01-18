@@ -522,7 +522,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
      */
    public BigDecimal getBigNumber()
     {
-        if (value==null) return null;
+        if (value==null || isNull()) return null;
         return value.getBigNumber();
     }
     
@@ -534,7 +534,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public double getNumber()
 	{
-		if (value==null) return 0.0;
+		if (value==null || isNull()) return 0.0;
 		return value.getNumber();
 	}
 
@@ -545,7 +545,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public String getString()
 	{
-		if (value==null) return null;
+		if (value==null || isNull()) return null;
 		return value.getString();
 	}
 	
@@ -567,7 +567,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public Date getDate()
 	{
-		if (value==null) return null;
+		if (value==null || isNull()) return null;
 		return value.getDate();
 	}
 	
@@ -582,7 +582,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public boolean getBoolean()
 	{
-		if (value==null) return false;
+		if (value==null || isNull()) return false;
 		return value.getBoolean();
 	}
 
@@ -598,7 +598,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public long getInteger()
 	{
-		if (value==null) return 0L;
+		if (value==null || isNull()) return 0L;
 		return value.getInteger();
 	}
 	
