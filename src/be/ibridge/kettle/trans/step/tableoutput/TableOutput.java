@@ -176,7 +176,7 @@ public class TableOutput extends BaseStep implements StepInterface
         
 		try
 		{
-		    debug="setValuesInsert";
+            debug="setValuesInsert";
 			data.db.setValues(r, insertStatement);
 		    debug="insertRow";
 			data.db.insertRow(insertStatement, data.batchMode);
