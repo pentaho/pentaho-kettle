@@ -68,28 +68,35 @@ public class Pan
 		    System.out.println("  -listdir   : List the directories in the repository");
 		    System.out.println("  -listtrans : List the transformations in the specified directory");
             System.out.println("  -exprep    : Export all repository objects to one XML file");
+            System.out.println("  -norep     : do not log into the repository");
 		    System.out.println("");
 		    
 		    return;
 		}
 
-		String repname   = Const.getCommandlineOption(args, "-rep");
-		String username  = Const.getCommandlineOption(args, "-user");
-		String password  = Const.getCommandlineOption(args, "-pass");
-		String transname = Const.getCommandlineOption(args, "-trans");
-		String dirname   = Const.getCommandlineOption(args, "-dir");
-		String filename  = Const.getCommandlineOption(args, "-file");
-		String loglevel  = Const.getCommandlineOption(args, "-level");
-		String logfile   = Const.getCommandlineOption(args, "-log");
-		String listdir   = Const.getCommandlineOption(args, "-listdir");
-		String listtrans = Const.getCommandlineOption(args, "-listtrans");
-		String listrep   = Const.getCommandlineOption(args, "-listrep");
-        String exprep    = Const.getCommandlineOption(args, "-exprep");
+		String repname   = Const.getCommandlineOption(args, "rep");
+		String username  = Const.getCommandlineOption(args, "user");
+		String password  = Const.getCommandlineOption(args, "pass");
+		String transname = Const.getCommandlineOption(args, "trans");
+		String dirname   = Const.getCommandlineOption(args, "dir");
+		String filename  = Const.getCommandlineOption(args, "file");
+		String loglevel  = Const.getCommandlineOption(args, "level");
+		String logfile   = Const.getCommandlineOption(args, "log");
+		String listdir   = Const.getCommandlineOption(args, "listdir");
+		String listtrans = Const.getCommandlineOption(args, "listtrans");
+		String listrep   = Const.getCommandlineOption(args, "listrep");
+        String exprep    = Const.getCommandlineOption(args, "exprep");
+        String norep     = Const.getCommandlineOption(args, "norep");
 		
-        repname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", repname);
-        username = Const.getEnvironmentVariable("KETTLE_USER",       username);
-        password = Const.getEnvironmentVariable("KETTLE_PASSWORD",   password);
-
+        String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
+        String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
+        String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);
+        
+        if (kettleRepname !=null && kettleRepname .length()>0) repname  = kettleRepname;
+        if (kettleUsername!=null && kettleUsername.length()>0) username = kettleUsername;
+        if (kettlePassword!=null && kettlePassword.length()>0) password = kettlePassword;
+        
+        /**
         System.out.println("Options:");
         System.out.println("-------------");
         if (repname!=null)   System.out.println("repository name :        "+repname);
@@ -100,6 +107,7 @@ public class Pan
         if (listdir!=null)   System.out.println("list directories");
         if (listtrans!=null) System.out.println("list transformations");
         if (exprep!=null)    System.out.println("export repository to:    "+exprep);
+        */ 
         
 		LogWriter log;
         if (logfile==null)
@@ -142,7 +150,7 @@ public class Pan
 			if (repname!=null || filename!=null)
 			{			
 				log.logDebug("Pan", "Parsing command line options.");
-				if (repname!=null)
+				if (repname!=null && !"Y".equalsIgnoreCase(norep))
 				{
 					log.logDebug("Pan", "Loading available repositories.");
 					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
@@ -262,9 +270,13 @@ public class Pan
 						System.out.println("ERROR: Unable to read/parse the repositories XML file.");
 					}
 				}
-				else
-				if (filename!=null)
+				
+                // Try to load the transformation from file, even if it failed to load from the repository
+                // You could implement some failover mechanism this way.
+                //
+				if (trans==null && filename!=null)
 				{
+                    log.logDetailed("Pan", "Loading transformation from XML file ["+filename+"]");
 					transMeta = new TransMeta(filename);
 					trans = new Trans(log, transMeta);
 				}
@@ -290,7 +302,7 @@ public class Pan
                 ( exprep==null || exprep.length()==0 )
                )
             {
-                System.out.println("ERROR: Pan can't continue because the transformation couldn't be loaded : ");
+                System.out.println("ERROR: Pan can't continue because the transformation couldn't be loaded.");
             }
 			return;
 		}
