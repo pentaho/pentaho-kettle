@@ -4226,18 +4226,22 @@ public class Spoon
 		Splash splash = new Splash(display);
 		
 		// System.out.println("Welcome to Spoon!");
-		String repname   = Const.getCommandlineOption(args, "-rep");
-		String username  = Const.getCommandlineOption(args, "-user");
-		String password  = Const.getCommandlineOption(args, "-pass");
-		String transname = Const.getCommandlineOption(args, "-trans");
-		String filename  = Const.getCommandlineOption(args, "-file");
-		String dirname   = Const.getCommandlineOption(args, "-dir");
-		String logfile   = Const.getCommandlineOption(args, "-log");
-		String loglevel  = Const.getCommandlineOption(args, "-level");
+		String repname   = Const.getCommandlineOption(args, "rep");
+		String username  = Const.getCommandlineOption(args, "user");
+		String password  = Const.getCommandlineOption(args, "pass");
+		String transname = Const.getCommandlineOption(args, "trans");
+		String filename  = Const.getCommandlineOption(args, "file");
+		String dirname   = Const.getCommandlineOption(args, "dir");
+		String logfile   = Const.getCommandlineOption(args, "log");
+		String loglevel  = Const.getCommandlineOption(args, "level");
 
-        repname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", repname);
-        username = Const.getEnvironmentVariable("KETTLE_USER",       username);
-        password = Const.getEnvironmentVariable("KETTLE_PASSWORD",   password);
+        String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
+        String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
+        String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);
+        
+        if (kettleRepname !=null && kettleRepname .length()>0) repname  = kettleRepname;
+        if (kettleUsername!=null && kettleUsername.length()>0) username = kettleUsername;
+        if (kettlePassword!=null && kettlePassword.length()>0) password = kettlePassword;
         
 		// Before anything else, check the runtime version!!!
 		String version = Const.JAVA_VERSION;
