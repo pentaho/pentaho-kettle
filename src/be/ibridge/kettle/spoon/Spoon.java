@@ -1148,11 +1148,14 @@ public class Spoon
         {
             String pluginID = (String)pluginHistory.get(i);
             StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithID(pluginID);
-            Image image = (Image) GUIResource.getInstance().getImagesSteps().get(pluginID);
-
-            TreeItem ti = new TreeItem(tiMain, SWT.NONE);
-            ti.setText(stepPlugin.getDescription());
-            ti.setImage(image);
+            if (stepPlugin!=null)
+            {
+                Image image = (Image) GUIResource.getInstance().getImagesSteps().get(pluginID);
+    
+                TreeItem ti = new TreeItem(tiMain, SWT.NONE);
+                ti.setText(stepPlugin.getDescription());
+                ti.setImage(image);
+            }
         }
         
         tiMain.setExpanded(true);
