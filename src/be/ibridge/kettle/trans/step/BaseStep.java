@@ -23,6 +23,7 @@ package be.ibridge.kettle.trans.step;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
@@ -424,6 +425,8 @@ public class BaseStep extends Thread
 	
 	private StepMetaInterface stepMetaInterface;
 	private StepDataInterface stepDataInterface;
+    
+    private List rowListeners; // List of RowListener interfaces
 	
 	/**
 	 * This is the base step that forms that basis for all steps.  You can derive from this class to implement your own steps.
@@ -484,6 +487,8 @@ public class BaseStep extends Thread
 		if (distributed)	logDetailed("distribution activated");
 		else 			logDetailed("distribution de-activated");
 		
+        rowListeners = new ArrayList();
+        
 		dispatch();
 	}
 	
@@ -699,23 +704,26 @@ public class BaseStep extends Thread
 	 * This should get priority over everything else! (synchronized)
 	 * If distribute is true, a a row is copied only once to a single output rowset!
 	 * 
-	 * @param in The row to put to the destination rowsets.
+	 * @param row The row to put to the destination rowsets.
 	 */
-	public synchronized void putRow(Row in)
+	public synchronized void putRow(Row row)
 	{
-		int i;
-		int sleeptime;
-		RowSet rs;
-
         if (previewSize>0 && previewBuffer.size()<previewSize) 
 		{
-            previewBuffer.add(new Row(in));
+            previewBuffer.add(new Row(row));
 		}
+        
+        // call all rowlisteners...
+        for (int i=0;i<rowListeners.size();i++)
+        {
+            RowListener rowListener = (RowListener)rowListeners.get(i);
+            rowListener.rowWrittenEvent(row);
+        }
 		
 		// Keep adding to terminator_rows buffer...
 		if (terminator && terminator_rows!=null)
 		{
-			terminator_rows.add(new Row(in));
+			terminator_rows.add(new Row(row));
 		}
 		
 		if (outputRowSets.size()==0) 
@@ -727,10 +735,10 @@ public class BaseStep extends Thread
 		//logDebug("putRow() start, output:"+output.size()+", line="+lines_read);
 
 		// Before we copy this row to output, wait for room...
-		for (i=0;i<outputRowSets.size();i++)  // Wait for all rowsets: keep synchronised!
+		for (int i=0;i<outputRowSets.size();i++)  // Wait for all rowsets: keep synchronised!
 		{
-			sleeptime=transMeta.getSleepTimeFull();
-			rs=(RowSet)outputRowSets.get(i);
+			int sleeptime=transMeta.getSleepTimeFull();
+			RowSet rs=(RowSet)outputRowSets.get(i);
 
 			try
 			{
@@ -770,8 +778,8 @@ public class BaseStep extends Thread
 		{
 			// Copy the row to the "next" output rowset.
 			// We keep the next one in out_handling
-			rs=(RowSet)outputRowSets.get(out_handling);
-			rs.putRow(in);
+			RowSet rs=(RowSet)outputRowSets.get(out_handling);
+			rs.putRow(row);
 			linesWritten++;
 			
 			// Now determine the next output rowset!
@@ -785,15 +793,15 @@ public class BaseStep extends Thread
 		else // Copy the row to all output rowsets!
 		{
             // set row in first output rowset
-			rs=(RowSet)outputRowSets.get(0);
-			rs.putRow(in);
+			RowSet rs=(RowSet)outputRowSets.get(0);
+			rs.putRow(row);
 			linesWritten++;
 			
 			// Copy to the row in the other output rowsets...		
-			for (i=1;i<outputRowSets.size();i++)  // start at 1, 0==input rowset
+			for (int i=1;i<outputRowSets.size();i++)  // start at 1, 0==input rowset
 			{
 				rs=(RowSet)outputRowSets.get(i);
-				rs.putRow(new Row(in));
+				rs.putRow(new Row(row));
 			}
 		}
 	}
@@ -802,8 +810,10 @@ public class BaseStep extends Thread
      * This version of getRow() only takes data from certain rowsets We select
      * these rowsets that have name = step Otherwise it's the same as the other
      * one.
+     * @param row the row to send to the destination step
+     * @param to  the name of the step to send the row to
      */
-    public synchronized void putRowTo(Row in, String to) throws KettleStepException
+    public synchronized void putRowTo(Row row, String to) throws KettleStepException
     {
         output_rowset_nr = findOutputRowSetNumber(stepname, getCopy(), to, 0);
         if (output_rowset_nr < 0) 
@@ -816,7 +826,7 @@ public class BaseStep extends Thread
             throw new KettleStepException("Unable to find rowset for target step ["+to+"]"); 
         }
 
-        putRowTo(in, output_rowset_nr);
+        putRowTo(row, output_rowset_nr);
     }
 
 	/**
@@ -824,22 +834,29 @@ public class BaseStep extends Thread
 	 * This should get priority over everything else! (synchronized)
 	 * If distribute is true, a a row is copied only once to a single output rowset!
 	 * 
-	 * @param in The row to put to the destination rowsets.
+	 * @param row The row to put to the destination rowsets.
 	 * @param output_rowset_nr the number of the rowset to put the row to.
 	 */
-	public synchronized void putRowTo(Row in, int output_rowset_nr)
+	public synchronized void putRowTo(Row row, int output_rowset_nr)
 	{
 		int sleeptime;
 		
 		if (previewSize>0 && previewBuffer.size()<previewSize) 
 		{
-			previewBuffer.add(new Row(in));
+			previewBuffer.add(new Row(row));
 		}
+        
+        // call all rowlisteners...
+        for (int i=0;i<rowListeners.size();i++)
+        {
+            RowListener rowListener = (RowListener)rowListeners.get(i);
+            rowListener.rowWrittenEvent(row);
+        }
 		
 		// Keep adding to terminator_rows buffer...
 		if (terminator && terminator_rows!=null)
 		{
-			terminator_rows.add(new Row(in));
+			terminator_rows.add(new Row(row));
 		}
 		
 		if (outputRowSets.size()==0) return; // nothing to do here!
@@ -868,7 +885,7 @@ public class BaseStep extends Thread
 		}
 		
 		// Don't distribute or anything, only go to this rowset!
-		rs.putRow(in);
+		rs.putRow(row);
 		linesWritten++;
 	}
 
@@ -950,12 +967,19 @@ public class BaseStep extends Thread
 		in.setPriorityTo(calcGetPriority(in));
 		
 		// Get this row!
-		Row r=in.getRow();
+		Row row=in.getRow();
 		linesRead++;
+        
+        // Notify all rowlisteners...
+        for (int i=0;i<rowListeners.size();i++)
+        {
+            RowListener rowListener = (RowListener)rowListeners.get(i);
+            rowListener.rowReadEvent(row);
+        }
 		
 		nextInputStream(); // Look for the next input stream to get row from.
 
-		return r;
+		return row;
 	}
 
 	/**
@@ -1006,10 +1030,17 @@ public class BaseStep extends Thread
 			return null;
 		}
 
-		Row r=in.getRow();  // Get this row!
+		Row row=in.getRow();  // Get this row!
 		linesRead++;
+        
+        // call all rowlisteners...
+        for (int i=0;i<rowListeners.size();i++)
+        {
+            RowListener rowListener = (RowListener)rowListeners.get(i);
+            rowListener.rowWrittenEvent(row);
+        }
 		
-		return r;
+		return row;
 	}
 	
 	private synchronized int findInputRowSetNumber(String from, int fromcopy, String to, int tocopy)
@@ -1472,5 +1503,20 @@ public class BaseStep extends Thread
     public void setDistributed(boolean distributed)
     {
         this.distributed = distributed;
+    }
+    
+    public void addRowListener(RowListener rowListener)
+    {
+        rowListeners.add(rowListener);
+    }
+
+    public void removeRowListener(RowListener rowListener)
+    {
+        rowListeners.remove(rowListener);
+    }
+
+    public List getRowListeners()
+    {
+        return rowListeners;
     }
 }

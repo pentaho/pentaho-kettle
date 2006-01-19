@@ -15,6 +15,8 @@
  
 package be.ibridge.kettle.trans.step;
 
+import java.util.List;
+
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 
@@ -159,4 +161,21 @@ public interface StepInterface
      * Signal output done to destination steps
      */
     public void setOutputDone();
+    
+    /**
+     * Add a rowlistener to the step allowing you to inspect (or manipulate, be careful) the rows coming in or exiting the step.
+     * @param rowListener the rowlistener to add
+     */
+    public void addRowListener(RowListener rowListener);
+    
+    /**
+     * Remove a rowlistener from this step.
+     * @param rowListener the rowlistener to remove
+     */
+    public void removeRowListener(RowListener rowListener);
+
+    /**
+     * @return a list of the installed RowListeners
+     */
+    public List getRowListeners();
 }
