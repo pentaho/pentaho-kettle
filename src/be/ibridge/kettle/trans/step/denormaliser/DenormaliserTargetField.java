@@ -2,6 +2,12 @@ package be.ibridge.kettle.trans.step.denormaliser;
 
 import be.ibridge.kettle.core.value.Value;
 
+/**
+ * Contains the properties of the target field, conversion mask, type, aggregation method, etc.
+ * 
+ * @author Matt
+ * @since 17-jan-2006
+ */
 public class DenormaliserTargetField
 {
     private String  fieldName;

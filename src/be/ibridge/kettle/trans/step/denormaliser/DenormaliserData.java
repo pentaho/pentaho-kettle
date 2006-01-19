@@ -24,8 +24,9 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 
 
 /**
+ * Data structure used by Denormaliser during processing
  * @author Matt
- * @since 24-jan-2005
+ * @since 19-jan-2006
  *
  */
 public class DenormaliserData extends BaseStepData implements StepDataInterface

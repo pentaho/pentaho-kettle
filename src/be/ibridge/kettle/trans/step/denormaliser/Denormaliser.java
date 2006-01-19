@@ -35,7 +35,7 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 
 /**
- * Pivots data based on key-value pairs
+ * Denormalises data based on key-value pairs
  * 
  * @author Matt
  * @since 17-jan-2006

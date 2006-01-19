@@ -40,7 +40,7 @@ import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 /**
- * The pivot transformation step meta-data
+ * The Denormaliser transformation step meta-data
  * 
  * @since 17-jan-2006
  * @author Matt
