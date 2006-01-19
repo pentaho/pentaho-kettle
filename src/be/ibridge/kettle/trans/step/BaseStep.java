@@ -52,6 +52,7 @@ import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
 import be.ibridge.kettle.trans.step.excelinput.ExcelInputMeta;
 import be.ibridge.kettle.trans.step.fieldsplitter.FieldSplitterMeta;
 import be.ibridge.kettle.trans.step.filterrows.FilterRowsMeta;
+import be.ibridge.kettle.trans.step.flattener.FlattenerMeta;
 import be.ibridge.kettle.trans.step.groupby.GroupByMeta;
 import be.ibridge.kettle.trans.step.insertupdate.InsertUpdateMeta;
 import be.ibridge.kettle.trans.step.joinrows.JoinRowsMeta;
@@ -128,7 +129,8 @@ public class BaseStep extends Thread
             XMLOutputMeta.class,
             MergeRowsMeta.class,
             ConstantMeta.class,
-            DenormaliserMeta.class
+            DenormaliserMeta.class,
+            FlattenerMeta.class
 		};
 	
 	public static final String type_desc[] = 
@@ -176,7 +178,8 @@ public class BaseStep extends Thread
             "XMLOutput",
             "MergeRows",
             "Constant",
-            "De-Normaliser"
+            "Denormaliser",
+            "Flattener"
 		};
 
 	public static final String type_long_desc[] = 
@@ -224,7 +227,8 @@ public class BaseStep extends Thread
             "XML Output",
             "Merge Rows",
             "Add constants",
-            "Row de-normaliser"
+            "Row denormaliser",
+            "Row flattener"
 		};
 
 	public static final String type_tooltip_desc[] = 
@@ -272,7 +276,8 @@ public class BaseStep extends Thread
             "Wite data to an XML file",
             "Merge two streams of rows, sorted on a certain key.  The two streams are compared and the equals, changed, deleted and new rows are flagged.",
             "Add one or more constants to the input rows",
-            "Denormalises rows by looking up key-value pairs and by assigning them to new fields in the output rows."+Const.CR+"This method aggregates and needs the input rows to be sorted on the grouping fields"
+            "Denormalises rows by looking up key-value pairs and by assigning them to new fields in the output rows."+Const.CR+"This method aggregates and needs the input rows to be sorted on the grouping fields",
+            "Flattens consequetive rows based on the order in which they appear in the input stream"
 		};
 
 	public static final String image_filename[] =
@@ -320,7 +325,8 @@ public class BaseStep extends Thread
             "XOU.png",
             "MRG.png",
             "CST.png",
-            "UNP.png"
+            "UNP.png",
+            "FLA.png"
 		};
 	
 	public static final String category[] = 
@@ -369,6 +375,7 @@ public class BaseStep extends Thread
             "Transform",        // "MergRows"
             "Transform",        // "Constant"
             "Experimental",     // "Denormaliser"
+            "Experimental"      // "Flattener"
 		};
 
     public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Mapping", "Experimental" };
