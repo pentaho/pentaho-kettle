@@ -54,7 +54,7 @@ public class XMLHandler
 
     /**
      * The header string to specify encoding in an XML file
-     * @encoding The desired encoding to use in the XML file
+     * @param encoding The desired encoding to use in the XML file
      * @return The XML header.
      */
     public static final String getXMLHeader(String encoding)

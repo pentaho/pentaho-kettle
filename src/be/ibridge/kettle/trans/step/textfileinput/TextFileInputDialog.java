@@ -1428,7 +1428,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	/**
 	 * Read the data from the TextFileInputMeta object and show it in this dialog.
 	 * 
-	 * @param in The TextFileInputMeta object to obtain the data from.
+	 * @param meta The TextFileInputMeta object to obtain the data from.
 	 */
 	public void getData(TextFileInputMeta meta)
 	{
