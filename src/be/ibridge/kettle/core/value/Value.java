@@ -2854,10 +2854,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
 					DecimalFormat        df  = (DecimalFormat)nf;
 					DecimalFormatSymbols dfs =new DecimalFormatSymbols();
 						
-					if (currency!=null) dfs.setCurrencySymbol( currency );
-					if (grouping!=null) dfs.setGroupingSeparator( grouping.charAt(0) );
-					if (decimal!=null) dfs.setDecimalSeparator( decimal.charAt(0) );
-		            if (pattern!=null) df.applyPattern(pattern);
+					if ( currency!=null && currency.length()>0 ) dfs.setCurrencySymbol( currency );
+					if ( grouping!=null && grouping.length()>0 ) dfs.setGroupingSeparator( grouping.charAt(0) );
+					if ( decimal !=null && decimal .length()>0 ) dfs.setDecimalSeparator( decimal.charAt(0) );
+		            if ( pattern !=null && pattern .length()>0 ) df.applyPattern( pattern );
 					try
 					{
 						setValue( nf.parse(getString()).doubleValue() );
