@@ -33,11 +33,12 @@ import be.ibridge.kettle.core.value.Value;
 
 /**
  * This class describes a single row in a stream of data.
- * A row is a array/list of @see be.ibridge.kettle.core.value.Value objects.
+ * A row is a array/list of Value objects.
  * Note that most methods in this class assume that a value with a certain name only occurs once in the Row.
  * 
  * @author Matt
  * @since Beginning 2003.
+ * @see be.ibridge.kettle.core.value.Value
  * 
  */
 public class Row implements XMLInterface, Comparable, Serializable
