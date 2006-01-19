@@ -2486,6 +2486,11 @@ public class TableView extends Composite
 		}
 	}
 	
+    /**
+     * Get all the strings from a certain column as an array
+     * @param colnr The column to return
+     * @return the column values as a string array.
+     */
 	public String[] getItems(int colnr)
 	{
 		String retval[] = new String[table.getItemCount()];
