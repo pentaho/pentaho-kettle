@@ -109,7 +109,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Group By");
+		shell.setText("Denormaliser");
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
