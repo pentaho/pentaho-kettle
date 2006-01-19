@@ -274,4 +274,9 @@ public class DenormaliserTargetField
         return getAggregationTypeDesc(targetAggregationType);
     }
 
+    public String getTargetAggregationTypeDescLong()
+    {
+        return getAggregationTypeDescLong(targetAggregationType);
+    }
+
 }

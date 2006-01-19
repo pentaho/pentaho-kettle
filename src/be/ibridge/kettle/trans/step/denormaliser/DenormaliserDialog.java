@@ -214,7 +214,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
              new ColumnInfo("Decimal",              ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo("Group",                ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo("Null if",              ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Aggregation",          ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo("Aggregation",          ColumnInfo.COLUMN_TYPE_CCOMBO,  DenormaliserTargetField.typeAggrLongDesc, false),
           };
         
         ciTarget[ciTarget.length-1].setToolTip("This is the aggregation to will be calculated in case of a key-value collision.  None means: overwrite value");
@@ -318,7 +318,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
             if (field.getTargetDecimalSymbol() != null )  item.setText( 9, field.getTargetDecimalSymbol());
             if (field.getTargetGroupingSymbol() != null ) item.setText(10, field.getTargetGroupingSymbol());
             if (field.getTargetNullString() != null )     item.setText(11, field.getTargetNullString());
-            if (field.getTargetAggregationType()>=0 )     item.setText(11, field.getTargetAggregationTypeDesc());
+            if (field.getTargetAggregationType()>=0 )     item.setText(12, field.getTargetAggregationTypeDescLong());
         }
 		
 		wStepname.selectAll();
@@ -419,19 +419,31 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 
 	private void getAgg()
 	{
+        // The grouping fields: ignore those.
+        wGroup.removeEmptyRows();
+        String[] groupingFields = wGroup.getItems(0);
 		try
 		{
 			Row r = transMeta.getPrevStepFields(stepname);
 			if (r!=null)
 			{
+                int nr=1;
 				Table table=wTarget.table;
 				for (int i=0;i<r.size();i++)
 				{
 					Value v = r.getValue(i);
-					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(1, v.getName());
-					ti.setText(2, v.getName());
-					ti.setText(3, "");
+                    if (Const.indexOfString(v.getName(), groupingFields)<0) // Not a grouping field
+                    {
+                        if (!wKeyField.getText().equalsIgnoreCase(v.getName())) // Not the key field
+                        {
+        					TableItem ti = new TableItem(table, SWT.NONE);
+        					ti.setText(1, "Field"+nr); // the target fieldname
+        					ti.setText(2, v.getName());
+                            ti.setText(4, v.getTypeDesc());
+        					if (v.getLength()>=0) ti.setText(6, ""+v.getLength());
+                            if (v.getPrecision()>=0) ti.setText(7, ""+v.getPrecision());
+                        }
+                    }
 				}
 				wTarget.removeEmptyRows();
 				wTarget.setRowNums();

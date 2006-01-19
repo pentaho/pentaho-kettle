@@ -66,6 +66,7 @@ public class Denormaliser extends BaseStep implements StepInterface
                 deNormalise(data.previous);
                 buildResult(data.previous);
 				putRow(data.previous);
+                System.out.println("Wrote row: "+data.previous);
 			}
 
 			setOutputDone();
@@ -148,6 +149,7 @@ public class Denormaliser extends BaseStep implements StepInterface
             
     		buildResult(data.previous);
     		putRow(data.previous);        // copy row to possible alternate rowset(s).
+            System.out.println("Wrote row: "+data.previous);
             newGroup();       // Create a new group aggregate (init)
             deNormalise(r);
 		}
@@ -227,6 +229,13 @@ public class Denormaliser extends BaseStep implements StepInterface
         }
 	}
 	
+    /**
+     * This method de-normalises a single key-value pair.
+     * It looks up the key and determines the value name to store it in.
+     * It converts it to the right type and stores it in the result row.
+     * @param r
+     * @throws KettleValueException
+     */
 	private void deNormalise(Row r) throws KettleValueException
 	{
         String key = r.getValue(data.keyFieldNr).getString();
@@ -238,30 +247,35 @@ public class Denormaliser extends BaseStep implements StepInterface
             int idx = keyNr.intValue();
             DenormaliserTargetField field = meta.getDenormaliserTargetField()[idx];
             
-            Value targetValue = r.getValue(data.fieldNameIndex[idx]);
-            
+            Value targetValue = r.getValue(data.fieldNameIndex[idx]); // This is the value we need to de-normalise, convert, aggregate.
+
+            System.out.println("Value type: "+targetValue.getTypeDesc()+"("+targetValue+"), convert to type : "+field.getTargetTypeDesc());
+
             // See if we need to convert this value
-            int targetType = field.getTargetType();
-            if (targetValue.getType() != targetType)
+            if (targetValue.getType() != field.getTargetType())
             {
-                switch(field.getTargetType())
+                switch(targetValue.getType())
                 {
                 case Value.VALUE_TYPE_STRING:
-                    switch(targetType)
+                    switch(field.getTargetType())
                     {
                     case Value.VALUE_TYPE_DATE:      targetValue.str2dat(field.getTargetFormat()); break; 
-                    case Value.VALUE_TYPE_INTEGER:   targetValue.setType(targetType); break; 
-                    case Value.VALUE_TYPE_NUMBER:    targetValue.str2num(field.getTargetFormat(), field.getTargetDecimalSymbol(), field.getTargetGroupingSymbol(), field.getTargetCurrencySymbol()); break;
-                    case Value.VALUE_TYPE_BIGNUMBER: targetValue.setType(targetType); break; 
-                    case Value.VALUE_TYPE_BOOLEAN:   targetValue.setType(targetType); break; 
+                    case Value.VALUE_TYPE_INTEGER:   targetValue.setType(targetValue.getType()); break; 
+                    case Value.VALUE_TYPE_NUMBER:
+                        // System.out.println("target value ["+targetValue+"] ("+targetValue.toStringMeta()+") : convert to number("+field.getTargetFormat()+" / "+field.getTargetDecimalSymbol()+" / "+field.getTargetGroupingSymbol()+" / "+field.getTargetCurrencySymbol());
+                        targetValue.str2num(field.getTargetFormat(), field.getTargetDecimalSymbol(), field.getTargetGroupingSymbol(), field.getTargetCurrencySymbol()); break;
+                    case Value.VALUE_TYPE_BIGNUMBER: targetValue.setType(targetValue.getType()); break; 
+                    case Value.VALUE_TYPE_BOOLEAN:   targetValue.setType(targetValue.getType()); break; 
                     default: break;
                     }
                 default:
-                    targetValue.setType(targetType); break;
+                    targetValue.setType(targetValue.getType()); break;
                 }
             }
      
             Value prevTarget = data.targetResult.getValue(idx);
+            // System.out.println("TargetValue="+targetValue+", Prev TargetResult="+prevTarget);
+            
             switch(field.getTargetAggregationType())
             {
             case DenormaliserTargetField.TYPE_AGGR_SUM:
@@ -289,7 +303,6 @@ public class Denormaliser extends BaseStep implements StepInterface
                 break;
             }
             
-            System.out.println("TargetValue="+targetValue+", Prev TargetResult="+prevTarget);
         }
 	}
     
