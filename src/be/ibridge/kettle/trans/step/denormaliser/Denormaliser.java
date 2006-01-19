@@ -66,7 +66,7 @@ public class Denormaliser extends BaseStep implements StepInterface
                 deNormalise(data.previous);
                 buildResult(data.previous);
 				putRow(data.previous);
-                System.out.println("Wrote row: "+data.previous);
+                //System.out.println("Wrote row: "+data.previous);
 			}
 
 			setOutputDone();
@@ -149,7 +149,7 @@ public class Denormaliser extends BaseStep implements StepInterface
             
     		buildResult(data.previous);
     		putRow(data.previous);        // copy row to possible alternate rowset(s).
-            System.out.println("Wrote row: "+data.previous);
+            //System.out.println("Wrote row: "+data.previous);
             newGroup();       // Create a new group aggregate (init)
             deNormalise(r);
 		}
@@ -249,7 +249,7 @@ public class Denormaliser extends BaseStep implements StepInterface
             
             Value targetValue = r.getValue(data.fieldNameIndex[idx]); // This is the value we need to de-normalise, convert, aggregate.
 
-            System.out.println("Value type: "+targetValue.getTypeDesc()+"("+targetValue+"), convert to type : "+field.getTargetTypeDesc());
+            // System.out.println("Value type: "+targetValue.getTypeDesc()+"("+targetValue+"), convert to type : "+field.getTargetTypeDesc());
 
             // See if we need to convert this value
             if (targetValue.getType() != field.getTargetType())
