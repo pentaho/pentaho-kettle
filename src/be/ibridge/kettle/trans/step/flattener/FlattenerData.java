@@ -30,7 +30,8 @@ public class FlattenerData extends BaseStepData implements StepDataInterface
     public Row  targetRow;
 	public Row  targetResult;
     public int  processed;
-    public int fieldNr;
+    public int  fieldNr;
+    public Row  previousRow;
 
 	/**
 	 * 

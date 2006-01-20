@@ -57,13 +57,20 @@ public class Flattener extends BaseStep implements StepInterface
 			// Don't forget the last set of rows...
 			if (data.processed>0) 
 			{
-				putRow(data.targetResult);
+                // Remove value to flatten
+                data.previousRow.removeValue( data.fieldNr );
+
+                // Add the fields we flattened
+                data.previousRow.addRow(data.targetResult);
+                
+                // send out inputrow + the flattened part
+                putRow(data.previousRow);
 			}
 
 			setOutputDone();
 			return false;
 		}
-				
+		
 		if (first)
 		{
             data.fieldNr = r.searchValueIndex(meta.getFieldName() );
@@ -82,6 +89,7 @@ public class Flattener extends BaseStep implements StepInterface
                 Value v = new Value(meta.getTargetField()[i], flattenValue.getType());
                 v.setLength(flattenValue.getLength());
                 v.setPrecision(flattenValue.getPrecision());
+                v.setNull();
                 data.targetRow.addValue(v);
             }
 			
@@ -103,14 +111,17 @@ public class Flattener extends BaseStep implements StepInterface
             // Add the fields we flattened
             r.addRow(data.targetResult);
             
-            // send out the flattened row
-            putRow(data.targetResult);
+            // send out inputrow + the flattened part
+            putRow(r);
             
             // clear the result row
             data.targetResult = new Row(data.targetRow);
             
             data.processed=0;
         }
+        
+        // Keep track in case we want to send out the last couple of flattened values.
+        data.previousRow = r;
 
         if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesRead);
 			
