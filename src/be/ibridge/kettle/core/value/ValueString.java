@@ -85,7 +85,7 @@ public class ValueString implements ValueInterface, Cloneable
 
 	public boolean getBoolean()
 	{
-		return "Y".equalsIgnoreCase(string) || "TRUE".equalsIgnoreCase(string) || "YES".equalsIgnoreCase(string);
+		return "Y".equalsIgnoreCase(string) || "TRUE".equalsIgnoreCase(string) || "YES".equalsIgnoreCase(string) || "1".equalsIgnoreCase(string);
 	}
 
 	public long getInteger()
