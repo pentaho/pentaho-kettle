@@ -2525,7 +2525,6 @@ public class Repository
 
 	public long getStepAttributeInteger(long id_step, int nr, String code) throws KettleDatabaseException
 	{
-	    
 		Row r = null;
 		if (stepAttributesBuffer!=null) r = searchStepAttributeInBuffer(id_step, code, (long)nr);
 		else                            r = getStepAttributeRow(id_step, nr, code);
