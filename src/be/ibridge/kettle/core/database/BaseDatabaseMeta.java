@@ -714,5 +714,14 @@ abstract class BaseDatabaseMeta implements Cloneable
         return true;
     }
 
+    /**
+     * @return true if the database supports a boolean, bit, logical, ... datatype
+     * The default is false: map to a string.
+     */
+    public boolean supportsBooleanDataType()
+    {
+        return false;
+    }
+
 
 }

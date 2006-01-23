@@ -512,4 +512,9 @@ public interface DatabaseInterface extends Cloneable
      * For example Interbase doesn't support this!
      */
     public boolean supportsBatchUpdates();
+
+    /**
+     * @return true if the database supports a boolean, bit, logical, ... datatype
+     */
+    public boolean supportsBooleanDataType();
 }

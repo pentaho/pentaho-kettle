@@ -604,13 +604,27 @@ public class Database
 				break;
 			case Value.VALUE_TYPE_BOOLEAN:
 				debug="Boolean";
-				if (!v.isNull())
+                if (databaseMeta.supportsBooleanDataType())
                 {
-                    ps.setString(pos, v.getBoolean()?"Y":"N");
+                    if (!v.isNull())
+                    {
+                        ps.setBoolean(pos, v.getBoolean());
+                    }
+                    else 
+                    {
+                        ps.setNull(pos, java.sql.Types.BOOLEAN);
+                    }
                 }
-				else 
+                else
                 {
-                    ps.setNull(pos, java.sql.Types.CHAR);
+    				if (!v.isNull())
+                    {
+                        ps.setString(pos, v.getBoolean()?"Y":"N");
+                    }
+    				else 
+                    {
+                        ps.setNull(pos, java.sql.Types.CHAR);
+                    }
                 }
 				break;
 			default:

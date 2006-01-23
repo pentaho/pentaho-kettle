@@ -1602,6 +1602,8 @@ public class DatabaseMeta implements Cloneable, XMLInterface
             r = new Row(); r.addValue(new Value(par, "supports timestamp-date conversion")); r.addValue(new Value(val, supportsTimeStampToDateConversion())); list.add(r);
             // supports batch updates
             r = new Row(); r.addValue(new Value(par, "supports batch updates")); r.addValue(new Value(val, supportsBatchUpdates())); list.add(r);
+            // supports boolean values
+            r = new Row(); r.addValue(new Value(par, "supports boolean data type")); r.addValue(new Value(val, supportsBooleanDataType())); list.add(r);
         }
         
         return list;
@@ -1624,5 +1626,12 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         return databaseInterface.supportsBatchUpdates();
     }
 
-
+   
+    /**
+     * @return true if the database supports a boolean, bit, logical, ... datatype
+     */
+    public boolean supportsBooleanDataType()
+    {
+        return databaseInterface.supportsBooleanDataType();
+    }
 }
