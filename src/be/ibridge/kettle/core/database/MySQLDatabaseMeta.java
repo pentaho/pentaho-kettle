@@ -178,11 +178,11 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		int type         = v.getType();
 		switch(type)
 		{
-		case Value.VALUE_TYPE_DATE   : retval+="DATETIME"; break;
-		case Value.VALUE_TYPE_BOOLEAN: retval+="CHAR(1)"; break;
-		case Value.VALUE_TYPE_NUMBER :
-		case Value.VALUE_TYPE_INTEGER: 
-        case Value.VALUE_TYPE_BIGNUMBER: 
+		case Value.VALUE_TYPE_DATE      : retval+="DATETIME"; break;
+		case Value.VALUE_TYPE_BOOLEAN   : retval+="BIT"; break;
+		case Value.VALUE_TYPE_NUMBER    :
+		case Value.VALUE_TYPE_INTEGER   : 
+        case Value.VALUE_TYPE_BIGNUMBER : 
 			if (fieldname.equalsIgnoreCase(tk) || // Technical key
 			    fieldname.equalsIgnoreCase(pk)    // Primary key
 			    ) 
