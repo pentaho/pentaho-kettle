@@ -646,6 +646,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                 int repeats = 1;
                 if (meta.isLineWrapped()) repeats=  meta.getNrWraps()>0  ?  meta.getNrWraps() :repeats;
                 
+                // Read a number of lines...
                 for (int i=0;i<repeats && !data.doneReading;i++)
                 {
                     debug="get a new line of data";
@@ -656,38 +657,42 @@ public class TextFileInput extends BaseStep implements StepInterface
                         boolean filterOK=true;
                         
                         // Filter row?
-                        if (meta.hasFilter() && meta.getFilterString()!=null && meta.getFilterString().length()>0)
+                        for (int f=0;f<meta.getFilter().length && filterOK;f++)
                         {
-                            int from = meta.getFilterPosition();
-                            if (from>=0)
+                            TextFileFilter filter = meta.getFilter()[f];
+                            if (filter.getFilterString()!=null && filter.getFilterString().length()>0)
                             {
-                                int to   = from + meta.getFilterString().length();
-                                debug="verify filter : get substring("+from+", "+to+") line length="+line.length();
-                                if (line.length()>=from && line.length()>=to)
+                                int from = filter.getFilterPosition();
+                                if (from>=0)
                                 {
-                                    String sub = line.substring(meta.getFilterPosition(), to);
-                                    if (sub.equalsIgnoreCase(meta.getFilterString()))
+                                    int to   = from + filter.getFilterString().length();
+                                    debug="verify filter : get substring("+from+", "+to+") line length="+line.length();
+                                    if (line.length()>=from && line.length()>=to)
                                     {
-                                        filterOK=false; // skip this one!
+                                        String sub = line.substring(filter.getFilterPosition(), to);
+                                        if (sub.equalsIgnoreCase(filter.getFilterString()))
+                                        {
+                                            filterOK=false; // skip this one!
+                                        }
                                     }
                                 }
-                            }
-                            else // anywhere on the line
-                            {
-                                int idx = line.indexOf(meta.getFilterString());
-                                if (idx>=0)
+                                else // anywhere on the line
                                 {
-                                    filterOK=false;
+                                    int idx = line.indexOf(filter.getFilterString());
+                                    if (idx>=0)
+                                    {
+                                        filterOK=false;
+                                    }
                                 }
-                            }
-                            
-                            if (!filterOK)
-                            {
-                                if (meta.isFilterLastLine())
+                                
+                                if (!filterOK)
                                 {
-                                    data.doneReading=true;
+                                    if (filter.isFilterLastLine())
+                                    {
+                                        data.doneReading=true;
+                                    }
+                                    repeats++; // grab another line, this one got filtered
                                 }
-                                repeats++; // grab another line, this one got filtered
                             }
                         }
 

@@ -130,23 +130,12 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     /** The maximum number or lines to read */
     private long               rowLimit;
 
-    /** Flag indicating that we want to filter the input based on the occurance of a string on a certain position */
-    private boolean            filter;
-
-    /** The position on which the filter is taking place
-     * TODO Add support for multiple positions, string and lastLine flags 
-     * */
-    private int                filterPosition;
-
-    /** The string to filter on */
-    private String             filterString;
-
-    /** True if we want to stop when we reach a filter line */
-    private boolean            filterLastLine;
-    
     /** The fields to import... */
     private TextFileInputField inputFields[];
 
+    /** The filters to use... */
+    private TextFileFilter filter[];
+    
     /** The encoding to use for reading: null or empty string means system default encoding */
     private String encoding;
     
@@ -296,53 +285,21 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     /**
-     * @return Returns the filter.
+     * @return The array of filters for the metadata of this text file input step. 
      */
-    public boolean hasFilter()
+    public TextFileFilter[] getFilter()
     {
         return filter;
     }
-
+    
     /**
-     * @param filter The filter to set.
+     * @param filter The array of filters to use
      */
-    public void setFilter(boolean filter)
+    public void setFilter(TextFileFilter[] filter)
     {
         this.filter = filter;
     }
-
-    /**
-     * @return Returns the filterPosition.
-     */
-    public int getFilterPosition()
-    {
-        return filterPosition;
-    }
-
-    /**
-     * @param filterPosition The filterPosition to set.
-     */
-    public void setFilterPosition(int filterPosition)
-    {
-        this.filterPosition = filterPosition;
-    }
-
-    /**
-     * @return Returns the filterString.
-     */
-    public String getFilterString()
-    {
-        return filterString;
-    }
-
-    /**
-     * @param filterString The filterString to set.
-     */
-    public void setFilterString(String filterString)
-    {
-        this.filterString = filterString;
-    }
-
+ 
     /**
      * @return Returns the footer.
      */
@@ -498,23 +455,31 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
         int nrfiles = fileName.length;
         int nrfields = inputFields.length;
+        int nrfilters = filter.length;
 
-        retval.allocate(nrfiles, nrfields);
+        retval.allocate(nrfiles, nrfields, nrfilters);
 
         for (int i = 0; i < nrfields; i++)
         {
             retval.inputFields[i] = (TextFileInputField) inputFields[i].clone();
         }
 
+        for (int i = 0; i < nrfilters; i++)
+        {
+            retval.filter[i] = (TextFileFilter) filter[i].clone();
+        }
+
         return retval;
     }
 
-    public void allocate(int nrfiles, int nrfields)
+    public void allocate(int nrfiles, int nrfields, int nrfilters)
     {
         fileName = new String[nrfiles];
         fileMask = new String[nrfiles];
 
         inputFields = new TextFileInputField[nrfields];
+        
+        filter = new TextFileFilter[nrfilters];
     }
 
     public void setDefault()
@@ -539,15 +504,11 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         includeRowNumber = false;
         rowNumberField = "";
 
-        filter = false;
-        filterPosition = -1;
-        filterString = "";
-        filterLastLine = false;
-
         int nrfiles = 0;
         int nrfields = 0;
-
-        allocate(nrfiles, nrfields);
+        int nrfilters = 0;
+        
+        allocate(nrfiles, nrfields, nrfilters);
 
         for (int i = 0; i < nrfiles; i++)
         {
@@ -644,10 +605,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         retval += "    " + XMLHandler.addTagValue("rownum_field", rowNumberField);
         retval += "    " + XMLHandler.addTagValue("format", fileFormat);
         retval += "    " + XMLHandler.addTagValue("encoding", encoding);
-        retval += "    " + XMLHandler.addTagValue("filter", filter);
-        retval += "    " + XMLHandler.addTagValue("filter_position", filterPosition);
-        retval += "    " + XMLHandler.addTagValue("filter_string", filterString);
-        retval += "    " + XMLHandler.addTagValue("filter_is_last_line", filterLastLine);
+
         retval += "    <file>" + Const.CR;
         for (int i = 0; i < fileName.length; i++)
         {
@@ -657,8 +615,20 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         retval += "      " + XMLHandler.addTagValue("type", fileType);
         retval += "      " + XMLHandler.addTagValue("zipped", zipped);
         retval += "      </file>" + Const.CR;
-        retval += "    <fields>" + Const.CR;
+        
+        retval += "    <filters>" + Const.CR;
+        for (int i = 0; i < filter.length; i++)
+        {
+            retval += "      <filter>" + Const.CR;
+            retval += "        " + XMLHandler.addTagValue("filter_string", filter[i].getFilterString(), false);
+            retval += "        " + XMLHandler.addTagValue("filter_position", filter[i].getFilterPosition(), false);
+            retval += "        " + XMLHandler.addTagValue("filter_is_last_line", filter[i].isFilterLastLine(), false);
+            retval += "      <filter>" + Const.CR;
+        }
+        retval += "      </filters>" + Const.CR;
+        
 
+        retval += "    <fields>" + Const.CR;
         for (int i = 0; i < inputFields.length; i++)
         {
             TextFileInputField field = inputFields[i];
@@ -694,9 +664,6 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            int nrfiles, nrfields;
-            String lim;
-
             separator = XMLHandler.getTagValue(stepnode, "separator");
             enclosure = XMLHandler.getTagValue(stepnode, "enclosure");
             escapeCharacter = XMLHandler.getTagValue(stepnode, "escapechar");
@@ -719,17 +686,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             fileFormat = XMLHandler.getTagValue(stepnode, "format");
             encoding = XMLHandler.getTagValue(stepnode, "encoding");
 
-            filter = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filter"));
-            filterPosition = Const.toInt(XMLHandler.getTagValue(stepnode, "filter_position"), -1);
-            filterString = XMLHandler.getTagValue(stepnode, "filter_string");
-            filterLastLine = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filter_is_last_line"));
+            Node filenode    = XMLHandler.getSubNode(stepnode, "file");
+            Node fields      = XMLHandler.getSubNode(stepnode, "fields");
+            Node filtersNode = XMLHandler.getSubNode(stepnode, "filters");
+            int nrfiles   = XMLHandler.countNodes(filenode, "name");
+            int nrfields  = XMLHandler.countNodes(fields, "field");
+            int nrfilters = XMLHandler.countNodes(fields, "filter");
 
-            Node filenode = XMLHandler.getSubNode(stepnode, "file");
-            Node fields = XMLHandler.getSubNode(stepnode, "fields");
-            nrfiles = XMLHandler.countNodes(filenode, "name");
-            nrfields = XMLHandler.countNodes(fields, "field");
-
-            allocate(nrfiles, nrfields);
+            allocate(nrfiles, nrfields, nrfilters);
 
             for (int i = 0; i < nrfiles; i++)
             {
@@ -741,6 +705,29 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
             fileType = XMLHandler.getTagValue(stepnode, "file", "type");
             zipped = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "zipped"));
+
+            // Backward compatibility : just one filter
+            if (XMLHandler.getTagValue(stepnode, "filter")!=null)
+            {
+                filter = new TextFileFilter[1];
+                filter[0] = new TextFileFilter();
+                
+                filter[0].setFilterPosition( Const.toInt(XMLHandler.getTagValue(stepnode, "filter_position"), -1) );
+                filter[0].setFilterString( XMLHandler.getTagValue(stepnode, "filter_string") );
+                filter[0].setFilterLastLine( "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filter_is_last_line")) );
+            }
+            else
+            {
+                for (int i=0; i < nrfilters ; i++)
+                {
+                    Node fnode = XMLHandler.getSubNodeByNr(filtersNode, "filter", i);
+                    filter[i] = new TextFileFilter();
+
+                    filter[i].setFilterPosition( Const.toInt(XMLHandler.getTagValue(fnode, "filter_position"), -1) );
+                    filter[i].setFilterString( XMLHandler.getTagValue(fnode, "filter_string") );
+                    filter[i].setFilterLastLine( "Y".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "filter_is_last_line")) );
+                }
+            }
 
             for (int i = 0; i < nrfields; i++)
             {
@@ -769,8 +756,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             }
 
             // Is there a limit on the number of rows we process?
-            lim = XMLHandler.getTagValue(stepnode, "limit");
-            rowLimit = Const.toLong(lim, 0L);
+            rowLimit = Const.toLong( XMLHandler.getTagValue(stepnode, "limit"), 0L);
 
             errorIgnored = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "error_ignored") );
             errorCountField = XMLHandler.getTagValue(stepnode, "error_count_field");
@@ -807,17 +793,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             rowNumberField = rep.getStepAttributeString(id_step, "rownum_field");
             fileFormat = rep.getStepAttributeString(id_step, "format");
             encoding = rep.getStepAttributeString(id_step, "encoding");
-            filter = rep.getStepAttributeBoolean(id_step, "filter");
-            filterPosition = (int) rep.getStepAttributeInteger(id_step, "filter_position");
-            filterString = rep.getStepAttributeString(id_step, "filter_string");
-            filterLastLine = rep.getStepAttributeBoolean(id_step, "filter_is_last_line");
 
             rowLimit = (int) rep.getStepAttributeInteger(id_step, "limit");
 
             int nrfiles = rep.countNrStepAttributes(id_step, "file_name");
             int nrfields = rep.countNrStepAttributes(id_step, "field_name");
+            int nrfilters = rep.countNrStepAttributes(id_step, "filter_string");
 
-            allocate(nrfiles, nrfields);
+            allocate(nrfiles, nrfields, nrfilters);
 
             for (int i = 0; i < nrfiles; i++)
             {
@@ -827,6 +810,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             fileType = rep.getStepAttributeString(id_step, "file_type");
             zipped = rep.getStepAttributeBoolean(id_step, "file_zipped");
 
+            for (int i = 0; i < nrfilters; i++)
+            {
+                filter[i] = new TextFileFilter();
+                filter[i].setFilterPosition( (int) rep.getStepAttributeInteger(id_step, i, "filter_position") );
+                filter[i].setFilterString( rep.getStepAttributeString(id_step, i, "filter_string") );
+                filter[i].setFilterLastLine( rep.getStepAttributeBoolean(id_step, i, "filter_is_last_line") );
+            }
+            
             for (int i = 0; i < nrfields; i++)
             {
                 TextFileInputField field = new TextFileInputField();
@@ -882,10 +873,6 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "rownum_field", rowNumberField);
             rep.saveStepAttribute(id_transformation, id_step, "format", fileFormat);
             rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding);
-            rep.saveStepAttribute(id_transformation, id_step, "filter", filter);
-            rep.saveStepAttribute(id_transformation, id_step, "filter_position", filterPosition);
-            rep.saveStepAttribute(id_transformation, id_step, "filter_string", filterString);
-            rep.saveStepAttribute(id_transformation, id_step, "filter_is_last_line", filterLastLine);
 
             rep.saveStepAttribute(id_transformation, id_step, "limit", rowLimit);
 
@@ -897,6 +884,13 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "file_type", fileType);
             rep.saveStepAttribute(id_transformation, id_step, "file_zipped", zipped);
 
+            for (int i = 0; i < filter.length ; i++)
+            {
+                rep.saveStepAttribute(id_transformation, id_step, i, "filter_position", filter[i].getFilterPosition());
+                rep.saveStepAttribute(id_transformation, id_step, i, "filter_string", filter[i].getFilterString());
+                rep.saveStepAttribute(id_transformation, id_step, i, "filter_is_last_line", filter[i].isFilterLastLine());
+            }
+            
             for (int i = 0; i < inputFields.length; i++)
             {
                 TextFileInputField field = inputFields[i];
@@ -1236,21 +1230,4 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         this.nrLinesDocHeader = nrLinesDocHeader;
     }
 
-    /**
-     * @return Returns the filterLastLine.
-     */
-    public boolean isFilterLastLine()
-    {
-        return filterLastLine;
-    }
-
-    /**
-     * @param filterLastLine The filterLastLine to set.
-     */
-    public void setFilterLastLine(boolean filterLastLine)
-    {
-        this.filterLastLine = filterLastLine;
-    }
-    
-    
 }

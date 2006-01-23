@@ -88,10 +88,17 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wFileTab, wContentTab, wFieldsTab;
+	private CTabItem     wFileTab, wContentTab;
+    private CTabItem     wFilterTab;
+    private CTabItem     wFieldsTab;
 
-	private Composite    wFileComp, wContentComp, wFieldsComp;
-	private FormData     fdFileComp, fdContentComp, fdFieldsComp;
+	private Composite    wFileComp, wContentComp;
+    private Composite    wFilterComp;
+    private Composite    wFieldsComp;
+    
+	private FormData     fdFileComp, fdContentComp;
+    private FormData     fdFilterComp;
+    private FormData     fdFieldsComp;
 
 	private Label        wlFilename;
 	private Button       wbbFilename; // Browse: add file or directory
@@ -210,22 +217,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private Text         wLimit;
 	private FormData     fdlLimit, fdLimit;
 
-	private Label        wlFilter;
-	private Button       wFilter;
-	private FormData     fdlFilter, fdFilter;
-
-	private Label        wlFilterPos;
-	private Text         wFilterPos;
-	private FormData     fdlFilterPos, fdFilterPos;
-
-	private Label        wlFilterStr;
-	private Text         wFilterStr;
-	private FormData     fdlFilterStr, fdFilterStr;
-
-    private Label        wlFilterLast;
-    private Button       wFilterLast;
-    private FormData     fdlFilterLast, fdFilterLast;
-
     // ERROR HANDLING...
     private Label        wlErrorIgnored;
     private Button       wErrorIgnored;
@@ -243,6 +234,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private Text         wErrorText;
     private FormData     fdlErrorText, fdErrorText;
 
+    
+    private TableView    wFilter;
+    private FormData     fdFilter;
+    
 	private TableView    wFields;
 	private FormData     fdFields;
 
@@ -250,6 +245,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 	// Wizard info...
 	private Vector fields;
+    
+    private int middle, margin;
+    private ModifyListener lsMod;
 		
 	private static final String STRING_PREVIEW_ROWS    = "  &Preview rows   "; 
 	
@@ -275,7 +273,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
 
-		ModifyListener lsMod = new ModifyListener() 
+		lsMod = new ModifyListener() 
 		{
 			public void modifyText(ModifyEvent e) 
 			{
@@ -291,8 +289,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		shell.setLayout(formLayout);
 		shell.setText("Text file input");
 		
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+		middle = props.getMiddlePct();
+		margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
@@ -482,646 +480,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		/// END OF FILE TAB
 		/////////////////////////////////////////////////////////////
 
+		addContentTab();
+		addFiltersTabs();
+        addFieldsTabs();
 
-		//////////////////////////
-		// START OF CONTENT TAB///
-		///
-		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText("Content");
-
-		FormLayout contentLayout = new FormLayout ();
-		contentLayout.marginWidth  = 3;
-		contentLayout.marginHeight = 3;
-		
-		wContentComp = new Composite(wTabFolder, SWT.NONE);
- 		props.setLook(wContentComp);
-		wContentComp.setLayout(contentLayout);
-
-		// Filetype line
-		wlFiletype=new Label(wContentComp, SWT.RIGHT);
-		wlFiletype.setText("Filetype ");
- 		props.setLook(wlFiletype);
-		fdlFiletype=new FormData();
-		fdlFiletype.left = new FormAttachment(0, 0);
-		fdlFiletype.top  = new FormAttachment(0, 0);
-		fdlFiletype.right= new FormAttachment(middle, -margin);
-		wlFiletype.setLayoutData(fdlFiletype);
-		wFiletype=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
-		wFiletype.setText("Filetype");
- 		props.setLook(wFiletype);
-		wFiletype.add("CSV");
-		wFiletype.add("Fixed");
-		wFiletype.select(0);
-		wFiletype.addModifyListener(lsMod);
-		fdFiletype=new FormData();
-		fdFiletype.left = new FormAttachment(middle, 0);
-		fdFiletype.top  = new FormAttachment(0, 0);
-		fdFiletype.right= new FormAttachment(100, 0);
-		wFiletype.setLayoutData(fdFiletype);
-
-		wlSeparator=new Label(wContentComp, SWT.RIGHT);
-		wlSeparator.setText("Separator ");
- 		props.setLook(wlSeparator);
-		fdlSeparator=new FormData();
-		fdlSeparator.left = new FormAttachment(0, 0);
-		fdlSeparator.top  = new FormAttachment(wFiletype, margin);
-		fdlSeparator.right= new FormAttachment(middle, -margin);
-		wlSeparator.setLayoutData(fdlSeparator);
-
-		wbSeparator=new Button(wContentComp, SWT.PUSH| SWT.CENTER);
- 		props.setLook(wbSeparator);
-		wbSeparator.setText("Insert &TAB");
-		fdbSeparator=new FormData();
-		fdbSeparator.right= new FormAttachment(100, 0);
-		fdbSeparator.top  = new FormAttachment(wFiletype, 0);
-		wbSeparator.setLayoutData(fdbSeparator);
-
-		wSeparator=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wSeparator);
-		wSeparator.addModifyListener(lsMod);
-		fdSeparator=new FormData();
-		fdSeparator.left = new FormAttachment(middle, 0);
-		fdSeparator.top  = new FormAttachment(wFiletype, margin);
-		fdSeparator.right= new FormAttachment(wbSeparator, -margin);
-		wSeparator.setLayoutData(fdSeparator);
-
-		// Enclosure
-		wlEnclosure=new Label(wContentComp, SWT.RIGHT);
-		wlEnclosure.setText("Enclosure ");
- 		props.setLook(wlEnclosure);
-		fdlEnclosure=new FormData();
-		fdlEnclosure.left = new FormAttachment(0, 0);
-		fdlEnclosure.top  = new FormAttachment(wSeparator, margin);
-		fdlEnclosure.right= new FormAttachment(middle, -margin);
-		wlEnclosure.setLayoutData(fdlEnclosure);
-		wEnclosure=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wEnclosure);
-		wEnclosure.addModifyListener(lsMod);
-		fdEnclosure=new FormData();
-		fdEnclosure.left = new FormAttachment(middle, 0);
-		fdEnclosure.top  = new FormAttachment(wSeparator, margin);
-		fdEnclosure.right= new FormAttachment(100, 0);
-		wEnclosure.setLayoutData(fdEnclosure);
-
-        // Escape
-        wlEscape=new Label(wContentComp, SWT.RIGHT);
-        wlEscape.setText("Escape ");
-        props.setLook(wlEscape);
-        fdlEscape=new FormData();
-        fdlEscape.left = new FormAttachment(0, 0);
-        fdlEscape.top  = new FormAttachment(wEnclosure, margin);
-        fdlEscape.right= new FormAttachment(middle, -margin);
-        wlEscape.setLayoutData(fdlEscape);
-        wEscape=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wEscape);
-        wEscape.addModifyListener(lsMod);
-        fdEscape=new FormData();
-        fdEscape.left = new FormAttachment(middle, 0);
-        fdEscape.top  = new FormAttachment(wEnclosure, margin);
-        fdEscape.right= new FormAttachment(100, 0);
-        wEscape.setLayoutData(fdEscape);
-
-		// Header checkbox
-		wlHeader=new Label(wContentComp, SWT.RIGHT);
-		wlHeader.setText("Header ");
- 		props.setLook(wlHeader);
-		fdlHeader=new FormData();
-		fdlHeader.left = new FormAttachment(0, 0);
-		fdlHeader.top  = new FormAttachment(wEscape, margin);
-		fdlHeader.right= new FormAttachment(middle, -margin);
-		wlHeader.setLayoutData(fdlHeader);
-		wHeader=new Button(wContentComp, SWT.CHECK);
- 		props.setLook(wHeader);
-		fdHeader=new FormData();
-		fdHeader.left = new FormAttachment(middle, 0);
-		fdHeader.top  = new FormAttachment(wEscape, margin);
-		wHeader.setLayoutData(fdHeader);
-
-        // NrHeader
-        wlNrHeader=new Label(wContentComp, SWT.RIGHT);
-        wlNrHeader.setText("Number of header lines");
-        props.setLook(wlNrHeader);
-        fdlNrHeader=new FormData();
-        fdlNrHeader.left = new FormAttachment(wHeader, margin);
-        fdlNrHeader.top  = new FormAttachment(wEscape, margin);
-        wlNrHeader.setLayoutData(fdlNrHeader);
-        wNrHeader=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wNrHeader.setTextLimit(3);
-        props.setLook(wNrHeader);
-        wNrHeader.addModifyListener(lsMod);
-        fdNrHeader=new FormData();
-        fdNrHeader.left = new FormAttachment(wlNrHeader, margin);
-        fdNrHeader.top  = new FormAttachment(wEscape, margin);
-        wNrHeader.setLayoutData(fdNrHeader);
-        
-		wlFooter=new Label(wContentComp, SWT.RIGHT);
-		wlFooter.setText("Footer ");
- 		props.setLook(wlFooter);
-		fdlFooter=new FormData();
-		fdlFooter.left = new FormAttachment(0, 0);
-		fdlFooter.top  = new FormAttachment(wHeader, margin);
-		fdlFooter.right= new FormAttachment(middle, -margin);
-		wlFooter.setLayoutData(fdlFooter);
-		wFooter=new Button(wContentComp, SWT.CHECK);
- 		props.setLook(wFooter);
-		fdFooter=new FormData();
-		fdFooter.left = new FormAttachment(middle, 0);
-		fdFooter.top  = new FormAttachment(wHeader, margin);
-		wFooter.setLayoutData(fdFooter);
-
-        // NrFooter
-        wlNrFooter=new Label(wContentComp, SWT.RIGHT);
-        wlNrFooter.setText("Number of footer lines");
-        props.setLook(wlNrFooter);
-        fdlNrFooter=new FormData();
-        fdlNrFooter.left = new FormAttachment(wFooter, margin);
-        fdlNrFooter.top  = new FormAttachment(wHeader, margin);
-        wlNrFooter.setLayoutData(fdlNrFooter);
-        wNrFooter=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wNrFooter.setTextLimit(3);
-        props.setLook(wNrFooter);
-        wNrFooter.addModifyListener(lsMod);
-        fdNrFooter=new FormData();
-        fdNrFooter.left = new FormAttachment(wlNrFooter, margin);
-        fdNrFooter.top  = new FormAttachment(wHeader, margin);
-        wNrFooter.setLayoutData(fdNrFooter);
-
-        // Wraps
-        wlWraps=new Label(wContentComp, SWT.RIGHT);
-        wlWraps.setText("Wrapped lines?");
-        props.setLook(wlWraps);
-        fdlWraps=new FormData();
-        fdlWraps.left = new FormAttachment(0, 0);
-        fdlWraps.top  = new FormAttachment(wFooter, margin);
-        fdlWraps.right= new FormAttachment(middle, -margin);
-        wlWraps.setLayoutData(fdlWraps);
-        wWraps=new Button(wContentComp, SWT.CHECK);
-        props.setLook(wWraps);
-        fdWraps=new FormData();
-        fdWraps.left = new FormAttachment(middle, 0);
-        fdWraps.top  = new FormAttachment(wFooter, margin);
-        wWraps.setLayoutData(fdWraps);
-
-        // NrWraps
-        wlNrWraps=new Label(wContentComp, SWT.RIGHT);
-        wlNrWraps.setText("Number of times wrapped");
-        props.setLook(wlNrWraps);
-        fdlNrWraps=new FormData();
-        fdlNrWraps.left = new FormAttachment(wWraps, margin);
-        fdlNrWraps.top  = new FormAttachment(wFooter, margin);
-        wlNrWraps.setLayoutData(fdlNrWraps);
-        wNrWraps=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wNrWraps.setTextLimit(3);
-        props.setLook(wNrWraps);
-        wNrWraps.addModifyListener(lsMod);
-        fdNrWraps=new FormData();
-        fdNrWraps.left = new FormAttachment(wlNrWraps, margin);
-        fdNrWraps.top  = new FormAttachment(wFooter, margin);
-        wNrWraps.setLayoutData(fdNrWraps);
-
-        // Pages
-        wlLayoutPaged=new Label(wContentComp, SWT.RIGHT);
-        wlLayoutPaged.setText("Paged layout (printout)?");
-        props.setLook(wlLayoutPaged);
-        fdlLayoutPaged=new FormData();
-        fdlLayoutPaged.left = new FormAttachment(0, 0);
-        fdlLayoutPaged.top  = new FormAttachment(wWraps, margin);
-        fdlLayoutPaged.right= new FormAttachment(middle, -margin);
-        wlLayoutPaged.setLayoutData(fdlLayoutPaged);
-        wLayoutPaged=new Button(wContentComp, SWT.CHECK);
-        props.setLook(wLayoutPaged);
-        fdLayoutPaged=new FormData();
-        fdLayoutPaged.left = new FormAttachment(middle, 0);
-        fdLayoutPaged.top  = new FormAttachment(wWraps, margin);
-        wLayoutPaged.setLayoutData(fdLayoutPaged);
-
-        // Nr of lines per page
-        wlNrLinesPerPage=new Label(wContentComp, SWT.RIGHT);
-        wlNrLinesPerPage.setText("Number lines per page");
-        props.setLook(wlNrLinesPerPage);
-        fdlNrLinesPerPage=new FormData();
-        fdlNrLinesPerPage.left = new FormAttachment(wLayoutPaged, margin);
-        fdlNrLinesPerPage.top  = new FormAttachment(wWraps, margin);
-        wlNrLinesPerPage.setLayoutData(fdlNrLinesPerPage);
-        wNrLinesPerPage=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wNrLinesPerPage.setTextLimit(3);
-        props.setLook(wNrLinesPerPage);
-        wNrLinesPerPage.addModifyListener(lsMod);
-        fdNrLinesPerPage=new FormData();
-        fdNrLinesPerPage.left = new FormAttachment(wlNrLinesPerPage, margin);
-        fdNrLinesPerPage.top  = new FormAttachment(wWraps, margin);
-        wNrLinesPerPage.setLayoutData(fdNrLinesPerPage);
-
-        // NrPages
-        wlNrLinesDocHeader=new Label(wContentComp, SWT.RIGHT);
-        wlNrLinesDocHeader.setText("Document header lines ");
-        props.setLook(wlNrLinesDocHeader);
-        fdlNrLinesDocHeader=new FormData();
-        fdlNrLinesDocHeader.left = new FormAttachment(wNrLinesPerPage, margin);
-        fdlNrLinesDocHeader.top  = new FormAttachment(wWraps, margin);
-        wlNrLinesDocHeader.setLayoutData(fdlNrLinesDocHeader);
-        wNrLinesDocHeader=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wNrLinesDocHeader.setTextLimit(3);
-        props.setLook(wNrLinesDocHeader);
-        wNrLinesDocHeader.addModifyListener(lsMod);
-        fdNrLinesDocHeader=new FormData();
-        fdNrLinesDocHeader.left = new FormAttachment(wlNrLinesDocHeader, margin);
-        fdNrLinesDocHeader.top  = new FormAttachment(wWraps, margin);
-        wNrLinesDocHeader.setLayoutData(fdNrLinesDocHeader);
-
-		// Zipped?
-		wlZipped=new Label(wContentComp, SWT.RIGHT);
-		wlZipped.setText("Zipped ");
- 		props.setLook(wlZipped);
-		fdlZipped=new FormData();
-		fdlZipped.left = new FormAttachment(0, 0);
-		fdlZipped.top  = new FormAttachment(wNrLinesDocHeader, margin);
-		fdlZipped.right= new FormAttachment(middle, -margin);
-		wlZipped.setLayoutData(fdlZipped);
-		wZipped=new Button(wContentComp, SWT.CHECK );
- 		props.setLook(wZipped);
-		wZipped.setToolTipText("Only the first entry in the archive is read!");
-		fdZipped=new FormData();
-		fdZipped.left = new FormAttachment(middle, 0);
-		fdZipped.top  = new FormAttachment(wNrLinesDocHeader, margin);
-		fdZipped.right= new FormAttachment(100, 0);
-		wZipped.setLayoutData(fdZipped);
-
-		wlNoempty=new Label(wContentComp, SWT.RIGHT);
-		wlNoempty.setText("No empty rows ");
- 		props.setLook(wlNoempty);
-		fdlNoempty=new FormData();
-		fdlNoempty.left = new FormAttachment(0, 0);
-		fdlNoempty.top  = new FormAttachment(wZipped, margin);
-		fdlNoempty.right= new FormAttachment(middle, -margin);
-		wlNoempty.setLayoutData(fdlNoempty);
-		wNoempty=new Button(wContentComp, SWT.CHECK );
- 		props.setLook(wNoempty);
-		wNoempty.setToolTipText("Check this to remove empty lines from the output rows.");
-		fdNoempty=new FormData();
-		fdNoempty.left = new FormAttachment(middle, 0);
-		fdNoempty.top  = new FormAttachment(wZipped, margin);
-		fdNoempty.right= new FormAttachment(100, 0);
-		wNoempty.setLayoutData(fdNoempty);
-
-		wlInclFilename=new Label(wContentComp, SWT.RIGHT);
-		wlInclFilename.setText("Include filename in output? ");
- 		props.setLook(wlInclFilename);
-		fdlInclFilename=new FormData();
-		fdlInclFilename.left = new FormAttachment(0, 0);
-		fdlInclFilename.top  = new FormAttachment(wNoempty, margin);
-		fdlInclFilename.right= new FormAttachment(middle, -margin);
-		wlInclFilename.setLayoutData(fdlInclFilename);
-		wInclFilename=new Button(wContentComp, SWT.CHECK );
- 		props.setLook(wInclFilename);
-		wInclFilename.setToolTipText("Check this to add a field (String) containing the filename.");
-		fdInclFilename=new FormData();
-		fdInclFilename.left = new FormAttachment(middle, 0);
-		fdInclFilename.top  = new FormAttachment(wNoempty, margin);
-		wInclFilename.setLayoutData(fdInclFilename);
-
-		wlInclFilenameField=new Label(wContentComp, SWT.LEFT);
-		wlInclFilenameField.setText("Filename fieldname ");
- 		props.setLook(wlInclFilenameField);
-		fdlInclFilenameField=new FormData();
-		fdlInclFilenameField.left = new FormAttachment(wInclFilename, margin);
-		fdlInclFilenameField.top  = new FormAttachment(wNoempty, margin);
-		wlInclFilenameField.setLayoutData(fdlInclFilenameField);
-		wInclFilenameField=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wInclFilenameField);
-		wInclFilenameField.addModifyListener(lsMod);
-		fdInclFilenameField=new FormData();
-		fdInclFilenameField.left = new FormAttachment(wlInclFilenameField, margin);
-		fdInclFilenameField.top  = new FormAttachment(wNoempty, margin);
-		fdInclFilenameField.right= new FormAttachment(100, 0);
-		wInclFilenameField.setLayoutData(fdInclFilenameField);
-
-		wlInclRownum=new Label(wContentComp, SWT.RIGHT);
-		wlInclRownum.setText("Rownum in output? ");
- 		props.setLook(wlInclRownum);
-		fdlInclRownum=new FormData();
-		fdlInclRownum.left = new FormAttachment(0, 0);
-		fdlInclRownum.top  = new FormAttachment(wInclFilenameField, margin);
-		fdlInclRownum.right= new FormAttachment(middle, -margin);
-		wlInclRownum.setLayoutData(fdlInclRownum);
-		wInclRownum=new Button(wContentComp, SWT.CHECK );
- 		props.setLook(wInclRownum);
-		wInclRownum.setToolTipText("Check this to add a field (String) containing the filename.");
-		fdRownum=new FormData();
-		fdRownum.left = new FormAttachment(middle, 0);
-		fdRownum.top  = new FormAttachment(wInclFilenameField, margin);
-		wInclRownum.setLayoutData(fdRownum);
-
-		wlInclRownumField=new Label(wContentComp, SWT.RIGHT);
-		wlInclRownumField.setText("Rownum fieldname ");
- 		props.setLook(wlInclRownumField);
-		fdlInclRownumField=new FormData();
-		fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);
-		fdlInclRownumField.top  = new FormAttachment(wInclFilenameField, margin);
-		wlInclRownumField.setLayoutData(fdlInclRownumField);
-		wInclRownumField=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wInclRownumField);
-		wInclRownumField.addModifyListener(lsMod);
-		fdInclRownumField=new FormData();
-		fdInclRownumField.left = new FormAttachment(wlInclRownumField, margin);
-		fdInclRownumField.top  = new FormAttachment(wInclFilenameField, margin);
-		fdInclRownumField.right= new FormAttachment(100, 0);
-		wInclRownumField.setLayoutData(fdInclRownumField);
-
-		wlFormat=new Label(wContentComp, SWT.RIGHT);
-		wlFormat.setText("Format ");
- 		props.setLook(wlFormat);
-		fdlFormat=new FormData();
-		fdlFormat.left = new FormAttachment(0, 0);
-		fdlFormat.top  = new FormAttachment(wInclRownumField, margin);
-		fdlFormat.right= new FormAttachment(middle, -margin);
-		wlFormat.setLayoutData(fdlFormat);
-		wFormat=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
-		wFormat.setText("Format");
- 		props.setLook(wFormat);
-		wFormat.add("DOS");
-		wFormat.add("Unix");
-		wFormat.select(0);
-		wFormat.addModifyListener(lsMod);
-		fdFormat=new FormData();
-		fdFormat.left = new FormAttachment(middle, 0);
-		fdFormat.top  = new FormAttachment(wInclRownumField, margin);
-		fdFormat.right= new FormAttachment(100, 0);
-		wFormat.setLayoutData(fdFormat);
-
-        wlEncoding=new Label(wContentComp, SWT.RIGHT);
-        wlEncoding.setText("Encoding ");
-        props.setLook(wlEncoding);
-        fdlEncoding=new FormData();
-        fdlEncoding.left = new FormAttachment(0, 0);
-        fdlEncoding.top  = new FormAttachment(wFormat, margin);
-        fdlEncoding.right= new FormAttachment(middle, -margin);
-        wlEncoding.setLayoutData(fdlEncoding);
-        wEncoding=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
-        wEncoding.setEditable(true);
-        props.setLook(wEncoding);
-        wEncoding.addModifyListener(lsMod);
-        fdEncoding=new FormData();
-        fdEncoding.left = new FormAttachment(middle, 0);
-        fdEncoding.top  = new FormAttachment(wFormat, margin);
-        fdEncoding.right= new FormAttachment(100, 0);
-        wEncoding.setLayoutData(fdEncoding);
-        wEncoding.addFocusListener(new FocusListener()
-            {
-                public void focusLost(org.eclipse.swt.events.FocusEvent e)
-                {
-                }
-            
-                public void focusGained(org.eclipse.swt.events.FocusEvent e)
-                {
-                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
-                    shell.setCursor(busy);
-                    setEncodings();
-                    shell.setCursor(null);
-                    busy.dispose();
-                }
-            }
-        );
-
-		wlLimit=new Label(wContentComp, SWT.RIGHT);
-		wlLimit.setText("Limit ");
- 		props.setLook(wlLimit);
-		fdlLimit=new FormData();
-		fdlLimit.left = new FormAttachment(0, 0);
-		fdlLimit.top  = new FormAttachment(wEncoding, margin);
-		fdlLimit.right= new FormAttachment(middle, -margin);
-		wlLimit.setLayoutData(fdlLimit);
-		wLimit=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wLimit);
-		wLimit.addModifyListener(lsMod);
-		fdLimit=new FormData();
-		fdLimit.left = new FormAttachment(middle, 0);
-		fdLimit.top  = new FormAttachment(wEncoding, margin);
-		fdLimit.right= new FormAttachment(100, 0);
-		wLimit.setLayoutData(fdLimit);
-
-		// Filter?
-		wlFilter=new Label(wContentComp, SWT.RIGHT);
-		wlFilter.setText("Filter ");
- 		props.setLook(wlFilter);
-		fdlFilter=new FormData();
-		fdlFilter.left = new FormAttachment(0, 0);
-		fdlFilter.top  = new FormAttachment(wLimit, margin);
-		fdlFilter.right= new FormAttachment(middle, -margin);
-		wlFilter.setLayoutData(fdlFilter);
-		wFilter=new Button(wContentComp, SWT.CHECK );
- 		props.setLook(wFilter);
-		wFilter.setToolTipText("Filter rows that have a value on a certain (character) position."+Const.CR+"The first position has number 0!");
-		fdFilter=new FormData();
-		fdFilter.left = new FormAttachment(middle, 0);
-		fdFilter.top  = new FormAttachment(wLimit, margin);
-		wFilter.setLayoutData(fdFilter);
-		
-		// Filter position...
-		wlFilterPos=new Label(wContentComp, SWT.LEFT);
-		wlFilterPos.setText("Pos ");
- 		props.setLook(wlFilterPos);
-		fdlFilterPos=new FormData();
-		fdlFilterPos.left = new FormAttachment(wFilter, margin*2);
-		fdlFilterPos.top  = new FormAttachment(wLimit, margin);
-		wlFilterPos.setLayoutData(fdlFilterPos);
-		wFilterPos=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wFilterPos);
-		wFilterPos.addModifyListener(lsMod);
-		fdFilterPos=new FormData();
-		fdFilterPos.left = new FormAttachment(wlFilterPos, margin*2);
-		fdFilterPos.top  = new FormAttachment(wLimit, margin);
-		fdFilterPos.right= new FormAttachment(wlFilterPos, margin*2+50);
-		wFilterPos.setLayoutData(fdFilterPos);
-
-		// Filter position...
-		wlFilterStr=new Label(wContentComp, SWT.LEFT);
-		wlFilterStr.setText("Value ");
- 		props.setLook(wlFilterStr);
-		fdlFilterStr=new FormData();
-		fdlFilterStr.left = new FormAttachment(wFilterPos, margin*2);
-		fdlFilterStr.top  = new FormAttachment(wLimit, margin);
-		wlFilterStr.setLayoutData(fdlFilterStr);
-		wFilterStr=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wFilterStr);
-		wFilterStr.addModifyListener(lsMod);
-		fdFilterStr=new FormData();
-		fdFilterStr.left = new FormAttachment(wlFilterStr, margin);
-		fdFilterStr.top  = new FormAttachment(wLimit, margin);
-        fdFilterStr.right= new FormAttachment(wlFilterStr, 200);
-		wFilterStr.setLayoutData(fdFilterStr);
-        
-        // Is Filter Last Line?
-        wlFilterLast=new Label(wContentComp, SWT.RIGHT);
-        wlFilterLast.setText("Stop on filter? ");
-        props.setLook(wlFilterLast);
-        fdlFilterLast=new FormData();
-        fdlFilterLast.left = new FormAttachment(wFilterStr, margin);
-        fdlFilterLast.top  = new FormAttachment(wLimit, margin);
-        wlFilterLast.setLayoutData(fdlFilterLast);
-        wFilterLast=new Button(wContentComp, SWT.CHECK );
-        props.setLook(wFilterLast);
-        wFilterLast.setToolTipText("Check this to stop processing when the filter string is encountered in the specified position");
-        fdFilterLast=new FormData();
-        fdFilterLast.left = new FormAttachment(wlFilterLast, margin);
-        fdFilterLast.top  = new FormAttachment(wLimit, margin);
-        wFilterLast.setLayoutData(fdFilterLast);
-
-        
-        
-        // ERROR HANDLING...
-        // ErrorIgnored?
-        wlErrorIgnored = new Label(wContentComp, SWT.RIGHT);
-        wlErrorIgnored.setText("Ignore errors? ");
-        props.setLook(wlErrorIgnored);
-        fdlErrorIgnored = new FormData();
-        fdlErrorIgnored.left = new FormAttachment(0, 0);
-        fdlErrorIgnored.top = new FormAttachment(wFilterStr, margin);
-        fdlErrorIgnored.right = new FormAttachment(middle, -margin);
-        wlErrorIgnored.setLayoutData(fdlErrorIgnored);
-        wErrorIgnored = new Button(wContentComp, SWT.CHECK);
-        props.setLook(wErrorIgnored);
-        wErrorIgnored.setToolTipText("Ignore parsing errors that occur, optionally log information about the errors.");
-        fdErrorIgnored = new FormData();
-        fdErrorIgnored.left = new FormAttachment(middle, 0);
-        fdErrorIgnored.top = new FormAttachment(wFilterStr, margin);
-        wErrorIgnored.setLayoutData(fdErrorIgnored);
-
-        wlErrorCount=new Label(wContentComp, SWT.RIGHT);
-        wlErrorCount.setText("Error count fieldname ");
-        props.setLook(wlErrorCount);
-        fdlErrorCount=new FormData();
-        fdlErrorCount.left = new FormAttachment(0, 0);
-        fdlErrorCount.top  = new FormAttachment(wErrorIgnored, margin);
-        fdlErrorCount.right= new FormAttachment(middle, -margin);
-        wlErrorCount.setLayoutData(fdlErrorCount);
-        wErrorCount=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wErrorCount);
-        wErrorCount.addModifyListener(lsMod);
-        fdErrorCount=new FormData();
-        fdErrorCount.left = new FormAttachment(middle, 0);
-        fdErrorCount.top  = new FormAttachment(wErrorIgnored, margin);
-        fdErrorCount.right= new FormAttachment(100, 0);
-        wErrorCount.setLayoutData(fdErrorCount);
-
-        wlErrorFields=new Label(wContentComp, SWT.RIGHT);
-        wlErrorFields.setText("Error fields fieldname");
-        props.setLook(wlErrorFields);
-        fdlErrorFields=new FormData();
-        fdlErrorFields.left = new FormAttachment(0, 0);
-        fdlErrorFields.top  = new FormAttachment(wErrorCount, margin);
-        fdlErrorFields.right= new FormAttachment(middle, -margin);
-        wlErrorFields.setLayoutData(fdlErrorFields);
-        wErrorFields=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wErrorFields);
-        wErrorFields.addModifyListener(lsMod);
-        fdErrorFields=new FormData();
-        fdErrorFields.left = new FormAttachment(middle, 0);
-        fdErrorFields.top  = new FormAttachment(wErrorCount, margin);
-        fdErrorFields.right= new FormAttachment(100, 0);
-        wErrorFields.setLayoutData(fdErrorFields);
-
-        wlErrorText=new Label(wContentComp, SWT.RIGHT);
-        wlErrorText.setText("Error text fieldname");
-        props.setLook(wlErrorText);
-        fdlErrorText=new FormData();
-        fdlErrorText.left = new FormAttachment(0, 0);
-        fdlErrorText.top  = new FormAttachment(wErrorFields, margin);
-        fdlErrorText.right= new FormAttachment(middle, -margin);
-        wlErrorText.setLayoutData(fdlErrorText);
-        wErrorText=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wErrorText);
-        wErrorText.addModifyListener(lsMod);
-        fdErrorText=new FormData();
-        fdErrorText.left = new FormAttachment(middle, 0);
-        fdErrorText.top  = new FormAttachment(wErrorFields, margin);
-        fdErrorText.right= new FormAttachment(100, 0);
-        wErrorText.setLayoutData(fdErrorText);
-		
-		fdContentComp = new FormData();
-		fdContentComp.left  = new FormAttachment(0, 0);
-		fdContentComp.top   = new FormAttachment(0, 0);
-		fdContentComp.right = new FormAttachment(100, 0);
-		fdContentComp.bottom= new FormAttachment(100, 0);
-		wContentComp.setLayoutData(fdContentComp);
-
-		wContentComp.layout();
-		wContentTab.setControl(wContentComp);
-
-
-		/////////////////////////////////////////////////////////////
-		/// END OF CONTENT TAB
-		/////////////////////////////////////////////////////////////
-
-
-		// Fields tab...
-		//
-		wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFieldsTab.setText("Fields");
-		
-		FormLayout fieldsLayout = new FormLayout ();
-		fieldsLayout.marginWidth  = Const.FORM_MARGIN;
-		fieldsLayout.marginHeight = Const.FORM_MARGIN;
-		
-		wFieldsComp = new Composite(wTabFolder, SWT.NONE);
-		wFieldsComp.setLayout(fieldsLayout);
- 		props.setLook(wFieldsComp);
-		
-		wGet=new Button(wFieldsComp, SWT.PUSH);
-		wGet.setText(" &Get fields ");
-		fdGet=new FormData();
-		fdGet.left=new FormAttachment(50, 0);
-		fdGet.bottom =new FormAttachment(100, 0);
-		wGet.setLayoutData(fdGet);
-
-		final int FieldsRows=input.getInputFields().length;
-		
-		// Prepare a list of possible formats...
-		String formats[] = Const.getConversionFormats();
-		
-		ColumnInfo[] colinf=new ColumnInfo[]
-            {
-			 new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,    false),
-			 new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO,  Value.getTypes(), true ),
-			 new ColumnInfo("Format",     ColumnInfo.COLUMN_TYPE_CCOMBO,  formats),
-			 new ColumnInfo("Position",   ColumnInfo.COLUMN_TYPE_TEXT,    false),
-			 new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,    false),
-			 new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,    false),
-			 new ColumnInfo("Currency",   ColumnInfo.COLUMN_TYPE_TEXT,    false),
-			 new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,    false),
-			 new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,    false),
-			 new ColumnInfo("Null if",    ColumnInfo.COLUMN_TYPE_TEXT,    false),
-			 new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  TextFileInputMeta.trimTypeDesc, true ),
-			 new ColumnInfo("Repeat",     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { "Y", "N" }, true )
-            };
-		
-		colinf[11].setToolTip("set this field to Y if you want to repeat values when the next are empty");
-		
-		wFields=new TableView(wFieldsComp, 
-						      SWT.FULL_SELECTION | SWT.MULTI, 
-						      colinf, 
-						      FieldsRows,  
-						      lsMod,
-							  props
-						      );
-
-		fdFields=new FormData();
-		fdFields.left  = new FormAttachment(0, 0);
-		fdFields.top   = new FormAttachment(0, 0);
-		fdFields.right = new FormAttachment(100, 0);
-		fdFields.bottom= new FormAttachment(wGet, -margin);
-		wFields.setLayoutData(fdFields);
-
-		fdFieldsComp=new FormData();
-		fdFieldsComp.left  = new FormAttachment(0, 0);
-		fdFieldsComp.top   = new FormAttachment(0, 0);
-		fdFieldsComp.right = new FormAttachment(100, 0);
-		fdFieldsComp.bottom= new FormAttachment(100, 0);
-		wFieldsComp.setLayoutData(fdFieldsComp);
-		
-		wFieldsComp.layout();
-		wFieldsTab.setControl(wFieldsComp);
-		
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
 		fdTabFolder.top   = new FormAttachment(wStepname, margin);
@@ -1258,7 +620,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		// Enable/disable the right fields...
         wInclFilename.addSelectionListener( lsFlags );
         wInclRownum.addSelectionListener( lsFlags );
-		wFilter.addSelectionListener( lsFlags);
         wErrorIgnored.addSelectionListener(lsFlags);
         wHeader.addSelectionListener(lsFlags);
         wFooter.addSelectionListener(lsFlags);
@@ -1377,11 +738,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wTabFolder.setSelection(0);
 
 		// Set the shell size, based upon previous time...
-		setSize();
 		getData(input);
-		input.setChanged(changed);
-		wFields.optWidth(true);
-		
+
+        setSize();
+
 		shell.open();
 		while (!shell.isDisposed())
 		{
@@ -1390,20 +750,643 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		return stepname;
 	}
 
-	public void setFlags()
+	private void addContentTab()
+    {
+        //////////////////////////
+        // START OF CONTENT TAB///
+        ///
+        wContentTab=new CTabItem(wTabFolder, SWT.NONE);
+        wContentTab.setText("Content");
+
+        FormLayout contentLayout = new FormLayout ();
+        contentLayout.marginWidth  = 3;
+        contentLayout.marginHeight = 3;
+        
+        wContentComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wContentComp);
+        wContentComp.setLayout(contentLayout);
+
+        // Filetype line
+        wlFiletype=new Label(wContentComp, SWT.RIGHT);
+        wlFiletype.setText("Filetype ");
+        props.setLook(wlFiletype);
+        fdlFiletype=new FormData();
+        fdlFiletype.left = new FormAttachment(0, 0);
+        fdlFiletype.top  = new FormAttachment(0, 0);
+        fdlFiletype.right= new FormAttachment(middle, -margin);
+        wlFiletype.setLayoutData(fdlFiletype);
+        wFiletype=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
+        wFiletype.setText("Filetype");
+        props.setLook(wFiletype);
+        wFiletype.add("CSV");
+        wFiletype.add("Fixed");
+        wFiletype.select(0);
+        wFiletype.addModifyListener(lsMod);
+        fdFiletype=new FormData();
+        fdFiletype.left = new FormAttachment(middle, 0);
+        fdFiletype.top  = new FormAttachment(0, 0);
+        fdFiletype.right= new FormAttachment(100, 0);
+        wFiletype.setLayoutData(fdFiletype);
+
+        wlSeparator=new Label(wContentComp, SWT.RIGHT);
+        wlSeparator.setText("Separator ");
+        props.setLook(wlSeparator);
+        fdlSeparator=new FormData();
+        fdlSeparator.left = new FormAttachment(0, 0);
+        fdlSeparator.top  = new FormAttachment(wFiletype, margin);
+        fdlSeparator.right= new FormAttachment(middle, -margin);
+        wlSeparator.setLayoutData(fdlSeparator);
+
+        wbSeparator=new Button(wContentComp, SWT.PUSH| SWT.CENTER);
+        props.setLook(wbSeparator);
+        wbSeparator.setText("Insert &TAB");
+        fdbSeparator=new FormData();
+        fdbSeparator.right= new FormAttachment(100, 0);
+        fdbSeparator.top  = new FormAttachment(wFiletype, 0);
+        wbSeparator.setLayoutData(fdbSeparator);
+
+        wSeparator=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wSeparator);
+        wSeparator.addModifyListener(lsMod);
+        fdSeparator=new FormData();
+        fdSeparator.left = new FormAttachment(middle, 0);
+        fdSeparator.top  = new FormAttachment(wFiletype, margin);
+        fdSeparator.right= new FormAttachment(wbSeparator, -margin);
+        wSeparator.setLayoutData(fdSeparator);
+
+        // Enclosure
+        wlEnclosure=new Label(wContentComp, SWT.RIGHT);
+        wlEnclosure.setText("Enclosure ");
+        props.setLook(wlEnclosure);
+        fdlEnclosure=new FormData();
+        fdlEnclosure.left = new FormAttachment(0, 0);
+        fdlEnclosure.top  = new FormAttachment(wSeparator, margin);
+        fdlEnclosure.right= new FormAttachment(middle, -margin);
+        wlEnclosure.setLayoutData(fdlEnclosure);
+        wEnclosure=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wEnclosure);
+        wEnclosure.addModifyListener(lsMod);
+        fdEnclosure=new FormData();
+        fdEnclosure.left = new FormAttachment(middle, 0);
+        fdEnclosure.top  = new FormAttachment(wSeparator, margin);
+        fdEnclosure.right= new FormAttachment(100, 0);
+        wEnclosure.setLayoutData(fdEnclosure);
+
+        // Escape
+        wlEscape=new Label(wContentComp, SWT.RIGHT);
+        wlEscape.setText("Escape ");
+        props.setLook(wlEscape);
+        fdlEscape=new FormData();
+        fdlEscape.left = new FormAttachment(0, 0);
+        fdlEscape.top  = new FormAttachment(wEnclosure, margin);
+        fdlEscape.right= new FormAttachment(middle, -margin);
+        wlEscape.setLayoutData(fdlEscape);
+        wEscape=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wEscape);
+        wEscape.addModifyListener(lsMod);
+        fdEscape=new FormData();
+        fdEscape.left = new FormAttachment(middle, 0);
+        fdEscape.top  = new FormAttachment(wEnclosure, margin);
+        fdEscape.right= new FormAttachment(100, 0);
+        wEscape.setLayoutData(fdEscape);
+
+        // Header checkbox
+        wlHeader=new Label(wContentComp, SWT.RIGHT);
+        wlHeader.setText("Header ");
+        props.setLook(wlHeader);
+        fdlHeader=new FormData();
+        fdlHeader.left = new FormAttachment(0, 0);
+        fdlHeader.top  = new FormAttachment(wEscape, margin);
+        fdlHeader.right= new FormAttachment(middle, -margin);
+        wlHeader.setLayoutData(fdlHeader);
+        wHeader=new Button(wContentComp, SWT.CHECK);
+        props.setLook(wHeader);
+        fdHeader=new FormData();
+        fdHeader.left = new FormAttachment(middle, 0);
+        fdHeader.top  = new FormAttachment(wEscape, margin);
+        wHeader.setLayoutData(fdHeader);
+
+        // NrHeader
+        wlNrHeader=new Label(wContentComp, SWT.RIGHT);
+        wlNrHeader.setText("Number of header lines");
+        props.setLook(wlNrHeader);
+        fdlNrHeader=new FormData();
+        fdlNrHeader.left = new FormAttachment(wHeader, margin);
+        fdlNrHeader.top  = new FormAttachment(wEscape, margin);
+        wlNrHeader.setLayoutData(fdlNrHeader);
+        wNrHeader=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wNrHeader.setTextLimit(3);
+        props.setLook(wNrHeader);
+        wNrHeader.addModifyListener(lsMod);
+        fdNrHeader=new FormData();
+        fdNrHeader.left = new FormAttachment(wlNrHeader, margin);
+        fdNrHeader.top  = new FormAttachment(wEscape, margin);
+        wNrHeader.setLayoutData(fdNrHeader);
+        
+        wlFooter=new Label(wContentComp, SWT.RIGHT);
+        wlFooter.setText("Footer ");
+        props.setLook(wlFooter);
+        fdlFooter=new FormData();
+        fdlFooter.left = new FormAttachment(0, 0);
+        fdlFooter.top  = new FormAttachment(wHeader, margin);
+        fdlFooter.right= new FormAttachment(middle, -margin);
+        wlFooter.setLayoutData(fdlFooter);
+        wFooter=new Button(wContentComp, SWT.CHECK);
+        props.setLook(wFooter);
+        fdFooter=new FormData();
+        fdFooter.left = new FormAttachment(middle, 0);
+        fdFooter.top  = new FormAttachment(wHeader, margin);
+        wFooter.setLayoutData(fdFooter);
+
+        // NrFooter
+        wlNrFooter=new Label(wContentComp, SWT.RIGHT);
+        wlNrFooter.setText("Number of footer lines");
+        props.setLook(wlNrFooter);
+        fdlNrFooter=new FormData();
+        fdlNrFooter.left = new FormAttachment(wFooter, margin);
+        fdlNrFooter.top  = new FormAttachment(wHeader, margin);
+        wlNrFooter.setLayoutData(fdlNrFooter);
+        wNrFooter=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wNrFooter.setTextLimit(3);
+        props.setLook(wNrFooter);
+        wNrFooter.addModifyListener(lsMod);
+        fdNrFooter=new FormData();
+        fdNrFooter.left = new FormAttachment(wlNrFooter, margin);
+        fdNrFooter.top  = new FormAttachment(wHeader, margin);
+        wNrFooter.setLayoutData(fdNrFooter);
+
+        // Wraps
+        wlWraps=new Label(wContentComp, SWT.RIGHT);
+        wlWraps.setText("Wrapped lines?");
+        props.setLook(wlWraps);
+        fdlWraps=new FormData();
+        fdlWraps.left = new FormAttachment(0, 0);
+        fdlWraps.top  = new FormAttachment(wFooter, margin);
+        fdlWraps.right= new FormAttachment(middle, -margin);
+        wlWraps.setLayoutData(fdlWraps);
+        wWraps=new Button(wContentComp, SWT.CHECK);
+        props.setLook(wWraps);
+        fdWraps=new FormData();
+        fdWraps.left = new FormAttachment(middle, 0);
+        fdWraps.top  = new FormAttachment(wFooter, margin);
+        wWraps.setLayoutData(fdWraps);
+
+        // NrWraps
+        wlNrWraps=new Label(wContentComp, SWT.RIGHT);
+        wlNrWraps.setText("Number of times wrapped");
+        props.setLook(wlNrWraps);
+        fdlNrWraps=new FormData();
+        fdlNrWraps.left = new FormAttachment(wWraps, margin);
+        fdlNrWraps.top  = new FormAttachment(wFooter, margin);
+        wlNrWraps.setLayoutData(fdlNrWraps);
+        wNrWraps=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wNrWraps.setTextLimit(3);
+        props.setLook(wNrWraps);
+        wNrWraps.addModifyListener(lsMod);
+        fdNrWraps=new FormData();
+        fdNrWraps.left = new FormAttachment(wlNrWraps, margin);
+        fdNrWraps.top  = new FormAttachment(wFooter, margin);
+        wNrWraps.setLayoutData(fdNrWraps);
+
+        // Pages
+        wlLayoutPaged=new Label(wContentComp, SWT.RIGHT);
+        wlLayoutPaged.setText("Paged layout (printout)?");
+        props.setLook(wlLayoutPaged);
+        fdlLayoutPaged=new FormData();
+        fdlLayoutPaged.left = new FormAttachment(0, 0);
+        fdlLayoutPaged.top  = new FormAttachment(wWraps, margin);
+        fdlLayoutPaged.right= new FormAttachment(middle, -margin);
+        wlLayoutPaged.setLayoutData(fdlLayoutPaged);
+        wLayoutPaged=new Button(wContentComp, SWT.CHECK);
+        props.setLook(wLayoutPaged);
+        fdLayoutPaged=new FormData();
+        fdLayoutPaged.left = new FormAttachment(middle, 0);
+        fdLayoutPaged.top  = new FormAttachment(wWraps, margin);
+        wLayoutPaged.setLayoutData(fdLayoutPaged);
+
+        // Nr of lines per page
+        wlNrLinesPerPage=new Label(wContentComp, SWT.RIGHT);
+        wlNrLinesPerPage.setText("Number lines per page");
+        props.setLook(wlNrLinesPerPage);
+        fdlNrLinesPerPage=new FormData();
+        fdlNrLinesPerPage.left = new FormAttachment(wLayoutPaged, margin);
+        fdlNrLinesPerPage.top  = new FormAttachment(wWraps, margin);
+        wlNrLinesPerPage.setLayoutData(fdlNrLinesPerPage);
+        wNrLinesPerPage=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wNrLinesPerPage.setTextLimit(3);
+        props.setLook(wNrLinesPerPage);
+        wNrLinesPerPage.addModifyListener(lsMod);
+        fdNrLinesPerPage=new FormData();
+        fdNrLinesPerPage.left = new FormAttachment(wlNrLinesPerPage, margin);
+        fdNrLinesPerPage.top  = new FormAttachment(wWraps, margin);
+        wNrLinesPerPage.setLayoutData(fdNrLinesPerPage);
+
+        // NrPages
+        wlNrLinesDocHeader=new Label(wContentComp, SWT.RIGHT);
+        wlNrLinesDocHeader.setText("Document header lines ");
+        props.setLook(wlNrLinesDocHeader);
+        fdlNrLinesDocHeader=new FormData();
+        fdlNrLinesDocHeader.left = new FormAttachment(wNrLinesPerPage, margin);
+        fdlNrLinesDocHeader.top  = new FormAttachment(wWraps, margin);
+        wlNrLinesDocHeader.setLayoutData(fdlNrLinesDocHeader);
+        wNrLinesDocHeader=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wNrLinesDocHeader.setTextLimit(3);
+        props.setLook(wNrLinesDocHeader);
+        wNrLinesDocHeader.addModifyListener(lsMod);
+        fdNrLinesDocHeader=new FormData();
+        fdNrLinesDocHeader.left = new FormAttachment(wlNrLinesDocHeader, margin);
+        fdNrLinesDocHeader.top  = new FormAttachment(wWraps, margin);
+        wNrLinesDocHeader.setLayoutData(fdNrLinesDocHeader);
+
+        // Zipped?
+        wlZipped=new Label(wContentComp, SWT.RIGHT);
+        wlZipped.setText("Zipped ");
+        props.setLook(wlZipped);
+        fdlZipped=new FormData();
+        fdlZipped.left = new FormAttachment(0, 0);
+        fdlZipped.top  = new FormAttachment(wNrLinesDocHeader, margin);
+        fdlZipped.right= new FormAttachment(middle, -margin);
+        wlZipped.setLayoutData(fdlZipped);
+        wZipped=new Button(wContentComp, SWT.CHECK );
+        props.setLook(wZipped);
+        wZipped.setToolTipText("Only the first entry in the archive is read!");
+        fdZipped=new FormData();
+        fdZipped.left = new FormAttachment(middle, 0);
+        fdZipped.top  = new FormAttachment(wNrLinesDocHeader, margin);
+        fdZipped.right= new FormAttachment(100, 0);
+        wZipped.setLayoutData(fdZipped);
+
+        wlNoempty=new Label(wContentComp, SWT.RIGHT);
+        wlNoempty.setText("No empty rows ");
+        props.setLook(wlNoempty);
+        fdlNoempty=new FormData();
+        fdlNoempty.left = new FormAttachment(0, 0);
+        fdlNoempty.top  = new FormAttachment(wZipped, margin);
+        fdlNoempty.right= new FormAttachment(middle, -margin);
+        wlNoempty.setLayoutData(fdlNoempty);
+        wNoempty=new Button(wContentComp, SWT.CHECK );
+        props.setLook(wNoempty);
+        wNoempty.setToolTipText("Check this to remove empty lines from the output rows.");
+        fdNoempty=new FormData();
+        fdNoempty.left = new FormAttachment(middle, 0);
+        fdNoempty.top  = new FormAttachment(wZipped, margin);
+        fdNoempty.right= new FormAttachment(100, 0);
+        wNoempty.setLayoutData(fdNoempty);
+
+        wlInclFilename=new Label(wContentComp, SWT.RIGHT);
+        wlInclFilename.setText("Include filename in output? ");
+        props.setLook(wlInclFilename);
+        fdlInclFilename=new FormData();
+        fdlInclFilename.left = new FormAttachment(0, 0);
+        fdlInclFilename.top  = new FormAttachment(wNoempty, margin);
+        fdlInclFilename.right= new FormAttachment(middle, -margin);
+        wlInclFilename.setLayoutData(fdlInclFilename);
+        wInclFilename=new Button(wContentComp, SWT.CHECK );
+        props.setLook(wInclFilename);
+        wInclFilename.setToolTipText("Check this to add a field (String) containing the filename.");
+        fdInclFilename=new FormData();
+        fdInclFilename.left = new FormAttachment(middle, 0);
+        fdInclFilename.top  = new FormAttachment(wNoempty, margin);
+        wInclFilename.setLayoutData(fdInclFilename);
+
+        wlInclFilenameField=new Label(wContentComp, SWT.LEFT);
+        wlInclFilenameField.setText("Filename fieldname ");
+        props.setLook(wlInclFilenameField);
+        fdlInclFilenameField=new FormData();
+        fdlInclFilenameField.left = new FormAttachment(wInclFilename, margin);
+        fdlInclFilenameField.top  = new FormAttachment(wNoempty, margin);
+        wlInclFilenameField.setLayoutData(fdlInclFilenameField);
+        wInclFilenameField=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wInclFilenameField);
+        wInclFilenameField.addModifyListener(lsMod);
+        fdInclFilenameField=new FormData();
+        fdInclFilenameField.left = new FormAttachment(wlInclFilenameField, margin);
+        fdInclFilenameField.top  = new FormAttachment(wNoempty, margin);
+        fdInclFilenameField.right= new FormAttachment(100, 0);
+        wInclFilenameField.setLayoutData(fdInclFilenameField);
+
+        wlInclRownum=new Label(wContentComp, SWT.RIGHT);
+        wlInclRownum.setText("Rownum in output? ");
+        props.setLook(wlInclRownum);
+        fdlInclRownum=new FormData();
+        fdlInclRownum.left = new FormAttachment(0, 0);
+        fdlInclRownum.top  = new FormAttachment(wInclFilenameField, margin);
+        fdlInclRownum.right= new FormAttachment(middle, -margin);
+        wlInclRownum.setLayoutData(fdlInclRownum);
+        wInclRownum=new Button(wContentComp, SWT.CHECK );
+        props.setLook(wInclRownum);
+        wInclRownum.setToolTipText("Check this to add a field (String) containing the filename.");
+        fdRownum=new FormData();
+        fdRownum.left = new FormAttachment(middle, 0);
+        fdRownum.top  = new FormAttachment(wInclFilenameField, margin);
+        wInclRownum.setLayoutData(fdRownum);
+
+        wlInclRownumField=new Label(wContentComp, SWT.RIGHT);
+        wlInclRownumField.setText("Rownum fieldname ");
+        props.setLook(wlInclRownumField);
+        fdlInclRownumField=new FormData();
+        fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);
+        fdlInclRownumField.top  = new FormAttachment(wInclFilenameField, margin);
+        wlInclRownumField.setLayoutData(fdlInclRownumField);
+        wInclRownumField=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wInclRownumField);
+        wInclRownumField.addModifyListener(lsMod);
+        fdInclRownumField=new FormData();
+        fdInclRownumField.left = new FormAttachment(wlInclRownumField, margin);
+        fdInclRownumField.top  = new FormAttachment(wInclFilenameField, margin);
+        fdInclRownumField.right= new FormAttachment(100, 0);
+        wInclRownumField.setLayoutData(fdInclRownumField);
+
+        wlFormat=new Label(wContentComp, SWT.RIGHT);
+        wlFormat.setText("Format ");
+        props.setLook(wlFormat);
+        fdlFormat=new FormData();
+        fdlFormat.left = new FormAttachment(0, 0);
+        fdlFormat.top  = new FormAttachment(wInclRownumField, margin);
+        fdlFormat.right= new FormAttachment(middle, -margin);
+        wlFormat.setLayoutData(fdlFormat);
+        wFormat=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
+        wFormat.setText("Format");
+        props.setLook(wFormat);
+        wFormat.add("DOS");
+        wFormat.add("Unix");
+        wFormat.select(0);
+        wFormat.addModifyListener(lsMod);
+        fdFormat=new FormData();
+        fdFormat.left = new FormAttachment(middle, 0);
+        fdFormat.top  = new FormAttachment(wInclRownumField, margin);
+        fdFormat.right= new FormAttachment(100, 0);
+        wFormat.setLayoutData(fdFormat);
+
+        wlEncoding=new Label(wContentComp, SWT.RIGHT);
+        wlEncoding.setText("Encoding ");
+        props.setLook(wlEncoding);
+        fdlEncoding=new FormData();
+        fdlEncoding.left = new FormAttachment(0, 0);
+        fdlEncoding.top  = new FormAttachment(wFormat, margin);
+        fdlEncoding.right= new FormAttachment(middle, -margin);
+        wlEncoding.setLayoutData(fdlEncoding);
+        wEncoding=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
+        wEncoding.setEditable(true);
+        props.setLook(wEncoding);
+        wEncoding.addModifyListener(lsMod);
+        fdEncoding=new FormData();
+        fdEncoding.left = new FormAttachment(middle, 0);
+        fdEncoding.top  = new FormAttachment(wFormat, margin);
+        fdEncoding.right= new FormAttachment(100, 0);
+        wEncoding.setLayoutData(fdEncoding);
+        wEncoding.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
+                {
+                }
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                    shell.setCursor(busy);
+                    setEncodings();
+                    shell.setCursor(null);
+                    busy.dispose();
+                }
+            }
+        );
+
+        wlLimit=new Label(wContentComp, SWT.RIGHT);
+        wlLimit.setText("Limit ");
+        props.setLook(wlLimit);
+        fdlLimit=new FormData();
+        fdlLimit.left = new FormAttachment(0, 0);
+        fdlLimit.top  = new FormAttachment(wEncoding, margin);
+        fdlLimit.right= new FormAttachment(middle, -margin);
+        wlLimit.setLayoutData(fdlLimit);
+        wLimit=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wLimit);
+        wLimit.addModifyListener(lsMod);
+        fdLimit=new FormData();
+        fdLimit.left = new FormAttachment(middle, 0);
+        fdLimit.top  = new FormAttachment(wEncoding, margin);
+        fdLimit.right= new FormAttachment(100, 0);
+        wLimit.setLayoutData(fdLimit);
+
+        
+        // ERROR HANDLING...
+        // ErrorIgnored?
+        wlErrorIgnored = new Label(wContentComp, SWT.RIGHT);
+        wlErrorIgnored.setText("Ignore errors? ");
+        props.setLook(wlErrorIgnored);
+        fdlErrorIgnored = new FormData();
+        fdlErrorIgnored.left = new FormAttachment(0, 0);
+        fdlErrorIgnored.top = new FormAttachment(wLimit, margin);
+        fdlErrorIgnored.right = new FormAttachment(middle, -margin);
+        wlErrorIgnored.setLayoutData(fdlErrorIgnored);
+        wErrorIgnored = new Button(wContentComp, SWT.CHECK);
+        props.setLook(wErrorIgnored);
+        wErrorIgnored.setToolTipText("Ignore parsing errors that occur, optionally log information about the errors.");
+        fdErrorIgnored = new FormData();
+        fdErrorIgnored.left = new FormAttachment(middle, 0);
+        fdErrorIgnored.top = new FormAttachment(wLimit, margin);
+        wErrorIgnored.setLayoutData(fdErrorIgnored);
+
+        wlErrorCount=new Label(wContentComp, SWT.RIGHT);
+        wlErrorCount.setText("Error count fieldname ");
+        props.setLook(wlErrorCount);
+        fdlErrorCount=new FormData();
+        fdlErrorCount.left = new FormAttachment(0, 0);
+        fdlErrorCount.top  = new FormAttachment(wErrorIgnored, margin);
+        fdlErrorCount.right= new FormAttachment(middle, -margin);
+        wlErrorCount.setLayoutData(fdlErrorCount);
+        wErrorCount=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wErrorCount);
+        wErrorCount.addModifyListener(lsMod);
+        fdErrorCount=new FormData();
+        fdErrorCount.left = new FormAttachment(middle, 0);
+        fdErrorCount.top  = new FormAttachment(wErrorIgnored, margin);
+        fdErrorCount.right= new FormAttachment(100, 0);
+        wErrorCount.setLayoutData(fdErrorCount);
+
+        wlErrorFields=new Label(wContentComp, SWT.RIGHT);
+        wlErrorFields.setText("Error fields fieldname");
+        props.setLook(wlErrorFields);
+        fdlErrorFields=new FormData();
+        fdlErrorFields.left = new FormAttachment(0, 0);
+        fdlErrorFields.top  = new FormAttachment(wErrorCount, margin);
+        fdlErrorFields.right= new FormAttachment(middle, -margin);
+        wlErrorFields.setLayoutData(fdlErrorFields);
+        wErrorFields=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wErrorFields);
+        wErrorFields.addModifyListener(lsMod);
+        fdErrorFields=new FormData();
+        fdErrorFields.left = new FormAttachment(middle, 0);
+        fdErrorFields.top  = new FormAttachment(wErrorCount, margin);
+        fdErrorFields.right= new FormAttachment(100, 0);
+        wErrorFields.setLayoutData(fdErrorFields);
+
+        wlErrorText=new Label(wContentComp, SWT.RIGHT);
+        wlErrorText.setText("Error text fieldname");
+        props.setLook(wlErrorText);
+        fdlErrorText=new FormData();
+        fdlErrorText.left = new FormAttachment(0, 0);
+        fdlErrorText.top  = new FormAttachment(wErrorFields, margin);
+        fdlErrorText.right= new FormAttachment(middle, -margin);
+        wlErrorText.setLayoutData(fdlErrorText);
+        wErrorText=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wErrorText);
+        wErrorText.addModifyListener(lsMod);
+        fdErrorText=new FormData();
+        fdErrorText.left = new FormAttachment(middle, 0);
+        fdErrorText.top  = new FormAttachment(wErrorFields, margin);
+        fdErrorText.right= new FormAttachment(100, 0);
+        wErrorText.setLayoutData(fdErrorText);
+        
+        fdContentComp = new FormData();
+        fdContentComp.left  = new FormAttachment(0, 0);
+        fdContentComp.top   = new FormAttachment(0, 0);
+        fdContentComp.right = new FormAttachment(100, 0);
+        fdContentComp.bottom= new FormAttachment(100, 0);
+        wContentComp.setLayoutData(fdContentComp);
+
+        wContentComp.layout();
+        wContentTab.setControl(wContentComp);
+
+
+        /////////////////////////////////////////////////////////////
+        /// END OF CONTENT TAB
+        /////////////////////////////////////////////////////////////
+
+    }
+
+    private void addFiltersTabs()
+    {
+        // Filters tab...
+        //
+        wFilterTab = new CTabItem(wTabFolder, SWT.NONE);
+        wFilterTab.setText("Filters");
+        
+        FormLayout FilterLayout = new FormLayout ();
+        FilterLayout.marginWidth  = Const.FORM_MARGIN;
+        FilterLayout.marginHeight = Const.FORM_MARGIN;
+        
+        wFilterComp = new Composite(wTabFolder, SWT.NONE);
+        wFilterComp.setLayout(FilterLayout);
+        props.setLook(wFilterComp);
+        
+        final int FilterRows=input.getFilter().length;
+        
+        ColumnInfo[] colinf=new ColumnInfo[]
+            {
+             new ColumnInfo("Filter string",      ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo("Filter position",    ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo("Stop on filter",     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { "N", "Y" } )
+            };
+        
+        colinf[2].setToolTip("set this field to Y if you want to stop processing when the filter is encountered");
+        
+        wFilter=new TableView(wFilterComp, 
+                              SWT.FULL_SELECTION | SWT.MULTI, 
+                              colinf, 
+                              FilterRows,  
+                              lsMod,
+                              props
+                              );
+
+        fdFilter=new FormData();
+        fdFilter.left  = new FormAttachment(0, 0);
+        fdFilter.top   = new FormAttachment(0, 0);
+        fdFilter.right = new FormAttachment(100, 0);
+        fdFilter.bottom= new FormAttachment(100, 0);
+        wFilter.setLayoutData(fdFilter);
+
+        fdFilterComp=new FormData();
+        fdFilterComp.left  = new FormAttachment(0, 0);
+        fdFilterComp.top   = new FormAttachment(0, 0);
+        fdFilterComp.right = new FormAttachment(100, 0);
+        fdFilterComp.bottom= new FormAttachment(100, 0);
+        wFilterComp.setLayoutData(fdFilterComp);
+        
+        wFilterComp.layout();
+        wFilterTab.setControl(wFilterComp);
+    }
+
+    
+    private void addFieldsTabs()
+    {
+        // Fields tab...
+        //
+        wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
+        wFieldsTab.setText("Fields");
+        
+        FormLayout fieldsLayout = new FormLayout ();
+        fieldsLayout.marginWidth  = Const.FORM_MARGIN;
+        fieldsLayout.marginHeight = Const.FORM_MARGIN;
+        
+        wFieldsComp = new Composite(wTabFolder, SWT.NONE);
+        wFieldsComp.setLayout(fieldsLayout);
+        props.setLook(wFieldsComp);
+        
+        wGet=new Button(wFieldsComp, SWT.PUSH);
+        wGet.setText(" &Get fields ");
+        fdGet=new FormData();
+        fdGet.left=new FormAttachment(50, 0);
+        fdGet.bottom =new FormAttachment(100, 0);
+        wGet.setLayoutData(fdGet);
+
+        final int FieldsRows=input.getInputFields().length;
+        
+        // Prepare a list of possible formats...
+        String formats[] = Const.getConversionFormats();
+        
+        ColumnInfo[] colinf=new ColumnInfo[]
+            {
+             new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO,  Value.getTypes(), true ),
+             new ColumnInfo("Format",     ColumnInfo.COLUMN_TYPE_CCOMBO,  formats),
+             new ColumnInfo("Position",   ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo("Currency",   ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo("Null if",    ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  TextFileInputMeta.trimTypeDesc, true ),
+             new ColumnInfo("Repeat",     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { "Y", "N" }, true )
+            };
+        
+        colinf[11].setToolTip("set this field to Y if you want to repeat values when the next are empty");
+        
+        wFields=new TableView(wFieldsComp, 
+                              SWT.FULL_SELECTION | SWT.MULTI, 
+                              colinf, 
+                              FieldsRows,  
+                              lsMod,
+                              props
+                              );
+
+        fdFields=new FormData();
+        fdFields.left  = new FormAttachment(0, 0);
+        fdFields.top   = new FormAttachment(0, 0);
+        fdFields.right = new FormAttachment(100, 0);
+        fdFields.bottom= new FormAttachment(wGet, -margin);
+        wFields.setLayoutData(fdFields);
+
+        fdFieldsComp=new FormData();
+        fdFieldsComp.left  = new FormAttachment(0, 0);
+        fdFieldsComp.top   = new FormAttachment(0, 0);
+        fdFieldsComp.right = new FormAttachment(100, 0);
+        fdFieldsComp.bottom= new FormAttachment(100, 0);
+        wFieldsComp.setLayoutData(fdFieldsComp);
+        
+        wFieldsComp.layout();
+        wFieldsTab.setControl(wFieldsComp);
+    }
+
+    public void setFlags()
 	{
         wlInclFilenameField.setEnabled(wInclFilename.getSelection());
         wInclFilenameField.setEnabled(wInclFilename.getSelection());
 
         wlInclRownumField.setEnabled(wInclRownum.getSelection());
         wInclRownumField.setEnabled(wInclRownum.getSelection());
-
-		wlFilterPos.setEnabled(wFilter.getSelection());
-		wFilterPos.setEnabled(wFilter.getSelection());
-		wlFilterStr.setEnabled(wFilter.getSelection());
-		wFilterStr.setEnabled(wFilter.getSelection());
-        wlFilterLast.setEnabled(wFilter.getSelection());
-        wFilterLast.setEnabled(wFilter.getSelection());
 
         wlErrorCount.setEnabled( wErrorIgnored.getSelection() );
         wErrorCount.setEnabled( wErrorIgnored.getSelection() );
@@ -1462,16 +1445,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wNoempty.setSelection(in.noEmptyLines());
 		wInclFilename.setSelection(in.includeFilename());
 		wInclRownum.setSelection(in.includeRowNumber());
-		//wMultiple.setSelection(in.wildcard);
-		wFilter.setSelection(in.hasFilter());
-        wFilterLast.setSelection(in.isFilterLastLine());
-		if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
+		
+        if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
 		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
 		if (in.getFileFormat()   !=null) wFormat.setText(in.getFileFormat());
 		wLimit.setText(""+in.getRowLimit());
-		
-		if (in.getFilterString()!=null) wFilterStr.setText(in.getFilterString());
-		wFilterPos.setText(""+in.getFilterPosition());
 		
 		log.logDebug(toString(), "getting fields info...");
 		for (int i=0;i<in.getInputFields().length;i++)
@@ -1513,6 +1491,24 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         if (in.getErrorFieldsField()!=null) wErrorFields.setText( in.getErrorFieldsField() );
         if (in.getErrorTextField()!=null) wErrorText.setText( in.getErrorTextField() );
         
+        for (int i=0;i<in.getFilter().length;i++)
+        {
+            TableItem item = wFilter.table.getItem(i);
+            
+            TextFileFilter filter = in.getFilter()[i];
+            if (filter.getFilterString()  !=null) item.setText(1, filter.getFilterString());
+            if (filter.getFilterPosition()>=0   ) item.setText(2, ""+filter.getFilterPosition());
+            item.setText(3, filter.isFilterLastLine()?"Y":"N");
+        }
+        
+        wFields.removeEmptyRows();
+        wFields.setRowNums();
+        wFields.optWidth(true);
+
+        wFilter.removeEmptyRows();
+        wFilter.setRowNums();
+        wFilter.optWidth(true);
+
         setFlags();
         
 		wStepname.selectAll();
@@ -1566,12 +1562,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		in.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
 		in.setFilenameField( wInclFilenameField.getText() );
 		in.setRowNumberField( wInclRownumField.getText() );
-		
-		in.setFilter( wFilter.getSelection() );
-		in.setFilterPosition( Const.toInt(wFilterPos.getText(), -1) );
-		in.setFilterString( wFilterStr.getText() );
-        in.setFilterLastLine( wFilterLast.getSelection() );
-		
+				
 		in.setIncludeFilename( wInclFilename.getSelection() );
 		in.setIncludeRowNumber( wInclRownum.getSelection() );
 		in.setHeader( wHeader.getSelection() );
@@ -1593,17 +1584,15 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             in.setEncoding(encoding);
         }
         
-		int i;
-		//Table table = wFields.table;
-		
 		int nrfiles    = wFilenameList.getItemCount();
 		int nrfields   = wFields.nrNonEmpty();
-		in.allocate(nrfiles, nrfields);
+        int nrfilters  = wFilter.nrNonEmpty();
+		in.allocate(nrfiles, nrfields, nrfilters);
 
 		in.setFileName( wFilenameList.getItems(0) );
 		in.setFileMask( wFilenameList.getItems(1) );
 
-		for (i=0;i<nrfields;i++)
+		for (int i=0;i<nrfields;i++)
 		{
 		    TextFileInputField field = new TextFileInputField();
 		    
@@ -1624,6 +1613,16 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			in.getInputFields()[i] = field;
 		}
         
+        for (int i=0;i<nrfilters;i++)
+        {
+            TableItem item = wFilter.getNonEmpty(i);
+            TextFileFilter filter = new TextFileFilter();
+            in.getFilter()[i] = filter;
+            
+            filter.setFilterString( item.getText(1) );
+            filter.setFilterPosition( Const.toInt(item.getText(2), -1) );
+            filter.setFilterLastLine( "Y".equalsIgnoreCase( item.getText(3) ) );
+        }
         // Error handling fields...
         in.setErrorIgnored( wErrorIgnored.getSelection() );
         in.setErrorCountField( wErrorCount.getText() );
@@ -1633,6 +1632,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	
 	private void get()
 	{
+        addFieldsTabs();
+        
 		if (wFiletype.getText().equalsIgnoreCase("CSV"))
 		{
 			getCSV();

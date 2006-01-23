@@ -47,7 +47,7 @@ public class TextFileInputField implements Cloneable
 	private String 	groupSymbol;
 	private boolean repeat;
 	private String 	nullString;
-	
+    
 	private String 	samples[];
 
 
