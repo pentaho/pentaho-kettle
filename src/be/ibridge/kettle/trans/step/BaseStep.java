@@ -370,12 +370,12 @@ public class BaseStep extends Thread
             "Mapping",          // "Mapping"
             "Mapping",          // "MappingInput"
             "Mapping",          // "MappingOutput"
-            "Experimental",     // "XMLInput"
-            "Experimental",     // "XMLOutut"
+            "Input",            // "XMLInput"
+            "Output",           // "XMLOutut"
             "Transform",        // "MergRows"
             "Transform",        // "Constant"
-            "Experimental",     // "Denormaliser"
-            "Experimental"      // "Flattener"
+            "Transform",        // "Denormaliser"
+            "Transform"         // "Flattener"
 		};
 
     public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Mapping", "Experimental" };
