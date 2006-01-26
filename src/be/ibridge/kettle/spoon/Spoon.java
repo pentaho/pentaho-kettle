@@ -4347,27 +4347,34 @@ public class Spoon
 								if (dirname==null) dirname=RepositoryDirectory.DIRECTORY_SEPARATOR;
 								
 								// Check username, password
-								win.rep.userinfo = new UserInfo(win.rep, username, password);
-								
-								if (win.rep.userinfo.getID()>0)
-								{
-									RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(dirname);
-									if (repdir!=null)
-									{
-										win.transMeta = new TransMeta(win.rep, transname, repdir);
-										win.setFilename(repname);
-										win.transMeta.clearChanged();
-									}
-									else
-									{
-                                        log.logError(APP_NAME, "Can't find directory ["+dirname+"] in the repository.");
-									}
-								}
-								else
+                                try
+                                {
+    								win.rep.userinfo = new UserInfo(win.rep, username, Const.NVL(password, ""));
+    								
+                                    if (transname!=null && dirname!=null)
+                                    {
+    									RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(dirname);
+    									if (repdir!=null)
+    									{
+    										win.transMeta = new TransMeta(win.rep, transname, repdir);
+    										win.setFilename(repname);
+    										win.transMeta.clearChanged();
+    									}
+    									else
+    									{
+                                            log.logError(APP_NAME, "Can't find directory ["+dirname+"] in the repository.");
+    									}
+                                    }
+                                }
+                                catch(KettleException e)
 								{
                                     log.logError(APP_NAME, "Can't verify username and password.");
-									win.rep.disconnect();
-									win.rep=null;
+                                    win.rep.disconnect();
+                                    win.rep=null;
+                                    MessageBox mb = new MessageBox(win.shell, SWT.OK | SWT.ICON_ERROR);
+                                    mb.setMessage("The supplied username or password is incorrect.");
+                                    mb.setText("Sorry...");
+                                    mb.open();
 								}
 							}
 							else
