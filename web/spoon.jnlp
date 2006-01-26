@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<jnlp spec="1.0+" codebase="http://www.kettle.be/webstart" href="spoon.jnlp">
+<jnlp spec="1.0+" codebase="http://kettle.javaforge.com/webstart" href="spoon.jnlp">
 
  <information>
   <title>Kettle Spoon</title>
@@ -18,30 +18,37 @@
  <resources>
   <j2se version="1.4+" java-vm-args="-Xmx256M"/>
   <jar href="lib/kettle.jar"/>
+
   <jar href="libext/activation.jar"/>
-  <jar href="libext/CacheDB.jar"/>
-  <jar href="libext/db2jcc.jar"/>
-  <jar href="libext/db2jcc_license_cu.jar"/>
-  <jar href="libext/edtftpj-1.4.5.jar"/>
-  <jar href="libext/firebirdsql-full.jar"/>
-  <jar href="libext/firebirdsql.jar"/>
-  <jar href="libext/gis-shape.jar"/>
-  <jar href="libext/hsqldb.jar"/>
-  <jar href="libext/ifxjdbc.jar"/>
-  <jar href="libext/javadbf.jar"/>
-  <jar href="libext/jconn2.jar"/>
-  <jar href="libext/js.jar"/>
-  <jar href="libext/jt400.jar"/>
-  <jar href="libext/jtds-1.0.3.jar"/>
-  <jar href="libext/jxl.jar"/>
-  <jar href="libext/ktable.jar"/>
-  <jar href="libext/log4j-1.2.8.jar"/>
-  <jar href="libext/mail.jar"/>
-  <jar href="libext/mysql-connector-java-3.1.7-bin.jar"/>
-  <jar href="libext/ojdbc14.jar"/>
-  <jar href="libext/orai18n.jar"/>
-  <jar href="libext/pg74.215.jdbc3.jar"/>
-  <jar href="libext/SQLBaseJDBC.jar"/>
+  <jar href="libext/CacheDB.jar
+  <jar href="libext/db2jcc.jar
+  <jar href="libext/db2jcc_license_cu.jar
+  <jar href="libext/edbc.jar
+  <jar href="libext/edtftpj-1.4.5.jar
+  <jar href="libext/ehcache-1.1.jar
+  <jar href="libext/firebirdsql-full.jar
+  <jar href="libext/gis-shape.jar
+  <jar href="libext/hsqldb.jar
+  <jar href="libext/ifxjdbc.jar
+  <jar href="libext/interclient.jar
+  <jar href="libext/javadbf.jar
+  <jar href="libext/jconn2.jar
+  <jar href="libext/js.jar
+  <jar href="libext/jsch-0.1.24.jar
+  <jar href="libext/jt400.jar
+  <jar href="libext/jtds-1.2.jar
+  <jar href="libext/jxl.jar
+  <jar href="libext/ktable.jar
+  <jar href="libext/log4j-1.2.8.jar
+  <jar href="libext/mail.jar
+  <jar href="libext/mysql-connector-java-3.1.7-bin.jar
+  <jar href="libext/ojdbc14.jar
+  <jar href="libext/orai18n.jar
+  <jar href="libext/pg74.215.jdbc3.jar
+  <jar href="libext/sapdbc.jar
+  <jar href="libext/SQLBaseJDBC.jar
+  <jar href="libext/xbasej.jar
+
   <jar href="libswt/jface.jar"/>
   <jar href="libswt/runtime.jar"/>
  </resources>
