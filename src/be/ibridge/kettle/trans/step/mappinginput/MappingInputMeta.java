@@ -286,24 +286,24 @@ public class MappingInputMeta extends BaseStepMeta implements StepMetaInterface
         CheckResult cr;
         if (prev == null || prev.size() == 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Not receiving any fields from previous steps!", stepinfo);
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving " + prev.size() + " fields", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Step is connected to previous one, receiving " + prev.size() + " fields", stepinfo);
             remarks.add(cr);
         }
 
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Step is receiving info from other steps.", stepinfo);
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK , "No input received from other steps!", stepinfo);
             remarks.add(cr);
         }
     }
