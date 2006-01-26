@@ -112,7 +112,7 @@ public class UserInfo
 		this(rep, login);
 		
 		// Verify the password:
-		if (getID()<0 || getPassword()==null || !getPassword().equals(passwd))
+		if ( getID()<0 || !passwd.equals(getPassword()) )
 		{
 			throw new KettleException("Incorrect password or login!");
 		}
