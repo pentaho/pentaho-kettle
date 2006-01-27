@@ -537,10 +537,10 @@ public class Chef
 		  char chr  = (char)('1'+i );
 		  int accel =  SWT.CTRL | chr;
 		  String repository = ( lr[i]!=null && lr[i].length()>0 ) ? ( "["+lr[i]+"] " ) : "";
-		  String filename = Const.FILE_SEPARATOR + lf[i];
+		  String filename = RepositoryDirectory.DIRECTORY_SEPARATOR + lf[i];
 		  if (!lt[i]) filename = lf[i];
 		  
-		  if (!ld[i].equals(Const.FILE_SEPARATOR))
+		  if (!ld[i].equals(RepositoryDirectory.DIRECTORY_SEPARATOR))
 		  {
 		  	filename=ld[i]+filename;
 		  }
@@ -1656,7 +1656,7 @@ public class Chef
             dos.close();
 
             // Handle last opened files...
-			props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, Const.FILE_SEPARATOR, false, "");
+			props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, RepositoryDirectory.DIRECTORY_SEPARATOR, false, "");
 			saveSettings();
 			addMenuLast();
 
@@ -3054,7 +3054,7 @@ public class Chef
 							win.rep = new Repository(log, repinfo, userinfo);
 							if (win.rep.connect("Chef"))
 							{
-								if (dirname==null) dirname=Const.FILE_SEPARATOR;
+								if (dirname==null) dirname=RepositoryDirectory.DIRECTORY_SEPARATOR;
 	
 								// Check username, password
 								win.rep.userinfo = new UserInfo(win.rep, username, password);

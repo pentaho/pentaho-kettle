@@ -740,9 +740,9 @@ public class Spoon
 		  char chr  = (char)('1'+i );
 		  int accel =  SWT.CTRL | chr;
 		  String repository = ( lr[i]!=null && lr[i].length()>0 ) ? ( "["+lr[i]+"] " ) : ""; 
-		  String filename = Const.FILE_SEPARATOR + lf[i];
+		  String filename = RepositoryDirectory.DIRECTORY_SEPARATOR + lf[i];
 		  if (!lt[i]) filename = lf[i];
-		  if (!ld[i].equals(Const.FILE_SEPARATOR))
+		  if (!ld[i].equals(RepositoryDirectory.DIRECTORY_SEPARATOR))
 		  {
 		  	filename=ld[i]+filename;
 		  }
@@ -2333,7 +2333,7 @@ public class Spoon
 					try
 					{
 						transMeta = new TransMeta(fname);
-						props.addLastFile(Props.TYPE_PROPERTIES_MENU, fname, Const.FILE_SEPARATOR, false, "");
+						props.addLastFile(Props.TYPE_PROPERTIES_MENU, fname, RepositoryDirectory.DIRECTORY_SEPARATOR, false, "");
 						addMenuLast();
 						if (!importfile) transMeta.clearChanged();
 						setFilename(fname);
@@ -2650,7 +2650,7 @@ public class Spoon
 			dos.close();
 
 			// Handle last opened files...
-			props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fname, Const.FILE_SEPARATOR, false, "");
+			props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fname, RepositoryDirectory.DIRECTORY_SEPARATOR, false, "");
 			saveSettings();
 			addMenuLast();
 			
