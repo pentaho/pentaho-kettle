@@ -80,7 +80,8 @@ public class Repository
 	private int					minorVersion;
 
     /** The maximum length of a text field in a Kettle repository : 2.000.000 is enough for everyone ;-) */ 
-    private static final int REP_STRING_LENGTH = 2000000;
+    private static final int REP_STRING_LENGTH      = 2000000;
+    private static final int REP_STRING_CODE_LENGTH =     255;
 
 	public Repository(LogWriter log, RepositoryMeta repinfo, UserInfo userinfo)
 	{
@@ -931,7 +932,7 @@ public class Repository
 			String tablename = "R_DATABASE_TYPE";
 			Row table = new Row();
 			table.addValue(new Value("ID_DATABASE_TYPE", Value.VALUE_TYPE_INTEGER, 5, 0));
-			table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+			table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 			table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 
 			database.prepareInsert(table, tablename);
@@ -3067,7 +3068,7 @@ public class Repository
 		tablename = "R_DATABASE_TYPE";
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_DATABASE_TYPE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("CODE",             Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("CODE",             Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("DESCRIPTION",      Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_DATABASE_TYPE", false);
 
@@ -3140,7 +3141,7 @@ public class Repository
 		tablename = "R_DATABASE_CONTYPE";
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_DATABASE_CONTYPE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_DATABASE_CONTYPE", false);
 
@@ -3266,7 +3267,7 @@ public class Repository
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValue(new Value("ID_DATABASE_ATTRIBUTE", Value.VALUE_TYPE_INTEGER, KEY, 0));
         table.addValue(new Value("ID_DATABASE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-        table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+        table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 
         sql = database.getDDL(tablename, table, null, false, "ID_DATABASE_ATTRIBUTE", false);
@@ -3400,7 +3401,7 @@ public class Repository
 		table.addValue(new Value("ID_TRANS_ATTRIBUTE", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("NR", Value.VALUE_TYPE_INTEGER, 6, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("VALUE_NUM", Value.VALUE_TYPE_NUMBER, 13, 2));
 		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_TRANS_ATTRIBUTE", false);
@@ -3575,7 +3576,7 @@ public class Repository
 		tablename = "R_STEP_TYPE";
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_STEP_TYPE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("HELPTEXT", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_STEP_TYPE", false);
@@ -3642,7 +3643,7 @@ public class Repository
 		table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_STEP", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("NR", Value.VALUE_TYPE_INTEGER, 6, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("VALUE_NUM", Value.VALUE_TYPE_NUMBER, 13, 2));
 		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_STEP_ATTRIBUTE", false);
@@ -3771,7 +3772,7 @@ public class Repository
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table = new Row();
 		table.addValue(new Value("ID_LOGLEVEL", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_LOGLEVEL", false);
 
@@ -3897,7 +3898,7 @@ public class Repository
 		tablename = "R_JOBENTRY_TYPE";
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_JOBENTRY_TYPE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_JOBENTRY_TYPE", false);
 
@@ -3992,7 +3993,7 @@ public class Repository
 		table.addValue(new Value("ID_JOB", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_JOBENTRY", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("NR", Value.VALUE_TYPE_INTEGER, 6, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("VALUE_NUM", Value.VALUE_TYPE_NUMBER, 13, 2));
 		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_JOBENTRY_ATTRIBUTE", false);
@@ -4251,7 +4252,7 @@ public class Repository
 		tablename = "R_PERMISSION";
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_PERMISSION", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_PERMISSION", false);
 
