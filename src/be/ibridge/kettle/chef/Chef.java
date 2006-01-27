@@ -743,8 +743,12 @@ public class Chef
         JobPlugin baseJobEntries[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_NATIVE);
         for (int i=0;i<baseJobEntries.length;i++)
         {
-           TreeItem tiBase = new TreeItem(tiBaseEntries, SWT.NONE);
-           tiBase.setText(baseJobEntries[i].getDescription());
+            JobPlugin plugin = baseJobEntries[i];
+            if (!plugin.getID().equals("SPECIAL"))
+            {
+               TreeItem tiBase = new TreeItem(tiBaseEntries, SWT.NONE);
+               tiBase.setText(baseJobEntries[i].getDescription());
+            }
         }
 
         // Job entry base type
