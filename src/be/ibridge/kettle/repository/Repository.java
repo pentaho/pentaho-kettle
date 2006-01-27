@@ -79,6 +79,9 @@ public class Repository
 	private int					majorVersion;
 	private int					minorVersion;
 
+    /** The maximum length of a text field in a Kettle repository : 2.000.000 is enough for everyone ;-) */ 
+    private static final int REP_STRING_LENGTH = 2000000;
+
 	public Repository(LogWriter log, RepositoryMeta repinfo, UserInfo userinfo)
 	{
 		this.repinfo = repinfo;
@@ -928,8 +931,8 @@ public class Repository
 			String tablename = "R_DATABASE_TYPE";
 			Row table = new Row();
 			table.addValue(new Value("ID_DATABASE_TYPE", Value.VALUE_TYPE_INTEGER, 5, 0));
-			table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, 256, 0));
-			table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, 256, 0));
+			table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+			table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 
 			database.prepareInsert(table, tablename);
 
@@ -3047,7 +3050,6 @@ public class Repository
 		String keyfield[];
 		String user[], pass[], code[], desc[], prof[];
 
-        int LEN = 255;
 		int KEY = 9; // integer, no need for bigint!
 
 		log.logBasic(toString(), "Starting to create or modify the repository tables...");
@@ -3065,8 +3067,8 @@ public class Repository
 		tablename = "R_DATABASE_TYPE";
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_DATABASE_TYPE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("CODE",             Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("DESCRIPTION",      Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("CODE",             Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("DESCRIPTION",      Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_DATABASE_TYPE", false);
 
 		if (sql != null && sql.length() > 0)
@@ -3138,8 +3140,8 @@ public class Repository
 		tablename = "R_DATABASE_CONTYPE";
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_DATABASE_CONTYPE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_DATABASE_CONTYPE", false);
 
 		if (sql != null && sql.length() > 0)
@@ -3202,7 +3204,7 @@ public class Repository
 		tablename = "R_NOTE";
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_NOTE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, 2000, 0));
+		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("GUI_LOCATION_X", Value.VALUE_TYPE_INTEGER, 6, 0));
 		table.addValue(new Value("GUI_LOCATION_Y", Value.VALUE_TYPE_INTEGER, 6, 0));
 		table.addValue(new Value("GUI_LOCATION_WIDTH", Value.VALUE_TYPE_INTEGER, 6, 0));
@@ -3229,17 +3231,17 @@ public class Repository
 		tablename = "R_DATABASE";
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_DATABASE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("ID_DATABASE_TYPE", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_DATABASE_CONTYPE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("HOST_NAME", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("DATABASE_NAME", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("HOST_NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("DATABASE_NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("PORT", Value.VALUE_TYPE_INTEGER, 7, 0));
-		table.addValue(new Value("USERNAME", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("PASSWORD", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("SERVERNAME", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("DATA_TBS", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("INDEX_TBS", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("USERNAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("PASSWORD", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("SERVERNAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("DATA_TBS", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("INDEX_TBS", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 
 		sql = database.getDDL(tablename, table, null, false, "ID_DATABASE", false);
 		if (sql != null && sql.length() > 0)
@@ -3264,8 +3266,8 @@ public class Repository
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValue(new Value("ID_DATABASE_ATTRIBUTE", Value.VALUE_TYPE_INTEGER, KEY, 0));
         table.addValue(new Value("ID_DATABASE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-        table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, 255, 0));
-        table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, 2000, 0));
+        table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+        table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 
         sql = database.getDDL(tablename, table, null, false, "ID_DATABASE_ATTRIBUTE", false);
         if (sql != null && sql.length() > 0)
@@ -3308,7 +3310,7 @@ public class Repository
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_DIRECTORY",        Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_DIRECTORY_PARENT", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("DIRECTORY_NAME",      Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("DIRECTORY_NAME",      Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_DIRECTORY", false);
 
 		if (sql != null && sql.length() > 0)
@@ -3351,22 +3353,22 @@ public class Repository
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_DIRECTORY", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("ID_STEP_READ", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_STEP_WRITE", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_STEP_INPUT", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_STEP_OUTPUT", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_STEP_UPDATE", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_DATABASE_LOG", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("TABLE_NAME_LOG", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("TABLE_NAME_LOG", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("USE_BATCHID", Value.VALUE_TYPE_BOOLEAN, 1, 0));
 		table.addValue(new Value("USE_LOGFIELD", Value.VALUE_TYPE_BOOLEAN, 1, 0));
 		table.addValue(new Value("ID_DATABASE_MAXDATE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("TABLE_NAME_MAXDATE", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("FIELD_NAME_MAXDATE", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("TABLE_NAME_MAXDATE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("FIELD_NAME_MAXDATE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("OFFSET_MAXDATE", Value.VALUE_TYPE_NUMBER, 12, 2));
 		table.addValue(new Value("DIFF_MAXDATE", Value.VALUE_TYPE_NUMBER, 12, 2));
-		table.addValue(new Value("MODIFIED_USER", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("MODIFIED_USER", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("MODIFIED_DATE", Value.VALUE_TYPE_DATE, 20, 0));
 		table.addValue(new Value("SIZE_ROWSET", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_TRANSFORMATION", false);
@@ -3398,9 +3400,9 @@ public class Repository
 		table.addValue(new Value("ID_TRANS_ATTRIBUTE", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("NR", Value.VALUE_TYPE_INTEGER, 6, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, 30, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("VALUE_NUM", Value.VALUE_TYPE_NUMBER, 13, 2));
-		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, 2000, 0));
+		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_TRANS_ATTRIBUTE", false);
 
 		if (sql != null && sql.length() > 0)
@@ -3445,8 +3447,8 @@ public class Repository
 		table.addValue(new Value("ID_DEPENDENCY", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_DATABASE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("TABLE_NAME", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("FIELD_NAME", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("TABLE_NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("FIELD_NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_DEPENDENCY", false);
 
 		if (sql != null && sql.length() > 0)
@@ -3519,11 +3521,11 @@ public class Repository
 		table.addValue(new Value("ID_CONDITION", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_CONDITION_PARENT", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("NEGATED", Value.VALUE_TYPE_BOOLEAN, 1, 0));
-		table.addValue(new Value("OPERATOR", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("LEFT_NAME", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("CONDITION_FUNCTION", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("RIGHT_NAME", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("ID_VALUE_RIGHT", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("OPERATOR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("LEFT_NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("CONDITION_FUNCTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("RIGHT_NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("ID_VALUE_RIGHT", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_CONDITION", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
@@ -3545,9 +3547,9 @@ public class Repository
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table = new Row();
 		table.addValue(new Value("ID_VALUE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("VALUE_TYPE", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("VALUE_TYPE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("IS_NULL", Value.VALUE_TYPE_BOOLEAN, 1, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_VALUE", false);
 
@@ -3573,9 +3575,9 @@ public class Repository
 		tablename = "R_STEP_TYPE";
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_STEP_TYPE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("HELPTEXT", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("HELPTEXT", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_STEP_TYPE", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
@@ -3606,8 +3608,8 @@ public class Repository
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_STEP", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, 2000, 0));
+		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("ID_STEP_TYPE", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("DISTRIBUTE", Value.VALUE_TYPE_BOOLEAN, 1, 0));
 		table.addValue(new Value("COPIES", Value.VALUE_TYPE_INTEGER, 3, 0));
@@ -3640,9 +3642,9 @@ public class Repository
 		table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_STEP", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("NR", Value.VALUE_TYPE_INTEGER, 6, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, 30, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("VALUE_NUM", Value.VALUE_TYPE_NUMBER, 13, 2));
-		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, 2000, 0));
+		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_STEP_ATTRIBUTE", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
@@ -3769,8 +3771,8 @@ public class Repository
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table = new Row();
 		table.addValue(new Value("ID_LOGLEVEL", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_LOGLEVEL", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
@@ -3833,15 +3835,15 @@ public class Repository
 		tablename = "R_LOG";
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_LOG", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("ID_LOGLEVEL", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("LOGTYPE", Value.VALUE_TYPE_STRING, 1, 0));
-		table.addValue(new Value("FILENAME", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("FILEEXTENTION", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("LOGTYPE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("FILENAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("FILEEXTENTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("ADD_DATE", Value.VALUE_TYPE_BOOLEAN, 1, 0));
 		table.addValue(new Value("ADD_TIME", Value.VALUE_TYPE_BOOLEAN, 1, 0));
 		table.addValue(new Value("ID_DATABASE_LOG", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("TABLE_NAME_LOG", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("TABLE_NAME_LOG", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_LOG", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
@@ -3866,11 +3868,11 @@ public class Repository
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_JOB", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_DIRECTORY", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("ID_DATABASE_LOG", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("TABLE_NAME_LOG", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("MODIFIED_USER", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("MODIFIED_DATE", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("TABLE_NAME_LOG", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("MODIFIED_USER", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("MODIFIED_DATE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_JOB", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
@@ -3895,8 +3897,8 @@ public class Repository
 		tablename = "R_JOBENTRY_TYPE";
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_JOBENTRY_TYPE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_JOBENTRY_TYPE", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
@@ -3931,8 +3933,8 @@ public class Repository
 		table.addValue(new Value("ID_JOBENTRY", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_JOB", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_JOBENTRY_TYPE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_JOBENTRY", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
@@ -3990,9 +3992,9 @@ public class Repository
 		table.addValue(new Value("ID_JOB", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_JOBENTRY", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("NR", Value.VALUE_TYPE_INTEGER, 6, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, 30, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("VALUE_NUM", Value.VALUE_TYPE_NUMBER, 13, 2));
-		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, 2000, 0));
+		table.addValue(new Value("VALUE_STR", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_JOBENTRY_ATTRIBUTE", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
@@ -4098,8 +4100,8 @@ public class Repository
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table = new Row();
 		table.addValue(new Value("ID_PROFILE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_PROFILE", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
@@ -4167,10 +4169,10 @@ public class Repository
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_USER", Value.VALUE_TYPE_INTEGER, KEY, 0));
 		table.addValue(new Value("ID_PROFILE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("LOGIN", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("PASSWORD", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("LOGIN", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("PASSWORD", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		table.addValue(new Value("ENABLED", Value.VALUE_TYPE_BOOLEAN, 1, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_USER", false);
 
@@ -4249,8 +4251,8 @@ public class Repository
 		tablename = "R_PERMISSION";
 		if (monitor!=null) monitor.subTask("Checking table "+tablename);
 		table.addValue(new Value("ID_PERMISSION", Value.VALUE_TYPE_INTEGER, KEY, 0));
-		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, LEN, 0));
-		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, LEN, 0));
+		table.addValue(new Value("CODE", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
+		table.addValue(new Value("DESCRIPTION", Value.VALUE_TYPE_STRING, REP_STRING_LENGTH, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_PERMISSION", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
