@@ -80,7 +80,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 		return retval;
 	}
 	
-	public JobEntryCopy(Node entrynode, ArrayList databases)
+	public JobEntryCopy(Node entrynode, ArrayList databases, Repository rep)
 		throws KettleXMLException
 	{
 		try

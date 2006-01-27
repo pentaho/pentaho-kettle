@@ -251,13 +251,17 @@ public class JobEntryBase implements Cloneable
 			String stype = XMLHandler.getTagValue(entrynode, "type");
 			setType(JobEntryCopy.getType(stype));
 			
-			// System.out.println("Loaded job entry ["+name+"] of type ["+stype+"]");
+			System.out.println("Loaded job entry ["+name+"] of type ["+stype+"]");
 		}
 		catch(Exception e)
 		{
 			throw new KettleXMLException("Unable to load base info for job entry", e);
 		}
 	}
+    
+    public void parseRepositoryObjects(Repository rep) throws KettleException
+    {
+    }
 	
 	public void saveRep(Repository rep, long id_job)
 		throws KettleException

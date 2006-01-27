@@ -448,6 +448,15 @@ public class Const
     public static final String STRING_TRANS_FILTER_NAMES[] = new String[] { "Kettle Transformations", "XML Files", "All files" };
 
 
+    /** The extention of a Kettle job XML file */
+    public static final String STRING_JOB_DEFAULT_EXT    = ".kjb";
+    
+    /** The possible extentions a job XML file can have. */
+    public static final String STRING_JOB_FILTER_EXT[]   = new String[] { "*.kjb;*.xml", "*.xml", "*.*" };
+
+    /** The discriptions of the possible extentions a job XML file can have. */
+    public static final String STRING_JOB_FILTER_NAMES[] = new String[] { "Kettle Jobs", "XML Files", "All files" };
+
 
 
 

@@ -26,6 +26,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleJobException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -33,6 +34,7 @@ import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.trans.Trans;
+import be.ibridge.kettle.trans.TransMeta;
 
 
 /**
@@ -58,6 +60,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	public  int     loglevel;
 	
 	public  boolean parallel;
+    private String directoryPath;
 	
 	public JobEntryTrans(String name)
 	{
@@ -139,7 +142,15 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		
 		retval+="      "+XMLHandler.addTagValue("filename",          filename);
 		retval+="      "+XMLHandler.addTagValue("transname",         transname);
-		retval+="      "+XMLHandler.addTagValue("directory",         directory.getPath());
+        if (directory!=null)
+        {
+            retval+="      "+XMLHandler.addTagValue("directory",         directory.getPath());
+        }
+        else
+        if (directoryPath!=null)
+        {
+            retval+="      "+XMLHandler.addTagValue("directory",         directoryPath); // don't loose this info (backup/recovery)
+        }
 		retval+="      "+XMLHandler.addTagValue("arg_from_previous", argFromPrevious);
 		retval+="      "+XMLHandler.addTagValue("set_logfile",       setLogfile);
 		retval+="      "+XMLHandler.addTagValue("logfile",           logfile);
@@ -157,16 +168,19 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		return retval;
 	}
 
-	public void loadXML(Node entrynode, ArrayList databases, RepositoryDirectory directory_tree)
-		throws KettleXMLException
+    public void loadXML(Node entrynode, ArrayList databases) throws KettleXMLException
 	{
 		try 
 		{
-			super.loadXML(entrynode, databases);
+            super.loadXML(entrynode, databases);
 			
-			setFileName( XMLHandler.getTagValue(entrynode, "filename") );
-			setTransname( XMLHandler.getTagValue(entrynode, "transname") );
-            directory = directory_tree.findDirectory( XMLHandler.getTagValue(entrynode, "directory") );
+			filename = XMLHandler.getTagValue(entrynode, "filename") ;
+			transname = XMLHandler.getTagValue(entrynode, "transname") ;
+            
+            directoryPath = XMLHandler.getTagValue(entrynode, "directory");
+            
+            // Sorry, mixing XML and repositories is not going to work.
+            // directory = rep.getDirectoryTree().findDirectory(directoryPath);
 
             argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
 			setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
@@ -190,6 +204,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			throw new KettleXMLException("Unable to load transformation job entry from XML node", e);
 		}
 	}
+   
 	
 	// Load the jobentry from repository
 	public void loadRep(Repository rep, long id_jobentry, ArrayList databases) throws KettleException
@@ -300,7 +315,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	 * @param prev_result The result of the previous execution
 	 * @return The Result of the execution.
 	 */
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
+	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleJobException
 	{
 		LogWriter log       = LogWriter.getInstance();
 		Result result = prev_result;
@@ -309,12 +324,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		LogWriter logwriter = log;
 		if (setLogfile) logwriter = LogWriter.getInstance(getLogFilename(), true, loglevel);
 		
-		log.logDetailed(toString(), "Starting transformation...(file="+getFileName()+", name="+getName()+"), repinfo="+getDescription());
-		Trans trans = new Trans(logwriter, getFileName(), getTransname(), arguments);
-		
-		// Set the result rows for the next one...
-		trans.getTransMeta().setSourceRows(prev_result.rows);
-		
 		// Open the transformation...
 		// Default directory for now...
 		
@@ -322,7 +331,35 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		
 		try
 		{
-			trans.open(rep, getTransname(), directory.getPath(), getFileName());
+            log.logDetailed(toString(), "Starting transformation...(file="+getFileName()+", name="+getName()+"), repinfo="+getDescription());
+            
+            TransMeta transMeta;
+            if (getTransname()!=null && getTransname().length()>0 &&  // Load from the repository
+                getDirectory()!=null
+               )
+            {
+                transMeta = new TransMeta(rep, getTransname(), getDirectory());
+            }
+            else  
+            if (getFileName()!=null && getFileName().length()>0) // Load from an XML file
+            {
+               
+                transMeta = new TransMeta(getFileName());
+            }
+            else
+            {
+                throw new KettleJobException("The transformation to execute is not specified!");
+            }
+
+            // Set the arguments...
+            transMeta.setArguments(arguments);
+
+            // Create the transformation from meta-data
+            Trans trans = new Trans(logwriter, transMeta);
+            
+            // Set the result rows for the next one...
+            trans.getTransMeta().setSourceRows(prev_result.rows);
+            
 			// Set rows of previous result for this transformations input!
 			trans.setSourceRows(prev_result.rows);
 				

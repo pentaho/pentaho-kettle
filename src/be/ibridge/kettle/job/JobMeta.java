@@ -514,7 +514,7 @@ public class JobMeta implements Cloneable, XMLInterface
 				Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i);
 				//System.out.println("Reading entry:\n"+entrynode);
 				
-				JobEntryCopy je = new JobEntryCopy(entrynode, databases);
+				JobEntryCopy je = new JobEntryCopy(entrynode, databases, null);
 				JobEntryCopy prev = findJobEntry(je.getName(), 0);
 				if (prev!=null)
 				{

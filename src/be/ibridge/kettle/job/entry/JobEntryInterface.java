@@ -20,6 +20,7 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleJobException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.entry.eval.JobEntryEval;
@@ -123,7 +124,7 @@ public interface JobEntryInterface
 		};
     
 
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob);
+	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleJobException;
 	
 	public void    clear();
 	public long    getID();

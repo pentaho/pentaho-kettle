@@ -16,8 +16,9 @@
  
 
 package be.ibridge.kettle.chef;
+import java.io.DataOutputStream;
 import java.io.File;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Locale;
@@ -1343,78 +1344,57 @@ public class Chef
 
 	public void openFile(boolean importfile)
 	{
-		if (showChangedWarning())
-		{
-			// Just a file or a transformation in the repository?
-			boolean repository = rep!=null;
-			String fname = null;
-			RepositoryDirectory repdir = rep.getDirectoryTree(); // default = root
+        if (showChangedWarning())
+        {
+            if (rep==null || importfile)  // Load from XML
+            {
+                FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+                // dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
+                dialog.setFilterExtensions(Const.STRING_JOB_FILTER_EXT);
+                dialog.setFilterNames(Const.STRING_JOB_FILTER_NAMES);
+                String fname = dialog.open();
+                if (fname!=null)
+                {
+                    try
+                    {
+                        jobMeta = new JobMeta(log, fname);
+                        props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, null, false, null);
+                        addMenuLast();
+                    }
+                    catch(KettleXMLException xe)
+                    {
+                        jobMeta.clear();
+                        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                        mb.setMessage("Error opening : "+fname+Const.CR+xe.getMessage());
+                        mb.setText("Error!");
+                        mb.open();
+                    }
 
-			if (!repository || importfile)
-			{
-				FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-				dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
-				dialog.setFilterExtensions(STRING_FILTER_EXT);
-				dialog.setFilterNames(STRING_FILTER_NAMES);
-				fname = dialog.open();
-				if (fname!=null)
-				{
-					try
-					{
-						jobMeta = new JobMeta(log, fname);
-						props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, null, false, null);
-						addMenuLast();
-					}
-					catch(KettleXMLException xe)
-					{
-						jobMeta.clear();
-						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage("Error opening : "+fname+Const.CR+xe.getMessage());
-						mb.setText("Error!");
-						mb.open();
-					}
-				}
-			}
-			else // Read a job from the repository!
-			{
-				// Refresh the directory tree for now...
-				SelectObjectDialog sod = new SelectObjectDialog(shell, props, rep, false, true, false);
-				fname  = sod.open();
-				repdir = sod.getDirectory();
-				if (fname!=null && repdir!=null)
-				{
-					JobLoadProgressDialog jlpd = new JobLoadProgressDialog(log, props, shell, rep, fname, repdir);
-					JobMeta jobInfo = jlpd.open();
-					if (jobInfo!=null)
-					{
-						jobMeta = jobInfo;
-						props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, repdir.getPath(), true, rep.getName());
-						addMenuLast();
-					}
-				}
-			}
-			jobMeta.clearChanged();
-			setFilename(fname);
-			refreshGraph();
-			refreshTree(true);
-		}
-	}
-/*
-	public void openFile()
-	{
-		FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-		dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
-		dialog.setFilterExtensions(STRING_FILTER_EXT);
-		dialog.setFilterNames(STRING_FILTER_NAMES);
-		String fname = dialog.open();
-		if (fname!=null) 
-		{
-			readData(fname);
-			setFilename(fname);
-		}
-	}
-*/
-	
+                    refreshGraph();
+                    refreshTree(true);
+                }
+            }
+            else // Read a job from the repository!
+            {
+                // Refresh the directory tree for now...
+                SelectObjectDialog sod = new SelectObjectDialog(shell, props, rep, false, true, false);
+                String fname  = sod.open();
+                RepositoryDirectory repdir = sod.getDirectory();
+                if (fname!=null && repdir!=null)
+                {
+                    JobLoadProgressDialog jlpd = new JobLoadProgressDialog(log, props, shell, rep, fname, repdir);
+                    JobMeta jobInfo = jlpd.open();
+                    if (jobInfo!=null)
+                    {
+                        jobMeta = jobInfo;
+                        props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, repdir.getPath(), true, rep.getName());
+                        addMenuLast();
+                    }
+                }
+            }
+        }
+    }
+        
 	public void newFile()
 	{
 		// AYS: Y/N??
@@ -1667,10 +1647,11 @@ public class Chef
 		String xml = XMLHandler.getXMLHeader() + jobMeta.getXML();
 		try
 		{
-			FileWriter fw = new FileWriter(fname);
-			fw.write(xml);
-			fw.close();
-			// Handle last opened files...
+            DataOutputStream dos = new DataOutputStream(new FileOutputStream(new File(fname)));
+            dos.write(xml.getBytes(Const.XML_ENCODING));
+            dos.close();
+
+            // Handle last opened files...
 			props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, Const.FILE_SEPARATOR, false, "");
 			saveSettings();
 			addMenuLast();
@@ -2048,7 +2029,7 @@ public class Chef
 			for (int i=0;i<nr;i++)
 			{
 				Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i);
-				entries[i] = new JobEntryCopy(entrynode, jobMeta.getDatabases());
+				entries[i] = new JobEntryCopy(entrynode, jobMeta.getDatabases(), rep);
 
 				String name = jobMeta.getAlternativeJobentryName(entries[i].getName());
 				entries[i].setName(name);

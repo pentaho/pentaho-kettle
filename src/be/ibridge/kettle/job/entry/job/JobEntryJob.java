@@ -59,6 +59,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	public  int     loglevel;
 	
 	public  boolean parallel;
+    private String directoryPath;
 		
 	
 	public JobEntryJob(String name)
@@ -141,7 +142,15 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		
 		retval+="      "+XMLHandler.addTagValue("filename",          filename);
 		retval+="      "+XMLHandler.addTagValue("jobname",           jobname);
-		retval+="      "+XMLHandler.addTagValue("directory",         directory.getPath());
+        if (directory!=null)
+        {
+            retval+="      "+XMLHandler.addTagValue("directory",         directory.getPath());
+        }
+        else
+        if (directoryPath!=null)
+        {
+            retval+="      "+XMLHandler.addTagValue("directory",         directoryPath); // don't loose this info (backup/recovery)
+        }
 		retval+="      "+XMLHandler.addTagValue("arg_from_previous", argFromPrevious);
 		retval+="      "+XMLHandler.addTagValue("set_logfile",       setLogfile);
 		retval+="      "+XMLHandler.addTagValue("logfile",           logfile);
@@ -159,8 +168,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		return retval;
 	}
 					
-	public void loadXML(Node entrynode, ArrayList databases, RepositoryDirectory directory_tree)
-		throws KettleXMLException
+	public void loadXML(Node entrynode, ArrayList databases) throws KettleXMLException
 	{
 		try
 		{
@@ -176,8 +184,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			logext = XMLHandler.getTagValue(entrynode, "logext");
 			loglevel = LogWriter.getLogLevel( XMLHandler.getTagValue(entrynode, "loglevel"));
 	
-			// The directory...
-		    directory = directory_tree.findDirectory( XMLHandler.getTagValue(entrynode, "directory") );
+            directoryPath = XMLHandler.getTagValue(entrynode, "directory");
+            
+            // Sorry, mixing XML and repositories is not going to work.
+            // directory = rep.getDirectoryTree().findDirectory(directoryPath);
 	
 			// How many arguments?
 			int argnr = 0;
