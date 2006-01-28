@@ -280,7 +280,7 @@ public class EnterValueDialog extends Dialog
 	public void getData()
 	{
 		wValueType.setText(value.getTypeDesc());
-		wInputString.setText(value.toString());
+		if (value.getString()!=null) wInputString.setText(value.toString());
 		setFormats();
 		
 		if (value.isNumber())
@@ -373,6 +373,10 @@ public class EnterValueDialog extends Dialog
 			val.trim();
 			val.setValue(val.getInteger());
 			break;
+        case Value.VALUE_TYPE_BIGNUMBER: 
+            val.trim();
+            val.setValue(val.getBigNumber());
+            break;
 		default: break;
 		}
 		
