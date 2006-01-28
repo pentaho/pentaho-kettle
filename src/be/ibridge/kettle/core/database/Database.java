@@ -1740,10 +1740,13 @@ public class Database
 				boolean found = false;
 				if (alltables!=null)
 				{
-					while (alltables.next() && !found)
+                    while (alltables.next() && !found)
 					{
-						String name = alltables.getString("TABLE_NAME");
-						if (tablename.equalsIgnoreCase(name))
+                        String schemaName = alltables.getString("TABLE_SCHEM");
+						String name       = alltables.getString("TABLE_NAME");
+						if ( tablename.equalsIgnoreCase(name) || 
+                             ( schemaName!=null && tablename.equalsIgnoreCase( databaseMeta.getSchemaTableCombination(schemaName, name)) )
+                           )
 						{
 							log.logDebug(toString(), "table ["+tablename+"] was found!");
 							found=true;
