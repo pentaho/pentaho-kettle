@@ -21,7 +21,7 @@ public class ExampleCellModifier implements ICellModifier
 
     /**
      * Constructor 
-     * @param TableViewerExample an instance of a TableViewerExample 
+     * @param tableViewerExample an instance of a TableViewerExample 
      */
     public ExampleCellModifier(TableViewerExample tableViewerExample)
     {

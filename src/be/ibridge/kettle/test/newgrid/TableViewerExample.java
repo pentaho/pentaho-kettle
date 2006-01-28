@@ -34,7 +34,7 @@ import org.eclipse.swt.widgets.*;
  * in the checkbox column. 
  * 
  * @author Laurent Gauthier
- * @created Apr 2, 2003  
+ * @since Apr 2, 2003  
  */
 
 public class TableViewerExample
