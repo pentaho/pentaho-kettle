@@ -3056,22 +3056,36 @@ public class Chef
 							{
 								if (dirname==null) dirname=RepositoryDirectory.DIRECTORY_SEPARATOR;
 	
-								// Check username, password
-								win.rep.userinfo = new UserInfo(win.rep, username, password);
-								
-								if (win.rep.getUserInfo().getID()>0)
-								{
-									RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(dirname);
-									
-									win.jobMeta = new JobMeta(log, win.rep, jobname, repdir);
-									win.setFilename(repname);
-									win.jobMeta.clearChanged();
-								}
-								else
-								{
+                                // Check username, password
+                                try
+                                {
+                                    win.rep.userinfo = new UserInfo(win.rep, username, Const.NVL(password, ""));
+                                    
+                                    if (jobname!=null && dirname!=null)
+                                    {
+                                        RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(dirname);
+                                        if (repdir!=null)
+                                        {
+                                            win.jobMeta = new JobMeta(log, win.rep, jobname, repdir);
+                                            win.setFilename(repname);
+                                            win.jobMeta.clearChanged();
+                                        }
+                                        else
+                                        {
+                                            log.logError(APP_NAME, "Can't find directory ["+dirname+"] in the repository.");
+                                        }
+                                    }
+                                }
+                                catch(KettleException e)
+                                {
                                     log.logError(APP_NAME, "Can't verify username and password.");
-									win.rep=null;
-								}
+                                    win.rep.disconnect();
+                                    win.rep=null;
+                                    MessageBox mb = new MessageBox(win.shell, SWT.OK | SWT.ICON_ERROR);
+                                    mb.setMessage("The supplied username or password is incorrect.");
+                                    mb.setText("Sorry...");
+                                    mb.open();
+                                }
 							}
 							else
 							{
