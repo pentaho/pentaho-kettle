@@ -1632,8 +1632,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	
 	private void get()
 	{
-        addFieldsTabs();
-        
 		if (wFiletype.getText().equalsIgnoreCase("CSV"))
 		{
 			getCSV();
