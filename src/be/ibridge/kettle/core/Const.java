@@ -95,6 +95,11 @@ public class Const
 	 */
 	public static final String CR = System.getProperty("line.separator");
 	
+    /**
+     * The system path separator ":" on Unix, ";" on Windows
+     */
+    public static final String PATH_SEPARATOR = System.getProperty("path.separator");
+    
 	/**
 	 * The Java runtime version
 	 */
@@ -363,6 +368,16 @@ public class Const
 	 */
 	public static final String MENU_LOG_FILE = "menu";
 
+    
+    /**
+     *  The name of the environment variable that helps define the path to the steps plugins 
+     */
+    public static final String ENVAR_PLUGIN_STEPS_PATH = "KETTLE_PLUGIN_STEPS_PATH";
+
+    /**
+     *  The name of the environment variable that helps define the path to the jobentries plugins 
+     */
+    public static final String ENVAR_PLUGIN_JOBENTRIES_PATH = "KETTLE_PLUGIN_JOBENTRIES_PATH";
 
 	/**
 	 * A number of tips that are shown when the application first starts.

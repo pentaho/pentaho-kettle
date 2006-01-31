@@ -72,7 +72,25 @@ public class JobEntryLoader
 	{
 		if (jobEntryLoader!=null) return jobEntryLoader;
 		
-		jobEntryLoader = new JobEntryLoader( new String[] { Const.PLUGIN_JOBENTRIES_DIRECTORY_PUBLIC, Const.PLUGIN_JOBENTRIES_DIRECTORY_PRIVATE } );
+        String path=Const.getEnvironmentVariable(Const.ENVAR_PLUGIN_JOBENTRIES_PATH, "");
+        String paths[];
+        if (path!=null && path.length()>0)
+        {
+            paths = path.split(Const.PATH_SEPARATOR);
+        }
+        else
+        {
+            paths = new String[0];
+        }
+        String directories[]= new String[paths.length + 2];
+        directories[0] = Const.PLUGIN_JOBENTRIES_DIRECTORY_PUBLIC;
+        directories[1] = Const.PLUGIN_JOBENTRIES_DIRECTORY_PRIVATE;
+        for (int i=0;i<paths.length;i++)
+        {
+            directories[i+2] = paths[i];
+        }
+
+		jobEntryLoader = new JobEntryLoader( directories );
 		
 		return jobEntryLoader;
 	}
