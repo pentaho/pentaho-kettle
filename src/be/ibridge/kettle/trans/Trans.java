@@ -169,261 +169,251 @@ public class Trans
 		}
 	}
 	
-	/**
-	 * Execute this transformation.
-	 * @return true if the execution went well, false if an error occurred.
-	 */
-	public boolean execute(String[] arguments)
-	{
-		RowSet    rs;
-		int    nroutput;
-		int    nrcopies;
-		int    prevcopies;
-		int    nextcopies;
-		
-		startDate = null;
-		
-		/*
-		 * Set the arguments on the transformation...
-		 */
-		transMeta.setArguments(arguments);
-		
-		/* OK, see if we need to capture the logging into a String and 
-		 * then put it in a database field later on.
-		 * From here until the execution is finished, the log will be captured.
-		 * 
-		 */
-		if (transMeta.isLogfieldUsed())
-		{
-			log.startStringCapture();
-			log.setString("START"+Const.CR);
-		}
-		
-		if (transMeta.getName()==null)
-		{
-			log.logBasic(toString(), "Dispatching started for filename ["+transMeta.getFilename()+"]");
-		}
-		else
-		{
-			log.logBasic(toString(), "Dispatching started for transformation ["+transMeta.getName()+"]");
-		}
-				
-		if (transMeta.getArguments()!=null)
-		{
-			log.logBasic(toString(), "Nr of arguments detected: "+transMeta.getArguments().length);
-		}
-		
-		steps	 = new ArrayList();
-		rowsets	 = new ArrayList();
-		
-		//
-		// Sort the steps & hops for visual pleasure...
-		// 
-		if (isMonitored())
-		{
-			transMeta.sortStepsNatural();
-			transMeta.sortHopsNatural();
-		}
-		
-		ArrayList hopsteps=transMeta.getTransHopSteps(false);
-		
-		log.logDetailed(toString(), "I found "+hopsteps.size()+" different steps to launch.");	
-		log.logDetailed(toString(), "Allocating rowsets...");
-		
-		// First allocate all the rowsets required!
-		for (int i=0;i<hopsteps.size();i++)
-		{
-			StepMeta stepMeta=(StepMeta)hopsteps.get(i);
-			log.logDetailed(toString(), " Allocating rowsets for step "+i+" --> "+stepMeta.getName());
-			
-			nroutput = transMeta.findNrNextSteps(stepMeta);
-	
-			for (int n=0;n<nroutput;n++)
-			{
-				// What's the next step?
-				StepMeta nsi = transMeta.findNextStep(stepMeta, n);
-				
-				// How many times do we start the target step?
-				nextcopies=nsi.getCopies();
-				prevcopies=stepMeta.getCopies();
-				log.logDetailed(toString(), "  prevcopies = "+prevcopies+", nextcopies="+nextcopies);
-				int disptype;
-				     if (prevcopies==1 && nextcopies==1) { disptype=TYPE_DISP_1_1; nrcopies = 1; } 
-				else if (prevcopies==1 && nextcopies >1) { disptype=TYPE_DISP_1_N; nrcopies = nextcopies; } 
-				else if (prevcopies >1 && nextcopies==1) { disptype=TYPE_DISP_N_1; nrcopies = prevcopies; } 
-				else if (prevcopies==nextcopies)         { disptype=TYPE_DISP_N_N; nrcopies = nextcopies; } // > 1!
-				else 
-				{
-					log.logError(toString(), "Only 1-1, 1-n, n-1 and n-n relationships are allowed!");
-					log.logError(toString(), "This means you can't have x-y relationships!");
-					return false;
-				}
-				
-				// At least run once...
-				// 
-				for (int c=0;c<nrcopies;c++)
-				{
-					rs=new RowSet(transMeta.getSizeRowset());
-					switch(disptype)
-					{
-					case TYPE_DISP_1_1: rs.setThreadNameFromToCopy(stepMeta.getName(), 0, nsi.getName(), 0); break; 
-					case TYPE_DISP_1_N: rs.setThreadNameFromToCopy(stepMeta.getName(), 0, nsi.getName(), c); break; 
-					case TYPE_DISP_N_1: rs.setThreadNameFromToCopy(stepMeta.getName(), c, nsi.getName(), 0); break; 
-					case TYPE_DISP_N_N: rs.setThreadNameFromToCopy(stepMeta.getName(), c, nsi.getName(), c); break; 
-					}
-					rowsets.add(rs);
-					log.logDetailed(toString(), "Transformation allocated new rowset ["+rs.toString()+"]");
-				}
-			}
-			log.logDetailed(toString(), " Allocated "+rowsets.size()+" rowsets for step "+i+" --> "+stepMeta.getName()+" ");
-		}
-		
-		log.logDetailed(toString(), "Allocating Steps & StepData...");
-		// Allocate the steps & the data...
-		for (int i=0;i<hopsteps.size();i++)
-		{
-			StepMeta stepMeta=(StepMeta)hopsteps.get(i);
-			String stepid = stepMeta.getStepID();
-			
-			log.logDetailed(toString(), " Transformation is about to allocate step ["+stepMeta.getName()+"] of type ["+stepid+"]");
-			
-			// How many copies are launched of this step?
-			nrcopies=stepMeta.getCopies(); 
-
-			log.logDebug(toString(), "  Step has nrcopies="+nrcopies);
-					 
-			// At least run once...
-			for (int c=0;c<nrcopies;c++)
-			{
-				// Make sure we haven't started it yet!
-				if (!hasStepStarted(stepMeta.getName(), c))
-				{
-					StepMetaDataCombi combi = new StepMetaDataCombi();
-					
-					combi.stepname = stepMeta.getName();
-					combi.copy     = c;
-					
-					// The meta-data
-					combi.meta = stepMeta.getStepMetaInterface();
-
-					// Allocate the step data
-					StepDataInterface data = combi.meta.getStepData();
-					combi.data = data;
-
-					// Allocate the step
-					StepInterface step=combi.meta.getStep(stepMeta, data, c, transMeta, this);
-					combi.step = step;
-					
-					
-					// Add to the bunch...
-					steps.add(combi);
-					
-					log.logDetailed(toString(), " Transformation has allocated a new step: ["+stepMeta.getName()+"]."+c);
-				}
-			}
-		}
-		
-		// Link the threads to the rowsets
-		setThreadsOnRowSets();
-		
-		// Now (optionally) write start log record!
-		try
-		{
-			beginProcessing();
-		}
-		catch(KettleTransException kte)
-		{
-			log.logError(toString(), kte.getMessage());
-			return false;
-		}
-		
-		// Set preview sizes
-		if (preview && preview_steps!=null)
-		{
-			for (int i=0;i<steps.size();i++)
-			{
-				StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
-				
-				BaseStep rt=(BaseStep)sid.step;
-				for (int x=0;x<preview_steps.length;x++)
-				{
-					if (preview_steps[x].equalsIgnoreCase(rt.getStepname()) && rt.getCopy()==0)
-					{
-						rt.previewSize=preview_sizes[x];
-						rt.previewBuffer=new ArrayList();
-					}
-				}
-			}
-		}
-		
-		// Initialize all the threads...
-		boolean ok = true;
-		for (int i=0;i<steps.size();i++)
-		{
-			StepMetaDataCombi sid=(StepMetaDataCombi)steps.get(i);
-			if (sid.step.init(sid.meta, sid.data)) 
-			{
-				sid.data.setStatus(StepDataInterface.STATUS_IDLE);
-			}
-			else
-			{
-			    sid.step.setErrors(1);
-				log.logError(toString(), "Error initializing step ["+sid.step.getStepname()+"]");
-				ok = false;
-			}
-		}
-		
-		if (!ok)
-		{
-			log.logError(toString(), "We failed to initialize at least one step.  Execution can not begin!");
-			return false;
-		}
-		
-		// Now start all the threads...
-		for (int i=0;i<steps.size();i++)
-		{
-			final StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
-			sid.step.markStart();
-			
-			//
-			// TODO: Rewrite this without using the BaseStep Thread.
-			// Instead create our own thread using a separate class.
-			// Something like :  new TransThread(sid.step, sid.meta, sid.data);
-			//
-			/*
-			Runnable run = new Runnable()
+    /**
+     * Execute this transformation.
+     * @return true if the execution went well, false if an error occurred.
+     */
+    public boolean execute(String[] arguments)
+    {
+        if (prepareExecution(arguments))
+        {
+            startThreads();
+            return true;
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Prepare the execution of the transformation.
+     * @param arguments the arguments to use for this transformation
+     * @return true if the execution went well, false if an error occurred.
+     */
+    public boolean prepareExecution(String[] arguments)
+    {
+        RowSet    rs;
+        int    nroutput;
+        int    nrcopies;
+        int    prevcopies;
+        int    nextcopies;
+        
+        startDate = null;
+        
+        /*
+         * Set the arguments on the transformation...
+         */
+        transMeta.setArguments(arguments);
+        
+        /* OK, see if we need to capture the logging into a String and 
+         * then put it in a database field later on.
+         * From here until the execution is finished, the log will be captured.
+         * 
+         */
+        if (transMeta.isLogfieldUsed())
+        {
+            log.startStringCapture();
+            log.setString("START"+Const.CR);
+        }
+        
+        if (transMeta.getName()==null)
+        {
+            log.logBasic(toString(), "Dispatching started for filename ["+transMeta.getFilename()+"]");
+        }
+        else
+        {
+            log.logBasic(toString(), "Dispatching started for transformation ["+transMeta.getName()+"]");
+        }
+                
+        if (transMeta.getArguments()!=null)
+        {
+            log.logBasic(toString(), "Nr of arguments detected: "+transMeta.getArguments().length);
+        }
+        
+        steps    = new ArrayList();
+        rowsets  = new ArrayList();
+        
+        //
+        // Sort the steps & hops for visual pleasure...
+        // 
+        if (isMonitored())
+        {
+            transMeta.sortStepsNatural();
+            transMeta.sortHopsNatural();
+        }
+        
+        ArrayList hopsteps=transMeta.getTransHopSteps(false);
+        
+        log.logDetailed(toString(), "I found "+hopsteps.size()+" different steps to launch.");  
+        log.logDetailed(toString(), "Allocating rowsets...");
+        
+        // First allocate all the rowsets required!
+        for (int i=0;i<hopsteps.size();i++)
+        {
+            StepMeta stepMeta=(StepMeta)hopsteps.get(i);
+            log.logDetailed(toString(), " Allocating rowsets for step "+i+" --> "+stepMeta.getName());
+            
+            nroutput = transMeta.findNrNextSteps(stepMeta);
+    
+            for (int n=0;n<nroutput;n++)
             {
-                public void run()
+                // What's the next step?
+                StepMeta nsi = transMeta.findNextStep(stepMeta, n);
+                
+                // How many times do we start the target step?
+                nextcopies=nsi.getCopies();
+                prevcopies=stepMeta.getCopies();
+                log.logDetailed(toString(), "  prevcopies = "+prevcopies+", nextcopies="+nextcopies);
+                int disptype;
+                     if (prevcopies==1 && nextcopies==1) { disptype=TYPE_DISP_1_1; nrcopies = 1; } 
+                else if (prevcopies==1 && nextcopies >1) { disptype=TYPE_DISP_1_N; nrcopies = nextcopies; } 
+                else if (prevcopies >1 && nextcopies==1) { disptype=TYPE_DISP_N_1; nrcopies = prevcopies; } 
+                else if (prevcopies==nextcopies)         { disptype=TYPE_DISP_N_N; nrcopies = nextcopies; } // > 1!
+                else 
                 {
-            		try
-            		{
-            		    log.logBasic(sid.step.getName(), "This step is starting to run...");
-            			while (sid.step.processRow(sid.meta, sid.data) && !sid.step.isStopped());
-            		}
-            		catch(Exception e)
-            		{
-            			sid.step.setErrors(1);
-            			sid.step.stopAll();
-            		}
-            		finally
-            		{
-            		    sid.step.dispose(sid.meta, sid.data);
-            			logSummary(sid.step);
-            			sid.step.markStop();
-            		}
+                    log.logError(toString(), "Only 1-1, 1-n, n-1 and n-n relationships are allowed!");
+                    log.logError(toString(), "This means you can't have x-y relationships!");
+                    return false;
                 }
-            };
-            new Thread(run).start();
-            */
-			
-			sid.step.start();
-		}
+                
+                // At least run once...
+                // 
+                for (int c=0;c<nrcopies;c++)
+                {
+                    rs=new RowSet(transMeta.getSizeRowset());
+                    switch(disptype)
+                    {
+                    case TYPE_DISP_1_1: rs.setThreadNameFromToCopy(stepMeta.getName(), 0, nsi.getName(), 0); break; 
+                    case TYPE_DISP_1_N: rs.setThreadNameFromToCopy(stepMeta.getName(), 0, nsi.getName(), c); break; 
+                    case TYPE_DISP_N_1: rs.setThreadNameFromToCopy(stepMeta.getName(), c, nsi.getName(), 0); break; 
+                    case TYPE_DISP_N_N: rs.setThreadNameFromToCopy(stepMeta.getName(), c, nsi.getName(), c); break; 
+                    }
+                    rowsets.add(rs);
+                    log.logDetailed(toString(), "Transformation allocated new rowset ["+rs.toString()+"]");
+                }
+            }
+            log.logDetailed(toString(), " Allocated "+rowsets.size()+" rowsets for step "+i+" --> "+stepMeta.getName()+" ");
+        }
+        
+        log.logDetailed(toString(), "Allocating Steps & StepData...");
+        // Allocate the steps & the data...
+        for (int i=0;i<hopsteps.size();i++)
+        {
+            StepMeta stepMeta=(StepMeta)hopsteps.get(i);
+            String stepid = stepMeta.getStepID();
+            
+            log.logDetailed(toString(), " Transformation is about to allocate step ["+stepMeta.getName()+"] of type ["+stepid+"]");
+            
+            // How many copies are launched of this step?
+            nrcopies=stepMeta.getCopies(); 
 
-		log.logDetailed(toString(), "Transformation has allocated "+steps.size()+" threads and "+rowsets.size()+" rowsets.");
+            log.logDebug(toString(), "  Step has nrcopies="+nrcopies);
+                     
+            // At least run once...
+            for (int c=0;c<nrcopies;c++)
+            {
+                // Make sure we haven't started it yet!
+                if (!hasStepStarted(stepMeta.getName(), c))
+                {
+                    StepMetaDataCombi combi = new StepMetaDataCombi();
+                    
+                    combi.stepname = stepMeta.getName();
+                    combi.copy     = c;
+                    
+                    // The meta-data
+                    combi.meta = stepMeta.getStepMetaInterface();
 
-		return true;
+                    // Allocate the step data
+                    StepDataInterface data = combi.meta.getStepData();
+                    combi.data = data;
 
-	}
+                    // Allocate the step
+                    StepInterface step=combi.meta.getStep(stepMeta, data, c, transMeta, this);
+                    combi.step = step;
+                    
+                    
+                    // Add to the bunch...
+                    steps.add(combi);
+                    
+                    log.logDetailed(toString(), " Transformation has allocated a new step: ["+stepMeta.getName()+"]."+c);
+                }
+            }
+        }
+        
+        // Link the threads to the rowsets
+        setThreadsOnRowSets();
+        
+        // Now (optionally) write start log record!
+        try
+        {
+            beginProcessing();
+        }
+        catch(KettleTransException kte)
+        {
+            log.logError(toString(), kte.getMessage());
+            return false;
+        }
+        
+        // Set preview sizes
+        if (preview && preview_steps!=null)
+        {
+            for (int i=0;i<steps.size();i++)
+            {
+                StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+                
+                BaseStep rt=(BaseStep)sid.step;
+                for (int x=0;x<preview_steps.length;x++)
+                {
+                    if (preview_steps[x].equalsIgnoreCase(rt.getStepname()) && rt.getCopy()==0)
+                    {
+                        rt.previewSize=preview_sizes[x];
+                        rt.previewBuffer=new ArrayList();
+                    }
+                }
+            }
+        }
+        
+        // Initialize all the threads...
+        boolean ok = true;
+        for (int i=0;i<steps.size();i++)
+        {
+            StepMetaDataCombi sid=(StepMetaDataCombi)steps.get(i);
+            if (sid.step.init(sid.meta, sid.data)) 
+            {
+                sid.data.setStatus(StepDataInterface.STATUS_IDLE);
+            }
+            else
+            {
+                sid.step.setErrors(1);
+                log.logError(toString(), "Error initializing step ["+sid.step.getStepname()+"]");
+                ok = false;
+            }
+        }
+        
+        if (!ok)
+        {
+            log.logError(toString(), "We failed to initialize at least one step.  Execution can not begin!");
+            return false;
+        }
+        
+        return true;
+    }
+    
+    /**
+     * Start the threads prepared by prepareThreads();
+     * Before you start the threads, you can add Rowlisteners to them.
+     */
+    public void startThreads()
+    {
+        // Now start all the threads...
+        for (int i=0;i<steps.size();i++)
+        {
+            final StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+            sid.step.markStart();
+            sid.step.start();
+        }
+
+        log.logDetailed(toString(), "Transformation has allocated "+steps.size()+" threads and "+rowsets.size()+" rowsets.");
+    }
 	
 	public void logSummary(StepInterface si)
 	{
