@@ -168,13 +168,29 @@ public class Trans
 			throw new KettleException("Transformation was unable to open ["+name+"]", e);
 		}
 	}
-	
-	/**
-	 * Execute this transformation.
-	 * @return true if the execution went well, false if an error occurred.
-	 */
-	public boolean execute(String[] arguments)
-	{
+
+    /**
+     * Execute this transformation.
+     * @return true if the execution went well, false if an error occurred.
+     */
+    public boolean execute(String[] arguments)
+    {
+        if (prepareExecution(arguments))
+        {
+            startThreads();
+            return true;
+        }
+        return false;
+    }
+    
+    
+    /**
+     * Prepare the execution of the transformation.
+     * @param arguments the arguments to use for this transformation
+     * @return true if the execution went well, false if an error occurred.
+     */
+    public boolean prepareExecution(String[] arguments)
+    {
 		RowSet    rs;
 		int    nroutput;
 		int    nrcopies;
@@ -379,51 +395,25 @@ public class Trans
 			return false;
 		}
 		
-		// Now start all the threads...
-		for (int i=0;i<steps.size();i++)
-		{
-			final StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
-			sid.step.markStart();
-			
-			//
-			// TODO: Rewrite this without using the BaseStep Thread.
-			// Instead create our own thread using a separate class.
-			// Something like :  new TransThread(sid.step, sid.meta, sid.data);
-			//
-			/*
-			Runnable run = new Runnable()
-            {
-                public void run()
-                {
-            		try
-            		{
-            		    log.logBasic(sid.step.getName(), "This step is starting to run...");
-            			while (sid.step.processRow(sid.meta, sid.data) && !sid.step.isStopped());
-            		}
-            		catch(Exception e)
-            		{
-            			sid.step.setErrors(1);
-            			sid.step.stopAll();
-            		}
-            		finally
-            		{
-            		    sid.step.dispose(sid.meta, sid.data);
-            			logSummary(sid.step);
-            			sid.step.markStop();
-            		}
-                }
-            };
-            new Thread(run).start();
-            */
-			
-			sid.step.start();
-		}
-
-		log.logDetailed(toString(), "Transformation has allocated "+steps.size()+" threads and "+rowsets.size()+" rowsets.");
-
-		return true;
-
+        return true;
 	}
+    
+    /**
+     * Start the threads prepared by prepareThreads();
+     * Before you start the threads, you can add Rowlisteners to them.
+     */
+    public void startThreads()
+    {
+        // Now start all the threads...
+        for (int i=0;i<steps.size();i++)
+        {
+            final StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+            sid.step.markStart();
+            sid.step.start();
+        }
+
+        log.logDetailed(toString(), "Transformation has allocated "+steps.size()+" threads and "+rowsets.size()+" rowsets.");
+    }
 	
 	public void logSummary(StepInterface si)
 	{
