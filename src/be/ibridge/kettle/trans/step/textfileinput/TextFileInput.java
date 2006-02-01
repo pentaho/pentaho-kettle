@@ -134,8 +134,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 						encl_found=true;
 						int p=from+len_encl;
 						
-						boolean is_enclosure = p+len_encl<length && line.substring(p, p+len_encl).equalsIgnoreCase(inf.getEnclosure());
-                        boolean is_escape    = p+len_esc <length && line.substring(p, p+len_esc).equalsIgnoreCase(inf.getEscapeCharacter());
+                        boolean is_enclosure = len_encl>0 && p+len_encl<length && line.substring(p, p+len_encl).equalsIgnoreCase(inf.getEnclosure());
+                        boolean is_escape    = len_esc >0 && p+len_esc <length && line.substring(p, p+len_esc).equalsIgnoreCase(inf.getEscapeCharacter());
 
                         boolean enclosure_after = false;
 						if ( (is_enclosure || is_escape) && p<length-1) // Is it really an enclosure, see if it's not repeated twice or escaped
