@@ -1257,6 +1257,27 @@ public class Trans
         return null;
     }
 
+    /**
+     * Find the StepInterface (thread) by looking it up using the name
+     * @param stepname The name of the step to look for
+     * @param copy the copy number of the step to look for
+     * @return the StepInterface or null if nothing was found.
+     */
+    public StepInterface getStepInterface(String stepname, int copy)
+    {
+        // Now start all the threads...
+        for (int i=0;i<steps.size();i++)
+        {
+            StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+            if (sid.stepname.equalsIgnoreCase(stepname) && sid.copy==copy)
+            {
+                return sid.step;
+            }
+        }
+
+        return null;
+    }
+
 }
 
 
