@@ -1259,8 +1259,9 @@ public class Trans
     
     /**
      * Find the StepInterface (thread) by looking it up using the name
-     * @param stepname The StepInterface f
-     * @return
+     * @param stepname The name of the step to look for
+     * @param copy the copy number of the step to look for
+     * @return the StepInterface or null if nothing was found.
      */
     public StepInterface getStepInterface(String stepname, int copy)
     {
