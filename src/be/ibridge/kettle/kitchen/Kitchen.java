@@ -43,7 +43,7 @@ public class Kitchen
 {
 	public static final String STRING_KITCHEN = "Kitchen";
 	
-	public static void main(String[] a)
+	public static int main(String[] a)
 	{
 	    ArrayList args = new ArrayList();
 	    for (int i=0;i<a.length;i++) 
@@ -72,7 +72,7 @@ public class Kitchen
             System.out.println("  -norep    : Don't log into the repository");
 		    System.out.println("");
 		    
-		    return;
+		    return 9;
 		}
 
 		String repname   = Const.getCommandlineOption(args, "rep");
@@ -122,7 +122,7 @@ public class Kitchen
 		if (!steploader.read())
 		{
 			log.logError("Spoon", "Error loading steps... halting Kitchen!");
-			return;
+			return 8;
 		}
 
 		Date start, stop;
@@ -275,11 +275,13 @@ public class Kitchen
 				System.out.println("ERROR: Kitchen can't continue because the job couldn't be loaded.");			    
 			}
 
-			return;
+			return 7;
 		}
 		
 		Result result = null;
-		
+
+        int returnCode=0;
+        
 		try
 		{
 			result = job.execute(); // Execute the selected job.
@@ -294,6 +296,7 @@ public class Kitchen
 			catch(KettleJobException je2)
 			{
 				log.logError(job.getName(), "A serious error occured : "+je2.getMessage());
+                returnCode = 2;
 			}
 		}
         finally
@@ -306,6 +309,7 @@ public class Kitchen
 		if (result!=null && result.getNrErrors()!=0)
 		{
 			log.logError(STRING_KITCHEN, "Finished with errors");
+            returnCode = 1;
 		}
 		cal=Calendar.getInstance();
 		stop=cal.getTime();
@@ -315,5 +319,8 @@ public class Kitchen
 		log.logBasic(STRING_KITCHEN, "Start="+begin+", Stop="+end);
 		long millis=stop.getTime()-start.getTime();
 		log.logBasic(STRING_KITCHEN, "Processing ended after "+(millis/1000)+" seconds.");
+        
+        return returnCode;
+
 	}
 }
