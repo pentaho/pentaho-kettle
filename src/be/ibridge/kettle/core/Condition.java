@@ -725,32 +725,39 @@ public class Condition implements Cloneable, XMLInterface
 		try
 		{
 			Row r = rep.getCondition(id_condition);
-			negate          = r.getBoolean("NEGATED", false);
-			operator        = getOperator( r.getString("OPERATOR", null) );
-			
-			id = r.getInteger("ID_CONDITION", -1L);
-			
-			long subids[] = rep.getSubConditionIDs(id);
-			if (subids.length==0)
-			{
-				left_valuename  = r.getString("LEFT_NAME", null);
-				function        = getFunction( r.getString("CONDITION_FUNCTION", null) );
-				right_valuename = r.getString("RIGHT_NAME", null);
-				
-				long id_value = r.getInteger("ID_VALUE_RIGHT", -1L);
-				if (id_value>0)
-				{
-					Value v = new Value(rep, id_value);
-					right_exact = v;
-				}
-			}
-			else
-			{
-				for (int i=0;i<subids.length;i++)
-				{
-					addCondition( new Condition(rep, subids[i]) );
-				}
-			}
+            if (r!=null)
+            {
+    			negate          = r.getBoolean("NEGATED", false);
+    			operator        = getOperator( r.getString("OPERATOR", null) );
+    			
+    			id = r.getInteger("ID_CONDITION", -1L);
+    			
+    			long subids[] = rep.getSubConditionIDs(id);
+    			if (subids.length==0)
+    			{
+    				left_valuename  = r.getString("LEFT_NAME", null);
+    				function        = getFunction( r.getString("CONDITION_FUNCTION", null) );
+    				right_valuename = r.getString("RIGHT_NAME", null);
+    				
+    				long id_value = r.getInteger("ID_VALUE_RIGHT", -1L);
+    				if (id_value>0)
+    				{
+    					Value v = new Value(rep, id_value);
+    					right_exact = v;
+    				}
+    			}
+    			else
+    			{
+    				for (int i=0;i<subids.length;i++)
+    				{
+    					addCondition( new Condition(rep, subids[i]) );
+    				}
+    			}
+            }
+            else
+            {
+                throw new KettleException("Condition with id_condition="+id_condition+" could not be found in the repository");
+            }
 		}
 		catch(KettleDatabaseException dbe)
 		{
