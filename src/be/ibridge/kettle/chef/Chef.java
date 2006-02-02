@@ -1394,6 +1394,8 @@ public class Chef
                         props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, repdir.getPath(), true, rep.getName());
                         addMenuLast();
                     }
+                    refreshGraph();
+                    refreshTree(true);
                 }
             }
         }
