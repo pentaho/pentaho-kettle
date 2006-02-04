@@ -156,9 +156,6 @@ public class Chef
 
 	public  Repository rep;
 	
-	public  boolean demo_mode;
-	public  int     license_nr;
-	
 	public  JobMeta jobMeta;
 	private ChefGraph chefgraph;
 
@@ -641,7 +638,7 @@ public class Chef
 							}
 				      	}
 				      	
-				      	refreshTree();
+				      	refreshTree(true);
 						refreshGraph();
 
 					  }
@@ -2997,9 +2994,6 @@ public class Chef
 		win.setDestroy(true);
 		
 		log.logDetailed(APP_NAME, "Main window is created.");
-        
-        // Check license info!
-		win.demo_mode=false;
 		
 		RepositoryMeta repinfo = null;
 		UserInfo userinfo = null;
