@@ -262,16 +262,21 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 			}
 			else
 			{
-				retval+="VARCHAR2"; 
 				if (length>0 && length<=2000)
 				{
-					retval+="("+length;
+					retval+="VARCHAR2("+length+")";
 				}
 				else
 				{
-					retval+="(2000"; // We don't know, so we just use the maximum...
+                    if (length<=0)
+                    {
+                        retval+="VARCHAR2(2000)"; // We don't know, so we just use the maximum...
+                    }
+                    else
+                    {
+                        retval+="CLOB"; 
+                    }
 				}
-				retval+=")";
 			}
 			break;
 		default:

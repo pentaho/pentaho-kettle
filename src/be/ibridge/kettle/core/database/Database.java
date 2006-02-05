@@ -1643,8 +1643,9 @@ public class Database
 				debug = "exec query";
 				res=sel_stmt.executeQuery(databaseMeta.stripCR(sql));
 			}
-			debug = "get metadata";
+			debug = "openQuery : get metadata";
 			rsmd = res.getMetaData();
+            debug = "openQuery : get rowinfo";
 			rowinfo = getRowInfo();
 		}
 		catch(SQLException ex)
@@ -2046,8 +2047,9 @@ public class Database
 				
 				debug = "exec query";
 				ResultSet r=sel_stmt.executeQuery(databaseMeta.stripCR(sql));
-				debug = "get metadata";
+				debug = "getQueryFields get metadata";
 				rsmd = r.getMetaData();
+                debug = "getQueryFields get row info";
 				fields = getRowInfo();
 				debug="close resultset";
 				r.close();
@@ -2146,9 +2148,10 @@ public class Database
 				name=new String(rm.getColumnName(i));
 				type=rm.getColumnType(i);
 				valtype=Value.VALUE_TYPE_NONE;
-                length=rm.getPrecision(i); 
-                precision=rm.getScale(i);
-				
+
+                length=-1; 
+                precision=-1;
+
 				switch(type)
 				{
 				case java.sql.Types.CHAR:
@@ -2196,6 +2199,8 @@ public class Database
 				case java.sql.Types.REAL:
 				case java.sql.Types.NUMERIC:
 					valtype=Value.VALUE_TYPE_NUMBER;
+                    length=rm.getPrecision(i); 
+                    precision=rm.getScale(i);
 					if (length    >=126) length=-1;
 					if (precision >=126) precision=-1;
 					if (precision==0 && length<18 && length>0)  valtype=Value.VALUE_TYPE_INTEGER;
@@ -2223,6 +2228,8 @@ public class Database
 
 				default:
  					valtype=Value.VALUE_TYPE_STRING;
+                    length=rm.getPrecision(i); 
+                    precision=rm.getScale(i);
  					break;
 				}
 				// comment=rm.getColumnLabel(i);
