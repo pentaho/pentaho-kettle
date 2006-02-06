@@ -116,7 +116,8 @@ public class RepositoriesMeta
 	{
 		for (int i=0;i<nrRepositories();i++)
 		{
-			if (getRepository(i).getName().equalsIgnoreCase(name)) return getRepository(i);
+            String repName=getRepository(i).getName();
+			if (repName!=null && repName.equalsIgnoreCase(name)) return getRepository(i);
 		}
 		return null;
 	}
