@@ -64,6 +64,7 @@ public class SearchFieldsProgressDialog implements IRunnableWithProgress
 		monitor.done();
 	}
 	
+    
 	
 
 	/**

@@ -18,6 +18,7 @@ package be.ibridge.kettle.spoon;
 import java.lang.reflect.InvocationTargetException;
 import java.util.StringTokenizer;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
@@ -1617,8 +1618,30 @@ public class SpoonGraph extends Canvas
         SearchFieldsProgressDialog op = new SearchFieldsProgressDialog(spoon.transMeta, stepMeta, before);
         try
         {
-            ProgressMonitorDialog pmd = new ProgressMonitorDialog(shell);
-            pmd.run(false, false, op);
+            final ProgressMonitorDialog pmd = new ProgressMonitorDialog(shell);
+            
+            // Run something in the background to cancel active database queries, forecably if needed!
+            Runnable run = new Runnable()
+            {
+                public void run()
+                {
+                    IProgressMonitor monitor = pmd.getProgressMonitor();
+                    while (pmd.getShell()==null || ( !pmd.getShell().isDisposed() && !monitor.isCanceled() ))
+                    {
+                        try { Thread.sleep(250); } catch(InterruptedException e) { };
+                    }
+                    
+                    if (monitor.isCanceled()) // Disconnect and see what happens!
+                    {
+                        try { spoon.transMeta.cancelQueries(); } catch(Exception e) {};
+                    }
+                }
+            };
+            // Dump the cancel looker in the background!
+            new Thread(run).start();
+            
+
+            pmd.run(true, true, op);
         }
         catch (InvocationTargetException e)
         {
