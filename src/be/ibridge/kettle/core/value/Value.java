@@ -1525,30 +1525,61 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		switch(getType())
 		{
 		case VALUE_TYPE_BOOLEAN:
-			if ( getBoolean() &&  v.getBoolean() || 
-			    !getBoolean() && !v.getBoolean()) return  0;  // true == true, false == false
-			if ( getBoolean() && !v.getBoolean()) return  1;  // true  > false
-			return -1;  // false < true
+		    {
+    			if ( getBoolean() &&  v.getBoolean() || 
+    			    !getBoolean() && !v.getBoolean()) return  0;  // true == true, false == false
+    			if ( getBoolean() && !v.getBoolean()) return  1;  // true  > false
+    			return -1;  // false < true
+            }
 
 		case VALUE_TYPE_DATE   :
-			return Double.compare(getNumber(), v.getNumber());
+            {
+                Date one = getDate();
+                Date two = v.getDate();
+                
+                if (one==null && two!=null) return -1;
+                if (one!=null && two==null) return 1;
+                if (one==null && two==null) return 0;
+
+			    return Double.compare(getNumber(), v.getNumber());
+            }
 			
 		case VALUE_TYPE_NUMBER :
-			return Double.compare(getNumber(), v.getNumber());
+            {
+			    return Double.compare(getNumber(), v.getNumber());
+            }
 
 		case VALUE_TYPE_STRING:
-			String one = Const.rtrim(getString());
-			String two = Const.rtrim(v.getString());
-            if (caseInsensitive) 
-                return one.compareToIgnoreCase(two);
-            else 
-                return one.compareTo(two); 
-
+            {
+    			String one = Const.rtrim(getString());
+    			String two = Const.rtrim(v.getString());
+                
+                if (one==null && two!=null) return -1;
+                if (one!=null && two==null) return 1;
+                if (one==null && two==null) return 0;
+                
+                if (caseInsensitive) 
+                    return one.compareToIgnoreCase(two);
+                else 
+                    return one.compareTo(two);
+            }
+            
 		case VALUE_TYPE_INTEGER:
-			return Double.compare(getNumber(), v.getNumber());
+            {
+			    return Double.compare(getNumber(), v.getNumber());
+            }
 
         case VALUE_TYPE_BIGNUMBER:
-            return getBigNumber().compareTo(v.getBigNumber());
+            {
+                BigDecimal one = getBigNumber();
+                BigDecimal two = v.getBigNumber();
+                
+                if (one==null && two!=null) return -1;
+                if (one!=null && two==null) return 1;
+                if (one==null && two==null) return 0;
+    
+                return getBigNumber().compareTo(v.getBigNumber());
+            }
 		}
 		
 		// Still here?  Not possible!  But hey, give back 0, mkay?
