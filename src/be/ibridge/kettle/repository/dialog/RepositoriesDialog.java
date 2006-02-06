@@ -504,7 +504,11 @@ public class RepositoriesDialog
 	{
 		wRepository.removeAll();
 		// Fill in the available repositories...
-		for (int i=0;i<input.nrRepositories();i++) wRepository.add( input.getRepository(i).getName() );
+		for (int i=0;i<input.nrRepositories();i++)
+        {
+            String name = input.getRepository(i).getName();
+            if (name!=null) wRepository.add( name );
+        }
 	}
 	
 	public void fillUsernames()
