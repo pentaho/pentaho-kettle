@@ -384,13 +384,37 @@ public class Condition implements Cloneable, XMLInterface
 				
 			    debug="Atomic : get fieldnrs left field";
 				Value field=null;
-				if (left_fieldnr>=0) field= r.getValue(left_fieldnr);
+				if (left_fieldnr>=0) 
+                {
+                    field= r.getValue(left_fieldnr);
+                    if (field==null)
+                    {
+                        throw new KettleException("Unable to find field ["+left_valuename+"] in the input row!");
+                    }
+                }
 				
 			    debug="Atomic : get fieldnrs right exact";
 				Value field2 = right_exact;
-				if (field2==null && right_fieldnr>=0) field2 = r.getValue(right_fieldnr);
-				
-			    debug="Atomic : evaluate (function="+Condition.functions[function]+")";
+				if (field2==null && right_fieldnr>=0) 
+                {
+                    field2 = r.getValue(right_fieldnr);
+                    if (field2==null)
+                    {
+                        throw new KettleException("Unable to find field ["+right_valuename+"] in the input row!");
+                    }
+                }
+                
+                if (field==null)
+                {
+                    throw new KettleException("Unable to find value for field ["+left_valuename+"] in the input row!");
+                }
+
+                if (field2==null && function!=FUNC_NULL && function!=FUNC_NOT_NULL)
+                {
+                    throw new KettleException("Unable to find value for field ["+right_valuename+"] in the input row!");
+                }
+
+                debug="Atomic : evaluate (function="+Condition.functions[function]+")";
 				switch(function)
 				{
 					case FUNC_EQUAL         : retval = (field.compare(field2)==0); break;
@@ -413,6 +437,7 @@ public class Condition implements Cloneable, XMLInterface
 				}
 				
 				// Only NOT makes sense, the rest doesn't, so ignore!!!!
+                debug="Atomic: optionally negate";
 				if (isNegated()) retval=!retval;
 			}
 			else
@@ -438,6 +463,8 @@ public class Condition implements Cloneable, XMLInterface
 					default: break;
 					}
 				}
+
+                debug="Composite: optionally negate";
 				if (isNegated()) retval=!retval;
 			}
 	    }
@@ -446,7 +473,7 @@ public class Condition implements Cloneable, XMLInterface
 	        throw new RuntimeException("Unexpected error evaluation condition ["+toString()+"] in part ["+debug+"] for row: "+r+Const.CR+e.toString());
 	    }
 		
-		return retval;
+        return retval;
 	}
 	
 	public void addCondition(Condition cb)
