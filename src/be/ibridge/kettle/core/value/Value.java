@@ -1514,8 +1514,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public int compare(Value v, boolean caseInsensitive)
 	{
-		boolean n1 =   isNull() || (  isString() && (   getString()==null ||   getString().length()==0 )) || (  isDate() &&   getDate()==null);
-		boolean n2 = v.isNull() || (v.isString() && ( v.getString()==null || v.getString().length()==0 )) || (v.isDate() && v.getDate()==null);
+		boolean n1 =   isNull() || (  isString() && (   getString()==null ||   getString().length()==0 )) || (  isDate() &&   getDate()==null) || (  isBigNumber() &&   getBigNumber()==null);
+		boolean n2 = v.isNull() || (v.isString() && ( v.getString()==null || v.getString().length()==0 )) || (v.isDate() && v.getDate()==null) || (v.isBigNumber() && v.getBigNumber()==null);
 		
 		// null is always smaller! 
 		if ( n1 && !n2) return -1; 
@@ -1534,13 +1534,6 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
 		case VALUE_TYPE_DATE   :
             {
-                Date one = getDate();
-                Date two = v.getDate();
-                
-                if (one==null && two!=null) return -1;
-                if (one!=null && two==null) return 1;
-                if (one==null && two==null) return 0;
-
 			    return Double.compare(getNumber(), v.getNumber());
             }
 			
@@ -1553,10 +1546,6 @@ public class Value implements Cloneable, XMLInterface, Serializable
             {
     			String one = Const.rtrim(getString());
     			String two = Const.rtrim(v.getString());
-                
-                if (one==null && two!=null) return -1;
-                if (one!=null && two==null) return 1;
-                if (one==null && two==null) return 0;
                 
                 if (caseInsensitive) 
                     return one.compareToIgnoreCase(two);
@@ -1571,13 +1560,6 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
         case VALUE_TYPE_BIGNUMBER:
             {
-                BigDecimal one = getBigNumber();
-                BigDecimal two = v.getBigNumber();
-                
-                if (one==null && two!=null) return -1;
-                if (one!=null && two==null) return 1;
-                if (one==null && two==null) return 0;
-    
                 return getBigNumber().compareTo(v.getBigNumber());
             }
 		}
