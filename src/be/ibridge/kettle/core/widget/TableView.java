@@ -1601,40 +1601,6 @@ public class TableView extends Composite
 		// Open the text editor in the correct column of the selected row.
 		editor.setEditor(text);
 
-		// position caret exactly on clicked position?
-		/*
-		if (lastclick!=null)
-		{
-			Rectangle tb  = text.getBounds();
-			Composite par = text.getParent();
-			Point p = par.getLocation();
-			tb.x+=p.x;  // position is relative to parent TableCursor
-			tb.y+=p.y;
-
-			lastclick.x -= tb.x;
-			lastclick.y -= tb.y;
-			
-			if (lastclick.x < tb.width && lastclick.y < tb.height)  // Obvious, just to make sure!
-			{
-				// System.out.println("Click = ("+lastclick.x+", "+lastclick.y+")");
-				
-				// There is no method to put the carret on the x-coordinate.
-				// Lets find it out ourselves.
-				String str = text.getText();
-				int len = 0;
-				int xlen = 0;
-				while (xlen < lastclick.x && len<str.length())
-				{
-					String sub = str.substring(0, len);
-					xlen = getTextLength( sub ) + 10; // Somehow, the text-box shifts to the left. 
-					// System.out.println("String : ["+sub+"], xlen="+xlen);
-					len++;					
-				}
-				if (len>0) len--;
-				text.setSelection(len);
-			}
-		}
-		*/
 		if (select_text) text.selectAll();
 
 		text.setFocus();
@@ -1675,8 +1641,6 @@ public class TableView extends Composite
 
 		int width = tablecolumn[colnr].getWidth();
 		int height = 20;
-		combo.setSize(width, height);
-		combo.layout();
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.verticalAlignment   = SWT.TOP;
 		editor.minimumWidth        = width;
@@ -1685,6 +1649,8 @@ public class TableView extends Composite
 		// Open the text editor in the correct column of the selected row.
 		editor.setEditor (combo);
 		combo.setFocus();
+        combo.setSize(width, height);
+        combo.layout();
 	}
 
 	private void editButton(TableItem row, int rownr, int colnr)
