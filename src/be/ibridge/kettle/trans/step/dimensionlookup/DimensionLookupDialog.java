@@ -230,8 +230,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			{
 				// We have new content: change ci connection:
 				ci = transMeta.findDatabase(wConnection.getText());
-				setAutoinc();
-				setSequence();
+				setFlags();
 			}
 		});
 
@@ -331,7 +330,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdAutoinc.right= new FormAttachment(100, 0);
 		wAutoinc.setLayoutData(fdAutoinc);
 		wAutoinc.setToolTipText("If this field is disabled, get the next value from the indicated sequence."+Const.CR+"If no sequence is supplied, Kettle will generate the appropriate keys");
-		setAutoinc();
+
 		// Clicking on update changes the options in the update combo boxes!		
 		wAutoinc.addSelectionListener(new SelectionAdapter() 
 			{
@@ -340,7 +339,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 					input.setAutoIncrement( !input.isAutoIncrement() );
 					input.setChanged();
 		
-					setAutoinc();
+					setFlags();
 				}
 			}
 		);
@@ -363,8 +362,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdSeq.top  = new FormAttachment(wlAutoinc, margin);
 		fdSeq.right= new FormAttachment(100, 0);
 		wSeq.setLayoutData(fdSeq);
-		setSequence();
-
+		
 		// Version key field:
 		wlVersion=new Label(wTableComp, SWT.RIGHT);
 		wlVersion.setText("Version field ");
@@ -622,7 +620,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdUpIns.right = new FormAttachment(100, 0);
 		fdUpIns.bottom= new FormAttachment(wGet, -margin);
 		wUpIns.setLayoutData(fdUpIns);
-		setUpdate();
 		
 		// Clicking on update changes the options in the update combo boxes!		
 		wUpdate.addSelectionListener(new SelectionAdapter() 
@@ -632,7 +629,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 					input.setUpdate(!input.isUpdate());
 					input.setChanged();
 		
-					setUpdate();
+					setFlags();
 				}
 			}
 		);
@@ -722,22 +719,16 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		return stepname;
 	}
 	
-	public void setAutoinc()
+	public void setFlags()
 	{
 		boolean enable= ci==null || ci.supportsAutoinc();
 		wlAutoinc.setEnabled(enable);
 		wAutoinc.setEnabled(enable);
-	}
 
-	public void setSequence()
-	{
 		boolean seq = ci==null || ci.supportsSequences();
 		wlSeq.setEnabled(seq);
 		wSeq.setEnabled(seq);
-	}
-	
-	public void setUpdate()
-	{
+
 		ColumnInfo colinf =new ColumnInfo("Type",      ColumnInfo.COLUMN_TYPE_CCOMBO, 
 			  input.isUpdate()?
 				 DimensionLookupMeta.typeDesc:
@@ -758,6 +749,20 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			wUpIns.setColumnToolTip(2, "Select the type of the value to return.");
 		}
 		wUpIns.optWidth(true);
+        
+        // In case of lookup: disable commitsize, etc.
+        wlCommit.setEnabled( wUpdate.getSelection() );
+        wCommit.setEnabled( wUpdate.getSelection() );
+        wlAutoinc.setEnabled( wUpdate.getSelection() );
+        wAutoinc.setEnabled( wUpdate.getSelection() );
+        wlSeq.setEnabled( wUpdate.getSelection() );
+        wSeq.setEnabled( wUpdate.getSelection() );
+        wlMinyear.setEnabled( wUpdate.getSelection() );
+        wMinyear.setEnabled( wUpdate.getSelection() );
+        wlMaxyear.setEnabled( wUpdate.getSelection() );
+        wMaxyear.setEnabled( wUpdate.getSelection() );
+        wlMinyear.setEnabled( wUpdate.getSelection() );
+        wMinyear.setEnabled( wUpdate.getSelection() );
 	}
 
 	/**
@@ -817,8 +822,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		wKey.optWidth(true);
 
 		ci = transMeta.findDatabase(wConnection.getText());
-		setAutoinc();
-		setSequence();
+
+        setFlags();
 		
 		wStepname.selectAll();
 	}
