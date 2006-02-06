@@ -1589,14 +1589,17 @@ public class TableView extends Composite
 				}
 			}
 		);
+        
+        int width = tablecolumn[colnr].getWidth();
+        int height = 20;
 				
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.grabHorizontal = true;
 		editor.grabVertical   = true;
-		editor.minimumWidth   =   50;
+		editor.minimumWidth   = width;
+        editor.minimumHeight  = height;
 		
-		setRowNums();
-		editor.layout();
+		// setRowNums();
 		
 		// Open the text editor in the correct column of the selected row.
 		editor.setEditor(text);
@@ -1604,6 +1607,7 @@ public class TableView extends Composite
 		if (select_text) text.selectAll();
 
 		text.setFocus();
+        editor.layout();
 	}
 	
 	private void editCombo(TableItem row, int rownr, int colnr)
