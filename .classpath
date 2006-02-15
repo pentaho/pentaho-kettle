@@ -23,7 +23,6 @@
 	<classpathentry kind="lib" path="libext/db2jcc.jar"/>
 	<classpathentry kind="lib" path="libext/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="libext/javadbf.jar"/>
-	<classpathentry kind="lib" path="libext/mysql-connector-java-3.1.7-bin.jar"/>
 	<classpathentry kind="lib" path="libext/db2jcc_license_cu.jar"/>
 	<classpathentry kind="lib" path="libext/gis-shape.jar"/>
 	<classpathentry sourcepath="C:/Soft/SWT/3.1M7/win32/src.zip" kind="lib" path="libswt/win32/swt.jar"/>
@@ -35,5 +34,6 @@
 	<classpathentry kind="lib" path="libext/jtds-1.2.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.24.jar"/>
 	<classpathentry kind="lib" path="libext/interclient.jar"/>
+	<classpathentry kind="lib" path="libext/mysql-connector-java-3.0.17-ga-bin.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
