@@ -252,7 +252,6 @@ public class RepositoriesDialog
 			}
 		);
 
-        // TODO: keep the last users in the Combo box, store in Props somewhere...
 		// Username
 		wlUsername = new Label(shell, SWT.RIGHT ); 
 		wlUsername.setText("Login: "); 

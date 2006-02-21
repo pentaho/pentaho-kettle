@@ -305,7 +305,7 @@ public class Database
 		}
 		catch(Exception e)
 		{
-			if (databaseMeta.supportsEmptyTransactions()) // TODO: find a way to examine the exact error thrown, in case it's -255: ignore, everything else: report
+			if (databaseMeta.supportsEmptyTransactions())
 				throw new KettleDatabaseException("Error comitting connection", e);
 		}
 	}
