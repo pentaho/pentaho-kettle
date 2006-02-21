@@ -33,7 +33,6 @@ public class CombinationLookupData extends BaseStepData implements StepDataInter
 	public Database db;
 	public int keynrs[];      // nrs in row of the keys
 	
-	// TODO: limit the database cache, we store 1000's of rows here + the corresponding technical key
 	public Hashtable cache;  
 
 	/**
