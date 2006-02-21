@@ -113,7 +113,6 @@ public class ChefLog extends Composite
 		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { white.dispose(); } });
 
 		SashForm sash = new SashForm(this, SWT.VERTICAL);
- 		// props.setLook(sash); TODO: Check this
 		
 		ColumnInfo colinf[] = 
 			{
@@ -133,7 +132,6 @@ public class ChefLog extends Composite
 		wTable = new KTable(sash, SWT.V_SCROLL | SWT.H_SCROLL);
 		wTable.setRowSelectionMode(true);
 		wTable.setModel(new ChefLogTableModel(colinf, jobEntryResults, chef.getChefGraph()));
- 		// props.setLook(wTable); TODO: check this
 		
 		FormData fdTable=new FormData();
 		fdTable.left   = new FormAttachment(0, 0);
