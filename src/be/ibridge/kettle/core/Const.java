@@ -76,7 +76,7 @@ public class Const
 	public static final int  ROWS_IN_ROWSET = 350; 
 	
 	/**
-	 * Fetch size in rows when querying a database TODO: make the fetch size configurable as an attribute in DatabaseMeta!
+	 * Fetch size in rows when querying a database
 	 */
 	public static final int  FETCH_SIZE = 100;
 	
