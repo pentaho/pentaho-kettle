@@ -777,7 +777,9 @@ public class TableView extends Composite
 							edit(rownr, colnr);
 						}
 					}
-					cursor.redraw();
+					// cursor.redraw();
+                    setFocus();
+                    table.setFocus();
 					
 					prev_rownr = rownr;
 				}
