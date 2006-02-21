@@ -1246,8 +1246,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
             case VALUE_TYPE_BIGNUMBER:
                 if (getString()!=null && getString().getBytes().length>0) 
                 {
-                    dos.writeInt(getString().getBytes().length);
-                    dos.writeChars(getString());
+                    dos.writeInt(getString().getBytes("UTF-8").length);
+                    dos.writeUTF(getString());
                 }
                 else
                 {
@@ -1323,9 +1323,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 int dataLength=dis.readInt();
                 if (dataLength>0)
                 {
-                    StringBuffer   val_string=new StringBuffer();
-                    for (int i=0;i<dataLength;i++) val_string.append(dis.readChar());
-                    setValue( val_string.toString() );
+                    String string = dis.readUTF();
+                    setValue( string );
                 }
                 if (theType==VALUE_TYPE_BIGNUMBER) 
                 {
@@ -1354,6 +1353,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
             case VALUE_TYPE_BOOLEAN:
                 setValue( dis.readBoolean() );
                 break;
+            default: break;
             }
         }
     }
@@ -1401,7 +1401,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 					if (getString()!=null && getString().getBytes().length>0) 
 					{
 						dos.writeInt(getString().getBytes().length);
-						dos.writeChars(getString());
+						dos.writeUTF(getString());
 					}
 					else
 					{
@@ -1457,15 +1457,15 @@ public class Value implements Cloneable, XMLInterface, Serializable
 				switch(getType())
 				{
 				case VALUE_TYPE_STRING:
+                case VALUE_TYPE_BIGNUMBER:
 					// Handle lengths
 					int dataLength=dis.readInt();
 					if (dataLength>0)
 					{
-						StringBuffer   val_string=new StringBuffer();
-						for (int i=0;i<dataLength;i++) val_string.append(dis.readChar());
-						setValue( val_string.toString() );
+                        String string = dis.readUTF();
+						setValue( string );
+                        if (metaData.isBigNumber()) convertString(metaData.getType());
 					}
-                    if (metaData.isBigNumber()) convertString(metaData.getType());
 					break;
 				case VALUE_TYPE_DATE:
 					if (dis.readBoolean())
@@ -1482,6 +1482,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 				case VALUE_TYPE_BOOLEAN:
 					setValue( dis.readBoolean() );
 					break;
+                default: break;
 				}
 			}			
 		}
