@@ -22,7 +22,7 @@ public class KettleURLClassLoader extends URLClassLoader
         Class loaded = findLoadedClass(name);
         if (loaded == null)
         {
-            // TODO: get the jar, load the bytes from the jar file, construct class from scratch as in snippet below...
+            // Get the jar, load the bytes from the jar file, construct class from scratch as in snippet below...
 
             /*
             
