@@ -149,7 +149,7 @@ public class MergeRows extends BaseStep implements StepInterface
                 {
                     data.two.addValue(VALUE_NEW);
                     putRow(data.two);
-                    data.two=getRowFrom(meta.getReferenceStepName());
+                    data.two=getRowFrom(meta.getCompareStepName());
                 }
             }
         }
