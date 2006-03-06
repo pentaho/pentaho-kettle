@@ -43,7 +43,7 @@ public class Kitchen
 {
 	public static final String STRING_KITCHEN = "Kitchen";
 	
-	public static int main(String[] a)
+	public static void main(String[] a)
 	{
 	    ArrayList args = new ArrayList();
 	    for (int i=0;i<a.length;i++) 
@@ -72,7 +72,7 @@ public class Kitchen
             System.out.println("  -norep    : Don't log into the repository");
 		    System.out.println("");
 		    
-		    return 9;
+		    System.exit(9);
 		}
 
 		String repname   = Const.getCommandlineOption(args, "rep");
@@ -122,7 +122,7 @@ public class Kitchen
 		if (!steploader.read())
 		{
 			log.logError("Spoon", "Error loading steps... halting Kitchen!");
-			return 8;
+			System.exit(8);
 		}
 
 		Date start, stop;
@@ -275,7 +275,7 @@ public class Kitchen
 				System.out.println("ERROR: Kitchen can't continue because the job couldn't be loaded.");			    
 			}
 
-			return 7;
+            System.exit(7);
 		}
 		
 		Result result = null;
@@ -320,7 +320,7 @@ public class Kitchen
 		long millis=stop.getTime()-start.getTime();
 		log.logBasic(STRING_KITCHEN, "Processing ended after "+(millis/1000)+" seconds.");
         
-        return returnCode;
+        System.exit(returnCode);
 
 	}
 }

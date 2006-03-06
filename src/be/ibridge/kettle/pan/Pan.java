@@ -39,7 +39,7 @@ import be.ibridge.kettle.trans.TransMeta;
 
 public class Pan
 {
-	public static int main(String[] a)
+	public static void main(String[] a)
 	{
 	    ArrayList args = new ArrayList();
 	    for (int i=0;i<a.length;i++) 
@@ -71,7 +71,7 @@ public class Pan
             System.out.println("  -norep     : do not log into the repository");
 		    System.out.println("");
 		    
-		    return 9;
+            System.exit(9);
 		}
 
 		String repname   = Const.getCommandlineOption(args, "rep");
@@ -132,7 +132,7 @@ public class Pan
 		if (!steploader.read())
 		{
 			log.logError("Spoon", "Error loading steps... halting Pan!");
-			return 8;
+            System.exit(8);
 		}
 		
 		Date start, stop;
@@ -304,7 +304,7 @@ public class Pan
             {
                 System.out.println("ERROR: Pan can't continue because the transformation couldn't be loaded.");
             }
-			return 7;
+            System.exit(7);
 		}
 		
 		try
@@ -327,17 +327,17 @@ public class Pan
 			if (ok) 
 			{
 				trans.printStats((int)millis/1000);
-				return 0;
+                System.exit(0);
 			}
 			else
 			{
-				return 1;
+                System.exit(1);
 			}
 		}
 		catch(KettleException ke)
 		{
 			System.out.println("ERROR occurred: "+ke.getMessage());
-            return 2;
+            System.exit(2);
 		}
 
 	}
