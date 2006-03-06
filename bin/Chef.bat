@@ -57,6 +57,7 @@ set CLASSPATH=%CLASSPATH%;libext\pg74.215.jdbc3.jar
 set CLASSPATH=%CLASSPATH%;libext\edbc.jar
 set CLASSPATH=%CLASSPATH%;libext\jsch-0.1.24.jar
 set CLASSPATH=%CLASSPATH%;libext\interclient.jar
+set CLASSPATH=%CLASSPATH%;libext\sapdbc.jar
 
 REM *****************
 REM   SWT Libraries
