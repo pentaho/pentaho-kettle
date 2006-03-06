@@ -54,4 +54,9 @@ public class Log4jMessage
     {
         return level==LogWriter.LOG_LEVEL_ERROR;
     }
+    
+    public String toString()
+    {
+        return subject + " - " + message;
+    }
 }
