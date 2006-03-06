@@ -240,21 +240,27 @@ public class Calculator extends BaseStep implements StepInterface
                        {
                            calendar.setTime(date);
                            value.setValue(calendar.get(Calendar.YEAR));
+                       }
+                       else
+                       {
+                           throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
+                       }
                     }
                     break;
                 case CalculatorMetaFunction.CALC_MONTH_OF_DATE           : // What is the month (Integer) of a date?
                     {
-                    value = new Value(fn.getFieldName(), fieldA);
-                    Calendar calendar = Calendar.getInstance();
-                    Date date = fieldA.getDate();
-                    if (date!=null)
-                    {
-                        calendar.setTime(date);
-                        value.setValue(calendar.get(Calendar.MONTH)+1);
-                    }
-                    else
-                    {
-                        throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
+                        value = new Value(fn.getFieldName(), fieldA);
+                        Calendar calendar = Calendar.getInstance();
+                        Date date = fieldA.getDate();
+                        if (date!=null)
+                        {
+                            calendar.setTime(date);
+                            value.setValue(calendar.get(Calendar.MONTH)+1);
+                        }
+                        else
+                        {
+                            throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
+                        }
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DAY_OF_YEAR           : // What is the day of year (Integer) of a date?
