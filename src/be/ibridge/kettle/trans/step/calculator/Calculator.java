@@ -21,7 +21,6 @@ import java.util.Date;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
