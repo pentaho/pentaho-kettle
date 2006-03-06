@@ -16,10 +16,12 @@
 package be.ibridge.kettle.trans.step.calculator;
 
 import java.util.Calendar;
+import java.util.Date;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
@@ -233,48 +235,90 @@ public class Calculator extends BaseStep implements StepInterface
                     {
                        value = new Value(fn.getFieldName(), fieldA);
                        Calendar calendar = Calendar.getInstance();
-                       calendar.setTime(fieldA.getDate());
-                       value.setValue(calendar.get(Calendar.YEAR));
+                       Date date = fieldA.getDate();
+                       if (date!=null)
+                       {
+                           calendar.setTime(date);
+                           value.setValue(calendar.get(Calendar.YEAR));
                     }
                     break;
                 case CalculatorMetaFunction.CALC_MONTH_OF_DATE           : // What is the month (Integer) of a date?
                     {
                     value = new Value(fn.getFieldName(), fieldA);
                     Calendar calendar = Calendar.getInstance();
-                    calendar.setTime(fieldA.getDate());
-                    value.setValue(calendar.get(Calendar.MONTH)+1);
+                    Date date = fieldA.getDate();
+                    if (date!=null)
+                    {
+                        calendar.setTime(date);
+                        value.setValue(calendar.get(Calendar.MONTH)+1);
+                    }
+                    else
+                    {
+                        throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DAY_OF_YEAR           : // What is the day of year (Integer) of a date?
                     {
                         value = new Value(fn.getFieldName(), fieldA);
                         Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(fieldA.getDate());
-                        value.setValue(calendar.get(Calendar.DAY_OF_YEAR));
+                        Date date = fieldA.getDate();
+                        if (date!=null)
+                        {
+                            calendar.setTime(date);
+                            value.setValue(calendar.get(Calendar.DAY_OF_YEAR));
+                        }
+                        else
+                        {
+                            throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
+                        }
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DAY_OF_MONTH           : // What is the day of month (Integer) of a date?
                     {
                         value = new Value(fn.getFieldName(), fieldA);
                         Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(fieldA.getDate());
-                        value.setValue(calendar.get(Calendar.DAY_OF_MONTH));
+                        Date date = fieldA.getDate();
+                        if (date!=null)
+                        {
+                            calendar.setTime(date);
+                            value.setValue(calendar.get(Calendar.DAY_OF_MONTH));
+                        }
+                        else
+                        {
+                            throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
+                        }
                     }
                     break;
                 case CalculatorMetaFunction.CALC_DAY_OF_WEEK           : // What is the day of week (Integer) of a date?
                     {
                         value = new Value(fn.getFieldName(), fieldA);
                         Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(fieldA.getDate());
-                        value.setValue(calendar.get(Calendar.DAY_OF_WEEK));
+                        Date date = fieldA.getDate();
+                        if (date!=null)
+                        {
+                            calendar.setTime(date);
+                            value.setValue(calendar.get(Calendar.DAY_OF_WEEK));
+                        }
+                        else
+                        {
+                            throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
+                        }
                     }
                     break;
                 case CalculatorMetaFunction.CALC_WEEK_OF_YEAR    : // What is the week of year (Integer) of a date?
                     {
                         value = new Value(fn.getFieldName(), fieldA);
                         Calendar calendar = Calendar.getInstance();
-                        calendar.setTime(fieldA.getDate());
-                        value.setValue(calendar.get(Calendar.WEEK_OF_YEAR));
+                        Date date = fieldA.getDate();
+                        if (date!=null)
+                        {
+                            calendar.setTime(date);
+                            value.setValue(calendar.get(Calendar.WEEK_OF_YEAR));
+                        }
+                        else
+                        {
+                            throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
+                        }
                     }
                     break;
                 default:
