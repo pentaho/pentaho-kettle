@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.util.Date;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -272,17 +271,34 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			debug="String length="+v.getLength()+", value="+v.toString();
 			if (v.isNull() || v.getString()==null) 
 			{
-				if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
+				if (idx>=0 && field!=null && field.getNullString()!=null) 
+                {
+                    if (meta.isEnclosureForced() && meta.getEnclosure()!=null)
+                    {
+                        retval=meta.getEnclosure()+field.getNullString()+meta.getEnclosure();
+                    }
+                    else
+                    {
+                        retval=field.getNullString();
+                    }
+                }
 			}
 			else
 			{
 				// Any separators in string?
 				// example: 123.4;"a;b;c";Some name
-				// 
-				int seppos = v.toString().indexOf(meta.getSeparator());
-				
-				if (seppos<0) retval=v.toString();
-				else          retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
+				//
+                if (meta.isEnclosureForced() && meta.getEnclosure()!=null) // Force enclosure?
+                {
+                    retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
+                }
+                else // See if there is a separator in the String...
+                {
+    				int seppos = v.toString().indexOf(meta.getSeparator());
+    				
+    				if (seppos<0) retval=v.toString();
+    				else          retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
+                }
 			}
 		}
 		else // Boolean
@@ -360,42 +376,47 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				String header = "";
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
+                    String fieldName = meta.getOutputFields()[i].getName();
+                    Value v = r.searchValue(fieldName);
+                    
 					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
 					{
 						header+=meta.getSeparator();
 					}
-					header+=meta.getOutputFields()[i].getName();
+                    if (meta.isEnclosureForced() && meta.getEnclosure()!=null && v!=null && v.isString())
+                    {
+                        header+=meta.getEnclosure();
+                    }
+					header+=fieldName;
+                    if (meta.isEnclosureForced() && meta.getEnclosure()!=null && v!=null && v.isString())
+                    {
+                        header+=meta.getEnclosure();
+                    }
 				}
 				header+=meta.getNewline();
                 data.writer.write(header.toCharArray());
 			}
 			else
-			if (r!=null)
+			if (r!=null)  // Just put all field names in the header/footer
 			{
 				for (int i=0;i<r.size();i++)
 				{
 					if (i>0) data.writer.write(meta.getSeparator().toCharArray());
 					Value v = r.getValue(i);
 					
-					// Header-value contains the name of the value
+                    // Header-value contains the name of the value
 					Value header_value = new Value(v.getName(), Value.VALUE_TYPE_STRING);
 					header_value.setValue(v.getName());
-					
-					// What's the fields index?
-					int idx=-1;
-					for (int x=0;x<meta.getOutputFields().length && idx<0; x++)
-					{
-						if (meta.getOutputFields()[x].getName().equalsIgnoreCase(v.getName())) idx=x;
-					}
-					switch(v.getType())
-					{
-					case Value.VALUE_TYPE_DATE:   v.setValue(new Date()); break;
-					case Value.VALUE_TYPE_STRING: v.setValue("a"); break;
-					default: break; 
-					}
-					//String fmt = formatField( v, idx );
-					//header_value.setLength( fmt.length() );
+
+                    if (meta.isEnclosureForced() && meta.getEnclosure()!=null && v.isString())
+                    {
+                        data.writer.write(meta.getEnclosure().toCharArray());
+                    }
                     data.writer.write(header_value.toString().toCharArray());
+                    if (meta.isEnclosureForced() && meta.getEnclosure()!=null && v.isString())
+                    {
+                        data.writer.write(meta.getEnclosure().toCharArray());
+                    }
 				}
                 data.writer.write(meta.getNewline().toCharArray());
 			}

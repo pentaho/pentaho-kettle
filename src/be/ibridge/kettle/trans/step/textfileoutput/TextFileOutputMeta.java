@@ -61,6 +61,9 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	
 	/** The enclosure to use in case the separator is part of a field's value */
     private  String enclosure;
+    
+    /** Setting to allow the enclosure to be always surrounding a String value, even when there is no separator inside */
+    private  boolean enclosureForced;
 	
 	/** Add a header at the top of the file? */
     private  boolean headerEnabled;
@@ -148,6 +151,27 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     public void setEnclosure(String enclosure)
     {
         this.enclosure = enclosure;
+    }
+
+
+    
+
+    /**
+     * @return Returns the enclosureForced.
+     */
+    public boolean isEnclosureForced()
+    {
+        return enclosureForced;
+    }
+
+
+
+    /**
+     * @param enclosureForced The enclosureForced to set.
+     */
+    public void setEnclosureForced(boolean enclosureForced)
+    {
+        this.enclosureForced = enclosureForced;
     }
 
 
@@ -427,7 +451,30 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         this.outputFields = outputFields;
     }
-	
+
+
+    /**
+     * @return The desired encoding of output file, null or empty if the default system encoding needs to be used. 
+     */
+    public String getEncoding()
+    {
+        return encoding;
+    }
+
+
+    /**
+     * @param encoding The desired encoding of output file, null or empty if the default system encoding needs to be used.
+     */
+    public void setEncoding(String encoding)
+    {
+        this.encoding = encoding;
+    }
+
+    
+    
+    
+    
+    
 	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
 		throws KettleXMLException
 	{
@@ -464,7 +511,9 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			
 			enclosure=XMLHandler.getTagValue(stepnode, "enclosure");
 			if (enclosure==null) enclosure="";
-			
+
+            enclosureForced = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "enclosure_forced"));
+
 			headerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
 			footerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
 			fileFormat       = XMLHandler.getTagValue(stepnode, "format");
@@ -533,17 +582,19 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	{
 		separator  = ";";
 		enclosure  = "\"";
-		headerEnabled     = true;
-		footerEnabled     = false;
-		fileFormat = "DOS";
-		fileName   = "file";
-		extension  = "txt";
-		stepNrInFilename      = false;
+        
+        enclosureForced  = false;
+		headerEnabled    = true;
+		footerEnabled    = false;
+		fileFormat       = "DOS";
+		fileName         = "file";
+		extension        = "txt";
+		stepNrInFilename = false;
 		dateInFilename   = false;
 		timeInFilename   = false;
-		zipped     = false;
-		padded        = false;
-		splitEvery = 0;
+		zipped           = false;
+		padded           = false;
+		splitEvery       = 0;
 
 		newline = getNewLine(fileFormat);
 			
@@ -690,6 +741,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		
 		retval+="    "+XMLHandler.addTagValue("separator", separator);
 		retval+="    "+XMLHandler.addTagValue("enclosure", enclosure);
+        retval+="    "+XMLHandler.addTagValue("enclosure_forced", enclosureForced);
 		retval+="    "+XMLHandler.addTagValue("header",    headerEnabled);
 		retval+="    "+XMLHandler.addTagValue("footer",    footerEnabled);
 		retval+="    "+XMLHandler.addTagValue("format",    fileFormat);
@@ -738,6 +790,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		{
 			separator       =      rep.getStepAttributeString (id_step, "separator");
 			enclosure       =      rep.getStepAttributeString (id_step, "enclosure");
+            enclosureForced =      rep.getStepAttributeBoolean(id_step, "enclosure_forced");
 			headerEnabled   =      rep.getStepAttributeBoolean(id_step, "header");
 			footerEnabled   =      rep.getStepAttributeBoolean(id_step, "footer");   
 			fileFormat      =      rep.getStepAttributeString (id_step, "format");  
@@ -785,21 +838,22 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "separator",       separator);
-			rep.saveStepAttribute(id_transformation, id_step, "enclosure",       enclosure);
-			rep.saveStepAttribute(id_transformation, id_step, "header",          headerEnabled);
-			rep.saveStepAttribute(id_transformation, id_step, "footer",          footerEnabled);
-			rep.saveStepAttribute(id_transformation, id_step, "format",          fileFormat);
-            rep.saveStepAttribute(id_transformation, id_step, "encoding",        encoding);
-			rep.saveStepAttribute(id_transformation, id_step, "file_name",       fileName);
-			rep.saveStepAttribute(id_transformation, id_step, "file_extention",  extension);
-			rep.saveStepAttribute(id_transformation, id_step, "file_append",     fileAppended);
-			rep.saveStepAttribute(id_transformation, id_step, "file_split",      splitEvery);
-			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr", stepNrInFilename);
-			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",   dateInFilename);
-			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",   timeInFilename);
-			rep.saveStepAttribute(id_transformation, id_step, "file_zipped",     zipped);
-			rep.saveStepAttribute(id_transformation, id_step, "file_pad",        padded);
+			rep.saveStepAttribute(id_transformation, id_step, "separator",        separator);
+			rep.saveStepAttribute(id_transformation, id_step, "enclosure",        enclosure);
+            rep.saveStepAttribute(id_transformation, id_step, "enclosure_forced", enclosureForced);
+			rep.saveStepAttribute(id_transformation, id_step, "header",           headerEnabled);
+			rep.saveStepAttribute(id_transformation, id_step, "footer",           footerEnabled);
+			rep.saveStepAttribute(id_transformation, id_step, "format",           fileFormat);
+            rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);
+			rep.saveStepAttribute(id_transformation, id_step, "file_name",        fileName);
+			rep.saveStepAttribute(id_transformation, id_step, "file_extention",   extension);
+			rep.saveStepAttribute(id_transformation, id_step, "file_append",      fileAppended);
+			rep.saveStepAttribute(id_transformation, id_step, "file_split",       splitEvery);
+			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr",  stepNrInFilename);
+			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
+			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
+			rep.saveStepAttribute(id_transformation, id_step, "file_zipped",      zipped);
+			rep.saveStepAttribute(id_transformation, id_step, "file_pad",         padded);
 			
 			for (int i=0;i<outputFields.length;i++)
 			{
@@ -889,19 +943,5 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	{
 		return new TextFileOutputData();
 	}
-
-
-
-    public String getEncoding()
-    {
-        return encoding;
-    }
-
-
-
-    public void setEncoding(String encoding)
-    {
-        this.encoding = encoding;
-    }
 
 }
