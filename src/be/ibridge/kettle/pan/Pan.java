@@ -280,11 +280,6 @@ public class Pan
 					transMeta = new TransMeta(filename);
 					trans = new Trans(log, transMeta);
 				}
-				else
-				{
-					System.out.println("ERROR: No file or transformation name specified.");
-					trans=null;
-				}
 			}
 		}
 		catch(KettleException e)
