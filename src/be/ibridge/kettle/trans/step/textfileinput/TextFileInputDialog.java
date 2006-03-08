@@ -140,6 +140,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private Label        wlEnclosure;
 	private Text         wEnclosure;
 	private FormData     fdlEnclosure, fdEnclosure;
+    
+    private Label        wlEnclBreaks;
+    private Button       wEnclBreaks;
+    private FormData     fdlEnclBreaks, fdEnclBreaks;
 
     private Label        wlEscape;
     private Text         wEscape;
@@ -832,13 +836,33 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdEnclosure.right= new FormAttachment(100, 0);
         wEnclosure.setLayoutData(fdEnclosure);
 
+        // Allow Enclosure breaks checkbox
+        wlEnclBreaks=new Label(wContentComp, SWT.RIGHT);
+        wlEnclBreaks.setText("Allow breaks in enclosed fields?");
+        props.setLook(wlEnclBreaks);
+        fdlEnclBreaks=new FormData();
+        fdlEnclBreaks.left = new FormAttachment(0, 0);
+        fdlEnclBreaks.top  = new FormAttachment(wEnclosure, margin);
+        fdlEnclBreaks.right= new FormAttachment(middle, -margin);
+        wlEnclBreaks.setLayoutData(fdlEnclBreaks);
+        wEnclBreaks=new Button(wContentComp, SWT.CHECK);
+        props.setLook(wEnclBreaks);
+        fdEnclBreaks=new FormData();
+        fdEnclBreaks.left = new FormAttachment(middle, 0);
+        fdEnclBreaks.top  = new FormAttachment(wEnclosure, margin);
+        wEnclBreaks.setLayoutData(fdEnclBreaks);
+        
+        // Disable until the logic works...
+        wlEnclBreaks.setEnabled(false);
+        wEnclBreaks.setEnabled(false);
+
         // Escape
         wlEscape=new Label(wContentComp, SWT.RIGHT);
         wlEscape.setText("Escape ");
         props.setLook(wlEscape);
         fdlEscape=new FormData();
         fdlEscape.left = new FormAttachment(0, 0);
-        fdlEscape.top  = new FormAttachment(wEnclosure, margin);
+        fdlEscape.top  = new FormAttachment(wlEnclBreaks, margin);
         fdlEscape.right= new FormAttachment(middle, -margin);
         wlEscape.setLayoutData(fdlEscape);
         wEscape=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -846,7 +870,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wEscape.addModifyListener(lsMod);
         fdEscape=new FormData();
         fdEscape.left = new FormAttachment(middle, 0);
-        fdEscape.top  = new FormAttachment(wEnclosure, margin);
+        fdEscape.top  = new FormAttachment(wlEnclBreaks, margin);
         fdEscape.right= new FormAttachment(100, 0);
         wEscape.setLayoutData(fdEscape);
 

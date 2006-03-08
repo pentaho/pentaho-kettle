@@ -77,6 +77,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
     /** Escape character used to escape the enclosure String (\) */
     private String             escapeCharacter;
+    
+    /** Switch to allow breaks (CR/LF) in Enclosures */
+    private boolean            breakInEnclosureAllowed;
 
     /** Flag indicating that the file contains one header line that should be skipped. */
     private boolean            header;
@@ -202,6 +205,22 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     public void setEnclosure(String enclosure)
     {
         this.enclosure = enclosure;
+    }
+
+    /**
+     * @return Returns the breakInEnclosureAllowed.
+     */
+    public boolean isBreakInEnclosureAllowed()
+    {
+        return breakInEnclosureAllowed;
+    }
+
+    /**
+     * @param breakInEnclosureAllowed The breakInEnclosureAllowed to set.
+     */
+    public void setBreakInEnclosureAllowed(boolean breakInEnclosureAllowed)
+    {
+        this.breakInEnclosureAllowed = breakInEnclosureAllowed;
     }
 
     /**
@@ -486,6 +505,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         separator = ";";
         enclosure = "\"";
+        breakInEnclosureAllowed=false;
         header = true;
         nrHeaderLines = 1;
         footer = false;
@@ -588,6 +608,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
         retval += "    " + XMLHandler.addTagValue("separator", separator);
         retval += "    " + XMLHandler.addTagValue("enclosure", enclosure);
+        retval += "    " + XMLHandler.addTagValue("enclosure_breaks", breakInEnclosureAllowed);
         retval += "    " + XMLHandler.addTagValue("escapechar", escapeCharacter);
         retval += "    " + XMLHandler.addTagValue("header", header);
         retval += "    " + XMLHandler.addTagValue("nr_headerlines", nrHeaderLines);
@@ -666,6 +687,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         {
             separator = XMLHandler.getTagValue(stepnode, "separator");
             enclosure = XMLHandler.getTagValue(stepnode, "enclosure");
+            breakInEnclosureAllowed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "enclosure_breaks"));
             escapeCharacter = XMLHandler.getTagValue(stepnode, "escapechar");
             header = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
             nrHeaderLines = Const.toInt( XMLHandler.getTagValue(stepnode, "nr_headerlines"), 1);
@@ -775,6 +797,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         {
             separator = rep.getStepAttributeString(id_step, "separator");
             enclosure = rep.getStepAttributeString(id_step, "enclosure");
+            breakInEnclosureAllowed = rep.getStepAttributeBoolean(id_step, "enclosure_breaks");
             escapeCharacter = rep.getStepAttributeString(id_step, "escapechar");
             header = rep.getStepAttributeBoolean(id_step, "header");
             nrHeaderLines = (int)rep.getStepAttributeInteger(id_step, "nr_headerlines");
@@ -855,6 +878,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         {
             rep.saveStepAttribute(id_transformation, id_step, "separator", separator);
             rep.saveStepAttribute(id_transformation, id_step, "enclosure", enclosure);
+            rep.saveStepAttribute(id_transformation, id_step, "enclosure_breaks", breakInEnclosureAllowed);
             rep.saveStepAttribute(id_transformation, id_step, "escapechar", escapeCharacter);
             rep.saveStepAttribute(id_transformation, id_step, "header", header);
             rep.saveStepAttribute(id_transformation, id_step, "nr_headerlines", nrHeaderLines);
