@@ -264,42 +264,44 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			{ 
 				base = new String[] { getFileName() };
 			}
-			//String env[] = new String[] { };
-								
+
+            // Construct the arguments...
 			if (argFromPrevious && prev_result.rows!=null)
 			{
-				cmd = new String[prev_result.rows.size()+base.length];
-				//env = new String[result.rows.size()+1];
+                ArrayList cmds = new ArrayList();
+                
+                // Add the base command...
+				for (int i=0;i<base.length;i++) cmds.add(base[i]);
 
-				for (int i=0;i<base.length;i++) cmd[i]=base[i];
-				//env[0]="ARGS="+result.rows.size();
+                // Add the arguments from previous results...
 				for (int i=0;i<prev_result.rows.size();i++) 
 				{
 					Row r = (Row)prev_result.rows.get(i);
-					cmd[i+base.length]=r.toString();
-					//env[i+1]="ARG"+i+"=\""+r.toString()+"\"";
+                    for (int j=0;j<r.size();j++)
+                    {
+                        cmds.add(r.getValue(j).toString());
+                    }
 				} 
+                cmd = (String[]) cmds.toArray(new String[cmds.size()]);
 			}
 			else
 			if (arguments!=null)
 			{
-				// System.out.println("base == null? "+(base==null)+", args == null ? "+(jobentry.arguments==null));
-				cmd = new String[arguments.length+base.length];
-				// env = new String[jobentry.arguments.length+1];
-				for (int i=0;i<base.length;i++) cmd[i]=base[i];
-				//if (result.rows!=null) env[0]="ARGS="+result.rows.size();
-				//else		           env[0]="ARGS=0";
+                ArrayList cmds = new ArrayList();
+
+                // Add the base command...
+                for (int i=0;i<base.length;i++) cmds.add(base[i]);
+
 				for (int i=0;i<arguments.length;i++) 
 				{
-					cmd[i+base.length]=arguments[i];
-					// env[i+1]="ARG"+i+"=\""+jobentry.arguments[i]+"\"";
+                    cmds.add(arguments[i]);
 				} 
+                cmd = (String[]) cmds.toArray(new String[cmds.size()]);
 			}
+            
 			// Launch the script!
 			log.logDetailed(toString(), "Passing "+(cmd.length-1)+" arguments to command : ["+cmd[0]+"]");
-			Process proc;
-			//System.out.println("executing command: ["+cmd[0]+"]");
-			proc = java.lang.Runtime.getRuntime().exec(cmd);
+			Process proc = java.lang.Runtime.getRuntime().exec(cmd);
 			
 			proc.waitFor();
 			log.logDetailed(toString(), "command ["+cmd[0]+"] has finished");

@@ -228,7 +228,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 					directory = rep.getDirectoryTree();
 				}
 				
-				// System.out.println("Loading transformation in directory ["+directory+"], id_directory="+id_directory);
+				System.out.println("Loading transformation in directory ["+directory+"], id_directory="+id_directory);
 			}
 			
 			filename          = rep.getJobEntryAttributeString(id_jobentry, "filename");
