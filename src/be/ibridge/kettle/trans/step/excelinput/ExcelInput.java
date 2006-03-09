@@ -156,6 +156,14 @@ public class ExcelInput extends BaseStep implements StepInterface
 			setOutputDone(); // signal end to receiver(s)
 			return false; // end of data or error.
 		}
+        
+        if (meta.getRowLimit()>0 && data.rownr>meta.getRowLimit())
+        {
+            // The close of the workbook is in dispose()
+            logDetailed("Row limit of ["+meta.getRowLimit()+"] reached: stop processing.");
+            setOutputDone(); // signal end to receiver(s)
+            return false; // end of data or error.
+        }
 
 		Row r = getRowFromWorkbooks();
 		if (r!=null)
