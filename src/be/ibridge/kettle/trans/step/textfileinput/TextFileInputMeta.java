@@ -154,6 +154,12 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     /** The name of the field that will contain the error texts, separated by CR */
     private String  errorTextField;
     
+    /** The directory that will contain bad line files */
+    private String badLineFilesDestinationDirectory;
+    
+    /** The extension of bad line files */
+    private String badLineFilesExtension;
+    
     /**
      * @return Returns the encoding.
      */
@@ -523,6 +529,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         filenameField = "";
         includeRowNumber = false;
         rowNumberField = "";
+        badLineFilesDestinationDirectory = ".";
+        badLineFilesExtension = ".BAD";
 
         int nrfiles = 0;
         int nrfields = 0;
@@ -677,6 +685,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         retval += "    " + XMLHandler.addTagValue("error_count_field", errorCountField);
         retval += "    " + XMLHandler.addTagValue("error_fields_field", errorFieldsField);
         retval += "    " + XMLHandler.addTagValue("error_text_field", errorTextField);
+        
+        retval += "    " + XMLHandler.addTagValue("bad_line_files_destination_directory", badLineFilesDestinationDirectory);
+        retval += "    " + XMLHandler.addTagValue("bad_line_files_extension", badLineFilesExtension);
 
         return retval;
     }
@@ -784,6 +795,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             errorCountField = XMLHandler.getTagValue(stepnode, "error_count_field");
             errorFieldsField = XMLHandler.getTagValue(stepnode, "error_fields_field");
             errorTextField = XMLHandler.getTagValue(stepnode, "error_text_field");
+            badLineFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "bad_line_files_destination_directory");
+            badLineFilesExtension = XMLHandler.getTagValue(stepnode, "bad_line_files_extension");
         }
         catch (Exception e)
         {
@@ -865,6 +878,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             errorCountField = rep.getStepAttributeString(id_step, "error_count_field");
             errorFieldsField = rep.getStepAttributeString(id_step, "error_fields_field");
             errorTextField = rep.getStepAttributeString(id_step, "error_text_field");
+            
+            badLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "bad_line_files_destination_directory");
+            badLineFilesExtension = rep.getStepAttributeString(id_step, "bad_line_files_extension");
         }
         catch (Exception e)
         {
@@ -937,6 +953,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "error_count_field", errorCountField);
             rep.saveStepAttribute(id_transformation, id_step, "error_fields_field", errorFieldsField);
             rep.saveStepAttribute(id_transformation, id_step, "error_text_field", errorTextField);
+            
+            rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_destination_directory", badLineFilesDestinationDirectory);
+            rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_extension", badLineFilesExtension);
+            
         }
         catch (Exception e)
         {
@@ -1253,5 +1273,22 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.nrLinesDocHeader = nrLinesDocHeader;
     }
+
+	public String getBadLineFilesDestinationDirectory() {
+		return badLineFilesDestinationDirectory;
+	}
+
+	public void setBadLineFilesDestinationDirectory(
+			String badLineFilesDestinationDirectory) {
+		this.badLineFilesDestinationDirectory = badLineFilesDestinationDirectory;
+	}
+
+	public String getBadLineFilesExtension() {
+		return badLineFilesExtension;
+	}
+
+	public void setBadLineFilesExtension(String badLineFilesExtension) {
+		this.badLineFilesExtension = badLineFilesExtension;
+	}
 
 }
