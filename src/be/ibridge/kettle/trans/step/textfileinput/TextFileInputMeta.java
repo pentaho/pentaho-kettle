@@ -178,6 +178,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     /** The extension of line number files */
     private String lineNumberFilesExtension;
     
+    private boolean dateFormatLenient;
     
     
     /**
@@ -557,6 +558,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         dataErrorLineFilesExtension = "dataerror";
         lineNumberFilesDestinationDirectory = ".";
         lineNumberFilesExtension = "line";
+        dateFormatLenient = true;
 
         int nrfiles = 0;
         int nrfields = 0;
@@ -720,6 +722,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         retval += "    " + XMLHandler.addTagValue("data_error_line_files_extension", dataErrorLineFilesExtension);
         retval += "    " + XMLHandler.addTagValue("line_number_files_destination_directory", lineNumberFilesDestinationDirectory);
         retval += "    " + XMLHandler.addTagValue("line_number_files_extension", lineNumberFilesExtension);
+        retval += "    " + XMLHandler.addTagValue("date_format_lenient", dateFormatLenient);
         
 
         return retval;
@@ -836,6 +839,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             dataErrorLineFilesExtension = XMLHandler.getTagValue(stepnode, "data_error_line_files_extension");
             lineNumberFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "line_number_files_destination_directory");
             lineNumberFilesExtension = XMLHandler.getTagValue(stepnode, "line_number_files_extension");
+            dateFormatLenient = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "date_format_lenient"));
         }
         catch (Exception e)
         {
@@ -926,6 +930,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             dataErrorLineFilesExtension = rep.getStepAttributeString(id_step, "data_error_line_files_extension");
             lineNumberFilesDestinationDirectory = rep.getStepAttributeString(id_step, "line_number_files_destination_directory");
             lineNumberFilesExtension = rep.getStepAttributeString(id_step, "line_number_files_extension");
+            dateFormatLenient = rep.getStepAttributeBoolean(id_step, "date_format_lenient");
         }
         catch (Exception e)
         {
@@ -1005,7 +1010,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "error_line_files_extension", errorLineFilesExtension);
             rep.saveStepAttribute(id_transformation, id_step, "line_number_files_destination_directory", lineNumberFilesDestinationDirectory);
             rep.saveStepAttribute(id_transformation, id_step, "line_number_files_extension", lineNumberFilesExtension);
-            
+            rep.saveStepAttribute(id_transformation, id_step, "date_format_lenient", dateFormatLenient);            
         }
         catch (Exception e)
         {
@@ -1389,6 +1394,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setErrorLineFilesExtension(String errorLineFilesExtension) {
 		this.errorLineFilesExtension = errorLineFilesExtension;
+	}
+
+	public boolean isDateFormatLenient() {
+		return dateFormatLenient;
+	}
+
+	public void setDateFormatLenient(boolean dateFormatLenient) {
+		this.dateFormatLenient = dateFormatLenient;
 	}
 
 }
