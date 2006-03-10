@@ -2142,7 +2142,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                         if (line != null)
                         {
                             ArrayList fields = TextFileInput.convertLineToStrings(log, line.toString(), meta);
-                            // System.out.println("Found "+fields.size()+" fields in header!");
 
                             for (int i = 0; i < fields.size(); i++)
                             {
@@ -2602,7 +2601,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		if (info.getInputFields().length==0)
 		{
-			System.out.println("No fields found: adding one!");
+			// System.out.println("No fields found: adding one!");
 			
 			TextFileInputField field = new TextFileInputField("Field1", 0, maxsize);
 			fields.add(field);

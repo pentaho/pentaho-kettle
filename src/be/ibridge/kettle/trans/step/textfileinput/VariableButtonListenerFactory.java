@@ -23,7 +23,6 @@ public class VariableButtonListenerFactory
             public void widgetSelected(SelectionEvent e) 
             {
                 Properties sp = System.getProperties();
-                System.out.println("sp.keySet().size()="+sp.keySet().size());
                 ArrayList keys = new ArrayList( sp.keySet() );
                 Collections.sort(keys);
                 
