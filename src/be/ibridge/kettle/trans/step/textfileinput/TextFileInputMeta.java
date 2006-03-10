@@ -922,14 +922,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             errorFieldsField = rep.getStepAttributeString(id_step, "error_fields_field");
             errorTextField = rep.getStepAttributeString(id_step, "error_text_field");
             
-            badLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "bad_line_files_destination_directory");
-            badLineFilesExtension = rep.getStepAttributeString(id_step, "bad_line_files_extension");
-            errorLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "error_line_files_destination_directory");
-            errorLineFilesExtension = rep.getStepAttributeString(id_step, "error_line_files_extension");
-            dataErrorLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "data_error_line_files_destination_directory");
-            dataErrorLineFilesExtension = rep.getStepAttributeString(id_step, "data_error_line_files_extension");
-            lineNumberFilesDestinationDirectory = rep.getStepAttributeString(id_step, "line_number_files_destination_directory");
-            lineNumberFilesExtension = rep.getStepAttributeString(id_step, "line_number_files_extension");
+            badLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "bad_line_files_dest_dir");
+            badLineFilesExtension = rep.getStepAttributeString(id_step, "bad_line_files_ext");
+            errorLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "error_line_files_dest_dir");
+            errorLineFilesExtension = rep.getStepAttributeString(id_step, "error_line_files_ext");
+            dataErrorLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "data_error_line_files_dest_dir");
+            dataErrorLineFilesExtension = rep.getStepAttributeString(id_step, "data_error_line_files_ext");
+            lineNumberFilesDestinationDirectory = rep.getStepAttributeString(id_step, "line_number_files_dest_dir");
+            lineNumberFilesExtension = rep.getStepAttributeString(id_step, "line_number_files_ext");
             dateFormatLenient = rep.getStepAttributeBoolean(id_step, "date_format_lenient");
         }
         catch (Exception e)
@@ -1004,12 +1004,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "error_fields_field", errorFieldsField);
             rep.saveStepAttribute(id_transformation, id_step, "error_text_field", errorTextField);
             
-            rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_destination_directory", badLineFilesDestinationDirectory);
-            rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_extension", badLineFilesExtension);
-            rep.saveStepAttribute(id_transformation, id_step, "error_line_files_destination_directory", errorLineFilesDestinationDirectory);
-            rep.saveStepAttribute(id_transformation, id_step, "error_line_files_extension", errorLineFilesExtension);
-            rep.saveStepAttribute(id_transformation, id_step, "line_number_files_destination_directory", lineNumberFilesDestinationDirectory);
-            rep.saveStepAttribute(id_transformation, id_step, "line_number_files_extension", lineNumberFilesExtension);
+            rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_dest_dir", badLineFilesDestinationDirectory);
+            rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_ext", badLineFilesExtension);
+            rep.saveStepAttribute(id_transformation, id_step, "error_line_files_dest_dir", errorLineFilesDestinationDirectory);
+            rep.saveStepAttribute(id_transformation, id_step, "error_line_files_ext", errorLineFilesExtension);
+            rep.saveStepAttribute(id_transformation, id_step, "data_error_line_files_dest_dir", dataErrorLineFilesDestinationDirectory);
+            rep.saveStepAttribute(id_transformation, id_step, "data_error_line_files_ext", dataErrorLineFilesExtension);
+            rep.saveStepAttribute(id_transformation, id_step, "line_number_files_dest_dir", lineNumberFilesDestinationDirectory);
+            rep.saveStepAttribute(id_transformation, id_step, "line_number_files_ext", lineNumberFilesExtension);
             rep.saveStepAttribute(id_transformation, id_step, "date_format_lenient", dateFormatLenient);            
         }
         catch (Exception e)

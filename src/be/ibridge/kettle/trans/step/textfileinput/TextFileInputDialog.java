@@ -256,8 +256,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private Button       wbvBadDestDir; // Variable
     private Text         wBadDestDir;
     private FormData     fdlBadDestDir, fdbBadDestDir, fdbvBadDestDir, fdBadDestDir;
-    private Label        wlBadDestExt;
-    private Text         wBadDestExt;
+    private Label        wlBadExt;
+    private Text         wBadExt;
     private FormData     fdlBadDestExt, fdBadDestExt;
 
     // Error messages files destination directory
@@ -266,8 +266,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private Button       wbvErrorDestDir; // Variable
     private Text         wErrorDestDir;
     private FormData     fdlErrorDestDir, fdbErrorDestDir, fdbvErrorDestDir, fdErrorDestDir;
-    private Label        wlErrorDestExt;
-    private Text         wErrorDestExt;
+    private Label        wlErrorExt;
+    private Text         wErrorExt;
     private FormData     fdlErrorDestExt, fdErrorDestExt;
 
     // Data error messages bad files destination directory
@@ -276,8 +276,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private Button       wbvDataErrorDestDir; // Variable
     private Text         wDataErrorDestDir;
     private FormData     fdlDataErrorDestDir, fdbDataErrorDestDir, fdbvDataErrorDestDir, fdDataErrorDestDir;
-    private Label        wlDataErrorDestExt;
-    private Text         wDataErrorDestExt;
+    private Label        wlDataErrorExt;
+    private Text         wDataErrorExt;
     private FormData     fdlDataErrorDestExt, fdDataErrorDestExt;
 
     // Line numbers files destination directory
@@ -286,8 +286,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private Button       wbvLineNrDestDir; // Variable
     private Text         wLineNrDestDir;
     private FormData     fdlLineNrDestDir, fdbLineNrDestDir, fdbvLineNrDestDir, fdLineNrDestDir;
-    private Label        wlLineNrDestExt;
-    private Text         wLineNrDestExt;
+    private Label        wlLineNrExt;
+    private Text         wLineNrExt;
     private FormData     fdlLineNrDestExt, fdLineNrDestExt;
 
     private TableView    wFilter;
@@ -591,6 +591,14 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wNrHeader.addSelectionListener( lsDef );
         wNrFooter.addSelectionListener( lsDef );
         wNrWraps.addSelectionListener( lsDef );
+        wBadDestDir.addSelectionListener( lsDef );
+        wBadExt.addSelectionListener( lsDef );
+        wErrorDestDir.addSelectionListener( lsDef );
+        wErrorExt.addSelectionListener( lsDef );
+        wDataErrorDestDir.addSelectionListener( lsDef );
+        wDataErrorExt.addSelectionListener( lsDef );
+        wLineNrDestDir.addSelectionListener( lsDef );
+        wLineNrExt.addSelectionListener( lsDef );
 
 		// Add the file to the list of files...
 		SelectionAdapter selA = new SelectionAdapter()
@@ -1362,29 +1370,29 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdbvBadDestDir.top  = new FormAttachment(previous, margin*4);
         wbvBadDestDir.setLayoutData(fdbvBadDestDir);
 
-        wBadDestExt=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wBadDestExt);
-        wBadDestExt.addModifyListener(lsMod);
+        wBadExt=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wBadExt);
+        wBadExt.addModifyListener(lsMod);
         fdBadDestExt=new FormData();
         fdBadDestExt.left = new FormAttachment(wbvBadDestDir, -150);
         fdBadDestExt.right= new FormAttachment(wbvBadDestDir, -margin);
         fdBadDestExt.top  = new FormAttachment(previous, margin*4);
-        wBadDestExt.setLayoutData(fdBadDestExt);
+        wBadExt.setLayoutData(fdBadDestExt);
 
-        wlBadDestExt=new Label(wErrorComp, SWT.RIGHT);
-        wlBadDestExt.setText("Extention ");
-        props.setLook(wlBadDestExt);
+        wlBadExt=new Label(wErrorComp, SWT.RIGHT);
+        wlBadExt.setText("Extention ");
+        props.setLook(wlBadExt);
         fdlBadDestExt=new FormData();
         fdlBadDestExt.top  = new FormAttachment(previous, margin*4);
-        fdlBadDestExt.right= new FormAttachment(wBadDestExt, -margin);
-        wlBadDestExt.setLayoutData(fdlBadDestExt);
+        fdlBadDestExt.right= new FormAttachment(wBadExt, -margin);
+        wlBadExt.setLayoutData(fdlBadDestExt);
 
         wBadDestDir=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wBadDestDir);
         wBadDestDir.addModifyListener(lsMod);
         fdBadDestDir=new FormData();
         fdBadDestDir.left = new FormAttachment(middle, 0);
-        fdBadDestDir.right= new FormAttachment(wlBadDestExt, -margin);
+        fdBadDestDir.right= new FormAttachment(wlBadExt, -margin);
         fdBadDestDir.top  = new FormAttachment(previous, margin*4);
         wBadDestDir.setLayoutData(fdBadDestDir);
         
@@ -1432,29 +1440,29 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdbvErrorDestDir.top  = new FormAttachment(previous, margin);
         wbvErrorDestDir.setLayoutData(fdbvErrorDestDir);
 
-        wErrorDestExt=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wErrorDestExt);
-        wErrorDestExt.addModifyListener(lsMod);
+        wErrorExt=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wErrorExt);
+        wErrorExt.addModifyListener(lsMod);
         fdErrorDestExt=new FormData();
         fdErrorDestExt.left = new FormAttachment(wbvErrorDestDir, -150);
         fdErrorDestExt.right= new FormAttachment(wbvErrorDestDir, -margin);
         fdErrorDestExt.top  = new FormAttachment(previous, margin);
-        wErrorDestExt.setLayoutData(fdErrorDestExt);
+        wErrorExt.setLayoutData(fdErrorDestExt);
 
-        wlErrorDestExt=new Label(wErrorComp, SWT.RIGHT);
-        wlErrorDestExt.setText("Extention ");
-        props.setLook(wlErrorDestExt);
+        wlErrorExt=new Label(wErrorComp, SWT.RIGHT);
+        wlErrorExt.setText("Extention ");
+        props.setLook(wlErrorExt);
         fdlErrorDestExt=new FormData();
         fdlErrorDestExt.top  = new FormAttachment(previous, margin);
-        fdlErrorDestExt.right= new FormAttachment(wErrorDestExt, -margin);
-        wlErrorDestExt.setLayoutData(fdlErrorDestExt);
+        fdlErrorDestExt.right= new FormAttachment(wErrorExt, -margin);
+        wlErrorExt.setLayoutData(fdlErrorDestExt);
 
         wErrorDestDir=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wErrorDestDir);
         wErrorDestDir.addModifyListener(lsMod);
         fdErrorDestDir=new FormData();
         fdErrorDestDir.left = new FormAttachment(middle, 0);
-        fdErrorDestDir.right= new FormAttachment(wlErrorDestExt, -margin);
+        fdErrorDestDir.right= new FormAttachment(wlErrorExt, -margin);
         fdErrorDestDir.top  = new FormAttachment(previous, margin);
         wErrorDestDir.setLayoutData(fdErrorDestDir);
         
@@ -1504,29 +1512,29 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdbvDataErrorDestDir.top  = new FormAttachment(previous, margin);
         wbvDataErrorDestDir.setLayoutData(fdbvDataErrorDestDir);
 
-        wDataErrorDestExt=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wDataErrorDestExt);
-        wDataErrorDestExt.addModifyListener(lsMod);
+        wDataErrorExt=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wDataErrorExt);
+        wDataErrorExt.addModifyListener(lsMod);
         fdDataErrorDestExt=new FormData();
         fdDataErrorDestExt.left = new FormAttachment(wbvDataErrorDestDir, -150);
         fdDataErrorDestExt.right= new FormAttachment(wbvDataErrorDestDir, -margin);
         fdDataErrorDestExt.top  = new FormAttachment(previous, margin);
-        wDataErrorDestExt.setLayoutData(fdDataErrorDestExt);
+        wDataErrorExt.setLayoutData(fdDataErrorDestExt);
 
-        wlDataErrorDestExt=new Label(wErrorComp, SWT.RIGHT);
-        wlDataErrorDestExt.setText("Extention ");
-        props.setLook(wlDataErrorDestExt);
+        wlDataErrorExt=new Label(wErrorComp, SWT.RIGHT);
+        wlDataErrorExt.setText("Extention ");
+        props.setLook(wlDataErrorExt);
         fdlDataErrorDestExt=new FormData();
         fdlDataErrorDestExt.top  = new FormAttachment(previous, margin);
-        fdlDataErrorDestExt.right= new FormAttachment(wDataErrorDestExt, -margin);
-        wlDataErrorDestExt.setLayoutData(fdlDataErrorDestExt);
+        fdlDataErrorDestExt.right= new FormAttachment(wDataErrorExt, -margin);
+        wlDataErrorExt.setLayoutData(fdlDataErrorDestExt);
 
         wDataErrorDestDir=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wDataErrorDestDir);
         wDataErrorDestDir.addModifyListener(lsMod);
         fdDataErrorDestDir=new FormData();
         fdDataErrorDestDir.left = new FormAttachment(middle, 0);
-        fdDataErrorDestDir.right= new FormAttachment(wlDataErrorDestExt, -margin);
+        fdDataErrorDestDir.right= new FormAttachment(wlDataErrorExt, -margin);
         fdDataErrorDestDir.top  = new FormAttachment(previous, margin);
         wDataErrorDestDir.setLayoutData(fdDataErrorDestDir);
         
@@ -1573,29 +1581,29 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdbvLineNrDestDir.top  = new FormAttachment(previous, margin);
         wbvLineNrDestDir.setLayoutData(fdbvLineNrDestDir);
 
-        wLineNrDestExt=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wLineNrDestExt);
-        wLineNrDestExt.addModifyListener(lsMod);
+        wLineNrExt=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wLineNrExt);
+        wLineNrExt.addModifyListener(lsMod);
         fdLineNrDestExt=new FormData();
         fdLineNrDestExt.left = new FormAttachment(wbvLineNrDestDir, -150);
         fdLineNrDestExt.right= new FormAttachment(wbvLineNrDestDir, -margin);
         fdLineNrDestExt.top  = new FormAttachment(previous, margin);
-        wLineNrDestExt.setLayoutData(fdLineNrDestExt);
+        wLineNrExt.setLayoutData(fdLineNrDestExt);
 
-        wlLineNrDestExt=new Label(wErrorComp, SWT.RIGHT);
-        wlLineNrDestExt.setText("Extention ");
-        props.setLook(wlLineNrDestExt);
+        wlLineNrExt=new Label(wErrorComp, SWT.RIGHT);
+        wlLineNrExt.setText("Extention ");
+        props.setLook(wlLineNrExt);
         fdlLineNrDestExt=new FormData();
         fdlLineNrDestExt.top  = new FormAttachment(previous, margin);
-        fdlLineNrDestExt.right= new FormAttachment(wLineNrDestExt, -margin);
-        wlLineNrDestExt.setLayoutData(fdlLineNrDestExt);
+        fdlLineNrDestExt.right= new FormAttachment(wLineNrExt, -margin);
+        wlLineNrExt.setLayoutData(fdlLineNrDestExt);
 
         wLineNrDestDir=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wLineNrDestDir);
         wLineNrDestDir.addModifyListener(lsMod);
         fdLineNrDestDir=new FormData();
         fdLineNrDestDir.left = new FormAttachment(middle, 0);
-        fdLineNrDestDir.right= new FormAttachment(wlLineNrDestExt, -margin);
+        fdLineNrDestDir.right= new FormAttachment(wlLineNrExt, -margin);
         fdLineNrDestDir.top  = new FormAttachment(previous, margin);
         wLineNrDestDir.setLayoutData(fdLineNrDestDir);
         
@@ -1781,29 +1789,29 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         wlBadDestDir.setEnabled( wErrorIgnored.getSelection() );
         wBadDestDir.setEnabled( wErrorIgnored.getSelection() );
-        wlBadDestExt.setEnabled( wErrorIgnored.getSelection() );
-        wBadDestExt.setEnabled( wErrorIgnored.getSelection() );
+        wlBadExt.setEnabled( wErrorIgnored.getSelection() );
+        wBadExt.setEnabled( wErrorIgnored.getSelection() );
         wbbBadDestDir.setEnabled( wErrorIgnored.getSelection() );
         wbvBadDestDir.setEnabled( wErrorIgnored.getSelection() );
 
         wlErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
         wErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
-        wlErrorDestExt.setEnabled( wErrorIgnored.getSelection() );
-        wErrorDestExt.setEnabled( wErrorIgnored.getSelection() );
+        wlErrorExt.setEnabled( wErrorIgnored.getSelection() );
+        wErrorExt.setEnabled( wErrorIgnored.getSelection() );
         wbbErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
         wbvErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
         
         wlDataErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
         wDataErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
-        wlDataErrorDestExt.setEnabled( wErrorIgnored.getSelection() );
-        wDataErrorDestExt.setEnabled( wErrorIgnored.getSelection() );
+        wlDataErrorExt.setEnabled( wErrorIgnored.getSelection() );
+        wDataErrorExt.setEnabled( wErrorIgnored.getSelection() );
         wbbDataErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
         wbvDataErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
 
         wlLineNrDestDir.setEnabled( wErrorIgnored.getSelection() );
         wLineNrDestDir.setEnabled( wErrorIgnored.getSelection() );
-        wlLineNrDestExt.setEnabled( wErrorIgnored.getSelection() );
-        wLineNrDestExt.setEnabled( wErrorIgnored.getSelection() );
+        wlLineNrExt.setEnabled( wErrorIgnored.getSelection() );
+        wLineNrExt.setEnabled( wErrorIgnored.getSelection() );
         wbbLineNrDestDir.setEnabled( wErrorIgnored.getSelection() );
         wbvLineNrDestDir.setEnabled( wErrorIgnored.getSelection() );
        
@@ -1905,16 +1913,16 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         if (in.getErrorTextField()!=null) wErrorText.setText( in.getErrorTextField() );
 
         if (in.getBadLineFilesDestinationDirectory()!=null) wBadDestDir.setText(in.getBadLineFilesDestinationDirectory());
-        if (in.getBadLineFilesExtension()!=null) wBadDestExt.setText(in.getBadLineFilesExtension());
+        if (in.getBadLineFilesExtension()!=null) wBadExt.setText(in.getBadLineFilesExtension());
 
         if (in.getErrorLineFilesDestinationDirectory()!=null) wErrorDestDir.setText(in.getErrorLineFilesDestinationDirectory());
-        if (in.getErrorLineFilesExtension()!=null) wErrorDestExt.setText(in.getErrorLineFilesExtension());
+        if (in.getErrorLineFilesExtension()!=null) wErrorExt.setText(in.getErrorLineFilesExtension());
 
         if (in.getDataErrorLineFilesDestinationDirectory()!=null) wDataErrorDestDir.setText(in.getDataErrorLineFilesDestinationDirectory());
-        if (in.getDataErrorLineFilesExtension()!=null) wDataErrorDestExt.setText(in.getDataErrorLineFilesExtension());
+        if (in.getDataErrorLineFilesExtension()!=null) wDataErrorExt.setText(in.getDataErrorLineFilesExtension());
 
         if (in.getLineNumberFilesDestinationDirectory()!=null) wLineNrDestDir.setText(in.getLineNumberFilesDestinationDirectory());
-        if (in.getLineNumberFilesExtension()!=null) wLineNrDestExt.setText(in.getLineNumberFilesExtension());
+        if (in.getLineNumberFilesExtension()!=null) wLineNrExt.setText(in.getLineNumberFilesExtension());
 
         for (int i=0;i<in.getFilter().length;i++)
         {
@@ -2055,13 +2063,13 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         in.setErrorTextField( wErrorText.getText() );
         
         in.setBadLineFilesDestinationDirectory( wBadDestDir.getText() );
-        in.setBadLineFilesExtension( wBadDestExt.getText() );
+        in.setBadLineFilesExtension( wBadExt.getText() );
         in.setErrorLineFilesDestinationDirectory( wErrorDestDir.getText() );
-        in.setErrorLineFilesExtension( wErrorDestExt.getText() );
+        in.setErrorLineFilesExtension( wErrorExt.getText() );
         in.setDataErrorLineFilesDestinationDirectory( wDataErrorDestDir.getText() );
-        in.setDataErrorLineFilesExtension( wDataErrorDestExt.getText() );
+        in.setDataErrorLineFilesExtension( wDataErrorExt.getText() );
         in.setLineNumberFilesDestinationDirectory( wLineNrDestDir.getText() );
-        in.setLineNumberFilesExtension( wLineNrDestExt.getText() );
+        in.setLineNumberFilesExtension( wLineNrExt.getText() );
 	}
 	
 	private void get()
