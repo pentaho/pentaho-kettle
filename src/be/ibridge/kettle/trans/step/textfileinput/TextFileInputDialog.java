@@ -88,15 +88,21 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wFileTab, wContentTab;
+	private CTabItem     wFileTab;
+    private CTabItem     wContentTab;
+    private CTabItem     wErrorTab;
     private CTabItem     wFilterTab;
     private CTabItem     wFieldsTab;
 
-	private Composite    wFileComp, wContentComp;
+	private Composite    wFileComp;
+    private Composite    wContentComp;
+    private Composite    wErrorComp;
     private Composite    wFilterComp;
     private Composite    wFieldsComp;
     
-	private FormData     fdFileComp, fdContentComp;
+	private FormData     fdFileComp;
+    private FormData     fdContentComp;
+    private FormData     fdErrorComp;
     private FormData     fdFilterComp;
     private FormData     fdFieldsComp;
 
@@ -485,6 +491,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		/////////////////////////////////////////////////////////////
 
 		addContentTab();
+        addErrorTab();
 		addFiltersTabs();
         addFieldsTabs();
 
@@ -1193,76 +1200,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdLimit.right= new FormAttachment(100, 0);
         wLimit.setLayoutData(fdLimit);
 
-        
-        // ERROR HANDLING...
-        // ErrorIgnored?
-        wlErrorIgnored = new Label(wContentComp, SWT.RIGHT);
-        wlErrorIgnored.setText("Ignore errors? ");
-        props.setLook(wlErrorIgnored);
-        fdlErrorIgnored = new FormData();
-        fdlErrorIgnored.left = new FormAttachment(0, 0);
-        fdlErrorIgnored.top = new FormAttachment(wLimit, margin);
-        fdlErrorIgnored.right = new FormAttachment(middle, -margin);
-        wlErrorIgnored.setLayoutData(fdlErrorIgnored);
-        wErrorIgnored = new Button(wContentComp, SWT.CHECK);
-        props.setLook(wErrorIgnored);
-        wErrorIgnored.setToolTipText("Ignore parsing errors that occur, optionally log information about the errors.");
-        fdErrorIgnored = new FormData();
-        fdErrorIgnored.left = new FormAttachment(middle, 0);
-        fdErrorIgnored.top = new FormAttachment(wLimit, margin);
-        wErrorIgnored.setLayoutData(fdErrorIgnored);
-
-        wlErrorCount=new Label(wContentComp, SWT.RIGHT);
-        wlErrorCount.setText("Error count fieldname ");
-        props.setLook(wlErrorCount);
-        fdlErrorCount=new FormData();
-        fdlErrorCount.left = new FormAttachment(0, 0);
-        fdlErrorCount.top  = new FormAttachment(wErrorIgnored, margin);
-        fdlErrorCount.right= new FormAttachment(middle, -margin);
-        wlErrorCount.setLayoutData(fdlErrorCount);
-        wErrorCount=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wErrorCount);
-        wErrorCount.addModifyListener(lsMod);
-        fdErrorCount=new FormData();
-        fdErrorCount.left = new FormAttachment(middle, 0);
-        fdErrorCount.top  = new FormAttachment(wErrorIgnored, margin);
-        fdErrorCount.right= new FormAttachment(100, 0);
-        wErrorCount.setLayoutData(fdErrorCount);
-
-        wlErrorFields=new Label(wContentComp, SWT.RIGHT);
-        wlErrorFields.setText("Error fields fieldname");
-        props.setLook(wlErrorFields);
-        fdlErrorFields=new FormData();
-        fdlErrorFields.left = new FormAttachment(0, 0);
-        fdlErrorFields.top  = new FormAttachment(wErrorCount, margin);
-        fdlErrorFields.right= new FormAttachment(middle, -margin);
-        wlErrorFields.setLayoutData(fdlErrorFields);
-        wErrorFields=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wErrorFields);
-        wErrorFields.addModifyListener(lsMod);
-        fdErrorFields=new FormData();
-        fdErrorFields.left = new FormAttachment(middle, 0);
-        fdErrorFields.top  = new FormAttachment(wErrorCount, margin);
-        fdErrorFields.right= new FormAttachment(100, 0);
-        wErrorFields.setLayoutData(fdErrorFields);
-
-        wlErrorText=new Label(wContentComp, SWT.RIGHT);
-        wlErrorText.setText("Error text fieldname");
-        props.setLook(wlErrorText);
-        fdlErrorText=new FormData();
-        fdlErrorText.left = new FormAttachment(0, 0);
-        fdlErrorText.top  = new FormAttachment(wErrorFields, margin);
-        fdlErrorText.right= new FormAttachment(middle, -margin);
-        wlErrorText.setLayoutData(fdlErrorText);
-        wErrorText=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wErrorText);
-        wErrorText.addModifyListener(lsMod);
-        fdErrorText=new FormData();
-        fdErrorText.left = new FormAttachment(middle, 0);
-        fdErrorText.top  = new FormAttachment(wErrorFields, margin);
-        fdErrorText.right= new FormAttachment(100, 0);
-        wErrorText.setLayoutData(fdErrorText);
-        
+              
         fdContentComp = new FormData();
         fdContentComp.left  = new FormAttachment(0, 0);
         fdContentComp.top   = new FormAttachment(0, 0);
@@ -1272,6 +1210,108 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         wContentComp.layout();
         wContentTab.setControl(wContentComp);
+
+
+        /////////////////////////////////////////////////////////////
+        /// END OF CONTENT TAB
+        /////////////////////////////////////////////////////////////
+
+    }
+
+    private void addErrorTab()
+    {
+        //////////////////////////
+        // START OF ERROR TAB  ///
+        ///
+        wErrorTab=new CTabItem(wTabFolder, SWT.NONE);
+        wErrorTab.setText("Error Handling");
+
+        FormLayout errorLayout = new FormLayout ();
+        errorLayout.marginWidth  = 3;
+        errorLayout.marginHeight = 3;
+        
+        wErrorComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wErrorComp);
+        wErrorComp.setLayout(errorLayout);
+        
+        // ERROR HANDLING...
+        // ErrorIgnored?
+        wlErrorIgnored = new Label(wErrorComp, SWT.RIGHT);
+        wlErrorIgnored.setText("Ignore errors? ");
+        props.setLook(wlErrorIgnored);
+        fdlErrorIgnored = new FormData();
+        fdlErrorIgnored.left = new FormAttachment(0, 0);
+        fdlErrorIgnored.top = new FormAttachment(wLimit, margin);
+        fdlErrorIgnored.right = new FormAttachment(middle, -margin);
+        wlErrorIgnored.setLayoutData(fdlErrorIgnored);
+        wErrorIgnored = new Button(wErrorComp, SWT.CHECK);
+        props.setLook(wErrorIgnored);
+        wErrorIgnored.setToolTipText("Ignore parsing errors that occur, optionally log information about the errors.");
+        fdErrorIgnored = new FormData();
+        fdErrorIgnored.left = new FormAttachment(middle, 0);
+        fdErrorIgnored.top = new FormAttachment(wLimit, margin);
+        wErrorIgnored.setLayoutData(fdErrorIgnored);
+
+        wlErrorCount=new Label(wErrorComp, SWT.RIGHT);
+        wlErrorCount.setText("Error count fieldname ");
+        props.setLook(wlErrorCount);
+        fdlErrorCount=new FormData();
+        fdlErrorCount.left = new FormAttachment(0, 0);
+        fdlErrorCount.top  = new FormAttachment(wErrorIgnored, margin);
+        fdlErrorCount.right= new FormAttachment(middle, -margin);
+        wlErrorCount.setLayoutData(fdlErrorCount);
+        wErrorCount=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wErrorCount);
+        wErrorCount.addModifyListener(lsMod);
+        fdErrorCount=new FormData();
+        fdErrorCount.left = new FormAttachment(middle, 0);
+        fdErrorCount.top  = new FormAttachment(wErrorIgnored, margin);
+        fdErrorCount.right= new FormAttachment(100, 0);
+        wErrorCount.setLayoutData(fdErrorCount);
+
+        wlErrorFields=new Label(wErrorComp, SWT.RIGHT);
+        wlErrorFields.setText("Error fields fieldname");
+        props.setLook(wlErrorFields);
+        fdlErrorFields=new FormData();
+        fdlErrorFields.left = new FormAttachment(0, 0);
+        fdlErrorFields.top  = new FormAttachment(wErrorCount, margin);
+        fdlErrorFields.right= new FormAttachment(middle, -margin);
+        wlErrorFields.setLayoutData(fdlErrorFields);
+        wErrorFields=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wErrorFields);
+        wErrorFields.addModifyListener(lsMod);
+        fdErrorFields=new FormData();
+        fdErrorFields.left = new FormAttachment(middle, 0);
+        fdErrorFields.top  = new FormAttachment(wErrorCount, margin);
+        fdErrorFields.right= new FormAttachment(100, 0);
+        wErrorFields.setLayoutData(fdErrorFields);
+
+        wlErrorText=new Label(wErrorComp, SWT.RIGHT);
+        wlErrorText.setText("Error text fieldname");
+        props.setLook(wlErrorText);
+        fdlErrorText=new FormData();
+        fdlErrorText.left = new FormAttachment(0, 0);
+        fdlErrorText.top  = new FormAttachment(wErrorFields, margin);
+        fdlErrorText.right= new FormAttachment(middle, -margin);
+        wlErrorText.setLayoutData(fdlErrorText);
+        wErrorText=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wErrorText);
+        wErrorText.addModifyListener(lsMod);
+        fdErrorText=new FormData();
+        fdErrorText.left = new FormAttachment(middle, 0);
+        fdErrorText.top  = new FormAttachment(wErrorFields, margin);
+        fdErrorText.right= new FormAttachment(100, 0);
+        wErrorText.setLayoutData(fdErrorText);
+        
+        fdErrorComp = new FormData();
+        fdErrorComp.left  = new FormAttachment(0, 0);
+        fdErrorComp.top   = new FormAttachment(0, 0);
+        fdErrorComp.right = new FormAttachment(100, 0);
+        fdErrorComp.bottom= new FormAttachment(100, 0);
+        wErrorComp.setLayoutData(fdErrorComp);
+
+        wErrorComp.layout();
+        wErrorTab.setControl(wErrorComp);
 
 
         /////////////////////////////////////////////////////////////
