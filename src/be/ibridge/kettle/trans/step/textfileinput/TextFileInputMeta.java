@@ -160,6 +160,12 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     /** The extension of bad line files */
     private String badLineFilesExtension;
     
+    /** The directory that will contain line number files */
+    private String lineNumberFilesDestinationDirectory;
+    
+    /** The extension of line number files */
+    private String lineNumberFilesExtension;
+    
     /**
      * @return Returns the encoding.
      */
@@ -530,7 +536,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         includeRowNumber = false;
         rowNumberField = "";
         badLineFilesDestinationDirectory = ".";
-        badLineFilesExtension = ".BAD";
+        badLineFilesExtension = "bad";
+        lineNumberFilesDestinationDirectory = ".";
+        lineNumberFilesExtension = "line";
 
         int nrfiles = 0;
         int nrfields = 0;
@@ -688,6 +696,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         
         retval += "    " + XMLHandler.addTagValue("bad_line_files_destination_directory", badLineFilesDestinationDirectory);
         retval += "    " + XMLHandler.addTagValue("bad_line_files_extension", badLineFilesExtension);
+        retval += "    " + XMLHandler.addTagValue("line_number_files_destination_directory", lineNumberFilesDestinationDirectory);
+        retval += "    " + XMLHandler.addTagValue("line_number_files_extension", lineNumberFilesExtension);
+        
 
         return retval;
     }
@@ -797,6 +808,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             errorTextField = XMLHandler.getTagValue(stepnode, "error_text_field");
             badLineFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "bad_line_files_destination_directory");
             badLineFilesExtension = XMLHandler.getTagValue(stepnode, "bad_line_files_extension");
+            lineNumberFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "line_number_files_destination_directory");
+            lineNumberFilesExtension = XMLHandler.getTagValue(stepnode, "line_number_files_extension");
         }
         catch (Exception e)
         {
@@ -881,6 +894,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             
             badLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "bad_line_files_destination_directory");
             badLineFilesExtension = rep.getStepAttributeString(id_step, "bad_line_files_extension");
+            lineNumberFilesDestinationDirectory = rep.getStepAttributeString(id_step, "line_number_files_destination_directory");
+            lineNumberFilesExtension = rep.getStepAttributeString(id_step, "line_number_files_extension");
         }
         catch (Exception e)
         {
@@ -956,6 +971,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             
             rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_destination_directory", badLineFilesDestinationDirectory);
             rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_extension", badLineFilesExtension);
+            rep.saveStepAttribute(id_transformation, id_step, "line_number_files_destination_directory", lineNumberFilesDestinationDirectory);
+            rep.saveStepAttribute(id_transformation, id_step, "line_number_files_extension", lineNumberFilesExtension);
             
         }
         catch (Exception e)
@@ -1289,6 +1306,23 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setBadLineFilesExtension(String badLineFilesExtension) {
 		this.badLineFilesExtension = badLineFilesExtension;
+	}
+
+	public String getLineNumberFilesDestinationDirectory() {
+		return lineNumberFilesDestinationDirectory;
+	}
+
+	public void setLineNumberFilesDestinationDirectory(
+			String lineNumberFilesDestinationDirectory) {
+		this.lineNumberFilesDestinationDirectory = lineNumberFilesDestinationDirectory;
+	}
+
+	public String getLineNumberFilesExtension() {
+		return lineNumberFilesExtension;
+	}
+
+	public void setLineNumberFilesExtension(String lineNumberFilesExtension) {
+		this.lineNumberFilesExtension = lineNumberFilesExtension;
 	}
 
 }
