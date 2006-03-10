@@ -122,6 +122,7 @@ public class TextFileCSVImportProgressDialog
         LogWriter log = LogWriter.getInstance();
 
         String line = "";
+        long fileLineNumber = 0;
         
         NumberFormat nf = NumberFormat.getInstance();
         DecimalFormat df = (DecimalFormat)nf;
@@ -216,11 +217,13 @@ public class TextFileCSVImportProgressDialog
         if (meta.hasHeader()) 
         {
             line = TextFileInput.getLine(log, reader, meta.getFileFormat());
+            fileLineNumber++;
             int skipped=1;
             while (line!=null && skipped<meta.getNrHeaderLines())
             {
                 line = TextFileInput.getLine(log, reader, meta.getFileFormat());
                 skipped++;
+                fileLineNumber++;
             }
         }
         int linenr = 1;
@@ -237,7 +240,7 @@ public class TextFileCSVImportProgressDialog
             if (samples>0) monitor.worked(1);
             
             debug = "convert line #" + linenr + " to row";
-            Row r = TextFileInput.convertLineToRow(log, line, strinfo, df, dfs, daf, dafs, meta.getFiles()[0], rownumber);
+            Row r = TextFileInput.convertLineToRow(log, new TextFileLine(line, fileLineNumber), strinfo, df, dfs, daf, dafs, meta.getFiles()[0], rownumber);
 
             rownumber++;
             for (int i = 0; i < nrfields && i < r.size(); i++)
@@ -434,6 +437,7 @@ public class TextFileCSVImportProgressDialog
                 }
             }
 
+            fileLineNumber++;
             if (!r.isIgnored())
                 linenr++;
             else

@@ -72,6 +72,8 @@ public class TextFileInputData extends BaseStepData implements StepDataInterface
 
     public boolean doneWithHeader;
 
+	public TextFileLineErrorHandler badLineHandler;
+
 	/**
 	 * 
 	 */
@@ -92,7 +94,7 @@ public class TextFileInputData extends BaseStepData implements StepDataInterface
 		nr_repeats=0;
 		previous_row=null;
 		filenr = 0;
-        
+		
         nrLinesOnPage=0;
 		
 		fr=null;

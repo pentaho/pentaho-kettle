@@ -26,6 +26,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.zip.ZipInputStream;
 
 import be.ibridge.kettle.core.Const;
@@ -53,6 +54,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 {
 	private TextFileInputMeta meta;
 	private TextFileInputData data;
+	private long lineNumberInFile;
 	
 	public TextFileInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
@@ -314,18 +316,18 @@ public class TextFileInput extends BaseStep implements StepInterface
 		return strings;
 	}
 	
-	public static final Row convertLineToRow(
-												LogWriter log, 
-												String line, 
-												TextFileInputMeta info,
-												DecimalFormat ldf, DecimalFormatSymbols ldfs,
-												SimpleDateFormat ldaf, DateFormatSymbols ldafs,
-												String fname,
-												long linenr
-											) 
+	public static final Row convertLineToRow(LogWriter log, TextFileLine textFileLine, TextFileInputMeta info, DecimalFormat ldf,
+			DecimalFormatSymbols ldfs, SimpleDateFormat ldaf, DateFormatSymbols ldafs, String fname, long rowNr) throws KettleException {
+		return convertLineToRow(log, textFileLine, info, ldf, ldfs, ldaf, ldafs, fname, rowNr, null);
+	}
+	
+	public static final Row convertLineToRow(LogWriter log, TextFileLine textFileLine, TextFileInputMeta info, DecimalFormat ldf,
+			DecimalFormatSymbols ldfs, SimpleDateFormat ldaf, DateFormatSymbols ldafs, String fname, long rowNr,
+			TextFileLineErrorHandler badLineHandler) 
         throws KettleException
 	{
-        if (line==null || line.length()==0) return null;
+		if (textFileLine == null || textFileLine.line == null || textFileLine.line.length() == 0)
+			return null;
         
         int fieldnr;
 		Row r=new Row();
@@ -352,7 +354,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		try
 		{
             // System.out.println("Convertings line to string ["+line+"]");
-			ArrayList strings = convertLineToStrings(log, line, info);
+			ArrayList strings = convertLineToStrings(log, textFileLine.line, info);
 			
 			for (fieldnr=0 ; fieldnr<nrfields ; fieldnr++)
 			{
@@ -413,6 +415,9 @@ public class TextFileInput extends BaseStep implements StepInterface
                                 sb.append(message);
                                 errorText.setValue(sb);
                             }
+                            if (badLineHandler != null) {
+								badLineHandler.handleLine(textFileLine);
+							}
                         }
                         else
                         {
@@ -467,7 +472,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		if (info.includeRowNumber() && r!=null)
 		{
 			Value inc = new Value(info.getRowNumberField(), Value.VALUE_TYPE_INTEGER);
-			inc.setValue(linenr);
+			inc.setValue(rowNr);
 			inc.setLength(9);
 			r.addValue(inc);
 		}
@@ -654,6 +659,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                     if (line!=null)
                     {
                         linesInput++;
+                        lineNumberInFile++;
                         boolean filterOK=true;
                         
                         // Filter row?
@@ -699,7 +705,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                         if (filterOK)
                         {
                             // logRowlevel("LINE READ: "+line);
-                            data.lineBuffer.add(line);
+                        	data.lineBuffer.add(new TextFileLine(line, lineNumberInFile));
                         }
                     }
                     else
@@ -725,7 +731,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 
         // Take the first line available in the buffer & remove the line from the buffer
         debug="take first line of buffer";
-        String line = (String) data.lineBuffer.get(0);
+        TextFileLine textLine = (TextFileLine) data.lineBuffer.get(0);
 
         debug="remove first line of buffer";
         data.lineBuffer.remove(0);
@@ -742,7 +748,7 @@ public class TextFileInput extends BaseStep implements StepInterface
             if (!data.doneWithHeader && data.pageLinesRead==0) // We are reading header lines
             {
                 debug="paged layout : header line "+data.headerLinesRead;
-                logRowlevel("P-HEADER ("+data.headerLinesRead+") : "+line);
+                logRowlevel("P-HEADER ("+data.headerLinesRead+") : "+textLine.line);
                 data.headerLinesRead++;
                 if (data.headerLinesRead>=meta.getNrHeaderLines())
                 {
@@ -762,18 +768,18 @@ public class TextFileInput extends BaseStep implements StepInterface
                             String extra="";
                             if (data.lineBuffer.size()>0)
                             {
-                                extra = (String)data.lineBuffer.get(0);
+                            	extra = ((TextFileLine) data.lineBuffer.get(0)).line;
                                 data.lineBuffer.remove(0);
                             }
-                            line+=extra;
+                            textLine.line+=extra;
                         }
                     }
 
                     debug="paged layout : data line";
-                    logRowlevel("P-DATA: "+line);
+                    logRowlevel("P-DATA: "+textLine.line);
                     // Read a normal line on a page of data.
                     data.pageLinesRead++;
-                    r = convertLineToRow(log, line, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1);
+                    r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1, data.badLineHandler);
                     if (r!=null) putrow = true;
                 }
                 else // done reading the data lines, skip the footer lines
@@ -781,7 +787,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                     debug="paged layout : footer line";
                     if (meta.hasFooter() && data.footerLinesRead<meta.getNrFooterLines())
                     {
-                        logRowlevel("P-FOOTER: "+line);
+                        logRowlevel("P-FOOTER: "+textLine.line);
                         data.footerLinesRead++;
                     }
                     
@@ -833,14 +839,14 @@ public class TextFileInput extends BaseStep implements StepInterface
                             String extra="";
                             if (data.lineBuffer.size()>0)
                             {
-                                extra = (String)data.lineBuffer.get(0);
+                            	extra = ((TextFileLine) data.lineBuffer.get(0)).line;
                                 data.lineBuffer.remove(0);
                             }
-                            line+=extra;
+                            textLine.line+=extra;
                         }
                     }
                     debug="normal : data";
-                    r = convertLineToRow(log, line, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1);
+                    r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1, data.badLineHandler);
                     if (r!=null) 
                     {
                         // System.out.println("Found data row: "+r);
@@ -928,6 +934,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                 data.isr.close();
                 data.filename=null; // send it down the next time.
 		    }
+		    data.badLineHandler.close();
 	    }
 	    catch(Exception e)
 	    {
@@ -946,6 +953,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 	{
 		try
 		{
+			lineNumberInFile = 0;
             debug="openNextFile : close last file";
 		    if (!closeLastFile()) return false;
             
@@ -957,6 +965,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			logBasic("Opening file: "+data.filename);
 
             data.fr=new FileInputStream(new File(data.filename));
+            data.badLineHandler.handleFile(data.filename);
 
             if (meta.isZipped())
             {
@@ -1023,7 +1032,8 @@ public class TextFileInput extends BaseStep implements StepInterface
                 {
                     // logRowlevel("LINE READ: "+line);
                     linesInput++;
-                    data.lineBuffer.add(line); // Store it in the line buffer...
+                    lineNumberInFile++;
+                    data.lineBuffer.add(new TextFileLine(line, lineNumberInFile)); // Store it in the line buffer...
                 }
                 else
                 {
@@ -1062,10 +1072,21 @@ public class TextFileInput extends BaseStep implements StepInterface
 				logError("No file(s) specified! Stop processing.");
 				return false;
 			}
-			
+			initErrorHandling();
 		    return true;
 		}
 		return false;
+	}
+	
+	private void initErrorHandling() {
+		List badLineHandlers = new ArrayList(2);
+		if (meta.getBadLineFilesDestinationDirectory() != null)
+			badLineHandlers.add(new TextFileLineHandler(meta.getBadLineFilesDestinationDirectory(), meta.getBadLineFilesExtension(), meta
+					.getEncoding()));
+		if (meta.getLineNumberFilesDestinationDirectory() != null)
+			badLineHandlers.add(new TextFileLineNumberErrorHandler(meta.getLineNumberFilesDestinationDirectory(), meta.getLineNumberFilesExtension(), meta
+					.getEncoding()));
+		data.badLineHandler = new CompositeTextFileLineErrorHandler(badLineHandlers);
 	}
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
