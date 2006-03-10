@@ -550,13 +550,13 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         filenameField = "";
         includeRowNumber = false;
         rowNumberField = "";
-        badLineFilesDestinationDirectory = ".";
+        badLineFilesDestinationDirectory = null;
         badLineFilesExtension = "bad";
-        errorLineFilesDestinationDirectory = ".";
+        errorLineFilesDestinationDirectory = null;
         errorLineFilesExtension = "error";
-        dataErrorLineFilesDestinationDirectory = ".";
+        dataErrorLineFilesDestinationDirectory = null;
         dataErrorLineFilesExtension = "dataerror";
-        lineNumberFilesDestinationDirectory = ".";
+        lineNumberFilesDestinationDirectory = null;
         lineNumberFilesExtension = "line";
         dateFormatLenient = true;
 
