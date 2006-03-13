@@ -12,7 +12,7 @@ public class TextFileLineNumberErrorHandler extends AbstractTextFileLineErrorHan
 	public void handleLine(TextFileLine textFileLine) throws KettleException {
 		try {
 			getWriter().write(String.valueOf(textFileLine.lineNumber));
-			getWriter().append(Const.CR);
+			getWriter().write(Const.CR);
 		} catch (Exception e) {
 			throw new KettleException("Could not create write line:" + textFileLine.line, e);
 
