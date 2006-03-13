@@ -179,7 +179,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		switch(type)
 		{
 		case Value.VALUE_TYPE_DATE      : retval+="DATETIME"; break;
-		case Value.VALUE_TYPE_BOOLEAN   : retval+="BIT"; break;
+		case Value.VALUE_TYPE_BOOLEAN   : retval+="CHAR(1)"; break;
 		case Value.VALUE_TYPE_NUMBER    :
 		case Value.VALUE_TYPE_INTEGER   : 
         case Value.VALUE_TYPE_BIGNUMBER : 
@@ -328,7 +328,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
      */
     public boolean supportsBooleanDataType()
     {
-        return true;
+        return false;
     }
 }
 
