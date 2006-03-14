@@ -72,7 +72,7 @@ public class TextFileInputData extends BaseStepData implements StepDataInterface
 
     public boolean doneWithHeader;
 
-	public TextFileLineErrorHandler badLineHandler;
+	public TextFileLineErrorHandler dataErrorLineHandler;
 
 	/**
 	 * 

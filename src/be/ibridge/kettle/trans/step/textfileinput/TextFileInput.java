@@ -323,7 +323,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 	
 	public static final Row convertLineToRow(LogWriter log, TextFileLine textFileLine, TextFileInputMeta info, DecimalFormat ldf,
 			DecimalFormatSymbols ldfs, SimpleDateFormat ldaf, DateFormatSymbols ldafs, String fname, long rowNr,
-			TextFileLineErrorHandler badLineHandler) 
+			TextFileLineErrorHandler dataErrorLineHandler) 
         throws KettleException
 	{
 		if (textFileLine == null || textFileLine.line == null || textFileLine.line.length() == 0)
@@ -415,8 +415,8 @@ public class TextFileInput extends BaseStep implements StepInterface
                                 sb.append(message);
                                 errorText.setValue(sb);
                             }
-                            if (badLineHandler != null) {
-								badLineHandler.handleLine(textFileLine);
+                            if (dataErrorLineHandler != null) {
+								dataErrorLineHandler.handleLine(textFileLine);
 							}
                         }
                         else
@@ -779,7 +779,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                     logRowlevel("P-DATA: "+textLine.line);
                     // Read a normal line on a page of data.
                     data.pageLinesRead++;
-                    r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1, data.badLineHandler);
+                    r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1, data.dataErrorLineHandler);
                     if (r!=null) putrow = true;
                 }
                 else // done reading the data lines, skip the footer lines
@@ -846,7 +846,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                         }
                     }
                     debug="normal : data";
-                    r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1, data.badLineHandler);
+                    r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1, data.dataErrorLineHandler);
                     if (r!=null) 
                     {
                         // System.out.println("Found data row: "+r);
@@ -934,7 +934,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                 data.isr.close();
                 data.filename=null; // send it down the next time.
 		    }
-		    data.badLineHandler.close();
+		    data.dataErrorLineHandler.close();
 	    }
 	    catch(Exception e)
 	    {
@@ -965,7 +965,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			logBasic("Opening file: "+data.filename);
 
             data.fr=new FileInputStream(new File(data.filename));
-            data.badLineHandler.handleFile(data.filename);
+            data.dataErrorLineHandler.handleFile(data.filename);
 
             if (meta.isZipped())
             {
@@ -1079,14 +1079,14 @@ public class TextFileInput extends BaseStep implements StepInterface
 	}
 	
 	private void initErrorHandling() {
-		List badLineHandlers = new ArrayList(2);
-		if (meta.getBadLineFilesDestinationDirectory() != null)
-			badLineHandlers.add(new TextFileLineHandler(meta.getBadLineFilesDestinationDirectory(), meta.getBadLineFilesExtension(), meta
+		List dataErrorLineHandlers = new ArrayList(2);
+		if (meta.getDataErrorLineFilesDestinationDirectory() != null)
+			dataErrorLineHandlers.add(new TextFileLineHandler(meta.getDataErrorLineFilesDestinationDirectory(), meta.getDataErrorLineFilesExtension(), meta
 					.getEncoding()));
 		if (meta.getLineNumberFilesDestinationDirectory() != null)
-			badLineHandlers.add(new TextFileLineNumberErrorHandler(meta.getLineNumberFilesDestinationDirectory(), meta.getLineNumberFilesExtension(), meta
+			dataErrorLineHandlers.add(new TextFileLineNumberErrorHandler(meta.getLineNumberFilesDestinationDirectory(), meta.getLineNumberFilesExtension(), meta
 					.getEncoding()));
-		data.badLineHandler = new CompositeTextFileLineErrorHandler(badLineHandlers);
+		data.dataErrorLineHandler = new CompositeTextFileLineErrorHandler(dataErrorLineHandlers);
 	}
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)

@@ -28,12 +28,13 @@
 	<classpathentry sourcepath="C:/Soft/SWT/3.1M7/win32/src.zip" kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="lib" path="libext/sapdbc.jar"/>
 	<classpathentry kind="lib" path="libext/edbc.jar"/>
-	<classpathentry sourcepath="ECLIPSE_HOME/plugins/org.eclipse.jdt.source_3.1.0/src/org.junit_3.8.1/junitsrc.zip" kind="var" path="JUNIT_HOME/junit.jar"/>
 	<classpathentry kind="src" path="extra"/>
 	<classpathentry kind="lib" path="libext/ehcache-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/jtds-1.2.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.24.jar"/>
 	<classpathentry kind="lib" path="libext/interclient.jar"/>
 	<classpathentry kind="lib" path="libext/mysql-connector-java-3.0.17-ga-bin.jar"/>
+	<classpathentry output="testClasses" kind="src" path="test/useCases/replay"/>
+	<classpathentry kind="lib" path="test/libext/junit.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -13,13 +13,16 @@
 	  <!-- set global properties for this build -->
 	
 	  <property name="src"        			location="src"/> 
+	  <property name="test"        			location="test"/> 
 	  <property name="classes"        		location="classes"/> 
+	  <property name="testClasses"        	location="testClasses"/> 
 	  <property name="bin"    				location="bin"/>
 	  <property name="build"      			location="build"/>
 	  <property name="lib"        			location="lib"/>
 	  <property name="plugins"        		location="plugins"/>
 	  <property name="homepage"        		location="homepage"/>
 	  <property name="libext"     			location="libext"/>
+	  <property name="testlibext"     		location="${test}/libext"/>
 	  <property name="libswt"     			location="libswt"/>
 	  <property name="distrib"				location="distrib"/>
 	  <property name="docs"					location="docs"/>
@@ -38,6 +41,7 @@
 	    <tstamp/>
 	    <mkdir dir="${build}"/>
 	    <mkdir dir="${classes}"/>
+	  	<mkdir dir="${testClasses}"/>
 	    <mkdir dir="${lib}"/>
 		<mkdir dir="${distrib}"/>
 		<mkdir dir="${docs}"/>
@@ -67,6 +71,28 @@
 		  		</classpath>
 	    </javac>
 	  </target>
+	
+		<!--
+		       ==========================
+		            Compile the test code
+		       ==========================
+		  -->
+
+		  <target name="compileTests" depends="kettle" description="compile the tests" >
+		  	<echo>Compiling Kettle tests...</echo>
+		    <javac srcdir="${test}" 
+		    	   destdir="${testClasses}"
+		    	   target="1.4"
+		    	   source="1.4"
+		           deprecation="true"
+		    	>
+
+		    	<classpath id="cp-kettle-test">
+		    		<fileset dir="${lib}" 	  		includes="kettle.jar"/>
+		    		<fileset dir="${testlibext}" 	includes="*.jar"/>
+			  	</classpath>
+		    </javac>
+		  </target>
 	
 	  <!--
 	       ==========================
@@ -174,7 +200,7 @@
 	        Distribution jar package
 	       ==========================
 	  -->
-	  <target name="distrib" depends="kettle" description="copy jar file to distribution directory" >
+	  <target name="distrib" depends="kettle, compileTests" description="copy jar file to distribution directory" >
 	  	<echo>Construct the distribution package...</echo>
 	  	
 	        <!-- root directory -->

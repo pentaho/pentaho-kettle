@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.exception.KettleException;
 
@@ -42,7 +43,7 @@ public abstract class AbstractTextFileLineErrorHandler implements
 	Writer getWriter() throws KettleException {
 		if (outputStreamWriter != null)
 			return outputStreamWriter;
-		File directory = new File(destinationDirectory);
+		File directory = new File(Const.replEnv(destinationDirectory));
 		String name = null;
 		if (fileExtension == null || fileExtension.length() == 0)
 			name = processingFilename;
