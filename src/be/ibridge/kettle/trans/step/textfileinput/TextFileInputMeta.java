@@ -839,7 +839,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             dataErrorLineFilesExtension = XMLHandler.getTagValue(stepnode, "data_error_line_files_extension");
             lineNumberFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "line_number_files_destination_directory");
             lineNumberFilesExtension = XMLHandler.getTagValue(stepnode, "line_number_files_extension");
-            dateFormatLenient = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "date_format_lenient"));
+            // Backward compatible
+            dateFormatLenient = ! "N".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "date_format_lenient"));
         }
         catch (Exception e)
         {
@@ -930,7 +931,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             dataErrorLineFilesExtension = rep.getStepAttributeString(id_step, "data_error_line_files_ext");
             lineNumberFilesDestinationDirectory = rep.getStepAttributeString(id_step, "line_number_files_dest_dir");
             lineNumberFilesExtension = rep.getStepAttributeString(id_step, "line_number_files_ext");
-            dateFormatLenient = rep.getStepAttributeBoolean(id_step, "date_format_lenient");
+            dateFormatLenient = rep.getStepAttributeBoolean(id_step, 0, "date_format_lenient", true);
         }
         catch (Exception e)
         {
