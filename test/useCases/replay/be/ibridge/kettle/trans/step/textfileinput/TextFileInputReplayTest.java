@@ -119,16 +119,18 @@ public class TextFileInputReplayTest extends TestCase {
 		trans.endProcessing("end");
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 4);
-		expectContent(directory + "input.txt.line", "5" + Const.CR + "18"
-				+ Const.CR);
+		expectContent(directory + "input.txt.line", "5" + Const.CR + "10"
+				+ Const.CR + "18" + Const.CR);
 		expectContent(
 				directory + "input.txt.dataerror",
 				"I changed this; 00000009,87;2005/abba/26 21:01:23.000; 1234"
 						+ Const.CR
+						+ "This is a text; 00001234,50;2005/95/26 12:34:56.000; 9876"
+						+ Const.CR
 						+ "This is a text; 00001234,50;2005/05/26 12:34:56.000; test"
 						+ Const.CR);
 	}
-	
+
 	public void testInputErrorIgnoreErrorsTrueLineNrOnly() throws Exception {
 		directory = "test/useCases/replay/textFileInputReplayErrorIgnoreTrueLineNrOnly/";
 		expectFiles(directory, 2);
@@ -143,7 +145,7 @@ public class TextFileInputReplayTest extends TestCase {
 		expectContent(directory + "input.txt.line", "5" + Const.CR + "18"
 				+ Const.CR);
 	}
-	
+
 	public void testInputErrorIgnoreErrorsTrueDataErrorOnly() throws Exception {
 		directory = "test/useCases/replay/textFileInputReplayErrorIgnoreTrueDataErrorOnly/";
 		expectFiles(directory, 2);
@@ -162,7 +164,7 @@ public class TextFileInputReplayTest extends TestCase {
 						+ "This is a text; 00001234,50;2005/05/26 12:34:56.000; test"
 						+ Const.CR);
 	}
-	
+
 	public void testInputErrorIgnoreErrorsTrueErrorOnly() throws Exception {
 		directory = "test/useCases/replay/textFileInputReplayErrorIgnoreTrueErrorOnly/";
 		expectFiles(directory, 2);

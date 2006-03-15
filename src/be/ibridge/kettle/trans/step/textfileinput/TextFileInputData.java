@@ -1,4 +1,4 @@
- /**********************************************************************
+/**********************************************************************
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
@@ -12,7 +12,6 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
 
 package be.ibridge.kettle.trans.step.textfileinput;
 
@@ -30,75 +29,87 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 
-
 /**
  * @author Matt
  * @since 22-jan-2005
  */
-public class TextFileInputData extends BaseStepData implements StepDataInterface 
-{
-    /** @deprecated */
+public class TextFileInputData extends BaseStepData implements
+		StepDataInterface {
+	/** @deprecated */
 	public String thisline, nextline, lastline;
-    
-    public ArrayList lineBuffer;
-    
+
+	public ArrayList lineBuffer;
+
 	public Row previous_row;
+
 	public int nr_repeats;
-    
-    public int nrLinesOnPage;
-	
+
+	public int nrLinesOnPage;
+
 	public NumberFormat nf;
+
 	public DecimalFormat df;
+
 	public DecimalFormatSymbols dfs;
+
 	public SimpleDateFormat daf;
+
 	public DateFormatSymbols dafs;
-	
-	public String  files[];
+
+	public String files[];
+
 	public boolean isLastFile;
-	public String  filename;
-	public int     filenr;
-	
+
+	public String filename;
+
+	public int filenr;
+
 	public FileInputStream fr;
+
 	public ZipInputStream zi;
-    public InputStreamReader isr;
 
-    public boolean doneReading;
+	public InputStreamReader isr;
 
-    public int headerLinesRead;
+	public boolean doneReading;
 
-    public int footerLinesRead;
+	public int headerLinesRead;
 
-    public int pageLinesRead;
+	public int footerLinesRead;
 
-    public boolean doneWithHeader;
+	public int pageLinesRead;
+
+	public boolean doneWithHeader;
 
 	public TextFileLineErrorHandler dataErrorLineHandler;
 
 	/**
 	 * 
 	 */
-	public TextFileInputData()
-	{
+	public TextFileInputData() {
 		super();
 
-		thisline=null;
-		nextline=null;
-        
-        lineBuffer = new ArrayList();
-		nf = NumberFormat.getInstance();
-		df = (DecimalFormat)nf;
-		dfs=new DecimalFormatSymbols();
-		daf = new SimpleDateFormat();
-		dafs= new DateFormatSymbols();
+		thisline = null;
+		nextline = null;
 
-		nr_repeats=0;
-		previous_row=null;
+		lineBuffer = new ArrayList();
+		nf = NumberFormat.getInstance();
+		df = (DecimalFormat) nf;
+		dfs = new DecimalFormatSymbols();
+		daf = new SimpleDateFormat();
+		dafs = new DateFormatSymbols();
+
+		nr_repeats = 0;
+		previous_row = null;
 		filenr = 0;
-		
-        nrLinesOnPage=0;
-		
-		fr=null;
-		zi=null;
+
+		nrLinesOnPage = 0;
+
+		fr = null;
+		zi = null;
+	}
+
+	public void setDateFormatLenient(boolean lenient) {
+		daf.setLenient(lenient);
 	}
 
 }

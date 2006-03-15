@@ -1072,6 +1072,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				logError("No file(s) specified! Stop processing.");
 				return false;
 			}
+			data.setDateFormatLenient(meta.isDateFormatLenient());
 			initErrorHandling();
 		    return true;
 		}
