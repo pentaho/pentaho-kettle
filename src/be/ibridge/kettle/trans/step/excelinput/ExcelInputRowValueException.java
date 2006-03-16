@@ -2,7 +2,12 @@ package be.ibridge.kettle.trans.step.excelinput;
 
 public class ExcelInputRowValueException extends ExcelInputRecoverableException {
 
-	ExcelInputRow excelInputRow;
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -6588939491162445000L;
+    
+    ExcelInputRow excelInputRow;
 
 	public ExcelInputRowValueException() {
 		super();

@@ -4,7 +4,12 @@ import be.ibridge.kettle.core.exception.KettleException;
 
 public class ExcelInputRecoverableException extends KettleException{
 
-	public ExcelInputRecoverableException() {
+	/**
+     * 
+     */
+    private static final long serialVersionUID = -4379052886893806698L;
+
+    public ExcelInputRecoverableException() {
 		super();
 	}
 
