@@ -55,7 +55,6 @@ public abstract class AbstractExcelInputErrorHandler implements
 		else
 			name = processingFilename + "_" + sheetName + "." + fileExtension;
 		File file = new File(directory, name);
-		System.out.println("Creating new error handler @ " + file.getAbsolutePath());
 		try {
 			if (encoding == null)
 				outputStreamWriter = new OutputStreamWriter(

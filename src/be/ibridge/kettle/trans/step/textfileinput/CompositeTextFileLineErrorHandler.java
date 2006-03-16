@@ -1,5 +1,6 @@
 package be.ibridge.kettle.trans.step.textfileinput;
 
+import java.io.File;
 import java.util.Iterator;
 import java.util.List;
 
@@ -14,11 +15,11 @@ public class CompositeTextFileLineErrorHandler implements
 		this.handlers = handlers;
 	}
 
-	public void handleFile(String filename) throws KettleException {
+	public void handleFile(File file) throws KettleException {
 		for (Iterator iter = handlers.iterator(); iter.hasNext();) {
 			TextFileLineErrorHandler handler = (TextFileLineErrorHandler) iter
 					.next();
-			handler.handleFile(filename);
+			handler.handleFile(file);
 		}
 	}
 

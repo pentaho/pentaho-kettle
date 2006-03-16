@@ -13,6 +13,8 @@ import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 
 public abstract class KettleStepUseCase extends TestCase {
+	public static final String REPLAY_DATE = "16032006-051637";
+
 	public LogWriter log;
 
 	public TransMeta meta;
@@ -34,8 +36,9 @@ public abstract class KettleStepUseCase extends TestCase {
 		File[] files = new File(directory).listFiles(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
 				return !(name.endsWith("ktr")
-						|| name.endsWith(getFileExtension()) || name
-						.endsWith(".svn"));
+						|| name.endsWith(getFileExtension())
+						|| name.endsWith(".svn") || name
+						.endsWith(REPLAY_DATE + ".line"));
 			}
 		});
 		if (files != null)
@@ -59,7 +62,6 @@ public abstract class KettleStepUseCase extends TestCase {
 
 	public void expectContent(String filename, String expectedContent)
 			throws IOException {
-		System.out.println("File "+new File(filename).getAbsolutePath());
 		FileInputStream stream = new FileInputStream(filename);
 		try {
 			StringBuffer buffer = new StringBuffer();

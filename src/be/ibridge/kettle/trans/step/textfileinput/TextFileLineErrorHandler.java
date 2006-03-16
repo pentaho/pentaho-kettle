@@ -1,5 +1,7 @@
 package be.ibridge.kettle.trans.step.textfileinput;
 
+import java.io.File;
+
 import be.ibridge.kettle.core.exception.KettleException;
 
 /**
@@ -8,16 +10,18 @@ import be.ibridge.kettle.core.exception.KettleException;
  * 
  */
 public interface TextFileLineErrorHandler {
-	
+
 	/**
 	 * Tells the handler which file is being processed.
-	 * @param filename
-	 * @throws KettleException 
+	 * 
+	 * @param file
+	 * @throws KettleException
 	 */
-	void handleFile(String filename) throws KettleException;
+	void handleFile(File file) throws KettleException;
 
 	/**
 	 * This method handles an error when processing the textFileLine
+	 * 
 	 * @param textFileLine
 	 * @throws KettleException
 	 */

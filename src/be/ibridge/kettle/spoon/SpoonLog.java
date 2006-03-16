@@ -364,6 +364,12 @@ public class SpoonLog extends Composite
 	
 	public void startstop()
 	{
+		startstop(null);
+	}
+	
+	
+	public void startstop(Date replayDate)
+	{
 		if (!running) // Not running, start the transformation...
 		{
 			// Auto save feature...
@@ -404,6 +410,7 @@ public class SpoonLog extends Composite
 					try
 					{
 						trans = new Trans(log, spoon.transMeta.getFilename(), spoon.transMeta.getName(), new String[] { spoon.transMeta.getFilename()} );
+						trans.setReplayDate(replayDate);
 						trans.open(spoon.rep, spoon.transMeta.getName(), spoon.transMeta.getDirectory().getPath(), spoon.transMeta.getFilename());
 						trans.setMonitored(true);
 						log.logBasic(toString(), "Transformation opened.");

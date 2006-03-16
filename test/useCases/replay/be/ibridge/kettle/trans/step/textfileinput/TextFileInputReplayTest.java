@@ -1,5 +1,8 @@
 package be.ibridge.kettle.trans.step.textfileinput;
 
+import java.text.ParseException;
+import java.util.Date;
+
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -56,17 +59,9 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		trans.waitUntilFinished();
 		trans.endProcessing("end");
 		assertEquals(0, trans.getErrors());
-		expectFiles(directory, 4);
-		expectContent(directory + "input.txt.line", "5" + Const.CR + "10"
-				+ Const.CR + "18" + Const.CR);
-		expectContent(
-				directory + "input.txt.dataerror",
-				"I changed this; 00000009,87;2005/abba/26 21:01:23.000; 1234"
-						+ Const.CR
-						+ "This is a text; 00001234,50;2005/95/26 12:34:56.000; 9876"
-						+ Const.CR
-						+ "This is a text; 00001234,50;2005/05/26 12:34:56.000; test"
-						+ Const.CR);
+		expectFiles(directory, 3);
+		expectContent(directory + "input.txt." + getDateFormatted() + ".line",
+				"5" + Const.CR + "10" + Const.CR + "18" + Const.CR);
 	}
 
 	public void testInputErrorIgnoreErrorsTrueLineNrOnly() throws Exception {
@@ -80,27 +75,8 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		trans.endProcessing("end");
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 3);
-		expectContent(directory + "input.txt.line", "5" + Const.CR + "18"
-				+ Const.CR);
-	}
-
-	public void testInputErrorIgnoreErrorsTrueDataErrorOnly() throws Exception {
-		directory = "test/useCases/replay/textFileInputReplayErrorIgnoreTrueDataErrorOnly/";
-		expectFiles(directory, 2);
-		meta = new TransMeta(directory + "transform.ktr");
-		trans = new Trans(log, meta);
-		boolean ok = trans.execute(null);
-		assertTrue(ok);
-		trans.waitUntilFinished();
-		trans.endProcessing("end");
-		assertEquals(0, trans.getErrors());
-		expectFiles(directory, 3);
-		expectContent(
-				directory + "input.txt.dataerror",
-				"I changed this; 00000009,87;2005/abba/26 21:01:23.000; 1234"
-						+ Const.CR
-						+ "This is a text; 00001234,50;2005/05/26 12:34:56.000; test"
-						+ Const.CR);
+		expectContent(directory + "input.txt." + getDateFormatted() + ".line",
+				"5" + Const.CR + "18" + Const.CR);
 	}
 
 	public void testInputErrorIgnoreErrorsTrueErrorOnly() throws Exception {
@@ -113,13 +89,33 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		trans.waitUntilFinished();
 		trans.endProcessing("end");
 		assertEquals(0, trans.getErrors());
+		expectFiles(directory, 2);
+	}
+
+	public void testReplay() throws Exception {
+		directory = "test/useCases/replay/textFileInputDoReplay/";
 		expectFiles(directory, 3);
-		expectContent(
-				directory + "input.txt.dataerror",
-				"I changed this; 00000009,87;2005/abba/26 21:01:23.000; 1234"
-						+ Const.CR
-						+ "This is a text; 00001234,50;2005/05/26 12:34:56.000; test"
-						+ Const.CR);
+		meta = new TransMeta(directory + "transform.ktr");
+		trans = new Trans(log, meta);
+		trans.setReplayDate(getReplayDate());
+		boolean ok = trans.execute(null);
+		assertTrue(ok);
+		trans.waitUntilFinished();
+		trans.endProcessing("end");
+		assertEquals(0, trans.getErrors());
+		expectFiles(directory, 4);
+		expectContent(directory + "input.txt." + getDateFormatted() + ".line",
+				"14" + Const.CR + "18" + Const.CR);
+	}
+
+	private Date getReplayDate() throws ParseException {
+		return AbstractTextFileLineErrorHandler.createDateFormat().parse(
+				REPLAY_DATE);
+	}
+
+	private String getDateFormatted() {
+		return AbstractTextFileLineErrorHandler.createDateFormat().format(
+				trans.getCurrentDate());
 	}
 
 	public String getFileExtension() {

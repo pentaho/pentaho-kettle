@@ -26,6 +26,7 @@ import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipInputStream;
 
@@ -702,7 +703,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                             }
                         }
 
-                        if (filterOK)
+                        if (filterOK && data.textFilePlayer.isProcessingNeeded(lineNumberInFile))
                         {
                             // logRowlevel("LINE READ: "+line);
                         	data.lineBuffer.add(new TextFileLine(line, lineNumberInFile));
@@ -715,19 +716,23 @@ public class TextFileInput extends BaseStep implements StepInterface
                 }
             }
 		}
-
-        // If the buffer is empty: open the next file. (if nothing in there, open the next, etc.)
-        while (data.lineBuffer.size()==0)
-        {
-            debug="empty buffer: open next file";
-            if (!openNextFile())  // Open fails: done processing!
-            {
-                debug="empty buffer: close last file";
-                closeLastFile();
-                setOutputDone();  // signal end to receiver(s)
-                return false;
-            }
-        }
+		
+		if(data.lineBuffer.isEmpty())
+		{
+			if (data.doneReading)
+			{
+				debug="empty buffer: open next file";
+	            if (!openNextFile())  // Open fails: done processing!
+	            {
+	                debug="empty buffer: close last file";
+	                closeLastFile();
+	                setOutputDone();  // signal end to receiver(s)
+	                return false;
+	            }
+			}
+			return true;
+		}
+		
 
         // Take the first line available in the buffer & remove the line from the buffer
         debug="take first line of buffer";
@@ -964,8 +969,10 @@ public class TextFileInput extends BaseStep implements StepInterface
             debug="openNextFile : open file";
 			logBasic("Opening file: "+data.filename);
 
-            data.fr=new FileInputStream(new File(data.filename));
-            data.dataErrorLineHandler.handleFile(data.filename);
+            File file = new File(data.filename);
+			data.fr=new FileInputStream(file);
+            data.dataErrorLineHandler.handleFile(file);
+            data.textFilePlayer = data.textFileReplayFactory.createPlayer(file);
 
             if (meta.isZipped())
             {
@@ -1021,6 +1028,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                 {
                     // Just skip these...
                     getLine(log, data.isr, meta.getFileFormat()); // header and footer: not wrapped   
+                    lineNumberInFile++;
                 }
             }
 
@@ -1033,7 +1041,8 @@ public class TextFileInput extends BaseStep implements StepInterface
                     // logRowlevel("LINE READ: "+line);
                     linesInput++;
                     lineNumberInFile++;
-                    data.lineBuffer.add(new TextFileLine(line, lineNumberInFile)); // Store it in the line buffer...
+                    if(data.textFilePlayer.isProcessingNeeded(lineNumberInFile))
+                    	data.lineBuffer.add(new TextFileLine(line, lineNumberInFile)); // Store it in the line buffer...
                 }
                 else
                 {
@@ -1073,19 +1082,28 @@ public class TextFileInput extends BaseStep implements StepInterface
 				return false;
 			}
 			data.setDateFormatLenient(meta.isDateFormatLenient());
+			initReplayFactory();
 			initErrorHandling();
 		    return true;
 		}
 		return false;
 	}
 	
+	private void initReplayFactory() {
+		Date replayDate = getTrans().getReplayDate();
+		if (replayDate == null)
+			data.textFileReplayFactory = TextFilePlayerAll.INSTANCE;
+		else
+			data.textFileReplayFactory = new TextFileReplayFactoryLineNumber(
+					replayDate, meta.getLineNumberFilesDestinationDirectory(),
+					meta.getLineNumberFilesExtension(), meta
+							.getEncoding());
+	}
+
 	private void initErrorHandling() {
 		List dataErrorLineHandlers = new ArrayList(2);
-		if (meta.getDataErrorLineFilesDestinationDirectory() != null)
-			dataErrorLineHandlers.add(new TextFileLineHandler(meta.getDataErrorLineFilesDestinationDirectory(), meta.getDataErrorLineFilesExtension(), meta
-					.getEncoding()));
 		if (meta.getLineNumberFilesDestinationDirectory() != null)
-			dataErrorLineHandlers.add(new TextFileLineNumberErrorHandler(meta.getLineNumberFilesDestinationDirectory(), meta.getLineNumberFilesExtension(), meta
+			dataErrorLineHandlers.add(new TextFileLineNumberErrorHandler(getTrans().getCurrentDate(), meta.getLineNumberFilesDestinationDirectory(), meta.getLineNumberFilesExtension(), meta
 					.getEncoding()));
 		data.dataErrorLineHandler = new CompositeTextFileLineErrorHandler(dataErrorLineHandlers);
 	}

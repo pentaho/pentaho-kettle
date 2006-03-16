@@ -30,23 +30,10 @@
   <notepads>
     </notepads>
   <order>
-  <hop> <from>TextFileInputReplayErrorIgnoreTrueErrorOnly</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>textFileInputDoReplay</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
 
   <step>
-    <name>Dummy (do nothing)</name>
-    <type>Dummy</type>
-    <description></description>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <GUI>
-      <xloc>459</xloc>
-      <yloc>102</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>TextFileInputReplayErrorIgnoreTrueErrorOnly</name>
+    <name>textFileInputDoReplay</name>
     <type>TextFileInput</type>
     <description></description>
     <distribute>Y</distribute>
@@ -72,9 +59,7 @@
     <format>DOS</format>
     <encoding></encoding>
     <file>
-      <name>%%user.dir%%\test\useCases\replay\textFileInputReplayErrorIgnoreTrueErrorOnly\input.txt</name>
-      <filemask></filemask>
-      <name>%%user.dir%%\test\useCases\replay\textFileInputReplayErrorIgnoreTrueErrorOnly\input2.txt</name>
+      <name>%%user.dir%%\test\useCases\replay\textFileInputDoReplay\input.txt</name>
       <filemask></filemask>
       <type>CSV</type>
       <zipped>N</zipped>
@@ -141,19 +126,32 @@
       </fields>
     <limit>0</limit>
     <error_ignored>Y</error_ignored>
-    <error_count_field>Ecount</error_count_field>
-    <error_fields_field>Efields</error_fields_field>
-    <error_text_field>Etext</error_text_field>
-    <bad_line_files_destination_directory></bad_line_files_destination_directory>
+    <error_count_field></error_count_field>
+    <error_fields_field></error_fields_field>
+    <error_text_field></error_text_field>
+    <bad_line_files_destination_directory>%%user.dir%%\test\useCases\replay\textFileInputDoReplay</bad_line_files_destination_directory>
     <bad_line_files_extension>bad</bad_line_files_extension>
-    <error_line_files_destination_directory>%%user.dir%%\test\useCases\replay\textFileInputReplayErrorIgnoreTrueErrorOnly</error_line_files_destination_directory>
+    <error_line_files_destination_directory>%%user.dir%%\test\useCases\replay\textFileInputDoReplay</error_line_files_destination_directory>
     <error_line_files_extension>error</error_line_files_extension>
-    <line_number_files_destination_directory></line_number_files_destination_directory>
+    <line_number_files_destination_directory>%%user.dir%%\test\useCases\replay\textFileInputDoReplay</line_number_files_destination_directory>
     <line_number_files_extension>line</line_number_files_extension>
     <date_format_lenient>Y</date_format_lenient>
     <GUI>
-      <xloc>222</xloc>
-      <yloc>102</yloc>
+      <xloc>74</xloc>
+      <yloc>92</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>217</xloc>
+      <yloc>92</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

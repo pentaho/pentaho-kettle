@@ -5,6 +5,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
@@ -12,6 +15,8 @@ import be.ibridge.kettle.core.exception.KettleException;
 
 public abstract class AbstractTextFileLineErrorHandler implements
 		TextFileLineErrorHandler {
+	private static final String DD_MMYYYY_HHMMSS = "ddMMyyyy-hhmmss";
+
 	private final LogWriter log = LogWriter.getInstance();
 
 	private final String destinationDirectory;
@@ -24,15 +29,41 @@ public abstract class AbstractTextFileLineErrorHandler implements
 
 	private OutputStreamWriter outputStreamWriter;
 
-	public AbstractTextFileLineErrorHandler(String destinationDirectory,
-			String fileExtension, String encoding) {
+	private String dateString;
+
+	public AbstractTextFileLineErrorHandler(Date date,
+			String destinationDirectory, String fileExtension, String encoding) {
 		this.destinationDirectory = destinationDirectory;
 		this.fileExtension = fileExtension;
 		this.encoding = encoding;
+		initDateFormatter(date);
+	}
+
+	private void initDateFormatter(Date date) {
+		dateString = createDateFormat().format(date);
+	}
+
+	static DateFormat createDateFormat() {
+		return new SimpleDateFormat(DD_MMYYYY_HHMMSS);
 	}
 
 	public abstract void handleLine(TextFileLine textFileLine)
 			throws KettleException;
+	
+	public static File getLineNumberFilename(String destinationDirectory, String processingFilename, String dateString, String extension )
+	{
+		String name = null;
+		if (extension == null || extension.length() == 0)
+			name = processingFilename + "." + dateString;
+		else
+			name = processingFilename + "." + dateString + "." + extension;
+		return new File(Const.replEnv(destinationDirectory), name);
+	}
+	
+	public static File getLineNumberFilename(String destinationDirectory, String processingFilename, Date date, String extension )
+	{
+		return getLineNumberFilename(destinationDirectory, processingFilename, createDateFormat().format(date), extension);
+	}
 
 	/**
 	 * returns the OutputWiter if exists. Otherwhise it will create a new one.
@@ -43,13 +74,7 @@ public abstract class AbstractTextFileLineErrorHandler implements
 	Writer getWriter() throws KettleException {
 		if (outputStreamWriter != null)
 			return outputStreamWriter;
-		File directory = new File(Const.replEnv(destinationDirectory));
-		String name = null;
-		if (fileExtension == null || fileExtension.length() == 0)
-			name = processingFilename;
-		else
-			name = processingFilename + "." + fileExtension;
-		File file = new File(directory, name);
+		File file = getLineNumberFilename(destinationDirectory, processingFilename, dateString, fileExtension);
 		try {
 			if (encoding == null)
 				outputStreamWriter = new OutputStreamWriter(
@@ -83,9 +108,8 @@ public abstract class AbstractTextFileLineErrorHandler implements
 		}
 	}
 
-	public void handleFile(String filename) throws KettleException {
+	public void handleFile(File file) throws KettleException {
 		close();
-		File file = new File(filename);
 		this.processingFilename = file.getName();
 	}
 

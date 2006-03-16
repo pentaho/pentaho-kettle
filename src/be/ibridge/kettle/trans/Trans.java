@@ -77,6 +77,13 @@ public class Trans
 		
 	public  int class_nr;
 	
+	/**
+	 * The replayDate indicates that this transformation is a replay
+	 * tarnsformation for a transformation executed on replayDate. If replayDate
+	 * is null, the transformation is not a replay.
+	 */
+	private Date replayDate;
+	
 	public final static int TYPE_DISP_1_1    = 1;
 	public final static int TYPE_DISP_1_N    = 2;
 	public final static int TYPE_DISP_N_1    = 3;
@@ -227,6 +234,14 @@ public class Trans
 		if (transMeta.getArguments()!=null)
 		{
 			log.logBasic(toString(), "Nr of arguments detected: "+transMeta.getArguments().length);
+		}
+		
+		if (getReplayDate()!=null)
+		{
+			log.logBasic(toString(), "Replay transformation date: "+getReplayDate());
+		}else
+		{
+			log.logBasic(toString(), "Not a replay transformation");
 		}
 		
 		steps	 = new ArrayList();
@@ -1277,6 +1292,14 @@ public class Trans
 
         return null;
     }
+
+	public Date getReplayDate() {
+		return replayDate;
+	}
+
+	public void setReplayDate(Date replayDate) {
+		this.replayDate = replayDate;
+	}
 
 }
 

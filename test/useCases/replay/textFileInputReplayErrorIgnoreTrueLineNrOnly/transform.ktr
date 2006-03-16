@@ -146,8 +146,6 @@
     <bad_line_files_extension>bad</bad_line_files_extension>
     <error_line_files_destination_directory></error_line_files_destination_directory>
     <error_line_files_extension>error</error_line_files_extension>
-    <data_error_line_files_destination_directory></data_error_line_files_destination_directory>
-    <data_error_line_files_extension>dataerror</data_error_line_files_extension>
     <line_number_files_destination_directory>%%user.dir%%\test\useCases\replay\textFileInputReplayErrorIgnoreTrueLineNrOnly</line_number_files_destination_directory>
     <line_number_files_extension>line</line_number_files_extension>
     <date_format_lenient>Y</date_format_lenient>
