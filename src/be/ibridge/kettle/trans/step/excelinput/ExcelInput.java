@@ -16,6 +16,9 @@
 package be.ibridge.kettle.trans.step.excelinput;
 
 import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import jxl.BooleanCell;
 import jxl.Cell;
@@ -25,6 +28,7 @@ import jxl.LabelCell;
 import jxl.NumberCell;
 import jxl.Sheet;
 import jxl.Workbook;
+import jxl.read.biff.BiffException;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
@@ -54,22 +58,30 @@ public class ExcelInput extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private Row fillRow(Row baserow, Sheet sheet, Cell line[], int startcolumn, int rownr)
+	private Row fillRow(Row baserow, int startcolumn, ExcelInputRow excelInputRow) throws ExcelInputRowValueException
 	{
         debug = "fillRow start";
 		Row r = new Row(baserow);
 		
 		// Set values in the row...
-		for (int i=startcolumn;i<line.length && i-startcolumn<r.size();i++)
+		for (int i=startcolumn;i<excelInputRow.cells.length && i-startcolumn<r.size();i++)
 		{
             debug = "get cell #"+i;
-			Cell cell = line[i];
-
+			Cell cell = excelInputRow.cells[i];
+			
             int rowcolumn=i-startcolumn;
             debug = "Rowcolumn = "+rowcolumn;
 
             Value v = r.getValue(rowcolumn);
             debug = "Value v = "+v;
+            
+            try{
+            	checkType(cell, v);
+            }catch(ExcelInputRowValueException ex)
+            {
+            	ex.excelInputRow = excelInputRow;
+            	throw ex;
+            }
 
 			if (cell.getType().equals(CellType.BOOLEAN))
 			{
@@ -124,7 +136,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		// Do we need to include the sheetname?
 		if (meta.getSheetField()!=null && meta.getSheetField().length()>0)
 		{
-			Value value = new Value(meta.getSheetField(), sheet.getName());
+			Value value = new Value(meta.getSheetField(), excelInputRow.sheetName);
 			value.setLength(data.maxsheetlength);
 			r.addValue(value);
 		}
@@ -143,66 +155,100 @@ public class ExcelInput extends BaseStep implements StepInterface
 		return r;
 	}
 	
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
-	{
-		meta=(ExcelInputMeta)smi;
-		data=(ExcelInputData)sdi;
-
-		// See if we're not done processing...
-		// We are done processing if the filenr >= number of files.
-		if (data.filenr >= data.files.length)
-		{
-            logDetailed("No more files to be processes! ("+data.filenr+" files done)");
-			setOutputDone(); // signal end to receiver(s)
-			return false; // end of data or error.
-		}
-        
-        if (meta.getRowLimit()>0 && data.rownr>meta.getRowLimit())
-        {
-            // The close of the workbook is in dispose()
-            logDetailed("Row limit of ["+meta.getRowLimit()+"] reached: stop processing.");
-            setOutputDone(); // signal end to receiver(s)
-            return false; // end of data or error.
-        }
-
-		Row r = getRowFromWorkbooks();
-		if (r!=null)
-		{
-            if (!r.isIgnored())
-            {
-                // OK, see if we need to repeat values.
-                if (data.previousRow!=null)
-                {
-                    for (int i=0;i<meta.getFieldRepeat().length;i++)
-                    {
-                        Value field = r.getValue(i);
-                        if (field.isNull() && meta.getFieldRepeat()[i])
-                        {
-                            // Take the value from the previous row.
-                            Value repeat = data.previousRow.getValue(i);
-                            field.setValue(repeat);
-                        }
-                    }
-                }
-                
-                // Remember this row for the next time around!
-                data.previousRow = r;
-                
-                // Send out the good news: we found a row of data!
-    			putRow(r);
-            }
-			return true;
-		}
-		else
-		{
-			return false;
+	private void checkType(Cell cell, Value v) throws ExcelInputRowValueException {
+		if (!meta.isStrictTypes())
+			return;
+		CellType cellType = cell.getType();
+		if (cellType.equals(CellType.BOOLEAN)) {
+			if (!(v.getType() == Value.VALUE_TYPE_STRING
+					|| v.getType() == Value.VALUE_TYPE_NONE || v.getType() == Value.VALUE_TYPE_BOOLEAN))
+				throw new ExcelInputRowValueException("Invalid type Boolean, expected "
+						+ v.getTypeDesc());
+		} else if (cellType.equals(CellType.DATE)) {
+			if (!(v.getType() == Value.VALUE_TYPE_STRING
+					|| v.getType() == Value.VALUE_TYPE_NONE || v.getType() == Value.VALUE_TYPE_DATE))
+				throw new ExcelInputRowValueException("Invalid type Date, expected "
+						+ v.getTypeDesc());
+		} else if (cellType.equals(CellType.LABEL)) {
+			if (v.getType() == Value.VALUE_TYPE_BOOLEAN
+					|| v.getType() == Value.VALUE_TYPE_DATE
+					|| v.getType() == Value.VALUE_TYPE_INTEGER
+					|| v.getType() == Value.VALUE_TYPE_NUMBER)
+				throw new ExcelInputRowValueException("Invalid type Label, expected "
+						+ v.getTypeDesc());
+		} else if (cellType.equals(CellType.EMPTY)) {
+			// ok
+		} else if (cellType.equals(CellType.NUMBER)) {
+			if (!(v.getType() == Value.VALUE_TYPE_STRING
+					|| v.getType() == Value.VALUE_TYPE_NONE
+					|| v.getType() == Value.VALUE_TYPE_INTEGER
+					|| v.getType() == Value.VALUE_TYPE_BIGNUMBER || v.getType() == Value.VALUE_TYPE_NUMBER))
+				throw new ExcelInputRowValueException("Invalid type Number, expected "
+						+ v.getTypeDesc());
+		} else {
+			throw new ExcelInputRowValueException("Unsupported type " + cellType);
 		}
 	}
 
-	public Row getRowFromWorkbooks() throws KettleException
+	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi)
+			throws KettleException {
+		meta = (ExcelInputMeta) smi;
+		data = (ExcelInputData) sdi;
+
+		// See if we're not done processing...
+		// We are done processing if the filenr >= number of files.
+		if (data.filenr >= data.files.length) {
+			logDetailed("No more files to be processes! (" + data.filenr
+					+ " files done)");
+			setOutputDone(); // signal end to receiver(s)
+			return false; // end of data or error.
+		}
+
+		if (meta.getRowLimit() > 0 && data.rownr > meta.getRowLimit()) {
+			// The close of the workbook is in dispose()
+			logDetailed("Row limit of [" + meta.getRowLimit()
+					+ "] reached: stop processing.");
+			setOutputDone(); // signal end to receiver(s)
+			return false; // end of data or error.
+		}
+
+		try {
+			Row r = getRowFromWorkbooks();
+			if (r != null) {
+				if (!r.isIgnored()) {
+					// OK, see if we need to repeat values.
+					if (data.previousRow != null) {
+						for (int i = 0; i < meta.getFieldRepeat().length; i++) {
+							Value field = r.getValue(i);
+							if (field.isNull() && meta.getFieldRepeat()[i]) {
+								// Take the value from the previous row.
+								Value repeat = data.previousRow.getValue(i);
+								field.setValue(repeat);
+							}
+						}
+					}
+
+					// Remember this row for the next time around!
+					data.previousRow = r;
+
+					// Send out the good news: we found a row of data!
+					putRow(r);
+				}
+				return true;
+			} else {
+				return false;
+			}
+		} catch (ExcelInputRowValueException excelInputRowValueException) {
+			data.dataErrorHandler.handleLine(excelInputRowValueException.excelInputRow);
+			return true;
+		} 
+	}
+
+	public Row getRowFromWorkbooks() throws ExcelInputRecoverableException
 	{
 		debug="processRow()";
-		// This procedure outputs a single Excel data row on the destination rowsets...
+		// This procedure outputs a single Excel data row on the destination
+		// rowsets...
 
 		Row retval=new Row();
 		retval.setIgnore();
@@ -216,7 +262,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 				debug="open workbook #"+data.filenr+" : "+data.files[data.filenr];
 				logDetailed("Opening workbook #"+data.filenr+" : "+data.files[data.filenr]);
 				data.workbook = Workbook.getWorkbook(new File(data.files[data.filenr]));
-                
+			    data.dataErrorHandler.handleFile(data.files[data.filenr]);
                 // Start at the first sheet again...
                 data.sheetnr = 0;
                 
@@ -250,14 +296,16 @@ public class ExcelInput extends BaseStep implements StepInterface
     			// Build a new row and fill in the data from the sheet...
     			try
     			{
-    				debug="Get line #"+data.rownr+" from sheet #"+data.filenr+"."+data.sheetnr;
+    				//Already increase cursor 1 row
+    				int rownr = data.rownr++;
+    				debug="Get line #"+rownr+" from sheet #"+data.filenr+"."+data.sheetnr;
     				logRowlevel(debug);
-    				Cell line[] = sheet.getRow(data.rownr);
+    				Cell line[] = sheet.getRow(rownr);
     
                     logRowlevel("Read line with "+line.length+" cells");
-    				Row r = fillRow(data.row, sheet, line, data.colnr, data.rownr);
-                    logRowlevel("Converted line to row #"+data.rownr+" : "+r);
-    				data.rownr++;
+                    ExcelInputRow excelInputRow = new ExcelInputRow(sheet.getName(), rownr+1, line );
+    				Row r = fillRow(data.row, data.colnr, excelInputRow);
+                    logRowlevel("Converted line to row #"+rownr+" : "+r);
     	
     				if (line.length>0 || !meta.ignoreEmptyRows())
     				{
@@ -297,24 +345,84 @@ public class ExcelInput extends BaseStep implements StepInterface
 				// Perhaps it was the last sheet?
 				if (data.sheetnr >= meta.getSheetName().length)
 				{
-					// Close the workbook!
-					data.workbook.close();
-					data.workbook = null; // marker to open again.
-					
-					// advance to the next file!
-					data.filenr++;
+					jumpToNextFile();
 				}
 			}
 		}
-		catch(Exception e)
+		catch (ExcelInputRowValueException excelInputRowValueException) {
+			if (!meta.isErrorIgnored()) {
+				logError("Error processing row in [" + debug
+						+ "] from Excel file [" + data.files[data.filenr]
+						+ "] : " + excelInputRowValueException.toString());
+				setErrors(1);
+				stopAll();
+				return null;
+			}
+
+			throw excelInputRowValueException;
+		}
+		catch(KettleException e)
 		{
-			logError("Error processing row in ["+debug+"] from Excel file ["+data.files[data.filenr]+"] : "+e.toString());
+			logError("Error processing row in [" + debug
+					+ "] from Excel file [" + data.files[data.filenr] + "] : "
+					+ e.toString());
 			setErrors(1);
 			stopAll();
 			return null;
+		} 
+		catch (BiffException e) {
+			if (!meta.isErrorIgnored()) {
+				logError("Error processing row in [" + debug
+						+ "] from Excel file [" + data.files[data.filenr]
+						+ "] : " + e.toString());
+				setErrors(1);
+				stopAll();
+				return null;
+			}
+		} catch (IOException e) {
+			if (!meta.isErrorIgnored()) {
+				logError("Error processing row in [" + debug
+						+ "] from Excel file [" + data.files[data.filenr]
+						+ "] : " + e.toString());
+				setErrors(1);
+				stopAll();
+				return null;
+			}
 		}
 		
 		return retval;
+	}
+
+	private void jumpToNextFile() throws KettleException {
+		data.sheetnr = 0;
+		
+		// Reset the start-row:
+		data.rownr = -1;
+		
+		// no previous row yet, don't take it from the previous sheet! (that whould be plain wrong!)
+        data.previousRow = null;
+        
+		// Close the workbook!
+		data.workbook.close();
+		data.workbook = null; // marker to open again.
+		data.dataErrorHandler.close();
+		
+		// advance to the next file!
+		data.filenr++;
+	}
+	
+	private void initErrorHandling() {
+		List dataErrorLineHandlers = new ArrayList(2);
+		if (meta.getDataErrorLineFilesDestinationDirectory() != null)
+			dataErrorLineHandlers.add(new ExcelInputRowErrorHandler(meta
+					.getDataErrorLineFilesDestinationDirectory(), meta
+					.getDataErrorLineFilesExtension(),  "Latin1"    ));  //meta.getEncoding()));
+		if (meta.getLineNumberFilesDestinationDirectory() != null)
+			dataErrorLineHandlers.add(new ExcelInputRowNumberErrorHandler(meta
+					.getLineNumberFilesDestinationDirectory(), meta
+					.getLineNumberFilesExtension(),  "Latin1" ));  //meta.getEncoding()));
+		data.dataErrorHandler = new CompositeExcelInputErrorHandler(
+				dataErrorLineHandlers);
 	}
 	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
@@ -324,6 +432,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 
 		if (super.init(smi, sdi))
 		{
+			initErrorHandling();
 			data.files = meta.getFiles();
 			if (data.files!=null && data.files.length>0)
 			{
@@ -359,6 +468,11 @@ public class ExcelInput extends BaseStep implements StepInterface
 	    data = (ExcelInputData)sdi;
 	    
 		if (data.workbook!=null) data.workbook.close();
+		try {
+			data.dataErrorHandler.close();
+		} catch (KettleException e) {
+			logDebug("Could not close dataErrorHandler");
+		}
 		
 		super.dispose(smi, sdi);
 	}
