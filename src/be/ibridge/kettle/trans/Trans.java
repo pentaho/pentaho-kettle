@@ -238,10 +238,10 @@ public class Trans
 		
 		if (getReplayDate()!=null)
 		{
-			log.logBasic(toString(), "Replay transformation date: "+getReplayDate());
+			log.logBasic(toString(), "This is a replay transformation for : "+getReplayDate());
 		}else
 		{
-			log.logBasic(toString(), "Not a replay transformation");
+			log.logBasic(toString(), "This is not a replay transformation");
 		}
 		
 		steps	 = new ArrayList();
@@ -730,6 +730,7 @@ public class Trans
 			logDate     = new Date();
 			startDate   = Const.MIN_DATE;
 			endDate     = currentDate;
+			log.logBasic(toString(), "This transformation can be replayed with replay date: " +currentDate);
             
             Database ldb = null;
             try
