@@ -1344,13 +1344,13 @@ public class ChefGraph extends Canvas
 				long id = sp.rep.getTransformationID(entry.getTransname(), entry.getDirectory().getID());
 				if (id<0) // New
 				{
-					sp.transMeta = new TransMeta(null, entry.getTransname(), entry.arguments);
+					sp.setTransMeta( new TransMeta(null, entry.getTransname(), entry.arguments) );
 				}
 				else
 				{
-					sp.transMeta = new TransMeta(sp.rep, entry.getTransname(), entry.getDirectory());
+					sp.setTransMeta( new TransMeta(sp.rep, entry.getTransname(), entry.getDirectory()) );
 				}
-				sp.transMeta.clearChanged();
+				sp.getTransMeta().clearChanged();
 				sp.open();
 			}
 			catch(KettleException ke)
@@ -1367,8 +1367,8 @@ public class ChefGraph extends Canvas
 			{
 				// Read from file...
 				Spoon sp = new Spoon(log, chef.disp, null);
-				sp.transMeta = new TransMeta(entry.getFileName());
-				sp.transMeta.clearChanged();
+				sp.setTransMeta( new TransMeta(entry.getFileName()) );
+				sp.getTransMeta().clearChanged();
 				sp.setFilename(entry.getFileName());
 				sp.open();
 			}
