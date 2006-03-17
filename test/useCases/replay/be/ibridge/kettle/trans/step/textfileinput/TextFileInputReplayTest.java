@@ -89,7 +89,11 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		trans.waitUntilFinished();
 		trans.endProcessing("end");
 		assertEquals(0, trans.getErrors());
-		expectFiles(directory, 2);
+		expectFiles(directory, 3);
+		expectContent(
+				directory + "input2.txt." + getDateFormatted() + ".error",
+				TextFileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
+						+ Const.CR);
 	}
 
 	public void testReplay() throws Exception {
@@ -127,17 +131,16 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 	}
 
 	private Date getReplayDate() throws ParseException {
-		return AbstractTextFileLineErrorHandler.createDateFormat().parse(
+		return AbstractTextFileErrorHandler.createDateFormat().parse(
 				REPLAY_DATE);
 	}
 
 	private String getDateFormatted() {
-		return AbstractTextFileLineErrorHandler.createDateFormat().format(
+		return AbstractTextFileErrorHandler.createDateFormat().format(
 				trans.getCurrentDate());
 	}
 
 	public String getFileExtension() {
 		return "txt";
 	}
-
 }

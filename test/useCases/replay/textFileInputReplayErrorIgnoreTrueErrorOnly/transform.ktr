@@ -74,8 +74,10 @@
     <file>
       <name>%%user.dir%%\test\useCases\replay\textFileInputReplayErrorIgnoreTrueErrorOnly\input.txt</name>
       <filemask></filemask>
+      <file_required>Y</file_required>
       <name>%%user.dir%%\test\useCases\replay\textFileInputReplayErrorIgnoreTrueErrorOnly\input2.txt</name>
       <filemask></filemask>
+      <file_required>Y</file_required>
       <type>CSV</type>
       <zipped>N</zipped>
       </file>

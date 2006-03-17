@@ -33,18 +33,20 @@ public abstract class KettleStepUseCase extends TestCase {
 	public abstract String getFileExtension();
 
 	protected void tearDown() throws Exception {
-		File[] files = new File(directory).listFiles(new FilenameFilter() {
-			public boolean accept(File dir, String name) {
-				return !(name.endsWith("ktr")
-						|| name.endsWith(getFileExtension())
-						|| name.endsWith(".svn") || name
-						.endsWith(REPLAY_DATE + ".line"));
-			}
-		});
-		if (files != null)
-			for (int i = 0; i < files.length; i++) {
-				files[i].delete();
-			}
+		if (directory != null) {
+			File[] files = new File(directory).listFiles(new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					return !(name.endsWith("ktr")
+							|| name.endsWith(getFileExtension())
+							|| name.endsWith(".svn") || name
+							.endsWith(REPLAY_DATE + ".line"));
+				}
+			});
+			if (files != null)
+				for (int i = 0; i < files.length; i++) {
+					files[i].delete();
+				}
+		}
 		super.tearDown();
 	}
 

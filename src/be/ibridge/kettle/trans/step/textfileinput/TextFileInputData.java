@@ -57,7 +57,7 @@ public class TextFileInputData extends BaseStepData implements
 
 	public DateFormatSymbols dafs;
 
-	public String files[];
+	public TextFileList files;
 
 	public boolean isLastFile;
 
@@ -83,7 +83,7 @@ public class TextFileInputData extends BaseStepData implements
 
 	public boolean doneWithHeader;
 
-	public TextFileLineErrorHandler dataErrorLineHandler;
+	public TextFileErrorHandler dataErrorLineHandler;
 
 	public TextFilePlayListFactory textFileReplayFactory;
 

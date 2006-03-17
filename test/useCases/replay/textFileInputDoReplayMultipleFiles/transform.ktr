@@ -33,6 +33,19 @@
   <hop> <from>textFileInputDoReplayMultipleFiles</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
 
   <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>349</xloc>
+      <yloc>100</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
     <name>textFileInputDoReplayMultipleFiles</name>
     <type>TextFileInput</type>
     <description></description>
@@ -143,19 +156,6 @@
     <GUI>
       <xloc>166</xloc>
       <yloc>101</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Dummy (do nothing)</name>
-    <type>Dummy</type>
-    <description></description>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <GUI>
-      <xloc>349</xloc>
-      <yloc>100</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

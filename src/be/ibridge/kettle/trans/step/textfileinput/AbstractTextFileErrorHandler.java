@@ -13,8 +13,8 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.exception.KettleException;
 
-public abstract class AbstractTextFileLineErrorHandler implements
-		TextFileLineErrorHandler {
+public abstract class AbstractTextFileErrorHandler implements
+		TextFileErrorHandler {
 	private static final String DD_MMYYYY_HHMMSS = "ddMMyyyy-hhmmss";
 
 	private final LogWriter log = LogWriter.getInstance();
@@ -31,7 +31,7 @@ public abstract class AbstractTextFileLineErrorHandler implements
 
 	private String dateString;
 
-	public AbstractTextFileLineErrorHandler(Date date,
+	public AbstractTextFileErrorHandler(Date date,
 			String destinationDirectory, String fileExtension, String encoding) {
 		this.destinationDirectory = destinationDirectory;
 		this.fileExtension = fileExtension;
@@ -47,7 +47,7 @@ public abstract class AbstractTextFileLineErrorHandler implements
 		return new SimpleDateFormat(DD_MMYYYY_HHMMSS);
 	}
 
-	public abstract void handleLine(TextFileLine textFileLine)
+	public abstract void handleLineError(TextFileLine textFileLine)
 			throws KettleException;
 	
 	public static File getLineNumberFilename(String destinationDirectory, String processingFilename, String dateString, String extension )

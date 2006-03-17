@@ -27,6 +27,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.zip.ZipInputStream;
 
@@ -324,7 +325,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 	
 	public static final Row convertLineToRow(LogWriter log, TextFileLine textFileLine, TextFileInputMeta info, DecimalFormat ldf,
 			DecimalFormatSymbols ldfs, SimpleDateFormat ldaf, DateFormatSymbols ldafs, String fname, long rowNr,
-			TextFileLineErrorHandler dataErrorLineHandler) 
+			TextFileErrorHandler dataErrorLineHandler) 
         throws KettleException
 	{
 		if (textFileLine == null || textFileLine.line == null || textFileLine.line.length() == 0)
@@ -417,7 +418,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                                 errorText.setValue(sb);
                             }
                             if (dataErrorLineHandler != null) {
-								dataErrorLineHandler.handleLine(textFileLine);
+								dataErrorLineHandler.handleLineError(textFileLine);
 							}
                         }
                         else
@@ -626,12 +627,13 @@ public class TextFileInput extends BaseStep implements StepInterface
 		
 		if (first) // we just got started
 		{
+			handleMissingFiles();
             debug="first";
 
             first=false;
 
 		    // Open the first file & read the required rows in the buffer, stop if it fails...
-		    if (!openNextFile()) 
+		    if (!openNextFile())
 		    {
                 closeLastFile();
                 setOutputDone();
@@ -922,6 +924,52 @@ public class TextFileInput extends BaseStep implements StepInterface
 		return retval;
 	}
 		
+	private void handleMissingFiles() throws KettleException {
+		debug = "Required files";
+		List nonExistantFiles = data.files.getNonExistantFiles();
+
+		if (nonExistantFiles.size() != 0) {
+			String message = getRequiredFilesDescription(nonExistantFiles);
+			log.logBasic(debug, "WARNING: Missing " + message);
+			if (meta.isErrorIgnored())
+				for (Iterator iter = nonExistantFiles.iterator(); iter
+						.hasNext();) {
+					data.dataErrorLineHandler.handleNonExistantFile((File) iter
+							.next());
+				}
+			else
+				throw new KettleException(
+						"Following required files are missing: " + message);
+		}
+
+		List nonAccessibleFiles = data.files.getNonAccessibleFiles();
+		if (nonAccessibleFiles.size() != 0) {
+			String message = getRequiredFilesDescription(nonAccessibleFiles);
+			log.logBasic(debug, "WARNING: Not accessible " + message);
+			if (meta.isErrorIgnored())
+				for (Iterator iter = nonAccessibleFiles.iterator(); iter
+						.hasNext();) {
+					data.dataErrorLineHandler
+							.handleNonAccessibleFile((File) iter.next());
+				}
+			else
+				throw new KettleException(
+						"Following required files are not accessible: "
+								+ message);
+		}
+		debug = "End of Required files";
+	}
+
+	private String getRequiredFilesDescription(List nonExistantFiles) {
+		StringBuffer buffer = new StringBuffer();
+		for (Iterator iter = nonExistantFiles.iterator(); iter.hasNext();) {
+			File file = (File) iter.next();
+			buffer.append(file.getPath());
+			buffer.append(Const.CR);
+		}
+		return buffer.toString();
+	}
+
 	private boolean closeLastFile()
 	{
 	    try
@@ -964,9 +1012,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 		    if (!closeLastFile()) return false;
             
 		    // Is this the last file?
-			data.isLastFile = ( data.filenr==data.files.length-1);
-			data.filename = data.files[data.filenr];
-			data.file = new File(data.filename);
+			data.isLastFile = ( data.filenr==data.files.nrOfFiles()-1);
+			data.file = data.files.getFile(data.filenr);
+			data.filename = data.file.getPath();
 
             debug="openNextFile : open file";
 			logBasic("Opening file: "+data.filename);
@@ -1074,15 +1122,15 @@ public class TextFileInput extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			data.files = meta.getFiles();
-			if (data.files==null || data.files.length==0)
+			initErrorHandling();
+			initReplayFactory();
+			data.setDateFormatLenient(meta.isDateFormatLenient());
+			data.files = meta.getTextFileList();
+			if (data.files.nrOfFiles()==0)
 			{
 				logError("No file(s) specified! Stop processing.");
 				return false;
 			}
-			data.setDateFormatLenient(meta.isDateFormatLenient());
-			initReplayFactory();
-			initErrorHandling();
 		    return true;
 		}
 		return false;
@@ -1102,9 +1150,18 @@ public class TextFileInput extends BaseStep implements StepInterface
 	private void initErrorHandling() {
 		List dataErrorLineHandlers = new ArrayList(2);
 		if (meta.getLineNumberFilesDestinationDirectory() != null)
-			dataErrorLineHandlers.add(new TextFileLineNumberErrorHandler(getTrans().getCurrentDate(), meta.getLineNumberFilesDestinationDirectory(), meta.getLineNumberFilesExtension(), meta
-					.getEncoding()));
-		data.dataErrorLineHandler = new CompositeTextFileLineErrorHandler(dataErrorLineHandlers);
+			dataErrorLineHandlers
+					.add(new TextFileErrorHandlerContentLineNumber(getTrans()
+							.getCurrentDate(), meta
+							.getLineNumberFilesDestinationDirectory(), meta
+							.getLineNumberFilesExtension(), meta.getEncoding()));
+		if (meta.getErrorLineFilesDestinationDirectory() != null)
+			dataErrorLineHandlers.add(new TextFileErrorHandlerMissingFiles(
+					getTrans().getCurrentDate(), meta
+							.getErrorLineFilesDestinationDirectory(), meta
+							.getErrorLineFilesExtension(), meta.getEncoding()));
+		data.dataErrorLineHandler = new CompositeTextFileErrorHandler(
+				dataErrorLineHandlers);
 	}
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)

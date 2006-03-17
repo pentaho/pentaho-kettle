@@ -24,8 +24,8 @@ package be.ibridge.kettle.trans.step.textfileinput;
 import java.io.File;
 import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.Shell;
@@ -50,7 +50,11 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 {
-    public final static int    TYPE_TRIM_NONE  = 0;
+    private static final String NO = "N";
+
+	private static final String YES = "Y";
+
+	public final static int    TYPE_TRIM_NONE  = 0;
 
     public final static int    TYPE_TRIM_LEFT  = 1;
 
@@ -65,6 +69,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
     /** Wildcard or filemask (regular expression) */
     private String             fileMask[];
+    
+    /** Array of boolean values as string, indicating if a file is required. */
+    private String             fileRequired[];
 
     /** Type of file: CSV or fixed */
     private String             fileType;
@@ -267,6 +274,13 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return fileMask;
     }
+    
+    /**
+     * @return Returns the fileRequired.
+     */
+    public String[] getFileRequired() {
+    	return fileRequired;
+	}
 
     /**
      * @param fileMask The fileMask to set.
@@ -274,6 +288,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     public void setFileMask(String[] fileMask)
     {
         this.fileMask = fileMask;
+    }
+    
+    /**
+     * @param fileRequired The fileRequired to set.
+     */
+    public void setFileRequired(String[] fileRequired)
+    {
+        this.fileRequired = fileRequired;
     }
 
     /**
@@ -516,6 +538,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         fileName = new String[nrfiles];
         fileMask = new String[nrfiles];
+        fileRequired = new String[nrfiles];
 
         inputFields = new TextFileInputField[nrfields];
         
@@ -562,6 +585,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         {
             fileName[i] = "filename" + (i + 1);
             fileMask[i] = "";
+            fileRequired[i] = NO;
         }
 
         for (int i = 0; i < nrfields; i++)
@@ -660,6 +684,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         {
             retval += "      " + XMLHandler.addTagValue("name", fileName[i]);
             retval += "      " + XMLHandler.addTagValue("filemask", fileMask[i]);
+            retval += "      " + XMLHandler.addTagValue("file_required", fileRequired[i]);
         }
         retval += "      " + XMLHandler.addTagValue("type", fileType);
         retval += "      " + XMLHandler.addTagValue("zipped", zipped);
@@ -724,23 +749,23 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         {
             separator = XMLHandler.getTagValue(stepnode, "separator");
             enclosure = XMLHandler.getTagValue(stepnode, "enclosure");
-            breakInEnclosureAllowed = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "enclosure_breaks"));
+            breakInEnclosureAllowed = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "enclosure_breaks"));
             escapeCharacter = XMLHandler.getTagValue(stepnode, "escapechar");
-            header = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
+            header = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
             nrHeaderLines = Const.toInt( XMLHandler.getTagValue(stepnode, "nr_headerlines"), 1);
-            footer = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
+            footer = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
             nrFooterLines = Const.toInt( XMLHandler.getTagValue(stepnode, "nr_footerlines"), 1);
-            lineWrapped = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "line_wrapped"));
+            lineWrapped = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "line_wrapped"));
             nrWraps = Const.toInt( XMLHandler.getTagValue(stepnode, "nr_wraps"), 1);
-            layoutPaged = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "layout_paged"));
+            layoutPaged = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "layout_paged"));
             nrLinesPerPage = Const.toInt( XMLHandler.getTagValue(stepnode, "nr_lines_per_page"), 1);
             nrLinesDocHeader = Const.toInt( XMLHandler.getTagValue(stepnode, "nr_lines_doc_header"), 1);
 
             String nempty = XMLHandler.getTagValue(stepnode, "noempty");
-            noEmptyLines = "Y".equalsIgnoreCase(nempty) || nempty == null;
-            includeFilename = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include"));
+            noEmptyLines = YES.equalsIgnoreCase(nempty) || nempty == null;
+            includeFilename = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include"));
             filenameField = XMLHandler.getTagValue(stepnode, "include_field");
-            includeRowNumber = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
+            includeRowNumber = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
             rowNumberField = XMLHandler.getTagValue(stepnode, "rownum_field");
             fileFormat = XMLHandler.getTagValue(stepnode, "format");
             encoding = XMLHandler.getTagValue(stepnode, "encoding");
@@ -758,12 +783,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             {
                 Node filenamenode = XMLHandler.getSubNodeByNr(filenode, "name", i);
                 Node filemasknode = XMLHandler.getSubNodeByNr(filenode, "filemask", i);
+                Node fileRequirednode = XMLHandler.getSubNodeByNr(filenode, "file_required", i);
                 fileName[i] = XMLHandler.getNodeValue(filenamenode);
                 fileMask[i] = XMLHandler.getNodeValue(filemasknode);
+                fileRequired[i] = XMLHandler.getNodeValue(fileRequirednode);
             }
 
             fileType = XMLHandler.getTagValue(stepnode, "file", "type");
-            zipped = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "zipped"));
+            zipped = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "zipped"));
 
             // Backward compatibility : just one filter
             if (XMLHandler.getTagValue(stepnode, "filter")!=null)
@@ -773,7 +800,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
                 
                 filter[0].setFilterPosition( Const.toInt(XMLHandler.getTagValue(stepnode, "filter_position"), -1) );
                 filter[0].setFilterString( XMLHandler.getTagValue(stepnode, "filter_string") );
-                filter[0].setFilterLastLine( "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filter_is_last_line")) );
+                filter[0].setFilterLastLine( YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "filter_is_last_line")) );
             }
             else
             {
@@ -784,7 +811,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
                     filter[i].setFilterPosition( Const.toInt(XMLHandler.getTagValue(fnode, "filter_position"), -1) );
                     filter[i].setFilterString( XMLHandler.getTagValue(fnode, "filter_string") );
-                    filter[i].setFilterLastLine( "Y".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "filter_is_last_line")) );
+                    filter[i].setFilterLastLine( YES.equalsIgnoreCase(XMLHandler.getTagValue(fnode, "filter_is_last_line")) );
                 }
             }
 
@@ -807,7 +834,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
                 String srepeat = XMLHandler.getTagValue(fnode, "repeat");
                 if (srepeat != null)
-                    field.setRepeated("Y".equalsIgnoreCase(srepeat));
+                    field.setRepeated(YES.equalsIgnoreCase(srepeat));
                 else
                     field.setRepeated(false);
 
@@ -817,7 +844,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             // Is there a limit on the number of rows we process?
             rowLimit = Const.toLong( XMLHandler.getTagValue(stepnode, "limit"), 0L);
 
-            errorIgnored = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "error_ignored") );
+            errorIgnored = YES.equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "error_ignored") );
             errorCountField = XMLHandler.getTagValue(stepnode, "error_count_field");
             errorFieldsField = XMLHandler.getTagValue(stepnode, "error_fields_field");
             errorTextField = XMLHandler.getTagValue(stepnode, "error_text_field");
@@ -828,7 +855,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             lineNumberFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "line_number_files_destination_directory");
             lineNumberFilesExtension = XMLHandler.getTagValue(stepnode, "line_number_files_extension");
             // Backward compatible
-            dateFormatLenient = ! "N".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "date_format_lenient"));
+            dateFormatLenient = ! NO.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "date_format_lenient"));
         }
         catch (Exception e)
         {
@@ -874,6 +901,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             {
                 fileName[i] = rep.getStepAttributeString(id_step, i, "file_name");
                 fileMask[i] = rep.getStepAttributeString(id_step, i, "file_mask");
+                fileRequired[i] = rep.getStepAttributeString(id_step, i, "file_required");
+                if(!YES.equalsIgnoreCase(fileRequired[i]))
+                	fileRequired[i] = NO;
             }
             fileType = rep.getStepAttributeString(id_step, "file_type");
             zipped = rep.getStepAttributeBoolean(id_step, "file_zipped");
@@ -957,6 +987,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             {
                 rep.saveStepAttribute(id_transformation, id_step, i, "file_name", fileName[i]);
                 rep.saveStepAttribute(id_transformation, id_step, i, "file_mask", fileMask[i]);
+                rep.saveStepAttribute(id_transformation, id_step, i, "file_required", fileRequired[i]);
             }
             rep.saveStepAttribute(id_transformation, id_step, "file_type", fileType);
             rep.saveStepAttribute(id_transformation, id_step, "file_zipped", zipped);
@@ -1022,20 +1053,29 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         return trimTypeDesc[i];
     }
 
-    public String[] getFiles()
+    public String[] getFilePaths()
     {
-        String files[] = null;
+    	List fileList = getTextFileList().getFiles();
+		String[] filePaths = new String[fileList.size()];
+    	for (int i = 0; i < filePaths.length; i++) {
+			filePaths[i] = ((File) fileList.get(i)).getPath();
+		}
+    	return filePaths;
+    }
+    
+    public TextFileList getTextFileList()
+    {
+    	TextFileList textFileList = new TextFileList();
 
         // Replace possible environment variables...
         final String realfile[] = Const.replEnv(fileName);
         final String realmask[] = Const.replEnv(fileMask);
 
-        ArrayList filelist = new ArrayList();
-
         for (int i = 0; i < realfile.length; i++)
         {
             final String onefile = realfile[i];
             final String onemask = realmask[i];
+            final boolean onerequired = YES.equalsIgnoreCase(fileRequired[i]);
 
             // System.out.println("Checking file ["+onefile+"] mask ["+onemask+"]");
 
@@ -1044,7 +1084,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
                 File file = new File(onefile);
                 try
                 {
-                    files = file.list(new FilenameFilter()
+                    String[] fileNames = file.list(new FilenameFilter()
                     {
                         public boolean accept(File dir, String name)
                         {
@@ -1052,55 +1092,39 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
                         }
                     });
 
-                    for (int j = 0; j < files.length; j++)
-                    {
-                        if (!onefile.endsWith(Const.FILE_SEPARATOR))
-                        {
-                            files[j] = onefile + Const.FILE_SEPARATOR + files[j];
-                        }
-                        else
-                        {
-                            files[j] = onefile + files[j];
-                        }
-                    }
+                    if (fileNames != null)
+						for (int j = 0; j < fileNames.length; j++) {
+							textFileList.addFile(new File(file, fileNames[j]));
+						}
                 }
                 catch (Exception e)
                 {
-                    files = null;
+                    //do othing
+                	e.printStackTrace();
                 }
             }
             else
             // A normal file...
             {
-                // Check if it exists...
-                File file = new File(onefile);
-                if (file.exists() && file.isFile() && file.canRead())
-                {
-                    files = new String[] { onefile };
-                }
-                else
-                // File is not accessible to us.
-                {
-                    files = null;
-                }
-            }
-
-            // System.out.println(" --> found "+(files==null?0:files.length)+" files");
-
-            // Add to our list...
-            if (files != null) for (int x = 0; x < files.length; x++)
-            {
-                filelist.add(files[x]);
+            	File file = new File(onefile);
+				if (file.exists()) {
+					if (file.canRead()) {
+						if (file.isFile())
+							textFileList.addFile(file);
+					} else if (onerequired)
+						textFileList.addNonAccessibleFile(file);
+				} else if (onerequired)
+					textFileList.addNonExistantFile(file);
             }
         }
         
         // Sort the list: quicksort
-        Collections.sort(filelist);
+        textFileList.sortFiles();
         
         // OK, return the list in filelist...
-        files = (String[]) filelist.toArray(new String[filelist.size()]);
+//        files = (String[]) filelist.toArray(new String[filelist.size()]);
 
-        return files;
+        return textFileList;
     }
 
     public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
@@ -1119,15 +1143,15 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             remarks.add(cr);
         }
 
-        String files[] = getFiles();
-        if (files == null || files.length == 0)
+        TextFileList textFileList = getTextFileList();
+        if (textFileList.nrOfFiles() == 0)
         {
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No files can be found to read.", stepinfo);
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "This step is reading " + files.length + " files.", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "This step is reading " + textFileList.nrOfFiles() + " files.", stepinfo);
             remarks.add(cr);
         }
     }
@@ -1373,5 +1397,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setDateFormatLenient(boolean dateFormatLenient) {
 		this.dateFormatLenient = dateFormatLenient;
 	}
+
+	
 
 }

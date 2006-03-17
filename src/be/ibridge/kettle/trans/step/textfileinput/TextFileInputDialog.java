@@ -84,6 +84,7 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 
 public class TextFileInputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static final String[] YES_NO_COMBO = new String[] { "N", "Y" };
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
@@ -495,17 +496,17 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wFirstHeader.setLayoutData(fdFirstHeader);
 
 		
-		ColumnInfo[] colinfo=new ColumnInfo[2];
+		ColumnInfo[] colinfo=new ColumnInfo[3];
 		colinfo[ 0]=new ColumnInfo("File/Directory",  ColumnInfo.COLUMN_TYPE_TEXT,    false);
 		colinfo[ 1]=new ColumnInfo("Wildcard",        ColumnInfo.COLUMN_TYPE_TEXT,    false );
-		
 		colinfo[ 1].setToolTip("Enter a regular expression here and a directory in the first column.");
-		
+		colinfo[ 2]=new ColumnInfo("Required",        ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
+		colinfo[ 2].setToolTip("Is this file required? "+ Const.CR + "Only used for files without wildcards.");
 		
 		wFilenameList = new TableView(wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
 						      colinfo, 
-						      2,  
+						      3,  
 						      lsMod,
 							  props
 						      );
@@ -641,7 +642,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				{
 					TextFileInputMeta tfii = new TextFileInputMeta();
 					getInfo(tfii);
-					String files[] = tfii.getFiles();
+					String files[] = tfii.getFilePaths();
 					if (files!=null && files.length>0)
 					{
 						EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, "Files read", "Files read:");
@@ -1570,7 +1571,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             {
              new ColumnInfo("Filter string",      ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo("Filter position",    ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Stop on filter",     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { "N", "Y" } )
+             new ColumnInfo("Stop on filter",     ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO )
             };
         
         colinf[2].setToolTip("set this field to Y if you want to stop processing when the filter is encountered");
@@ -1749,7 +1750,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			wFilenameList.removeAll();
 			for (int i=0;i<in.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] } );
+				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i], in.getFileRequired()[i] } );
 			}
 			wFilenameList.removeEmptyRows();
 			wFilenameList.setRowNums();
@@ -1928,6 +1929,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 		in.setFileName( wFilenameList.getItems(0) );
 		in.setFileMask( wFilenameList.getItems(1) );
+		in.setFileRequired( wFilenameList.getItems(2) );
 
 		for (int i=0;i<nrfields;i++)
 		{
@@ -1992,13 +1994,13 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		TextFileInputMeta meta = new TextFileInputMeta();
 		getInfo(meta);
 						
-		String          files[] = meta.getFiles();
+		TextFileList    textFileList = meta.getTextFileList();
 		FileInputStream fileInputStream = null;
 		ZipInputStream  zipInputStream = null ;
 		InputStream     inputStream  = null;
         String          fileFormat = wFormat.getText();
         
-		if (files!=null && files.length>0)
+		if (textFileList.nrOfFiles()>0)
 		{
 			int clearFields = meta.hasHeader()?SWT.YES:SWT.NO;
 			int nrInputFields = meta.getInputFields().length;
@@ -2018,7 +2020,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 					wFields.table.removeAll();
 				}
 
-				fileInputStream = new FileInputStream(new File(files[0]));
+				fileInputStream = new FileInputStream(textFileList.getFile(0));
 				Table table = wFields.table;
 				
 				if (meta.isZipped())
@@ -2240,7 +2242,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         try
         {
-    		if (info.getFiles()!=null && info.getFiles().length>0)
+    		if (info.getTextFileList().nrOfFiles()>0)
     		{
     			String shellText = "Nr of lines to view.  0 means all lines.";
     			String lineText = "Number of lines (0=all lines)";
@@ -2289,7 +2291,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	{
 		TextFileInputMeta info = new TextFileInputMeta();
 		getInfo(info);
-		String files[] = info.getFiles();
+		TextFileList textFileList = info.getTextFileList();
 		
         FileInputStream fi = null;
 		ZipInputStream  zi = null ;
@@ -2297,12 +2299,12 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		ArrayList retval = new ArrayList();
 		
-		if (files!=null && files.length>0)
+		if (textFileList.nrOfFiles()>0)
 		{
-			String filename = files[0];
+			File file = textFileList.getFile(0);
 			try
 			{
-				fi = new FileInputStream(new File(filename));
+				fi = new FileInputStream(file);
 				
 				if (info.isZipped())
 				{
@@ -2368,7 +2370,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			}
 			catch(Exception e)
 			{
-                throw new KettleException("Error getting first "+nrlines+" from file "+filename, e);
+                throw new KettleException("Error getting first "+nrlines+" from file "+file.getPath(), e);
 			}
 			finally
 			{

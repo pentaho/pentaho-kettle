@@ -380,8 +380,6 @@ public class SpoonLog extends Composite
 				date = df.parse(dateString);
 				return null;
 			} catch (ParseException e) {
-				log.logBasic(toString(), "Could not parse Replay date "
-						+ dateString);
 				return "Invalid Replay date, should have format "
 						+ Trans.REPLAY_DATE_FORMAT;
 			}

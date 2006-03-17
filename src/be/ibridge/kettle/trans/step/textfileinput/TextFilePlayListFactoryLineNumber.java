@@ -106,7 +106,7 @@ public class TextFilePlayListFactoryLineNumber implements
 
 	private void initializeCurrentPlayList(TextFileLine textFileLine)
 			throws KettleException {
-		File lineFile = AbstractTextFileLineErrorHandler.getLineNumberFilename(
+		File lineFile = AbstractTextFileErrorHandler.getLineNumberFilename(
 				directory, textFileLine.file.getName(), replayDate, extension);
 		if (lineFile.exists())
 			currentPlayList = new TextFilePlayLineNumber(lineFile, encoding,
