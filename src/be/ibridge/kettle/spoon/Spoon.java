@@ -191,7 +191,7 @@ public class Spoon
 	
 	public  Repository rep;
 		
-	public  TransMeta transMeta;
+	private TransMeta transMeta;
 
 	private ToolBar  tBar;
 
@@ -218,6 +218,8 @@ public class Spoon
 	 		
 	public  KeyAdapter defKeys;
 	public  KeyAdapter modKeys;
+
+    private SpoonHistory spoonhist;
 
 		
 	public Spoon(LogWriter l, Repository rep)
@@ -1316,16 +1318,22 @@ public class Spoon
 		CTabItem   tiTabsList  = new CTabItem(tabfolder, SWT.NULL); 
 		tiTabsList.setText("Log view");
 		tiTabsList.setToolTipText("Displays the log of the running transformation.");
-		
+
+        CTabItem   tiTabsHist  = new CTabItem(tabfolder, SWT.NULL); 
+        tiTabsHist.setText("History");
+        tiTabsHist.setToolTipText("Displays the logs of previous runs.");
+
 		spoongraph = new SpoonGraph(tabfolder, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND, log, this);
 		spoonlog   = new SpoonLog(tabfolder, SWT.NONE, this, log, null);
+        spoonhist  = new SpoonHistory(tabfolder, SWT.NONE, this, log, null);
 		
 		tabfolder.addKeyListener(defKeys);
 		tabfolder.addKeyListener(modKeys);
 		
 		tiTabsGraph.setControl(spoongraph);
 		tiTabsList.setControl(spoonlog);
-		
+        tiTabsHist.setControl(spoonhist);
+        
 		tabfolder.setSelection(0);
 		
 		sashform.addKeyListener(defKeys);
@@ -4506,6 +4514,22 @@ public class Spoon
 		
         // Kill all remaining things in this VM!
         System.exit(0);
+    }
+
+    /**
+     * @return Returns the transMeta.
+     */
+    public TransMeta getTransMeta()
+    {
+        return transMeta;
+    }
+
+    /**
+     * @param transMeta The transMeta to set.
+     */
+    public void setTransMeta(TransMeta transMeta)
+    {
+        this.transMeta = transMeta;
     }
     
 }

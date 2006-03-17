@@ -414,7 +414,7 @@ public class SpoonLog extends Composite
 		if (!running) // Not running, start the transformation...
 		{
 			// Auto save feature...
-			if (spoon.transMeta.hasChanged())
+			if (spoon.getTransMeta().hasChanged())
 			{
 				if (spoon.props.getAutoSave()) 
 				{
@@ -441,19 +441,20 @@ public class SpoonLog extends Composite
 				}
 			}
 			
-            if ( ((spoon.transMeta.getName()!=null && spoon.rep!=null) ||     // Repository available & name set
-			      (spoon.transMeta.getFilename()!=null && spoon.rep==null )   // No repository & filename set
-			      ) && !spoon.transMeta.hasChanged()                              // Didn't change
+            if ( ((spoon.getTransMeta().getName()!=null && spoon.rep!=null) ||     // Repository available & name set
+			      (spoon.getTransMeta().getFilename()!=null && spoon.rep==null )   // No repository & filename set
+			      ) && !spoon.getTransMeta().hasChanged()                              // Didn't change
 			   )
 			{
 				if (trans==null || (trans!=null && trans.isFinished()) )
 				{
 					try
 					{
-						trans = new Trans(log, spoon.transMeta.getFilename(), spoon.transMeta.getName(), new String[] { spoon.transMeta.getFilename()} );
+						trans = new Trans(log, spoon.getTransMeta().getFilename(), spoon.getTransMeta().getName(), new String[] { spoon.getTransMeta().getFilename()} );
 						trans.setReplayDate(replayDate);
-						trans.open(spoon.rep, spoon.transMeta.getName(), spoon.transMeta.getDirectory().getPath(), spoon.transMeta.getFilename());
-						trans.setMonitored(true);
+						trans.open(spoon.rep, spoon.getTransMeta().getName(), spoon.getTransMeta().getDirectory().getPath(), spoon.getTransMeta().getFilename());
+
+                        trans.setMonitored(true);
 						log.logBasic(toString(), "Transformation opened.");
 					}
 					catch(KettleException e)
@@ -487,7 +488,7 @@ public class SpoonLog extends Composite
 			}
 			else
 			{
-				if (spoon.transMeta.hasChanged())
+				if (spoon.getTransMeta().hasChanged())
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
 					m.setText("File has changed!");
@@ -495,7 +496,7 @@ public class SpoonLog extends Composite
 					m.open();
 				}
 				else
-				if (spoon.rep!=null && spoon.transMeta.getName()==null)
+				if (spoon.rep!=null && spoon.getTransMeta().getName()==null)
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
 					m.setText("Transformation has no name!");
@@ -735,17 +736,17 @@ public class SpoonLog extends Composite
 	public void preview()
 	{
 		log.logDetailed(toString(), "PREVIEW!!!");
-		PreviewSelectDialog psd = new PreviewSelectDialog(shell, SWT.NONE, log, spoon.props, spoon.transMeta);
+		PreviewSelectDialog psd = new PreviewSelectDialog(shell, SWT.NONE, log, spoon.props, spoon.getTransMeta());
 		psd.open();
 		if (psd.previewSteps!=null)
 		{
-            Row arguments = getArguments(spoon.transMeta);
+            Row arguments = getArguments(spoon.getTransMeta());
             if (arguments!=null)
             {
                 String args[] = convertArguments(arguments);
                 
     			spoon.tabfolder.setSelection(1);
-    			trans=new Trans(log, spoon.transMeta, psd.previewSteps, psd.previewSizes);
+    			trans=new Trans(log, spoon.getTransMeta(), psd.previewSteps, psd.previewSizes);
     			trans.execute(args);
     			preview=true;
     			readLog();
@@ -859,9 +860,9 @@ public class SpoonLog extends Composite
 			line = esd.open();
 			if (line!=null)
 			{
-				for (i=0;i<spoon.transMeta.nrSteps();i++)
+				for (i=0;i<spoon.getTransMeta().nrSteps();i++)
 				{
-					StepMeta stepMeta = spoon.transMeta.getStep(i);
+					StepMeta stepMeta = spoon.getTransMeta().getStep(i);
 					if (line.indexOf( stepMeta.getName() ) >=0 )
 					{
 						spoon.editStep( stepMeta.getName() );
