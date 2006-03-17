@@ -240,7 +240,7 @@ public class TextFileCSVImportProgressDialog
             if (samples>0) monitor.worked(1);
             
             debug = "convert line #" + linenr + " to row";
-            Row r = TextFileInput.convertLineToRow(log, new TextFileLine(line, fileLineNumber), strinfo, df, dfs, daf, dafs, meta.getFiles()[0], rownumber);
+            Row r = TextFileInput.convertLineToRow(log, new TextFileLine(line, fileLineNumber, null), strinfo, df, dfs, daf, dafs, meta.getFiles()[0], rownumber);
 
             rownumber++;
             for (int i = 0; i < nrfields && i < r.size(); i++)

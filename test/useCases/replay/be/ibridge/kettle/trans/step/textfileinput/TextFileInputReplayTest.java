@@ -108,6 +108,24 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 				"14" + Const.CR + "18" + Const.CR);
 	}
 
+	public void testReplayMultipleFiles() throws Exception {
+		directory = "test/useCases/replay/textFileInputDoReplayMultipleFiles/";
+		expectFiles(directory, 7);
+		meta = new TransMeta(directory + "transform.ktr");
+		trans = new Trans(log, meta);
+		trans.setReplayDate(getReplayDate());
+		boolean ok = trans.execute(null);
+		assertTrue(ok);
+		trans.waitUntilFinished();
+		trans.endProcessing("end");
+		assertEquals(0, trans.getErrors());
+		expectFiles(directory, 9);
+		expectContent(directory + "input1.txt." + getDateFormatted() + ".line",
+				"7" + Const.CR);
+		expectContent(directory + "input3.txt." + getDateFormatted() + ".line",
+				"18" + Const.CR + "19" + Const.CR);
+	}
+
 	private Date getReplayDate() throws ParseException {
 		return AbstractTextFileLineErrorHandler.createDateFormat().parse(
 				REPLAY_DATE);

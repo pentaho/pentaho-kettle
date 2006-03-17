@@ -703,10 +703,10 @@ public class TextFileInput extends BaseStep implements StepInterface
                             }
                         }
 
-                        if (filterOK && data.textFilePlayer.isProcessingNeeded(lineNumberInFile))
+                        if (filterOK)
                         {
                             // logRowlevel("LINE READ: "+line);
-                        	data.lineBuffer.add(new TextFileLine(line, lineNumberInFile));
+                        	data.lineBuffer.add(new TextFileLine(line, lineNumberInFile, data.file));
                         }
                     }
                     else
@@ -717,22 +717,18 @@ public class TextFileInput extends BaseStep implements StepInterface
             }
 		}
 		
-		if(data.lineBuffer.isEmpty())
-		{
-			if (data.doneReading)
-			{
-				debug="empty buffer: open next file";
-	            if (!openNextFile())  // Open fails: done processing!
-	            {
-	                debug="empty buffer: close last file";
-	                closeLastFile();
-	                setOutputDone();  // signal end to receiver(s)
-	                return false;
-	            }
-			}
-			return true;
-		}
-		
+        // If the buffer is empty: open the next file. (if nothing in there, open the next, etc.)
+        while (data.lineBuffer.size()==0)
+        {
+            debug="empty buffer: open next file";
+            if (!openNextFile())  // Open fails: done processing!
+            {
+                debug="empty buffer: close last file";
+                closeLastFile();
+                setOutputDone();  // signal end to receiver(s)
+                return false;
+            }
+        }		
 
         // Take the first line available in the buffer & remove the line from the buffer
         debug="take first line of buffer";
@@ -850,13 +846,17 @@ public class TextFileInput extends BaseStep implements StepInterface
                             textLine.line+=extra;
                         }
                     }
-                    debug="normal : data";
-                    r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten+1, data.dataErrorLineHandler);
-                    if (r!=null) 
-                    {
-                        // System.out.println("Found data row: "+r);
-                        putrow = true;
-                    }
+                    debug = "normal : data";
+					if (data.textFileReplayFactory.isProcessingNeeded(textLine)) {
+						r = convertLineToRow(log, textLine, meta, data.df,
+								data.dfs, data.daf, data.dafs, data.filename,
+								linesWritten + 1, data.dataErrorLineHandler);
+						if (r != null) {
+							// System.out.println("Found data row: "+r);
+							putrow = true;
+						}
+					} else
+						putrow = false;
                 }
             }
         }
@@ -938,6 +938,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				data.fr.close();
                 data.isr.close();
                 data.filename=null; // send it down the next time.
+                data.file = null;
 		    }
 		    data.dataErrorLineHandler.close();
 	    }
@@ -965,14 +966,13 @@ public class TextFileInput extends BaseStep implements StepInterface
 		    // Is this the last file?
 			data.isLastFile = ( data.filenr==data.files.length-1);
 			data.filename = data.files[data.filenr];
+			data.file = new File(data.filename);
 
             debug="openNextFile : open file";
 			logBasic("Opening file: "+data.filename);
 
-            File file = new File(data.filename);
-			data.fr=new FileInputStream(file);
-            data.dataErrorLineHandler.handleFile(file);
-            data.textFilePlayer = data.textFileReplayFactory.createPlayer(file);
+            data.fr=new FileInputStream(data.file);
+            data.dataErrorLineHandler.handleFile(data.file);
 
             if (meta.isZipped())
             {
@@ -1041,8 +1041,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                     // logRowlevel("LINE READ: "+line);
                     linesInput++;
                     lineNumberInFile++;
-                    if(data.textFilePlayer.isProcessingNeeded(lineNumberInFile))
-                    	data.lineBuffer.add(new TextFileLine(line, lineNumberInFile)); // Store it in the line buffer...
+                    data.lineBuffer.add(new TextFileLine(line, lineNumberInFile, data.file)); // Store it in the line buffer...
                 }
                 else
                 {
@@ -1094,7 +1093,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		if (replayDate == null)
 			data.textFileReplayFactory = TextFilePlayerAll.INSTANCE;
 		else
-			data.textFileReplayFactory = new TextFileReplayFactoryLineNumber(
+			data.textFileReplayFactory = new TextFilePlayListFactoryLineNumber(
 					replayDate, meta.getLineNumberFilesDestinationDirectory(),
 					meta.getLineNumberFilesExtension(), meta
 							.getEncoding());

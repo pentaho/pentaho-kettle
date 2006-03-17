@@ -1,17 +1,10 @@
 package be.ibridge.kettle.trans.step.textfileinput;
 
-import java.io.File;
+public class TextFilePlayerAll implements TextFilePlayListFactory {
 
-public class TextFilePlayerAll implements TextFileReplayFactory,
-		TextFilePlayer {
+	public static final TextFilePlayListFactory INSTANCE = new TextFilePlayerAll();
 
-	public static final TextFileReplayFactory INSTANCE = new TextFilePlayerAll();
-
-	public TextFilePlayer createPlayer(File file) {
-		return this;
-	}
-
-	public boolean isProcessingNeeded(long lineNumberInFile) {
+	public boolean isProcessingNeeded(TextFileLine textFileLine) {
 		return true;
 	}
 

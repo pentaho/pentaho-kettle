@@ -15,11 +15,15 @@
  
 package be.ibridge.kettle.spoon;
 import java.io.FileInputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -367,8 +371,45 @@ public class SpoonLog extends Composite
 		startstop(null);
 	}
 	
+	final class DateValidator implements IInputValidator {
+		final SimpleDateFormat df = new SimpleDateFormat(Trans.REPLAY_DATE_FORMAT);
+		Date date = null;
+
+		public String isValid(String dateString) {
+			try {
+				date = df.parse(dateString);
+				return null;
+			} catch (ParseException e) {
+				log.logBasic(toString(), "Could not parse Replay date "
+						+ dateString);
+				return "Invalid Replay date, should have format "
+						+ Trans.REPLAY_DATE_FORMAT;
+			}
+		}
+	}
 	
-	public void startstop(Date replayDate)
+	public void startstopReplay() {
+		DateValidator dateValidator = new DateValidator();
+		InputDialog id = new InputDialog(shell,
+				"Enter Replay Transformation date",
+				"What's the execution date of the transformation" + Const.CR
+						+ "you want to replay?", dateValidator.df.format(new Date()),
+				dateValidator);
+		int answer = id.open();
+		if (answer == 1) {
+			log.logDebug(toString(), "Cancel replay");
+			return;
+		}
+		if (dateValidator.date == null) {
+			log.logDebug(toString(), "Cancel replay");
+			return;
+		}
+		startstop(dateValidator.date);
+	}
+	
+	
+	
+	private void startstop(Date replayDate)
 	{
 		if (!running) // Not running, start the transformation...
 		{

@@ -894,6 +894,12 @@ public class Spoon
 		tiFilePreview.setImage(imFilePreview);
 		tiFilePreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoonlog.preview(); }});
 		tiFilePreview.setToolTipText("Preview this transformation");
+		
+		final ToolItem tiFileReplay = new ToolItem(tBar, SWT.PUSH);
+		final Image imFileReplay = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"replay.png")); 
+		tiFileReplay.setImage(imFileReplay);
+		tiFileReplay.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { tabfolder.setSelection(1); spoonlog.startstopReplay(); }});
+		tiFileReplay.setToolTipText("Replay this transformation");
 
 		new ToolItem(tBar, SWT.SEPARATOR);
 		final ToolItem tiFileCheck = new ToolItem(tBar, SWT.PUSH);

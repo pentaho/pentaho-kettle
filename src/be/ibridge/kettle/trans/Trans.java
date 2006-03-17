@@ -16,6 +16,7 @@
 
 package be.ibridge.kettle.trans;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -50,6 +51,8 @@ import be.ibridge.kettle.trans.step.mappingoutput.MappingOutput;
  */
 public class Trans
 {	
+	public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
+	
 	private LogWriter log;
 	private TransMeta transMeta;
 
@@ -236,11 +239,11 @@ public class Trans
 			log.logBasic(toString(), "Nr of arguments detected: "+transMeta.getArguments().length);
 		}
 		
-		if (getReplayDate()!=null)
-		{
-			log.logBasic(toString(), "This is a replay transformation for : "+getReplayDate());
-		}else
-		{
+		if (getReplayDate() != null) {
+			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
+			log.logBasic(toString(), "This is a replay transformation for : "
+					+ df.format(getReplayDate()));
+		} else {
 			log.logBasic(toString(), "This is not a replay transformation");
 		}
 		
@@ -730,7 +733,8 @@ public class Trans
 			logDate     = new Date();
 			startDate   = Const.MIN_DATE;
 			endDate     = currentDate;
-			log.logBasic(toString(), "This transformation can be replayed with replay date: " +currentDate);
+			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
+			log.logBasic(toString(), "This transformation can be replayed with replay date: " + df.format(currentDate));
             
             Database ldb = null;
             try

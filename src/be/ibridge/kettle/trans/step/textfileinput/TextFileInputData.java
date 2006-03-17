@@ -15,6 +15,7 @@
 
 package be.ibridge.kettle.trans.step.textfileinput;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.text.DateFormatSymbols;
@@ -61,6 +62,8 @@ public class TextFileInputData extends BaseStepData implements
 	public boolean isLastFile;
 
 	public String filename;
+	
+	public File file;
 
 	public int filenr;
 
@@ -82,9 +85,7 @@ public class TextFileInputData extends BaseStepData implements
 
 	public TextFileLineErrorHandler dataErrorLineHandler;
 
-	public TextFileReplayFactory textFileReplayFactory;
-
-	public TextFilePlayer textFilePlayer;
+	public TextFilePlayListFactory textFileReplayFactory;
 
 	/**
 	 * 
