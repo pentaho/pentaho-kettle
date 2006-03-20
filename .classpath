@@ -15,7 +15,6 @@
 	<classpathentry kind="lib" path="libext/mail.jar"/>
 	<classpathentry kind="lib" path="libext/ojdbc14.jar"/>
 	<classpathentry kind="lib" path="libext/orai18n.jar"/>
-	<classpathentry kind="lib" path="libext/pg74.215.jdbc3.jar"/>
 	<classpathentry kind="lib" path="libext/SQLBaseJDBC.jar"/>
 	<classpathentry kind="lib" path="libswt/jface.jar"/>
 	<classpathentry kind="lib" path="libswt/runtime.jar"/>
@@ -36,5 +35,6 @@
 	<classpathentry kind="lib" path="libext/mysql-connector-java-3.0.17-ga-bin.jar"/>
 	<classpathentry output="testClasses" kind="src" path="test/useCases/replay"/>
 	<classpathentry kind="lib" path="test/libext/junit.jar"/>
+	<classpathentry kind="lib" path="libext/postgresql-8.1-405.jdbc3.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
