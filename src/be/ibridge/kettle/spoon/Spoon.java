@@ -2389,6 +2389,7 @@ public class Spoon
 					refreshTree(true);
 				}
 			}
+            spoonhist.refreshHistory();
 		}
 	}
 	

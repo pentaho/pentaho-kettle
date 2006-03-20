@@ -64,6 +64,8 @@ public class SpoonHistory extends Composite
 	private FormData fdText, fdSash, fdRefresh; 
 	
 	private Spoon spoon;
+
+    private ArrayList rowList;
 	
 	public SpoonHistory(Composite parent, int style, Spoon sp, LogWriter l, String fname)
 	{
@@ -98,8 +100,7 @@ public class SpoonHistory extends Composite
             new ColumnInfo("Start date",      ColumnInfo.COLUMN_TYPE_TEXT, false, true),
             new ColumnInfo("End date",        ColumnInfo.COLUMN_TYPE_TEXT, false, true),
     		new ColumnInfo("Log date",        ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Dependency date", ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-    		new ColumnInfo("Time",            ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+            new ColumnInfo("Dependency date", ColumnInfo.COLUMN_TYPE_TEXT, false, true)
         };
 		
         for (int i=0;i<colinf.length;i++) colinf[i].setAllignement(SWT.RIGHT);
@@ -154,6 +155,15 @@ public class SpoonHistory extends Composite
             };
 		
 		wRefresh.addSelectionListener(lsRefresh);
+        
+        wFields.table.addSelectionListener(new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent e)
+                {
+                    showLogEntry();
+                }
+            }
+        );
 	}
 	
 	public void refreshHistory()
@@ -171,11 +181,13 @@ public class SpoonHistory extends Composite
                     {
                         // open a connection
                         database = new Database(transMeta.getLogConnection());
+                        database.connect();
+                        
                         Row params = new Row();
                         params.addValue(new Value("transname", transMeta.getName()));
                         ResultSet resultSet = database.openQuery("SELECT * FROM "+transMeta.getLogTable()+" WHERE TRANSNAME = ?", params);
                         
-                        ArrayList rowList = new ArrayList();
+                        rowList = new ArrayList();
                         Row row = database.getRow(resultSet);
                         while (row!=null)
                         {
@@ -193,31 +205,27 @@ public class SpoonHistory extends Composite
                             {
                                 row = (Row) rowList.get(i);
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
-                                item.setText(0, row.getString("TRANSNAME", ""));                                
-                                item.setText(1, row.getString("TRANSNAME", ""));          
-                                
-                                
-                                
-                                /*
-                                 *             new ColumnInfo("Batch ID",        ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Status",          ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Read",            ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Written",         ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Updated",         ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Input",           ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Output",          ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Errors",          ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Start date",      ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("End date",        ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Log date",        ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Dependency date", ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Time",            ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-
-                                 */
-                                
+                                item.setText( 0, row.getString("BATCH_ID", ""));          
+                                item.setText( 1, row.getString("STATUS", ""));          
+                                item.setText( 2, row.getString("LINES_READ", ""));          
+                                item.setText( 3, row.getString("LINES_WRITTEN", ""));          
+                                item.setText( 4, row.getString("LINES_UPDATED", ""));          
+                                item.setText( 5, row.getString("LINES_INPUT", ""));          
+                                item.setText( 6, row.getString("LINES_OUTPUT", ""));          
+                                item.setText( 7, row.getString("ERRORS", ""));          
+                                item.setText( 8, row.getString("STARTDATE", ""));          
+                                item.setText( 9, row.getString("ENDDATE", ""));          
+                                item.setText(10, row.getString("LOGDATE", ""));          
+                                item.setText(11, row.getString("DEPDATE", ""));                                
                             }
+                            
+                            wFields.removeEmptyRows();
+                            wFields.setRowNums();
+                            wFields.optWidth(true);
+                            wFields.table.setSelection(0);
+                            
+                            showLogEntry();
                         }
-                        
                     }
                     catch(KettleException e)
                     {
@@ -231,10 +239,25 @@ public class SpoonHistory extends Composite
                 }
             }
         }
-        
 	}
     	
-	public String toString()
+	public void showLogEntry()
+    {
+        // grab the selected line in the table:
+        int nr = wFields.table.getSelectionIndex();
+        if (nr>=0 && nr<rowList.size())
+        {
+            // OK, grab this one from the buffer...
+            Row row = (Row) rowList.get(nr);
+            String logging = row.getString("LOG_FIELD", "");
+            if (logging!=null) 
+            {
+                wText.setText(logging);
+            }
+        }
+    }
+
+    public String toString()
 	{
 		return Spoon.APP_NAME;
 	}
