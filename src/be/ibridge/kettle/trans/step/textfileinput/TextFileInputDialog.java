@@ -237,6 +237,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private Label        wlErrorIgnored;
     private Button       wErrorIgnored;
     private FormData     fdlErrorIgnored, fdErrorIgnored;
+    
+    private Label        wlSkipErrorLines;
+    private Button       wSkipErrorLines;
+    private FormData     fdlSkipErrorLines, fdSkipErrorLines;
 
     private Label        wlErrorCount;
     private Text         wErrorCount;
@@ -1273,13 +1277,30 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdErrorIgnored.left = new FormAttachment(middle, 0);
         fdErrorIgnored.top = new FormAttachment(0, margin);
         wErrorIgnored.setLayoutData(fdErrorIgnored);
+        
+        // Skip error lines?
+        wlSkipErrorLines = new Label(wErrorComp, SWT.RIGHT);
+        wlSkipErrorLines.setText("Skip error lines? ");
+        props.setLook(wlSkipErrorLines);
+        fdlSkipErrorLines = new FormData();
+        fdlSkipErrorLines.left = new FormAttachment(0, 0);
+        fdlSkipErrorLines.top = new FormAttachment(wErrorIgnored, margin);
+        fdlSkipErrorLines.right = new FormAttachment(middle, -margin);
+        wlSkipErrorLines.setLayoutData(fdlSkipErrorLines);
+        wSkipErrorLines = new Button(wErrorComp, SWT.CHECK);
+        props.setLook(wSkipErrorLines);
+        wSkipErrorLines.setToolTipText("Skip error lines or use null-values on incompatible types?");
+        fdSkipErrorLines = new FormData();
+        fdSkipErrorLines.left = new FormAttachment(middle, 0);
+        fdSkipErrorLines.top = new FormAttachment(wErrorIgnored, margin);
+        wSkipErrorLines.setLayoutData(fdSkipErrorLines);
 
         wlErrorCount=new Label(wErrorComp, SWT.RIGHT);
         wlErrorCount.setText("Error count fieldname ");
         props.setLook(wlErrorCount);
         fdlErrorCount=new FormData();
         fdlErrorCount.left = new FormAttachment(0, 0);
-        fdlErrorCount.top  = new FormAttachment(wErrorIgnored, margin);
+        fdlErrorCount.top  = new FormAttachment(wSkipErrorLines, margin);
         fdlErrorCount.right= new FormAttachment(middle, -margin);
         wlErrorCount.setLayoutData(fdlErrorCount);
         wErrorCount=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -1287,7 +1308,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wErrorCount.addModifyListener(lsMod);
         fdErrorCount=new FormData();
         fdErrorCount.left = new FormAttachment(middle, 0);
-        fdErrorCount.top  = new FormAttachment(wErrorIgnored, margin);
+        fdErrorCount.top  = new FormAttachment(wSkipErrorLines, margin);
         fdErrorCount.right= new FormAttachment(100, 0);
         wErrorCount.setLayoutData(fdErrorCount);
 
@@ -1694,6 +1715,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wInclRownumField.setEnabled(wInclRownum.getSelection());
 
         // Error handling tab...
+        wlSkipErrorLines.setEnabled( wErrorIgnored.getSelection() );
+        wSkipErrorLines.setEnabled( wErrorIgnored.getSelection() );
         wlErrorCount.setEnabled( wErrorIgnored.getSelection() );
         wErrorCount.setEnabled( wErrorIgnored.getSelection() );
         wlErrorFields.setEnabled( wErrorIgnored.getSelection() );
@@ -1816,6 +1839,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         // Error handling fields...
         wErrorIgnored.setSelection( in.isErrorIgnored() );
+        wSkipErrorLines.setSelection( in.isErrorLineSkipped() );
         if (in.getErrorCountField()!=null) wErrorCount.setText( in.getErrorCountField() );
         if (in.getErrorFieldsField()!=null) wErrorFields.setText( in.getErrorFieldsField() );
         if (in.getErrorTextField()!=null) wErrorText.setText( in.getErrorTextField() );
@@ -1964,6 +1988,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         }
         // Error handling fields...
         in.setErrorIgnored( wErrorIgnored.getSelection() );
+        in.setErrorLineSkipped( wSkipErrorLines.getSelection() );
         in.setErrorCountField( wErrorCount.getText() );
         in.setErrorFieldsField( wErrorFields.getText() );
         in.setErrorTextField( wErrorText.getText() );

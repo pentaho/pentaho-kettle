@@ -478,6 +478,9 @@ public class TextFileInput extends BaseStep implements StepInterface {
 								dataErrorLineHandler
 										.handleLineError(textFileLine);
 							}
+							
+							if (info.isErrorLineSkipped())
+								return null;
 						} else {
 							throw new KettleException("Couldn't parse field ["
 									+ f.getName() + "] with value [" + pol
@@ -1042,6 +1045,9 @@ public class TextFileInput extends BaseStep implements StepInterface {
 			if (!closeLastFile())
 				return false;
 
+			if(data.files.nrOfFiles() == 0)
+				return false;
+			
 			// Is this the last file?
 			data.isLastFile = (data.filenr == data.files.nrOfFiles() - 1);
 			data.file = data.files.getFile(data.filenr);
@@ -1151,7 +1157,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 			initReplayFactory();
 			data.setDateFormatLenient(meta.isDateFormatLenient());
 			data.files = meta.getTextFileList();
-			if (data.files.nrOfFiles() == 0) {
+			if (data.files.nrOfFiles() == 0 && !meta.isErrorIgnored()) {
 				logError("No file(s) specified! Stop processing.");
 				return false;
 			}

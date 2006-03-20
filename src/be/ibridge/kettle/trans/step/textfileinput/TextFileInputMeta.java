@@ -180,6 +180,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     private String lineNumberFilesExtension;
     
     private boolean dateFormatLenient;
+
+    /** If error line are skipped, you can replay without introducing doubles.*/
+	private boolean errorLineSkipped;
     
     
     /**
@@ -727,6 +730,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
         // ERROR HANDLING
         retval += "    " + XMLHandler.addTagValue("error_ignored", errorIgnored);
+        retval += "    " + XMLHandler.addTagValue("error_line_skipped", errorLineSkipped);
         retval += "    " + XMLHandler.addTagValue("error_count_field", errorCountField);
         retval += "    " + XMLHandler.addTagValue("error_fields_field", errorFieldsField);
         retval += "    " + XMLHandler.addTagValue("error_text_field", errorTextField);
@@ -845,6 +849,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             rowLimit = Const.toLong( XMLHandler.getTagValue(stepnode, "limit"), 0L);
 
             errorIgnored = YES.equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "error_ignored") );
+            errorLineSkipped = YES.equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "error_line_skipped") );
             errorCountField = XMLHandler.getTagValue(stepnode, "error_count_field");
             errorFieldsField = XMLHandler.getTagValue(stepnode, "error_fields_field");
             errorTextField = XMLHandler.getTagValue(stepnode, "error_text_field");
@@ -937,6 +942,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             }
             
             errorIgnored = rep.getStepAttributeBoolean(id_step, "error_ignored");
+            errorLineSkipped = rep.getStepAttributeBoolean(id_step, "error_line_skipped");
             errorCountField = rep.getStepAttributeString(id_step, "error_count_field");
             errorFieldsField = rep.getStepAttributeString(id_step, "error_fields_field");
             errorTextField = rep.getStepAttributeString(id_step, "error_text_field");
@@ -1018,6 +1024,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             }
             
             rep.saveStepAttribute(id_transformation, id_step, "error_ignored", errorIgnored);
+            rep.saveStepAttribute(id_transformation, id_step, "error_line_skipped", errorLineSkipped);
             rep.saveStepAttribute(id_transformation, id_step, "error_count_field", errorCountField);
             rep.saveStepAttribute(id_transformation, id_step, "error_fields_field", errorFieldsField);
             rep.saveStepAttribute(id_transformation, id_step, "error_text_field", errorTextField);
@@ -1396,6 +1403,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDateFormatLenient(boolean dateFormatLenient) {
 		this.dateFormatLenient = dateFormatLenient;
+	}
+
+	public boolean isErrorLineSkipped() {
+		return errorLineSkipped;
+	}
+
+	public void setErrorLineSkipped(boolean errorLineSkipped) {
+		this.errorLineSkipped = errorLineSkipped;
 	}
 
 	

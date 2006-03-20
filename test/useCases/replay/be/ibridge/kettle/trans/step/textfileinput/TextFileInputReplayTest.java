@@ -35,6 +35,19 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 2);
 	}
+	
+	public void testInputErrorIgnoreErrorsTrueNoFiles() throws Exception {
+		directory = "test/useCases/replay/textFileInputReplayErrorIgnoreFalse/";
+		expectFiles(directory, 2);
+		meta = new TransMeta(directory + "transform.ktr");
+		trans = new Trans(log, meta);
+		boolean ok = trans.execute(null);
+		assertTrue(ok);
+		trans.waitUntilFinished();
+		trans.endProcessing("end");
+		assertEquals(1, trans.getErrors());
+		expectFiles(directory, 2);
+	}
 
 	public void testInputErrorIgnoreErrorsFalse() throws Exception {
 		directory = "test/useCases/replay/textFileInputReplayErrorIgnoreFalse/";
@@ -47,6 +60,23 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		trans.endProcessing("end");
 		assertEquals(1, trans.getErrors());
 		expectFiles(directory, 2);
+	}
+	
+	public void testInputErrorIgnoreErrorsRequiredNoFiles() throws Exception {
+		directory = "test/useCases/replay/textFileInputIgnoreErrorRequiredNoFiles/";
+		expectFiles(directory, 1);
+		meta = new TransMeta(directory + "transform.ktr");
+		trans = new Trans(log, meta);
+		boolean ok = trans.execute(null);
+		assertTrue(ok);
+		trans.waitUntilFinished();
+		trans.endProcessing("end");
+		assertEquals(0, trans.getErrors());
+		expectFiles(directory, 2);
+		expectContent(
+				directory + "input.txt." + getDateFormatted() + ".error",
+				TextFileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
+						+ Const.CR);
 	}
 
 	public void testInputErrorIgnoreErrorsTrue() throws Exception {
@@ -94,6 +124,48 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 				directory + "input2.txt." + getDateFormatted() + ".error",
 				TextFileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
 						+ Const.CR);
+	}
+
+	public void testInputOutputSkipErrorLineTrue() throws Exception {
+		directory = "test/useCases/replay/textFileInputOutputSkipErrorLineTrue/";
+		expectFiles(directory, 2);
+		meta = new TransMeta(directory + "transform.ktr");
+		trans = new Trans(log, meta);
+		boolean ok = trans.execute(null);
+		assertTrue(ok);
+		trans.waitUntilFinished();
+		trans.endProcessing("end");
+		assertEquals(0, trans.getErrors());
+		expectFiles(directory, 4);
+		expectContent(directory + "input.txt." + getDateFormatted() + ".line",
+				"3" + Const.CR + "5" + Const.CR);
+		expectContent(directory + "result.out",
+				"StrField;NumField;DatField;IntField" + Const.CR
+						+ "Line2 ; 1234;2005/05/26 12:34:56.000; 9876"
+						+ Const.CR
+						+ "Line4 ; 0009;2005/05/26 21:01:23.000; 1234"
+						+ Const.CR);
+	}
+
+	public void testInputOutputSkipErrorLineFalse() throws Exception {
+		directory = "test/useCases/replay/textFileInputOutputSkipErrorLineFalse/";
+		expectFiles(directory, 2);
+		meta = new TransMeta(directory + "transform.ktr");
+		trans = new Trans(log, meta);
+		boolean ok = trans.execute(null);
+		assertTrue(ok);
+		trans.waitUntilFinished();
+		trans.endProcessing("end");
+		assertEquals(0, trans.getErrors());
+		expectFiles(directory, 4);
+		expectContent(directory + "input.txt." + getDateFormatted() + ".line",
+				"3" + Const.CR + "5" + Const.CR);
+		expectContent(directory + "result.out",
+				"StrField;NumField;DatField;IntField" + Const.CR
+						+ "Line2 ; 1234;2005/05/26 12:34:56.000; 9876"
+						+ Const.CR + "Line3 ; 0123;; 9876" + Const.CR
+						+ "Line4 ; 0009;2005/05/26 21:01:23.000; 1234"
+						+ Const.CR + "Line5 ; 1234;; 9876" + Const.CR);
 	}
 
 	public void testReplay() throws Exception {
