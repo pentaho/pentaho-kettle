@@ -85,7 +85,7 @@ public class TextFileInputData extends BaseStepData implements
 
 	public TextFileErrorHandler dataErrorLineHandler;
 
-	public TextFilePlayListFactory textFileReplayFactory;
+	public TextFilePlayList textFileReplayFactory;
 
 	/**
 	 * 

@@ -38,8 +38,9 @@ public abstract class KettleStepUseCase extends TestCase {
 				public boolean accept(File dir, String name) {
 					return !(name.endsWith("ktr")
 							|| name.endsWith(getFileExtension())
-							|| name.endsWith(".svn") || name
-							.endsWith(REPLAY_DATE + ".line"));
+							|| name.endsWith(".svn")
+							|| name.endsWith(REPLAY_DATE + ".line") || name
+							.endsWith(REPLAY_DATE + ".error"));
 				}
 			});
 			if (files != null)

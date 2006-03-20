@@ -130,6 +130,46 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 				"18" + Const.CR + "19" + Const.CR);
 	}
 
+	public void testReplayErrorOnly() throws Exception {
+		directory = "test/useCases/replay/textFileInputDoReplayErrorOnly/";
+		expectFiles(directory, 6);
+		meta = new TransMeta(directory + "transform.ktr");
+		trans = new Trans(log, meta);
+		trans.setReplayDate(getReplayDate());
+		boolean ok = trans.execute(null);
+		assertTrue(ok);
+		trans.waitUntilFinished();
+		trans.endProcessing("end");
+		assertEquals(0, trans.getErrors());
+		expectFiles(directory, 7);
+		expectContent(directory + "input3.txt." + getDateFormatted() + ".line",
+				"6" + Const.CR + "14" + Const.CR + "17" + Const.CR + "18"
+						+ Const.CR);
+	}
+
+	public void testReplayMixed() throws Exception {
+		directory = "test/useCases/replay/textFileInputDoReplayMixed/";
+		expectFiles(directory, 8);
+		meta = new TransMeta(directory + "transform.ktr");
+		trans = new Trans(log, meta);
+		trans.setReplayDate(getReplayDate());
+		boolean ok = trans.execute(null);
+		assertTrue(ok);
+		trans.waitUntilFinished();
+		trans.endProcessing("end");
+		assertEquals(0, trans.getErrors());
+		expectFiles(directory, 11);
+		expectContent(directory + "input3.txt." + getDateFormatted() + ".line",
+				"6" + Const.CR + "14" + Const.CR + "17" + Const.CR + "18"
+						+ Const.CR);
+		expectContent(directory + "input2.txt." + getDateFormatted() + ".line",
+				"14" + Const.CR);
+		expectContent(
+				directory + "input4.txt." + getDateFormatted() + ".error",
+				TextFileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
+						+ Const.CR);
+	}
+
 	private Date getReplayDate() throws ParseException {
 		return AbstractTextFileErrorHandler.createDateFormat().parse(
 				REPLAY_DATE);

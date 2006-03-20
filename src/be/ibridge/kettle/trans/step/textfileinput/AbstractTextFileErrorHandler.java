@@ -50,7 +50,7 @@ public abstract class AbstractTextFileErrorHandler implements
 	public abstract void handleLineError(TextFileLine textFileLine)
 			throws KettleException;
 	
-	public static File getLineNumberFilename(String destinationDirectory, String processingFilename, String dateString, String extension )
+	public static File getReplayFilename(String destinationDirectory, String processingFilename, String dateString, String extension )
 	{
 		String name = null;
 		if (extension == null || extension.length() == 0)
@@ -60,9 +60,9 @@ public abstract class AbstractTextFileErrorHandler implements
 		return new File(Const.replEnv(destinationDirectory), name);
 	}
 	
-	public static File getLineNumberFilename(String destinationDirectory, String processingFilename, Date date, String extension )
+	public static File getReplayFilename(String destinationDirectory, String processingFilename, Date date, String extension )
 	{
-		return getLineNumberFilename(destinationDirectory, processingFilename, createDateFormat().format(date), extension);
+		return getReplayFilename(destinationDirectory, processingFilename, createDateFormat().format(date), extension);
 	}
 
 	/**
@@ -74,7 +74,7 @@ public abstract class AbstractTextFileErrorHandler implements
 	Writer getWriter() throws KettleException {
 		if (outputStreamWriter != null)
 			return outputStreamWriter;
-		File file = getLineNumberFilename(destinationDirectory, processingFilename, dateString, fileExtension);
+		File file = getReplayFilename(destinationDirectory, processingFilename, dateString, fileExtension);
 		try {
 			if (encoding == null)
 				outputStreamWriter = new OutputStreamWriter(
