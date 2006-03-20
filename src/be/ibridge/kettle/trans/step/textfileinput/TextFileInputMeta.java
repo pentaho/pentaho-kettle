@@ -161,17 +161,17 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     /** The name of the field that will contain the error texts, separated by CR */
     private String  errorTextField;
     
-    /** The directory that will contain bad line files */
-    private String badLineFilesDestinationDirectory;
+    /** The directory that will contain warning files */
+    private String warningFilesDestinationDirectory;
     
-    /** The extension of bad line files */
-    private String badLineFilesExtension;
+    /** The extension of warning files */
+    private String warningFilesExtension;
     
-    /** The directory that will contain error line files */
-    private String errorLineFilesDestinationDirectory;
+    /** The directory that will contain error files */
+    private String errorFilesDestinationDirectory;
     
-    /** The extension of error line files */
-    private String errorLineFilesExtension;
+    /** The extension of error files */
+    private String errorFilesExtension;
     
     /** The directory that will contain line number files */
     private String lineNumberFilesDestinationDirectory;
@@ -567,10 +567,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         filenameField = "";
         includeRowNumber = false;
         rowNumberField = "";
-        badLineFilesDestinationDirectory = null;
-        badLineFilesExtension = "bad";
-        errorLineFilesDestinationDirectory = null;
-        errorLineFilesExtension = "error"; 
+        warningFilesDestinationDirectory = null;
+        warningFilesExtension = "warning";
+        errorFilesDestinationDirectory = null;
+        errorFilesExtension = "error"; 
         lineNumberFilesDestinationDirectory = null;
         lineNumberFilesExtension = "line";
         dateFormatLenient = true;
@@ -731,10 +731,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         retval += "    " + XMLHandler.addTagValue("error_fields_field", errorFieldsField);
         retval += "    " + XMLHandler.addTagValue("error_text_field", errorTextField);
         
-        retval += "    " + XMLHandler.addTagValue("bad_line_files_destination_directory", badLineFilesDestinationDirectory);
-        retval += "    " + XMLHandler.addTagValue("bad_line_files_extension", badLineFilesExtension);
-        retval += "    " + XMLHandler.addTagValue("error_line_files_destination_directory", errorLineFilesDestinationDirectory);
-        retval += "    " + XMLHandler.addTagValue("error_line_files_extension", errorLineFilesExtension); 
+        retval += "    " + XMLHandler.addTagValue("bad_line_files_destination_directory", warningFilesDestinationDirectory);
+        retval += "    " + XMLHandler.addTagValue("bad_line_files_extension", warningFilesExtension);
+        retval += "    " + XMLHandler.addTagValue("error_line_files_destination_directory", errorFilesDestinationDirectory);
+        retval += "    " + XMLHandler.addTagValue("error_line_files_extension", errorFilesExtension); 
         retval += "    " + XMLHandler.addTagValue("line_number_files_destination_directory", lineNumberFilesDestinationDirectory);
         retval += "    " + XMLHandler.addTagValue("line_number_files_extension", lineNumberFilesExtension);
         retval += "    " + XMLHandler.addTagValue("date_format_lenient", dateFormatLenient);
@@ -848,10 +848,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             errorCountField = XMLHandler.getTagValue(stepnode, "error_count_field");
             errorFieldsField = XMLHandler.getTagValue(stepnode, "error_fields_field");
             errorTextField = XMLHandler.getTagValue(stepnode, "error_text_field");
-            badLineFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "bad_line_files_destination_directory");
-            badLineFilesExtension = XMLHandler.getTagValue(stepnode, "bad_line_files_extension");
-            errorLineFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "error_line_files_destination_directory");
-            errorLineFilesExtension = XMLHandler.getTagValue(stepnode, "error_line_files_extension"); 
+            warningFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "bad_line_files_destination_directory");
+            warningFilesExtension = XMLHandler.getTagValue(stepnode, "bad_line_files_extension");
+            errorFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "error_line_files_destination_directory");
+            errorFilesExtension = XMLHandler.getTagValue(stepnode, "error_line_files_extension"); 
             lineNumberFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "line_number_files_destination_directory");
             lineNumberFilesExtension = XMLHandler.getTagValue(stepnode, "line_number_files_extension");
             // Backward compatible
@@ -941,10 +941,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             errorFieldsField = rep.getStepAttributeString(id_step, "error_fields_field");
             errorTextField = rep.getStepAttributeString(id_step, "error_text_field");
             
-            badLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "bad_line_files_dest_dir");
-            badLineFilesExtension = rep.getStepAttributeString(id_step, "bad_line_files_ext");
-            errorLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "error_line_files_dest_dir");
-            errorLineFilesExtension = rep.getStepAttributeString(id_step, "error_line_files_ext"); 
+            warningFilesDestinationDirectory = rep.getStepAttributeString(id_step, "bad_line_files_dest_dir");
+            warningFilesExtension = rep.getStepAttributeString(id_step, "bad_line_files_ext");
+            errorFilesDestinationDirectory = rep.getStepAttributeString(id_step, "error_line_files_dest_dir");
+            errorFilesExtension = rep.getStepAttributeString(id_step, "error_line_files_ext"); 
             lineNumberFilesDestinationDirectory = rep.getStepAttributeString(id_step, "line_number_files_dest_dir");
             lineNumberFilesExtension = rep.getStepAttributeString(id_step, "line_number_files_ext");
             dateFormatLenient = rep.getStepAttributeBoolean(id_step, 0, "date_format_lenient", true);
@@ -1022,10 +1022,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "error_fields_field", errorFieldsField);
             rep.saveStepAttribute(id_transformation, id_step, "error_text_field", errorTextField);
             
-            rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_dest_dir", badLineFilesDestinationDirectory);
-            rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_ext", badLineFilesExtension);
-            rep.saveStepAttribute(id_transformation, id_step, "error_line_files_dest_dir", errorLineFilesDestinationDirectory);
-            rep.saveStepAttribute(id_transformation, id_step, "error_line_files_ext", errorLineFilesExtension); 
+            rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_dest_dir", warningFilesDestinationDirectory);
+            rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_ext", warningFilesExtension);
+            rep.saveStepAttribute(id_transformation, id_step, "error_line_files_dest_dir", errorFilesDestinationDirectory);
+            rep.saveStepAttribute(id_transformation, id_step, "error_line_files_ext", errorFilesExtension); 
             rep.saveStepAttribute(id_transformation, id_step, "line_number_files_dest_dir", lineNumberFilesDestinationDirectory);
             rep.saveStepAttribute(id_transformation, id_step, "line_number_files_ext", lineNumberFilesExtension);
             rep.saveStepAttribute(id_transformation, id_step, "date_format_lenient", dateFormatLenient);            
@@ -1339,21 +1339,21 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         this.nrLinesDocHeader = nrLinesDocHeader;
     }
 
-	public String getBadLineFilesDestinationDirectory() {
-		return badLineFilesDestinationDirectory;
+	public String getWarningFilesDestinationDirectory() {
+		return warningFilesDestinationDirectory;
 	}
 
-	public void setBadLineFilesDestinationDirectory(
-			String badLineFilesDestinationDirectory) {
-		this.badLineFilesDestinationDirectory = badLineFilesDestinationDirectory;
+	public void setWarningFilesDestinationDirectory(
+			String warningFilesDestinationDirectory) {
+		this.warningFilesDestinationDirectory = warningFilesDestinationDirectory;
 	}
 
-	public String getBadLineFilesExtension() {
-		return badLineFilesExtension;
+	public String getWarningFilesExtension() {
+		return warningFilesExtension;
 	}
 
-	public void setBadLineFilesExtension(String badLineFilesExtension) {
-		this.badLineFilesExtension = badLineFilesExtension;
+	public void setWarningFilesExtension(String warningFilesExtension) {
+		this.warningFilesExtension = warningFilesExtension;
 	}
 
 	public String getLineNumberFilesDestinationDirectory() {
@@ -1374,20 +1374,20 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	public String getErrorLineFilesDestinationDirectory() {
-		return errorLineFilesDestinationDirectory;
+		return errorFilesDestinationDirectory;
 	}
 
 	public void setErrorLineFilesDestinationDirectory(
 			String errorLineFilesDestinationDirectory) {
-		this.errorLineFilesDestinationDirectory = errorLineFilesDestinationDirectory;
+		this.errorFilesDestinationDirectory = errorLineFilesDestinationDirectory;
 	} 
 	
 	public String getErrorLineFilesExtension() {
-		return errorLineFilesExtension;
+		return errorFilesExtension;
 	}
 
 	public void setErrorLineFilesExtension(String errorLineFilesExtension) {
-		this.errorLineFilesExtension = errorLineFilesExtension;
+		this.errorFilesExtension = errorLineFilesExtension;
 	}
 
 	public boolean isDateFormatLenient() {
