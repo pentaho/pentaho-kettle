@@ -84,7 +84,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	 */
 	public boolean isFetchSizeSupported()
 	{
-		return false;
+		return true;
 	}
 
 	/**
@@ -116,6 +116,11 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
     public boolean supportsAutoInc()
     {
         return false;
+    }
+    
+    public String getLimitClause(int nrRows)
+    {
+        return " limit "+nrRows;
     }
     
     /**
