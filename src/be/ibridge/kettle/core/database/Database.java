@@ -1590,6 +1590,13 @@ public class Database
 		return openQuery(sql, null);
 	}
 
+    /**
+     * Open a query on the database with a set of parameters stored in a Kettle Row
+     * @param sql The SQL to launch with question marks (?) as placeholders for the parameters
+     * @param params The parameters or null if no parameters are used.
+     * @return A JDBC ResultSet
+     * @throws KettleDatabaseException when something goes wrong with the query.
+     */
 	public ResultSet openQuery(String sql, Row params)
 		throws KettleDatabaseException
 	{
