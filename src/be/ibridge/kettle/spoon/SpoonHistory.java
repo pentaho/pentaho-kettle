@@ -205,18 +205,18 @@ public class SpoonHistory extends Composite
                             {
                                 row = (Row) rowList.get(i);
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
-                                item.setText( 0, row.getString("BATCH_ID", ""));          
-                                item.setText( 1, row.getString("STATUS", ""));          
-                                item.setText( 2, row.getString("LINES_READ", ""));          
-                                item.setText( 3, row.getString("LINES_WRITTEN", ""));          
-                                item.setText( 4, row.getString("LINES_UPDATED", ""));          
-                                item.setText( 5, row.getString("LINES_INPUT", ""));          
-                                item.setText( 6, row.getString("LINES_OUTPUT", ""));          
-                                item.setText( 7, row.getString("ERRORS", ""));          
-                                item.setText( 8, row.getString("STARTDATE", ""));          
-                                item.setText( 9, row.getString("ENDDATE", ""));          
-                                item.setText(10, row.getString("LOGDATE", ""));          
-                                item.setText(11, row.getString("DEPDATE", ""));                                
+                                item.setText( 1, row.getString("ID_BATCH", ""));          
+                                item.setText( 2, row.getString("STATUS", ""));          
+                                item.setText( 3, row.getString("LINES_READ", ""));          
+                                item.setText( 4, row.getString("LINES_WRITTEN", ""));          
+                                item.setText( 5, row.getString("LINES_UPDATED", ""));          
+                                item.setText( 6, row.getString("LINES_INPUT", ""));          
+                                item.setText( 7, row.getString("LINES_OUTPUT", ""));          
+                                item.setText( 8, row.getString("ERRORS", ""));          
+                                item.setText( 9, row.getString("STARTDATE", ""));          
+                                item.setText(10, row.getString("ENDDATE", ""));          
+                                item.setText(11, row.getString("LOGDATE", ""));          
+                                item.setText(12, row.getString("DEPDATE", ""));                                
                             }
                             
                             wFields.removeEmptyRows();
