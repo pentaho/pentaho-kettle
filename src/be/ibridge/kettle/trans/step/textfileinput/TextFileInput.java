@@ -389,12 +389,14 @@ public class TextFileInput extends BaseStep implements StepInterface {
 			SimpleDateFormat ldaf, DateFormatSymbols ldafs, String fname,
 			long rowNr, TextFileErrorHandler dataErrorLineHandler)
 			throws KettleException {
+
+		Row r = new Row();
+
 		if (textFileLine == null || textFileLine.line == null
 				|| textFileLine.line.length() == 0)
-			return null;
+			return r;
 
 		int fieldnr;
-		Row r = new Row();
 		Value value;
 
 		Value errorCount = null;
@@ -480,7 +482,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 							}
 							
 							if (info.isErrorLineSkipped())
-								return null;
+								r.setIgnore();
 						} else {
 							throw new KettleException("Couldn't parse field ["
 									+ f.getName() + "] with value [" + pol
@@ -522,14 +524,14 @@ public class TextFileInput extends BaseStep implements StepInterface {
 		}
 
 		// Possibly add a filename...
-		if (info.includeFilename() && r != null) {
+		if (info.includeFilename()) {
 			Value inc = new Value(info.getFilenameField(), fname);
 			inc.setLength(100);
 			r.addValue(inc);
 		}
 
 		// Possibly add a row number...
-		if (info.includeRowNumber() && r != null) {
+		if (info.includeRowNumber()) {
 			Value inc = new Value(info.getRowNumberField(),
 					Value.VALUE_TYPE_INTEGER);
 			inc.setValue(rowNr);
