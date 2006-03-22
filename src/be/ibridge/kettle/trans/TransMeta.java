@@ -240,8 +240,9 @@ public class TransMeta implements XMLInterface
         clearUndo();
         clearChanged();
 
-        useBatchId = false;
+        useBatchId = true; // Make this one the default from now on...
         batchId = 0;
+        logfieldUsed = false; // Don't use the log-field by default...
 
         modifiedUser = "-";
         modifiedDate = new Value("modified_date", new Date());
