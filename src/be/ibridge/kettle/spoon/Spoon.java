@@ -840,7 +840,7 @@ public class Spoon
 				      	setShellText();
 						refreshTree();
 						refreshGraph();
-
+                        refreshHistory();
 					  }
 				  } 
 			  };
@@ -2389,7 +2389,7 @@ public class Spoon
 					refreshTree(true);
 				}
 			}
-            spoonhist.refreshHistory();
+            refreshHistory();
 		}
 	}
 	
@@ -2402,6 +2402,7 @@ public class Spoon
 			setFilename(null);
 			refreshTree(true);
 			refreshGraph();
+            refreshHistory();
 		}
 	}
 	
@@ -2926,6 +2927,11 @@ public class Spoon
 		setShellText();
 	}
 
+    public void refreshHistory()
+    {
+        spoonhist.refreshHistory();
+    }
+    
 	public StepMeta newStep()
 	{
 		return newStep(true, true);
@@ -4469,6 +4475,7 @@ public class Spoon
 										{
 											win.transMeta = transInfo;
 											win.setFilename(lastfiles[0]);
+                                            win.refreshHistory();
 										}
 									}
 								}
@@ -4477,6 +4484,7 @@ public class Spoon
 							{
 								win.transMeta = new TransMeta(lastfiles[0]);
 								win.setFilename(lastfiles[0]);
+                                win.refreshHistory();
 							}
 						}
 						win.transMeta.clearChanged();

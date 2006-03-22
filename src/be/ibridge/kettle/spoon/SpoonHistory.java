@@ -19,6 +19,8 @@ import java.util.ArrayList;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.FillLayout;
@@ -164,8 +166,24 @@ public class SpoonHistory extends Composite
                 }
             }
         );
+        wFields.cursor.addKeyListener(new KeyListener()
+            {
+                public void keyReleased(KeyEvent e)
+                {
+                    showLogEntry();
+                }
+            
+                public void keyPressed(KeyEvent e)
+                {
+                }
+            
+            }
+        );
 	}
 	
+    /**
+     * Refreshes the history window in Spoon: reads entries from the specified log table in the Transformation Settings dialog.
+     */
 	public void refreshHistory()
 	{
         // See if there is a transformation loaded that has a connection table specified.
@@ -230,6 +248,7 @@ public class SpoonHistory extends Composite
                     catch(KettleException e)
                     {
                         new ErrorDialog(this.getShell(), Props.getInstance(), "Error getting logging information", "Error getting information from the logging table", e);
+                        wFields.clearAll(false);
                     }
                     finally
                     {
@@ -237,7 +256,19 @@ public class SpoonHistory extends Composite
                     }
                     
                 }
+                else
+                {
+                    wFields.clearAll(false);
+                }
             }
+            else
+            {
+                wFields.clearAll(false);
+            }
+        }
+        else
+        {
+            wFields.clearAll(false);
         }
 	}
     	
@@ -253,6 +284,10 @@ public class SpoonHistory extends Composite
             if (logging!=null) 
             {
                 wText.setText(logging);
+            }
+            else
+            {
+                wText.setText("");
             }
         }
     }
