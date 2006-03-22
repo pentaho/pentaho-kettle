@@ -274,9 +274,15 @@ public class SpoonHistory extends Composite
     	
 	public void showLogEntry()
     {
+        if (rowList==null) 
+        {
+            wText.setText("");
+            return;
+        }
+        
         // grab the selected line in the table:
         int nr = wFields.table.getSelectionIndex();
-        if (nr>=0 && nr<rowList.size())
+        if (nr>=0 && rowList!=null && nr<rowList.size())
         {
             // OK, grab this one from the buffer...
             Row row = (Row) rowList.get(nr);
