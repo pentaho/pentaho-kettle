@@ -143,16 +143,20 @@ import be.ibridge.kettle.trans.step.selectvalues.SelectValuesMeta;
 import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
 import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
 
-
 /**
  * This class handles the main window of the Spoon graphical transformation editor.
  * 
  * @author Matt
  * @since 16-may-2003
+ * 
+ * Add i18n support
+ * import the package:be.ibridge.kettle.i18n.Messages
+ * @modified by vitoelv since 07-Feb-2006
  */
 public class Spoon
 {
-    public static final String APP_NAME = "Spoon";
+	//public static final String APP_NAME = "Spoon";
+    public static final String APP_NAME = Messages.getString("System.Name");  //"Spoon";
     
     private LogWriter log;
 	private Display disp;
@@ -191,7 +195,7 @@ public class Spoon
 	
 	public  Repository rep;
 		
-	private TransMeta transMeta;
+	public  TransMeta transMeta;
 
 	private ToolBar  tBar;
 
@@ -207,19 +211,17 @@ public class Spoon
 	private Listener lsNew, lsEdit, lsDupe, lsCopy, lsDel, lsSQL, lsCache, lsExpl;
 	private SelectionAdapter lsEditDef, lsEditSel;
 	
-	public static final String STRING_CONNECTIONS = "Connections";
-	public static final String STRING_STEPS       = "Steps";
-	public static final String STRING_HOPS        = "Hops";
-	public static final String STRING_BASE        = "Base step types";
-	public static final String STRING_PLUGIN      = "Plugin step types";
-    public static final String STRING_HISTORY     = "Step creation history";
+	public static final String STRING_CONNECTIONS = Messages.getString("STRING_CONNECTIONS"); //"Connections";
+	public static final String STRING_STEPS       = Messages.getString("STRING_STEPS"); //"Steps";
+	public static final String STRING_HOPS        = Messages.getString("STRING_HOPS"); //"Hops";
+	public static final String STRING_BASE        = Messages.getString("STRING_BASE"); //"Base step types";
+	public static final String STRING_PLUGIN      = Messages.getString("STRING_PLUGIN"); //"Plugin step types";
+    public static final String STRING_HISTORY     = Messages.getString("STRING_HISTORY"); //"Step creation history";
 
 	private static final String APPL_TITLE         = APP_NAME;
 	 		
 	public  KeyAdapter defKeys;
 	public  KeyAdapter modKeys;
-
-    private SpoonHistory spoonhist;
 
 		
 	public Spoon(LogWriter l, Repository rep)
@@ -266,7 +268,8 @@ public class Spoon
 		
 		if (!Props.isInitialized()) 
 		{
-			log.logDetailed(toString(), "Load properties for Spoon...");
+			//log.logDetailed(toString(), "Load properties for Spoon...");
+			log.logDetailed(toString(),Messages.getString("Log.LoadProperties"));
 			Props.init(disp, Props.TYPE_PROPERTIES_SPOON);  // things to remember...
 		}
 		props=Props.getInstance();
@@ -547,19 +550,21 @@ public class Spoon
 		shell.setMenuBar(mBar);
 		
 		// main File menu...
-		MenuItem mFile = new MenuItem(mBar, SWT.CASCADE); mFile.setText("&File");
+		MenuItem mFile = new MenuItem(mBar, SWT.CASCADE); 
+		  //mFile.setText("&File");
+		  mFile.setText(Messages.getString("Menu.File") );
 		  msFile = new Menu(shell, SWT.DROP_DOWN);
 		  mFile.setMenu(msFile);
-		  MenuItem miFileNew       = new MenuItem(msFile, SWT.CASCADE); miFileNew.setText("&New \tCTRL-N");
-		  MenuItem miFileOpen      = new MenuItem(msFile, SWT.CASCADE); miFileOpen.setText("&Open \tCTRL-O");
-		  MenuItem miFileImport    = new MenuItem(msFile, SWT.CASCADE); miFileImport.setText("&Import from an XML file\tCTRL-I");
-		  MenuItem miFileExport    = new MenuItem(msFile, SWT.CASCADE); miFileExport.setText("&Export to an XML file");
-		  MenuItem miFileSave      = new MenuItem(msFile, SWT.CASCADE); miFileSave.setText("&Save \tCTRL-S");
-		  MenuItem miFileSaveAs    = new MenuItem(msFile, SWT.CASCADE); miFileSaveAs.setText("Save &as...");
+		  MenuItem miFileNew       = new MenuItem(msFile, SWT.CASCADE); miFileNew.setText(Messages.getString("Menu.File.New")); //miFileNew.setText("&New \tCTRL-N");
+		  MenuItem miFileOpen      = new MenuItem(msFile, SWT.CASCADE); miFileOpen.setText(Messages.getString("Menu.File.Open")); //&Open \tCTRL-O
+		  MenuItem miFileImport    = new MenuItem(msFile, SWT.CASCADE); miFileImport.setText(Messages.getString("Menu.File.Import")); //"&Import from an XML file\tCTRL-I"
+		  MenuItem miFileExport    = new MenuItem(msFile, SWT.CASCADE); miFileExport.setText(Messages.getString("Menu.File.Export")); //&Export to an XML file
+		  MenuItem miFileSave      = new MenuItem(msFile, SWT.CASCADE); miFileSave.setText(Messages.getString("Menu.File.Save"));  //"&Save \tCTRL-S"
+		  MenuItem miFileSaveAs    = new MenuItem(msFile, SWT.CASCADE); miFileSaveAs.setText(Messages.getString("Menu.File.SaveAs"));  //"Save &as..."
 		  new MenuItem(msFile, SWT.SEPARATOR);
-		  MenuItem miFilePrint     = new MenuItem(msFile, SWT.CASCADE); miFilePrint.setText("&Print \tCTRL-P");
+		  MenuItem miFilePrint     = new MenuItem(msFile, SWT.CASCADE); miFilePrint.setText(Messages.getString("Menu.File.Print")); //"&Print \tCTRL-P"
 		  new MenuItem(msFile, SWT.SEPARATOR);
-		  MenuItem miFileQuit      = new MenuItem(msFile, SWT.CASCADE); miFileQuit.setText("&Quit");
+		  MenuItem miFileQuit      = new MenuItem(msFile, SWT.CASCADE); miFileQuit.setText(Messages.getString("Menu.File.Quit")); //miFileQuit.setText("&Quit");
 		  miFileSep3               = new MenuItem(msFile, SWT.SEPARATOR);
 		  addMenuLast();
 		
@@ -582,22 +587,22 @@ public class Spoon
 		miFileQuit      .addListener (SWT.Selection, lsFileQuit     );
 
 		// main Edit menu...
-		MenuItem mEdit = new MenuItem(mBar, SWT.CASCADE); mEdit.setText("&Edit");
+		MenuItem mEdit = new MenuItem(mBar, SWT.CASCADE); mEdit.setText(Messages.getString("Menu.Edit")); //&Edit
 		  Menu msEdit = new Menu(shell, SWT.DROP_DOWN);
 		  mEdit.setMenu(msEdit);
 		  miEditUndo                  = new MenuItem(msEdit, SWT.CASCADE);
 		  miEditRedo                  = new MenuItem(msEdit, SWT.CASCADE);
 		  setUndoMenu();
 		  new MenuItem(msEdit, SWT.SEPARATOR);
-		  MenuItem miEditUnselectAll  = new MenuItem(msEdit, SWT.CASCADE); miEditUnselectAll.setText("&Clear selection \tESC");
-		  MenuItem miEditSelectAll    = new MenuItem(msEdit, SWT.CASCADE); miEditSelectAll.setText("&Select all steps \tCTRL-A");
+		  MenuItem miEditUnselectAll  = new MenuItem(msEdit, SWT.CASCADE); miEditUnselectAll.setText(Messages.getString("Menu.Edit.ClearSelection"));  //&Clear selection \tESC
+		  MenuItem miEditSelectAll    = new MenuItem(msEdit, SWT.CASCADE); miEditSelectAll.setText(Messages.getString("Menu.Edit.SelectAllSteps")); //"&Select all steps \tCTRL-A"
 		  new MenuItem(msEdit, SWT.SEPARATOR);
-		  MenuItem miEditCopy         = new MenuItem(msEdit, SWT.CASCADE); miEditCopy.setText("Copy selected steps to clipboard\tCTRL-C");
-		  MenuItem miEditPaste        = new MenuItem(msEdit, SWT.CASCADE); miEditPaste.setText("Paste steps from clipboard\tCTRL-V");
+		  MenuItem miEditCopy         = new MenuItem(msEdit, SWT.CASCADE); miEditCopy.setText(Messages.getString("Menu.Edit.CopyToClipboard")); //Copy selected steps to clipboard\tCTRL-C
+		  MenuItem miEditPaste        = new MenuItem(msEdit, SWT.CASCADE); miEditPaste.setText(Messages.getString("Menu.Edit.PasteFromClipboard")); //Paste steps from clipboard\tCTRL-V
 		  new MenuItem(msEdit, SWT.SEPARATOR);
-		  MenuItem miEditRefresh      = new MenuItem(msEdit, SWT.CASCADE); miEditRefresh.setText("&Refresh \tF5");
+		  MenuItem miEditRefresh      = new MenuItem(msEdit, SWT.CASCADE); miEditRefresh.setText(Messages.getString("Menu.Edit.Refresh"));  //&Refresh \tF5
 		  new MenuItem(msEdit, SWT.SEPARATOR);
-		  MenuItem miEditOptions      = new MenuItem(msEdit, SWT.CASCADE); miEditOptions.setText("&Options...");
+		  MenuItem miEditOptions      = new MenuItem(msEdit, SWT.CASCADE); miEditOptions.setText(Messages.getString("Menu.Edit.Options"));  //&Options...
 		
 		Listener lsEditUndo        = new Listener() { public void handleEvent(Event e) { undoAction(); } };
 		Listener lsEditRedo        = new Listener() { public void handleEvent(Event e) { redoAction(); } };
@@ -612,14 +617,14 @@ public class Spoon
 		miEditOptions    .addListener(SWT.Selection, lsEditOptions);
 
 		// main Repository menu...
-		MenuItem mRep = new MenuItem(mBar, SWT.CASCADE); mRep.setText("&Repository");
+		MenuItem mRep = new MenuItem(mBar, SWT.CASCADE); mRep.setText(Messages.getString("Menu.Repository")); //&Repository
 		  Menu msRep = new Menu(shell, SWT.DROP_DOWN);
 		  mRep.setMenu(msRep);
-		  MenuItem miRepConnect    = new MenuItem(msRep, SWT.CASCADE); miRepConnect.setText("&Connect to repository \tCTRL-R");
-		  MenuItem miRepDisconnect = new MenuItem(msRep, SWT.CASCADE); miRepDisconnect.setText("&Disconnect repository \tCTRL-D");
-		  MenuItem miRepExplore    = new MenuItem(msRep, SWT.CASCADE); miRepExplore.setText("&Explore repository \tCTRL-E");
+		  MenuItem miRepConnect    = new MenuItem(msRep, SWT.CASCADE); miRepConnect.setText(Messages.getString("Menu.Repository.ConnectToRepository"));  //&Connect to repository \tCTRL-R
+		  MenuItem miRepDisconnect = new MenuItem(msRep, SWT.CASCADE); miRepDisconnect.setText(Messages.getString("Menu.Repository.DisconnectRepository")); //&Disconnect repository \tCTRL-D
+		  MenuItem miRepExplore    = new MenuItem(msRep, SWT.CASCADE); miRepExplore.setText(Messages.getString("Menu.Repository.ExploreRepository"));  //&Explore repository \tCTRL-E
 		  new MenuItem(msRep, SWT.SEPARATOR);
-		  MenuItem miRepUser       = new MenuItem(msRep, SWT.CASCADE); miRepUser.setText("&Edit current user\tCTRL-U");
+		  MenuItem miRepUser       = new MenuItem(msRep, SWT.CASCADE); miRepUser.setText(Messages.getString("Menu.Repository.EditCurrentUser")); //&Edit current user\tCTRL-U
 		
 		Listener lsRepConnect     = new Listener() { public void handleEvent(Event e) { openRepository();    } };
 		Listener lsRepDisconnect  = new Listener() { public void handleEvent(Event e) { closeRepository();   } };
@@ -632,24 +637,24 @@ public class Spoon
 		miRepUser       .addListener (SWT.Selection, lsRepUser      );
         
 		// main Transformation menu...
-		MenuItem mTrans = new MenuItem(mBar, SWT.CASCADE); mTrans.setText("&Transformation");
+		MenuItem mTrans = new MenuItem(mBar, SWT.CASCADE); mTrans.setText(Messages.getString("Menu.Transformation"));  //&Transformation
 		  Menu msTrans = new Menu(shell, SWT.DROP_DOWN );
 		  mTrans.setMenu(msTrans);
-		  MenuItem miTransRun       = new MenuItem(msTrans, SWT.CASCADE); miTransRun    .setText("&Run \tF9");
-		  MenuItem miTransPreview   = new MenuItem(msTrans, SWT.CASCADE); miTransPreview.setText("&Preview \tF10");
-		  MenuItem miTransCheck     = new MenuItem(msTrans, SWT.CASCADE); miTransCheck  .setText("&Verify \tF11");
-		  MenuItem miTransImpact    = new MenuItem(msTrans, SWT.CASCADE); miTransImpact .setText("&Impact");
-		  MenuItem miTransSQL       = new MenuItem(msTrans, SWT.CASCADE); miTransSQL    .setText("&Get SQL");
+		  MenuItem miTransRun       = new MenuItem(msTrans, SWT.CASCADE); miTransRun    .setText(Messages.getString("Menu.Transformation.Run"));//&Run \tF9
+		  MenuItem miTransPreview   = new MenuItem(msTrans, SWT.CASCADE); miTransPreview.setText(Messages.getString("Menu.Transformation.Preview"));//&Preview \tF10
+		  MenuItem miTransCheck     = new MenuItem(msTrans, SWT.CASCADE); miTransCheck  .setText(Messages.getString("Menu.Transformation.Verify"));//&Verify \tF11
+		  MenuItem miTransImpact    = new MenuItem(msTrans, SWT.CASCADE); miTransImpact .setText(Messages.getString("Menu.Transformation.Impact"));//&Impact
+		  MenuItem miTransSQL       = new MenuItem(msTrans, SWT.CASCADE); miTransSQL    .setText(Messages.getString("Menu.Transformation.GetSQL"));//&Get SQL
 		  new MenuItem(msTrans, SWT.SEPARATOR);
-		  MenuItem miLastImpact     = new MenuItem(msTrans, SWT.CASCADE); miLastImpact  .setText("Show last impact analyses \tF6");
-		  MenuItem miLastCheck      = new MenuItem(msTrans, SWT.CASCADE); miLastCheck   .setText("Show last verify results  \tF7");
-		  MenuItem miLastPreview    = new MenuItem(msTrans, SWT.CASCADE); miLastPreview .setText("Show last preview results \tF8");
+		  MenuItem miLastImpact     = new MenuItem(msTrans, SWT.CASCADE); miLastImpact  .setText(Messages.getString("Menu.Transformation.ShowLastImpactAnalyses"));//Show last impact analyses \tF6
+		  MenuItem miLastCheck      = new MenuItem(msTrans, SWT.CASCADE); miLastCheck   .setText(Messages.getString("Menu.Transformation.ShowLastVerifyResults"));//Show last verify results  \tF7
+		  MenuItem miLastPreview    = new MenuItem(msTrans, SWT.CASCADE); miLastPreview .setText(Messages.getString("Menu.Transformation.ShowLastPreviewResults"));//Show last preview results \tF8
 		  new MenuItem(msTrans, SWT.SEPARATOR);
-		  MenuItem miTransCopy      = new MenuItem(msTrans, SWT.CASCADE); miTransCopy   .setText("&Copy transformation to clipboard");
-		  MenuItem miTransPaste     = new MenuItem(msTrans, SWT.CASCADE); miTransPaste  .setText("P&aste transformation from clipboard");
-          MenuItem miTransImage     = new MenuItem(msTrans, SWT.CASCADE); miTransImage  .setText("Copy the transformation image clipboard \tCTRL-ALT-I");
+		  MenuItem miTransCopy      = new MenuItem(msTrans, SWT.CASCADE); miTransCopy   .setText(Messages.getString("Menu.Transformation.CopyTransformationToClipboard"));//&Copy transformation to clipboard
+		  MenuItem miTransPaste     = new MenuItem(msTrans, SWT.CASCADE); miTransPaste  .setText(Messages.getString("Menu.Transformation.PasteTransformationFromClipboard"));//P&aste transformation from clipboard
+          MenuItem miTransImage     = new MenuItem(msTrans, SWT.CASCADE); miTransImage  .setText(Messages.getString("Menu.Transformation.CopyTransformationImageClipboard"));//Copy the transformation image clipboard \tCTRL-ALT-I
 		  new MenuItem(msTrans, SWT.SEPARATOR);
-		  MenuItem miTransDetails   = new MenuItem(msTrans, SWT.CASCADE); miTransDetails.setText("&Settings... \tCTRL-T");
+		  MenuItem miTransDetails   = new MenuItem(msTrans, SWT.CASCADE); miTransDetails.setText(Messages.getString("Menu.Transformation.Settings"));//&Settings... \tCTRL-T
 
 		Listener lsTransDetails   = new Listener() { public void handleEvent(Event e) { setTrans();   } };
 		Listener lsTransRun       = new Listener() { public void handleEvent(Event e) { tabfolder.setSelection(1); spoonlog.startstop(); } };
@@ -679,29 +684,29 @@ public class Spoon
 
 
 		// Wizard menu
-		MenuItem mWizard = new MenuItem(mBar, SWT.CASCADE); mWizard.setText("&Wizard");
+		MenuItem mWizard = new MenuItem(mBar, SWT.CASCADE); mWizard.setText(Messages.getString("Menu.Wizard"));  //"&Wizard"
 		  Menu msWizard = new Menu(shell, SWT.DROP_DOWN );
 		  mWizard.setMenu(msWizard);
 
 		  MenuItem miWizardNewConnection = new MenuItem(msWizard, SWT.CASCADE); 
-		  miWizardNewConnection.setText("&Create database connection wizard...\tF3");
+		  miWizardNewConnection.setText(Messages.getString("Menu.Wizard.CreateDatabaseConnectionWizard"));//&Create database connection wizard...\tF3
 		  Listener lsWizardNewConnection= new Listener() { public void handleEvent(Event e) { createDatabaseWizard();  } };
 		  miWizardNewConnection.addListener(SWT.Selection, lsWizardNewConnection);
 
 		  MenuItem miWizardCopyTable = new MenuItem(msWizard, SWT.CASCADE); 
-		  miWizardCopyTable.setText("&Copy table wizard...\tF4");
+		  miWizardCopyTable.setText(Messages.getString("Menu.Wizard.CopyTableWizard"));//&Copy table wizard...\tF4
 		  Listener lsWizardCopyTable= new Listener() { public void handleEvent(Event e) { copyTableWizard();  } };
 		  miWizardCopyTable.addListener(SWT.Selection, lsWizardCopyTable);
 		  
 		
 		// main Help menu...
-		MenuItem mHelp = new MenuItem(mBar, SWT.CASCADE); mHelp.setText("&Help");
+		MenuItem mHelp = new MenuItem(mBar, SWT.CASCADE); mHelp.setText(Messages.getString("Menu.Help")); //"&Help"
 		  Menu msHelp = new Menu(shell, SWT.DROP_DOWN );
 		  mHelp.setMenu(msHelp);
-		MenuItem miHelpCredit       = new MenuItem(msHelp, SWT.CASCADE); miHelpCredit.setText("&Credits");
+		MenuItem miHelpCredit       = new MenuItem(msHelp, SWT.CASCADE); miHelpCredit.setText(Messages.getString("Menu.Help.Credits"));//&Credits
 		Listener lsHelpCredit = new Listener() { public void handleEvent(Event e) { ShowCreditsDialog scd = new ShowCreditsDialog(shell, props, GUIResource.getInstance().getImageCredits()); scd.open();     } };
 		miHelpCredit.addListener (SWT.Selection, lsHelpCredit  );
-		MenuItem miHelpTOTD       = new MenuItem(msHelp, SWT.CASCADE); miHelpTOTD.setText("&Tip of the day");
+		MenuItem miHelpTOTD       = new MenuItem(msHelp, SWT.CASCADE); miHelpTOTD.setText(Messages.getString("Menu.Help.Tip"));//&Tip of the day
 		Listener lsHelpTOTD = new Listener() { public void handleEvent(Event e) 
 			{ 
 				TipsDialog td = new TipsDialog(shell, props); 
@@ -712,7 +717,7 @@ public class Spoon
 
 		new MenuItem(msHelp, SWT.SEPARATOR);
 
-		MenuItem miHelpAbout       = new MenuItem(msHelp, SWT.CASCADE); miHelpAbout.setText("&About");
+		MenuItem miHelpAbout       = new MenuItem(msHelp, SWT.CASCADE); miHelpAbout.setText(Messages.getString("Menu.About"));//"&About"
 		Listener lsHelpAbout = new Listener() { public void handleEvent(Event e) { helpAbout();      } };
 		miHelpAbout.addListener (SWT.Selection, lsHelpAbout  );
 
@@ -742,9 +747,9 @@ public class Spoon
 		  char chr  = (char)('1'+i );
 		  int accel =  SWT.CTRL | chr;
 		  String repository = ( lr[i]!=null && lr[i].length()>0 ) ? ( "["+lr[i]+"] " ) : ""; 
-		  String filename = RepositoryDirectory.DIRECTORY_SEPARATOR + lf[i];
+		  String filename = Const.FILE_SEPARATOR + lf[i];
 		  if (!lt[i]) filename = lf[i];
-		  if (!ld[i].equals(RepositoryDirectory.DIRECTORY_SEPARATOR))
+		  if (!ld[i].equals(Const.FILE_SEPARATOR))
 		  {
 		  	filename=ld[i]+filename;
 		  }
@@ -777,7 +782,7 @@ public class Spoon
 				      	if (ft && (rep==null || !rep.getRepositoryInfo().getName().equalsIgnoreCase(fr) ))
 				      	{
 				      		int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION };
-				      		RepositoriesDialog rd = new RepositoriesDialog(disp, SWT.NONE, perms, "Spoon");
+				      		RepositoriesDialog rd = new RepositoriesDialog(disp, SWT.NONE, perms, Messages.getString("RepositoriesDialog.ToolName")); //RepositoriesDialog.ToolName="Spoon"
 				      		rd.setRepositoryName(fr);
 				      		if (rd.open())
 				      		{
@@ -788,8 +793,8 @@ public class Spoon
 				      			{
 				      				rep=null;
 				      				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-									mb.setMessage("I was unable to connect to this repository!");
-									mb.setText("Error!");
+									mb.setMessage(Messages.getString("Message.MessageBox.UnableConnectRepository"));//I was unable to connect to this repository!
+									mb.setText(Messages.getString("Error.MessageBox.ConnectToRepositoryError"));//Error!
 									mb.open();
 				      			}
 				      		}
@@ -817,8 +822,8 @@ public class Spoon
 				      		{
 								clear();
 			      				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-								mb.setMessage("Can't load this transformation.  Please connect to the correct repository first.");
-								mb.setText("Error!");
+								mb.setMessage(Messages.getString("Message.MessageBox.UnableLoadTransformation"));//Can't load this transformation.  Please connect to the correct repository first.
+								mb.setText(Messages.getString("Error.MessageBox.LoadTransformationError"));//Error!
 								mb.open();
 				      		}
 				      	}
@@ -834,13 +839,14 @@ public class Spoon
 				      		catch(KettleException ke)
 							{
 								clear();
-								new ErrorDialog(shell, props, "Error loading transformation", "I was unable to load this transformation from the XML file because of an error", ke);
+								//"Error loading transformation", "I was unable to load this transformation from the XML file because of an error"
+								new ErrorDialog(shell, props, Messages.getString("Message.ErrorDialog.Title.LoadTransformationError"), Messages.getString("Message.ErrorDialog.Info.LoadTransformationError"), ke);
 							}
 				      	}
 				      	setShellText();
 						refreshTree();
 						refreshGraph();
-                        refreshHistory();
+
 					  }
 				  } 
 			  };
@@ -857,58 +863,52 @@ public class Spoon
 		final Image imFileNew = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"new.png")); 
 		tiFileNew.setImage(imFileNew);
 		tiFileNew.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newFile(); }});
-		tiFileNew.setToolTipText("New transformation, clear all settings");
+		tiFileNew.setToolTipText(Messages.getString("ToolTip.NewTranformation"));//New transformation, clear all settings
 
 		final ToolItem tiFileOpen = new ToolItem(tBar, SWT.PUSH);
 		final Image imFileOpen = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"open.png")); 
 		tiFileOpen.setImage(imFileOpen);
 		tiFileOpen.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { openFile(false); }});
-		tiFileOpen.setToolTipText("Open tranformation");
+		tiFileOpen.setToolTipText(Messages.getString("ToolTip.OpenTranformation"));//Open tranformation
 
 		final ToolItem tiFileSave = new ToolItem(tBar, SWT.PUSH);
 		final Image imFileSave = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"save.png")); 
 		tiFileSave.setImage(imFileSave);
 		tiFileSave.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveFile(); }});
-		tiFileSave.setToolTipText("Save current transformation");
+		tiFileSave.setToolTipText(Messages.getString("ToolTip.SaveCurrentTranformation"));//Save current transformation
 
 		final ToolItem tiFileSaveAs = new ToolItem(tBar, SWT.PUSH);
 		final Image imFileSaveAs = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"saveas.png")); 
 		tiFileSaveAs.setImage(imFileSaveAs);
 		tiFileSaveAs.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveFileAs(); }});
-		tiFileSaveAs.setToolTipText("Save transformation with different name");
+		tiFileSaveAs.setToolTipText(Messages.getString("ToolTip.SaveDifferentNameTranformation"));//Save transformation with different name
 
 		new ToolItem(tBar, SWT.SEPARATOR);
 		final ToolItem tiFilePrint = new ToolItem(tBar, SWT.PUSH);
 		final Image imFilePrint = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"print.png")); 
 		tiFilePrint.setImage(imFilePrint);
 		tiFilePrint.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { printFile(); }});
-		tiFilePrint.setToolTipText("Print");
+		tiFilePrint.setToolTipText(Messages.getString("ToolTip.Print"));//Print
 
 		new ToolItem(tBar, SWT.SEPARATOR);
 		final ToolItem tiFileRun = new ToolItem(tBar, SWT.PUSH);
 		final Image imFileRun = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"run.png")); 
 		tiFileRun.setImage(imFileRun);
 		tiFileRun.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { tabfolder.setSelection(1); spoonlog.startstop(); }});
-		tiFileRun.setToolTipText("Run this transformation");
+		tiFileRun.setToolTipText(Messages.getString("ToolTip.RunTranformation"));//Run this transformation
 
 		final ToolItem tiFilePreview = new ToolItem(tBar, SWT.PUSH);
 		final Image imFilePreview = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"preview.png")); 
 		tiFilePreview.setImage(imFilePreview);
 		tiFilePreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoonlog.preview(); }});
-		tiFilePreview.setToolTipText("Preview this transformation");
-		
-		final ToolItem tiFileReplay = new ToolItem(tBar, SWT.PUSH);
-		final Image imFileReplay = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"replay.png")); 
-		tiFileReplay.setImage(imFileReplay);
-		tiFileReplay.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { tabfolder.setSelection(1); spoonlog.startstopReplay(); }});
-		tiFileReplay.setToolTipText("Replay this transformation");
+		tiFilePreview.setToolTipText(Messages.getString("ToolTip.PreviewTranformation"));//Preview this transformation
 
 		new ToolItem(tBar, SWT.SEPARATOR);
 		final ToolItem tiFileCheck = new ToolItem(tBar, SWT.PUSH);
 		final Image imFileCheck = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"check.png")); 
 		tiFileCheck.setImage(imFileCheck);
 		tiFileCheck.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { checkTrans(); }});
-		tiFileCheck.setToolTipText("Verify this transformation");
+		tiFileCheck.setToolTipText(Messages.getString("ToolTip.VerifyTranformation"));//Verify this transformation
 
 		new ToolItem(tBar, SWT.SEPARATOR);
 		final ToolItem tiImpact = new ToolItem(tBar, SWT.PUSH);
@@ -920,7 +920,7 @@ public class Spoon
 		Image imImpact2 = new Image(disp, idImpact);
 		tiImpact.setImage(imImpact2);
 		tiImpact.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { analyseImpact(); }});
-		tiImpact.setToolTipText("Analyze the impact of this transformation on the database(s)");
+		tiImpact.setToolTipText(Messages.getString("ToolTip.AnalyzeTranformation"));//Analyze the impact of this transformation on the database(s)
 
 		new ToolItem(tBar, SWT.SEPARATOR);
 		final ToolItem tiSQL = new ToolItem(tBar, SWT.PUSH);
@@ -932,7 +932,7 @@ public class Spoon
 		Image imSQL2= new Image(disp, idSQL);
 		tiSQL.setImage(imSQL2);
 		tiSQL.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSQL();  }});
-		tiSQL.setToolTipText("Generate the SQL needed to run this transformation");
+		tiSQL.setToolTipText(Messages.getString("ToolTip.GenerateSQLForTranformation"));//Generate the SQL needed to run this transformation
 
 		tBar.addDisposeListener(new DisposeListener() 
 			{
@@ -1079,7 +1079,8 @@ public class Spoon
                             item.getText().equalsIgnoreCase(STRING_PLUGIN)
                            )
                         {
-                            tooltip="Select one of the step types listed below and"+Const.CR+"drag it onto the graphical view tab to the right.";
+                        	
+                            tooltip=Messages.getString("ToolTip.SelectStepType",Const.CR);  //"Select one of the step types listed below and"+Const.CR+"drag it onto the graphical view tab to the right.";
                         }
                     }
                     tree.setToolTipText(tooltip);
@@ -1174,7 +1175,8 @@ public class Spoon
 		TreeItem ti = (TreeItem)e.item;
 		String strti = ti.getText();
 		Tree root = ti.getParent();
-		log.logDebug(toString(), "Clicked on  "+ti.getText());
+		
+		log.logDebug(toString(), Messages.getString("Log.ClickedOn") +ti.getText());//Clicked on  
 		TreeItem sel[] = root.getSelection();
 
 		Menu mCSH = new Menu(shell, SWT.POP_UP);
@@ -1185,12 +1187,12 @@ public class Spoon
 		{
 			if (!strti.equalsIgnoreCase(STRING_BASE) && !strti.equalsIgnoreCase(STRING_PLUGIN))
 			{
-				MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText("New");
+				MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Menu.Popup.BASE.New"));//"New"
 				miNew.addListener( SWT.Selection, lsNew );
 			}
 			if (strti.equalsIgnoreCase(STRING_STEPS))
 			{
-				MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText("Sort steps");
+				MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Menu.Popup.STEPS.SortSteps"));//Sort steps
 				miNew.addSelectionListener( new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent arg0)
@@ -1202,7 +1204,7 @@ public class Spoon
 			}
 			if (strti.equalsIgnoreCase(STRING_HOPS))
 			{
-				MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText("Sort hops");
+				MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Menu.Popup.HOPS.SortHops"));//Sort hops
 				miNew.addSelectionListener( new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent arg0)
@@ -1214,7 +1216,7 @@ public class Spoon
 			}
 			if (strti.equalsIgnoreCase(STRING_CONNECTIONS))
 			{
-				MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText("New Connection Wizard");
+				MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Menu.Popup.CONNECTIONS.NewConnectionWizard"));//New Connection Wizard
 				miNew.addSelectionListener( new SelectionAdapter()
                 {
                     public void widgetSelected(SelectionEvent arg0)
@@ -1222,7 +1224,7 @@ public class Spoon
                         createDatabaseWizard();
                     }
                 } );
-				MenuItem miCache  = new MenuItem(mCSH, SWT.PUSH); miCache.setText("Clear complete DB Cache");
+				MenuItem miCache  = new MenuItem(mCSH, SWT.PUSH); miCache.setText(Messages.getString("Menu.Popup.CONNECTIONS.ClearDBCache"));//Clear complete DB Cache
 				miCache.addListener( SWT.Selection, lsCache );
 			}
 		}
@@ -1231,16 +1233,16 @@ public class Spoon
 			String strparent = parent.getText();
 			if (strparent.equalsIgnoreCase(STRING_CONNECTIONS))
 			{
-				MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText("New");
-				MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText("Edit");
-				MenuItem miDupe = new MenuItem(mCSH, SWT.PUSH); miDupe.setText("Duplicate");
-				MenuItem miCopy = new MenuItem(mCSH, SWT.PUSH); miCopy.setText("Copy to clipboard");
-				MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText("Delete");
+				MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Menu.Popup.CONNECTIONS.New"));//New
+				MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Menu.Popup.CONNECTIONS.Edit"));//Edit
+				MenuItem miDupe = new MenuItem(mCSH, SWT.PUSH); miDupe.setText(Messages.getString("Menu.Popup.CONNECTIONS.Duplicate"));//Duplicate
+				MenuItem miCopy = new MenuItem(mCSH, SWT.PUSH); miCopy.setText(Messages.getString("Menu.Popup.CONNECTIONS.CopyToClipboard"));//Copy to clipboard
+				MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Menu.Popup.CONNECTIONS.Delete"));//Delete
 				new MenuItem(mCSH, SWT.SEPARATOR);
-				MenuItem miSQL  = new MenuItem(mCSH, SWT.PUSH); miSQL.setText("SQL Editor");
-				MenuItem miCache= new MenuItem(mCSH, SWT.PUSH); miCache.setText("Clear DB Cache of "+ti.getText());
+				MenuItem miSQL  = new MenuItem(mCSH, SWT.PUSH); miSQL.setText(Messages.getString("Menu.Popup.CONNECTIONS.SQLEditor"));//SQL Editor
+				MenuItem miCache= new MenuItem(mCSH, SWT.PUSH); miCache.setText(Messages.getString("Menu.Popup.CONNECTIONS.ClearDBCache")+ti.getText());//Clear DB Cache of 
 				new MenuItem(mCSH, SWT.SEPARATOR);
-				MenuItem miExpl = new MenuItem(mCSH, SWT.PUSH); miExpl.setText("Explore");
+				MenuItem miExpl = new MenuItem(mCSH, SWT.PUSH); miExpl.setText(Messages.getString("Menu.Popup.CONNECTIONS.Explore"));//Explore
                 // disable for now if the connection is an SAP R/3 type of database...
                 DatabaseMeta dbMeta = transMeta.findDatabase(strti);
                 if (dbMeta==null || dbMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_SAPR3) miExpl.setEnabled(false);
@@ -1258,20 +1260,20 @@ public class Spoon
 			{
 				if (sel.length==2)
 				{
-					MenuItem miNewHop = new MenuItem(mCSH, SWT.PUSH); miNewHop.setText("New Hop");
+					MenuItem miNewHop = new MenuItem(mCSH, SWT.PUSH); miNewHop.setText(Messages.getString("Menu.Popup.STEPS.NewHop"));//New Hop
 					miNewHop.addListener(SWT.Selection, lsNew);
 				}
-				MenuItem miEdit   = new MenuItem(mCSH, SWT.PUSH); miEdit.setText("Edit");
-				MenuItem miDupe   = new MenuItem(mCSH, SWT.PUSH); miDupe.setText("Duplicate");
-				MenuItem miDel    = new MenuItem(mCSH, SWT.PUSH); miDel.setText("Delete");
+				MenuItem miEdit   = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Menu.Popup.STEPS.Edit"));//Edit
+				MenuItem miDupe   = new MenuItem(mCSH, SWT.PUSH); miDupe.setText(Messages.getString("Menu.Popup.STEPS.Duplicate"));//Duplicate
+				MenuItem miDel    = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Menu.Popup.STEPS.Delete"));//Delete
 				miEdit.addListener(SWT.Selection, lsEdit );
 				miDupe.addListener(SWT.Selection, lsDupe );
 				miDel.addListener(SWT.Selection, lsDel );
 			}
 			if (strparent.equalsIgnoreCase(STRING_HOPS))
 			{
-				MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText("Edit");
-				MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText("Delete");
+				MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Menu.Popup.HOPS.Edit"));//Edit
+				MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Menu.Popup.HOPS.Delete"));//Delete
 				miEdit.addListener( SWT.Selection, lsEdit );
 				miDel.addListener ( SWT.Selection, lsDel  );
 			}
@@ -1283,7 +1285,7 @@ public class Spoon
 				if (strgrandparent.equalsIgnoreCase(STRING_BASE) ||
 					strgrandparent.equalsIgnoreCase(STRING_PLUGIN))
 				{
-					MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText("New");
+					MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Menu.Popup.BASE_PLUGIN.New"));//New
 					miNew.addListener( SWT.Selection, lsNew );   
 				}
 			}
@@ -1312,28 +1314,22 @@ public class Spoon
 		tabfolder.setLayoutData(fdTabfolder);
 		
 		CTabItem   tiTabsGraph = new CTabItem(tabfolder, SWT.NONE); 
-		tiTabsGraph.setText("Graphical view");
-		tiTabsGraph.setToolTipText("Displays the transformation graphically.");
+		tiTabsGraph.setText(Messages.getString("Title.GraphicalView"));//"Graphical view"
+		tiTabsGraph.setToolTipText(Messages.getString("ToolTip.DisplaysTransformationGraphical"));//Displays the transformation graphically.
 		
 		CTabItem   tiTabsList  = new CTabItem(tabfolder, SWT.NULL); 
-		tiTabsList.setText("Log view");
-		tiTabsList.setToolTipText("Displays the log of the running transformation.");
-
-        CTabItem   tiTabsHist  = new CTabItem(tabfolder, SWT.NULL); 
-        tiTabsHist.setText("History");
-        tiTabsHist.setToolTipText("Displays the logs of previous runs.");
-
+		tiTabsList.setText(Messages.getString("Title.LogView"));//Log view
+		tiTabsList.setToolTipText(Messages.getString("ToolTip.DisplaysTransformationLog"));//Displays the log of the running transformation.
+		
 		spoongraph = new SpoonGraph(tabfolder, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND, log, this);
 		spoonlog   = new SpoonLog(tabfolder, SWT.NONE, this, log, null);
-        spoonhist  = new SpoonHistory(tabfolder, SWT.NONE, this, log, null);
 		
 		tabfolder.addKeyListener(defKeys);
 		tabfolder.addKeyListener(modKeys);
 		
 		tiTabsGraph.setControl(spoongraph);
 		tiTabsList.setControl(spoonlog);
-        tiTabsHist.setControl(spoonhist);
-        
+		
 		tabfolder.setSelection(0);
 		
 		sashform.addKeyListener(defKeys);
@@ -1348,7 +1344,7 @@ public class Spoon
 	
 	public void newSelected()
 	{
-		log.logDebug(toString(), "New Selected");
+		log.logDebug(toString(), Messages.getString("Log.NewSelected"));//"New Selected"
 		// Determine what menu we selected from...
 		
 		TreeItem ti[] = selectionTree.getSelection();
@@ -1360,14 +1356,14 @@ public class Spoon
 			TreeItem parent = ti[0].getParentItem();
 			if (parent == null)
 			{
-				log.logDebug(toString(), "Element has no parent");
+				log.logDebug(toString(), Messages.getString("Log.ElementHasNoParent"));//Element has no parent
 				if (name.equalsIgnoreCase(STRING_CONNECTIONS)) newConnection();
 				if (name.equalsIgnoreCase(STRING_HOPS      )) newHop();
 				if (name.equalsIgnoreCase(STRING_STEPS     )) 
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-					mb.setMessage("Please use the 'Base step types' below to create new steps.");
-					mb.setText("Tip!");
+					mb.setMessage(Messages.getString("Message.MessageBox.WarningCreateNewSteps"));//Please use the 'Base step types' below to create new steps.
+					mb.setText(Messages.getString("Message.MessageBox.Tip"));//Tip!
 					mb.open();
 				} 
 				//refreshTree();
@@ -1375,11 +1371,11 @@ public class Spoon
 			else
 			{
 				String strparent = parent.getText();
-				log.logDebug(toString(), "Element has parent: "+strparent);
+				log.logDebug(toString(), Messages.getString("Log.ElementHasParent")+strparent);//Element has parent: 
 				if (strparent.equalsIgnoreCase(STRING_CONNECTIONS)) newConnection();
 				if (strparent.equalsIgnoreCase(STRING_STEPS      )) 
 				{
-					log.logDebug(toString(), "New hop!");
+					log.logDebug(toString(), Messages.getString("Log.NewHop"));//New hop!
 					StepMeta from = transMeta.findStep( ti[0].getText() );
 					StepMeta to   = transMeta.findStep( ti[1].getText() );
 					if (from!=null && to!=null) newHop(from, to);
@@ -1412,7 +1408,7 @@ public class Spoon
 			TreeItem parent = ti[0].getParentItem();
 			if (parent != null)
 			{
-				log.logDebug(toString(), "(EDIT) Element has parent.");
+				log.logDebug(toString(), Messages.getString("Log.EDIT.ElementHasParent"));//(EDIT) Element has parent.
 				String strparent = parent.getText();
 				if (strparent.equalsIgnoreCase(STRING_CONNECTIONS)) editConnection(name);
 				if (strparent.equalsIgnoreCase(STRING_STEPS      )) editStep(name);
@@ -1433,7 +1429,7 @@ public class Spoon
 			}
 			else
 			{
-				log.logDebug(toString(), "Element has no parent");
+				log.logDebug(toString(), Messages.getString("Log.ElementHasNoParent"));//Element has no parent
 				if (name.equalsIgnoreCase(STRING_CONNECTIONS)) newConnection();
 				if (name.equalsIgnoreCase(STRING_HOPS       )) newHop();
 			}
@@ -1453,7 +1449,7 @@ public class Spoon
 			TreeItem parent = ti[0].getParentItem();
 			if (parent != null)
 			{
-				log.logDebug(toString(), "(DUPE) Element has parent.");
+				log.logDebug(toString(), Messages.getString("Log.DUPE.ElementHasParent"));//"(DUPE) Element has parent."
 				String type = parent.getText();
 				if (type.equalsIgnoreCase(STRING_CONNECTIONS)) dupeConnection(name);
 				if (type.equalsIgnoreCase(STRING_STEPS      )) dupeStep(name);
@@ -1478,7 +1474,7 @@ public class Spoon
 			TreeItem parent = ti[0].getParentItem();
 			if (parent != null)
 			{
-				log.logDebug(toString(), "(DUPE) Element has parent.");
+				log.logDebug(toString(), Messages.getString("Log.DUPE.ElementHasParent"));//"(DUPE) Element has parent."
 				String type = parent.getText();
 				if (type.equalsIgnoreCase(STRING_CONNECTIONS)) clipConnection(name);
 				if (type.equalsIgnoreCase(STRING_STEPS      )) clipStep(name);
@@ -1506,11 +1502,11 @@ public class Spoon
 		// Then call editConnection or editStep or editTrans
 		for (i=name.length-1;i>=0;i--)
 		{
-			log.logDebug(toString(), "(DELETE) Trying to delete #"+i+"/"+(ti.length-1)+" : "+name[i]);
+			log.logDebug(toString(), Messages.getString("Log.DELETE.TryToDelete")+"#"+i+"/"+(ti.length-1)+" : "+name[i]);//(DELETE) Trying to delete 
 			if (parent[i] != null)
 			{
 				String type = parent[i].getText();
-				log.logDebug(toString(), "(DELETE) Element has parent: "+type);
+				log.logDebug(toString(), Messages.getString("Log.DELETE.ElementHasParent")+type);//(DELETE) Element has parent: 
 				if (type.equalsIgnoreCase(STRING_CONNECTIONS)) delConnection(name[i]);
 				if (type.equalsIgnoreCase(STRING_STEPS      )) delStep(name[i]);
 				if (type.equalsIgnoreCase(STRING_HOPS       )) delHop(name[i]);
@@ -1570,7 +1566,7 @@ public class Spoon
 		if (db!=null)
 		{
 			DatabaseMeta newdb = (DatabaseMeta)db.clone();
-			String dupename = "(copy of) "+name; 
+			String dupename = Messages.getString("Other.DupeName") +name; //"(copy of) "
 			newdb.setName(dupename);
 			transMeta.addDatabase(pos+1, newdb);
 			refreshTree();
@@ -1628,12 +1624,13 @@ public class Spoon
 					}
 					catch(KettleDatabaseException dbe)
 					{
-						new ErrorDialog(shell, props, "ERROR", "Error deleting connection ["+db+"] from repository!", dbe);
+						
+						new ErrorDialog(shell, props, Messages.getString("Message.ErrorDialog.Title.ERROR"), Messages.getString("Message.ErrorDialog.Info.ErrorDeletingConnection",name), dbe);//"Error deleting connection ["+db+"] from repository!"
 					}
 				}
 				else
 				{
-					new ErrorDialog(shell, props, "ERROR", "Error deleting connection ["+db+"] from repository!", new KettleException("This user is read-only!"));
+					new ErrorDialog(shell, props, Messages.getString("Message.ErrorDialog.Title.ERROR"),Messages.getString("Message.ErrorDialog.Info.ErrorDeletingConnection",name) , new KettleException(Messages.getString("Message.ErrorDialog.Exception.ReadOnlyUser")));//"Error deleting connection ["+db+"] from repository!" //This user is read-only!
 				}
 			}
 
@@ -1644,7 +1641,7 @@ public class Spoon
 	
 	public void editStep(String name)
 	{
-		log.logDebug(toString(), "Edit step: "+name);
+		log.logDebug(toString(), Messages.getString("Log.EditStep") +name);//"Edit step: "
 		editStepInfo(transMeta.findStep(name));
 	}
 	
@@ -1667,7 +1664,7 @@ public class Spoon
 			}
 			catch(Throwable e)
 			{
-				new ErrorDialog(shell, props, "Oops!", "Unable to open dialog for this step", new Exception(e));
+				new ErrorDialog(shell, props, Messages.getString("Message.ErrorDialog.Title.Oops"), Messages.getString("Message.ErrorDialog.Info.UnableOpenDialog"), new Exception(e));//"Unable to open dialog for this step"
 			}
 
 			if (stepname!=null)
@@ -1695,8 +1692,8 @@ public class Spoon
 				{
 					stepname=newname;
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-					mb.setMessage("This stepname already exists.  Spoon changed the stepname to ["+stepname+"]");
-					mb.setText("Tip!");
+					mb.setMessage(Messages.getString("Message.MessageBox.StepnameExists",stepname));//"This stepname already exists.  Spoon changed the stepname to ["+stepname+"]"
+					mb.setText(Messages.getString("Message.MessageBox.Tip"));
 					mb.open();
 				}
 				stepMeta.setName(stepname);
@@ -1720,7 +1717,7 @@ public class Spoon
 
 	public void dupeStep(String name)
 	{
-		log.logDebug(toString(), "Duplicate step: "+name);
+		log.logDebug(toString(), Messages.getString("Log.DuplicateStep")+name);//Duplicate step: 
 		
 		StepMeta stMeta = null, stepMeta = null, look=null;
 		
@@ -1759,7 +1756,7 @@ public class Spoon
 
 	public void clipStep(String name)
 	{
-		log.logDebug(toString(), "copy step to clipboard: "+name);
+		log.logDebug(toString(), Messages.getString("Log.CopyStepToClipboard")+name);//copy step to clipboard: 
 		
 		StepMeta stepMeta = transMeta.findStep(name);
 		if (stepMeta!=null)
@@ -1782,7 +1779,7 @@ public class Spoon
 			
 			Node stepsnode = XMLHandler.getSubNode(transnode, "steps");
 			int nr = XMLHandler.countNodes(stepsnode, "step");
-			log.logDebug(toString(), "I found "+nr+" steps to paste on location: "+loc);
+			log.logDebug(toString(), Messages.getString("Log.FoundSteps",""+nr)+loc);//"I found "+nr+" steps to paste on location: "
 			StepMeta steps[] = new StepMeta[nr];
 			
 			//Point min = new Point(loc.x, loc.y);
@@ -1806,7 +1803,7 @@ public class Spoon
 			// Load the hops...
 			Node hopsnode = XMLHandler.getSubNode(transnode, "order");
 			nr = XMLHandler.countNodes(hopsnode, "hop");
-			log.logDebug(toString(), "I found "+nr+" hops to paste.");
+			log.logDebug(toString(), Messages.getString("Log.FoundHops",""+nr));//"I found "+nr+" hops to paste."
 			TransHopMeta hops[] = new TransHopMeta[nr];
 			
 			ArrayList alSteps = new ArrayList();
@@ -1848,7 +1845,7 @@ public class Spoon
 			// Load the notes...
 			Node notesnode = XMLHandler.getSubNode(transnode, "notepads");
 			nr = XMLHandler.countNodes(notesnode, "notepad");
-			log.logDebug(toString(), "I found "+nr+" notepads to paste.");
+			log.logDebug(toString(), Messages.getString("Log.FoundNotepads",""+nr));//"I found "+nr+" notepads to paste."
 			NotePadMeta notes[] = new NotePadMeta[nr];
 			
 			for (int i=0;i<notes.length;i++)
@@ -1886,7 +1883,7 @@ public class Spoon
 		}
 		catch(KettleException e)
 		{
-		    new ErrorDialog(shell, props, "Error pasting steps...", "I was unable to paste steps to this transformation", e);
+		    new ErrorDialog(shell, props, Messages.getString("Message.ErrorDialog.Title.ErrorPastingSteps"),Messages.getString("Message.ErrorDialog.Info.UnablePasteSteps") , e);//"Error pasting steps...", "I was unable to paste steps to this transformation"
 		}
 	}
 	
@@ -1942,7 +1939,7 @@ public class Spoon
 
 	public void delStep(String name)
 	{
-		log.logDebug(toString(), "Delete step: "+name);
+		log.logDebug(toString(), Messages.getString("Log.DeleteStep")+name);//"Delete step: "
 		
 		int i, pos=0;
 		StepMeta stepMeta = null, look=null;
@@ -1977,7 +1974,7 @@ public class Spoon
 		}
 		else
 		{
-			log.logDebug(toString(), "Couldn't find step ["+name+"] to delete...");
+			log.logDebug(toString(),Messages.getString("Log.UnableFindStepToDelete",name) );//"Couldn't find step ["+name+"] to delete..."
 		}
 	}	
 
@@ -2040,8 +2037,8 @@ public class Spoon
 			if (transMeta.findTransHop(hi.getFromStep(), hi.getToStep())!=null)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("This hop already exists!");
-				mb.setText("Error!");
+				mb.setMessage(Messages.getString("Message.MessageBox.HopExists"));//"This hop already exists!"
+				mb.setText(Messages.getString("Message.MessageBox.Error"));//Error!
 				mb.open();
 				error=true;
 			}
@@ -2052,8 +2049,8 @@ public class Spoon
 				refreshGraph();
 				
 				MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-				mb.setMessage("Adding this hop causes a loop in the transformation.  Loops are not allowed!");
-				mb.setText("Warning!");
+				mb.setMessage(Messages.getString("Message.MessageBox.AddingHopCausesLoop"));//Adding this hop causes a loop in the transformation.  Loops are not allowed!
+				mb.setText(Messages.getString("Message.MessageBox.Warning"));//Warning!
 				mb.open();
 				error=true;
 			}
@@ -2099,16 +2096,16 @@ public class Spoon
 				try
 				{
 					db.saveRep(rep);
-					log.logDetailed(toString(), "Saved database connection ["+db+"] to the repository.");
+					log.logDetailed(toString(), Messages.getString("Log.SavedDatabaseConnection",db.getDatabaseName()));//"Saved database connection ["+db+"] to the repository."
 				}
 				catch(KettleException ke)
-				{
-					new ErrorDialog(shell, props, "Can't save...","Error saving connection ["+db+"] to repository!", ke);
+				{//
+					new ErrorDialog(shell, props, Messages.getString("Message.ErrorDialog.Title.UnableSave"),Messages.getString("Message.ErrorDialog.Info.ErrorSavingConnection",db.getDatabaseName()), ke);//"Can't save...","Error saving connection ["+db+"] to repository!"
 				}
 			}
 			else
 			{
-				new ErrorDialog(shell, props, "Can't save...","Error saving connection ["+db+"] to repository!", new KettleException("This repository user is read-only!"));
+				new ErrorDialog(shell, props, Messages.getString("Message.ErrorDialog.Title.UnableSave"),Messages.getString("Message.ErrorDialog.Info.ErrorSavingConnection",db.getDatabaseName()), new KettleException(Messages.getString("Message.ErrorDialog.Exception.ReadOnlyRepositoryUser")));//This repository user is read-only!
 			}
 		}
 	}
@@ -2123,8 +2120,8 @@ public class Spoon
 		if (transMeta.hasChanged())
 		{
             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
-			mb.setMessage("This model has changed.  Do you want to save it?");
-			mb.setText("Warning!");
+			mb.setMessage(Messages.getString("Message.MessageBox.PromptSave"));//"This model has changed.  Do you want to save it?"
+			mb.setText(Messages.getString("Message.MessageBox.Warning"));
             int reply = mb.open();
             if (reply==SWT.YES)
             {
@@ -2165,8 +2162,8 @@ public class Spoon
 			{
 				rep=null;
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("An error occured connecting to the repository!"+Const.CR+"See the log for more information.");
-				mb.setText("Error!");
+				mb.setMessage(Messages.getString("Message.MessageBox.ErrorConnectingRepository",Const.CR));//"An error occured connecting to the repository!"+Const.CR+"See the log for more information."
+				mb.setText(Messages.getString("Message.MessageBox.Error"));
 				mb.open();
 			}
 			
@@ -2275,8 +2272,8 @@ public class Spoon
 						catch(KettleException e)
 						{
 							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-							mb.setMessage("Error opening : "+objname+Const.CR+e.getMessage());
-							mb.setText("Error!");
+							mb.setMessage(Messages.getString("Message.MessageBox.ErrorOpening")+objname+Const.CR+e.getMessage());//"Error opening : "
+							mb.setText(Messages.getString("Message.MessageBox.Error"));
 							mb.open();
 						}
 					}
@@ -2303,8 +2300,8 @@ public class Spoon
 					catch(KettleException e)
 					{
 						MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-						mb.setMessage("Sorry, I was unable to change this user in the repository: "+Const.CR+e.getMessage());
-						mb.setText("Edit user");
+						mb.setMessage(Messages.getString("Message.MessageBox.UnableChangeUser")+Const.CR+e.getMessage());//Sorry, I was unable to change this user in the repository: 
+						mb.setText(Messages.getString("Message.MessageBox.EditUser"));//"Edit user"
 						mb.open();
 					}
 			 	}
@@ -2312,8 +2309,8 @@ public class Spoon
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-				mb.setMessage("Sorry, you are not allowed to change this user.");
-				mb.setText("Edit user");
+				mb.setMessage(Messages.getString("Message.MessageBox.NotAllowedChangeUser"));//"Sorry, you are not allowed to change this user."
+				mb.setText(Messages.getString("Message.MessageBox.EditUser"));
 				mb.open();
 			}		
 		}
@@ -2347,7 +2344,7 @@ public class Spoon
 					try
 					{
 						transMeta = new TransMeta(fname);
-						props.addLastFile(Props.TYPE_PROPERTIES_MENU, fname, RepositoryDirectory.DIRECTORY_SEPARATOR, false, "");
+						props.addLastFile(Props.TYPE_PROPERTIES_MENU, fname, Const.FILE_SEPARATOR, false, "");
 						addMenuLast();
 						if (!importfile) transMeta.clearChanged();
 						setFilename(fname);
@@ -2356,8 +2353,8 @@ public class Spoon
 					{
 						clear();
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage("Error opening : "+fname+Const.CR+e.getMessage());
-						mb.setText("Error!");
+						mb.setMessage(Messages.getString("Message.MessageBox.ErrorOpening")+fname+Const.CR+e.getMessage());//"Error opening : "
+						mb.setText(Messages.getString("Message.MessageBox.Error"));//"Error!"
 						mb.open();
 					}
 
@@ -2378,7 +2375,7 @@ public class Spoon
 					{
 						transMeta = transInfo;
 						// transMeta = new TransInfo(log, rep, transname, repdir);
-                        log.logDetailed(toString(), "Transformation ["+transname+"] in directory ["+repdir+"] loaded from the repository.");
+                        log.logDetailed(toString(),Messages.getString("Log.LoadToTransformation",transname,repdir.getDirectoryName()) );//"Transformation ["+transname+"] in directory ["+repdir+"] loaded from the repository."
 						//System.out.println("name="+transMeta.getName());
 						props.addLastFile(Props.TYPE_PROPERTIES_SPOON, transname, repdir.getPath(), true, rep.getName());
 						addMenuLast();
@@ -2389,7 +2386,6 @@ public class Spoon
 					refreshTree(true);
 				}
 			}
-            refreshHistory();
 		}
 	}
 	
@@ -2402,7 +2398,6 @@ public class Spoon
 			setFilename(null);
 			refreshTree(true);
 			refreshGraph();
-            refreshHistory();
 		}
 	}
 	
@@ -2420,13 +2415,13 @@ public class Spoon
         boolean exit        = true;
         boolean showWarning = true;
 		
-		log.logDetailed(toString(), "Quit application.");
+		log.logDetailed(toString(), Messages.getString("Log.QuitApplication"));//"Quit application."
 		saveSettings();
 		if (transMeta.hasChanged())
 		{
 			MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
-			mb.setMessage("File has changed!  Do you want to save first?");
-			mb.setText("Warning!");
+			mb.setMessage(Messages.getString("Message.MessageBox.SaveChangedFile"));//"File has changed!  Do you want to save first?"
+			mb.setText(Messages.getString("Message.MessageBox.Warning"));//"Warning!"
 			int answer = mb.open();
 		
 			switch(answer)
@@ -2449,17 +2444,17 @@ public class Spoon
              (exit && showWarning && props.showExitWarning() )
            )
         {
-            String message = "Are you sure you want to exit?"; 
-            if (spoonlog.isRunning()) message = "There is a running transformation.  Are you sure you want to exit?";
+            String message = Messages.getString("Message.Warning.PromptExit"); //"Are you sure you want to exit?"
+            if (spoonlog.isRunning()) message = Messages.getString("Message.Warning.PromptExitWhenRunTransformation");//There is a running transformation.  Are you sure you want to exit?
             
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                    "Warning!", 
+            		Messages.getString("Message.Warning.Warning"),//"Warning!" 
                     null,
                     message,
                     MessageDialog.WARNING,
-                    new String[] { "Yes", "No" },
+                    new String[] { Messages.getString("Message.Warning.Yes"), Messages.getString("Message.Warning.No") },//"Yes", "No" 
                     1,
-                    "Please, don't show this warning anymore.",
+                    Messages.getString("Message.Warning.NotShowWarning"),//"Please, don't show this warning anymore."
                     !props.showExitWarning()
                );
                int idx = md.open();
@@ -2477,7 +2472,7 @@ public class Spoon
 	
 	public void saveFile()
 	{
-		log.logDetailed(toString(), "Save to file or repository...");
+		log.logDetailed(toString(), Messages.getString("Log.SaveToFileOrRepository"));//"Save to file or repository..."
 		
 		if (rep!=null)
 		{
@@ -2501,7 +2496,7 @@ public class Spoon
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "An error occured saving the database cache to disk", e);
+			new ErrorDialog(shell, props, Messages.getString("Message.ErrorDialog.Title.ERROR"), Messages.getString("Message.ErrorDialog.Info.ErrorSavingDatabaseCache"), e);//"An error occured saving the database cache to disk"
 		}
 	}
 	
@@ -2512,7 +2507,7 @@ public class Spoon
 
 	public void saveRepository(boolean ask_name)
 	{
-		log.logDetailed(toString(), "Save to repository...");
+		log.logDetailed(toString(), Messages.getString("Log.SaveToRepository"));//"Save to repository..."
 		if (rep!=null)
 		{
 			boolean answer = true;
@@ -2522,8 +2517,8 @@ public class Spoon
 				if (!ask)
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					mb.setMessage("Please give this transformation a name before saving it in the database.");
-					mb.setText("Transformation has no name.");
+					mb.setMessage(Messages.getString("Message.MessageBox.PromptTransformationName"));//"Please give this transformation a name before saving it in the database."
+					mb.setText(Messages.getString("Message.MessageBox.TransformationNoName"));//"Transformation has no name."
 					mb.open();
 				}
 				ask=false;
@@ -2539,8 +2534,8 @@ public class Spoon
 					if (transMeta.showReplaceWarning(rep))
 					{
 						MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-						mb.setMessage("There already is a transformation called ["+transMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the transformation?");
-						mb.setText("Overwrite?");
+						mb.setMessage(Messages.getString("Message.MessageBox.PromptOverwriteTransformation",transMeta.getName(),Const.CR));//"There already is a transformation called ["+transMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the transformation?"
+						mb.setText(Messages.getString("Message.MessageBox.Overwrite"));//"Overwrite?"
 						response = mb.open();
 					}
 					
@@ -2559,13 +2554,13 @@ public class Spoon
 							if (!props.getSaveConfirmation())
 							{
 								MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-																						 "Save OK!", 
+																						 Messages.getString("Message.Warning.SaveOK"), //"Save OK!"
 																						 null,
-																						 "This transformation was stored in repository",
+																						 Messages.getString("Message.Warning.TransformationWasStored"),//"This transformation was stored in repository"
 																						 MessageDialog.QUESTION,
-																						 new String[] { "OK!" },
+																						 new String[] { Messages.getString("Message.Warning.OK") },//"OK!"
 																						 0,
-																						 "Don't show this message again.",
+																						 Messages.getString("Message.Warning.NotShowThisMessage"),//"Don't show this message again."
 																						 props.getSaveConfirmation()
 																						 );
 								md.open();
@@ -2585,8 +2580,8 @@ public class Spoon
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.CLOSE | SWT.ICON_ERROR);
-					mb.setMessage("Sorry, the user you're logged on with, can only read from the repository");
-					mb.setText("Transformation not saved!");
+					mb.setMessage(Messages.getString("Message.MessageBox.OnlyreadRepository"));//"Sorry, the user you're logged on with, can only read from the repository"
+					mb.setText(Messages.getString("Message.MessageBox.NotSaveTransformation"));//"Transformation not saved!"
 					mb.open();
 				}
 			}
@@ -2594,15 +2589,15 @@ public class Spoon
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setMessage("There is no repository connection available.");
-			mb.setText("No repository available.");
+			mb.setMessage(Messages.getString("Message.MessageBox.NoRepositoryConnection"));//"There is no repository connection available."
+			mb.setText(Messages.getString("Message.MessageBox.NoRepositoryAvailable"));//"No repository available."
 			mb.open();
 		}
 	}
 
 	public void saveFileAs()
 	{
-		log.logBasic(toString(), "Save as...");
+		log.logBasic(toString(), Messages.getString("Log.SaveAs"));//"Save as..."
 
 		if (rep!=null)
 		{
@@ -2644,8 +2639,8 @@ public class Spoon
 			if (f.exists())
 			{
 				MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES | SWT.ICON_WARNING);
-				mb.setMessage("This file already exists.  Do you want to overwrite it?");
-				mb.setText("This file already exists!");
+				mb.setMessage(Messages.getString("Message.MessageBox.PromptOverwriteFile"));//"This file already exists.  Do you want to overwrite it?"
+				mb.setText(Messages.getString("Message.MessageBox.FileExists"));//"This file already exists!"
 				id = mb.open();
 			}
 			if (id==SWT.YES)
@@ -2666,20 +2661,20 @@ public class Spoon
 			dos.close();
 
 			// Handle last opened files...
-			props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fname, RepositoryDirectory.DIRECTORY_SEPARATOR, false, "");
+			props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fname, Const.FILE_SEPARATOR, false, "");
 			saveSettings();
 			addMenuLast();
 			
 			transMeta.clearChanged();
 			setShellText();
-			log.logDebug(toString(), "File written to ["+fname+"]");
+			log.logDebug(toString(), Messages.getString("Log.FileWritten")+" ["+fname+"]"); //"File written to
 		}
 		catch(Exception e)
 		{
-			log.logDebug(toString(), "Error opening file for writing! --> "+e.toString());
+			log.logDebug(toString(), Messages.getString("Log.ErrorOpeningFileForWriting")+e.toString());//"Error opening file for writing! --> "
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setMessage("Error saving file:"+Const.CR+e.toString());
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("Message.MessageBox.ErrorSavingFile")+Const.CR+e.toString());//"Error saving file:"
+			mb.setText(Messages.getString("Message.MessageBox.ERROR"));//"ERROR"
 			mb.open();
 		}
 	}
@@ -2687,8 +2682,8 @@ public class Spoon
 	public void helpAbout()
 	{
 		MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION | SWT.CENTER);
-		String mess = "Kettle - Spoon version "+Const.VERSION+Const.CR+Const.CR+Const.CR;
-		mess+="(c) 2001-2004 i-Bridge bvba"+Const.CR+"         www.kettle.be"+Const.CR;
+		String mess = Messages.getString("System.ProductInfo")+Const.VERSION+Const.CR+Const.CR+Const.CR;//Kettle - Spoon version 
+		mess+=Messages.getString("System.CompanyInfo")+Const.CR+"         "+Messages.getString("System.ProductWebsiteUrl")+Const.CR; //(c) 2001-2004 i-Bridge bvba     www.kettle.be
 		
 		mb.setMessage(mess);
 		mb.setText(APP_NAME);
@@ -2814,16 +2809,16 @@ public class Spoon
 			}
 
 			// First delete no longer used items...
-			log.logDebug(toString(), "check steps");
+			log.logDebug(toString(), Messages.getString("Log.CheckSteps"));//"check steps"
 			for (int i=0;i<ti.length;i++)
 			{
 				String str = ti[i].getText();
-				log.logDebug(toString(), "  check step tree item #"+i+" : ["+str+"]");
+				log.logDebug(toString(), "  "+Messages.getString("Log.CheckStepTreeItem")+i+" : ["+str+"]");
 				StepMeta inf = transMeta.findStep(str);
 				if (inf!=null) idx = transMeta.indexOfStep(inf); else idx=-1;
 				if (idx<0 || idx>i) 
 				{
-					log.logDebug(toString(), "     remove tree item ["+str+"]");
+					log.logDebug(toString(), "     "+ Messages.getString("Log.RemoveTreeItem")+ "["+str+"]");//remove tree item
 					ti[i].dispose();
 				}
 			}
@@ -2927,11 +2922,6 @@ public class Spoon
 		setShellText();
 	}
 
-    public void refreshHistory()
-    {
-        spoonhist.refreshHistory();
-    }
-    
 	public StepMeta newStep()
 	{
 		return newStep(true, true);
@@ -2945,7 +2935,7 @@ public class Spoon
 		if (ti.length==1)
 		{
 			String steptype = ti[0].getText();
-			log.logDebug(toString(), "New step: "+steptype);
+			log.logDebug(toString(), Messages.getString("Log.NewStep")+steptype);//"New step: "
 			
 			inf = newStep(steptype, steptype, openit, rename);
 		}
@@ -3015,8 +3005,8 @@ public class Spoon
 					{
 						inf.setName(newname);
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-						mb.setMessage("This stepname already exists.  Spoon changed the stepname to ["+newname+"]");
-						mb.setText("Info!");
+						mb.setMessage(Messages.getString("Message.MessageBox.ChangeStepname",newname));//"This stepname already exists.  Spoon changed the stepname to ["+newname+"]"
+						mb.setText(Messages.getString("Message.MessageBox.Info"));//"Info!"
 						mb.open();
 					}
 					inf.setLocation(20, 20); // default location at (20,20)
@@ -3057,23 +3047,23 @@ public class Spoon
                     }
 
                     System.out.println("Content = "+content);
-                    ShowBrowserDialog sbd = new ShowBrowserDialog(shell, "Error help text", content.toString());
+                    ShowBrowserDialog sbd = new ShowBrowserDialog(shell, Messages.getString("Message.ShowBrowserDialog.ErrorHelpText"), content.toString());//"Error help text"
                     sbd.open();
                 }
                 catch(Exception ex)
                 {
-                    new ErrorDialog(shell, props, "Error showing help text", "I was unable to display error help text!", ex);
+                    new ErrorDialog(shell, props, Messages.getString("Message.ErrorDialog.Title.ErrorShowingHelpText"), "I was unable to display error help text!", ex);//"Error showing help text"
                 }
             }
             else
             {
-    		    new ErrorDialog(shell, props, "Error creating step", "I was unable to create a new step", e);
+    		    new ErrorDialog(shell, props, Messages.getString("Message.ErrorDialog.Title.ErrorCreatingStep"),Messages.getString("Message.ErrorDialog.Info.UnableCreateNewStep") , e);//"Error creating step"  "I was unable to create a new step"
             }
     		return null;
 		}
         catch(Throwable e)
         {
-            new ErrorDialog(shell, props, "Error creating step", "I was unable to create a new step", new Exception(e));
+            new ErrorDialog(shell, props, Messages.getString("Message.ErrorDialog.Title.ErrorCreatingStep"), Messages.getString("Message.ErrorDialog.Info.UnableCreateNewStep"), new Exception(e));//"Error creating step"
             return null;
         }
 				
@@ -3159,19 +3149,19 @@ public class Spoon
 		{
 			String repository = "["+getRepositoryName()+"]";
 			String transname  = transMeta.getName();
-			if (transname==null) transname="[no name]";
-			shell.setText(APPL_TITLE+" - "+repository+"   "+transname+(transMeta.hasChanged()?" (changed)":""));
+			if (transname==null) transname=Messages.getString("Other.NoName");//"[no name]"
+			shell.setText(APPL_TITLE+" - "+repository+"   "+transname+(transMeta.hasChanged()?(" "+Messages.getString("Other.Changed")):""));//(changed)
 		}
 		else
 		{
-			String repository = "[no repository]";
+			String repository = Messages.getString("Other.NoRepository");//"[no repository]"
 			if (fname!=null)
 			{
-				shell.setText(APPL_TITLE+" - "+repository+"   File: "+fname+(transMeta.hasChanged()?" (changed)":""));
+				shell.setText(APPL_TITLE+" - "+repository+"   File: "+fname+(transMeta.hasChanged()?(" "+Messages.getString("Other.Changed")):""));
 			}
 			else
 			{
-				shell.setText(APPL_TITLE+" - "+repository+"   "+(transMeta.hasChanged()?" (changed)":""));
+				shell.setText(APPL_TITLE+" - "+repository+"   "+(transMeta.hasChanged()?(" "+Messages.getString("Other.Changed")):""));
 			}
 		}
 		
@@ -3694,23 +3684,23 @@ public class Spoon
 		if (prev!=null) 
 		{
 			miEditUndo.setEnabled(true);
-			miEditUndo.setText("Undo : "+prev.toString()+" \tCTRL-Z");
+			miEditUndo.setText(Messages.getString("Menu.Undo.Available",prev.toString()));//"Undo : "+prev.toString()+" \tCTRL-Z"
 		} 
 		else            
 		{
 			miEditUndo.setEnabled(false);
-			miEditUndo.setText("Undo : not available \tCTRL-Z");
+			miEditUndo.setText(Messages.getString("Menu.Undo.NotAvailable"));//"Undo : not available \tCTRL-Z"
 		} 
 
 		if (next!=null) 
 		{
 			miEditRedo.setEnabled(true);
-			miEditRedo.setText("Redo : "+next.toString()+" \tCTRL-Y");
+			miEditRedo.setText(Messages.getString("Menu.Redo.Available",next.toString()));//"Redo : "+next.toString()+" \tCTRL-Y"
 		} 
 		else            
 		{
 			miEditRedo.setEnabled(false);
-			miEditRedo.setText("Redo : not available \tCTRL-Y");			
+			miEditRedo.setText(Messages.getString("Menu.Redo.NotAvailable"));//"Redo : not available \tCTRL-Y"			
 		} 
 	}
 
@@ -3859,8 +3849,8 @@ public class Spoon
 					else
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage("Couldn't find connection, please refresh the tree (F5)!");
-						mb.setText("Error!");
+						mb.setMessage(Messages.getString("Message.MessageBox.CannotFindConnection"));//"Couldn't find connection, please refresh the tree (F5)!"
+						mb.setText(Messages.getString("Message.MessageBox.Error"));//"Error!"
 						mb.open();
 					}
 				} 
@@ -3892,7 +3882,7 @@ public class Spoon
 		{
 			// Display all the rows...
 			PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, "-", rows);
-			prd.setTitleMessage("Impact analyses", "Result of analyses:");
+			prd.setTitleMessage(Messages.getString("Message.PreviewRowsDialog.Title.ImpactAnalyses"), Messages.getString("Message.PreviewRowsDialog.Info.ResultOfAnalyses"));//"Impact analyses"  "Result of analyses:"
 			prd.open();
 		}
 		else
@@ -3900,13 +3890,13 @@ public class Spoon
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
 			if (impactHasRun)
 			{
-				mb.setMessage("As far as I can tell, this transformation has no impact on any database.");
+				mb.setMessage(Messages.getString("Message.MessageBox.TransformationNoImpactOnDatabase"));//"As far as I can tell, this transformation has no impact on any database."
 			}
 			else
 			{
-				mb.setMessage("Please run the impact analyses first on this transformation.");
+				mb.setMessage(Messages.getString("Message.MessageBox.RunImpactAnalysesFirst"));//"Please run the impact analyses first on this transformation."
 			}
-			mb.setText("Impact");
+			mb.setText(Messages.getString("Message.MessageBox.Impact"));//Impact
 			mb.open();
 		}
 	}
@@ -3929,8 +3919,8 @@ public class Spoon
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-				mb.setMessage("As far as I can tell, no SQL statements need to be executed before this transformation can run.");
-				mb.setText("SQL");
+				mb.setMessage(Messages.getString("Message.MessageBox.NoSQLNeedEexecuted"));//As far as I can tell, no SQL statements need to be executed before this transformation can run.
+				mb.setText(Messages.getString("Message.MessageBox.SQL"));//"SQL"
 				mb.open();
 			}
 		}
@@ -3953,7 +3943,7 @@ public class Spoon
 	 */
 	public void pasteTransformation()
 	{
-        log.logDetailed(toString(), "Paste transformation from the clipboard!");
+        log.logDetailed(toString(), Messages.getString("Log.PasteTransformationFromClipboard"));//"Paste transformation from the clipboard!"
 	    if (showChangedWarning())
 	    {
 	        String xml = fromClipboard();
@@ -3966,7 +3956,7 @@ public class Spoon
 	        }
 	        catch(KettleException e)
 	        {
-	            new ErrorDialog(shell, props, "Error pasting transformation", "An error occurred pasting a transformation from the clipboard", e);
+	            new ErrorDialog(shell, props, Messages.getString("Message.ErrorDialog.Title.ErrorPastingTransformation"),  Messages.getString("Message.ErrorDialog.Info.ErrorPastingTransformation"), e);//Error pasting transformation  "An error occurred pasting a transformation from the clipboard"
 	        }
 	    }
 	}
@@ -4129,15 +4119,15 @@ public class Spoon
 			//
 			// Add a note
 			//
-			String note = "Reads information from table ["+tablename+"] on database ["+sourceDBInfo+"]"+Const.CR;
-			note+="After that, it writes the information to table ["+tablename+"] on database ["+targetDBInfo+"]";
+			String note = Messages.getString("Message.Note.ReadInformationFromTableOnDB",tablename,sourceDBInfo.getDatabaseName() )+Const.CR;//"Reads information from table ["+tablename+"] on database ["+sourceDBInfo+"]"
+			note+=Messages.getString("Message.Note.WriteInformationToTableOnDB",tablename,targetDBInfo.getDatabaseName() );//"After that, it writes the information to table ["+tablename+"] on database ["+targetDBInfo+"]"
 			NotePadMeta ni = new NotePadMeta(note, 150, 10, -1, -1);
 			ti.addNote(ni);
 	
 			// 
 			// create the source step...
 			//
-			String fromstepname = "read from ["+tablename+"]";
+			String fromstepname = Messages.getString("Message.Note.ReadFromTable",tablename); //"read from ["+tablename+"]";
 			TableInputMeta tii = new TableInputMeta();
 			tii.setDatabaseMeta(sourceDBInfo);
 			tii.setSQL("SELECT * FROM "+tablename);
@@ -4148,7 +4138,7 @@ public class Spoon
 			StepMeta fromstep = new StepMeta(log, fromstepid, fromstepname, (StepMetaInterface)tii );
 			fromstep.setLocation(150,100);
 			fromstep.setDraw(true);
-			fromstep.setDescription("Reads information from table ["+tablename+"] on database ["+sourceDBInfo+"]");
+			fromstep.setDescription(Messages.getString("Message.Note.ReadInformationFromTableOnDB",tablename,sourceDBInfo.getDatabaseName() ));
 			ti.addStep(fromstep);
 			
 			//
@@ -4179,12 +4169,12 @@ public class Spoon
 					}
 				}
 				
-				String selstepname = "Handle reserved words";
+				String selstepname =Messages.getString("Message.Note.HandleReservedWords"); //"Handle reserved words";
 				String selstepid = steploader.getStepPluginID(svi);
 				StepMeta selstep = new StepMeta(log, selstepid, selstepname, (StepMetaInterface)svi );
 				selstep.setLocation(350,100);
 				selstep.setDraw(true);
-				selstep.setDescription("Renames reserved words for "+targetDBInfo.getDatabaseTypeDesc());
+				selstep.setDescription(Messages.getString("Message.Note.RenamesReservedWords",targetDBInfo.getDatabaseTypeDesc()) );//"Renames reserved words for "+targetDBInfo.getDatabaseTypeDesc()
 				ti.addStep(selstep);
 				
 				TransHopMeta shi = new TransHopMeta(fromstep, selstep);
@@ -4198,7 +4188,7 @@ public class Spoon
 			//
 			// Add the TableOutputMeta step...
 			//
-			String tostepname = "write to ["+tablename+"]";
+			String tostepname = Messages.getString("Message.Note.WriteToTable",tablename); // "write to ["+tablename+"]";
 			TableOutputMeta toi = new TableOutputMeta();
 			toi.setDatabase( targetDBInfo );
 			toi.setTablename( tablename );
@@ -4209,7 +4199,7 @@ public class Spoon
 			StepMeta tostep = new StepMeta(log, tostepid, tostepname, (StepMetaInterface)toi );
 			tostep.setLocation(550,100);
 			tostep.setDraw(true);
-			tostep.setDescription("Write information to table ["+tablename+"] on database ["+targetDBInfo+"]");
+			tostep.setDescription(Messages.getString("Message.Note.WriteInformationToTableOnDB2",tablename,targetDBInfo.getDatabaseName() ));//"Write information to table ["+tablename+"] on database ["+targetDBInfo+"]"
 			ti.addStep(tostep);
 			
 			//
@@ -4225,7 +4215,7 @@ public class Spoon
 		}
 		catch(Exception e)
 		{
-			new ErrorDialog(shell, props, "Unexpected error", "An unexpected error occurred creating the new transformation", new KettleException(e.getMessage(), e)); 
+			new ErrorDialog(shell, props, Messages.getString("Message.ErrorDialog.Title.UnexpectedError"), Messages.getString("Message.ErrorDialog.Info.UnexpectedError"), new KettleException(e.getMessage(), e));//"Unexpected error"  "An unexpected error occurred creating the new transformation" 
 			return false;
 		}
 		return true;
@@ -4250,14 +4240,14 @@ public class Spoon
 		Splash splash = new Splash(display);
 		
 		// System.out.println("Welcome to Spoon!");
-		String repname   = Const.getCommandlineOption(args, "rep");
-		String username  = Const.getCommandlineOption(args, "user");
-		String password  = Const.getCommandlineOption(args, "pass");
-		String transname = Const.getCommandlineOption(args, "trans");
-		String filename  = Const.getCommandlineOption(args, "file");
-		String dirname   = Const.getCommandlineOption(args, "dir");
-		String logfile   = Const.getCommandlineOption(args, "log");
-		String loglevel  = Const.getCommandlineOption(args, "level");
+		String repname   = Const.getCommandlineOption(args, Messages.getString("CommandlineOption_Repname"));//"rep"
+		String username  = Const.getCommandlineOption(args, Messages.getString("CommandlineOption_Username"));//"user"
+		String password  = Const.getCommandlineOption(args, Messages.getString("CommandlineOption_Password"));//"pass"
+		String transname = Const.getCommandlineOption(args, Messages.getString("CommandlineOption_Transname"));//"trans"
+		String filename  = Const.getCommandlineOption(args, Messages.getString("CommandlineOption_Filename"));//"file"
+		String dirname   = Const.getCommandlineOption(args, Messages.getString("CommandlineOption_Dirname"));//"dir"
+		String logfile   = Const.getCommandlineOption(args, Messages.getString("CommandlineOption_Logfile"));//"log"
+		String loglevel  = Const.getCommandlineOption(args, Messages.getString("CommandlineOption_Loglevel"));//"level"
 
         String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
         String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
@@ -4271,7 +4261,7 @@ public class Spoon
 		String version = Const.JAVA_VERSION;
 		if ("1.4".compareToIgnoreCase(version)>0)
 		{
-			System.out.println("Spoon is running on Java version "+version);
+			System.out.println("The System is running on Java version "+version);
 			System.out.println("Unfortunately, it needs version 1.4 or higher to run.");
 			return;
 		}
@@ -4289,19 +4279,19 @@ public class Spoon
             log=LogWriter.getInstance( logfile, true, LogWriter.LOG_LEVEL_BASIC );
 		}
 
-		if (log.getRealFilename()!=null) log.logBasic(APP_NAME, "Logging goes to "+log.getRealFilename());
+		if (log.getRealFilename()!=null) log.logBasic(APP_NAME, Messages.getString("Log.LoggingToFile")+log.getRealFilename());//"Logging goes to "
 		
 		if (loglevel!=null) 
 		{
 			log.setLogLevel(loglevel);
-			log.logBasic(APP_NAME, "Logging is at level : "+log.getLogLevelDesc());
+			log.logBasic(APP_NAME, Messages.getString("Log.LoggingAtLevel")+log.getLogLevelDesc());//"Logging is at level : "
 		}
 		
 		/* Load the plugins etc.*/
 		StepLoader stloader = StepLoader.getInstance();
 		if (!stloader.read())
 		{
-            log.logError(APP_NAME, "Error loading steps & plugins... halting Spoon!");
+            log.logError(APP_NAME, Messages.getString("Log.ErrorLoadingAndHaltSystem"));//Error loading steps & plugins... halting Spoon!
 			return;
 		}
 
@@ -4309,18 +4299,18 @@ public class Spoon
 		win.setDestroy(true);
 		win.setArguments((String[])args.toArray(new String[args.size()]));
 		
-        log.logBasic(APP_NAME, "Main window is created.");
+        log.logBasic(APP_NAME, Messages.getString("Log.MainWindowCreated"));//Main window is created.
         
 		RepositoryMeta repinfo = null;
 		UserInfo userinfo = null;
 		
 		if (repname==null && filename==null && win.props.showRepositoriesDialogAtStartup())
 		{		
-            log.logBasic(APP_NAME, "Asking for repository");
+            log.logBasic(APP_NAME, Messages.getString("Log.AskingForRepository"));//"Asking for repository"
 
 			int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION };
 			splash.hide();
-			RepositoriesDialog rd = new RepositoriesDialog(win.disp, SWT.NONE, perms, "Spoon");
+			RepositoriesDialog rd = new RepositoriesDialog(win.disp, SWT.NONE, perms, Messages.getString("System.Name"));//"Spoon"
 			if (rd.open())
 			{
 				repinfo = rd.getRepository();
@@ -4328,8 +4318,8 @@ public class Spoon
 				if (!userinfo.useTransformations())
 				{
 					MessageBox mb = new MessageBox(win.shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage("Sorry, this repository user can't work with transformations from the repository.");
-					mb.setText("Error!");
+					mb.setMessage(Messages.getString("Message.MessageBox.RepositoryUserCannotWork"));//"Sorry, this repository user can't work with transformations from the repository."
+					mb.setText(Messages.getString("Message.MessageBox.Error"));//"Error!"
 					mb.open();
 					
 					userinfo = null;
@@ -4363,54 +4353,47 @@ public class Spoon
 						{
 							// Define and connect to the repository...
 							win.rep = new Repository(log, repinfo, userinfo);
-							if (win.rep.connect("Spoon"))
+							if (win.rep.connect(Messages.getString("System.Name")))//"Spoon"
 							{
 								if (dirname==null) dirname=RepositoryDirectory.DIRECTORY_SEPARATOR;
 								
 								// Check username, password
-                                try
-                                {
-    								win.rep.userinfo = new UserInfo(win.rep, username, Const.NVL(password, ""));
-    								
-                                    if (transname!=null && dirname!=null)
-                                    {
-    									RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(dirname);
-    									if (repdir!=null)
-    									{
-    										win.transMeta = new TransMeta(win.rep, transname, repdir);
-    										win.setFilename(repname);
-    										win.transMeta.clearChanged();
-    									}
-    									else
-    									{
-                                            log.logError(APP_NAME, "Can't find directory ["+dirname+"] in the repository.");
-    									}
-                                    }
-                                }
-                                catch(KettleException e)
+								win.rep.userinfo = new UserInfo(win.rep, username, password);
+								
+								if (win.rep.userinfo.getID()>0)
 								{
-                                    log.logError(APP_NAME, "Can't verify username and password.");
-                                    win.rep.disconnect();
-                                    win.rep=null;
-                                    MessageBox mb = new MessageBox(win.shell, SWT.OK | SWT.ICON_ERROR);
-                                    mb.setMessage("The supplied username or password is incorrect.");
-                                    mb.setText("Sorry...");
-                                    mb.open();
+									RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(dirname);
+									if (repdir!=null)
+									{
+										win.transMeta = new TransMeta(win.rep, transname, repdir);
+										win.setFilename(repname);
+										win.transMeta.clearChanged();
+									}
+									else
+									{
+                                        log.logError(APP_NAME, Messages.getString("Log.UnableFindDirectory",dirname));//"Can't find directory ["+dirname+"] in the repository."
+									}
+								}
+								else
+								{
+                                    log.logError(APP_NAME, Messages.getString("Log.UnableVerifyUser"));//"Can't verify username and password."
+									win.rep.disconnect();
+									win.rep=null;
 								}
 							}
 							else
 							{
-                                log.logError(APP_NAME, "Can't connect to the repository.");
+                                log.logError(APP_NAME, Messages.getString("Log.UnableConnectToRepository"));//"Can't connect to the repository."
 							}
 						}
 						else
 						{
-                            log.logError(APP_NAME, "No repository provided, can't load transformation.");
+                            log.logError(APP_NAME, Messages.getString("Log.NoRepositoryRrovided"));//"No repository provided, can't load transformation."
 						}
 					}
 					else
 					{
-                        log.logError(APP_NAME, "No repositories defined on this system.");
+                        log.logError(APP_NAME, Messages.getString("Log.NoRepositoriesDefined"));//"No repositories defined on this system."
 					}
 				}
 				else
@@ -4427,7 +4410,7 @@ public class Spoon
 				if (repinfo!=null && userinfo!=null)
 				{
 					win.rep = new Repository(log, repinfo, userinfo);
-					if (!win.rep.connect("Spoon"))
+					if (!win.rep.connect(Messages.getString("System.Name"))) //"Spoon"
 					{
 						win.rep = null;
 					}
@@ -4435,7 +4418,7 @@ public class Spoon
 	
 				if (win.props.openLastFile())
 				{
-                    log.logDetailed(APP_NAME, "Trying to open the last file used.");
+                    log.logDetailed(APP_NAME, Messages.getString("Log.TryingOpenLastUsedFile"));//"Trying to open the last file used."
 					
 					String  lastfiles[] = win.props.getLastFiles();
 					String  lastdirs[]  = win.props.getLastDirs();
@@ -4468,14 +4451,13 @@ public class Spoon
 									RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(lastdirs[0]);
 									if (repdir!=null)
 									{
-                                        log.logDetailed(APP_NAME, "Auto loading transformation ["+lastfiles[0]+"] from repository directory ["+lastdirs[0]+"]");
+                                        log.logDetailed(APP_NAME, Messages.getString("Log.AutoLoadingTransformation",lastfiles[0],lastdirs[0]));//"Auto loading transformation ["+lastfiles[0]+"] from repository directory ["+lastdirs[0]+"]"
 										TransLoadProgressDialog tlpd = new TransLoadProgressDialog(win.shell, win.rep, lastfiles[0], repdir);
 										TransMeta transInfo = tlpd.open(); // = new TransInfo(log, win.rep, lastfiles[0], repdir);
 										if (transInfo != null) 
 										{
 											win.transMeta = transInfo;
 											win.setFilename(lastfiles[0]);
-                                            win.refreshHistory();
 										}
 									}
 								}
@@ -4484,7 +4466,6 @@ public class Spoon
 							{
 								win.transMeta = new TransMeta(lastfiles[0]);
 								win.setFilename(lastfiles[0]);
-                                win.refreshHistory();
 							}
 						}
 						win.transMeta.clearChanged();
@@ -4494,7 +4475,7 @@ public class Spoon
 		}
 		catch(KettleException ke)
 		{
-            log.logError(APP_NAME, "An error occurred: "+Const.CR+ke.getMessage());
+            log.logError(APP_NAME, Messages.getString("Log.ErrorOccurred")+Const.CR+ke.getMessage());//"An error occurred: "
 			// ke.printStackTrace();
 		}
 				
@@ -4511,12 +4492,12 @@ public class Spoon
 		}
 		catch(Throwable e)
 		{
-            log.logError(APP_NAME, "An unexpected error occurred in Spoon: probable cause: please close all windows before stopping Spoon! "+Const.CR+e.getMessage());
+            log.logError(APP_NAME, Messages.getString("Log.UnexpectedErrorOccurred")+Const.CR+e.getMessage());//"An unexpected error occurred in Spoon: probable cause: please close all windows before stopping Spoon! "
 			e.printStackTrace();
 		}
 		win.dispose();
 
-        log.logBasic(APP_NAME, APP_NAME+" has ended.");
+        log.logBasic(APP_NAME, APP_NAME+" "+Messages.getString("Log.AppHasEnded"));//" has ended."
 
 		// Close the logfile
 		log.close();
