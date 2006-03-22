@@ -2,31 +2,33 @@ package be.ibridge.kettle.spoon;
 
 import java.util.MissingResourceException;
 
+import be.ibridge.kettle.i18n.GlobalMessages;
+
 public class Messages {
-	public static final String packageName = Spoon.class.getPackage().toString();
+	public static final String packageName = Spoon.class.getPackage().getName();
     
     
 	public static String getString(String key) {
 		try {
-			return be.ibridge.kettle.i18n.Messages.getString(packageName, key);
+			return be.ibridge.kettle.i18n.GlobalMessages.getString(packageName, key);
 		} catch (MissingResourceException e) {
-			return '!' + key + '!';
+            return GlobalMessages.getSystemString(key);
 		}
 	}
     
     public static String getString(String key, String param1) {
         try {
-            return be.ibridge.kettle.i18n.Messages.getString(packageName, key, param1);
+            return be.ibridge.kettle.i18n.GlobalMessages.getString(packageName, key, param1);
         } catch (MissingResourceException e) {
-            return '!' + key + '!';
+            return GlobalMessages.getSystemString(key, param1);
         }
     }
 
     public static String getString(String key, String param1, String param2) {
         try {
-            return be.ibridge.kettle.i18n.Messages.getString(packageName, key, param1, param2);
+            return be.ibridge.kettle.i18n.GlobalMessages.getString(packageName, key, param1, param2);
         } catch (MissingResourceException e) {
-            return '!' + key + '!';
+            return GlobalMessages.getSystemString(key, param1, param2);
         }
     }
 
