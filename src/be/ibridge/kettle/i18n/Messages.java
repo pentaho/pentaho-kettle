@@ -11,7 +11,7 @@ import java.util.ResourceBundle;
 public class Messages {
 	private static final ThreadLocal threadLocales = new ThreadLocal();
 	private static Locale defaultLocale;	
-	 //private static final String BUNDLE_NAME = "be.ibridge.kettle.i18n.messages";//$NON-NLS-1$
+	private static final String SYSTEM_BUNDLE_NAME = "be.ibridge.kettle.i18n.messages";//$NON-NLS-1$
 	private static final String BUNDLE_NAME = "messages";//$NON-NLS-1$
 	
 	private static final Map locales = Collections.synchronizedMap( new HashMap() );
@@ -53,6 +53,16 @@ public class Messages {
 	  	}
 	  	return bundle;
 	  }
+      
+      public static String getString(String key) {
+        try {
+          return getBundle(SYSTEM_BUNDLE_NAME).getString(key);
+        } catch (MissingResourceException e) {
+          System.out.println(e.getMessage());   
+          return '!' + key + '!';
+        }
+      }
+
 	  
 	  public static String getString(String packageName, String key) {
 	    try {
