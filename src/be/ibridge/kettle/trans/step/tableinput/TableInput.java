@@ -224,6 +224,7 @@ public class TableInput extends BaseStep implements StepInterface
 			try
 			{
 				data.db.connect();
+                data.db.setCommit(100); // needed for PGSQL it seems...
 				logDetailed("Connected to database...");
 
 				return true;
