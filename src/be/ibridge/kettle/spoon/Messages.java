@@ -5,7 +5,7 @@ import java.util.MissingResourceException;
 import be.ibridge.kettle.i18n.GlobalMessages;
 
 public class Messages {
-	public static final String packageName = Spoon.class.getPackage().getName();
+	public static final String packageName = Messages.class.getPackage().getName();
     
     
 	public static String getString(String key) {
