@@ -5,12 +5,12 @@ package be.ibridge.kettle.i18n;
 import java.text.MessageFormat;
 import java.util.ResourceBundle;
 
-public class MessageUtil {
+public class GlobalMessageUtil {
 
 
   public static String formatErrorMessage(String key, String msg) {
     String s2 = key.substring(0, key.indexOf(".")+"ERROR_0000".length()+1); //$NON-NLS-1$ //$NON-NLS-2$
-    return Messages.getString("MESSUTIL.ERROR_FORMAT_MASK", s2, msg); //$NON-NLS-1$
+    return GlobalMessages.getString("MESSUTIL.ERROR_FORMAT_MASK", s2, msg); //$NON-NLS-1$
   }
 
   public static String getString(ResourceBundle bundle, String key) {
