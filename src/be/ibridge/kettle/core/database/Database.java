@@ -3327,96 +3327,123 @@ public class Database
 								  )
 		throws KettleDatabaseException
 	{
-		int parms;
-			
-		String sql = "INSERT INTO "+logtable+" ( ";
-		if (job)
-		{
-			if (use_id) 
-			{
-				sql+="ID_JOB, JOBNAME";
-				parms=13;
-			} 
-			else 
-			{
-				sql+="JOBNAME";
-				parms=12;
-			} 
-		}
-		else
-		{
-			if (use_id) 
-			{
-				sql+="ID_BATCH, TRANSNAME";
-				parms=13;
-			} 
-			else 
-			{ 
-				sql+="TRANSNAME";
-				parms=12;
-			} 
-		}
-		
-		sql+=", STATUS, LINES_READ, LINES_WRITTEN, LINES_UPDATED, LINES_INPUT, LINES_OUTPUT, ERRORS, STARTDATE, ENDDATE, LOGDATE, DEPDATE";
-		
-		if (log_string!=null && log_string.length()>0) sql+=", LOG_FIELD";  // This is possibly a CLOB!
-		
-		sql+=") VALUES(";
-		for (int i=0;i<parms;i++) if (i==0) sql+="?"; else sql+=", ?";
-		
-		if (log_string!=null && log_string.length()>0) sql+=", ?";
-		
-		sql+=")";
-		try
-		{
-			pstmt = connection.prepareStatement(databaseMeta.stripCR(sql));
-			
-			Row r = new Row();
-			if (job)
-			{
-				if (use_id)
-				{
-					r.addValue( new Value("ID_BATCH",          	id          	));
-				}
-				r.addValue( new Value("TRANSNAME",            name           ));
-			}
-			else
-			{
-				if (use_id)
-				{
-					r.addValue( new Value("ID_JOB",          	id          	));
-				}
-				r.addValue( new Value("JOBNAME",            name           ));
-			}
-			r.addValue( new Value("STATUS",          status       ));
-			r.addValue( new Value("LINES_READ",      (long)read   ));
-			r.addValue( new Value("LINES_WRITTEN",   (long)written));
-			r.addValue( new Value("LINES_UPDATED",   (long)updated));
-			r.addValue( new Value("LINES_INPUT",     (long)input  ));
-			r.addValue( new Value("LINES_OUTPUT",    (long)output ));
-			r.addValue( new Value("ERRORS",          (long)errors ));
-			r.addValue( new Value("STARTDATE",       startdate    ));
-			r.addValue( new Value("ENDDATE",         enddate      ));
-			r.addValue( new Value("LOGDATE",         logdate      ));
-			r.addValue( new Value("DEPDATE",         depdate      ));
-
-			if (log_string!=null && log_string.length()>0)
-			{
-				Value large = new Value("LOG_FIELD",       log_string     );
-				large.setLength(DatabaseMeta.CLOB_LENGTH);
-				r.addValue( large );
-			}
-
-			setValues(r);
-
-			pstmt.executeUpdate();
-			pstmt.close(); pstmt=null;
-			
-		}
-		catch(SQLException ex) 
-		{
-			throw new KettleDatabaseException("Unable to write log record to log table "+logtable, ex);
-		}
+        if (!job && use_id && log_string!=null && !status.equalsIgnoreCase("start"))
+        {
+            String sql = "UPDATE "+logtable+" SET STATUS=?, LINES_READ=?, LINES_WRITTEN=?, LINES_INPUT=?," +
+                    " LINES_OUTPUT=?, LINES_UPDATED=?, ERRORS=?, STARTDATE=?, ENDDATE=?, LOGDATE=?, DEPDATE=?, LOG_FIELD=? " +
+                    "WHERE ID_BATCH=?";
+            Row r = new Row();
+            r.addValue( new Value("STATUS",          status       ));
+            r.addValue( new Value("LINES_READ",      (long)read   ));
+            r.addValue( new Value("LINES_WRITTEN",   (long)written));
+            r.addValue( new Value("LINES_INPUT",     (long)input  ));
+            r.addValue( new Value("LINES_OUTPUT",    (long)output ));
+            r.addValue( new Value("LINES_UPDATED",   (long)updated));
+            r.addValue( new Value("ERRORS",          (long)errors ));
+            r.addValue( new Value("STARTDATE",       startdate    ));
+            r.addValue( new Value("ENDDATE",         enddate      ));
+            r.addValue( new Value("LOGDATE",         logdate      ));
+            r.addValue( new Value("DEPDATE",         depdate      ));
+            Value logfield = new Value("LOG_FIELD",       log_string);
+            logfield.setLength(DatabaseMeta.CLOB_LENGTH);
+            r.addValue( logfield );
+            r.addValue( new Value("ID_BATCH",        id           ));
+            
+            execStatement(sql, r);
+        }
+        else
+        {
+    		int parms;
+            
+    		String sql = "INSERT INTO "+logtable+" ( ";
+    		if (job)
+    		{
+    			if (use_id) 
+    			{
+    				sql+="ID_JOB, JOBNAME";
+    				parms=13;
+    			} 
+    			else 
+    			{
+    				sql+="JOBNAME";
+    				parms=12;
+    			} 
+    		}
+    		else
+    		{
+    			if (use_id) 
+    			{
+    				sql+="ID_BATCH, TRANSNAME";
+    				parms=13;
+    			} 
+    			else 
+    			{ 
+    				sql+="TRANSNAME";
+    				parms=12;
+    			} 
+    		}
+    		
+    		sql+=", STATUS, LINES_READ, LINES_WRITTEN, LINES_UPDATED, LINES_INPUT, LINES_OUTPUT, ERRORS, STARTDATE, ENDDATE, LOGDATE, DEPDATE";
+    		
+    		if (log_string!=null && log_string.length()>0) sql+=", LOG_FIELD";  // This is possibly a CLOB!
+    		
+    		sql+=") VALUES(";
+    		for (int i=0;i<parms;i++) if (i==0) sql+="?"; else sql+=", ?";
+    		
+    		if (log_string!=null && log_string.length()>0) sql+=", ?";
+    		
+    		sql+=")";
+    		try
+    		{
+    			pstmt = connection.prepareStatement(databaseMeta.stripCR(sql));
+    			
+    			Row r = new Row();
+    			if (job)
+    			{
+    				if (use_id)
+    				{
+    					r.addValue( new Value("ID_BATCH",          	id          	));
+    				}
+    				r.addValue( new Value("TRANSNAME",            name           ));
+    			}
+    			else
+    			{
+    				if (use_id)
+    				{
+    					r.addValue( new Value("ID_JOB",          	id          	));
+    				}
+    				r.addValue( new Value("JOBNAME",            name           ));
+    			}
+    			r.addValue( new Value("STATUS",          status       ));
+    			r.addValue( new Value("LINES_READ",      (long)read   ));
+    			r.addValue( new Value("LINES_WRITTEN",   (long)written));
+    			r.addValue( new Value("LINES_UPDATED",   (long)updated));
+    			r.addValue( new Value("LINES_INPUT",     (long)input  ));
+    			r.addValue( new Value("LINES_OUTPUT",    (long)output ));
+    			r.addValue( new Value("ERRORS",          (long)errors ));
+    			r.addValue( new Value("STARTDATE",       startdate    ));
+    			r.addValue( new Value("ENDDATE",         enddate      ));
+    			r.addValue( new Value("LOGDATE",         logdate      ));
+    			r.addValue( new Value("DEPDATE",         depdate      ));
+    
+    			if (log_string!=null && log_string.length()>0)
+    			{
+    				Value large = new Value("LOG_FIELD",       log_string     );
+    				large.setLength(DatabaseMeta.CLOB_LENGTH);
+    				r.addValue( large );
+    			}
+    
+    			setValues(r);
+    
+    			pstmt.executeUpdate();
+    			pstmt.close(); pstmt=null;
+    			
+    		}
+    		catch(SQLException ex) 
+    		{
+    			throw new KettleDatabaseException("Unable to write log record to log table "+logtable, ex);
+    		}
+        }
 	}
 	
 	public Row getLastLogDate( String logtable, 
