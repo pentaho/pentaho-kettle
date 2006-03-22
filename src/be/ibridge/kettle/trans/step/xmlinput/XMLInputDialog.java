@@ -1095,23 +1095,26 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         }
         else  // No child nodes left: this is a value we want to grab
         {
-            int idxLast = path.size()-1;
-            XMLInputFieldPosition last = (XMLInputFieldPosition) path.get(idxLast);
-            path.remove(idxLast);
-            
             if (path.size()>0)
             {
-                String encoded = XMLInputFieldPosition.encodePath(path);
-                if (row.searchValueIndex(baseName)<0)
+                int idxLast = path.size()-1;
+                XMLInputFieldPosition last = (XMLInputFieldPosition) path.get(idxLast);
+                path.remove(idxLast);
+                
+                if (path.size()>0)
                 {
-                    Value value = new Value(baseName, Value.VALUE_TYPE_STRING);
-                    value.setOrigin(encoded);
-                    
-                    row.addValue(value);
+                    String encoded = XMLInputFieldPosition.encodePath(path);
+                    if (row.searchValueIndex(baseName)<0)
+                    {
+                        Value value = new Value(baseName, Value.VALUE_TYPE_STRING);
+                        value.setOrigin(encoded);
+                        
+                        row.addValue(value);
+                    }
                 }
+                
+                path.add(last);
             }
-            
-            path.add(last);
         }
     }
 	
