@@ -901,7 +901,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 						}
 					}
 					debug = "normal : data";
-					if (data.textFileReplayFactory.isProcessingNeeded(textLine)) {
+					if (data.textFileReplayFactory.isProcessingNeeded(textLine.file, textLine.lineNumber)) {
 						r = convertLineToRow(log, textLine, meta, data.df,
 								data.dfs, data.daf, data.dafs, data.filename,
 								linesWritten + 1, data.dataErrorLineHandler);

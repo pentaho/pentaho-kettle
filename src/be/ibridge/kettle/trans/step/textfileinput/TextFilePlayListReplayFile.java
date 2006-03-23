@@ -15,7 +15,7 @@ class TextFilePlayListReplayFile implements TextFilePlayList {
 		return processingFile;
 	}
 
-	public boolean isProcessingNeeded(TextFileLine textFileLine)
+	public boolean isProcessingNeeded(File file, long lineNr)
 			throws KettleException {
 		return false;
 	}

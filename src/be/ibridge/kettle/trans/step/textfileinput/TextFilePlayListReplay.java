@@ -43,38 +43,35 @@ public class TextFilePlayListReplay implements TextFilePlayList {
 		return result;
 	}
 
-	public boolean isProcessingNeeded(TextFileLine textFileLine)
+	public boolean isProcessingNeeded(File file, long lineNr)
 			throws KettleException {
-		initializeCurrentIfNeeded(textFileLine);
-		return currentLineNumberFile.isProcessingNeeded(textFileLine)
-				|| currentErrorFile.isProcessingNeeded(textFileLine);
+		initializeCurrentIfNeeded(file);
+		return currentLineNumberFile.isProcessingNeeded(file, lineNr)
+				|| currentErrorFile.isProcessingNeeded(file, lineNr);
 	}
 
-	private void initializeCurrentIfNeeded(TextFileLine textFileLine)
-			throws KettleException {
-		if (!textFileLine.file.equals(getCurrentProcessingFile()))
-			initializeCurrent(textFileLine);
+	private void initializeCurrentIfNeeded(File file) throws KettleException {
+		if (!file.equals(getCurrentProcessingFile()))
+			initializeCurrent(file);
 	}
 
-	private void initializeCurrent(TextFileLine textFileLine)
-			throws KettleException {
+	private void initializeCurrent(File file) throws KettleException {
 		File lineFile = AbstractFileErrorHandler.getReplayFilename(
-				lineNumberDirectory, textFileLine.file.getName(), replayDate,
+				lineNumberDirectory, file.getName(), replayDate,
 				lineNumberExtension, AbstractFileErrorHandler.DUMMY_SOURCE);
 		if (lineFile.exists())
 			currentLineNumberFile = new TextFilePlayListReplayLineNumberFile(
-					lineFile, encoding, textFileLine.file);
+					lineFile, encoding, file);
 		else
-			currentLineNumberFile = new TextFilePlayListReplayFile(
-					textFileLine.file);
+			currentLineNumberFile = new TextFilePlayListReplayFile(file);
 
 		File errorFile = AbstractFileErrorHandler.getReplayFilename(
-				errorDirectory, textFileLine.file.getName(), replayDate,
-				errorExtension, AbstractFileErrorHandler.DUMMY_SOURCE);
+				errorDirectory, file.getName(), replayDate, errorExtension,
+				AbstractFileErrorHandler.DUMMY_SOURCE);
 		if (errorFile.exists())
 			currentErrorFile = new TextFilePlayListReplayErrorFile(errorFile,
-					textFileLine.file);
+					file);
 		else
-			currentErrorFile = new TextFilePlayListReplayFile(textFileLine.file);
+			currentErrorFile = new TextFilePlayListReplayFile(file);
 	}
 }

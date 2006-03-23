@@ -17,8 +17,6 @@ import be.ibridge.kettle.core.exception.KettleException;
 class TextFilePlayListReplayLineNumberFile extends TextFilePlayListReplayFile {
 	Set lineNumbers = new HashSet();
 
-	
-
 	public TextFilePlayListReplayLineNumberFile(File lineNumberFile,
 			String encoding, File processingFile) throws KettleException {
 		super(processingFile);
@@ -55,8 +53,9 @@ class TextFilePlayListReplayLineNumberFile extends TextFilePlayListReplayFile {
 				}
 		}
 	}
-	
-	public boolean isProcessingNeeded(TextFileLine textFileLine) throws KettleException {
-		return lineNumbers.contains(new Long(textFileLine.lineNumber));
+
+	public boolean isProcessingNeeded(File file, long lineNr)
+			throws KettleException {
+		return lineNumbers.contains(new Long(lineNr));
 	}
 }

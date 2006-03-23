@@ -13,7 +13,7 @@ public class TextFilePlayListReplayErrorFile extends TextFilePlayListReplayFile 
 		this.errorFile = errorFile;
 	}
 
-	public boolean isProcessingNeeded(TextFileLine textFileLine)
+	public boolean isProcessingNeeded(File file, long lineNr)
 			throws KettleException {
 		return errorFile.exists();
 	}
