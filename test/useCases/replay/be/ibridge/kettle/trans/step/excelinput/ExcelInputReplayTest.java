@@ -185,6 +185,28 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 				+ ".line", "6" + Const.CR + "10" + Const.CR + "14" + Const.CR
 				+ "17" + Const.CR + "18" + Const.CR);
 	}
+	
+	public void testReplayErrorOnlyWildcards() throws Exception {
+		directory = "test/useCases/replay/excelInputDoReplayErrorOnlyWildcards/";
+		expectFiles(directory, 6);
+		meta = new TransMeta(directory + "transform.ktr");
+		trans = new Trans(log, meta);
+		trans.setReplayDate(getReplayDate());
+		boolean ok = trans.execute(null);
+		assertTrue(ok);
+		trans.waitUntilFinished();
+		trans.endProcessing("end");
+		assertEquals(0, trans.getErrors());
+		expectFiles(directory, 9);
+		expectContent(directory + "input3.xls_Sheet1." + getDateFormatted()
+				+ ".line", "6" + Const.CR + "10" + Const.CR + "14" + Const.CR
+				+ "17" + Const.CR + "18" + Const.CR);
+		expectContent(directory + "input3.xls_Sheet2." + getDateFormatted()
+				+ ".line", "12" + Const.CR);
+		expectContent(directory + "input3.xls_Sheet3." + getDateFormatted()
+				+ ".line", "6" + Const.CR + "10" + Const.CR + "14" + Const.CR
+				+ "17" + Const.CR + "18" + Const.CR);
+	}
 
 	public String getFileExtension() {
 		return "xls";

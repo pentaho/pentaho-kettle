@@ -85,7 +85,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
 			} catch (KettleException ex) {
 				if (!meta.isErrorIgnored())
 					throw ex;
-				logRowlevel("Warning processing [" + debug
+				logBasic("Warning processing [" + debug
 						+ "] from Excel file [" + data.filename + "] : "
 						+ ex.toString());
 				data.errorHandler.handleLineError(excelInputRow.rownr,
