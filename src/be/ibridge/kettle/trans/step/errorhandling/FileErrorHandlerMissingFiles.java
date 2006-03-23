@@ -18,15 +18,15 @@ public class FileErrorHandlerMissingFiles extends
 		super(date, destinationDirectory, fileExtension, encoding);
 	}
 
-	public void handleLineError(long lineNr, Object source) {
+	public void handleLineError(long lineNr, String filePart) {
 
 	}
 
 	public void handleNonExistantFile(File file) throws KettleException {
 		handleFile(file);
 		try {
-			getWriter(DUMMY_SOURCE).write(THIS_FILE_DOES_NOT_EXIST);
-			getWriter(DUMMY_SOURCE).write(Const.CR);
+			getWriter(NO_PARTS).write(THIS_FILE_DOES_NOT_EXIST);
+			getWriter(NO_PARTS).write(Const.CR);
 		} catch (Exception e) {
 			throw new KettleException("Could not create NonExistantFile for :"
 					+ file.getPath(), e);
@@ -36,8 +36,8 @@ public class FileErrorHandlerMissingFiles extends
 	public void handleNonAccessibleFile(File file ) throws KettleException {
 		handleFile(file);
 		try {
-			getWriter(DUMMY_SOURCE).write(THIS_FILE_WAS_NOT_ACCESSIBLE);
-			getWriter(DUMMY_SOURCE).write(Const.CR);
+			getWriter(NO_PARTS).write(THIS_FILE_WAS_NOT_ACCESSIBLE);
+			getWriter(NO_PARTS).write(Const.CR);
 		} catch (Exception e) {
 			throw new KettleException(
 					"Could not create NonAccessibleFile for :" + file.getPath(),

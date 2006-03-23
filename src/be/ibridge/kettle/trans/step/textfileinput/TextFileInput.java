@@ -486,7 +486,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 							}
 							if (errorHandler != null) {
 								errorHandler
-										.handleLineError(textFileLine.lineNumber, AbstractFileErrorHandler.DUMMY_SOURCE);
+										.handleLineError(textFileLine.lineNumber, AbstractFileErrorHandler.NO_PARTS);
 							}
 							
 							if (info.isErrorLineSkipped())

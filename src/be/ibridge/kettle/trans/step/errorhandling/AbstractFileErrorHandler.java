@@ -19,7 +19,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 	private static final String DD_MMYYYY_HHMMSS = "ddMMyyyy-hhmmss";
 
-	public static final Object DUMMY_SOURCE = new Object();
+	public static final String NO_PARTS = "NO_PARTS";
 
 	private final LogWriter log = LogWriter.getInstance();
 
@@ -56,7 +56,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 			String processingFilename, String dateString, String extension, Object source) {
 		String name = null;
 		String sourceAdding = "";
-		if (source != DUMMY_SOURCE) {
+		if (source != NO_PARTS) {
 			sourceAdding = "_" + source.toString();
 		}
 		if (extension == null || extension.length() == 0)

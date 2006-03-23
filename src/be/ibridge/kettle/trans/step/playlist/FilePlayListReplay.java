@@ -58,7 +58,7 @@ public class FilePlayListReplay implements FilePlayList {
 	private void initializeCurrent(File file) throws KettleException {
 		File lineFile = AbstractFileErrorHandler.getReplayFilename(
 				lineNumberDirectory, file.getName(), replayDate,
-				lineNumberExtension, AbstractFileErrorHandler.DUMMY_SOURCE);
+				lineNumberExtension, AbstractFileErrorHandler.NO_PARTS);
 		if (lineFile.exists())
 			currentLineNumberFile = new FilePlayListReplayLineNumberFile(
 					lineFile, encoding, file);
@@ -67,7 +67,7 @@ public class FilePlayListReplay implements FilePlayList {
 
 		File errorFile = AbstractFileErrorHandler.getReplayFilename(
 				errorDirectory, file.getName(), replayDate, errorExtension,
-				AbstractFileErrorHandler.DUMMY_SOURCE);
+				AbstractFileErrorHandler.NO_PARTS);
 		if (errorFile.exists())
 			currentErrorFile = new FilePlayListReplayErrorFile(errorFile,
 					file);

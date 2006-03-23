@@ -13,11 +13,11 @@ public class FileErrorHandlerContentLineNumber extends AbstractFileErrorHandler 
 		super(date, destinationDirectory, fileExtension, encoding);
 	}
 
-	public void handleLineError(long lineNr, Object source)
+	public void handleLineError(long lineNr, String filePart)
 			throws KettleException {
 		try {
-			getWriter(source).write(String.valueOf(lineNr));
-			getWriter(source).write(Const.CR);
+			getWriter(filePart).write(String.valueOf(lineNr));
+			getWriter(filePart).write(Const.CR);
 		} catch (Exception e) {
 			throw new KettleException("Could not create write line:" + lineNr,
 					e);

@@ -24,11 +24,11 @@ public interface FileErrorHandler {
 	 * lineNr.
 	 * 
 	 * @param lineNr
-	 * @param source
-	 *            An object that indicates what source gave the error.
+	 * @param filePart
+	 *            allows us to split error according to a filePart
 	 * @throws KettleException
 	 */
-	void handleLineError(long lineNr, Object source) throws KettleException;
+	void handleLineError(long lineNr, String filePart) throws KettleException;
 
 	/**
 	 * This method closes the handler;

@@ -23,11 +23,11 @@ public class CompositeFileErrorHandler implements
 		}
 	}
 
-	public void handleLineError(long lineNr, Object source) throws KettleException {
+	public void handleLineError(long lineNr, String filePart) throws KettleException {
 		for (Iterator iter = handlers.iterator(); iter.hasNext();) {
 			FileErrorHandler handler = (FileErrorHandler) iter
 					.next();
-			handler.handleLineError(lineNr, source);
+			handler.handleLineError(lineNr, filePart);
 		}
 	}
 
