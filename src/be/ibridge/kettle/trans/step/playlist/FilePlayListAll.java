@@ -7,7 +7,7 @@ public class FilePlayListAll implements FilePlayList {
 
 	public static final FilePlayList INSTANCE = new FilePlayListAll();
 
-	public boolean isProcessingNeeded(File  file, long lineNr) {
+	public boolean isProcessingNeeded(File  file, long lineNr, String filePart) {
 		return true;
 	}
 

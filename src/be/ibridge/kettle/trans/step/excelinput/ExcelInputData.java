@@ -25,6 +25,7 @@ import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandler;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
+import be.ibridge.kettle.trans.step.playlist.FilePlayList;
 
 
 /**
@@ -98,6 +99,8 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface
 	 * The error handler when processing of a row fails.
 	 */
 	public FileErrorHandler errorHandler;
+	
+	public FilePlayList filePlayList;
 	
 	/**
 	 * 

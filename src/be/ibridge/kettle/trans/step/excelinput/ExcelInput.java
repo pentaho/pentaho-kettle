@@ -1,4 +1,4 @@
- /**********************************************************************
+/**********************************************************************
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
@@ -12,11 +12,12 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 package be.ibridge.kettle.trans.step.excelinput;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
@@ -42,131 +43,126 @@ import be.ibridge.kettle.trans.step.errorhandling.CompositeFileErrorHandler;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
-
+import be.ibridge.kettle.trans.step.playlist.FilePlayListAll;
+import be.ibridge.kettle.trans.step.playlist.FilePlayListReplay;
 
 /**
  * This class reads data from one or more Microsoft Excel files.
- *  
+ * 
  * @author Matt
  * @since 19-NOV-2003
- *
+ * 
  */
-public class ExcelInput extends BaseStep implements StepInterface
-{
+public class ExcelInput extends BaseStep implements StepInterface {
 	private ExcelInputMeta meta;
+
 	private ExcelInputData data;
-	
-	public ExcelInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
-	{
+
+	public ExcelInput(StepMeta stepMeta, StepDataInterface stepDataInterface,
+			int copyNr, TransMeta transMeta, Trans trans) {
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
-	
-	private Row fillRow(Row baserow, int startcolumn, ExcelInputRow excelInputRow) throws KettleException
-	{
-        debug = "fillRow start";
-		Row r = new Row(baserow);
-		
-		// Set values in the row...
-		for (int i=startcolumn;i<excelInputRow.cells.length && i-startcolumn<r.size();i++)
-		{
-            debug = "get cell #"+i;
-			Cell cell = excelInputRow.cells[i];
-			
-            int rowcolumn=i-startcolumn;
-            debug = "Rowcolumn = "+rowcolumn;
 
-            Value v = r.getValue(rowcolumn);
-            debug = "Value v = "+v;
-            
-            try{
-            	checkType(cell, v);
-            }catch(KettleException ex)
-            {
-            	if (!meta.isErrorIgnored())
-            		throw ex;
-            	logRowlevel("Warning processing [" + debug
+	private Row fillRow(Row baserow, int startcolumn,
+			ExcelInputRow excelInputRow) throws KettleException {
+		debug = "fillRow start";
+		Row r = new Row(baserow);
+
+		// Set values in the row...
+		for (int i = startcolumn; i < excelInputRow.cells.length
+				&& i - startcolumn < r.size(); i++) {
+			debug = "get cell #" + i;
+			Cell cell = excelInputRow.cells[i];
+
+			int rowcolumn = i - startcolumn;
+			debug = "Rowcolumn = " + rowcolumn;
+
+			Value v = r.getValue(rowcolumn);
+			debug = "Value v = " + v;
+
+			try {
+				checkType(cell, v);
+			} catch (KettleException ex) {
+				if (!meta.isErrorIgnored())
+					throw ex;
+				logRowlevel("Warning processing [" + debug
 						+ "] from Excel file [" + data.filename + "] : "
 						+ ex.toString());
-            	data.errorHandler.handleLineError(excelInputRow.rownr, excelInputRow.sheetName);
-            	if(meta.isErrorLineSkipped())
-            	{
-            		r.setIgnore();
-            		return r;
-            	}
-            }
+				data.errorHandler.handleLineError(excelInputRow.rownr,
+						excelInputRow.sheetName);
+				if (meta.isErrorLineSkipped()) {
+					r.setIgnore();
+					return r;
+				}
+			}
 
-			if (cell.getType().equals(CellType.BOOLEAN))
-			{
-				v.setValue( ((BooleanCell)cell).getValue() );
-			}
-			else
-			if (cell.getType().equals(CellType.DATE))
-			{
-				v.setValue( ((DateCell)cell).getDate() );
-			}
-			else
-			if (cell.getType().equals(CellType.LABEL))
-			{
-				v.setValue( ((LabelCell)cell).getString() );
-                switch(meta.getFieldTrimType()[rowcolumn])
-                {
-                case ExcelInputMeta.TYPE_TRIM_LEFT: v.ltrim(); break;
-                case ExcelInputMeta.TYPE_TRIM_RIGHT: v.rtrim(); break;
-                case ExcelInputMeta.TYPE_TRIM_BOTH: v.trim(); break;
-                default: break;
-                }
-			}
-			else
-			if (cell.getType().equals(CellType.NUMBER))
-			{
-				v.setValue( ((NumberCell)cell).getValue() );
-			}
-			else
-			{
-				logDetailed("Unknown type : "+cell.getType().toString()+" : ["+cell.getContents()+"]");
+			if (cell.getType().equals(CellType.BOOLEAN)) {
+				v.setValue(((BooleanCell) cell).getValue());
+			} else if (cell.getType().equals(CellType.DATE)) {
+				v.setValue(((DateCell) cell).getDate());
+			} else if (cell.getType().equals(CellType.LABEL)) {
+				v.setValue(((LabelCell) cell).getString());
+				switch (meta.getFieldTrimType()[rowcolumn]) {
+				case ExcelInputMeta.TYPE_TRIM_LEFT:
+					v.ltrim();
+					break;
+				case ExcelInputMeta.TYPE_TRIM_RIGHT:
+					v.rtrim();
+					break;
+				case ExcelInputMeta.TYPE_TRIM_BOTH:
+					v.trim();
+					break;
+				default:
+					break;
+				}
+			} else if (cell.getType().equals(CellType.NUMBER)) {
+				v.setValue(((NumberCell) cell).getValue());
+			} else {
+				logDetailed("Unknown type : " + cell.getType().toString()
+						+ " : [" + cell.getContents() + "]");
 				v.setNull();
 			}
-			
+
 			// Change to the appropriate type...
 			// 
 			v.setType(meta.getFieldType()[rowcolumn]);
-			v.setLength(meta.getFieldLength()[rowcolumn], meta.getFieldPrecision()[rowcolumn]);
+			v.setLength(meta.getFieldLength()[rowcolumn], meta
+					.getFieldPrecision()[rowcolumn]);
 		}
-		
-        debug = "filename";
+
+		debug = "filename";
 
 		// Do we need to include the filename?
-		if (meta.getFileField()!=null && meta.getFileField().length()>0)
-		{
+		if (meta.getFileField() != null && meta.getFileField().length() > 0) {
 			Value value = new Value(meta.getFileField(), data.filename);
 			value.setLength(data.maxfilelength);
 			r.addValue(value);
 		}
 
-        debug = "sheetname";
+		debug = "sheetname";
 
 		// Do we need to include the sheetname?
-		if (meta.getSheetField()!=null && meta.getSheetField().length()>0)
-		{
-			Value value = new Value(meta.getSheetField(), excelInputRow.sheetName);
+		if (meta.getSheetField() != null && meta.getSheetField().length() > 0) {
+			Value value = new Value(meta.getSheetField(),
+					excelInputRow.sheetName);
 			value.setLength(data.maxsheetlength);
 			r.addValue(value);
 		}
 
-        debug = "rownumber";
+		debug = "rownumber";
 
 		// Do we need to include the rownumber?
-		if (meta.getRowNumberField()!=null && meta.getRowNumberField().length()>0)
-		{
-			Value value = new Value(meta.getRowNumberField(), linesWritten+1);
+		if (meta.getRowNumberField() != null
+				&& meta.getRowNumberField().length() > 0) {
+			Value value = new Value(meta.getRowNumberField(), linesWritten + 1);
 			r.addValue(value);
 		}
 
-        debug = "end of fillRow";
+		debug = "end of fillRow";
 
 		return r;
 	}
-	
+
 	private void checkType(Cell cell, Value v) throws KettleException {
 		if (!meta.isStrictTypes())
 			return;
@@ -207,12 +203,11 @@ public class ExcelInput extends BaseStep implements StepInterface
 		meta = (ExcelInputMeta) smi;
 		data = (ExcelInputData) sdi;
 
-		if(first)
-		{
+		if (first) {
 			first = false;
 			handleMissingFiles();
 		}
-		
+
 		// See if we're not done processing...
 		// We are done processing if the filenr >= number of files.
 		if (data.filenr >= data.files.nrOfFiles()) {
@@ -230,7 +225,6 @@ public class ExcelInput extends BaseStep implements StepInterface
 			return false; // end of data or error.
 		}
 
-		
 		Row r = getRowFromWorkbooks();
 		if (r != null) {
 			if (!r.isIgnored()) {
@@ -256,21 +250,21 @@ public class ExcelInput extends BaseStep implements StepInterface
 		} else {
 			return false;
 		}
-		
+
 	}
-	
+
 	private void handleMissingFiles() throws KettleException {
 		debug = "Required files";
 		List nonExistantFiles = data.files.getNonExistantFiles();
 
 		if (nonExistantFiles.size() != 0) {
-			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
+			String message = FileInputList
+					.getRequiredFilesDescription(nonExistantFiles);
 			log.logBasic(debug, "WARNING: Missing " + message);
 			if (meta.isErrorIgnored())
 				for (Iterator iter = nonExistantFiles.iterator(); iter
 						.hasNext();) {
-					data.errorHandler.handleNonExistantFile((File) iter
-							.next() );
+					data.errorHandler.handleNonExistantFile((File) iter.next());
 				}
 			else
 				throw new KettleException(
@@ -279,13 +273,14 @@ public class ExcelInput extends BaseStep implements StepInterface
 
 		List nonAccessibleFiles = data.files.getNonAccessibleFiles();
 		if (nonAccessibleFiles.size() != 0) {
-			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
+			String message = FileInputList
+					.getRequiredFilesDescription(nonAccessibleFiles);
 			log.logBasic(debug, "WARNING: Not accessible " + message);
 			if (meta.isErrorIgnored())
 				for (Iterator iter = nonAccessibleFiles.iterator(); iter
 						.hasNext();) {
-					data.errorHandler
-							.handleNonAccessibleFile((File) iter.next() );
+					data.errorHandler.handleNonAccessibleFile((File) iter
+							.next());
 				}
 			else
 				throw new KettleException(
@@ -295,119 +290,115 @@ public class ExcelInput extends BaseStep implements StepInterface
 		debug = "End of Required files";
 	}
 
-	public Row getRowFromWorkbooks() 
-	{
-		debug="processRow()";
+	public Row getRowFromWorkbooks() {
+		debug = "processRow()";
 		// This procedure outputs a single Excel data row on the destination
 		// rowsets...
 
-		Row retval=new Row();
+		Row retval = new Row();
 		retval.setIgnore();
 
-		try
-		{
+		try {
 			// First, see if a file has been opened?
-			if (data.workbook == null)
-			{
+			if (data.workbook == null) {
 				// See if it's the first file
-				if(data.filenr == 0)
-				{
-					
+				if (data.filenr == 0) {
+
 				}
 				// Open a new workbook..
 				data.file = data.files.getFile(data.filenr);
 				data.filename = data.file.getPath();
-				debug="open workbook #"+data.filenr+" : "+ data.filename;
-				logDetailed("Opening workbook #"+data.filenr+" : "+data.filename);
+				debug = "open workbook #" + data.filenr + " : " + data.filename;
+				logDetailed("Opening workbook #" + data.filenr + " : "
+						+ data.filename);
 				data.workbook = Workbook.getWorkbook(data.file);
-			    data.errorHandler.handleFile(data.file);
-                // Start at the first sheet again...
-                data.sheetnr = 0;
-                
-			}
-			
-            boolean nextsheet=false; 
-            
-			// What sheet were we handling?
-			debug="Get sheet #"+data.filenr+"."+data.sheetnr;
-			logDetailed(debug);
-			Sheet sheet = data.workbook.getSheet(meta.getSheetName()[data.sheetnr] );
-			if (sheet!=null)
-            {
-    			// at what row do we continue reading?
-    			if (data.rownr<0)
-    			{
-    				data.rownr = meta.getStartRow()[data.sheetnr];
-                    
-                    // Add an extra row if we have a header row to skip...
-                    if (meta.startsWithHeader())
-                    {
-                        data.rownr++;
-                    }
-                    
-    				debug="startrow = "+data.rownr;
-    			}
-    			// Start at the specified column
-    			data.colnr = meta.getStartColumn()[data.sheetnr];
-    			debug="startcol = "+data.colnr;
-    
-    			// Build a new row and fill in the data from the sheet...
-    			try
-    			{
-    				//Already increase cursor 1 row
-    				int rownr = data.rownr++;
-    				debug="Get line #"+rownr+" from sheet #"+data.filenr+"."+data.sheetnr;
-    				logRowlevel(debug);
-    				Cell line[] = sheet.getRow(rownr);
-    
-                    logRowlevel("Read line with "+line.length+" cells");
-                    ExcelInputRow excelInputRow = new ExcelInputRow(sheet.getName(), rownr+1, line );
-    				Row r = fillRow(data.row, data.colnr, excelInputRow);
-                    logRowlevel("Converted line to row #"+rownr+" : "+r);
-    	
-    				if (line.length>0 || !meta.ignoreEmptyRows())
-    				{
-    					// Put the row 
-    					retval=r;
-    				}
-    				
-    				if (line.length==0 && meta.stopOnEmpty())
-    				{
-    					nextsheet=true;
-    				}
-    			}
-    			catch(ArrayIndexOutOfBoundsException e)
-    			{
-                    logRowlevel("Out of index error: move to next sheet! ("+debug+")");
-    				// We tried to read below the last line in the sheet.
-    				// Go to the next sheet...
-    				nextsheet=true;
-    			}
-            }
-            else
-            {
-                nextsheet=true;
-            }
+				data.errorHandler.handleFile(data.file);
+				// Start at the first sheet again...
+				data.sheetnr = 0;
 
-			if (nextsheet)
-			{
+			}
+
+			boolean nextsheet = false;
+
+			// What sheet were we handling?
+			debug = "Get sheet #" + data.filenr + "." + data.sheetnr;
+			logDetailed(debug);
+			String sheetName = meta.getSheetName()[data.sheetnr];
+			Sheet sheet = data.workbook
+					.getSheet(sheetName);
+			if (sheet != null) {
+				// at what row do we continue reading?
+				if (data.rownr < 0) {
+					data.rownr = meta.getStartRow()[data.sheetnr];
+
+					// Add an extra row if we have a header row to skip...
+					if (meta.startsWithHeader()) {
+						data.rownr++;
+					}
+
+					debug = "startrow = " + data.rownr;
+				}
+				// Start at the specified column
+				data.colnr = meta.getStartColumn()[data.sheetnr];
+				debug = "startcol = " + data.colnr;
+
+				// Build a new row and fill in the data from the sheet...
+				try {
+					// Already increase cursor 1 row
+					int rownr = data.rownr++;
+					if (!data.filePlayList.isProcessingNeeded(data.file, rownr, sheetName))
+					{	retval.setIgnore();
+						nextsheet = true;}
+					else {
+						debug = "Get line #" + rownr + " from sheet #"
+								+ data.filenr + "." + data.sheetnr;
+						logRowlevel(debug);
+						Cell line[] = sheet.getRow(rownr);
+
+						logRowlevel("Read line with " + line.length + " cells");
+						ExcelInputRow excelInputRow = new ExcelInputRow(sheet
+								.getName(), rownr + 1, line);
+						Row r = fillRow(data.row, data.colnr, excelInputRow);
+						logRowlevel("Converted line to row #" + rownr + " : "
+								+ r);
+
+						if (line.length > 0 || !meta.ignoreEmptyRows()) {
+							// Put the row
+							retval = r;
+						}
+
+						if (line.length == 0 && meta.stopOnEmpty()) {
+							nextsheet = true;
+						}
+					}
+				} catch (ArrayIndexOutOfBoundsException e) {
+					logRowlevel("Out of index error: move to next sheet! ("
+							+ debug + ")");
+					// We tried to read below the last line in the sheet.
+					// Go to the next sheet...
+					nextsheet = true;
+				}
+			} else {
+				nextsheet = true;
+			}
+
+			if (nextsheet) {
 				// Go to the next sheet
 				data.sheetnr++;
-				
+
 				// Reset the start-row:
 				data.rownr = -1;
-				
-				// no previous row yet, don't take it from the previous sheet! (that whould be plain wrong!)
-                data.previousRow = null; 
+
+				// no previous row yet, don't take it from the previous sheet!
+				// (that whould be plain wrong!)
+				data.previousRow = null;
 
 				// Perhaps it was the last sheet?
-				if (data.sheetnr >= meta.getSheetName().length)
-				{
+				if (data.sheetnr >= meta.getSheetName().length) {
 					jumpToNextFile();
 				}
 			}
-		}catch(Exception e)
-		{
+		} catch (Exception e) {
 			logError("Error processing row in [" + debug
 					+ "] from Excel file [" + data.filename + "] : "
 					+ e.toString());
@@ -415,28 +406,29 @@ public class ExcelInput extends BaseStep implements StepInterface
 			stopAll();
 			return null;
 		}
-		
+
 		return retval;
 	}
 
 	private void jumpToNextFile() throws KettleException {
 		data.sheetnr = 0;
-		
+
 		// Reset the start-row:
 		data.rownr = -1;
-		
-		// no previous row yet, don't take it from the previous sheet! (that whould be plain wrong!)
-        data.previousRow = null;
-        
+
+		// no previous row yet, don't take it from the previous sheet! (that
+		// whould be plain wrong!)
+		data.previousRow = null;
+
 		// Close the workbook!
 		data.workbook.close();
 		data.workbook = null; // marker to open again.
 		data.errorHandler.close();
-		
+
 		// advance to the next file!
 		data.filenr++;
 	}
-	
+
 	private void initErrorHandling() {
 		List errorHandlers = new ArrayList(2);
 		if (meta.getLineNumberFilesDestinationDirectory() != null)
@@ -445,46 +437,45 @@ public class ExcelInput extends BaseStep implements StepInterface
 					.getLineNumberFilesDestinationDirectory(), meta
 					.getLineNumberFilesExtension(), "Latin1"));
 		if (meta.getErrorFilesDestinationDirectory() != null)
-			errorHandlers.add(new FileErrorHandlerMissingFiles(
-					getTrans().getCurrentDate(), meta
-							.getErrorFilesDestinationDirectory(), meta
-							.getErrorLineFilesExtension(), "Latin1"));
+			errorHandlers.add(new FileErrorHandlerMissingFiles(getTrans()
+					.getCurrentDate(),
+					meta.getErrorFilesDestinationDirectory(), meta
+							.getErrorFilesExtension(), "Latin1"));
 		data.errorHandler = new CompositeFileErrorHandler(errorHandlers);
 	}
-	
-//	private void initReplayFactory() {
-//		Date replayDate = getTrans().getReplayDate();
-//		if (replayDate == null)
-//			data.excelFileReplayFactory = TextFilePlayListAll.INSTANCE;
-//		else
-//			data.excelFileReplayFactory = new TextFilePlayListReplay(replayDate,
-//					meta.getLineNumberFilesDestinationDirectory(), meta
-//							.getLineNumberFilesExtension(), meta
-//							.getErrorLineFilesDestinationDirectory(), meta
-//							.getErrorLineFilesExtension(), meta.getEncoding());
-//	}
-	
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
-	{
-		meta=(ExcelInputMeta)smi;
-		data=(ExcelInputData)sdi;
 
-		if (super.init(smi, sdi))
-		{
+	private void initReplayFactory() {
+		Date replayDate = getTrans().getReplayDate();
+		if (replayDate == null)
+			data.filePlayList = FilePlayListAll.INSTANCE;
+		else
+			data.filePlayList = new FilePlayListReplay(replayDate, meta
+					.getLineNumberFilesDestinationDirectory(), meta
+					.getLineNumberFilesExtension(), meta
+					.getErrorFilesDestinationDirectory(), meta
+					.getErrorFilesExtension(), "Latin1");
+	}
+
+	public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
+		meta = (ExcelInputMeta) smi;
+		data = (ExcelInputData) sdi;
+
+		if (super.init(smi, sdi)) {
 			initErrorHandling();
-//			initReplayFactory();
+			initReplayFactory();
 			data.files = meta.getFileList();
 			if (data.files.nrOfFiles() == 0 && !meta.isErrorIgnored()) {
 				logError("No file(s) specified! Stop processing.");
 				return false;
 			}
-			
+
 			data.row = meta.getEmptyFields();
 			if (data.row.size() > 0) {
 				// Determine the maximum filename length...
 				data.maxfilelength = -1;
-				
-				for (Iterator iter = data.files.getFiles().iterator(); iter.hasNext();) {
+
+				for (Iterator iter = data.files.getFiles().iterator(); iter
+						.hasNext();) {
 					File file = (File) iter.next();
 					String name = file.getName();
 					if (name.length() > data.maxfilelength)
@@ -501,41 +492,36 @@ public class ExcelInput extends BaseStep implements StepInterface
 			} else {
 				logError("No input fields defined!");
 			}
-			
+
 		}
 		return false;
 	}
-	
-	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
-	{
-	    meta = (ExcelInputMeta)smi;
-	    data = (ExcelInputData)sdi;
-	    
-		if (data.workbook!=null) data.workbook.close();
+
+	public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+		meta = (ExcelInputMeta) smi;
+		data = (ExcelInputData) sdi;
+
+		if (data.workbook != null)
+			data.workbook.close();
 		try {
 			data.errorHandler.close();
 		} catch (KettleException e) {
 			logDebug("Could not close errorHandler");
 		}
-		
+
 		super.dispose(smi, sdi);
 	}
 
-	public void run()
-	{
-		try
-		{
+	public void run() {
+		try {
 			logBasic("Starting to run...");
-			while (processRow(meta, data) && !isStopped());
-		}
-		catch(Exception e)
-		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			while (processRow(meta, data) && !isStopped())
+				;
+		} catch (Exception e) {
+			logError("Unexpected error in '" + debug + "' : " + e.toString());
 			setErrors(1);
 			stopAll();
-		}
-		finally
-		{
+		} finally {
 			dispose(meta, data);
 			logSummary();
 			markStop();

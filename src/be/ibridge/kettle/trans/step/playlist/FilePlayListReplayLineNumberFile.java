@@ -18,8 +18,9 @@ class FilePlayListReplayLineNumberFile extends FilePlayListReplayFile {
 	Set lineNumbers = new HashSet();
 
 	public FilePlayListReplayLineNumberFile(File lineNumberFile,
-			String encoding, File processingFile) throws KettleException {
-		super(processingFile);
+			String encoding, File processingFile, String filePart)
+			throws KettleException {
+		super(processingFile, filePart);
 		initialize(lineNumberFile, encoding);
 	}
 
@@ -54,7 +55,7 @@ class FilePlayListReplayLineNumberFile extends FilePlayListReplayFile {
 		}
 	}
 
-	public boolean isProcessingNeeded(File file, long lineNr)
+	public boolean isProcessingNeeded(File file, long lineNr, String filePart)
 			throws KettleException {
 		return lineNumbers.contains(new Long(lineNr));
 	}

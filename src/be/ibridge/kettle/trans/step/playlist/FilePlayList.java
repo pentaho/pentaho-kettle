@@ -6,6 +6,6 @@ import be.ibridge.kettle.core.exception.KettleException;
 
 public interface FilePlayList {
 
-	boolean isProcessingNeeded(File  file, long lineNr) throws KettleException;
+	boolean isProcessingNeeded(File  file, long lineNr, String filePart) throws KettleException;
 
 }

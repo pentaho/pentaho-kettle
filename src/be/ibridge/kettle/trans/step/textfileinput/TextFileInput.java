@@ -903,7 +903,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 						}
 					}
 					debug = "normal : data";
-					if (data.textFileReplayFactory.isProcessingNeeded(textLine.file, textLine.lineNumber)) {
+					if (data.filePlayList.isProcessingNeeded(textLine.file, textLine.lineNumber, AbstractFileErrorHandler.NO_PARTS)) {
 						r = convertLineToRow(log, textLine, meta, data.df,
 								data.dfs, data.daf, data.dafs, data.filename,
 								linesWritten + 1, data.dataErrorLineHandler);
@@ -1169,9 +1169,9 @@ public class TextFileInput extends BaseStep implements StepInterface {
 	private void initReplayFactory() {
 		Date replayDate = getTrans().getReplayDate();
 		if (replayDate == null)
-			data.textFileReplayFactory = FilePlayListAll.INSTANCE;
+			data.filePlayList = FilePlayListAll.INSTANCE;
 		else
-			data.textFileReplayFactory = new FilePlayListReplay(replayDate,
+			data.filePlayList = new FilePlayListReplay(replayDate,
 					meta.getLineNumberFilesDestinationDirectory(), meta
 							.getLineNumberFilesExtension(), meta
 							.getErrorFilesDestinationDirectory(), meta

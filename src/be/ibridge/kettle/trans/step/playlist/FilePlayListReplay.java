@@ -43,35 +43,41 @@ public class FilePlayListReplay implements FilePlayList {
 		return result;
 	}
 
-	public boolean isProcessingNeeded(File file, long lineNr)
+	private String getCurrentProcessingFilePart() {
+		String result = null;
+		if (currentLineNumberFile != null)
+			result = currentLineNumberFile.getProcessingFilePart();
+		return result;
+	}
+
+	public boolean isProcessingNeeded(File file, long lineNr, String filePart)
 			throws KettleException {
-		initializeCurrentIfNeeded(file);
-		return currentLineNumberFile.isProcessingNeeded(file, lineNr)
-				|| currentErrorFile.isProcessingNeeded(file, lineNr);
+		initializeCurrentIfNeeded(file, filePart);
+		return currentLineNumberFile.isProcessingNeeded(file, lineNr, filePart)
+				|| currentErrorFile.isProcessingNeeded(file, lineNr, filePart);
 	}
 
-	private void initializeCurrentIfNeeded(File file) throws KettleException {
-		if (!file.equals(getCurrentProcessingFile()))
-			initializeCurrent(file);
+	private void initializeCurrentIfNeeded(File file, String filePart) throws KettleException {
+		if (!(file.equals(getCurrentProcessingFile()) && filePart.equals(getCurrentProcessingFilePart())))
+			initializeCurrent(file, filePart);
 	}
 
-	private void initializeCurrent(File file) throws KettleException {
+	private void initializeCurrent(File file, String filePart) throws KettleException {
 		File lineFile = AbstractFileErrorHandler.getReplayFilename(
 				lineNumberDirectory, file.getName(), replayDate,
-				lineNumberExtension, AbstractFileErrorHandler.NO_PARTS);
+				lineNumberExtension, filePart);
 		if (lineFile.exists())
 			currentLineNumberFile = new FilePlayListReplayLineNumberFile(
-					lineFile, encoding, file);
+					lineFile, encoding, file, filePart);
 		else
-			currentLineNumberFile = new FilePlayListReplayFile(file);
+			currentLineNumberFile = new FilePlayListReplayFile(file, filePart);
 
 		File errorFile = AbstractFileErrorHandler.getReplayFilename(
 				errorDirectory, file.getName(), replayDate, errorExtension,
 				AbstractFileErrorHandler.NO_PARTS);
 		if (errorFile.exists())
-			currentErrorFile = new FilePlayListReplayErrorFile(errorFile,
-					file);
+			currentErrorFile = new FilePlayListReplayErrorFile(errorFile, file);
 		else
-			currentErrorFile = new FilePlayListReplayFile(file);
+			currentErrorFile = new FilePlayListReplayFile(file, AbstractFileErrorHandler.NO_PARTS);
 	}
 }
