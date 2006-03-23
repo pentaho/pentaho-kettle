@@ -109,7 +109,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		expectContent(directory + "input.xls_Sheet2." + getDateFormatted()
 				+ ".line", "10" + Const.CR + "17" + Const.CR);
 	}
-	
+
 	public void testInputErrorIgnoreErrorsTrueErrorOnly() throws Exception {
 		directory = "test/useCases/replay/excelInputReplayErrorIgnoreTrueErrorOnly/";
 		expectFiles(directory, 2);
@@ -121,7 +121,8 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		trans.endProcessing("end");
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 3);
-		expectContent(directory + "input2.xls." + getDateFormatted() + ".error",
+		expectContent(
+				directory + "input2.xls." + getDateFormatted() + ".error",
 				FileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
 						+ Const.CR);
 	}
@@ -161,6 +162,28 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		expectContent(directory + "result.out", "name;age" + Const.CR
 				+ "john; 23" + Const.CR + "ward; 15" + Const.CR + "john; 24"
 				+ Const.CR + "ward; 16" + Const.CR + "john; 25" + Const.CR);
+	}
+
+	public void testReplayErrorOnly() throws Exception {
+		directory = "test/useCases/replay/excelInputDoReplayErrorOnly/";
+		expectFiles(directory, 6);
+		meta = new TransMeta(directory + "transform.ktr");
+		trans = new Trans(log, meta);
+		trans.setReplayDate(getReplayDate());
+		boolean ok = trans.execute(null);
+		assertTrue(ok);
+		trans.waitUntilFinished();
+		trans.endProcessing("end");
+		assertEquals(0, trans.getErrors());
+		expectFiles(directory, 9);
+		expectContent(directory + "input3.xls_Sheet1." + getDateFormatted()
+				+ ".line", "6" + Const.CR + "10" + Const.CR + "14" + Const.CR
+				+ "17" + Const.CR + "18" + Const.CR);
+		expectContent(directory + "input3.xls_Sheet2." + getDateFormatted()
+				+ ".line", "12" + Const.CR);
+		expectContent(directory + "input3.xls_Sheet3." + getDateFormatted()
+				+ ".line", "6" + Const.CR + "10" + Const.CR + "14" + Const.CR
+				+ "17" + Const.CR + "18" + Const.CR);
 	}
 
 	public String getFileExtension() {

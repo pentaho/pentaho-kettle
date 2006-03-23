@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FilenameFilter;
 import java.io.IOException;
+import java.text.ParseException;
+import java.util.Date;
 
 import junit.framework.TestCase;
 import be.ibridge.kettle.core.Const;
@@ -32,10 +34,14 @@ public abstract class KettleStepUseCase extends TestCase {
 	}
 
 	public abstract String getFileExtension();
-	
+
 	public String getDateFormatted() {
 		return AbstractFileErrorHandler.createDateFormat().format(
 				trans.getCurrentDate());
+	}
+
+	public Date getReplayDate() throws ParseException {
+		return AbstractFileErrorHandler.createDateFormat().parse(REPLAY_DATE);
 	}
 
 	protected void tearDown() throws Exception {

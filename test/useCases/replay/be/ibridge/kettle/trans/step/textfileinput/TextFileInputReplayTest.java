@@ -1,13 +1,9 @@
 package be.ibridge.kettle.trans.step.textfileinput;
 
-import java.text.ParseException;
-import java.util.Date;
-
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.KettleStepUseCase;
-import be.ibridge.kettle.trans.step.errorhandling.AbstractFileErrorHandler;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 
 public class TextFileInputReplayTest extends KettleStepUseCase {
@@ -37,7 +33,7 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 2);
 	}
-	
+
 	public void testInputErrorIgnoreErrorsTrueNoFiles() throws Exception {
 		directory = "test/useCases/replay/textFileInputReplayErrorIgnoreFalse/";
 		expectFiles(directory, 2);
@@ -63,7 +59,7 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		assertEquals(1, trans.getErrors());
 		expectFiles(directory, 2);
 	}
-	
+
 	public void testInputErrorIgnoreErrorsRequiredNoFiles() throws Exception {
 		directory = "test/useCases/replay/textFileInputIgnoreErrorRequiredNoFiles/";
 		expectFiles(directory, 1);
@@ -75,8 +71,7 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		trans.endProcessing("end");
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 2);
-		expectContent(
-				directory + "input.txt." + getDateFormatted() + ".error",
+		expectContent(directory + "input.txt." + getDateFormatted() + ".error",
 				FileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
 						+ Const.CR);
 	}
@@ -243,13 +238,6 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 				FileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
 						+ Const.CR);
 	}
-
-	private Date getReplayDate() throws ParseException {
-		return AbstractFileErrorHandler.createDateFormat().parse(
-				REPLAY_DATE);
-	}
-
-	
 
 	public String getFileExtension() {
 		return "txt";
