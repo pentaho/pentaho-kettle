@@ -1316,13 +1316,13 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		this.lineNumberFilesExtension = lineNumberFilesExtension;
 	}
 
-	public String getErrorLineFilesDestinationDirectory() {
+	public String getErrorFilesDestinationDirectory() {
 		return errorFilesDestinationDirectory;
 	}
 
-	public void setErrorLineFilesDestinationDirectory(
-			String errorLineFilesDestinationDirectory) {
-		this.errorFilesDestinationDirectory = errorLineFilesDestinationDirectory;
+	public void setErrorFilesDestinationDirectory(
+			String errorFilesDestinationDirectory) {
+		this.errorFilesDestinationDirectory = errorFilesDestinationDirectory;
 	} 
 	
 	public String getErrorLineFilesExtension() {

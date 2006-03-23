@@ -174,7 +174,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     private String badLineFilesExtension;
     
     /** The directory that will contain error line files */
-    private String errorLineFilesDestinationDirectory;
+    private String errorFilesDestinationDirectory;
     
     /** The extension of error line files */
     private String errorLineFilesExtension;
@@ -588,7 +588,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
             errorLineSkipped = YES.equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "error_line_skipped") );
             badLineFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "bad_line_files_destination_directory");
             badLineFilesExtension = XMLHandler.getTagValue(stepnode, "bad_line_files_extension");
-            errorLineFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "error_line_files_destination_directory");
+            errorFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "error_line_files_destination_directory");
             errorLineFilesExtension = XMLHandler.getTagValue(stepnode, "error_line_files_extension");
             lineNumberFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "line_number_files_destination_directory");
             lineNumberFilesExtension = XMLHandler.getTagValue(stepnode, "line_number_files_extension");
@@ -653,7 +653,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		errorLineSkipped = false;
 		badLineFilesDestinationDirectory = null;
         badLineFilesExtension = "bad";
-        errorLineFilesDestinationDirectory = null;
+        errorFilesDestinationDirectory = null;
         errorLineFilesExtension = "error";
         lineNumberFilesDestinationDirectory = null;
         lineNumberFilesExtension = "line";
@@ -763,7 +763,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
         
         retval += "    " + XMLHandler.addTagValue("bad_line_files_destination_directory", badLineFilesDestinationDirectory);
         retval += "    " + XMLHandler.addTagValue("bad_line_files_extension", badLineFilesExtension);
-        retval += "    " + XMLHandler.addTagValue("error_line_files_destination_directory", errorLineFilesDestinationDirectory);
+        retval += "    " + XMLHandler.addTagValue("error_line_files_destination_directory", errorFilesDestinationDirectory);
         retval += "    " + XMLHandler.addTagValue("error_line_files_extension", errorLineFilesExtension);
         retval += "    " + XMLHandler.addTagValue("line_number_files_destination_directory", lineNumberFilesDestinationDirectory);
         retval += "    " + XMLHandler.addTagValue("line_number_files_extension", lineNumberFilesExtension);
@@ -825,7 +825,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
             
             badLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "bad_line_files_dest_dir");
             badLineFilesExtension = rep.getStepAttributeString(id_step, "bad_line_files_ext");
-            errorLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "error_line_files_dest_dir");
+            errorFilesDestinationDirectory = rep.getStepAttributeString(id_step, "error_line_files_dest_dir");
             errorLineFilesExtension = rep.getStepAttributeString(id_step, "error_line_files_ext");
             lineNumberFilesDestinationDirectory = rep.getStepAttributeString(id_step, "line_number_files_dest_dir");
             lineNumberFilesExtension = rep.getStepAttributeString(id_step, "line_number_files_ext");
@@ -879,7 +879,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
             
             rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_dest_dir", badLineFilesDestinationDirectory);
             rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_ext", badLineFilesExtension);
-            rep.saveStepAttribute(id_transformation, id_step, "error_line_files_dest_dir", errorLineFilesDestinationDirectory);
+            rep.saveStepAttribute(id_transformation, id_step, "error_line_files_dest_dir", errorFilesDestinationDirectory);
             rep.saveStepAttribute(id_transformation, id_step, "error_line_files_ext", errorLineFilesExtension);
              rep.saveStepAttribute(id_transformation, id_step, "line_number_files_dest_dir", lineNumberFilesDestinationDirectory);
             rep.saveStepAttribute(id_transformation, id_step, "line_number_files_ext", lineNumberFilesExtension);
@@ -1001,13 +1001,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		this.errorIgnored = errorIgnored;
 	}
 
-	public String getErrorLineFilesDestinationDirectory() {
-		return errorLineFilesDestinationDirectory;
+	public String getErrorFilesDestinationDirectory() {
+		return errorFilesDestinationDirectory;
 	}
 
-	public void setErrorLineFilesDestinationDirectory(
+	public void setErrorFilesDestinationDirectory(
 			String errorLineFilesDestinationDirectory) {
-		this.errorLineFilesDestinationDirectory = errorLineFilesDestinationDirectory;
+		this.errorFilesDestinationDirectory = errorLineFilesDestinationDirectory;
 	}
 
 	public String getErrorLineFilesExtension() {

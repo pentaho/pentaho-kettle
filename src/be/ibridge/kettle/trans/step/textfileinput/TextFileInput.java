@@ -1174,7 +1174,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 			data.textFileReplayFactory = new FilePlayListReplay(replayDate,
 					meta.getLineNumberFilesDestinationDirectory(), meta
 							.getLineNumberFilesExtension(), meta
-							.getErrorLineFilesDestinationDirectory(), meta
+							.getErrorFilesDestinationDirectory(), meta
 							.getErrorLineFilesExtension(), meta.getEncoding());
 	}
 
@@ -1186,10 +1186,10 @@ public class TextFileInput extends BaseStep implements StepInterface {
 							.getCurrentDate(), meta
 							.getLineNumberFilesDestinationDirectory(), meta
 							.getLineNumberFilesExtension(), meta.getEncoding()));
-		if (meta.getErrorLineFilesDestinationDirectory() != null)
+		if (meta.getErrorFilesDestinationDirectory() != null)
 			dataErrorLineHandlers.add(new FileErrorHandlerMissingFiles(
 					getTrans().getCurrentDate(), meta
-							.getErrorLineFilesDestinationDirectory(), meta
+							.getErrorFilesDestinationDirectory(), meta
 							.getErrorLineFilesExtension(), meta.getEncoding()));
 		data.dataErrorLineHandler = new CompositeFileErrorHandler(
 				dataErrorLineHandlers);

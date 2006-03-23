@@ -42,6 +42,7 @@ import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.errorhandling.CompositeFileErrorHandler;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
+import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 
@@ -205,6 +206,12 @@ public class ExcelInput extends BaseStep implements StepInterface
 		meta = (ExcelInputMeta) smi;
 		data = (ExcelInputData) sdi;
 
+		if(first)
+		{
+			first = false;
+			handleMissingFiles();
+		}
+		
 		// See if we're not done processing...
 		// We are done processing if the filenr >= number of files.
 		if (data.filenr >= data.files.nrOfFiles()) {
@@ -249,7 +256,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 				return false;
 			}
 		} catch (ExcelInputRowValueException excelInputRowValueException) {
-			data.dataErrorHandler.handleLineError(excelInputRowValueException.excelInputRow.rownr, excelInputRowValueException.excelInputRow.sheetName);
+			data.errorHandler.handleLineError(excelInputRowValueException.excelInputRow.rownr, excelInputRowValueException.excelInputRow.sheetName);
 			return true;
 		} 
 	}
@@ -264,8 +271,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 			if (meta.isErrorIgnored())
 				for (Iterator iter = nonExistantFiles.iterator(); iter
 						.hasNext();) {
-//					data.dataErrorLineHandler.handleNonExistantFile((File) iter
-//							.next() );
+					data.errorHandler.handleNonExistantFile((File) iter
+							.next() );
 				}
 			else
 				throw new KettleException(
@@ -279,8 +286,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 			if (meta.isErrorIgnored())
 				for (Iterator iter = nonAccessibleFiles.iterator(); iter
 						.hasNext();) {
-//					data.dataErrorLineHandler
-//							.handleNonAccessibleFile((File) iter.next() );
+					data.errorHandler
+							.handleNonAccessibleFile((File) iter.next() );
 				}
 			else
 				throw new KettleException(
@@ -301,11 +308,6 @@ public class ExcelInput extends BaseStep implements StepInterface
 
 		try
 		{
-			if(first)
-			{
-				first = false;
-				handleMissingFiles();
-			}
 			// First, see if a file has been opened?
 			if (data.workbook == null)
 			{
@@ -320,7 +322,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 				debug="open workbook #"+data.filenr+" : "+ data.filename;
 				logDetailed("Opening workbook #"+data.filenr+" : "+data.filename);
 				data.workbook = Workbook.getWorkbook(data.file);
-			    data.dataErrorHandler.handleFile(data.file);
+			    data.errorHandler.handleFile(data.file);
                 // Start at the first sheet again...
                 data.sheetnr = 0;
                 
@@ -463,7 +465,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		// Close the workbook!
 		data.workbook.close();
 		data.workbook = null; // marker to open again.
-		data.dataErrorHandler.close();
+		data.errorHandler.close();
 		
 		// advance to the next file!
 		data.filenr++;
@@ -476,7 +478,12 @@ public class ExcelInput extends BaseStep implements StepInterface
 					.getCurrentDate(), meta
 					.getLineNumberFilesDestinationDirectory(), meta
 					.getLineNumberFilesExtension(), "Latin1"));
-		data.dataErrorHandler = new CompositeFileErrorHandler(errorHandlers);
+		if (meta.getErrorFilesDestinationDirectory() != null)
+			errorHandlers.add(new FileErrorHandlerMissingFiles(
+					getTrans().getCurrentDate(), meta
+							.getErrorFilesDestinationDirectory(), meta
+							.getErrorLineFilesExtension(), "Latin1"));
+		data.errorHandler = new CompositeFileErrorHandler(errorHandlers);
 	}
 	
 //	private void initReplayFactory() {
@@ -540,9 +547,9 @@ public class ExcelInput extends BaseStep implements StepInterface
 	    
 		if (data.workbook!=null) data.workbook.close();
 		try {
-			data.dataErrorHandler.close();
+			data.errorHandler.close();
 		} catch (KettleException e) {
-			logDebug("Could not close dataErrorHandler");
+			logDebug("Could not close errorHandler");
 		}
 		
 		super.dispose(smi, sdi);

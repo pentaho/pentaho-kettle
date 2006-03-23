@@ -1848,7 +1848,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         if (in.getWarningFilesDestinationDirectory()!=null) wWarnDestDir.setText(in.getWarningFilesDestinationDirectory());
         if (in.getWarningFilesExtension()!=null) wWarnExt.setText(in.getWarningFilesExtension());
 
-        if (in.getErrorLineFilesDestinationDirectory()!=null) wErrorDestDir.setText(in.getErrorLineFilesDestinationDirectory());
+        if (in.getErrorFilesDestinationDirectory()!=null) wErrorDestDir.setText(in.getErrorFilesDestinationDirectory());
         if (in.getErrorLineFilesExtension()!=null) wErrorExt.setText(in.getErrorLineFilesExtension());
 
         if (in.getLineNumberFilesDestinationDirectory()!=null) wLineNrDestDir.setText(in.getLineNumberFilesDestinationDirectory());
@@ -1996,7 +1996,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         in.setWarningFilesDestinationDirectory( wWarnDestDir.getText() );
         in.setWarningFilesExtension( wWarnExt.getText() );
-        in.setErrorLineFilesDestinationDirectory( wErrorDestDir.getText() );
+        in.setErrorFilesDestinationDirectory( wErrorDestDir.getText() );
         in.setErrorLineFilesExtension( wErrorExt.getText() ); 
         in.setLineNumberFilesDestinationDirectory( wLineNrDestDir.getText() );
         in.setLineNumberFilesExtension( wLineNrExt.getText() );

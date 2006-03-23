@@ -97,7 +97,7 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface
 	/**
 	 * The error handler when processing of a row fails.
 	 */
-	public FileErrorHandler dataErrorHandler;
+	public FileErrorHandler errorHandler;
 	
 	/**
 	 * 
