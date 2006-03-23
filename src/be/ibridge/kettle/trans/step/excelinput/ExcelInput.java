@@ -39,6 +39,8 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.errorhandling.CompositeFileErrorHandler;
+import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 
 
 /**
@@ -79,6 +81,12 @@ public class ExcelInput extends BaseStep implements StepInterface
             	checkType(cell, v);
             }catch(ExcelInputRowValueException ex)
             {
+            	if(meta.isErrorIgnored() && meta.isErrorLineSkipped())
+            	{
+            		r.setIgnore();
+            		return r;
+            	}
+            	
             	ex.excelInputRow = excelInputRow;
             	throw ex;
             }
@@ -239,7 +247,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 				return false;
 			}
 		} catch (ExcelInputRowValueException excelInputRowValueException) {
-			data.dataErrorHandler.handleLine(excelInputRowValueException.excelInputRow);
+			data.dataErrorHandler.handleLineError(excelInputRowValueException.excelInputRow.rownr, excelInputRowValueException.excelInputRow.sheetName);
 			return true;
 		} 
 	}
@@ -262,7 +270,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 				debug="open workbook #"+data.filenr+" : "+data.files[data.filenr];
 				logDetailed("Opening workbook #"+data.filenr+" : "+data.files[data.filenr]);
 				data.workbook = Workbook.getWorkbook(new File(data.files[data.filenr]));
-			    data.dataErrorHandler.handleFile(data.files[data.filenr]);
+			    data.dataErrorHandler.handleFile(new File(data.files[data.filenr]));
                 // Start at the first sheet again...
                 data.sheetnr = 0;
                 
@@ -412,17 +420,13 @@ public class ExcelInput extends BaseStep implements StepInterface
 	}
 	
 	private void initErrorHandling() {
-		List dataErrorLineHandlers = new ArrayList(2);
-		if (meta.getDataErrorLineFilesDestinationDirectory() != null)
-			dataErrorLineHandlers.add(new ExcelInputRowErrorHandler(meta
-					.getDataErrorLineFilesDestinationDirectory(), meta
-					.getDataErrorLineFilesExtension(),  "Latin1"    ));  //meta.getEncoding()));
+		List errorHandlers = new ArrayList(2);
 		if (meta.getLineNumberFilesDestinationDirectory() != null)
-			dataErrorLineHandlers.add(new ExcelInputRowNumberErrorHandler(meta
+			errorHandlers.add(new FileErrorHandlerContentLineNumber(getTrans()
+					.getCurrentDate(), meta
 					.getLineNumberFilesDestinationDirectory(), meta
-					.getLineNumberFilesExtension(),  "Latin1" ));  //meta.getEncoding()));
-		data.dataErrorHandler = new CompositeExcelInputErrorHandler(
-				dataErrorLineHandlers);
+					.getLineNumberFilesExtension(), "Latin1"));
+		data.dataErrorHandler = new CompositeFileErrorHandler(errorHandlers);
 	}
 	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)

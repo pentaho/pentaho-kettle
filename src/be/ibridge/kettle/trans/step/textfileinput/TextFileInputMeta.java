@@ -570,6 +570,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         filenameField = "";
         includeRowNumber = false;
         rowNumberField = "";
+        errorIgnored = false;
+        errorLineSkipped = false;
         warningFilesDestinationDirectory = null;
         warningFilesExtension = "warning";
         errorFilesDestinationDirectory = null;
@@ -577,6 +579,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         lineNumberFilesDestinationDirectory = null;
         lineNumberFilesExtension = "line";
         dateFormatLenient = true;
+        
 
         int nrfiles = 0;
         int nrfields = 0;

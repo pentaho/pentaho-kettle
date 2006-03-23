@@ -1,4 +1,4 @@
-package be.ibridge.kettle.trans.step.textfileinput;
+package be.ibridge.kettle.trans.step.errorhandling;
 
 import java.io.File;
 import java.util.Iterator;
@@ -6,34 +6,34 @@ import java.util.List;
 
 import be.ibridge.kettle.core.exception.KettleException;
 
-public class CompositeTextFileErrorHandler implements
-		TextFileErrorHandler {
+public class CompositeFileErrorHandler implements
+		FileErrorHandler {
 	private List handlers;
 
-	public CompositeTextFileErrorHandler(List handlers) {
+	public CompositeFileErrorHandler(List handlers) {
 		super();
 		this.handlers = handlers;
 	}
 
 	public void handleFile(File file) throws KettleException {
 		for (Iterator iter = handlers.iterator(); iter.hasNext();) {
-			TextFileErrorHandler handler = (TextFileErrorHandler) iter
+			FileErrorHandler handler = (FileErrorHandler) iter
 					.next();
 			handler.handleFile(file);
 		}
 	}
 
-	public void handleLineError(TextFileLine textFileLine) throws KettleException {
+	public void handleLineError(long lineNr, Object source) throws KettleException {
 		for (Iterator iter = handlers.iterator(); iter.hasNext();) {
-			TextFileErrorHandler handler = (TextFileErrorHandler) iter
+			FileErrorHandler handler = (FileErrorHandler) iter
 					.next();
-			handler.handleLineError(textFileLine);
+			handler.handleLineError(lineNr, source);
 		}
 	}
 
 	public void close() throws KettleException {
 		for (Iterator iter = handlers.iterator(); iter.hasNext();) {
-			TextFileErrorHandler handler = (TextFileErrorHandler) iter
+			FileErrorHandler handler = (FileErrorHandler) iter
 					.next();
 			handler.close();
 		}
@@ -41,7 +41,7 @@ public class CompositeTextFileErrorHandler implements
 
 	public void handleNonExistantFile(File file) throws KettleException {
 		for (Iterator iter = handlers.iterator(); iter.hasNext();) {
-			TextFileErrorHandler handler = (TextFileErrorHandler) iter
+			FileErrorHandler handler = (FileErrorHandler) iter
 					.next();
 			handler.handleNonExistantFile(file);
 		}
@@ -49,7 +49,7 @@ public class CompositeTextFileErrorHandler implements
 
 	public void handleNonAccessibleFile(File file) throws KettleException {
 		for (Iterator iter = handlers.iterator(); iter.hasNext();) {
-			TextFileErrorHandler handler = (TextFileErrorHandler) iter
+			FileErrorHandler handler = (FileErrorHandler) iter
 					.next();
 			handler.handleNonAccessibleFile(file);
 		}

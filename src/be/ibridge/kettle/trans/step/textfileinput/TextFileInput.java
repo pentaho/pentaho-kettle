@@ -43,6 +43,11 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.errorhandling.AbstractFileErrorHandler;
+import be.ibridge.kettle.trans.step.errorhandling.CompositeFileErrorHandler;
+import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandler;
+import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
+import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or
@@ -387,7 +392,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 			TextFileLine textFileLine, TextFileInputMeta info,
 			DecimalFormat ldf, DecimalFormatSymbols ldfs,
 			SimpleDateFormat ldaf, DateFormatSymbols ldafs, String fname,
-			long rowNr, TextFileErrorHandler dataErrorLineHandler)
+			long rowNr, FileErrorHandler errorHandler)
 			throws KettleException {
 
 		Row r = new Row();
@@ -476,9 +481,9 @@ public class TextFileInput extends BaseStep implements StepInterface {
 								sb.append(message);
 								errorText.setValue(sb);
 							}
-							if (dataErrorLineHandler != null) {
-								dataErrorLineHandler
-										.handleLineError(textFileLine);
+							if (errorHandler != null) {
+								errorHandler
+										.handleLineError(textFileLine.lineNumber, AbstractFileErrorHandler.DUMMY_SOURCE);
 							}
 							
 							if (info.isErrorLineSkipped())
@@ -977,7 +982,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 				for (Iterator iter = nonExistantFiles.iterator(); iter
 						.hasNext();) {
 					data.dataErrorLineHandler.handleNonExistantFile((File) iter
-							.next());
+							.next() );
 				}
 			else
 				throw new KettleException(
@@ -992,7 +997,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 				for (Iterator iter = nonAccessibleFiles.iterator(); iter
 						.hasNext();) {
 					data.dataErrorLineHandler
-							.handleNonAccessibleFile((File) iter.next());
+							.handleNonAccessibleFile((File) iter.next() );
 				}
 			else
 				throw new KettleException(
@@ -1184,16 +1189,16 @@ public class TextFileInput extends BaseStep implements StepInterface {
 		List dataErrorLineHandlers = new ArrayList(2);
 		if (meta.getLineNumberFilesDestinationDirectory() != null)
 			dataErrorLineHandlers
-					.add(new TextFileErrorHandlerContentLineNumber(getTrans()
+					.add(new FileErrorHandlerContentLineNumber(getTrans()
 							.getCurrentDate(), meta
 							.getLineNumberFilesDestinationDirectory(), meta
 							.getLineNumberFilesExtension(), meta.getEncoding()));
 		if (meta.getErrorLineFilesDestinationDirectory() != null)
-			dataErrorLineHandlers.add(new TextFileErrorHandlerMissingFiles(
+			dataErrorLineHandlers.add(new FileErrorHandlerMissingFiles(
 					getTrans().getCurrentDate(), meta
 							.getErrorLineFilesDestinationDirectory(), meta
 							.getErrorLineFilesExtension(), meta.getEncoding()));
-		data.dataErrorLineHandler = new CompositeTextFileErrorHandler(
+		data.dataErrorLineHandler = new CompositeFileErrorHandler(
 				dataErrorLineHandlers);
 	}
 

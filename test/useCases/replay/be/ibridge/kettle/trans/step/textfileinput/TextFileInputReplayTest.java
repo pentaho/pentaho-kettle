@@ -7,6 +7,8 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.KettleStepUseCase;
+import be.ibridge.kettle.trans.step.errorhandling.AbstractFileErrorHandler;
+import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 
 public class TextFileInputReplayTest extends KettleStepUseCase {
 
@@ -75,7 +77,7 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		expectFiles(directory, 2);
 		expectContent(
 				directory + "input.txt." + getDateFormatted() + ".error",
-				TextFileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
+				FileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
 						+ Const.CR);
 	}
 
@@ -122,7 +124,7 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		expectFiles(directory, 3);
 		expectContent(
 				directory + "input2.txt." + getDateFormatted() + ".error",
-				TextFileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
+				FileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
 						+ Const.CR);
 	}
 
@@ -238,19 +240,16 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 				"14" + Const.CR);
 		expectContent(
 				directory + "input4.txt." + getDateFormatted() + ".error",
-				TextFileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
+				FileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
 						+ Const.CR);
 	}
 
 	private Date getReplayDate() throws ParseException {
-		return AbstractTextFileErrorHandler.createDateFormat().parse(
+		return AbstractFileErrorHandler.createDateFormat().parse(
 				REPLAY_DATE);
 	}
 
-	private String getDateFormatted() {
-		return AbstractTextFileErrorHandler.createDateFormat().format(
-				trans.getCurrentDate());
-	}
+	
 
 	public String getFileExtension() {
 		return "txt";

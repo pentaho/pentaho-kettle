@@ -4,6 +4,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.KettleStepUseCase;
+import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 
 public class ExcelInputReplayTest extends KettleStepUseCase {
 
@@ -46,6 +47,22 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		expectFiles(directory, 2);
 	}
 
+//	public void testInputErrorIgnoreErrorsTrueRequiredNoFiles() throws Exception {
+//		directory = "test/useCases/replay/excelInputIgnoreErrorRequiredNoFiles/";
+//		expectFiles(directory, 1);
+//		meta = new TransMeta(directory + "transform.ktr");
+//		trans = new Trans(log, meta);
+//		boolean ok = trans.execute(null);
+//		assertTrue(ok);
+//		trans.waitUntilFinished();
+//		trans.endProcessing("end");
+//		assertEquals(0, trans.getErrors());
+//		expectFiles(directory, 2);
+//		expectContent(directory + "input.xls." + getDateFormatted() + ".error",
+//				FileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
+//						+ Const.CR);
+//	}
+
 	public void testInputErrorIgnoreErrorsFalse() throws Exception {
 		directory = "test/useCases/replay/excelInputReplayErrorIgnoreFalse/";
 		expectFiles(directory, 2);
@@ -69,19 +86,13 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		trans.waitUntilFinished();
 		trans.endProcessing("end");
 		assertEquals(0, trans.getErrors());
-		expectFiles(directory, 6);
-		expectContent(directory + "input.xls_Sheet1.line", "2" + Const.CR
-				+ "19" + Const.CR);
-		expectContent(directory + "input.xls_Sheet2.line", "10" + Const.CR
-				+ "17" + Const.CR);
-		expectContent(directory + "input.xls_Sheet1.dataerror",
-				"text1-1\t1234.5\taiaia\t9876" + Const.CR
-						+ "text1-18	9.87\t12/06/2005\tyoepie" + Const.CR);
-		expectContent(directory + "input.xls_Sheet2.dataerror",
-				"text2-9\t1234.5\tsome sing else\t9876" + Const.CR
-						+ "text2-16\t9.87\t26/05/2005\tNOK" + Const.CR);
+		expectFiles(directory, 4);
+		expectContent(directory + "input.xls_Sheet1." + getDateFormatted()
+				+ ".line", "2" + Const.CR + "19" + Const.CR);
+		expectContent(directory + "input.xls_Sheet2." + getDateFormatted()
+				+ ".line", "10" + Const.CR + "17" + Const.CR);
 	}
-	
+
 	public void testInputErrorIgnoreErrorsTrueRowNrOnly() throws Exception {
 		directory = "test/useCases/replay/excelInputReplayErrorIgnoreTrueRowNrOnly/";
 		expectFiles(directory, 2);
@@ -93,29 +104,10 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		trans.endProcessing("end");
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 4);
-		expectContent(directory + "input.xls_Sheet1.line", "2" + Const.CR
-				+ "19" + Const.CR);
-		expectContent(directory + "input.xls_Sheet2.line", "10" + Const.CR
-				+ "17" + Const.CR);
-	}
-	
-	public void testInputErrorIgnoreErrorsTrueDataErrorOnly() throws Exception {
-		directory = "test/useCases/replay/excelInputReplayErrorIgnoreTrueDataErrorOnly/";
-		expectFiles(directory, 2);
-		meta = new TransMeta(directory + "transform.ktr");
-		trans = new Trans(log, meta);
-		boolean ok = trans.execute(null);
-		assertTrue(ok);
-		trans.waitUntilFinished();
-		trans.endProcessing("end");
-		assertEquals(0, trans.getErrors());
-		expectFiles(directory, 4);
-		expectContent(directory + "input.xls_Sheet1.dataerror",
-				"text1-1\t1234.5\taiaia\t9876" + Const.CR
-						+ "text1-18	9.87\t12/06/2005\tyoepie" + Const.CR);
-		expectContent(directory + "input.xls_Sheet2.dataerror",
-				"text2-9\t1234.5\tsome sing else\t9876" + Const.CR
-						+ "text2-16\t9.87\t26/05/2005\tNOK" + Const.CR);
+		expectContent(directory + "input.xls_Sheet1." + getDateFormatted()
+				+ ".line", "2" + Const.CR + "19" + Const.CR);
+		expectContent(directory + "input.xls_Sheet2." + getDateFormatted()
+				+ ".line", "10" + Const.CR + "17" + Const.CR);
 	}
 
 	public String getFileExtension() {

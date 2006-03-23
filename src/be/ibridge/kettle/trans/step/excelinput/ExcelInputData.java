@@ -21,6 +21,7 @@ import jxl.Workbook;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
+import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandler;
 
 
 /**
@@ -87,9 +88,9 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface
 	public int colnr;
 	
 	/**
-	 * The data error handler when processing of a row fails.
+	 * The error handler when processing of a row fails.
 	 */
-	public ExcelInputErrorHandler dataErrorHandler;
+	public FileErrorHandler dataErrorHandler;
 	
 	/**
 	 * 

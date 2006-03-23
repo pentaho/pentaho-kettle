@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Date;
 
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.trans.step.errorhandling.AbstractFileErrorHandler;
 
 public class TextFilePlayListReplay implements TextFilePlayList {
 
@@ -57,9 +58,9 @@ public class TextFilePlayListReplay implements TextFilePlayList {
 
 	private void initializeCurrent(TextFileLine textFileLine)
 			throws KettleException {
-		File lineFile = AbstractTextFileErrorHandler.getReplayFilename(
+		File lineFile = AbstractFileErrorHandler.getReplayFilename(
 				lineNumberDirectory, textFileLine.file.getName(), replayDate,
-				lineNumberExtension);
+				lineNumberExtension, AbstractFileErrorHandler.DUMMY_SOURCE);
 		if (lineFile.exists())
 			currentLineNumberFile = new TextFilePlayListReplayLineNumberFile(
 					lineFile, encoding, textFileLine.file);
@@ -67,9 +68,9 @@ public class TextFilePlayListReplay implements TextFilePlayList {
 			currentLineNumberFile = new TextFilePlayListReplayFile(
 					textFileLine.file);
 
-		File errorFile = AbstractTextFileErrorHandler.getReplayFilename(
+		File errorFile = AbstractFileErrorHandler.getReplayFilename(
 				errorDirectory, textFileLine.file.getName(), replayDate,
-				errorExtension);
+				errorExtension, AbstractFileErrorHandler.DUMMY_SOURCE);
 		if (errorFile.exists())
 			currentErrorFile = new TextFilePlayListReplayErrorFile(errorFile,
 					textFileLine.file);

@@ -52,6 +52,7 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static final String YES = "Y";
 	public final static int TYPE_TRIM_NONE  = 0;
 	public final static int TYPE_TRIM_LEFT  = 1;
 	public final static int TYPE_TRIM_RIGHT = 2;
@@ -155,11 +156,14 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	 */
 	private  boolean fieldRepeat[];
 	
+    /** Strict types : will generate erros */
+    private boolean strictTypes;
+	
 	/** Ignore error : turn into warnings */
     private boolean errorIgnored;
     
-    /** Strict types : will generate erros */
-    private boolean strictTypes;
+    /** If error line are skipped, you can replay without introducing doubles.*/
+	private boolean errorLineSkipped;
 	
     /** The directory that will contain bad line files */
     private String badLineFilesDestinationDirectory;
@@ -172,12 +176,6 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     
     /** The extension of error line files */
     private String errorLineFilesExtension;
-    
-    /** The directory that will contain data error line files */
-    private String dataErrorLineFilesDestinationDirectory;
-    
-    /** The extension of data error line files */
-    private String dataErrorLineFilesExtension;
     
     /** The directory that will contain line number files */
     private String lineNumberFilesDestinationDirectory;
@@ -529,11 +527,11 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			startsWithHeader          = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
+			startsWithHeader          = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
 			String nempty   = XMLHandler.getTagValue(stepnode, "noempty");
-			ignoreEmptyRows         = "Y".equalsIgnoreCase(nempty) || nempty==null;
+			ignoreEmptyRows         = YES.equalsIgnoreCase(nempty) || nempty==null;
 			String soempty  = XMLHandler.getTagValue(stepnode, "stoponempty");
-			stopOnEmpty     = "Y".equalsIgnoreCase(soempty) || nempty==null;
+			stopOnEmpty     = YES.equalsIgnoreCase(soempty) || nempty==null;
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownumfield");
 			rowLimit           = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0);
@@ -568,7 +566,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 				String srepeat      = XMLHandler.getTagValue(fnode, "repeat");
 				fieldTrimType[i]    = getTrimType(XMLHandler.getTagValue(fnode, "trim_type"));
 				
-				if (srepeat!=null) fieldRepeat[i] = "Y".equalsIgnoreCase(srepeat); 
+				if (srepeat!=null) fieldRepeat[i] = YES.equalsIgnoreCase(srepeat); 
 				else               fieldRepeat[i]=false;
 			}
 			
@@ -581,14 +579,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 				startColumn[i]  = Const.toInt(XMLHandler.getTagValue(snode, "startcol"), 0);
 			}
 			
-			errorIgnored = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "error_ignored") );
-            strictTypes = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "strict_types") );
+            strictTypes = YES.equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "strict_types") );
+            errorIgnored = YES.equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "error_ignored") );
+            errorLineSkipped = YES.equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "error_line_skipped") );
             badLineFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "bad_line_files_destination_directory");
             badLineFilesExtension = XMLHandler.getTagValue(stepnode, "bad_line_files_extension");
             errorLineFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "error_line_files_destination_directory");
             errorLineFilesExtension = XMLHandler.getTagValue(stepnode, "error_line_files_extension");
-            dataErrorLineFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "data_error_line_files_destination_directory");
-            dataErrorLineFilesExtension = XMLHandler.getTagValue(stepnode, "data_error_line_files_extension");
             lineNumberFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "line_number_files_destination_directory");
             lineNumberFilesExtension = XMLHandler.getTagValue(stepnode, "line_number_files_extension");
 		}
@@ -647,12 +644,11 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		strictTypes = false;
 		errorIgnored = false;
+		errorLineSkipped = false;
 		badLineFilesDestinationDirectory = null;
         badLineFilesExtension = "bad";
         errorLineFilesDestinationDirectory = null;
         errorLineFilesExtension = "error";
-        dataErrorLineFilesDestinationDirectory = null;
-        dataErrorLineFilesExtension = "dataerror";
         lineNumberFilesDestinationDirectory = null;
         lineNumberFilesExtension = "line";
 	}
@@ -754,15 +750,14 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval+="      </sheets>"+Const.CR;
 		
         // ERROR HANDLING
-        retval += "    " + XMLHandler.addTagValue("error_ignored", errorIgnored);
         retval += "    " + XMLHandler.addTagValue("strict_types", strictTypes);
+        retval += "    " + XMLHandler.addTagValue("error_ignored", errorIgnored);
+        retval += "    " + XMLHandler.addTagValue("error_line_skipped", errorLineSkipped);
         
         retval += "    " + XMLHandler.addTagValue("bad_line_files_destination_directory", badLineFilesDestinationDirectory);
         retval += "    " + XMLHandler.addTagValue("bad_line_files_extension", badLineFilesExtension);
         retval += "    " + XMLHandler.addTagValue("error_line_files_destination_directory", errorLineFilesDestinationDirectory);
         retval += "    " + XMLHandler.addTagValue("error_line_files_extension", errorLineFilesExtension);
-        retval += "    " + XMLHandler.addTagValue("data_error_line_files_destination_directory", dataErrorLineFilesDestinationDirectory);
-        retval += "    " + XMLHandler.addTagValue("data_error_line_files_extension", dataErrorLineFilesExtension);
         retval += "    " + XMLHandler.addTagValue("line_number_files_destination_directory", lineNumberFilesDestinationDirectory);
         retval += "    " + XMLHandler.addTagValue("line_number_files_extension", lineNumberFilesExtension);
 
@@ -814,15 +809,14 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 				fieldRepeat[i]    =                rep.getStepAttributeBoolean(id_step, i, "field_repeat");
 			}		
 			
-			errorIgnored = rep.getStepAttributeBoolean(id_step, 0, "error_ignored", false);
             strictTypes = rep.getStepAttributeBoolean(id_step, 0, "strict_types", false);
+			errorIgnored = rep.getStepAttributeBoolean(id_step, 0, "error_ignored", false);
+            errorLineSkipped = rep.getStepAttributeBoolean(id_step, 0, "error_line_skipped", false);
             
             badLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "bad_line_files_dest_dir");
             badLineFilesExtension = rep.getStepAttributeString(id_step, "bad_line_files_ext");
             errorLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "error_line_files_dest_dir");
             errorLineFilesExtension = rep.getStepAttributeString(id_step, "error_line_files_ext");
-            dataErrorLineFilesDestinationDirectory = rep.getStepAttributeString(id_step, "data_error_line_files_dest_dir");
-            dataErrorLineFilesExtension = rep.getStepAttributeString(id_step, "data_error_line_files_ext");
             lineNumberFilesDestinationDirectory = rep.getStepAttributeString(id_step, "line_number_files_dest_dir");
             lineNumberFilesExtension = rep.getStepAttributeString(id_step, "line_number_files_ext");
 		}
@@ -868,16 +862,15 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",    fieldRepeat[i]);
 			}
 			
-			rep.saveStepAttribute(id_transformation, id_step, "error_ignored", errorIgnored);
             rep.saveStepAttribute(id_transformation, id_step, "strict_types", strictTypes);
+			rep.saveStepAttribute(id_transformation, id_step, "error_ignored", errorIgnored);
+            rep.saveStepAttribute(id_transformation, id_step, "error_line_skipped", errorLineSkipped);
             
             rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_dest_dir", badLineFilesDestinationDirectory);
             rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_ext", badLineFilesExtension);
             rep.saveStepAttribute(id_transformation, id_step, "error_line_files_dest_dir", errorLineFilesDestinationDirectory);
             rep.saveStepAttribute(id_transformation, id_step, "error_line_files_ext", errorLineFilesExtension);
-            rep.saveStepAttribute(id_transformation, id_step, "data_error_line_files_dest_dir", dataErrorLineFilesDestinationDirectory);
-            rep.saveStepAttribute(id_transformation, id_step, "data_error_line_files_ext", dataErrorLineFilesExtension);
-            rep.saveStepAttribute(id_transformation, id_step, "line_number_files_dest_dir", lineNumberFilesDestinationDirectory);
+             rep.saveStepAttribute(id_transformation, id_step, "line_number_files_dest_dir", lineNumberFilesDestinationDirectory);
             rep.saveStepAttribute(id_transformation, id_step, "line_number_files_ext", lineNumberFilesExtension);
 		}
 		catch(Exception e)
@@ -1052,24 +1045,6 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		this.badLineFilesExtension = badLineFilesExtension;
 	}
 
-	public String getDataErrorLineFilesDestinationDirectory() {
-		return dataErrorLineFilesDestinationDirectory;
-	}
-
-	public void setDataErrorLineFilesDestinationDirectory(
-			String dataErrorLineFilesDestinationDirectory) {
-		this.dataErrorLineFilesDestinationDirectory = dataErrorLineFilesDestinationDirectory;
-	}
-
-	public String getDataErrorLineFilesExtension() {
-		return dataErrorLineFilesExtension;
-	}
-
-	public void setDataErrorLineFilesExtension(
-			String dataErrorLineFilesExtension) {
-		this.dataErrorLineFilesExtension = dataErrorLineFilesExtension;
-	}
-
 	public boolean isErrorIgnored() {
 		return errorIgnored;
 	}
@@ -1112,6 +1087,14 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		this.lineNumberFilesExtension = lineNumberFilesExtension;
 	}
 
+	public boolean isErrorLineSkipped() {
+		return errorLineSkipped;
+	}
+
+	public void setErrorLineSkipped(boolean errorLineSkipped) {
+		this.errorLineSkipped = errorLineSkipped;
+	}
+	
 	public boolean isStrictTypes() {
 		return strictTypes;
 	}
@@ -1119,5 +1102,6 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setStrictTypes(boolean strictTypes) {
 		this.strictTypes = strictTypes;
 	}
+
 
 }

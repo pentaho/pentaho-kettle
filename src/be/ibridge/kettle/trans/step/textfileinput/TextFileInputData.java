@@ -29,6 +29,7 @@ import java.util.zip.ZipInputStream;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
+import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandler;
 
 /**
  * @author Matt
@@ -83,7 +84,7 @@ public class TextFileInputData extends BaseStepData implements
 
 	public boolean doneWithHeader;
 
-	public TextFileErrorHandler dataErrorLineHandler;
+	public FileErrorHandler dataErrorLineHandler;
 
 	public TextFilePlayList textFileReplayFactory;
 

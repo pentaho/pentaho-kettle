@@ -11,6 +11,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
+import be.ibridge.kettle.trans.step.errorhandling.AbstractFileErrorHandler;
 
 public abstract class KettleStepUseCase extends TestCase {
 	public static final String REPLAY_DATE = "16032006-051637";
@@ -31,6 +32,11 @@ public abstract class KettleStepUseCase extends TestCase {
 	}
 
 	public abstract String getFileExtension();
+	
+	public String getDateFormatted() {
+		return AbstractFileErrorHandler.createDateFormat().format(
+				trans.getCurrentDate());
+	}
 
 	protected void tearDown() throws Exception {
 		if (directory != null) {
@@ -65,7 +71,9 @@ public abstract class KettleStepUseCase extends TestCase {
 
 	public void expectContent(String filename, String expectedContent)
 			throws IOException {
-		FileInputStream stream = new FileInputStream(filename);
+		File file = new File(filename);
+		assertTrue(file.exists());
+		FileInputStream stream = new FileInputStream(file);
 		try {
 			StringBuffer buffer = new StringBuffer();
 			int read = 0;

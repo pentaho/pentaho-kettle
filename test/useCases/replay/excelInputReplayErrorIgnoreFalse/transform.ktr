@@ -110,18 +110,17 @@
         <startcol>0</startcol>
         </sheet>
       </sheets>
-    <error_ignored>N</error_ignored>
     <strict_types>Y</strict_types>
+    <error_ignored>N</error_ignored>
+    <error_line_skipped>N</error_line_skipped>
     <bad_line_files_destination_directory></bad_line_files_destination_directory>
     <bad_line_files_extension>bad</bad_line_files_extension>
     <error_line_files_destination_directory></error_line_files_destination_directory>
     <error_line_files_extension>error</error_line_files_extension>
-    <data_error_line_files_destination_directory></data_error_line_files_destination_directory>
-    <data_error_line_files_extension>dataerror</data_error_line_files_extension>
     <line_number_files_destination_directory></line_number_files_destination_directory>
     <line_number_files_extension>line</line_number_files_extension>
     <GUI>
-      <xloc>133</xloc>
+      <xloc>131</xloc>
       <yloc>123</yloc>
       <draw>Y</draw>
       </GUI>

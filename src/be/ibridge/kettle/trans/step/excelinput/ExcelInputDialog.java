@@ -152,19 +152,25 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	private Label        wlStrictTypes;
     private Button       wStrictTypes;
     private FormData     fdlStrictTypes, fdStrictTypes;
-    private Label        wlErrorIgnored;
+	
+	private Label        wlErrorIgnored;
     private Button       wErrorIgnored;
     private FormData     fdlErrorIgnored, fdErrorIgnored;
+    
+    private Label        wlSkipErrorLines;
+    private Button       wSkipErrorLines;
+    private FormData     fdlSkipErrorLines, fdSkipErrorLines;
+    
 //  New entries for intelligent error handling AKA replay functionality
     // Bad files destination directory
-    private Label        wlBadDestDir;
-    private Button       wbbBadDestDir; // Browse: add file or directory
-    private Button       wbvBadDestDir; // Variable
-    private Text         wBadDestDir;
-    private FormData     fdlBadDestDir, fdbBadDestDir, fdbvBadDestDir, fdBadDestDir;
-    private Label        wlBadExt;
-    private Text         wBadExt;
-    private FormData     fdlBadDestExt, fdBadDestExt;
+    private Label        wlWarningDestDir;
+    private Button       wbbWarningDestDir; // Browse: add file or directory
+    private Button       wbvWarningDestDir; // Variable
+    private Text         wWarningDestDir;
+    private FormData     fdlWarningDestDir, fdbWarningDestDir, fdbvWarningDestDir, fdWarningDestDir;
+    private Label        wlWarningExt;
+    private Text         wWarningExt;
+    private FormData     fdlWarningDestExt, fdWarningDestExt;
 
     // Error messages files destination directory
     private Label        wlErrorDestDir;
@@ -175,16 +181,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     private Label        wlErrorExt;
     private Text         wErrorExt;
     private FormData     fdlErrorDestExt, fdErrorDestExt;
-
-    // Data error messages bad files destination directory
-    private Label        wlDataErrorDestDir;
-    private Button       wbbDataErrorDestDir; // Browse: add file or directory
-    private Button       wbvDataErrorDestDir; // Variable
-    private Text         wDataErrorDestDir;
-    private FormData     fdlDataErrorDestDir, fdbDataErrorDestDir, fdbvDataErrorDestDir, fdDataErrorDestDir;
-    private Label        wlDataErrorExt;
-    private Text         wDataErrorExt;
-    private FormData     fdlDataErrorDestExt, fdDataErrorDestExt;
 
     // Line numbers files destination directory
     private Label        wlLineNrDestDir;
@@ -1011,15 +1007,13 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		//		 Error handling fields...
         wErrorIgnored.setSelection( in.isErrorIgnored() );
         wStrictTypes.setSelection( in.isStrictTypes() );
+        wSkipErrorLines.setSelection( in.isErrorLineSkipped() );
 
-        if (in.getBadLineFilesDestinationDirectory()!=null) wBadDestDir.setText(in.getBadLineFilesDestinationDirectory());
-        if (in.getBadLineFilesExtension()!=null) wBadExt.setText(in.getBadLineFilesExtension());
+        if (in.getBadLineFilesDestinationDirectory()!=null) wWarningDestDir.setText(in.getBadLineFilesDestinationDirectory());
+        if (in.getBadLineFilesExtension()!=null) wWarningExt.setText(in.getBadLineFilesExtension());
 
         if (in.getErrorLineFilesDestinationDirectory()!=null) wErrorDestDir.setText(in.getErrorLineFilesDestinationDirectory());
         if (in.getErrorLineFilesExtension()!=null) wErrorExt.setText(in.getErrorLineFilesExtension());
-
-        if (in.getDataErrorLineFilesDestinationDirectory()!=null) wDataErrorDestDir.setText(in.getDataErrorLineFilesDestinationDirectory());
-        if (in.getDataErrorLineFilesExtension()!=null) wDataErrorExt.setText(in.getDataErrorLineFilesExtension());
 
         if (in.getLineNumberFilesDestinationDirectory()!=null) wLineNrDestDir.setText(in.getLineNumberFilesDestinationDirectory());
         if (in.getLineNumberFilesExtension()!=null) wLineNrExt.setText(in.getLineNumberFilesExtension());
@@ -1091,16 +1085,15 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			in.getFieldPrecision()[i] = Const.toInt(sprec, -1);
 		}	
 		
-//		 Error handling fields...
+		// Error handling fields...
+		in.setStrictTypes( wStrictTypes.getSelection() );
         in.setErrorIgnored( wErrorIgnored.getSelection() );
-        in.setStrictTypes( wStrictTypes.getSelection() );
+        in.setErrorLineSkipped( wSkipErrorLines.getSelection() );
         
-        in.setBadLineFilesDestinationDirectory( wBadDestDir.getText() );
-        in.setBadLineFilesExtension( wBadExt.getText() );
+        in.setBadLineFilesDestinationDirectory( wWarningDestDir.getText() );
+        in.setBadLineFilesExtension( wWarningExt.getText() );
         in.setErrorLineFilesDestinationDirectory( wErrorDestDir.getText() );
         in.setErrorLineFilesExtension( wErrorExt.getText() );
-        in.setDataErrorLineFilesDestinationDirectory( wDataErrorDestDir.getText() );
-        in.setDataErrorLineFilesExtension( wDataErrorExt.getText() );
         in.setLineNumberFilesDestinationDirectory( wLineNrDestDir.getText() );
         in.setLineNumberFilesExtension( wLineNrExt.getText() );
 		
@@ -1134,9 +1127,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         props.setLook(wErrorComp);
         wErrorComp.setLayout(errorLayout);
         
-        
-        
         // ERROR HANDLING...
+        // ErrorIgnored?
         wlStrictTypes = new Label(wErrorComp, SWT.RIGHT);
         wlStrictTypes.setText("Strict types? ");
         props.setLook(wlStrictTypes);
@@ -1147,12 +1139,13 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wlStrictTypes.setLayoutData(fdlStrictTypes);
         wStrictTypes = new Button(wErrorComp, SWT.CHECK);
         props.setLook(wStrictTypes);
-        wStrictTypes.setToolTipText("When input cannot be parsed to defined types, consider as error.");
+        wStrictTypes.setToolTipText("Consider wrong types as errors?");
         fdStrictTypes = new FormData();
         fdStrictTypes.left = new FormAttachment(middle, 0);
         fdStrictTypes.top = new FormAttachment(0, margin);
         wStrictTypes.setLayoutData(fdStrictTypes);
         Control previous = wStrictTypes;
+
         // ErrorIgnored?
         wlErrorIgnored = new Label(wErrorComp, SWT.RIGHT);
         wlErrorIgnored.setText("Ignore errors? ");
@@ -1170,84 +1163,103 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         fdErrorIgnored.top = new FormAttachment(previous, margin);
         wErrorIgnored.setLayoutData(fdErrorIgnored);
         previous = wErrorIgnored;
+
+        // Skip error lines?
+        wlSkipErrorLines = new Label(wErrorComp, SWT.RIGHT);
+        wlSkipErrorLines.setText("Skip error lines? ");
+        props.setLook(wlSkipErrorLines);
+        fdlSkipErrorLines = new FormData();
+        fdlSkipErrorLines.left = new FormAttachment(0, 0);
+        fdlSkipErrorLines.top = new FormAttachment(previous, margin);
+        fdlSkipErrorLines.right = new FormAttachment(middle, -margin);
+        wlSkipErrorLines.setLayoutData(fdlSkipErrorLines);
+        wSkipErrorLines = new Button(wErrorComp, SWT.CHECK);
+        props.setLook(wSkipErrorLines);
+        wSkipErrorLines.setToolTipText("Skip error lines or use null-values on incompatible types?");
+        fdSkipErrorLines = new FormData();
+        fdSkipErrorLines.left = new FormAttachment(middle, 0);
+        fdSkipErrorLines.top = new FormAttachment(previous, margin);
+        wSkipErrorLines.setLayoutData(fdSkipErrorLines);
+        
+        previous = wSkipErrorLines;
         
         
         
         // Bad lines files directory + extention
         
-        // BadDestDir line
-        wlBadDestDir=new Label(wErrorComp, SWT.RIGHT);
-        wlBadDestDir.setText("Bad lines files directory ");
-        props.setLook(wlBadDestDir);
-        fdlBadDestDir=new FormData();
-        fdlBadDestDir.left = new FormAttachment(0, 0);
-        fdlBadDestDir.top  = new FormAttachment(previous, margin*4);
-        fdlBadDestDir.right= new FormAttachment(middle, -margin);
-        wlBadDestDir.setLayoutData(fdlBadDestDir);
+        // WarningDestDir line
+        wlWarningDestDir=new Label(wErrorComp, SWT.RIGHT);
+        wlWarningDestDir.setText("Warning files directory ");
+        props.setLook(wlWarningDestDir);
+        fdlWarningDestDir=new FormData();
+        fdlWarningDestDir.left = new FormAttachment(0, 0);
+        fdlWarningDestDir.top  = new FormAttachment(previous, margin*4);
+        fdlWarningDestDir.right= new FormAttachment(middle, -margin);
+        wlWarningDestDir.setLayoutData(fdlWarningDestDir);
 
-        wbbBadDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
-        props.setLook(wbbBadDestDir);
-        wbbBadDestDir.setText("&Browse");
-        wbbBadDestDir.setToolTipText("Browse for a directory ");
-        fdbBadDestDir=new FormData();
-        fdbBadDestDir.right= new FormAttachment(100, 0);
-        fdbBadDestDir.top  = new FormAttachment(previous, margin*4);
-        wbbBadDestDir.setLayoutData(fdbBadDestDir);
+        wbbWarningDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
+        props.setLook(wbbWarningDestDir);
+        wbbWarningDestDir.setText("&Browse");
+        wbbWarningDestDir.setToolTipText("Browse for a directory ");
+        fdbWarningDestDir=new FormData();
+        fdbWarningDestDir.right= new FormAttachment(100, 0);
+        fdbWarningDestDir.top  = new FormAttachment(previous, margin*4);
+        wbbWarningDestDir.setLayoutData(fdbWarningDestDir);
 
-        wbvBadDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
-        props.setLook(wbvBadDestDir);
-        wbvBadDestDir.setText("&Variable");
-        wbvBadDestDir.setToolTipText("Insert a variable in the directory");
-        fdbvBadDestDir=new FormData();
-        fdbvBadDestDir.right= new FormAttachment(wbbBadDestDir, -margin);
-        fdbvBadDestDir.top  = new FormAttachment(previous, margin*4);
-        wbvBadDestDir.setLayoutData(fdbvBadDestDir);
+        wbvWarningDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
+        props.setLook(wbvWarningDestDir);
+        wbvWarningDestDir.setText("&Variable");
+        wbvWarningDestDir.setToolTipText("Insert a variable in the directory");
+        fdbvWarningDestDir=new FormData();
+        fdbvWarningDestDir.right= new FormAttachment(wbbWarningDestDir, -margin);
+        fdbvWarningDestDir.top  = new FormAttachment(previous, margin*4);
+        wbvWarningDestDir.setLayoutData(fdbvWarningDestDir);
 
-        wBadExt=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wBadExt);
-        wBadExt.addModifyListener(lsMod);
-        fdBadDestExt=new FormData();
-        fdBadDestExt.left = new FormAttachment(wbvBadDestDir, -150);
-        fdBadDestExt.right= new FormAttachment(wbvBadDestDir, -margin);
-        fdBadDestExt.top  = new FormAttachment(previous, margin*4);
-        wBadExt.setLayoutData(fdBadDestExt);
+        wWarningExt=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wWarningExt);
+        wWarningExt.addModifyListener(lsMod);
+        fdWarningDestExt=new FormData();
+        fdWarningDestExt.left = new FormAttachment(wbvWarningDestDir, -150);
+        fdWarningDestExt.right= new FormAttachment(wbvWarningDestDir, -margin);
+        fdWarningDestExt.top  = new FormAttachment(previous, margin*4);
+        wWarningExt.setLayoutData(fdWarningDestExt);
 
-        wlBadExt=new Label(wErrorComp, SWT.RIGHT);
-        wlBadExt.setText("Extention ");
-        props.setLook(wlBadExt);
-        fdlBadDestExt=new FormData();
-        fdlBadDestExt.top  = new FormAttachment(previous, margin*4);
-        fdlBadDestExt.right= new FormAttachment(wBadExt, -margin);
-        wlBadExt.setLayoutData(fdlBadDestExt);
+        wlWarningExt=new Label(wErrorComp, SWT.RIGHT);
+        wlWarningExt.setText("Extention ");
+        props.setLook(wlWarningExt);
+        fdlWarningDestExt=new FormData();
+        fdlWarningDestExt.top  = new FormAttachment(previous, margin*4);
+        fdlWarningDestExt.right= new FormAttachment(wWarningExt, -margin);
+        wlWarningExt.setLayoutData(fdlWarningDestExt);
 
-        wBadDestDir=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wBadDestDir);
-        wBadDestDir.addModifyListener(lsMod);
-        fdBadDestDir=new FormData();
-        fdBadDestDir.left = new FormAttachment(middle, 0);
-        fdBadDestDir.right= new FormAttachment(wlBadExt, -margin);
-        fdBadDestDir.top  = new FormAttachment(previous, margin*4);
-        wBadDestDir.setLayoutData(fdBadDestDir);
+        wWarningDestDir=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wWarningDestDir);
+        wWarningDestDir.addModifyListener(lsMod);
+        fdWarningDestDir=new FormData();
+        fdWarningDestDir.left = new FormAttachment(middle, 0);
+        fdWarningDestDir.right= new FormAttachment(wlWarningExt, -margin);
+        fdWarningDestDir.top  = new FormAttachment(previous, margin*4);
+        wWarningDestDir.setLayoutData(fdWarningDestDir);
         
         // Listen to the Browse... button
-        wbbBadDestDir.addSelectionListener(DirectoryDialogButtonListenerFactory.getSelectionAdapter(shell, wBadDestDir));
+        wbbWarningDestDir.addSelectionListener(DirectoryDialogButtonListenerFactory.getSelectionAdapter(shell, wWarningDestDir));
 
         // Listen to the Variable... button
-        wbvBadDestDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wBadDestDir));        
+        wbvWarningDestDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wWarningDestDir));        
         
         // Whenever something changes, set the tooltip to the expanded version of the directory:
-        wBadDestDir.addModifyListener(getModifyListenerTooltipText(wBadDestDir));
+        wWarningDestDir.addModifyListener(getModifyListenerTooltipText(wWarningDestDir));
         
         
 
 
         
         // Error lines files directory + extention
-        previous = wBadDestDir;
+        previous = wWarningDestDir;
         
         // ErrorDestDir line
         wlErrorDestDir=new Label(wErrorComp, SWT.RIGHT);
-        wlErrorDestDir.setText("Error lines files directory ");
+        wlErrorDestDir.setText("Error files directory ");
         props.setLook(wlErrorDestDir);
         fdlErrorDestDir=new FormData();
         fdlErrorDestDir.left = new FormAttachment(0, 0);
@@ -1308,83 +1320,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         // Whenever something changes, set the tooltip to the expanded version of the directory:
         wErrorDestDir.addModifyListener(getModifyListenerTooltipText(wErrorDestDir));
 
-       
-        
-   
-        
-        
-        
-        // Data Error lines files directory + extention
-        previous = wErrorDestDir;
-        
-        // LineNrDestDir line
-        wlDataErrorDestDir=new Label(wErrorComp, SWT.RIGHT);
-        wlDataErrorDestDir.setText("Data error lines files directory ");
-        props.setLook(wlDataErrorDestDir);
-        fdlDataErrorDestDir=new FormData();
-        fdlDataErrorDestDir.left = new FormAttachment(0, 0);
-        fdlDataErrorDestDir.top  = new FormAttachment(previous, margin);
-        fdlDataErrorDestDir.right= new FormAttachment(middle, -margin);
-        wlDataErrorDestDir.setLayoutData(fdlDataErrorDestDir);
-
-        wbbDataErrorDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
-        props.setLook(wbbDataErrorDestDir);
-        wbbDataErrorDestDir.setText("&Browse");
-        wbbDataErrorDestDir.setToolTipText("Browse for a directory ");
-        fdbDataErrorDestDir=new FormData();
-        fdbDataErrorDestDir.right= new FormAttachment(100, 0);
-        fdbDataErrorDestDir.top  = new FormAttachment(previous, margin);
-        wbbDataErrorDestDir.setLayoutData(fdbDataErrorDestDir);
-
-        wbvDataErrorDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
-        props.setLook(wbvDataErrorDestDir);
-        wbvDataErrorDestDir.setText("&Variable");
-        wbvDataErrorDestDir.setToolTipText("Insert a variable in the directory");
-        fdbvDataErrorDestDir=new FormData();
-        fdbvDataErrorDestDir.right= new FormAttachment(wbbDataErrorDestDir, -margin);
-        fdbvDataErrorDestDir.top  = new FormAttachment(previous, margin);
-        wbvDataErrorDestDir.setLayoutData(fdbvDataErrorDestDir);
-
-        wDataErrorExt=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wDataErrorExt);
-        wDataErrorExt.addModifyListener(lsMod);
-        fdDataErrorDestExt=new FormData();
-        fdDataErrorDestExt.left = new FormAttachment(wbvDataErrorDestDir, -150);
-        fdDataErrorDestExt.right= new FormAttachment(wbvDataErrorDestDir, -margin);
-        fdDataErrorDestExt.top  = new FormAttachment(previous, margin);
-        wDataErrorExt.setLayoutData(fdDataErrorDestExt);
-
-        wlDataErrorExt=new Label(wErrorComp, SWT.RIGHT);
-        wlDataErrorExt.setText("Extention ");
-        props.setLook(wlDataErrorExt);
-        fdlDataErrorDestExt=new FormData();
-        fdlDataErrorDestExt.top  = new FormAttachment(previous, margin);
-        fdlDataErrorDestExt.right= new FormAttachment(wDataErrorExt, -margin);
-        wlDataErrorExt.setLayoutData(fdlDataErrorDestExt);
-
-        wDataErrorDestDir=new Text(wErrorComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wDataErrorDestDir);
-        wDataErrorDestDir.addModifyListener(lsMod);
-        fdDataErrorDestDir=new FormData();
-        fdDataErrorDestDir.left = new FormAttachment(middle, 0);
-        fdDataErrorDestDir.right= new FormAttachment(wlDataErrorExt, -margin);
-        fdDataErrorDestDir.top  = new FormAttachment(previous, margin);
-        wDataErrorDestDir.setLayoutData(fdDataErrorDestDir);
-        
-        // Listen to the Browse... button
-        wbbDataErrorDestDir.addSelectionListener(DirectoryDialogButtonListenerFactory.getSelectionAdapter(shell, wDataErrorDestDir));
-
-        // Listen to the Variable... button
-        wbvDataErrorDestDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wDataErrorDestDir));        
-        
-        // Whenever something changes, set the tooltip to the expanded version of the directory:
-        wDataErrorDestDir.addModifyListener(getModifyListenerTooltipText(wDataErrorDestDir));
-
-   
-        
-        
         // Line numbers files directory + extention
-        previous = wDataErrorDestDir;
+        previous = wErrorDestDir;
         
         // LineNrDestDir line
         wlLineNrDestDir=new Label(wErrorComp, SWT.RIGHT);

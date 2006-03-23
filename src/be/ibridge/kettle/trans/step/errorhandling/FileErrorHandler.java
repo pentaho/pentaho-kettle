@@ -1,4 +1,4 @@
-package be.ibridge.kettle.trans.step.textfileinput;
+package be.ibridge.kettle.trans.step.errorhandling;
 
 import java.io.File;
 
@@ -9,7 +9,7 @@ import be.ibridge.kettle.core.exception.KettleException;
  * @author Johnny Vanhentenyk
  * 
  */
-public interface TextFileErrorHandler {
+public interface FileErrorHandler {
 
 	/**
 	 * Tells the handler which file is being processed.
@@ -20,12 +20,15 @@ public interface TextFileErrorHandler {
 	void handleFile(File file) throws KettleException;
 
 	/**
-	 * This method handles an error when processing the textFileLine
+	 * This method handles an error when processing the line with corresponding
+	 * lineNr.
 	 * 
-	 * @param textFileLine
+	 * @param lineNr
+	 * @param source
+	 *            An object that indicates what source gave the error.
 	 * @throws KettleException
 	 */
-	void handleLineError(TextFileLine textFileLine) throws KettleException;
+	void handleLineError(long lineNr, Object source) throws KettleException;
 
 	/**
 	 * This method closes the handler;
@@ -35,15 +38,18 @@ public interface TextFileErrorHandler {
 
 	/**
 	 * This method handles a file that is required, but does not exist.
+	 * 
 	 * @param file
-	 * @throws KettleException 
+	 * @throws KettleException
 	 */
 	void handleNonExistantFile(File file) throws KettleException;
 
 	/**
 	 * This method handles a file that is required, but is not accessible.
+	 * 
 	 * @param file
-	 * @throws KettleException 
+	 * @throws KettleException
 	 */
-	void handleNonAccessibleFile(File file) throws KettleException;
+	void handleNonAccessibleFile(File file)
+			throws KettleException;
 }
