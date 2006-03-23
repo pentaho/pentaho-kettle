@@ -18,6 +18,7 @@ package be.ibridge.kettle.trans.step.excelinput;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import jxl.BooleanCell;
@@ -41,6 +42,7 @@ import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.errorhandling.CompositeFileErrorHandler;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
+import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 
 /**
@@ -134,7 +136,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		// Do we need to include the filename?
 		if (meta.getFileField()!=null && meta.getFileField().length()>0)
 		{
-			Value value = new Value(meta.getFileField(), data.files[data.filenr]);
+			Value value = new Value(meta.getFileField(), data.filename);
 			value.setLength(data.maxfilelength);
 			r.addValue(value);
 		}
@@ -205,7 +207,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 
 		// See if we're not done processing...
 		// We are done processing if the filenr >= number of files.
-		if (data.filenr >= data.files.length) {
+		if (data.filenr >= data.files.nrOfFiles()) {
 			logDetailed("No more files to be processes! (" + data.filenr
 					+ " files done)");
 			setOutputDone(); // signal end to receiver(s)
@@ -251,6 +253,42 @@ public class ExcelInput extends BaseStep implements StepInterface
 			return true;
 		} 
 	}
+	
+	private void handleMissingFiles() throws KettleException {
+		debug = "Required files";
+		List nonExistantFiles = data.files.getNonExistantFiles();
+
+		if (nonExistantFiles.size() != 0) {
+			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
+			log.logBasic(debug, "WARNING: Missing " + message);
+			if (meta.isErrorIgnored())
+				for (Iterator iter = nonExistantFiles.iterator(); iter
+						.hasNext();) {
+//					data.dataErrorLineHandler.handleNonExistantFile((File) iter
+//							.next() );
+				}
+			else
+				throw new KettleException(
+						"Following required files are missing: " + message);
+		}
+
+		List nonAccessibleFiles = data.files.getNonAccessibleFiles();
+		if (nonAccessibleFiles.size() != 0) {
+			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
+			log.logBasic(debug, "WARNING: Not accessible " + message);
+			if (meta.isErrorIgnored())
+				for (Iterator iter = nonAccessibleFiles.iterator(); iter
+						.hasNext();) {
+//					data.dataErrorLineHandler
+//							.handleNonAccessibleFile((File) iter.next() );
+				}
+			else
+				throw new KettleException(
+						"Following required files are not accessible: "
+								+ message);
+		}
+		debug = "End of Required files";
+	}
 
 	public Row getRowFromWorkbooks() throws ExcelInputRecoverableException
 	{
@@ -263,14 +301,26 @@ public class ExcelInput extends BaseStep implements StepInterface
 
 		try
 		{
+			if(first)
+			{
+				first = false;
+				handleMissingFiles();
+			}
 			// First, see if a file has been opened?
 			if (data.workbook == null)
 			{
+				// See if it's the first file
+				if(data.filenr == 0)
+				{
+					
+				}
 				// Open a new workbook..
-				debug="open workbook #"+data.filenr+" : "+data.files[data.filenr];
-				logDetailed("Opening workbook #"+data.filenr+" : "+data.files[data.filenr]);
-				data.workbook = Workbook.getWorkbook(new File(data.files[data.filenr]));
-			    data.dataErrorHandler.handleFile(new File(data.files[data.filenr]));
+				data.file = data.files.getFile(data.filenr);
+				data.filename = data.file.getPath();
+				debug="open workbook #"+data.filenr+" : "+ data.filename;
+				logDetailed("Opening workbook #"+data.filenr+" : "+data.filename);
+				data.workbook = Workbook.getWorkbook(data.file);
+			    data.dataErrorHandler.handleFile(data.file);
                 // Start at the first sheet again...
                 data.sheetnr = 0;
                 
@@ -360,7 +410,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		catch (ExcelInputRowValueException excelInputRowValueException) {
 			if (!meta.isErrorIgnored()) {
 				logError("Error processing row in [" + debug
-						+ "] from Excel file [" + data.files[data.filenr]
+						+ "] from Excel file [" + data.filename
 						+ "] : " + excelInputRowValueException.toString());
 				setErrors(1);
 				stopAll();
@@ -372,7 +422,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		catch(KettleException e)
 		{
 			logError("Error processing row in [" + debug
-					+ "] from Excel file [" + data.files[data.filenr] + "] : "
+					+ "] from Excel file [" + data.filename + "] : "
 					+ e.toString());
 			setErrors(1);
 			stopAll();
@@ -381,7 +431,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		catch (BiffException e) {
 			if (!meta.isErrorIgnored()) {
 				logError("Error processing row in [" + debug
-						+ "] from Excel file [" + data.files[data.filenr]
+						+ "] from Excel file [" + data.filename
 						+ "] : " + e.toString());
 				setErrors(1);
 				stopAll();
@@ -390,7 +440,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		} catch (IOException e) {
 			if (!meta.isErrorIgnored()) {
 				logError("Error processing row in [" + debug
-						+ "] from Excel file [" + data.files[data.filenr]
+						+ "] from Excel file [" + data.filename
 						+ "] : " + e.toString());
 				setErrors(1);
 				stopAll();
@@ -429,6 +479,18 @@ public class ExcelInput extends BaseStep implements StepInterface
 		data.dataErrorHandler = new CompositeFileErrorHandler(errorHandlers);
 	}
 	
+//	private void initReplayFactory() {
+//		Date replayDate = getTrans().getReplayDate();
+//		if (replayDate == null)
+//			data.excelFileReplayFactory = TextFilePlayListAll.INSTANCE;
+//		else
+//			data.excelFileReplayFactory = new TextFilePlayListReplay(replayDate,
+//					meta.getLineNumberFilesDestinationDirectory(), meta
+//							.getLineNumberFilesExtension(), meta
+//							.getErrorLineFilesDestinationDirectory(), meta
+//							.getErrorLineFilesExtension(), meta.getEncoding());
+//	}
+	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(ExcelInputMeta)smi;
@@ -437,31 +499,36 @@ public class ExcelInput extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 			initErrorHandling();
-			data.files = meta.getFiles();
-			if (data.files!=null && data.files.length>0)
-			{
-				data.row = meta.getEmptyFields();
-				if (data.row.size()>0)
-				{
-					// Determine the maximum filename length...
-					data.maxfilelength = -1;
-					for (int i=0;i<data.files.length;i++) if (data.files[i].length()>data.maxfilelength) data.maxfilelength=data.files[i].length();
+//			initReplayFactory();
+			data.files = meta.getFileList();
+			if (data.files.nrOfFiles() == 0 && !meta.isErrorIgnored()) {
+				logError("No file(s) specified! Stop processing.");
+				return false;
+			}
+			
+			data.row = meta.getEmptyFields();
+			if (data.row.size() > 0) {
+				// Determine the maximum filename length...
+				data.maxfilelength = -1;
 				
-					// Determine the maximum sheetname length...
-					data.maxsheetlength = -1;
-					for (int i=0;i<meta.getSheetName().length;i++) if (meta.getSheetName()[i].length()>data.maxsheetlength) data.maxsheetlength=meta.getSheetName()[i].length();
+				for (Iterator iter = data.files.getFiles().iterator(); iter.hasNext();) {
+					File file = (File) iter.next();
+					String name = file.getName();
+					if (name.length() > data.maxfilelength)
+						data.maxfilelength = name.length();
+				}
 
-					return true;
-				}
-				else
-				{
-					logError("No input fields defined!");
-				}
+				// Determine the maximum sheetname length...
+				data.maxsheetlength = -1;
+				for (int i = 0; i < meta.getSheetName().length; i++)
+					if (meta.getSheetName()[i].length() > data.maxsheetlength)
+						data.maxsheetlength = meta.getSheetName()[i].length();
+
+				return true;
+			} else {
+				logError("No input fields defined!");
 			}
-			else
-			{
-				logError("No file specified! Stop processing.");
-			}
+			
 		}
 		return false;
 	}

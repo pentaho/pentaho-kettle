@@ -48,6 +48,7 @@ import be.ibridge.kettle.trans.step.errorhandling.CompositeFileErrorHandler;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandler;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerMissingFiles;
+import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or
@@ -976,7 +977,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 		List nonExistantFiles = data.files.getNonExistantFiles();
 
 		if (nonExistantFiles.size() != 0) {
-			String message = getRequiredFilesDescription(nonExistantFiles);
+			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
 			log.logBasic(debug, "WARNING: Missing " + message);
 			if (meta.isErrorIgnored())
 				for (Iterator iter = nonExistantFiles.iterator(); iter
@@ -991,7 +992,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
 		List nonAccessibleFiles = data.files.getNonAccessibleFiles();
 		if (nonAccessibleFiles.size() != 0) {
-			String message = getRequiredFilesDescription(nonAccessibleFiles);
+			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
 			log.logBasic(debug, "WARNING: Not accessible " + message);
 			if (meta.isErrorIgnored())
 				for (Iterator iter = nonAccessibleFiles.iterator(); iter
@@ -1005,16 +1006,6 @@ public class TextFileInput extends BaseStep implements StepInterface {
 								+ message);
 		}
 		debug = "End of Required files";
-	}
-
-	private String getRequiredFilesDescription(List nonExistantFiles) {
-		StringBuffer buffer = new StringBuffer();
-		for (Iterator iter = nonExistantFiles.iterator(); iter.hasNext();) {
-			File file = (File) iter.next();
-			buffer.append(file.getPath());
-			buffer.append(Const.CR);
-		}
-		return buffer.toString();
 	}
 
 	private boolean closeLastFile() {

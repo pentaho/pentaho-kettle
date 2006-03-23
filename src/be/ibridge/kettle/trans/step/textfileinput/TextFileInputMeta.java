@@ -21,12 +21,8 @@
 
 package be.ibridge.kettle.trans.step.textfileinput;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.Hashtable;
-import java.util.List;
-import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
@@ -47,6 +43,7 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 {
@@ -1065,76 +1062,12 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
     public String[] getFilePaths()
     {
-    	List fileList = getTextFileList().getFiles();
-		String[] filePaths = new String[fileList.size()];
-    	for (int i = 0; i < filePaths.length; i++) {
-			filePaths[i] = ((File) fileList.get(i)).getPath();
-		}
-    	return filePaths;
+    	return FileInputList.createFilePathList(fileName, fileMask, fileRequired);
     }
     
-    public TextFileList getTextFileList()
+    public FileInputList getTextFileList()
     {
-    	TextFileList textFileList = new TextFileList();
-
-        // Replace possible environment variables...
-        final String realfile[] = Const.replEnv(fileName);
-        final String realmask[] = Const.replEnv(fileMask);
-
-        for (int i = 0; i < realfile.length; i++)
-        {
-            final String onefile = realfile[i];
-            final String onemask = realmask[i];
-            final boolean onerequired = YES.equalsIgnoreCase(fileRequired[i]);
-
-            // System.out.println("Checking file ["+onefile+"] mask ["+onemask+"]");
-
-            if (onemask != null && onemask.length() > 0) // A directory & a wildcard
-            {
-                File file = new File(onefile);
-                try
-                {
-                    String[] fileNames = file.list(new FilenameFilter()
-                    {
-                        public boolean accept(File dir, String name)
-                        {
-                            return Pattern.matches(onemask, name);
-                        }
-                    });
-
-                    if (fileNames != null)
-						for (int j = 0; j < fileNames.length; j++) {
-							textFileList.addFile(new File(file, fileNames[j]));
-						}
-                }
-                catch (Exception e)
-                {
-                    //do othing
-                	e.printStackTrace();
-                }
-            }
-            else
-            // A normal file...
-            {
-            	File file = new File(onefile);
-				if (file.exists()) {
-					if (file.canRead()) {
-						if (file.isFile())
-							textFileList.addFile(file);
-					} else if (onerequired)
-						textFileList.addNonAccessibleFile(file);
-				} else if (onerequired)
-					textFileList.addNonExistantFile(file);
-            }
-        }
-        
-        // Sort the list: quicksort
-        textFileList.sortFiles();
-        
-        // OK, return the list in filelist...
-//        files = (String[]) filelist.toArray(new String[filelist.size()]);
-
-        return textFileList;
+    	return FileInputList.createFileList(fileName, fileMask, fileRequired);
     }
 
     public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
@@ -1153,7 +1086,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             remarks.add(cr);
         }
 
-        TextFileList textFileList = getTextFileList();
+        FileInputList textFileList = getTextFileList();
         if (textFileList.nrOfFiles() == 0)
         {
             cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No files can be found to read.", stepinfo);

@@ -47,21 +47,21 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		expectFiles(directory, 2);
 	}
 
-//	public void testInputErrorIgnoreErrorsTrueRequiredNoFiles() throws Exception {
-//		directory = "test/useCases/replay/excelInputIgnoreErrorRequiredNoFiles/";
-//		expectFiles(directory, 1);
-//		meta = new TransMeta(directory + "transform.ktr");
-//		trans = new Trans(log, meta);
-//		boolean ok = trans.execute(null);
-//		assertTrue(ok);
-//		trans.waitUntilFinished();
-//		trans.endProcessing("end");
-//		assertEquals(0, trans.getErrors());
-//		expectFiles(directory, 2);
-//		expectContent(directory + "input.xls." + getDateFormatted() + ".error",
-//				FileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
-//						+ Const.CR);
-//	}
+	public void testInputErrorRequiredNoFiles() throws Exception {
+		directory = "test/useCases/replay/excelInputErrorRequiredNoFiles/";
+		expectFiles(directory, 1);
+		meta = new TransMeta(directory + "transform.ktr");
+		trans = new Trans(log, meta);
+		boolean ok = trans.execute(null);
+		assertTrue(ok);
+		trans.waitUntilFinished();
+		trans.endProcessing("end");
+		assertEquals(0, trans.getErrors());
+		expectFiles(directory, 2);
+		expectContent(directory + "input.xls." + getDateFormatted() + ".error",
+				FileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
+						+ Const.CR);
+	}
 
 	public void testInputErrorIgnoreErrorsFalse() throws Exception {
 		directory = "test/useCases/replay/excelInputReplayErrorIgnoreFalse/";

@@ -22,12 +22,8 @@
 
 package be.ibridge.kettle.trans.step.excelinput;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Hashtable;
-import java.util.regex.Pattern;
 
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
@@ -48,10 +44,13 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 
 public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 {
+	private static final String NO = "N";
+
 	private static final String YES = "Y";
 	public final static int TYPE_TRIM_NONE  = 0;
 	public final static int TYPE_TRIM_LEFT  = 1;
@@ -71,6 +70,9 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	 * The regular expression to use (null means: no mask)
 	 */
 	private  String  fileMask[];
+	
+	/** Array of boolean values as string, indicating if a file is required. */
+	private  String  fileRequired[];
 
 	/**
 	 * The fieldname that holds the name of the file
@@ -551,8 +553,10 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				Node filenamenode = XMLHandler.getSubNodeByNr(filenode, "name", i); 
 				Node filemasknode = XMLHandler.getSubNodeByNr(filenode, "filemask", i); 
+				Node fileRequirednode = XMLHandler.getSubNodeByNr(filenode, "file_required", i);
 				fileName[i] = XMLHandler.getNodeValue(filenamenode);
 				fileMask[i] = XMLHandler.getNodeValue(filemasknode);
+				fileRequired[i] = XMLHandler.getNodeValue(fileRequirednode);
 			}
 			
 			for (int i=0;i<nrfields;i++)
@@ -599,6 +603,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		fileName   = new String [nrfiles];
 		fileMask   = new String [nrfiles];
+		fileRequired = new String[nrfiles];
 		
 		sheetName  = new String [nrsheets];
 		startRow   = new int    [nrsheets];
@@ -628,6 +633,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			fileName[i]="filename"+(i+1);
 			fileMask[i]="";
+			fileRequired[i] = NO;
 		}
 		
 		for (int i=0;i<nrfields;i++)
@@ -715,6 +721,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			retval+="      "+XMLHandler.addTagValue("name",     fileName[i]);
 			retval+="      "+XMLHandler.addTagValue("filemask", fileMask[i]);
+			retval+="      "+XMLHandler.addTagValue("file_required", fileRequired[i]);
 		}
 		retval+="      </file>"+Const.CR;
 
@@ -790,6 +797,9 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				fileName[i] =      rep.getStepAttributeString (id_step, i, "file_name"    );
 				fileMask[i] =      rep.getStepAttributeString (id_step, i, "file_mask"    );
+				fileRequired[i] = rep.getStepAttributeString(id_step, i, "file_required");
+                if(!YES.equalsIgnoreCase(fileRequired[i]))
+                	fileRequired[i] = NO;
 			}
 
 			for (int i=0;i<nrsheets;i++)
@@ -843,6 +853,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_name",     fileName[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_mask",     fileMask[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "file_required", fileRequired[i]);
 			}
 	
 			for (int i=0;i<sheetName.length;i++)
@@ -897,81 +908,18 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		return type_trim_desc[i];	
 	}
 	
-	public String[] getFiles()
-	{
-		String files[]=null;
-		
-		// Replace possible environment variables...
-		final String realfile[] = Const.replEnv(fileName);
-		final String realmask[] = Const.replEnv(fileMask);
-		
-		ArrayList filelist = new ArrayList();
-		
-		for (int i=0;i<realfile.length;i++)
-		{
-			final String onefile = realfile[i];
-			final String onemask = realmask[i];
-			
-			// System.out.println("Checking file ["+onefile+"] mask ["+onemask+"]");
-			
-			if (onemask!=null && onemask.length()>0) // A directory & a wildcard
-			{
-				File file = new File(onefile);
-				try
-				{
-					files = file.list(new FilenameFilter() { public boolean accept(File dir, String name)
-							{ return Pattern.matches(onemask, name); } } );
-					
-					for (int j = 0; j < files.length; j++)
-					{
-						if (!onefile.endsWith(Const.FILE_SEPARATOR))
-						{
-							files[j] = onefile+Const.FILE_SEPARATOR+files[j];
-						}
-						else
-						{
-							files[j] = onefile+files[j];
-						}
-					}
-				}
-				catch(Exception e)
-				{
-					files=null;
-				}
-			}
-			else // A normal file...
-			{
-				// Check if it exists...
-				File file = new File(onefile);
-				if (file.exists() && file.isFile() && file.canRead() )
-				{
-					files = new String[] { onefile };
-				}
-				else // File is not accessible to us.
-				{
-					files = null;
-				}
-			}
-
-			// System.out.println(" --> found "+(files==null?0:files.length)+" files");
-
-			// Add to our list...
-			if (files!=null)
-			for (int x=0;x<files.length;x++)
-			{				
-				filelist.add(files[x]);
-			}
-		}
-        
-        // Sort the list: quicksort
-        Collections.sort(filelist);
-
-		// OK, return the list in filelist...
-		files = (String[])filelist.toArray(new String[filelist.size()]);
-
-		return files;
-	}
+	public String[] getFilePaths()
+    {
+    	return FileInputList.createFilePathList(fileName, fileMask, fileRequired);
+    }
+    
+    public FileInputList getFileList()
+    {
+    	return FileInputList.createFileList(fileName, fileMask, fileRequired);
+    }
 	
+
+
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
 	{
 		CheckResult cr;
@@ -988,15 +936,15 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 		
-		String files[] = getFiles();
-		if (files==null || files.length==0)
+		FileInputList fileList = getFileList();
+		if (fileList.nrOfFiles() == 0)
 		{
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No files can be found to read.", stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "This step is reading "+files.length+" files.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "This step is reading "+fileList.nrOfFiles()+" files.", stepinfo);
 			remarks.add(cr);
 		}
 	}
@@ -1101,6 +1049,20 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setStrictTypes(boolean strictTypes) {
 		this.strictTypes = strictTypes;
+	}
+
+
+
+
+	public String[] getFileRequired() {
+		return fileRequired;
+	}
+
+
+
+
+	public void setFileRequired(String[] fileRequired) {
+		this.fileRequired = fileRequired;
 	}
 
 

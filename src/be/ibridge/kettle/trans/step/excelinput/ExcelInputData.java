@@ -16,12 +16,15 @@
 
 package be.ibridge.kettle.trans.step.excelinput;
 
+import java.io.File;
+
 import jxl.Sheet;
 import jxl.Workbook;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandler;
+import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 
 /**
@@ -54,12 +57,16 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface
 	/**
 	 * The Excel files to read
 	 */
-	public String files[];
+	public FileInputList files;
 
 	/**
 	 * The file number that's being handled...
 	 */
 	public int filenr;
+	
+	public String filename;
+	
+	public File file;
 	
 	/**
 	 * The workbook that's being processed...

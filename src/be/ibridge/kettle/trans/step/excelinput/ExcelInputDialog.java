@@ -23,6 +23,7 @@ package be.ibridge.kettle.trans.step.excelinput;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Properties;
 
 import jxl.Cell;
@@ -73,6 +74,7 @@ import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 import be.ibridge.kettle.trans.step.textfileinput.DirectoryDialogButtonListenerFactory;
 import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
@@ -80,6 +82,7 @@ import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterface
 {
+	private static final String[] YES_NO_COMBO = new String[] { "N", "Y" };
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
@@ -369,12 +372,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdbShowFiles.bottom = new FormAttachment(100, -margin);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
-		ColumnInfo[] colinfo=new ColumnInfo[2];
+		ColumnInfo[] colinfo=new ColumnInfo[3];
 		colinfo[ 0]=new ColumnInfo("File/Directory",  ColumnInfo.COLUMN_TYPE_TEXT,    false);
 		colinfo[ 1]=new ColumnInfo("Wildcard",        ColumnInfo.COLUMN_TYPE_TEXT,    false );
-		
 		colinfo[ 1].setToolTip("Enter a regular expression here and a directory in the first column.");
-		
+		colinfo[ 2]=new ColumnInfo("Required",        ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
+		colinfo[ 2].setToolTip("Is this file required? "+ Const.CR + "Only used for files without wildcards.");
 		
 		wFilenameList = new TableView(wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
@@ -791,8 +794,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 				{
 					ExcelInputMeta eii = new ExcelInputMeta();
 					getInfo(eii);
-					String files[] = eii.getFiles();
-					if (files!=null && files.length>0)
+					String[] files = eii.getFilePaths();
+					if (files.length > 0)
 					{
 						EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, "Files read", "Files read:");
 						esd.setViewOnly();
@@ -951,7 +954,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			wFilenameList.removeAll();
 			for (int i=0;i<in.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] } );
+				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] , in.getFileRequired()[i]} );
 			}
 			wFilenameList.removeEmptyRows();
 			wFilenameList.setRowNums();
@@ -1061,6 +1064,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			TableItem item = wFilenameList.getNonEmpty(i);
 			in.getFileName()[i] = item.getText(1);
 			in.getFileMask()[i] = item.getText(2);
+			in.getFileRequired()[i] = item.getText(3);
 		}
 
 		for (int i=0;i<nrsheets;i++)
@@ -1448,13 +1452,11 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		ExcelInputMeta info = new ExcelInputMeta();
 		getInfo(info);
 
-		String files[] = info.getFiles();
-		
-		for (int i=0;i<files.length;i++)
-		{
+		FileInputList fileList = info.getFileList();
+		for (Iterator iter = fileList.getFiles().iterator(); iter.hasNext();) {
+			File file = (File) iter.next();
 			try
 			{
-				File file = new File(files[i]);
 				Workbook workbook = Workbook.getWorkbook(file);
 				
 				int nrSheets = workbook.getNumberOfSheets();
@@ -1471,7 +1473,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			catch(Exception e)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("I was unable to read the Excel file ["+files[i]+"]."+Const.CR+"  Please check the files, directories & expression.");
+				mb.setMessage("I was unable to read the Excel file ["+file.getPath()+"]."+Const.CR+"  Please check the files, directories & expression.");
 				mb.setText("ERROR");
 				mb.open(); 
 			}
@@ -1508,13 +1510,11 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		ExcelInputMeta info = new ExcelInputMeta();
 		getInfo(info);
 
-		String files[] = info.getFiles();
-		
-		for (int i=0;i<files.length;i++)
-		{
+		FileInputList fileList = info.getFileList();
+		for (Iterator iter = fileList.getFiles().iterator(); iter.hasNext();) {
+			File file = (File) iter.next();
 			try
 			{
-				File file = new File(files[i]);
 				Workbook workbook = Workbook.getWorkbook(file);
 				
 				int nrSheets = workbook.getNumberOfSheets();
@@ -1599,7 +1599,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			catch(Exception e)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("I was unable to read the Excel file ["+files[i]+"]."+Const.CR+"  Please check the files, directories & expression."+Const.CR+e.toString());
+				mb.setMessage("I was unable to read the Excel file ["+file.getPath()+"]."+Const.CR+"  Please check the files, directories & expression."+Const.CR+e.toString());
 				mb.setText("ERROR");
 				mb.open(); 
 			}

@@ -80,6 +80,7 @@ import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 
 public class TextFileInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -2019,7 +2020,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		TextFileInputMeta meta = new TextFileInputMeta();
 		getInfo(meta);
 						
-		TextFileList    textFileList = meta.getTextFileList();
+		FileInputList    textFileList = meta.getTextFileList();
 		FileInputStream fileInputStream = null;
 		ZipInputStream  zipInputStream = null ;
 		InputStream     inputStream  = null;
@@ -2316,7 +2317,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	{
 		TextFileInputMeta info = new TextFileInputMeta();
 		getInfo(info);
-		TextFileList textFileList = info.getTextFileList();
+		FileInputList textFileList = info.getTextFileList();
 		
         FileInputStream fi = null;
 		ZipInputStream  zi = null ;

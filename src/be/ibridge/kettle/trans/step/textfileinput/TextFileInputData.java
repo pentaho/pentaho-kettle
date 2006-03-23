@@ -30,6 +30,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandler;
+import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 /**
  * @author Matt
@@ -58,7 +59,7 @@ public class TextFileInputData extends BaseStepData implements
 
 	public DateFormatSymbols dafs;
 
-	public TextFileList files;
+	public FileInputList files;
 
 	public boolean isLastFile;
 
