@@ -1,10 +1,10 @@
-package be.ibridge.kettle.trans.step.textfileinput;
+package be.ibridge.kettle.trans.step.playlist;
 
 import java.io.File;
 
 import be.ibridge.kettle.core.exception.KettleException;
 
-class TextFilePlayListReplayFile implements TextFilePlayList {
+public class TextFilePlayListReplayFile implements TextFilePlayList {
 	private File processingFile;
 
 	public TextFilePlayListReplayFile(File processingFile) {

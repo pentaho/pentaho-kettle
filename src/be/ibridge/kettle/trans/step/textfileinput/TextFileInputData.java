@@ -31,6 +31,7 @@ import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandler;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
+import be.ibridge.kettle.trans.step.playlist.TextFilePlayList;
 
 /**
  * @author Matt

@@ -49,6 +49,8 @@ import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandler;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
+import be.ibridge.kettle.trans.step.playlist.TextFilePlayListAll;
+import be.ibridge.kettle.trans.step.playlist.TextFilePlayListReplay;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or

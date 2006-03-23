@@ -1,6 +1,7 @@
-package be.ibridge.kettle.trans.step.textfileinput;
+package be.ibridge.kettle.trans.step.playlist;
 
 import java.io.File;
+
 
 public class TextFilePlayListAll implements TextFilePlayList {
 
