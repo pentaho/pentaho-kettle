@@ -110,6 +110,26 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 				+ ".line", "10" + Const.CR + "17" + Const.CR);
 	}
 
+	public void testInputOutputSkipErrorLineFalse() throws Exception {
+		directory = "test/useCases/replay/excelInputOutputSkipErrorLineFalse/";
+		expectFiles(directory, 2);
+		meta = new TransMeta(directory + "transform.ktr");
+		trans = new Trans(log, meta);
+		boolean ok = trans.execute(null);
+		assertTrue(ok);
+		trans.waitUntilFinished();
+		trans.endProcessing("end");
+		assertEquals(0, trans.getErrors());
+		expectFiles(directory, 4);
+		expectContent(directory + "input.xls_Sheet1." + getDateFormatted()
+				+ ".line", "3" + Const.CR + "6" + Const.CR);
+		expectContent(directory + "result.out", "name;age" + Const.CR
+				+ "john; 23" + Const.CR + "dennis; 0" + Const.CR + "ward; 15"
+				+ Const.CR + "john; 24" + Const.CR + "roel; 0" + Const.CR
+				+ "ward; 16" + Const.CR + "john; 25" + Const.CR);
+
+	}
+
 	public String getFileExtension() {
 		return "xls";
 	}

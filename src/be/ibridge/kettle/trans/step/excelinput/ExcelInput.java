@@ -16,7 +16,6 @@
 package be.ibridge.kettle.trans.step.excelinput;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,7 +28,6 @@ import jxl.LabelCell;
 import jxl.NumberCell;
 import jxl.Sheet;
 import jxl.Workbook;
-import jxl.read.biff.BiffException;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
@@ -63,7 +61,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private Row fillRow(Row baserow, int startcolumn, ExcelInputRow excelInputRow) throws ExcelInputRowValueException
+	private Row fillRow(Row baserow, int startcolumn, ExcelInputRow excelInputRow) throws KettleException
 	{
         debug = "fillRow start";
 		Row r = new Row(baserow);
@@ -82,16 +80,19 @@ public class ExcelInput extends BaseStep implements StepInterface
             
             try{
             	checkType(cell, v);
-            }catch(ExcelInputRowValueException ex)
+            }catch(KettleException ex)
             {
-            	if(meta.isErrorIgnored() && meta.isErrorLineSkipped())
+            	if (!meta.isErrorIgnored())
+            		throw ex;
+            	logRowlevel("Warning processing [" + debug
+						+ "] from Excel file [" + data.filename + "] : "
+						+ ex.toString());
+            	data.errorHandler.handleLineError(excelInputRow.rownr, excelInputRow.sheetName);
+            	if(meta.isErrorLineSkipped())
             	{
             		r.setIgnore();
             		return r;
             	}
-            	
-            	ex.excelInputRow = excelInputRow;
-            	throw ex;
             }
 
 			if (cell.getType().equals(CellType.BOOLEAN))
@@ -166,26 +167,26 @@ public class ExcelInput extends BaseStep implements StepInterface
 		return r;
 	}
 	
-	private void checkType(Cell cell, Value v) throws ExcelInputRowValueException {
+	private void checkType(Cell cell, Value v) throws KettleException {
 		if (!meta.isStrictTypes())
 			return;
 		CellType cellType = cell.getType();
 		if (cellType.equals(CellType.BOOLEAN)) {
 			if (!(v.getType() == Value.VALUE_TYPE_STRING
 					|| v.getType() == Value.VALUE_TYPE_NONE || v.getType() == Value.VALUE_TYPE_BOOLEAN))
-				throw new ExcelInputRowValueException("Invalid type Boolean, expected "
+				throw new KettleException("Invalid type Boolean, expected "
 						+ v.getTypeDesc());
 		} else if (cellType.equals(CellType.DATE)) {
 			if (!(v.getType() == Value.VALUE_TYPE_STRING
 					|| v.getType() == Value.VALUE_TYPE_NONE || v.getType() == Value.VALUE_TYPE_DATE))
-				throw new ExcelInputRowValueException("Invalid type Date, expected "
+				throw new KettleException("Invalid type Date, expected "
 						+ v.getTypeDesc());
 		} else if (cellType.equals(CellType.LABEL)) {
 			if (v.getType() == Value.VALUE_TYPE_BOOLEAN
 					|| v.getType() == Value.VALUE_TYPE_DATE
 					|| v.getType() == Value.VALUE_TYPE_INTEGER
 					|| v.getType() == Value.VALUE_TYPE_NUMBER)
-				throw new ExcelInputRowValueException("Invalid type Label, expected "
+				throw new KettleException("Invalid type Label, expected "
 						+ v.getTypeDesc());
 		} else if (cellType.equals(CellType.EMPTY)) {
 			// ok
@@ -194,10 +195,10 @@ public class ExcelInput extends BaseStep implements StepInterface
 					|| v.getType() == Value.VALUE_TYPE_NONE
 					|| v.getType() == Value.VALUE_TYPE_INTEGER
 					|| v.getType() == Value.VALUE_TYPE_BIGNUMBER || v.getType() == Value.VALUE_TYPE_NUMBER))
-				throw new ExcelInputRowValueException("Invalid type Number, expected "
+				throw new KettleException("Invalid type Number, expected "
 						+ v.getTypeDesc());
 		} else {
-			throw new ExcelInputRowValueException("Unsupported type " + cellType);
+			throw new KettleException("Unsupported type " + cellType);
 		}
 	}
 
@@ -229,36 +230,33 @@ public class ExcelInput extends BaseStep implements StepInterface
 			return false; // end of data or error.
 		}
 
-		try {
-			Row r = getRowFromWorkbooks();
-			if (r != null) {
-				if (!r.isIgnored()) {
-					// OK, see if we need to repeat values.
-					if (data.previousRow != null) {
-						for (int i = 0; i < meta.getFieldRepeat().length; i++) {
-							Value field = r.getValue(i);
-							if (field.isNull() && meta.getFieldRepeat()[i]) {
-								// Take the value from the previous row.
-								Value repeat = data.previousRow.getValue(i);
-								field.setValue(repeat);
-							}
+		
+		Row r = getRowFromWorkbooks();
+		if (r != null) {
+			if (!r.isIgnored()) {
+				// OK, see if we need to repeat values.
+				if (data.previousRow != null) {
+					for (int i = 0; i < meta.getFieldRepeat().length; i++) {
+						Value field = r.getValue(i);
+						if (field.isNull() && meta.getFieldRepeat()[i]) {
+							// Take the value from the previous row.
+							Value repeat = data.previousRow.getValue(i);
+							field.setValue(repeat);
 						}
 					}
-
-					// Remember this row for the next time around!
-					data.previousRow = r;
-
-					// Send out the good news: we found a row of data!
-					putRow(r);
 				}
-				return true;
-			} else {
-				return false;
+
+				// Remember this row for the next time around!
+				data.previousRow = r;
+
+				// Send out the good news: we found a row of data!
+				putRow(r);
 			}
-		} catch (ExcelInputRowValueException excelInputRowValueException) {
-			data.errorHandler.handleLineError(excelInputRowValueException.excelInputRow.rownr, excelInputRowValueException.excelInputRow.sheetName);
 			return true;
-		} 
+		} else {
+			return false;
+		}
+		
 	}
 	
 	private void handleMissingFiles() throws KettleException {
@@ -297,7 +295,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		debug = "End of Required files";
 	}
 
-	public Row getRowFromWorkbooks() throws ExcelInputRecoverableException
+	public Row getRowFromWorkbooks() 
 	{
 		debug="processRow()";
 		// This procedure outputs a single Excel data row on the destination
@@ -408,20 +406,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 					jumpToNextFile();
 				}
 			}
-		}
-		catch (ExcelInputRowValueException excelInputRowValueException) {
-			if (!meta.isErrorIgnored()) {
-				logError("Error processing row in [" + debug
-						+ "] from Excel file [" + data.filename
-						+ "] : " + excelInputRowValueException.toString());
-				setErrors(1);
-				stopAll();
-				return null;
-			}
-
-			throw excelInputRowValueException;
-		}
-		catch(KettleException e)
+		}catch(Exception e)
 		{
 			logError("Error processing row in [" + debug
 					+ "] from Excel file [" + data.filename + "] : "
@@ -429,25 +414,6 @@ public class ExcelInput extends BaseStep implements StepInterface
 			setErrors(1);
 			stopAll();
 			return null;
-		} 
-		catch (BiffException e) {
-			if (!meta.isErrorIgnored()) {
-				logError("Error processing row in [" + debug
-						+ "] from Excel file [" + data.filename
-						+ "] : " + e.toString());
-				setErrors(1);
-				stopAll();
-				return null;
-			}
-		} catch (IOException e) {
-			if (!meta.isErrorIgnored()) {
-				logError("Error processing row in [" + debug
-						+ "] from Excel file [" + data.filename
-						+ "] : " + e.toString());
-				setErrors(1);
-				stopAll();
-				return null;
-			}
 		}
 		
 		return retval;
