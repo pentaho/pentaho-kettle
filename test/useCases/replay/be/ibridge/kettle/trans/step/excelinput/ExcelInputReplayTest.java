@@ -47,8 +47,8 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		expectFiles(directory, 2);
 	}
 
-	public void testInputErrorRequiredNoFiles() throws Exception {
-		directory = "test/useCases/replay/excelInputErrorRequiredNoFiles/";
+	public void testInputErrorIgnoreErrorRequiredNoFiles() throws Exception {
+		directory = "test/useCases/replay/excelInputErrorIgnoreErrorRequiredNoFiles/";
 		expectFiles(directory, 1);
 		meta = new TransMeta(directory + "transform.ktr");
 		trans = new Trans(log, meta);
