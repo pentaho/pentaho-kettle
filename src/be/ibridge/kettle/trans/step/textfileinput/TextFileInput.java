@@ -49,8 +49,8 @@ import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandler;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerContentLineNumber;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandlerMissingFiles;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
-import be.ibridge.kettle.trans.step.playlist.TextFilePlayListAll;
-import be.ibridge.kettle.trans.step.playlist.TextFilePlayListReplay;
+import be.ibridge.kettle.trans.step.playlist.FilePlayListAll;
+import be.ibridge.kettle.trans.step.playlist.FilePlayListReplay;
 
 /**
  * Read all sorts of text files, convert them to rows and writes these to one or
@@ -1169,9 +1169,9 @@ public class TextFileInput extends BaseStep implements StepInterface {
 	private void initReplayFactory() {
 		Date replayDate = getTrans().getReplayDate();
 		if (replayDate == null)
-			data.textFileReplayFactory = TextFilePlayListAll.INSTANCE;
+			data.textFileReplayFactory = FilePlayListAll.INSTANCE;
 		else
-			data.textFileReplayFactory = new TextFilePlayListReplay(replayDate,
+			data.textFileReplayFactory = new FilePlayListReplay(replayDate,
 					meta.getLineNumberFilesDestinationDirectory(), meta
 							.getLineNumberFilesExtension(), meta
 							.getErrorLineFilesDestinationDirectory(), meta

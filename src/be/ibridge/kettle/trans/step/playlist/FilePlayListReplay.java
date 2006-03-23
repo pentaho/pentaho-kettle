@@ -6,7 +6,7 @@ import java.util.Date;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.trans.step.errorhandling.AbstractFileErrorHandler;
 
-public class TextFilePlayListReplay implements TextFilePlayList {
+public class FilePlayListReplay implements FilePlayList {
 
 	private final Date replayDate;
 
@@ -20,11 +20,11 @@ public class TextFilePlayListReplay implements TextFilePlayList {
 
 	private final String errorExtension;
 
-	private TextFilePlayListReplayFile currentLineNumberFile;
+	private FilePlayListReplayFile currentLineNumberFile;
 
-	private TextFilePlayListReplayFile currentErrorFile;
+	private FilePlayListReplayFile currentErrorFile;
 
-	public TextFilePlayListReplay(Date replayDate, String lineNumberDirectory,
+	public FilePlayListReplay(Date replayDate, String lineNumberDirectory,
 			String lineNumberExtension, String errorDirectory,
 			String errorExtension, String encoding) {
 		this.replayDate = replayDate;
@@ -60,18 +60,18 @@ public class TextFilePlayListReplay implements TextFilePlayList {
 				lineNumberDirectory, file.getName(), replayDate,
 				lineNumberExtension, AbstractFileErrorHandler.DUMMY_SOURCE);
 		if (lineFile.exists())
-			currentLineNumberFile = new TextFilePlayListReplayLineNumberFile(
+			currentLineNumberFile = new FilePlayListReplayLineNumberFile(
 					lineFile, encoding, file);
 		else
-			currentLineNumberFile = new TextFilePlayListReplayFile(file);
+			currentLineNumberFile = new FilePlayListReplayFile(file);
 
 		File errorFile = AbstractFileErrorHandler.getReplayFilename(
 				errorDirectory, file.getName(), replayDate, errorExtension,
 				AbstractFileErrorHandler.DUMMY_SOURCE);
 		if (errorFile.exists())
-			currentErrorFile = new TextFilePlayListReplayErrorFile(errorFile,
+			currentErrorFile = new FilePlayListReplayErrorFile(errorFile,
 					file);
 		else
-			currentErrorFile = new TextFilePlayListReplayFile(file);
+			currentErrorFile = new FilePlayListReplayFile(file);
 	}
 }

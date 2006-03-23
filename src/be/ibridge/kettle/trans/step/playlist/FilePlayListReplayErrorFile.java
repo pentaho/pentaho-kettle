@@ -4,11 +4,11 @@ import java.io.File;
 
 import be.ibridge.kettle.core.exception.KettleException;
 
-public class TextFilePlayListReplayErrorFile extends TextFilePlayListReplayFile {
+public class FilePlayListReplayErrorFile extends FilePlayListReplayFile {
 
 	private File errorFile;
 
-	public TextFilePlayListReplayErrorFile(File errorFile, File processingFile) {
+	public FilePlayListReplayErrorFile(File errorFile, File processingFile) {
 		super(processingFile);
 		this.errorFile = errorFile;
 	}

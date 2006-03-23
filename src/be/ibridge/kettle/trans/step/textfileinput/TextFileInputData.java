@@ -31,7 +31,7 @@ import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandler;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
-import be.ibridge.kettle.trans.step.playlist.TextFilePlayList;
+import be.ibridge.kettle.trans.step.playlist.FilePlayList;
 
 /**
  * @author Matt
@@ -88,7 +88,7 @@ public class TextFileInputData extends BaseStepData implements
 
 	public FileErrorHandler dataErrorLineHandler;
 
-	public TextFilePlayList textFileReplayFactory;
+	public FilePlayList textFileReplayFactory;
 
 	/**
 	 * 

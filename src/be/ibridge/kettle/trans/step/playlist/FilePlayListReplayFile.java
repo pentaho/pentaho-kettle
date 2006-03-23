@@ -4,10 +4,10 @@ import java.io.File;
 
 import be.ibridge.kettle.core.exception.KettleException;
 
-public class TextFilePlayListReplayFile implements TextFilePlayList {
+public class FilePlayListReplayFile implements FilePlayList {
 	private File processingFile;
 
-	public TextFilePlayListReplayFile(File processingFile) {
+	public FilePlayListReplayFile(File processingFile) {
 		this.processingFile = processingFile;
 	}
 

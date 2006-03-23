@@ -14,10 +14,10 @@ import java.util.Set;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.exception.KettleException;
 
-class TextFilePlayListReplayLineNumberFile extends TextFilePlayListReplayFile {
+class FilePlayListReplayLineNumberFile extends FilePlayListReplayFile {
 	Set lineNumbers = new HashSet();
 
-	public TextFilePlayListReplayLineNumberFile(File lineNumberFile,
+	public FilePlayListReplayLineNumberFile(File lineNumberFile,
 			String encoding, File processingFile) throws KettleException {
 		super(processingFile);
 		initialize(lineNumberFile, encoding);

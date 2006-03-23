@@ -3,9 +3,9 @@ package be.ibridge.kettle.trans.step.playlist;
 import java.io.File;
 
 
-public class TextFilePlayListAll implements TextFilePlayList {
+public class FilePlayListAll implements FilePlayList {
 
-	public static final TextFilePlayList INSTANCE = new TextFilePlayListAll();
+	public static final FilePlayList INSTANCE = new FilePlayListAll();
 
 	public boolean isProcessingNeeded(File  file, long lineNr) {
 		return true;

@@ -4,7 +4,7 @@ import java.io.File;
 
 import be.ibridge.kettle.core.exception.KettleException;
 
-public interface TextFilePlayList {
+public interface FilePlayList {
 
 	boolean isProcessingNeeded(File  file, long lineNr) throws KettleException;
 
