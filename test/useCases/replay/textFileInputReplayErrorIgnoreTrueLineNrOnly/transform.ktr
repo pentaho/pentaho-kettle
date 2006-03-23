@@ -74,6 +74,7 @@
     <file>
       <name>%%user.dir%%\test\useCases\replay\textFileInputReplayErrorIgnoreTrueLineNrOnly\input.txt</name>
       <filemask></filemask>
+      <file_required></file_required>
       <type>CSV</type>
       <zipped>N</zipped>
       </file>
@@ -139,6 +140,7 @@
       </fields>
     <limit>0</limit>
     <error_ignored>Y</error_ignored>
+    <error_line_skipped>N</error_line_skipped>
     <error_count_field>Ecount</error_count_field>
     <error_fields_field>Efields</error_fields_field>
     <error_text_field>Etext</error_text_field>
