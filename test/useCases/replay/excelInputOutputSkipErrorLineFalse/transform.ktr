@@ -9,8 +9,8 @@
       <input></input>
       <output></output>
       <update></update>
-      <connection>testje</connection>
-      <table>test</table>
+      <connection></connection>
+      <table></table>
       <use_batchid>N</use_batchid>
       <use_logfield>N</use_logfield>
       </log>
@@ -42,11 +42,6 @@
     <data_tablespace></data_tablespace>
     <index_tablespace></index_tablespace>
     <attributes>
-      <attribute><code>CUSTOM_DRIVER_CLASS</code><attribute></attribute></attribute>
-      <attribute><code>CUSTOM_URL</code><attribute></attribute></attribute>
-      <attribute><code>SAPClient</code><attribute></attribute></attribute>
-      <attribute><code>SAPLanguage</code><attribute></attribute></attribute>
-      <attribute><code>SAPSystemNumber</code><attribute></attribute></attribute>
     </attributes>
   </connection>
   <order>

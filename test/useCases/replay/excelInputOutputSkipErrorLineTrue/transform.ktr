@@ -9,8 +9,8 @@
       <input></input>
       <output></output>
       <update></update>
-      <connection>testje</connection>
-      <table>test</table>
+      <connection></connection>
+      <table></table>
       <use_batchid>N</use_batchid>
       <use_logfield>N</use_logfield>
       </log>

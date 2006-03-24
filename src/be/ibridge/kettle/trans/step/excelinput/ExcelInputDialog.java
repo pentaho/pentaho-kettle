@@ -1012,7 +1012,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wStrictTypes.setSelection( in.isStrictTypes() );
         wSkipErrorLines.setSelection( in.isErrorLineSkipped() );
 
-        if (in.getBadLineFilesDestinationDirectory()!=null) wWarningDestDir.setText(in.getBadLineFilesDestinationDirectory());
+        if (in.getWarningFilesDestinationDirectory()!=null) wWarningDestDir.setText(in.getWarningFilesDestinationDirectory());
         if (in.getBadLineFilesExtension()!=null) wWarningExt.setText(in.getBadLineFilesExtension());
 
         if (in.getErrorFilesDestinationDirectory()!=null) wErrorDestDir.setText(in.getErrorFilesDestinationDirectory());
@@ -1094,7 +1094,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         in.setErrorIgnored( wErrorIgnored.getSelection() );
         in.setErrorLineSkipped( wSkipErrorLines.getSelection() );
         
-        in.setBadLineFilesDestinationDirectory( wWarningDestDir.getText() );
+        in.setWarningFilesDestinationDirectory( wWarningDestDir.getText() );
         in.setBadLineFilesExtension( wWarningExt.getText() );
         in.setErrorFilesDestinationDirectory( wErrorDestDir.getText() );
         in.setErrorFilesExtension( wErrorExt.getText() );

@@ -301,10 +301,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
 		try {
 			// First, see if a file has been opened?
 			if (data.workbook == null) {
-				// See if it's the first file
-				if (data.filenr == 0) {
-
-				}
+				
 				// Open a new workbook..
 				data.file = data.files.getFile(data.filenr);
 				data.filename = data.file.getPath();
@@ -344,22 +341,24 @@ public class ExcelInput extends BaseStep implements StepInterface {
 
 				// Build a new row and fill in the data from the sheet...
 				try {
-					// Already increase cursor 1 row
-					int rownr = data.rownr++;
-					if (!data.filePlayList.isProcessingNeeded(data.file, rownr, sheetName))
+					Cell line[] = sheet.getRow(data.rownr);
+					// Already increase cursor 1 row					
+					int lineNr = ++data.rownr;
+					// Excel starts counting at 0
+					if (!data.filePlayList.isProcessingNeeded(data.file, lineNr, sheetName))
 					{	retval.setIgnore();
-						nextsheet = true;}
+					}
 					else {
-						debug = "Get line #" + rownr + " from sheet #"
+						debug = "Get line #" + lineNr + " from sheet #"
 								+ data.filenr + "." + data.sheetnr;
 						logRowlevel(debug);
-						Cell line[] = sheet.getRow(rownr);
+						
 
 						logRowlevel("Read line with " + line.length + " cells");
 						ExcelInputRow excelInputRow = new ExcelInputRow(sheet
-								.getName(), rownr + 1, line);
+								.getName(), lineNr, line);
 						Row r = fillRow(data.row, data.colnr, excelInputRow);
-						logRowlevel("Converted line to row #" + rownr + " : "
+						logRowlevel("Converted line to row #" + lineNr + " : "
 								+ r);
 
 						if (line.length > 0 || !meta.ignoreEmptyRows()) {
