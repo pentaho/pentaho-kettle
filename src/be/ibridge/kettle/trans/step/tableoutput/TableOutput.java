@@ -282,7 +282,7 @@ public class TableOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception dbe)
 		{
-		    dbe.printStackTrace();
+		    // dbe.printStackTrace();
 			logError("Unexpected error committing the database connection: "+dbe.toString());
 			setErrors(1);
 			stopAll();
