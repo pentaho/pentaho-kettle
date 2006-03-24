@@ -331,14 +331,13 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			try
 			{
 				db.connect();
-				Value last = db.checkSequence(sequenceName);
-				if (last!=null)
+				if (db.checkSequenceExists(sequenceName))
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Sequence is at value "+last, stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Sequence exits.", stepMeta);
 				}
 				else
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Last value of sequence couldn't be found", stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "The sequence ["+sequenceName+"] couldn't be found", stepMeta);
 				}
 			}
 			catch(KettleException e)
