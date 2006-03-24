@@ -60,6 +60,8 @@ public class Normaliser extends BaseStep implements StepInterface
 		
 		if (first) // INITIALISE
 		{
+            first = false;
+            
 			// Get the list of occurances...
 			data.type_occ = new ArrayList();
 			data.maxlen=0;
