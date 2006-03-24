@@ -185,7 +185,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 				+ ".line", "6" + Const.CR + "10" + Const.CR + "14" + Const.CR
 				+ "17" + Const.CR + "18" + Const.CR);
 	}
-	
+
 	public void testReplayErrorOnlyWildcards() throws Exception {
 		directory = "test/useCases/replay/excelInputDoReplayErrorOnlyWildcards/";
 		expectFiles(directory, 6);
@@ -207,8 +207,8 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 				+ ".line", "6" + Const.CR + "10" + Const.CR + "14" + Const.CR
 				+ "17" + Const.CR + "18" + Const.CR);
 	}
-	
-	public void testReplayErrorMultipleFiles() throws Exception {
+
+	public void testReplayMultipleFiles() throws Exception {
 		directory = "test/useCases/replay/excelInputDoReplayMultipleFiles/";
 		expectFiles(directory, 11);
 		meta = new TransMeta(directory + "transform.ktr");
@@ -223,9 +223,53 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		expectContent(directory + "input1.xls_sh2." + getDateFormatted()
 				+ ".line", "18" + Const.CR);
 		expectContent(directory + "input3.xls_sh1." + getDateFormatted()
-				+ ".line", "7" + Const.CR+"8" + Const.CR);
+				+ ".line", "7" + Const.CR + "8" + Const.CR);
 		expectContent(directory + "input3.xls_sh3." + getDateFormatted()
-				+ ".line", "14" + Const.CR+"18" + Const.CR);
+				+ ".line", "14" + Const.CR + "18" + Const.CR);
+	}
+
+	public void testReplayMixed() throws Exception {
+		directory = "test/useCases/replay/excelInputDoReplayMixed/";
+		expectFiles(directory, 14);
+		meta = new TransMeta(directory + "transform.ktr");
+		trans = new Trans(log, meta);
+		trans.setReplayDate(getReplayDate());
+		boolean ok = trans.execute(null);
+		assertTrue(ok);
+		trans.waitUntilFinished();
+		trans.endProcessing("end");
+		assertEquals(0, trans.getErrors());
+		expectFiles(directory, 20);
+		expectContent(directory + "input1.xls_sh2." + getDateFormatted()
+				+ ".line", "18" + Const.CR);
+		expectContent(directory + "input3.xls_sh1." + getDateFormatted()
+				+ ".line", "7" + Const.CR + "8" + Const.CR);
+		expectContent(directory + "input3.xls_sh3." + getDateFormatted()
+				+ ".line", "14" + Const.CR + "18" + Const.CR);
+		expectContent(directory + "input4.xls_sh1." + getDateFormatted()
+				+ ".line", "7" + Const.CR + "8" + Const.CR);
+		expectContent(directory + "input4.xls_sh3." + getDateFormatted()
+				+ ".line", "13" + Const.CR + "14" + Const.CR + "18" + Const.CR);
+		expectContent(
+				directory + "input5.xls." + getDateFormatted() + ".error",
+				FileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
+						+ Const.CR);
+	}
+
+	public void testReplay() throws Exception {
+		directory = "test/useCases/replay/excelInputDoReplay/";
+		expectFiles(directory, 3);
+		meta = new TransMeta(directory + "transform.ktr");
+		trans = new Trans(log, meta);
+		trans.setReplayDate(getReplayDate());
+		boolean ok = trans.execute(null);
+		assertTrue(ok);
+		trans.waitUntilFinished();
+		trans.endProcessing("end");
+		assertEquals(0, trans.getErrors());
+		expectFiles(directory, 4);
+		expectContent(directory + "input.xls_sh2." + getDateFormatted()
+				+ ".line", "7" + Const.CR + "18" + Const.CR);
 	}
 
 	public String getFileExtension() {
