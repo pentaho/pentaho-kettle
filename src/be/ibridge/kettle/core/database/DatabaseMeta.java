@@ -877,10 +877,13 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         {
             String code = (String) iter.next();
             String attribute = (String) getAttributes().getProperty(code);
-            retval+="      <attribute>"+
-                                XMLHandler.addTagValue("code", code, false)+
-                                XMLHandler.addTagValue("attribute", attribute, false)+
-                           "</attribute>"+Const.CR;
+            if (attribute!=null && attribute.length()>0)
+            {
+                retval+="      <attribute>"+
+                                    XMLHandler.addTagValue("code", code, false)+
+                                    XMLHandler.addTagValue("attribute", attribute, false)+
+                               "</attribute>"+Const.CR;
+            }
         }
         retval+="    </attributes>"+Const.CR;
         
