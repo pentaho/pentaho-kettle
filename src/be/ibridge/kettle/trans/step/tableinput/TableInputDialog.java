@@ -115,14 +115,14 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Table input");
+		shell.setText(Messages.getString("TableInputDialog.TableInput")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
         // Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("TableInputDialog.StepName")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -146,7 +146,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Table line...
 		wlSQL=new Label(shell, SWT.NONE);
-		wlSQL.setText("SQL ");
+		wlSQL.setText(Messages.getString("TableInputDialog.SQL")); //$NON-NLS-1$
  		props.setLook(wlSQL);
 		fdlSQL=new FormData();
 		fdlSQL.left = new FormAttachment(0, 0);
@@ -155,7 +155,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbTable);
-		wbTable.setText("Get &SQL select statement...");
+		wbTable.setText(Messages.getString("TableInputDialog.GetSQLAndSelectStatement")); //$NON-NLS-1$
 		fdbTable=new FormData();
 		fdbTable.right = new FormAttachment(100, 0);
 		fdbTable.top   = new FormAttachment(wConnection, margin);
@@ -173,7 +173,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Read date from...
 		wlDatefrom=new Label(shell, SWT.RIGHT);
-		wlDatefrom.setText("Insert data from step");
+		wlDatefrom.setText(Messages.getString("TableInputDialog.InsertDataFromStep")); //$NON-NLS-1$
  		props.setLook(wlDatefrom);
 		fdlDatefrom=new FormData();
 		fdlDatefrom.left = new FormAttachment(0, 0);
@@ -198,7 +198,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
         // Execute for each row?
         wlEachRow = new Label(shell, SWT.RIGHT);
-        wlEachRow.setText("Execute for each row? ");
+        wlEachRow.setText(Messages.getString("TableInputDialog.ExecuteForEachRow")); //$NON-NLS-1$
         props.setLook(wlEachRow);
         fdlEachRow = new FormData();
         fdlEachRow.left = new FormAttachment(0, 0);
@@ -215,7 +215,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Limit input ...
 		wlLimit=new Label(shell, SWT.RIGHT);
-		wlLimit.setText("Limit size ");
+		wlLimit.setText(Messages.getString("TableInputDialog.LimitSize")); //$NON-NLS-1$
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -233,11 +233,11 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
         wPreview=new Button(shell, SWT.PUSH);
-        wPreview.setText(" &Preview ");
+        wPreview.setText(Messages.getString("System.Button.Preview")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
 		
@@ -286,7 +286,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 	{
 		if (input.getSQL() != null) wSQL.setText(input.getSQL());
 		if (input.getDatabaseMeta() != null) wConnection.setText(input.getDatabaseMeta().getName());
-		wLimit.setText(""+(int)input.getRowLimit());
+		wLimit.setText(""+(int)input.getRowLimit()); //$NON-NLS-1$
 		
         if (input.getLookupStepname() != null)
         {
@@ -328,8 +328,8 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		if (input.getDatabaseMeta()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Please select a valid connection!");
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("TableInputDialog.SelectValidConnection")); //$NON-NLS-1$
+			mb.setText(Messages.getString("TableInputDialog.DialogCaptionError")); //$NON-NLS-1$
 			mb.open();
 		}
 		
@@ -345,12 +345,12 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 			String tableName = (String)std.open();
 			if (tableName != null)
 			{
-				String sql = "SELECT *"+Const.CR+"FROM "+tableName+Const.CR;
+				String sql = "SELECT *"+Const.CR+"FROM "+tableName+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
 				wSQL.setText(sql);
 
 				MessageBox yn = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION);
-				yn.setMessage("Do you want to include the field-names in the SQL?");
-				yn.setText("Question?");
+				yn.setMessage(Messages.getString("TableInputDialog.IncludeFieldNamesInSQL")); //$NON-NLS-1$
+				yn.setText(Messages.getString("TableInputDialog.DialogCaptionQuestion")); //$NON-NLS-1$
 				int id = yn.open();
 				switch(id)
 				{
@@ -364,29 +364,29 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 						Row fields = db.getQueryFields(sql, false);
 						if (fields!=null)
 						{
-							sql = "SELECT"+Const.CR;
+							sql = "SELECT"+Const.CR; //$NON-NLS-1$
 							for (int i=0;i<fields.size();i++)
 							{
 								Value field=fields.getValue(i);
-								if (i==0) sql+="  "; else sql+=", ";
+								if (i==0) sql+="  "; else sql+=", "; //$NON-NLS-1$ //$NON-NLS-2$
 								sql+=field.getName()+Const.CR;
 							}
-							sql+="FROM "+tableName+Const.CR;
+							sql+="FROM "+tableName+Const.CR; //$NON-NLS-1$
 							wSQL.setText(sql);
 						}
 						else
 						{
 							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-							mb.setMessage("Sorry, I couldn't retrieve the fields!"+Const.CR+"Perhaps you don't have the right permissions?");
-							mb.setText("ERROR");
+							mb.setMessage(Messages.getString("TableInputDialog.ERROR_CouldNotRetrieveFields")+Const.CR+Messages.getString("TableInputDialog.PerhapsNoPermissions")); //$NON-NLS-1$ //$NON-NLS-2$
+							mb.setText(Messages.getString("TableInputDialog.DialogCaptionError2")); //$NON-NLS-1$
 							mb.open();
 						}
 					}
 					catch(KettleException e)
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setText("ERROR!");
-						mb.setMessage("An error occurred: "+Const.CR+e.getMessage());
+						mb.setText(Messages.getString("TableInputDialog.DialogCaptionError3")); //$NON-NLS-1$
+						mb.setMessage(Messages.getString("TableInputDialog.AnErrorOccurred")+Const.CR+e.getMessage()); //$NON-NLS-1$
 						mb.open(); 
 					}
 					finally
@@ -400,8 +400,8 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("This database connection is no longer available!");
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("TableInputDialog.ConnectionNoLongerAvailable")); //$NON-NLS-1$
+			mb.setText(Messages.getString("TableInputDialog.DialogCaptionError4")); //$NON-NLS-1$
 			mb.open();
 		}
 					
@@ -435,7 +435,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, "Enter preview size", "Enter the number of rows you would like to preview:");
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("TableInputDialog.EnterPreviewSize"), Messages.getString("TableInputDialog.NumberOfRowsToPreview")); //$NON-NLS-1$ //$NON-NLS-2$
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {
@@ -450,8 +450,8 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
                 if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                 {
                     MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                    mb.setMessage("One or more errors occured during preview!  Examine the logfile to see what went wrong.");
-                    mb.setText("ERROR");
+                    mb.setMessage(Messages.getString("TableInputDialog.ErrorsDuringPreviewCheckLogfile")); //$NON-NLS-1$
+                    mb.setText(Messages.getString("TableInputDialog.DialogCaptionError5")); //$NON-NLS-1$
                     mb.open(); 
                 }
                 
