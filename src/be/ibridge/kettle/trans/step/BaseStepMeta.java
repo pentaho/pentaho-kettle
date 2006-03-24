@@ -21,6 +21,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.SQLStatement;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.trans.TransMeta;
 
@@ -202,6 +203,22 @@ public class BaseStepMeta implements Cloneable
      * @return A row of argument values. (name and optionally a default value)
      */
     public Row getUsedArguments()
+    {
+        return new Row();
+    }
+
+    /**
+     * The natural way of data flow in a transformation is source-to-target.
+     * However, this makes mapping to target tables difficult to do.
+     * To help out here, we supply information to the transformation meta-data model about which fields are required for a step.
+     * This allows us to automate certain tasks like the mapping to pre-defined tables.
+     * The Table Output step in this case will output the fields in the target table using this method. 
+     * 
+     * This default implementation returns an empty row meaning that no fields are required for this step to operate.
+     * @return the required fields for this steps metadata.
+     * @throws KettleException in case the required fields can't be determined
+     */
+    public Row getRequiredFields() throws KettleException
     {
         return new Row();
     }

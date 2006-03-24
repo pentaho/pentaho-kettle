@@ -82,6 +82,7 @@ import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.PrintSpool;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.SourceToTargetMapping;
 import be.ibridge.kettle.core.TransAction;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.XMLHandler;
@@ -91,6 +92,7 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.CheckResultDialog;
 import be.ibridge.kettle.core.dialog.DatabaseDialog;
 import be.ibridge.kettle.core.dialog.DatabaseExplorerDialog;
+import be.ibridge.kettle.core.dialog.EnterMappingDialog;
 import be.ibridge.kettle.core.dialog.EnterOptionsDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
@@ -155,7 +157,6 @@ import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
  */
 public class Spoon
 {
-    //public static final String APP_NAME = "Spoon";
     public static final String APP_NAME = Messages.getString("System.Name");  //"Spoon";
     
     private LogWriter log;
@@ -4541,6 +4542,73 @@ public class Spoon
     public void setTransMeta(TransMeta transMeta)
     {
         this.transMeta = transMeta;
+    }
+
+    /**
+     * Create a new SelectValues step in between this step and the previous.
+     * If the previous fields are not there, no mapping can be made, same with the required fields.
+     * @param stepMeta The target step to map against.
+     */
+    public void generateMapping(StepMeta stepMeta)
+    {
+        try
+        {
+            if (stepMeta!=null)
+            {
+                StepMetaInterface smi = stepMeta.getStepMetaInterface();
+                Row targetFields = smi.getRequiredFields();
+                Row sourceFields = transMeta.getPrevStepFields(stepMeta);
+                
+                // Build the mapping: let the user decide!!
+                String[] source = sourceFields.getFieldNames();
+                for (int i=0;i<source.length;i++)
+                {
+                    Value v = sourceFields.getValue(i);
+                    source[i]+=" ("+v.getOrigin()+")";
+                }
+                String[] target = targetFields.getFieldNames();
+                
+                EnterMappingDialog dialog = new EnterMappingDialog(shell, source, target);
+                ArrayList mappings = dialog.open();
+                if (mappings!=null)
+                {
+                    // OK, so we now know which field maps where.
+                    // This allows us to generate the mapping using a SelectValues Step...
+                    SelectValuesMeta svm = new SelectValuesMeta();
+                    svm.allocate(mappings.size(), 0, 0);
+                    
+                    String selectName[] = new String[mappings.size()];
+                    String selectRename[] = new String[mappings.size()];
+                    for (int i=0;i<mappings.size();i++)
+                    {
+                        SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
+                        selectName[i] = sourceFields.getValue(mapping.getSourcePosition()).getName();
+                        selectRename[i] = target[mapping.getTargetPosition()];
+                    }
+                    svm.setSelectName(selectName);
+                    svm.setSelectRename(selectRename);
+                    
+                    // Now that we have the meta-data, create a new step info object
+                    StepMeta newStep = new StepMeta(log, "SelectValues", stepMeta.getName()+" Mapping", svm);
+                    newStep.setLocation(stepMeta.getLocation().x+20, stepMeta.getLocation().y+20);
+                    newStep.setDraw(true);
+
+                    transMeta.addStep(newStep);
+                    
+                    // Redraw stuff...
+                    refreshTree();
+                    refreshGraph();
+                }
+            }
+            else
+            {
+                System.out.println("No target to do mapping against!");
+            }
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, Props.getInstance(), "Error creating mapping", "There was an error when Kettle tried to generate a mapping against the target step", e);
+        }
     }
     
 }

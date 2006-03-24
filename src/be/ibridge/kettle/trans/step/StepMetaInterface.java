@@ -200,4 +200,16 @@ public interface StepMetaInterface
      *         Set the type to Value.VALUE_TYPE_NONE if it's not used!
      */
     public Row getUsedArguments();
+    
+    /**
+     * The natural way of data flow in a transformation is source-to-target.
+     * However, this makes mapping to target tables difficult to do.
+     * To help out here, we supply information to the transformation meta-data model about which fields are required for a step.
+     * This allows us to automate certain tasks like the mapping to pre-defined tables.
+     * The Table Output step in this case will output the fields in the target table using this method. 
+     *   
+     * @return the required fields for this steps metadata.
+     * @throws KettleException in case the required fields can't be determined.
+     */
+    public Row getRequiredFields() throws KettleException;
 }

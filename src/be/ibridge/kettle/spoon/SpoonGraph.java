@@ -1188,6 +1188,21 @@ public class SpoonGraph extends Canvas
                 }
             });
 
+            
+            /*
+             * 
+             * Check...
+             */
+            MenuItem miMapping = new MenuItem(mPop, SWT.CASCADE);
+            miMapping.setText("Generate mapping against this target step");
+            miMapping.addSelectionListener(new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent e)
+                {
+                    spoon.generateMapping(stepMeta);
+                }
+            });
+
             if (sels == 2)
             {
                 miNewHop.addSelectionListener(new SelectionAdapter()
