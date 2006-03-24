@@ -23,6 +23,7 @@ import java.util.Enumeration;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.ControlEditor;
 import org.eclipse.swt.custom.TableCursor;
@@ -367,7 +368,14 @@ public class TableView extends Composite
 					int rownr = table.indexOf(row);
 					if (colnr>0)
 					{
-						row.setText(colnr, combo.getText());
+                        try
+                        {
+                            row.setText(colnr, combo.getText());
+                        }
+                        catch(Exception exc)
+                        {
+                            // Eat widget disposed error
+                        }
 																
 						String after_edit[] = getItemText(row);
 						checkChanged(new String[][] { before_edit }, new String[][] { after_edit }, new int[] { rownr });
@@ -509,8 +517,11 @@ public class TableView extends Composite
 						if (row==null) return;
 						int colnr = cursor.getColumn();
 						int rownr = table.indexOf(row);
-						row.setText(colnr, combo.getText());
-						combo.dispose();
+						if (combo!=null && !combo.isDisposed()) 
+                        {
+                            row.setText(colnr, combo.getText());
+                            // if (!combo.isDisposed()) combo.dispose();
+                        }
 
 						String after_edit[] = getItemText(row);
 						checkChanged(new String[][] { before_edit }, new String[][] { after_edit }, new int[] { rownr });
@@ -1527,8 +1538,18 @@ public class TableView extends Composite
 		TableItem row   = table.getItem(rownr);
 		
 		Control oldEditor = editor.getEditor();
-		if (oldEditor != null) oldEditor.dispose();
-
+		if (oldEditor != null && !oldEditor.isDisposed()) 
+        {
+            try
+            {
+                oldEditor.dispose();
+            }
+            catch(SWTException swte)
+            {
+                // Eat "Widget Is Disposed Exception" : did you ever!!!
+            }
+        }
+        
 		cursor.setSelection(row, colnr);
 		cursor.setFocus();
 		cursor.setVisible(true);
