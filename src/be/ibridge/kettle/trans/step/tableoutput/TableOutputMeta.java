@@ -668,4 +668,45 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		return retval;
 	}
 
+    public Row getRequiredFields() throws KettleException
+    {
+        if (database!=null)
+        {
+            Database db = new Database(database);
+            try
+            {
+                db.connect();
+                
+                if (tablename!=null && tablename.length()!=0)
+                {
+                    // Check if this table exists...
+                    if (db.checkTableExists(tablename))
+                    {
+                        return db.getTableFields(tablename);
+                    }
+                    else
+                    {
+                        throw new KettleException("Unable to determine the required fields because the specified database table couldn't be found.");
+                    }
+                }
+                else
+                {
+                    throw new KettleException("Unable to determine the required fields because the database table name wasn't specified.");
+                }
+            }
+            catch(Exception e)
+            {
+                throw new KettleException("Unable to determine the required fields.", e);
+            }
+            finally
+            {
+                db.disconnect();
+            }
+        }
+        else
+        {
+            throw new KettleException("Unable to determine the required fields because the database connection wasn't defined.");
+        }
+
+    }
 }
