@@ -79,11 +79,6 @@ public class EnterOptionsDialog extends Dialog
 
 	private FontData     fixedFontData, graphFontData, noteFontData;
 	private Font         fixedFont, graphFont, noteFont;
-	private int          iconsize;
-	private int          linewidth;
-	private int          shadowsize;
-	private int          maxUndo; 
-	private int          middlePercent;    
 
 	private RGB          backgroundRGB, graphColorRGB, tabColorRGB;	
 	private Color        background, graphColor, tabColor;
@@ -134,6 +129,10 @@ public class EnterOptionsDialog extends Dialog
 	private Text         wMaxUndo;
 	private FormData     fdlMaxUndo, fdMaxUndo;
 
+    private Label        wlDefaultPreview;
+    private Text         wDefaultPreview;
+    private FormData     fdlDefaultPreview, fdDefaultPreview;
+
 	private Label        wlMiddlePct;
 	private Text         wMiddlePct;
 	private FormData     fdlMiddlePct, fdMiddlePct;
@@ -161,6 +160,10 @@ public class EnterOptionsDialog extends Dialog
 	private Label        wlAutoSave;
 	private Button       wAutoSave;
 	private FormData     fdlAutoSave, fdAutoSave;
+
+    private Label        wlDBConnXML;
+    private Button       wDBConnXML;
+    private FormData     fdlDBConnXML, fdDBConnXML;
 
 	private Label        wlSaveConf;
 	private Button       wSaveConf;
@@ -244,7 +247,7 @@ public class EnterOptionsDialog extends Dialog
 		fdlMaxUndo.top  = new FormAttachment(0, 0);
 		wlMaxUndo.setLayoutData(fdlMaxUndo);
 		wMaxUndo=new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wMaxUndo.setText(""+maxUndo);
+		wMaxUndo.setText(""+props.getMaxUndo());
         props.setLook(wMaxUndo);
 		fdMaxUndo=new FormData();
 		fdMaxUndo.left = new FormAttachment(middle, 0);
@@ -252,13 +255,31 @@ public class EnterOptionsDialog extends Dialog
 		fdMaxUndo.top  = new FormAttachment(0, 0);
 		wMaxUndo.setLayoutData(fdMaxUndo);
 
+        // Default preview size
+        wlDefaultPreview=new Label(wGeneralComp, SWT.RIGHT);
+        wlDefaultPreview.setText("Default preview size");
+        props.setLook(wlDefaultPreview);
+        fdlDefaultPreview=new FormData();
+        fdlDefaultPreview.left = new FormAttachment(0, 0);
+        fdlDefaultPreview.right= new FormAttachment(middle, -margin);
+        fdlDefaultPreview.top  = new FormAttachment(wMaxUndo, margin);
+        wlDefaultPreview.setLayoutData(fdlDefaultPreview);
+        wDefaultPreview=new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wDefaultPreview.setText(""+props.getDefaultPreviewSize());
+        props.setLook(wDefaultPreview);
+        fdDefaultPreview=new FormData();
+        fdDefaultPreview.left = new FormAttachment(middle, 0);
+        fdDefaultPreview.right= new FormAttachment(100, -margin);
+        fdDefaultPreview.top  = new FormAttachment(wMaxUndo, margin);
+        wDefaultPreview.setLayoutData(fdDefaultPreview);
+
 		// Show tips on startup?
 		wlShowTips=new Label(wGeneralComp, SWT.RIGHT);
 		wlShowTips.setText("Show tips at startup? ");
         props.setLook(wlShowTips);
 		fdlShowTips=new FormData();
 		fdlShowTips.left = new FormAttachment(0, 0);
-		fdlShowTips.top  = new FormAttachment(wMaxUndo, margin);
+		fdlShowTips.top  = new FormAttachment(wDefaultPreview, margin);
 		fdlShowTips.right= new FormAttachment(middle, -margin);
 		wlShowTips.setLayoutData(fdlShowTips);
 		wShowTips=new Button(wGeneralComp, SWT.CHECK);
@@ -266,7 +287,7 @@ public class EnterOptionsDialog extends Dialog
 		wShowTips.setSelection(props.showTips());
 		fdShowTips=new FormData();
 		fdShowTips.left = new FormAttachment(middle, 0);
-		fdShowTips.top  = new FormAttachment(wMaxUndo, margin);
+		fdShowTips.top  = new FormAttachment(wDefaultPreview, margin);
 		fdShowTips.right= new FormAttachment(100, 0);
 		wShowTips.setLayoutData(fdShowTips);
 
@@ -325,13 +346,31 @@ public class EnterOptionsDialog extends Dialog
 		fdAutoSave.right= new FormAttachment(100, 0);
 		wAutoSave.setLayoutData(fdAutoSave);
 
+        // Only save used connections to XML?
+        wlDBConnXML=new Label(wGeneralComp, SWT.RIGHT);
+        wlDBConnXML.setText("Only save used connections to XML? ");
+        props.setLook(wlDBConnXML);
+        fdlDBConnXML=new FormData();
+        fdlDBConnXML.left = new FormAttachment(0, 0);
+        fdlDBConnXML.top  = new FormAttachment(wAutoSave, margin);
+        fdlDBConnXML.right= new FormAttachment(middle, -margin);
+        wlDBConnXML.setLayoutData(fdlDBConnXML);
+        wDBConnXML=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wDBConnXML);
+        wDBConnXML.setSelection(props.areOnlyUsedConnectionsSavedToXML());
+        fdDBConnXML=new FormData();
+        fdDBConnXML.left = new FormAttachment(middle, 0);
+        fdDBConnXML.top  = new FormAttachment(wAutoSave, margin);
+        fdDBConnXML.right= new FormAttachment(100, 0);
+        wDBConnXML.setLayoutData(fdDBConnXML);
+
 		// Show confirmation after save?
 		wlSaveConf=new Label(wGeneralComp, SWT.RIGHT);
 		wlSaveConf.setText("Show save confirmation? ");
         props.setLook(wlSaveConf);
 		fdlSaveConf=new FormData();
 		fdlSaveConf.left = new FormAttachment(0, 0);
-		fdlSaveConf.top  = new FormAttachment(wAutoSave, margin);
+		fdlSaveConf.top  = new FormAttachment(wDBConnXML, margin);
 		fdlSaveConf.right= new FormAttachment(middle, -margin);
 		wlSaveConf.setLayoutData(fdlSaveConf);
 		wSaveConf=new Button(wGeneralComp, SWT.CHECK);
@@ -339,7 +378,7 @@ public class EnterOptionsDialog extends Dialog
 		wSaveConf.setSelection(props.getSaveConfirmation());
 		fdSaveConf=new FormData();
 		fdSaveConf.left = new FormAttachment(middle, 0);
-		fdSaveConf.top  = new FormAttachment(wAutoSave, margin);
+		fdSaveConf.top  = new FormAttachment(wDBConnXML, margin);
 		fdSaveConf.right= new FormAttachment(100, 0);
 		wSaveConf.setLayoutData(fdSaveConf);
 
@@ -788,7 +827,7 @@ public class EnterOptionsDialog extends Dialog
 		fdlIconsize.top  = new FormAttachment(wTabColor, margin);
 		wlIconsize.setLayoutData(fdlIconsize);
 		wIconsize=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wIconsize.setText(""+iconsize);
+		wIconsize.setText(""+props.getIconSize());
         props.setLook(wIconsize);
 		fdIconsize=new FormData();
 		fdIconsize.left = new FormAttachment(middle, 0);
@@ -806,7 +845,7 @@ public class EnterOptionsDialog extends Dialog
 		fdlLineWidth.top  = new FormAttachment(wIconsize, margin);
 		wlLineWidth.setLayoutData(fdlLineWidth);
 		wLineWidth=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wLineWidth.setText(""+linewidth);
+		wLineWidth.setText(""+props.getLineWidth());
         props.setLook(wLineWidth);
 		fdLineWidth=new FormData();
 		fdLineWidth.left = new FormAttachment(middle, 0);
@@ -824,7 +863,7 @@ public class EnterOptionsDialog extends Dialog
 		fdlShadowSize.top  = new FormAttachment(wLineWidth, margin);
 		wlShadowSize.setLayoutData(fdlShadowSize);
 		wShadowSize=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wShadowSize.setText(""+shadowsize);
+		wShadowSize.setText(""+props.getShadowSize());
         props.setLook(wShadowSize);
 		fdShadowSize=new FormData();
 		fdShadowSize.left = new FormAttachment(middle, 0);
@@ -842,7 +881,7 @@ public class EnterOptionsDialog extends Dialog
 		fdlMiddlePct.top  = new FormAttachment(wShadowSize, margin);
 		wlMiddlePct.setLayoutData(fdlMiddlePct);
 		wMiddlePct=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wMiddlePct.setText(""+middlePercent);
+		wMiddlePct.setText(""+props.getMiddlePct());
         props.setLook(wMiddlePct);
 		fdMiddlePct=new FormData();
 		fdMiddlePct.left = new FormAttachment(middle, 0);
@@ -937,6 +976,7 @@ public class EnterOptionsDialog extends Dialog
 		wShadowSize.addSelectionListener(lsDef);
 		wMaxUndo.addSelectionListener   (lsDef);
 		wMiddlePct.addSelectionListener (lsDef);
+        wDefaultPreview.addSelectionListener (lsDef);
 		
 		// Detect [X] or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -992,12 +1032,6 @@ public class EnterOptionsDialog extends Dialog
 
 		tabColorRGB = props.getTabColorRGB();
 		tabColor = new Color(display, tabColorRGB);
-
-		iconsize = props.getIconSize();
-		linewidth = props.getLineWidth();
-		shadowsize = props.getShadowSize();
-		maxUndo = props.getMaxUndo();
-		middlePercent = props.getMiddlePct();
 	}
 	
 	private void cancel()
@@ -1008,29 +1042,26 @@ public class EnterOptionsDialog extends Dialog
 	}
 	
 	private void ok()
-	{
-		iconsize   = Const.toInt(wIconsize.getText(), Const.ICON_SIZE);
-		linewidth  = Const.toInt(wLineWidth.getText(), Const.LINE_WIDTH);
-		shadowsize = Const.toInt(wShadowSize.getText(), Const.SHADOW_SIZE);
-		maxUndo   = Const.toInt(wMaxUndo.getText(), Const.MAX_UNDO);		
-		middlePercent = Const.toInt(wMiddlePct.getText(), Const.MIDDLE_PCT);
-		
+	{        
 		props.setFixedFont     ( fixedFontData );
 		props.setGraphFont     ( graphFontData );
 		props.setNoteFont      ( noteFontData  );
 		props.setBackgroundRGB ( backgroundRGB  );
 		props.setGraphColorRGB ( graphColorRGB    );
 		props.setTabColorRGB   ( tabColorRGB      );
-		props.setIconSize      ( iconsize        );
-		props.setLineWidth     ( linewidth       );
-		props.setShadowSize    ( shadowsize      );
-		props.setMiddlePct     ( middlePercent      );
+		props.setIconSize      ( Const.toInt(wIconsize.getText(), props.getIconSize() ));
+		props.setLineWidth     ( Const.toInt(wLineWidth.getText(), props.getLineWidth() ));
+		props.setShadowSize    ( Const.toInt(wShadowSize.getText(), props.getShadowSize() ));
+		props.setMiddlePct     ( Const.toInt(wMiddlePct.getText(), props.getMiddlePct() ));
+        
+        props.setDefaultPreviewSize( Const.toInt( wDefaultPreview.getText(), props.getDefaultPreviewSize() ));
 
-		props.setMaxUndo                         ( maxUndo                    );
+		props.setMaxUndo                         ( Const.toInt(wMaxUndo.getText(), props.getMaxUndo() ));
 		props.setShowTips                        ( wShowTips.getSelection()    );
 		props.setUseDBCache                      ( wUseCache.getSelection()    );
 		props.setOpenLastFile                    ( wOpenLast.getSelection()    );
 		props.setAutoSave                        ( wAutoSave.getSelection()    );
+        props.setOnlyUsedConnectionsSavedToXML   ( wDBConnXML.getSelection()   );
 		props.setSaveConfirmation                ( wSaveConf.getSelection()    );
 		props.setAutoSplit                       ( wAutoSplit.getSelection()   );
         props.setRepositoriesDialogAtStartupShown( wShowRep.getSelection()     );

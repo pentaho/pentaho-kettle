@@ -196,7 +196,8 @@ public class PreviewSelectDialog extends Dialog
 		}
 		else
 		{		
-			// No previous selection: set the selected steps to 100
+			// No previous selection: set the selected steps to the default preview size
+            //
 			for (i=0;i<trans.nrUsedSteps();i++)
 			{
 				StepMeta stepMeta = trans.getUsedStep(i);
@@ -204,12 +205,12 @@ public class PreviewSelectDialog extends Dialog
 				TableItem item = wFields.table.getItem(i);
 				name = stepMeta.getName();
 				item.setText(1, stepMeta.getName());
-				item.setText(2, "0");
+				item.setText(2, "");
 	
 				// Is the step selected?
 				if (stepMeta.isSelected())
 				{
-					item.setText(2, "100");
+					item.setText(2, ""+props.getDefaultPreviewSize());
 				}
 			}
 		}

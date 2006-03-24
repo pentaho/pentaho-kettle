@@ -134,6 +134,9 @@ public class Props implements Cloneable
     
     public static final String STRING_PLUGIN_HISTORY          = "PluginHistory";
 
+    public static final String STRING_DEFAULT_PREVIEW_SIZE    = "DefaultPreviewSize";
+    public static final String STRING_ONLY_USED_DB_TO_XML     = "SaveOnlyUsedConnectionsToXML";
+
 		
 	private Properties properties;
 	
@@ -1395,5 +1398,25 @@ public class Props implements Cloneable
     {
         this.display = display;
     }
-
+    
+    public void setDefaultPreviewSize(int size)
+    {
+        properties.setProperty(STRING_DEFAULT_PREVIEW_SIZE,  ""+size);
+    }
+    
+    public int getDefaultPreviewSize()
+    {
+        return Const.toInt(properties.getProperty(STRING_DEFAULT_PREVIEW_SIZE), 100);
+    }
+    
+    public boolean areOnlyUsedConnectionsSavedToXML()
+    {
+        String show = properties.getProperty(STRING_ONLY_USED_DB_TO_XML, "N");
+        return !"N".equalsIgnoreCase(show); // Default: save all connections
+    }
+    
+    public void setOnlyUsedConnectionsSavedToXML(boolean onlyUsedConnections)
+    {
+        properties.setProperty(STRING_ONLY_USED_DB_TO_XML, onlyUsedConnections?"Y":"N");
+    }
 }
