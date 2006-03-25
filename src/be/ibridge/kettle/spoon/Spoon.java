@@ -4598,6 +4598,7 @@ public class Spoon
                     newStep.setDraw(true);
 
                     transMeta.addStep(newStep);
+                    addUndoNew(new StepMeta[] { newStep }, new int[] { transMeta.indexOfStep(newStep) });
                     
                     // Redraw stuff...
                     refreshTree();
