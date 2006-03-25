@@ -4564,7 +4564,7 @@ public class Spoon
                 for (int i=0;i<source.length;i++)
                 {
                     Value v = sourceFields.getValue(i);
-                    source[i]+=" ("+v.getOrigin()+")";
+                    source[i]+=EnterMappingDialog.STRING_ORIGIN_SEPARATOR+v.getOrigin()+")";
                 }
                 String[] target = targetFields.getFieldNames();
                 
@@ -4589,7 +4589,11 @@ public class Spoon
                     svm.setSelectRename(selectRename);
                     
                     // Now that we have the meta-data, create a new step info object
-                    StepMeta newStep = new StepMeta(log, "SelectValues", stepMeta.getName()+" Mapping", svm);
+                    
+                    String stepName = stepMeta.getName()+" Mapping";
+                    stepName = transMeta.getAlternativeStepname(stepName);  // if it's already there, rename it.
+                    
+                    StepMeta newStep = new StepMeta(log, "SelectValues", stepName, svm);
                     newStep.setLocation(stepMeta.getLocation().x+20, stepMeta.getLocation().y+20);
                     newStep.setDraw(true);
 

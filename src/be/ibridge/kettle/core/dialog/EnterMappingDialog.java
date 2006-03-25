@@ -48,6 +48,8 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
  */
 public class EnterMappingDialog extends Dialog
 {
+    public static final String STRING_ORIGIN_SEPARATOR = "            (";
+    
     private Label     wlSource;
 
     private List      wSource;
@@ -98,9 +100,9 @@ public class EnterMappingDialog extends Dialog
 
     private FormData  fdDelete;
 
-    private Button    wOK, wCancel;
+    private Button    wOK, wGuess, wCancel;
 
-    private Listener  lsOK, lsCancel;
+    private Listener  lsOK, lsGuess, lsCancel;
 
     private Shell     shell;
 
@@ -333,6 +335,18 @@ public class EnterMappingDialog extends Dialog
         };
         wOK.addListener(SWT.Selection, lsOK);
 
+        // Some buttons
+        wGuess = new Button(shell, SWT.PUSH);
+        wGuess.setText("  &Guess  ");
+        lsGuess = new Listener()
+        {
+            public void handleEvent(Event e)
+            {
+                guess();
+            }
+        };
+        wGuess.addListener(SWT.Selection, lsGuess);
+
         wCancel = new Button(shell, SWT.PUSH);
         wCancel.setText("  &Cancel  ");
         lsCancel = new Listener()
@@ -344,7 +358,7 @@ public class EnterMappingDialog extends Dialog
         };
         wCancel.addListener(SWT.Selection, lsCancel);
 
-        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wGuess, wCancel }, margin, null);
 
         wSource.addSelectionListener(new SelectionAdapter()
         {
@@ -397,9 +411,26 @@ public class EnterMappingDialog extends Dialog
         return mappings;
     }
 
-    private void findTarget()
+    private void guess()
     {
-        // OK, user selects an entry in the list on the left.
+        // Guess the target for all the sources...
+        for (int i=0;i<sourceList.length;i++)
+        {
+            int idx = Const.indexOfString(sourceList[i], wSource.getItems());
+            if (idx>=0) 
+            {
+                wSource.select(idx);
+                if (findTarget())
+                {
+                    add();
+                }
+            }
+        }
+    }
+
+    private boolean findTarget()
+    {
+        // Guess, user selects an entry in the list on the left.
         // Find a comparable entry in the target list...
         boolean found = false;
 
@@ -407,7 +438,7 @@ public class EnterMappingDialog extends Dialog
         // Skip eventhing after the bracket...
         String sourceStr = wSource.getItem(sourceIndex).toUpperCase();
 
-        int indexOfBracket = sourceStr.indexOf(" (");
+        int indexOfBracket = sourceStr.indexOf(EnterMappingDialog.STRING_ORIGIN_SEPARATOR);
         String sourceString = sourceStr;
         if (indexOfBracket >= 0)
         {
@@ -431,11 +462,13 @@ public class EnterMappingDialog extends Dialog
             }
             length--;
         }
+        
+        return found;
     }
 
-    private void findSource()
+    private boolean findSource()
     {
-        // OK, user selects an entry in the list on the right.
+        // Guess, user selects an entry in the list on the right.
         // Find a comparable entry in the source list...
         boolean found = false;
 
@@ -460,6 +493,7 @@ public class EnterMappingDialog extends Dialog
             }
             length--;
         }
+        return found;
     }
 
     private void add()
