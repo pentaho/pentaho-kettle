@@ -458,4 +458,17 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 										);
 		impact.add(ii);
 	}
+    
+    public DatabaseMeta[] getUsedDatabaseConnections()
+    {
+        if (databaseMeta!=null) 
+        {
+            return new DatabaseMeta[] { databaseMeta };
+        }
+        else
+        {
+            return super.getUsedDatabaseConnections();
+        }
+    }
+
 }

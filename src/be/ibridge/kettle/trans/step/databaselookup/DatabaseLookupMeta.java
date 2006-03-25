@@ -840,4 +840,16 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		}
 	}
 
+    public DatabaseMeta[] getUsedDatabaseConnections()
+    {
+        if (databaseMeta!=null) 
+        {
+            return new DatabaseMeta[] { databaseMeta };
+        }
+        else
+        {
+            return super.getUsedDatabaseConnections();
+        }
+    }
+
 }

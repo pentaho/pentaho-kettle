@@ -604,4 +604,16 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
+    public DatabaseMeta[] getUsedDatabaseConnections()
+    {
+        if (databaseMeta!=null) 
+        {
+            return new DatabaseMeta[] { databaseMeta };
+        }
+        else
+        {
+            return super.getUsedDatabaseConnections();
+        }
+    }
+
 }

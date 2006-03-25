@@ -853,5 +853,18 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 			impact.add(ii);
 		}
 	}
+    
+    public DatabaseMeta[] getUsedDatabaseConnections()
+    {
+        if (database!=null) 
+        {
+            return new DatabaseMeta[] { database };
+        }
+        else
+        {
+            return super.getUsedDatabaseConnections();
+        }
+    }
+
 }
 

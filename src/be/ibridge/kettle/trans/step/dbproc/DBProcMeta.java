@@ -491,4 +491,16 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 		return new DBProcData();
 	}
 
+    public DatabaseMeta[] getUsedDatabaseConnections()
+    {
+        if (database!=null) 
+        {
+            return new DatabaseMeta[] { database };
+        }
+        else
+        {
+            return super.getUsedDatabaseConnections();
+        }
+    }
+
 }

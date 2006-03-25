@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.SQLStatement;
 import be.ibridge.kettle.core.database.Database;
+import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
@@ -223,4 +224,13 @@ public class BaseStepMeta implements Cloneable
         return new Row();
     }
 
+    /**
+     * This method returns all the database connections that are used by the step.
+     * @return an array of database connections meta-data.
+     *         Return an empty array if no connections are used.
+     */
+    public DatabaseMeta[] getUsedDatabaseConnections()
+    {
+        return new DatabaseMeta[] { };
+    }
 }

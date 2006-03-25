@@ -709,4 +709,17 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
         }
 
     }
+    
+    public DatabaseMeta[] getUsedDatabaseConnections()
+    {
+        if (database!=null) 
+        {
+            return new DatabaseMeta[] { database };
+        }
+        else
+        {
+            return super.getUsedDatabaseConnections();
+        }
+    }
+
 }

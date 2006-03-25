@@ -1659,6 +1659,19 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		return new DimensionLookupData();
 	}
+    
+    public DatabaseMeta[] getUsedDatabaseConnections()
+    {
+        if (databaseMeta!=null) 
+        {
+            return new DatabaseMeta[] { databaseMeta };
+        }
+        else
+        {
+            return super.getUsedDatabaseConnections();
+        }
+    }
+
 
 }
 

@@ -23,6 +23,7 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.SQLStatement;
+import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
@@ -212,4 +213,11 @@ public interface StepMetaInterface
      * @throws KettleException in case the required fields can't be determined.
      */
     public Row getRequiredFields() throws KettleException;
+    
+    /**
+     * This method returns all the database connections that are used by the step.
+     * @return an array of database connections meta-data.
+     *         Return an empty array if no connections are used.
+     */
+    public DatabaseMeta[] getUsedDatabaseConnections();
 }

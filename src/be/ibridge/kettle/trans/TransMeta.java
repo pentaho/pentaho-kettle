@@ -1890,6 +1890,8 @@ public class TransMeta implements XMLInterface
 
     public String getXML()
     {
+        Props props = Props.getInstance();
+        
         String xml = "";
 
         xml += "<transformation>" + Const.CR;
@@ -1938,10 +1940,20 @@ public class TransMeta implements XMLInterface
         }
         xml += "    </notepads>" + Const.CR;
 
+        // The database connections...
         for (int i = 0; i < nrDatabases(); i++)
         {
             DatabaseMeta dbMeta = getDatabase(i);
-            xml += dbMeta.getXML();
+            if (props.areOnlyUsedConnectionsSavedToXML())
+            {
+                if (isDatabaseConnectionUsed(dbMeta)) xml += dbMeta.getXML(); 
+            }
+            else
+            {
+                xml += dbMeta.getXML();
+            }
+            
+            
         }
 
         xml += "  <order>" + Const.CR;
@@ -4048,5 +4060,28 @@ public class TransMeta implements XMLInterface
     public void setSleepTimeFull(int sleepTimeFull)
     {
         this.sleepTimeFull = sleepTimeFull;
+    }
+    
+    /**
+     * This method asks all steps in the transformation whether or not the specified database connection is used.
+     * The connection is used in the transformation if any of the steps uses it or if it is being used to log to.
+     * @param databaseMeta The connection to check
+     * @return true if the connection is used in this transformation.
+     */
+    public boolean isDatabaseConnectionUsed(DatabaseMeta databaseMeta)
+    {
+        for (int i=0;i<nrSteps();i++)
+        {
+            StepMeta stepMeta = getStep(i);
+            DatabaseMeta dbs[] = stepMeta.getStepMetaInterface().getUsedDatabaseConnections();
+            for (int d=0;d<dbs.length;d++)
+            {
+                if (dbs[d].equals(databaseMeta)) return true;
+            }
+        }
+        
+        if (logConnection!=null && logConnection.equals(databaseMeta)) return true;
+        
+        return false;
     }
 }

@@ -840,5 +840,17 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new UpdateData();
 	}
+    
+    public DatabaseMeta[] getUsedDatabaseConnections()
+    {
+        if (database!=null) 
+        {
+            return new DatabaseMeta[] { database };
+        }
+        else
+        {
+            return super.getUsedDatabaseConnections();
+        }
+    }
 
 }
