@@ -2118,6 +2118,7 @@ public class TransMeta implements XMLInterface
             logConnection = findDatabase(logcon);
             logTable = XMLHandler.getTagValue(infonode, "log", "table");
             useBatchId = "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "use_batchid"));
+            logfieldUsed= "Y".equalsIgnoreCase(XMLHandler.getTagValue(infonode, "log", "USE_LOGFIELD"));
 
             // Maxdate range options...
             String maxdatcon = XMLHandler.getTagValue(infonode, "maxdate", "connection");
