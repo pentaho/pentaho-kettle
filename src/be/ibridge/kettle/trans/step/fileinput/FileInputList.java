@@ -18,7 +18,7 @@ public class FileInputList {
 	private List nonAccessibleFiles = new ArrayList(1);
 
 	private static final String YES = "Y";
-	
+
 	public static String getRequiredFilesDescription(List nonExistantFiles) {
 		StringBuffer buffer = new StringBuffer();
 		for (Iterator iter = nonExistantFiles.iterator(); iter.hasNext();) {
@@ -28,61 +28,59 @@ public class FileInputList {
 		}
 		return buffer.toString();
 	}
-	
-	public static String[] createFilePathList(String[] fileName, String[] fileMask, String[] fileRequired)
-    {
-    	List fileList = createFileList(fileName, fileMask, fileRequired).getFiles();
+
+	public static String[] createFilePathList(String[] fileName,
+			String[] fileMask, String[] fileRequired) {
+		List fileList = createFileList(fileName, fileMask, fileRequired)
+				.getFiles();
 		String[] filePaths = new String[fileList.size()];
-    	for (int i = 0; i < filePaths.length; i++) {
+		for (int i = 0; i < filePaths.length; i++) {
 			filePaths[i] = ((File) fileList.get(i)).getPath();
 		}
-    	return filePaths;
-    }
-	
-    public static FileInputList createFileList(String[] fileName, String[] fileMask, String[] fileRequired)
-    {
-    	FileInputList fileInputList = new FileInputList();
+		return filePaths;
+	}
 
-        // Replace possible environment variables...
-        final String realfile[] = Const.replEnv(fileName);
-        final String realmask[] = Const.replEnv(fileMask);
+	public static FileInputList createFileList(String[] fileName,
+			String[] fileMask, String[] fileRequired) {
+		FileInputList fileInputList = new FileInputList();
 
-        for (int i = 0; i < realfile.length; i++)
-        {
-            final String onefile = realfile[i];
-            final String onemask = realmask[i];
-            final boolean onerequired = YES.equalsIgnoreCase(fileRequired[i]);
+		// Replace possible environment variables...
+		final String realfile[] = Const.replEnv(fileName);
+		final String realmask[] = Const.replEnv(fileMask);
 
-            // System.out.println("Checking file ["+onefile+"] mask ["+onemask+"]");
+		for (int i = 0; i < realfile.length; i++) {
+			final String onefile = realfile[i];
+			final String onemask = realmask[i];
+			final boolean onerequired = YES.equalsIgnoreCase(fileRequired[i]);
 
-            if (onemask != null && onemask.length() > 0) // A directory & a wildcard
-            {
-                File file = new File(onefile);
-                try
-                {
-                    String[] fileNames = file.list(new FilenameFilter()
-                    {
-                        public boolean accept(File dir, String name)
-                        {
-                            return Pattern.matches(onemask, name);
-                        }
-                    });
+			// System.out.println("Checking file ["+onefile+"] mask
+			// ["+onemask+"]");
+			if (onefile == null)
+				continue;
+			
+			if (onemask != null && onemask.length() > 0) // A directory & a
+															// wildcard
+			{
+				File file = new File(onefile);
+				try {
+					String[] fileNames = file.list(new FilenameFilter() {
+						public boolean accept(File dir, String name) {
+							return Pattern.matches(onemask, name);
+						}
+					});
 
-                    if (fileNames != null)
+					if (fileNames != null)
 						for (int j = 0; j < fileNames.length; j++) {
 							fileInputList.addFile(new File(file, fileNames[j]));
 						}
-                }
-                catch (Exception e)
-                {
-                    //do othing
-                	e.printStackTrace();
-                }
-            }
-            else
-            // A normal file...
-            {
-            	File file = new File(onefile);
+				} catch (Exception e) {
+					// do othing
+					e.printStackTrace();
+				}
+			} else
+			// A normal file...
+			{
+				File file = new File(onefile);
 				if (file.exists()) {
 					if (file.canRead()) {
 						if (file.isFile())
@@ -91,17 +89,17 @@ public class FileInputList {
 						fileInputList.addNonAccessibleFile(file);
 				} else if (onerequired)
 					fileInputList.addNonExistantFile(file);
-            }
-        }
-        
-        // Sort the list: quicksort
-        fileInputList.sortFiles();
-        
-        // OK, return the list in filelist...
-//        files = (String[]) filelist.toArray(new String[filelist.size()]);
+			}
+		}
 
-        return fileInputList;
-    }
+		// Sort the list: quicksort
+		fileInputList.sortFiles();
+
+		// OK, return the list in filelist...
+		// files = (String[]) filelist.toArray(new String[filelist.size()]);
+
+		return fileInputList;
+	}
 
 	public List getFiles() {
 		return files;
@@ -139,5 +137,9 @@ public class FileInputList {
 
 	public int nrOfFiles() {
 		return files.size();
+	}
+
+	public int nrOfMissingFiles() {
+		return nonAccessibleFiles.size() + nonExistantFiles.size();
 	}
 }

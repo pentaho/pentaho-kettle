@@ -1157,7 +1157,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 			initReplayFactory();
 			data.setDateFormatLenient(meta.isDateFormatLenient());
 			data.files = meta.getTextFileList();
-			if (data.files.nrOfFiles() == 0 && !meta.isErrorIgnored()) {
+			if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0) {
 				logError("No file(s) specified! Stop processing.");
 				return false;
 			}

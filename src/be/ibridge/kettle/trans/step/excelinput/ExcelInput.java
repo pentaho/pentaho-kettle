@@ -463,7 +463,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
 			initErrorHandling();
 			initReplayFactory();
 			data.files = meta.getFileList();
-			if (data.files.nrOfFiles() == 0 && !meta.isErrorIgnored()) {
+			if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0) {
 				logError("No file(s) specified! Stop processing.");
 				return false;
 			}
