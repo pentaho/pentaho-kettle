@@ -850,7 +850,7 @@ public class Repository
 	}
 
 	public void insertJob(long id_job, long id_directory, String name, long id_database_log, String table_name_log,
-			String modified_user, Value modified_date) throws KettleDatabaseException
+			String modified_user, Value modified_date, boolean useBatchId, boolean batchIdPassed, boolean logfieldUsed) throws KettleDatabaseException
 	{
 		Row table = new Row();
 
@@ -861,6 +861,9 @@ public class Repository
 		table.addValue(new Value("TABLE_NAME_LOG", table_name_log));
 		table.addValue(new Value("MODIFIED_USER", modified_user));
 		table.addValue(new Value("MODIFIED_DATE", modified_date));
+        table.addValue(new Value("USE_BATCH_ID", useBatchId));
+        table.addValue(new Value("PASS_BATCH_ID", batchIdPassed));
+        table.addValue(new Value("USE_LOGFIELD", logfieldUsed));
 
 		database.prepareInsert(table, "R_JOB");
 		database.setValuesInsert(table);
@@ -3874,6 +3877,9 @@ public class Repository
 		table.addValue(new Value("TABLE_NAME_LOG", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("MODIFIED_USER", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
 		table.addValue(new Value("MODIFIED_DATE", Value.VALUE_TYPE_DATE, 20, 0));
+        table.addValue(new Value("USE_BATCH_ID", Value.VALUE_TYPE_BOOLEAN, 0, 0));
+        table.addValue(new Value("PASS_BATCH_ID", Value.VALUE_TYPE_BOOLEAN, 0, 0));
+        table.addValue(new Value("USE_LOGFIELD", Value.VALUE_TYPE_BOOLEAN, 0, 0));
 		sql = database.getDDL(tablename, table, null, false, "ID_JOB", false);
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
