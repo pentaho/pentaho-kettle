@@ -2868,19 +2868,23 @@ public class Value implements Cloneable, XMLInterface, Serializable
 					DecimalFormat        df  = (DecimalFormat)nf;
 					DecimalFormatSymbols dfs =new DecimalFormatSymbols();
 						
+                    if ( pattern !=null && pattern .length()>0 ) df.applyPattern( pattern );
+                    if ( decimal !=null && decimal .length()>0 ) dfs.setDecimalSeparator( decimal.charAt(0) );
+                    if ( grouping!=null && grouping.length()>0 ) dfs.setGroupingSeparator( grouping.charAt(0) );
 					if ( currency!=null && currency.length()>0 ) dfs.setCurrencySymbol( currency );
-					if ( grouping!=null && grouping.length()>0 ) dfs.setGroupingSeparator( grouping.charAt(0) );
-					if ( decimal !=null && decimal .length()>0 ) dfs.setDecimalSeparator( decimal.charAt(0) );
-		            if ( pattern !=null && pattern .length()>0 ) df.applyPattern( pattern );
 					try
 					{
+                        df.setDecimalFormatSymbols(dfs);
 						setValue( nf.parse(getString()).doubleValue() );
 					}
 					catch(Exception e)
 					{
-						setType(VALUE_TYPE_NUMBER);
-						setNull();
-						throw new KettleValueException("Couldn't convert string to number "+e.toString());
+                        String message = "Couldn't convert string to number "+e.toString();
+                        if ( pattern !=null && pattern .length()>0 ) message+=" pattern="+pattern;
+                        if ( decimal !=null && decimal .length()>0 ) message+=" decimal="+decimal;
+                        if ( grouping!=null && grouping.length()>0 ) message+=" grouping="+grouping.charAt(0);
+                        if ( currency!=null && currency.length()>0 ) message+=" currency="+currency;
+						throw new KettleValueException(message);
 					}
 				}
 			}
