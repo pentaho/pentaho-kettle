@@ -3269,6 +3269,7 @@ public class Database
 		v=new Value("ENDDATE",         Value.VALUE_TYPE_DATE   );                    r.addValue(v);
 		v=new Value("LOGDATE",         Value.VALUE_TYPE_DATE   );                    r.addValue(v);
 		v=new Value("DEPDATE",         Value.VALUE_TYPE_DATE   );                    r.addValue(v);
+		v=new Value("REPLAYDATE",      Value.VALUE_TYPE_DATE   );                    r.addValue(v);
 
 		if (use_logfield)
 		{
@@ -3323,6 +3324,7 @@ public class Database
 								  long input, long output, long errors,
 								  java.util.Date startdate, java.util.Date enddate,
 								  java.util.Date logdate,   java.util.Date depdate,
+								  java.util.Date replayDate, 
 								  String log_string
 								  )
 		throws KettleDatabaseException
@@ -3330,7 +3332,7 @@ public class Database
         if (!job && use_id && log_string!=null && !status.equalsIgnoreCase("start"))
         {
             String sql = "UPDATE "+logtable+" SET STATUS=?, LINES_READ=?, LINES_WRITTEN=?, LINES_INPUT=?," +
-                    " LINES_OUTPUT=?, LINES_UPDATED=?, ERRORS=?, STARTDATE=?, ENDDATE=?, LOGDATE=?, DEPDATE=?, LOG_FIELD=? " +
+                    " LINES_OUTPUT=?, LINES_UPDATED=?, ERRORS=?, STARTDATE=?, ENDDATE=?, LOGDATE=?, DEPDATE=?, REPLAYDATE=?, LOG_FIELD=? " +
                     "WHERE ID_BATCH=?";
             Row r = new Row();
             r.addValue( new Value("STATUS",          status       ));
@@ -3344,6 +3346,7 @@ public class Database
             r.addValue( new Value("ENDDATE",         enddate      ));
             r.addValue( new Value("LOGDATE",         logdate      ));
             r.addValue( new Value("DEPDATE",         depdate      ));
+            r.addValue( new Value("REPLAYDATE", 	 replayDate      ));
             Value logfield = new Value("LOG_FIELD",       log_string);
             logfield.setLength(DatabaseMeta.CLOB_LENGTH);
             r.addValue( logfield );
@@ -3361,12 +3364,12 @@ public class Database
     			if (use_id) 
     			{
     				sql+="ID_JOB, JOBNAME";
-    				parms=13;
+    				parms=14;
     			} 
     			else 
     			{
     				sql+="JOBNAME";
-    				parms=12;
+    				parms=13;
     			} 
     		}
     		else
@@ -3374,16 +3377,16 @@ public class Database
     			if (use_id) 
     			{
     				sql+="ID_BATCH, TRANSNAME";
-    				parms=13;
+    				parms=14;
     			} 
     			else 
     			{ 
     				sql+="TRANSNAME";
-    				parms=12;
+    				parms=13;
     			} 
     		}
     		
-    		sql+=", STATUS, LINES_READ, LINES_WRITTEN, LINES_UPDATED, LINES_INPUT, LINES_OUTPUT, ERRORS, STARTDATE, ENDDATE, LOGDATE, DEPDATE";
+    		sql+=", STATUS, LINES_READ, LINES_WRITTEN, LINES_UPDATED, LINES_INPUT, LINES_OUTPUT, ERRORS, STARTDATE, ENDDATE, LOGDATE, DEPDATE, REPLAYDATE";
     		
     		if (log_string!=null && log_string.length()>0) sql+=", LOG_FIELD";  // This is possibly a CLOB!
     		
@@ -3425,6 +3428,7 @@ public class Database
     			r.addValue( new Value("ENDDATE",         enddate      ));
     			r.addValue( new Value("LOGDATE",         logdate      ));
     			r.addValue( new Value("DEPDATE",         depdate      ));
+    			r.addValue( new Value("REPLAYDATE",      replayDate      ));
     
     			if (log_string!=null && log_string.length()>0)
     			{

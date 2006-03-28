@@ -935,7 +935,7 @@ public class Trans
                                transMeta.getName(), 
                                "start", 
                                0L, 0L, 0L, 0L, 0L, 0L, 
-                               startDate, endDate, logDate, depDate,
+                               startDate, endDate, logDate, depDate,currentDate,
                                null
                              );
                 }
@@ -1022,7 +1022,7 @@ public class Trans
 					result.getNrLinesInput()+result.getNrFilesRetrieved(),
 					result.getNrLinesOutput(),
 					result.getNrErrors(), 
-				    startDate, endDate, logDate, depDate,
+				    startDate, endDate, logDate, depDate,currentDate,
 					log_string
 				);
 			}

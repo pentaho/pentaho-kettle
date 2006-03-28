@@ -1336,7 +1336,7 @@ public class Spoon
 
         spoongraph = new SpoonGraph(tabfolder, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND, log, this);
         spoonlog   = new SpoonLog(tabfolder, SWT.NONE, this, log, null);
-        spoonhist  = new SpoonHistory(tabfolder, SWT.NONE, this, log, null);
+        spoonhist  = new SpoonHistory(tabfolder, SWT.NONE, this, log, null, spoonlog, shell);
         
         tabfolder.addKeyListener(defKeys);
         tabfolder.addKeyListener(modKeys);

@@ -31,6 +31,7 @@ import be.ibridge.kettle.core.Const;
  */
 public class ValueDate implements ValueInterface, Cloneable
 {
+	public static final String DATE_FORMAT = "yyyy/MM/dd HH:mm:ss.SSS";
 	private Date date;
 
 	public ValueDate()
@@ -56,7 +57,7 @@ public class ValueDate implements ValueInterface, Cloneable
 	public String getString()
 	{
 		if (date==null) return null;
-		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+		SimpleDateFormat df = new SimpleDateFormat(DATE_FORMAT);
 		return df.format(date);
 	}
 

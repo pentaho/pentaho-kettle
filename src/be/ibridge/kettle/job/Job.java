@@ -291,7 +291,7 @@ public class Job extends Thread
 				
 				ldb.writeLogRecord(jobinfo.logtable, false, 0, true, jobinfo.getName(), "start", 
 				                   0L, 0L, 0L, 0L, 0L, 0L, 
-				                   startDate, endDate, logDate, depDate,
+				                   startDate, endDate, logDate, depDate,currentDate,
 								   log.getString()
 								   );
 				ldb.disconnect();
@@ -330,7 +330,7 @@ public class Job extends Thread
 				ldb.connect();
 				ldb.writeLogRecord(jobinfo.logtable, false, 0, true, jobinfo.getName(), status, 
 				                   read,written,updated,input,output,errors, 
-				                   startDate, endDate, logDate, depDate,
+				                   startDate, endDate, logDate, depDate,currentDate,
 								   log.getString()
 								   );
 			}

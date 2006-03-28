@@ -15,7 +15,10 @@
  
 package be.ibridge.kettle.spoon;
 import java.sql.ResultSet;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -29,6 +32,8 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.MessageBox;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
@@ -41,6 +46,7 @@ import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.value.ValueDate;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.TransMeta;
 
@@ -60,19 +66,25 @@ public class SpoonHistory extends Composite
 	private ColumnInfo[] colinf;	
 	
 	private Text   wText;
-	private Button wRefresh;
+	private Button wRefresh, wReplay;
     private TableView wFields;
     
-	private FormData fdText, fdSash, fdRefresh; 
+	private FormData fdText, fdSash, fdRefresh, fdReplay; 
 	
 	private Spoon spoon;
 
     private ArrayList rowList;
+
+	private final SpoonLog spoonLog;
+
+	private final Shell shell;
 	
-	public SpoonHistory(Composite parent, int style, Spoon sp, LogWriter l, String fname)
+	public SpoonHistory(Composite parent, int style, Spoon sp, LogWriter l, String fname, SpoonLog spoonLog, Shell shell)
 	{
 		super(parent, style);
 		spoon = sp;
+		this.spoonLog = spoonLog;
+		this.shell = shell;
 		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -102,13 +114,14 @@ public class SpoonHistory extends Composite
             new ColumnInfo("Start date",      ColumnInfo.COLUMN_TYPE_TEXT, false, true),
             new ColumnInfo("End date",        ColumnInfo.COLUMN_TYPE_TEXT, false, true),
     		new ColumnInfo("Log date",        ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Dependency date", ColumnInfo.COLUMN_TYPE_TEXT, false, true)
+            new ColumnInfo("Dependency date", ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+            new ColumnInfo("Replay date",     ColumnInfo.COLUMN_TYPE_TEXT, false, true)
         };
 		
         for (int i=0;i<colinf.length;i++) colinf[i].setAllignement(SWT.RIGHT);
         
         wFields=new TableView(sash, 
-							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
+							  SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, 
 							  colinf, 
 							  FieldsRows,  
 							  true, // readonly!
@@ -127,6 +140,14 @@ public class SpoonHistory extends Composite
 		fdRefresh.left   = new FormAttachment(15, 0);  
 		fdRefresh.bottom = new FormAttachment(100, 0);
 		wRefresh.setLayoutData(fdRefresh);
+		
+		wReplay = new Button(this, SWT.PUSH);
+		wReplay.setText(" Replay ");
+
+		fdReplay    = new FormData(); 
+		fdReplay.left   = new FormAttachment(wRefresh, Const.MARGIN);  
+		fdReplay.bottom = new FormAttachment(100, 0);
+		wReplay.setLayoutData(fdReplay);
 
 		// Put text in the middle
 		fdText=new FormData();
@@ -147,6 +168,8 @@ public class SpoonHistory extends Composite
 		// sash.setWeights(new int[] { 60, 40} );
 
 		pack();
+		
+		setupReplayListener();
         
         SelectionAdapter lsRefresh = new SelectionAdapter()
             {
@@ -179,6 +202,43 @@ public class SpoonHistory extends Composite
             
             }
         );
+	}
+
+	private void setupReplayListener() {
+		SelectionAdapter lsReplay = new SelectionAdapter()
+        {
+			final SimpleDateFormat df = new SimpleDateFormat(
+					ValueDate.DATE_FORMAT);
+
+			public void widgetSelected(SelectionEvent e) {
+				int idx = wFields.getSelectionIndex();
+				if (idx >= 0) {
+					String fields[] = wFields.getItem(idx);
+					String dateString = fields[12];
+					if (dateString == null
+							|| dateString.equals(Const.NULL_STRING)) {
+						MessageBox mb = new MessageBox(shell, SWT.OK
+								| SWT.ICON_ERROR);
+						mb.setMessage("Error replaying transformation."
+								+ Const.CR + "Replay date cannot be null.");
+						mb.setText("ERROR");
+						mb.open();
+						return;
+					}
+					try {
+						Date date = df.parse(dateString);
+						spoon.tabfolder.setSelection(1);
+						spoonLog.startstop(date);
+					} catch (ParseException e1) {
+						new ErrorDialog(shell, spoon.props,
+								"Error replaying transformation",
+								"Invalid replay date: " + dateString, e1);
+					}
+				}
+			}
+		};
+	
+        wReplay.addSelectionListener(lsReplay);
 	}
 	
     /**
@@ -234,7 +294,11 @@ public class SpoonHistory extends Composite
                                 item.setText( 9, row.getString("STARTDATE", ""));          
                                 item.setText(10, row.getString("ENDDATE", ""));          
                                 item.setText(11, row.getString("LOGDATE", ""));          
-                                item.setText(12, row.getString("DEPDATE", ""));                                
+                                item.setText(12, row.getString("DEPDATE", ""));  
+                                String replayDate = row.getString("REPLAYDATE", "");
+                                if(replayDate == null)
+                                	replayDate = Const.NULL_STRING;
+								item.setText(13, replayDate);
                             }
                             
                             wFields.removeEmptyRows();

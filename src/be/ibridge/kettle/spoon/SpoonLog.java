@@ -407,7 +407,7 @@ public class SpoonLog extends Composite
 	
 	
 	
-	private void startstop(Date replayDate)
+	public void startstop(Date replayDate)
 	{
 		if (!running) // Not running, start the transformation...
 		{
