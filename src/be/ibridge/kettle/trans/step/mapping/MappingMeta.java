@@ -231,7 +231,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    </input>"+Const.CR);
         
         retval.append("  <output>"+Const.CR);
-        for (int i=0;i<inputField.length;i++)
+        for (int i=0;i<outputField.length;i++)
         {
             retval.append("    <connector>"+XMLHandler.addTagValue("field", outputField[i], false)+"  "+XMLHandler.addTagValue("mapping", outputMapping[i], false)+"</connector>"+Const.CR);
         }
