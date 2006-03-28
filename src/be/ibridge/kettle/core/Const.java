@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.swt.SWT;
@@ -1633,6 +1634,31 @@ public class Const
         for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
         
         return formats;
+    }
+    
+    /**
+     * Sorts the array of Strings, determines the uniquely occuring strings.  
+     * @param strings the array that you want to do a distinct on
+     * @return a sorted array of uniquely occuring strings
+     */
+    public static final String[] getDistinctStrings(String[] strings)
+    {
+        if (strings==null) return null;
+        if (strings.length==0) return new String[] {};
+        
+        String[] sorted = sortStrings(strings);
+        List result = new ArrayList();
+        String previous = "";
+        for (int i=0;i<sorted.length;i++)
+        {
+            if (!sorted[i].equalsIgnoreCase(previous))
+            {
+                result.add(sorted[i]);
+            }
+            previous=sorted[i];
+        }
+        
+        return (String[])result.toArray(new String[result.size()]);
     }
 
 }
