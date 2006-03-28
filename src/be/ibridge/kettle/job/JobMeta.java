@@ -97,6 +97,14 @@ public class JobMeta implements Cloneable, XMLInterface
 	
 	public  String  created_user, modified_user;
 	public  Value   created_date, modified_date;
+    
+    private boolean             useBatchId;
+
+    private long                batchId;
+
+    private boolean             batchIdPassed;
+
+    private boolean             logfieldUsed;
 
 	public JobMeta(LogWriter l)
 	{
@@ -360,7 +368,10 @@ public class JobMeta implements Cloneable, XMLInterface
 				logconnection==null?-1:logconnection.getID(),
 				logtable,
 				modified_user,
-				modified_date
+				modified_date,
+                useBatchId,
+                batchIdPassed,
+                logfieldUsed
 			);
 		}
  		catch(KettleDatabaseException dbe)
@@ -402,6 +413,10 @@ public class JobMeta implements Cloneable, XMLInterface
 
 		retval+="  "+XMLHandler.addTagValue("logconnection", ci==null?"":ci.getName());
 		retval+="  "+XMLHandler.addTagValue("logtable", logtable);
+
+        retval+= "   " + XMLHandler.addTagValue("use_batchid", useBatchId);
+        retval+= "   " + XMLHandler.addTagValue("pass_batchid", batchIdPassed);
+        retval+= "   " + XMLHandler.addTagValue("use_logfield", logfieldUsed);
 
 		retval+="  <entries>"+Const.CR;
 		for (int i=0;i<nrJobEntries();i++)
@@ -503,6 +518,10 @@ public class JobMeta implements Cloneable, XMLInterface
 			String logcon        = XMLHandler.getTagValue(jobnode, "logconnection");
 			logconnection        = findDatabase(logcon);
 			logtable             = XMLHandler.getTagValue(jobnode, "logtable");
+            
+            useBatchId           = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_batchid"));
+            batchIdPassed        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "pass_batchid"));
+            logfieldUsed         = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_logfield"));
 			
 			/*
 			 * read the job entries...
@@ -1553,6 +1572,70 @@ public class JobMeta implements Cloneable, XMLInterface
 		if (getName()!=null) return getName();
 		else return getClass().getName();	
 	}
+
+    /**
+     * @return Returns the batchId.
+     */
+    public long getBatchId()
+    {
+        return batchId;
+    }
+
+    /**
+     * @param batchId The batchId to set.
+     */
+    public void setBatchId(long batchId)
+    {
+        this.batchId = batchId;
+    }
+
+    /**
+     * @return Returns the logfieldUsed.
+     */
+    public boolean isLogfieldUsed()
+    {
+        return logfieldUsed;
+    }
+
+    /**
+     * @param logfieldUsed The logfieldUsed to set.
+     */
+    public void setLogfieldUsed(boolean logfieldUsed)
+    {
+        this.logfieldUsed = logfieldUsed;
+    }
+
+    /**
+     * @return Returns the useBatchId.
+     */
+    public boolean isUseBatchId()
+    {
+        return useBatchId;
+    }
+
+    /**
+     * @param useBatchId The useBatchId to set.
+     */
+    public void setUseBatchId(boolean useBatchId)
+    {
+        this.useBatchId = useBatchId;
+    }
+
+    /**
+     * @return Returns the batchIdPassed.
+     */
+    public boolean isBatchIdPassed()
+    {
+        return batchIdPassed;
+    }
+
+    /**
+     * @param batchIdPassed The batchIdPassed to set.
+     */
+    public void setBatchIdPassed(boolean batchIdPassed)
+    {
+        this.batchIdPassed = batchIdPassed;
+    }
 
 
 }

@@ -67,6 +67,7 @@ import be.ibridge.kettle.job.entry.job.JobEntryJob;
 import be.ibridge.kettle.job.entry.trans.JobEntryTrans;
 import be.ibridge.kettle.spoon.Spoon;
 import be.ibridge.kettle.trans.TransMeta;
+import be.ibridge.kettle.trans.step.StepMeta;
 
 
 /**
@@ -1937,6 +1938,8 @@ public class ChefGraph extends Canvas
 
     private void allignleft()
     {
+        if (chef.getJobMeta().nrSelected() == 0) return;
+
         JobEntryCopy jobentries[] = new JobEntryCopy[chef.jobMeta.nrSelected()];
         Point before[]   = new Point[chef.jobMeta.nrSelected()];
         Point after[]    = new Point[chef.jobMeta.nrSelected()];
@@ -1954,6 +1957,7 @@ public class ChefGraph extends Canvas
                 if (p.x < min) min = p.x;
             }
         }
+        
         // Then apply the coordinate...
         for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
         {

@@ -18,6 +18,7 @@
 package be.ibridge.kettle.job.dialog;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -51,6 +52,7 @@ import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.repository.dialog.SelectDirectoryDialog;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
 /**
@@ -75,15 +77,26 @@ public class JobDialog extends Dialog
 
 	private Label        wlLogconnection;
 	private Button       wbLogconnection;
-	private Text         wLogconnection;
+	private CCombo       wLogconnection;
 	private FormData     fdlLogconnection, fdbLogconnection, fdLogconnection;
 
 	private Label        wlLogtable;
 	private Text         wLogtable;
 	private FormData     fdlLogtable, fdLogtable;
 
+    private Label        wlBatch;
+    private Button       wBatch;
+    private FormData     fdlBatch, fdBatch;
+
+    private Label        wlBatchTrans;
+    private Button       wBatchTrans;
+    private FormData     fdlBatchTrans, fdBatchTrans;
+
+    private Label        wlLogfield;
+    private Button       wLogfield;
+    private FormData     fdlLogfield, fdLogfield;
+
 	private Button wOK, wSQL, wCancel;
-	private FormData fdOK, fdSQL, fdCancel;
 	private Listener lsOK, lsSQL, lsCancel;
 
 	private JobMeta jobMeta;
@@ -139,11 +152,12 @@ public class JobDialog extends Dialog
 		int margin = Const.MARGIN;
 
 		// Transformation name:
-		wlJobname=new Label(shell, SWT.NONE);
+		wlJobname=new Label(shell, SWT.RIGHT);
 		wlJobname.setText("Job name :");
  		props.setLook(		wlJobname);
 		fdlJobname=new FormData();
 		fdlJobname.left = new FormAttachment(0, 0);
+        fdlJobname.right= new FormAttachment(middle, 0);
 		fdlJobname.top  = new FormAttachment(0, margin);
 		wlJobname.setLayoutData(fdlJobname);
 		wJobname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -220,12 +234,13 @@ public class JobDialog extends Dialog
 		wDirectory.setLayoutData(fdDirectory);
 
 		// Log table connection...
-		wlLogconnection=new Label(shell, SWT.NONE);
+		wlLogconnection=new Label(shell, SWT.RIGHT);
 		wlLogconnection.setText("Log Connection: ");
  		props.setLook(wlLogconnection);
 		fdlLogconnection=new FormData();
 		fdlLogconnection.top  = new FormAttachment(wDirectory, margin*4);
 		fdlLogconnection.left = new FormAttachment(0, 0);
+        fdlLogconnection.right= new FormAttachment(middle, 0);
 		wlLogconnection.setLayoutData(fdlLogconnection);
 
 		wbLogconnection=new Button(shell, SWT.PUSH);
@@ -234,12 +249,11 @@ public class JobDialog extends Dialog
 		{
 			public void widgetSelected(SelectionEvent e) 
 			{
-				DatabaseMeta ci = jobMeta.getLogConnection();
+				DatabaseMeta ci = jobMeta.findDatabase(wLogconnection.getText());
 				if (ci==null) ci=new DatabaseMeta();
 				DatabaseDialog cid = new DatabaseDialog(shell, SWT.NONE, log, ci, props);
 				if (cid.open()!=null)
 				{
-					jobMeta.setLogConnection(ci);
 					wLogconnection.setText(ci.getName());
 				}
 			}
@@ -249,22 +263,29 @@ public class JobDialog extends Dialog
 		fdbLogconnection.right = new FormAttachment(100, 0);
 		wbLogconnection.setLayoutData(fdbLogconnection);
 
-		wLogconnection=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wLogconnection=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wLogconnection);
 		wLogconnection.addModifyListener(lsMod);
-		wLogconnection.setEnabled(false);
 		fdLogconnection=new FormData();
 		fdLogconnection.top  = new FormAttachment(wDirectory, margin*4);
 		fdLogconnection.left = new FormAttachment(middle, 0);
 		fdLogconnection.right= new FormAttachment(wbLogconnection, -margin);
 		wLogconnection.setLayoutData(fdLogconnection);
+        
+        // populare the combo box...
+        for (int i=0;i<jobMeta.nrDatabases();i++)
+        {
+            DatabaseMeta meta = jobMeta.getDatabase(i);
+            wLogconnection.add(meta.getName());
+        }
 
 		// Log table...:
-		wlLogtable=new Label(shell, SWT.NONE);
+		wlLogtable=new Label(shell, SWT.RIGHT);
 		wlLogtable.setText("Log table:");
  		props.setLook(wlLogtable);
 		fdlLogtable=new FormData();
-		fdlLogtable.left = new FormAttachment(0, 0);
+        fdlLogtable.left = new FormAttachment(0, 0);
+		fdlLogtable.right= new FormAttachment(middle, 0);
 		fdlLogtable.top  = new FormAttachment(wLogconnection, margin);
 		wlLogtable.setLayoutData(fdlLogtable);
 		wLogtable=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -276,7 +297,53 @@ public class JobDialog extends Dialog
 		fdLogtable.right= new FormAttachment(100, 0);
 		wLogtable.setLayoutData(fdLogtable);
 
+        wlBatch=new Label(shell, SWT.RIGHT);
+        wlBatch.setText("Use Batch-ID? ");
+        props.setLook(wlBatch);
+        fdlBatch=new FormData();
+        fdlBatch.left = new FormAttachment(0, 0);
+        fdlBatch.top  = new FormAttachment(wLogtable, margin*3);
+        fdlBatch.right= new FormAttachment(middle, -margin);
+        wlBatch.setLayoutData(fdlBatch);
+        wBatch=new Button(shell, SWT.CHECK);
+        props.setLook(wBatch);
+        fdBatch=new FormData();
+        fdBatch.left = new FormAttachment(middle, 0);
+        fdBatch.top  = new FormAttachment(wLogtable, margin*3);
+        fdBatch.right= new FormAttachment(100, 0);
+        wBatch.setLayoutData(fdBatch);
 
+        wlBatchTrans=new Label(shell, SWT.RIGHT);
+        wlBatchTrans.setText("Pass the batch ID to job entries");
+        props.setLook(wlBatchTrans);
+        fdlBatchTrans=new FormData();
+        fdlBatchTrans.left = new FormAttachment(0, 0);
+        fdlBatchTrans.top  = new FormAttachment(wBatch, margin);
+        fdlBatchTrans.right= new FormAttachment(middle, -margin);
+        wlBatchTrans.setLayoutData(fdlBatchTrans);
+        wBatchTrans=new Button(shell, SWT.CHECK);
+        props.setLook(wBatchTrans);
+        fdBatchTrans=new FormData();
+        fdBatchTrans.left = new FormAttachment(middle, 0);
+        fdBatchTrans.top  = new FormAttachment(wBatch, margin);
+        fdBatchTrans.right= new FormAttachment(100, 0);
+        wBatchTrans.setLayoutData(fdBatchTrans);
+
+        wlLogfield=new Label(shell, SWT.RIGHT);
+        wlLogfield.setText("Use logfield to store logging in? ");
+        props.setLook(wlLogfield);
+        fdlLogfield=new FormData();
+        fdlLogfield.left = new FormAttachment(0, 0);
+        fdlLogfield.top  = new FormAttachment(wBatchTrans, margin);
+        fdlLogfield.right= new FormAttachment(middle, -margin);
+        wlLogfield.setLayoutData(fdlLogfield);
+        wLogfield=new Button(shell, SWT.CHECK);
+        props.setLook(wLogfield);
+        fdLogfield=new FormData();
+        fdLogfield.left = new FormAttachment(middle, 0);
+        fdLogfield.top  = new FormAttachment(wBatchTrans, margin);
+        fdLogfield.right= new FormAttachment(100, 0);
+        wLogfield.setLayoutData(fdLogfield);
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
@@ -285,21 +352,9 @@ public class JobDialog extends Dialog
 		wSQL.setText(" &SQL ");
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(" &Cancel ");
-		fdOK=new FormData();
-		fdOK.left   = new FormAttachment(25, 0);
-		fdOK.top    = new FormAttachment(wLogtable, margin*4);
-		wOK.setLayoutData(fdOK);
 
-		fdSQL=new FormData();
-		fdSQL.left  = new FormAttachment(wOK, 10);
-		fdSQL.top   = new FormAttachment(wLogtable, margin*4);
-		wSQL.setLayoutData(fdSQL);
-
-		fdCancel=new FormData();
-		fdCancel.left = new FormAttachment(wSQL, 10);
-		fdCancel.top  = new FormAttachment(wLogtable, margin*4);
-		wCancel.setLayoutData(fdCancel);
-
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wSQL, wCancel }, margin, wLogfield);
+        
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		lsSQL      = new Listener() { public void handleEvent(Event e) { sql();    } };

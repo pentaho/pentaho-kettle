@@ -156,7 +156,7 @@ public class Chef
 
 	public  Repository rep;
 	
-	public  JobMeta jobMeta;
+	public JobMeta jobMeta; // TODO: make private with getter / setter
 	private ChefGraph chefgraph;
 
 	private ChefLog    cheflog;
@@ -3169,4 +3169,20 @@ public class Chef
         // Kill all remaining things in this VM!
        System.exit(0);
 	}
+
+    /**
+     * @return Returns the jobMeta.
+     */
+    public JobMeta getJobMeta()
+    {
+        return jobMeta;
+    }
+
+    /**
+     * @param jobMeta The jobMeta to set.
+     */
+    public void setJobMeta(JobMeta jobMeta)
+    {
+        this.jobMeta = jobMeta;
+    }
 }

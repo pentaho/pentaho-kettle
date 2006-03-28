@@ -132,6 +132,8 @@ public class TransMeta implements XMLInterface
 
     private long                batchId;
 
+    private long                jobBatchId;
+
     private boolean             logfieldUsed;
 
     private String              createdUser, modifiedUser;
@@ -4084,5 +4086,21 @@ public class TransMeta implements XMLInterface
         if (logConnection!=null && logConnection.equals(databaseMeta)) return true;
         
         return false;
+    }
+
+    /**
+     * @return Returns the jobBatchId.
+     */
+    public long getJobBatchId()
+    {
+        return jobBatchId;
+    }
+
+    /**
+     * @param jobBatchId The jobBatchId to set.
+     */
+    public void setJobBatchId(long jobBatchId)
+    {
+        this.jobBatchId = jobBatchId;
     }
 }
