@@ -72,6 +72,10 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 	private Text         wPrefix;
 	private FormData     fdlPrefix, fdPrefix;
 
+    private Label        wlSortSize;
+    private Text         wSortSize;
+    private FormData     fdlSortSize, fdSortSize;
+
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -223,7 +227,6 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 			}
 		);
 
-		// Table line...
 		wlPrefix=new Label(shell, SWT.RIGHT);
 		wlPrefix.setText("TMP-file prefix ");
  		props.setLook(wlPrefix);
@@ -242,6 +245,23 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		wPrefix.setLayoutData(fdPrefix);
 		wPrefix.setText("srt");
 
+        wlSortSize=new Label(shell, SWT.RIGHT);
+        wlSortSize.setText("Sort size (rows in memory) ");
+        props.setLook(wlSortSize);
+        fdlSortSize=new FormData();
+        fdlSortSize.left = new FormAttachment(0, 0);
+        fdlSortSize.right= new FormAttachment(middle, -margin);
+        fdlSortSize.top  = new FormAttachment(wPrefix, margin*2);
+        wlSortSize.setLayoutData(fdlSortSize);
+        wSortSize=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wSortSize);
+        wSortSize.addModifyListener(lsMod);
+        fdSortSize=new FormData();
+        fdSortSize.left  = new FormAttachment(middle, 0);
+        fdSortSize.top   = new FormAttachment(wPrefix, margin*2);
+        fdSortSize.right = new FormAttachment(100, 0);
+        wSortSize.setLayoutData(fdSortSize);
+
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(" &OK ");
 		wGet=new Button(shell, SWT.PUSH);
@@ -256,7 +276,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wPrefix, margin);
+		fdlFields.top  = new FormAttachment(wSortSize, margin);
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsCols=2;
@@ -333,7 +353,8 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 	{
 		if (input.getPrefix() != null) wPrefix.setText(input.getPrefix());
 		if (input.getDirectory() != null) wSortDir.setText(input.getDirectory());
-		
+		wSortSize.setText(""+input.getSortSize());
+        
 		int i;
 		Table table = wFields.table;
 		table.removeAll();
@@ -368,6 +389,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		// copy info to SortRowsMeta class (input)
 		input.setPrefix( wPrefix.getText() );
 		input.setDirectory( wSortDir.getText() );
+        input.setSortSize( Const.toInt( wSortSize.getText(), Const.SORT_SIZE ) );
 
 		//Table table = wFields.table;
 		int nrfields = wFields.nrNonEmpty();

@@ -68,7 +68,7 @@ public class SortRows extends BaseStep implements StepInterface
 		}
 		
 		// time to write to disk: buffer is full!
-		if (   data.buffer.size()==Const.SORT_SIZE     // Buffer is full: sort & dump to disk 
+		if (   data.buffer.size()==meta.getSortSize()     // Buffer is full: sort & dump to disk 
 		   || (data.files.size()>0 && r==null && data.buffer.size()>0) // No more records: join from disk 
 		   )
 		{
@@ -132,7 +132,7 @@ public class SortRows extends BaseStep implements StepInterface
 		
 			try
 			{
-				for (f=0;f<data.files.size();f++)
+				for (f=0;f<data.files.size() && !isStopped();f++)
 				{
 					filename=((File)data.files.get(f)).toString();
 					debug="opening file "+filename;
@@ -180,7 +180,7 @@ public class SortRows extends BaseStep implements StepInterface
 			{
 				// We now have "filenr" rows waiting: which one is the smallest?
 				//
-				for (i=0;i<data.rowbuffer.size();i++)
+				for (i=0;i<data.rowbuffer.size() && !isStopped();i++)
 				{
 					Row b = (Row)data.rowbuffer.get(i);
 					logRowlevel("--BR#"+i+": "+b.toString());
@@ -189,7 +189,7 @@ public class SortRows extends BaseStep implements StepInterface
 				
 				smallest=0;
 				r1=(Row)data.rowbuffer.get(smallest);
-				for (f=1;f<data.rowbuffer.size();f++)
+				for (f=1;f<data.rowbuffer.size() && !isStopped();f++)
 				{
 					r2=(Row)data.rowbuffer.get(f);
 					
@@ -275,7 +275,7 @@ public class SortRows extends BaseStep implements StepInterface
 		{
 			// Now we can start the output!
 			r=getBuffer();
-			while (r!=null)
+			while (r!=null  && !isStopped())
 			{
 				logRowlevel("Read row: "+r.toString());
 				
