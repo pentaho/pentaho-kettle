@@ -44,6 +44,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.repository.PermissionMeta;
@@ -425,6 +426,11 @@ public class RepositoriesDialog
 				{
 					userinfo=null;
 					repinfo=null;
+                    
+                    if (!(e instanceof KettleDatabaseException))
+                    {
+                        new ErrorDialog(shell, props, "Unexpected error", "Unexpected error logging in: ", e);
+                    }
 				}
 				finally
 				{

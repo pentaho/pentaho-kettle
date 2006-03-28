@@ -207,7 +207,8 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		switch(type)
 		{
 		case Value.VALUE_TYPE_DATE   : retval+="DATETIME"; break;
-		case Value.VALUE_TYPE_BOOLEAN: retval+="YESNO"; break;
+		// Move back to Y/N for bug - [# 1538] Repository on MS ACCESS: error creating repository
+		case Value.VALUE_TYPE_BOOLEAN: retval+="CHAR(1)"; break; 
 		case Value.VALUE_TYPE_NUMBER :
 		case Value.VALUE_TYPE_INTEGER: 
         case Value.VALUE_TYPE_BIGNUMBER: 

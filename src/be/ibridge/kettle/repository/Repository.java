@@ -472,7 +472,7 @@ public class Repository
 	public long getRootDirectoryID() throws KettleDatabaseException
 	{
 		Row result = database.getOneRow("SELECT ID_DIRECTORY FROM R_DIRECTORY WHERE ID_DIRECTORY_PARENT = 0");
-		if (result != null && result.getValue(0).isInteger())
+		if (result != null && result.getValue(0).isNumeric())
 			return result.getValue(0).getInteger();
 		return -1;
 	}
@@ -518,7 +518,7 @@ public class Repository
 		Row par = new Row();
 		par.addValue(new Value("value", value));
 		Row result = database.getOneRow("SELECT " + idfield + " FROM " + tablename + " WHERE " + lookupfield + " = ?", par);
-		if (result != null && result.getValue(0).isInteger())
+		if (result != null && result.getValue(0).isNumeric())
 			return result.getValue(0).getInteger();
 		return -1;
 	}
@@ -531,7 +531,7 @@ public class Repository
 		par.addValue(new Value("key", key));
 		Row result = database.getOneRow("SELECT " + idfield + " FROM " + tablename + " WHERE " + lookupfield + " = ? AND "
 									+ lookupkey + " = ?", par);
-		if (result != null && result.getValue(0).isInteger())
+		if (result != null && result.getValue(0).isNumeric())
 			return result.getValue(0).getInteger();
 		return -1;
 	}
@@ -551,7 +551,7 @@ public class Repository
 			sql += lookupkey[i] + " = ? ";
 		}
 		Row result = database.getOneRow(sql, par);
-		if (result != null && result.getValue(0).isInteger())
+		if (result != null && result.getValue(0).isNumeric())
 			return result.getValue(0).getInteger();
 		return -1;
 	}
@@ -569,7 +569,7 @@ public class Repository
 		}
 
 		Row result = database.getOneRow(sql, par);
-		if (result != null && result.getValue(0).isInteger())
+		if (result != null && result.getValue(0).isNumeric())
 			return result.getValue(0).getInteger();
 		return -1;
 	}
@@ -1275,7 +1275,7 @@ public class Repository
 		sql += "AND   IS_NULL    = ? ";
 
 		Row result = database.getOneRow(sql, table);
-		if (result != null && result.getValue(0).isInteger())
+		if (result != null && result.getValue(0).isNumeric())
 			return result.getValue(0).getInteger();
 		else
 			return -1;

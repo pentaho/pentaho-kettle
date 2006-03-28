@@ -96,10 +96,15 @@ public class UserInfo
 					throw new KettleDatabaseException("User ["+login+"] couldn't be found!");
 				}
 			}
+            else
+            {
+                setID(-1L);
+                throw new KettleDatabaseException("User ["+login+"] couldn't be found!");
+            }
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			rep.log.logError(toString(), "Unable to load user with login ["+login+"] from the repository: "+dbe.getMessage());
+            rep.log.logError(toString(), "Unable to load user with login ["+login+"] from the repository: "+dbe.getMessage());
 			throw new KettleException("Unable to load user with login ["+login+"] from the repository", dbe);
 		}
 	}
@@ -114,7 +119,8 @@ public class UserInfo
 		// Verify the password:
 		if ( getID()<0 || !passwd.equals(getPassword()) )
 		{
-			throw new KettleException("Incorrect password or login!");
+            System.out.println("Password: "+getPassword());
+			throw new KettleDatabaseException("Incorrect password or login!");
 		}
 	}
 	
