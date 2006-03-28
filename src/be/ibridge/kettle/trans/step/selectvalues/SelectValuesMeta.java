@@ -502,7 +502,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("      <meta>");
 			retval.append("        "+XMLHandler.addTagValue("name",      metaName[i]));
 			retval.append("        "+XMLHandler.addTagValue("rename",    metaRename[i]));
-			retval.append("        "+XMLHandler.addTagValue("type",      metaType[i]));
+			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(metaType[i])) );
 			retval.append("        "+XMLHandler.addTagValue("length",    metaLength[i]));
 			retval.append("        "+XMLHandler.addTagValue("precision", metaPrecision[i]));
 			retval.append("        </meta>");
