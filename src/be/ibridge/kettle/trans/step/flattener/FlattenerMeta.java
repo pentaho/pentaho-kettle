@@ -158,20 +158,20 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
 
     public String getXML()
     {
-        String retval = "";
+        StringBuffer retval = new StringBuffer();
 
-        retval += "      " + XMLHandler.addTagValue("field_name", fieldName);
+        retval.append("      " + XMLHandler.addTagValue("field_name", fieldName));
 
-        retval += "      <fields>" + Const.CR;
+        retval.append("      <fields>" + Const.CR);
         for (int i = 0; i < targetField.length; i++)
         {
-            retval += "        <field>" + Const.CR;
-            retval += "          " + XMLHandler.addTagValue("name", targetField[i]);
-            retval += "          </field>" + Const.CR;
+            retval.append("        <field>" + Const.CR);
+            retval.append("          " + XMLHandler.addTagValue("name", targetField[i]));
+            retval.append("          </field>" + Const.CR);
         }
-        retval += "        </fields>" + Const.CR;
+        retval.append("        </fields>" + Const.CR);
 
-        return retval;
+        return retval.toString();
     }
 
     public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException

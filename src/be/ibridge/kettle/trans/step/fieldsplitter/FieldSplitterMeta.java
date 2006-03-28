@@ -494,31 +494,30 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
-		int i;
+        StringBuffer retval = new StringBuffer();
 
-		retval+="   "+XMLHandler.addTagValue("splitfield", splitField);
-		retval+="   "+XMLHandler.addTagValue("delimiter", delimiter);
+		retval.append("   "+XMLHandler.addTagValue("splitfield", splitField));
+		retval.append("   "+XMLHandler.addTagValue("delimiter", delimiter));
 		
-		retval+="    <fields>";
-		for (i=0;i<field.length;i++)
+		retval.append("    <fields>");
+		for (int i=0;i<field.length;i++)
 		{
-			retval+="      <field>";
-			retval+="        "+XMLHandler.addTagValue("name",      field[i]);
-			retval+="        "+XMLHandler.addTagValue("id",        fieldID[i]);
-			retval+="        "+XMLHandler.addTagValue("idrem",     removeID[i]);
-			retval+="        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(fieldType[i]));
-			retval+="        "+XMLHandler.addTagValue("format",    fieldFormat[i]);
-			retval+="        "+XMLHandler.addTagValue("group",     fieldGroup[i]);
-			retval+="        "+XMLHandler.addTagValue("decimal",   fieldDecimal[i]);
-			retval+="        "+XMLHandler.addTagValue("length",    fieldLength[i]);
-			retval+="        "+XMLHandler.addTagValue("precision", fieldPrecision[i]);
-			retval+="        "+XMLHandler.addTagValue("nullif",    fieldDefault[i]);
-			retval+="        </field>";
+			retval.append("      <field>");
+			retval.append("        "+XMLHandler.addTagValue("name",      field[i]));
+			retval.append("        "+XMLHandler.addTagValue("id",        fieldID[i]));
+			retval.append("        "+XMLHandler.addTagValue("idrem",     removeID[i]));
+			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(fieldType[i])));
+			retval.append("        "+XMLHandler.addTagValue("format",    fieldFormat[i]));
+			retval.append("        "+XMLHandler.addTagValue("group",     fieldGroup[i]));
+			retval.append("        "+XMLHandler.addTagValue("decimal",   fieldDecimal[i]));
+			retval.append("        "+XMLHandler.addTagValue("length",    fieldLength[i]));
+			retval.append("        "+XMLHandler.addTagValue("precision", fieldPrecision[i]));
+			retval.append("        "+XMLHandler.addTagValue("nullif",    fieldDefault[i]));
+			retval.append("        </field>");
 		}
-		retval+="      </fields>";
+		retval.append("      </fields>");
 
-		return retval;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

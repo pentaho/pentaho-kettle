@@ -1894,53 +1894,53 @@ public class TransMeta implements XMLInterface
     {
         Props props = Props.getInstance();
         
-        String xml = "";
+        StringBuffer retval = new StringBuffer();
 
-        xml += "<transformation>" + Const.CR;
+        retval.append("<transformation>" + Const.CR);
 
-        xml += "  <info>" + Const.CR;
+        retval.append("  <info>" + Const.CR);
 
-        xml += "    " + XMLHandler.addTagValue("name", name);
-        xml += "    " + XMLHandler.addTagValue("directory", directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR);
-        xml += "    <log>" + Const.CR;
-        xml += "      " + XMLHandler.addTagValue("read", readStep == null ? "" : readStep.getName());
-        xml += "      " + XMLHandler.addTagValue("write", writeStep == null ? "" : writeStep.getName());
-        xml += "      " + XMLHandler.addTagValue("input", inputStep == null ? "" : inputStep.getName());
-        xml += "      " + XMLHandler.addTagValue("output", outputStep == null ? "" : outputStep.getName());
-        xml += "      " + XMLHandler.addTagValue("update", updateStep == null ? "" : updateStep.getName());
-        xml += "      " + XMLHandler.addTagValue("connection", logConnection == null ? "" : logConnection.getName());
-        xml += "      " + XMLHandler.addTagValue("table", logTable);
-        xml += "      " + XMLHandler.addTagValue("use_batchid", useBatchId);
-        xml += "      " + XMLHandler.addTagValue("use_logfield", logfieldUsed);
-        xml += "      </log>" + Const.CR;
-        xml += "    <maxdate>" + Const.CR;
-        xml += "      " + XMLHandler.addTagValue("connection", maxDateConnection == null ? "" : maxDateConnection.getName());
-        xml += "      " + XMLHandler.addTagValue("table", maxDateTable);
-        xml += "      " + XMLHandler.addTagValue("field", maxDateField);
-        xml += "      " + XMLHandler.addTagValue("offset", maxDateOffset);
-        xml += "      " + XMLHandler.addTagValue("maxdiff", maxDateDifference);
-        xml += "      </maxdate>" + Const.CR;
-        xml += "    " + XMLHandler.addTagValue("size_rowset", sizeRowset);
-        xml += "    " + XMLHandler.addTagValue("sleep_time_empty", sleepTimeEmpty);
-        xml += "    " + XMLHandler.addTagValue("sleep_time_full", sleepTimeFull);
+        retval.append("    " + XMLHandler.addTagValue("name", name));
+        retval.append("    " + XMLHandler.addTagValue("directory", directory != null ? directory.getPath() : RepositoryDirectory.DIRECTORY_SEPARATOR));
+        retval.append("    <log>" + Const.CR);
+        retval.append("      " + XMLHandler.addTagValue("read", readStep == null ? "" : readStep.getName()));
+        retval.append("      " + XMLHandler.addTagValue("write", writeStep == null ? "" : writeStep.getName()));
+        retval.append("      " + XMLHandler.addTagValue("input", inputStep == null ? "" : inputStep.getName()));
+        retval.append("      " + XMLHandler.addTagValue("output", outputStep == null ? "" : outputStep.getName()));
+        retval.append("      " + XMLHandler.addTagValue("update", updateStep == null ? "" : updateStep.getName()));
+        retval.append("      " + XMLHandler.addTagValue("connection", logConnection == null ? "" : logConnection.getName()));
+        retval.append("      " + XMLHandler.addTagValue("table", logTable));
+        retval.append("      " + XMLHandler.addTagValue("use_batchid", useBatchId));
+        retval.append("      " + XMLHandler.addTagValue("use_logfield", logfieldUsed));
+        retval.append("      </log>" + Const.CR);
+        retval.append("    <maxdate>" + Const.CR);
+        retval.append("      " + XMLHandler.addTagValue("connection", maxDateConnection == null ? "" : maxDateConnection.getName()));
+        retval.append("      " + XMLHandler.addTagValue("table", maxDateTable));
+        retval.append("      " + XMLHandler.addTagValue("field", maxDateField));
+        retval.append("      " + XMLHandler.addTagValue("offset", maxDateOffset));
+        retval.append("      " + XMLHandler.addTagValue("maxdiff", maxDateDifference));
+        retval.append("      </maxdate>" + Const.CR);
+        retval.append("    " + XMLHandler.addTagValue("size_rowset", sizeRowset));
+        retval.append("    " + XMLHandler.addTagValue("sleep_time_empty", sleepTimeEmpty));
+        retval.append("    " + XMLHandler.addTagValue("sleep_time_full", sleepTimeFull));
 
-        xml += "    <dependencies>" + Const.CR;
+        retval.append("    <dependencies>" + Const.CR);
         for (int i = 0; i < nrDependencies(); i++)
         {
             TransDependency td = getDependency(i);
-            xml += td.getXML();
+            retval.append(td.getXML());
         }
-        xml += "      </dependencies>" + Const.CR;
+        retval.append("      </dependencies>" + Const.CR);
 
-        xml += "    </info>" + Const.CR;
+        retval.append("    </info>" + Const.CR);
 
-        xml += "  <notepads>" + Const.CR;
+        retval.append("  <notepads>" + Const.CR);
         if (notes != null) for (int i = 0; i < nrNotes(); i++)
         {
             NotePadMeta ni = getNote(i);
-            xml += ni.getXML();
+            retval.append(ni.getXML());
         }
-        xml += "    </notepads>" + Const.CR;
+        retval.append("    </notepads>" + Const.CR);
 
         // The database connections...
         for (int i = 0; i < nrDatabases(); i++)
@@ -1948,33 +1948,33 @@ public class TransMeta implements XMLInterface
             DatabaseMeta dbMeta = getDatabase(i);
             if (props.areOnlyUsedConnectionsSavedToXML())
             {
-                if (isDatabaseConnectionUsed(dbMeta)) xml += dbMeta.getXML(); 
+                if (isDatabaseConnectionUsed(dbMeta)) retval.append(dbMeta.getXML());
             }
             else
             {
-                xml += dbMeta.getXML();
+                retval.append(dbMeta.getXML());
             }
             
             
         }
 
-        xml += "  <order>" + Const.CR;
+        retval.append("  <order>" + Const.CR);
         for (int i = 0; i < nrTransHops(); i++)
         {
             TransHopMeta transHopMeta = getTransHop(i);
-            xml += transHopMeta.getXML();
+            retval.append(transHopMeta.getXML());
         }
-        xml += "  </order>" + Const.CR + Const.CR;
+        retval.append("  </order>" + Const.CR + Const.CR);
 
         for (int i = 0; i < nrSteps(); i++)
         {
             StepMeta stepMeta = getStep(i);
-            xml += stepMeta.getXML();
+            retval.append(stepMeta.getXML());
         }
 
-        xml += "</transformation>" + Const.CR;
+        retval.append("</transformation>" + Const.CR);
 
-        return xml;
+        return retval.toString();
     }
 
     /**

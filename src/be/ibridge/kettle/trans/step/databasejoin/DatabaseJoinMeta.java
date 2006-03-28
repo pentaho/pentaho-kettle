@@ -333,25 +333,24 @@ public class DatabaseJoinMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
-		int i;
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName());
-		retval+="    "+XMLHandler.addTagValue("rowlimit", rowLimit);
-		retval+="    "+XMLHandler.addTagValue("sql", sql);
-		retval+="    "+XMLHandler.addTagValue("outer_join", outerJoin);
+		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName()));
+		retval.append("    "+XMLHandler.addTagValue("rowlimit", rowLimit));
+		retval.append("    "+XMLHandler.addTagValue("sql", sql));
+		retval.append("    "+XMLHandler.addTagValue("outer_join", outerJoin));
 
-		retval+="    <parameter>"+Const.CR;
-		for (i=0;i<parameterField.length;i++)
+		retval.append("    <parameter>"+Const.CR);
+		for (int i=0;i<parameterField.length;i++)
 		{
-			retval+="      <field>"+Const.CR;
-			retval+="        "+XMLHandler.addTagValue("name", parameterField[i]);
-			retval+="        "+XMLHandler.addTagValue("type", Value.getTypeDesc(parameterType[i]));
-			retval+="        </field>"+Const.CR;
+			retval.append("      <field>"+Const.CR);
+			retval.append("        "+XMLHandler.addTagValue("name", parameterField[i]));
+			retval.append("        "+XMLHandler.addTagValue("type", Value.getTypeDesc(parameterType[i])));
+			retval.append("        </field>"+Const.CR);
 		}
-		retval+="      </parameter>"+Const.CR;
+		retval.append("      </parameter>"+Const.CR);
 
-		return retval;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

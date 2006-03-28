@@ -251,42 +251,42 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
 
     public String getXML()
     {
-        String retval = "";
+        StringBuffer retval = new StringBuffer();
 
-        retval += "      " + XMLHandler.addTagValue("key_field", keyField);
+        retval.append("      " + XMLHandler.addTagValue("key_field", keyField));
 
-        retval += "      <group>" + Const.CR;
+        retval.append("      <group>" + Const.CR);
         for (int i = 0; i < groupField.length; i++)
         {
-            retval += "        <field>" + Const.CR;
-            retval += "          " + XMLHandler.addTagValue("name", groupField[i]);
-            retval += "          </field>" + Const.CR;
+            retval.append("        <field>" + Const.CR);
+            retval.append("          " + XMLHandler.addTagValue("name", groupField[i]));
+            retval.append("          </field>" + Const.CR);
         }
-        retval += "        </group>" + Const.CR;
+        retval.append("        </group>" + Const.CR);
 
-        retval += "      <fields>" + Const.CR;
+        retval.append("      <fields>" + Const.CR);
         for (int i = 0; i < denormaliserTargetField.length; i++)
         {
             DenormaliserTargetField field = denormaliserTargetField[i];
 
-            retval += "        <field>" + Const.CR;
-            retval += "          " + XMLHandler.addTagValue("field_name", field.getFieldName());
-            retval += "          " + XMLHandler.addTagValue("key_value", field.getKeyValue());
-            retval += "          " + XMLHandler.addTagValue("target_name", field.getTargetName());
-            retval += "          " + XMLHandler.addTagValue("target_type", field.getTargetTypeDesc());
-            retval += "          " + XMLHandler.addTagValue("target_format", field.getTargetFormat());
-            retval += "          " + XMLHandler.addTagValue("target_length", field.getTargetLength());
-            retval += "          " + XMLHandler.addTagValue("target_precision", field.getTargetPrecision());
-            retval += "          " + XMLHandler.addTagValue("target_decimal_symbol", field.getTargetDecimalSymbol());
-            retval += "          " + XMLHandler.addTagValue("target_grouping_symbol", field.getTargetGroupingSymbol());
-            retval += "          " + XMLHandler.addTagValue("target_currency_symbol", field.getTargetCurrencySymbol());
-            retval += "          " + XMLHandler.addTagValue("target_null_string", field.getTargetNullString());
-            retval += "          " + XMLHandler.addTagValue("target_aggregation_type", field.getTargetAggregationTypeDesc());
-            retval += "          </field>" + Const.CR;
+            retval.append("        <field>" + Const.CR);
+            retval.append("          " + XMLHandler.addTagValue("field_name", field.getFieldName()));
+            retval.append("          " + XMLHandler.addTagValue("key_value", field.getKeyValue()));
+            retval.append("          " + XMLHandler.addTagValue("target_name", field.getTargetName()));
+            retval.append("          " + XMLHandler.addTagValue("target_type", field.getTargetTypeDesc()));
+            retval.append("          " + XMLHandler.addTagValue("target_format", field.getTargetFormat()));
+            retval.append("          " + XMLHandler.addTagValue("target_length", field.getTargetLength()));
+            retval.append("          " + XMLHandler.addTagValue("target_precision", field.getTargetPrecision()));
+            retval.append("          " + XMLHandler.addTagValue("target_decimal_symbol", field.getTargetDecimalSymbol()));
+            retval.append("          " + XMLHandler.addTagValue("target_grouping_symbol", field.getTargetGroupingSymbol()));
+            retval.append("          " + XMLHandler.addTagValue("target_currency_symbol", field.getTargetCurrencySymbol()));
+            retval.append("          " + XMLHandler.addTagValue("target_null_string", field.getTargetNullString()));
+            retval.append("          " + XMLHandler.addTagValue("target_aggregation_type", field.getTargetAggregationTypeDesc()));
+            retval.append("          </field>" + Const.CR);
         }
-        retval += "        </fields>" + Const.CR;
+        retval.append("        </fields>" + Const.CR);
 
-        return retval;
+        return retval.toString();
     }
 
     public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException

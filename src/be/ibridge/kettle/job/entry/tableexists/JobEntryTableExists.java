@@ -48,7 +48,7 @@ public class JobEntryTableExists extends JobEntryBase implements JobEntryInterfa
 
 	public JobEntryTableExists(String n)
 	{
-		super(n, "");
+	    super(n, "");
 		tablename=null;
 		connection=null;
 		setID(-1L);
@@ -67,14 +67,14 @@ public class JobEntryTableExists extends JobEntryBase implements JobEntryInterfa
 
 	public String getXML()
 	{
-		String retval ="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+=super.getXML();
+		retval.append(super.getXML());
 		
-		retval+="      "+XMLHandler.addTagValue("tablename",  tablename);
-		retval+="      "+XMLHandler.addTagValue("connection", connection==null?null:connection.getName());
+		retval.append("      "+XMLHandler.addTagValue("tablename",  tablename));
+		retval.append("      "+XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
 		
-		return retval;
+		return retval.toString();
 	}
 	
 	public void loadXML(Node entrynode, ArrayList databases)

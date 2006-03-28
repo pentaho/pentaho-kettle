@@ -101,13 +101,13 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public String getXML()
 	{
-		String retval="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="    <file>"+Const.CR;
-		retval+="      "+XMLHandler.addTagValue("name",       filename);
-		retval+="      </file>"+Const.CR;
+		retval.append("    <file>"+Const.CR);
+		retval.append("      "+XMLHandler.addTagValue("name",       filename));
+		retval.append("      </file>"+Const.CR);
 
-		return retval;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

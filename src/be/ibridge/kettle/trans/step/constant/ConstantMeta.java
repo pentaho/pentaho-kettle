@@ -335,30 +335,29 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public String getXML()
 	{
-		String retval="";
-		int i;
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="    <fields>"+Const.CR;
-		for (i=0;i<fieldName.length;i++)
+		retval.append("    <fields>"+Const.CR);
+		for (int i=0;i<fieldName.length;i++)
 		{
 			if (fieldName[i]!=null && fieldName[i].length()!=0)
 			{
-				retval+="      <field>"+Const.CR;
-				retval+="        "+XMLHandler.addTagValue("name",      fieldName[i]);
-				retval+="        "+XMLHandler.addTagValue("type",      fieldType[i]);
-				retval+="        "+XMLHandler.addTagValue("format",    fieldFormat[i]);
-				retval+="        "+XMLHandler.addTagValue("currency",  currency[i]);
-				retval+="        "+XMLHandler.addTagValue("decimal",   decimal[i]);
-				retval+="        "+XMLHandler.addTagValue("group",     group[i]);
-				retval+="        "+XMLHandler.addTagValue("nullif",    value[i]);
-				retval+="        "+XMLHandler.addTagValue("length",    fieldLength[i]);
-				retval+="        "+XMLHandler.addTagValue("precision", fieldPrecision[i]);
-				retval+="        </field>"+Const.CR;
+				retval.append("      <field>"+Const.CR);
+				retval.append("        "+XMLHandler.addTagValue("name",      fieldName[i]));
+				retval.append("        "+XMLHandler.addTagValue("type",      fieldType[i]));
+				retval.append("        "+XMLHandler.addTagValue("format",    fieldFormat[i]));
+				retval.append("        "+XMLHandler.addTagValue("currency",  currency[i]));
+				retval.append("        "+XMLHandler.addTagValue("decimal",   decimal[i]));
+				retval.append("        "+XMLHandler.addTagValue("group",     group[i]));
+				retval.append("        "+XMLHandler.addTagValue("nullif",    value[i]));
+				retval.append("        "+XMLHandler.addTagValue("length",    fieldLength[i]));
+				retval.append("        "+XMLHandler.addTagValue("precision", fieldPrecision[i]));
+				retval.append("        </field>"+Const.CR);
 			}
 		}
-		retval+="      </fields>"+Const.CR;
+		retval.append("      </fields>"+Const.CR);
 
-		return retval;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

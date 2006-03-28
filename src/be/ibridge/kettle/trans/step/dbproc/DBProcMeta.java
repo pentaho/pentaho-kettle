@@ -306,30 +306,29 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
-		int i;
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="    "+XMLHandler.addTagValue("connection", database==null?"":database.getName());
-		retval+="    "+XMLHandler.addTagValue("procedure", procedure);
-		retval+="    <lookup>"+Const.CR;
+		retval.append("    "+XMLHandler.addTagValue("connection", database==null?"":database.getName()));
+		retval.append("    "+XMLHandler.addTagValue("procedure", procedure));
+		retval.append("    <lookup>"+Const.CR);
 
-		for (i=0;i<argument.length;i++)
+		for (int i=0;i<argument.length;i++)
 		{
-			retval+="      <arg>"+Const.CR;
-			retval+="        "+XMLHandler.addTagValue("name",      argument[i]);
-			retval+="        "+XMLHandler.addTagValue("direction", argumentDirection[i]);
-			retval+="        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(argumentType[i]));
-			retval+="        </arg>"+Const.CR;
+			retval.append("      <arg>"+Const.CR);
+			retval.append("        "+XMLHandler.addTagValue("name",      argument[i]));
+			retval.append("        "+XMLHandler.addTagValue("direction", argumentDirection[i]));
+			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(argumentType[i])));
+			retval.append("        </arg>"+Const.CR);
 		}
 
-		retval+="      </lookup>"+Const.CR;
+		retval.append("      </lookup>"+Const.CR);
 
-		retval+="    <result>"+Const.CR;
-		retval+="      "+XMLHandler.addTagValue("name", resultName);
-		retval+="      "+XMLHandler.addTagValue("type", Value.getTypeDesc(resultType));
-		retval+="      </result>"+Const.CR;
+		retval.append("    <result>"+Const.CR);
+		retval.append("      "+XMLHandler.addTagValue("name", resultName));
+		retval.append("      "+XMLHandler.addTagValue("type", Value.getTypeDesc(resultType)));
+		retval.append("      </result>"+Const.CR);
 
-		return retval;
+		return retval.toString();
 	}
 	
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

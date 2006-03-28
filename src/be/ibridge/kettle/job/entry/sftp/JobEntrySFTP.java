@@ -72,20 +72,20 @@ public class JobEntrySFTP extends JobEntryBase implements JobEntryInterface
 
 	public String getXML()
 	{
-		String retval ="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+=super.getXML();
+		retval.append(super.getXML());
 		
-		retval+="      "+XMLHandler.addTagValue("servername",   serverName);
-		retval+="      "+XMLHandler.addTagValue("serverport",   serverPort);
-		retval+="      "+XMLHandler.addTagValue("username",     userName);
-		retval+="      "+XMLHandler.addTagValue("password",     password);
-		retval+="      "+XMLHandler.addTagValue("sftpdirectory", sftpDirectory);
-		retval+="      "+XMLHandler.addTagValue("targetdirectory", targetDirectory);
-		retval+="      "+XMLHandler.addTagValue("wildcard",     wildcard);
-		retval+="      "+XMLHandler.addTagValue("remove",       remove);
+		retval.append("      "+XMLHandler.addTagValue("servername",   serverName));
+		retval.append("      "+XMLHandler.addTagValue("serverport",   serverPort));
+		retval.append("      "+XMLHandler.addTagValue("username",     userName));
+		retval.append("      "+XMLHandler.addTagValue("password",     password));
+		retval.append("      "+XMLHandler.addTagValue("sftpdirectory", sftpDirectory));
+		retval.append("      "+XMLHandler.addTagValue("targetdirectory", targetDirectory));
+		retval.append("      "+XMLHandler.addTagValue("wildcard",     wildcard));
+		retval.append("      "+XMLHandler.addTagValue("remove",       remove));
 		
-		return retval;
+		return retval.toString();
 	}
 	
 	public void loadXML(Node entrynode, ArrayList databases)

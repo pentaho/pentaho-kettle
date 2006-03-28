@@ -81,20 +81,20 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 
 	public String getXML()
 	{
-		String retval ="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+=super.getXML();
+		retval.append(super.getXML());
 		
-		retval+="      "+XMLHandler.addTagValue("server",         server);
-		retval+="      "+XMLHandler.addTagValue("destination",    destination);
-		retval+="      "+XMLHandler.addTagValue("replyto",        replyto);
-		retval+="      "+XMLHandler.addTagValue("subject",        subject);
-		retval+="      "+XMLHandler.addTagValue("include_date",   include_date);
-		retval+="      "+XMLHandler.addTagValue("contact_person", contact_person);
-		retval+="      "+XMLHandler.addTagValue("contact_phone",  contact_phone);
-		retval+="      "+XMLHandler.addTagValue("comment",        comment);
+		retval.append("      "+XMLHandler.addTagValue("server",         server));
+		retval.append("      "+XMLHandler.addTagValue("destination",    destination));
+		retval.append("      "+XMLHandler.addTagValue("replyto",        replyto));
+		retval.append("      "+XMLHandler.addTagValue("subject",        subject));
+		retval.append("      "+XMLHandler.addTagValue("include_date",   include_date));
+		retval.append("      "+XMLHandler.addTagValue("contact_person", contact_person));
+		retval.append("      "+XMLHandler.addTagValue("contact_phone",  contact_phone));
+		retval.append("      "+XMLHandler.addTagValue("comment",        comment));
 
-		return retval;
+		return retval.toString();
 	}
 	
 	public void loadXML(Node entrynode, ArrayList databases)

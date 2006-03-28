@@ -64,13 +64,12 @@ public class JobEntryFileExists extends JobEntryBase implements JobEntryInterfac
 
 	public String getXML()
 	{
-		String retval ="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+=super.getXML();
+		retval.append(super.getXML());		
+		retval.append("      "+XMLHandler.addTagValue("filename",   filename));
 		
-		retval+="      "+XMLHandler.addTagValue("filename",   filename);
-		
-		return retval;
+		return retval.toString();
 	}
 	
 	public void loadXML(Node entrynode, ArrayList databases)

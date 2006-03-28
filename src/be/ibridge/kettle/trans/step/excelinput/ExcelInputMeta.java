@@ -701,76 +701,74 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public String getXML()
 	{
-		String retval="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="    "+XMLHandler.addTagValue("header",          startsWithHeader);
-		retval+="    "+XMLHandler.addTagValue("noempty",         ignoreEmptyRows);
-		retval+="    "+XMLHandler.addTagValue("stoponempty",     stopOnEmpty);
-		retval+="    "+XMLHandler.addTagValue("filefield",       fileField);
-		retval+="    "+XMLHandler.addTagValue("sheetfield",      sheetField);
-		retval+="    "+XMLHandler.addTagValue("rownumfield",     rowNumberField);
-		retval+="    "+XMLHandler.addTagValue("sheetfield",      sheetField);
-		retval+="    "+XMLHandler.addTagValue("filefield",       fileField);
-		retval+="    "+XMLHandler.addTagValue("limit",           rowLimit);
+		retval.append("    "+XMLHandler.addTagValue("header",          startsWithHeader));
+		retval.append("    "+XMLHandler.addTagValue("noempty",         ignoreEmptyRows));
+		retval.append("    "+XMLHandler.addTagValue("stoponempty",     stopOnEmpty));
+		retval.append("    "+XMLHandler.addTagValue("filefield",       fileField));
+		retval.append("    "+XMLHandler.addTagValue("sheetfield",      sheetField));
+		retval.append("    "+XMLHandler.addTagValue("rownumfield",     rowNumberField));
+		retval.append("    "+XMLHandler.addTagValue("sheetfield",      sheetField));
+		retval.append("    "+XMLHandler.addTagValue("filefield",       fileField));
+		retval.append("    "+XMLHandler.addTagValue("limit",           rowLimit));
 
 		/*
 		 * Describe the files to read
 		 */
-		retval+="    <file>"+Const.CR;
+		retval.append("    <file>"+Const.CR);
 		for (int i=0;i<fileName.length;i++)
 		{
-			retval+="      "+XMLHandler.addTagValue("name",     fileName[i]);
-			retval+="      "+XMLHandler.addTagValue("filemask", fileMask[i]);
-			retval+="      "+XMLHandler.addTagValue("file_required", fileRequired[i]);
+			retval.append("      "+XMLHandler.addTagValue("name",     fileName[i]));
+			retval.append("      "+XMLHandler.addTagValue("filemask", fileMask[i]));
+			retval.append("      "+XMLHandler.addTagValue("file_required", fileRequired[i]));
 		}
-		retval+="      </file>"+Const.CR;
+		retval.append("      </file>"+Const.CR);
 
 		/*
 		 * Describe the fields to read
 		 */
-		retval+="    <fields>"+Const.CR;
+		retval.append("    <fields>"+Const.CR);
 		for (int i=0;i<fieldName.length;i++)
 		{
-			retval+="      <field>"+Const.CR;
-			retval+="        "+XMLHandler.addTagValue("name",      fieldName[i]);
-			retval+="        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(fieldType[i]));
-			retval+="        "+XMLHandler.addTagValue("length",    fieldLength[i]);
-			retval+="        "+XMLHandler.addTagValue("precision", fieldPrecision[i]);
-			retval+="        "+XMLHandler.addTagValue("trim_type", getTrimTypeDesc( fieldTrimType[i] ));
-			retval+="        "+XMLHandler.addTagValue("repeat",    fieldRepeat[i]);
-			retval+="        </field>"+Const.CR;
+			retval.append("      <field>"+Const.CR);
+			retval.append("        "+XMLHandler.addTagValue("name",      fieldName[i]));
+			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(fieldType[i])));
+			retval.append("        "+XMLHandler.addTagValue("length",    fieldLength[i]));
+			retval.append("        "+XMLHandler.addTagValue("precision", fieldPrecision[i]));
+			retval.append("        "+XMLHandler.addTagValue("trim_type", getTrimTypeDesc( fieldTrimType[i] )));
+			retval.append("        "+XMLHandler.addTagValue("repeat",    fieldRepeat[i]));
+			retval.append("        </field>"+Const.CR);
 		}
-		retval+="      </fields>"+Const.CR;
+		retval.append("      </fields>"+Const.CR);
 
 		/*
 		 * Describe the sheets to load... 
 		 */
-		retval+="    <sheets>"+Const.CR;
+		retval.append("    <sheets>"+Const.CR);
 		for (int i=0;i<sheetName.length;i++)
 		{
-			retval+="      <sheet>"+Const.CR;
-			retval+="        "+XMLHandler.addTagValue("name",      sheetName[i]);
-			retval+="        "+XMLHandler.addTagValue("startrow",  startRow[i]);
-			retval+="        "+XMLHandler.addTagValue("startcol",  startColumn[i]);
-			retval+="        </sheet>"+Const.CR;
+			retval.append("      <sheet>"+Const.CR);
+			retval.append("        "+XMLHandler.addTagValue("name",      sheetName[i]));
+			retval.append("        "+XMLHandler.addTagValue("startrow",  startRow[i]));
+			retval.append("        "+XMLHandler.addTagValue("startcol",  startColumn[i]));
+			retval.append("        </sheet>"+Const.CR);
 		}
-		retval+="      </sheets>"+Const.CR;
+		retval.append("      </sheets>"+Const.CR);
 		
         // ERROR HANDLING
-        retval += "    " + XMLHandler.addTagValue("strict_types", strictTypes);
-        retval += "    " + XMLHandler.addTagValue("error_ignored", errorIgnored);
-        retval += "    " + XMLHandler.addTagValue("error_line_skipped", errorLineSkipped);
+        retval.append("    " + XMLHandler.addTagValue("strict_types", strictTypes));
+        retval.append("    " + XMLHandler.addTagValue("error_ignored", errorIgnored));
+        retval.append("    " + XMLHandler.addTagValue("error_line_skipped", errorLineSkipped));
         
-        retval += "    " + XMLHandler.addTagValue("bad_line_files_destination_directory", warningFilesDestinationDirectory);
-        retval += "    " + XMLHandler.addTagValue("bad_line_files_extension", warningFilesExtension);
-        retval += "    " + XMLHandler.addTagValue("error_line_files_destination_directory", errorFilesDestinationDirectory);
-        retval += "    " + XMLHandler.addTagValue("error_line_files_extension", errorFilesExtension);
-        retval += "    " + XMLHandler.addTagValue("line_number_files_destination_directory", lineNumberFilesDestinationDirectory);
-        retval += "    " + XMLHandler.addTagValue("line_number_files_extension", lineNumberFilesExtension);
-
+        retval.append("    " + XMLHandler.addTagValue("bad_line_files_destination_directory", warningFilesDestinationDirectory));
+        retval.append("    " + XMLHandler.addTagValue("bad_line_files_extension", warningFilesExtension));
+        retval.append("    " + XMLHandler.addTagValue("error_line_files_destination_directory", errorFilesDestinationDirectory));
+        retval.append("    " + XMLHandler.addTagValue("error_line_files_extension", errorFilesExtension));
+        retval.append("    " + XMLHandler.addTagValue("line_number_files_destination_directory", lineNumberFilesDestinationDirectory));
+        retval.append("    " + XMLHandler.addTagValue("line_number_files_extension", lineNumberFilesExtension));
 		
-		
-		return retval;
+		return retval.toString();
 	}
 	
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

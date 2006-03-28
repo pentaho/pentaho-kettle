@@ -81,21 +81,21 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 
 	public String getXML()
 	{
-		String retval ="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+=super.getXML();
+		retval.append(super.getXML());
 		
-		retval+="      "+XMLHandler.addTagValue("servername",   serverName);
-		retval+="      "+XMLHandler.addTagValue("username",     userName);
-		retval+="      "+XMLHandler.addTagValue("password",     password);
-		retval+="      "+XMLHandler.addTagValue("ftpdirectory", ftpDirectory);
-		retval+="      "+XMLHandler.addTagValue("targetdirectory", targetDirectory);
-		retval+="      "+XMLHandler.addTagValue("wildcard",     wildcard);
-		retval+="      "+XMLHandler.addTagValue("binary",       binaryMode);
-		retval+="      "+XMLHandler.addTagValue("timeout",      timeout);
-		retval+="      "+XMLHandler.addTagValue("remove",       remove);
+		retval.append("      "+XMLHandler.addTagValue("servername",   serverName));
+		retval.append("      "+XMLHandler.addTagValue("username",     userName));
+		retval.append("      "+XMLHandler.addTagValue("password",     password));
+		retval.append("      "+XMLHandler.addTagValue("ftpdirectory", ftpDirectory));
+		retval.append("      "+XMLHandler.addTagValue("targetdirectory", targetDirectory));
+		retval.append("      "+XMLHandler.addTagValue("wildcard",     wildcard));
+		retval.append("      "+XMLHandler.addTagValue("binary",       binaryMode));
+		retval.append("      "+XMLHandler.addTagValue("timeout",      timeout));
+		retval.append("      "+XMLHandler.addTagValue("remove",       remove));
 		
-		return retval;
+		return retval.toString();
 	}
 	
 	public void loadXML(Node entrynode, ArrayList databases)

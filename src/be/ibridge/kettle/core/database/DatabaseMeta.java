@@ -845,22 +845,22 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	
 	public String getXML()
 	{
-		String retval="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="  <connection>"+Const.CR;
-		retval+="    "+XMLHandler.addTagValue("name",       getName());
-		retval+="    "+XMLHandler.addTagValue("server",     getHostname());
-		retval+="    "+XMLHandler.addTagValue("type",       getDatabaseTypeDesc());
-		retval+="    "+XMLHandler.addTagValue("access",     getAccessTypeDesc());
-		retval+="    "+XMLHandler.addTagValue("database",   getDatabaseName());
-		retval+="    "+XMLHandler.addTagValue("port",       getDatabasePortNumber());
-		retval+="    "+XMLHandler.addTagValue("username",   getUsername());
-		retval+="    "+XMLHandler.addTagValue("password",   "Encrypted "+Encr.encryptPassword(getPassword()));	
-		retval+="    "+XMLHandler.addTagValue("servername", getServername());
-		retval+="    "+XMLHandler.addTagValue("data_tablespace", getDataTablespace());
-		retval+="    "+XMLHandler.addTagValue("index_tablespace", getIndexTablespace());
+		retval.append("  <connection>"+Const.CR);
+		retval.append("    "+XMLHandler.addTagValue("name",       getName()));
+		retval.append("    "+XMLHandler.addTagValue("server",     getHostname()));
+		retval.append("    "+XMLHandler.addTagValue("type",       getDatabaseTypeDesc()));
+		retval.append("    "+XMLHandler.addTagValue("access",     getAccessTypeDesc()));
+		retval.append("    "+XMLHandler.addTagValue("database",   getDatabaseName()));
+		retval.append("    "+XMLHandler.addTagValue("port",       getDatabasePortNumber()));
+		retval.append("    "+XMLHandler.addTagValue("username",   getUsername()));
+		retval.append("    "+XMLHandler.addTagValue("password",   "Encrypted "+Encr.encryptPassword(getPassword())) );	
+		retval.append("    "+XMLHandler.addTagValue("servername", getServername()));
+		retval.append("    "+XMLHandler.addTagValue("data_tablespace", getDataTablespace()));
+		retval.append("    "+XMLHandler.addTagValue("index_tablespace", getIndexTablespace()));
         
-        retval+="    <attributes>"+Const.CR;
+        retval.append("    <attributes>"+Const.CR);
         List list = new ArrayList( getAttributes().keySet() );
         Collections.sort(list);  // Sort the entry-sets to make sure we can compare XML strings: if the order is different, the XML is different.  
         
@@ -870,16 +870,16 @@ public class DatabaseMeta implements Cloneable, XMLInterface
             String attribute = (String) getAttributes().getProperty(code);
             if (attribute!=null && attribute.length()>0)
             {
-                retval+="      <attribute>"+
+                retval.append("      <attribute>"+
                                     XMLHandler.addTagValue("code", code, false)+
                                     XMLHandler.addTagValue("attribute", attribute, false)+
-                               "</attribute>"+Const.CR;
+                               "</attribute>"+Const.CR);
             }
         }
-        retval+="    </attributes>"+Const.CR;
+        retval.append("    </attributes>"+Const.CR);
         
-		retval+="  </connection>"+Const.CR;
-		return retval;
+		retval.append("  </connection>"+Const.CR);
+		return retval.toString();
 	}
 	
 	public int hashCode()

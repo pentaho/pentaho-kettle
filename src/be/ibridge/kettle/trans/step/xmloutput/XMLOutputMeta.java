@@ -496,46 +496,45 @@ public class XMLOutputMeta extends BaseStepMeta  implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
-		int i;
+		StringBuffer retval=new StringBuffer();
 		
-        retval+="    "+XMLHandler.addTagValue("encoding",  encoding);
-        retval+="    "+XMLHandler.addTagValue("xml_main_element",  mainElement);
-        retval+="    "+XMLHandler.addTagValue("xml_repeat_element",  repeatElement);
+        retval.append("    "+XMLHandler.addTagValue("encoding",  encoding));
+        retval.append("    "+XMLHandler.addTagValue("xml_main_element",  mainElement));
+        retval.append("    "+XMLHandler.addTagValue("xml_repeat_element",  repeatElement));
 
-		retval+="    <file>"+Const.CR;
-		retval+="      "+XMLHandler.addTagValue("name",       fileName);
-		retval+="      "+XMLHandler.addTagValue("extention",  extension);
-		retval+="      "+XMLHandler.addTagValue("split",      stepNrInFilename);
-		retval+="      "+XMLHandler.addTagValue("add_date",   dateInFilename);
-		retval+="      "+XMLHandler.addTagValue("add_time",   timeInFilename);
-		retval+="      "+XMLHandler.addTagValue("zipped",     zipped);
-		retval+="      "+XMLHandler.addTagValue("splitevery", splitEvery);
-		retval+="      </file>"+Const.CR;
-		retval+="    <fields>"+Const.CR;
-		for (i=0;i<outputFields.length;i++)
+		retval.append("    <file>"+Const.CR);
+		retval.append("      "+XMLHandler.addTagValue("name",       fileName));
+		retval.append("      "+XMLHandler.addTagValue("extention",  extension));
+		retval.append("      "+XMLHandler.addTagValue("split",      stepNrInFilename));
+		retval.append("      "+XMLHandler.addTagValue("add_date",   dateInFilename));
+		retval.append("      "+XMLHandler.addTagValue("add_time",   timeInFilename));
+		retval.append("      "+XMLHandler.addTagValue("zipped",     zipped));
+		retval.append("      "+XMLHandler.addTagValue("splitevery", splitEvery));
+		retval.append("      </file>"+Const.CR);
+		retval.append("    <fields>"+Const.CR);
+		for (int i=0;i<outputFields.length;i++)
 		{
 		    XMLField field = outputFields[i];
 		    
 			if (field.getFieldName()!=null && field.getFieldName().length()!=0)
 			{
-				retval+="      <field>"+Const.CR;
-				retval+="        "+XMLHandler.addTagValue("name",      field.getFieldName());
-                retval+="        "+XMLHandler.addTagValue("element",   field.getElementName());
-				retval+="        "+XMLHandler.addTagValue("type",      field.getType());
-				retval+="        "+XMLHandler.addTagValue("format",    field.getFormat());
-				retval+="        "+XMLHandler.addTagValue("currency",  field.getCurrencySymbol());
-				retval+="        "+XMLHandler.addTagValue("decimal",   field.getDecimalSymbol());
-				retval+="        "+XMLHandler.addTagValue("group",     field.getGroupingSymbol());
-				retval+="        "+XMLHandler.addTagValue("nullif",    field.getNullString());
-				retval+="        "+XMLHandler.addTagValue("length",    field.getLength());
-				retval+="        "+XMLHandler.addTagValue("precision", field.getPrecision());
-				retval+="        </field>"+Const.CR;
+				retval.append("      <field>"+Const.CR);
+				retval.append("        "+XMLHandler.addTagValue("name",      field.getFieldName()));
+                retval.append("        "+XMLHandler.addTagValue("element",   field.getElementName()));
+				retval.append("        "+XMLHandler.addTagValue("type",      field.getType()));
+				retval.append("        "+XMLHandler.addTagValue("format",    field.getFormat()));
+				retval.append("        "+XMLHandler.addTagValue("currency",  field.getCurrencySymbol()));
+				retval.append("        "+XMLHandler.addTagValue("decimal",   field.getDecimalSymbol()));
+				retval.append("        "+XMLHandler.addTagValue("group",     field.getGroupingSymbol()));
+				retval.append("        "+XMLHandler.addTagValue("nullif",    field.getNullString()));
+				retval.append("        "+XMLHandler.addTagValue("length",    field.getLength()));
+				retval.append("        "+XMLHandler.addTagValue("precision", field.getPrecision()));
+				retval.append("        </field>"+Const.CR);
 			}
 		}
-		retval+="      </fields>"+Const.CR;
+		retval.append("      </fields>"+Const.CR);
 
-		return retval;
+		return retval.toString();
 	}
 	
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

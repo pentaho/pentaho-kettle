@@ -67,14 +67,14 @@ public class JobEntrySQL extends JobEntryBase implements JobEntryInterface
 
 	public String getXML()
 	{
-		String retval ="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+=super.getXML();
+		retval.append(super.getXML());
 		
-		retval+="      "+XMLHandler.addTagValue("sql",      sql);
-		retval+="      "+XMLHandler.addTagValue("connection", connection==null?null:connection.getName());
+		retval.append("      "+XMLHandler.addTagValue("sql",      sql));
+		retval.append("      "+XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
 		
-		return retval;
+		return retval.toString();
 	}
 	
 	public void loadXML(Node entrynode, ArrayList databases)

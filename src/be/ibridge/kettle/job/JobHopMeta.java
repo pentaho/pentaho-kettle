@@ -101,19 +101,19 @@ public class JobHopMeta implements Cloneable, XMLInterface
 
 	public String getXML()
 	{
-		String retval="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="    <hop>"+Const.CR;
-		retval+="      "+XMLHandler.addTagValue("from",          from_entry.getName());
-		retval+="      "+XMLHandler.addTagValue("to",            to_entry.getName());
-		retval+="      "+XMLHandler.addTagValue("from_nr",       from_entry.getNr());
-		retval+="      "+XMLHandler.addTagValue("to_nr",         to_entry.getNr());
-		retval+="      "+XMLHandler.addTagValue("enabled",       enabled);
-		retval+="      "+XMLHandler.addTagValue("evaluation",    evaluation);
-		retval+="      "+XMLHandler.addTagValue("unconditional", unconditional);
-		retval+="      </hop>"+Const.CR;
+		retval.append("    <hop>"+Const.CR);
+		retval.append("      "+XMLHandler.addTagValue("from",          from_entry.getName()));
+		retval.append("      "+XMLHandler.addTagValue("to",            to_entry.getName()));
+		retval.append("      "+XMLHandler.addTagValue("from_nr",       from_entry.getNr()));
+		retval.append("      "+XMLHandler.addTagValue("to_nr",         to_entry.getNr()));
+		retval.append("      "+XMLHandler.addTagValue("enabled",       enabled));
+		retval.append("      "+XMLHandler.addTagValue("evaluation",    evaluation));
+		retval.append("      "+XMLHandler.addTagValue("unconditional", unconditional));
+		retval.append("      </hop>"+Const.CR);
 		
-		return retval;
+		return retval.toString();
 	}
 
 	public JobHopMeta(Repository rep, long id_job_hop, JobMeta job, ArrayList jobcopies)

@@ -201,26 +201,25 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     
     public String getXML()
     {
-        String retval = "";
-        int i;
+        StringBuffer retval = new StringBuffer();
 
-        retval += "    <fields>" + Const.CR;
-        for (i = 0; i < fieldName.length; i++)
+        retval.append("    <fields>" + Const.CR);
+        for (int i = 0; i < fieldName.length; i++)
         {
             if (fieldName[i] != null && fieldName[i].length() != 0)
             {
-                retval += "      <field>" + Const.CR;
-                retval += "        " + XMLHandler.addTagValue("name", fieldName[i]);
-                retval += "        " + XMLHandler.addTagValue("type", Value.getTypeDesc(fieldType[i]));
-                retval += "        " + XMLHandler.addTagValue("length", fieldLength[i]);
-                retval += "        " + XMLHandler.addTagValue("precision", fieldPrecision[i]);
-                retval += "        " + XMLHandler.addTagValue("added", fieldAdded[i]?"Y":"N");
-                retval += "        </field>" + Const.CR;
+                retval.append("      <field>" + Const.CR);
+                retval.append("        " + XMLHandler.addTagValue("name", fieldName[i]));
+                retval.append("        " + XMLHandler.addTagValue("type", Value.getTypeDesc(fieldType[i])));
+                retval.append("        " + XMLHandler.addTagValue("length", fieldLength[i]));
+                retval.append("        " + XMLHandler.addTagValue("precision", fieldPrecision[i]));
+                retval.append("        " + XMLHandler.addTagValue("added", fieldAdded[i]?"Y":"N"));
+                retval.append("        </field>" + Const.CR);
             }
         }
-        retval += "      </fields>" + Const.CR;
+        retval.append("      </fields>" + Const.CR);
 
-        return retval;
+        return retval.toString();
     }
 
     public void setDefault()

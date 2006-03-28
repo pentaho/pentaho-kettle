@@ -208,36 +208,36 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 
     public String getXML()
     {
-        String retval="";
+        StringBuffer retval = new StringBuffer();
         
         if (mappingTransMeta!=null)
         {
-            retval+="    "+XMLHandler.addTagValue("trans_name", mappingTransMeta.getName());
+            retval.append("    "+XMLHandler.addTagValue("trans_name", mappingTransMeta.getName()));
             if (mappingTransMeta.getDirectory()!=null)
             {
-                retval+="    "+XMLHandler.addTagValue("directory_path", mappingTransMeta.getDirectory().getPath());
+                retval.append("    "+XMLHandler.addTagValue("directory_path", mappingTransMeta.getDirectory().getPath()));
             }
             if (mappingTransMeta.getFilename()!=null)
             {
-                retval+="    "+XMLHandler.addTagValue("filename", mappingTransMeta.getFilename());
+                retval.append("    "+XMLHandler.addTagValue("filename", mappingTransMeta.getFilename()));
             }
         }
         
-        retval+="  <input>"+Const.CR;
+        retval.append("  <input>"+Const.CR);
         for (int i=0;i<inputField.length;i++)
         {
-            retval+="    <connector>"+XMLHandler.addTagValue("field", inputField[i], false)+"  "+XMLHandler.addTagValue("mapping", inputMapping[i], false)+"</connector>"+Const.CR;
+            retval.append("    <connector>"+XMLHandler.addTagValue("field", inputField[i], false)+"  "+XMLHandler.addTagValue("mapping", inputMapping[i], false)+"</connector>"+Const.CR);
         }
-        retval+="    </input>"+Const.CR;
+        retval.append("    </input>"+Const.CR);
         
-        retval+="  <output>"+Const.CR;
+        retval.append("  <output>"+Const.CR);
         for (int i=0;i<inputField.length;i++)
         {
-            retval+="    <connector>"+XMLHandler.addTagValue("field", outputField[i], false)+"  "+XMLHandler.addTagValue("mapping", outputMapping[i], false)+"</connector>"+Const.CR;
+            retval.append("    <connector>"+XMLHandler.addTagValue("field", outputField[i], false)+"  "+XMLHandler.addTagValue("mapping", outputMapping[i], false)+"</connector>"+Const.CR);
         }
-        retval+="    </output>"+Const.CR;
+        retval.append("    </output>"+Const.CR);
         
-        return retval;
+        return retval.toString();
     }
 
 	public void setDefault()

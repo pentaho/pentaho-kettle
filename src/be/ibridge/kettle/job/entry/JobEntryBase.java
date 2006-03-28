@@ -233,12 +233,13 @@ public class JobEntryBase implements Cloneable
 
 	public String getXML()
 	{
-		String retval = "";
-		retval+="      "+XMLHandler.addTagValue("name",              getName());
-		retval+="      "+XMLHandler.addTagValue("description",       getDescription());
-		retval+="      "+XMLHandler.addTagValue("type",              getTypeDesc());
+        StringBuffer retval = new StringBuffer();
+        
+		retval.append("      "+XMLHandler.addTagValue("name",              getName()));
+		retval.append("      "+XMLHandler.addTagValue("description",       getDescription()));
+		retval.append("      "+XMLHandler.addTagValue("type",              getTypeDesc()));
 	
-		return retval;
+		return retval.toString();
 	}	
 
 	public void loadXML(Node entrynode, ArrayList databases)

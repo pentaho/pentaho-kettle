@@ -65,12 +65,12 @@ public class JobEntryEval extends JobEntryBase implements JobEntryInterface
 	
 	public String getXML()
 	{
-		String retval ="";
+        StringBuffer retval = new StringBuffer();
 	
-		retval+=super.getXML();
-		retval+="      "+XMLHandler.addTagValue("script",      script);
+		retval.append(super.getXML());
+		retval.append("      "+XMLHandler.addTagValue("script",      script));
 
-		return retval;
+		return retval.toString();
 	}
 	
 	public void loadXML(Node entrynode, ArrayList databases)

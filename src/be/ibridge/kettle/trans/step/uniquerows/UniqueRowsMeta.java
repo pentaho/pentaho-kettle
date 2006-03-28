@@ -201,22 +201,22 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
+		StringBuffer retval=new StringBuffer();
 
-		retval+="      "+XMLHandler.addTagValue("count_rows",  countRows);
-		retval+="      "+XMLHandler.addTagValue("count_field", countField);
+		retval.append("      "+XMLHandler.addTagValue("count_rows",  countRows));
+		retval.append("      "+XMLHandler.addTagValue("count_field", countField));
 
-		retval+="    <fields>";
+		retval.append("    <fields>");
 		for (int i=0;i<compareFields.length;i++)
 		{
-			retval+="      <field>";
-			retval+="        "+XMLHandler.addTagValue("name",  compareFields[i]);
-            retval+="        "+XMLHandler.addTagValue("case_insensitive",  caseInsensitive[i]);
-			retval+="        </field>";
+			retval.append("      <field>");
+			retval.append("        "+XMLHandler.addTagValue("name",  compareFields[i]));
+            retval.append("        "+XMLHandler.addTagValue("case_insensitive",  caseInsensitive[i]));
+			retval.append("        </field>");
 		}
-		retval+="      </fields>";
+		retval.append("      </fields>");
 
-		return retval;
+		return retval.toString();
 	}
 	
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

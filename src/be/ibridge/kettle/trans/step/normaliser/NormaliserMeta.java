@@ -299,23 +299,22 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
-		int i;
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="   "+XMLHandler.addTagValue("typefield", typeField);
+		retval.append("   "+XMLHandler.addTagValue("typefield", typeField));
 		
-		retval+="    <fields>";
-		for (i=0;i<fieldName.length;i++)
+		retval.append("    <fields>");
+		for (int i=0;i<fieldName.length;i++)
 		{
-			retval+="      <field>";
-			retval+="        "+XMLHandler.addTagValue("name",  fieldName[i]);
-			retval+="        "+XMLHandler.addTagValue("value", fieldValue[i]);
-			retval+="        "+XMLHandler.addTagValue("norm",  fieldNorm[i]);
-			retval+="        </field>";
+			retval.append("      <field>");
+			retval.append("        "+XMLHandler.addTagValue("name",  fieldName[i]));
+			retval.append("        "+XMLHandler.addTagValue("value", fieldValue[i]));
+			retval.append("        "+XMLHandler.addTagValue("norm",  fieldNorm[i]));
+			retval.append("        </field>");
 		}
-		retval+="      </fields>";
+		retval.append("      </fields>");
 
-		return retval;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

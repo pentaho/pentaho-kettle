@@ -395,35 +395,35 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
+        StringBuffer retval = new StringBuffer();
 
-		retval+="      "+XMLHandler.addTagValue("all_rows",  passAllRows);
-		retval+="      "+XMLHandler.addTagValue("ignore_aggregate",  aggregateIgnored);
-		retval+="      "+XMLHandler.addTagValue("field_ignore", aggregateIgnoredField);
-        retval+="      "+XMLHandler.addTagValue("directory", directory);
-        retval+="      "+XMLHandler.addTagValue("prefix",    prefix);
+		retval.append("      "+XMLHandler.addTagValue("all_rows",  passAllRows));
+		retval.append("      "+XMLHandler.addTagValue("ignore_aggregate",  aggregateIgnored));
+		retval.append("      "+XMLHandler.addTagValue("field_ignore", aggregateIgnoredField));
+        retval.append("      "+XMLHandler.addTagValue("directory", directory));
+        retval.append("      "+XMLHandler.addTagValue("prefix",    prefix));
 
-		retval+="      <group>"+Const.CR;
+		retval.append("      <group>"+Const.CR);
 		for (int i=0;i<groupField.length;i++)
 		{
-			retval+="        <field>"+Const.CR;
-			retval+="          "+XMLHandler.addTagValue("name", groupField[i]);
-			retval+="          </field>"+Const.CR;
+			retval.append("        <field>"+Const.CR);
+			retval.append("          "+XMLHandler.addTagValue("name", groupField[i]));
+			retval.append("          </field>"+Const.CR);
 		}
-		retval+="        </group>"+Const.CR;
+		retval.append("        </group>"+Const.CR);
 
-		retval+="      <fields>"+Const.CR;
+		retval.append("      <fields>"+Const.CR);
 		for (int i=0;i<subjectField.length;i++)
 		{
-			retval+="        <field>"+Const.CR;
-			retval+="          "+XMLHandler.addTagValue("aggregate", aggregateField[i]);
-			retval+="          "+XMLHandler.addTagValue("subject", subjectField[i]);
-			retval+="          "+XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i]));
-			retval+="          </field>"+Const.CR;
+			retval.append("        <field>"+Const.CR);
+			retval.append("          "+XMLHandler.addTagValue("aggregate", aggregateField[i]));
+			retval.append("          "+XMLHandler.addTagValue("subject", subjectField[i]));
+			retval.append("          "+XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i])));
+			retval.append("          </field>"+Const.CR);
 		}
-		retval+="        </fields>"+Const.CR;
+		retval.append("        </fields>"+Const.CR);
 
-		return retval;
+		return retval.toString();
 	}
 	
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

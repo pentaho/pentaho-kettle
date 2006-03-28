@@ -248,40 +248,40 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
     
     public String getXML()
     {
-        String retval="";
+        StringBuffer retval=new StringBuffer();
         
-        retval+="    "+XMLHandler.addTagValue("include",         includeFilename);
-        retval+="    "+XMLHandler.addTagValue("include_field",   filenameField);
-        retval+="    "+XMLHandler.addTagValue("rownum",          includeRowNumber);
-        retval+="    "+XMLHandler.addTagValue("rownum_field",    rowNumberField);
+        retval.append("    "+XMLHandler.addTagValue("include",         includeFilename));
+        retval.append("    "+XMLHandler.addTagValue("include_field",   filenameField));
+        retval.append("    "+XMLHandler.addTagValue("rownum",          includeRowNumber));
+        retval.append("    "+XMLHandler.addTagValue("rownum_field",    rowNumberField));
         
-        retval+="    <file>"+Const.CR;
+        retval.append("    <file>"+Const.CR);
         for (int i=0;i<fileName.length;i++)
         {
-            retval+="      "+XMLHandler.addTagValue("name",     fileName[i]);
-            retval+="      "+XMLHandler.addTagValue("filemask", fileMask[i]);
+            retval.append("      "+XMLHandler.addTagValue("name",     fileName[i]));
+            retval.append("      "+XMLHandler.addTagValue("filemask", fileMask[i]));
         }
-        retval+="      </file>"+Const.CR;
+        retval.append("      </file>"+Const.CR);
         
-        retval+="    <fields>"+Const.CR;
+        retval.append("    <fields>"+Const.CR);
         for (int i=0;i<inputFields.length;i++)
         {
             XMLInputField field = inputFields[i];
-            retval+=field.getXML();
+            retval.append(field.getXML());
         }
-        retval+="      </fields>"+Const.CR;
+        retval.append("      </fields>"+Const.CR);
         
-        retval+="    <positions>"+Const.CR;
+        retval.append("    <positions>"+Const.CR);
         for (int i=0;i<inputPosition.length;i++)
         {
-            retval+="      "+XMLHandler.addTagValue("position", inputPosition[i]);
+            retval.append("      "+XMLHandler.addTagValue("position", inputPosition[i]));
         }
         
-        retval+="      </positions>"+Const.CR;
+        retval.append("      </positions>"+Const.CR);
 
-        retval+="    "+XMLHandler.addTagValue("limit", rowLimit);
+        retval.append("    "+XMLHandler.addTagValue("limit", rowLimit));
 
-        return retval;
+        return retval.toString();
     }
 
 	private void readData(Node stepnode) throws KettleXMLException

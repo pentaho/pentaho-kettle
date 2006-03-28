@@ -63,21 +63,21 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 
 	public String getXML()
 	{
-		String retval="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="    <entry>"+Const.CR;
+		retval.append("    <entry>"+Const.CR);
 		
-		retval+=entry.getXML();
+		retval.append(entry.getXML());
 		
-		retval+="      "+XMLHandler.addTagValue("parallel", parallel);
-		retval+="      "+XMLHandler.addTagValue("draw",     draw);
-		retval+="      "+XMLHandler.addTagValue("nr",       nr);
-		retval+="      "+XMLHandler.addTagValue("xloc",     location.x);
-		retval+="      "+XMLHandler.addTagValue("yloc",     location.y);
+		retval.append("      "+XMLHandler.addTagValue("parallel", parallel));
+		retval.append("      "+XMLHandler.addTagValue("draw",     draw));
+		retval.append("      "+XMLHandler.addTagValue("nr",       nr));
+		retval.append("      "+XMLHandler.addTagValue("xloc",     location.x));
+		retval.append("      "+XMLHandler.addTagValue("yloc",     location.y));
 		
-		retval+="      </entry>"+Const.CR;
+		retval.append("      </entry>"+Const.CR);
 		
-		return retval;
+		return retval.toString();
 	}
 	
 	public JobEntryCopy(Node entrynode, ArrayList databases, Repository rep)

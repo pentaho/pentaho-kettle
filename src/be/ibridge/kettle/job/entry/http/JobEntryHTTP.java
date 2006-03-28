@@ -157,31 +157,31 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
 
     public String getXML()
     {
-        String retval = "";
+        StringBuffer retval = new StringBuffer();
 
-        retval += super.getXML();
+        retval.append(super.getXML() );
 
-        retval += "      " + XMLHandler.addTagValue("url", url);
-        retval += "      " + XMLHandler.addTagValue("targetfilename", targetFilename);
-        retval += "      " + XMLHandler.addTagValue("file_appended", fileAppended);
-        retval += "      " + XMLHandler.addTagValue("date_time_added", dateTimeAdded);
-        retval += "      " + XMLHandler.addTagValue("targetfilename_extention", targetFilenameExtention);
-        retval += "      " + XMLHandler.addTagValue("uploadfilename", uploadFilename);
+        retval.append("      " + XMLHandler.addTagValue("url", url));
+        retval.append("      " + XMLHandler.addTagValue("targetfilename", targetFilename));
+        retval.append("      " + XMLHandler.addTagValue("file_appended", fileAppended));
+        retval.append("      " + XMLHandler.addTagValue("date_time_added", dateTimeAdded));
+        retval.append("      " + XMLHandler.addTagValue("targetfilename_extention", targetFilenameExtention));
+        retval.append("      " + XMLHandler.addTagValue("uploadfilename", uploadFilename));
 
-        retval += "      " + XMLHandler.addTagValue("url_fieldname", urlFieldname);
-        retval += "      " + XMLHandler.addTagValue("run_every_row", runForEveryRow);
+        retval.append("      " + XMLHandler.addTagValue("url_fieldname", urlFieldname));
+        retval.append("      " + XMLHandler.addTagValue("run_every_row", runForEveryRow));
 
-        retval += "      " + XMLHandler.addTagValue("username", username);
+        retval.append("      " + XMLHandler.addTagValue("username", username));
         if (password != null && password.length() > 0)
         {
-            retval += "      " + XMLHandler.addTagValue("password", "Encrypted: " + Encr.encryptPassword(password));
+            retval.append("      " + XMLHandler.addTagValue("password", "Encrypted: " + Encr.encryptPassword(password)));
         }
 
-        retval += "      " + XMLHandler.addTagValue("proxy_host", proxyHostname);
-        retval += "      " + XMLHandler.addTagValue("proxy_port", proxyPort);
-        retval += "      " + XMLHandler.addTagValue("non_proxy_hosts", nonProxyHosts);
+        retval.append("      " + XMLHandler.addTagValue("proxy_host", proxyHostname));
+        retval.append("      " + XMLHandler.addTagValue("proxy_port", proxyPort));
+        retval.append("      " + XMLHandler.addTagValue("non_proxy_hosts", nonProxyHosts));
 
-        return retval;
+        return retval.toString();
     }
 
     public void loadXML(Node entrynode, ArrayList databases) throws KettleXMLException

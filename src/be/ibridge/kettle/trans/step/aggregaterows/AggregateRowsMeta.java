@@ -259,21 +259,20 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
-		int i;
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="    <fields>"+Const.CR;
-		for (i=0;i<fieldName.length;i++)
+		retval.append("    <fields>"+Const.CR);
+		for (int i=0;i<fieldName.length;i++)
 		{
-		retval+="      <field>"+Const.CR;
-		retval+="        "+XMLHandler.addTagValue("name", fieldName[i]);
-		retval+="        "+XMLHandler.addTagValue("rename", fieldNewName[i]);
-		retval+="        "+XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i]));
-		retval+="        </field>"+Const.CR;
+    		retval.append("      <field>"+Const.CR);
+    		retval.append("        "+XMLHandler.addTagValue("name", fieldName[i]));
+    		retval.append("        "+XMLHandler.addTagValue("rename", fieldNewName[i]));
+    		retval.append("        "+XMLHandler.addTagValue("type", getTypeDesc(aggregateType[i])));
+    		retval.append("        </field>"+Const.CR);
 		}
-		retval+="      </fields>"+Const.CR;
+		retval.append("      </fields>"+Const.CR);
 
-		return retval;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

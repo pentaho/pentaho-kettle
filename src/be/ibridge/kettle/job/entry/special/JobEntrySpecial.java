@@ -62,14 +62,14 @@ public class JobEntrySpecial extends JobEntryBase implements JobEntryInterface
 
 	public String getXML()
 	{
-		String retval ="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+=super.getXML();
+		retval.append(super.getXML());
 		
-		retval+="      "+XMLHandler.addTagValue("start",      start);
-		retval+="      "+XMLHandler.addTagValue("dummy",      dummy);
+		retval.append("      "+XMLHandler.addTagValue("start",      start));
+		retval.append("      "+XMLHandler.addTagValue("dummy",      dummy));
 
-		return retval;
+		return retval.toString();
 	}
 
 	public void loadXML(Node entrynode, ArrayList databases)

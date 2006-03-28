@@ -258,19 +258,19 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="      "+XMLHandler.addTagValue("valuename", valuename);
-		retval+="      "+XMLHandler.addTagValue("use_database", useDatabase);
-		retval+="      "+XMLHandler.addTagValue("connection", database==null?"":database.getName());
-		retval+="      "+XMLHandler.addTagValue("seqname", sequenceName);
+		retval.append("      "+XMLHandler.addTagValue("valuename", valuename));
+		retval.append("      "+XMLHandler.addTagValue("use_database", useDatabase));
+		retval.append("      "+XMLHandler.addTagValue("connection", database==null?"":database.getName()));
+		retval.append("      "+XMLHandler.addTagValue("seqname", sequenceName));
 
-		retval+="      "+XMLHandler.addTagValue("use_counter", useCounter);
-		retval+="      "+XMLHandler.addTagValue("start_at", startAt);
-		retval+="      "+XMLHandler.addTagValue("increment_by", incrementBy);
-		retval+="      "+XMLHandler.addTagValue("max_value", maxValue);
+		retval.append("      "+XMLHandler.addTagValue("use_counter", useCounter));
+		retval.append("      "+XMLHandler.addTagValue("start_at", startAt));
+		retval.append("      "+XMLHandler.addTagValue("increment_by", incrementBy));
+		retval.append("      "+XMLHandler.addTagValue("max_value", maxValue));
 		
-		return retval;
+		return retval.toString();
 	}
 	
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

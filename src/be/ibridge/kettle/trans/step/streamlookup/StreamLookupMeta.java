@@ -375,33 +375,32 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
-		int i;
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="    "+XMLHandler.addTagValue("from", lookupFromStep!=null?lookupFromStep.getName():"");
-        retval+="    "+XMLHandler.addTagValue("input_sorted", inputSorted);
+		retval.append("    "+XMLHandler.addTagValue("from", lookupFromStep!=null?lookupFromStep.getName():""));
+        retval.append("    "+XMLHandler.addTagValue("input_sorted", inputSorted));
 
-		retval+="    <lookup>"+Const.CR;
-		for (i=0;i<keystream.length;i++)
+		retval.append("    <lookup>"+Const.CR);
+		for (int i=0;i<keystream.length;i++)
 		{
-			retval+="      <key>"+Const.CR;
-			retval+="        "+XMLHandler.addTagValue("name",  keystream[i]);
-			retval+="        "+XMLHandler.addTagValue("field", keylookup[i]);
-			retval+="      </key>"+Const.CR;
+			retval.append("      <key>"+Const.CR);
+			retval.append("        "+XMLHandler.addTagValue("name",  keystream[i]));
+			retval.append("        "+XMLHandler.addTagValue("field", keylookup[i]));
+			retval.append("      </key>"+Const.CR);
 		}
 		
-		for (i=0;i<value.length;i++)
+		for (int i=0;i<value.length;i++)
 		{
-			retval+="      <value>"+Const.CR;
-			retval+="        "+XMLHandler.addTagValue("name",    value[i]);
-			retval+="        "+XMLHandler.addTagValue("rename",  valueName[i]);
-			retval+="        "+XMLHandler.addTagValue("default", valueDefault[i]);
-			retval+="        "+XMLHandler.addTagValue("type",    Value.getTypeDesc(valueDefaultType[i]));
-			retval+="      </value>"+Const.CR;
+			retval.append("      <value>"+Const.CR);
+			retval.append("        "+XMLHandler.addTagValue("name",    value[i]));
+			retval.append("        "+XMLHandler.addTagValue("rename",  valueName[i]));
+			retval.append("        "+XMLHandler.addTagValue("default", valueDefault[i]));
+			retval.append("        "+XMLHandler.addTagValue("type",    Value.getTypeDesc(valueDefaultType[i])));
+			retval.append("      </value>"+Const.CR);
 		}
-		retval+="    </lookup>"+Const.CR;
+		retval.append("    </lookup>"+Const.CR);
 		
-		return retval;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

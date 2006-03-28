@@ -242,16 +242,16 @@ public class NotePadMeta implements Cloneable, XMLInterface
 	
 	public String getXML()
 	{
-		String retval="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="    <notepad>"+Const.CR;
-		retval+="      "+XMLHandler.addTagValue("note",   note);
-		retval+="      "+XMLHandler.addTagValue("xloc",   location.x);
-		retval+="      "+XMLHandler.addTagValue("yloc",   location.y);
-		retval+="      "+XMLHandler.addTagValue("width",  width);
-		retval+="      "+XMLHandler.addTagValue("heigth", height);
-		retval+="      </notepad>"+Const.CR;
+		retval.append("    <notepad>"+Const.CR);
+		retval.append("      "+XMLHandler.addTagValue("note",   note));
+		retval.append("      "+XMLHandler.addTagValue("xloc",   location.x));
+		retval.append("      "+XMLHandler.addTagValue("yloc",   location.y));
+		retval.append("      "+XMLHandler.addTagValue("width",  width));
+		retval.append("      "+XMLHandler.addTagValue("heigth", height));
+		retval.append("      </notepad>"+Const.CR);
 		
-		return retval;
+		return retval.toString();
 	}
 }

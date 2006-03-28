@@ -112,13 +112,14 @@ public class RepositoryMeta
 	
 	public String getXML()
 	{
-		String retval="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="  <repository>"+Const.CR;
-		retval+="    "+XMLHandler.addTagValue("name",        name);
-		retval+="    "+XMLHandler.addTagValue("description", description);
-		retval+="    "+XMLHandler.addTagValue("connection",  connection!=null?connection.getName():null);
-		retval+="    </repository>"+Const.CR;
-		return retval;
+		retval.append("  <repository>"+Const.CR);
+		retval.append("    "+XMLHandler.addTagValue("name",        name));
+		retval.append("    "+XMLHandler.addTagValue("description", description));
+		retval.append("    "+XMLHandler.addTagValue("connection",  connection!=null?connection.getName():null));
+		retval.append("    </repository>"+Const.CR);
+        
+		return retval.toString();
 	}
 }

@@ -344,25 +344,25 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval=new String();
+		StringBuffer retval=new StringBuffer();
 		
-		retval+="    "+XMLHandler.addTagValue("connection",    database==null?"":database.getName());
-		retval+="    "+XMLHandler.addTagValue("table",         tablename);
-		retval+="    "+XMLHandler.addTagValue("commit",        commitSize);
-		retval+="    "+XMLHandler.addTagValue("truncate",      truncateTable);
-		retval+="    "+XMLHandler.addTagValue("ignore_errors", ignoreErrors);
-		retval+="    "+XMLHandler.addTagValue("use_batch",     useBatchUpdate);
+		retval.append("    "+XMLHandler.addTagValue("connection",    database==null?"":database.getName()));
+		retval.append("    "+XMLHandler.addTagValue("table",         tablename));
+		retval.append("    "+XMLHandler.addTagValue("commit",        commitSize));
+		retval.append("    "+XMLHandler.addTagValue("truncate",      truncateTable));
+		retval.append("    "+XMLHandler.addTagValue("ignore_errors", ignoreErrors));
+		retval.append("    "+XMLHandler.addTagValue("use_batch",     useBatchUpdate));
 
-        retval+="    "+XMLHandler.addTagValue("partitioning_enabled",   partitioningEnabled);
-        retval+="    "+XMLHandler.addTagValue("partitioning_field",     partitioningField);
-        retval+="    "+XMLHandler.addTagValue("partitioning_daily",     partitioningDaily);
-        retval+="    "+XMLHandler.addTagValue("partitioning_monthly",   partitioningMonthly);
+        retval.append("    "+XMLHandler.addTagValue("partitioning_enabled",   partitioningEnabled));
+        retval.append("    "+XMLHandler.addTagValue("partitioning_field",     partitioningField));
+        retval.append("    "+XMLHandler.addTagValue("partitioning_daily",     partitioningDaily));
+        retval.append("    "+XMLHandler.addTagValue("partitioning_monthly",   partitioningMonthly));
         
-        retval+="    "+XMLHandler.addTagValue("tablename_in_field", tableNameInField);
-        retval+="    "+XMLHandler.addTagValue("tablename_field", tableNameField);
-        retval+="    "+XMLHandler.addTagValue("tablename_in_table", tableNameInTable);
+        retval.append("    "+XMLHandler.addTagValue("tablename_in_field", tableNameInField));
+        retval.append("    "+XMLHandler.addTagValue("tablename_field", tableNameField));
+        retval.append("    "+XMLHandler.addTagValue("tablename_in_table", tableNameInTable));
         
-		return retval;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

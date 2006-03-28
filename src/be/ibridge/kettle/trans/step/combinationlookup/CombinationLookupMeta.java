@@ -396,36 +396,35 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	
 	public String getXML()
 	{
-		String retval="";
-		int i;
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="      "+XMLHandler.addTagValue("table", tablename);
-		retval+="      "+XMLHandler.addTagValue("connection", database==null?"":database.getName());
-		retval+="      "+XMLHandler.addTagValue("commit", commitSize);
-		retval+="      "+XMLHandler.addTagValue("replace", replaceFields);
-		retval+="      "+XMLHandler.addTagValue("crc", useHash);
-		retval+="      "+XMLHandler.addTagValue("crcfield", hashField);
+		retval.append("      "+XMLHandler.addTagValue("table", tablename));
+		retval.append("      "+XMLHandler.addTagValue("connection", database==null?"":database.getName()));
+		retval.append("      "+XMLHandler.addTagValue("commit", commitSize));
+		retval.append("      "+XMLHandler.addTagValue("replace", replaceFields));
+		retval.append("      "+XMLHandler.addTagValue("crc", useHash));
+		retval.append("      "+XMLHandler.addTagValue("crcfield", hashField));
 		
-		retval+="      <fields>"+Const.CR;
-		for (i=0;i<keyField.length;i++)
+		retval.append("      <fields>"+Const.CR);
+		for (int i=0;i<keyField.length;i++)
 		{
-			retval+="        <key>"+Const.CR;
-			retval+="          "+XMLHandler.addTagValue("name",   keyField[i]);
-			retval+="          "+XMLHandler.addTagValue("lookup", keyLookup[i]);
-			retval+="          </key>"+Const.CR;
+			retval.append("        <key>"+Const.CR);
+			retval.append("          "+XMLHandler.addTagValue("name",   keyField[i]));
+			retval.append("          "+XMLHandler.addTagValue("lookup", keyLookup[i]));
+			retval.append("          </key>"+Const.CR);
 		}
 
-		retval+="        <return>"+Const.CR;
-		retval+="          "+XMLHandler.addTagValue("name", technicalKeyField);
-		retval+="          "+XMLHandler.addTagValue("use_autoinc", useAutoinc);
-		retval+="        </return>"+Const.CR;
+		retval.append("        <return>"+Const.CR);
+		retval.append("          "+XMLHandler.addTagValue("name", technicalKeyField));
+		retval.append("          "+XMLHandler.addTagValue("use_autoinc", useAutoinc));
+		retval.append("        </return>"+Const.CR);
 
-		retval+="      </fields>"+Const.CR;
+		retval.append("      </fields>"+Const.CR);
 
 		// If sequence is empty: use auto-increment field!
-		retval+="      "+XMLHandler.addTagValue("sequence", sequenceFrom);
+		retval.append("      "+XMLHandler.addTagValue("sequence", sequenceFrom));
 		
-		return retval;
+		return retval.toString();
 	}
 	
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

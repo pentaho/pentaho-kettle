@@ -399,53 +399,53 @@ public class JobMeta implements Cloneable, XMLInterface
 	public String getXML()
 	{
 		DatabaseMeta ci = getLogConnection(); 
-		String retval=new String();
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="<job>"+Const.CR;
-		retval+="  "+XMLHandler.addTagValue("name", getName());
-		retval+="  "+XMLHandler.addTagValue("directory", directory.getPath());
+		retval.append("<job>"+Const.CR);
+		retval.append("  "+XMLHandler.addTagValue("name", getName()));
+		retval.append("  "+XMLHandler.addTagValue("directory", directory.getPath()));
 		
 		for (int i=0;i<nrDatabases();i++)
 		{
 			DatabaseMeta dbinfo = getDatabase(i);
-			retval+=dbinfo.getXML();
+			retval.append(dbinfo.getXML());
 		}
 
-		retval+="  "+XMLHandler.addTagValue("logconnection", ci==null?"":ci.getName());
-		retval+="  "+XMLHandler.addTagValue("logtable", logtable);
+		retval.append("  "+XMLHandler.addTagValue("logconnection", ci==null?"":ci.getName()));
+		retval.append("  "+XMLHandler.addTagValue("logtable", logtable));
 
-        retval+= "   " + XMLHandler.addTagValue("use_batchid", useBatchId);
-        retval+= "   " + XMLHandler.addTagValue("pass_batchid", batchIdPassed);
-        retval+= "   " + XMLHandler.addTagValue("use_logfield", logfieldUsed);
+        retval.append( "   " + XMLHandler.addTagValue("use_batchid", useBatchId));
+        retval.append( "   " + XMLHandler.addTagValue("pass_batchid", batchIdPassed));
+        retval.append( "   " + XMLHandler.addTagValue("use_logfield", logfieldUsed));
 
-		retval+="  <entries>"+Const.CR;
+		retval.append("  <entries>"+Const.CR);
 		for (int i=0;i<nrJobEntries();i++)
 		{
 			JobEntryCopy jge = getJobEntry(i);
-			retval+=jge.getXML();
+			retval.append(jge.getXML());
 		}
-		retval+="    </entries>"+Const.CR;
+		retval.append("    </entries>"+Const.CR);
 
-		retval+="  <hops>"+Const.CR;
+		retval.append("  <hops>"+Const.CR);
 		for (int i=0;i<nrJobHops();i++)
 		{
 			JobHopMeta hi = getJobHop(i);
-			retval+=hi.getXML();
+			retval.append(hi.getXML());
 		}
-		retval+="    </hops>"+Const.CR;
+		retval.append("    </hops>"+Const.CR);
 
-		retval+="  <notepads>"+Const.CR;
+		retval.append("  <notepads>"+Const.CR);
 		for (int i=0;i<nrNotes();i++)
 		{
 			NotePadMeta ni= getNote(i);
-			retval+=ni.getXML();
+			retval.append(ni.getXML());
 		}
-		retval+="    </notepads>"+Const.CR;
+		retval.append("    </notepads>"+Const.CR);
 
 
-		retval+="  </job>"+Const.CR;
+		retval.append("  </job>"+Const.CR);
 		
-		return retval;
+		return retval.toString();
 	}
 
 	/**

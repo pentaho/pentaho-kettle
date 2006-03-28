@@ -347,35 +347,34 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
-		int i;
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="    "+XMLHandler.addTagValue("connection", database==null?"":database.getName());
-		retval+="    "+XMLHandler.addTagValue("commit", commitSize);
-		retval+="    <lookup>"+Const.CR;
-		retval+="      "+XMLHandler.addTagValue("table", tableName);
+		retval.append("    "+XMLHandler.addTagValue("connection", database==null?"":database.getName()));
+		retval.append("    "+XMLHandler.addTagValue("commit", commitSize));
+		retval.append("    <lookup>"+Const.CR);
+		retval.append("      "+XMLHandler.addTagValue("table", tableName));
 
-		for (i=0;i<keyStream.length;i++)
+		for (int i=0;i<keyStream.length;i++)
 		{
-			retval+="      <key>"+Const.CR;
-			retval+="        "+XMLHandler.addTagValue("name", keyStream[i]);
-			retval+="        "+XMLHandler.addTagValue("field", keyLookup[i]);
-			retval+="        "+XMLHandler.addTagValue("condition", keyCondition[i]);
-			retval+="        "+XMLHandler.addTagValue("name2", keyStream2[i]);
-			retval+="        </key>"+Const.CR;
+			retval.append("      <key>"+Const.CR);
+			retval.append("        "+XMLHandler.addTagValue("name", keyStream[i]));
+			retval.append("        "+XMLHandler.addTagValue("field", keyLookup[i]));
+			retval.append("        "+XMLHandler.addTagValue("condition", keyCondition[i]));
+			retval.append("        "+XMLHandler.addTagValue("name2", keyStream2[i]));
+			retval.append("        </key>"+Const.CR);
 		}
 
-		for (i=0;i<updateLookup.length;i++)
+		for (int i=0;i<updateLookup.length;i++)
 		{
-			retval+="      <value>"+Const.CR;
-			retval+="        "+XMLHandler.addTagValue("name", updateLookup[i]);
-			retval+="        "+XMLHandler.addTagValue("rename", updateStream[i]);
-			retval+="        </value>"+Const.CR;
+			retval.append("      <value>"+Const.CR);
+			retval.append("        "+XMLHandler.addTagValue("name", updateLookup[i]));
+			retval.append("        "+XMLHandler.addTagValue("rename", updateStream[i]));
+			retval.append("        </value>"+Const.CR);
 		}
 
-		retval+="      </lookup>"+Const.CR;
+		retval.append("      </lookup>"+Const.CR);
 
-		return retval;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

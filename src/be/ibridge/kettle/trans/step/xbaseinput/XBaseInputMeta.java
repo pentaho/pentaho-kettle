@@ -201,14 +201,14 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String xml="";
+		StringBuffer retval=new StringBuffer();
 		
-		xml+="    "+XMLHandler.addTagValue("file_dbf",    dbfFileName);
-		xml+="    "+XMLHandler.addTagValue("limit",       rowLimit);
-		xml+="    "+XMLHandler.addTagValue("add_rownr",   rowNrAdded);
-		xml+="    "+XMLHandler.addTagValue("field_rownr", rowNrField);
+		retval.append("    "+XMLHandler.addTagValue("file_dbf",    dbfFileName));
+		retval.append("    "+XMLHandler.addTagValue("limit",       rowLimit));
+		retval.append("    "+XMLHandler.addTagValue("add_rownr",   rowNrAdded));
+		retval.append("    "+XMLHandler.addTagValue("field_rownr", rowNrField));
 
-		return xml;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

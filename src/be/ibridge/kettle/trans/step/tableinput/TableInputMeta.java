@@ -268,15 +268,15 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String xml="";
+        StringBuffer retval = new StringBuffer();
 		
-		xml+="    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName());
-		xml+="    "+XMLHandler.addTagValue("sql",        sql);
-		xml+="    "+XMLHandler.addTagValue("limit",      rowLimit);
-		xml+="    "+XMLHandler.addTagValue("lookup",     getLookupStepname());
-        xml+="    "+XMLHandler.addTagValue("execute_each_row",   executeEachInputRow);
+		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName()));
+		retval.append("    "+XMLHandler.addTagValue("sql",        sql));
+		retval.append("    "+XMLHandler.addTagValue("limit",      rowLimit));
+		retval.append("    "+XMLHandler.addTagValue("lookup",     getLookupStepname()));
+        retval.append("    "+XMLHandler.addTagValue("execute_each_row",   executeEachInputRow));
 
-		return xml;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

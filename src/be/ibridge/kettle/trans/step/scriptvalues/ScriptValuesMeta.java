@@ -281,24 +281,24 @@ public class ScriptValuesMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
-		int i;
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="    "+XMLHandler.addTagValue("script", script);
-		retval+="    <fields>";
-		for (i=0;i<name.length;i++)
+		retval.append("    "+XMLHandler.addTagValue("script", script));
+        
+		retval.append("    <fields>");
+		for (int i=0;i<name.length;i++)
 		{
-			retval+="      <field>";
-			retval+="        "+XMLHandler.addTagValue("name",      name[i]);
-			retval+="        "+XMLHandler.addTagValue("rename",    rename[i]);
-			retval+="        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(type[i]));
-			retval+="        "+XMLHandler.addTagValue("length",    length[i]);
-			retval+="        "+XMLHandler.addTagValue("precision", precision[i]);
-			retval+="        </field>";
+			retval.append("      <field>");
+			retval.append("        "+XMLHandler.addTagValue("name",      name[i]));
+			retval.append("        "+XMLHandler.addTagValue("rename",    rename[i]));
+			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(type[i])));
+			retval.append("        "+XMLHandler.addTagValue("length",    length[i]));
+			retval.append("        "+XMLHandler.addTagValue("precision", precision[i]));
+			retval.append("        </field>");
 		}
-		retval+="      </fields>";
+		retval.append("      </fields>");
 		
-		return retval;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

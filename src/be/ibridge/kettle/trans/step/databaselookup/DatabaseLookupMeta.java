@@ -485,39 +485,38 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
 	public String getXML()
 	{
-		String retval="";
-		int i;
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName());
-		retval+="    "+XMLHandler.addTagValue("cache", cached);
-		retval+="    "+XMLHandler.addTagValue("cache_size", cacheSize);
-		retval+="    <lookup>"+Const.CR;
-		retval+="      "+XMLHandler.addTagValue("table", tablename);
-		retval+="      "+XMLHandler.addTagValue("orderby", orderByClause);
+		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName()));
+		retval.append("    "+XMLHandler.addTagValue("cache", cached));
+		retval.append("    "+XMLHandler.addTagValue("cache_size", cacheSize));
+		retval.append("    <lookup>"+Const.CR);
+		retval.append("      "+XMLHandler.addTagValue("table", tablename));
+		retval.append("      "+XMLHandler.addTagValue("orderby", orderByClause));
 
-		for (i=0;i<streamKeyField1.length;i++)
+		for (int i=0;i<streamKeyField1.length;i++)
 		{
-			retval+="      <key>"+Const.CR;
-			retval+="        "+XMLHandler.addTagValue("name", streamKeyField1[i]);
-			retval+="        "+XMLHandler.addTagValue("field", tableKeyField[i]);
-			retval+="        "+XMLHandler.addTagValue("condition", keyCondition[i]);
-			retval+="        "+XMLHandler.addTagValue("name2", streamKeyField2[i]);
-			retval+="        </key>"+Const.CR;
+			retval.append("      <key>"+Const.CR);
+			retval.append("        "+XMLHandler.addTagValue("name", streamKeyField1[i]));
+			retval.append("        "+XMLHandler.addTagValue("field", tableKeyField[i]));
+			retval.append("        "+XMLHandler.addTagValue("condition", keyCondition[i]));
+			retval.append("        "+XMLHandler.addTagValue("name2", streamKeyField2[i]));
+			retval.append("        </key>"+Const.CR);
 		}
 
-		for (i=0;i<returnValueField.length;i++)
+		for (int i=0;i<returnValueField.length;i++)
 		{
-			retval+="      <value>"+Const.CR;
-			retval+="        "+XMLHandler.addTagValue("name", returnValueField[i]);
-			retval+="        "+XMLHandler.addTagValue("rename", returnValueNewName[i]);
-			retval+="        "+XMLHandler.addTagValue("default", returnValueDefault[i]);
-			retval+="        "+XMLHandler.addTagValue("type", Value.getTypeDesc(returnValueDefaultType[i]));
-			retval+="        </value>"+Const.CR;
+			retval.append("      <value>"+Const.CR);
+			retval.append("        "+XMLHandler.addTagValue("name", returnValueField[i]));
+			retval.append("        "+XMLHandler.addTagValue("rename", returnValueNewName[i]));
+			retval.append("        "+XMLHandler.addTagValue("default", returnValueDefault[i]));
+			retval.append("        "+XMLHandler.addTagValue("type", Value.getTypeDesc(returnValueDefaultType[i])));
+			retval.append("        </value>"+Const.CR);
 		}
 
-		retval+="      </lookup>"+Const.CR;
+		retval.append("      </lookup>"+Const.CR);
 
-		return retval;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

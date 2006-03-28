@@ -208,31 +208,31 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public String getXML()
 	{
-		String retval="";
+        StringBuffer retval = new StringBuffer();
 
-        retval+="    <keys>"+Const.CR;
+        retval.append("    <keys>"+Const.CR);
         for (int i=0;i<keyFields.length;i++)
         {
-            retval+="      "+XMLHandler.addTagValue("key", keyFields[i]);
+            retval.append("      "+XMLHandler.addTagValue("key", keyFields[i]));
         }
-        retval+="    </keys>"+Const.CR;
+        retval.append("    </keys>"+Const.CR);
         
-        retval+="    <values>"+Const.CR;
+        retval.append("    <values>"+Const.CR);
         for (int i=0;i<valueFields.length;i++)
         {
-            retval+="      "+XMLHandler.addTagValue("value", valueFields[i]);
+            retval.append("      "+XMLHandler.addTagValue("value", valueFields[i]));
         }
-        retval+="    </values>"+Const.CR;
+        retval.append("    </values>"+Const.CR);
 
-        retval+=XMLHandler.addTagValue("flag_field", flagField);        
+        retval.append(XMLHandler.addTagValue("flag_field", flagField));        
 
-		retval+=XMLHandler.addTagValue("reference", getReferenceStepName());		
-		retval+=XMLHandler.addTagValue("compare", getCompareStepName());		
-		retval+="    <compare>"+Const.CR;
+		retval.append(XMLHandler.addTagValue("reference", getReferenceStepName()));		
+		retval.append(XMLHandler.addTagValue("compare", getCompareStepName()));		
+		retval.append("    <compare>"+Const.CR);
 				
-		retval+="    </compare>"+Const.CR;
+		retval.append("    </compare>"+Const.CR);
 
-		return retval;
+		return retval.toString();
 	}
 
 	private void readData(Node stepnode)

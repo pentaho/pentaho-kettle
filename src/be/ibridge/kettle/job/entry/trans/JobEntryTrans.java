@@ -136,36 +136,36 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	
 	public String getXML()
 	{
-		String retval = "";
+        StringBuffer retval = new StringBuffer();
 
-		retval+=super.getXML();
+		retval.append(super.getXML());
 		
-		retval+="      "+XMLHandler.addTagValue("filename",          filename);
-		retval+="      "+XMLHandler.addTagValue("transname",         transname);
+		retval.append("      "+XMLHandler.addTagValue("filename",          filename));
+		retval.append("      "+XMLHandler.addTagValue("transname",         transname));
         if (directory!=null)
         {
-            retval+="      "+XMLHandler.addTagValue("directory",         directory.getPath());
+            retval.append("      "+XMLHandler.addTagValue("directory",         directory.getPath()));
         }
         else
         if (directoryPath!=null)
         {
-            retval+="      "+XMLHandler.addTagValue("directory",         directoryPath); // don't loose this info (backup/recovery)
+            retval.append("      "+XMLHandler.addTagValue("directory",         directoryPath)); // don't loose this info (backup/recovery)
         }
-		retval+="      "+XMLHandler.addTagValue("arg_from_previous", argFromPrevious);
-		retval+="      "+XMLHandler.addTagValue("set_logfile",       setLogfile);
-		retval+="      "+XMLHandler.addTagValue("logfile",           logfile);
-		retval+="      "+XMLHandler.addTagValue("logext",            logext);
-		retval+="      "+XMLHandler.addTagValue("add_date",          addDate);
-		retval+="      "+XMLHandler.addTagValue("add_time",          addTime);
-		retval+="      "+XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel));
+		retval.append("      "+XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
+		retval.append("      "+XMLHandler.addTagValue("set_logfile",       setLogfile));
+		retval.append("      "+XMLHandler.addTagValue("logfile",           logfile));
+		retval.append("      "+XMLHandler.addTagValue("logext",            logext));
+		retval.append("      "+XMLHandler.addTagValue("add_date",          addDate));
+		retval.append("      "+XMLHandler.addTagValue("add_time",          addTime));
+		retval.append("      "+XMLHandler.addTagValue("loglevel",          LogWriter.getLogLevelDesc(loglevel)));
 
 		if (arguments!=null)
 		for (int i=0;i<arguments.length;i++)
 		{
-			retval+="      "+XMLHandler.addTagValue("argument"+i, arguments[i]);
+			retval.append("      "+XMLHandler.addTagValue("argument"+i, arguments[i]));
 		}
 
-		return retval;
+		return retval.toString();
 	}
 
     public void loadXML(Node entrynode, ArrayList databases) throws KettleXMLException

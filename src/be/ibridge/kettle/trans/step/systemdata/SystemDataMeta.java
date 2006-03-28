@@ -351,20 +351,20 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
+        StringBuffer retval = new StringBuffer();
 
-		retval+="    <fields>"+Const.CR;
+		retval.append("    <fields>"+Const.CR);
 		
 		for (int i=0;i<fieldName.length;i++)
 		{
-			retval+="      <field>"+Const.CR;
-			retval+="        "+XMLHandler.addTagValue("name", fieldName[i]);
-			retval+="        "+XMLHandler.addTagValue("type", type_desc[fieldType[i]]);
-			retval+="        </field>"+Const.CR;
+			retval.append("      <field>"+Const.CR);
+			retval.append("        "+XMLHandler.addTagValue("name", fieldName[i]));
+			retval.append("        "+XMLHandler.addTagValue("type", type_desc[fieldType[i]]));
+			retval.append("        </field>"+Const.CR);
 		}
-		retval+="      </fields>"+Const.CR;
+		retval.append("      </fields>"+Const.CR);
 
-		return retval;
+		return retval.toString();
 	}
 	
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

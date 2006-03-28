@@ -275,25 +275,25 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String xml="";
+        StringBuffer retval = new StringBuffer();
 		
-		xml+="    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName());
-        xml+="    "+XMLHandler.addTagValue("execute_each_row", executedEachInputRow);
-		xml+="    "+XMLHandler.addTagValue("sql",        sql);
+		retval.append("    "+XMLHandler.addTagValue("connection", databaseMeta==null?"":databaseMeta.getName()));
+        retval.append("    "+XMLHandler.addTagValue("execute_each_row", executedEachInputRow));
+		retval.append("    "+XMLHandler.addTagValue("sql",        sql));
         
-        xml+="    "+XMLHandler.addTagValue("insert_field",  insertField);
-        xml+="    "+XMLHandler.addTagValue("update_field",  updateField);
-        xml+="    "+XMLHandler.addTagValue("delete_field",  deleteField);
-        xml+="    "+XMLHandler.addTagValue("read_field",    readField);
+        retval.append("    "+XMLHandler.addTagValue("insert_field",  insertField));
+        retval.append("    "+XMLHandler.addTagValue("update_field",  updateField));
+        retval.append("    "+XMLHandler.addTagValue("delete_field",  deleteField));
+        retval.append("    "+XMLHandler.addTagValue("read_field",    readField));
 
-        xml+="    <arguments>"+Const.CR;
+        retval.append("    <arguments>"+Const.CR);
         for (int i=0;i<arguments.length;i++)
         {
-            xml+="       <argument>"+XMLHandler.addTagValue("name", arguments[i], false)+"</argument>"+Const.CR;
+            retval.append("       <argument>"+XMLHandler.addTagValue("name", arguments[i], false)+"</argument>"+Const.CR);
         }
-        xml+="    </arguments>"+Const.CR;
+        retval.append("    </arguments>"+Const.CR);
 
-		return xml;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

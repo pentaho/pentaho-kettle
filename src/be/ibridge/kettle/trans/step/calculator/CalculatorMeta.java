@@ -85,15 +85,15 @@ public class CalculatorMeta extends BaseStepMeta implements StepMetaInterface
     
     public String getXML()
     {
-        String xml="";
-        
+        StringBuffer retval = new StringBuffer();
+       
         if (calculation!=null)
         for (int i=0;i<calculation.length;i++)
         {
-            xml+="       "+calculation[i].getXML()+Const.CR;
+            retval.append("       "+calculation[i].getXML()+Const.CR);
         }
         
-        return xml;
+        return retval.toString();
     }
 
 	public Object clone()

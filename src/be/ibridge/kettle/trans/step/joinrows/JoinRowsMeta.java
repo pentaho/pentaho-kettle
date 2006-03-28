@@ -220,24 +220,24 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
+        StringBuffer retval = new StringBuffer();
 
-		retval+="      "+XMLHandler.addTagValue("directory",  directory);
-		retval+="      "+XMLHandler.addTagValue("prefix",     prefix);
-		retval+="      "+XMLHandler.addTagValue("cache_size", cacheSize);
+		retval.append("      "+XMLHandler.addTagValue("directory",  directory));
+		retval.append("      "+XMLHandler.addTagValue("prefix",     prefix));
+		retval.append("      "+XMLHandler.addTagValue("cache_size", cacheSize));
 		
-		retval+="      "+XMLHandler.addTagValue("main", getLookupStepname());
+		retval.append("      "+XMLHandler.addTagValue("main", getLookupStepname()));
 
-		retval+="    <compare>"+Const.CR;
+		retval.append("    <compare>"+Const.CR);
 		
 		if (condition!=null)
 		{
-			retval+=condition.getXML();
+			retval.append(condition.getXML());
 		}
 		
-		retval+="    </compare>"+Const.CR;
+		retval.append("    </compare>"+Const.CR);
 
-		return retval;	
+		return retval.toString();	
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

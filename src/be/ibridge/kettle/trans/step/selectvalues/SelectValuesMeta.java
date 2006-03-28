@@ -479,38 +479,37 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
-		int i;
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="    <fields>";
-		for (i=0;i<selectName.length;i++)
+		retval.append("    <fields>");
+		for (int i=0;i<selectName.length;i++)
 		{
-			retval+="      <field>";
-			retval+="        "+XMLHandler.addTagValue("name",      selectName[i]);
-			retval+="        "+XMLHandler.addTagValue("rename",    selectRename[i]);
-			retval+="        "+XMLHandler.addTagValue("length",    selectLength[i]);
-			retval+="        "+XMLHandler.addTagValue("precision", selectPrecision[i]);
-			retval+="        </field>";
+			retval.append("      <field>");
+			retval.append("        "+XMLHandler.addTagValue("name",      selectName[i]));
+			retval.append("        "+XMLHandler.addTagValue("rename",    selectRename[i]));
+			retval.append("        "+XMLHandler.addTagValue("length",    selectLength[i]));
+			retval.append("        "+XMLHandler.addTagValue("precision", selectPrecision[i]));
+			retval.append("        </field>");
 		}
-		for (i=0;i<deleteName.length;i++)
+		for (int i=0;i<deleteName.length;i++)
 		{
-			retval+="      <remove>";
-			retval+="        "+XMLHandler.addTagValue("name",      deleteName[i]);
-			retval+="        </remove>";
+			retval.append("      <remove>");
+			retval.append("        "+XMLHandler.addTagValue("name",      deleteName[i]));
+			retval.append("        </remove>");
 		}
-		for (i=0;i<metaName.length;i++)
+		for (int i=0;i<metaName.length;i++)
 		{
-			retval+="      <meta>";
-			retval+="        "+XMLHandler.addTagValue("name",      metaName[i]);
-			retval+="        "+XMLHandler.addTagValue("rename",    metaRename[i]);
-			retval+="        "+XMLHandler.addTagValue("type",      metaType[i]);
-			retval+="        "+XMLHandler.addTagValue("length",    metaLength[i]);
-			retval+="        "+XMLHandler.addTagValue("precision", metaPrecision[i]);
-			retval+="        </meta>";
+			retval.append("      <meta>");
+			retval.append("        "+XMLHandler.addTagValue("name",      metaName[i]));
+			retval.append("        "+XMLHandler.addTagValue("rename",    metaRename[i]));
+			retval.append("        "+XMLHandler.addTagValue("type",      metaType[i]));
+			retval.append("        "+XMLHandler.addTagValue("length",    metaLength[i]));
+			retval.append("        "+XMLHandler.addTagValue("precision", metaPrecision[i]));
+			retval.append("        </meta>");
 		}
-		retval+="      </fields>";
+		retval.append("      </fields>");
 
-		return retval;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)

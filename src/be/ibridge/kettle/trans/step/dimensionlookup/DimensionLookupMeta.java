@@ -715,56 +715,55 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 	public String getXML()
 	{
-		String retval = "";
-		int i;
+        StringBuffer retval = new StringBuffer();
+		
+		retval.append("      " + XMLHandler.addTagValue("table", tableName));
+		retval.append("      " + XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName()));
+		retval.append("      " + XMLHandler.addTagValue("commit", commitSize));
+		retval.append("      " + XMLHandler.addTagValue("update", update));
 
-		retval += "      " + XMLHandler.addTagValue("table", tableName);
-		retval += "      " + XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName());
-		retval += "      " + XMLHandler.addTagValue("commit", commitSize);
-		retval += "      " + XMLHandler.addTagValue("update", update);
-
-		retval += "      <fields>" + Const.CR;
-		for (i = 0; i < keyStream.length; i++)
+		retval.append("      <fields>" + Const.CR);
+		for (int i = 0; i < keyStream.length; i++)
 		{
-			retval += "        <key>" + Const.CR;
-			retval += "          " + XMLHandler.addTagValue("name", keyStream[i]);
-			retval += "          " + XMLHandler.addTagValue("lookup", keyLookup[i]);
-			retval += "          </key>" + Const.CR;
+			retval.append("        <key>" + Const.CR);
+			retval.append("          " + XMLHandler.addTagValue("name", keyStream[i]));
+			retval.append("          " + XMLHandler.addTagValue("lookup", keyLookup[i]));
+			retval.append("          </key>" + Const.CR);
 		}
 
-		retval += "        <date>" + Const.CR;
-		retval += "          " + XMLHandler.addTagValue("name", dateField);
-		retval += "          " + XMLHandler.addTagValue("from", dateFrom);
-		retval += "          " + XMLHandler.addTagValue("to", dateTo);
-		retval += "          </date>" + Const.CR;
+		retval.append("        <date>" + Const.CR);
+		retval.append("          " + XMLHandler.addTagValue("name", dateField));
+		retval.append("          " + XMLHandler.addTagValue("from", dateFrom));
+		retval.append("          " + XMLHandler.addTagValue("to", dateTo));
+		retval.append("          </date>" + Const.CR);
 
 		if (fieldStream != null)
-			for (i = 0; i < fieldStream.length; i++)
+			for (int i = 0; i < fieldStream.length; i++)
 			{
 				if (fieldStream[i] != null)
 				{
-					retval += "        <field>" + Const.CR;
-					retval += "          " + XMLHandler.addTagValue("name", fieldStream[i]);
-					retval += "          " + XMLHandler.addTagValue("lookup", fieldLookup[i]);
-					retval += "          " + XMLHandler.addTagValue("update", getUpdateType(update, fieldUpdate[i]));
-					retval += "          </field>" + Const.CR;
+					retval.append("        <field>" + Const.CR);
+					retval.append("          " + XMLHandler.addTagValue("name", fieldStream[i]));
+					retval.append("          " + XMLHandler.addTagValue("lookup", fieldLookup[i]));
+					retval.append("          " + XMLHandler.addTagValue("update", getUpdateType(update, fieldUpdate[i])));
+					retval.append("          </field>" + Const.CR);
 				}
 			}
-		retval += "        <return>" + Const.CR;
-		retval += "          " + XMLHandler.addTagValue("name", keyField);
-		retval += "          " + XMLHandler.addTagValue("rename", keyRename);
-		retval += "          " + XMLHandler.addTagValue("use_autoinc", autoIncrement);
-		retval += "          " + XMLHandler.addTagValue("version", versionField);
-		retval += "        </return>" + Const.CR;
+		retval.append("        <return>" + Const.CR);
+		retval.append("          " + XMLHandler.addTagValue("name", keyField));
+		retval.append("          " + XMLHandler.addTagValue("rename", keyRename));
+		retval.append("          " + XMLHandler.addTagValue("use_autoinc", autoIncrement));
+		retval.append("          " + XMLHandler.addTagValue("version", versionField));
+		retval.append("        </return>" + Const.CR);
 
-		retval += "      </fields>" + Const.CR;
+		retval.append("      </fields>" + Const.CR);
 
 		// If sequence is empty: use auto-increment field!
-		retval += "      " + XMLHandler.addTagValue("sequence", sequenceName);
-		retval += "      " + XMLHandler.addTagValue("min_year", minYear);
-		retval += "      " + XMLHandler.addTagValue("max_year", maxYear);
+		retval.append("      " + XMLHandler.addTagValue("sequence", sequenceName));
+		retval.append("      " + XMLHandler.addTagValue("min_year", minYear));
+		retval.append("      " + XMLHandler.addTagValue("max_year", maxYear));
 
-		return retval;
+		return retval.toString();
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
