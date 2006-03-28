@@ -64,85 +64,94 @@ public class Constant extends BaseStep implements StepInterface
 				value=new Value(meta.getFieldName()[i], valtype); // build a value!
 				String stringValue = meta.getValue()[i];
 				
-                switch(value.getType())
+                // If the value is empty: consider it to be NULL.
+                if (stringValue==null || stringValue.length()==0)
                 {
-                case Value.VALUE_TYPE_NUMBER:
-					try
-					{
-						if (meta.getFieldFormat()[i]!=null || meta.getDecimal()[i] !=null ||
-						meta.getGroup()[i]       !=null || meta.getCurrency()[i]!=null    
-						)
-						{
-							if (meta.getFieldFormat()[i]!=null && meta.getFieldFormat()[i].length()>=1) data.df.applyPattern(meta.getFieldFormat()[i]);
-							if (meta.getDecimal()[i] !=null && meta.getDecimal()[i].length()>=1) data.dfs.setDecimalSeparator( meta.getDecimal()[i].charAt(0) );
-							if (meta.getGroup()[i]   !=null && meta.getGroup()[i].length()>=1) data.dfs.setGroupingSeparator( meta.getGroup()[i].charAt(0) );
-							if (meta.getCurrency()[i]!=null && meta.getCurrency()[i].length()>=1) data.dfs.setCurrencySymbol( meta.getCurrency()[i] );
-							
-							data.df.setDecimalFormatSymbols(data.dfs);
-						}
-						
-						value.setValue( data.nf.parse(stringValue).doubleValue() );
-					}
-					catch(Exception e)
-					{
-                        String message = "Couldn't parse number field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
-                        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
-					}
-                    break;
-                case Value.VALUE_TYPE_STRING:
-					value.setValue(stringValue);
-                    break;
-                case Value.VALUE_TYPE_DATE:
-					try
-					{
-						if (meta.getFieldFormat()[i]!=null)
-						{
-							data.daf.applyPattern(meta.getFieldFormat()[i]);
-							data.daf.setDateFormatSymbols(data.dafs);
-						}
-						
-						value.setValue( data.daf.parse(stringValue) );
-					}
-					catch(Exception e)
-					{
-						String message = "Couldn't parse date field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
-                        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
-					}
-                    break;
-                    
-                case Value.VALUE_TYPE_INTEGER:
-                    try
-                    {
-                        value.setValue( Long.parseLong(stringValue) );
-                    }
-                    catch(Exception e)
-                    {
-                        String message = "Couldn't parse Integer field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
-                        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
-                    }
-                    break;
-
-                case Value.VALUE_TYPE_BIGNUMBER:
-                    try
-                    {
-                        value.setValue( new BigDecimal(stringValue) );
-                    }
-                    catch(Exception e)
-                    {
-                        String message = "Couldn't parse BigNumber field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
-                        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
-                    }
-                    break;
-                    
-                case Value.VALUE_TYPE_BOOLEAN:
-                    value.setValue( "Y".equalsIgnoreCase(stringValue) || "TRUE".equalsIgnoreCase(stringValue));
-                    break;
-                    
-                default:
-                    String message = "Please specify the value type of field ["+value.getName()+"] with value ["+stringValue+"] -->";
-                    remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
-
+                    value.setNull();
                 }
+                else
+                {
+                    switch(value.getType())
+                    {
+                    case Value.VALUE_TYPE_NUMBER:
+    					try
+    					{
+    						if (meta.getFieldFormat()[i]!=null || meta.getDecimal()[i] !=null ||
+    						meta.getGroup()[i]       !=null || meta.getCurrency()[i]!=null    
+    						)
+    						{
+    							if (meta.getFieldFormat()[i]!=null && meta.getFieldFormat()[i].length()>=1) data.df.applyPattern(meta.getFieldFormat()[i]);
+    							if (meta.getDecimal()[i] !=null && meta.getDecimal()[i].length()>=1) data.dfs.setDecimalSeparator( meta.getDecimal()[i].charAt(0) );
+    							if (meta.getGroup()[i]   !=null && meta.getGroup()[i].length()>=1) data.dfs.setGroupingSeparator( meta.getGroup()[i].charAt(0) );
+    							if (meta.getCurrency()[i]!=null && meta.getCurrency()[i].length()>=1) data.dfs.setCurrencySymbol( meta.getCurrency()[i] );
+    							
+    							data.df.setDecimalFormatSymbols(data.dfs);
+    						}
+    						
+    						value.setValue( data.nf.parse(stringValue).doubleValue() );
+    					}
+    					catch(Exception e)
+    					{
+                            String message = "Couldn't parse number field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
+                            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+    					}
+                        break;
+                    case Value.VALUE_TYPE_STRING:
+                        value.setValue(stringValue);
+                        break;
+                    case Value.VALUE_TYPE_DATE:
+    					try
+    					{
+    						if (meta.getFieldFormat()[i]!=null)
+    						{
+    							data.daf.applyPattern(meta.getFieldFormat()[i]);
+    							data.daf.setDateFormatSymbols(data.dafs);
+    						}
+    						
+    						value.setValue( data.daf.parse(stringValue) );
+    					}
+    					catch(Exception e)
+    					{
+    						String message = "Couldn't parse date field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
+                            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+    					}
+                        break;
+                        
+                    case Value.VALUE_TYPE_INTEGER:
+                        try
+                        {
+                            value.setValue( Long.parseLong(stringValue) );
+                        }
+                        catch(Exception e)
+                        {
+                            String message = "Couldn't parse Integer field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
+                            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+                        }
+                        break;
+    
+                    case Value.VALUE_TYPE_BIGNUMBER:
+                        try
+                        {
+                            value.setValue( new BigDecimal(stringValue) );
+                        }
+                        catch(Exception e)
+                        {
+                            String message = "Couldn't parse BigNumber field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
+                            remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+                        }
+                        break;
+                        
+                    case Value.VALUE_TYPE_BOOLEAN:
+                        value.setValue( "Y".equalsIgnoreCase(stringValue) || "TRUE".equalsIgnoreCase(stringValue));
+                        break;
+                        
+                    default:
+                        String message = "Please specify the value type of field ["+value.getName()+"] with value ["+stringValue+"] -->";
+                        remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
+    
+                    }
+                }
+                
 				// Now add value to the row!
 				// This is in fact a copy from the fields row, but now with data.
 				r.addValue(value); 
