@@ -78,18 +78,20 @@ public class SelectValues extends BaseStep implements StepInterface
 				}
 			}
 			
-			// Check for doubles in the selected fields...
+			// Check for doubles in the selected fields... AFTER renaming!!
 			int cnt[] = new int[meta.getSelectName().length];
 			for (int i=0;i<meta.getSelectName().length;i++)
 			{
 				cnt[i]=0;
 				for (int j=0;j<meta.getSelectName().length;j++)
 				{
-					if (meta.getSelectName()[i].equals(meta.getSelectName()[j])) cnt[i]++;
+                    String one = Const.NVL( meta.getSelectRename()[i], meta.getSelectName()[i]);
+                    String two = Const.NVL( meta.getSelectRename()[j], meta.getSelectName()[j]);
+					if (one.equals(two)) cnt[i]++;
 					
 					if (cnt[i]>1)
 					{
-						logError("Field '"+meta.getSelectName()[i]+"' is specified twice with the same name!");
+						logError("Field '"+one+"' is specified twice (or more) with the same name!");
 						setErrors(1);
 						stopAll();
 						return false;
@@ -103,12 +105,17 @@ public class SelectValues extends BaseStep implements StepInterface
 		for (int i=0;i<meta.getSelectName().length;i++)
 		{
 			debug="get start loop (fieldnrs["+i+"]="+data.fieldnrs[i]+")";
+            
 			// Normally this can't happen, except when streams are mixed with different
 			// number of fields.
 			// 
 			if (data.fieldnrs[i]<row.size())
 			{
-				data.values[i]=row.getValue(data.fieldnrs[i]);
+			    // TODO: Clone might be a 'bit' expensive as it is only needed in case you want to copy a single field to 2 or more target fields.
+                // And even then it is only required for the last n-1 target fields.
+                // Perhaps we can consider the requirements for cloning at init(), store it in a boolean[] and just consider this at runtime
+                //
+				data.values[i]=row.getValue(data.fieldnrs[i]).Clone(); 
 				if (meta.getSelectRename()[i]!=null && meta.getSelectRename()[i].length()>0)
 				{
 					data.values[i].setName(meta.getSelectRename()[i]);
@@ -129,8 +136,15 @@ public class SelectValues extends BaseStep implements StepInterface
 		debug="add values to row in correct order...";
 		for (int i=0;i<meta.getSelectName().length;i++) // Add in the same order as before!
 		{
-			if (i>row.size()) row.addValue(data.values[i]);
-			else              row.setValue(i, data.values[i]);
+			if (i>=row.size()) 
+            {
+                row.addValue(data.values[i]);
+            }
+			else
+            {
+                debug="add values to row in correct order... data.values["+i+"] : "+data.values[i].toStringMeta();
+                row.setValue(i, data.values[i]);
+            }
 		}
 		debug="remove unwanted/unselected fields.";
 		for (int i=row.size()-1;i>=meta.getSelectName().length;i--)
