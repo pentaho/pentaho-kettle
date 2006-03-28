@@ -478,7 +478,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 								{
 									error_message="Fields in input stream, not found in output table:"+Const.CR+Const.CR+error_message;
 	
-									cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
+									cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, error_message, stepMeta);
 									remarks.add(cr);
 								}
 								else
