@@ -1758,8 +1758,13 @@ public class TableView extends Composite
 			item.setText(0, num);
 		}
 	}
+    
+    public void optWidth(boolean header)
+    {
+        optWidth(header, 0);
+    }
 	
-	public void optWidth(boolean header)
+	public void optWidth(boolean header, int nrLines)
 	{
 		for (int c=0;c<table.getColumnCount();c++)
 		{
@@ -1770,7 +1775,7 @@ public class TableView extends Composite
 				max=dummy_gc.textExtent(tc.getText(), SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x;
 			} 
 				
-			for (int r=0;r<table.getItemCount();r++)
+			for (int r=0;r<table.getItemCount() && ( r<nrLines || nrLines<=0);r++)
 			{
 				TableItem ti = table.getItem(r);
 				String str = "";
