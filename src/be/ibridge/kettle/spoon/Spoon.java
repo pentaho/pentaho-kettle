@@ -4577,16 +4577,14 @@ public class Spoon
                     SelectValuesMeta svm = new SelectValuesMeta();
                     svm.allocate(mappings.size(), 0, 0);
                     
-                    String selectName[] = new String[mappings.size()];
-                    String selectRename[] = new String[mappings.size()];
                     for (int i=0;i<mappings.size();i++)
                     {
                         SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
-                        selectName[i] = sourceFields.getValue(mapping.getSourcePosition()).getName();
-                        selectRename[i] = target[mapping.getTargetPosition()];
+                        svm.getSelectName()[i] = sourceFields.getValue(mapping.getSourcePosition()).getName();
+                        svm.getSelectRename()[i] = target[mapping.getTargetPosition()];
+                        svm.getSelectLength()[i] = -1;
+                        svm.getSelectPrecision()[i] = -1;
                     }
-                    svm.setSelectName(selectName);
-                    svm.setSelectRename(selectRename);
                     
                     // Now that we have the meta-data, create a new step info object
                     
