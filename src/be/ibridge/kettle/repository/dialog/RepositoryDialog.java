@@ -350,7 +350,18 @@ public class RepositoryDialog
 	private void ok()
 	{
 		getInfo(input);
-		dispose();
+        
+        if (input.getName()!=null && input.getName().length()>0)
+        {
+            dispose();
+        }
+        else
+        {
+            MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK );
+            box.setMessage("You should at least give this repository a name.");
+            box.setText("ERROR");
+            box.open();
+       }
 	}
 	
 	private void fillConnections()
