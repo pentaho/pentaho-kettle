@@ -586,8 +586,8 @@ public class Database
                     }
                     else
 					{
-						java.sql.Timestamp sdate = new java.sql.Timestamp(dat);
-						ps.setTimestamp(pos, sdate);
+                        java.sql.Timestamp sdate = new java.sql.Timestamp(dat);
+					    ps.setTimestamp(pos, sdate);
 					}
 				}
 				else
@@ -598,7 +598,7 @@ public class Database
                     }
                     else
                     {
-                        ps.setNull(pos, java.sql.Types.TIME);
+                        ps.setNull(pos, java.sql.Types.TIMESTAMP);
                     }
                 }
 				break;
