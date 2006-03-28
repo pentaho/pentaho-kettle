@@ -1469,6 +1469,12 @@ public class Database
                     if (sql.toUpperCase().startsWith("DELETE")) result.setNrLinesDeleted((long) count);
                 }
             }
+            
+            // See if a cache needs to be cleared...
+            if (sql.toUpperCase().startsWith("ALTER TABLE"))
+            {
+                DBCache.getInstance().clear(databaseMeta.getName());
+            }
 		}
 		catch(SQLException ex)
 		{
