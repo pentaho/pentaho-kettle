@@ -93,6 +93,27 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.groupField = groupField;
     }
+    
+    public String[] getDenormaliserTargetFields()
+    {
+        String fields[] = new String[denormaliserTargetField.length];
+        for (int i=0;i<fields.length;i++)
+        {
+            fields[i] = denormaliserTargetField[i].getTargetName();
+        }
+        
+        return fields;
+    }
+    
+    public DenormaliserTargetField searchTargetField(String targetName)
+    {
+        for (int i=0;i<denormaliserTargetField.length;i++)
+        {
+            DenormaliserTargetField field = denormaliserTargetField[i];
+            if (field.getTargetName().equalsIgnoreCase(targetName)) return field;            
+        }
+        return null;
+    }
 
     /**
      * @return Returns the pivotField.
@@ -212,6 +233,7 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
                 denormaliserTargetField[i].setKeyValue(XMLHandler.getTagValue(fnode, "key_value"));
                 denormaliserTargetField[i].setTargetName(XMLHandler.getTagValue(fnode, "target_name"));
                 denormaliserTargetField[i].setTargetType(XMLHandler.getTagValue(fnode, "target_type"));
+                denormaliserTargetField[i].setTargetFormat(XMLHandler.getTagValue(fnode, "target_format"));
                 denormaliserTargetField[i].setTargetLength(Const.toInt(XMLHandler.getTagValue(fnode, "target_length"), -1));
                 denormaliserTargetField[i].setTargetPrecision(Const.toInt(XMLHandler.getTagValue(fnode, "target_precision"), -1));
                 denormaliserTargetField[i].setTargetDecimalSymbol(XMLHandler.getTagValue(fnode, "target_decimal_symbol"));
@@ -252,6 +274,7 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
             retval += "          " + XMLHandler.addTagValue("key_value", field.getKeyValue());
             retval += "          " + XMLHandler.addTagValue("target_name", field.getTargetName());
             retval += "          " + XMLHandler.addTagValue("target_type", field.getTargetTypeDesc());
+            retval += "          " + XMLHandler.addTagValue("target_format", field.getTargetFormat());
             retval += "          " + XMLHandler.addTagValue("target_length", field.getTargetLength());
             retval += "          " + XMLHandler.addTagValue("target_precision", field.getTargetPrecision());
             retval += "          " + XMLHandler.addTagValue("target_decimal_symbol", field.getTargetDecimalSymbol());
@@ -289,6 +312,7 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
                 denormaliserTargetField[i].setKeyValue(rep.getStepAttributeString(id_step, i, "key_value"));
                 denormaliserTargetField[i].setTargetName(rep.getStepAttributeString(id_step, i, "target_name"));
                 denormaliserTargetField[i].setTargetType(rep.getStepAttributeString(id_step, i, "target_type"));
+                denormaliserTargetField[i].setTargetFormat(rep.getStepAttributeString(id_step, i, "target_format"));
                 denormaliserTargetField[i].setTargetLength((int) rep.getStepAttributeInteger(id_step, i, "target_length"));
                 denormaliserTargetField[i].setTargetPrecision((int) rep.getStepAttributeInteger(id_step, i, "target_precision"));
                 denormaliserTargetField[i].setTargetDecimalSymbol(rep.getStepAttributeString(id_step, i, "target_decimal_symbol"));
@@ -323,6 +347,7 @@ public class DenormaliserMeta extends BaseStepMeta implements StepMetaInterface
                 rep.saveStepAttribute(id_transformation, id_step, i, "key_value", field.getKeyValue());
                 rep.saveStepAttribute(id_transformation, id_step, i, "target_name", field.getTargetName());
                 rep.saveStepAttribute(id_transformation, id_step, i, "target_type", field.getTargetTypeDesc());
+                rep.saveStepAttribute(id_transformation, id_step, i, "target_format", field.getTargetFormat());
                 rep.saveStepAttribute(id_transformation, id_step, i, "target_length", field.getTargetLength());
                 rep.saveStepAttribute(id_transformation, id_step, i, "target_precision", field.getTargetPrecision());
                 rep.saveStepAttribute(id_transformation, id_step, i, "target_decimal_symbol", field.getTargetDecimalSymbol());

@@ -185,7 +185,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		fdGroup.left  = new FormAttachment(0, 0);
 		fdGroup.top   = new FormAttachment(wlGroup, margin);
 		fdGroup.right = new FormAttachment(wGet, -margin);
-		fdGroup.bottom= new FormAttachment(45, 0);
+		fdGroup.bottom= new FormAttachment(30, 0);
 		wGroup.setLayoutData(fdGroup);
 
 		// THE unpivot target field fields
