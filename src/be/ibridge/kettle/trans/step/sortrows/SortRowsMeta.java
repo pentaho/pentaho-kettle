@@ -56,6 +56,9 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 	private String  directory;
     /** Temp files prefix... */
 	private String  prefix;
+    
+    /** The sort size: number of rows sorted and kept in memory */
+    private int  sortSize;
 
 	public SortRowsMeta()
 	{
@@ -163,6 +166,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			directory = XMLHandler.getTagValue(stepnode, "directory");
 			prefix    = XMLHandler.getTagValue(stepnode, "prefix");
+            sortSize  = Const.toInt( XMLHandler.getTagValue(stepnode, "sort_size"), Const.SORT_SIZE );
 			
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
 			int nrfields = XMLHandler.countNodes(fields, "field");
@@ -190,7 +194,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{		
 		directory = "%%java.io.tmpdir%%";
 		prefix    = "out";
-		
+		sortSize = Const.SORT_SIZE;
+        
 		int nrfields = 0;
 		
 		allocate(nrfields);
@@ -207,6 +212,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 		retval+="      "+XMLHandler.addTagValue("directory", directory);
 		retval+="      "+XMLHandler.addTagValue("prefix",    prefix);
+        retval+="      "+XMLHandler.addTagValue("sort_size", sortSize);
 		
 		retval+="    <fields>"+Const.CR;
 		for (int i=0;i<fieldName.length;i++)
@@ -228,6 +234,8 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			directory        =      rep.getStepAttributeString (id_step, "directory");
 			prefix           =      rep.getStepAttributeString (id_step, "prefix");
+            sortSize         = (int)rep.getStepAttributeInteger(id_step, "sort_size");
+            if (sortSize==0) sortSize=Const.SORT_SIZE;
 			
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 			
@@ -252,6 +260,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			rep.saveStepAttribute(id_transformation, id_step, "directory",       directory);
 			rep.saveStepAttribute(id_transformation, id_step, "prefix",          prefix);
+            rep.saveStepAttribute(id_transformation, id_step, "sort_size",       sortSize);
 			
 			for (int i=0;i<fieldName.length;i++)
 			{
@@ -364,4 +373,20 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new SortRowsData();
 	}
+
+    /**
+     * @return Returns the sortSize.
+     */
+    public int getSortSize()
+    {
+        return sortSize;
+    }
+
+    /**
+     * @param sortSize The sortSize to set.
+     */
+    public void setSortSize(int sortSize)
+    {
+        this.sortSize = sortSize;
+    }
 }
