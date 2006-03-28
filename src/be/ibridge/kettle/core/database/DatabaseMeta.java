@@ -822,15 +822,6 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 			{
 				setPassword( Encr.decryptPassword(getPassword().substring(10)) );
 			} 
-	
-			// Backward compatibility!
-			if (getDatabaseType() == TYPE_DATABASE_GENERIC ||
-				getDatabaseType() == TYPE_DATABASE_ACCESS  ||
-				getDatabaseType() == TYPE_DATABASE_DBASE
-			    )
-			{
-				setAccessType( TYPE_ACCESS_ODBC );
-			}
             
             // Also, read the database attributes...
             Node attrsnode = XMLHandler.getSubNode(con, "attributes");
