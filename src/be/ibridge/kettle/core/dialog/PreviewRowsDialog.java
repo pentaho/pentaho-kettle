@@ -245,7 +245,7 @@ public class PreviewRowsDialog extends Dialog
                         if (show!=null) item.setText(c+1, show);
                     }
                 }
-                wFields.optWidth(true);
+                wFields.optWidth(true, 200);
             }
         });
 	}
