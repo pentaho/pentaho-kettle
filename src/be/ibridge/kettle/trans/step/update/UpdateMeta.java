@@ -818,7 +818,7 @@ public class UpdateMeta extends BaseStepMeta implements StepMetaInterface
             {
                 Value v = prev.searchValue(updateStream[i]);
 
-                DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), database
+                DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_UPDATE, transMeta.getName(), stepMeta.getName(), database
                         .getDatabaseName(), tableName, updateLookup[i], updateStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta());
                 impact.add(ii);
             }
