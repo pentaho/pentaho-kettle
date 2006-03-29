@@ -2515,6 +2515,58 @@ public class Database
 		
 		return true;
 	}
+    
+    /**
+     * Prepare a delete statement by giving it the tablename, fields and conditions to work with.
+     * @param table The table-name to delete in
+     * @param codes  
+     * @param condition
+     * @return
+     */
+    
+    
+    public boolean prepareDelete(String table, String codes[], String condition[])
+    {
+        String sql;
+    
+        int i;
+        
+        sql = "DELETE FROM "+table+Const.CR;
+        sql+= "WHERE ";
+        
+        for (i=0;i<codes.length;i++)
+        {
+            if (i!=0) sql += "AND   ";
+            sql += codes[i];
+            if ("BETWEEN".equalsIgnoreCase(condition[i]))
+            {
+                sql+=" BETWEEN ? AND ? ";
+            }
+            else
+            if ("IS NULL".equalsIgnoreCase(condition[i]) || "IS NOT NULL".equalsIgnoreCase(condition[i]))
+            {
+                sql+=" "+condition[i]+" ";
+            }
+            else
+            {
+                sql+=" "+condition[i]+" ? ";
+            }
+        }
+        
+        try
+        {
+            log.logDetailed(toString(), "Setting update preparedStatement to ["+sql+"]");
+            prepStatementUpdate=connection.prepareStatement(databaseMeta.stripCR(sql));
+        }
+        catch(SQLException ex) 
+        {
+            printSQLException(ex);
+            return false;
+        }
+        
+        return true;
+    }
+
 	
 	public void setProcLookup(String proc, String arg[], String argdir[], int argtype[], String returnvalue, int returntype)
 		throws KettleDatabaseException
