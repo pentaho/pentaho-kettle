@@ -323,6 +323,7 @@ public class ChefLog extends Composite
 						job = new Job(log, chef.jobMeta.getName(), chef.jobMeta.getFilename(), null);
 						job.open(chef.rep, chef.jobMeta.getFilename(), chef.jobMeta.getName(), chef.jobMeta.getDirectory().getPath());
 						job.setJobEntryResults(jobEntryResults);
+                        log.logMinimal(Chef.APP_NAME, "Starting job...");
 						job.start();
 						readLog();
 					}
@@ -375,6 +376,7 @@ public class ChefLog extends Composite
 					job.stopAll();
 					job.endProcessing("stop");
 					job=null;
+                    log.logMinimal(Chef.APP_NAME, "Job was stopped.");
 				}
 			}
 			catch(KettleJobException je)
@@ -436,7 +438,11 @@ public class ChefLog extends Composite
 	
 	private void refreshView()
 	{
-		if (job!=null && !job.isActive()) job=null;
+		if (job!=null && !job.isActive())
+        {
+            job=null;
+            log.logMinimal(Chef.APP_NAME, "Job has ended.");
+        }
 		
 		if (!wStart.isDisposed())
 		{
