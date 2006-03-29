@@ -45,8 +45,8 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 
 /*
- * Created on 26-apr-2003
- *
+ * @author Tom
+ * @since 28-March-2006
  */
 
 public class DeleteMeta extends BaseStepMeta implements StepMetaInterface

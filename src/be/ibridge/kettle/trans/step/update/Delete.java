@@ -31,10 +31,10 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 
 /**
- * Delete data in a database table, does NOT ever perform an insert.
+ * Delete data in a database table.
  * 
- * @author Matt
- * @since 26-apr-2003
+ * @author Tom
+ * @since 28-March-2006
  */
 public class Delete extends BaseStep implements StepInterface
 {
@@ -128,11 +128,11 @@ public class Delete extends BaseStep implements StepInterface
 			 */
             if (!meta.isErrorIgnored())
             {
-                throw new KettleDatabaseException("Entry to update with following key could not be found: "+lu);
+                throw new KettleDatabaseException("Entry to delete with following key could not be found: "+lu);
             }
             else
             {
-                log.logDetailed(toString(), "WARNING: key could not be found for update: "+lu);
+                log.logDetailed(toString(), "WARNING: key could not be found for : "+lu);
                 if (meta.getIgnoreFlagField()!=null && meta.getIgnoreFlagField().length()>0) // add flag field!
                 {
                     row.addValue(new Value(meta.getIgnoreFlagField(), false));
@@ -147,7 +147,7 @@ public class Delete extends BaseStep implements StepInterface
 			 * UPDATE row or do nothing?
 			 *
 			 */
-			debug="compare for update";
+			debug="compare for delete";
 			boolean update = false;
 			for (int i=0;i<data.valuenrs.length;i++)
 			{
@@ -161,7 +161,7 @@ public class Delete extends BaseStep implements StepInterface
 			}
 			if (update)
 			{
-				logRowlevel("Update row with: !"+lu.toString());
+				logRowlevel("Delete row with: !"+lu.toString());
 				debug="setValuesUpdate()";
 				data.dbupd.setValuesUpdate(lu);
 				debug="updateRow()";

@@ -22,8 +22,8 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 
 
 /**
- * @author Matt
- * @since 28-feb-2005
+ * @author Tom
+ * @since 28-March-2006
  *
  */
 public class DeleteData extends BaseStepData implements StepDataInterface

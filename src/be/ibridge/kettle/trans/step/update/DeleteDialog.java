@@ -60,7 +60,11 @@ import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 
-
+/**
+ * @author Tom
+ * @since 28-March-2006
+ *
+ */
 public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private CCombo       wConnection;
@@ -124,7 +128,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Update");
+		shell.setText("Delete");
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -294,7 +298,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		
 		// THE UPDATE/INSERT TABLE
 		wlReturn=new Label(shell, SWT.NONE);
-		wlReturn.setText("Update fields: ");
+		wlReturn.setText("Delete fields: ");
  		props.setLook(wlReturn);
 		fdlReturn=new FormData();
 		fdlReturn.left  = new FormAttachment(0, 0);
@@ -317,7 +321,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 							  );
 
 		wGetLU = new Button(shell, SWT.PUSH);
-		wGetLU.setText(" Get &update fields ");
+		wGetLU.setText(" Get &delete fields ");
 		fdGetLU = new FormData();
 		fdGetLU.top   = new FormAttachment(wlReturn, margin);
 		fdGetLU.right = new FormAttachment(100, 0);
