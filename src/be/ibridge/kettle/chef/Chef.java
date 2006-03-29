@@ -92,6 +92,7 @@ import be.ibridge.kettle.core.dialog.DatabaseExplorerDialog;
 import be.ibridge.kettle.core.dialog.EnterOptionsDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
+import be.ibridge.kettle.core.dialog.SQLStatementsDialog;
 import be.ibridge.kettle.core.dialog.Splash;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -122,6 +123,8 @@ import be.ibridge.kettle.repository.dialog.RepositoriesDialog;
 import be.ibridge.kettle.repository.dialog.RepositoryExplorerDialog;
 import be.ibridge.kettle.repository.dialog.SelectObjectDialog;
 import be.ibridge.kettle.repository.dialog.UserDialog;
+import be.ibridge.kettle.spoon.Messages;
+import be.ibridge.kettle.spoon.dialog.GetJobSQLProgressDialog;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.TransHopMeta;
 import be.ibridge.kettle.trans.TransMeta;
@@ -685,6 +688,13 @@ public class Chef
 		tiFileRun.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { tabfolder.setSelection(1); cheflog.startstop(); }});
 		tiFileRun.setToolTipText("Run this job");
 
+        new ToolItem(tBar, SWT.SEPARATOR);
+        final ToolItem tiSQL = new ToolItem(tBar, SWT.PUSH);
+        final Image imSQL = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"SQLbutton.png")); 
+        tiSQL.setImage(imSQL);
+        tiSQL.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSQL(); }});
+        tiSQL.setToolTipText("Generate the SQL needed to run this job");
+
 		tBar.addDisposeListener(new DisposeListener() 
 			{
 				public void widgetDisposed(DisposeEvent e) 
@@ -700,7 +710,33 @@ public class Chef
 		tBar.pack();
 	}
 	
-	private void addTree()
+    /**
+     * Get & show the SQL required to run the loaded job entry...
+     *
+     */
+    public void getSQL()
+    {
+        GetJobSQLProgressDialog pspd = new GetJobSQLProgressDialog(shell, jobMeta, rep);
+        ArrayList stats = pspd.open();
+        if (stats!=null) // null means error, but we already displayed the error
+        {
+            if (stats.size()>0)
+            {
+                SQLStatementsDialog ssd = new SQLStatementsDialog(shell, SWT.NONE, stats);
+                ssd.open();
+            }
+            else
+            {
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
+                mb.setMessage(Messages.getString("Message.MessageBox.NoSQLNeedEexecuted"));//As far as I can tell, no SQL statements need to be executed before this transformation can run.
+                mb.setText(Messages.getString("Message.MessageBox.SQL"));//"SQL"
+                mb.open();
+            }
+        }
+    }
+    
+
+    private void addTree()
 	{
 		SashForm leftsplit = new SashForm(sashform, SWT.VERTICAL);
 		leftsplit.setLayout(new FillLayout());

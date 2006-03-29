@@ -293,8 +293,8 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 
 	        messageText.append("Job:").append(Const.CR);
 	        messageText.append("-----").append(Const.CR);
-	        messageText.append("Name       : ").append(parentJob.getJobinfo().getName()).append(Const.CR);
-	        messageText.append("Directory  : ").append(parentJob.getJobinfo().getDirectory()).append(Const.CR);
+	        messageText.append("Name       : ").append(parentJob.getJobMeta().getName()).append(Const.CR);
+	        messageText.append("Directory  : ").append(parentJob.getJobMeta().getDirectory()).append(Const.CR);
 	        messageText.append("JobEntry   : ").append(getName()).append(Const.CR);
 	        messageText.append(Const.CR);
 

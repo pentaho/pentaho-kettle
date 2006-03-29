@@ -159,5 +159,7 @@ public interface JobEntryInterface
 	public boolean isShell();
 	public boolean isMail();
 	public boolean isSpecial();
+    
+    public ArrayList getSQLStatements(Repository repository) throws KettleException;
 }
 

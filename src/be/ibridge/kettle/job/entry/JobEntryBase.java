@@ -409,4 +409,9 @@ public class JobEntryBase implements Cloneable
 	{
 		return true;
 	}
+    
+    public ArrayList getSQLStatements(Repository repository) throws KettleException
+    {
+        return new ArrayList();
+    }
 }

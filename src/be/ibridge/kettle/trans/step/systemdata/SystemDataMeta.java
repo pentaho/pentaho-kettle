@@ -69,18 +69,19 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 	public final static int TYPE_SYSTEM_INFO_MODIFIED_USER    = 20;
 	public final static int TYPE_SYSTEM_INFO_MODIFIED_DATE    = 21;
 	public final static int TYPE_SYSTEM_INFO_BATCH_ID         = 22;
-	public final static int TYPE_SYSTEM_INFO_HOSTNAME         = 23;
-	public final static int TYPE_SYSTEM_INFO_IP_ADDRESS       = 24;
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_01      = 25;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_02      = 26;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_03      = 27;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_04      = 28;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_05      = 29;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_06      = 30;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_07      = 31;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_08      = 32;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_09      = 33;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_10      = 34;	
+    public final static int TYPE_SYSTEM_INFO_JOB_BATCH_ID     = 23;
+	public final static int TYPE_SYSTEM_INFO_HOSTNAME         = 24;
+	public final static int TYPE_SYSTEM_INFO_IP_ADDRESS       = 25;
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_01      = 26;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_02      = 27;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_03      = 28;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_04      = 29;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_05      = 30;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_06      = 31;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_07      = 32;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_08      = 33;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_09      = 34;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_10      = 35;	
 
 	public final static String type_desc[] = 
 		{
@@ -107,6 +108,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 			"User modified",
 			"Date modified",
 			"batch ID",
+            "job batch ID",
 			"Hostname",
 			"IP address",
 			"command line argument 1",
@@ -146,6 +148,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 			"User that modified the transformation last",
 			"Date when the transformation was modified last",
 			"transformation batch ID",
+            "parent job batch ID",
 			"Hostname",
 			"IP address",
 			"command line argument 1",

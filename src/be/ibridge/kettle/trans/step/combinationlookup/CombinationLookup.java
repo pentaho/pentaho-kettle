@@ -180,7 +180,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				{
 					// What's the next value for the technical key?
 					val_key=new Value(meta.getTechnicalKeyField(), 0.0); // value to accept new key...
-					data.db.getNextValue(getTransMeta(), meta.getTablename(), val_key);
+					data.db.getNextValue(getTransMeta().getCounters(), meta.getTablename(), val_key);
 				}
 	
 				data.db.combiInsert( row, meta.getTablename(), meta.getSequenceFrom()==null?null:meta.getTechnicalKeyField(),

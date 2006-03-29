@@ -121,6 +121,9 @@ public class TableInput extends BaseStep implements StepInterface
                 }
                 else
                 {
+                    // First close the previous query, otherwise we run out of cursors!
+                    closePreviousQuery();
+                    
                     boolean success = doQuery(nextRow); // OK, perform a new query
                     if (!success) 
                     { 
@@ -151,6 +154,11 @@ public class TableInput extends BaseStep implements StepInterface
 		return true;
 	}
     
+    private void closePreviousQuery() throws KettleDatabaseException
+    {
+        data.db.closeQuery(data.rs);
+    }
+
     private boolean doQuery(Row parameters) throws KettleDatabaseException
     {
         boolean success = true;
@@ -185,7 +193,7 @@ public class TableInput extends BaseStep implements StepInterface
 		logBasic("Finished reading query, closing connection.");
 		try
 		{
-		    data.db.closeQuery(data.rs);
+		    closePreviousQuery();
 		}
 		catch(KettleException e)
 		{

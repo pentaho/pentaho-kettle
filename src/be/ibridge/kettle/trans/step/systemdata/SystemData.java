@@ -195,6 +195,9 @@ public class SystemData extends BaseStep implements StepInterface
 			case SystemDataMeta.TYPE_SYSTEM_INFO_BATCH_ID:
 				row.addValue(new Value(meta.getFieldName()[i], getTransMeta().getBatchId()));
 				break;
+            case SystemDataMeta.TYPE_SYSTEM_INFO_JOB_BATCH_ID:
+                row.addValue(new Value(meta.getFieldName()[i], getTransMeta().getJobBatchId()));
+                break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_HOSTNAME:
 				row.addValue(new Value(meta.getFieldName()[i], Const.getHostname()));
 				break;

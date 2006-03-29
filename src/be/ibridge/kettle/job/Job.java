@@ -44,7 +44,7 @@ import be.ibridge.kettle.trans.StepLoader;
 public class Job extends Thread
 {
 	private LogWriter log;
-	private JobMeta jobinfo;
+	private JobMeta jobMeta;
 	private Repository rep;
 	
 	/**
@@ -60,10 +60,10 @@ public class Job extends Thread
 	{
 		this.log=lw;
 		
-		jobinfo = new JobMeta(log);
-		jobinfo.setName(name);
-		jobinfo.setFilename(file);
-		jobinfo.arguments=args;
+		jobMeta = new JobMeta(log);
+		jobMeta.setName(name);
+		jobMeta.setFilename(file);
+		jobMeta.arguments=args;
 		active=false;
 		stopped=false;
 	}
@@ -72,7 +72,7 @@ public class Job extends Thread
 	{
 		this.log        = lw;
 		this.rep        = rep;
-		this.jobinfo    = ti;
+		this.jobMeta    = ti;
 		
 		active=false;
 		stopped=false;
@@ -84,19 +84,19 @@ public class Job extends Thread
 		this.rep = rep;
 		if (rep!=null)
 		{
-			jobinfo = new JobMeta(log, rep, jobname, rep.getDirectoryTree().findDirectory(dirname));
+			jobMeta = new JobMeta(log, rep, jobname, rep.getDirectoryTree().findDirectory(dirname));
 		}
 		else
 		{
-			jobinfo = new JobMeta(log, fname);
+			jobMeta = new JobMeta(log, fname);
 		}
 	}
 
 	public String getJobname()
 	{
-		if (jobinfo==null) return null;
+		if (jobMeta==null) return null;
 		
-		return jobinfo.getName();
+		return jobMeta.getName();
 	}
 
 	public void setRepository(Repository rep)
@@ -154,7 +154,7 @@ public class Job extends Thread
 	{
 		Result res = null;
 		JobEntryResult jer = new JobEntryResult();
-		jer.setJobName(getJobinfo().getName());
+		jer.setJobName(getJobMeta().getName());
 
 		if (stopped)
 		{
@@ -169,7 +169,7 @@ public class Job extends Thread
 		if (startpoint == null)
 		{
 			beginProcessing();
-			startpoint = jobinfo.findJobEntry(JobMeta.STRING_SPECIAL_START, 0);
+			startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0);
 			if (startpoint == null) 
 			{
 				log.logError(toString(), "Couldn't find starting point in this job.");
@@ -197,14 +197,14 @@ public class Job extends Thread
 				
 		// Try all next job entries.
 		// Launch only those where the hopinfo indicates true or false
-		int nrNext = jobinfo.findNrNextChefGraphEntries(startpoint);
+		int nrNext = jobMeta.findNrNextChefGraphEntries(startpoint);
 		for (int i=0;i<nrNext && !isStopped();i++)
 		{
 			// The next entry is...
-			JobEntryCopy nextEntry = jobinfo.findNextChefGraphEntry(startpoint, i);
+			JobEntryCopy nextEntry = jobMeta.findNextChefGraphEntry(startpoint, i);
 			
 			// See if we need to execute this...
-			JobHopMeta hi = jobinfo.findJobHop(startpoint, nextEntry);
+			JobHopMeta hi = jobMeta.findJobHop(startpoint, nextEntry);
 
 			// The next comment...
 			String nextComment = null;
@@ -229,11 +229,11 @@ public class Job extends Thread
 			   ) 
 			{				
 				// Start this next step!
-				log.logBasic(jobinfo.toString(), "Starting entry ["+nextEntry.getName()+"]");
+				log.logBasic(jobMeta.toString(), "Starting entry ["+nextEntry.getName()+"]");
 				// Pass along the previous result, perhaps the next job can use it...
 				res = execute(nr+1, result, nextEntry, startpoint, nextComment);
 				
-				log.logBasic(jobinfo.toString(), "Finished jobentry ["+nextEntry.getName()+"] (result="+res.getResult()+")");
+				log.logBasic(jobMeta.toString(), "Finished jobentry ["+nextEntry.getName()+"] (result="+res.getResult()+")");
 			}
 		}
 		
@@ -270,14 +270,14 @@ public class Job extends Thread
 		startDate   = Const.MIN_DATE;
 		endDate     = currentDate;
 		
-		DatabaseMeta logcon = jobinfo.getLogConnection();
+		DatabaseMeta logcon = jobMeta.getLogConnection();
 		if (logcon!=null)
 		{
 			Database ldb = new Database(logcon);
 			try
 			{
 				ldb.connect();
-				Row lastr = ldb.getLastLogDate(jobinfo.logTable, jobinfo.getName(), true, "end");
+				Row lastr = ldb.getLastLogDate(jobMeta.getLogTable(), jobMeta.getName(), true, "end");
 				if (lastr!=null && lastr.size()>0)
 				{
 					Value last = lastr.getValue(0); // #0: last enddate
@@ -288,17 +288,25 @@ public class Job extends Thread
 				}
 
 				depDate = currentDate;
+                
+                // See if we have to add a batch id...
+                Value id_batch = new Value("ID_JOB", (long)1);
+                if (jobMeta.isBatchIdUsed())
+                {
+                    ldb.getNextValue(null, jobMeta.getLogTable(), id_batch);
+                    jobMeta.setBatchId( id_batch.getInteger() );
+                }
 				
-				ldb.writeLogRecord(jobinfo.logTable, false, 0, true, jobinfo.getName(), "start", 
+				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), jobMeta.getBatchId(), true, jobMeta.getName(), "start", 
 				                   0L, 0L, 0L, 0L, 0L, 0L, 
-				                   startDate, endDate, logDate, depDate,currentDate,
+				                   startDate, endDate, logDate, depDate, currentDate,
 								   log.getString()
 								   );
 				ldb.disconnect();
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				throw new KettleJobException("Unable to begin processing by logging start in logtable "+jobinfo.logTable, dbe);
+				throw new KettleJobException("Unable to begin processing by logging start in logtable "+jobMeta.getLogTable(), dbe);
 			}
 			finally
 			{
@@ -321,22 +329,22 @@ public class Job extends Thread
 		 * Sums errors, read, written, etc.
 		 */		
 
-		DatabaseMeta logcon = jobinfo.getLogConnection();
+		DatabaseMeta logcon = jobMeta.getLogConnection();
 		if (logcon!=null)
 		{
 			Database ldb = new Database(logcon);
 			try
 			{
 				ldb.connect();
-				ldb.writeLogRecord(jobinfo.logTable, false, 0, true, jobinfo.getName(), status, 
+				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), jobMeta.getBatchId(), true, jobMeta.getName(), status, 
 				                   read,written,updated,input,output,errors, 
-				                   startDate, endDate, logDate, depDate,currentDate,
+				                   startDate, endDate, logDate, depDate, currentDate,
 								   log.getString()
 								   );
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				throw new KettleJobException("Unable to end processing by writing log record to table "+jobinfo.logTable, dbe);
+				throw new KettleJobException("Unable to end processing by writing log record to table "+jobMeta.getLogTable(), dbe);
 			}
 			finally
 			{
@@ -413,9 +421,9 @@ public class Job extends Thread
 	/**
 	 * @return Returns the jobinfo.
 	 */
-	public JobMeta getJobinfo()
+	public JobMeta getJobMeta()
 	{
-		return jobinfo;
+		return jobMeta;
 	}
 	
 	/**

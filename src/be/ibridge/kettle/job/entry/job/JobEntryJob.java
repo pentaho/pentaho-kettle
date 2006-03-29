@@ -28,6 +28,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.job.Job;
+import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
@@ -305,6 +306,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		{
 			job.open(rep, getFileName(), getName(), directory.getPath());
 			job.setJobEntryResults(parentJob.getJobEntryResults());//
+            
+            if (parentJob.getJobMeta().isBatchIdPassed())
+            {
+                job.getJobMeta().setBatchId(parentJob.getJobMeta().getBatchId());
+            }
 			
 			JobEntryJobRunner runner = new JobEntryJobRunner( job, prev_result, nr);
 			new Thread(runner).start();
@@ -376,4 +382,24 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		return true;
 	}
 
+    public ArrayList getSQLStatements(Repository repository) throws KettleException
+    {
+        JobMeta jobMeta = getJobMeta(repository);
+        
+        return jobMeta.getSQLStatements(repository, null);
+    }
+    
+    private JobMeta getJobMeta(Repository rep) throws KettleException
+    {
+        if (rep!=null && getDirectory()!=null)
+        {
+            return new JobMeta(LogWriter.getInstance(), rep, getJobName(), getDirectory());
+        }
+        else
+        {
+            return new JobMeta(LogWriter.getInstance(), getFileName());
+        }
+    }
+
 }
+

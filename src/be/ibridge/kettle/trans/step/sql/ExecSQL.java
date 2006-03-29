@@ -163,6 +163,8 @@ public class ExecSQL extends BaseStep implements StepInterface
         Row add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());
         row.addRow(add);
         
+        data.db.commit();
+        
 		putRow(row);  // send it out!    
 
         if ((linesWritten>0) && (linesWritten%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesWritten);

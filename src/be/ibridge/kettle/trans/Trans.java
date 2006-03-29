@@ -906,7 +906,7 @@ public class Trans
 					Value id_batch = new Value("ID_BATCH", (long)1);
 					if (transMeta.isBatchIdUsed())
 					{
-						ldb.getNextValue(transMeta, transMeta.getLogTable(), id_batch);
+						ldb.getNextValue(transMeta.getCounters(), transMeta.getLogTable(), id_batch);
 						transMeta.setBatchId( id_batch.getInteger() );
 					}
 					

@@ -226,7 +226,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				{
 					// What's the next value for the technical key?
 					technicalKey=new Value(meta.getKeyField(), 0L); // value to accept new key...
-					data.db.getNextValue(getTransMeta(), meta.getTableName(), technicalKey);
+					data.db.getNextValue(getTransMeta().getCounters(), meta.getTableName(), technicalKey);
 				}
 
 				/*
@@ -352,7 +352,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					{
 						// What's the next value for the technical key?
 						technicalKey=new Value(meta.getKeyField(), 0L); // value to accept new key...
-						data.db.getNextValue(getTransMeta(), meta.getTableName(), technicalKey);
+						data.db.getNextValue(getTransMeta().getCounters(), meta.getTableName(), technicalKey);
 					}
 
 					data.db.dimInsert( row, meta.getTableName(), 

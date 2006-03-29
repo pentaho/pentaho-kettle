@@ -31,6 +31,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Hashtable;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -44,7 +45,6 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleDatabaseBatchException;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.value.Value;
-import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.dimensionlookup.DimensionLookupMeta;
 
 
@@ -3311,6 +3311,7 @@ public class Database
 		v=new Value("ENDDATE",         Value.VALUE_TYPE_DATE  );                     r.addValue(v);
 		v=new Value("LOGDATE",         Value.VALUE_TYPE_DATE  );                     r.addValue(v);
 		v=new Value("DEPDATE",         Value.VALUE_TYPE_DATE  );                     r.addValue(v);
+        v=new Value("REPLAYDATE",      Value.VALUE_TYPE_DATE   );                    r.addValue(v);
 
 		if (use_logfield)
 		{
@@ -3337,11 +3338,13 @@ public class Database
 								  )
 		throws KettleDatabaseException
 	{
-        if (!job && use_id && log_string!=null && !status.equalsIgnoreCase("start"))
+        if (use_id && log_string!=null && !status.equalsIgnoreCase("start"))
         {
             String sql = "UPDATE "+logtable+" SET STATUS=?, LINES_READ=?, LINES_WRITTEN=?, LINES_INPUT=?," +
                     " LINES_OUTPUT=?, LINES_UPDATED=?, ERRORS=?, STARTDATE=?, ENDDATE=?, LOGDATE=?, DEPDATE=?, REPLAYDATE=?, LOG_FIELD=? " +
-                    "WHERE ID_BATCH=?";
+                    "WHERE ";
+            if (job) sql+="ID_JOB=?"; else sql+="ID_BATCH=?";
+
             Row r = new Row();
             r.addValue( new Value("STATUS",          status       ));
             r.addValue( new Value("LINES_READ",      (long)read   ));
@@ -3503,13 +3506,15 @@ public class Database
 		return row;
 	}
 	
-	public synchronized void getNextValue(TransMeta transMeta, String table, Value val_key)
+	public synchronized void getNextValue(Hashtable counters, String table, Value val_key)
 		throws KettleDatabaseException
 	{
 		String lookup = table+"."+val_key.getName();
 		
 		// Try to find the previous sequence value...
-		Counter counter = (Counter)transMeta.getCounters().get(lookup);
+		Counter counter = null;
+        if (counters!=null) counter=(Counter)counters.get(lookup);
+        
 		if (counter==null)
 		{
 			Row r = getOneRow("SELECT MAX("+val_key.getName()+") FROM "+table);
@@ -3517,7 +3522,7 @@ public class Database
 			{
 				counter = new Counter(r.getValue(0).getInteger()+1, 1);
 				val_key.setValue(counter.next());
-				transMeta.getCounters().put(lookup, counter);
+				if (counters!=null) counters.put(lookup, counter);
 			}
 			else
 			{
