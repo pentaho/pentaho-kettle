@@ -335,7 +335,8 @@ public class LogWriter
         }
 	}
 	
-	public void logBasic(String subject, String message)    { println(LOG_LEVEL_BASIC, subject, message) ; }
+	public void logMinimal(String subject, String message)  { println(LOG_LEVEL_MINIMAL, subject, message) ; }
+    public void logBasic(String subject, String message)    { println(LOG_LEVEL_BASIC, subject, message) ; }
 	public void logDetailed(String subject, String message) { println(LOG_LEVEL_DETAILED, subject, message); }
 	public void logDebug(String subject, String message)    { println(LOG_LEVEL_DEBUG, subject, message); }
 	public void logRowlevel(String subject, String message) { println(LOG_LEVEL_ROWLEVEL, subject, message); }

@@ -122,10 +122,10 @@ public class Pan
         if (loglevel!=null) 
         {
             log.setLogLevel(loglevel);
-            log.logBasic("Pan", "Logging is at level : "+log.getLogLevelDesc());
+            log.logMinimal("Pan", "Logging is at level : "+log.getLogLevelDesc());
         }
         
-        log.logBasic("Pan", "Start of run.");
+        log.logMinimal("Pan", "Start of run.");
 		
 		/* Load the plugins etc.*/
 		StepLoader steploader = StepLoader.getInstance();
@@ -309,16 +309,16 @@ public class Pan
 			trans.waitUntilFinished();
 			trans.endProcessing("end");
 
-			log.logBasic("Pan", "Finished!");
+			log.logMinimal("Pan", "Finished!");
 			
 			cal=Calendar.getInstance();
 			stop=cal.getTime();
 			String begin=df.format(start).toString();
 			String end  =df.format(stop).toString();
 
-			log.logBasic("Pan", "Start="+begin+", Stop="+end);
+			log.logMinimal("Pan", "Start="+begin+", Stop="+end);
 			long millis=stop.getTime()-start.getTime();
-			log.logBasic("Pan", "Processing ended after "+(millis/1000)+" seconds.");
+			log.logMinimal("Pan", "Processing ended after "+(millis/1000)+" seconds.");
 			if (ok) 
 			{
 				trans.printStats((int)millis/1000);
@@ -332,6 +332,7 @@ public class Pan
 		catch(KettleException ke)
 		{
 			System.out.println("ERROR occurred: "+ke.getMessage());
+            log.logError("Pan", "Unexpected error occurred: "+ke.getMessage());
             System.exit(2);
 		}
 

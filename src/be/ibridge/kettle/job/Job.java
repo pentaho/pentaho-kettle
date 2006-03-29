@@ -277,7 +277,7 @@ public class Job extends Thread
 			try
 			{
 				ldb.connect();
-				Row lastr = ldb.getLastLogDate(jobinfo.logtable, jobinfo.getName(), true, "end");
+				Row lastr = ldb.getLastLogDate(jobinfo.logTable, jobinfo.getName(), true, "end");
 				if (lastr!=null && lastr.size()>0)
 				{
 					Value last = lastr.getValue(0); // #0: last enddate
@@ -289,7 +289,7 @@ public class Job extends Thread
 
 				depDate = currentDate;
 				
-				ldb.writeLogRecord(jobinfo.logtable, false, 0, true, jobinfo.getName(), "start", 
+				ldb.writeLogRecord(jobinfo.logTable, false, 0, true, jobinfo.getName(), "start", 
 				                   0L, 0L, 0L, 0L, 0L, 0L, 
 				                   startDate, endDate, logDate, depDate,currentDate,
 								   log.getString()
@@ -298,7 +298,7 @@ public class Job extends Thread
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				throw new KettleJobException("Unable to begin processing by logging start in logtable "+jobinfo.logtable, dbe);
+				throw new KettleJobException("Unable to begin processing by logging start in logtable "+jobinfo.logTable, dbe);
 			}
 			finally
 			{
@@ -328,7 +328,7 @@ public class Job extends Thread
 			try
 			{
 				ldb.connect();
-				ldb.writeLogRecord(jobinfo.logtable, false, 0, true, jobinfo.getName(), status, 
+				ldb.writeLogRecord(jobinfo.logTable, false, 0, true, jobinfo.getName(), status, 
 				                   read,written,updated,input,output,errors, 
 				                   startDate, endDate, logDate, depDate,currentDate,
 								   log.getString()
@@ -336,7 +336,7 @@ public class Job extends Thread
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				throw new KettleJobException("Unable to end processing by writing log record to table "+jobinfo.logtable, dbe);
+				throw new KettleJobException("Unable to end processing by writing log record to table "+jobinfo.logTable, dbe);
 			}
 			finally
 			{

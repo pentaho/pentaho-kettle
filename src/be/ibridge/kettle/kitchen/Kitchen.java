@@ -110,12 +110,12 @@ public class Kitchen
         if (loglevel!=null) 
         {
             log.setLogLevel(loglevel);
-            log.logBasic(STRING_KITCHEN, "Logging is at level : "+log.getLogLevelDesc());
+            log.logMinimal(STRING_KITCHEN, "Logging is at level : "+log.getLogLevelDesc());
         } 
 		
         if (repname!=null && username!=null) log.logDetailed(STRING_KITCHEN, "Repository and username supplied");
 
-		log.logBasic(STRING_KITCHEN, "Start of run.");
+		log.logMinimal(STRING_KITCHEN, "Start of run.");
 		
 		/* Load the plugins etc.*/
 		StepLoader steploader = StepLoader.getInstance();
@@ -304,7 +304,7 @@ public class Kitchen
             if (repository!=null) repository.disconnect();
         }
         
-		log.logBasic(STRING_KITCHEN, "Finished!");
+		log.logMinimal(STRING_KITCHEN, "Finished!");
 		
 		if (result!=null && result.getNrErrors()!=0)
 		{
@@ -316,9 +316,9 @@ public class Kitchen
 		String begin=df.format(start).toString();
 		String end  =df.format(stop).toString();
 
-		log.logBasic(STRING_KITCHEN, "Start="+begin+", Stop="+end);
+		log.logMinimal(STRING_KITCHEN, "Start="+begin+", Stop="+end);
 		long millis=stop.getTime()-start.getTime();
-		log.logBasic(STRING_KITCHEN, "Processing ended after "+(millis/1000)+" seconds.");
+		log.logMinimal(STRING_KITCHEN, "Processing ended after "+(millis/1000)+" seconds.");
         
         System.exit(returnCode);
 

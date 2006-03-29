@@ -140,7 +140,7 @@ public class Trans
 		preview=false;
 		preview_steps=null;
 		preview_sizes=null;
-		log.logBasic(toString(), "Transformation is pre-loaded from repository.");
+		log.logMinimal(toString(), "Transformation is pre-loaded from repository.");
 		log.logDebug(toString(), "nr of steps to run : "+transMeta.nrSteps()+", nr of hops : "+transMeta.nrTransHops());
 	}
 		
@@ -227,16 +227,16 @@ public class Trans
 		
 		if (transMeta.getName()==null)
 		{
-			log.logBasic(toString(), "Dispatching started for filename ["+transMeta.getFilename()+"]");
+			log.logMinimal(toString(), "Dispatching started for filename ["+transMeta.getFilename()+"]");
 		}
 		else
 		{
-			log.logBasic(toString(), "Dispatching started for transformation ["+transMeta.getName()+"]");
+			log.logMinimal(toString(), "Dispatching started for transformation ["+transMeta.getName()+"]");
 		}
 				
 		if (transMeta.getArguments()!=null)
 		{
-			log.logBasic(toString(), "Nr of arguments detected: "+transMeta.getArguments().length);
+			log.logMinimal(toString(), "Nr of arguments detected: "+transMeta.getArguments().length);
 		}
 		
 		if (getReplayDate() != null) {
@@ -456,12 +456,12 @@ public class Trans
 			}
 			if (errors==0)
 			{
-				log.logBasic(toString(), "Transformation ended.");
+				log.logMinimal(toString(), "Transformation ended.");
 			}
 			else
 			{
-				log.logBasic(toString(), "Transformation detected "+errors+" steps with errors!");
-				log.logBasic(toString(), "Transformation is killing the other steps!");
+				log.logMinimal(toString(), "Transformation detected "+errors+" steps with errors!");
+				log.logMinimal(toString(), "Transformation is killing the other steps!");
 				killAll();
 			}
 		}
