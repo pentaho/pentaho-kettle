@@ -98,13 +98,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.value.Value;
-import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPage1;
-import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPage2;
-import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPageInformix;
-import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPageJDBC;
-import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPageOCI;
-import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPageODBC;
-import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPageOracle;
+import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobHopMeta;
 import be.ibridge.kettle.job.JobMeta;
@@ -2433,61 +2427,16 @@ public class Chef
 	 * Shows a wizard that creates a new database connection...
 	 *
 	 */
-	private void createDatabaseWizard()
-	{
-		final DatabaseMeta newDBInfo = new DatabaseMeta();
-		
-		final CreateDatabaseWizardPage1 page1 = new CreateDatabaseWizardPage1("1", props, newDBInfo, jobMeta.getDatabases());
-		page1.createControl(shell);
-		
-		final  CreateDatabaseWizardPageInformix pageifx = new CreateDatabaseWizardPageInformix("ifx", props, newDBInfo);
-		pageifx.createControl(shell);
-		
-		final  CreateDatabaseWizardPageJDBC pagejdbc = new CreateDatabaseWizardPageJDBC("jdbc", props, newDBInfo);
-		pagejdbc.createControl(shell);
-		
-		final  CreateDatabaseWizardPageOCI pageoci = new CreateDatabaseWizardPageOCI("oci", props, newDBInfo);
-		pageoci.createControl(shell);
-		
-		final CreateDatabaseWizardPageODBC pageodbc = new CreateDatabaseWizardPageODBC("odbc", props, newDBInfo);
-		pageodbc.createControl(shell);
-		
-		final CreateDatabaseWizardPageOracle pageoracle = new CreateDatabaseWizardPageOracle("oracle", props, newDBInfo);
-
-		final CreateDatabaseWizardPage2 page2 = new CreateDatabaseWizardPage2("2", props, newDBInfo);
-		page2.createControl(shell);
-
-		Wizard wizard = new Wizard() 
-		{
-			public boolean performFinish() 
-			{
-				jobMeta.addDatabase(newDBInfo);
-				refreshTree(true);
-				refreshGraph();
-				return true;
-			}
-			
-			/**
-			 * @see org.eclipse.jface.wizard.Wizard#canFinish()
-			 */
-			public boolean canFinish()
-			{
-				return page2.canFinish();
-			}
-		};
-				
-		wizard.addPage(page1);
-		wizard.addPage(pageoci);
-		wizard.addPage(pageodbc);
-		wizard.addPage(pagejdbc);
-		wizard.addPage(pageoracle);
-		wizard.addPage(pageifx);
-		wizard.addPage(page2);
-				
-		WizardDialog wd = new WizardDialog(shell, wizard);
-		wd.setMinimumPageSize(700,400);
-		wd.open();
-	}
+    private void createDatabaseWizard()
+    {
+    	CreateDatabaseWizard cdw=new CreateDatabaseWizard();
+    	DatabaseMeta newDBInfo=cdw.createAndRunDatabaseWizard(shell, props, jobMeta.getDatabases());
+    	if(newDBInfo!=null){ //finished
+    		jobMeta.addDatabase(newDBInfo);
+    		refreshTree(true);
+    		refreshGraph();
+    	}
+    }
 
 	
 	public void saveSettings()
