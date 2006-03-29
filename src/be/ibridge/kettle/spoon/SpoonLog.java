@@ -467,9 +467,9 @@ public class SpoonLog extends Composite
                         if (arguments!=null)
                         {
                             String args[] = convertArguments(arguments);
-    					    log.logMinimal(Spoon.APP_NAME, "Excecuting transformation ["+trans.getTransMeta().getName()+"]...");
+    					    log.logMinimal(Spoon.APP_NAME, "Launching transformation ["+trans.getTransMeta().getName()+"]...");
     						trans.execute(args);
-                            log.logMinimal(Spoon.APP_NAME, "Started.");
+                            log.logMinimal(Spoon.APP_NAME, "Started the transformation execution.");
     						running=!running;
     						wStart.setText(STOP_TEXT);
     						readLog();
