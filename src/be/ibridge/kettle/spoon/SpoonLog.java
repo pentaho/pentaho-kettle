@@ -467,9 +467,9 @@ public class SpoonLog extends Composite
                         if (arguments!=null)
                         {
                             String args[] = convertArguments(arguments);
-    					    log.logBasic(Spoon.APP_NAME, "Excecuting transformation ["+trans.getTransMeta().getName()+"]...");
+    					    log.logMinimal(Spoon.APP_NAME, "Excecuting transformation ["+trans.getTransMeta().getName()+"]...");
     						trans.execute(args);
-                            log.logBasic(Spoon.APP_NAME, "Started.");
+                            log.logMinimal(Spoon.APP_NAME, "Started.");
     						running=!running;
     						wStart.setText(STOP_TEXT);
     						readLog();
@@ -516,6 +516,7 @@ public class SpoonLog extends Composite
 			try
 			{
 				trans.endProcessing("stop");
+                log.logMinimal(Spoon.APP_NAME, "Processing of transformation stopped.");
 			}
 			catch(KettleException e)
 			{
@@ -714,7 +715,7 @@ public class SpoonLog extends Composite
 		
 		if ( trans!=null && trans.isFinished() && running )
 		{
-		    log.logBasic(Spoon.APP_NAME, "The transformation has finished!!");
+		    log.logMinimal(Spoon.APP_NAME, "The transformation has finished!!");
 		    
 			wStart.setText(START_TEXT);
 			running=false;
