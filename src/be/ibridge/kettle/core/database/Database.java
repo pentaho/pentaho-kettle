@@ -1449,8 +1449,10 @@ public class Database
 			}
 			else
 			{
+                String sqlStripped = databaseMeta.stripCR(sql);
+                // log.logDetailed(toString(), "Executing SQL Statement: ["+sqlStripped+"]");
 				Statement stmt = connection.createStatement();
-                resultSet = stmt.execute(databaseMeta.stripCR(sql));
+                resultSet = stmt.execute(sqlStripped);
                 count = stmt.getUpdateCount();
 				stmt.close();
 			}
@@ -1458,7 +1460,7 @@ public class Database
             {
                 // the result is a resultset, but we don't do anything with it!
                 // You should have called something else!
-                // System.out.println("What to do with ResultSet??? (count="+count+")");
+                // log.logDetailed(toString(), "What to do with ResultSet??? (count="+count+")");
             }
             else
             {
