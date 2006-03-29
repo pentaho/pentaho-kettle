@@ -464,11 +464,24 @@ public class Const
 
 
     /** rounds double f to any number of places after decimal point
-     * 
+     *  Does arithmetic using BigDecimal class to avoid integer overflow while rounding
+     *  TODO: make the rounding itself optional in the Props for performance reasons.
+     *  
      * @param f The value to round
      * @param places The number of decimal places
      * @return The rounded floating point value
      */
+    
+    public static final float round(double f, int places) 
+    { 
+        java.math.BigDecimal bdtemp = new java.math.BigDecimal(f); 
+        bdtemp = bdtemp.setScale(places, java.math.BigDecimal.ROUND_HALF_EVEN); 
+        return bdtemp.floatValue(); 
+    } 
+    
+    /* OLD code: caused a lot of problems with very small and very large numbers.
+     * It's a miracle it worked at all.
+     * Go ahead, have a laugh...
     public static final float round(double f, int places)
     {
         float temp = (float) (f * (Math.pow(10, places)));
@@ -480,6 +493,7 @@ public class Const
         return temp;
 
     }
+    */
 
 	/**
 	 * Convert a String into an integer.  If the conversion fails, assign a default value.
