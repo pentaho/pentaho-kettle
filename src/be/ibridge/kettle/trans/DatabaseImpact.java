@@ -36,7 +36,9 @@ public class DatabaseImpact
 	public static final int TYPE_IMPACT_READ       = 1;
 	public static final int TYPE_IMPACT_WRITE      = 2;
 	public static final int TYPE_IMPACT_READ_WRITE = 3;
-	public static final int TYPE_IMPACT_TRUNCATE   = 3;
+	public static final int TYPE_IMPACT_TRUNCATE   = 4;
+    public static final int TYPE_IMPACT_DELETE     = 5;
+    public static final int TYPE_IMPACT_UPDATE     = 6;
 	
 	public static final String type_desc[] = 
 		{
@@ -44,7 +46,9 @@ public class DatabaseImpact
 		 "Read",
 		 "Write",
 		 "Read/Write",
-		 "Truncate"
+		 "Truncate",
+         "Delete",
+         "Update"
 		};
 	
 	private String transname;
