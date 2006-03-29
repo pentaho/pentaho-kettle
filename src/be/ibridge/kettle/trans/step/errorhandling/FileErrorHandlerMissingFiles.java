@@ -5,6 +5,7 @@ import java.util.Date;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.trans.step.BaseStep;
 
 public class FileErrorHandlerMissingFiles extends
 		AbstractFileErrorHandler {
@@ -14,8 +15,8 @@ public class FileErrorHandlerMissingFiles extends
 	public static final String THIS_FILE_WAS_NOT_ACCESSIBLE = "This file was not accessible";
 
 	public FileErrorHandlerMissingFiles(Date date,
-			String destinationDirectory, String fileExtension, String encoding) {
-		super(date, destinationDirectory, fileExtension, encoding);
+			String destinationDirectory, String fileExtension, String encoding, BaseStep baseStep) {
+		super(date, destinationDirectory, fileExtension, encoding, baseStep);
 	}
 
 	public void handleLineError(long lineNr, String filePart) {

@@ -14,18 +14,25 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.mail;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Properties;
 
+import javax.activation.DataHandler;
+import javax.activation.FileDataSource;
 import javax.mail.Address;
 import javax.mail.Message;
 import javax.mail.MessagingException;
+import javax.mail.Multipart;
 import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 import org.w3c.dom.Node;
 
@@ -62,6 +69,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 	private String contact_person;
 	private String contact_phone;
 	private String comment;
+	private boolean includeFiles;
 
 	public JobEntryMail(String n)
 	{
@@ -93,6 +101,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		retval.append("      "+XMLHandler.addTagValue("contact_person", contact_person));
 		retval.append("      "+XMLHandler.addTagValue("contact_phone",  contact_phone));
 		retval.append("      "+XMLHandler.addTagValue("comment",        comment));
+		retval.append("      "+XMLHandler.addTagValue("include_files",   includeFiles));
 
 		return retval.toString();
 	}
@@ -111,6 +120,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			setContactPerson( XMLHandler.getTagValue(entrynode, "concact_person") );
 			setContactPhone ( XMLHandler.getTagValue(entrynode, "concact_phone") );
 			setComment      ( XMLHandler.getTagValue(entrynode, "comment") );
+			setIncludeFiles ( "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_files")) );
 		}
 		catch(KettleException xe)
 		{
@@ -135,6 +145,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			contact_person  = rep.getJobEntryAttributeString (id_jobentry, "contact_person");
 			contact_phone   = rep.getJobEntryAttributeString (id_jobentry, "contact_phone");
 			comment         = rep.getJobEntryAttributeString (id_jobentry, "comment");
+			includeFiles    = rep.getJobEntryAttributeBoolean(id_jobentry, "include_files");
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -158,6 +169,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			rep.saveJobEntryAttribute(id_job, getID(), "contact_person", contact_person);
 			rep.saveJobEntryAttribute(id_job, getID(), "contact_phone", contact_phone);
 			rep.saveJobEntryAttribute(id_job, getID(), "comment", comment);
+			rep.saveJobEntryAttribute(id_job, getID(), "include_files", includeFiles);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -265,63 +277,85 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		
 		try 
 		{
-		    // create a message
+			// create a message
 		    Message msg = new MimeMessage(session);
 		    msg.setFrom(new InternetAddress(replyto));
 		    InternetAddress[] address = {new InternetAddress(destination)};
 		    msg.setRecipients(Message.RecipientType.TO, address);
 		    msg.setSubject(subject);
 		    msg.setSentDate(new Date());
-		    String messageText = "";
+		    StringBuffer messageText = new StringBuffer();
 
 		    if (comment!=null)
 		    {
-		        messageText+=comment+Const.CR+Const.CR;
+		        messageText.append(comment).append(Const.CR).append(Const.CR);
 		    }
 
-	        messageText+="Job:"+Const.CR;
-	        messageText+="-----"+Const.CR;
-	        messageText+="Name       : "+parentJob.getJobinfo().getName()+Const.CR;
-	        messageText+="Directory  : "+parentJob.getJobinfo().getDirectory()+Const.CR;
-	        messageText+="JobEntry   : "+getName()+Const.CR;
-	        messageText+=Const.CR;
+	        messageText.append("Job:").append(Const.CR);
+	        messageText.append("-----").append(Const.CR);
+	        messageText.append("Name       : ").append(parentJob.getJobinfo().getName()).append(Const.CR);
+	        messageText.append("Directory  : ").append(parentJob.getJobinfo().getDirectory()).append(Const.CR);
+	        messageText.append("JobEntry   : ").append(getName()).append(Const.CR);
+	        messageText.append(Const.CR);
 
 		    if (include_date) 
 		    {
 		        Value date = new Value("date", new Date());
-		        messageText += "Message date: "+date.toString()+Const.CR+Const.CR;
+		        messageText.append("Message date: ").append(date.toString()).append(Const.CR).append(Const.CR);
 		    }
 		    if (prev_result!=null)
 		    {
-		        messageText+="Previous result:"+Const.CR;
-		        messageText+="-----------------"+Const.CR;
-		        messageText+="Job entry nr         : "+prev_result.getEntryNr()+Const.CR;
-			    messageText+="Errors               : "+prev_result.getNrErrors()+Const.CR;
-			    messageText+="Lines read           : "+prev_result.getNrLinesRead()+Const.CR;
-			    messageText+="Lines written        : "+prev_result.getNrLinesWritten()+Const.CR;
-			    messageText+="Lines input          : "+prev_result.getNrLinesInput()+Const.CR;
-			    messageText+="Lines output         : "+prev_result.getNrLinesOutput()+Const.CR;
-			    messageText+="Lines updated        : "+prev_result.getNrLinesUpdated()+Const.CR;
-			    messageText+="Script exit status   : "+prev_result.getExitStatus()+Const.CR;
-			    messageText+="Result               : "+prev_result.getResult()+Const.CR;
-			    messageText+=Const.CR;
+		        messageText.append("Previous result:").append(Const.CR);
+		        messageText.append("-----------------").append(Const.CR);
+		        messageText.append("Job entry nr         : ").append(prev_result.getEntryNr()).append(Const.CR);
+			    messageText.append("Errors               : ").append(prev_result.getNrErrors()).append(Const.CR);
+			    messageText.append("Lines read           : ").append(prev_result.getNrLinesRead()).append(Const.CR);
+			    messageText.append("Lines written        : ").append(prev_result.getNrLinesWritten()).append(Const.CR);
+			    messageText.append("Lines input          : ").append(prev_result.getNrLinesInput()).append(Const.CR);
+			    messageText.append("Lines output         : ").append(prev_result.getNrLinesOutput()).append(Const.CR);
+			    messageText.append("Lines updated        : ").append(prev_result.getNrLinesUpdated()).append(Const.CR);
+			    messageText.append("Script exit status   : ").append(prev_result.getExitStatus()).append(Const.CR);
+			    messageText.append("Result               : ").append(prev_result.getResult()).append(Const.CR);
+			    messageText.append(Const.CR);
 		    }
 		    
 		    // Include the path to this job entry...
 		    ArrayList path = parentJob.getJobEntryResults();
 		    if (path!=null)
 		    {
-		        messageText+="Path to this job entry:"+Const.CR;
-		        messageText+="------------------------"+Const.CR;
+		        messageText.append("Path to this job entry:").append(Const.CR);
+		        messageText.append("------------------------").append(Const.CR);
 		        for (int i=0;i<path.size();i++)
 		        {
 		            JobEntryResult jer = (JobEntryResult) path.get(i);
-			        messageText+="#"+i+" : "+jer.getThisJobEntry().getName()+Const.CR;
+			        messageText.append("#"+i+" : "+jer.getThisJobEntry().getName()).append(Const.CR);
 		        }
 		    }
-		    
-		    msg.setText(messageText);
-		    
+		    		    
+		    Multipart parts = new MimeMultipart();
+			MimeBodyPart part1 = new MimeBodyPart(); // put the text in the
+														// 1st part
+			part1.setText(messageText.toString());
+			parts.addBodyPart(part1);
+			if (includeFiles && prev_result != null && prev_result.interestingFiles.size() > 0) {
+				for (Iterator iter = prev_result.interestingFiles.iterator(); iter
+						.hasNext();) {
+					File file = (File) iter.next();
+					if (file != null && file.exists()) {
+						// greate a data source
+						MimeBodyPart files = new MimeBodyPart();
+						FileDataSource fds = new FileDataSource(file);
+						// get a data Handler to manipulate this file type;
+						files.setDataHandler(new DataHandler(fds));
+						// include the file in th e data source
+						files.setFileName(fds.getName());
+						// add the part with the file in the BodyPart();
+						parts.addBodyPart(files);
+					}
+				}
+			}
+		    msg.setContent(parts);
+
 		    Transport.send(msg);
 		} 
 		catch (MessagingException mex) 
@@ -409,6 +443,14 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 	public boolean isUnconditional()
 	{
 		return true;
+	}
+
+	public boolean isIncludeFiles() {
+		return includeFiles;
+	}
+
+	public void setIncludeFiles(boolean includeFiles) {
+		this.includeFiles = includeFiles;
 	}
 
 }

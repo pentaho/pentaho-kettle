@@ -1052,6 +1052,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 			data.isLastFile = (data.filenr == data.files.nrOfFiles() - 1);
 			data.file = data.files.getFile(data.filenr);
 			data.filename = data.file.getPath();
+			addInterestingFile(data.file);
 
 			debug = "openNextFile : open file";
 			logBasic("Opening file: " + data.filename);
@@ -1185,12 +1186,12 @@ public class TextFileInput extends BaseStep implements StepInterface {
 					.add(new FileErrorHandlerContentLineNumber(getTrans()
 							.getCurrentDate(), meta
 							.getLineNumberFilesDestinationDirectory(), meta
-							.getLineNumberFilesExtension(), meta.getEncoding()));
+							.getLineNumberFilesExtension(), meta.getEncoding(), this));
 		if (meta.getErrorFilesDestinationDirectory() != null)
 			dataErrorLineHandlers.add(new FileErrorHandlerMissingFiles(
 					getTrans().getCurrentDate(), meta
 							.getErrorFilesDestinationDirectory(), meta
-							.getErrorLineFilesExtension(), meta.getEncoding()));
+							.getErrorLineFilesExtension(), meta.getEncoding(), this));
 		data.dataErrorLineHandler = new CompositeFileErrorHandler(
 				dataErrorLineHandlers);
 	}

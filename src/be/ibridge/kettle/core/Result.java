@@ -16,6 +16,7 @@
  
 package be.ibridge.kettle.core;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Result describes the result of the execution of a Transformation or a Job.
@@ -41,6 +42,7 @@ public class Result implements Cloneable
 
 	public int exitStatus;
 	public ArrayList rows;
+	public List interestingFiles;
 	
 	public boolean stopped;
 	
@@ -56,6 +58,7 @@ public class Result implements Cloneable
 		
 		exitStatus=0;
 		rows=null;
+		interestingFiles = new ArrayList();
 		
 		stopped=false;
 		entryNr=0;

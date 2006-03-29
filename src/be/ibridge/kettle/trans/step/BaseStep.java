@@ -20,6 +20,7 @@
 
 package be.ibridge.kettle.trans.step;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -46,7 +47,6 @@ import be.ibridge.kettle.trans.step.cubeoutput.CubeOutputMeta;
 import be.ibridge.kettle.trans.step.databasejoin.DatabaseJoinMeta;
 import be.ibridge.kettle.trans.step.databaselookup.DatabaseLookupMeta;
 import be.ibridge.kettle.trans.step.dbproc.DBProcMeta;
-import be.ibridge.kettle.trans.step.delete.DeleteMeta;
 import be.ibridge.kettle.trans.step.denormaliser.DenormaliserMeta;
 import be.ibridge.kettle.trans.step.dimensionlookup.DimensionLookupMeta;
 import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
@@ -77,6 +77,7 @@ import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
 import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 import be.ibridge.kettle.trans.step.textfileoutput.TextFileOutputMeta;
 import be.ibridge.kettle.trans.step.uniquerows.UniqueRowsMeta;
+import be.ibridge.kettle.trans.step.update.DeleteMeta;
 import be.ibridge.kettle.trans.step.update.UpdateMeta;
 import be.ibridge.kettle.trans.step.xbaseinput.XBaseInputMeta;
 import be.ibridge.kettle.trans.step.xmlinput.XMLInputMeta;
@@ -441,6 +442,12 @@ public class BaseStep extends Thread
 	private StepDataInterface stepDataInterface;
     
     private List rowListeners; // List of RowListener interfaces
+    
+    /**
+     * List of files that are interesting for this step.
+     * After execution, these can be added to result.
+     */
+    private List interestingFiles;
 	
 	/**
 	 * This is the base step that forms that basis for all steps.  You can derive from this class to implement your own steps.
@@ -502,6 +509,7 @@ public class BaseStep extends Thread
 		else 			logDetailed("distribution de-activated");
 		
         rowListeners = new ArrayList();
+        interestingFiles = new ArrayList();
         
 		dispatch();
 	}
@@ -1533,4 +1541,13 @@ public class BaseStep extends Thread
     {
         return rowListeners;
     }
+
+    public void addInterestingFile(File file)
+    {
+    	interestingFiles.add(file);
+    }
+    
+	public List getInterestingFiles() {
+		return interestingFiles;
+	}
 }

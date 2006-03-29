@@ -79,6 +79,10 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 	private Label        wlAddDate;
 	private Button       wAddDate;
 	private FormData     fdlAddDate, fdAddDate;
+	
+	private Label        wlIncludeFiles;
+	private Button       wIncludeFiles;
+	private FormData     fdlIncludeFiles, fdIncludeFiles;
 
 	private Label        wlPerson;
 	private Text         wPerson;
@@ -260,6 +264,32 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 				}
 			}
 		);
+		
+		// Include Files?
+		wlIncludeFiles=new Label(shell, SWT.RIGHT);
+		wlIncludeFiles.setText("Attach files to message?");
+ 		props.setLook(wlIncludeFiles);
+		fdlIncludeFiles=new FormData();
+		fdlIncludeFiles.left = new FormAttachment(0, 0);
+		fdlIncludeFiles.top  = new FormAttachment(wAddDate, margin);
+		fdlIncludeFiles.right= new FormAttachment(middle, -margin);
+		wlIncludeFiles.setLayoutData(fdlIncludeFiles);
+		wIncludeFiles=new Button(shell, SWT.CHECK);
+ 		props.setLook(wIncludeFiles);
+		fdIncludeFiles=new FormData();
+		fdIncludeFiles.left = new FormAttachment(middle, 0);
+		fdIncludeFiles.top  = new FormAttachment(wAddDate, margin);
+		fdIncludeFiles.right= new FormAttachment(100, 0);
+		wIncludeFiles.setLayoutData(fdIncludeFiles);
+		wIncludeFiles.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					jobmail.setIncludeFiles(jobmail.isIncludeFiles());
+					jobmail.setChanged();
+				}
+			}
+		);
 
 		// Person line
 		wlPerson=new Label(shell, SWT.RIGHT);
@@ -267,7 +297,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
  		props.setLook(wlPerson);
 		fdlPerson=new FormData();
 		fdlPerson.left = new FormAttachment(0, 0);
-		fdlPerson.top  = new FormAttachment(wAddDate, margin);
+		fdlPerson.top  = new FormAttachment(wIncludeFiles, margin);
 		fdlPerson.right= new FormAttachment(middle, 0);
 		wlPerson.setLayoutData(fdlPerson);
 
@@ -276,7 +306,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		wPerson.addModifyListener(lsMod);
 		fdPerson=new FormData();
 		fdPerson.left = new FormAttachment(middle, 0);
-		fdPerson.top  = new FormAttachment(wAddDate, margin);
+		fdPerson.top  = new FormAttachment(wIncludeFiles, margin);
 		fdPerson.right= new FormAttachment(100, 0);
 		wPerson.setLayoutData(fdPerson);
 
@@ -378,6 +408,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		if (jobmail.getContactPhone()!=null) wPhone.setText(jobmail.getContactPhone());
 		if (jobmail.getComment()!=null) wComment.setText(jobmail.getComment());
 		wAddDate.setSelection(jobmail.getIncludeDate());
+		wIncludeFiles.setSelection(jobmail.isIncludeFiles());
 	}
 	
 	private void cancel()
@@ -401,6 +432,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		jobmail.setComment( wComment.getText() );
 
 		jobmail.setIncludeDate( wAddDate.getSelection() );
+		jobmail.setIncludeFiles( wIncludeFiles.getSelection() );
 
 		dispose();
 	}

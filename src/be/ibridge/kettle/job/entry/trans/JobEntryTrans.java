@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.trans;
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -322,7 +323,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		result.setEntryNr( nr );
 
 		LogWriter logwriter = log;
-		if (setLogfile) logwriter = LogWriter.getInstance(getLogFilename(), true, loglevel);
+		String logFilename = getLogFilename();
+		if (setLogfile) {
+			logwriter = LogWriter.getInstance(logFilename, true, loglevel);
+		}
 		
 		// Open the transformation...
 		// Default directory for now...
@@ -388,6 +392,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 				}
 				result = trans.getResult();
 				result.setEntryNr( nr );
+				if (setLogfile) {
+					result.interestingFiles.add(new File(logFilename));
+				}
 			}
 		}
 		catch(KettleException e)

@@ -175,15 +175,15 @@ public class ExcelInput extends BaseStep implements StepInterface {
 		} else if (cellType.equals(CellType.DATE)) {
 			if (!(v.getType() == Value.VALUE_TYPE_STRING
 					|| v.getType() == Value.VALUE_TYPE_NONE || v.getType() == Value.VALUE_TYPE_DATE))
-				throw new KettleException("Invalid type Date, expected "
-						+ v.getTypeDesc());
+				throw new KettleException("Invalid type Date: "
+						+ cell.getContents() + ", expected " + v.getTypeDesc());
 		} else if (cellType.equals(CellType.LABEL)) {
 			if (v.getType() == Value.VALUE_TYPE_BOOLEAN
 					|| v.getType() == Value.VALUE_TYPE_DATE
 					|| v.getType() == Value.VALUE_TYPE_INTEGER
 					|| v.getType() == Value.VALUE_TYPE_NUMBER)
-				throw new KettleException("Invalid type Label, expected "
-						+ v.getTypeDesc());
+				throw new KettleException("Invalid type Label: "
+						+ cell.getContents() + ", expected " + v.getTypeDesc());
 		} else if (cellType.equals(CellType.EMPTY)) {
 			// ok
 		} else if (cellType.equals(CellType.NUMBER)) {
@@ -191,10 +191,11 @@ public class ExcelInput extends BaseStep implements StepInterface {
 					|| v.getType() == Value.VALUE_TYPE_NONE
 					|| v.getType() == Value.VALUE_TYPE_INTEGER
 					|| v.getType() == Value.VALUE_TYPE_BIGNUMBER || v.getType() == Value.VALUE_TYPE_NUMBER))
-				throw new KettleException("Invalid type Number, expected "
-						+ v.getTypeDesc());
+				throw new KettleException("Invalid type Number: "
+						+ cell.getContents() + ", expected " + v.getTypeDesc());
 		} else {
-			throw new KettleException("Unsupported type " + cellType);
+			throw new KettleException("Unsupported type " + cellType
+					+ " with value: " + cell.getContents());
 		}
 	}
 
@@ -305,6 +306,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
 				// Open a new workbook..
 				data.file = data.files.getFile(data.filenr);
 				data.filename = data.file.getPath();
+				addInterestingFile(data.file);
 				debug = "open workbook #" + data.filenr + " : " + data.filename;
 				logDetailed("Opening workbook #" + data.filenr + " : "
 						+ data.filename);
@@ -434,12 +436,12 @@ public class ExcelInput extends BaseStep implements StepInterface {
 			errorHandlers.add(new FileErrorHandlerContentLineNumber(getTrans()
 					.getCurrentDate(), meta
 					.getLineNumberFilesDestinationDirectory(), meta
-					.getLineNumberFilesExtension(), "Latin1"));
+					.getLineNumberFilesExtension(), "Latin1", this));
 		if (meta.getErrorFilesDestinationDirectory() != null)
 			errorHandlers.add(new FileErrorHandlerMissingFiles(getTrans()
 					.getCurrentDate(),
 					meta.getErrorFilesDestinationDirectory(), meta
-							.getErrorFilesExtension(), "Latin1"));
+							.getErrorFilesExtension(), "Latin1", this));
 		data.errorHandler = new CompositeFileErrorHandler(errorHandlers);
 	}
 

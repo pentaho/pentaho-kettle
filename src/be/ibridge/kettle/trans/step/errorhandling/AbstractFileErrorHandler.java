@@ -15,6 +15,7 @@ import java.util.Map;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.trans.step.BaseStep;
 
 public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 	private static final String DD_MMYYYY_HHMMSS = "ddMMyyyy-hhmmss";
@@ -35,11 +36,14 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 
 	private String dateString;
 
+	private BaseStep baseStep;
+
 	public AbstractFileErrorHandler(Date date, String destinationDirectory,
-			String fileExtension, String encoding) {
+			String fileExtension, String encoding, BaseStep baseStep) {
 		this.destinationDirectory = destinationDirectory;
 		this.fileExtension = fileExtension;
 		this.encoding = encoding;
+		this.baseStep = baseStep;
 		this.writers = new HashMap();
 		initDateFormatter(date);
 	}
@@ -83,6 +87,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 		if (outputStreamWriter != null)
 			return outputStreamWriter;
 		File file = getReplayFilename(destinationDirectory, processingFilename, dateString, fileExtension, source);
+		baseStep.addInterestingFile(file);
 		try {
 			if (encoding == null)
 				outputStreamWriter = new OutputStreamWriter(
