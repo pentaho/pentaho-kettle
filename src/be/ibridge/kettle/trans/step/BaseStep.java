@@ -46,6 +46,7 @@ import be.ibridge.kettle.trans.step.cubeoutput.CubeOutputMeta;
 import be.ibridge.kettle.trans.step.databasejoin.DatabaseJoinMeta;
 import be.ibridge.kettle.trans.step.databaselookup.DatabaseLookupMeta;
 import be.ibridge.kettle.trans.step.dbproc.DBProcMeta;
+import be.ibridge.kettle.trans.step.delete.DeleteMeta;
 import be.ibridge.kettle.trans.step.denormaliser.DenormaliserMeta;
 import be.ibridge.kettle.trans.step.dimensionlookup.DimensionLookupMeta;
 import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
@@ -108,6 +109,7 @@ public class BaseStep extends Thread
 			DBProcMeta.class,               
 			InsertUpdateMeta.class,
 			UpdateMeta.class,
+			DeleteMeta.class,
 			NormaliserMeta.class,         
 			FieldSplitterMeta.class,
 			UniqueRowsMeta.class,
@@ -157,6 +159,7 @@ public class BaseStep extends Thread
 			"DBProc",               
 			"InsertUpdate",
 			"Update",
+			"Delete",
 			"Normaliser",         
 			"FieldSplitter",
 			"Unique",
@@ -206,6 +209,7 @@ public class BaseStep extends Thread
 			"Call DB Procedure",
 			"Insert / Update",
 			"Update",
+			"Delete",
 			"Row Normaliser",           
 			"Split Fields",
 			"Unique rows",
@@ -255,6 +259,7 @@ public class BaseStep extends Thread
 			"Get back information by calling a database procedure.", // 20
 			"Update or insert rows in a database based upon keys.",  
 			"Update data in a database table based upon keys",
+			"Delete data in a database table based upon keys",
 			"De-normalised information can be normalised using this step type.",            
 			"When you want to split a single field into more then one, use this step type.",
 			"Remove double rows and leave only unique occurences."+Const.CR+"This works only on a sorted input."+Const.CR+"If the input is not sorted, only double consecutive rows are handled correctly.",
@@ -304,6 +309,7 @@ public class BaseStep extends Thread
 			"PRC.png",
 			"INU.png",
 			"UPD.png",
+			"Delete.png",
 			"NRM.png",
 			"SPL.png",
 			"UNQ.png",
@@ -352,7 +358,8 @@ public class BaseStep extends Thread
 			"Transform", 	    // "ScriptValue",
 			"Lookup", 		    // "DBProc",               
 			"Output", 		    // "InsertUpdate",
-			"Output",           // "Update"
+			"Output",           // "Update",
+			"Output",           // "Delete",
 			"Transform", 	    // "Normaliser",         
 			"Extra", 	        // "FieldSplitter",
 			"Transform", 	    // "Unique",
