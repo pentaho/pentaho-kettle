@@ -53,7 +53,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
 	public  String  arguments[];
 	public  boolean argFromPrevious;
+    private boolean runEveryResultRow;
 
+    
 	public  boolean setLogfile;
 	public  String  logfile, logext;
 	public  boolean addDate, addTime;
@@ -61,7 +63,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	
 	public  boolean parallel;
     private String directoryPath;
-		
+
 	
 	public JobEntryJob(String name)
 	{
@@ -153,6 +155,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             retval.append("      "+XMLHandler.addTagValue("directory",         directoryPath)); // don't loose this info (backup/recovery)
         }
 		retval.append("      "+XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
+        retval.append("      "+XMLHandler.addTagValue("run_every_result_row", runEveryResultRow));
 		retval.append("      "+XMLHandler.addTagValue("set_logfile",       setLogfile));
 		retval.append("      "+XMLHandler.addTagValue("logfile",           logfile));
 		retval.append("      "+XMLHandler.addTagValue("logext",            logext));
@@ -178,7 +181,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			setFileName( XMLHandler.getTagValue(entrynode, "filename") );
 			setJobName( XMLHandler.getTagValue(entrynode, "jobname") );
 			argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
-			setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
+            runEveryResultRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "run_every_result_row") );
+            setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
 			addDate = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_date") );
 			addTime = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_time") );
 			logfile = XMLHandler.getTagValue(entrynode, "logfile");
@@ -231,7 +235,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			}
 			
 			filename          = rep.getJobEntryAttributeString(id_jobentry, "filename");
-			argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
+			argFromPrevious   = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
+            runEveryResultRow = rep.getJobEntryAttributeBoolean(id_jobentry, "run_every_result_row");
 	
 			setLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
 			addDate          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
@@ -269,6 +274,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			rep.saveJobEntryAttribute(id_job, getID(), "id_job", id_job_attr);
 			rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
+            rep.saveJobEntryAttribute(id_job, getID(), "run_every_result_row", runEveryResultRow);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_date", addDate);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
@@ -305,35 +311,69 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		try
 		{
 			job.open(rep, getFileName(), getName(), directory.getPath());
-			job.setJobEntryResults(parentJob.getJobEntryResults());//
+			job.setJobEntryResults(parentJob.getJobEntryResults());
             
             if (parentJob.getJobMeta().isBatchIdPassed())
             {
                 job.getJobMeta().setBatchId(parentJob.getJobMeta().getBatchId());
             }
 			
-			JobEntryJobRunner runner = new JobEntryJobRunner( job, prev_result, nr);
-			new Thread(runner).start();
-			
-			while (!runner.isFinished() && !parentJob.isStopped())
-			{
-				try { Thread.sleep(100);}
-				catch(InterruptedException e) { }
-			}
-			
-			// if the parent-job was stopped, stop the sub-job too... 
-			if (parentJob.isStopped())
-			{
-				job.stopAll();
-				runner.waitUntilFinished(); // Wait until finished!
-				job.endProcessing("stop");
-			}
-			else
-			{
-				job.endProcessing("end");
-			}
-			
-			result = runner.getResult();
+            int runNr = 0;
+            int nrRuns = 1;
+            boolean forEvery = false;
+            if (prev_result.getRows()!=null) nrRuns = prev_result.getRows().size();
+            
+            while (runNr<nrRuns && result.getResult())
+            {
+                // So, for every result row, the job is executed with the one line as the resultset.
+                // We can then make a step that sets environment variables etc.
+                // 
+                Result pass;
+                if (forEvery)
+                {
+                    pass = (Result) prev_result.clone();
+                    ArrayList passRows = new ArrayList();
+                    passRows.add(prev_result.getRows().get(runNr));
+                    pass.setRows(passRows);
+                }
+                else
+                {
+                    pass = prev_result;
+                }
+                
+                JobEntryJobRunner runner = new JobEntryJobRunner( job, prev_result, nr);
+    			new Thread(runner).start();
+    			
+    			while (!runner.isFinished() && !parentJob.isStopped())
+    			{
+    				try { Thread.sleep(100);}
+    				catch(InterruptedException e) { }
+    			}
+    			
+    			// if the parent-job was stopped, stop the sub-job too... 
+    			if (parentJob.isStopped())
+    			{
+    				job.stopAll();
+    				runner.waitUntilFinished(); // Wait until finished!
+    				job.endProcessing("stop");
+    			}
+    			else
+    			{
+    				job.endProcessing("end");
+    			}
+    			
+    			Result oneResult = runner.getResult();
+                if (runNr==0)
+                {
+                    result = oneResult;
+                }
+                else
+                {
+                    result.add(oneResult);
+                }
+                
+                runNr++;
+            }
 		}
 		catch(KettleException je)
 		{
@@ -399,6 +439,22 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         {
             return new JobMeta(LogWriter.getInstance(), getFileName());
         }
+    }
+
+    /**
+     * @return Returns the runEveryResultRow.
+     */
+    public boolean isRunEveryResultRow()
+    {
+        return runEveryResultRow;
+    }
+
+    /**
+     * @param runEveryResultRow The runEveryResultRow to set.
+     */
+    public void setRunEveryResultRow(boolean runEveryResultRow)
+    {
+        this.runEveryResultRow = runEveryResultRow;
     }
 
 }
