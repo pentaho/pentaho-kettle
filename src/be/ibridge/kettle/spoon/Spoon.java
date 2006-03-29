@@ -103,13 +103,7 @@ import be.ibridge.kettle.core.dialog.Splash;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
-import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPage1;
-import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPage2;
-import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPageInformix;
-import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPageJDBC;
-import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPageOCI;
-import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPageODBC;
-import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizardPageOracle;
+import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
 import be.ibridge.kettle.repository.PermissionMeta;
 import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
@@ -4005,74 +3999,21 @@ public class Spoon
         */
     }
 
-    
-    /**
-     * Create a transformation that extracts tables & data from a database.<p><p>
-     * 
-     * 0) Select the database to rip<p>
-     * 1) Select the table in the database to copy<p>
-     * 2) Select the database to dump to<p>
-     * 3) Select the repository directory in which it will end up<p>
-     * 4) Select a name for the new transformation<p>
-     * 6) Create 1 transformation for the selected table<p> 
-     */
+	/**
+	 * Shows a wizard that creates a new database connection...
+	 *
+	 */
     private void createDatabaseWizard()
     {
-        final DatabaseMeta newDBInfo = new DatabaseMeta();
-        
-        final CreateDatabaseWizardPage1 page1 = new CreateDatabaseWizardPage1("1", props, newDBInfo, transMeta.getDatabases());
-        page1.createControl(shell);
-        
-        final  CreateDatabaseWizardPageInformix pageifx = new CreateDatabaseWizardPageInformix("ifx", props, newDBInfo);
-        pageifx.createControl(shell);
-        
-        final  CreateDatabaseWizardPageJDBC pagejdbc = new CreateDatabaseWizardPageJDBC("jdbc", props, newDBInfo);
-        pagejdbc.createControl(shell);
-        
-        final  CreateDatabaseWizardPageOCI pageoci = new CreateDatabaseWizardPageOCI("oci", props, newDBInfo);
-        pageoci.createControl(shell);
-        
-        final CreateDatabaseWizardPageODBC pageodbc = new CreateDatabaseWizardPageODBC("odbc", props, newDBInfo);
-        pageodbc.createControl(shell);
-        
-        final CreateDatabaseWizardPageOracle pageoracle = new CreateDatabaseWizardPageOracle("oracle", props, newDBInfo);
-
-        final CreateDatabaseWizardPage2 page2 = new CreateDatabaseWizardPage2("2", props, newDBInfo);
-        page2.createControl(shell);
-
-        Wizard wizard = new Wizard() 
-        {
-            public boolean performFinish() 
-            {
-                transMeta.addDatabase(newDBInfo);
-                refreshTree(true);
-                refreshGraph();
-                return true;
-            }
-            
-            /**
-             * @see org.eclipse.jface.wizard.Wizard#canFinish()
-             */
-            public boolean canFinish()
-            {
-                return page2.canFinish();
-            }
-        };
-                
-        wizard.addPage(page1);
-        wizard.addPage(pageoci);
-        wizard.addPage(pageodbc);
-        wizard.addPage(pagejdbc);
-        wizard.addPage(pageoracle);
-        wizard.addPage(pageifx);
-        wizard.addPage(page2);
-                
-        WizardDialog wd = new WizardDialog(shell, wizard);
-        wd.setMinimumPageSize(700,400);
-        wd.open();
+    	CreateDatabaseWizard cdw=new CreateDatabaseWizard();
+    	DatabaseMeta newDBInfo=cdw.createAndRunDatabaseWizard(shell, props, transMeta.getDatabases());
+    	if(newDBInfo!=null){ //finished
+    		transMeta.addDatabase(newDBInfo);
+    		refreshTree(true);
+    		refreshGraph();
+    	}
     }
-
-    
+        
     /**
      * Create a transformation that extracts tables & data from a database.<p><p>
      * 
