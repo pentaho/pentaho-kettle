@@ -46,11 +46,9 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
-import be.ibridge.kettle.core.SQLStatement;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseExplorerDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.dialog.SQLEditor;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
@@ -58,7 +56,6 @@ import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
-import be.ibridge.kettle.trans.step.StepMeta;
 
 /**
  * 
@@ -79,26 +76,10 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 	private Text         wTable;
 	private FormData     fdlTable, fdbTable, fdTable;
 
-	private Label        wlReturn;
-	private TableView    wReturn;
-	private FormData     fdlReturn, fdReturn;
-
 	private Label        wlCommit;
 	private Text         wCommit;
 	private FormData     fdlCommit, fdCommit;
     
-    private Label        wlErrorIgnored;
-    private Button       wErrorIgnored;
-    private FormData     fdlErrorIgnored, fdErrorIgnored;
-
-    private Label        wlIgnoreFlagField;
-    private Text         wIgnoreFlagField;
-    private FormData     fdlIgnoreFlagField, fdIgnoreFlagField;
-    
-	private Button wGetLU;
-	private FormData fdGetLU;
-	private Listener lsGetLU;
-
 	private DeleteMeta input;
 
 	public DeleteDialog(Shell parent, Object in, TransMeta tr, String sname)
@@ -203,56 +184,13 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		fdCommit.right = new FormAttachment(100, 0);
 		wCommit.setLayoutData(fdCommit);
         
-        
-        wlErrorIgnored=new Label(shell, SWT.RIGHT);
-        wlErrorIgnored.setText("Ignore lookup failure? ");
- 		props.setLook(        wlErrorIgnored);
-        fdlErrorIgnored=new FormData();
-        fdlErrorIgnored.left = new FormAttachment(0, 0);
-        fdlErrorIgnored.top  = new FormAttachment(wCommit, margin);
-        fdlErrorIgnored.right= new FormAttachment(middle, -margin);
-        wlErrorIgnored.setLayoutData(fdlErrorIgnored);
-        
-        wErrorIgnored=new Button(shell, SWT.CHECK );
- 		props.setLook(        wErrorIgnored);
-        wErrorIgnored.setToolTipText("Check this to add a flag field (boolean) to see if the key was found.");
-        fdErrorIgnored=new FormData();
-        fdErrorIgnored.left = new FormAttachment(middle, 0);
-        fdErrorIgnored.top  = new FormAttachment(wCommit, margin);
-        wErrorIgnored.setLayoutData(fdErrorIgnored);
-        wErrorIgnored.addSelectionListener(new SelectionAdapter() 
-            {
-                public void widgetSelected(SelectionEvent e) 
-                {
-                    input.setChanged();
-                    setFlags();
-                }
-            }
-        );
-
-        wlIgnoreFlagField=new Label(shell, SWT.LEFT);
-        wlIgnoreFlagField.setText("Flag field (key found) ");
- 		props.setLook(        wlIgnoreFlagField);
-        fdlIgnoreFlagField=new FormData();
-        fdlIgnoreFlagField.left = new FormAttachment(wErrorIgnored, margin);
-        fdlIgnoreFlagField.top  = new FormAttachment(wCommit, margin);
-        wlIgnoreFlagField.setLayoutData(fdlIgnoreFlagField);
-        wIgnoreFlagField=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(        wIgnoreFlagField);
-        wIgnoreFlagField.addModifyListener(lsMod);
-        fdIgnoreFlagField=new FormData();
-        fdIgnoreFlagField.left = new FormAttachment(wlIgnoreFlagField, margin);
-        fdIgnoreFlagField.top  = new FormAttachment(wCommit, margin);
-        fdIgnoreFlagField.right= new FormAttachment(100, 0);
-        wIgnoreFlagField.setLayoutData(fdIgnoreFlagField);
-
-
+       
 		wlKey=new Label(shell, SWT.NONE);
 		wlKey.setText("The key(s) to look up the value(s): ");
  		props.setLook(wlKey);
 		fdlKey=new FormData();
 		fdlKey.left  = new FormAttachment(0, 0);
-		fdlKey.top   = new FormAttachment(wIgnoreFlagField, margin);
+		fdlKey.top   = new FormAttachment(wCommit, margin);
 		wlKey.setLayoutData(fdlKey);
 
 		int nrKeyCols=4;
@@ -283,70 +221,24 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		fdKey.left = new FormAttachment(0, 0);
 		fdKey.top = new FormAttachment(wlKey, margin);
 		fdKey.right = new FormAttachment(wGet, -margin);
-		fdKey.bottom = new FormAttachment(wlKey, 190);
+		fdKey.bottom = new FormAttachment(100, -30);
 		wKey.setLayoutData(fdKey);
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(" &OK ");
-		wSQL=new Button(shell, SWT.PUSH);
-		wSQL.setText(" &SQL ");
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(" &Cancel ");
 
-		setButtonPositions(new Button[] { wOK, wSQL, wCancel }, margin, null);
-
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 		
-		// THE UPDATE/INSERT TABLE
-		wlReturn=new Label(shell, SWT.NONE);
-		wlReturn.setText("Delete fields: ");
- 		props.setLook(wlReturn);
-		fdlReturn=new FormData();
-		fdlReturn.left  = new FormAttachment(0, 0);
-		fdlReturn.top   = new FormAttachment(wKey, margin);
-		wlReturn.setLayoutData(fdlReturn);
-		
-		int UpInsCols=2;
-		int UpInsRows= (input.getUpdateLookup()!=null?input.getUpdateLookup().length:1);
-		
-		ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
-		ciReturn[0]=new ColumnInfo("Table field",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		ciReturn[1]=new ColumnInfo("Stream field", ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		
-		wReturn=new TableView(shell, 
-							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
-							  ciReturn, 
-							  UpInsRows,  
-							  lsMod,
-							  props
-							  );
-
-		wGetLU = new Button(shell, SWT.PUSH);
-		wGetLU.setText(" Get &delete fields ");
-		fdGetLU = new FormData();
-		fdGetLU.top   = new FormAttachment(wlReturn, margin);
-		fdGetLU.right = new FormAttachment(100, 0);
-		wGetLU.setLayoutData(fdGetLU);
-
-		fdReturn = new FormData();
-		fdReturn.left = new FormAttachment(0, 0);
-		fdReturn.top = new FormAttachment(wlReturn, margin);
-		fdReturn.right = new FormAttachment(wGetLU, -margin);
-		fdReturn.bottom = new FormAttachment(wOK, -2*margin);
-		wReturn.setLayoutData(fdReturn);
-
-
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();        } };
 		lsGet      = new Listener() { public void handleEvent(Event e) { get();       } };
-		lsGetLU    = new Listener() { public void handleEvent(Event e) { getUpdate(); } };
-		lsSQL      = new Listener() { public void handleEvent(Event e) { create();    } };
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();    } };
 		
 		wOK.addListener    (SWT.Selection, lsOK    );
 		wGet.addListener   (SWT.Selection, lsGet   );
-		wGetLU.addListener (SWT.Selection, lsGetLU );
-		wSQL.addListener   (SWT.Selection, lsSQL   );
 		wCancel.addListener(SWT.Selection, lsCancel);
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
@@ -383,8 +275,6 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 
     public void setFlags()
     {
-        wlIgnoreFlagField.setEnabled(wErrorIgnored.getSelection());
-        wIgnoreFlagField.setEnabled(wErrorIgnored.getSelection());
     }
 
 	/**
@@ -397,9 +287,6 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		
 		wCommit.setText(""+input.getCommitSize());
         
-        wErrorIgnored.setSelection( input.isErrorIgnored() );
-        if (input.getIgnoreFlagField()!=null) wIgnoreFlagField.setText( input.getIgnoreFlagField() );
-		
 		if (input.getKeyStream()!=null)
 		for (i=0;i<input.getKeyStream().length;i++)
 		{
@@ -409,15 +296,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 			if (input.getKeyStream()[i]         !=null) item.setText(3, input.getKeyStream()[i]);
 			if (input.getKeyStream2()[i]        !=null) item.setText(4, input.getKeyStream2()[i]);
 		}
-		
-		if (input.getUpdateLookup()!=null)
-		for (i=0;i<input.getUpdateLookup().length;i++)
-		{
-			TableItem item = wReturn.table.getItem(i);
-			if (input.getUpdateLookup()[i]!=null     ) item.setText(1, input.getUpdateLookup()[i]);
-			if (input.getUpdateStream()[i]!=null ) item.setText(2, input.getUpdateStream()[i]);
-		}
-		
+				
 		if (input.getTableName()!=null)        wTable.setText( input.getTableName() );
 		if (input.getDatabase()!=null)   wConnection.setText(input.getDatabase().getName());
 		else if (transMeta.nrDatabases()==1)
@@ -428,8 +307,6 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		wStepname.selectAll();
 		wKey.setRowNums();
 		wKey.optWidth(true);
-		wReturn.setRowNums();
-		wReturn.optWidth(true);	
         
         setFlags();
 	}
@@ -445,9 +322,8 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		//Table ktable = wKey.table;
 		int nrkeys = wKey.nrNonEmpty();
-		int nrfields = wReturn.nrNonEmpty();
 		
-		inf.allocate(nrkeys, nrfields);
+		inf.allocate(nrkeys);
 				
 		inf.setCommitSize( Const.toInt( wCommit.getText(), 0) );
 		
@@ -461,22 +337,9 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 			inf.getKeyStream2()[i]         = item.getText(4);
 		}
 
-		//Table ftable = wReturn.table;
-
-		log.logDebug(toString(), "Found "+nrfields+" fields");
-		for (int i=0;i<nrfields;i++)
-		{
-			TableItem item  = wReturn.getNonEmpty(i);
-			inf.getUpdateLookup()[i]        = item.getText(1);
-			inf.getUpdateStream()[i]    = item.getText(2);
-		}
-		
 		inf.setTableName( wTable.getText() ); 
 		inf.setDatabase( transMeta.findDatabase(wConnection.getText()) );
         
-        inf.setErrorIgnored( wErrorIgnored.getSelection());
-        inf.setIgnoreFlagField( wIgnoreFlagField.getText());
-
 		stepname = wStepname.getText(); // return value
 	}
 
@@ -557,81 +420,6 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		}
 	}
 
-	private void getUpdate()
-	{
-		try
-		{
-			int i, count;
-			Row r = transMeta.getPrevStepFields(stepname);
-			if (r!=null)
-			{
-				Table table=wReturn.table;
-				count=table.getItemCount();
-				for (i=0;i<r.size();i++)
-				{
-					Value v = r.getValue(i);
-					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(0, ""+(count+i+1));
-					ti.setText(1, v.getName());
-					ti.setText(2, v.getName());
-	
-				}
-				wReturn.removeEmptyRows();
-				wReturn.setRowNums();
-				wReturn.optWidth(true);
-			}
-		}
-		catch(KettleException ke)
-		{
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
-		}
-
-	}
-	
-	// Generate code for create table...
-	// Conversions done by Database
-	private void create()
-	{
-		try
-		{
-			DeleteMeta info = new DeleteMeta();
-			getInfo(info);
-	
-			String name = stepname;  // new name might not yet be linked to other steps! 
-			StepMeta stepinfo = new StepMeta(log, "CombinationLookup", name, info);
-			Row prev = transMeta.getPrevStepFields(stepname);
-			
-			SQLStatement sql = info.getSQLStatements(transMeta, stepinfo, prev);
-			if (!sql.hasError())
-			{
-				if (sql.hasSQL())
-				{
-					SQLEditor sqledit = new SQLEditor(shell, SWT.NONE, info.getDatabase(), transMeta.getDbCache(), sql.getSQL());
-					sqledit.open();
-				}
-				else
-				{
-					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-					mb.setMessage("No SQL needs to be executed to make this step function properly.");
-					mb.setText("OK");
-					mb.open(); 
-				}
-			}
-			else
-			{
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(sql.getError());
-				mb.setText("ERROR");
-				mb.open(); 
-			}
-		}
-		catch(KettleException ke)
-		{
-			new ErrorDialog(shell, props, "Couldn't build SQL", "Unable to build the SQL statement because of an error", ke);
-		}
-
-	}
-	
 	public String toString()
 	{
 		return this.getClass().getName();

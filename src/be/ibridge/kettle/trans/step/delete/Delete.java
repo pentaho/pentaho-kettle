@@ -20,7 +20,6 @@ import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
-import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -47,20 +46,17 @@ public class Delete extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private synchronized void lookupValues(Row row) throws KettleException
+	private synchronized void deleteValues(Row row) throws KettleException
 	{
 		Row lu;
-		Row add;
 	
-		debug="Start of lookupValues";
-			
+		debug="Start of deleteValues";
 		if (first)
 		{
 			debug="first run, initialize";
 			first=false;
 			
-			data.dblup.setLookup(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup(), null, null);
-			data.dbupd.prepareUpdate(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup());
+			data.dbupd.prepareDelete(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition());
 			
 			debug="first run, lookup values, field positions, etc.";
 			// lookup the values!
@@ -87,19 +83,6 @@ public class Delete extends BaseStep implements StepInterface
 				
 				logDebug("Field ["+meta.getKeyStream()[i]+"] has nr. "+data.keynrs[i]);
 			}
-			// Cache the position of the compare fields in Row row
-			//
-			debug="first run, lookup compare fields, positions, etc.";
-			data.valuenrs = new int[meta.getUpdateLookup().length];
-			for (int i=0;i<meta.getUpdateLookup().length;i++)
-			{
-				data.valuenrs[i]=row.searchValueIndex(meta.getUpdateStream()[i]);
-				if (data.valuenrs[i]<0)  // couldn't find field!
-				{
-					throw new KettleStepException("Field ["+meta.getUpdateStream()[i]+"] is required and couldn't be found!");
-				}
-				logDebug("Field ["+meta.getUpdateStream()[i]+"] has nr. "+data.valuenrs[i]);
-			}
 		}
 		
 		lu = new Row();
@@ -116,69 +99,13 @@ public class Delete extends BaseStep implements StepInterface
 		}
 		
 		debug="setValues()";
-		data.dblup.setValuesLookup(lu);
+		data.dbupd.setValuesUpdate(lu);
 		
-		logDebug("Values set for lookup: "+lu.toString()+", input row: "+row);
+		logDebug("Values set for delete: "+lu.toString()+", input row: "+row);
 		debug="getLookup()";
-		add=data.dblup.getLookup();  // Got back the complete row!
-		linesInput++;
-		
-		if (add==null) 
-		{
-			/* nothing was found: throw error!
-			 */
-            if (!meta.isErrorIgnored())
-            {
-                throw new KettleDatabaseException("Entry to delete with following key could not be found: "+lu);
-            }
-            else
-            {
-                log.logDetailed(toString(), "WARNING: key could not be found for : "+lu);
-                if (meta.getIgnoreFlagField()!=null && meta.getIgnoreFlagField().length()>0) // add flag field!
-                {
-                    row.addValue(new Value(meta.getIgnoreFlagField(), false));
-                }
-            }
-		}
-		else
-		{
-			logRowlevel("Found row: !"+add.toString());
-			/* Row was found:
-			 *  
-			 * UPDATE row or do nothing?
-			 *
-			 */
-			debug="compare for delete";
-			boolean update = false;
-			for (int i=0;i<data.valuenrs.length;i++)
-			{
-				Value rowvalue = row.getValue(data.valuenrs[i]);
-				lu.addValue(i, rowvalue);
-				Value retvalue = add.getValue(i);
-				if (!rowvalue.equals(retvalue))
-				{
-					update=true;
-				}
-			}
-			if (update)
-			{
-				logRowlevel("Delete row with: !"+lu.toString());
-				debug="setValuesUpdate()";
-				data.dbupd.setValuesUpdate(lu);
-				debug="updateRow()";
-				data.dbupd.updateRow();
-				linesUpdated++;
-			}
-			else
-			{
-				linesSkipped++;
-			}
-            
-            if (meta.getIgnoreFlagField()!=null && meta.getIgnoreFlagField().length()>0) // add flag field!
-            {
-                row.addValue(new Value(meta.getIgnoreFlagField(), false));
-            }
-		}
+
+		data.dbupd.updateRow();
+		linesUpdated++;
 	}
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
@@ -195,7 +122,7 @@ public class Delete extends BaseStep implements StepInterface
 		    
 		try
 		{
-			lookupValues(r); // add new values to the row in rowset[0].
+			deleteValues(r); // add new values to the row in rowset[0].
 			putRow(r);       // copy row to output rowset(s);
 			
 			if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
@@ -219,11 +146,9 @@ public class Delete extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
-			data.dblup=new Database(meta.getDatabase());
 			data.dbupd=new Database(meta.getDatabase());
 			try 
 			{
-				data.dblup.connect();
 				data.dbupd.connect();
 				
 				logBasic("Connected to database...");
@@ -258,7 +183,6 @@ public class Delete extends BaseStep implements StepInterface
             setErrors(1);
         }
         
-		data.dblup.disconnect();
 		data.dbupd.disconnect();
 
 		super.dispose(smi, sdi);

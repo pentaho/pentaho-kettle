@@ -44,9 +44,10 @@ import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 
-/*
+/**
+ * This class takes care of deleting values in a table using a certain condition and values for input.
  * 
- * @author Tom
+ * @author Tom, Matt
  * @since 28-March-2006
  */
 
@@ -70,22 +71,11 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 	/** Extra field for between... */
 	private String keyStream2[];
 	
-	/** Field value to update after lookup */
-	private String updateLookup[];
-	
-	/** Stream name to update value with */
-	private String updateStream[];
-	
 	/** Commit size for inserts/updates */
 	private int    commitSize; 
     
-    /** update errors are ignored if this flag is set to true */
-    private boolean errorIgnored;
-    
-    /** adds a boolean field to the output indicating success of the update */
-    private String  ignoreFlagField;
-	
-	public DeleteMeta()
+
+    public DeleteMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
@@ -204,73 +194,6 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
         this.tableName = tableName;
     }
     
-    /**
-     * @return Returns the updateLookup.
-     */
-    public String[] getUpdateLookup()
-    {
-        return updateLookup;
-    }
-    
-    /**
-     * @param updateLookup The updateLookup to set.
-     */
-    public void setUpdateLookup(String[] updateLookup)
-    {
-        this.updateLookup = updateLookup;
-    }
-    
-    /**
-     * @return Returns the updateStream.
-     */
-    public String[] getUpdateStream()
-    {
-        return updateStream;
-    }
-    
-    /**
-     * @param updateStream The updateStream to set.
-     */
-    public void setUpdateStream(String[] updateStream)
-    {
-        this.updateStream = updateStream;
-    }
-    
-    /**
-     * @return Returns the ignoreError.
-     */
-    public boolean isErrorIgnored()
-    {
-        return errorIgnored;
-    }
-
-    /**
-     * @param ignoreError The ignoreError to set.
-     */
-    public void setErrorIgnored(boolean ignoreError)
-    {
-        this.errorIgnored = ignoreError;
-    }
-
-    /**
-     * @return Returns the ignoreFlagField.
-     */
-    public String getIgnoreFlagField()
-    {
-        return ignoreFlagField;
-    }
-
-
-
-    /**
-     * @param ignoreFlagField The ignoreFlagField to set.
-     */
-    public void setIgnoreFlagField(String ignoreFlagField)
-    {
-        this.ignoreFlagField = ignoreFlagField;
-    }
-
-
 
     public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
 		throws KettleXMLException
@@ -278,23 +201,20 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 		readData(stepnode, databases);
 	}
 
-	public void allocate(int nrkeys, int nrvalues)
+	public void allocate(int nrkeys)
 	{
-		keyStream          = new String[nrkeys];
+		keyStream    = new String[nrkeys];
 		keyLookup    = new String[nrkeys];
 		keyCondition = new String[nrkeys];
-		keyStream2         = new String[nrkeys];
-		updateLookup        = new String[nrvalues];
-		updateStream    = new String[nrvalues];
+		keyStream2   = new String[nrkeys];
 	}
 
 	public Object clone()
 	{
 		DeleteMeta retval = (DeleteMeta)super.clone();
 		int nrkeys    = keyStream.length;
-		int nrvalues  = updateLookup.length;
 
-		retval.allocate(nrkeys, nrvalues);
+		retval.allocate(nrkeys);
 		
 		for (int i=0;i<nrkeys;i++)
 		{
@@ -304,11 +224,6 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 			retval.keyStream2        [i] = keyStream2[i];
 		}
 
-		for (int i=0;i<nrvalues;i++)
-		{
-			retval.updateLookup[i]        = updateLookup[i];
-			retval.updateStream[i]    = updateStream[i];
-		}
 		return retval;
 	}
 	
@@ -318,21 +233,18 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			String csize;
-			int nrkeys, nrvalues;
+			int nrkeys;
 			
 			String con = XMLHandler.getTagValue(stepnode, "connection");
 			database = Const.findDatabase(databases, con);
 			csize      = XMLHandler.getTagValue(stepnode, "commit");
 			commitSize=Const.toInt(csize, 0);
-            errorIgnored = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "error_ignored"));
-            ignoreFlagField = XMLHandler.getTagValue(stepnode, "ignore_flag_field");
 			tableName      = XMLHandler.getTagValue(stepnode, "lookup", "table");
 	
 			Node lookup = XMLHandler.getSubNode(stepnode, "lookup");
 			nrkeys    = XMLHandler.countNodes(lookup, "key");
-			nrvalues  = XMLHandler.countNodes(lookup, "value");
 			
-			allocate(nrkeys, nrvalues);
+			allocate(nrkeys);
 			
 			for (int i=0;i<nrkeys;i++)
 			{
@@ -345,14 +257,6 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 				keyStream2        [i] = XMLHandler.getTagValue(knode, "name2");
 			}
 	
-			for (int i=0;i<nrvalues;i++)
-			{
-				Node vnode = XMLHandler.getSubNodeByNr(lookup, "value", i);
-				
-				updateLookup[i]        = XMLHandler.getTagValue(vnode, "name");
-				updateStream[i]    = XMLHandler.getTagValue(vnode, "rename");
-				if (updateStream[i]==null) updateStream[i]=updateLookup[i]; // default: the same name!
-			}
 		}
 		catch(Exception e)
 		{
@@ -363,15 +267,13 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 	public void setDefault()
 	{
 		keyStream        = null;
-		updateLookup      = null;
 		database = null;
 		commitSize     = 0;
 		tableName      = "lookup table";
 
 		int nrkeys   = 0;
-		int nrvalues = 0;
-
-		allocate(nrkeys, nrvalues);
+		
+		allocate(nrkeys);
 		
 		for (int i=0;i<nrkeys;i++)
 		{
@@ -379,12 +281,6 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 			keyCondition[i]= "BETWEEN";
 			keyStream[i]         = "age_from";
 			keyStream2[i]        = "age_to";
-		}
-
-		for (int i=0;i<nrvalues;i++)
-		{
-			updateLookup[i]="return field #"+i;
-			updateStream[i]="new name #"+i;
 		}
 	}
 
@@ -394,8 +290,6 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 		
 		retval.append("    "+XMLHandler.addTagValue("connection", database==null?"":database.getName()));
 		retval.append("    "+XMLHandler.addTagValue("commit", commitSize));
-        retval.append("    "+XMLHandler.addTagValue("error_ignored", errorIgnored));
-        retval.append("    "+XMLHandler.addTagValue("ignore_flag_field", ignoreFlagField));
 		retval.append("    <lookup>"+Const.CR);
 		retval.append("      "+XMLHandler.addTagValue("table", tableName));
 
@@ -407,14 +301,6 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("        "+XMLHandler.addTagValue("condition", keyCondition[i]));
 			retval.append("        "+XMLHandler.addTagValue("name2", keyStream2[i]));
 			retval.append("        </key>"+Const.CR);
-		}
-
-		for (int i=0;i<updateLookup.length;i++)
-		{
-			retval.append("      <value>"+Const.CR);
-			retval.append("        "+XMLHandler.addTagValue("name", updateLookup[i]));
-			retval.append("        "+XMLHandler.addTagValue("rename", updateStream[i]));
-			retval.append("        </value>"+Const.CR);
 		}
 
 		retval.append("      </lookup>"+Const.CR);
@@ -433,26 +319,16 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 			commitSize     = (int)rep.getStepAttributeInteger(id_step, "commit");
 			tableName      =      rep.getStepAttributeString(id_step, "table");
             
-            errorIgnored    =     rep.getStepAttributeBoolean(id_step, "error_ignored");
-            ignoreFlagField =     rep.getStepAttributeString (id_step, "ignore_flag_field");
-	
 			int nrkeys   = rep.countNrStepAttributes(id_step, "key_name");
-			int nrvalues = rep.countNrStepAttributes(id_step, "value_name");
 			
-			allocate(nrkeys, nrvalues);
+			allocate(nrkeys);
 			
 			for (int i=0;i<nrkeys;i++)
 			{
-				keyStream[i]          = rep.getStepAttributeString(id_step, i, "key_name");
+				keyStream[i]    = rep.getStepAttributeString(id_step, i, "key_name");
 				keyLookup[i]    = rep.getStepAttributeString(id_step, i, "key_field");
 				keyCondition[i] = rep.getStepAttributeString(id_step, i, "key_condition");
-				keyStream2[i]         = rep.getStepAttributeString(id_step, i, "key_name2");
-			}
-			
-			for (int i=0;i<nrvalues;i++)
-			{
-				updateLookup[i]        = rep.getStepAttributeString(id_step, i, "value_name");
-				updateStream[i]    = rep.getStepAttributeString(id_step, i, "value_rename");
+				keyStream2[i]   = rep.getStepAttributeString(id_step, i, "key_name2");
 			}
 		}
 		catch(Exception e)
@@ -470,9 +346,6 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "commit",        commitSize);
 			rep.saveStepAttribute(id_transformation, id_step, "table",         tableName);
 
-            rep.saveStepAttribute(id_transformation, id_step, "error_ignored",        errorIgnored);
-            rep.saveStepAttribute(id_transformation, id_step, "ignore_flag_field",    ignoreFlagField);
-
 			for (int i=0;i<keyStream.length;i++)
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "key_name",      keyStream[i]);
@@ -481,12 +354,6 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "key_name2",     keyStream2[i]);
 			}
 	
-			for (int i=0;i<updateLookup.length;i++)
-			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "value_name",    updateLookup[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "value_rename",  updateStream[i]);
-			}
-			
 			// Also, save the step-database relationship!
 			if (database!=null) rep.insertStepDatabase(id_transformation, id_step, database.getID());
 		}
@@ -501,17 +368,8 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
         Row row;
         if (r==null) row=new Row(); // give back values
         else         row=r;         // add to the existing row of values...
-        
-        if (ignoreFlagField!=null && ignoreFlagField.length()>0)
-        {
-            Value v = new Value(ignoreFlagField, Value.VALUE_TYPE_BOOLEAN);
-            v.setOrigin(name);
-            
-            row.addValue( v );
-        }
-        
+                
         return row;
-
     }
 
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
@@ -565,37 +423,6 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 						else
 						{
 							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All lookup fields found in the table.", stepinfo);
-						}
-						remarks.add(cr);
-						
-						// How about the fields to insert/update in the table?
-						first=true;
-						error_found=false;
-						error_message = "";
-
-						for (int i=0;i<updateLookup.length;i++)
-						{
-							String lufield = updateLookup[i];
-
-							Value v = r.searchValue(lufield);
-							if (v==null)
-							{
-								if (first)
-								{
-									first=false;
-									error_message+="Missing fields to update/insert in target table:"+Const.CR;
-								}
-								error_found=true;
-								error_message+="\t\t"+lufield+Const.CR; 
-							}
-						}
-						if (error_found)
-						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
-						}
-						else
-						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All insert/update fields found in the table.", stepinfo);
 						}
 						remarks.add(cr);
 					}
@@ -662,32 +489,6 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
 					first=true;
 					error_found=false;
 					error_message = "";
-
-					for (int i=0;i<updateStream.length;i++)
-					{
-						String lufield = updateStream[i];
-
-						Value v = prev.searchValue(lufield);
-						if (v==null)
-						{
-							if (first)
-							{
-								first=false;
-								error_message+="Missing input stream fields to update/insert the target table with:"+Const.CR;
-							}
-							error_found=true;
-							error_message+="\t\t"+lufield+Const.CR; 
-						}
-					}
-					if (error_found)
-					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
-					}
-					else
-					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All insert/update fields found in the input stream.", stepinfo);
-					}
-					remarks.add(cr);
 				}
 				else
 				{
@@ -809,18 +610,8 @@ public class DeleteMeta extends BaseStepMeta implements StepMetaInterface
             {
                 Value v = prev.searchValue(keyStream[i]);
 
-                DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_READ, transMeta.getName(), stepMeta.getName(), database
+                DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_DELETE, transMeta.getName(), stepMeta.getName(), database
                         .getDatabaseName(), tableName, keyLookup[i], keyStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta());
-                impact.add(ii);
-            }
-
-            // Update fields : read/write
-            for (int i = 0; i < updateLookup.length; i++)
-            {
-                Value v = prev.searchValue(updateStream[i]);
-
-                DatabaseImpact ii = new DatabaseImpact(DatabaseImpact.TYPE_IMPACT_READ_WRITE, transMeta.getName(), stepMeta.getName(), database
-                        .getDatabaseName(), tableName, updateLookup[i], updateStream[i], v!=null?v.getOrigin():"?", "", "Type = " + v.toStringMeta());
                 impact.add(ii);
             }
         }

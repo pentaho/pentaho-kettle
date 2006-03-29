@@ -29,11 +29,10 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
  */
 public class DeleteData extends BaseStepData implements StepDataInterface
 {
-	public Database dblup, dbupd;
+	public Database dbupd;
 
 	public int    keynrs[];         // nr of keylookup -value in row...
 	public int    keynrs2[];        // nr of keylookup2-value in row...
-	public int    valuenrs[];       // Stream valuename nrs to prevent searches.
 	
 	/**
 	 * 
@@ -42,7 +41,6 @@ public class DeleteData extends BaseStepData implements StepDataInterface
 	{
 		super();
 
-		dblup=null;
 		dbupd=null;
 	}
 
