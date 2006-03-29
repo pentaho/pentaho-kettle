@@ -245,23 +245,24 @@ public class JobDialog extends Dialog
 
 		wbLogconnection=new Button(shell, SWT.PUSH);
 		wbLogconnection.setText("&Edit...");
-		wbLogconnection.addSelectionListener(new SelectionAdapter() 
-		{
-			public void widgetSelected(SelectionEvent e) 
-			{
-				DatabaseMeta ci = jobMeta.findDatabase(wLogconnection.getText());
-				if (ci==null) ci=new DatabaseMeta();
-				DatabaseDialog cid = new DatabaseDialog(shell, SWT.NONE, log, ci, props);
-				if (cid.open()!=null)
-				{
-					wLogconnection.setText(ci.getName());
-				}
-			}
-		});
 		fdbLogconnection=new FormData();
 		fdbLogconnection.top   = new FormAttachment(wDirectory, margin*4);
 		fdbLogconnection.right = new FormAttachment(100, 0);
 		wbLogconnection.setLayoutData(fdbLogconnection);
+        wbLogconnection.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    DatabaseMeta ci = jobMeta.findDatabase(wLogconnection.getText());
+                    if (ci==null) ci=new DatabaseMeta();
+                    DatabaseDialog cid = new DatabaseDialog(shell, SWT.NONE, log, ci, props);
+                    if (cid.open()!=null)
+                    {
+                        wLogconnection.setText(ci.getName());
+                    }
+                }
+            }
+        );
 
 		wLogconnection=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wLogconnection);
@@ -272,6 +273,7 @@ public class JobDialog extends Dialog
 		fdLogconnection.right= new FormAttachment(wbLogconnection, -margin);
 		wLogconnection.setLayoutData(fdLogconnection);
         
+
         // populare the combo box...
         for (int i=0;i<jobMeta.nrDatabases();i++)
         {
@@ -401,7 +403,11 @@ public class JobDialog extends Dialog
 		if (jobMeta.getName()!=null)           wJobname.setText      ( jobMeta.getName());
 		if (jobMeta.getDirectory()!=null)      wDirectory.setText    ( jobMeta.getDirectory().getPath() );
 		if (jobMeta.getLogConnection()!=null)  wLogconnection.setText( jobMeta.getLogConnection().getName());
-		if (jobMeta.logtable!=null)            wLogtable.setText     ( jobMeta.logtable);
+		if (jobMeta.getLogTable()!=null)       wLogtable.setText     ( jobMeta.getLogTable());
+        
+        wBatch.setSelection(jobMeta.isBatchIdUsed());
+        wBatchTrans.setSelection(jobMeta.isBatchIdPassed());
+        wLogfield.setSelection(jobMeta.isLogfieldUsed());
 	}
 	
 	private void cancel()
@@ -414,7 +420,13 @@ public class JobDialog extends Dialog
 	private void ok()
 	{
 		jobMeta.setName( wJobname.getText() );
-		jobMeta.logtable = wLogtable.getText();		
+		jobMeta.setLogConnection( jobMeta.findDatabase(wLogconnection.getText()) );
+        jobMeta.setLogTable( wLogtable.getText() );
+        
+        jobMeta.setUseBatchId( wBatch.getSelection());
+        jobMeta.setBatchIdPassed( wBatchTrans.getSelection());
+        jobMeta.setLogfieldUsed( wLogfield.getSelection());
+
 		dispose();
 	}
 	
@@ -422,10 +434,10 @@ public class JobDialog extends Dialog
 	// Conversions done by Database
 	private void sql()
 	{
-		DatabaseMeta ci = jobMeta.getLogConnection();
+		DatabaseMeta ci = jobMeta.findDatabase(wLogconnection.getText());
 		if (ci!=null)
 		{
-			Row r = Database.getJobLogrecordFields(false, false); // TODO: add job id & logfield to Jobs too!!
+			Row r = Database.getJobLogrecordFields(wBatch.getSelection(), wLogfield.getSelection());
 			if (r!=null && r.size()>0)
 			{
 				String tablename = wLogtable.getText();
@@ -434,6 +446,9 @@ public class JobDialog extends Dialog
 					Database db = new Database(ci);
 					try
 					{
+                        db.connect();
+                        
+                        // Get the DDL for the specified tablename and fields...
 						String createTable = db.getDDL(tablename, r);
 						log.logBasic(toString(), createTable);
 	
@@ -447,6 +462,10 @@ public class JobDialog extends Dialog
 						mb.setText("ERROR");
 						mb.open();
 					}
+                    finally
+                    {
+                        db.disconnect();
+                    }
 				}
 				else
 				{

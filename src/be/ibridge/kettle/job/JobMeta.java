@@ -29,9 +29,11 @@ import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Rectangle;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.SQLStatement;
 import be.ibridge.kettle.core.TransAction;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
+import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -74,8 +76,7 @@ public class JobMeta implements Cloneable, XMLInterface
 	
 	private  boolean        changed, changed_entries, changed_hops, changed_notes;
 	private  DatabaseMeta   logconnection;
-	public   String         logtable;
-	// public   Props          props;
+	private  String         logTable;
 
 	public  DBCache dbcache;
 
@@ -131,7 +132,7 @@ public class JobMeta implements Cloneable, XMLInterface
 		notes      = new ArrayList();
 		databases  = new ArrayList();
 		logconnection = null;
-		logtable = null;
+		logTable = null;
 		arguments = null;
 
 		max_undo = Const.MAX_UNDO;
@@ -366,7 +367,7 @@ public class JobMeta implements Cloneable, XMLInterface
 				directory.getID(),
 				getName(),
 				logconnection==null?-1:logconnection.getID(),
-				logtable,
+				logTable,
 				modified_user,
 				modified_date,
                 useBatchId,
@@ -412,7 +413,7 @@ public class JobMeta implements Cloneable, XMLInterface
 		}
 
 		retval.append("  "+XMLHandler.addTagValue("logconnection", ci==null?"":ci.getName()));
-		retval.append("  "+XMLHandler.addTagValue("logtable", logtable));
+		retval.append("  "+XMLHandler.addTagValue("logtable", logTable));
 
         retval.append( "   " + XMLHandler.addTagValue("use_batchid", useBatchId));
         retval.append( "   " + XMLHandler.addTagValue("pass_batchid", batchIdPassed));
@@ -517,7 +518,7 @@ public class JobMeta implements Cloneable, XMLInterface
 			 */
 			String logcon        = XMLHandler.getTagValue(jobnode, "logconnection");
 			logconnection        = findDatabase(logcon);
-			logtable             = XMLHandler.getTagValue(jobnode, "logtable");
+			logTable             = XMLHandler.getTagValue(jobnode, "logtable");
             
             useBatchId           = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "use_batchid"));
             batchIdPassed        = "Y".equalsIgnoreCase(XMLHandler.getTagValue(jobnode, "pass_batchid"));
@@ -801,7 +802,7 @@ public class JobMeta implements Cloneable, XMLInterface
 				Row jobrow = rep.getJob(getID());
 				
 				name                 = jobrow.searchValue("NAME").getString();
-				logtable             = jobrow.searchValue("TABLE_NAME_LOG").getString();
+				logTable             = jobrow.searchValue("TABLE_NAME_LOG").getString();
 				
 				long id_logdb        = jobrow.searchValue("ID_DATABASE_LOG").getInteger();
 				if (id_logdb>0)
@@ -809,6 +810,10 @@ public class JobMeta implements Cloneable, XMLInterface
 					// Get the logconnection
 					logconnection = new DatabaseMeta(rep, id_logdb);
 				}
+                useBatchId    = jobrow.getBoolean("USE_BATCH_ID", false);
+                batchIdPassed = jobrow.getBoolean("PASS_BATCH_ID", false);
+                logfieldUsed  = jobrow.getBoolean("USE_LOGFIELD", false);
+
 				if (monitor!=null) monitor.worked(1);
 	
 				log.logDetailed(toString(), "Loading "+noteids.length+" notes");
@@ -1608,7 +1613,7 @@ public class JobMeta implements Cloneable, XMLInterface
     /**
      * @return Returns the useBatchId.
      */
-    public boolean isUseBatchId()
+    public boolean isBatchIdUsed()
     {
         return useBatchId;
     }
@@ -1635,6 +1640,76 @@ public class JobMeta implements Cloneable, XMLInterface
     public void setBatchIdPassed(boolean batchIdPassed)
     {
         this.batchIdPassed = batchIdPassed;
+    }
+
+    
+    
+    /**
+     * Builds a list of all the SQL statements that this transformation needs in order to work properly.
+     * 
+     * @return An ArrayList of SQLStatement objects.
+     */
+    public ArrayList getSQLStatements(Repository repository, IProgressMonitor monitor) throws KettleException
+    {
+        if (monitor != null) monitor.beginTask("Getting the SQL needed for this job...", nrJobEntries() + 1);
+        ArrayList stats = new ArrayList();
+
+        for (int i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy copy = getJobEntry(i);
+            if (monitor != null) monitor.subTask("Getting SQL statements for job entry copy [" + copy + "]");
+            ArrayList list = copy.getEntry().getSQLStatements(repository);
+            stats.addAll(list);
+            if (monitor != null) monitor.worked(1);
+        }
+
+        // Also check the sql for the logtable...
+        if (monitor != null) monitor.subTask("Getting SQL statements for the job (logtable, etc.)");
+        if (logconnection != null && logTable != null && logTable.length() > 0)
+        {
+            Database db = new Database(logconnection);
+            try
+            {
+                db.connect();
+                Row fields = Database.getJobLogrecordFields(useBatchId, logfieldUsed);
+                String sql = db.getDDL(logTable, fields);
+                if (sql != null && sql.length() > 0)
+                {
+                    SQLStatement stat = new SQLStatement("<this job>", logconnection, sql);
+                    stats.add(stat);
+                }
+            }
+            catch (KettleDatabaseException dbe)
+            {
+                SQLStatement stat = new SQLStatement("<this job>", logconnection, null);
+                stat.setError("Error obtaining job log table info: " + dbe.getMessage());
+                stats.add(stat);
+            }
+            finally
+            {
+                db.disconnect();
+            }
+        }
+        if (monitor != null) monitor.worked(1);
+        if (monitor != null) monitor.done();
+
+        return stats;
+    }
+
+    /**
+     * @return Returns the logTable.
+     */
+    public String getLogTable()
+    {
+        return logTable;
+    }
+
+    /**
+     * @param logTable The logTable to set.
+     */
+    public void setLogTable(String logTable)
+    {
+        this.logTable = logTable;
     }
 
 

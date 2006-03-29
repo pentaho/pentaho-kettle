@@ -216,20 +216,29 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			
 			long id_transformation = rep.getJobEntryAttributeInteger(id_jobentry, "id_transformation");
 			Row r = rep.getTransformation(id_transformation);
-			if (r!=null) 
+			if (r==null) 
 			{
-				transname = r.getString("NAME", null);
-				long id_directory =  r.getInteger("ID_DIRECTORY", 0L);
-				if (id_directory>0)
-				{
-					directory = rep.getDirectoryTree().findDirectory(id_directory);
-				}
-				else
-				{
-					directory = rep.getDirectoryTree();
-				}
+                if (r==null)
+                {
+                    transname = rep.getJobEntryAttributeString(id_jobentry, "name");
+                    String dirPath = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
+                    directory = rep.getDirectoryTree().findDirectory(dirPath);
+                }
+                else
+                {
+    				transname = r.getString("NAME", null);
+    				long id_directory =  r.getInteger("ID_DIRECTORY", 0L);
+    				if (id_directory>0)
+    				{
+    					directory = rep.getDirectoryTree().findDirectory(id_directory);
+    				}
+    				else
+    				{
+    					directory = rep.getDirectoryTree();
+    				}
+                }
 				
-				System.out.println("Loading transformation in directory ["+directory+"], id_directory="+id_directory);
+				System.out.println("Loading transformation in directory ["+directory+"]");
 			}
 			
 			filename          = rep.getJobEntryAttributeString(id_jobentry, "filename");
@@ -269,6 +278,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			
 			long id_transformation = rep.getTransformationID(transname, directory.getID());
 			rep.saveJobEntryAttribute(id_job, getID(), "id_transformation", id_transformation);
+            rep.saveJobEntryAttribute(id_job, getID(), "name", getTransname());
+            rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory()!=null?getDirectory().getPath():"");
 			rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
@@ -337,26 +348,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		{
             log.logDetailed(toString(), "Starting transformation...(file="+getFileName()+", name="+getName()+"), repinfo="+getDescription());
             
-            TransMeta transMeta;
-            if (getTransname()!=null && getTransname().length()>0 &&  // Load from the repository
-                getDirectory()!=null
-               )
+            TransMeta transMeta = getTransMeta(rep);
+            
+            if (parentJob.getJobMeta().isBatchIdPassed())
             {
-                transMeta = new TransMeta(rep, getTransname(), getDirectory());
+                transMeta.setJobBatchId(parentJob.getJobMeta().getBatchId());
             }
-            else  
-            if (getFileName()!=null && getFileName().length()>0) // Load from an XML file
-            {
-               
-                transMeta = new TransMeta(getFileName());
-            }
-            else
-            {
-                throw new KettleJobException("The transformation to execute is not specified!");
-            }
-
-            // Set the arguments...
-            transMeta.setArguments(arguments);
 
             // Create the transformation from meta-data
             Trans trans = new Trans(logwriter, transMeta);
@@ -417,7 +414,32 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		return result;
 	}
 
-	public boolean evaluates()
+	private TransMeta getTransMeta(Repository rep) throws KettleException
+    {
+        TransMeta transMeta = null;
+        if (getTransname() != null && getTransname().length() > 0 && // Load from the repository
+                getDirectory() != null)
+        {
+            transMeta = new TransMeta(rep, getTransname(), getDirectory());
+        }
+        else
+            if (getFileName() != null && getFileName().length() > 0) // Load from an XML file
+            {
+
+                transMeta = new TransMeta(getFileName());
+            }
+            else
+            {
+                throw new KettleJobException("The transformation to execute is not specified!");
+            }
+
+        // Set the arguments...
+        transMeta.setArguments(arguments);
+
+        return transMeta;
+    }
+
+    public boolean evaluates()
 	{
 		return true;
 	}
@@ -426,5 +448,12 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	{
 		return true;
 	}
+    
+    public ArrayList getSQLStatements(Repository repository) throws KettleException
+    {
+        TransMeta transMeta = getTransMeta(repository);
+        
+        return transMeta.getSQLStatements();
+    }
 
 }
