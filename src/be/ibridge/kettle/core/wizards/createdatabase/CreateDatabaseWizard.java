@@ -26,9 +26,9 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 
 /**
  * Shows a wizard that creates a new database connection...
- *
- * @author jb
- * @since  04-apr-2005
+ * (Code 'normalized' from Spoon and Chef.)
+ * @author Matt, Jens
+ * @since  29-mar-2006
  *
  */
 public class CreateDatabaseWizard {
