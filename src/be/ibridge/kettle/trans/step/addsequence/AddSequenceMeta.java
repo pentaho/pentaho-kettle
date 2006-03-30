@@ -376,8 +376,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 				try
 				{
 					db.connect();
-					Value last = db.checkSequence(sequenceName);
-					if (last==null)
+					if (!db.checkSequenceExists(sequenceName))
 					{
 						String cr_table = db.getCreateSequenceStatement(sequenceName, startAt, incrementBy, maxValue, true);
 						retval.setSQL(cr_table);
