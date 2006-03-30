@@ -2384,7 +2384,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 // 
                 BigDecimal bigDec = getBigNumber();
                 // System.out.println("ROUND decimalPlaces : "+decimalPlaces+", bigNumber = "+bigDec);
-                bigDec = bigDec.setScale(decimalPlaces, BigDecimal.ROUND_HALF_UP); 
+                bigDec = bigDec.setScale(decimalPlaces, BigDecimal.ROUND_HALF_EVEN); 
                 // System.out.println("ROUND finished result         : "+bigDec);
                 setValue( bigDec );
             }
