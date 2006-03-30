@@ -820,7 +820,7 @@ public class JobMeta implements Cloneable, XMLInterface
 				for (int i=0;i<noteids.length;i++)
 				{
 					if (monitor!=null) monitor.subTask("Reading note #"+(i+1)+"/"+noteids.length);
-						NotePadMeta ni = new NotePadMeta(log, rep, noteids[i]);
+					NotePadMeta ni = new NotePadMeta(log, rep, noteids[i]);
 					if (indexOfNote(ni)<0) addNote(ni);
 					if (monitor!=null) monitor.worked(1);
 				}
