@@ -432,4 +432,20 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         return transMeta.getSQLStatements();
     }
 
+    /**
+     * @return Returns the directoryPath.
+     */
+    public String getDirectoryPath()
+    {
+        return directoryPath;
+    }
+
+    /**
+     * @param directoryPath The directoryPath to set.
+     */
+    public void setDirectoryPath(String directoryPath)
+    {
+        this.directoryPath = directoryPath;
+    }
+
 }

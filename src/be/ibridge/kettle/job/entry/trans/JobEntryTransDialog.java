@@ -613,7 +613,14 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 	
 	public void getData()
 	{
-		if (jobentry.getDirectory()!=null) wDirectory.setText(jobentry.getDirectory().getPath());
+		if (jobentry.getDirectory()!=null)
+        {
+            wDirectory.setText(jobentry.getDirectory().getPath());
+        }
+        else
+        {
+            if (jobentry.getDirectoryPath()!=null) wDirectory.setText(jobentry.getDirectoryPath());
+        }
 		if (jobentry.getName()!=null)      wName.setText(jobentry.getName());
 		if (jobentry.getTransname()!=null) wTransname.setText(jobentry.getTransname()); 
 		if (jobentry.getFileName()!=null)  wFilename.setText(jobentry.getFileName());

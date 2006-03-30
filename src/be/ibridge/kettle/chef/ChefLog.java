@@ -16,7 +16,6 @@
  
 package be.ibridge.kettle.chef;
 import java.io.FileInputStream;
-import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -39,21 +38,22 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
 
-import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleJobException;
 import be.ibridge.kettle.job.Job;
+import be.ibridge.kettle.job.JobEntryResult;
+import be.ibridge.kettle.job.entry.JobEntryCopy;
 import be.ibridge.kettle.spoon.dialog.LogSettingsDialog;
-import de.kupzog.ktable.KTable;
 
-/**
- * TODO add name of job in list (subjobs etc)
- * TODO add stopped property to Result
- * 
+/*** 
  * Handles the display of the job execution log in the Chef application.
  * 
  * @author Matt
@@ -71,8 +71,7 @@ public class ChefLog extends Composite
 	private LogWriter log;
 	private Chef chef;
 	
-	private KTable wTable;
-	private ArrayList jobEntryResults;
+	private Tree wTree;
 	
 	private Text   wText;
 	private Button wStart;	
@@ -113,32 +112,37 @@ public class ChefLog extends Composite
 		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { white.dispose(); } });
 
 		SashForm sash = new SashForm(this, SWT.VERTICAL);
-		
-		ColumnInfo colinf[] = 
-			{
-			 new ColumnInfo("Nr",       	  ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-			 new ColumnInfo("Icon",           ColumnInfo.COLUMN_TYPE_ICON ),
-			 new ColumnInfo("Job name",       ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-			 new ColumnInfo("Entry name",     ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-			 new ColumnInfo("Result",         ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-			 new ColumnInfo("Previous entry", ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-			 new ColumnInfo("Comment",        ColumnInfo.COLUMN_TYPE_TEXT, false, true)
-			};
-		
-		// Default: empty!
-		jobEntryResults = new ArrayList();
-				
-		// Create the KTable...
-		wTable = new KTable(sash, SWT.V_SCROLL | SWT.H_SCROLL);
-		wTable.setRowSelectionMode(true);
-		wTable.setModel(new ChefLogTableModel(colinf, jobEntryResults, chef.getChefGraph()));
-		
+								
+		// Create the tree table...
+		wTree = new Tree(sash, SWT.V_SCROLL | SWT.H_SCROLL);
+        wTree.setHeaderVisible(true);
+        
+        TreeColumn column1 = new TreeColumn(wTree, SWT.LEFT);
+        column1.setText("Job / Job Entry");
+        column1.setWidth(200);
+        
+        TreeColumn column2 = new TreeColumn(wTree, SWT.LEFT);
+        column2.setText("Comment");
+        column2.setWidth(200);
+        
+        TreeColumn column3 = new TreeColumn(wTree, SWT.LEFT);
+        column3.setText("Result");
+        column3.setWidth(100);
+
+        TreeColumn column4 = new TreeColumn(wTree, SWT.LEFT);
+        column4.setText("Reason");
+        column4.setWidth(200);
+
+        TreeColumn column5 = new TreeColumn(wTree, SWT.RIGHT);
+        column5.setText("Nr");
+        column5.setWidth(50);
+
 		FormData fdTable=new FormData();
 		fdTable.left   = new FormAttachment(0, 0);
 		fdTable.top    = new FormAttachment(0, 0);
 		fdTable.right  = new FormAttachment(100, 0);
 		fdTable.bottom = new FormAttachment(100, 0);
-		wTable.setLayoutData(fdTable);
+		wTree.setLayoutData(fdTable);
 
 
 		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
@@ -322,7 +326,7 @@ public class ChefLog extends Composite
 						wStart.setText(STOP_TEXT);
 						job = new Job(log, chef.jobMeta.getName(), chef.jobMeta.getFilename(), null);
 						job.open(chef.rep, chef.jobMeta.getFilename(), chef.jobMeta.getName(), chef.jobMeta.getDirectory().getPath());
-						job.setJobEntryResults(jobEntryResults);
+
                         log.logMinimal(Chef.APP_NAME, "Starting job...");
 						job.start();
 						readLog();
@@ -414,13 +418,7 @@ public class ChefLog extends Composite
 				for (i=0;i<c;i++) message.append((char)buffer[i]);
 			}
 			
-			wTable.redraw();
-			/*
-			System.out.println("jobEntryResults has "+jobEntryResults.size()+" results ");
-			System.out.println("job has "+job.getJobEntryResults().size()+" results ");
-			System.out.println("table has "+wTable.getModel().getRowCount());
-			System.out.println();
-			*/
+			refreshTreeTable();
 		}
 		catch(Exception ex)
 		{
@@ -435,8 +433,91 @@ public class ChefLog extends Composite
 		} 
 	}
 	
-	
-	private void refreshView()
+
+    /**
+     * Refresh the data in the tree-table...
+     * Use the data from the JobTracker in the job
+     */
+	private void refreshTreeTable()
+    {
+        if (job!=null)
+        {
+            JobTracker jobTracker = job.getJobTracker();
+            
+            // Allow some flickering for now ;-)
+            wTree.removeAll();
+            
+            // Re-populate this...
+            TreeItem treeItem = new TreeItem(wTree, SWT.NONE);
+            treeItem.setText( 0, jobTracker.getJobMeta().getName());
+            for (int i=0;i<jobTracker.nrJobTrackers();i++)
+            {
+                addTrackerToTree(jobTracker.getJobTracker(i), treeItem);
+            }
+            treeItem.setExpanded(true);
+        }
+    }
+
+    private void addTrackerToTree(JobTracker jobTracker, TreeItem parentItem)
+    {
+        try
+        {
+            if (jobTracker!=null)
+            {
+                TreeItem treeItem = new TreeItem(parentItem, SWT.NONE);
+                if (jobTracker.nrJobTrackers()>0)
+                {
+                    // This is a sub-job: display the name at the top of the list...
+                    treeItem.setText( 0, "Job: "+jobTracker.getJobMeta().getName() );
+                    
+                    // then populare the sub-job entries ...
+                    for (int i=0;i<jobTracker.nrJobTrackers();i++)
+                    {
+                        addTrackerToTree(jobTracker.getJobTracker(i), treeItem);
+                    }
+                }
+                else
+                {
+                    JobEntryResult result = jobTracker.getJobEntryResult();
+                    if (result!=null)
+                    {
+                        JobEntryCopy jec = result.getJobEntry();
+                        if (jec!=null)
+                        {
+                            treeItem.setText( 0, jec.getName() );
+                        }
+                        else
+                        {
+                            treeItem.setText( 0, "Job: "+jobTracker.getJobMeta().getName());
+                        }
+                        String comment = result.getComment();
+                        if (comment!=null)
+                        {
+                            treeItem.setText(1, comment);
+                        }
+                        Result res = result.getResult();
+                        if (res!=null)
+                        {
+                            treeItem.setText(2, res.getResult()?"Success":"Failure");
+                            treeItem.setText(4, ""+res.getEntryNr());
+                        }
+                        String reason = result.getReason();
+                        if (reason!=null)
+                        {
+                            treeItem.setText(3, reason );
+                        }
+                    }
+                }
+                treeItem.setExpanded(true);
+            }
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+    }
+
+    private void refreshView()
 	{
 		if (job!=null && !job.isActive())
         {

@@ -23,7 +23,6 @@ import be.ibridge.kettle.job.entry.JobEntryCopy;
  * This class holds the result of a job entry after it was executed.
  * Things we want to keep track of are:<p>
  * --> result of the execution (Result)<p>
- * --> next step to execute<p>
  * --> ...<p>
  * 
  * @author Matt
@@ -32,11 +31,11 @@ import be.ibridge.kettle.job.entry.JobEntryCopy;
 public class JobEntryResult implements Cloneable
 {
 	private Result result;
-	private JobEntryCopy thisJobEntry;
-	private JobEntryCopy prevJobEntry;
+	private JobEntryCopy jobEntry;
+
 	private String comment;
-	private String jobName;
-	
+    private String reason;
+
 	/**
 	 * Creates a new empty job entry result...
 	 */
@@ -46,10 +45,16 @@ public class JobEntryResult implements Cloneable
 
 	/**
 	 * Creates a new job entry result...
+     * @param result the result of the job entry
+     * @param comment an optional comment
+     * @param jobEntry the job entry for which this is the result.
 	 */
-	public JobEntryResult(Result result)
+	public JobEntryResult(Result result, String comment, String reason, JobEntryCopy jobEntry)
 	{
 		this.result = result;
+        this.comment = comment;
+        this.reason = reason;
+        this.jobEntry = jobEntry;
 	}
 	
 	public Object clone()
@@ -88,33 +93,17 @@ public class JobEntryResult implements Cloneable
 	/**
 	 * @param thisJobEntry The thisJobEntry to set.
 	 */
-	public void setThisJobEntry(JobEntryCopy thisJobEntry)
+	public void setJobEntry(JobEntryCopy jobEntry)
 	{
-		this.thisJobEntry = thisJobEntry;
+		this.jobEntry = jobEntry;
 	}
 	
 	/**
 	 * @return Returns the thisJobEntry.
 	 */
-	public JobEntryCopy getThisJobEntry()
+	public JobEntryCopy getJobEntry()
 	{
-		return thisJobEntry;
-	}
-	
-	/**
-	 * @param nextJobEntry The nextJobEntry to set.
-	 */
-	public void setPrevJobEntry(JobEntryCopy nextJobEntry)
-	{
-		this.prevJobEntry = nextJobEntry;
-	}
-	
-	/**
-	 * @return Returns the nextJobEntry.
-	 */
-	public JobEntryCopy getPrevJobEntry()
-	{
-		return prevJobEntry;
+		return jobEntry;
 	}
 	
 	/**
@@ -132,22 +121,21 @@ public class JobEntryResult implements Cloneable
 	{
 		this.comment = comment;
 	}
-	
-	/**
-	 * @param jobName The jobName to set.
-	 */
-	public void setJobName(String jobName)
-	{
-		this.jobName = jobName;
-	}
-	
-	/**
-	 * @return Returns the jobName.
-	 */
-	public String getJobName()
-	{
-		return jobName;
-	}
-	
+
+    /**
+     * @return Returns the reason.
+     */
+    public String getReason()
+    {
+        return reason;
+    }
+
+    /**
+     * @param reason The reason to set.
+     */
+    public void setReason(String reason)
+    {
+        this.reason = reason;
+    }	
 }
 

@@ -1583,7 +1583,7 @@ public class TableView extends Composite
 			return;
 		}
 		
-		text   = new Text(cursor, SWT.LEFT);
+		text   = new Text(cursor, SWT.LEFT );
         props.setLook(text, Props.WIDGET_STYLE_TABLE);
 		text.addTraverseListener(lsTraverse);
 		text.addFocusListener(lsFocusText);
@@ -1614,14 +1614,14 @@ public class TableView extends Composite
 		);
         
         int width = tablecolumn[colnr].getWidth();
-        int height = 20;
+        // int height = 30;
 				
 		editor.horizontalAlignment = SWT.LEFT;
         editor.verticalAlignment   = SWT.TOP;
         editor.grabHorizontal = true;
 		editor.grabVertical   = true;
 		editor.minimumWidth   = width;
-        editor.minimumHeight  = height;
+        // editor.minimumHeight  = height;
 		editor.layout();
         
 		if (select_text) text.selectAll();
@@ -1629,7 +1629,7 @@ public class TableView extends Composite
         // Open the text editor in the correct column of the selected row.
         editor.setEditor (text);
         text.setFocus();
-        text.setSize(width, height);
+        // text.setSize(width, height);
         editor.layout();
 	}
 	

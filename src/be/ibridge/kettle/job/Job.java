@@ -15,9 +15,9 @@
  
 package be.ibridge.kettle.job;
 
-import java.util.ArrayList;
 import java.util.Date;
 
+import be.ibridge.kettle.chef.JobTracker;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
@@ -50,7 +50,7 @@ public class Job extends Thread
 	/**
 	 * Keep a list of the job entries that were executed.
 	 */
-	private ArrayList jobEntryResults;
+	private JobTracker jobTracker;
 	
 	private Date      startDate, endDate, currentDate, logDate, depDate;
 	
@@ -66,6 +66,7 @@ public class Job extends Thread
 		jobMeta.arguments=args;
 		active=false;
 		stopped=false;
+        jobTracker = new JobTracker(jobMeta);
 	}
 
 	public Job(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
@@ -76,6 +77,7 @@ public class Job extends Thread
 		
 		active=false;
 		stopped=false;
+        jobTracker = new JobTracker(jobMeta);
 	}
 	
 	public void open(Repository rep, String fname, String jobname, String dirname)
@@ -121,15 +123,17 @@ public class Job extends Thread
 	public Result execute()
 		throws KettleJobException
 	{
-		if (jobEntryResults!=null) jobEntryResults.clear(); else jobEntryResults=new ArrayList();
+        // Start the tracking...
+        JobEntryResult jerStart = new JobEntryResult(null, "Start of job execution", "start", null);
+        jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
+
 		active=true;
-		Result res = execute(1, null, null, null, "start");
+		Result res = execute(0, null, null, null, "start");
 		
 		// Save this result...
-		JobEntryResult jer = new JobEntryResult(res);
-		jer.setComment("Job execution ended");
-		jobEntryResults.add(jer);
-		
+		JobEntryResult jerEnd = new JobEntryResult(res, "Job execution ended", "end", null);
+		jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
+        
 		active=false;
 		return res;	
 	}
@@ -149,13 +153,11 @@ public class Job extends Thread
 		return res;
 	}
 	
-	private Result execute(int nr, Result prev_result, JobEntryCopy startpoint, JobEntryCopy previous, String comment)
+	private Result execute(int nr, Result prev_result, JobEntryCopy startpoint, JobEntryCopy previous, String reason)
 		throws KettleJobException
 	{
 		Result res = null;
-		JobEntryResult jer = new JobEntryResult();
-		jer.setJobName(getJobMeta().getName());
-
+       
 		if (stopped)
 		{
 			res=new Result(nr);
@@ -175,25 +177,21 @@ public class Job extends Thread
 				log.logError(toString(), "Couldn't find starting point in this job.");
 				return prev_result;
 			}
-			else
-			{
-				// for the stats......
-				jer.setComment("Start of job");
-			}
 		}
-		jer.setThisJobEntry(startpoint);
-		jer.setPrevJobEntry(previous);
-		jer.setComment(comment);
 		
 		// What entry is next?
 		JobEntryInterface jei = startpoint.getEntry();
-		
+
+        // Track the fact that we are going to launch the next job entry...
+        JobEntryResult jerBefore = new JobEntryResult(null, "Job entry started", reason, startpoint);
+        jobTracker.addJobTracker(new JobTracker(jobMeta, jerBefore));
+
 		// Execute this entry...
 		Result result = jei.execute(prev_result, nr, rep, this);
 		
-		// Save the result as well...
-		jer.setResult((Result)result.clone());
-		jobEntryResults.add(jer.clone());
+		// Save this result as well...
+        JobEntryResult jerAfter = new JobEntryResult(result, "Job entry ended", null, startpoint);
+        jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
 				
 		// Try all next job entries.
 		// Launch only those where the hopinfo indicates true or false
@@ -441,36 +439,27 @@ public class Job extends Thread
 	{
 		return rep;
 	}	
-	
-	/**
-	 * @param jobEntryResults The jobEntryResults to set.
-	 */
-	public void setJobEntryResults(ArrayList jobEntryResults)
-	{
-		this.jobEntryResults = jobEntryResults;
-	}
-	
-	/**
-	 * @return Returns the jobEntryResults.
-	 */
-	public ArrayList getJobEntryResults()
-	{
-		return jobEntryResults;
-	}
-	
-	public JobEntryResult getLastJobEntryResult()
-	{
-		if (jobEntryResults.size()>0)
-		{
-			return (JobEntryResult)jobEntryResults.get(jobEntryResults.size()-1);
-		}
-		return null;
-	}
-	
+		
 	public String toString()
 	{
 		return this.getClass().getName();
 	}
+
+    /**
+     * @return Returns the jobTracker.
+     */
+    public JobTracker getJobTracker()
+    {
+        return jobTracker;
+    }
+
+    /**
+     * @param jobTracker The jobTracker to set.
+     */
+    public void setJobTracker(JobTracker jobTracker)
+    {
+        this.jobTracker = jobTracker;
+    }
 	
 }
 

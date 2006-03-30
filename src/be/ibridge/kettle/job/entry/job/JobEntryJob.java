@@ -300,7 +300,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		try
 		{
 			job.open(rep, getFileName(), getName(), directory.getPath());
-			job.setJobEntryResults(parentJob.getJobEntryResults());
+            
+            parentJob.getJobTracker().addJobTracker(job.getJobTracker()); // Link the job with the sub-job
+            job.getJobTracker().setParentJobTracker(parentJob.getJobTracker()); // Link both ways!
             
             if (parentJob.getJobMeta().isBatchIdPassed())
             {

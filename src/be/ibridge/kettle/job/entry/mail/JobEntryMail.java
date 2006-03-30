@@ -36,6 +36,7 @@ import javax.mail.internet.MimeMultipart;
 
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.chef.JobTracker;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
@@ -45,7 +46,6 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.Job;
-import be.ibridge.kettle.job.JobEntryResult;
 import be.ibridge.kettle.job.entry.JobEntryBase;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
@@ -320,16 +320,13 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		    }
 		    
 		    // Include the path to this job entry...
-		    ArrayList path = parentJob.getJobEntryResults();
-		    if (path!=null)
+		    JobTracker jobTracker = parentJob.getJobTracker();
+		    if (jobTracker!=null)
 		    {
 		        messageText.append("Path to this job entry:").append(Const.CR);
 		        messageText.append("------------------------").append(Const.CR);
-		        for (int i=0;i<path.size();i++)
-		        {
-		            JobEntryResult jer = (JobEntryResult) path.get(i);
-			        messageText.append("#"+i+" : "+jer.getThisJobEntry().getName()).append(Const.CR);
-		        }
+                messageText.append("TODO: backtracking of the job entry...").append(Const.CR);
+                // TODO: backtracking of the job entry...
 		    }
 		    		    
 		    Multipart parts = new MimeMultipart();
