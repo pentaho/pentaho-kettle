@@ -23,7 +23,6 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
-import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -214,42 +213,19 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		{
 			super.loadRep(rep, id_jobentry, databases);
 			
-			long id_transformation = rep.getJobEntryAttributeInteger(id_jobentry, "id_transformation");
-			Row r = rep.getTransformation(id_transformation);
-			if (r==null) 
-			{
-                if (r==null)
-                {
-                    transname = rep.getJobEntryAttributeString(id_jobentry, "name");
-                    String dirPath = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
-                    directory = rep.getDirectoryTree().findDirectory(dirPath);
-                }
-                else
-                {
-    				transname = r.getString("NAME", null);
-    				long id_directory =  r.getInteger("ID_DIRECTORY", 0L);
-    				if (id_directory>0)
-    				{
-    					directory = rep.getDirectoryTree().findDirectory(id_directory);
-    				}
-    				else
-    				{
-    					directory = rep.getDirectoryTree();
-    				}
-                }
-				
-				System.out.println("Loading transformation in directory ["+directory+"]");
-			}
-			
-			filename          = rep.getJobEntryAttributeString(id_jobentry, "filename");
-			argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
+	        transname = rep.getJobEntryAttributeString(id_jobentry, "name");
+            String dirPath = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
+            directory = rep.getDirectoryTree().findDirectory(dirPath);
+     	
+			filename         = rep.getJobEntryAttributeString(id_jobentry, "filename");
+			argFromPrevious  = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
 	
 			setLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
 			addDate          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
 			addTime          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
-			logfile           = rep.getJobEntryAttributeString(id_jobentry, "logfile");
-			logext            = rep.getJobEntryAttributeString(id_jobentry, "logext");
-			loglevel          = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
+			logfile          = rep.getJobEntryAttributeString(id_jobentry, "logfile");
+			logext           = rep.getJobEntryAttributeString(id_jobentry, "logext");
+			loglevel         = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
 	
 			// How many arguments?
 			int argnr = rep.countNrJobEntryAttributes(id_jobentry, "argument");

@@ -22,7 +22,6 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
-import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -218,21 +217,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		{
 			super.loadRep(rep, id_jobentry, databases);
 
-			long id_job_attr = rep.getJobEntryAttributeInteger(id_jobentry, "id_job");
-			Row r = rep.getJob(id_job_attr);
-			if (r!=null) 
-			{
-				jobname = r.getString("NAME", null);
-				long id_directory =  r.getInteger("ID_DIRECTORY", 0L);
-				if (id_directory>0)
-				{
-					directory = rep.getDirectoryTree().findDirectory(id_directory);
-				}
-				else
-				{
-					directory = rep.getDirectoryTree();
-				}
-			}
+            jobname = rep.getJobEntryAttributeString(id_jobentry, "name");
+            String dirPath = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
+            directory = rep.getDirectoryTree().findDirectory(dirPath);
 			
 			filename          = rep.getJobEntryAttributeString(id_jobentry, "filename");
 			argFromPrevious   = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
@@ -272,7 +259,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
 			long id_job_attr = rep.getJobID(jobname, directory.getID());
 			rep.saveJobEntryAttribute(id_job, getID(), "id_job", id_job_attr);
-			rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
+            rep.saveJobEntryAttribute(id_job, getID(), "name", getJobName());
+            rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory()!=null?getDirectory().getPath():"");
+            rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
             rep.saveJobEntryAttribute(id_job, getID(), "run_every_result_row", runEveryResultRow);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
