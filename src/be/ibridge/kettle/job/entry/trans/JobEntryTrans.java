@@ -246,7 +246,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	
 			setLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
 			addDate          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
-			addTime          = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_time");
+			addTime          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
 			logfile           = rep.getJobEntryAttributeString(id_jobentry, "logfile");
 			logext            = rep.getJobEntryAttributeString(id_jobentry, "logext");
 			loglevel          = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
