@@ -20,6 +20,7 @@ import java.util.Calendar;
 
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.XMLHandler;
@@ -32,6 +33,7 @@ import be.ibridge.kettle.job.entry.JobEntryBase;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
+import be.ibridge.kettle.trans.StepLoader;
 
 
 /**
@@ -296,10 +298,27 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		LogWriter logwriter = log;
 		if (setLogfile) logwriter = LogWriter.getInstance(getLogFilename(), true, loglevel);
 		
-		Job job = new Job(logwriter, getName(), getFileName(), arguments);
 		try
 		{
-			job.open(rep, getFileName(), getName(), directory.getPath());
+            JobMeta jobMeta = null;
+            if (rep!=null && jobname!=null && jobname.length()>0 && directory!=null) // load from the repository...
+            {
+                log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+jobname+"]");
+                jobMeta = new JobMeta(logwriter, rep, jobname, directory);
+            }
+            else // Get it from the XML file
+            if (filename!=null)
+            {
+                log.logDetailed(toString(), "Loading job from XML file : ["+filename+"]");
+                jobMeta = new JobMeta(logwriter, filename);
+            }
+            
+            if (jobMeta==null)
+            {
+                throw new KettleException("Unable to load the job: please specify the name and repository directory OR a filename");
+            }
+            
+            Job job = new Job(logwriter, StepLoader.getInstance(), rep, jobMeta);
             
             parentJob.getJobTracker().addJobTracker(job.getJobTracker()); // Link the job with the sub-job
             job.getJobTracker().setParentJobTracker(parentJob.getJobTracker()); // Link both ways!
@@ -368,7 +387,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		}
 		catch(KettleException je)
 		{
-			log.logError(toString(), "Unable to open job entry job with name ["+getName()+"]");
+			log.logError(toString(), "Unable to open job entry job with name ["+getName()+"] : "+Const.CR+je.toString());
 			result.setNrErrors(1);
 		}
 		
