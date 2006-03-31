@@ -129,6 +129,7 @@ public class Job extends Thread
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
 
 		active=true;
+        
 		// Where do we start?
 		JobEntryCopy startpoint;
 		beginProcessing();
@@ -162,7 +163,16 @@ public class Job extends Thread
 	public Result execute(int nr, Result result)
 		throws KettleJobException
 	{
-		Result res =  execute(nr, result, null, null, "start of job entry");
+        // Where do we start?
+        JobEntryCopy startpoint;
+
+        startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0);
+        if (startpoint == null) 
+        {
+            throw new KettleJobException("Couldn't find starting point in this job.");
+        }
+
+		Result res =  execute(nr, result, startpoint, null, "start of job entry");
 
 		return res;
 	}
