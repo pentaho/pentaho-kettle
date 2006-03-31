@@ -218,7 +218,11 @@ public class LogWriter
 			// Remove this one from the hashtable...
 			logs.remove(getFilename());
 			if(fileAppender != null)
+			{
 				fileAppender.close();
+				rootLogger.removeAppender(fileAppender);
+				fileAppender = null;
+			}
 		}
 		catch(Exception e) 
 		{ 
@@ -324,9 +328,10 @@ public class LogWriter
 	public void logError(String subject, String message)    { println(LOG_LEVEL_ERROR, subject, message); }
 	
     /** @deprecated */
-	public Object getStream()
-	{
-        return fileAppender.getFileOutputStream();
+	public Object getStream() {
+		if (fileAppender != null)
+			return fileAppender.getFileOutputStream();
+		return null;
 	}
 	
 	public void setFilter(String filter)
