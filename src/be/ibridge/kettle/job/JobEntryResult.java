@@ -15,6 +15,8 @@
 
 package be.ibridge.kettle.job;
 
+import java.util.Date;
+
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
 
@@ -35,12 +37,15 @@ public class JobEntryResult implements Cloneable
 
 	private String comment;
     private String reason;
+    
+    private Date   logDate;
 
 	/**
 	 * Creates a new empty job entry result...
 	 */
 	public JobEntryResult()
 	{
+        logDate = new Date();
 	}
 
 	/**
@@ -51,6 +56,7 @@ public class JobEntryResult implements Cloneable
 	 */
 	public JobEntryResult(Result result, String comment, String reason, JobEntryCopy jobEntry)
 	{
+        this();
 		this.result = result;
         this.comment = comment;
         this.reason = reason;
@@ -136,6 +142,22 @@ public class JobEntryResult implements Cloneable
     public void setReason(String reason)
     {
         this.reason = reason;
+    }
+
+    /**
+     * @return Returns the logDate.
+     */
+    public Date getLogDate()
+    {
+        return logDate;
+    }
+
+    /**
+     * @param logDate The logDate to set.
+     */
+    public void setLogDate(Date logDate)
+    {
+        this.logDate = logDate;
     }	
 }
 

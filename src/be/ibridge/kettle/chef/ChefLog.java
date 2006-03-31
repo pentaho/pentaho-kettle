@@ -16,6 +16,8 @@
  
 package be.ibridge.kettle.chef;
 import java.io.FileInputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -77,9 +79,10 @@ public class ChefLog extends Composite
 	private Button wStart;	
 	private Button wRefresh;
 	private Button wClear;
-	private Button wLog;
+    private Button wLog;
+	private Button wAuto;
 
-	private FormData fdText, fdSash, fdStart, fdRefresh, fdClear, fdLog; 
+	private FormData fdText, fdSash, fdStart, fdRefresh, fdClear, fdLog, fdAuto; 
 	private SelectionListener lsStart, lsRefresh, lsClear, lsLog;
 	private StringBuffer message;
 
@@ -137,6 +140,10 @@ public class ChefLog extends Composite
         column5.setText("Nr");
         column5.setWidth(50);
 
+        TreeColumn column6 = new TreeColumn(wTree, SWT.RIGHT);
+        column6.setText("Log date");
+        column6.setWidth(120);
+
 		FormData fdTable=new FormData();
 		fdTable.left   = new FormAttachment(0, 0);
 		fdTable.top    = new FormAttachment(0, 0);
@@ -161,10 +168,15 @@ public class ChefLog extends Composite
 		wLog = new Button(this, SWT.PUSH);
 		wLog.setText("&Log settings");
 
+        wAuto = new Button(this, SWT.CHECK);
+        wAuto.setText("&Auto refresh");
+        wAuto.setSelection(true);
+
 		fdStart    = new FormData(); 
 		fdRefresh  = new FormData(); 
 		fdClear    = new FormData(); 
 		fdLog      = new FormData(); 
+        fdAuto     = new FormData(); 
 
 		fdStart.left   = new FormAttachment(15, 0);  
 		fdStart.bottom = new FormAttachment(100, 0);
@@ -181,6 +193,10 @@ public class ChefLog extends Composite
 		fdLog.left   = new FormAttachment(wClear, 10);  
 		fdLog.bottom = new FormAttachment(100, 0);
 		wLog.setLayoutData(fdLog);
+
+        fdAuto.left   = new FormAttachment(wLog, 10);  
+        fdAuto.bottom = new FormAttachment(100, 0);
+        wAuto.setLayoutData(fdAuto);
 
 		fdText=new FormData();
 		fdText.left   = new FormAttachment(0, 0);
@@ -230,9 +246,11 @@ public class ChefLog extends Composite
 						{
 							public void run() 
 							{
-								checkErrors();	
-								readLog(); 
-								refreshView(); 
+                                if (wAuto.getSelection())
+                                {
+    								readLog(); 
+    								refreshView();
+                                }
 							}
 						}
 					);
@@ -397,25 +415,19 @@ public class ChefLog extends Composite
 			}
 		}
 	}
-
-	public void checkErrors()
-	{
-	}
 	
 	public void readLog()
 	{
-		int i, n;
-
 		if (message==null)  message = new StringBuffer(); else message.setLength(0);				
 		try		
 		{	
-			n = in.available();
+			int n = in.available();
 					
 			if (n>0)
 			{
 				byte buffer[] = new byte[n];
 				int c = in.read(buffer, 0, n);
-				for (i=0;i<c;i++) message.append((char)buffer[i]);
+				for (int i=0;i<c;i++) message.append((char)buffer[i]);
 			}
 			
 			refreshTreeTable();
@@ -509,6 +521,11 @@ public class ChefLog extends Composite
                         if (reason!=null)
                         {
                             treeItem.setText(3, reason );
+                        }
+                        Date logDate = result.getLogDate();
+                        if (logDate!=null)
+                        {
+                            treeItem.setText(5, new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(logDate));
                         }
                     }
                 }
