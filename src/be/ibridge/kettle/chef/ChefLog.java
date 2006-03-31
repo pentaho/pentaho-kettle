@@ -449,7 +449,11 @@ public class ChefLog extends Composite
             
             // Re-populate this...
             TreeItem treeItem = new TreeItem(wTree, SWT.NONE);
-            treeItem.setText( 0, jobTracker.getJobMeta().getName());
+            String jobName = jobTracker.getJobMeta().getName();
+            if(jobName==null) {
+            	jobName = "No Name";
+            }
+            treeItem.setText( 0,jobName);
             for (int i=0;i<jobTracker.nrJobTrackers();i++)
             {
                 addTrackerToTree(jobTracker.getJobTracker(i), treeItem);
