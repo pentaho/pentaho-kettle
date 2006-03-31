@@ -86,7 +86,7 @@ public interface JobEntryInterface
 			"RES.png",
             "",
             "SFT.png",
-            "WEB.png"
+            "WEB.png",
 		};
 	
 	public final static String type_tooltip_desc[] = 
@@ -103,8 +103,8 @@ public interface JobEntryInterface
 			"Evaluates the result of the execution of a previous job entry", 
 			"Special entries: start and dummy",
             "Get files using SFTP (Secure File Transfer Protocol)",
-            "Get a file using the HTTP (HyperText Transfer Protocol)"
-		};
+            "Get a file using the HTTP (HyperText Transfer Protocol)",
+ 		};
 	
 	public final static Class type_classname[] = 
 		{
@@ -120,9 +120,8 @@ public interface JobEntryInterface
 	        JobEntryEval.class,
 	        JobEntrySpecial.class,
             JobEntrySFTP.class,
-            JobEntryHTTP.class
+            JobEntryHTTP.class,
 		};
-    
 
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleJobException;
 	

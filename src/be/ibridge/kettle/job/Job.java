@@ -30,6 +30,7 @@ import be.ibridge.kettle.core.exception.KettleJobException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
+import be.ibridge.kettle.job.entry.special.JobEntrySpecial;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.StepLoader;
 
@@ -128,8 +129,21 @@ public class Job extends Thread
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
 
 		active=true;
-		Result res = execute(0, null, null, null, "start");
-		
+		// Where do we start?
+		JobEntryCopy startpoint;
+		beginProcessing();
+		startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0);
+		if (startpoint == null) 
+		{
+			throw new KettleJobException("Couldn't find starting point in this job.");
+		}
+		JobEntrySpecial jes = (JobEntrySpecial)startpoint.getEntry();
+		Result res = null;
+		boolean isFirst = true;
+		while(jes.isRepeat()||isFirst&&!isStopped()) {
+			isFirst = false;
+			res = execute(0, null, startpoint, null, "start");
+		}
 		// Save this result...
 		JobEntryResult jerEnd = new JobEntryResult(res, "Job execution ended", "end", null);
 		jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
@@ -166,18 +180,6 @@ public class Job extends Thread
 		}
 		
 		log.logDetailed(toString(), "exec("+nr+", "+(prev_result!=null?prev_result.getNrErrors():0)+", "+(startpoint!=null?startpoint.toString():"null")+")");
-		
-		// Where do we start?
-		if (startpoint == null)
-		{
-			beginProcessing();
-			startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0);
-			if (startpoint == null) 
-			{
-				log.logError(toString(), "Couldn't find starting point in this job.");
-				return prev_result;
-			}
-		}
 		
 		// What entry is next?
 		JobEntryInterface jei = startpoint.getEntry();

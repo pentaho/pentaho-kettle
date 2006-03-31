@@ -42,6 +42,7 @@ import be.ibridge.kettle.job.entry.sftp.JobEntrySFTPDialog;
 import be.ibridge.kettle.job.entry.shell.JobEntryShell;
 import be.ibridge.kettle.job.entry.shell.JobEntryShellDialog;
 import be.ibridge.kettle.job.entry.special.JobEntrySpecial;
+import be.ibridge.kettle.job.entry.special.JobEntrySpecialDialog;
 import be.ibridge.kettle.job.entry.sql.JobEntrySQL;
 import be.ibridge.kettle.job.entry.sql.JobEntrySQLDialog;
 import be.ibridge.kettle.job.entry.tableexists.JobEntryTableExists;
@@ -369,6 +370,7 @@ public class JobEntryBase implements Cloneable
 		case JobEntryInterface.TYPE_JOBENTRY_TABLE_EXISTS   : d = new JobEntryTableExistsDialog(parent, (JobEntryTableExists)jei, rep, jobinfo); break;
 		case JobEntryInterface.TYPE_JOBENTRY_FILE_EXISTS    : d = new JobEntryFileExistsDialog(parent, (JobEntryFileExists)jei, rep, jobinfo); break;
 		case JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION : d = new JobEntryTransDialog(parent, (JobEntryTrans)jei, rep); break;
+        case JobEntryInterface.TYPE_JOBENTRY_SPECIAL        : d = new JobEntrySpecialDialog(parent, (JobEntrySpecial)jei, rep); break;
         case JobEntryInterface.TYPE_JOBENTRY_SFTP           : d = new JobEntrySFTPDialog(parent, (JobEntrySFTP)jei, rep, jobinfo); break;
         case JobEntryInterface.TYPE_JOBENTRY_HTTP           : d = new JobEntryHTTPDialog(parent, (JobEntryHTTP)jei, rep, jobinfo); break;
 		default:
