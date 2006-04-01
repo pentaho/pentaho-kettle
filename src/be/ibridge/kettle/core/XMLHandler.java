@@ -583,8 +583,16 @@ public class XMLHandler
 		{
 			value = new StringBuffer();
 		}
-	
-		return "<"+tag+">"+value+"</"+tag+">"+(cr?Const.CR:"");
+		//Tom modify these for performance
+//		return "<"+tag+">"+value+"</"+tag+">"+(cr?Const.CR:"");
+		value.insert(0, '<');
+		value.insert(1, tag);
+		value.insert((tag.length()+1), '>');
+		value.append("</");
+		value.append(tag);
+		value.append(">");
+		value.append(cr?Const.CR:"");
+		return value.toString();
 	}
 
 	/**

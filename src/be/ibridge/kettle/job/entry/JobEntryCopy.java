@@ -64,19 +64,24 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer();
-		
-		retval.append("    <entry>"+Const.CR);
-		
+        //Tom modify these for performance
+//		retval.append("    <entry>"+Const.CR);
+		retval.append("    <entry>").append(Const.CR);
 		retval.append(entry.getXML());
 		
-		retval.append("      "+XMLHandler.addTagValue("parallel", parallel));
-		retval.append("      "+XMLHandler.addTagValue("draw",     draw));
-		retval.append("      "+XMLHandler.addTagValue("nr",       nr));
-		retval.append("      "+XMLHandler.addTagValue("xloc",     location.x));
-		retval.append("      "+XMLHandler.addTagValue("yloc",     location.y));
+//		retval.append("      "+XMLHandler.addTagValue("parallel", parallel));
+		retval.append("      ").append(XMLHandler.addTagValue("parallel", parallel));
+//		retval.append("      "+XMLHandler.addTagValue("draw",     draw));
+		retval.append("      ").append(XMLHandler.addTagValue("draw",     draw));
+//		retval.append("      "+XMLHandler.addTagValue("nr",       nr));
+		retval.append("      ").append(XMLHandler.addTagValue("nr",       nr));
+//		retval.append("      "+XMLHandler.addTagValue("xloc",     location.x));
+		retval.append("      ").append(XMLHandler.addTagValue("xloc",     location.x));
+//		retval.append("      "+XMLHandler.addTagValue("yloc",     location.y));
+		retval.append("      ").append(XMLHandler.addTagValue("yloc",     location.y));
 		
-		retval.append("      </entry>"+Const.CR);
-		
+//		retval.append("      </entry>"+Const.CR);
+		retval.append("    <entry>").append(Const.CR);
 		return retval.toString();
 	}
 	
