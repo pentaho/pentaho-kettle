@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Locale;
 
 import org.eclipse.swt.SWT;
@@ -53,7 +54,7 @@ public class Const
 	/**
 	 *  Version number
 	 */
-	public static final String  VERSION = "2.2.2";
+	public static final String  VERSION = "2.3.0";
 	
 	/**
 	 * Sleep time waiting when buffer is empty
@@ -76,7 +77,7 @@ public class Const
 	public static final int  ROWS_IN_ROWSET = 350; 
 	
 	/**
-	 * Fetch size in rows when querying a database TODO: make the fetch size configurable as an attribute in DatabaseMeta!
+	 * Fetch size in rows when querying a database
 	 */
 	public static final int  FETCH_SIZE = 100;
 	
@@ -95,11 +96,6 @@ public class Const
 	 */
 	public static final String CR = System.getProperty("line.separator");
 	
-    /**
-     * The system path separator ":" on Unix, ";" on Windows
-     */
-    public static final String PATH_SEPARATOR = System.getProperty("path.separator");
-    
 	/**
 	 * The Java runtime version
 	 */
@@ -368,16 +364,6 @@ public class Const
 	 */
 	public static final String MENU_LOG_FILE = "menu";
 
-    
-    /**
-     *  The name of the environment variable that helps define the path to the steps plugins 
-     */
-    public static final String ENVAR_PLUGIN_STEPS_PATH = "KETTLE_PLUGIN_STEPS_PATH";
-
-    /**
-     *  The name of the environment variable that helps define the path to the jobentries plugins 
-     */
-    public static final String ENVAR_PLUGIN_JOBENTRIES_PATH = "KETTLE_PLUGIN_JOBENTRIES_PATH";
 
 	/**
 	 * A number of tips that are shown when the application first starts.
@@ -478,11 +464,24 @@ public class Const
 
 
     /** rounds double f to any number of places after decimal point
-     * 
+     *  Does arithmetic using BigDecimal class to avoid integer overflow while rounding
+     *  TODO: make the rounding itself optional in the Props for performance reasons.
+     *  
      * @param f The value to round
      * @param places The number of decimal places
      * @return The rounded floating point value
      */
+    
+    public static final double round(double f, int places) 
+    { 
+        java.math.BigDecimal bdtemp = new java.math.BigDecimal(f); 
+        bdtemp = bdtemp.setScale(places, java.math.BigDecimal.ROUND_HALF_EVEN); 
+        return bdtemp.doubleValue(); 
+    } 
+    
+    /* OLD code: caused a lot of problems with very small and very large numbers.
+     * It's a miracle it worked at all.
+     * Go ahead, have a laugh...
     public static final float round(double f, int places)
     {
         float temp = (float) (f * (Math.pow(10, places)));
@@ -494,6 +493,7 @@ public class Const
         return temp;
 
     }
+    */
 
 	/**
 	 * Convert a String into an integer.  If the conversion fails, assign a default value.
@@ -1648,6 +1648,31 @@ public class Const
         for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
         
         return formats;
+    }
+    
+    /**
+     * Sorts the array of Strings, determines the uniquely occuring strings.  
+     * @param strings the array that you want to do a distinct on
+     * @return a sorted array of uniquely occuring strings
+     */
+    public static final String[] getDistinctStrings(String[] strings)
+    {
+        if (strings==null) return null;
+        if (strings.length==0) return new String[] {};
+        
+        String[] sorted = sortStrings(strings);
+        List result = new ArrayList();
+        String previous = "";
+        for (int i=0;i<sorted.length;i++)
+        {
+            if (!sorted[i].equalsIgnoreCase(previous))
+            {
+                result.add(sorted[i]);
+            }
+            previous=sorted[i];
+        }
+        
+        return (String[])result.toArray(new String[result.size()]);
     }
 
 }
