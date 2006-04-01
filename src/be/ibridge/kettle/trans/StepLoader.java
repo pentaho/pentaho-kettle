@@ -71,26 +71,8 @@ public class StepLoader
     public static final StepLoader getInstance()
     {
         if (stepLoader != null) return stepLoader;
-        
-        String path=Const.getEnvironmentVariable(Const.ENVAR_PLUGIN_STEPS_PATH, "");
-        String paths[];
-        if (path!=null && path.length()>0)
-        {
-            paths = path.split( Const.PATH_SEPARATOR);
-        }
-        else
-        {
-            paths = new String[0];
-        }
-        String directories[]= new String[paths.length + 2];
-        directories[0] = Const.PLUGIN_STEPS_DIRECTORY_PUBLIC;
-        directories[1] = Const.PLUGIN_STEPS_DIRECTORY_PRIVATE;
-        for (int i=0;i<paths.length;i++)
-        {
-            directories[i+2] = paths[i];
-        }
 
-        stepLoader = new StepLoader(directories);
+        stepLoader = new StepLoader(new String[] { Const.PLUGIN_STEPS_DIRECTORY_PUBLIC, Const.PLUGIN_STEPS_DIRECTORY_PRIVATE } );
 
         return stepLoader;
     }
