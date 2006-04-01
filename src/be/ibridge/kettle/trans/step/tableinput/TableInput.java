@@ -121,6 +121,7 @@ public class TableInput extends BaseStep implements StepInterface
                 }
                 else
                 {
+                    closeLastQuery();
                     boolean success = doQuery(nextRow); // OK, perform a new query
                     if (!success) 
                     { 
@@ -179,21 +180,26 @@ public class TableInput extends BaseStep implements StepInterface
         return success;
     }
 
+    
+    private void closeLastQuery()
+    {
+        try
+        {
+            data.db.closeQuery(data.rs);
+        }
+        catch(KettleException e)
+        {
+            logError("Unexpected error closing query : "+e.toString());
+            setErrors(1);
+            stopAll();
+        }
+    }
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		logBasic("Finished reading query, closing connection.");
-		try
-		{
-		    data.db.closeQuery(data.rs);
-		}
-		catch(KettleException e)
-		{
-			logError("Unexpected error closing query : "+e.toString());
-		    setErrors(1);
-		    stopAll();
-		}
-		data.db.disconnect();
+		closeLastQuery();
+        data.db.disconnect();
 
 		super.dispose(smi, sdi);
 	}

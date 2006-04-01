@@ -261,7 +261,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         fdlValues.top   = new FormAttachment(wFlagfield, margin);
         wlValues.setLayoutData(fdlValues);
         
-        int nrValueRows= (input.getKeyFields()!=null?input.getKeyFields().length:1);
+        int nrValueRows= (input.getValueFields()!=null?input.getValueFields().length:1);
         
         ColumnInfo[] ciValues=new ColumnInfo[] {
             new ColumnInfo("Value field", ColumnInfo.COLUMN_TYPE_TEXT, false),

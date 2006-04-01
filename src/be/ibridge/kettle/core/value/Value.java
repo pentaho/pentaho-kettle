@@ -1246,8 +1246,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
             case VALUE_TYPE_BIGNUMBER:
                 if (getString()!=null && getString().getBytes().length>0) 
                 {
-                    dos.writeInt(getString().getBytes().length);
-                    dos.writeChars(getString());
+                    dos.writeInt(getString().getBytes("UTF-8").length);
+                    dos.writeUTF(getString());
                 }
                 else
                 {
@@ -1323,9 +1323,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 int dataLength=dis.readInt();
                 if (dataLength>0)
                 {
-                    StringBuffer   val_string=new StringBuffer();
-                    for (int i=0;i<dataLength;i++) val_string.append(dis.readChar());
-                    setValue( val_string.toString() );
+                    String string = dis.readUTF();
+                    setValue( string );
                 }
                 if (theType==VALUE_TYPE_BIGNUMBER) 
                 {
@@ -1354,6 +1353,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
             case VALUE_TYPE_BOOLEAN:
                 setValue( dis.readBoolean() );
                 break;
+            default: break;
             }
         }
     }
@@ -1401,7 +1401,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 					if (getString()!=null && getString().getBytes().length>0) 
 					{
 						dos.writeInt(getString().getBytes().length);
-						dos.writeChars(getString());
+						dos.writeUTF(getString());
 					}
 					else
 					{
@@ -1457,15 +1457,15 @@ public class Value implements Cloneable, XMLInterface, Serializable
 				switch(getType())
 				{
 				case VALUE_TYPE_STRING:
+                case VALUE_TYPE_BIGNUMBER:
 					// Handle lengths
 					int dataLength=dis.readInt();
 					if (dataLength>0)
 					{
-						StringBuffer   val_string=new StringBuffer();
-						for (int i=0;i<dataLength;i++) val_string.append(dis.readChar());
-						setValue( val_string.toString() );
+                        String string = dis.readUTF();
+						setValue( string );
+                        if (metaData.isBigNumber()) convertString(metaData.getType());
 					}
-                    if (metaData.isBigNumber()) convertString(metaData.getType());
 					break;
 				case VALUE_TYPE_DATE:
 					if (dis.readBoolean())
@@ -1482,6 +1482,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 				case VALUE_TYPE_BOOLEAN:
 					setValue( dis.readBoolean() );
 					break;
+                default: break;
 				}
 			}			
 		}
@@ -1514,8 +1515,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public int compare(Value v, boolean caseInsensitive)
 	{
-		boolean n1 =   isNull() || (  isString() && (   getString()==null ||   getString().length()==0 )) || (  isDate() &&   getDate()==null);
-		boolean n2 = v.isNull() || (v.isString() && ( v.getString()==null || v.getString().length()==0 )) || (v.isDate() && v.getDate()==null);
+		boolean n1 =   isNull() || (  isString() && (   getString()==null ||   getString().length()==0 )) || (  isDate() &&   getDate()==null) || (  isBigNumber() &&   getBigNumber()==null);
+		boolean n2 = v.isNull() || (v.isString() && ( v.getString()==null || v.getString().length()==0 )) || (v.isDate() && v.getDate()==null) || (v.isBigNumber() && v.getBigNumber()==null);
 		
 		// null is always smaller! 
 		if ( n1 && !n2) return -1; 
@@ -1525,30 +1526,43 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		switch(getType())
 		{
 		case VALUE_TYPE_BOOLEAN:
-			if ( getBoolean() &&  v.getBoolean() || 
-			    !getBoolean() && !v.getBoolean()) return  0;  // true == true, false == false
-			if ( getBoolean() && !v.getBoolean()) return  1;  // true  > false
-			return -1;  // false < true
+		    {
+    			if ( getBoolean() &&  v.getBoolean() || 
+    			    !getBoolean() && !v.getBoolean()) return  0;  // true == true, false == false
+    			if ( getBoolean() && !v.getBoolean()) return  1;  // true  > false
+    			return -1;  // false < true
+            }
 
 		case VALUE_TYPE_DATE   :
-			return Double.compare(getNumber(), v.getNumber());
+            {
+			    return Double.compare(getNumber(), v.getNumber());
+            }
 			
 		case VALUE_TYPE_NUMBER :
-			return Double.compare(getNumber(), v.getNumber());
+            {
+			    return Double.compare(getNumber(), v.getNumber());
+            }
 
 		case VALUE_TYPE_STRING:
-			String one = Const.rtrim(getString());
-			String two = Const.rtrim(v.getString());
-            if (caseInsensitive) 
-                return one.compareToIgnoreCase(two);
-            else 
-                return one.compareTo(two); 
-
+            {
+    			String one = Const.rtrim(getString());
+    			String two = Const.rtrim(v.getString());
+                
+                if (caseInsensitive) 
+                    return one.compareToIgnoreCase(two);
+                else 
+                    return one.compareTo(two);
+            }
+            
 		case VALUE_TYPE_INTEGER:
-			return Double.compare(getNumber(), v.getNumber());
+            {
+			    return Double.compare(getNumber(), v.getNumber());
+            }
 
         case VALUE_TYPE_BIGNUMBER:
-            return getBigNumber().compareTo(v.getBigNumber());
+            {
+                return getBigNumber().compareTo(v.getBigNumber());
+            }
 		}
 		
 		// Still here?  Not possible!  But hey, give back 0, mkay?
@@ -2370,7 +2384,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 // 
                 BigDecimal bigDec = getBigNumber();
                 // System.out.println("ROUND decimalPlaces : "+decimalPlaces+", bigNumber = "+bigDec);
-                bigDec = bigDec.setScale(decimalPlaces, BigDecimal.ROUND_HALF_UP); 
+                bigDec = bigDec.setScale(decimalPlaces, BigDecimal.ROUND_HALF_EVEN); 
                 // System.out.println("ROUND finished result         : "+bigDec);
                 setValue( bigDec );
             }
@@ -2854,19 +2868,23 @@ public class Value implements Cloneable, XMLInterface, Serializable
 					DecimalFormat        df  = (DecimalFormat)nf;
 					DecimalFormatSymbols dfs =new DecimalFormatSymbols();
 						
+                    if ( pattern !=null && pattern .length()>0 ) df.applyPattern( pattern );
+                    if ( decimal !=null && decimal .length()>0 ) dfs.setDecimalSeparator( decimal.charAt(0) );
+                    if ( grouping!=null && grouping.length()>0 ) dfs.setGroupingSeparator( grouping.charAt(0) );
 					if ( currency!=null && currency.length()>0 ) dfs.setCurrencySymbol( currency );
-					if ( grouping!=null && grouping.length()>0 ) dfs.setGroupingSeparator( grouping.charAt(0) );
-					if ( decimal !=null && decimal .length()>0 ) dfs.setDecimalSeparator( decimal.charAt(0) );
-		            if ( pattern !=null && pattern .length()>0 ) df.applyPattern( pattern );
 					try
 					{
+                        df.setDecimalFormatSymbols(dfs);
 						setValue( nf.parse(getString()).doubleValue() );
 					}
 					catch(Exception e)
 					{
-						setType(VALUE_TYPE_NUMBER);
-						setNull();
-						throw new KettleValueException("Couldn't convert string to number "+e.toString());
+                        String message = "Couldn't convert string to number "+e.toString();
+                        if ( pattern !=null && pattern .length()>0 ) message+=" pattern="+pattern;
+                        if ( decimal !=null && decimal .length()>0 ) message+=" decimal="+decimal;
+                        if ( grouping!=null && grouping.length()>0 ) message+=" grouping="+grouping.charAt(0);
+                        if ( currency!=null && currency.length()>0 ) message+=" currency="+currency;
+						throw new KettleValueException(message);
 					}
 				}
 			}

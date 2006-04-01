@@ -258,19 +258,19 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 
 	public String getXML()
 	{
-		String retval="";
+        StringBuffer retval = new StringBuffer();
 		
-		retval+="      "+XMLHandler.addTagValue("valuename", valuename);
-		retval+="      "+XMLHandler.addTagValue("use_database", useDatabase);
-		retval+="      "+XMLHandler.addTagValue("connection", database==null?"":database.getName());
-		retval+="      "+XMLHandler.addTagValue("seqname", sequenceName);
+		retval.append("      "+XMLHandler.addTagValue("valuename", valuename));
+		retval.append("      "+XMLHandler.addTagValue("use_database", useDatabase));
+		retval.append("      "+XMLHandler.addTagValue("connection", database==null?"":database.getName()));
+		retval.append("      "+XMLHandler.addTagValue("seqname", sequenceName));
 
-		retval+="      "+XMLHandler.addTagValue("use_counter", useCounter);
-		retval+="      "+XMLHandler.addTagValue("start_at", startAt);
-		retval+="      "+XMLHandler.addTagValue("increment_by", incrementBy);
-		retval+="      "+XMLHandler.addTagValue("max_value", maxValue);
+		retval.append("      "+XMLHandler.addTagValue("use_counter", useCounter));
+		retval.append("      "+XMLHandler.addTagValue("start_at", startAt));
+		retval.append("      "+XMLHandler.addTagValue("increment_by", incrementBy));
+		retval.append("      "+XMLHandler.addTagValue("max_value", maxValue));
 		
-		return retval;
+		return retval.toString();
 	}
 	
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
@@ -331,14 +331,13 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			try
 			{
 				db.connect();
-				Value last = db.checkSequence(sequenceName);
-				if (last!=null)
+				if (db.checkSequenceExists(sequenceName))
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Sequence is at value "+last, stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Sequence exits.", stepMeta);
 				}
 				else
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Last value of sequence couldn't be found", stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "The sequence ["+sequenceName+"] couldn't be found", stepMeta);
 				}
 			}
 			catch(KettleException e)
@@ -377,8 +376,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 				try
 				{
 					db.connect();
-					Value last = db.checkSequence(sequenceName);
-					if (last==null)
+					if (!db.checkSequenceExists(sequenceName))
 					{
 						String cr_table = db.getCreateSequenceStatement(sequenceName, startAt, incrementBy, maxValue, true);
 						retval.setSQL(cr_table);
