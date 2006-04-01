@@ -43,7 +43,7 @@ public class Kitchen
 {
 	public static final String STRING_KITCHEN = "Kitchen";
 	
-	public static int main(String[] a)
+	public static void main(String[] a)
 	{
 	    ArrayList args = new ArrayList();
 	    for (int i=0;i<a.length;i++) 
@@ -72,7 +72,7 @@ public class Kitchen
             System.out.println("  -norep    : Don't log into the repository");
 		    System.out.println("");
 		    
-		    return 9;
+		    System.exit(9);
 		}
 
 		String repname   = Const.getCommandlineOption(args, "rep");
@@ -110,19 +110,19 @@ public class Kitchen
         if (loglevel!=null) 
         {
             log.setLogLevel(loglevel);
-            log.logBasic(STRING_KITCHEN, "Logging is at level : "+log.getLogLevelDesc());
+            log.logMinimal(STRING_KITCHEN, "Logging is at level : "+log.getLogLevelDesc());
         } 
 		
         if (repname!=null && username!=null) log.logDetailed(STRING_KITCHEN, "Repository and username supplied");
 
-		log.logBasic(STRING_KITCHEN, "Start of run.");
+		log.logMinimal(STRING_KITCHEN, "Start of run.");
 		
 		/* Load the plugins etc.*/
 		StepLoader steploader = StepLoader.getInstance();
 		if (!steploader.read())
 		{
 			log.logError("Spoon", "Error loading steps... halting Kitchen!");
-			return 8;
+			System.exit(8);
 		}
 
 		Date start, stop;
@@ -275,11 +275,12 @@ public class Kitchen
 				System.out.println("ERROR: Kitchen can't continue because the job couldn't be loaded.");			    
 			}
 
-			return 7;
+            System.exit(7);
 		}
 		
 		Result result = null;
-		int returnCode = 0;
+
+        int returnCode=0;
         
 		try
 		{
@@ -303,22 +304,23 @@ public class Kitchen
             if (repository!=null) repository.disconnect();
         }
         
-		log.logBasic(STRING_KITCHEN, "Finished!");
+		log.logMinimal(STRING_KITCHEN, "Finished!");
 		
 		if (result!=null && result.getNrErrors()!=0)
 		{
 			log.logError(STRING_KITCHEN, "Finished with errors");
-            returnCode=1;
+            returnCode = 1;
 		}
 		cal=Calendar.getInstance();
 		stop=cal.getTime();
 		String begin=df.format(start).toString();
 		String end  =df.format(stop).toString();
 
-		log.logBasic(STRING_KITCHEN, "Start="+begin+", Stop="+end);
+		log.logMinimal(STRING_KITCHEN, "Start="+begin+", Stop="+end);
 		long millis=stop.getTime()-start.getTime();
-		log.logBasic(STRING_KITCHEN, "Processing ended after "+(millis/1000)+" seconds.");
+		log.logMinimal(STRING_KITCHEN, "Processing ended after "+(millis/1000)+" seconds.");
         
-        return returnCode;
+        System.exit(returnCode);
+
 	}
 }

@@ -39,7 +39,7 @@ import be.ibridge.kettle.trans.TransMeta;
 
 public class Pan
 {
-	public static int main(String[] a)
+	public static void main(String[] a)
 	{
 	    ArrayList args = new ArrayList();
 	    for (int i=0;i<a.length;i++) 
@@ -71,7 +71,7 @@ public class Pan
             System.out.println("  -norep     : do not log into the repository");
 		    System.out.println("");
 		    
-		    return 9;
+            System.exit(9);
 		}
 
 		String repname   = Const.getCommandlineOption(args, "rep");
@@ -122,17 +122,17 @@ public class Pan
         if (loglevel!=null) 
         {
             log.setLogLevel(loglevel);
-            log.logBasic("Pan", "Logging is at level : "+log.getLogLevelDesc());
+            log.logMinimal("Pan", "Logging is at level : "+log.getLogLevelDesc());
         }
         
-        log.logBasic("Pan", "Start of run.");
+        log.logMinimal("Pan", "Start of run.");
 		
 		/* Load the plugins etc.*/
 		StepLoader steploader = StepLoader.getInstance();
 		if (!steploader.read())
 		{
 			log.logError("Spoon", "Error loading steps... halting Pan!");
-			return 8;
+            System.exit(8);
 		}
 		
 		Date start, stop;
@@ -280,11 +280,6 @@ public class Pan
 					transMeta = new TransMeta(filename);
 					trans = new Trans(log, transMeta);
 				}
-				else
-				{
-					System.out.println("ERROR: No file or transformation name specified.");
-					trans=null;
-				}
 			}
 		}
 		catch(KettleException e)
@@ -304,7 +299,7 @@ public class Pan
             {
                 System.out.println("ERROR: Pan can't continue because the transformation couldn't be loaded.");
             }
-			return 7;
+            System.exit(7);
 		}
 		
 		try
@@ -314,30 +309,31 @@ public class Pan
 			trans.waitUntilFinished();
 			trans.endProcessing("end");
 
-			log.logBasic("Pan", "Finished!");
+			log.logMinimal("Pan", "Finished!");
 			
 			cal=Calendar.getInstance();
 			stop=cal.getTime();
 			String begin=df.format(start).toString();
 			String end  =df.format(stop).toString();
 
-			log.logBasic("Pan", "Start="+begin+", Stop="+end);
+			log.logMinimal("Pan", "Start="+begin+", Stop="+end);
 			long millis=stop.getTime()-start.getTime();
-			log.logBasic("Pan", "Processing ended after "+(millis/1000)+" seconds.");
+			log.logMinimal("Pan", "Processing ended after "+(millis/1000)+" seconds.");
 			if (ok) 
 			{
 				trans.printStats((int)millis/1000);
-				return 0;
+                System.exit(0);
 			}
 			else
 			{
-				return 1;
+                System.exit(1);
 			}
 		}
 		catch(KettleException ke)
 		{
 			System.out.println("ERROR occurred: "+ke.getMessage());
-            return 2;
+            log.logError("Pan", "Unexpected error occurred: "+ke.getMessage());
+            System.exit(2);
 		}
 
 	}
