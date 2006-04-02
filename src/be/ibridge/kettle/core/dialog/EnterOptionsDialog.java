@@ -20,6 +20,8 @@
  */
 
 package be.ibridge.kettle.core.dialog;
+import java.util.Locale;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
@@ -43,6 +45,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.ColorDialog;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
@@ -57,6 +60,8 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.i18n.GlobalMessages;
+import be.ibridge.kettle.i18n.LanguageChoice;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
@@ -184,6 +189,14 @@ public class EnterOptionsDialog extends Dialog
     private Label        wlClearCustom;
     private Button       wClearCustom;
     private FormData     fdlClearCustom, fdClearCustom;
+
+    private Label        wlDefaultLocale;
+    private Combo        wDefaultLocale;
+    private FormData     fdlDefaultLocale, fdDefaultLocale;
+
+    private Label        wlFailoverLocale;
+    private Combo        wFailoverLocale;
+    private FormData     fdlFailoverLocale, fdFailoverLocale;
 
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
@@ -926,6 +939,49 @@ public class EnterOptionsDialog extends Dialog
         fdOriginalLook.right= new FormAttachment(100, 0);
         wOriginalLook.setLayoutData(fdOriginalLook);
         
+        // DefaultLocale line
+        wlDefaultLocale=new Label(wLookComp, SWT.RIGHT);
+        wlDefaultLocale.setText("Default locale to use ");
+        props.setLook(wlDefaultLocale);
+        fdlDefaultLocale=new FormData();
+        fdlDefaultLocale.left = new FormAttachment(0, 0);
+        fdlDefaultLocale.right= new FormAttachment(middle, -margin);
+        fdlDefaultLocale.top  = new FormAttachment(wOriginalLook, margin);
+        wlDefaultLocale.setLayoutData(fdlDefaultLocale);
+        wDefaultLocale=new Combo(wLookComp, SWT.SINGLE | SWT.READ_ONLY | SWT.LEFT | SWT.BORDER);
+        wDefaultLocale.setItems(GlobalMessages.localeDescr);
+        // wDefaultLocale.setText(""+LanguageChoice.getInstance().getDefaultLocale().toString());
+        props.setLook(wDefaultLocale);
+        fdDefaultLocale=new FormData();
+        fdDefaultLocale.left = new FormAttachment(middle, 0);
+        fdDefaultLocale.right= new FormAttachment(100, -margin);
+        fdDefaultLocale.top  = new FormAttachment(wOriginalLook, margin);
+        wDefaultLocale.setLayoutData(fdDefaultLocale);
+        // language selections...
+        int idxDefault = Const.indexOfString(LanguageChoice.getInstance().getDefaultLocale().toString(), GlobalMessages.localeCodes);
+        if (idxDefault>=0) wDefaultLocale.select(idxDefault);
+
+        // FailoverLocale line
+        wlFailoverLocale=new Label(wLookComp, SWT.RIGHT);
+        wlFailoverLocale.setText("Failover locale to use ");
+        props.setLook(wlFailoverLocale);
+        fdlFailoverLocale=new FormData();
+        fdlFailoverLocale.left = new FormAttachment(0, 0);
+        fdlFailoverLocale.right= new FormAttachment(middle, -margin);
+        fdlFailoverLocale.top  = new FormAttachment(wDefaultLocale, margin);
+        wlFailoverLocale.setLayoutData(fdlFailoverLocale);
+        wFailoverLocale=new Combo(wLookComp, SWT.SINGLE | SWT.READ_ONLY | SWT.LEFT | SWT.BORDER);
+        wFailoverLocale.setItems(GlobalMessages.localeDescr);
+        // setText(""+LanguageChoice.getInstance().getFailoverLocale().toString());
+        props.setLook(wFailoverLocale);
+        fdFailoverLocale=new FormData();
+        fdFailoverLocale.left = new FormAttachment(middle, 0);
+        fdFailoverLocale.right= new FormAttachment(100, -margin);
+        fdFailoverLocale.top  = new FormAttachment(wDefaultLocale, margin);
+        wFailoverLocale.setLayoutData(fdFailoverLocale);
+        int idxFailover = Const.indexOfString(LanguageChoice.getInstance().getFailoverLocale().toString(), GlobalMessages.localeCodes);
+        if (idxFailover>=0) wFailoverLocale.select(idxFailover);
+
 
 		fdLookComp=new FormData();
 		fdLookComp.left  = new FormAttachment(0, 0);
@@ -1069,6 +1125,10 @@ public class EnterOptionsDialog extends Dialog
         props.setExitWarningShown                ( wExitWarning.getSelection() );
         props.setOSLookShown                     ( wOriginalLook.getSelection());
 		
+        LanguageChoice.getInstance().setDefaultLocale( new Locale( GlobalMessages.localeCodes[ wDefaultLocale.getSelectionIndex()]) );
+        LanguageChoice.getInstance().setFailoverLocale( new Locale( GlobalMessages.localeCodes[ wFailoverLocale.getSelectionIndex()]) );
+        LanguageChoice.getInstance().saveSettings();
+        
         props.saveProps();
         
 		dispose();

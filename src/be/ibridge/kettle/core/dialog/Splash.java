@@ -33,7 +33,7 @@ public class Splash
 		
 		splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
 		final Image kettle_image = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_splash.png"));
-
+        
 		FormLayout splashLayout = new FormLayout();
 		splash.setLayout(splashLayout);
 		

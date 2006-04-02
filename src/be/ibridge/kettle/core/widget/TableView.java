@@ -1673,6 +1673,7 @@ public class TableView extends Composite
 		editor.minimumWidth        = width;
 		editor.minimumHeight       = height;
 		editor.layout();
+        
 		// Open the text editor in the correct column of the selected row.
 		editor.setEditor (combo);
 		combo.setFocus();

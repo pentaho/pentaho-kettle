@@ -103,19 +103,19 @@ public class SpoonHistory extends Composite
 		final int FieldsRows=1;
 		
 		colinf=new ColumnInfo[] {
-            new ColumnInfo("Batch ID",        ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-    		new ColumnInfo("Status",          ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Read",            ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-    		new ColumnInfo("Written",         ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Updated",         ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-    		new ColumnInfo("Input",           ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-    		new ColumnInfo("Output",          ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-    		new ColumnInfo("Errors",          ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Start date",      ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("End date",        ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-    		new ColumnInfo("Log date",        ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Dependency date", ColumnInfo.COLUMN_TYPE_TEXT, false, true),
-            new ColumnInfo("Replay date",     ColumnInfo.COLUMN_TYPE_TEXT, false, true)
+            new ColumnInfo(Messages.getString("SpoonHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Status"),          ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("SpoonHistory.Column.Read"),            ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Written"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("SpoonHistory.Column.Updated"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Input"),           ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Output"),          ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Errors"),          ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("SpoonHistory.Column.StartDate"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("SpoonHistory.Column.EndDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("SpoonHistory.Column.LogDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("SpoonHistory.Column.DependencyDate"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("SpoonHistory.Column.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
         };
 		
         for (int i=0;i<colinf.length;i++) colinf[i].setAllignement(SWT.RIGHT);
@@ -134,7 +134,7 @@ public class SpoonHistory extends Composite
 		wText.setVisible(true);
 		
 		wRefresh = new Button(this, SWT.PUSH);
-		wRefresh.setText(" Refresh ");
+		wRefresh.setText(Messages.getString("SpoonHistory.Button.Refresh")); //$NON-NLS-1$
 
 		fdRefresh    = new FormData(); 
 		fdRefresh.left   = new FormAttachment(15, 0);  
@@ -142,7 +142,7 @@ public class SpoonHistory extends Composite
 		wRefresh.setLayoutData(fdRefresh);
 		
 		wReplay = new Button(this, SWT.PUSH);
-		wReplay.setText(" Replay ");
+		wReplay.setText(Messages.getString("SpoonHistory.Button.Replay")); //$NON-NLS-1$
 
 		fdReplay    = new FormData(); 
 		fdReplay.left   = new FormAttachment(wRefresh, Const.MARGIN);  
@@ -219,9 +219,9 @@ public class SpoonHistory extends Composite
 							|| dateString.equals(Const.NULL_STRING)) {
 						MessageBox mb = new MessageBox(shell, SWT.OK
 								| SWT.ICON_ERROR);
-						mb.setMessage("Error replaying transformation."
-								+ Const.CR + "Replay date cannot be null.");
-						mb.setText("ERROR");
+						mb.setMessage(Messages.getString("SpoonHistory.Error.ReplayingTransformation") //$NON-NLS-1$
+								+ Const.CR + Messages.getString("SpoonHistory.Error.ReplayDateCannotBeNull")); //$NON-NLS-1$
+						mb.setText(Messages.getString("SpoonHistory.ERROR")); //$NON-NLS-1$
 						mb.open();
 						return;
 					}
@@ -231,8 +231,8 @@ public class SpoonHistory extends Composite
 						spoonLog.startstop(date);
 					} catch (ParseException e1) {
 						new ErrorDialog(shell, spoon.props,
-								"Error replaying transformation",
-								"Invalid replay date: " + dateString, e1);
+								Messages.getString("SpoonHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
+								Messages.getString("SpoonHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
 					}
 				}
 			}
@@ -262,8 +262,8 @@ public class SpoonHistory extends Composite
                         database.connect();
                         
                         Row params = new Row();
-                        params.addValue(new Value("transname", transMeta.getName()));
-                        ResultSet resultSet = database.openQuery("SELECT * FROM "+transMeta.getLogTable()+" WHERE TRANSNAME = ?", params);
+                        params.addValue(new Value("transname", transMeta.getName())); //$NON-NLS-1$
+                        ResultSet resultSet = database.openQuery("SELECT * FROM "+transMeta.getLogTable()+" WHERE TRANSNAME = ?", params); //$NON-NLS-1$ //$NON-NLS-2$
                         
                         rowList = new ArrayList();
                         Row row = database.getRow(resultSet);
@@ -283,19 +283,19 @@ public class SpoonHistory extends Composite
                             {
                                 row = (Row) rowList.get(i);
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
-                                item.setText( 1, row.getString("ID_BATCH", ""));          
-                                item.setText( 2, row.getString("STATUS", ""));          
-                                item.setText( 3, row.getString("LINES_READ", ""));          
-                                item.setText( 4, row.getString("LINES_WRITTEN", ""));          
-                                item.setText( 5, row.getString("LINES_UPDATED", ""));          
-                                item.setText( 6, row.getString("LINES_INPUT", ""));          
-                                item.setText( 7, row.getString("LINES_OUTPUT", ""));          
-                                item.setText( 8, row.getString("ERRORS", ""));          
-                                item.setText( 9, row.getString("STARTDATE", ""));          
-                                item.setText(10, row.getString("ENDDATE", ""));          
-                                item.setText(11, row.getString("LOGDATE", ""));          
-                                item.setText(12, row.getString("DEPDATE", ""));  
-                                String replayDate = row.getString("REPLAYDATE", "");
+                                item.setText( 1, row.getString("ID_BATCH", ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 2, row.getString("STATUS", ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 3, row.getString("LINES_READ", ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 4, row.getString("LINES_WRITTEN", ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 5, row.getString("LINES_UPDATED", ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 6, row.getString("LINES_INPUT", ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 7, row.getString("LINES_OUTPUT", ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 8, row.getString("ERRORS", ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 9, row.getString("STARTDATE", ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText(10, row.getString("ENDDATE", ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText(11, row.getString("LOGDATE", ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText(12, row.getString("DEPDATE", ""));   //$NON-NLS-1$ //$NON-NLS-2$
+                                String replayDate = row.getString("REPLAYDATE", ""); //$NON-NLS-1$ //$NON-NLS-2$
                                 if(replayDate == null)
                                 	replayDate = Const.NULL_STRING;
 								item.setText(13, replayDate);
@@ -311,7 +311,7 @@ public class SpoonHistory extends Composite
                     }
                     catch(KettleException e)
                     {
-                        new ErrorDialog(this.getShell(), Props.getInstance(), "Error getting logging information", "Error getting information from the logging table", e);
+                        new ErrorDialog(this.getShell(), Props.getInstance(), Messages.getString("SpoonHistory.Error.GettingLoggingInfo"), Messages.getString("SpoonHistory.Error.GettingInfoFromLoggingTable"), e); //$NON-NLS-1$ //$NON-NLS-2$
                         wFields.clearAll(false);
                     }
                     finally
@@ -340,7 +340,7 @@ public class SpoonHistory extends Composite
     {
         if (rowList==null) 
         {
-            wText.setText("");
+            wText.setText(""); //$NON-NLS-1$
             return;
         }
         
@@ -350,14 +350,14 @@ public class SpoonHistory extends Composite
         {
             // OK, grab this one from the buffer...
             Row row = (Row) rowList.get(nr);
-            String logging = row.getString("LOG_FIELD", "");
+            String logging = row.getString("LOG_FIELD", ""); //$NON-NLS-1$ //$NON-NLS-2$
             if (logging!=null) 
             {
                 wText.setText(logging);
             }
             else
             {
-                wText.setText("");
+                wText.setText(""); //$NON-NLS-1$
             }
         }
     }

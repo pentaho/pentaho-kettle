@@ -11,9 +11,7 @@ public class GlobalMessages
 {
     private static final ThreadLocal threadLocales         = new ThreadLocal();
 
-    private static Locale            defaultLocale         = Locale.getDefault();
-
-    private static Locale            failoverLocale        = Locale.US;
+    private static final LanguageChoice  langChoice        = LanguageChoice.getInstance();
 
     private static final String      SYSTEM_BUNDLE_PACKAGE = GlobalMessages.class.getPackage().getName();
 
@@ -21,6 +19,10 @@ public class GlobalMessages
 
     private static final Map         locales               = Collections.synchronizedMap(new HashMap());
 
+    public static final String[] localeCodes = { "en_US", "nl_NL", "zh_CN", "es_ES", "fr_FR", "de_DE" };
+    
+    public static final String[] localeDescr = { "English (US)", "Nederlands", "Simplified Chinese", "Español", "Français", "Deutch" };
+    
     protected static Map getLocales()
     {
         return locales;
@@ -31,8 +33,8 @@ public class GlobalMessages
         Locale rtn = (Locale) threadLocales.get();
         if (rtn != null) { return rtn; }
 
-        setLocale(defaultLocale);
-        return defaultLocale;
+        setLocale(langChoice.getDefaultLocale());
+        return langChoice.getDefaultLocale();
     }
 
     public static void setLocale(Locale newLocale)
@@ -65,7 +67,7 @@ public class GlobalMessages
     {
         try
         {
-            ResourceBundle bundle = getBundle(defaultLocale, buildBundleName(SYSTEM_BUNDLE_PACKAGE));
+            ResourceBundle bundle = getBundle(langChoice.getDefaultLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE));
             return bundle.getString(key);
         }
         catch (MissingResourceException e)
@@ -73,7 +75,7 @@ public class GlobalMessages
             // OK, try to find the key in the alternate failover locale
             try
             {
-                ResourceBundle bundle = getBundle(failoverLocale, buildBundleName(SYSTEM_BUNDLE_PACKAGE));
+                ResourceBundle bundle = getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE));
                 return bundle.getString(key);
             }
             catch (MissingResourceException fe)
@@ -88,13 +90,13 @@ public class GlobalMessages
     {
         try
         {
-            return GlobalMessageUtil.getString(getBundle(defaultLocale, buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1);
+            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1);
         }
         catch (MissingResourceException e)
         {
             try
             {
-                return GlobalMessageUtil.getString(getBundle(failoverLocale, buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1);
+                return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1);
             }
             catch (MissingResourceException fe)
             {
@@ -108,13 +110,13 @@ public class GlobalMessages
     {
         try
         {
-            return GlobalMessageUtil.getString(getBundle(failoverLocale, buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2);
+            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2);
         }
         catch (MissingResourceException e)
         {
             try
             {
-                return GlobalMessageUtil.getString(getBundle(failoverLocale, buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2);
+                return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2);
             }
             catch (MissingResourceException fe)
             {
@@ -128,11 +130,11 @@ public class GlobalMessages
     {
         try
         {
-            return getBundle(defaultLocale, packageName + "." + BUNDLE_NAME).getString(key);
+            return getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME).getString(key);
         }
         catch(MissingResourceException e)
         {
-            return getBundle(failoverLocale, packageName + "." + BUNDLE_NAME).getString(key);
+            return getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME).getString(key);
         }
     }
 
@@ -140,11 +142,11 @@ public class GlobalMessages
     {
         try
         {
-            return GlobalMessageUtil.getString(getBundle(defaultLocale, packageName), key, param1);
+            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1);
         }
         catch(MissingResourceException e)
         {
-            return GlobalMessageUtil.getString(getBundle(failoverLocale, packageName), key, param1);
+            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1);
         }
     }
 
@@ -152,11 +154,11 @@ public class GlobalMessages
     {
         try
         {
-            return GlobalMessageUtil.getString(getBundle(defaultLocale, packageName), key, param1, param2);
+            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2);
         }
         catch(MissingResourceException e)
         {
-            return GlobalMessageUtil.getString(getBundle(failoverLocale, packageName), key, param1, param2);
+            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2);
         }
     }
 
@@ -164,28 +166,30 @@ public class GlobalMessages
     {
         try
         {
-            return GlobalMessageUtil.getString(getBundle(defaultLocale, packageName), key, param1, param2, param3);
+            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3);
         }
         catch(MissingResourceException e)
         {
-            return GlobalMessageUtil.getString(getBundle(failoverLocale, packageName), key, param1, param2, param3);
+            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3);
         }
     }
+    
 
+/*
     public static String getErrorString(String packageName, String key)
     {
-        return GlobalMessageUtil.formatErrorMessage(key, getString(packageName, key));
+        return GlobalMessageUtil.formatErrorMessage(key, getString(packageName + "." + BUNDLE_NAME, key));
     }
 
     public static String getErrorString(String packageName, String key, String param1)
     {
         try
         {
-            return GlobalMessageUtil.getErrorString(getBundle(defaultLocale, packageName), key, param1);
+            return GlobalMessageUtil.getErrorString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1);
         }
         catch(MissingResourceException e)
         {
-            return GlobalMessageUtil.getErrorString(getBundle(failoverLocale, packageName), key, param1);
+            return GlobalMessageUtil.getErrorString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1);
         }
     }
 
@@ -193,11 +197,11 @@ public class GlobalMessages
     {
         try
         {
-            return GlobalMessageUtil.getErrorString(getBundle(defaultLocale, packageName), key, param1, param2);
+            return GlobalMessageUtil.getErrorString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2);
         }
         catch(MissingResourceException e)
         {
-            return GlobalMessageUtil.getErrorString(getBundle(failoverLocale, packageName), key, param1, param2);
+            return GlobalMessageUtil.getErrorString(getBundle(langChoice.getFailoverLocale(), packageName), key, param1, param2);
         }
     }
 
@@ -205,12 +209,12 @@ public class GlobalMessages
     {
         try
         {
-            return GlobalMessageUtil.getErrorString(getBundle(defaultLocale, packageName), key, param1, param2, param3);
+            return GlobalMessageUtil.getErrorString(getBundle(langChoice.getDefaultLocale(), packageName), key, param1, param2, param3);
         }
         catch(MissingResourceException e)
         {
-            return GlobalMessageUtil.getErrorString(getBundle(failoverLocale, packageName), key, param1, param2, param3);
+            return GlobalMessageUtil.getErrorString(getBundle(langChoice.getFailoverLocale(), packageName), key, param1, param2, param3);
         }
     }
-
+*/
 }

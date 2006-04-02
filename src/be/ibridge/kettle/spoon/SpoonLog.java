@@ -82,8 +82,8 @@ public class SpoonLog extends Composite
     public static final long UPDATE_TIME_LOG   = 2000L;
     public static final long REFRESH_TIME      =  100L;
     
-	public final static String START_TEXT = " &Start transformation "; 
-	public final static String STOP_TEXT  = " &Stop transformation "; 
+	public final static String START_TEXT = Messages.getString("SpoonLog.Button.StartTransformation");  //$NON-NLS-1$
+	public final static String STOP_TEXT  = Messages.getString("SpoonLog.Button.StopTransformation");  //$NON-NLS-1$
 
 	private Shell shell;
 	private Display display;
@@ -149,18 +149,18 @@ public class SpoonLog extends Composite
 		final int FieldsRows=1;
 		
 		colinf=new ColumnInfo[FieldsCols];
-		colinf[ 0]=new ColumnInfo("Stepname",       ColumnInfo.COLUMN_TYPE_TEXT, false, true);
-		colinf[ 1]=new ColumnInfo("Copynr",         ColumnInfo.COLUMN_TYPE_TEXT, false, true);
-		colinf[ 2]=new ColumnInfo("Read",           ColumnInfo.COLUMN_TYPE_TEXT, false, true);
-		colinf[ 3]=new ColumnInfo("Written",        ColumnInfo.COLUMN_TYPE_TEXT, false, true);
-		colinf[ 4]=new ColumnInfo("Input",          ColumnInfo.COLUMN_TYPE_TEXT, false, true);
-		colinf[ 5]=new ColumnInfo("Output",         ColumnInfo.COLUMN_TYPE_TEXT, false, true);
-		colinf[ 6]=new ColumnInfo("Updated",        ColumnInfo.COLUMN_TYPE_TEXT, false, true);
-		colinf[ 7]=new ColumnInfo("Errors",         ColumnInfo.COLUMN_TYPE_TEXT, false, true);
-		colinf[ 8]=new ColumnInfo("Active",         ColumnInfo.COLUMN_TYPE_TEXT, false, true);
-		colinf[ 9]=new ColumnInfo("Time",           ColumnInfo.COLUMN_TYPE_TEXT, false, true);
-		colinf[10]=new ColumnInfo("Speed (r/s)",    ColumnInfo.COLUMN_TYPE_TEXT, false, true);
-		colinf[11]=new ColumnInfo("Pri/in/out",     ColumnInfo.COLUMN_TYPE_TEXT, false, true);
+		colinf[ 0]=new ColumnInfo(Messages.getString("SpoonLog.Column.Stepname"),       ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
+		colinf[ 1]=new ColumnInfo(Messages.getString("SpoonLog.Column.Copynr"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
+		colinf[ 2]=new ColumnInfo(Messages.getString("SpoonLog.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
+		colinf[ 3]=new ColumnInfo(Messages.getString("SpoonLog.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
+		colinf[ 4]=new ColumnInfo(Messages.getString("SpoonLog.Column.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
+		colinf[ 5]=new ColumnInfo(Messages.getString("SpoonLog.Column.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
+		colinf[ 6]=new ColumnInfo(Messages.getString("SpoonLog.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
+		colinf[ 7]=new ColumnInfo(Messages.getString("SpoonLog.Column.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
+		colinf[ 8]=new ColumnInfo(Messages.getString("SpoonLog.Column.Active"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
+		colinf[ 9]=new ColumnInfo(Messages.getString("SpoonLog.Column.Time"),           ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
+		colinf[10]=new ColumnInfo(Messages.getString("SpoonLog.Column.Speed"),    ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
+		colinf[11]=new ColumnInfo(Messages.getString("SpoonLog.Column.PriorityBufferSizes"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
 		
 		colinf[ 1].setAllignement(SWT.RIGHT);
 		colinf[ 2].setAllignement(SWT.RIGHT);
@@ -200,15 +200,15 @@ public class SpoonLog extends Composite
 		wStart = new Button(this, SWT.PUSH);
 		wStart.setText(START_TEXT);
 		wPreview = new Button(this, SWT.PUSH);
-		wPreview.setText(" &Preview ");
+		wPreview.setText(Messages.getString("SpoonLog.Button.Preview")); //$NON-NLS-1$
 		wError = new Button(this, SWT.PUSH);
-		wError.setText(" &Show error lines ");
+		wError.setText(Messages.getString("SpoonLog.Button.ShowErrorLines")); //$NON-NLS-1$
 		wClear = new Button(this, SWT.PUSH);
-		wClear.setText(" &Clear log ");
+		wClear.setText(Messages.getString("SpoonLog.Button.ClearLog")); //$NON-NLS-1$
 		wLog = new Button(this, SWT.PUSH);
-		wLog.setText(" &Log settings ");
+		wLog.setText(Messages.getString("SpoonLog.Button.LogSettings")); //$NON-NLS-1$
 		wlOnlyActive=new Label(this, SWT.RIGHT);
-		wlOnlyActive.setText("Only show active steps");
+		wlOnlyActive.setText(Messages.getString("SpoonLog.Button.ShowOnlyActiveSteps")); //$NON-NLS-1$
 		wOnlyActive=new Button(this, SWT.CHECK);
 
 		fdStart    = new FormData(); 
@@ -283,7 +283,7 @@ public class SpoonLog extends Composite
 		}
 		catch(Exception e)
 		{
-			log.logError(Spoon.APP_NAME, "Couldn't create input-pipe connection to output-pipe!");
+			log.logError(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.CouldNotLinkInputToOutputPipe")); //$NON-NLS-1$
 		}
 		
 		lsError = new SelectionAdapter() 
@@ -380,7 +380,7 @@ public class SpoonLog extends Composite
 				date = df.parse(dateString);
 				return null;
 			} catch (ParseException e) {
-				return "Invalid Replay date, should have format "
+				return Messages.getString("SpoonLog.Error.InvalidReplayDateFormat") //$NON-NLS-1$
 						+ Trans.REPLAY_DATE_FORMAT;
 			}
 		}
@@ -389,17 +389,17 @@ public class SpoonLog extends Composite
 	public void startstopReplay() {
 		DateValidator dateValidator = new DateValidator();
 		InputDialog id = new InputDialog(shell,
-				"Enter Replay Transformation date",
-				"What's the execution date of the transformation" + Const.CR
-						+ "you want to replay?", dateValidator.df.format(new Date()),
+				Messages.getString("SpoonLog.Dialog.Title.EnterReplayDate"), //$NON-NLS-1$
+				Messages.getString("SpoonLog.Dialog.Message.WhatIsTheExecutionDate1") + Const.CR //$NON-NLS-1$
+						+ Messages.getString("SpoonLog.Dialog.Message.WhatIsTheExecutionDate2"), dateValidator.df.format(new Date()), //$NON-NLS-1$
 				dateValidator);
 		int answer = id.open();
 		if (answer == 1) {
-			log.logDebug(toString(), "Cancel replay");
+			log.logDebug(toString(), Messages.getString("SpoonLog.Log.CancelReplay1")); //$NON-NLS-1$
 			return;
 		}
 		if (dateValidator.date == null) {
-			log.logDebug(toString(), "Cancel replay");
+			log.logDebug(toString(), Messages.getString("SpoonLog.Log.CancelReplay2")); //$NON-NLS-1$
 			return;
 		}
 		startstop(dateValidator.date);
@@ -421,13 +421,13 @@ public class SpoonLog extends Composite
 				else
 				{
 					MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-																			 "File has changed!", 
+																			 Messages.getString("SpoonLog.Dialog.Title.FileHasChanged"),  //$NON-NLS-1$
 																			 null,
-																			 "You need to save your transformation before you can run it."+Const.CR+"Do you want to save the transformation now?"+Const.CR,
+																			 Messages.getString("SpoonLog.Dialog.Message.FileHasChanged1")+Const.CR+Messages.getString("SpoonLog.Dialog.Message.FileHasChanged2")+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
 																			 MessageDialog.QUESTION,
-																			 new String[] { "Yes", "No" },
+																			 new String[] { Messages.getString("System.Yes"), Messages.getString("System.No") }, //$NON-NLS-1$ //$NON-NLS-2$
 																			 0,
-																			 "Automatically save the transformation.",
+																			 Messages.getString("SpoonLog.Dialog.Option.AutoSaveTransformation"), //$NON-NLS-1$
 																			 spoon.props.getAutoSave()
 																			 );
 					int answer = md.open();
@@ -453,12 +453,12 @@ public class SpoonLog extends Composite
 						trans.open(spoon.rep, spoon.getTransMeta().getName(), spoon.getTransMeta().getDirectory().getPath(), spoon.getTransMeta().getFilename());
 
                         trans.setMonitored(true);
-						log.logBasic(toString(), "Transformation opened.");
+						log.logBasic(toString(), Messages.getString("SpoonLog.Log.TransformationOpened")); //$NON-NLS-1$
 					}
 					catch(KettleException e)
 					{
 						trans=null;
-						new ErrorDialog(shell, spoon.props, "Error opening transformation", "Transformation failed to open: ", e);
+						new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.Title.ErrorOpeningTransformation"), Messages.getString("SpoonLog.Dialog.Message.ErrorOpeningTransformation"), e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					readLog();
 					if (trans!=null)
@@ -467,9 +467,9 @@ public class SpoonLog extends Composite
                         if (arguments!=null)
                         {
                             String args[] = convertArguments(arguments);
-    					    log.logMinimal(Spoon.APP_NAME, "Launching transformation ["+trans.getTransMeta().getName()+"]...");
+    					    log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.LaunchingTransformation")+trans.getTransMeta().getName()+"]..."); //$NON-NLS-1$ //$NON-NLS-2$
     						trans.execute(args);
-                            log.logMinimal(Spoon.APP_NAME, "Started the transformation execution.");
+                            log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
     						running=!running;
     						wStart.setText(STOP_TEXT);
     						readLog();
@@ -479,8 +479,8 @@ public class SpoonLog extends Composite
 				else
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText("Warning!");
-					m.setMessage("The transformation is running, don't start it twice!");	
+					m.setText(Messages.getString("SpoonLog.Dialog.Title.DoNoStartTransformationTwice")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("SpoonLog.Dialog.Message.DoNoStartTransformationTwice"));	 //$NON-NLS-1$
 					m.open();
 				}
 			}
@@ -489,23 +489,23 @@ public class SpoonLog extends Composite
 				if (spoon.getTransMeta().hasChanged())
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText("File has changed!");
-					m.setMessage("Please save your transformation first!");	
+					m.setText(Messages.getString("SpoonLog.Dialog.Title.SaveTransformationBeforeRunning")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("SpoonLog.Dialog.Message.SaveTransformationBeforeRunning"));	 //$NON-NLS-1$
 					m.open();
 				}
 				else
 				if (spoon.rep!=null && spoon.getTransMeta().getName()==null)
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText("Transformation has no name!");
-					m.setMessage("Please give your transformation a name to identify it by!");	
+					m.setText(Messages.getString("SpoonLog.Dialog.Title.GiveTransformationANameBeforeRunning")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("SpoonLog.Dialog.Message.GiveTransformationANameBeforeRunning"));	 //$NON-NLS-1$
 					m.open();
 				}
 				else
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText("No filename!");
-					m.setMessage("Before running, please save your transformation first!");	
+					m.setText(Messages.getString("SpoonLog.Dialog.Title.SaveTransformationBeforeRunning2")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("SpoonLog.Dialog.Message.SaveTransformationBeforeRunning2"));	 //$NON-NLS-1$
 					m.open();
 				}
 			}
@@ -515,12 +515,12 @@ public class SpoonLog extends Composite
 			trans.stopAll();
 			try
 			{
-				trans.endProcessing("stop");
-                log.logMinimal(Spoon.APP_NAME, "Processing of transformation stopped.");
+				trans.endProcessing("stop"); //$NON-NLS-1$
+                log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.ProcessingOfTransformationStopped")); //$NON-NLS-1$
 			}
 			catch(KettleException e)
 			{
-				new ErrorDialog(shell, spoon.props, "Error writing log record", "Unable to write log record to the logging table", e); 
+				new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.Title.ErrorWritingLogRecord"), Messages.getString("SpoonLog.Dialog.Message.ErrorWritingLogRecord"), e);  //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			wStart.setText(START_TEXT);
 			running=!running;
@@ -663,17 +663,17 @@ public class SpoonLog extends Composite
 					
 					String fields[] = new String[colinf.length+1];
 					fields[1] =    rt.getStepname();
-					fields[2] = ""+rt.getCopy();
-					fields[3] = ""+rt.linesRead;
-					fields[4] = ""+rt.linesWritten;
-					fields[5] = ""+rt.linesInput;
-					fields[6] = ""+rt.linesOutput;
-					fields[7] = ""+rt.linesUpdated;
-					fields[8] = ""+rt.getErrors();
-					fields[9] = ""+rt.getStatus();
-					fields[10] = ""+Math.floor((lapsed*10) + 0.5)/10;
-					fields[11] = lapsed==0?"-":""+( in_speed>out_speed?in_speed:out_speed );
-					fields[12] = rt.isAlive()?""+rt.getPriority()+"/"+rt.rowsetInputSize()+"/"+rt.rowsetOutputSize():"-";
+					fields[2] = ""+rt.getCopy(); //$NON-NLS-1$
+					fields[3] = ""+rt.linesRead; //$NON-NLS-1$
+					fields[4] = ""+rt.linesWritten; //$NON-NLS-1$
+					fields[5] = ""+rt.linesInput; //$NON-NLS-1$
+					fields[6] = ""+rt.linesOutput; //$NON-NLS-1$
+					fields[7] = ""+rt.linesUpdated; //$NON-NLS-1$
+					fields[8] = ""+rt.getErrors(); //$NON-NLS-1$
+					fields[9] = ""+rt.getStatus(); //$NON-NLS-1$
+					fields[10] = ""+Math.floor((lapsed*10) + 0.5)/10; //$NON-NLS-1$
+					fields[11] = lapsed==0?"-":""+( in_speed>out_speed?in_speed:out_speed ); //$NON-NLS-1$ //$NON-NLS-2$
+					fields[12] = rt.isAlive()?""+rt.getPriority()+"/"+rt.rowsetInputSize()+"/"+rt.rowsetOutputSize():"-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 					
 					// Anti-flicker: if nothing has changed, don't change it on the screen!
 					for (int f=1;f<fields.length;f++)
@@ -715,17 +715,17 @@ public class SpoonLog extends Composite
 		
 		if ( trans!=null && trans.isFinished() && running )
 		{
-		    log.logMinimal(Spoon.APP_NAME, "The transformation has finished!!");
+		    log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.TransformationHasFinished")); //$NON-NLS-1$
 		    
 			wStart.setText(START_TEXT);
 			running=false;
 			try
 			{
-				trans.endProcessing("end");
+				trans.endProcessing("end"); //$NON-NLS-1$
 			}
 			catch(KettleException e)
 			{
-				new ErrorDialog(shell, spoon.props, "Error writing log record", "Unable to write log record to the logging table", e); 
+				new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.Title.ErrorWritingLogRecord"), Messages.getString("SpoonLog.Dialog.Message.ErrorWritingLogRecord"), e);  //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		
@@ -734,7 +734,7 @@ public class SpoonLog extends Composite
 	
 	public void preview()
 	{
-		log.logDetailed(toString(), "PREVIEW!!!");
+		log.logDetailed(toString(), Messages.getString("SpoonLog.Log.DoPreview")); //$NON-NLS-1$
 		PreviewSelectDialog psd = new PreviewSelectDialog(shell, SWT.NONE, log, spoon.props, spoon.getTransMeta());
 		psd.open();
 		if (psd.previewSteps!=null)
@@ -763,7 +763,7 @@ public class SpoonLog extends Composite
             for (int v = 0; v < arguments.size() ; v++ )
             {
                 Value value = arguments.getValue(v);
-                if (value.getName().equalsIgnoreCase("Argument "+(i+1)))
+                if (value.getName().equalsIgnoreCase("Argument "+(i+1))) //$NON-NLS-1$
                 {
                     args[i] = value.getString();
                 }
@@ -792,7 +792,7 @@ public class SpoonLog extends Composite
 			{
 				buffers.add(rt.previewBuffer);
 				names.add(rt.getStepname());
-				log.logBasic(toString(), "Step: "+rt.getStepname()+" --> "+rt.previewBuffer.size()+" rows");
+				log.logBasic(toString(), Messages.getString("SpoonLog.Log.Step")+rt.getStepname()+" --> "+rt.previewBuffer.size()+Messages.getString("SpoonLog.Log.Rows")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 		// OK, now we're ready to show it all!
@@ -806,7 +806,7 @@ public class SpoonLog extends Composite
 	{
 		wFields.table.removeAll();
 		new TableItem(wFields.table, SWT.NONE);
-		wText.setText("");
+		wText.setText(""); //$NON-NLS-1$
 	}
 	
 	private void setLog()
@@ -830,8 +830,8 @@ public class SpoonLog extends Composite
 			if (all.substring(i, i+crlen).equalsIgnoreCase(Const.CR))
 			{
 				String line = all.substring(startpos, i);
-				if (line.toUpperCase().indexOf("ERROR")>=0 ||
-				    line.toUpperCase().indexOf("EXCEPTION")>=0
+				if (line.toUpperCase().indexOf(Messages.getString("SpoonLog.System.ERROR"))>=0 || //$NON-NLS-1$
+				    line.toUpperCase().indexOf(Messages.getString("SpoonLog.System.EXCEPTION"))>=0 //$NON-NLS-1$
 				    ) 
 				{
 					err.add(line);
@@ -843,8 +843,8 @@ public class SpoonLog extends Composite
 			i++;
 		}
 		String line = all.substring(startpos);
-		if (line.toUpperCase().indexOf("ERROR")>=0 ||
-		    line.toUpperCase().indexOf("EXCEPTION")>=0
+		if (line.toUpperCase().indexOf(Messages.getString("SpoonLog.System.ERROR2"))>=0 || //$NON-NLS-1$
+		    line.toUpperCase().indexOf(Messages.getString("SpoonLog.System.EXCEPTION2"))>=0 //$NON-NLS-1$
 		    ) 
 		{
 			err.add(line);
@@ -855,7 +855,7 @@ public class SpoonLog extends Composite
 			String err_lines[] = new String[err.size()];
 			for (i=0;i<err_lines.length;i++) err_lines[i] = (String)err.get(i);
 			
-			EnterSelectionDialog esd = new EnterSelectionDialog(shell, spoon.props, err_lines, "Error lines", "Select the step to edit:");
+			EnterSelectionDialog esd = new EnterSelectionDialog(shell, spoon.props, err_lines, Messages.getString("SpoonLog.Dialog.Title.ErrorLines"), Messages.getString("SpoonLog.Dialog.Message.ErrorLines")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();
 			if (line!=null)
 			{

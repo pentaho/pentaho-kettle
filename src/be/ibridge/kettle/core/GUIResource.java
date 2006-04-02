@@ -67,6 +67,8 @@ public class GUIResource
     private Image     imageStart;
     private Image     imageDummy;
     private Image     imageSpoon;
+    
+    private Image     imageSplash;
 
     private GUIResource(Display display)
     {
@@ -271,6 +273,7 @@ public class GUIResource
         imageStart       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "STR.png"));
         imageDummy       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "DUM.png"));
         imageSpoon       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoon32.png"));
+        imageSplash      = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_splash.png"));
     }
 
     /**
@@ -570,6 +573,22 @@ public class GUIResource
     public Image getImageStart()
     {
         return imageStart;
+    }
+
+    /**
+     * @return Returns the imageSplash.
+     */
+    public Image getImageSplash()
+    {
+        return imageSplash;
+    }
+
+    /**
+     * @param imageSplash The imageSplash to set.
+     */
+    public void setImageSplash(Image imageSplash)
+    {
+        this.imageSplash = imageSplash;
     }
    
     

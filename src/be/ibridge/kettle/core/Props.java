@@ -136,7 +136,6 @@ public class Props implements Cloneable
 
     public static final String STRING_DEFAULT_PREVIEW_SIZE    = "DefaultPreviewSize";
     public static final String STRING_ONLY_USED_DB_TO_XML     = "SaveOnlyUsedConnectionsToXML";
-
 		
 	private Properties properties;
 	
@@ -175,6 +174,7 @@ public class Props implements Cloneable
     public static final int WIDGET_STYLE_NOTEPAD = 3;
     public static final int WIDGET_STYLE_GRAPH   = 4;
     public static final int WIDGET_STYLE_TAB     = 5;
+
 
  
 
@@ -1419,4 +1419,5 @@ public class Props implements Cloneable
     {
         properties.setProperty(STRING_ONLY_USED_DB_TO_XML, onlyUsedConnections?"Y":"N");
     }
+
 }
