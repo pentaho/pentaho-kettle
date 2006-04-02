@@ -35,6 +35,7 @@ public class ValueString implements ValueInterface, Cloneable
 {
 	private String string;
 	private int length;
+	private static SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
 
 	public ValueString()
 	{
@@ -71,7 +72,8 @@ public class ValueString implements ValueInterface, Cloneable
 	{
 	    if (string!=null)
 	    {
-			SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+//	    	Tom modified this for performance
+//			SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
 			try
 			{
 				return df.parse(string);
@@ -105,7 +107,8 @@ public class ValueString implements ValueInterface, Cloneable
 	
 	public void    setDate(Date date)
 	{
-		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+		//Tom modified this for performance
+//		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
 		this.string = df.format(date);
 	}
 	
