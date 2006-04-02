@@ -15,7 +15,7 @@ public class GlobalMessages
 
     private static final String      SYSTEM_BUNDLE_PACKAGE = GlobalMessages.class.getPackage().getName();
 
-    private static final String      BUNDLE_NAME           = "messages";                                  //$NON-NLS-1$
+    private static final String      BUNDLE_NAME           = "messages.messages";                                  //$NON-NLS-1$
 
     private static final Map         locales               = Collections.synchronizedMap(new HashMap());
 
