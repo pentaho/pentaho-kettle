@@ -220,6 +220,10 @@ public class Spoon
 
     private SpoonHistory spoonhist;
 
+    private Menu mBar;
+
+    private Composite tabComp;
+
         
     public Spoon(LogWriter l, Repository rep)
     {
@@ -418,10 +422,7 @@ public class Spoon
                 } 
             } 
         );
-        int weights[] = props.getSashWeights();
-        sashform.setWeights(weights);
-        sashform.setVisible(true);
-                
+
         shell.layout();
         
         // Set the shell size, based upon previous time...
@@ -543,7 +544,12 @@ public class Spoon
     
     public void addMenu()
     {
-        Menu mBar = new Menu(shell, SWT.BAR);
+        if (mBar!=null)
+        {
+            mBar.dispose();
+        }
+        
+        mBar = new Menu(shell, SWT.BAR);
         shell.setMenuBar(mBar);
         
         // main File menu...
@@ -1298,15 +1304,20 @@ public class Spoon
     
     private void addTabs()
     {
-        Composite child = new Composite(sashform, SWT.BORDER );
-        props.setLook(child);
+        if (tabComp!=null)
+        {
+            tabComp.dispose();
+        }
+        
+        tabComp = new Composite(sashform, SWT.BORDER );
+        props.setLook(tabComp);
         
         FormLayout childLayout = new FormLayout();
         childLayout.marginWidth  = 0;
         childLayout.marginHeight = 0;
-        child.setLayout(childLayout);
+        tabComp.setLayout(childLayout);
         
-        tabfolder= new CTabFolder(child, SWT.BORDER);
+        tabfolder= new CTabFolder(tabComp, SWT.BORDER);
         props.setLook(tabfolder, Props.WIDGET_STYLE_TAB);
         
         FormData fdTabfolder = new FormData();
@@ -1343,6 +1354,10 @@ public class Spoon
         
         sashform.addKeyListener(defKeys);
         sashform.addKeyListener(modKeys);
+        
+        int weights[] = props.getSashWeights();
+        sashform.setWeights(weights);
+        sashform.setVisible(true);                
     }
     
     public String getRepositoryName()
@@ -2721,6 +2736,10 @@ public class Spoon
             props.saveProps();
             loadSettings();
             changeLooks();
+            addMenu();
+            addMenuLast();
+            setUndoMenu();
+            addTabs();
         } 
     }
     
