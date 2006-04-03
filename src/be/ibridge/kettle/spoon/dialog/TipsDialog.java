@@ -76,8 +76,8 @@ public class TipsDialog extends Dialog
 	{
 		super(parent, SWT.NONE);
 		props=pr;
-		title="Spoon tips...";
-		message="TIP!";
+		title=Messages.getString("TipsDialog.Dialog.Tips.Title"); //Spoon tips...
+		message=Messages.getString("TipsDialog.Label.Tips.Text"); //TIP\!
 		this.parent = parent;
 		
 		description=getTip();
@@ -153,9 +153,9 @@ public class TipsDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &Close  ");
+		wOK.setText(Messages.getString("System.Button.Close"));
 		wNext=new Button(shell, SWT.PUSH);
-		wNext.setText("  &Next tip");
+		wNext.setText(Messages.getString("TipsDialog.Button.Tips")); //&Next tip
 		fdOK=new FormData();
 		fdOK.left       = new FormAttachment(33, 0);
 		fdOK.bottom     = new FormAttachment(100, 0);

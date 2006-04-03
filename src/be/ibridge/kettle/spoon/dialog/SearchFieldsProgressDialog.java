@@ -46,19 +46,19 @@ public class SearchFieldsProgressDialog implements IRunnableWithProgress
 		{
 			if (before)
 			{
-				monitor.beginTask("Searching for input fields...", size);
+				monitor.beginTask(Messages.getString("SearchFieldsProgressDialog.Dialog.SearchInputFields.Message"), size); //Searching for input fields...
 				fields = transMeta.getPrevStepFields(stepInfo, monitor);
 			}
 			else
 			{
-				monitor.beginTask("Searching for output fields...", size);
+				monitor.beginTask(Messages.getString("SearchFieldsProgressDialog.Dialog.SearchOutputFields.Message"), size); //Searching for output fields...
 				fields = transMeta.getStepFields(stepInfo, monitor);
 			}
 		}
 		catch(KettleStepException kse)
 		{
-			LogWriter.getInstance().logError("Search fields progress dialog", "Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage());
-			throw new InvocationTargetException(kse, "Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage());
+			LogWriter.getInstance().logError(Messages.getString("SearchFieldsProgressDialog.Log.SourceName"), Messages.getString("SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage())); //"Search fields progress dialog","Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage()
+			throw new InvocationTargetException(kse, Messages.getString("SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage())); //"Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage()
 		}
 
 		monitor.done();

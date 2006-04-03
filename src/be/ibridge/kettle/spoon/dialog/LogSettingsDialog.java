@@ -86,14 +86,14 @@ public class LogSettingsDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Set logging parameters:");
+		shell.setText(Messages.getString("LogSettingsDialog.Dialog.LoggingParameters.Title")); //Set logging parameters:
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filter line
 		wlFilter=new Label(shell, SWT.RIGHT);
-		wlFilter.setText("Select filter ");
+		wlFilter.setText(Messages.getString("LogSettingsDialog.Label.FilterSelection.Text")); //Select filter 
  		props.setLook(wlFilter);
 		fdlFilter=new FormData();
 		fdlFilter.left = new FormAttachment(0, 0);
@@ -112,7 +112,7 @@ public class LogSettingsDialog extends Dialog
 		wFilter.setLayoutData(fdFilter);
 
 		wlLoglevel=new Label(shell, SWT.RIGHT);
-		wlLoglevel.setText("Loglevel ");
+		wlLoglevel.setText(Messages.getString("LogSettingsDialog.Label.LogLevel.Text")); //Loglevel 
  		props.setLook(wlLoglevel);
 		fdlLoglevel=new FormData();
 		fdlLoglevel.left = new FormAttachment(0, 0);
@@ -133,7 +133,7 @@ public class LogSettingsDialog extends Dialog
 
 		// Time?
 		wlTime=new Label(shell, SWT.RIGHT);
-		wlTime.setText("Enable Time?");
+		wlTime.setText(Messages.getString("LogSettingsDialog.Label.EnableTime.Text")); //Enable Time?
  		props.setLook(wlTime);
 		fdlTime=new FormData();
 		fdlTime.left = new FormAttachment(0, 0);
@@ -156,9 +156,9 @@ public class LogSettingsDialog extends Dialog
 		);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wTime);
 		

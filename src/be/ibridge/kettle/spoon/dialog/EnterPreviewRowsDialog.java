@@ -96,14 +96,14 @@ public class EnterPreviewRowsDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Select the preview step:");
+		shell.setText(Messages.getString("EnterPreviewRowsDialog.Dialog.PreviewStep.Title")); //Select the preview step:
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlStepname=new Label(shell, SWT.NONE);
-		wlStepname.setText("Step name : ");
+		wlStepname.setText(Messages.getString("EnterPreviewRowsDialog.Dialog.PreviewStep.Message")); //Step name : 
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -130,14 +130,14 @@ public class EnterPreviewRowsDialog extends Dialog
 		});
 
 		wShow=new Button(shell, SWT.PUSH);
-		wShow.setText(" &Show ");
+		wShow.setText(Messages.getString("System.Button.Show"));
 		fdShow=new FormData();
 		fdShow.left=new FormAttachment(33, 0);
 		fdShow.top =new FormAttachment(wStepname, 30);
 		wShow.setLayoutData(fdShow);
 
 		wClose=new Button(shell, SWT.PUSH);
-		wClose.setText(" &Close ");
+		wClose.setText(Messages.getString("System.Button.Close"));
 		fdClose=new FormData();
 		fdClose.left=new FormAttachment(wShow, 10);
 		fdClose.top =new FormAttachment(wStepname, 30);
@@ -209,8 +209,8 @@ public class EnterPreviewRowsDialog extends Dialog
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING );
-			mb.setMessage("No rows found in previewing this step.");
-			mb.setText("WARNING");
+			mb.setMessage(Messages.getString("EnterPreviewRowsDialog.Dialog.NoRowsFound.Message")); //No rows found in previewing this step.
+			mb.setText(Messages.getString("EnterPreviewRowsDialog.Dialog.NoRowsFound.Title")); //WARNING
 			mb.open();
 		}
 	}

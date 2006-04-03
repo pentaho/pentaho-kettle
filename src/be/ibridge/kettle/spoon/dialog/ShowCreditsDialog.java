@@ -80,32 +80,17 @@ public class ShowCreditsDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Credits");
+		shell.setText(Messages.getString("ShowCreditsDialog.Dialog.Credits.Title"));
 		
 		int margin = Const.MARGIN;
 
 		// Close...
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &Close  ");
+		wOK.setText(Messages.getString("System.Button.Close"));
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK }, margin, null);
 		
 		wCredits = new Text(shell, SWT.MULTI | SWT.READ_ONLY | SWT.CENTER);
-		wCredits.setText(
-            "Kettle would have been a lot harder to build if it wasn't for the help of these fine libraries :" +Const.CR +
-            Const.CR+
-			"SWT: The Standard Windowing Toolkit from IBM's Eclipse project." + Const.CR +
-			"     You can find more information on SWT and the Eclipse project at http://www.eclipse.org" +Const.CR+ 
-			Const.CR+			
-			"Rhino: Rhino is part of the Mozilla project and implements the complete JavaScript 1.5 specifications (Standard ECMA-262 ECMAScript, Edition 3)."+Const.CR+
-			"       This library can be found on the mozilla website: http://www.mozilla.org"+Const.CR+
-			Const.CR+			
-			"jDTS:  Because it is illegal to include the Microsoft JDBC driver for SQL Server, we switched to jTDS with great success."+Const.CR+
-			"       jTDS is released under the GNU LGPL and can therefor be included in this distribution."+Const.CR+
-			"       jTDS can be found on the Sourceforge website: http://jtds.sourceforge.net/"+Const.CR+
-			Const.CR+
-			"Java:  You're running this software using the Java 2 Standard Edition (J2SE) Runtime Environment from Sun." +Const.CR+
-			"       For more info on Java, visit http://www.javasoft.com"+Const.CR
-			);
+		wCredits.setText(Messages.getString("ShowCreditsDialog.Dialog.Credits.Message"));
  		props.setLook(wCredits);
 		fdCredits=new FormData();
 		fdCredits.left  = new FormAttachment(0, 0);

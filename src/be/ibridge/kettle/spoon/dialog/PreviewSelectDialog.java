@@ -86,12 +86,12 @@ public class PreviewSelectDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Preview selection screen");
+		shell.setText(Messages.getString("PreviewSelectDialog.Dialog.PreviewSelection.Title")); //Preview selection screen
 		
 		int margin = Const.MARGIN;
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText("Steps: ");
+		wlFields.setText(Messages.getString("PreviewSelectDialog.Label.Steps.Text")); //Steps: 
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -102,8 +102,12 @@ public class PreviewSelectDialog extends Dialog
 		final int FieldsRows=trans.nrUsedSteps();
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Stepname",     ColumnInfo.COLUMN_TYPE_TEXT, false, true );
-		colinf[1]=new ColumnInfo("Preview size", ColumnInfo.COLUMN_TYPE_TEXT, false, false);
+		colinf[0]=new ColumnInfo(
+      Messages.getString("PreviewSelectDialog.Column.Stepname"),
+      ColumnInfo.COLUMN_TYPE_TEXT, false, true ); //Stepname
+		colinf[1]=new ColumnInfo(
+      Messages.getString("PreviewSelectDialog.Column.PreviewSize"),
+      ColumnInfo.COLUMN_TYPE_TEXT, false, false); //Preview size
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -122,9 +126,9 @@ public class PreviewSelectDialog extends Dialog
 		wFields.setLayoutData(fdFields);
 
 		wPreview=new Button(shell, SWT.PUSH);
-		wPreview.setText(" &Show ");
+		wPreview.setText(Messages.getString("System.Button.Show"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Close ");
+		wCancel.setText(Messages.getString("System.Button.Close"));
 		fdPreview=new FormData();
 		fdPreview.left=new FormAttachment(33, 0);
 		fdPreview.bottom =new FormAttachment(100, 0);

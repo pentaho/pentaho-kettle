@@ -58,7 +58,7 @@ public class GetJobSQLProgressDialog
 				}
 				catch(KettleException e)
 				{
-					throw new InvocationTargetException(e, "Error generating SQL for job: "+Const.CR+e.getMessage());
+					throw new InvocationTargetException(e, Messages.getString("GetJobSQLProgressDialog.RuntimeError.UnableToGenerateSQL.DLG0001", e.getMessage())); //Error generating SQL for job: \n{0}
 				}
 			}
 		};
@@ -70,12 +70,12 @@ public class GetJobSQLProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, "Error generating SQL for job", "An error occured generating the SQL for this job!", e);
+			new ErrorDialog(shell, props, Messages.getString("GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Title"), Messages.getString("GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Message"), e); //"Error generating SQL for job","An error occured generating the SQL for this job\!"
 			stats = null;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, "Error generating SQL for job", "An error occured generating the SQL for this job!", e);
+			new ErrorDialog(shell, props, Messages.getString("GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Title"), Messages.getString("GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Message"), e); //"Error generating SQL for job","An error occured generating the SQL for this job\!"
 			stats = null;
 		}
 

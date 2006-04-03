@@ -61,7 +61,7 @@ public class AnalyseImpactProgressDialog
 				{
 					impact.clear();
 					impactHasRun=false;
-					throw new InvocationTargetException(e, "Problem encountered generating impact list: "+e.toString());
+					throw new InvocationTargetException(e, Messages.getString("AnalyseImpactProgressDialog.RuntimeError.UnableToAnalyzeImpact.DLG0001", e.toString())); //Problem encountered generating impact list: {0}
 				}
 			}
 		};
@@ -73,11 +73,11 @@ public class AnalyseImpactProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, "Error checking transformation", "An error occured checking this transformation!", e);
+			new ErrorDialog(shell, props, Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title"), Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages"), e); //"Error checking transformation","An error occured checking this transformation\!"
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, "Error checking transformation", "An error occured checking this transformation!", e);
+			new ErrorDialog(shell, props, Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title"), Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages"), e); //"Error checking transformation","An error occured checking this transformation\!"
 		}
 		
 		return impactHasRun;

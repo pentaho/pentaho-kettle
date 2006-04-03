@@ -56,7 +56,7 @@ public class GetSQLProgressDialog
 				}
 				catch(KettleException e)
 				{
-					throw new InvocationTargetException(e, "Error generating SQL for transformation: "+Const.CR+e.getMessage());
+					throw new InvocationTargetException(e, Messages.getString("GetSQLProgressDialog.RuntimeError.UnableToGenerateSQL.DLG0001", e.getMessage())); //Error generating SQL for transformation: \n{0}
 				}
 			}
 		};
@@ -68,12 +68,12 @@ public class GetSQLProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, "Error generating SQL for transformation", "An error occured generating the SQL for this transformation!", e);
+			new ErrorDialog(shell, props, Messages.getString("GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Title"), Messages.getString("GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Message"), e); //"Error generating SQL for transformation","An error occured generating the SQL for this transformation\!"
 			stats = null;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, "Error generating SQL for transformation", "An error occured generating the SQL for this transformation!", e);
+			new ErrorDialog(shell, props, Messages.getString("GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Title"), Messages.getString("GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Message"), e); //"Error generating SQL for transformation","An error occured generating the SQL for this transformation\!"
 			stats = null;
 		}
 

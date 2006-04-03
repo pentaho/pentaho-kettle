@@ -58,7 +58,7 @@ public class CheckTransProgressDialog
 				}
 				catch(Exception e)
 				{
-					throw new InvocationTargetException(e, "Problem encountered checking transformation: "+e.toString());
+					throw new InvocationTargetException(e, Messages.getString("AnalyseImpactProgressDialog.RuntimeError.ErrorCheckingTransformation.DLG0002", e.toString())); //Problem encountered checking transformation: {0}
 				}
 			}
 		};
@@ -89,11 +89,11 @@ public class CheckTransProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, "Error checking transformation", "An error occured checking this transformation!", e);
+			new ErrorDialog(shell, props, Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title"), Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message"), e); // "Error checking transformation","An error occured checking this transformation\!"
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, "Error checking transformation", "An error occured checking this transformation!", e);
+			new ErrorDialog(shell, props, Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title"), Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message"), e); // "Error checking transformation","An error occured checking this transformation\!"
 		}
 	}
 }
