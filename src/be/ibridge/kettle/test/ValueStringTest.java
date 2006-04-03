@@ -2,6 +2,7 @@ package be.ibridge.kettle.test;
 
 import java.util.Date;
 
+import junit.framework.Assert;
 import junit.framework.TestCase;
 import be.ibridge.kettle.core.value.ValueString;
 
@@ -33,7 +34,7 @@ public class ValueStringTest extends TestCase {
 	public void testSetDate() {
 		vs.setDate(new Date());
 		System.out.println(vs.getString());
-		this.assertTrue(vs.getString().length()==23);
+		Assert.assertTrue(vs.getString().length()==23);
 	}
 
 }
