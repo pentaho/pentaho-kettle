@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
@@ -142,6 +143,7 @@ public class RepositoriesDialog
 
 		shell.setLayout(formLayout);
 		shell.setText("Select a repository");
+        shell.setImage(GUIResource.getInstance().getImageSpoon());
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -295,8 +297,7 @@ public class RepositoriesDialog
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(" &Cancel ");
 
-		Button[] buttons = new Button[] { wOK, wNorep, wCancel };
-		BaseStepDialog.positionBottomButtons(shell, buttons, margin, wPassword);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wNorep, wCancel }, margin, null);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
