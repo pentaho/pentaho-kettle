@@ -44,7 +44,13 @@ public class GlobalMessages
 
     private static String buildHashKey(Locale locale, String packageName)
     {
-        return packageName + "_" + locale.toString();
+        String locString = locale.toString();
+        if (locString.length()==5 && locString.charAt(2)=='_') // Force upper-lowercase format
+        {
+            locString=locString.substring(0,2).toLowerCase()+"_"+locString.substring(3).toUpperCase();
+            // System.out.println("locString="+locString);
+        }
+        return packageName + "_" + locString;
     }
 
     private static String buildBundleName(String packageName)
@@ -57,7 +63,7 @@ public class GlobalMessages
         ResourceBundle bundle = (ResourceBundle) locales.get(buildHashKey(locale, packageName));
         if (bundle == null)
         {
-            bundle = ResourceBundle.getBundle(packageName, locale);
+            bundle = ResourceBundle.getBundle(buildHashKey(locale, packageName), locale);
             locales.put(buildHashKey(locale, packageName), bundle);
         }
         return bundle;
