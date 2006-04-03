@@ -79,6 +79,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 import be.ibridge.kettle.trans.step.textfileoutput.TextFileOutputMeta;
 import be.ibridge.kettle.trans.step.uniquerows.UniqueRowsMeta;
 import be.ibridge.kettle.trans.step.update.UpdateMeta;
+import be.ibridge.kettle.trans.step.valuemapper.ValueMapperMeta;
 import be.ibridge.kettle.trans.step.xbaseinput.XBaseInputMeta;
 import be.ibridge.kettle.trans.step.xmlinput.XMLInputMeta;
 import be.ibridge.kettle.trans.step.xmloutput.XMLOutputMeta;
@@ -133,7 +134,8 @@ public class BaseStep extends Thread
             MergeRowsMeta.class,
             ConstantMeta.class,
             DenormaliserMeta.class,
-            FlattenerMeta.class
+            FlattenerMeta.class,
+            ValueMapperMeta.class
 		};
 	
 	public static final String type_desc[] = 
@@ -183,7 +185,8 @@ public class BaseStep extends Thread
             "MergeRows",
             "Constant",
             "Denormaliser",
-            "Flattener"
+            "Flattener",
+            "ValueMapper"
 		};
 
 	public static final String type_long_desc[] = 
@@ -233,7 +236,8 @@ public class BaseStep extends Thread
             "Merge Rows",
             "Add constants",
             "Row denormaliser",
-            "Row flattener"
+            "Row flattener",
+            "Value Mapper"
 		};
 
 	public static final String type_tooltip_desc[] = 
@@ -283,7 +287,8 @@ public class BaseStep extends Thread
             "Merge two streams of rows, sorted on a certain key.  The two streams are compared and the equals, changed, deleted and new rows are flagged.",
             "Add one or more constants to the input rows",
             "Denormalises rows by looking up key-value pairs and by assigning them to new fields in the output rows."+Const.CR+"This method aggregates and needs the input rows to be sorted on the grouping fields",
-            "Flattens consequetive rows based on the order in which they appear in the input stream"
+            "Flattens consequetive rows based on the order in which they appear in the input stream",
+            "Maps values of a certain field from one value to another"
 		};
 
 	public static final String image_filename[] =
@@ -333,7 +338,8 @@ public class BaseStep extends Thread
             "MRG.png",
             "CST.png",
             "UNP.png",
-            "FLA.png"
+            "FLA.png",
+            "VMP.png"
 		};
 	
 	public static final String category[] = 
@@ -383,7 +389,8 @@ public class BaseStep extends Thread
             "Transform",        // "MergRows"
             "Transform",        // "Constant"
             "Transform",        // "Denormaliser"
-            "Transform"         // "Flattener"
+            "Transform",        // "Flattener"
+            "Transform",        // "ValueMapper"
 		};
 
     public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Mapping", "Experimental" };
