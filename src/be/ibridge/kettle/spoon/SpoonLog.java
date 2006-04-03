@@ -734,25 +734,32 @@ public class SpoonLog extends Composite
 	
 	public void preview()
 	{
-		log.logDetailed(toString(), Messages.getString("SpoonLog.Log.DoPreview")); //$NON-NLS-1$
-		PreviewSelectDialog psd = new PreviewSelectDialog(shell, SWT.NONE, log, spoon.props, spoon.getTransMeta());
-		psd.open();
-		if (psd.previewSteps!=null)
-		{
-            Row arguments = getArguments(spoon.getTransMeta());
-            if (arguments!=null)
-            {
-                String args[] = convertArguments(arguments);
-                
-    			spoon.tabfolder.setSelection(1);
-    			trans=new Trans(log, spoon.getTransMeta(), psd.previewSteps, psd.previewSizes);
-    			trans.execute(args);
-    			preview=true;
-    			readLog();
-    			running=!running;
-    			wStart.setText(STOP_TEXT);
-            }
-		}
+        try
+        {
+    		log.logDetailed(toString(), Messages.getString("SpoonLog.Log.DoPreview")); //$NON-NLS-1$
+    		PreviewSelectDialog psd = new PreviewSelectDialog(shell, SWT.NONE, log, spoon.props, spoon.getTransMeta());
+    		psd.open();
+    		if (psd.previewSteps!=null)
+    		{
+                Row arguments = getArguments(spoon.getTransMeta());
+                if (arguments!=null)
+                {
+                    String args[] = convertArguments(arguments);
+                    
+        			spoon.tabfolder.setSelection(1);
+        			trans=new Trans(log, spoon.getTransMeta(), psd.previewSteps, psd.previewSizes);
+        			trans.execute(args);
+        			preview=true;
+        			readLog();
+        			running=!running;
+        			wStart.setText(STOP_TEXT);
+                }
+    		}
+        }
+        catch(Exception e)
+        {
+            new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.Title.UnexpectedErrorDuringPreview"), Messages.getString("SpoonLog.Dialog.Message.UnexpectedErrorDuringPreview"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
 	}
 
 	private String[] convertArguments(Row arguments)
