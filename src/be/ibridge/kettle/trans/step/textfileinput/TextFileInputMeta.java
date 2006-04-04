@@ -700,7 +700,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             retval.append("        " + XMLHandler.addTagValue("filter_string", filter[i].getFilterString(), false));
             retval.append("        " + XMLHandler.addTagValue("filter_position", filter[i].getFilterPosition(), false));
             retval.append("        " + XMLHandler.addTagValue("filter_is_last_line", filter[i].isFilterLastLine(), false));
-            retval.append("      <filter>" + Const.CR);
+            retval.append("      </filter>" + Const.CR);
         }
         retval.append("      </filters>" + Const.CR);
         
