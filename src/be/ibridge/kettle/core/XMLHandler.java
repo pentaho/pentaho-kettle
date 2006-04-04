@@ -569,29 +569,60 @@ public class XMLHandler
 	public static final String addTagValue(String tag, String val, boolean cr)
 	{
 		StringBuffer value;
-		
-		if (val!=null)
+        
+        if (val!=null && val.length()>0)
 		{
-			value = new StringBuffer(val);
-			Const.repl(value, "&", "&amp;");
-			Const.repl(value, "'", "&apos;");
-			Const.repl(value, "<", "&lt;");
-			Const.repl(value, ">", "&gt;");
-			Const.repl(value, "\"", "&quot;");
+            value = new StringBuffer("<");
+            value.append(tag);
+            value.append(">");
+            
+            for (int i=0;i<val.length();i++)
+            {
+                char c = val.charAt(i);
+                switch(c)
+                {
+                case '&'  : value.append("&amp;"); break;
+                case '\'' : value.append("&apos;"); break;
+                case '<'  : value.append("&lt;"); break;
+                case '>'  : value.append("&gt;"); break;
+                case '"'  : value.append("&quot;"); break;
+                case 0x1A : value.append("CTRL-Z WARNING NO WAY BACK HERE"); break; 
+                default: 
+                    if (((int)c >= 0x20) && 
+                        (
+                          Character.isLetterOrDigit(c) ||
+                          Character.isSpace(c) ||
+                          Character.isWhitespace(c) || 
+                          c==':' ||
+                          c=='\\'
+                        )
+                       )
+                    {
+                        value.append(c);
+                    }
+                    else
+                    {
+                        value.append("&#x"+Integer.toHexString((int)c)+";");
+                    }
+                }
+            }
+            
+            value.append("</");
+            value.append(tag);
+            value.append(">");
 		}
 		else
 		{
-			value = new StringBuffer();
+			value = new StringBuffer("<");
+            value.append(tag);
+            value.append("/>");
 		}
-		//Tom modify these for performance
-//		return "<"+tag+">"+value+"</"+tag+">"+(cr?Const.CR:"");
-		value.insert(0, '<');
-		value.insert(1, tag);
-		value.insert((tag.length()+1), '>');
-		value.append("</");
-		value.append(tag);
-		value.append(">");
-		value.append(cr?Const.CR:"");
+        
+        if (cr)
+        {
+            value.append(Const.CR);
+        }
+        
 		return value.toString();
 	}
 
