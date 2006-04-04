@@ -18,7 +18,6 @@ package be.ibridge.kettle.trans.step.xmlinput;
 
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
