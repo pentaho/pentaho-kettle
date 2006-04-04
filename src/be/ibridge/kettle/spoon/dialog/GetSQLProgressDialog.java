@@ -55,7 +55,7 @@ public class GetSQLProgressDialog
 				}
 				catch(KettleException e)
 				{
-					throw new InvocationTargetException(e, Messages.getString("GetSQLProgressDialog.RuntimeError.UnableToGenerateSQL.DLG0001", e.getMessage())); //Error generating SQL for transformation: \n{0}
+					throw new InvocationTargetException(e, Messages.getString("GetSQLProgressDialog.RuntimeError.UnableToGenerateSQL.Exception", e.getMessage())); //Error generating SQL for transformation: \n{0}
 				}
 			}
 		};

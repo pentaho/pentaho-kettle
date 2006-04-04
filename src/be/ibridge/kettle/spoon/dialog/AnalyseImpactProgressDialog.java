@@ -61,7 +61,7 @@ public class AnalyseImpactProgressDialog
 				{
 					impact.clear();
 					impactHasRun=false;
-					throw new InvocationTargetException(e, Messages.getString("AnalyseImpactProgressDialog.RuntimeError.UnableToAnalyzeImpact.DLG0001", e.toString())); //Problem encountered generating impact list: {0}
+					throw new InvocationTargetException(e, Messages.getString("AnalyseImpactProgressDialog.RuntimeError.UnableToAnalyzeImpact.Exception", e.toString())); //Problem encountered generating impact list: {0}
 				}
 			}
 		};

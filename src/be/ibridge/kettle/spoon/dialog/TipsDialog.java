@@ -77,7 +77,7 @@ public class TipsDialog extends Dialog
 		super(parent, SWT.NONE);
 		props=pr;
 		title=Messages.getString("TipsDialog.Dialog.Tips.Title"); //Spoon tips...
-		message=Messages.getString("TipsDialog.Label.Tips.Text"); //TIP\!
+		message=Messages.getString("TipsDialog.Label.Tips"); //TIP\!
 		this.parent = parent;
 		
 		description=getTip();

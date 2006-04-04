@@ -57,7 +57,7 @@ public class SearchFieldsProgressDialog implements IRunnableWithProgress
 		}
 		catch(KettleStepException kse)
 		{
-			LogWriter.getInstance().logError(Messages.getString("SearchFieldsProgressDialog.Log.SourceName"), Messages.getString("SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage())); //"Search fields progress dialog","Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage()
+			LogWriter.getInstance().logError(toString(), Messages.getString("SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage())); //"Search fields progress dialog","Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage()
 			throw new InvocationTargetException(kse, Messages.getString("SearchFieldsProgressDialog.Log.UnableToGetFields", stepInfo.toString(), kse.getMessage())); //"Unable to get fields for step ["+stepInfo+"] : "+kse.getMessage()
 		}
 

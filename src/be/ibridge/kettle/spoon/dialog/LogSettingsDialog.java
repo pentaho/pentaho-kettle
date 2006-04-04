@@ -93,7 +93,7 @@ public class LogSettingsDialog extends Dialog
 
 		// Filter line
 		wlFilter=new Label(shell, SWT.RIGHT);
-		wlFilter.setText(Messages.getString("LogSettingsDialog.Label.FilterSelection.Text")); //Select filter 
+		wlFilter.setText(Messages.getString("LogSettingsDialog.Label.FilterSelection")); //Select filter 
  		props.setLook(wlFilter);
 		fdlFilter=new FormData();
 		fdlFilter.left = new FormAttachment(0, 0);
@@ -112,7 +112,7 @@ public class LogSettingsDialog extends Dialog
 		wFilter.setLayoutData(fdFilter);
 
 		wlLoglevel=new Label(shell, SWT.RIGHT);
-		wlLoglevel.setText(Messages.getString("LogSettingsDialog.Label.LogLevel.Text")); //Loglevel 
+		wlLoglevel.setText(Messages.getString("LogSettingsDialog.Label.LogLevel")); //Loglevel 
  		props.setLook(wlLoglevel);
 		fdlLoglevel=new FormData();
 		fdlLoglevel.left = new FormAttachment(0, 0);
@@ -133,7 +133,7 @@ public class LogSettingsDialog extends Dialog
 
 		// Time?
 		wlTime=new Label(shell, SWT.RIGHT);
-		wlTime.setText(Messages.getString("LogSettingsDialog.Label.EnableTime.Text")); //Enable Time?
+		wlTime.setText(Messages.getString("LogSettingsDialog.Label.EnableTime")); //Enable Time?
  		props.setLook(wlTime);
 		fdlTime=new FormData();
 		fdlTime.left = new FormAttachment(0, 0);

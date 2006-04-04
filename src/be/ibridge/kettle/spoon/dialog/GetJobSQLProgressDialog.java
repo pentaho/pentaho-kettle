@@ -57,7 +57,7 @@ public class GetJobSQLProgressDialog
 				}
 				catch(KettleException e)
 				{
-					throw new InvocationTargetException(e, Messages.getString("GetJobSQLProgressDialog.RuntimeError.UnableToGenerateSQL.DLG0001", e.getMessage())); //Error generating SQL for job: \n{0}
+					throw new InvocationTargetException(e, Messages.getString("GetJobSQLProgressDialog.RuntimeError.UnableToGenerateSQL.Exception", e.getMessage())); //Error generating SQL for job: \n{0}
 				}
 			}
 		};

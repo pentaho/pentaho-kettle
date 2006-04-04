@@ -58,7 +58,7 @@ public class CheckTransProgressDialog
 				}
 				catch(Exception e)
 				{
-					throw new InvocationTargetException(e, Messages.getString("AnalyseImpactProgressDialog.RuntimeError.ErrorCheckingTransformation.DLG0002", e.toString())); //Problem encountered checking transformation: {0}
+					throw new InvocationTargetException(e, Messages.getString("AnalyseImpactProgressDialog.RuntimeError.ErrorCheckingTransformation.Exception", e.toString())); //Problem encountered checking transformation: {0}
 				}
 			}
 		};

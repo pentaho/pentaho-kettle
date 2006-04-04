@@ -91,7 +91,7 @@ public class PreviewSelectDialog extends Dialog
 		int margin = Const.MARGIN;
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText(Messages.getString("PreviewSelectDialog.Label.Steps.Text")); //Steps: 
+		wlFields.setText(Messages.getString("PreviewSelectDialog.Label.Steps")); //Steps: 
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
