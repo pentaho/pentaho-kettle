@@ -131,8 +131,6 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 	private XMLInputMeta input;
 	
-	private static final String STRING_PREVIEW_ROWS    = "  &Preview rows   "; 
-
 	public static final int dateLengths[] = new int[]
 		{
 			23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6
@@ -167,14 +165,14 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Text file input");
+		shell.setText(Messages.getString("XMLInputDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("XMLInputDialog.Stepname.Label"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -198,7 +196,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		// START OF FILE TAB   ///
 		//////////////////////////
 		wFileTab=new CTabItem(wTabFolder, SWT.NONE);
-		wFileTab.setText("File");
+		wFileTab.setText(Messages.getString("XMLInputDialog.File.Tab"));
 		
 		wFileComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wFileComp);
@@ -210,7 +208,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Filename line
 		wlFilename=new Label(wFileComp, SWT.RIGHT);
-		wlFilename.setText("File or directory ");
+		wlFilename.setText(Messages.getString("XMLInputDialog.Filename.Label"));
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -220,8 +218,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		wbbFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbbFilename);
-		wbbFilename.setText("&Browse");
-		wbbFilename.setToolTipText("Browse for a file or directory & add to the list");
+		wbbFilename.setText(Messages.getString("XMLInputDialog.FilenameBrowse.Button"));
+		wbbFilename.setToolTipText(Messages.getString("XMLInputDialog.FilenameBrowse.Tooltip"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(0, 0);
@@ -229,8 +227,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		wbvFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbvFilename);
-		wbvFilename.setText("&Variable");
-		wbvFilename.setToolTipText("Insert a variable in the filename or directory");
+		wbvFilename.setText(Messages.getString("XMLInputDialog.FilenameVar.Button"));
+		wbvFilename.setToolTipText(Messages.getString("XMLInputDialog.FilenameVar.Tooltip"));
 		fdbvFilename=new FormData();
 		fdbvFilename.right= new FormAttachment(wbbFilename, -margin);
 		fdbvFilename.top  = new FormAttachment(0, 0);
@@ -238,8 +236,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbaFilename);
-		wbaFilename.setText("&Add");
-		wbaFilename.setToolTipText("Add this entry to the list of files & directories.");
+		wbaFilename.setText(Messages.getString("XMLInputDialog.FilenameAdd.Button"));
+		wbaFilename.setToolTipText(Messages.getString("XMLInputDialog.FilenameAdd.Tooltip"));
 		fdbaFilename=new FormData();
 		fdbaFilename.right= new FormAttachment(wbvFilename, -margin);
 		fdbaFilename.top  = new FormAttachment(0, 0);
@@ -255,7 +253,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wFilename.setLayoutData(fdFilename);
 
 		wlFilemask=new Label(wFileComp, SWT.RIGHT);
-		wlFilemask.setText("Regular Expression ");
+		wlFilemask.setText(Messages.getString("XMLInputDialog.RegExp.Label"));
  		props.setLook(wlFilemask);
 		fdlFilemask=new FormData();
 		fdlFilemask.left = new FormAttachment(0, 0);
@@ -273,7 +271,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Filename list line
 		wlFilenameList=new Label(wFileComp, SWT.RIGHT);
-		wlFilenameList.setText("Selected files: ");
+		wlFilenameList.setText(Messages.getString("XMLInputDialog.FilenameList.Label"));
  		props.setLook(wlFilenameList);
 		fdlFilenameList=new FormData();
 		fdlFilenameList.left = new FormAttachment(0, 0);
@@ -284,8 +282,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		// Buttons to the right of the screen...
 		wbdFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbdFilename);
-		wbdFilename.setText("&Delete");
-		wbdFilename.setToolTipText("Delete the selected entries from the list of files.");
+		wbdFilename.setText(Messages.getString("XMLInputDialog.FilenameRemove.Button"));
+		wbdFilename.setToolTipText(Messages.getString("XMLInputDialog.FilenameRemove.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
 		fdbdFilename.top  = new FormAttachment (wFilemask, 40);
@@ -293,8 +291,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		wbeFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbeFilename);
-		wbeFilename.setText("&Edit");
-		wbeFilename.setToolTipText("Edit the selected file and remove from the list.");
+		wbeFilename.setText(Messages.getString("XMLInputDialog.FilenameEdit.Button"));
+		wbeFilename.setToolTipText(Messages.getString("XMLInputDialog.FilenameEdit.Tooltip"));
 		fdbeFilename=new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
 		fdbeFilename.top  = new FormAttachment (wbdFilename, margin);
@@ -302,17 +300,23 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		wbShowFiles=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbShowFiles);
-		wbShowFiles.setText("&Show filename(s)...");
+		wbShowFiles.setText(Messages.getString("XMLInputDialog.ShowFiles.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left   = new FormAttachment(middle, 0);
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
 		ColumnInfo[] colinfo=new ColumnInfo[2];
-		colinfo[ 0]=new ColumnInfo("File/Directory",  ColumnInfo.COLUMN_TYPE_TEXT,    false);
-		colinfo[ 1]=new ColumnInfo("Wildcard",        ColumnInfo.COLUMN_TYPE_TEXT,    false );
+		colinfo[ 0]=new ColumnInfo(
+      Messages.getString("XMLInputDialog.Files.Filename.Column"),
+      ColumnInfo.COLUMN_TYPE_TEXT,
+      false);
+		colinfo[ 1]=new ColumnInfo(
+      Messages.getString("XMLInputDialog.Files.Wildcard.Column"),
+      ColumnInfo.COLUMN_TYPE_TEXT,
+      false );
 		
-		colinfo[ 1].setToolTip("Enter a regular expression here and a directory in the first column.");
+		colinfo[ 1].setToolTip(Messages.getString("XMLInputDialog.Files.Wildcard.Tooltip"));
 		
 		
 		wFilenameList = new TableView(wFileComp, 
@@ -350,7 +354,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		// START OF CONTENT TAB///
 		///
 		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText("Content");
+		wContentTab.setText(Messages.getString("XMLInputDialog.Content.Tab"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
@@ -361,7 +365,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wContentComp.setLayout(contentLayout);
 
 		wlInclFilename=new Label(wContentComp, SWT.RIGHT);
-		wlInclFilename.setText("Include filename in output? ");
+		wlInclFilename.setText(Messages.getString("XMLInputDialog.InclFilename.Label"));
  		props.setLook(wlInclFilename);
 		fdlInclFilename=new FormData();
 		fdlInclFilename.left = new FormAttachment(0, 0);
@@ -370,14 +374,14 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wlInclFilename.setLayoutData(fdlInclFilename);
 		wInclFilename=new Button(wContentComp, SWT.CHECK );
  		props.setLook(wInclFilename);
-		wInclFilename.setToolTipText("Check this to add a field (String) containing the filename.");
+		wInclFilename.setToolTipText(Messages.getString("XMLInputDialog.InclFilename.Tooltip"));
 		fdInclFilename=new FormData();
 		fdInclFilename.left = new FormAttachment(middle, 0);
 		fdInclFilename.top  = new FormAttachment(0, 0);
 		wInclFilename.setLayoutData(fdInclFilename);
 
 		wlInclFilenameField=new Label(wContentComp, SWT.LEFT);
-		wlInclFilenameField.setText("Filename fieldname ");
+		wlInclFilenameField.setText(Messages.getString("XMLInputDialog.InclFilenameField.Label"));
  		props.setLook(wlInclFilenameField);
 		fdlInclFilenameField=new FormData();
 		fdlInclFilenameField.left = new FormAttachment(wInclFilename, margin);
@@ -393,7 +397,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wInclFilenameField.setLayoutData(fdInclFilenameField);
 
 		wlInclRownum=new Label(wContentComp, SWT.RIGHT);
-		wlInclRownum.setText("Rownum in output? ");
+		wlInclRownum.setText(Messages.getString("XMLInputDialog.InclRownum.Label"));
  		props.setLook(wlInclRownum);
 		fdlInclRownum=new FormData();
 		fdlInclRownum.left = new FormAttachment(0, 0);
@@ -402,14 +406,14 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wlInclRownum.setLayoutData(fdlInclRownum);
 		wInclRownum=new Button(wContentComp, SWT.CHECK );
  		props.setLook(wInclRownum);
-		wInclRownum.setToolTipText("Check this to add a field (String) containing the filename.");
+		wInclRownum.setToolTipText(Messages.getString("XMLInputDialog.InclRownum.Tooltip"));
 		fdRownum=new FormData();
 		fdRownum.left = new FormAttachment(middle, 0);
 		fdRownum.top  = new FormAttachment(wInclFilenameField, margin);
 		wInclRownum.setLayoutData(fdRownum);
 
 		wlInclRownumField=new Label(wContentComp, SWT.RIGHT);
-		wlInclRownumField.setText("Rownum fieldname ");
+		wlInclRownumField.setText(Messages.getString("XMLInputDialog.InclRownumField.Label"));
  		props.setLook(wlInclRownumField);
 		fdlInclRownumField=new FormData();
 		fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);
@@ -425,7 +429,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wInclRownumField.setLayoutData(fdInclRownumField);
 
 		wlLimit=new Label(wContentComp, SWT.RIGHT);
-		wlLimit.setText("Limit ");
+		wlLimit.setText(Messages.getString("XMLInputDialog.Limit.Label"));
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -442,7 +446,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wLimit.setLayoutData(fdLimit);
 
         wlPosition=new Label(wContentComp, SWT.RIGHT);
-        wlPosition.setText("Location ");
+        wlPosition.setText(Messages.getString("XMLInputDialog.Location.Label"));
         props.setLook(wlPosition);
         fdlPosition=new FormData();
         fdlPosition.left = new FormAttachment(0, 0);
@@ -452,7 +456,10 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         
         ColumnInfo[] locationColumns = new ColumnInfo[] 
         { 
-            new ColumnInfo("Elements", ColumnInfo.COLUMN_TYPE_TEXT, false)
+            new ColumnInfo(
+              Messages.getString("XMLInputDialog.Position.Elements.Column"),
+              ColumnInfo.COLUMN_TYPE_TEXT,
+              false)
         };
         
         int nrElements = input.getInputPosition()!=null ? input.getInputPosition().length : 0;
@@ -485,7 +492,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		// Fields tab...
 		//
 		wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFieldsTab.setText("Fields");
+		wFieldsTab.setText(Messages.getString("XMLInputDialog.Fields.Tab"));
 		
 		FormLayout fieldsLayout = new FormLayout ();
 		fieldsLayout.marginWidth  = Const.FORM_MARGIN;
@@ -496,7 +503,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
  		props.setLook(wFieldsComp);
 		
 		wGet=new Button(wFieldsComp, SWT.PUSH);
-		wGet.setText(" &Get fields ");
+		wGet.setText(Messages.getString("XMLInputDialog.GetFields.Button"));
 		fdGet=new FormData();
 		fdGet.left=new FormAttachment(50, 0);
 		fdGet.bottom =new FormAttachment(100, 0);
@@ -515,18 +522,54 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		
 		ColumnInfo[] colinf=new ColumnInfo[]
             {
-			 new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,    false),
-			 new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO,  Value.getTypes(), true ),
-			 new ColumnInfo("Format",     ColumnInfo.COLUMN_TYPE_CCOMBO,  formats),
-			 new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,    false),
-			 new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,    false),
-			 new ColumnInfo("Currency",   ColumnInfo.COLUMN_TYPE_TEXT,    false),
-			 new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,    false),
-			 new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,    false),
-			 new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  XMLInputField.trimTypeDesc, true ),
-			 new ColumnInfo("Repeat",     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { "Y", "N" }, true ),
-             new ColumnInfo("Position",   ColumnInfo.COLUMN_TYPE_TEXT,    false),
-            };
+			 new ColumnInfo(
+         Messages.getString("XMLInputDialog.FieldsTable.Name.Column"),
+         ColumnInfo.COLUMN_TYPE_TEXT,
+         false),
+			 new ColumnInfo(
+         Messages.getString("XMLInputDialog.FieldsTable.Type.Column"),
+         ColumnInfo.COLUMN_TYPE_CCOMBO,
+         Value.getTypes(),
+         true ),
+			 new ColumnInfo(
+         Messages.getString("XMLInputDialog.FieldsTable.Format.Column"),
+         ColumnInfo.COLUMN_TYPE_CCOMBO,
+         formats),
+			 new ColumnInfo(
+         Messages.getString("XMLInputDialog.FieldsTable.Format.Column"),
+         ColumnInfo.COLUMN_TYPE_TEXT,
+         false),
+			 new ColumnInfo(
+         Messages.getString("XMLInputDialog.FieldsTable.Precision.Column"),
+         ColumnInfo.COLUMN_TYPE_TEXT,
+         false),
+			 new ColumnInfo(
+         Messages.getString("XMLInputDialog.FieldsTable.Currency.Column"),
+         ColumnInfo.COLUMN_TYPE_TEXT,
+         false),
+			 new ColumnInfo(
+         Messages.getString("XMLInputDialog.FieldsTable.Decimal.Column"),
+         ColumnInfo.COLUMN_TYPE_TEXT,
+         false),
+			 new ColumnInfo(
+         Messages.getString("XMLInputDialog.FieldsTable.Group.Column"),
+         ColumnInfo.COLUMN_TYPE_TEXT,
+         false),
+			 new ColumnInfo(
+         Messages.getString("XMLInputDialog.FieldsTable.TrimType.Column"),
+         ColumnInfo.COLUMN_TYPE_CCOMBO,
+         XMLInputField.trimTypeDesc,
+         true ),
+			 new ColumnInfo(
+         Messages.getString("XMLInputDialog.FieldsTable.Repeat.Column"),
+         ColumnInfo.COLUMN_TYPE_CCOMBO,
+         new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") },
+         true ),
+       new ColumnInfo(
+         Messages.getString("XMLInputDialog.FieldsTable.Position.Column"),
+         ColumnInfo.COLUMN_TYPE_TEXT,
+         false),
+    };
 		
 		wFields=new TableView(wFieldsComp, 
 						      SWT.FULL_SELECTION | SWT.MULTI, 
@@ -561,13 +604,13 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wTabFolder.setLayoutData(fdTabFolder);
 		
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("System.Button.OK"));
 
 		wPreview=new Button(shell, SWT.PUSH);
-		wPreview.setText(STRING_PREVIEW_ROWS);
+		wPreview.setText(Messages.getString("XMLInputDialog.Button.PreviewRows"));
 		
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
 
@@ -647,21 +690,21 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
     					String files[] = tfii.getFiles();
     					if (files!=null && files.length>0)
     					{
-    						EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, "Files read", "Files read:");
+    						EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, Messages.getString("XMLInputDialog.FilesReadSelection.DialogTitle"), Messages.getString("XMLInputDialog.FilesReadSelection.DialogMessage"));
     						esd.setViewOnly();
     						esd.open();
     					}
     					else
     					{
     						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-    						mb.setMessage("No files found!  Please check the filename/directory and regular expression options.");
-    						mb.setText("ERROR");
+    						mb.setMessage(Messages.getString("XMLInputDialog.NoFileFound.DialogMessage"));
+    						mb.setText(Messages.getString("XMLInputDialog.NoFileFound.DialogTitle"));
     						mb.open(); 
     					}
                     }
                     catch(KettleException ex)
                     {
-                        new ErrorDialog(shell, props, "Error parsing input data", "An error occurred while parsing the input data on this dialog", ex);
+                        new ErrorDialog(shell, props, Messages.getString("XMLInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), ex);
                     }
 				}
 			}
@@ -718,7 +761,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 						i++;
 					}
 					
-					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, "Select an Environment Variable", "Select an Environment Variable");
+					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("XMLInputDialog.EnvVarSelection.DialogTitle"), Messages.getString("XMLInputDialog.EnvVarSelection.DialogMessage"));
 					if (esd.open()!=null)
 					{
 						int nr = esd.getSelectionNr();
@@ -763,7 +806,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 							dialog.setFileName( fname );
 						}
 						
-						dialog.setFilterNames(new String[] {"XML files", "All files"});
+						dialog.setFilterNames(new String[] {Messages.getString("System.FileType.XMLFiles"), Messages.getString("System.FileType.AllFiles")});
 						
 						if (dialog.open()!=null)
 						{
@@ -840,7 +883,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
 		wLimit.setText(""+in.getRowLimit());
 		
-		log.logDebug(toString(), "getting fields info...");
+		log.logDebug(toString(), Messages.getString("XMLInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
 		{
 		    XMLInputField field = in.getInputFields()[i];
@@ -857,7 +900,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
     			String group    = field.getGroupSymbol();
     			String decim    = field.getDecimalSymbol();
     			String trim     = field.getTrimTypeDesc();
-    			String rep      = field.isRepeated()?"Y":"N";
+    			String rep      = field.isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No");
     			
                 if (name    !=null) item.setText( 1, name);
     			if (type    !=null) item.setText( 2, type    );
@@ -910,7 +953,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, "Error parsing input data", "An error occurred while parsing the input data on this dialog", e);
+            new ErrorDialog(shell, props, Messages.getString("XMLInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), e);
         }
 		dispose();
 	}
@@ -951,7 +994,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			field.setDecimalSymbol( item.getText(7) );
 			field.setGroupSymbol( item.getText(8) );
 			field.setTrimType( XMLInputField.getTrimType(item.getText(9)) );
-			field.setRepeated( "Y".equalsIgnoreCase(item.getText(10)) );		
+			field.setRepeated( Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(10)) );		
 			field.setFieldPosition( item.getText(11) );
             
 			in.getInputFields()[i] = field;
@@ -1023,7 +1066,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, "Error parsing input data", "An error occurred while parsing the input data on this dialog", e);
+            new ErrorDialog(shell, props, Messages.getString("XMLInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), e);
         }
 	}
     
@@ -1129,7 +1172,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
             TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
             
-            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, "Enter preview size", "Enter the number of rows you would like to preview:");
+            EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("XMLInputDialog.NumberRows.DialogTitle"), Messages.getString("XMLInputDialog.NumberRows.DialogMessage"));
             int previewSize = numberDialog.open();
             if (previewSize>0)
             {
@@ -1145,7 +1188,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, "Error displaying preview data", "An error occurred while trying to preview XML data", e);
+            new ErrorDialog(shell, props, Messages.getString("XMLInputDialog.ErrorPreviewingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorPreviewingData.DialogMessage"), e);
        }
 	}
 

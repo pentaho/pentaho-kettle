@@ -468,7 +468,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unexpected error reading step information from the repository", e);
+			throw new KettleException(Messages.getString("XMLInputMeta.Exception.ErrorReadingRepository"), e);
 		}
 	}
 	
@@ -513,7 +513,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
+			throw new KettleException(Messages.getString("XMLInputMeta.Exception.ErrorSavingToRepository", ""+id_step), e);
 		}
 	}
 	
@@ -596,24 +596,24 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we get input...
 		if (input.length>0)
 		{		
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "This step is not expecting nor reading any input", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XMLInputMeta.CheckResult.NoInputExpected"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Not receiving any input from other steps.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XMLInputMeta.CheckResult.NoInput"), stepinfo);
 			remarks.add(cr);
 		}
 		
 		String files[] = getFiles();
 		if (files==null || files.length==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No files can be found to read.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XMLInputMeta.CheckResult.NoFiles"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "This step is reading "+files.length+" files.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XMLInputMeta.CheckResult.FilesOk", ""+files.length), stepinfo);
 			remarks.add(cr);
 		}
 	}

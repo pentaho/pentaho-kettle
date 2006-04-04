@@ -70,7 +70,7 @@ public class XMLInputFieldPosition
         int equalIndex = encoded.indexOf("=");
         if (equalIndex<0)
         {
-            throw new KettleValueException("Sorry, this is not a valid XML Field Position (no equal sign in code: '"+encoded+"')");
+            throw new KettleValueException(Messages.getString("XMLInputFieldPosition.Exception.InvalidXMLFieldPosition", encoded));
         }
         
         String positionType  = Const.trim( encoded.substring(0, equalIndex) );
@@ -103,7 +103,7 @@ public class XMLInputFieldPosition
         }
         else
         {
-            throw new KettleValueException("Sorry, the position type can either be E (element) or A (attribute), you specified "+positionType);
+            throw new KettleValueException(Messages.getString("XMLInputFieldPosition.Exception.WrongPositionType", positionType));
         }
         
         // Get the element nr

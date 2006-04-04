@@ -60,7 +60,7 @@ public class XMLInput extends BaseStep implements StepInterface
 		    return false;     // This is the end of this step.
 		}
 		
-		logRowlevel("Read row: "+row.toString());
+		logRowlevel(Messages.getString("XMLInput.Log.ReadRow", row.toString()));
         
         putRow(row);
         
@@ -138,7 +138,7 @@ public class XMLInput extends BaseStep implements StepInterface
                         }
                         else
                         {
-                            logDebug("Unable to find position '"+pos.toString()+"' in node "+Const.CR+node);
+                            logDebug(Messages.getString("XMLInput.Log.UnableToFindPosition", pos.toString(), node.toString()));
                         }
                         node=subNode;
                     }
@@ -154,7 +154,7 @@ public class XMLInput extends BaseStep implements StepInterface
                         }
                         else
                         {
-                            logDebug("Unable to find position '"+pos.toString()+"' in node "+Const.CR+node);
+                            logDebug(Messages.getString("XMLInput.Log.UnableToFindPosition", pos.toString(), node.toString()));
                         }
                         node=subNode;
                     }
@@ -310,7 +310,7 @@ public class XMLInput extends BaseStep implements StepInterface
 		{
             if (data.filenr>=data.files.length) // finished processing!
             {
-                logDetailed("Finished processing files.");
+                logDetailed(Messages.getString("XMLInput.Log.FinishedProcessing"));
                 return false;
             }
             
@@ -318,7 +318,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			data.last_file = ( data.filenr==data.files.length-1);
 			data.filename = data.files[data.filenr];
 			
-			logBasic("Opening file: "+data.filename);
+			logBasic(Messages.getString("XMLInput.Log.OpeningFile", data.filename));
 			
 			// Move file pointer ahead!
 			data.filenr++;
@@ -341,7 +341,7 @@ public class XMLInput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Couldn't open file #"+data.filenr+" : "+data.filename+" --> "+e.toString());
+			logError(Messages.getString("XMLInput.Log.UnableToOpenFile", ""+data.filenr, data.filename, e.toString()));
 			stopAll();
 			setErrors(1);
 			return false;
@@ -359,7 +359,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			data.files = meta.getFiles();
 			if (data.files==null || data.files.length==0)
 			{
-				logError("No file(s) specified! Stop processing.");
+				logError(Messages.getString("XMLInput.Log.NoFiles"));
 				return false;
 			}
             
