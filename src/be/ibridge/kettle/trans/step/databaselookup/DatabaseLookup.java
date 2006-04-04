@@ -176,7 +176,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			debug = "setValuesLookup()";
 			data.db.setValuesLookup(lu);
 			debug = "getLookup()";
-			add=data.db.getLookup();
+			add=data.db.getLookup(meta.isFailOnMultipleResults());
 			cache_now=true;
 		}
 				

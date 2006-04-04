@@ -88,6 +88,10 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 	private Text         wOrderBy;
 	private FormData     fdlOrderBy, fdOrderBy;
 
+    private Label        wlFailMultiple;
+    private Button       wFailMultiple;
+    private FormData     fdlFailMultiple, fdFailMultiple;
+
 	private Button wGet, wGetLU;
 	private Listener lsGet, lsGetLU;
 
@@ -258,39 +262,6 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		fdKey.bottom= new FormAttachment(wlKey, 150);
 		wKey.setLayoutData(fdKey);
 
-		// THE UPDATE/INSERT TABLE
-		wlReturn=new Label(shell, SWT.NONE);
-		wlReturn.setText("Values to return from the lookup table :");
- 		props.setLook(wlReturn);
-		fdlReturn=new FormData();
-		fdlReturn.left  = new FormAttachment(0, 0);
-		fdlReturn.top   = new FormAttachment(wKey, margin);
-		wlReturn.setLayoutData(fdlReturn);
-		
-		int UpInsCols=4;
-		int UpInsRows= (input.getReturnValueField()!=null?input.getReturnValueField().length:1);
-		
-		ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
-		ciReturn[0]=new ColumnInfo("Field",    ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		ciReturn[1]=new ColumnInfo("New name", ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		ciReturn[2]=new ColumnInfo("Default",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		ciReturn[3]=new ColumnInfo("Type",     ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes());
-		
-		wReturn=new TableView(shell, 
-							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
-							  ciReturn, 
-							  UpInsRows,  
-							  lsMod,
-							  props
-							  );
-
-		fdReturn=new FormData();
-		fdReturn.left  = new FormAttachment(0, 0);
-		fdReturn.top   = new FormAttachment(wlReturn, margin);
-		fdReturn.right = new FormAttachment(100, 0);
-		fdReturn.bottom= new FormAttachment(100, -60);
-		wReturn.setLayoutData(fdReturn);
-
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(" &OK ");
@@ -316,11 +287,70 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
  		props.setLook(wOrderBy);
 		fdOrderBy=new FormData();
 		fdOrderBy.left   = new FormAttachment(middle, 0);
-		fdOrderBy.top    = new FormAttachment(wReturn, margin);
+		fdOrderBy.bottom = new FormAttachment(wOK, -2*margin);
 		fdOrderBy.right  = new FormAttachment(100, 0);
 		wOrderBy.setLayoutData(fdOrderBy);
 
+        // FailMultiple?
+        wlFailMultiple=new Label(shell, SWT.RIGHT);
+        wlFailMultiple.setText("Fail on multiple results?");
+        props.setLook(wlFailMultiple);
+        fdlFailMultiple=new FormData();
+        fdlFailMultiple.left   = new FormAttachment(0, 0);
+        fdlFailMultiple.right  = new FormAttachment(middle, -margin);
+        fdlFailMultiple.bottom = new FormAttachment(wOrderBy, -margin);
+        wlFailMultiple.setLayoutData(fdlFailMultiple);
+        wFailMultiple=new Button(shell, SWT.CHECK);
+        props.setLook(wFailMultiple);
+        fdFailMultiple=new FormData();
+        fdFailMultiple.left   = new FormAttachment(middle, 0);
+        fdFailMultiple.bottom = new FormAttachment(wOrderBy, -margin);
+        wFailMultiple.setLayoutData(fdFailMultiple);
+        wFailMultiple.addSelectionListener(new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent e)
+                {
+                    setFlags();
+                }
+            }
+        );
 
+        
+        // THE UPDATE/INSERT TABLE
+        wlReturn=new Label(shell, SWT.NONE);
+        wlReturn.setText("Values to return from the lookup table :");
+        props.setLook(wlReturn);
+        fdlReturn=new FormData();
+        fdlReturn.left  = new FormAttachment(0, 0);
+        fdlReturn.top   = new FormAttachment(wKey, margin);
+        wlReturn.setLayoutData(fdlReturn);
+        
+        int UpInsCols=4;
+        int UpInsRows= (input.getReturnValueField()!=null?input.getReturnValueField().length:1);
+        
+        ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
+        ciReturn[0]=new ColumnInfo("Field",    ColumnInfo.COLUMN_TYPE_TEXT,   false);
+        ciReturn[1]=new ColumnInfo("New name", ColumnInfo.COLUMN_TYPE_TEXT,   false);
+        ciReturn[2]=new ColumnInfo("Default",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+        ciReturn[3]=new ColumnInfo("Type",     ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes());
+        
+        wReturn=new TableView(shell, 
+                              SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
+                              ciReturn, 
+                              UpInsRows,  
+                              lsMod,
+                              props
+                              );
+
+        fdReturn=new FormData();
+        fdReturn.left  = new FormAttachment(0, 0);
+        fdReturn.top   = new FormAttachment(wlReturn, margin);
+        fdReturn.right = new FormAttachment(100, 0);
+        fdReturn.bottom= new FormAttachment(wFailMultiple, -margin);
+        wReturn.setLayoutData(fdReturn);
+
+
+        
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();        } };
 		lsGet      = new Listener() { public void handleEvent(Event e) { get();       } };
@@ -367,7 +397,13 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		return stepname;
 	}
 
-	/**
+	private void setFlags()
+    {
+        wlOrderBy.setEnabled( !wFailMultiple.getSelection() );
+        wOrderBy.setEnabled( !wFailMultiple.getSelection() );
+    }
+
+    /**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
 	public void getData()
@@ -407,12 +443,15 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 			wConnection.setText( transMeta.getDatabase(0).getName() );
 		}
 		if (input.getOrderByClause()!=null)      wOrderBy.setText(input.getOrderByClause());
-
+		wFailMultiple.setSelection(input.isFailOnMultipleResults());
+        
 		wStepname.selectAll();
 		wKey.setRowNums();
 		wKey.optWidth(true);
 		wReturn.setRowNums();
 		wReturn.optWidth(true);
+        
+        setFlags();
 	}
 	
 	private void cancel()
@@ -463,7 +502,8 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		input.setTablename( wTable.getText() ); 
 		input.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
 		input.setOrderByClause( wOrderBy.getText() );
-
+		input.setFailOnMultipleResults( wFailMultiple.getSelection() );
+        
 		stepname = wStepname.getText(); // return value
 
 		if (transMeta.findDatabase(wConnection.getText())==null)
