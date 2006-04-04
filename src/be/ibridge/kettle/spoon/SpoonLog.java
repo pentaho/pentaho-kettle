@@ -389,9 +389,9 @@ public class SpoonLog extends Composite
 	public void startstopReplay() {
 		DateValidator dateValidator = new DateValidator();
 		InputDialog id = new InputDialog(shell,
-				Messages.getString("SpoonLog.Dialog.Title.EnterReplayDate"), //$NON-NLS-1$
-				Messages.getString("SpoonLog.Dialog.Message.WhatIsTheExecutionDate1") + Const.CR //$NON-NLS-1$
-						+ Messages.getString("SpoonLog.Dialog.Message.WhatIsTheExecutionDate2"), dateValidator.df.format(new Date()), //$NON-NLS-1$
+				Messages.getString("SpoonLog.Dialog.EnterReplayDate.Title"), //$NON-NLS-1$
+				Messages.getString("SpoonLog.Dialog.WhatIsTheExecutionDate1.Message") + Const.CR //$NON-NLS-1$
+						+ Messages.getString("SpoonLog.Dialog.WhatIsTheExecutionDate2.Message"), dateValidator.df.format(new Date()), //$NON-NLS-1$
 				dateValidator);
 		int answer = id.open();
 		if (answer == 1) {
@@ -421,9 +421,9 @@ public class SpoonLog extends Composite
 				else
 				{
 					MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-																			 Messages.getString("SpoonLog.Dialog.Title.FileHasChanged"),  //$NON-NLS-1$
+																			 Messages.getString("SpoonLog.Dialog.FileHasChanged.Title"),  //$NON-NLS-1$
 																			 null,
-																			 Messages.getString("SpoonLog.Dialog.Message.FileHasChanged1")+Const.CR+Messages.getString("SpoonLog.Dialog.Message.FileHasChanged2")+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
+																			 Messages.getString("SpoonLog.Dialog.FileHasChanged1.Message")+Const.CR+Messages.getString("SpoonLog.Dialog.FileHasChanged2.Message")+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
 																			 MessageDialog.QUESTION,
 																			 new String[] { Messages.getString("System.Yes"), Messages.getString("System.No") }, //$NON-NLS-1$ //$NON-NLS-2$
 																			 0,
@@ -458,7 +458,7 @@ public class SpoonLog extends Composite
 					catch(KettleException e)
 					{
 						trans=null;
-						new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.Title.ErrorOpeningTransformation"), Messages.getString("SpoonLog.Dialog.Message.ErrorOpeningTransformation"), e); //$NON-NLS-1$ //$NON-NLS-2$
+						new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.ErrorOpeningTransformation.Title"), Messages.getString("SpoonLog.Dialog.ErrorOpeningTransformation.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					readLog();
 					if (trans!=null)
@@ -479,8 +479,8 @@ public class SpoonLog extends Composite
 				else
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText(Messages.getString("SpoonLog.Dialog.Title.DoNoStartTransformationTwice")); //$NON-NLS-1$
-					m.setMessage(Messages.getString("SpoonLog.Dialog.Message.DoNoStartTransformationTwice"));	 //$NON-NLS-1$
+					m.setText(Messages.getString("SpoonLog.Dialog.DoNoStartTransformationTwice.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("SpoonLog.Dialog.DoNoStartTransformationTwice.Message"));	 //$NON-NLS-1$
 					m.open();
 				}
 			}
@@ -489,23 +489,23 @@ public class SpoonLog extends Composite
 				if (spoon.getTransMeta().hasChanged())
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText(Messages.getString("SpoonLog.Dialog.Title.SaveTransformationBeforeRunning")); //$NON-NLS-1$
-					m.setMessage(Messages.getString("SpoonLog.Dialog.Message.SaveTransformationBeforeRunning"));	 //$NON-NLS-1$
+					m.setText(Messages.getString("SpoonLog.Dialog.SaveTransformationBeforeRunning.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("SpoonLog.Dialog.SaveTransformationBeforeRunning.Message"));	 //$NON-NLS-1$
 					m.open();
 				}
 				else
 				if (spoon.rep!=null && spoon.getTransMeta().getName()==null)
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText(Messages.getString("SpoonLog.Dialog.Title.GiveTransformationANameBeforeRunning")); //$NON-NLS-1$
-					m.setMessage(Messages.getString("SpoonLog.Dialog.Message.GiveTransformationANameBeforeRunning"));	 //$NON-NLS-1$
+					m.setText(Messages.getString("SpoonLog.Dialog.GiveTransformationANameBeforeRunning.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("SpoonLog.Dialog.GiveTransformationANameBeforeRunning.Message"));	 //$NON-NLS-1$
 					m.open();
 				}
 				else
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText(Messages.getString("SpoonLog.Dialog.Title.SaveTransformationBeforeRunning2")); //$NON-NLS-1$
-					m.setMessage(Messages.getString("SpoonLog.Dialog.Message.SaveTransformationBeforeRunning2"));	 //$NON-NLS-1$
+					m.setText(Messages.getString("SpoonLog.Dialog.SaveTransformationBeforeRunning2.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("SpoonLog.Dialog.SaveTransformationBeforeRunning2.Message"));	 //$NON-NLS-1$
 					m.open();
 				}
 			}
@@ -520,7 +520,7 @@ public class SpoonLog extends Composite
 			}
 			catch(KettleException e)
 			{
-				new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.Title.ErrorWritingLogRecord"), Messages.getString("SpoonLog.Dialog.Message.ErrorWritingLogRecord"), e);  //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e);  //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			wStart.setText(START_TEXT);
 			running=!running;
@@ -725,7 +725,7 @@ public class SpoonLog extends Composite
 			}
 			catch(KettleException e)
 			{
-				new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.Title.ErrorWritingLogRecord"), Messages.getString("SpoonLog.Dialog.Message.ErrorWritingLogRecord"), e);  //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e);  //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		
@@ -758,7 +758,7 @@ public class SpoonLog extends Composite
         }
         catch(Exception e)
         {
-            new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.Title.UnexpectedErrorDuringPreview"), Messages.getString("SpoonLog.Dialog.Message.UnexpectedErrorDuringPreview"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.UnexpectedErrorDuringPreview.Title"), Messages.getString("SpoonLog.Dialog.UnexpectedErrorDuringPreview.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
 	}
 
@@ -862,7 +862,7 @@ public class SpoonLog extends Composite
 			String err_lines[] = new String[err.size()];
 			for (i=0;i<err_lines.length;i++) err_lines[i] = (String)err.get(i);
 			
-			EnterSelectionDialog esd = new EnterSelectionDialog(shell, spoon.props, err_lines, Messages.getString("SpoonLog.Dialog.Title.ErrorLines"), Messages.getString("SpoonLog.Dialog.Message.ErrorLines")); //$NON-NLS-1$ //$NON-NLS-2$
+			EnterSelectionDialog esd = new EnterSelectionDialog(shell, spoon.props, err_lines, Messages.getString("SpoonLog.Dialog.ErrorLines.Title"), Messages.getString("SpoonLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();
 			if (line!=null)
 			{

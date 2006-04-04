@@ -301,8 +301,8 @@ public class SpoonGraph extends Canvas
                         if (spoon.getTransMeta().hasLoop(candidate.getFromStep()))
                         {
                             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
-                            mb.setMessage(Messages.getString("SpoonGraph.Dialog.Message.HopCausesLoop")); //$NON-NLS-1$
-                            mb.setText(Messages.getString("SpoonGraph.Dialog.Title.HopCausesLoop")); //$NON-NLS-1$
+                            mb.setMessage(Messages.getString("SpoonGraph.Dialog.HopCausesLoop.Message")); //$NON-NLS-1$
+                            mb.setText(Messages.getString("SpoonGraph.Dialog.HopCausesLoop.Title")); //$NON-NLS-1$
                             mb.open();
                             int idx = spoon.getTransMeta().indexOfTransHop(candidate);
                             spoon.getTransMeta().removeTransHop(idx);
@@ -387,8 +387,8 @@ public class SpoonGraph extends Canvas
                                     int id = 0;
                                     if (!spoon.props.getAutoSplit())
                                     {
-                                        MessageDialogWithToggle md = new MessageDialogWithToggle(shell, Messages.getString("SpoonGraph.Dialog.Title.SplitHop"), null, //$NON-NLS-1$
-                                                Messages.getString("SpoonGraph.Dialog.Message.SplitHop") + Const.CR + hi.toString(), MessageDialog.QUESTION, new String[] { //$NON-NLS-1$
+                                        MessageDialogWithToggle md = new MessageDialogWithToggle(shell, Messages.getString("SpoonGraph.Dialog.SplitHop.Title"), null, //$NON-NLS-1$
+                                                Messages.getString("SpoonGraph.Dialog.SplitHop.Message") + Const.CR + hi.toString(), MessageDialog.QUESTION, new String[] { //$NON-NLS-1$
                                                         Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, 0, Messages.getString("SpoonGraph.Dialog.Option.SplitHop.DoNotAskAgain"), spoon.props.getAutoSplit()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                                         id = md.open();
                                         spoon.props.setAutoSplit(md.getToggleState());
@@ -732,8 +732,8 @@ public class SpoonGraph extends Canvas
                                 if (spoon.getTransMeta().findStep(step) == null)
                                 {
                                     MessageBox mb = new MessageBox(shell, SWT.OK);
-                                    mb.setMessage(Messages.getString("SpoonGraph.Dialog.Message.ItemCanNotBePlacedOnCanvas")); //$NON-NLS-1$
-                                    mb.setText(Messages.getString("SpoonGraph.Dialog.Title.ItemCanNotBePlacedOnCanvas")); //$NON-NLS-1$
+                                    mb.setMessage(Messages.getString("SpoonGraph.Dialog.ItemCanNotBePlacedOnCanvas.Message")); //$NON-NLS-1$
+                                    mb.setText(Messages.getString("SpoonGraph.Dialog.ItemCanNotBePlacedOnCanvas.Title")); //$NON-NLS-1$
                                     mb.open();
                                     return;
                                 }
@@ -742,8 +742,8 @@ public class SpoonGraph extends Canvas
                     if (stepMeta.isDrawn() || spoon.getTransMeta().isStepUsedInTransHops(stepMeta))
                     {
                         MessageBox mb = new MessageBox(shell, SWT.OK);
-                        mb.setMessage(Messages.getString("SpoonGraph.Dialog.Message.StepIsAlreadyOnCanvas")); //$NON-NLS-1$
-                        mb.setText(Messages.getString("SpoonGraph.Dialog.Title.StepIsAlreadyOnCanvas")); //$NON-NLS-1$
+                        mb.setMessage(Messages.getString("SpoonGraph.Dialog.StepIsAlreadyOnCanvas.Message")); //$NON-NLS-1$
+                        mb.setText(Messages.getString("SpoonGraph.Dialog.StepIsAlreadyOnCanvas.Title")); //$NON-NLS-1$
                         mb.open();
                         return;
                     }
@@ -1253,8 +1253,8 @@ public class SpoonGraph extends Canvas
                 public void widgetSelected(SelectionEvent e)
                 {
                     selected_steps = null;
-                    String tt = Messages.getString("SpoonGraph.Dialog.Title.NrOfCopiesOfStep"); //$NON-NLS-1$
-                    String mt = Messages.getString("SpoonGraph.Dialog.Message.NrOfCopiesOfStep"); //$NON-NLS-1$
+                    String tt = Messages.getString("SpoonGraph.Dialog.NrOfCopiesOfStep.Title"); //$NON-NLS-1$
+                    String mt = Messages.getString("SpoonGraph.Dialog.NrOfCopiesOfStep.Message"); //$NON-NLS-1$
                     EnterNumberDialog nd = new EnterNumberDialog(shell, spoon.props, stepMeta.getCopies(), tt, mt);
                     int cop = nd.open();
                     if (cop >= 0)
@@ -1363,8 +1363,8 @@ public class SpoonGraph extends Canvas
                         {
                             spoon.refreshGraph();
                             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
-                            mb.setMessage(Messages.getString("SpoonGraph.Dialog.Message.LoopsAreNotAllowed")); //$NON-NLS-1$
-                            mb.setText(Messages.getString("SpoonGraph.Dialog.Title.LoopsAreNotAllowed")); //$NON-NLS-1$
+                            mb.setMessage(Messages.getString("SpoonGraph.Dialog.LoopsAreNotAllowed.Message")); //$NON-NLS-1$
+                            mb.setText(Messages.getString("SpoonGraph.Dialog.LoopsAreNotAllowed.Title")); //$NON-NLS-1$
                             mb.open();
 
                             hi.flip();
@@ -1390,8 +1390,8 @@ public class SpoonGraph extends Canvas
                         {
                             hi.setEnabled(!hi.isEnabled());
                             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-                            mb.setMessage(Messages.getString("SpoonGraph.Dialog.Message.LoopAfterHopEnabled")); //$NON-NLS-1$
-                            mb.setText(Messages.getString("SpoonGraph.Dialog.Title.LoopAfterHopEnabled")); //$NON-NLS-1$
+                            mb.setMessage(Messages.getString("SpoonGraph.Dialog.LoopAfterHopEnabled.Message")); //$NON-NLS-1$
+                            mb.setText(Messages.getString("SpoonGraph.Dialog.LoopAfterHopEnabled.Title")); //$NON-NLS-1$
                             mb.open();
                         }
                         else
@@ -1471,8 +1471,8 @@ public class SpoonGraph extends Canvas
                         public void widgetSelected(SelectionEvent e)
                         {
                             selrect = null;
-                            String title = Messages.getString("SpoonGraph.Dialog.Title.NoteEditor"); //$NON-NLS-1$
-                            String message = Messages.getString("SpoonGraph.Dialog.Message.NoteEditor"); //$NON-NLS-1$
+                            String title = Messages.getString("SpoonGraph.Dialog.NoteEditor.Title"); //$NON-NLS-1$
+                            String message = Messages.getString("SpoonGraph.Dialog.NoteEditor.Message"); //$NON-NLS-1$
                             EnterTextDialog dd = new EnterTextDialog(shell, title, message, ""); //$NON-NLS-1$
                             String n = dd.open();
                             if (n != null)
@@ -1583,8 +1583,8 @@ public class SpoonGraph extends Canvas
             if (stMeta == null || !stMeta.isSelected()) nrsels++;
 
             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_WARNING);
-            mb.setText(Messages.getString("SpoonGraph.Dialog.Title.Warning.DeleteSteps")); //$NON-NLS-1$
-            String message = Messages.getString("SpoonGraph.Dialog.Message.Warning.DeleteSteps") + nrsels + Messages.getString("SpoonGraph.Dialog.Message.Warning.DeleteSteps2") + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
+            mb.setText(Messages.getString("SpoonGraph.Dialog.Warning.Title.DeleteSteps")); //$NON-NLS-1$
+            String message = Messages.getString("SpoonGraph.Dialog.Warning.Message.DeleteSteps") + nrsels + Messages.getString("SpoonGraph.Dialog.Warning.Message.DeleteSteps2") + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
             for (int i = spoon.getTransMeta().nrSteps() - 1; i >= 0; i--)
             {
                 StepMeta stepMeta = spoon.getTransMeta().getStep(i);
@@ -1612,8 +1612,8 @@ public class SpoonGraph extends Canvas
 
     public void editDescription(StepMeta stepMeta)
     {
-        String title = Messages.getString("SpoonGraph.Dialog.Title.StepDescription"); //$NON-NLS-1$
-        String message = Messages.getString("SpoonGraph.Dialog.Message.StepDescription"); //$NON-NLS-1$
+        String title = Messages.getString("SpoonGraph.Dialog.StepDescription.Title"); //$NON-NLS-1$
+        String message = Messages.getString("SpoonGraph.Dialog.StepDescription.Message"); //$NON-NLS-1$
         EnterTextDialog dd = new EnterTextDialog(shell, title, message, stepMeta.getDescription());
         String d = dd.open();
         if (d != null) stepMeta.setDescription(d);
@@ -1660,11 +1660,11 @@ public class SpoonGraph extends Canvas
         }
         catch (InvocationTargetException e)
         {
-            new ErrorDialog(shell, spoon.props, Messages.getString("SpoonGraph.Dialog.Title.GettingFields"), Messages.getString("SpoonGraph.Dialog.Message.GettingFields"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, spoon.props, Messages.getString("SpoonGraph.Dialog.GettingFields.Title"), Messages.getString("SpoonGraph.Dialog.GettingFields.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
         catch (InterruptedException e)
         {
-            new ErrorDialog(shell, spoon.props, Messages.getString("SpoonGraph.Dialog.Title.GettingFields"), Messages.getString("SpoonGraph.Dialog.Message.GettingFields"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, spoon.props, Messages.getString("SpoonGraph.Dialog.GettingFields.Title"), Messages.getString("SpoonGraph.Dialog.GettingFields.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         Row fields = op.getFields();
@@ -1685,8 +1685,8 @@ public class SpoonGraph extends Canvas
         else
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-            mb.setMessage(Messages.getString("SpoonGraph.Dialog.Message.CouldntFindFields")); //$NON-NLS-1$
-            mb.setText(Messages.getString("SpoonGraph.Dialog.Title.CouldntFindFields")); //$NON-NLS-1$
+            mb.setMessage(Messages.getString("SpoonGraph.Dialog.CouldntFindFields.Message")); //$NON-NLS-1$
+            mb.setText(Messages.getString("SpoonGraph.Dialog.CouldntFindFields.Title")); //$NON-NLS-1$
             mb.open();
         }
 
@@ -2096,8 +2096,8 @@ public class SpoonGraph extends Canvas
     {
         NotePadMeta before = (NotePadMeta) ni.clone();
 
-        String title = Messages.getString("SpoonGraph.Dialog.Title.EditNote"); //$NON-NLS-1$
-        String message = Messages.getString("SpoonGraph.Dialog.Message.EditNote"); //$NON-NLS-1$
+        String title = Messages.getString("SpoonGraph.Dialog.EditNote.Title"); //$NON-NLS-1$
+        String message = Messages.getString("SpoonGraph.Dialog.EditNote.Message"); //$NON-NLS-1$
         EnterTextDialog dd = new EnterTextDialog(shell, title, message, ni.getNote());
         String n = dd.open();
         if (n != null)

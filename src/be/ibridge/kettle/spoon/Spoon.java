@@ -796,8 +796,8 @@ public class Spoon
                                 {
                                     rep=null;
                                     MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                                    mb.setMessage(Messages.getString("Spoon.Dialog.Message.UnableConnectRepository"));//I was unable to connect to this repository!
-                                    mb.setText(Messages.getString("Spoon.Dialog.Title.UnableConnectRepository"));//Error!
+                                    mb.setMessage(Messages.getString("Spoon.Dialog.UnableConnectRepository.Message"));//I was unable to connect to this repository!
+                                    mb.setText(Messages.getString("Spoon.Dialog.UnableConnectRepository.Title"));//Error!
                                     mb.open();
                                 }
                             }
@@ -825,8 +825,8 @@ public class Spoon
                             {
                                 clear();
                                 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                                mb.setMessage(Messages.getString("Spoon.Dialog.Message.UnableLoadTransformation"));//Can't load this transformation.  Please connect to the correct repository first.
-                                mb.setText(Messages.getString("Spoon.Dialog.Title.UnableLoadTransformation"));//Error!
+                                mb.setMessage(Messages.getString("Spoon.Dialog.UnableLoadTransformation.Message"));//Can't load this transformation.  Please connect to the correct repository first.
+                                mb.setText(Messages.getString("Spoon.Dialog.UnableLoadTransformation.Title"));//Error!
                                 mb.open();
                             }
                         }
@@ -843,7 +843,7 @@ public class Spoon
                             {
                                 clear();
                                 //"Error loading transformation", "I was unable to load this transformation from the XML file because of an error"
-                                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.Title.LoadTransformationError"), Messages.getString("Spoon.Dialog.Message.LoadTransformationError"), ke);
+                                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.LoadTransformationError.Title"), Messages.getString("Spoon.Dialog.LoadTransformationError.Message"), ke);
                             }
                         }
                         setShellText();
@@ -1386,8 +1386,8 @@ public class Spoon
                 if (name.equalsIgnoreCase(STRING_STEPS     )) 
                 {
                     MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-                    mb.setMessage(Messages.getString("Spoon.Dialog.Message.WarningCreateNewSteps"));//Please use the 'Base step types' below to create new steps.
-                    mb.setText(Messages.getString("Spoon.Dialog.Title.WarningCreateNewSteps"));//Tip!
+                    mb.setMessage(Messages.getString("Spoon.Dialog.WarningCreateNewSteps.Message"));//Please use the 'Base step types' below to create new steps.
+                    mb.setText(Messages.getString("Spoon.Dialog.WarningCreateNewSteps.Title"));//Tip!
                     mb.open();
                 } 
                 //refreshTree();
@@ -1649,12 +1649,12 @@ public class Spoon
                     catch(KettleDatabaseException dbe)
                     {
                         
-                        new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.Title.ERROR"), Messages.getString("Spoon.Dialog.Message.ErrorDeletingConnection",name), dbe);//"Error deleting connection ["+db+"] from repository!"
+                        new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ERROR.Title"), Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Message",name), dbe);//"Error deleting connection ["+db+"] from repository!"
                     }
                 }
                 else
                 {
-                    new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.Title.ErrorDeletingConnection"),Messages.getString("Spoon.Dialog.Message.ErrorDeletingConnection",name) , new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyUser")));//"Error deleting connection ["+db+"] from repository!" //This user is read-only!
+                    new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Title"),Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Message",name) , new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyUser")));//"Error deleting connection ["+db+"] from repository!" //This user is read-only!
                 }
             }
 
@@ -1688,7 +1688,7 @@ public class Spoon
             }
             catch(Throwable e)
             {
-                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.Title.UnableOpenDialog"), Messages.getString("Spoon.Dialog.Message.UnableOpenDialog"), new Exception(e));//"Unable to open dialog for this step"
+                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnableOpenDialog.Title"), Messages.getString("Spoon.Dialog.UnableOpenDialog.Message"), new Exception(e));//"Unable to open dialog for this step"
             }
 
             if (stepname!=null)
@@ -1716,8 +1716,8 @@ public class Spoon
                 {
                     stepname=newname;
                     MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-                    mb.setMessage(Messages.getString("Spoon.Dialog.Message.StepnameExists",stepname));//"This stepname already exists.  Spoon changed the stepname to ["+stepname+"]"
-                    mb.setText(Messages.getString("Spoon.Dialog.Message.Tip"));
+                    mb.setMessage(Messages.getString("Spoon.Dialog.StepnameExists.Message",stepname));//"This stepname already exists.  Spoon changed the stepname to ["+stepname+"]"
+                    mb.setText(Messages.getString("Spoon.Dialog.Tip.Message"));
                     mb.open();
                 }
                 stepMeta.setName(stepname);
@@ -1907,7 +1907,7 @@ public class Spoon
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.Title.UnablePasteSteps"),Messages.getString("Spoon.Dialog.Message.UnablePasteSteps") , e);//"Error pasting steps...", "I was unable to paste steps to this transformation"
+            new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnablePasteSteps.Title"),Messages.getString("Spoon.Dialog.UnablePasteSteps.Message") , e);//"Error pasting steps...", "I was unable to paste steps to this transformation"
         }
     }
     
@@ -2061,8 +2061,8 @@ public class Spoon
             if (transMeta.findTransHop(hi.getFromStep(), hi.getToStep())!=null)
             {
                 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                mb.setMessage(Messages.getString("Spoon.Dialog.Message.HopExists"));//"This hop already exists!"
-                mb.setText(Messages.getString("Spoon.Dialog.Title.HopExists"));//Error!
+                mb.setMessage(Messages.getString("Spoon.Dialog.HopExists.Message"));//"This hop already exists!"
+                mb.setText(Messages.getString("Spoon.Dialog.HopExists.Title"));//Error!
                 mb.open();
                 error=true;
             }
@@ -2073,8 +2073,8 @@ public class Spoon
                 refreshGraph();
                 
                 MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-                mb.setMessage(Messages.getString("Spoon.Dialog.Message.AddingHopCausesLoop"));//Adding this hop causes a loop in the transformation.  Loops are not allowed!
-                mb.setText(Messages.getString("Spoon.Dialog.Title.AddingHopCausesLoop"));//Warning!
+                mb.setMessage(Messages.getString("Spoon.Dialog.AddingHopCausesLoop.Message"));//Adding this hop causes a loop in the transformation.  Loops are not allowed!
+                mb.setText(Messages.getString("Spoon.Dialog.AddingHopCausesLoop.Title"));//Warning!
                 mb.open();
                 error=true;
             }
@@ -2124,12 +2124,12 @@ public class Spoon
                 }
                 catch(KettleException ke)
                 {//
-                    new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.Title.ErrorSavingConnection"),Messages.getString("Spoon.Dialog.Message.ErrorSavingConnection",db.getDatabaseName()), ke);//"Can't save...","Error saving connection ["+db+"] to repository!"
+                    new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorSavingConnection.Title"),Messages.getString("Spoon.Dialog.ErrorSavingConnection.Message",db.getDatabaseName()), ke);//"Can't save...","Error saving connection ["+db+"] to repository!"
                 }
             }
             else
             {
-                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.Title.UnableSave"),Messages.getString("Spoon.Dialog.Message.ErrorSavingConnection",db.getDatabaseName()), new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyRepositoryUser")));//This repository user is read-only!
+                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnableSave.Title"),Messages.getString("Spoon.Dialog.ErrorSavingConnection.Message",db.getDatabaseName()), new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyRepositoryUser")));//This repository user is read-only!
             }
         }
     }
@@ -2144,8 +2144,8 @@ public class Spoon
         if (transMeta.hasChanged())
         {
             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
-            mb.setMessage(Messages.getString("Spoon.Dialog.Message.PromptSave"));//"This model has changed.  Do you want to save it?"
-            mb.setText(Messages.getString("Spoon.Dialog.Title.PromptSave"));
+            mb.setMessage(Messages.getString("Spoon.Dialog.PromptSave.Message"));//"This model has changed.  Do you want to save it?"
+            mb.setText(Messages.getString("Spoon.Dialog.PromptSave.Title"));
             int reply = mb.open();
             if (reply==SWT.YES)
             {
@@ -2186,8 +2186,8 @@ public class Spoon
             {
                 rep=null;
                 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                mb.setMessage(Messages.getString("Spoon.Dialog.Message.ErrorConnectingRepository",Const.CR));//"An error occured connecting to the repository!"+Const.CR+"See the log for more information."
-                mb.setText(Messages.getString("Spoon.Dialog.Title.ErrorConnectingRepository"));
+                mb.setMessage(Messages.getString("Spoon.Dialog.ErrorConnectingRepository.Message",Const.CR));//"An error occured connecting to the repository!"+Const.CR+"See the log for more information."
+                mb.setText(Messages.getString("Spoon.Dialog.ErrorConnectingRepository.Title"));
                 mb.open();
             }
             
@@ -2296,8 +2296,8 @@ public class Spoon
                         catch(KettleException e)
                         {
                             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                            mb.setMessage(Messages.getString("Spoon.Dialog.Message.ErrorOpening")+objname+Const.CR+e.getMessage());//"Error opening : "
-                            mb.setText(Messages.getString("Spoon.Dialog.Title.ErrorOpening"));
+                            mb.setMessage(Messages.getString("Spoon.Dialog.ErrorOpening.Message")+objname+Const.CR+e.getMessage());//"Error opening : "
+                            mb.setText(Messages.getString("Spoon.Dialog.ErrorOpening.Title"));
                             mb.open();
                         }
                     }
@@ -2324,8 +2324,8 @@ public class Spoon
                     catch(KettleException e)
                     {
                         MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-                        mb.setMessage(Messages.getString("Spoon.Dialog.Message.UnableChangeUser")+Const.CR+e.getMessage());//Sorry, I was unable to change this user in the repository: 
-                        mb.setText(Messages.getString("Spoon.Dialog.Title.UnableChangeUser"));//"Edit user"
+                        mb.setMessage(Messages.getString("Spoon.Dialog.UnableChangeUser.Message")+Const.CR+e.getMessage());//Sorry, I was unable to change this user in the repository: 
+                        mb.setText(Messages.getString("Spoon.Dialog.UnableChangeUser.Title"));//"Edit user"
                         mb.open();
                     }
                 }
@@ -2333,8 +2333,8 @@ public class Spoon
             else
             {
                 MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-                mb.setMessage(Messages.getString("Spoon.Dialog.Message.NotAllowedChangeUser"));//"Sorry, you are not allowed to change this user."
-                mb.setText(Messages.getString("Spoon.Dialog.Title.NotAllowedChangeUser"));
+                mb.setMessage(Messages.getString("Spoon.Dialog.NotAllowedChangeUser.Message"));//"Sorry, you are not allowed to change this user."
+                mb.setText(Messages.getString("Spoon.Dialog.NotAllowedChangeUser.Title"));
                 mb.open();
             }       
         }
@@ -2377,8 +2377,8 @@ public class Spoon
                     {
                         clear();
                         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                        mb.setMessage(Messages.getString("Spoon.Dialog.Message.ErrorOpening")+fname+Const.CR+e.getMessage());//"Error opening : "
-                        mb.setText(Messages.getString("Spoon.Dialog.Message.Error"));//"Error!"
+                        mb.setMessage(Messages.getString("Spoon.Dialog.ErrorOpening.Message")+fname+Const.CR+e.getMessage());//"Error opening : "
+                        mb.setText(Messages.getString("Spoon.Dialog.Error.Message"));//"Error!"
                         mb.open();
                     }
 
@@ -2446,8 +2446,8 @@ public class Spoon
         if (transMeta.hasChanged())
         {
             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
-            mb.setMessage(Messages.getString("Spoon.Dialog.Message.SaveChangedFile"));//"File has changed!  Do you want to save first?"
-            mb.setText(Messages.getString("Spoon.Dialog.Title.SaveChangedFile"));//"Warning!"
+            mb.setMessage(Messages.getString("Spoon.Dialog.SaveChangedFile.Message"));//"File has changed!  Do you want to save first?"
+            mb.setText(Messages.getString("Spoon.Dialog.SaveChangedFile.Title"));//"Warning!"
             int answer = mb.open();
         
             switch(answer)
@@ -2522,7 +2522,7 @@ public class Spoon
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.Title.ERROR"), Messages.getString("Spoon.Dialog.Message.ErrorSavingDatabaseCache"), e);//"An error occured saving the database cache to disk"
+            new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ERROR.Title"), Messages.getString("Spoon.Dialog.ErrorSavingDatabaseCache.Message"), e);//"An error occured saving the database cache to disk"
         }
     }
     
@@ -2543,8 +2543,8 @@ public class Spoon
                 if (!ask)
                 {
                     MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-                    mb.setMessage(Messages.getString("Spoon.Dialog.Message.PromptTransformationName"));//"Please give this transformation a name before saving it in the database."
-                    mb.setText(Messages.getString("Spoon.Dialog.Title.PromptTransformationName"));//"Transformation has no name."
+                    mb.setMessage(Messages.getString("Spoon.Dialog.PromptTransformationName.Message"));//"Please give this transformation a name before saving it in the database."
+                    mb.setText(Messages.getString("Spoon.Dialog.PromptTransformationName.Title"));//"Transformation has no name."
                     mb.open();
                 }
                 ask=false;
@@ -2560,8 +2560,8 @@ public class Spoon
                     if (transMeta.showReplaceWarning(rep))
                     {
                         MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-                        mb.setMessage(Messages.getString("Spoon.Dialog.Message.PromptOverwriteTransformation",transMeta.getName(),Const.CR));//"There already is a transformation called ["+transMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the transformation?"
-                        mb.setText(Messages.getString("Spoon.Dialog.Title.PromptOverwriteTransformation"));//"Overwrite?"
+                        mb.setMessage(Messages.getString("Spoon.Dialog.PromptOverwriteTransformation.Message",transMeta.getName(),Const.CR));//"There already is a transformation called ["+transMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the transformation?"
+                        mb.setText(Messages.getString("Spoon.Dialog.PromptOverwriteTransformation.Title"));//"Overwrite?"
                         response = mb.open();
                     }
                     
@@ -2606,8 +2606,8 @@ public class Spoon
                 else
                 {
                     MessageBox mb = new MessageBox(shell, SWT.CLOSE | SWT.ICON_ERROR);
-                    mb.setMessage(Messages.getString("Spoon.Dialog.Message.OnlyreadRepository"));//"Sorry, the user you're logged on with, can only read from the repository"
-                    mb.setText(Messages.getString("Spoon.Dialog.Title.OnlyreadRepository"));//"Transformation not saved!"
+                    mb.setMessage(Messages.getString("Spoon.Dialog.OnlyreadRepository.Message"));//"Sorry, the user you're logged on with, can only read from the repository"
+                    mb.setText(Messages.getString("Spoon.Dialog.OnlyreadRepository.Title"));//"Transformation not saved!"
                     mb.open();
                 }
             }
@@ -2615,8 +2615,8 @@ public class Spoon
         else
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setMessage(Messages.getString("Spoon.Dialog.Message.NoRepositoryConnection"));//"There is no repository connection available."
-            mb.setText(Messages.getString("Spoon.Dialog.Title.NoRepositoryConnection"));//"No repository available."
+            mb.setMessage(Messages.getString("Spoon.Dialog.NoRepositoryConnection.Message"));//"There is no repository connection available."
+            mb.setText(Messages.getString("Spoon.Dialog.NoRepositoryConnection.Title"));//"No repository available."
             mb.open();
         }
     }
@@ -2665,8 +2665,8 @@ public class Spoon
             if (f.exists())
             {
                 MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES | SWT.ICON_WARNING);
-                mb.setMessage(Messages.getString("Spoon.Dialog.Message.PromptOverwriteFile"));//"This file already exists.  Do you want to overwrite it?"
-                mb.setText(Messages.getString("Spoon.Dialog.Title.PromptOverwriteFile"));//"This file already exists!"
+                mb.setMessage(Messages.getString("Spoon.Dialog.PromptOverwriteFile.Message"));//"This file already exists.  Do you want to overwrite it?"
+                mb.setText(Messages.getString("Spoon.Dialog.PromptOverwriteFile.Title"));//"This file already exists!"
                 id = mb.open();
             }
             if (id==SWT.YES)
@@ -2699,8 +2699,8 @@ public class Spoon
         {
             log.logDebug(toString(), Messages.getString("Spoon.Log.ErrorOpeningFileForWriting")+e.toString());//"Error opening file for writing! --> "
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-            mb.setMessage(Messages.getString("Spoon.Dialog.Message.ErrorSavingFile")+Const.CR+e.toString());//"Error saving file:"
-            mb.setText(Messages.getString("Spoon.Dialog.Title.ErrorSavingFile"));//"ERROR"
+            mb.setMessage(Messages.getString("Spoon.Dialog.ErrorSavingFile.Message")+Const.CR+e.toString());//"Error saving file:"
+            mb.setText(Messages.getString("Spoon.Dialog.ErrorSavingFile.Title"));//"ERROR"
             mb.open();
         }
     }
@@ -3040,8 +3040,8 @@ public class Spoon
                     {
                         inf.setName(newname);
                         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-                        mb.setMessage(Messages.getString("Spoon.Dialog.Message.ChangeStepname",newname));//"This stepname already exists.  Spoon changed the stepname to ["+newname+"]"
-                        mb.setText(Messages.getString("Spoon.Dialog.Title.ChangeStepname"));//"Info!"
+                        mb.setMessage(Messages.getString("Spoon.Dialog.ChangeStepname.Message",newname));//"This stepname already exists.  Spoon changed the stepname to ["+newname+"]"
+                        mb.setText(Messages.getString("Spoon.Dialog.ChangeStepname.Title"));//"Info!"
                         mb.open();
                     }
                     inf.setLocation(20, 20); // default location at (20,20)
@@ -3082,23 +3082,23 @@ public class Spoon
                     }
 
                     System.out.println("Content = "+content);
-                    ShowBrowserDialog sbd = new ShowBrowserDialog(shell, Messages.getString("Spoon.Dialog.Title.ErrorHelpText"), content.toString());//"Error help text"
+                    ShowBrowserDialog sbd = new ShowBrowserDialog(shell, Messages.getString("Spoon.Dialog.ErrorHelpText.Title"), content.toString());//"Error help text"
                     sbd.open();
                 }
                 catch(Exception ex)
                 {
-                    new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.Title.ErrorShowingHelpText"), Messages.getString("Spoon.Dialog.Message.ErrorShowingHelpText"), ex);//"Error showing help text"
+                    new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorShowingHelpText.Title"), Messages.getString("Spoon.Dialog.ErrorShowingHelpText.Message"), ex);//"Error showing help text"
                 }
             }
             else
             {
-                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.Title.UnableCreateNewStep"),Messages.getString("Spoon.Dialog.Message.UnableCreateNewStep") , e);//"Error creating step"  "I was unable to create a new step"
+                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnableCreateNewStep.Title"),Messages.getString("Spoon.Dialog.UnableCreateNewStep.Message") , e);//"Error creating step"  "I was unable to create a new step"
             }
             return null;
         }
         catch(Throwable e)
         {
-            new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.Title.ErrorCreatingStep"), Messages.getString("Spoon.Dialog.Message.UnableCreateNewStep"), new Exception(e));//"Error creating step"
+            new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorCreatingStep.Title"), Messages.getString("Spoon.Dialog.UnableCreateNewStep.Message"), new Exception(e));//"Error creating step"
             return null;
         }
                 
@@ -3884,8 +3884,8 @@ public class Spoon
                     else
                     {
                         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                        mb.setMessage(Messages.getString("Spoon.Dialog.Message.CannotFindConnection"));//"Couldn't find connection, please refresh the tree (F5)!"
-                        mb.setText(Messages.getString("Spoon.Dialog.Title.CannotFindConnection"));//"Error!"
+                        mb.setMessage(Messages.getString("Spoon.Dialog.CannotFindConnection.Message"));//"Couldn't find connection, please refresh the tree (F5)!"
+                        mb.setText(Messages.getString("Spoon.Dialog.CannotFindConnection.Title"));//"Error!"
                         mb.open();
                     }
                 } 
@@ -3917,7 +3917,7 @@ public class Spoon
         {
             // Display all the rows...
             PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, "-", rows);
-            prd.setTitleMessage(Messages.getString("Spoon.Dialog.Title.ImpactAnalyses"), Messages.getString("Spoon.Dialog.Message.ImpactAnalyses"));//"Impact analyses"  "Result of analyses:"
+            prd.setTitleMessage(Messages.getString("Spoon.Dialog.ImpactAnalyses.Title"), Messages.getString("Spoon.Dialog.ImpactAnalyses.Message"));//"Impact analyses"  "Result of analyses:"
             prd.open();
         }
         else
@@ -3925,13 +3925,13 @@ public class Spoon
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
             if (impactHasRun)
             {
-                mb.setMessage(Messages.getString("Spoon.Dialog.Message.TransformationNoImpactOnDatabase"));//"As far as I can tell, this transformation has no impact on any database."
+                mb.setMessage(Messages.getString("Spoon.Dialog.TransformationNoImpactOnDatabase.Message"));//"As far as I can tell, this transformation has no impact on any database."
             }
             else
             {
-                mb.setMessage(Messages.getString("Spoon.Dialog.Message.RunImpactAnalysesFirst"));//"Please run the impact analyses first on this transformation."
+                mb.setMessage(Messages.getString("Spoon.Dialog.RunImpactAnalysesFirst.Message"));//"Please run the impact analyses first on this transformation."
             }
-            mb.setText(Messages.getString("Spoon.Dialog.Title.ImpactAnalyses"));//Impact
+            mb.setText(Messages.getString("Spoon.Dialog.ImpactAnalyses.Title"));//Impact
             mb.open();
         }
     }
@@ -3954,8 +3954,8 @@ public class Spoon
             else
             {
                 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-                mb.setMessage(Messages.getString("Spoon.Dialog.Message.NoSQLNeedEexecuted"));//As far as I can tell, no SQL statements need to be executed before this transformation can run.
-                mb.setText(Messages.getString("Spoon.Dialog.Title.NoSQLNeedEexecuted"));//"SQL"
+                mb.setMessage(Messages.getString("Spoon.Dialog.NoSQLNeedEexecuted.Message"));//As far as I can tell, no SQL statements need to be executed before this transformation can run.
+                mb.setText(Messages.getString("Spoon.Dialog.NoSQLNeedEexecuted.Title"));//"SQL"
                 mb.open();
             }
         }
@@ -3991,7 +3991,7 @@ public class Spoon
             }
             catch(KettleException e)
             {
-                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.Title.ErrorPastingTransformation"),  Messages.getString("Spoon.Dialog.Message.ErrorPastingTransformation"), e);//Error pasting transformation  "An error occurred pasting a transformation from the clipboard"
+                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorPastingTransformation.Title"),  Messages.getString("Spoon.Dialog.ErrorPastingTransformation.Message"), e);//Error pasting transformation  "An error occurred pasting a transformation from the clipboard"
             }
         }
     }
@@ -4197,7 +4197,7 @@ public class Spoon
         }
         catch(Exception e)
         {
-            new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.Title.UnexpectedError"), Messages.getString("Spoon.Dialog.Message.UnexpectedError"), new KettleException(e.getMessage(), e));//"Unexpected error"  "An unexpected error occurred creating the new transformation" 
+            new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnexpectedError.Title"), Messages.getString("Spoon.Dialog.UnexpectedError.Message"), new KettleException(e.getMessage(), e));//"Unexpected error"  "An unexpected error occurred creating the new transformation" 
             return false;
         }
         return true;
@@ -4300,8 +4300,8 @@ public class Spoon
                 if (!userinfo.useTransformations())
                 {
                     MessageBox mb = new MessageBox(win.shell, SWT.OK | SWT.ICON_ERROR );
-                    mb.setMessage(Messages.getString("Spoon.Dialog.Message.RepositoryUserCannotWork"));//"Sorry, this repository user can't work with transformations from the repository."
-                    mb.setText(Messages.getString("Spoon.Dialog.Title.RepositoryUserCannotWork"));//"Error!"
+                    mb.setMessage(Messages.getString("Spoon.Dialog.RepositoryUserCannotWork.Message"));//"Sorry, this repository user can't work with transformations from the repository."
+                    mb.setText(Messages.getString("Spoon.Dialog.RepositoryUserCannotWork.Title"));//"Error!"
                     mb.open();
                     
                     userinfo = null;
