@@ -1325,12 +1325,12 @@ public class Const
 	/**
 	 * Implements Oracle style NVL function
 	 * @param source The source argument
-	 * @param def The default value in case source is null
+	 * @param def The default value in case source is null or the length of the string is 0
 	 * @return source if source is not null, otherwise return def
 	 */
 	public static final String NVL(String source, String def)
 	{
-		if (source==null) return def;
+		if (source==null || source.length()==0) return def;
 		return source;
 	}
 	
