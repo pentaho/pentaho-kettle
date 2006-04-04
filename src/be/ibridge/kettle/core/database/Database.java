@@ -2839,14 +2839,22 @@ public class Database
 		}
 	}
 	
-	public Row getLookup()
-		throws KettleDatabaseException
+	public Row getLookup() throws KettleDatabaseException
 	{
 		return getLookup(prepStatementLookup);
 	}
 
-	public Row getLookup(PreparedStatement ps)
-		throws KettleDatabaseException
+    public Row getLookup(boolean failOnMultipleResults) throws KettleDatabaseException
+    {
+        return getLookup(prepStatementLookup, failOnMultipleResults);
+    }
+
+    public Row getLookup(PreparedStatement ps) throws KettleDatabaseException
+    {
+        return getLookup(ps, false);
+    }
+
+	public Row getLookup(PreparedStatement ps, boolean failOnMultipleResults) throws KettleDatabaseException
 	{
 		String debug = "start";
 		Row ret;
@@ -2863,7 +2871,14 @@ public class Database
 			
 			debug = "getRow(res)";
 			ret=getRow(res);
-
+			
+            if (failOnMultipleResults)
+            {
+                if (res.next()) 
+                {
+                    throw new KettleDatabaseException("Only 1 row was expected as a result of a lookup, and more then 1 were found!");
+                }
+            }
 			debug = "res.close()";
 			res.close(); // close resultset!
 			
