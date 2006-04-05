@@ -1067,7 +1067,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 				data.zi.getNextEntry();
 
 				if (meta.getEncoding() != null
-						&& meta.getEnclosure().length() > 0) {
+						&& meta.getEncoding().length() > 0) {
 					data.isr = new InputStreamReader(new BufferedInputStream(
 							data.zi), meta.getEncoding());
 				} else {
@@ -1076,7 +1076,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 				}
 			} else {
 				if (meta.getEncoding() != null
-						&& meta.getEnclosure().length() > 0) {
+						&& meta.getEncoding().length() > 0) {
 					data.isr = new InputStreamReader(new BufferedInputStream(
 							data.fr), meta.getEncoding());
 				} else {
