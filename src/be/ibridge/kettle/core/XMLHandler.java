@@ -59,9 +59,7 @@ public class XMLHandler
      */
     public static final String getXMLHeader(String encoding)
     {
-    	//Tom modified this for performance
-//        return "<?xml version=\"1.0\" encoding=\""+encoding+"\"?>"+Const.CR; // "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+Const.CR;
-        return (new StringBuffer(50).append("<?xml version=\"1.0\" encoding=\"").append(encoding).append("\"?>").append(Const.CR)).toString(); // "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+Const.CR;
+        return "<?xml version=\"1.0\" encoding=\""+encoding+"\"?>"+Const.CR;
     }
 
 	/**
