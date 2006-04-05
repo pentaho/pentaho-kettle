@@ -15,7 +15,9 @@
 
  
 package be.ibridge.kettle.chef;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Timer;
@@ -420,16 +422,14 @@ public class ChefLog extends Composite
 	{
 		if (message==null)  message = new StringBuffer(); else message.setLength(0);				
 		try		
-		{	
-			int n = in.available();
-					
-			if (n>0)
-			{
-				byte buffer[] = new byte[n];
-				int c = in.read(buffer, 0, n);
-				for (int i=0;i<c;i++) message.append((char)buffer[i]);
-			}
-			
+		{
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, Const.XML_ENCODING));
+            String line;
+            while ( (line=reader.readLine()) != null )
+            {
+                message.append(line);
+                message.append(Const.CR);
+            }
 			refreshTreeTable();
 		}
 		catch(Exception ex)

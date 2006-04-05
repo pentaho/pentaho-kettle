@@ -14,7 +14,9 @@
  **********************************************************************/
  
 package be.ibridge.kettle.spoon;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -579,19 +581,18 @@ public class SpoonLog extends Composite
 
 		if (message==null) message = new StringBuffer(); else message.setLength(0);				
 		try
-		{	
-			int n = in.available();
-			if (n>0)
-			{
-				byte buffer[] = new byte[n];
-				int c = in.read(buffer, 0, n);
-				for (int i=0;i<c;i++) message.append((char)buffer[i]);
-			}
-						
+		{
+            BufferedReader reader = new BufferedReader(new InputStreamReader(in, Const.XML_ENCODING));
+            String line;
+            while ( (line=reader.readLine()) != null )
+            {
+                message.append(line);
+                message.append(Const.CR);
+            }
 		}
 		catch(Exception ex)
 		{
-			message.append(ex.toString());
+			message.append("Unexpected error reading the log: "+ex.toString());
 		}
 
 		if (!wText.isDisposed() && message.length()>0) 

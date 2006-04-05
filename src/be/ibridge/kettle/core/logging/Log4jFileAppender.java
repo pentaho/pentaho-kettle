@@ -62,7 +62,7 @@ public class Log4jFileAppender implements Appender
         String line = layout.format(event)+Const.CR;
         try
         {
-            fileOutputStream.write(line.getBytes());
+            fileOutputStream.write(line.getBytes(Const.XML_ENCODING));
         }
         catch(IOException e)
         {
