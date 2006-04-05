@@ -59,7 +59,9 @@ public class XMLHandler
      */
     public static final String getXMLHeader(String encoding)
     {
-        return "<?xml version=\"1.0\" encoding=\""+encoding+"\"?>"+Const.CR; // "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+Const.CR;
+    	//Tom modified this for performance
+//        return "<?xml version=\"1.0\" encoding=\""+encoding+"\"?>"+Const.CR; // "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+Const.CR;
+        return (new StringBuffer(50).append("<?xml version=\"1.0\" encoding=\"").append(encoding).append("\"?>").append(Const.CR)).toString(); // "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"+Const.CR;
     }
 
 	/**
@@ -680,7 +682,9 @@ public class XMLHandler
 	 */
 	public static final String addTagValue(String tag, long l, boolean cr)
 	{
-		return addTagValue(tag, ""+l, cr);
+		//Tom modified this for performance
+//		return addTagValue(tag, ""+l, cr);
+		return addTagValue(tag, String.valueOf(l), cr);
 	}
 
 	/**
