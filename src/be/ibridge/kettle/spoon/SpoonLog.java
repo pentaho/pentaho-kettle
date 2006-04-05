@@ -401,7 +401,7 @@ public class SpoonLog extends Composite
 			return;
 		}
 		if (dateValidator.date == null) {
-			log.logDebug(toString(), Messages.getString("SpoonLog.Log.CancelReplay2")); //$NON-NLS-1$
+			log.logDebug(toString(), Messages.getString("SpoonLog.Log.CancelReplay1")); //$NON-NLS-1$
 			return;
 		}
 		startstop(dateValidator.date);
