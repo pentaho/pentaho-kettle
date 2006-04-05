@@ -993,7 +993,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			field.setCurrencySymbol( item.getText(6) );
 			field.setDecimalSymbol( item.getText(7) );
 			field.setGroupSymbol( item.getText(8) );
-			field.setTrimType( XMLInputField.getTrimType(item.getText(9)) );
+			field.setTrimType( XMLInputField.getTrimTypeByDesc(item.getText(9)) );
 			field.setRepeated( Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(10)) );		
 			field.setFieldPosition( item.getText(11) );
             

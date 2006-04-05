@@ -448,7 +448,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 				field.setGroupSymbol( rep.getStepAttributeString (id_step, i, "field_group") );
 				field.setLength( (int)rep.getStepAttributeInteger(id_step, i, "field_length") );
 				field.setPrecision( (int)rep.getStepAttributeInteger(id_step, i, "field_precision") );
-				field.setTrimType( XMLInputField.getTrimType( rep.getStepAttributeString (id_step, i, "field_trim_type") ));
+				field.setTrimType( XMLInputField.getTrimTypeByCode( rep.getStepAttributeString (id_step, i, "field_trim_type") ));
 				field.setRepeated( rep.getStepAttributeBoolean(id_step, i, "field_repeat") );
 
                 String fieldPositionCode = rep.getStepAttributeString(id_step, i, "field_position_code"); 
@@ -501,7 +501,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_group",         field.getGroupSymbol());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",        field.getLength());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision",     field.getPrecision());
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type",     field.getTrimTypeDesc());
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type",     field.getTrimTypeCode());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",        field.isRepeated());
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_position_code", field.getFieldPositionsCode());
 			}

@@ -37,7 +37,14 @@ public class XMLInputField implements Cloneable
     public final static int TYPE_TRIM_RIGHT = 2;
     public final static int TYPE_TRIM_BOTH  = 3;
     
-    public final static String trimTypeDesc[] = { "none", "left", "right", "both" };
+    public final static String trimTypeCode[] = { "none", "left", "right", "both" };
+    
+    public final static String trimTypeDesc[] = {
+      Messages.getString("XMLInputField.TrimType.None"),
+      Messages.getString("XMLInputField.TrimType.Left"),
+      Messages.getString("XMLInputField.TrimType.Right"),
+      Messages.getString("XMLInputField.TrimType.Both")
+    };
     
     public final static String POSITION_MARKER  = ",";
     
@@ -91,7 +98,7 @@ public class XMLInputField implements Cloneable
         retval+="        "+XMLHandler.addTagValue("group",        getGroupSymbol());
         retval+="        "+XMLHandler.addTagValue("length",       getLength());
         retval+="        "+XMLHandler.addTagValue("precision",    getPrecision());
-        retval+="        "+XMLHandler.addTagValue("trim_type",    getTrimTypeDesc());
+        retval+="        "+XMLHandler.addTagValue("trim_type",    getTrimTypeCode());
         retval+="        "+XMLHandler.addTagValue("repeat",       isRepeated());
         
         retval+="        <positions>";
@@ -116,7 +123,7 @@ public class XMLInputField implements Cloneable
         setGroupSymbol( XMLHandler.getTagValue(fnode, "group") );
         setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
         setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
-        setTrimType( getTrimType(XMLHandler.getTagValue(fnode, "trim_type")) );
+        setTrimType( getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")) );
         setRepeated( !"N".equalsIgnoreCase(XMLHandler.getTagValue(fnode, "repeat")) ); 
         
         Node positions = XMLHandler.getSubNode(fnode, "positions");
@@ -132,7 +139,18 @@ public class XMLInputField implements Cloneable
         }
     }
 
-    public final static int getTrimType(String tt)
+    public final static int getTrimTypeByCode(String tt)
+    {
+        if (tt==null) return 0;
+        
+        for (int i=0;i<trimTypeCode.length;i++)
+        {
+            if (trimTypeCode[i].equalsIgnoreCase(tt)) return i;
+        }
+        return 0;
+    }
+    
+    public final static int getTrimTypeByDesc(String tt)
     {
         if (tt==null) return 0;
         
@@ -143,6 +161,12 @@ public class XMLInputField implements Cloneable
         return 0;
     }
 
+    public final static String getTrimTypeCode(int i)
+    {
+        if (i<0 || i>=trimTypeCode.length) return trimTypeCode[0];
+        return trimTypeCode[i]; 
+    }
+    
     public final static String getTrimTypeDesc(int i)
     {
         if (i<0 || i>=trimTypeDesc.length) return trimTypeDesc[0];
@@ -248,6 +272,11 @@ public class XMLInputField implements Cloneable
 	public int getTrimType()
 	{
 		return trimtype;
+	}
+
+  public String getTrimTypeCode()
+	{
+		return getTrimTypeCode(trimtype);
 	}
 
 	public String getTrimTypeDesc()
