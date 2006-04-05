@@ -74,7 +74,9 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
 	public static final String getLine(LogWriter log, InputStreamReader reader,
 			String format) {
-		StringBuffer line = new StringBuffer();
+		//Tom modified for performance
+//		StringBuffer line = new StringBuffer();
+		StringBuffer line = new StringBuffer(256);
 		int c = 0;
 
 		try {
