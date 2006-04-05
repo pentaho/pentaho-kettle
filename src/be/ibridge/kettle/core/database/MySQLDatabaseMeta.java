@@ -99,7 +99,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		}
 		else
 		{
-			return "jdbc:mysql://"+getHostname()+":"+getDatabasePortNumber()+"/"+getDatabaseName();
+			return "jdbc:mysql://"+getHostname()+":"+getDatabasePortNumber()+"/"+getDatabaseName()+"?defaultFetchSize=500&useCursorFetch=true";
 		}
 	}
 

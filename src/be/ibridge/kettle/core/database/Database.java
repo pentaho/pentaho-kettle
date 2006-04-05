@@ -1626,7 +1626,7 @@ public class Database
 				pstmt = connection.prepareStatement(databaseMeta.stripCR(sql), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 				debug = "P Set values";
 				setValues(params); // set the dates etc!
-				if (databaseMeta.isFetchSizeSupported() && ( pstmt.getMaxRows()>0 || databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_POSTGRES ) ) 
+				if (databaseMeta.isFetchSizeSupported() && ( pstmt.getMaxRows()>0 || databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_POSTGRES || databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_MYSQL) )  
 				{
 					debug = "P Set fetchsize";
                     int fs = Const.FETCH_SIZE<=pstmt.getMaxRows()?pstmt.getMaxRows():Const.FETCH_SIZE;
