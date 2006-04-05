@@ -962,10 +962,17 @@ public class TextFileInput extends BaseStep implements StepInterface {
 					}
 				}
 			}
-
-			logRowlevel("Putting row: " + r.toString());
-			putRow(r);
-
+			
+            // Don't put empty rows out if we don't want those...
+            if (meta.noEmptyLines() && r.size()==0)
+            {
+                logRowlevel("Empty row skipped");
+            }
+            else
+            {
+                logRowlevel("Putting row: " + r.toString());
+                putRow(r);
+            }
 		}
 
 		if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0)
