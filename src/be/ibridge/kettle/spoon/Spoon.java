@@ -1649,7 +1649,7 @@ public class Spoon
                     catch(KettleDatabaseException dbe)
                     {
                         
-                        new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ERROR.Title"), Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Message",name), dbe);//"Error deleting connection ["+db+"] from repository!"
+                        new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Title"), Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Message",name), dbe);//"Error deleting connection ["+db+"] from repository!"
                     }
                 }
                 else
@@ -2378,7 +2378,7 @@ public class Spoon
                         clear();
                         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
                         mb.setMessage(Messages.getString("Spoon.Dialog.ErrorOpening.Message")+fname+Const.CR+e.getMessage());//"Error opening : "
-                        mb.setText(Messages.getString("Spoon.Dialog.Error.Message"));//"Error!"
+                        mb.setText(Messages.getString("Spoon.Dialog.ErrorOpening.Title"));//"Error!"
                         mb.open();
                     }
 
@@ -2522,7 +2522,7 @@ public class Spoon
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ERROR.Title"), Messages.getString("Spoon.Dialog.ErrorSavingDatabaseCache.Message"), e);//"An error occured saving the database cache to disk"
+            new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorSavingDatabaseCache.Title"), Messages.getString("Spoon.Dialog.ErrorSavingDatabaseCache.Message"), e);//"An error occured saving the database cache to disk"
         }
     }
     
