@@ -1580,11 +1580,11 @@ public class SpoonGraph extends Canvas
         }
         else
         {
-            if (stMeta == null || !stMeta.isSelected()) nrsels++;
+            if (stMeta != null && !stMeta.isSelected()) nrsels++;
 
             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_WARNING);
-            mb.setText(Messages.getString("SpoonGraph.Dialog.Warning.Title.DeleteSteps")); //$NON-NLS-1$
-            String message = Messages.getString("SpoonGraph.Dialog.Warning.Message.DeleteSteps") + nrsels + Messages.getString("SpoonGraph.Dialog.Warning.Message.DeleteSteps2") + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
+            mb.setText(Messages.getString("SpoonGraph.Dialog.Warning.DeleteSteps.Title")); //$NON-NLS-1$
+            String message = Messages.getString("SpoonGraph.Dialog.Warning.DeleteSteps.Message") + nrsels + Messages.getString("SpoonGraph.Dialog.Warning.DeleteSteps2.Message") + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
             for (int i = spoon.getTransMeta().nrSteps() - 1; i >= 0; i--)
             {
                 StepMeta stepMeta = spoon.getTransMeta().getStep(i);

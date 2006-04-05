@@ -425,7 +425,7 @@ public class SpoonLog extends Composite
 																			 null,
 																			 Messages.getString("SpoonLog.Dialog.FileHasChanged1.Message")+Const.CR+Messages.getString("SpoonLog.Dialog.FileHasChanged2.Message")+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
 																			 MessageDialog.QUESTION,
-																			 new String[] { Messages.getString("System.Yes"), Messages.getString("System.No") }, //$NON-NLS-1$ //$NON-NLS-2$
+																			 new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
 																			 0,
 																			 Messages.getString("SpoonLog.Dialog.Option.AutoSaveTransformation"), //$NON-NLS-1$
 																			 spoon.props.getAutoSave()
