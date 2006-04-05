@@ -27,6 +27,7 @@ import java.util.Hashtable;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.core.Base64;
 import be.ibridge.kettle.core.CheckResult;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
@@ -696,8 +697,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    <filters>" + Const.CR);
         for (int i = 0; i < filter.length; i++)
         {
+            byte[] filterBytes = filter[i].getFilterString().getBytes();
+            
             retval.append("      <filter>" + Const.CR);
-            retval.append("        " + XMLHandler.addTagValue("filter_string", filter[i].getFilterString(), false));
+            retval.append("        " + XMLHandler.addTagValue("filter_string", Base64.encodeBytes( filterBytes ), false));
             retval.append("        " + XMLHandler.addTagValue("filter_position", filter[i].getFilterPosition(), false));
             retval.append("        " + XMLHandler.addTagValue("filter_is_last_line", filter[i].isFilterLastLine(), false));
             retval.append("      </filter>" + Const.CR);
@@ -779,7 +782,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             Node filtersNode = XMLHandler.getSubNode(stepnode, "filters");
             int nrfiles   = XMLHandler.countNodes(filenode, "name");
             int nrfields  = XMLHandler.countNodes(fields, "field");
-            int nrfilters = XMLHandler.countNodes(fields, "filter");
+            int nrfilters = XMLHandler.countNodes(filtersNode, "filter");
 
             allocate(nrfiles, nrfields, nrfilters);
 
@@ -814,7 +817,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
                     filter[i] = new TextFileFilter();
 
                     filter[i].setFilterPosition( Const.toInt(XMLHandler.getTagValue(fnode, "filter_position"), -1) );
-                    filter[i].setFilterString( XMLHandler.getTagValue(fnode, "filter_string") );
+                    
+                    String filterString = XMLHandler.getTagValue(fnode, "filter_string");
+                    filter[i].setFilterString( new String(Base64.decode(filterString)));
+                    
                     filter[i].setFilterLastLine( YES.equalsIgnoreCase(XMLHandler.getTagValue(fnode, "filter_is_last_line")) );
                 }
             }

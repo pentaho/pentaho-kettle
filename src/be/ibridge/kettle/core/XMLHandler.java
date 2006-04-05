@@ -586,24 +586,9 @@ public class XMLHandler
                 case '<'  : value.append("&lt;"); break;
                 case '>'  : value.append("&gt;"); break;
                 case '"'  : value.append("&quot;"); break;
-                case 0x1A : value.append("CTRL-Z WARNING NO WAY BACK HERE"); break; 
+                case 0x1A : value.append("{ILLEGAL XML CHARACTER 0x1A}"); break;
                 default: 
-                    if (((int)c >= 0x20) && 
-                        (
-                          Character.isLetterOrDigit(c) ||
-                          Character.isSpace(c) ||
-                          Character.isWhitespace(c) || 
-                          c==':' ||
-                          c=='\\'
-                        )
-                       )
-                    {
-                        value.append(c);
-                    }
-                    else
-                    {
-                        value.append("&#x"+Integer.toHexString((int)c)+";");
-                    }
+                    value.append(c);
                 }
             }
             
@@ -795,6 +780,5 @@ public class XMLHandler
         
         return (String[])elements.toArray(new String[elements.size()]);
     }
-
 }
 	
