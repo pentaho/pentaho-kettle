@@ -104,6 +104,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
+import be.ibridge.kettle.i18n.LanguageChoice;
 import be.ibridge.kettle.repository.PermissionMeta;
 import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
@@ -223,6 +224,8 @@ public class Spoon
     private Menu mBar;
 
     private Composite tabComp;
+
+    private SashForm leftSash;
 
         
     public Spoon(LogWriter l, Repository rep)
@@ -962,8 +965,13 @@ public class Spoon
 
     private void addTree()
     {
+        if (leftSash!=null)
+        {
+            leftSash.dispose();
+        }
+        
         // Split the left side of the screen in half
-        SashForm leftSash = new SashForm(sashform, SWT.VERTICAL);
+        leftSash = new SashForm(sashform, SWT.VERTICAL);
         
         // Now set up the main CSH tree
         selectionTree = new Tree(leftSash, SWT.MULTI | SWT.BORDER);
@@ -2730,16 +2738,30 @@ public class Spoon
     
     public void editOptions()
     {
+        LanguageChoice langChoice = LanguageChoice.getInstance();
+        Locale defLoc = langChoice.getDefaultLocale();
+        
         EnterOptionsDialog eod = new EnterOptionsDialog(shell, props);
         if (eod.open()!=null)
         {
             props.saveProps();
             loadSettings();
             changeLooks();
-            addMenu();
-            addMenuLast();
-            setUndoMenu();
-            addTabs();
+
+            if (!langChoice.getDefaultLocale().equals(defLoc))
+            {
+                addMenu();
+                addMenuLast();
+                setUndoMenu();
+                addTabs();
+                // refreshTree(true);
+                
+                // TODO: localize message
+                MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION);
+                mb.setMessage("Please restart the application for all language changes to take effect!");
+                mb.setText("Info");
+                mb.open();
+            }
         } 
     }
     
@@ -2776,6 +2798,7 @@ public class Spoon
         //
         if (transMeta.haveConnectionsChanged() || complete)
         {
+            tiConn.setText(STRING_CONNECTIONS);
             // TreeItem tiConn= this.tiConn (TreeItem)widgets.getWidget(STRING_CONNECTIONS);
             ti = tiConn.getItems();
 
@@ -2829,6 +2852,7 @@ public class Spoon
         //
         if (transMeta.haveStepsChanged() || complete)
         {
+            tiStep.setText(STRING_STEPS);
             ti = tiStep.getItems();
 
             // In complete refresh: delete all items first
@@ -2897,6 +2921,7 @@ public class Spoon
         //
         if (transMeta.haveHopsChanged() || complete)
         {
+            tiHops.setText(STRING_HOPS);
             ti = tiHops.getItems();
 
             // In complete refresh: delete all items first
