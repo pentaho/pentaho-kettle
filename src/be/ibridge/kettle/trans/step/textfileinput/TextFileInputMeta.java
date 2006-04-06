@@ -697,7 +697,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    <filters>" + Const.CR);
         for (int i = 0; i < filter.length; i++)
         {
-            byte[] filterBytes = filter[i].getFilterString().getBytes();
+            byte[] filterBytes = filter[i].getFilterString()!=null ? filter[i].getFilterString().getBytes() :  new byte[] {};
             
             retval.append("      <filter>" + Const.CR);
             retval.append("        " + XMLHandler.addTagValue("filter_string", Base64.encodeBytes( filterBytes ), false));

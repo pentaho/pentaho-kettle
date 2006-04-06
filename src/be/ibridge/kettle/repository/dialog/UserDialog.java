@@ -88,12 +88,12 @@ public class UserDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText("User information");
+		shell.setText(Messages.getString("UserDialog.Dialog.Main.Title")); //$NON-NLS-1$
 		shell.setLayout (formLayout);
  		
 		// Username
 		wlLogin = new Label(shell, SWT.RIGHT ); 
-		wlLogin.setText("Login: "); 
+		wlLogin.setText(Messages.getString("UserDialog.Label.Login"));  //$NON-NLS-1$
  		props.setLook(wlLogin);
 		FormData fdlLogin = new FormData();
 		fdlLogin.left = new FormAttachment(0,0); 
@@ -110,7 +110,7 @@ public class UserDialog extends Dialog
 		
 		// Password
 		wlPassword = new Label(shell, SWT.RIGHT ); 
-		wlPassword.setText("Password: "); 
+		wlPassword.setText(Messages.getString("UserDialog.Label.Password"));  //$NON-NLS-1$
  		props.setLook(wlPassword);
 		FormData fdlPassword = new FormData();
 		fdlPassword.left = new FormAttachment(0,0);
@@ -128,7 +128,7 @@ public class UserDialog extends Dialog
 
 		// Username
 		wlUsername = new Label(shell, SWT.RIGHT ); 
-		wlUsername.setText("Full name: "); 
+		wlUsername.setText(Messages.getString("UserDialog.Label.FullName"));  //$NON-NLS-1$
  		props.setLook(wlUsername);
 		FormData fdlUsername = new FormData();
 		fdlUsername.left = new FormAttachment(0,0);
@@ -145,7 +145,7 @@ public class UserDialog extends Dialog
 
 		// Description
 		wlDescription = new Label(shell, SWT.RIGHT ); 
-		wlDescription.setText("Description: "); 
+		wlDescription.setText(Messages.getString("UserDialog.Label.Description"));  //$NON-NLS-1$
  		props.setLook(wlDescription);
 		FormData fdlDescription = new FormData();
 		fdlDescription.left = new FormAttachment(0,0);
@@ -162,7 +162,7 @@ public class UserDialog extends Dialog
 
 		// Profile selector
 		wlProfile=new Label(shell, SWT.RIGHT);
-		wlProfile.setText("Profile ");
+		wlProfile.setText(Messages.getString("UserDialog.Label.Profile")); //$NON-NLS-1$
  		props.setLook(wlProfile);
 		fdlProfile=new FormData();
 		fdlProfile.left = new FormAttachment(0, 0);
@@ -171,9 +171,9 @@ public class UserDialog extends Dialog
 		wlProfile.setLayoutData(fdlProfile);
 	
 		// Add the Profile buttons :
-		wnProfile = new Button(shell, SWT.PUSH);  wnProfile.setText("New");
-		weProfile = new Button(shell, SWT.PUSH);  weProfile.setText("Edit");
-		wdProfile = new Button(shell, SWT.PUSH);  wdProfile.setText("Delete");
+		wnProfile = new Button(shell, SWT.PUSH);  wnProfile.setText(Messages.getString("System.Button.New")); //$NON-NLS-1$
+		weProfile = new Button(shell, SWT.PUSH);  weProfile.setText(Messages.getString("System.Button.Edit")); //$NON-NLS-1$
+		wdProfile = new Button(shell, SWT.PUSH);  wdProfile.setText(Messages.getString("System.Button.Delete")); //$NON-NLS-1$
 
 		// Button positions...
 		fddProfile = new FormData();		
@@ -201,9 +201,9 @@ public class UserDialog extends Dialog
 
 		// Buttons
 		wOK     = new Button(shell, SWT.PUSH); 
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH); 
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		
 		FormData fdOK        = new FormData();
 		FormData fdCancel    = new FormData();
@@ -307,8 +307,8 @@ public class UserDialog extends Dialog
 		catch(KettleException e)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Sorry, an error occurred: "+e.getMessage());
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("UserDialog.Dialog.UnexpectedError.Message")+e.getMessage()); //$NON-NLS-1$
+			mb.setText(Messages.getString("UserDialog.Dialog.UnexpectedError.Title")); //$NON-NLS-1$
 			mb.open(); 
 		}
 	}
@@ -327,8 +327,8 @@ public class UserDialog extends Dialog
 		catch(KettleException e)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("I couldn't retrieve the available profiles from the repository: "+Const.CR+e.getMessage());
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("UserDialog.Dialog.ErrorRetrievingProfiles.Message")+Const.CR+e.getMessage()); //$NON-NLS-1$
+			mb.setText(Messages.getString("UserDialog.Dialog.ErrorRetrievingProfiles.Title")); //$NON-NLS-1$
 			mb.open();
 		}
 	}

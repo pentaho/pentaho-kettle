@@ -116,7 +116,7 @@ public class RepositoriesDialog
 		this.toolName = toolName;
 		
 		shell = new Shell(disp, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
-		shell.setText("Kettle repositories");
+		shell.setText(Messages.getString("RepositoriesDialog.Dialog.Main.Title")); //$NON-NLS-1$
 
 		log=LogWriter.getInstance();
 		props=Props.getInstance();
@@ -142,7 +142,7 @@ public class RepositoriesDialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Select a repository");
+		shell.setText(Messages.getString("RepositoriesDialog.Label.SelectRepository")); //$NON-NLS-1$
         shell.setImage(GUIResource.getInstance().getImageSpoon());
 
 		int middle = props.getMiddlePct();
@@ -150,9 +150,9 @@ public class RepositoriesDialog
 
 		// Kettle welcome
 		wlKettle = new Label(shell, SWT.CENTER);
-		wlKettle.setText("Welcome to Kettle - "+toolName);
+		wlKettle.setText(Messages.getString("RepositoriesDialog.Label.Welcome")+toolName); //$NON-NLS-1$
 		props.setLook(wlKettle);
-        final Font f = new Font(shell.getDisplay(), "Arial", 18, SWT.BOLD | SWT.ITALIC);
+        final Font f = new Font(shell.getDisplay(), "Arial", 18, SWT.BOLD | SWT.ITALIC); //$NON-NLS-1$
         wlKettle.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) {  f.dispose(); } });
         wlKettle.setFont(f);
         fdlKettle=new FormData();
@@ -163,7 +163,7 @@ public class RepositoriesDialog
 
 		// Repository selector
 		wlRepository=new Label(shell, SWT.RIGHT);
-		wlRepository.setText("Repository ");
+		wlRepository.setText(Messages.getString("RepositoriesDialog.Label.Repository")); //$NON-NLS-1$
  		props.setLook(wlRepository);
 		fdlRepository=new FormData();
 		fdlRepository.left = new FormAttachment(0, 0);
@@ -173,9 +173,9 @@ public class RepositoriesDialog
 		wRepository=new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 
 		// Add the Repository buttons :
-		wnRepository = new Button(shell, SWT.PUSH);  wnRepository.setText("New");
-		weRepository = new Button(shell, SWT.PUSH);  weRepository.setText("Edit");
-		wdRepository = new Button(shell, SWT.PUSH);  wdRepository.setText("Delete");
+		wnRepository = new Button(shell, SWT.PUSH);  wnRepository.setText(Messages.getString("System.Button.New")); //$NON-NLS-1$
+		weRepository = new Button(shell, SWT.PUSH);  weRepository.setText(Messages.getString("System.Button.Edit")); //$NON-NLS-1$
+		wdRepository = new Button(shell, SWT.PUSH);  wdRepository.setText(Messages.getString("System.Button.Delete")); //$NON-NLS-1$
 
 		// Button positions...
 		fddRepository = new FormData();		
@@ -257,7 +257,7 @@ public class RepositoriesDialog
 
 		// Username
 		wlUsername = new Label(shell, SWT.RIGHT ); 
-		wlUsername.setText("Login: "); 
+		wlUsername.setText(Messages.getString("RepositoriesDialog.Label.Login"));  //$NON-NLS-1$
  		props.setLook(wlUsername);
 		fdlUsername = new FormData();
 		fdlUsername.left = new FormAttachment(0,0); 
@@ -274,7 +274,7 @@ public class RepositoriesDialog
 
 		// Password
 		wlPassword = new Label(shell, SWT.RIGHT ); 
-		wlPassword.setText("Password: "); 
+		wlPassword.setText(Messages.getString("RepositoriesDialog.Label.Password"));  //$NON-NLS-1$
  		props.setLook(wlPassword);
 		fdlPassword = new FormData();
 		fdlPassword.left   = new FormAttachment(0,0);
@@ -291,11 +291,11 @@ public class RepositoriesDialog
 		wPassword.setLayoutData(fdPassword);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wNorep=new Button(shell, SWT.PUSH);
-		wNorep.setText(" &No repository ");
+		wNorep.setText(Messages.getString("RepositoriesDialog.Button.NoRepository")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wNorep, wCancel }, margin, null);
 
@@ -430,7 +430,7 @@ public class RepositoriesDialog
                     
                     if (!(e instanceof KettleDatabaseException))
                     {
-                        new ErrorDialog(shell, props, "Unexpected error", "Unexpected error logging in: ", e);
+                        new ErrorDialog(shell, props, Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Title"), Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
                     }
 				}
 				finally
@@ -441,8 +441,8 @@ public class RepositoriesDialog
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("I couldn't connect to this repository!"+Const.CR+"Please check the settings in the repository connection.");
-				mb.setText("Sorry");
+				mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message1")+Const.CR+Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
+				mb.setText(Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Title")); //$NON-NLS-1$
 				mb.open(); 
 				
 				return;
@@ -454,33 +454,33 @@ public class RepositoriesDialog
 		if (userinfo==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Incorrect username or password!");
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.IncorrectUserPassword.Message")); //$NON-NLS-1$
+			mb.setText(Messages.getString("RepositoriesDialog.Dialog.IncorrectUserPassword.Title")); //$NON-NLS-1$
 			mb.open(); 
 		}
 		else
 		{
 			// Check the permissions of the user
 			boolean ok = true;
-			String mess = "";
+			String mess = ""; //$NON-NLS-1$
 			for (int i=0;i<toolsPermissions.length;i++)
 			{
 				switch(toolsPermissions[i])
 				{
 				case PermissionMeta.TYPE_PERMISSION_TRANSFORMATION:
 					ok = ok && userinfo.useTransformations();
-					mess += mess.length()>0?", ":""; 
-					mess+="Spoon"; 
+					mess += mess.length()>0?", ":"";  //$NON-NLS-1$ //$NON-NLS-2$
+					mess+="Spoon";  //$NON-NLS-1$
 					break;
 				case PermissionMeta.TYPE_PERMISSION_SCHEMA:
 					ok = ok && userinfo.useSchemas(); 
-					mess += mess.length()>0?", ":""; 
-					mess+="Menu"; 
+					mess += mess.length()>0?", ":"";  //$NON-NLS-1$ //$NON-NLS-2$
+					mess+="Menu";  //$NON-NLS-1$
 					break;
 				case PermissionMeta.TYPE_PERMISSION_JOB:
 					ok = ok && userinfo.useJobs(); 
-					mess += mess.length()>0?", ":""; 
-					mess+="Chef"; 
+					mess += mess.length()>0?", ":"";  //$NON-NLS-1$ //$NON-NLS-2$
+					mess+="Chef";  //$NON-NLS-1$
 					break;
 				default: break;
 				}
@@ -490,10 +490,10 @@ public class RepositoriesDialog
 			if (!ok)
 			{
 				int idx = mess.lastIndexOf(',');
-				if (idx>0) mess = mess.substring(0, idx) + "and"+ mess.substring(idx+1);
+				if (idx>0) mess = mess.substring(0, idx) + "and"+ mess.substring(idx+1); //$NON-NLS-1$
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("Sorry, you don't have permissions to run "+mess);
-				mb.setText("ERROR");
+				mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.NoPermissions.Message")+mess); //$NON-NLS-1$
+				mb.setText(Messages.getString("RepositoriesDialog.Dialog.NoPermissions.Title")); //$NON-NLS-1$
 				mb.open(); 
 
 				userinfo=null;
@@ -538,8 +538,8 @@ public class RepositoriesDialog
 				catch(KettleDatabaseException dbe)
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage("I was unable to get the list of users from the repository connection.");
-					mb.setText("ERROR");
+					mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.UnableToGetUserList.Message")); //$NON-NLS-1$
+					mb.setText(Messages.getString("RepositoriesDialog.Dialog.UnableToGetUserList.Title")); //$NON-NLS-1$
 					mb.open(); 
 				}
 				rep.disconnect();

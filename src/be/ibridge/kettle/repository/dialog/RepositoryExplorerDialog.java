@@ -94,13 +94,13 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 public class RepositoryExplorerDialog extends Dialog 
 {
-	private static final String STRING_OBJECTS         = "Objects";
-	private static final String STRING_DATABASES       = "Connections";
-	public  static final String STRING_TRANSFORMATIONS = "Transformations";
-	public  static final String STRING_JOBS            = "Jobs";
-	public  static final String STRING_SCHEMAS         = "Schema's";
-	private static final String STRING_USERS           = "Users";
-	private static final String STRING_PROFILES        = "Profiles";
+	private static final String STRING_OBJECTS         = Messages.getString("RepositoryExplorerDialog.Tree.String.Objects"); //$NON-NLS-1$
+	private static final String STRING_DATABASES       = Messages.getString("RepositoryExplorerDialog.Tree.String.Connections"); //$NON-NLS-1$
+	public  static final String STRING_TRANSFORMATIONS = Messages.getString("RepositoryExplorerDialog.Tree.String.Transformations"); //$NON-NLS-1$
+	public  static final String STRING_JOBS            = Messages.getString("RepositoryExplorerDialog.Tree.String.Jobs"); //$NON-NLS-1$
+	public  static final String STRING_SCHEMAS         = Messages.getString("RepositoryExplorerDialog.Tree.String.Schemas"); //$NON-NLS-1$
+	private static final String STRING_USERS           = Messages.getString("RepositoryExplorerDialog.Tree.String.Users"); //$NON-NLS-1$
+	private static final String STRING_PROFILES        = Messages.getString("RepositoryExplorerDialog.Tree.String.Profiles"); //$NON-NLS-1$
 	
 	private static final int    ITEM_CATEGORY_NONE                        =  0;
 	private static final int    ITEM_CATEGORY_ROOT                        =  1;
@@ -158,17 +158,17 @@ public class RepositoryExplorerDialog extends Dialog
 
 	public String open() 
 	{
-        debug="opening repository explorer";
+        debug="opening repository explorer"; //$NON-NLS-1$
         
         try
         {
     		dircolor = GUIResource.getInstance().getColorDirectory();
     		
-            debug="open new shell";
+            debug="open new shell"; //$NON-NLS-1$
             Shell parent = getParent();
     		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
     		props.setLook(shell);
-    		shell.setText("Repository explorer on ["+rep.getName()+"]");
+    		shell.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Title")+rep.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
     		
     		FormLayout formLayout = new FormLayout ();
     		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -176,15 +176,47 @@ public class RepositoryExplorerDialog extends Dialog
     		
     		shell.setLayout (formLayout);
      		
+            // Add a menu on top!
+            Menu mBar = new Menu(shell, SWT.BAR);
+            shell.setMenuBar(mBar);
+            
+            ////////////////////////////////////////////////////
+            // FILE
+            MenuItem mFile = new MenuItem(mBar, SWT.CASCADE); 
+            mFile.setText(Messages.getString("RepositoryExplorerDialog.Menu.File")); //$NON-NLS-1$
+            Menu msFile = new Menu(shell, SWT.DROP_DOWN);
+            mFile.setMenu(msFile);
+            
+            // File export ALL
+            //
+            MenuItem miFileExport = new MenuItem(msFile, SWT.CASCADE); 
+            miFileExport.setText(Messages.getString("RepositoryExplorerDialog.Menu.FileExportAll")); //$NON-NLS-1$
+            miFileExport.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportAll(); } });
+            
+            // File import ALL
+            //
+            MenuItem miFileImport = new MenuItem(msFile, SWT.CASCADE); 
+            miFileImport.setText(Messages.getString("RepositoryExplorerDialog.Menu.FileImportAll")); //$NON-NLS-1$
+            miFileImport.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { importAll(); } });
+
+            new MenuItem(msFile, SWT.SEPARATOR);
+            
+            // File close
+            //
+            MenuItem miFileClose= new MenuItem(msFile, SWT.CASCADE); 
+            miFileClose.setText(Messages.getString("RepositoryExplorerDialog.Menu.FileClose")); //$NON-NLS-1$
+            miFileClose.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { handleOK(); } });
+            
+            
      		// Tree
      		wTree = new Tree(shell, SWT.MULTI | SWT.BORDER /*| (multiple?SWT.CHECK:SWT.NONE)*/);
      		props.setLook(wTree);
     
      		// Buttons
     		wOK = new Button(shell, SWT.PUSH); 
-    		wOK.setText("  &OK  ");
+    		wOK.setText(Messages.getString("RepositoryExplorerDialog.System.Button.OK")); //$NON-NLS-1$
     		wCancel = new Button(shell, SWT.PUSH); 
-    		wCancel.setText("  &Cancel  ");
+    		wCancel.setText(Messages.getString("RepositoryExplorerDialog.System.Button.Cancel")); //$NON-NLS-1$
     				
     		FormData fdTree      = new FormData(); 
     		int margin =  10;
@@ -258,15 +290,15 @@ public class RepositoryExplorerDialog extends Dialog
     			{
     				public void dragStart(DragSourceEvent event)
     				{ 
-                        debug="drag start";
+                        debug="drag start"; //$NON-NLS-1$
     					event.doit=true;
     				}
     	
     				public void dragSetData(DragSourceEvent event) 
     				{
-                        debug="drag set data";
+                        debug="drag set data"; //$NON-NLS-1$
 
-    					event.data = "";
+    					event.data = ""; //$NON-NLS-1$
     					event.doit = false;
     					
     					TreeItem ti[] = wTree.getSelection();
@@ -278,7 +310,7 @@ public class RepositoryExplorerDialog extends Dialog
     						//
     						if (cat==ITEM_CATEGORY_TRANSFORMATION)
     						{
-                                debug="drag set: drag around transformation";
+                                debug="drag set: drag around transformation"; //$NON-NLS-1$
     							RepositoryDirectory repdir = getDirectory(ti[0]);
     							if (repdir!=null)
     							{
@@ -286,10 +318,10 @@ public class RepositoryExplorerDialog extends Dialog
     								// Pass info as a piece of XML
     								//
     								String xml=XMLHandler.getXMLHeader();
-    								xml+="<dragdrop>"+Const.CR;
-    								xml+="  "+XMLHandler.addTagValue("directory", repdir.getPath());
-    								xml+="  "+XMLHandler.addTagValue("transformation", ti[0].getText());
-    								xml+="</dragdrop>"+Const.CR;
+    								xml+="<dragdrop>"+Const.CR; //$NON-NLS-1$
+    								xml+="  "+XMLHandler.addTagValue("directory", repdir.getPath()); //$NON-NLS-1$ //$NON-NLS-2$
+    								xml+="  "+XMLHandler.addTagValue("transformation", ti[0].getText()); //$NON-NLS-1$ //$NON-NLS-2$
+    								xml+="</dragdrop>"+Const.CR; //$NON-NLS-1$
     								
     								event.data = xml;
     								event.doit = true;
@@ -297,10 +329,10 @@ public class RepositoryExplorerDialog extends Dialog
     						}
                             else
                             {
-                                debug="do nothing";
+                                debug="do nothing"; //$NON-NLS-1$
                                 String xml=XMLHandler.getXMLHeader();
-                                xml+="<dragdrop>"+Const.CR;
-                                xml+="</dragdrop>"+Const.CR;
+                                xml+="<dragdrop>"+Const.CR; //$NON-NLS-1$
+                                xml+="</dragdrop>"+Const.CR; //$NON-NLS-1$
                                 event.data=xml;
                                 event.doit=true;
 
@@ -322,7 +354,7 @@ public class RepositoryExplorerDialog extends Dialog
     			
     			public void dragLeave(DropTargetEvent event) 
     			{ 
-                    debug="drag leave";
+                    debug="drag leave"; //$NON-NLS-1$
     			}
     			
     			public void dragOperationChanged(DropTargetEvent event) 
@@ -331,13 +363,13 @@ public class RepositoryExplorerDialog extends Dialog
     			
     			public void dragOver(DropTargetEvent event) 
     			{ 
-                    debug="drag over";    				
+                    debug="drag over";    				 //$NON-NLS-1$
     			}
     			public void drop(DropTargetEvent event) 
     			{
                     try
                     {
-                        debug="Drop item in tree";
+                        debug="Drop item in tree"; //$NON-NLS-1$
                         
         				if (event.data == null)  // no data to copy, indicate failure in event.detail 
         				{
@@ -350,13 +382,13 @@ public class RepositoryExplorerDialog extends Dialog
         				TreeItem ti = (TreeItem)event.item;
         				if (ti!=null)
         				{
-                            debug="Get category";
+                            debug="Get category"; //$NON-NLS-1$
         					int category = getItemCategory(ti);
         					if (category==ITEM_CATEGORY_TRANSFORMATION_DIRECTORY ||
         					    category==ITEM_CATEGORY_TRANSFORMATION
         					   )
         					{
-                                debug="Get directory";
+                                debug="Get directory"; //$NON-NLS-1$
         						RepositoryDirectory repdir = getDirectory(ti);
         						if (repdir!=null)
         						{
@@ -369,8 +401,8 @@ public class RepositoryExplorerDialog extends Dialog
                                     else
                                     {
                                         MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK );
-                                        mb.setMessage("I'm sorry, but I can't move the transformation.");
-                                        mb.setText("Sorry...");
+                                        mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnableToMove.Message")); //$NON-NLS-1$
+                                        mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnableToMove.Title")); //$NON-NLS-1$
                                         mb.open();
                                     }
         						}
@@ -378,21 +410,21 @@ public class RepositoryExplorerDialog extends Dialog
                             else
                             {
                                 MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK );
-                                mb.setMessage("I'm sorry, but I can't move this item at this time.");
-                                mb.setText("Sorry...");
+                                mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.SorryOneItemAtATime.Message")); //$NON-NLS-1$
+                                mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.SorryOneItemAtATime.Title")); //$NON-NLS-1$
                                 mb.open();
                             }
         				}
                     }
                     catch(Throwable e)
                     {
-                        new ErrorDialog(shell, props, "Unexpected error", "Error in part ["+debug+"]"+Const.CR+"Please report this error to the Kettle developers!", new Exception(e));
+                        new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Drop.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Drop.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Drop.UnexpectedError.Message2"), new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     }
     			}
     
     			public void dropAccept(DropTargetEvent event) 
     			{
-                    debug="drop accept";
+                    debug="drop accept"; //$NON-NLS-1$
     			}
     		});
     
@@ -400,15 +432,15 @@ public class RepositoryExplorerDialog extends Dialog
     		// Detect X or ALT-F4 or something that kills this window...
     		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { dispose(); } } );
             
-            debug="set screen size and position";
+            debug="set screen size and position"; //$NON-NLS-1$
     
     		WindowProperty winprop = props.getScreen(shell.getText());
     		if (winprop!=null) winprop.setShell(shell); 
     		else 
     		{
-                debug="pack screen";
+                debug="pack screen"; //$NON-NLS-1$
     		    shell.pack();
-                debug="set default screen size ";
+                debug="set default screen size "; //$NON-NLS-1$
     		    shell.setSize(400, 480);
     		}
     
@@ -423,7 +455,7 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(Throwable e)
         {
-            new ErrorDialog(shell, props, "Unexpected error", "An unexpected error occurred in the repository explorer in part ["+debug+"]"+Const.CR+"Please contact support for a software update."+Const.CR+"We appoligize for the unconvenience.", new Exception(e));
+            new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Message2")+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Message3"), new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         }
 		return objectName;
 
@@ -502,26 +534,26 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					// Export all
 					MenuItem miExp  = new MenuItem(mTree, SWT.PUSH); 
-					miExp.setText("&Export all objects to an XML file");
+					miExp.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Objects.ExportAll")); //$NON-NLS-1$
 					SelectionAdapter lsExp = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportAll(); } };
 					miExp.addSelectionListener( lsExp );
 
 					// Import all
 					MenuItem miImp  = new MenuItem(mTree, SWT.PUSH); 
-					miImp.setText("&Import all objects from an XML file");
+					miImp.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Objects.ImportAll")); //$NON-NLS-1$
 					SelectionAdapter lsImp = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { importAll(); } };
 					miImp.addSelectionListener( lsImp );
 					miImp.setEnabled(!userinfo.isReadonly());
 
 					// Export transMeta
 					MenuItem miTrans  = new MenuItem(mTree, SWT.PUSH); 
-					miTrans.setText("&Export transformations");
+					miTrans.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Objects.ExportTrans")); //$NON-NLS-1$
 					SelectionAdapter lsTrans = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportTransformations(); } };
 					miTrans.addSelectionListener( lsTrans );
 
 					// Export jobs
 					MenuItem miJobs  = new MenuItem(mTree, SWT.PUSH); 
-					miJobs.setText("&Export Jobs");
+					miJobs.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Objects.ExportJob")); //$NON-NLS-1$
 					SelectionAdapter lsJobs = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { exportJobs(); } };
 					miJobs.addSelectionListener( lsJobs );
 				}
@@ -531,7 +563,7 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					// New database
 					MenuItem miNew  = new MenuItem(mTree, SWT.PUSH); 
-					miNew.setText("&New database");
+					miNew.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.ConnectionsRoot.New")); //$NON-NLS-1$
 					SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newDatabase(); } };
 					miNew.addSelectionListener( lsNew );
 					miNew.setEnabled(!userinfo.isReadonly());
@@ -542,19 +574,19 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					// New database
 					MenuItem miNew  = new MenuItem(mTree, SWT.PUSH); 
-					miNew.setText("&New database");
+					miNew.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Connections.New")); //$NON-NLS-1$
 					SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newDatabase(); } };
 					miNew.addSelectionListener( lsNew );
 					miNew.setEnabled(!userinfo.isReadonly());
 					// Edit database info
 					MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
-					miEdit.setText("&Edit database");
+					miEdit.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Connections.Edit")); //$NON-NLS-1$
 					SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editDatabase(item); } };
 					miEdit.addSelectionListener( lsEdit );
 					miEdit.setEnabled(!userinfo.isReadonly());
 					// Delete database info
 					MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
-					miDel.setText("&Delete database");
+					miDel.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Connections.Delete")); //$NON-NLS-1$
 					SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delDatabase(item); } };
 					miDel.addSelectionListener( lsDel );
 					miDel.setEnabled(!userinfo.isReadonly());
@@ -575,7 +607,7 @@ public class RepositoryExplorerDialog extends Dialog
 
 					// Open transformation...
 					MenuItem miOpen  = new MenuItem(mTree, SWT.PUSH); 
-					miOpen.setText("&Open transformation");
+					miOpen.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Transformations.Open")); //$NON-NLS-1$
 					miOpen.addSelectionListener( 
 						new SelectionAdapter() 
 						{ 
@@ -587,7 +619,7 @@ public class RepositoryExplorerDialog extends Dialog
 					);
 					// Delete transformation
 					MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
-					miDel.setText("&Delete transformation");
+					miDel.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Transformations.Delete")); //$NON-NLS-1$
 					miDel.addSelectionListener( 
 						new SelectionAdapter() 
 						{ 
@@ -600,7 +632,7 @@ public class RepositoryExplorerDialog extends Dialog
 					// Rename transformation
 					miDel.setEnabled(!userinfo.isReadonly());
 					MenuItem miRen  = new MenuItem(mTree, SWT.PUSH); 
-					miRen.setText("&Rename transformation \tF2");
+					miRen.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Transformations.Rename")); //$NON-NLS-1$
 					miRen.addSelectionListener( 
 						new SelectionAdapter() 
 						{ 
@@ -628,7 +660,7 @@ public class RepositoryExplorerDialog extends Dialog
 
 					// Open transformation...
 					MenuItem miCreate  = new MenuItem(mTree, SWT.PUSH); 
-					miCreate.setText("&Create directory");
+					miCreate.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.TransDirectory.Create")); //$NON-NLS-1$
 					miCreate.addSelectionListener( 
 						new SelectionAdapter() 
 						{ 
@@ -642,7 +674,7 @@ public class RepositoryExplorerDialog extends Dialog
 					{
 						// Rename directory
 						MenuItem miRename  = new MenuItem(mTree, SWT.PUSH); 
-						miRename.setText("&Rename directory");
+						miRename.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.TransDirectory.Rename")); //$NON-NLS-1$
 						miRename.addSelectionListener( 
 							new SelectionAdapter() 
 							{ 
@@ -654,7 +686,7 @@ public class RepositoryExplorerDialog extends Dialog
 						);
 						// Delete directory
 						MenuItem miDelete  = new MenuItem(mTree, SWT.PUSH); 
-						miDelete.setText("&Delete directory");
+						miDelete.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.TransDirectory.Delete")); //$NON-NLS-1$
 						miDelete.addSelectionListener( 
 							new SelectionAdapter() 
 							{ 
@@ -683,7 +715,7 @@ public class RepositoryExplorerDialog extends Dialog
 
 					// Delete job
 					MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
-					miDel.setText("&Delete job");
+					miDel.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Jobs.Delete")); //$NON-NLS-1$
 					miDel.addSelectionListener( 
 						new SelectionAdapter() 
 						{ 
@@ -696,7 +728,7 @@ public class RepositoryExplorerDialog extends Dialog
 					// Rename job
 					miDel.setEnabled(!userinfo.isReadonly());
 					MenuItem miRen  = new MenuItem(mTree, SWT.PUSH); 
-					miRen.setText("&Rename job \tF2");
+					miRen.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Jobs.Rename")); //$NON-NLS-1$
 					miRen.addSelectionListener( 
 						new SelectionAdapter() 
 						{ 
@@ -721,7 +753,7 @@ public class RepositoryExplorerDialog extends Dialog
 					mTree = new Menu(shell, SWT.POP_UP);
 					// New user
 					MenuItem miNew  = new MenuItem(mTree, SWT.PUSH); 
-					miNew.setText("&New user");
+					miNew.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.UsersRoot.New")); //$NON-NLS-1$
 					SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newUser(); } };
 					miNew.addSelectionListener( lsNew );
 					miNew.setEnabled(!userinfo.isReadonly());
@@ -732,25 +764,25 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					// New user
 					MenuItem miNew  = new MenuItem(mTree, SWT.PUSH); 
-					miNew.setText("&New user");
+					miNew.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Users.New")); //$NON-NLS-1$
 					SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newUser(); } };
 					miNew.addSelectionListener( lsNew );
 					miNew.setEnabled(!userinfo.isReadonly());
 					// Edit user info
 					MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
-					miEdit.setText("&Edit user");
+					miEdit.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Users.Edit")); //$NON-NLS-1$
 					SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editUser(item); } };
 					miEdit.addSelectionListener( lsEdit );
 					miEdit.setEnabled(!userinfo.isReadonly());
 					// Rename user
 					MenuItem miRen = new MenuItem(mTree, SWT.PUSH); 
-					miRen.setText("&Rename user");
+					miRen.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Users.Rename")); //$NON-NLS-1$
 					SelectionAdapter lsRen = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { renameUser(); } };
 					miRen.addSelectionListener( lsRen );
 					miRen.setEnabled(!userinfo.isReadonly());
 					// Delete user info
 					MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
-					miDel.setText("&Delete user");
+					miDel.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Users.Delete")); //$NON-NLS-1$
 					SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delUser(item); } };
 					miDel.addSelectionListener( lsDel );
 					miDel.setEnabled(!userinfo.isReadonly());
@@ -760,7 +792,7 @@ public class RepositoryExplorerDialog extends Dialog
 			case ITEM_CATEGORY_PROFILES_ROOT               :
 				{
 					MenuItem miNew  = new MenuItem(mTree, SWT.PUSH); 
-					miNew.setText("&New profile");
+					miNew.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.ProfilesRoot.New")); //$NON-NLS-1$
 					SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newProfile(); } };
 					miNew.addSelectionListener( lsNew );
 					miNew.setEnabled(!userinfo.isReadonly());
@@ -771,25 +803,25 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					// New profile
 					MenuItem miNew  = new MenuItem(mTree, SWT.PUSH); 
-					miNew.setText("&New profile");
+					miNew.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.Profiles.New")); //$NON-NLS-1$
 					SelectionAdapter lsNew = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newProfile(); } };
 					miNew.addSelectionListener( lsNew );
 					miNew.setEnabled(!userinfo.isReadonly());
 					// Edit profile info
 					MenuItem miEdit  = new MenuItem(mTree, SWT.PUSH); 
-					miEdit.setText("&Edit profile");
+					miEdit.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.ProfilesRoot.Edit")); //$NON-NLS-1$
 					SelectionAdapter lsEdit = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editProfile(item); } };
 					miEdit.addSelectionListener( lsEdit );
 					miEdit.setEnabled(!userinfo.isReadonly());
 					// Rename profile
 					MenuItem miRen = new MenuItem(mTree, SWT.PUSH); 
-					miRen.setText("&Rename profile");
+					miRen.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.ProfilesRoot.Rename")); //$NON-NLS-1$
 					SelectionAdapter lsRen = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { renameProfile(); } };
 					miRen.addSelectionListener( lsRen );
 					miRen.setEnabled(!userinfo.isReadonly());
 					// Delete profile info
 					MenuItem miDel  = new MenuItem(mTree, SWT.PUSH); 
-					miDel.setText("&Delete profile");
+					miDel.setText(Messages.getString("RepositoryExplorerDialog.PopupMenu.ProfilesRoot.Delete")); //$NON-NLS-1$
 					SelectionAdapter lsDel = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { delProfile(item); } };
 					miDel.addSelectionListener( lsDel );
 					miDel.setEnabled(!userinfo.isReadonly());
@@ -876,7 +908,7 @@ public class RepositoryExplorerDialog extends Dialog
 	    }
 	    catch(KettleException e)
 	    {
-			new ErrorDialog(shell, props, "Error", "An error occurred commiting the changes you made: ", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.PopupMenu.Dialog.ErrorCommitingChanges.Title"), Messages.getString("RepositoryExplorerDialog.PopupMenu.Dialog.ErrorCommitingChanges.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 	    }
 		dispose();
 	}
@@ -891,7 +923,7 @@ public class RepositoryExplorerDialog extends Dialog
 			rep.setDirectoryTree( new RepositoryDirectory(rep) );
 	
 			TreeItem tiTree = new TreeItem(wTree, SWT.NONE); 
-			tiTree.setText(rep.getName()==null?"-":rep.getName());
+			tiTree.setText(rep.getName()==null?"-":rep.getName()); //$NON-NLS-1$
 			
 			TreeItem tiObj = new TreeItem(tiTree, SWT.NONE);
 			tiObj.setText(STRING_OBJECTS);
@@ -992,7 +1024,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException dbe)
 		{
-			new ErrorDialog(shell, props, "Error", "An error occurred refreshing the repository tree: ", dbe);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.PopupMenu.Dialog.ErrorRefreshingTree.Title"), Messages.getString("RepositoryExplorerDialog.PopupMenu.Dialog.ErrorRefreshingTree.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
@@ -1012,8 +1044,8 @@ public class RepositoryExplorerDialog extends Dialog
 		boolean error = false;
 
 		MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
-		mb.setMessage("Are you sure you want to remove "+(tiSel.length>1?"these "+tiSel.length+" transformations?":"this transformation?"));
-		mb.setText("Confirm delete...");
+		mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.Confirm.Message1")+(tiSel.length>1?Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.Confirm.Message2")+tiSel.length+Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.Confirm.Message3"):Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.Confirm.Message4"))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.Confirm.Title")); //$NON-NLS-1$
 		int answer = mb.open();
 		
 		if (answer!=SWT.YES)
@@ -1046,15 +1078,15 @@ public class RepositoryExplorerDialog extends Dialog
 					}
 					catch(KettleDatabaseException dbe)
 					{
-						new ErrorDialog(shell, props, "Error", "Kettle couldn't remove transformation ["+name+"]", dbe);
+						new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorRemoving.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorRemoving.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						error=true;
 					}
 				}
 				else
 				{
 					mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage("Sorry, couldn't find transformation ["+name+"]"+Const.CR+"It's probably already removed.");
-					mb.setText("ERROR");
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorFinding.Title")); //$NON-NLS-1$
 					mb.open();
 					error=true;
 				}
@@ -1067,7 +1099,7 @@ public class RepositoryExplorerDialog extends Dialog
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				new ErrorDialog(shell, props, "Error", "An error occurred deleting this transformation: ", dbe);
+				new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorDeleting.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorDeleting.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 				error=true;
 			}
 		}
@@ -1160,14 +1192,14 @@ public class RepositoryExplorerDialog extends Dialog
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage("Sorry, couldn't find transformation ["+name+"]"+Const.CR+"It's probably already removed.");
-				mb.setText("ERROR");
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorFinding.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			new ErrorDialog(shell, props, "Error", "Kettle couldn't rename transformation ["+name+"]!", dbe);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorRenaming.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorRenaming.Message")+name+"]!", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
 		return retval;
@@ -1177,42 +1209,42 @@ public class RepositoryExplorerDialog extends Dialog
     //
 	public boolean moveTransformation(String xml, RepositoryDirectory repdir)
 	{
-        debug = "Move transformation";
+        debug = "Move transformation"; //$NON-NLS-1$
         
 		boolean retval=false;
 		
 		try
 		{
-            debug = "parse xml";
+            debug = "parse xml"; //$NON-NLS-1$
 			Document doc = XMLHandler.loadXMLString(xml);
 			
-			String dirname   = XMLHandler.getTagValue(doc, "dragdrop", "directory");
-			String transname = XMLHandler.getTagValue(doc, "dragdrop", "transformation");
+			String dirname   = XMLHandler.getTagValue(doc, "dragdrop", "directory"); //$NON-NLS-1$ //$NON-NLS-2$
+			String transname = XMLHandler.getTagValue(doc, "dragdrop", "transformation"); //$NON-NLS-1$ //$NON-NLS-2$
             
             if (dirname!=null && transname!=null)
             {
-                debug = "dirname="+dirname+", transname="+transname;
+                debug = "dirname="+dirname+", transname="+transname; //$NON-NLS-1$ //$NON-NLS-2$
     
     			// OK, find this transformation...
     			RepositoryDirectory fromdir = rep.getDirectoryTree().findDirectory(dirname);
     			if (fromdir!=null)
     			{
-                    debug = "fromdir found: move transformation!";
+                    debug = "fromdir found: move transformation!"; //$NON-NLS-1$
     				rep.moveTransformation(transname, fromdir.getID(), repdir.getID());
     				retval=true;
     			}
     			else
     			{
     				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-    				mb.setMessage("Sorry, I couldn't find directory ["+dirname+"]"+Const.CR);
-    				mb.setText("ERROR");
+    				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.ErrorMoving.Message")+dirname+"]"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+    				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.ErrorMoving.Title")); //$NON-NLS-1$
     				mb.open();
     			}
             }
 		}
 		catch(Exception dbe)
 		{
-			new ErrorDialog(shell, props, "Error", "Kettle couldn't move this transformation!", dbe);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnexpectedError.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		return retval;
@@ -1304,14 +1336,14 @@ public class RepositoryExplorerDialog extends Dialog
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage("Sorry, couldn't find job ["+name+"]"+Const.CR+"It's probably already removed.");
-				mb.setText("ERROR");
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.ErrorFinding.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			new ErrorDialog(shell, props, "Error", "Kettle couldn't rename job ["+name+"]", dbe);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 
 		return retval;
@@ -1330,8 +1362,8 @@ public class RepositoryExplorerDialog extends Dialog
 			if (id>0)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
-				mb.setMessage("Are you sure you want to remove this job?");
-				mb.setText("["+name+"]");
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.Confirmation.Message")); //$NON-NLS-1$
+				mb.setText("["+name+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 				int answer = mb.open();
 				
 				if (answer==SWT.YES)
@@ -1343,15 +1375,15 @@ public class RepositoryExplorerDialog extends Dialog
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage("Sorry, couldn't find job ["+name+"]"+Const.CR+"It's probably already removed.");
-				mb.setText("ERROR");
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.ErrorFinding.Title")); //$NON-NLS-1$
 				mb.open();
 				error=true;
 			}
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			new ErrorDialog(shell, props, "Error", "Kettle couldn't remove job ["+name+"]", dbe);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			error=true;
 		}
 			
@@ -1436,15 +1468,15 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage("Sorry, couldn't find job ["+name+"]"+Const.CR+"It's probably already removed.");
-					mb.setText("ERROR");
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.ErrorFinding.Title")); //$NON-NLS-1$
 					mb.open();
 				}								
 			}
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			new ErrorDialog(shell, props, "Error", "Kettle couldn't rename job ["+name+"]", dbe);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
 		return retval;
@@ -1466,8 +1498,8 @@ public class RepositoryExplorerDialog extends Dialog
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-				mb.setMessage("Sorry, you are not allowed to change this user.");
-				mb.setText("Edit user");
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.User.Edit.NotAllowed.Message")); //$NON-NLS-1$
+				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.User.Edit.NotAllowed.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 			if(ui!=null && !login.equalsIgnoreCase(ui.getLogin())) refreshTree();
@@ -1475,7 +1507,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Sorry, I couldn't save user information to the repository.", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.User.Edit.UnexpectedError.Message.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.Edit.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -1496,8 +1528,8 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage("Sorry, this user already exists in the repository.");
-					mb.setText("ERROR");
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.User.New.AlreadyExists.Message")); //$NON-NLS-1$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.User.New.AlreadyExists.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 					
@@ -1507,7 +1539,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Sorry, I couldn't save user information to the repository.", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.User.New.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.New.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -1523,7 +1555,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Sorry, I couldn't delete the user information from the repository.", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.User.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		refreshTree();
@@ -1612,15 +1644,15 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage("Sorry, couldn't find user ["+name+"]"+Const.CR+"It's probably already removed or renamed.");
-					mb.setText("ERROR");
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.User.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.User.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.User.Rename.ErrorFinding.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 			}
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Sorry, I couldn't rename user ["+name+"]", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.User.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.Rename.UnexpectedError.Message")+name+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
 		return retval;
@@ -1710,15 +1742,15 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage("Sorry, couldn't find profile ["+name+"]"+Const.CR+"It's probably already removed or renamed.");
-					mb.setText("ERROR");
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Rename.ErrorFinding.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 			}
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Sorry, I couldn't rename profile ["+name+"]", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Rename.UnexpectedError.Message")+name+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
 		return retval;
@@ -1743,8 +1775,8 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-					mb.setMessage("Sorry, you are not allowed to change this database connection.");
-					mb.setText("Edit database");
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Edit.NotAllowed.Message")); //$NON-NLS-1$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Edit.NotAllowed.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 				if(!databasename.equalsIgnoreCase(name)) refreshTree();
@@ -1752,7 +1784,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Sorry, I couldn't change this database connection ["+databasename+"]", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Edit.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Edit.UnexpectedError.Message")+databasename+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 
@@ -1774,8 +1806,8 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage("Sorry, this database already exists in the repository.");
-					mb.setText("ERROR");
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.AlreadyExists.Message")); //$NON-NLS-1$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.AlreadyExists.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 					// Refresh tree...
@@ -1784,7 +1816,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Sorry, I couldn't create the new database connection", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -1802,7 +1834,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Sorry, I couldn't delete the database connection", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -1888,15 +1920,15 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage("Sorry, couldn't find database connection ["+name+"]"+Const.CR+"It's probably already removed or renamed.");
-					mb.setText("ERROR");
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Rename.ErrorFinding.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Rename.ErrorFinding.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Rename.ErrorFinding.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 			}
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Sorry, I couldn't rename the new database connection", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Rename.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		return retval;
@@ -1973,8 +2005,8 @@ public class RepositoryExplorerDialog extends Dialog
 			if (!repdir.renameInRep(rep))
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage("Kettle couldn't rename directory ["+name+"]"+Const.CR+"Please check the logs for more information.");
-				mb.setText("ERROR");
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 			else
@@ -2065,7 +2097,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Sorry, I couldn't edit the profile.", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Edit.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Edit.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -2087,8 +2119,8 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage("Sorry, this database already exists in the repository.");
-					mb.setText("ERROR");
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Create.AlreadyExists.Message")); //$NON-NLS-1$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Create.AlreadyExists.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 					
@@ -2098,7 +2130,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Sorry, I couldn't create a new profile", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Create.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
@@ -2117,13 +2149,13 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Sorry, I couldn't delete the profile", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
 	public void createDirectory(TreeItem ti, RepositoryDirectory repdir)
 	{
-		EnterStringDialog esd = new EnterStringDialog(shell, props, "New directory", "New directory", "Specify the directory:");
+		EnterStringDialog esd = new EnterStringDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.AskName.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.AskName.Default"), Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.AskName.Message")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		String newdir = esd.open();
 		if (newdir!=null)
 		{
@@ -2140,16 +2172,16 @@ public class RepositoryExplorerDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-					mb.setMessage("Sorry, I was unable to create directory ["+newdir+"] in directory ["+repdir.getPath()+"]");
-					mb.setText("ERROR");
+					mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.UnexpectedError.Message1")+newdir+Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.UnexpectedError.Message2")+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.UnexpectedError.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 			}
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage("Sorry, directory ["+newdir+"] in directory ["+repdir.getPath()+"] already exists!");
-				mb.setText("ERROR");
+				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.AlreadyExists.Message1")+newdir+Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.AlreadyExists.Message2")+repdir.getPath()+Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.AlreadyExists.Message3")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Create.AlreadyExists.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
@@ -2164,8 +2196,8 @@ public class RepositoryExplorerDialog extends Dialog
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-			mb.setMessage("Sorry, this directory could not be deleted. Perhaps there are still objects in it?"+Const.CR+"Please check the log for more information.");
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Delete.ErrorRemoving.Message1")+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Delete.ErrorRemoving.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
+			mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Delete.ErrorRemoving.Title")); //$NON-NLS-1$
 			mb.open();
 		}
 	}
@@ -2188,7 +2220,7 @@ public class RepositoryExplorerDialog extends Dialog
 					for (int i=0;i<trans.length;i++)
 					{
 						TransMeta ti = new TransMeta(rep, trans[i], repdir);
-						System.out.println("Loading/Exporting transformation ["+trans[i]+"] in directory ["+repdir.getPath()+"]");
+						System.out.println("Loading/Exporting transformation ["+trans[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 						String xml = XMLHandler.getXMLHeader() + ti.getXML();
 							
@@ -2197,10 +2229,10 @@ public class RepositoryExplorerDialog extends Dialog
 						if (!dir.exists()) 
 						{
 							dir.mkdir();
-							System.out.println("Created directory ["+dir.getName()+"]");
+							System.out.println("Created directory ["+dir.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						
-						String filename = directory+repdir.getPath()+Const.FILE_SEPARATOR+trans[i]+".ktr";
+						String filename = directory+repdir.getPath()+Const.FILE_SEPARATOR+trans[i]+".ktr"; //$NON-NLS-1$
 						File f = new File(filename);
 						try
 						{
@@ -2210,7 +2242,7 @@ public class RepositoryExplorerDialog extends Dialog
 						}
 						catch(IOException e)
 						{
-							System.out.println("Couldn't create file ["+filename+"]");
+							System.out.println("Couldn't create file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 				}
@@ -2218,7 +2250,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Sorry, an error occurred exporting the transformations to XML:", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.ExportTrans.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.ExportTrans.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
@@ -2241,7 +2273,7 @@ public class RepositoryExplorerDialog extends Dialog
 					for (int i=0;i<jobs.length;i++)
 					{
 						JobMeta ji = new JobMeta(log, rep, jobs[i], repdir);
-						System.out.println("Loading/Exporting job ["+jobs[i]+"] in directory ["+repdir.getPath()+"]");
+						System.out.println("Loading/Exporting job ["+jobs[i]+"] in directory ["+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 						String xml = XMLHandler.getXMLHeader() + ji.getXML();
 						
@@ -2250,10 +2282,10 @@ public class RepositoryExplorerDialog extends Dialog
 						if (!dir.exists()) 
 						{
 							dir.mkdir();
-							System.out.println("Created directory ["+dir.getName()+"]");
+							System.out.println("Created directory ["+dir.getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						
-						String filename = directory+repdir.getPath()+Const.FILE_SEPARATOR+jobs[i]+".kjb";
+						String filename = directory+repdir.getPath()+Const.FILE_SEPARATOR+jobs[i]+".kjb"; //$NON-NLS-1$
 						File f = new File(filename);
 						try
 						{
@@ -2263,7 +2295,7 @@ public class RepositoryExplorerDialog extends Dialog
 						}
 						catch(IOException e)
 						{
-							System.out.println("Couldn't create file ["+filename+"]");
+							System.out.println("Couldn't create file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 				}
@@ -2271,7 +2303,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Sorry, an error occurred exporting the jobs to XML:", e);
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.ExportJobs.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.ExportJobs.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
@@ -2281,7 +2313,7 @@ public class RepositoryExplorerDialog extends Dialog
 		if (dialog.open()!=null)
 		{
 			String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
-			System.out.println("Export objects to file ["+filename+"]");
+			System.out.println("Export objects to file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			RepositoryExportProgressDialog repd = new RepositoryExportProgressDialog(shell, rep, filename);
 			repd.open();
@@ -2294,7 +2326,7 @@ public class RepositoryExplorerDialog extends Dialog
 		if (dialog.open()!=null)
 		{
 			final String filename = dialog.getFilterPath() + Const.FILE_SEPARATOR + dialog.getFileName();
-			System.out.println("Import objects from XML file ["+filename+"]");
+			System.out.println("Import objects from XML file ["+filename+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
 			RepositoryDirectory baseDirectory = sdd.open();
@@ -2325,8 +2357,8 @@ public class RepositoryExplorerDialog extends Dialog
 		int level = Const.getTreeLevel(ti);
 		String path[] = Const.getTreeStrings(ti);
 		
-		String item = "";
-		String parent = "";
+		String item = ""; //$NON-NLS-1$
+		String parent = ""; //$NON-NLS-1$
 		
 		if (ti!=null) 
 		{

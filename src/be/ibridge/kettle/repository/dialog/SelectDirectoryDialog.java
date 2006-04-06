@@ -60,7 +60,6 @@ import be.ibridge.kettle.repository.RepositoryDirectory;
  */
 public class SelectDirectoryDialog extends Dialog 
 {
-	private LogWriter log;
 	private Props props;
 	private Repository rep;
 		
@@ -83,7 +82,6 @@ public class SelectDirectoryDialog extends Dialog
 	{
 		super(parent, style);
 		this.props          = props;
-		this.log            = log;
 		this.rep            = rep;
 		
 		selection = null;
@@ -93,7 +91,6 @@ public class SelectDirectoryDialog extends Dialog
     {
         super(parent, style);
         this.props          = Props.getInstance();
-        this.log            = LogWriter.getInstance();
         this.rep            = rep;
         
         selection = null;
@@ -106,7 +103,7 @@ public class SelectDirectoryDialog extends Dialog
 		Shell parent = getParent();
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
-		shell.setText("Directory Selection dialog");
+		shell.setText(Messages.getString("SelectDirectoryDialog.Dialog.Main.Title")); //$NON-NLS-1$
 		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -122,13 +119,13 @@ public class SelectDirectoryDialog extends Dialog
  		
  		// Buttons
 		wOK = new Button(shell, SWT.PUSH); 
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 
 		wRefresh = new Button(shell, SWT.PUSH); 
-		wRefresh.setText("  &Refresh  ");
+		wRefresh.setText(Messages.getString("System.Button.Refresh")); //$NON-NLS-1$
 		
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		
 		FormData fdTree      = new FormData(); 
 		FormData fdOK        = new FormData();
@@ -160,7 +157,6 @@ public class SelectDirectoryDialog extends Dialog
 			{
 				public void handleEvent (Event e) 
 				{
-					log.logDebug("SelectDirectoryDialog", "CANCEL SelectDirectoryDialog");
 					dispose();
 				}
 			}
@@ -243,7 +239,7 @@ public class SelectDirectoryDialog extends Dialog
 			 * NEW Sub-directory
 			 */
 			MenuItem miNew = new MenuItem(mTree, SWT.CASCADE);
-			miNew.setText("New sub-directory");
+			miNew.setText(Messages.getString("SelectDirectoryDialog.PopupMenu.Directory.New")); //$NON-NLS-1$
 			miNew.addSelectionListener(new SelectionAdapter()
 			{
 				public void widgetSelected(SelectionEvent e)
@@ -261,7 +257,7 @@ public class SelectDirectoryDialog extends Dialog
 							//
 							// What's the name of the new directory?
 							//
-							EnterStringDialog etd = new EnterStringDialog(shell, props, "New directory", "Enter the directory name", "New directory");
+							EnterStringDialog etd = new EnterStringDialog(shell, props, Messages.getString("SelectDirectoryDialog.Dialog.EnterDirectoryName.Title"), Messages.getString("SelectDirectoryDialog.Dialog.EnterDirectoryName.Message"), Messages.getString("SelectDirectoryDialog.Dialog.EnterDirectoryName.Default")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 							String newdir = etd.open();
 							if (newdir!=null)
 							{
@@ -276,8 +272,8 @@ public class SelectDirectoryDialog extends Dialog
 								else
 								{
 									MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-									mb.setMessage("Unable to create new directory in the repository!");
-									mb.setText("ERROR");
+									mb.setMessage(Messages.getString("SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Message")); //$NON-NLS-1$
+									mb.setText(Messages.getString("SelectDirectoryDialog.Dialog.UnableToCreateDirectory.Title")); //$NON-NLS-1$
 									mb.open();
 								}
 							}
@@ -285,16 +281,16 @@ public class SelectDirectoryDialog extends Dialog
 						else
 						{
 							MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-							mb.setMessage("Couldn't locate this directory!");
-							mb.setText("ERROR");
+							mb.setMessage(Messages.getString("SelectDirectoryDialog.Dialog.UnableToLocateDirectory.Message")); //$NON-NLS-1$
+							mb.setText(Messages.getString("SelectDirectoryDialog.Dialog.UnableToLocateDirectory.Title")); //$NON-NLS-1$
 							mb.open();
 						}
 					}
 					else
 					{
 						MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-						mb.setMessage("User ["+rep.getUserInfo().getLogin()+"] doesn't have the permissions to create directories!");
-						mb.setText("ERROR");
+						mb.setMessage(Messages.getString("SelectDirectoryDialog.Dialog.PermissionDenied.Message1")+rep.getUserInfo().getLogin()+Messages.getString("SelectDirectoryDialog.Dialog.PermissionDenied.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
+						mb.setText(Messages.getString("SelectDirectoryDialog.Dialog.PermissionDenied.Title")); //$NON-NLS-1$
 						mb.open();
 					}
 				}
@@ -304,9 +300,9 @@ public class SelectDirectoryDialog extends Dialog
 			 * RENAME directory
 			 */
 			MenuItem miRen = new MenuItem(mTree, SWT.CASCADE);
-			miRen.setText("Rename directory\tF2");
+			miRen.setText(Messages.getString("SelectDirectoryDialog.PopupMenu.Directory.Rename")); //$NON-NLS-1$
 			MenuItem miDel = new MenuItem(mTree, SWT.CASCADE);
-			miDel.setText("Delete directory\tDEL");
+			miDel.setText(Messages.getString("SelectDirectoryDialog.PopupMenu.Directory.Delete")); //$NON-NLS-1$
 		}
 		wTree.setMenu(mTree);
 	}

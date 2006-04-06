@@ -88,11 +88,11 @@ public class SelectObjectDialog extends Dialog
 		this.job            = job;
 		this.schema         = schema;
 		
-		shellText = "Select repository object";
-		lineText = (trans?"Select the transformation:":
-			                (job?"Select the job:":
-			                	  (schema?"Select the schema:":
-			                	  	      "Select the object"
+		shellText = Messages.getString("SelectObjectDialog.Dialog.Main.Title"); //$NON-NLS-1$
+		lineText = (trans?Messages.getString("SelectObjectDialog.Dialog.Trans.Title"): //$NON-NLS-1$
+			                (job?Messages.getString("SelectObjectDialog.Dialog.Job.Title"): //$NON-NLS-1$
+			                	  (schema?Messages.getString("SelectObjectDialog.Dialog.Schema.Title"): //$NON-NLS-1$
+			                	  	      Messages.getString("SelectObjectDialog.Dialog.Object.Title") //$NON-NLS-1$
 			                	  )
 			                )
 					);
@@ -138,7 +138,7 @@ public class SelectObjectDialog extends Dialog
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		fdOK=new FormData();
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		fdOK.left       = new FormAttachment(33, 0);
 		fdOK.bottom     = new FormAttachment(100, 0);
 
@@ -147,7 +147,7 @@ public class SelectObjectDialog extends Dialog
 		wOK.addListener    (SWT.Selection, lsOK     );
 		
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		fdCancel=new FormData();
 		fdCancel.left   = new FormAttachment(66, 0);
 		fdCancel.bottom = new FormAttachment(100, 0);
@@ -203,7 +203,7 @@ public class SelectObjectDialog extends Dialog
         }
         catch(KettleDatabaseException e)
         {
-            new ErrorDialog(shell, props, "Error constructing directory tree", "There was a database error while constructing the repository directory tree", e);
+            new ErrorDialog(shell, props, Messages.getString("SelectObjectDialog.Dialog.UnexpectedError.Title"), Messages.getString("SelectObjectDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
 	}
 	
@@ -237,8 +237,8 @@ public class SelectObjectDialog extends Dialog
 					else
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage("Sorry, I coudln't find the directory for this object.");
-						mb.setText("Error!");
+						mb.setMessage(Messages.getString("SelectObjectDialog.Dialog.DirectoryNotFound.Message")); //$NON-NLS-1$
+						mb.setText(Messages.getString("SelectObjectDialog.Dialog.DirectoryNotFound.Title")); //$NON-NLS-1$
 						mb.open();
 					}
 				}

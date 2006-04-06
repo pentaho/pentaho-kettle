@@ -83,35 +83,35 @@ public class ProfileDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText("Profile information");
+		shell.setText(Messages.getString("ProfileDialog.Dialog.Main.Title")); //$NON-NLS-1$
 		shell.setLayout (formLayout);
  		
 		// What's the profile name?
 		wlName = new Label(shell, SWT.RIGHT); 
  		props.setLook(wlName);
-		wlName.setText("Name: "); 
+		wlName.setText(Messages.getString("ProfileDialog.Label.Name"));  //$NON-NLS-1$
 		wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
  		props.setLook(wName);
 
 		// What's the profile description?
 		wlDesc = new Label(shell, SWT.RIGHT); 
  		props.setLook(wlDesc);
-		wlDesc.setText("Description: "); 
+		wlDesc.setText(Messages.getString("ProfileDialog.Label.Description"));  //$NON-NLS-1$
 		wDesc = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
  		props.setLook(wDesc);
 
 		// What permissions are there?
 		wlPermission = new Label(shell, SWT.RIGHT); 
-		wlPermission.setText("Permissions: "); 
+		wlPermission.setText(Messages.getString("ProfileDialog.Label.Permissions"));  //$NON-NLS-1$
  		props.setLook(wlPermission);
 		wPermission = new List(shell, SWT.BORDER | SWT.READ_ONLY | SWT.MULTI );
  		props.setLook(wPermission);
 
 		// Buttons
 		wOK     = new Button(shell, SWT.PUSH); 
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH); 
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		
 		FormData fdlName       = new FormData(); 
 		FormData fdName        = new FormData(); 
@@ -257,8 +257,8 @@ public class ProfileDialog extends Dialog
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Please provide at lease a profile name!");
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("ProfileDialog.Dialog.UnexpectedError.Message")); //$NON-NLS-1$
+			mb.setText(Messages.getString("ProfileDialog.Dialog.UnexpectedError.Title")); //$NON-NLS-1$
 			mb.open(); 
 		}
 		
