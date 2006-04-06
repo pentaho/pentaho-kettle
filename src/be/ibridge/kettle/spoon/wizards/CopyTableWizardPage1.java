@@ -60,8 +60,8 @@ public class CopyTableWizardPage1 extends WizardPage
 		this.props=Props.getInstance();
 		this.databases=databases;
 		
-		setTitle("Enter the source and target database");
-		setDescription("Select the source and target databases.");
+		setTitle(Messages.getString("CopyTableWizardPage1.Dialog.Title")); //$NON-NLS-1$
+		setDescription(Messages.getString("CopyTableWizardPage1.Dialog.Description")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -138,31 +138,31 @@ public class CopyTableWizardPage1 extends WizardPage
 		
 		if (source==null && target==null)
 		{
-			setErrorMessage("Select both the source and target database!");
+			setErrorMessage(Messages.getString("CopyTableWizardPage1.SourceAndTargetIsNull.DialogMessage")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		if (source==null && target!=null)
 		{
-			setErrorMessage("Select the source database!");
+			setErrorMessage(Messages.getString("CopyTableWizardPage1.SourceIsNull.DialogMessage")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		if (source!=null && target==null)
 		{
-			setErrorMessage("Select the target database!");
+			setErrorMessage(Messages.getString("CopyTableWizardPage1.TargetIsNull.DialogMessage")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		if (source!=null && target!=null && source.equals(target))
 		{
-			setErrorMessage("The source and target database can't be the same!");
+			setErrorMessage(Messages.getString("CopyTableWizardPage1.SourceAndTargetIsSame.DialogMessage")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		{
 			setErrorMessage(null);
-			setMessage("Select 'next' to proceed");
+			setMessage(Messages.getString("CopyTableWizardPage1.GoOnNext.DialogMessage")); //$NON-NLS-1$
 			return true;
 		}
 	}	

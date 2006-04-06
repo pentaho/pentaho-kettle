@@ -68,8 +68,8 @@ public class CopyTableWizardPage3 extends WizardPage
 		this.props=props;
 		this.rep = rep;
 		
-		setTitle("Enter the transformation details");
-		setDescription("Enter the name of the target transformation and the directory to put everything in.");
+		setTitle(Messages.getString("CopyTableWizardPage3.Dialog.Title")); //$NON-NLS-1$
+		setDescription(Messages.getString("CopyTableWizardPage3.Dialog.Description")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -81,8 +81,8 @@ public class CopyTableWizardPage3 extends WizardPage
         this.rep = rep;
         
         
-        setTitle("Enter the transformation details");
-        setDescription("Enter the name of the target transformation and the directory to put everything in.");
+        setTitle(Messages.getString("CopyTableWizardPage3.Dialog.Title")); //$NON-NLS-1$
+        setDescription(Messages.getString("CopyTableWizardPage3.Dialog.Description")); //$NON-NLS-1$
         
         setPageComplete(false);
     }
@@ -113,7 +113,7 @@ public class CopyTableWizardPage3 extends WizardPage
 
 		// Job name:
 		wlTransname=new Label(composite, SWT.RIGHT);
-		wlTransname.setText("Transformation name :");
+		wlTransname.setText(Messages.getString("CopyTableWizardPage3.Dialog.JobName.Label")); //$NON-NLS-1$
  		props.setLook(wlTransname);
 		fdlTransname=new FormData();
 		fdlTransname.left = new FormAttachment(0, 0);
@@ -131,7 +131,7 @@ public class CopyTableWizardPage3 extends WizardPage
 		
 		// Directory:
 		wlDirectory=new Label(composite, SWT.RIGHT);
-		wlDirectory.setText("Directory :");
+		wlDirectory.setText(Messages.getString("CopyTableWizardPage3.Dialog.Directory.Label")); //$NON-NLS-1$
  		props.setLook(wlDirectory);
 		fdlDirectory=new FormData();
 		fdlDirectory.left = new FormAttachment(0, 0);
@@ -140,7 +140,7 @@ public class CopyTableWizardPage3 extends WizardPage
 		wlDirectory.setLayoutData(fdlDirectory);
 
 		wbDirectory=new Button(composite, SWT.PUSH);
-		wbDirectory.setText("...");
+		wbDirectory.setText(Messages.getString("CopyTableWizardPage3.Dialog.DirectoryButton.Label")); //$NON-NLS-1$
  		props.setLook(wbDirectory);
 		fdbDirectory=new FormData();
 		fdbDirectory.right= new FormAttachment(100, 0);

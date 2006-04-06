@@ -59,8 +59,8 @@ public class CopyTableWizardPage2 extends WizardPage
         super(arg);
         this.props=props;
 
-        setTitle("Select the table to copy");
-        setDescription("Select the table to copy from the source database");
+        setTitle(Messages.getString("CopyTableWizardPage2.Dialog.Title")); //$NON-NLS-1$
+        setDescription(Messages.getString("CopyTableWizardPage2.Dialog.Description")); //$NON-NLS-1$
     }
     
 	public CopyTableWizardPage2(String arg)
@@ -68,8 +68,8 @@ public class CopyTableWizardPage2 extends WizardPage
 		super(arg);
 		this.props=Props.getInstance();
 
-		setTitle("Select the table to copy");
-		setDescription("Select the table to copy from the source database");
+		setTitle(Messages.getString("CopyTableWizardPage2.Dialog.Title")); //$NON-NLS-1$
+		setDescription(Messages.getString("CopyTableWizardPage2.Dialog.Description")); //$NON-NLS-1$
 	}
 	
 	public void createControl(Composite parent)
@@ -87,7 +87,7 @@ public class CopyTableWizardPage2 extends WizardPage
 
  		// Source list to the left...
 		wlListSource  = new Label(composite, SWT.NONE);
-		wlListSource.setText("Available tables:");
+		wlListSource.setText(Messages.getString("CopyTableWizardPage2.Dialog.TableList.Label")); //$NON-NLS-1$
         props.setLook(wlListSource);
  		FormData fdlListSource = new FormData();
 		fdlListSource.left   = new FormAttachment(0, 0); 
@@ -138,7 +138,7 @@ public class CopyTableWizardPage2 extends WizardPage
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			new ErrorDialog(shell, props, "Error getting tables", "Error obtaining table list from database!", dbe);
+			new ErrorDialog(shell, props, Messages.getString("CopyTableWizardPage2.ErrorGettingTables.DialogTitle"), Messages.getString("CopyTableWizardPage2.ErrorGettingTables.DialogMessage"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 			input = null;
 			return false;
 		}
