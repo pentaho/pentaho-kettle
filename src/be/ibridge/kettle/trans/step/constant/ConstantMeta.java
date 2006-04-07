@@ -421,12 +421,12 @@ public class ConstantMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "This step gets data from input stream(s).", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ConstantMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Step doesn't get data from the input stream(s).", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ConstantMeta.CheckResult.NoFields"), stepMeta);
 			remarks.add(cr);
 		}
         

@@ -282,7 +282,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "+prev.size()+" fields", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 			remarks.add(cr);
 			
 			String  error_message="";
@@ -300,7 +300,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			if (error_found) 
 			{
-				error_message="Sort keys that were not found in input stream:"+Const.CR+Const.CR+error_message;
+				error_message=Messages.getString("SortRowsMeta.CheckResult.SortKeysNotFound", error_message);
 
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
@@ -309,12 +309,12 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				if (fieldName.length>0)
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All sort keys are found in the input stream.", stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.AllSortKeysFound"), stepMeta);
 					remarks.add(cr);
 				}
 				else
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No sort keys are entered.", stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.NoSortKeysEntered"), stepMeta);
 					remarks.add(cr);
 				}
 			}
@@ -325,36 +325,36 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				if (f.isDirectory())
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "["+directory+"] exists and is a directory", stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.DirectoryExists", directory), stepMeta);
 					remarks.add(cr);
 				}
 				else
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "["+directory+"] exists but is not a directory", stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.ExistsButNoDirectory", directory), stepMeta);
 					remarks.add(cr);
 				}
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Directory ["+directory+"] doesn't exist!", stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.DirectoryNotExists", directory), stepMeta);
 				remarks.add(cr);
 			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Couldn't find fields from previous steps, check the hops...!", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.NoFields"), stepMeta);
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XMLOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XMLOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
 	}

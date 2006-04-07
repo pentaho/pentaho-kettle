@@ -87,14 +87,14 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Add constant values");
+		shell.setText(Messages.getString("ConstantDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -112,7 +112,7 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		wStepname.setLayoutData(fdStepname);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText("Fields :");
+		wlFields.setText(Messages.getString("ConstantDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -123,15 +123,15 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() );
-		colinf[2]=new ColumnInfo("Format",     ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[3]=new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[4]=new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[5]=new ColumnInfo("Currency",   ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[6]=new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[7]=new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[8]=new ColumnInfo("Value",      ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[0]=new ColumnInfo(Messages.getString("ConstantDialog.Name.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[1]=new ColumnInfo(Messages.getString("ConstantDialog.Type.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() );
+		colinf[2]=new ColumnInfo(Messages.getString("ConstantDialog.Format.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[3]=new ColumnInfo(Messages.getString("ConstantDialog.Length.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[4]=new ColumnInfo(Messages.getString("ConstantDialog.Precision.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[5]=new ColumnInfo(Messages.getString("ConstantDialog.Currency.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[6]=new ColumnInfo(Messages.getString("ConstantDialog.Decimal.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[7]=new ColumnInfo(Messages.getString("ConstantDialog.Group.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[8]=new ColumnInfo(Messages.getString("ConstantDialog.Value.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -149,9 +149,9 @@ public class ConstantDialog extends BaseStepDialog implements StepDialogInterfac
 		wFields.setLayoutData(fdFields);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
 

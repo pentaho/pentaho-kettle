@@ -110,14 +110,14 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Sort rows");
+		shell.setText(Messages.getString("SortRowsDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -136,7 +136,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Connection line
 		wlSortDir=new Label(shell, SWT.RIGHT);
-		wlSortDir.setText("Sort directory ");
+		wlSortDir.setText(Messages.getString(""));
  		props.setLook(wlSortDir);
 		fdlSortDir=new FormData();
 		fdlSortDir.left = new FormAttachment(0, 0);
@@ -146,7 +146,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 		wbSortDir=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbSortDir);
-		wbSortDir.setText("&Browse...");
+		wbSortDir.setText(Messages.getString("System.Button.Browse"));
 		fdbSortDir=new FormData();
 		fdbSortDir.right= new FormAttachment(100, 0);
 		fdbSortDir.top  = new FormAttachment(wStepname, margin);
@@ -154,7 +154,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 		wbcSortDir=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbcSortDir);
-		wbcSortDir.setText("&Variable...");
+		wbcSortDir.setText(Messages.getString("System.Button.Variable"));
 		fdbcSortDir=new FormData();
 		fdbcSortDir.right= new FormAttachment(wbSortDir, -margin);
 		fdbcSortDir.top  = new FormAttachment(wStepname, margin);
@@ -216,7 +216,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 						i++;
 					}
 					
-					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, "Select an Environment Variable", "Select an Environment Variable");
+					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("SortRowsDialog.SelectEnvVar.DialogTitle"), Messages.getString("SortRowsDialog.SelectEnvVar.DialogMessage"));
 					if (esd.open()!=null)
 					{
 						int nr = esd.getSelectionNr();
@@ -246,7 +246,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		wPrefix.setText("srt");
 
         wlSortSize=new Label(shell, SWT.RIGHT);
-        wlSortSize.setText("Sort size (rows in memory) ");
+        wlSortSize.setText(Messages.getString("SortRowsDialog.SortSize.Label"));
         props.setLook(wlSortSize);
         fdlSortSize=new FormData();
         fdlSortSize.left = new FormAttachment(0, 0);
@@ -263,16 +263,16 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
         wSortSize.setLayoutData(fdSortSize);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("System.Button.OK"));
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(" &Get Fields ");
+		wGet.setText(Messages.getString("System.Button.GetFields"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText("Fields :");
+		wlFields.setText(Messages.getString("SortRowsDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -283,8 +283,8 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Fieldname",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[1]=new ColumnInfo("Ascending",  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" } );
+		colinf[0]=new ColumnInfo(Messages.getString("SortRowsDialog.Fieldname.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[1]=new ColumnInfo(Messages.getString("SortRowsDialog.Ascending.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") } );
 		
 		wFields=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -363,7 +363,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 			TableItem ti = new TableItem(table, SWT.NONE);
 			ti.setText(0, ""+(i+1));
 			ti.setText(1, input.getFieldName()[i]);
-			ti.setText(2, input.getAscending()[i]?"Y":"N");
+			ti.setText(2, input.getAscending()[i]?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
 		}
 		if (table.getItemCount()==0) // at least 1!
 		{
@@ -400,7 +400,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		{
 			TableItem ti = wFields.getNonEmpty(i);
 			input.getFieldName()[i] = ti.getText(1);
-			input.getAscending()[i] = "Y".equalsIgnoreCase(ti.getText(2));
+			input.getAscending()[i] = Messages.getString("System.Combo.Yes").equalsIgnoreCase(ti.getText(2));
 		}
 		
 		dispose();
@@ -431,7 +431,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get the fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("SortRowsDialog.UnableToGetFields.DialogTitle"), Messages.getString("SortRowsDialog.UnableToGetFields.DialogMessage"), ke);
 		}
 
 	}
