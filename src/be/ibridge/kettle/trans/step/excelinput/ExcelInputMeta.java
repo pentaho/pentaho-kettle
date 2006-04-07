@@ -57,7 +57,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	public final static int TYPE_TRIM_RIGHT = 2;
 	public final static int TYPE_TRIM_BOTH  = 3;
 	
-	public final static String type_trim_desc[] = { "none", "left", "right", "both" };
+  public final static String type_trim_code[] = { "none", "left", "right", "both" };
+	public final static String type_trim_desc[] = {
+      Messages.getString("ExcelInputMeta.TrimType.None"),
+      Messages.getString("ExcelInputMeta.TrimType.Left"),
+      Messages.getString("ExcelInputMeta.TrimType.Right"),
+      Messages.getString("ExcelInputMeta.TrimType.Both")
+    };
 
 	public  static final String STRING_SEPARATOR = " \t --> ";
 
@@ -568,7 +574,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 				fieldLength[i]      = Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1);
 				fieldPrecision[i]   = Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1);
 				String srepeat      = XMLHandler.getTagValue(fnode, "repeat");
-				fieldTrimType[i]    = getTrimType(XMLHandler.getTagValue(fnode, "trim_type"));
+				fieldTrimType[i]    = getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type"));
 				
 				if (srepeat!=null) fieldRepeat[i] = YES.equalsIgnoreCase(srepeat); 
 				else               fieldRepeat[i]=false;
@@ -736,7 +742,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(fieldType[i])));
 			retval.append("        "+XMLHandler.addTagValue("length",    fieldLength[i]));
 			retval.append("        "+XMLHandler.addTagValue("precision", fieldPrecision[i]));
-			retval.append("        "+XMLHandler.addTagValue("trim_type", getTrimTypeDesc( fieldTrimType[i] )));
+			retval.append("        "+XMLHandler.addTagValue("trim_type", getTrimTypeCode( fieldTrimType[i] )));
 			retval.append("        "+XMLHandler.addTagValue("repeat",    fieldRepeat[i]));
 			retval.append("        </field>"+Const.CR);
 		}
@@ -813,7 +819,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 				fieldType[i]     = Value.getType( rep.getStepAttributeString (id_step, i, "field_type") );
 				fieldLength[i]    = (int)          rep.getStepAttributeInteger(id_step, i, "field_length");
 				fieldPrecision[i] = (int)          rep.getStepAttributeInteger(id_step, i, "field_precision");
-				fieldTrimType[i] = getTrimType(   rep.getStepAttributeString (id_step, i, "field_trim_type") );
+				fieldTrimType[i] = getTrimTypeByCode(   rep.getStepAttributeString (id_step, i, "field_trim_type") );
 				fieldRepeat[i]    =                rep.getStepAttributeBoolean(id_step, i, "field_repeat");
 			}		
 			
@@ -867,7 +873,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      Value.getTypeDesc(fieldType[i]));
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    fieldLength[i]);
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldPrecision[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type", getTrimTypeDesc( fieldTrimType[i] ));
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type", getTrimTypeCode( fieldTrimType[i] ));
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",    fieldRepeat[i]);
 			}
 			
@@ -889,7 +895,18 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	}
 	
-	public final static int getTrimType(String tt)
+  public final static int getTrimTypeByCode(String tt)
+	{
+		if (tt==null) return 0;
+		
+		for (int i=0;i<type_trim_code.length;i++)
+		{
+			if (type_trim_code[i].equalsIgnoreCase(tt)) return i;
+		}
+		return 0;
+	}
+  
+	public final static int getTrimTypeByDesc(String tt)
 	{
 		if (tt==null) return 0;
 		
@@ -900,6 +917,12 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		return 0;
 	}
 
+  public final static String getTrimTypeCode(int i)
+	{
+		if (i<0 || i>=type_trim_code.length) return type_trim_code[0];
+		return type_trim_code[i];	
+	}
+  
 	public final static String getTrimTypeDesc(int i)
 	{
 		if (i<0 || i>=type_trim_desc.length) return type_trim_desc[0];
@@ -925,24 +948,24 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we get input...
 		if (input.length>0)
 		{		
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "This step is not expecting nor reading any input", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExcelInputMeta.CheckResult.NoInputError"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Not receiving any input from other steps.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelInputMeta.CheckResult.NoInputOk"), stepinfo);
 			remarks.add(cr);
 		}
 		
 		FileInputList fileList = getFileList();
 		if (fileList.nrOfFiles() == 0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No files can be found to read.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("ExcelInputMeta.CheckResult.ExpectedFilesError"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "This step is reading "+fileList.nrOfFiles()+" files.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("ExcelInputMeta.CheckResult.ExpectedFilesOk", ""+fileList.nrOfFiles()), stepinfo);
 			remarks.add(cr);
 		}
 	}

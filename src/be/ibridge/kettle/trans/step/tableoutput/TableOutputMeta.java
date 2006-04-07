@@ -429,7 +429,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		if (database!=null)
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Connection exists", stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.ConnectionExists"), stepMeta);
 			remarks.add(cr);
 
 			Database db = new Database(database);
@@ -437,7 +437,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				db.connect();
 				
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Connection to database OK", stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.ConnectionOk"), stepMeta);
 				remarks.add(cr);
 
 				if (tablename!=null && tablename.length()!=0)
@@ -445,13 +445,13 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 					// Check if this table exists...
 					if (db.checkTableExists(tablename))
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Table ["+tablename+"] exists and is accessible", stepMeta);
+						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.TableAccessible", tablename), stepMeta);
 						remarks.add(cr);
 
 						Row r = db.getTableFields(tablename);
 						if (r!=null)
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Table ["+tablename+"] is readeable and we got the fields from it.", stepMeta);
+							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.TableOk", tablename), stepMeta);
 							remarks.add(cr);
 
 							String error_message = "";
@@ -460,7 +460,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 							// Now see what we can find as previous step...
 							if (prev!=null && prev.size()>0)
 							{
-								cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "+prev.size()+" fields", stepMeta);
+								cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepMeta);
 								remarks.add(cr);
 	
 								// Starting from prev...
@@ -476,14 +476,14 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 								}
 								if (error_found) 
 								{
-									error_message="Fields in input stream, not found in output table:"+Const.CR+Const.CR+error_message;
+									error_message=Messages.getString("TableOutputMeta.CheckResult.FieldsNotFoundInOutput", error_message);
 	
 									cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 									remarks.add(cr);
 								}
 								else
 								{
-									cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All fields, coming from previous steps, are found in the output table", stepMeta);
+									cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.AllFieldsFoundInOutput"), stepMeta);
 									remarks.add(cr);
 								}
 	
@@ -500,44 +500,44 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 								}
 								if (error_found) 
 								{
-									error_message="Fields in table, not found in input stream:"+Const.CR+Const.CR+error_message;
+									error_message=Messages.getString("TableOutputMeta.CheckResult.FieldsNotFound", error_message);
 	
 									cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, error_message, stepMeta);
 									remarks.add(cr);
 								}
 								else
 								{
-									cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All fields in the table are found in the input stream, coming from previous steps", stepMeta);
+									cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.AllFieldsFound"), stepMeta);
 									remarks.add(cr);
 								}
 							}
 							else
 							{
-								cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Couldn't find fields from previous steps, check the hops...!", stepMeta);
+								cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TableOutputMeta.CheckResult.NoFields"), stepMeta);
 								remarks.add(cr);
 							}
 						}
 						else
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Couldn't read the table info, please check the table-name & permissions.", stepMeta);
+							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TableOutputMeta.CheckResult.TableNotAccessible"), stepMeta);
 							remarks.add(cr);
 						}
 					}
 					else
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Table ["+tablename+"] doesn't exist or can't be read on this database connection.", stepMeta);
+						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TableOutputMeta.CheckResult.TableError", tablename), stepMeta);
 						remarks.add(cr);
 					}
 				}
 				else
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No table name was entered in this step.", stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TableOutputMeta.CheckResult.NoTableName"), stepMeta);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleException e)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "An error occurred: "+e.getMessage(), stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TableOutputMeta.CheckResult.UndefinedError", e.getMessage()), stepMeta);
 				remarks.add(cr);
 			}
 			finally
@@ -547,19 +547,19 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		else
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Please select or create a connection to use", stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TableOutputMeta.CheckResult.NoConnection"), stepMeta);
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TableOutputMeta.CheckResult.ExpectedInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TableOutputMeta.CheckResult.ExpectedInputError"), stepMeta);
 			remarks.add(cr);
 		}
 	}
@@ -643,7 +643,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					catch(KettleDatabaseException dbe)
 					{
-						retval.setError("I was unable to connect to the database to verify the status of the table: "+dbe.getMessage());
+						retval.setError(Messages.getString("TableOutputMeta.Error.ErrorConnecting", dbe.getMessage()));
 					}
 					finally
 					{
@@ -652,17 +652,17 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 				}
 				else
 				{
-					retval.setError("No table is defined on this connection.");
+					retval.setError(Messages.getString("TableOutputMeta.Error.NoTable"));
 				}
 			}
 			else
 			{
-				retval.setError("Not receiving any fields from previous steps. Check the previous steps for errors & the connecting hops.");
+				retval.setError(Messages.getString("TableOutputMeta.Error.NoInput"));
 			}
 		}
 		else
 		{
-			retval.setError("There is no connection defined in this step.");
+			retval.setError(Messages.getString("TableOutputMeta.Error.NoConnection"));
 		}
 
 		return retval;
@@ -686,17 +686,17 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
                     }
                     else
                     {
-                        throw new KettleException("Unable to determine the required fields because the specified database table couldn't be found.");
+                        throw new KettleException(Messages.getString("TableOutputMeta.Exception.TableNotFound"));
                     }
                 }
                 else
                 {
-                    throw new KettleException("Unable to determine the required fields because the database table name wasn't specified.");
+                    throw new KettleException(Messages.getString("TableOutputMeta.Exception.TableNotSpecified"));
                 }
             }
             catch(Exception e)
             {
-                throw new KettleException("Unable to determine the required fields.", e);
+                throw new KettleException(Messages.getString("TableOutputMeta.Exception.ErrorGettingFields"), e);
             }
             finally
             {
@@ -705,7 +705,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
         }
         else
         {
-            throw new KettleException("Unable to determine the required fields because the database connection wasn't defined.");
+            throw new KettleException(Messages.getString("TableOutputMeta.Exception.ConnectionNotDefined"));
         }
 
     }

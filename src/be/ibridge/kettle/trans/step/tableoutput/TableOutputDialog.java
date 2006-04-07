@@ -147,11 +147,11 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Table output");
+		shell.setText(Messages.getString("TableOutputDialog.DialogTitle"));
 		
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -175,7 +175,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		
 		// Table line...
 		wlTable=new Label(shell, SWT.RIGHT);
-		wlTable.setText("Target table ");
+		wlTable.setText(Messages.getString("TableOutputDialog.TargetTable.Label"));
  		props.setLook(wlTable);
 		fdlTable=new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
@@ -185,7 +185,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbTable);
-		wbTable.setText("&Browse...");
+		wbTable.setText(Messages.getString("System.Button.Browse"));
 		fdbTable=new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
 		fdbTable.top  = new FormAttachment(wConnection, margin);
@@ -193,7 +193,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
         wbcTable=new Button(shell, SWT.PUSH| SWT.CENTER);
         props.setLook(wbcTable);
-        wbcTable.setText("&Variable...");
+        wbcTable.setText(Messages.getString("System.Button.Variable"));
         fdbcTable=new FormData();
         fdbcTable.right= new FormAttachment(wbTable, 0);
         fdbcTable.top  = new FormAttachment(wConnection, margin);
@@ -210,7 +210,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		// Commit size ...
 		wlCommit=new Label(shell, SWT.RIGHT);
-		wlCommit.setText("Commit size ");
+		wlCommit.setText(Messages.getString("TableOutputDialog.CommitSize.Label"));
  		props.setLook(wlCommit);
 		fdlCommit=new FormData();
 		fdlCommit.left = new FormAttachment(0, 0);
@@ -228,7 +228,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		// Truncate table
 		wlTruncate=new Label(shell, SWT.RIGHT);
-		wlTruncate.setText("Truncate table ");
+		wlTruncate.setText(Messages.getString("TableOutputDialog.TruncateTable.Label"));
  		props.setLook(wlTruncate);
 		fdlTruncate=new FormData();
 		fdlTruncate.left  = new FormAttachment(0, 0);
@@ -253,7 +253,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		// Ignore errors
 		wlIgnore=new Label(shell, SWT.RIGHT);
-		wlIgnore.setText("Ignore insert errors ");
+		wlIgnore.setText(Messages.getString("TableOutputDialog.IgnoreInsertErrors.Label"));
  		props.setLook(wlIgnore);
 		fdlIgnore=new FormData();
 		fdlIgnore.left  = new FormAttachment(0, 0);
@@ -271,7 +271,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		// UsePart update
 		wlBatch=new Label(shell, SWT.RIGHT);
-		wlBatch.setText("Use batch update for inserts");
+		wlBatch.setText(Messages.getString("TableOutputDialog.Batch.Label"));
  		props.setLook(wlBatch);
 		fdlBatch=new FormData();
 		fdlBatch.left  = new FormAttachment(0, 0);
@@ -303,8 +303,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         
         // Use partitioning?
         wlUsePart=new Label(shell, SWT.RIGHT);
-        wlUsePart.setText("Partition data over tables");
-        wlUsePart.setToolTipText("Moves data into table TABLENAME_YYYYMMDD or TABLENAME_YYYYMM based on the partitioning field"+Const.CR+"For example, SALES_200503, SALES_200504, ...");
+        wlUsePart.setText(Messages.getString("TableOutputDialog.UsePart.Label"));
+        wlUsePart.setToolTipText(Messages.getString("TableOutputDialog.UsePart.Tooltip"));
         props.setLook(wlUsePart);
         fdlUsePart=new FormData();
         fdlUsePart.left  = new FormAttachment(0, 0);
@@ -334,7 +334,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         
         // Partitioning field
         wlPartField=new Label(shell, SWT.RIGHT);
-        wlPartField.setText("Partitioning field ");
+        wlPartField.setText(Messages.getString("TableOutputDialog.PartField.Label"));
         props.setLook(wlPartField);
         fdlPartField=new FormData();
         fdlPartField.top  = new FormAttachment(wUsePart, margin);
@@ -352,8 +352,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
         // Partition per month
         wlPartMonthly=new Label(shell, SWT.RIGHT);
-        wlPartMonthly.setText("Partition data per month");
-        wlPartMonthly.setToolTipText("Moves data into table TABLENAME_YYYYMM based on the partitioning field"+Const.CR+"For example, SALES_200503, SALES_200504, ...");
+        wlPartMonthly.setText(Messages.getString("TableOutputDialog.PartMonthly.Label"));
+        wlPartMonthly.setToolTipText(Messages.getString("TableOutputDialog.PartMonthly.Tooltip"));
         props.setLook(wlPartMonthly);
         fdlPartMonthly=new FormData();
         fdlPartMonthly.left  = new FormAttachment(0, 0);
@@ -382,8 +382,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
         // Partition per month
         wlPartDaily=new Label(shell, SWT.RIGHT);
-        wlPartDaily.setText("Partition data per day");
-        wlPartDaily.setToolTipText("Moves data into table TABLENAME_YYYYMMDD based on the partitioning field"+Const.CR+"For example, SALES_20050301, SALES_20050301, ...");
+        wlPartDaily.setText(Messages.getString("TableOutputDialog.PartDaily.Label"));
+        wlPartDaily.setToolTipText(Messages.getString("TableOutputDialog.PartDaily.Tooltip"));
         props.setLook(wlPartDaily);
         fdlPartDaily=new FormData();
         fdlPartDaily.left  = new FormAttachment(0, 0);
@@ -413,7 +413,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         
         // NameInField
         wlNameInField=new Label(shell, SWT.RIGHT);
-        wlNameInField.setText("Is the name of the table defined in a field? ");
+        wlNameInField.setText(Messages.getString("TableOutputDialog.NameInField.Label"));
         props.setLook(wlNameInField);
         fdlNameInField=new FormData();
         fdlNameInField.left  = new FormAttachment(0, 0);
@@ -440,7 +440,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         
         // NameField size ...
         wlNameField=new Label(shell, SWT.RIGHT);
-        wlNameField.setText("Field that contains name of table: ");
+        wlNameField.setText(Messages.getString("TableOutputDialog.NameField.Label"));
         props.setLook(wlNameField);
         fdlNameField=new FormData();
         fdlNameField.left = new FormAttachment(0, 0);
@@ -458,7 +458,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 
         // NameInTable
         wlNameInTable=new Label(shell, SWT.RIGHT);
-        wlNameInTable.setText("Store the tablename field ");
+        wlNameInTable.setText(Messages.getString("TableOutputDialog.NameInTable.Label"));
         props.setLook(wlNameInTable);
         fdlNameInTable=new FormData();
         fdlNameInTable.left  = new FormAttachment(0, 0);
@@ -485,11 +485,11 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("System.Button.OK"));
 		wCreate=new Button(shell, SWT.PUSH);
-		wCreate.setText("  &SQL  ");
+		wCreate.setText(Messages.getString("System.Button.SQL"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
 		setButtonPositions(new Button[] { wOK, wCreate, wCancel }, margin, wNameInTable);
 
@@ -541,7 +541,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
                         i++;
                     }
                     
-                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, "Select an Environment Variable", "Select an Environment Variable");
+                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("TableOutputDialog.SelectEnv.DialogTitle"), Messages.getString("TableOutputDialog.SelectEnv.DialogMessage"));
                     if (esd.open()!=null)
                     {
                         int nr = esd.getSelectionNr();
@@ -666,8 +666,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		if (input.getDatabase()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Please select a valid connection!");
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("TableOutputDialog.ConnectionError.DialogMessage"));
+			mb.setText(Messages.getString("TableOutputDialog.ConnectionError.DialogTitle"));
 			mb.open();
 		}
 		
@@ -682,7 +682,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		{
 			DatabaseMeta inf = transMeta.getDatabase(connr);
 						
-			log.logDebug(toString(), "Looking at connection: "+inf.toString());
+			log.logDebug(toString(), Messages.getString("TableOutputDialog.Log.LookingAtConnection", inf.toString()));
 		
 			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, props, SWT.NONE, inf, transMeta.getDatabases());
 			std.setSelectedTable(wTable.getText());
@@ -695,8 +695,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Please select a valid database connection first!");
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("TableOutputDialog.ConnectionError2.DialogMessage"));
+			mb.setText(Messages.getString("TableOutputDialog.ConnectionError2.DialogTitle"));
 			mb.open(); 
 		}
 					
@@ -729,8 +729,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-					mb.setMessage("No SQL needs to be executed to make this step function properly.");
-					mb.setText("OK");
+					mb.setMessage(Messages.getString("TableOutputDialog.NoSQL.DialogMessage"));
+					mb.setText(Messages.getString("TableOutputDialog.NoSQL.DialogTitle"));
 					mb.open(); 
 				}
 			}
@@ -738,13 +738,13 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 				mb.setMessage(sql.getError());
-				mb.setText("ERROR");
+				mb.setText(Messages.getString("TableOutputDialog.SQLError.DialogTitle"));
 				mb.open(); 
 			}
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Couldn't build SQL", "Unable to build the SQL statement because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("TableOutputDialog.BuildSQLError.DialogTitle"), Messages.getString("TableOutputDialog.BuildSQLError.DialogMessage"), ke);
 		}
 	}
 

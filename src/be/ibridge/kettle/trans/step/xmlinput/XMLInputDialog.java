@@ -172,7 +172,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText(Messages.getString("XMLInputDialog.Stepname.Label"));
+		wlStepname.setText(Messages.getString("System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
