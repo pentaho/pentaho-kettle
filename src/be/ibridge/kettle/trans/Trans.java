@@ -51,7 +51,7 @@ import be.ibridge.kettle.trans.step.mappingoutput.MappingOutput;
  */
 public class Trans
 {	
-	public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss";
+	public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"; //$NON-NLS-1$
 	
 	private LogWriter log;
 	private TransMeta transMeta;
@@ -121,13 +121,13 @@ public class Trans
 	 */
 	public Trans(LogWriter lw, TransMeta transMeta, String prev_steps[], int prev_sizes[])
 	{
-		this(lw, (String)null, (String)null, new String[] { "no filename, preview mode" });
+		this(lw, (String)null, (String)null, new String[] { Messages.getString("Trans.Dialog.Description.NoFileNamePreviewMode") }); //$NON-NLS-1$
 		this.transMeta=transMeta;
 		preview=true;
 		preview_steps=prev_steps;
 		preview_sizes=prev_sizes;
-		log.logBasic(toString(), "Transformation is in preview mode...");
-		log.logDebug(toString(), "nr of steps to preview : "+transMeta.nrSteps()+", nr of hops : "+transMeta.nrTransHops());
+		log.logBasic(toString(), Messages.getString("Trans.Log.TransformationIsInPreviewMode")); //$NON-NLS-1$
+		log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToPreivew")+transMeta.nrSteps()+", nr of hops : "+transMeta.nrTransHops()); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/*
@@ -135,13 +135,13 @@ public class Trans
 	 */
 	public Trans(LogWriter lw, TransMeta transMeta)
 	{
-		this(lw, (String)null, (String)null, new String[] { "no filename, preloaded transformation" });
+		this(lw, (String)null, (String)null, new String[] { Messages.getString("Trans.Dialog.Description.NoFileNamePreloadedTransformation") }); //$NON-NLS-1$
 		this.transMeta=transMeta;
 		preview=false;
 		preview_steps=null;
 		preview_sizes=null;
-		log.logMinimal(toString(), "Transformation is pre-loaded from repository.");
-		log.logDebug(toString(), "nr of steps to run : "+transMeta.nrSteps()+", nr of hops : "+transMeta.nrTransHops());
+		log.logMinimal(toString(), Messages.getString("Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
+		log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 		
 	public String getName()
@@ -165,7 +165,7 @@ public class Trans
 				}
 				else
 				{
-					throw new KettleException("Unable to load transformation ["+name+"] because directory could not be found: ["+dirname+"]");
+					throw new KettleException(Messages.getString("Trans.Exception.UnableToLoadTransformation",name,dirname)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			}
 			else
@@ -175,7 +175,7 @@ public class Trans
 		}
 		catch(KettleException e)
 		{
-			throw new KettleException("Transformation was unable to open ["+name+"]", e);
+			throw new KettleException(Messages.getString("Trans.Exception.UnableToOpenTransformation",name), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -222,29 +222,29 @@ public class Trans
 		if (transMeta.isLogfieldUsed())
 		{
 			log.startStringCapture();
-			log.setString("START"+Const.CR);
+			log.setString(Messages.getString("Trans.Log.Start")+Const.CR); //$NON-NLS-1$
 		}
 		
 		if (transMeta.getName()==null)
 		{
-			log.logMinimal(toString(), "Dispatching started for filename ["+transMeta.getFilename()+"]");
+			log.logMinimal(toString(), Messages.getString("Trans.Log.DispacthingStartedForFilename",transMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		else
 		{
-			log.logMinimal(toString(), "Dispatching started for transformation ["+transMeta.getName()+"]");
+			log.logMinimal(toString(), Messages.getString("Trans.Log.DispacthingStartedForTransformation",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 				
 		if (transMeta.getArguments()!=null)
 		{
-			log.logMinimal(toString(), "Nr of arguments detected: "+transMeta.getArguments().length);
+			log.logMinimal(toString(), Messages.getString("Trans.Log.NumberOfArgumentsDetected", String.valueOf(transMeta.getArguments().length) )); //$NON-NLS-1$
 		}
 		
 		if (getReplayDate() != null) {
 			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
-			log.logBasic(toString(), "This is a replay transformation for : "
+			log.logBasic(toString(), Messages.getString("Trans.Log.ThisIsAReplayTransformation") //$NON-NLS-1$
 					+ df.format(getReplayDate()));
 		} else {
-			log.logBasic(toString(), "This is not a replay transformation");
+			log.logBasic(toString(), Messages.getString("Trans.Log.ThisIsNotAReplayTransformation")); //$NON-NLS-1$
 		}
 		
 		steps	 = new ArrayList();
@@ -261,14 +261,14 @@ public class Trans
 		
 		ArrayList hopsteps=transMeta.getTransHopSteps(false);
 		
-		log.logDetailed(toString(), "I found "+hopsteps.size()+" different steps to launch.");	
-		log.logDetailed(toString(), "Allocating rowsets...");
+		log.logDetailed(toString(), Messages.getString("Trans.Log.FoundDefferentSteps",String.valueOf(hopsteps.size())));	 //$NON-NLS-1$ //$NON-NLS-2$
+		log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatingRowsets")); //$NON-NLS-1$
 		
 		// First allocate all the rowsets required!
 		for (int i=0;i<hopsteps.size();i++)
 		{
 			StepMeta stepMeta=(StepMeta)hopsteps.get(i);
-			log.logDetailed(toString(), " Allocating rowsets for step "+i+" --> "+stepMeta.getName());
+			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocateingRowsetsForStep",String.valueOf(i),stepMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			nroutput = transMeta.findNrNextSteps(stepMeta);
 	
@@ -280,7 +280,7 @@ public class Trans
 				// How many times do we start the target step?
 				nextcopies=nsi.getCopies();
 				prevcopies=stepMeta.getCopies();
-				log.logDetailed(toString(), "  prevcopies = "+prevcopies+", nextcopies="+nextcopies);
+				log.logDetailed(toString(), Messages.getString("Trans.Log.copiesInfo",String.valueOf(prevcopies),String.valueOf(nextcopies))); //$NON-NLS-1$ //$NON-NLS-2$
 				int disptype;
 				     if (prevcopies==1 && nextcopies==1) { disptype=TYPE_DISP_1_1; nrcopies = 1; } 
 				else if (prevcopies==1 && nextcopies >1) { disptype=TYPE_DISP_1_N; nrcopies = nextcopies; } 
@@ -288,8 +288,8 @@ public class Trans
 				else if (prevcopies==nextcopies)         { disptype=TYPE_DISP_N_N; nrcopies = nextcopies; } // > 1!
 				else 
 				{
-					log.logError(toString(), "Only 1-1, 1-n, n-1 and n-n relationships are allowed!");
-					log.logError(toString(), "This means you can't have x-y relationships!");
+					log.logError(toString(), Messages.getString("Trans.Log.AllowedRelationships")); //$NON-NLS-1$
+					log.logError(toString(), Messages.getString("Trans.Log.CannotHaveXYRelationships")); //$NON-NLS-1$
 					return false;
 				}
 				
@@ -306,25 +306,25 @@ public class Trans
 					case TYPE_DISP_N_N: rs.setThreadNameFromToCopy(stepMeta.getName(), c, nsi.getName(), c); break; 
 					}
 					rowsets.add(rs);
-					log.logDetailed(toString(), "Transformation allocated new rowset ["+rs.toString()+"]");
+					log.logDetailed(toString(), Messages.getString("Trans.TransformationAllocatedNewRowset",rs.toString())); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
-			log.logDetailed(toString(), " Allocated "+rowsets.size()+" rowsets for step "+i+" --> "+stepMeta.getName()+" ");
+			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatedRowsets",String.valueOf(rowsets.size()),String.valueOf(i),stepMeta.getName())+" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 		
-		log.logDetailed(toString(), "Allocating Steps & StepData...");
+		log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatingStepsAndStepData")); //$NON-NLS-1$
 		// Allocate the steps & the data...
 		for (int i=0;i<hopsteps.size();i++)
 		{
 			StepMeta stepMeta=(StepMeta)hopsteps.get(i);
 			String stepid = stepMeta.getStepID();
 			
-			log.logDetailed(toString(), " Transformation is about to allocate step ["+stepMeta.getName()+"] of type ["+stepid+"]");
+			log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationIsToAllocateStep",stepMeta.getName(),stepid)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			
 			// How many copies are launched of this step?
 			nrcopies=stepMeta.getCopies(); 
 
-			log.logDebug(toString(), "  Step has nrcopies="+nrcopies);
+			log.logDebug(toString(), Messages.getString("Trans.Log.StepHasNumberRowCopies",String.valueOf(nrcopies))); //$NON-NLS-1$
 					 
 			// At least run once...
 			for (int c=0;c<nrcopies;c++)
@@ -352,7 +352,7 @@ public class Trans
 					// Add to the bunch...
 					steps.add(combi);
 					
-					log.logDetailed(toString(), " Transformation has allocated a new step: ["+stepMeta.getName()+"]."+c);
+					log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationHasAllocatedANewStep",stepMeta.getName(),String.valueOf(c))); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}
@@ -402,14 +402,14 @@ public class Trans
 			else
 			{
 			    sid.step.setErrors(1);
-				log.logError(toString(), "Error initializing step ["+sid.step.getStepname()+"]");
+				log.logError(toString(), Messages.getString("Trans.Log.ErrorInitializingStep",sid.step.getStepname())); //$NON-NLS-1$ //$NON-NLS-2$
 				ok = false;
 			}
 		}
 		
 		if (!ok)
 		{
-			log.logError(toString(), "We failed to initialize at least one step.  Execution can not begin!");
+			log.logError(toString(), Messages.getString("Trans.Log.FailToInitializeAtLeastOneStep")); //$NON-NLS-1$
 			return false;
 		}
 		
@@ -430,12 +430,12 @@ public class Trans
             sid.step.start();
         }
 
-        log.logDetailed(toString(), "Transformation has allocated "+steps.size()+" threads and "+rowsets.size()+" rowsets.");
+        log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationHasAllocated",String.valueOf(steps.size()),String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 	
 	public void logSummary(StepInterface si)
 	{
-		log.logBasic(si.getStepname(), "Finished processing (I="+si.getLinesInput()+", O="+si.getLinesOutput()+", R="+si.getLinesRead()+", W="+si.getLinesWritten()+", U="+si.getLinesUpdated()+", E="+si.getErrors());
+		log.logBasic(si.getStepname(), Messages.getString("Trans.Log.FinishedProcessing",String.valueOf(si.getLinesInput()),String.valueOf(si.getLinesOutput()),String.valueOf(si.getLinesRead()))+Messages.getString("Trans.Log.FinishedProcessing2",String.valueOf(si.getLinesWritten()),String.valueOf(si.getLinesUpdated()),String.valueOf(si.getErrors()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 	}
 
 	//
@@ -456,18 +456,18 @@ public class Trans
 			}
 			if (errors==0)
 			{
-				log.logMinimal(toString(), "Transformation ended.");
+				log.logMinimal(toString(), Messages.getString("Trans.Log.TransformationEnded")); //$NON-NLS-1$
 			}
 			else
 			{
-				log.logMinimal(toString(), "Transformation detected "+errors+" steps with errors!");
-				log.logMinimal(toString(), "Transformation is killing the other steps!");
+				log.logMinimal(toString(), Messages.getString("Trans.Log.TransformationDetectedErrors")+errors+" steps with errors!"); //$NON-NLS-1$ //$NON-NLS-2$
+				log.logMinimal(toString(), Messages.getString("Trans.Log.TransformationIsKillingTheOtherSteps")); //$NON-NLS-1$
 				killAll();
 			}
 		}
 		catch(Exception e)
 		{
-			log.logError(toString(), "Transformation error: "+e.toString());
+			log.logError(toString(), Messages.getString("Trans.Log.TransformationError")+e.toString()); //$NON-NLS-1$
 		}
 	}
 
@@ -482,7 +482,7 @@ public class Trans
 			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
 			if (sid.step.getErrors()!=0L) errors++;
 		}
-		if (errors>0) log.logError(toString(), "Errors detected!");
+		if (errors>0) log.logError(toString(), Messages.getString("Trans.Log.TransformationErrorsDetected")); //$NON-NLS-1$
 		
 		return errors;
 	}
@@ -520,7 +520,7 @@ public class Trans
 			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
 			BaseStep thr = (BaseStep)sid.step;
 			
-			log.logBasic(toString(), "Looking at step: "+thr.getStepname());
+			log.logBasic(toString(), Messages.getString("Trans.Log.LookingAtStep")+thr.getStepname()); //$NON-NLS-1$
 			while (thr.isAlive())
 			{
 				thr.stopAll();
@@ -530,7 +530,7 @@ public class Trans
 				}
 				catch(Exception e)
 				{
-					log.logError(toString(), "Transformation error: "+e.toString());
+					log.logError(toString(), Messages.getString("Trans.Log.TransformationErrors")+e.toString()); //$NON-NLS-1$
 					return;
 				}
 			}
@@ -543,7 +543,7 @@ public class Trans
 		BaseStep thr;
 		long proc;
 		
-		log.logBasic(toString(), " ");
+		log.logBasic(toString(), " "); //$NON-NLS-1$
 		if (steps==null) return;
 		
 		for (i=0;i<steps.size();i++)
@@ -555,22 +555,22 @@ public class Trans
 			{
 				if (thr.getErrors()==0)
 				{
-					log.logBasic(toString(), "Process '"+thr.getStepname()+"'."+thr.getCopy()+" ended successfully, processed "+proc+" lines. ("+(proc/seconds)+" lines/s)");
+					log.logBasic(toString(), Messages.getString("Trans.Log.ProcessSuccessfullyInfo")+thr.getStepname()+"'."+thr.getCopy()+" ended successfully, processed "+proc+" lines. ("+(proc/seconds)+" lines/s)"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 				}
 				else
 				{
-					log.logError(toString(), "Process '"+thr.getStepname()+"'."+thr.getCopy()+" ended with "+thr.getErrors()+" errors after "+proc+" lines. ("+(proc/seconds)+" lines/s)");
+					log.logError(toString(), Messages.getString("Trans.Log.ProcessErrorInfo")+thr.getStepname()+"'."+thr.getCopy()+" ended with "+thr.getErrors()+" errors after "+proc+" lines. ("+(proc/seconds)+" lines/s)"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 				}							
 			}
 			else
 			{
 				if (thr.getErrors()==0)
 				{
-					log.logBasic(toString(), "Process '"+thr.getStepname()+"'."+thr.getCopy()+" ended successfully, processed "+proc+" lines in "+seconds+" seconds.");
+					log.logBasic(toString(), Messages.getString("Trans.Log.ProcessSuccessfullyInfo2")+thr.getStepname()+"'."+thr.getCopy()+" ended successfully, processed "+proc+" lines in "+seconds+" seconds."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 				}
 				else
 				{
-					log.logError(toString(), "Process '"+thr.getStepname()+"'."+thr.getCopy()+" ended with "+thr.getErrors()+" errors after processing "+proc+" lines in "+seconds+" seconds.");
+					log.logError(toString(), Messages.getString("Trans.Log.ProcessErrorInfo")+thr.getStepname()+"'."+thr.getCopy()+" ended with "+thr.getErrors()+" errors after processing "+proc+" lines in "+seconds+" seconds."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 				}							
 			}
 		}
@@ -734,7 +734,7 @@ public class Trans
 			startDate   = Const.MIN_DATE;
 			endDate     = currentDate;
 			SimpleDateFormat df = new SimpleDateFormat(REPLAY_DATE_FORMAT);
-			log.logBasic(toString(), "This transformation can be replayed with replay date: " + df.format(currentDate));
+			log.logBasic(toString(), Messages.getString("Trans.Log.TransformationCanBeReplayed") + df.format(currentDate)); //$NON-NLS-1$
             
             Database ldb = null;
             try
@@ -743,20 +743,20 @@ public class Trans
     			if (logcon!=null)
     			{
     			    ldb = new Database(logcon);
-				    log.logDetailed(toString(), "Opening log connection ["+transMeta.getLogConnection()+"]");
+				    log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningLogConnection")+transMeta.getLogConnection()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 					ldb.connect();
 					
 					//
 					// Get the date range from the logging table: from the last end_date to now. (currentDate)
 					//
-					Row lastr = ldb.getLastLogDate(transMeta.getLogTable(), transMeta.getName(), false, "end");
+					Row lastr = ldb.getLastLogDate(transMeta.getLogTable(), transMeta.getName(), false, Messages.getString("Trans.Row.Status.End")); //$NON-NLS-1$
 					if (lastr!=null && lastr.size()>0)
 					{
 						Value last = lastr.getValue(0); // #0: last enddate
 						if (last!=null && !last.isNull())
 						{
 							startDate = last.getDate();
-						    log.logDetailed(toString(), "Start date found from previous log entry: "+startDate);
+						    log.logDetailed(toString(), Messages.getString("Trans.Log.StartDateFound")+startDate); //$NON-NLS-1$
 						}
 					}
 					
@@ -769,20 +769,20 @@ public class Trans
 						transMeta.getMaxDateField()!=null && transMeta.getMaxDateField().length()>0
 						)
 					{
-						log.logDetailed(toString(), "Looking for maxdate connection: ["+transMeta.getMaxDateConnection()+"]");
+						log.logDetailed(toString(), Messages.getString("Trans.Log.LookingForMaxdateConnection")+transMeta.getMaxDateConnection()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 						DatabaseMeta maxcon = transMeta.getMaxDateConnection();
 						if (maxcon!=null)
 						{
 							Database maxdb = new Database(maxcon);
 							try
 							{
-							    log.logDetailed(toString(), "Opening maximum date connection...");
+							    log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningMaximumDateConnection")); //$NON-NLS-1$
 								maxdb.connect();
 								
 								//
 								// Determine the endDate by looking at a field in a table...
 								//
-								String sql = "SELECT MAX("+transMeta.getMaxDateField()+") FROM "+transMeta.getMaxDateTable();
+								String sql = "SELECT MAX("+transMeta.getMaxDateField()+") FROM "+transMeta.getMaxDateTable(); //$NON-NLS-1$ //$NON-NLS-2$
 								Row r1 = maxdb.getOneRow(sql);
 								if (r1!=null)
 								{
@@ -790,18 +790,18 @@ public class Trans
 									Value maxvalue = r1.getValue(0);
 									if (maxvalue!=null && !maxvalue.isNull() && maxvalue.getDate()!=null)
 									{
-									    log.logDetailed(toString(), "Last date found on the maxDate connection: "+r1);
+									    log.logDetailed(toString(), Messages.getString("Trans.Log.LastDateFoundOnTheMaxdateConnection")+r1); //$NON-NLS-1$
 										endDate.setTime( (long)( maxvalue.getDate().getTime() + ( transMeta.getMaxDateOffset()*1000 ) ));
 									}
 								}
 								else
 								{
-								    log.logDetailed(toString(), "No last date found on the maxDate connection!");
+								    log.logDetailed(toString(), Messages.getString("Trans.Log.NoLastDateFoundOnTheMaxdateConnection")); //$NON-NLS-1$
 								}
 							}
 							catch(KettleException e)
 							{
-								throw new KettleTransException("Error connecting to database ["+transMeta.getMaxDateConnection()+"]", e);
+								throw new KettleTransException(Messages.getString("Trans.Log.ErrorConnectingToDatabase")+transMeta.getMaxDateConnection()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
 							}
 							finally
 							{
@@ -810,7 +810,7 @@ public class Trans
 						}
 						else
 						{
-							throw new KettleTransException("Maximum date connection ["+transMeta.getMaxDateConnection()+"] couldn't be found!");
+							throw new KettleTransException(Messages.getString("Trans.Exception.MaximumDateConnectionCouldNotBeFound")+transMeta.getMaxDateConnection()+"] couldn't be found!"); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 	
@@ -819,7 +819,7 @@ public class Trans
 					// Get the maximum in depdate...
 					if (transMeta.nrDependencies()>0)
 					{
-						log.logDetailed(toString(), "Checking for max dependency date!");
+						log.logDetailed(toString(), Messages.getString("Trans.Log.CheckingForMaxDependencyDate")); //$NON-NLS-1$
 						// 
 						// Maybe one of the tables where this transformation is dependend on has changed?
 						// If so we need to change the start-date!
@@ -847,7 +847,7 @@ public class Trans
 								{
 									depdb.connect();
 									
-									String sql = "SELECT MAX("+td.getFieldname()+") FROM "+td.getTablename();
+									String sql = "SELECT MAX("+td.getFieldname()+") FROM "+td.getTablename(); //$NON-NLS-1$ //$NON-NLS-2$
 									Row r1 = depdb.getOneRow(sql);
 									if (r1!=null)
 									{
@@ -855,7 +855,7 @@ public class Trans
 										Value maxvalue = r1.getValue(0);
 										if (maxvalue!=null && !maxvalue.isNull() && maxvalue.getDate()!=null)
 										{
-											log.logDetailed(toString(), "found date from table "+td.getTablename()+"."+td.getFieldname()+" = "+maxvalue.toString());
+											log.logDetailed(toString(), Messages.getString("Trans.Log.FoundDateFromTable")+td.getTablename()+"."+td.getFieldname()+" = "+maxvalue.toString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 											if ( maxvalue.getDate().getTime() > maxdepdate.getTime())
 											{
 												maxdepdate=maxvalue.getDate();
@@ -863,17 +863,17 @@ public class Trans
 										}
 										else
 										{
-											throw new KettleTransException("Unable to get dependency info from ["+td.getDatabase().getName()+"."+td.getTablename()+"."+td.getFieldname()+"]");
+											throw new KettleTransException(Messages.getString("Trans.Exception.UnableToGetDependencyInfoFromDB")+td.getDatabase().getName()+"."+td.getTablename()+"."+td.getFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 										}
 									}
 									else
 									{
-										throw new KettleTransException("Unable to get dependency info from ["+td.getDatabase().getName()+"."+td.getTablename()+"."+td.getFieldname()+"]");
+										throw new KettleTransException(Messages.getString("Trans.Exception.UnableToGetDependencyInfoFromDB2")+td.getDatabase().getName()+"."+td.getTablename()+"."+td.getFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 									}
 								}
 								catch(KettleException e)
 								{
-									throw new KettleTransException("Error in database ["+td.getDatabase()+"]", e);
+									throw new KettleTransException(Messages.getString("Trans.Exception.ErrorInDatabase")+td.getDatabase()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
 								}
 								finally
 								{
@@ -882,9 +882,9 @@ public class Trans
 							}
 							else
 							{
-								throw new KettleTransException("Connection ["+td.getDatabase()+"] couldn't be found!");
+								throw new KettleTransException(Messages.getString("Trans.Exception.ConnectionCouldNotBeFound")+td.getDatabase()+"] couldn't be found!"); //$NON-NLS-1$ //$NON-NLS-2$
 							}
-							log.logDetailed(toString(), "maxdepdate = "+(new Value("maxdepdate", maxdepdate)).toString());
+							log.logDetailed(toString(), Messages.getString("Trans.Log.Maxdepdate")+(new Value("maxdepdate", maxdepdate)).toString()); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						
 						// OK, so we now have the maximum depdate;
@@ -903,7 +903,7 @@ public class Trans
 					}
 					
 					// See if we have to add a batch id...
-					Value id_batch = new Value("ID_BATCH", (long)1);
+					Value id_batch = new Value("ID_BATCH", (long)1); //$NON-NLS-1$
 					if (transMeta.isBatchIdUsed())
 					{
 						ldb.getNextValue(transMeta.getCounters(), transMeta.getLogTable(), id_batch);
@@ -933,7 +933,7 @@ public class Trans
                                transMeta.getBatchId(), 
                                false, 
                                transMeta.getName(), 
-                               "start", 
+                               Messages.getString("Trans.Dialog.Description.Start"),  //$NON-NLS-1$
                                0L, 0L, 0L, 0L, 0L, 0L, 
                                startDate, endDate, logDate, depDate,currentDate,
                                null
@@ -943,7 +943,7 @@ public class Trans
             }
 			catch(KettleException e)
 			{
-				throw new KettleTransException("Error writing log record to table ["+transMeta.getLogTable()+"]", e);
+				throw new KettleTransException(Messages.getString("Trans.Exception.ErrorWritingLogRecordToTable")+transMeta.getLogTable()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			finally
 			{
@@ -954,7 +954,7 @@ public class Trans
 		}
 		catch(KettleException e)
 		{
-			throw new KettleTransException("Unable to begin processing transformation", e);
+			throw new KettleTransException(Messages.getString("Trans.Exception.UnableToBeginProcessingTransformation"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -1003,8 +1003,8 @@ public class Trans
 		if (transMeta.isLogfieldUsed())
 		{
 			log_string = log.getString();
-			log_string+=Const.CR+"END";
-			log.setString("");
+			log_string+=Const.CR+Messages.getString("Trans.Log.Status.End"); //$NON-NLS-1$
+			log.setString(""); //$NON-NLS-1$
 			log.endStringCapture();
 		}
 		
@@ -1029,7 +1029,7 @@ public class Trans
 			}
 			catch(Exception e)
 			{
-				throw new KettleException("Error writing log record to table ["+transMeta.getLogTable()+"]", e);
+				throw new KettleException(Messages.getString("Trans.Exception.ErrorWritingLogRecordToTable2")+transMeta.getLogTable()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			finally
 			{
@@ -1243,7 +1243,7 @@ public class Trans
         {
             StepMetaDataCombi smdc = (StepMetaDataCombi) steps.get(i);
             StepInterface step = smdc.step;
-            if (step.getStepID().equalsIgnoreCase("MappingInput"))
+            if (step.getStepID().equalsIgnoreCase("MappingInput")) //$NON-NLS-1$
                 return (MappingInput)step;
         }
         return null;
@@ -1256,7 +1256,7 @@ public class Trans
         {
             StepMetaDataCombi smdc = (StepMetaDataCombi) steps.get(i);
             StepInterface step = smdc.step;
-            if (step.getStepID().equalsIgnoreCase("MappingOutput"))
+            if (step.getStepID().equalsIgnoreCase("MappingOutput")) //$NON-NLS-1$
                 return (MappingOutput)step;
         }
         return null;

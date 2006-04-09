@@ -68,7 +68,7 @@ public class KettleURLClassLoader extends URLClassLoader
         }
         catch(Exception e)
         {
-            System.out.println("Unable to read class from InputStream : "+e.toString());
+            System.out.println(Messages.getString("KettleURLClassLoader.Exception.UnableToReadClass")+e.toString()); //$NON-NLS-1$
             return null;
         }
     }

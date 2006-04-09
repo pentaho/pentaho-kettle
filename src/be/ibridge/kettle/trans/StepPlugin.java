@@ -124,7 +124,7 @@ public class StepPlugin
 
     public String getCategory()
     {
-        if (category == null) return "General";
+        if (category == null) return Messages.getString("StepPlugin.Label"); //$NON-NLS-1$
         return category;
     }
 

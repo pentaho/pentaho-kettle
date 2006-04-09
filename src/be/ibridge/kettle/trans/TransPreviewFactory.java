@@ -21,7 +21,7 @@ public class TransPreviewFactory
         previewMeta.addStep(one);
         
         DummyTransMeta twoMeta = new DummyTransMeta();
-        StepMeta two = new StepMeta(log, stepLoader.getStepPluginID(twoMeta), "dummy", twoMeta);
+        StepMeta two = new StepMeta(log, stepLoader.getStepPluginID(twoMeta), "dummy", twoMeta); //$NON-NLS-1$
         two.setLocation(250,50);
         two.setDraw(true);
         previewMeta.addStep(two);

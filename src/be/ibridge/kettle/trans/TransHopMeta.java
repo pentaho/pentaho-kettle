@@ -69,15 +69,15 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable
 	{
 		try
 		{
-			from_step = searchStep( steps, XMLHandler.getTagValue(hopnode, "from") );
-			to_step   = searchStep( steps, XMLHandler.getTagValue(hopnode, "to") );
-			String en = XMLHandler.getTagValue(hopnode, "enabled");
+			from_step = searchStep( steps, XMLHandler.getTagValue(hopnode, "from") ); //$NON-NLS-1$
+			to_step   = searchStep( steps, XMLHandler.getTagValue(hopnode, "to") ); //$NON-NLS-1$
+			String en = XMLHandler.getTagValue(hopnode, "enabled"); //$NON-NLS-1$
 			
-			if (en==null) enabled   =true; else enabled   =en.equalsIgnoreCase("Y");
+			if (en==null) enabled   =true; else enabled   =en.equalsIgnoreCase("Y"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to load hop info from XML node", e);
+			throw new KettleXMLException(Messages.getString("TransHopMeta.Exception.UnableToLoadHopInfo"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -120,16 +120,16 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable
 			
 			Row r = rep.getTransHop(id_trans_hop);
 			
-			long id_step_from = r.searchValue("ID_STEP_FROM").getInteger();
-			long id_step_to   = r.searchValue("ID_STEP_TO").getInteger();
-			enabled           = r.searchValue("ENABLED").getBoolean();
+			long id_step_from = r.searchValue("ID_STEP_FROM").getInteger(); //$NON-NLS-1$
+			long id_step_to   = r.searchValue("ID_STEP_TO").getInteger(); //$NON-NLS-1$
+			enabled           = r.searchValue("ENABLED").getBoolean(); //$NON-NLS-1$
 			
 			from_step = TransMeta.findStep(steps, id_step_from);
 			to_step   = TransMeta.findStep(steps, id_step_to);
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load Transformation hop info from the repository with id_trans_hop="+id_trans_hop, dbe);
+			throw new KettleException(Messages.getString("TransHopMeta.Exception.LoadTransformationHopInfo")+id_trans_hop, dbe); //$NON-NLS-1$
 		}
 	}
 		
@@ -148,7 +148,7 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to save transformation hop info to the database for id_transformation="+id_transformation, dbe);
+			throw new KettleException(Messages.getString("TransHopMeta.Exception.UnableToSaveTransformationHopInfo")+id_transformation, dbe); //$NON-NLS-1$
 		}
 	}
 
@@ -235,20 +235,20 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable
 
 	public String toString()
 	{
-		String str_fr = (from_step==null)?"(empty)":from_step.getName();
-		String str_to = (to_step==null)?"(empty)":to_step.getName();
-		return str_fr+" --> "+str_to+" ("+(enabled?"enabled":"disabled")+")";
+		String str_fr = (from_step==null)?"(empty)":from_step.getName(); //$NON-NLS-1$
+		String str_to = (to_step==null)?"(empty)":to_step.getName(); //$NON-NLS-1$
+		return str_fr+" --> "+str_to+" ("+(enabled?"enabled":"disabled")+")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 	}
 	
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("  <hop> ");
-		retval.append(XMLHandler.addTagValue("from",    from_step.getName(), false));
-		retval.append(XMLHandler.addTagValue("to",      to_step.getName(), false));
-		retval.append(XMLHandler.addTagValue("enabled", enabled, false));
-		retval.append(" </hop>");
+		retval.append("  <hop> "); //$NON-NLS-1$
+		retval.append(XMLHandler.addTagValue("from",    from_step.getName(), false)); //$NON-NLS-1$
+		retval.append(XMLHandler.addTagValue("to",      to_step.getName(), false)); //$NON-NLS-1$
+		retval.append(XMLHandler.addTagValue("enabled", enabled, false)); //$NON-NLS-1$
+		retval.append(" </hop>"); //$NON-NLS-1$
 		
 		return retval.toString();
 	}

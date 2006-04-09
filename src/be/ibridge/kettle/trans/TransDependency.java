@@ -58,14 +58,14 @@ public class TransDependency implements XMLInterface
 	{
 		try
 		{
-			String depcon    = XMLHandler.getTagValue(depnode, "connection");
+			String depcon    = XMLHandler.getTagValue(depnode, "connection"); //$NON-NLS-1$
 			db = Const.findDatabase(databases, depcon);
-			tablename        = XMLHandler.getTagValue(depnode, "table");
-			fieldname        = XMLHandler.getTagValue(depnode, "field");
+			tablename        = XMLHandler.getTagValue(depnode, "table"); //$NON-NLS-1$
+			fieldname        = XMLHandler.getTagValue(depnode, "field"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to load transformation dependency from XML", e);
+			throw new KettleXMLException(Messages.getString("TransDependency.Exception.UnableToLoadTransformation"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -111,12 +111,12 @@ public class TransDependency implements XMLInterface
 	
 	public String getXML()
 	{
-		String retval = "";
-		retval+="      <dependency>"+Const.CR;
-		retval+="        "+XMLHandler.addTagValue("connection", db==null?"":db.getName());
-		retval+="        "+XMLHandler.addTagValue("table",      tablename);
-		retval+="        "+XMLHandler.addTagValue("field",      fieldname);
-		retval+="        </dependency>"+Const.CR;
+		String retval = ""; //$NON-NLS-1$
+		retval+="      <dependency>"+Const.CR; //$NON-NLS-1$
+		retval+="        "+XMLHandler.addTagValue("connection", db==null?"":db.getName()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval+="        "+XMLHandler.addTagValue("table",      tablename); //$NON-NLS-1$ //$NON-NLS-2$
+		retval+="        "+XMLHandler.addTagValue("field",      fieldname); //$NON-NLS-1$ //$NON-NLS-2$
+		retval+="        </dependency>"+Const.CR; //$NON-NLS-1$
 		
 		return retval;
 	}
@@ -132,15 +132,15 @@ public class TransDependency implements XMLInterface
 			
 			if (r!=null)
 			{
-				long id_connection = r.searchValue("ID_DATABASE").getInteger();
+				long id_connection = r.searchValue("ID_DATABASE").getInteger(); //$NON-NLS-1$
 				db        = Const.findDatabase(databases, id_connection);
-				tablename = r.searchValue("TABLE_NAME").getString();
-				fieldname = r.searchValue("FIELD_NAME").getString();
+				tablename = r.searchValue("TABLE_NAME").getString(); //$NON-NLS-1$
+				fieldname = r.searchValue("FIELD_NAME").getString(); //$NON-NLS-1$
 			}
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load transformation dependency from the repository with id_dependency="+id_dependency, dbe);
+			throw new KettleException(Messages.getString("TransDependency.Exception.UnableToLoadTransformationDependency")+id_dependency, dbe); //$NON-NLS-1$
 		}
 	}
 
@@ -155,7 +155,7 @@ public class TransDependency implements XMLInterface
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to save transformation dependency to the repository for id_transformation="+id_transformation, dbe);
+			throw new KettleException(Messages.getString("TransDependency.Exception.UnableToSaveTransformationDepency")+id_transformation, dbe); //$NON-NLS-1$
 		}
 	}
 

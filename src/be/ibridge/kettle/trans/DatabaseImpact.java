@@ -42,13 +42,13 @@ public class DatabaseImpact
 	
 	public static final String type_desc[] = 
 		{
-		 "none",
-		 "Read",
-		 "Write",
-		 "Read/Write",
-		 "Truncate",
-         "Delete",
-         "Update"
+		 Messages.getString("DatabaseImpact.TypeDesc.Label.None"), //$NON-NLS-1$
+		 Messages.getString("DatabaseImpact.TypeDesc.Label.Read"), //$NON-NLS-1$
+		 Messages.getString("DatabaseImpact.TypeDesc.Label.Write"), //$NON-NLS-1$
+		 Messages.getString("DatabaseImpact.TypeDesc.Label.ReadOrWrite"), //$NON-NLS-1$
+		 Messages.getString("DatabaseImpact.TypeDesc.Label.Truncate"), //$NON-NLS-1$
+         Messages.getString("DatabaseImpact.TypeDesc.Label.Delete"), //$NON-NLS-1$
+         Messages.getString("DatabaseImpact.TypeDesc.Label.Update") //$NON-NLS-1$
 		};
 	
 	private String transname;
@@ -143,16 +143,16 @@ public class DatabaseImpact
 	public Row getRow()
 	{
 		Row r = new Row();
-		r.addValue( new Value("Type", 			getTypeDesc()) );
-		r.addValue( new Value("Transformation", getTransformationName()) );
-		r.addValue( new Value("Step", 			getStepName()) );
-		r.addValue( new Value("Database", 		getDatabaseName()) );
-		r.addValue( new Value("Table", 			getTable()) );
-		r.addValue( new Value("Field", 			getField()) );
-		r.addValue( new Value("Value", 			getValue()) );
-		r.addValue( new Value("Value Origin", 	getValueOrigin()) );
-		r.addValue( new Value("SQL", 			getSQL()) );
-		r.addValue( new Value("Remarks", 		getRemark()) );
+		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Type"), 			getTypeDesc()) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Transformation"), getTransformationName()) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Step"), 			getStepName()) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Database"), 		getDatabaseName()) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Table"), 			getTable()) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Field"), 			getField()) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Value"), 			getValue()) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.ValueOrigin"), 	getValueOrigin()) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.SQL"), 			getSQL()) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("DatabaseImpact.RowDesc.Label.Remarks"), 		getRemark()) ); //$NON-NLS-1$
 
 		return r;
 	}

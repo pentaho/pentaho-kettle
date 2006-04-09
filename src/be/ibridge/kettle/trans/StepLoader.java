@@ -97,7 +97,7 @@ public class StepLoader
             String category = BaseStep.category[i];
 
             StepPlugin sp = new StepPlugin(StepPlugin.TYPE_NATIVE, id, long_desc, tooltip, directory, jarfiles, iconfile, classname, category, null);
-            if (id.equalsIgnoreCase("ScriptValues")) sp.setSeparateClassloaderNeeded(true); 
+            if (id.equalsIgnoreCase("ScriptValues")) sp.setSeparateClassloaderNeeded(true);  //$NON-NLS-1$
 
             pluginList.add(sp);
         }
@@ -115,7 +115,7 @@ public class StepLoader
 		        if (f.isDirectory() && f.exists())
 		        {
                     LogWriter log = LogWriter.getInstance();
-		            log.logDetailed("StepLoader", "Looking for plugins in directory: "+pluginDirectory[dirNr]);
+		            log.logDetailed(Messages.getString("StepLoader.Log.StepLoader.Title"), Messages.getString("StepLoader.Log.StepLoader.Description")+pluginDirectory[dirNr]); //$NON-NLS-1$ //$NON-NLS-2$
 	
 		            String dirs[] = f.list();
 		            for (int i = 0; i < dirs.length; i++)
@@ -125,7 +125,7 @@ public class StepLoader
 		                File pi = new File(piDir);
 		                if (pi.isDirectory()) // Only consider directories here!
 		                {
-	                        String pixml = pi.toString() + Const.FILE_SEPARATOR + "plugin.xml";
+	                        String pixml = pi.toString() + Const.FILE_SEPARATOR + "plugin.xml"; //$NON-NLS-1$
 		                    File fpixml = new File(pixml);
 		
 		                    if (fpixml.canRead()) // Yep, files exists...
@@ -140,15 +140,15 @@ public class StepLoader
 		                            Document doc = db.parse(fpixml);
 		
 		                            // Read the details from the XML file:
-		                            Node plugin = XMLHandler.getSubNode(doc, "plugin");
+		                            Node plugin = XMLHandler.getSubNode(doc, "plugin"); //$NON-NLS-1$
 		
-		                            String id = XMLHandler.getTagAttribute(plugin, "id");
-		                            String description = XMLHandler.getTagAttribute(plugin, "description");
-		                            String iconfile = XMLHandler.getTagAttribute(plugin, "iconfile");
-		                            String tooltip = XMLHandler.getTagAttribute(plugin, "tooltip");
-		                            String category = XMLHandler.getTagAttribute(plugin, "category");
-		                            String classname = XMLHandler.getTagAttribute(plugin, "classname");
-                                    String errorHelpfile = XMLHandler.getTagAttribute(plugin, "errorhelpfile");
+		                            String id = XMLHandler.getTagAttribute(plugin, "id"); //$NON-NLS-1$
+		                            String description = XMLHandler.getTagAttribute(plugin, "description"); //$NON-NLS-1$
+		                            String iconfile = XMLHandler.getTagAttribute(plugin, "iconfile"); //$NON-NLS-1$
+		                            String tooltip = XMLHandler.getTagAttribute(plugin, "tooltip"); //$NON-NLS-1$
+		                            String category = XMLHandler.getTagAttribute(plugin, "category"); //$NON-NLS-1$
+		                            String classname = XMLHandler.getTagAttribute(plugin, "classname"); //$NON-NLS-1$
+                                    String errorHelpfile = XMLHandler.getTagAttribute(plugin, "errorhelpfile"); //$NON-NLS-1$
 		
 		                            // String jarfile =
 		                            // InfoHandler.getTagAttribute(plugin, "jarfile");
@@ -156,17 +156,17 @@ public class StepLoader
 		                            // System.out.println("id="+id+",
 		                            // iconfile="+iconfile+", classname="+classname);
 		
-		                            Node libsnode = XMLHandler.getSubNode(plugin, "libraries");
+		                            Node libsnode = XMLHandler.getSubNode(plugin, "libraries"); //$NON-NLS-1$
 		                            //System.out.println("libsnode="+Const.CR+libsnode);
 		
-		                            int nrlibs = XMLHandler.countNodes(libsnode, "library");
+		                            int nrlibs = XMLHandler.countNodes(libsnode, "library"); //$NON-NLS-1$
 		                            //System.out.println("nrlibs="+nrlibs);
 		
 		                            String jarfiles[] = new String[nrlibs];
 		                            for (int j = 0; j < nrlibs; j++)
 		                            {
-		                                Node libnode = XMLHandler.getSubNodeByNr(libsnode, "library", j);
-		                                String jarfile = XMLHandler.getTagAttribute(libnode, "name");
+		                                Node libnode = XMLHandler.getSubNodeByNr(libsnode, "library", j); //$NON-NLS-1$
+		                                String jarfile = XMLHandler.getTagAttribute(libnode, "name"); //$NON-NLS-1$
 		                                jarfiles[j] = pi.toString() + Const.FILE_SEPARATOR + jarfile;
 		                            }
 		                            
@@ -188,12 +188,12 @@ public class StepLoader
 		                            {
 		                                int idx = pluginList.indexOf(sp);
 			                            pluginList.set(idx, sp);
-		                                System.out.println("Replaced existing plugin with ID : "+id);
+		                                System.out.println(Messages.getString("StepLoader.Log.ReplaceExistingPlugid")+id); //$NON-NLS-1$
 		                            }
 		                        }
 		                        catch (Exception e)
 		                        {
-		                            System.out.println("Error reading plugin XML file: " + e.toString());
+		                            System.out.println(Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001") + e.toString()); //$NON-NLS-1$
 		                            return false;
 		                        }
 		                    }
@@ -203,7 +203,7 @@ public class StepLoader
             }
             catch(Exception e)
             {
-                System.out.println("Couldn't find directory ["+pluginDirectory[dirNr]+"]");
+                System.out.println(Messages.getString("StepLoader.RuntimeError.CouldNotFindDirectory.TRANS0002")+pluginDirectory[dirNr]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
         return true;
@@ -218,7 +218,7 @@ public class StepLoader
         }
         else
         {
-            throw new KettleStepLoaderException("Unable to load class for step/plugin with description ["+desc+"]."+Const.CR+"Check if the plugin is available in the plugins subdirectory of the Kettle distribution.");
+            throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.UnableToLoadClass.TRANS0003",desc+"]."+Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
     }
 
@@ -276,35 +276,35 @@ public class StepLoader
                 }
                     break;
                 default:
-                    throw new KettleStepLoaderException("Unknown plugin type : " + sp.getType());
+                    throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.UnknownPluginType.TRANS0004") + sp.getType()); //$NON-NLS-1$
                 }
 
                 return (StepMetaInterface) cl.newInstance();
             }
             catch (ClassNotFoundException e)
             {
-                throw new KettleStepLoaderException("Class not found", e);
+                throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.ClassNotFound.TRANS0005"), e); //$NON-NLS-1$
             }
             catch (InstantiationException e)
             {
-                throw new KettleStepLoaderException("Unable to instantiate class", e);
+                throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.UnableToInstantiateClass.TRANS0006"), e); //$NON-NLS-1$
             }
             catch (IllegalAccessException e)
             {
-                throw new KettleStepLoaderException("Illegal access to class", e);
+                throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.IllegalAccessToClass.TRANS0007"), e); //$NON-NLS-1$
             }
             catch (MalformedURLException e)
             {
-                throw new KettleStepLoaderException("Malformed URL", e);
+                throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.MalformedURL.TRANS0008"), e); //$NON-NLS-1$
             }
             catch (Throwable e)
             {
-                throw new KettleStepLoaderException("Unexpected error loading class", e);
+                throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.UnExpectedErrorLoadingClass.TRANS0009"), e); //$NON-NLS-1$
             }
         } 
         else
         {
-            throw new KettleStepLoaderException("No valid step/plugin specified.");
+            throw new KettleStepLoaderException(Messages.getString("StepLoader.RuntimeError.NoValidStepOrPlugin.TRANS0010")); //$NON-NLS-1$
         }
     }
 
