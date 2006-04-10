@@ -113,6 +113,10 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     private Button       wNameInTable;
     private FormData     fdlNameInTable, fdNameInTable;
 
+    private Label        wlReturnKeys;
+    private Button       wReturnKeys;
+    private FormData     fdlReturnKeys, fdReturnKeys;
+
     
     private TableOutputMeta input;
 	
@@ -482,6 +486,34 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
             }
         );
    
+        // Return generated keys?
+        wlReturnKeys=new Label(shell, SWT.RIGHT);
+        wlReturnKeys.setText(Messages.getString("TableOutputDialog.ReturnKeys.Label"));
+        wlReturnKeys.setToolTipText(Messages.getString("TableOutputDialog.ReturnKeys.Tooltip"));
+        props.setLook(wlReturnKeys);
+        fdlReturnKeys=new FormData();
+        fdlReturnKeys.left  = new FormAttachment(0, 0);
+        fdlReturnKeys.top   = new FormAttachment(wNameInTable, margin*5);
+        fdlReturnKeys.right = new FormAttachment(middle, -margin);
+        wlReturnKeys.setLayoutData(fdlReturnKeys);
+        wReturnKeys=new Button(shell, SWT.CHECK);
+        props.setLook(wReturnKeys);
+        fdReturnKeys=new FormData();
+        fdReturnKeys.left  = new FormAttachment(middle, 0);
+        fdReturnKeys.top   = new FormAttachment(wNameInTable, margin*5);
+        fdReturnKeys.right = new FormAttachment(100, 0);
+        wReturnKeys.setLayoutData(fdReturnKeys);
+        wReturnKeys.addSelectionListener(lsSelMod);
+        
+        wReturnKeys.addSelectionListener(
+            new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent arg0)
+                {
+                    setFlags();
+                }
+            }
+        );
         
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -491,7 +523,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
-		setButtonPositions(new Button[] { wOK, wCreate, wCancel }, margin, wNameInTable);
+		setButtonPositions(new Button[] { wOK, wCreate, wCancel }, margin, wReturnKeys);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -576,7 +608,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         // Can't ignore errors when using batch inserts.
         boolean useIgnore          = !wBatch.getSelection(); 
         
-        boolean useTruncate        = !( wUsePart.getSelection() || wNameInField.getSelection() );
+        boolean useTruncate        = !( wReturnKeys.getSelection() || wNameInField.getSelection() );
         boolean useTablename       = !( wNameInField.getSelection() );
         boolean usePartitioning    = wUsePart.getSelection();
         boolean isTableNameInField = wNameInField.getSelection();
@@ -628,6 +660,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         if (input.getTableNameField()!=null) wNameField.setText( input.getTableNameField() );
         wNameInTable.setSelection( input.isTableNameInTable());
         
+        wReturnKeys.setSelection( input.isReturningGeneratedKeys() );
+        
 		setFlags();
 		
 		wStepname.selectAll();
@@ -655,6 +689,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         info.setTableNameInField( wNameInField.getSelection() );
         info.setTableNameField( wNameField.getText() );
         info.setTableNameInTable( wNameInTable.getSelection() );
+        info.setReturningGeneratedKeys( wReturnKeys.getSelection() );
 	}
 	
 	private void ok()

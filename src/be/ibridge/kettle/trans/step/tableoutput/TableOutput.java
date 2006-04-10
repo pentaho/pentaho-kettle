@@ -181,6 +181,14 @@ public class TableOutput extends BaseStep implements StepInterface
 		    debug="insertRow";
 			data.db.insertRow(insertStatement, data.batchMode);
 			linesOutput++;
+			
+			// See if we need to get back the keys as well...
+			if (meta.isReturningGeneratedKeys())
+			{
+				Row extra = data.db.getGeneratedKeys(insertStatement);
+				// Send out the good word!
+				r.addRow(extra);
+			}
 		}
 		catch(KettleDatabaseBatchException be)
 		{

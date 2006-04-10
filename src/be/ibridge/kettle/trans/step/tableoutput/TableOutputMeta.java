@@ -66,8 +66,24 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
     private boolean      tableNameInField;
     private String       tableNameField;
     private boolean      tableNameInTable;
+    
+    private boolean      returningGeneratedKeys;
 
     /**
+	 * @return Returns the returningGeneratedKeys.
+	 */
+	public boolean isReturningGeneratedKeys() {
+		return returningGeneratedKeys;
+	}
+
+	/**
+	 * @param returningGeneratedKeys The returningGeneratedKeys to set.
+	 */
+	public void setReturningGeneratedKeys(boolean returningGeneratedKeys) {
+		this.returningGeneratedKeys = returningGeneratedKeys;
+	}
+
+	/**
      * @return Returns the tableNameInTable.
      */
     public boolean isTableNameInTable()
@@ -321,6 +337,8 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
             tableNameInField = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "tablename_in_field"));
             tableNameField   = XMLHandler.getTagValue(stepnode, "tablename_field");
             tableNameInTable = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "tablename_in_table"));
+            
+            returningGeneratedKeys = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "return_keys"));
         }
 		catch(Exception e)
 		{
@@ -361,7 +379,9 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    "+XMLHandler.addTagValue("tablename_in_field", tableNameInField));
         retval.append("    "+XMLHandler.addTagValue("tablename_field", tableNameField));
         retval.append("    "+XMLHandler.addTagValue("tablename_in_table", tableNameInTable));
-        
+
+		retval.append("    "+XMLHandler.addTagValue("return_keys", returningGeneratedKeys));
+
 		return retval.toString();
 	}
 
@@ -385,7 +405,9 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 
             tableNameInField      = rep.getStepAttributeBoolean(id_step, "tablename_in_field"); 
             tableNameField        = rep.getStepAttributeString (id_step, "tablename_field"); 
-            tableNameInTable      = rep.getStepAttributeBoolean(id_step, "tablename_in_table"); 
+            tableNameInTable      = rep.getStepAttributeBoolean(id_step, "tablename_in_table");
+            
+            returningGeneratedKeys= rep.getStepAttributeBoolean(id_step, "return_keys");
 		}
 		catch(Exception e)
 		{
@@ -414,8 +436,11 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "tablename_field" ,   tableNameField);
             rep.saveStepAttribute(id_transformation, id_step, "tablename_in_table", tableNameInTable);
 
+            rep.saveStepAttribute(id_transformation, id_step, "return_keys", returningGeneratedKeys);
+            
 			// Also, save the step-database relationship!
 			if (database!=null) rep.insertStepDatabase(id_transformation, id_step, database.getID());
+			
 		}
 		catch(Exception e)
 		{
