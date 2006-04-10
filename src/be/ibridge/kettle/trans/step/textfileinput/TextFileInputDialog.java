@@ -918,6 +918,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdNrHeader=new FormData();
         fdNrHeader.left = new FormAttachment(wlNrHeader, margin);
         fdNrHeader.top  = new FormAttachment(wEscape, margin);
+        fdNrHeader.right  = new FormAttachment(100, 0);
         wNrHeader.setLayoutData(fdNrHeader);
         
         wlFooter=new Label(wContentComp, SWT.RIGHT);
@@ -950,6 +951,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdNrFooter=new FormData();
         fdNrFooter.left = new FormAttachment(wlNrFooter, margin);
         fdNrFooter.top  = new FormAttachment(wHeader, margin);
+        fdNrFooter.right  = new FormAttachment(100, 0);
         wNrFooter.setLayoutData(fdNrFooter);
 
         // Wraps
@@ -983,6 +985,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdNrWraps=new FormData();
         fdNrWraps.left = new FormAttachment(wlNrWraps, margin);
         fdNrWraps.top  = new FormAttachment(wFooter, margin);
+        fdNrWraps.right  = new FormAttachment(100, 0);
         wNrWraps.setLayoutData(fdNrWraps);
 
         // Pages
@@ -1016,6 +1019,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdNrLinesPerPage=new FormData();
         fdNrLinesPerPage.left = new FormAttachment(wlNrLinesPerPage, margin);
         fdNrLinesPerPage.top  = new FormAttachment(wWraps, margin);
+        fdNrLinesPerPage.right  = new FormAttachment(100, 0);
         wNrLinesPerPage.setLayoutData(fdNrLinesPerPage);
 
         // NrPages
@@ -1023,16 +1027,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wlNrLinesDocHeader.setText("Document header lines ");
         props.setLook(wlNrLinesDocHeader);
         fdlNrLinesDocHeader=new FormData();
-        fdlNrLinesDocHeader.left = new FormAttachment(wNrLinesPerPage, margin);
-        fdlNrLinesDocHeader.top  = new FormAttachment(wWraps, margin);
+        fdlNrLinesDocHeader.left = new FormAttachment(wLayoutPaged, margin);
+        fdlNrLinesDocHeader.top  = new FormAttachment(wNrLinesPerPage, margin);
         wlNrLinesDocHeader.setLayoutData(fdlNrLinesDocHeader);
         wNrLinesDocHeader=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         wNrLinesDocHeader.setTextLimit(3);
         props.setLook(wNrLinesDocHeader);
         wNrLinesDocHeader.addModifyListener(lsMod);
         fdNrLinesDocHeader=new FormData();
-        fdNrLinesDocHeader.left = new FormAttachment(wlNrLinesDocHeader, margin);
-        fdNrLinesDocHeader.top  = new FormAttachment(wWraps, margin);
+        
+        fdNrLinesDocHeader.left = new FormAttachment(wlNrLinesPerPage, margin);
+        fdNrLinesDocHeader.top  = new FormAttachment(wNrLinesPerPage, margin);
+        fdNrLinesDocHeader.right = new FormAttachment(100, 0);
         wNrLinesDocHeader.setLayoutData(fdNrLinesDocHeader);
 
         // Zipped?
