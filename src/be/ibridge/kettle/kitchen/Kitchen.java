@@ -65,7 +65,7 @@ public class Kitchen
 		    System.out.println("  -dir      : The directory (don't forget the leading / or \\)");
 		    System.out.println("  -file     : The filename (Job XML) to launch");
 		    System.out.println("  -level    : The logging level	(Basic, Detailed, Debug, Rowlevel, Error, Nothing)");
-		    System.out.println("  -log      : The logging file to write to");
+		    System.out.println("  -logfile  : The logging file to write to");
 		    System.out.println("  -listdir  : List the directories in the repository");
 		    System.out.println("  -listjobs : List the jobs in the specified directory");
 		    System.out.println("  -listrep  : List the defined repositories");
@@ -82,7 +82,11 @@ public class Kitchen
 		String dirname   = Const.getCommandlineOption(args, "dir");
 		String filename  = Const.getCommandlineOption(args, "file");
 		String loglevel  = Const.getCommandlineOption(args, "level");
-		String logfile   = Const.getCommandlineOption(args, "log");
+        String logfile   = Const.getCommandlineOption(args, "log");
+        if (logfile==null)
+        {
+            logfile   = Const.getCommandlineOption(args, "logfile");
+        }
 		String listdir   = Const.getCommandlineOption(args, "listdir");
 		String listjobs  = Const.getCommandlineOption(args, "listjobs");
 		String listrep   = Const.getCommandlineOption(args, "listrep");

@@ -82,6 +82,10 @@ public class Pan
 		String filename  = Const.getCommandlineOption(args, "file");
 		String loglevel  = Const.getCommandlineOption(args, "level");
 		String logfile   = Const.getCommandlineOption(args, "log");
+        if (logfile==null)
+        {
+            logfile   = Const.getCommandlineOption(args, "logfile");
+        }
 		String listdir   = Const.getCommandlineOption(args, "listdir");
 		String listtrans = Const.getCommandlineOption(args, "listtrans");
 		String listrep   = Const.getCommandlineOption(args, "listrep");

@@ -19,7 +19,6 @@ package be.ibridge.kettle.core;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
 
@@ -39,8 +38,7 @@ import be.ibridge.kettle.core.logging.Log4jStringAppender;
  */
 public class LogWriter 
 {
-	private static LogWriter lastLog;
-	private static Hashtable logs = new Hashtable();
+	private static LogWriter logWriter;
 	
 	public static final int LOG_LEVEL_ERROR      =  0;
 	public static final int LOG_LEVEL_NOTHING    =  1;
@@ -90,32 +88,26 @@ public class LogWriter
     
     private Log4jKettleLayout    layout;
 
-	private static final String NO_FILE_NAME = "-";
-	
     private File realFilename;
 
-	private static final LogWriter findLogWriter(String filename)
-	{
-		return (LogWriter)logs.get(filename);
-	}
-	
 	public static final LogWriter getInstance()
 	{
-		if (lastLog!=null) return lastLog;
+		if (logWriter!=null) return logWriter;
 		
-		throw new RuntimeException("The logging system is not initialized!");
+        return getInstance(LOG_LEVEL_BASIC);
 	}
 	
 	public static final LogWriter getInstance(int lvl)
 	{
-		LogWriter log = findLogWriter(NO_FILE_NAME);
+		if (logWriter != null)
+        {
+            logWriter.setLogLevel(lvl);
+            return logWriter;
+        }
 		
-		if (log != null) return log;
+		logWriter = new LogWriter(lvl);
 		
-		lastLog = new LogWriter(lvl);
-		logs.put(NO_FILE_NAME, lastLog);
-		
-		return lastLog;
+		return logWriter;
 	}
     
     private LogWriter()
@@ -124,10 +116,12 @@ public class LogWriter
         
         layout = new Log4jKettleLayout(true);
 
+        // Create the console appender, don't add it yet!
         consoleAppender = new Log4jConsoleAppender();
         consoleAppender.setLayout(layout);
         consoleAppender.setName("AppendToConsole");
 
+        // Create the string appender, don't add it yet!
         stringAppender  = new Log4jStringAppender();
         stringAppender.setLayout(layout);
         stringAppender.setName("AppendToString");
@@ -153,13 +147,10 @@ public class LogWriter
 	 */
 	public static final LogWriter getInstance(String filename, boolean exact, int level)
 	{
-		LogWriter log = findLogWriter(filename);
+		if (logWriter != null) return logWriter;
 		
-		if (log != null) return log;
-		
-		lastLog = new LogWriter(filename, exact, level);
-		logs.put(filename, lastLog);
-		return lastLog;
+		logWriter = new LogWriter(filename, exact, level);
+		return logWriter;
 	}
 	
 	private LogWriter(String filename, boolean exact, int level)
@@ -215,14 +206,14 @@ public class LogWriter
 		boolean retval=true;
 		try
 		{
-			// Remove this one from the hashtable...
-			logs.remove(getFilename());
+			// Close the file appender if there is one...
 			if(fileAppender != null)
 			{
 				fileAppender.close();
 				rootLogger.removeAppender(fileAppender);
 				fileAppender = null;
 			}
+            logWriter=null;
 		}
 		catch(Exception e) 
 		{ 
@@ -278,10 +269,7 @@ public class LogWriter
 		{
 			return filename;
 		}
-		else
-		{
-			return NO_FILE_NAME;
-		}
+		return "[NO LOGFILE SET]";
 	}
 	
 	public void println(int lvl, String msg)
