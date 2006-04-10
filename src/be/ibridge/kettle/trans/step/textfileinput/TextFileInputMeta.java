@@ -697,10 +697,18 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    <filters>" + Const.CR);
         for (int i = 0; i < filter.length; i++)
         {
-            byte[] filterBytes = filter[i].getFilterString()!=null ? filter[i].getFilterString().getBytes() :  new byte[] {};
+            String filterString = filter[i].getFilterString();
+            byte[] filterBytes = new byte[] {};
+            String filterPrefix = "";
+            if (filterString!=null)
+            {
+                filterBytes = filterString.getBytes();
+                filterPrefix = "Base64: ";
+            }
+            String filterEncoded = filterPrefix + Base64.encodeBytes( filterBytes );
             
             retval.append("      <filter>" + Const.CR);
-            retval.append("        " + XMLHandler.addTagValue("filter_string", Base64.encodeBytes( filterBytes ), false));
+            retval.append("        " + XMLHandler.addTagValue("filter_string", filterEncoded, false));
             retval.append("        " + XMLHandler.addTagValue("filter_position", filter[i].getFilterPosition(), false));
             retval.append("        " + XMLHandler.addTagValue("filter_is_last_line", filter[i].isFilterLastLine(), false));
             retval.append("      </filter>" + Const.CR);
@@ -819,7 +827,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
                     filter[i].setFilterPosition( Const.toInt(XMLHandler.getTagValue(fnode, "filter_position"), -1) );
                     
                     String filterString = XMLHandler.getTagValue(fnode, "filter_string");
-                    filter[i].setFilterString( new String(Base64.decode(filterString)));
+                    if (filterString.startsWith("Base64: "))
+                    {
+                        filter[i].setFilterString( new String(Base64.decode(filterString)));
+                    }
+                    else
+                    {
+                        filter[i].setFilterString( filterString );
+                    }
                     
                     filter[i].setFilterLastLine( YES.equalsIgnoreCase(XMLHandler.getTagValue(fnode, "filter_is_last_line")) );
                 }
