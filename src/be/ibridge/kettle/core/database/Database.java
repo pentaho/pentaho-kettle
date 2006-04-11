@@ -919,19 +919,14 @@ public class Database
 		log.logDebug(toString(), "Row inserted!");
 		if (keyfield==null)
 		{
-			try
+			Row keys = getGeneratedKeys(prepStatementInsert);
+			if (keys.size()>0)
 			{
-				ResultSet keys=prepStatementInsert.getGeneratedKeys(); // 1 key
-				if (keys.next()) technicalKey.setValue(keys.getLong(1));
-				else 
-                {
-                    throw new KettleDatabaseException("Unable to retrieve technical key value from auto-increment field : "+keyfield+", no fields in resultset.");
-                }
-				keys.close();
+				technicalKey.setValue(keys.getValue(0).getInteger());
 			}
-			catch(SQLException ex) 
+			else
 			{
-				throw new KettleDatabaseException("Unable to retrieve technical key value from auto-increment field : "+keyfield, ex);
+				throw new KettleDatabaseException("Unable to retrieve value of auto-generated technical key : no value found!");
 			}
 		}
 		
@@ -959,6 +954,47 @@ public class Database
 			log.logDebug(toString(), "Values set for update ("+rupd.size()+")");
 			insertRow(prepStatementUpdate); // do the actual update
 			log.logDebug(toString(), "Row updated!");
+		}
+	}
+
+	/** 
+	 * @param ps  The prepared insert statement to use
+	 * @return The generated keys in auto-increment fields
+	 * @throws KettleDatabaseException in case something goes wrong retrieving the keys.
+	 */
+	public Row getGeneratedKeys(PreparedStatement ps) throws KettleDatabaseException 
+	{
+		ResultSet keys = null;
+		try
+		{
+			keys=prepStatementInsert.getGeneratedKeys(); // 1 row of keys
+			if (keys.next()) 
+			{
+				return getRow(keys);
+			}
+			else 
+            {
+                throw new KettleDatabaseException("Unable to retrieve generated key(s) for auto-increment field(s) : no rows were found in resultset.");
+            }
+		}
+		catch(SQLException ex) 
+		{
+			throw new KettleDatabaseException("Unable to retrieve key(s) from auto-increment field(s)", ex);
+		}
+		finally
+		{
+			if (keys!=null)
+			{
+				try
+				{
+					keys.close();
+				}
+				catch(SQLException e)
+				{
+					throw new KettleDatabaseException("Unable to close resultset of auto-generated keys", e);
+				}
+			
+			}
 		}
 	}
 
