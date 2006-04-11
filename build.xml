@@ -200,7 +200,7 @@
 	        Distribution jar package
 	       ==========================
 	  -->
-	  <target name="distrib" depends="kettle, compileTests" description="copy jar file to distribution directory" >
+	  <target name="distrib" depends="kettle" description="copy jar file to distribution directory" >
 	  	<echo>Construct the distribution package...</echo>
 	  	
 	        <!-- root directory -->
@@ -408,7 +408,7 @@
 	       ==========================
 	  -->
 
-	<target name="default" depends="distrib,webstart" description="default = build all"/>
+	<target name="default" depends="distrib,webstart,compileTests" description="default = build all"/>
 
 	<!--
 	       ==========================
