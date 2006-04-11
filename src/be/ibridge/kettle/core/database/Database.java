@@ -352,7 +352,7 @@ public class Database
 	}
 
     /**
-     * Prepare a statement to be executed on the database.
+     * Prepare a statement to be executed on the database. (does not return generated keys)
      * @param sql The SQL to be prepared
      * @return The PreparedStatement object.
      * @throws KettleDatabaseException
@@ -360,9 +360,29 @@ public class Database
 	public PreparedStatement prepareSQL(String sql)
 	 throws KettleDatabaseException
 	{
+		return prepareSQL(sql, false);
+	}
+
+    /**
+     * Prepare a statement to be executed on the database.
+     * @param sql The SQL to be prepared
+     * @param returnKeys set to true if you want to return generated keys from an insert statement 
+     * @return The PreparedStatement object.
+     * @throws KettleDatabaseException
+     */
+	public PreparedStatement prepareSQL(String sql, boolean returnKeys)
+	 throws KettleDatabaseException
+	{
 		try
 		{
-			return connection.prepareStatement(databaseMeta.stripCR(sql));
+			if (returnKeys)
+			{
+				return connection.prepareStatement(databaseMeta.stripCR(sql), Statement.RETURN_GENERATED_KEYS);
+			}
+			else
+			{
+				return connection.prepareStatement(databaseMeta.stripCR(sql));
+			}
 		}
 		catch(SQLException ex) 
 		{
@@ -967,15 +987,8 @@ public class Database
 		ResultSet keys = null;
 		try
 		{
-			keys=prepStatementInsert.getGeneratedKeys(); // 1 row of keys
-			if (keys.next()) 
-			{
-				return getRow(keys);
-			}
-			else 
-            {
-                throw new KettleDatabaseException("Unable to retrieve generated key(s) for auto-increment field(s) : no rows were found in resultset.");
-            }
+			keys=ps.getGeneratedKeys(); // 1 row of keys
+			return getRow(keys);
 		}
 		catch(SQLException ex) 
 		{
@@ -2384,6 +2397,9 @@ public class Database
 		
 		try
 		{
+			if (rsmd==null) rsmd = rs.getMetaData();
+			if (rowinfo==null) rowinfo = getRowInfo(rsmd);
+			
 			nrcols=rsmd.getColumnCount();
 						
 			if (rs.next())

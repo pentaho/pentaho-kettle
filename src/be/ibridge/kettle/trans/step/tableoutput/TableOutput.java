@@ -170,7 +170,7 @@ public class TableOutput extends BaseStep implements StepInterface
             debug="prepareInsert for table ["+tableName+"]";
             String sql = data.db.getInsertStatement(tableName, r);
             logDetailed("Prepared statement : "+sql);
-            insertStatement = data.db.prepareSQL(sql);
+            insertStatement = data.db.prepareSQL(sql, meta.isReturningGeneratedKeys());
             data.preparedStatements.put(tableName, insertStatement);
         }
         
@@ -185,11 +185,16 @@ public class TableOutput extends BaseStep implements StepInterface
 			// See if we need to get back the keys as well...
 			if (meta.isReturningGeneratedKeys())
 			{
+				debug="getGeneratedKeys";
 				Row extra = data.db.getGeneratedKeys(insertStatement);
+
 				// Send out the good word!
 				// Only 1 key at the moment. (should be enough for now :-)
+				debug="get first value";
 				Value keyVal = extra.getValue(0);
+				debug="set key field to name ["+meta.getGeneratedKeyField()+"]";
 				keyVal.setName(meta.getGeneratedKeyField());
+				debug="add value to row";
 				r.addValue(keyVal);
 			}
 		}

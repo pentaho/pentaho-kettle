@@ -627,18 +627,39 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	
     public void setFlags()
     {
+    	// Do we want to return keys?
+    	boolean returnKeys        = wReturnKeys.getSelection();
+    	
+    	// Can't use batch yet when grabbing auto-generated keys...
+    	boolean useBatch          = wBatch.getSelection() && !returnKeys;
+    	
+    	// Only enable batch option when not returning keys.
+    	boolean enableBatch       = !returnKeys;
+    	
         // Can't ignore errors when using batch inserts.
-        boolean useIgnore          = !wBatch.getSelection(); 
+        boolean useIgnore          = !useBatch; 
         
-        boolean useTruncate        = !( wReturnKeys.getSelection() || wNameInField.getSelection() );
-        boolean useTablename       = !( wNameInField.getSelection() );
+        // Do we use partitioning?
         boolean usePartitioning    = wUsePart.getSelection();
+        
+        // Do we get the tablename from a field?
         boolean isTableNameInField = wNameInField.getSelection();
         
+        // Can't truncate when doing partitioning or with table name in field
+        boolean useTruncate        = !( usePartitioning || isTableNameInField );
+        
+        // Use the table-name specified or get it from a field?
+        boolean useTablename       = !( isTableNameInField );
+
+        wUsePart.setSelection(usePartitioning);
+        wNameInField.setSelection(isTableNameInField);
+        wBatch.setSelection(useBatch);
+        wReturnKeys.setSelection(returnKeys);
+        wTruncate.setSelection(useTruncate);
+
         wIgnore.setEnabled( useIgnore );
         wlIgnore.setEnabled( useIgnore );
 
-        wUsePart.setSelection(usePartitioning);
         wlPartMonthly.setEnabled(usePartitioning);
         wPartMonthly.setEnabled(usePartitioning);
         wlPartDaily.setEnabled(usePartitioning);
@@ -646,7 +667,6 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         wlPartField.setEnabled(usePartitioning);
         wPartField.setEnabled(usePartitioning);
         
-        wNameInField.setSelection(isTableNameInField);
         wlNameField.setEnabled(isTableNameInField);
         wNameField.setEnabled(isTableNameInField);
         wlNameInTable.setEnabled(isTableNameInField);
@@ -658,8 +678,11 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         wlTruncate.setEnabled(useTruncate);
         wTruncate.setEnabled(useTruncate);
         
-        wlReturnField.setEnabled(wReturnKeys.getSelection());
-        wReturnField.setEnabled(wReturnKeys.getSelection());
+        wlReturnField.setEnabled(returnKeys);
+        wReturnField.setEnabled(returnKeys);
+        
+        wlBatch.setEnabled(enableBatch);
+        wBatch.setEnabled(enableBatch);
     }
 
 	/**
