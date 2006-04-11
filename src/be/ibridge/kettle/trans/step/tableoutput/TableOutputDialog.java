@@ -117,6 +117,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
     private Button       wReturnKeys;
     private FormData     fdlReturnKeys, fdReturnKeys;
 
+    private Label        wlReturnField;
+    private Text         wReturnField;
+    private FormData     fdlReturnField, fdReturnField;
     
     private TableOutputMeta input;
 	
@@ -514,6 +517,25 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
                 }
             }
         );
+
+        // ReturnField size ...
+        wlReturnField=new Label(shell, SWT.RIGHT);
+        wlReturnField.setText(Messages.getString("TableOutputDialog.ReturnField.Label"));
+        props.setLook(wlReturnField);
+        fdlReturnField=new FormData();
+        fdlReturnField.left = new FormAttachment(0, 0);
+        fdlReturnField.right= new FormAttachment(middle, -margin);
+        fdlReturnField.top  = new FormAttachment(wReturnKeys, margin);
+        wlReturnField.setLayoutData(fdlReturnField);
+        wReturnField=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wReturnField);
+        wReturnField.addModifyListener(lsMod);
+        fdReturnField=new FormData();
+        fdReturnField.left = new FormAttachment(middle, 0);
+        fdReturnField.top  = new FormAttachment(wReturnKeys, margin);
+        fdReturnField.right= new FormAttachment(100, 0);
+        wReturnField.setLayoutData(fdReturnField);
+
         
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -523,7 +545,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
-		setButtonPositions(new Button[] { wOK, wCreate, wCancel }, margin, wReturnKeys);
+		setButtonPositions(new Button[] { wOK, wCreate, wCancel }, margin, wReturnField);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -635,6 +657,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         
         wlTruncate.setEnabled(useTruncate);
         wTruncate.setEnabled(useTruncate);
+        
+        wlReturnField.setEnabled(wReturnKeys.getSelection());
+        wReturnField.setEnabled(wReturnKeys.getSelection());
     }
 
 	/**
@@ -661,6 +686,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         wNameInTable.setSelection( input.isTableNameInTable());
         
         wReturnKeys.setSelection( input.isReturningGeneratedKeys() );
+        if (input.getGeneratedKeyField()!=null) wReturnField.setText( input.getGeneratedKeyField());
         
 		setFlags();
 		
@@ -690,6 +716,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         info.setTableNameField( wNameField.getText() );
         info.setTableNameInTable( wNameInTable.getSelection() );
         info.setReturningGeneratedKeys( wReturnKeys.getSelection() );
+        info.setGeneratedKeyField( wReturnField.getText() );
 	}
 	
 	private void ok()

@@ -187,7 +187,10 @@ public class TableOutput extends BaseStep implements StepInterface
 			{
 				Row extra = data.db.getGeneratedKeys(insertStatement);
 				// Send out the good word!
-				r.addRow(extra);
+				// Only 1 key at the moment. (should be enough for now :-)
+				Value keyVal = extra.getValue(0);
+				keyVal.setName(meta.getGeneratedKeyField());
+				r.addValue(keyVal);
 			}
 		}
 		catch(KettleDatabaseBatchException be)

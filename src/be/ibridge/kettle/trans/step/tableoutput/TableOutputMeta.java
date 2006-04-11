@@ -30,6 +30,7 @@ import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
@@ -68,8 +69,23 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
     private boolean      tableNameInTable;
     
     private boolean      returningGeneratedKeys;
+    private String       generatedKeyField;
 
     /**
+	 * @return Returns the generatedKeyField.
+	 */
+	public String getGeneratedKeyField() {
+		return generatedKeyField;
+	}
+
+	/**
+	 * @param generatedKeyField The generatedKeyField to set.
+	 */
+	public void setGeneratedKeyField(String generatedKeyField) {
+		this.generatedKeyField = generatedKeyField;
+	}
+
+	/**
 	 * @return Returns the returningGeneratedKeys.
 	 */
 	public boolean isReturningGeneratedKeys() {
@@ -339,6 +355,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
             tableNameInTable = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "tablename_in_table"));
             
             returningGeneratedKeys = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "return_keys"));
+            generatedKeyField   = XMLHandler.getTagValue(stepnode, "return_field");
         }
 		catch(Exception e)
 		{
@@ -381,6 +398,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    "+XMLHandler.addTagValue("tablename_in_table", tableNameInTable));
 
 		retval.append("    "+XMLHandler.addTagValue("return_keys", returningGeneratedKeys));
+        retval.append("    "+XMLHandler.addTagValue("return_field", generatedKeyField));
 
 		return retval.toString();
 	}
@@ -408,6 +426,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
             tableNameInTable      = rep.getStepAttributeBoolean(id_step, "tablename_in_table");
             
             returningGeneratedKeys= rep.getStepAttributeBoolean(id_step, "return_keys");
+            generatedKeyField     = rep.getStepAttributeString (id_step, "return_field");
 		}
 		catch(Exception e)
 		{
@@ -437,6 +456,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "tablename_in_table", tableNameInTable);
 
             rep.saveStepAttribute(id_transformation, id_step, "return_keys", returningGeneratedKeys);
+            rep.saveStepAttribute(id_transformation, id_step, "return_field", generatedKeyField);
             
 			// Also, save the step-database relationship!
 			if (database!=null) rep.insertStepDatabase(id_transformation, id_step, database.getID());
@@ -448,7 +468,24 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
+	public Row getFields(Row r, String name, Row info) throws KettleStepException 
+	{
+		Row row;
+		if (r == null)
+			row = new Row(); // give back values
+		else
+			row = r; // add to the existing row of values...
 
+		// Just add the returning key field...
+		if (returningGeneratedKeys && generatedKeyField!=null && generatedKeyField.length()>0)
+		{
+			Value key = new Value(generatedKeyField, Value.VALUE_TYPE_INTEGER);
+			key.setOrigin(name);
+			row.addValue(key);
+		}
+
+		return row;
+	}
 
 	public void check(ArrayList remarks, StepMeta stepMeta, Row prev, String input[], String output[], Row info)
 	{
