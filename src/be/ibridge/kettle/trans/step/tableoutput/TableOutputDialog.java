@@ -573,7 +573,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
                         i++;
                     }
                     
-                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("TableOutputDialog.SelectEnv.DialogTitle"), Messages.getString("TableOutputDialog.SelectEnv.DialogMessage"));
+                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Message"));
                     if (esd.open()!=null)
                     {
                         int nr = esd.getSelectionNr();
@@ -702,7 +702,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 			mb.setMessage(Messages.getString("TableOutputDialog.ConnectionError.DialogMessage"));
-			mb.setText(Messages.getString("TableOutputDialog.ConnectionError.DialogTitle"));
+			mb.setText(Messages.getString("System.Dialog.Error.Title"));
 			mb.open();
 		}
 		
@@ -731,7 +731,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 			mb.setMessage(Messages.getString("TableOutputDialog.ConnectionError2.DialogMessage"));
-			mb.setText(Messages.getString("TableOutputDialog.ConnectionError2.DialogTitle"));
+			mb.setText(Messages.getString("System.Dialog.Error.Title"));
 			mb.open(); 
 		}
 					
@@ -773,7 +773,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 				mb.setMessage(sql.getError());
-				mb.setText(Messages.getString("TableOutputDialog.SQLError.DialogTitle"));
+				mb.setText(Messages.getString("System.Dialog.Error.Title"));
 				mb.open(); 
 			}
 		}

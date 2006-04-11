@@ -186,14 +186,14 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Text file output");
+		shell.setText(Messages.getString("TextFileOutputDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left  = new FormAttachment(0, 0);
@@ -217,7 +217,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		// START OF FILE TAB///
 		///
 		wFileTab=new CTabItem(wTabFolder, SWT.NONE);
-		wFileTab.setText("File");
+		wFileTab.setText(Messages.getString("TextFileOutputDialog.FileTab.TabTitle"));
 		
 		Composite wFileComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wFileComp);
@@ -229,7 +229,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 		// Filename line
 		wlFilename=new Label(wFileComp, SWT.RIGHT);
-		wlFilename.setText("Filename ");
+		wlFilename.setText(Messages.getString("TextFileOutputDialog.Filename.Label"));
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -239,7 +239,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 		wbFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFilename);
-		wbFilename.setText("&Browse...");
+		wbFilename.setText(Messages.getString("System.Button.Browse"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(0, 0);
@@ -247,7 +247,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 		wbcFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbcFilename);
-		wbcFilename.setText("&Variable...");
+		wbcFilename.setText(Messages.getString("System.Button.Variable"));
 		fdbcFilename=new FormData();
 		fdbcFilename.right= new FormAttachment(wbFilename, -margin);
 		fdbcFilename.top  = new FormAttachment(0, 0);
@@ -274,7 +274,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 		// Extension line
 		wlExtension=new Label(wFileComp, SWT.RIGHT);
-		wlExtension.setText("Extension ");
+		wlExtension.setText(Messages.getString("System.Label.Extension"));
  		props.setLook(wlExtension);
 		fdlExtension=new FormData();
 		fdlExtension.left = new FormAttachment(0, 0);
@@ -293,7 +293,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 		// Create multi-part file?
 		wlAddStepnr=new Label(wFileComp, SWT.RIGHT);
-		wlAddStepnr.setText("Include stepnr in filename? ");
+		wlAddStepnr.setText(Messages.getString("TextFileOutputDialog.AddStepnr.Label"));
  		props.setLook(wlAddStepnr);
 		fdlAddStepnr=new FormData();
 		fdlAddStepnr.left = new FormAttachment(0, 0);
@@ -318,7 +318,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 		// Create multi-part file?
 		wlAddDate=new Label(wFileComp, SWT.RIGHT);
-		wlAddDate.setText("Include date in filename?");
+		wlAddDate.setText(Messages.getString("TextFileOutputDialog.AddDate.Label"));
  		props.setLook(wlAddDate);
 		fdlAddDate=new FormData();
 		fdlAddDate.left = new FormAttachment(0, 0);
@@ -343,7 +343,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		);
 		// Create multi-part file?
 		wlAddTime=new Label(wFileComp, SWT.RIGHT);
-		wlAddTime.setText("Include time in filename? ");
+		wlAddTime.setText(Messages.getString("TextFileOutputDialog.AddTime.Label"));
  		props.setLook(wlAddTime);
 		fdlAddTime=new FormData();
 		fdlAddTime.left = new FormAttachment(0, 0);
@@ -368,7 +368,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 		wbShowFiles=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbShowFiles);
-		wbShowFiles.setText("&Show filename(s)...");
+		wbShowFiles.setText(Messages.getString("TextFileOutputDialog.ShowFiles.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left = new FormAttachment(middle, 0);
 		fdbShowFiles.top  = new FormAttachment(wAddTime, margin*2);
@@ -382,15 +382,15 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 					String files[] = tfoi.getFiles();
 					if (files!=null && files.length>0)
 					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, "Output files", "Output file(s):");
+						EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, Messages.getString("TextFileOutputDialog.SelectOutputFiles.DialogTitle"), Messages.getString("TextFileOutputDialog.SelectOutputFiles.DialogMessage"));
 						esd.setViewOnly();
 						esd.open();
 					}
 					else
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage("No files found!  Please check the filename/directory and options.");
-						mb.setText("ERROR");
+						mb.setMessage(Messages.getString("TextFileOutputDialog.NoFilesFound.DialogMessage"));
+						mb.setText(Messages.getString("System.DialogTitle.Error"));
 						mb.open(); 
 					}
 				}
@@ -417,7 +417,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		// START OF CONTENT TAB///
 		///
 		wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-		wContentTab.setText("Content");
+		wContentTab.setText(Messages.getString("TextFileOutputDialog.ContentTab.TabTitle"));
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = 3;
@@ -430,7 +430,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 		// Append to end of file?
 		wlAppend=new Label(wContentComp, SWT.RIGHT);
-		wlAppend.setText("Append ");
+		wlAppend.setText(Messages.getString("TextFileOutputDialog.Append.Label"));
  		props.setLook(wlAppend);
 		fdlAppend=new FormData();
 		fdlAppend.left = new FormAttachment(0, 0);
@@ -454,7 +454,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		);
 		
 		wlSeparator=new Label(wContentComp, SWT.RIGHT);
-		wlSeparator.setText("Separator ");
+		wlSeparator.setText(Messages.getString("TextFileOutputDialog.Separator.Label"));
  		props.setLook(wlSeparator);
 		fdlSeparator=new FormData();
 		fdlSeparator.left = new FormAttachment(0, 0);
@@ -464,7 +464,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 		wbSeparator=new Button(wContentComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbSeparator);
-		wbSeparator.setText("Insert &TAB");
+		wbSeparator.setText(Messages.getString("TextFileOutputDialog.Separator.Button"));
 		fdbSeparator=new FormData();
 		fdbSeparator.right= new FormAttachment(100, 0);
 		fdbSeparator.top  = new FormAttachment(wAppend, 0);
@@ -489,7 +489,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 		// Enclosure line...
 		wlEnclosure=new Label(wContentComp, SWT.RIGHT);
-		wlEnclosure.setText("Enclosure ");
+		wlEnclosure.setText(Messages.getString("TextFileOutputDialog.Enclosure.Label"));
  		props.setLook(wlEnclosure);
 		fdlEnclosure=new FormData();
 		fdlEnclosure.left = new FormAttachment(0, 0);
@@ -506,7 +506,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wEnclosure.setLayoutData(fdEnclosure);
 
         wlEnclForced=new Label(wContentComp, SWT.RIGHT);
-        wlEnclForced.setText("Force the enclosure around fields? ");
+        wlEnclForced.setText(Messages.getString("TextFileOutputDialog.EnclForced.Label"));
         props.setLook(wlEnclForced);
         fdlEnclForced=new FormData();
         fdlEnclForced.left = new FormAttachment(0, 0);
@@ -530,7 +530,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         );
 
 		wlHeader=new Label(wContentComp, SWT.RIGHT);
-		wlHeader.setText("Header ");
+		wlHeader.setText(Messages.getString("TextFileOutputDialog.Header.Label"));
  		props.setLook(wlHeader);
 		fdlHeader=new FormData();
 		fdlHeader.left = new FormAttachment(0, 0);
@@ -554,7 +554,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		);
 
 		wlFooter=new Label(wContentComp, SWT.RIGHT);
-		wlFooter.setText("Footer ");
+		wlFooter.setText(Messages.getString("TextFileOutputDialog.Footer.Label"));
  		props.setLook(wlFooter);
 		fdlFooter=new FormData();
 		fdlFooter.left = new FormAttachment(0, 0);
@@ -578,7 +578,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		);
 
 		wlZipped=new Label(wContentComp, SWT.RIGHT);
-		wlZipped.setText("Zipped ");
+		wlZipped.setText(Messages.getString("TextFileOutputDialog.Zipped.Label"));
  		props.setLook(wlZipped);
 		fdlZipped=new FormData();
 		fdlZipped.left = new FormAttachment(0, 0);
@@ -602,7 +602,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		);
 
 		wlFormat=new Label(wContentComp, SWT.RIGHT);
-		wlFormat.setText("Format ");
+		wlFormat.setText(Messages.getString("TextFileOutputDialog.Format.Label"));
  		props.setLook(wlFormat);
 		fdlFormat=new FormData();
 		fdlFormat.left = new FormAttachment(0, 0);
@@ -610,7 +610,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdlFormat.right= new FormAttachment(middle, -margin);
 		wlFormat.setLayoutData(fdlFormat);
 		wFormat=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
-		wFormat.setText("Format");
+		wFormat.setText(Messages.getString("TextFileOutputDialog.Format.Label"));
  		props.setLook(wFormat);
 
 		wFormat.add("DOS");
@@ -624,7 +624,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wFormat.setLayoutData(fdFormat);
 
         wlEncoding=new Label(wContentComp, SWT.RIGHT);
-        wlEncoding.setText("Encoding ");
+        wlEncoding.setText(Messages.getString("TextFileOutputDialog.Encoding.Label"));
         props.setLook(wlEncoding);
         fdlEncoding=new FormData();
         fdlEncoding.left = new FormAttachment(0, 0);
@@ -659,7 +659,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
         
 		wlPad=new Label(wContentComp, SWT.RIGHT);
-		wlPad.setText("Right pad fields");
+		wlPad.setText(Messages.getString("TextFileOutputDialog.Pad.Label"));
  		props.setLook(wlPad);
 		fdlPad=new FormData();
 		fdlPad.left = new FormAttachment(0, 0);
@@ -684,7 +684,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 
 		wlSplitEvery=new Label(wContentComp, SWT.RIGHT);
-		wlSplitEvery.setText("Split every ... rows");
+		wlSplitEvery.setText(Messages.getString("TextFileOutputDialog.SplitEvery.Label"));
  		props.setLook(wlSplitEvery);
 		fdlSplitEvery=new FormData();
 		fdlSplitEvery.left = new FormAttachment(0, 0);
@@ -717,7 +717,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		// Fields tab...
 		//
 		wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
-		wFieldsTab.setText("Fields");
+		wFieldsTab.setText(Messages.getString("TextFileOutputDialog.FieldsTab.TabTitle"));
 		
 		FormLayout fieldsLayout = new FormLayout ();
 		fieldsLayout.marginWidth  = Const.FORM_MARGIN;
@@ -728,12 +728,12 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
  		props.setLook(wFieldsComp);
 
 		wGet=new Button(wFieldsComp, SWT.PUSH);
-		wGet.setText(" &Get Fields ");
-		wGet.setToolTipText("Get the fields as defined in previous steps.");
+		wGet.setText(Messages.getString("System.Button.GetFields"));
+		wGet.setToolTipText(Messages.getString("System.Tooltip.GetFields"));
 
 		wMinWidth =new Button(wFieldsComp, SWT.PUSH);
-		wMinWidth.setText(" &Minimal width ");
-		wMinWidth.setToolTipText("Sets the output to non-padded width.");
+		wMinWidth.setText(Messages.getString("TextFileOutputDialog.MinWidth.Button"));
+		wMinWidth.setToolTipText(Messages.getString("TextFileOutputDialog.MinWidth.Tooltip"));
 
 		setButtonPositions(new Button[] { wGet, wMinWidth}, margin, null);
 
@@ -749,15 +749,15 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() );
-		colinf[2]=new ColumnInfo("Format",     ColumnInfo.COLUMN_TYPE_CCOMBO, formats);
-		colinf[3]=new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[4]=new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[5]=new ColumnInfo("Currency",   ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[6]=new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[7]=new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[8]=new ColumnInfo("Null",       ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[0]=new ColumnInfo(Messages.getString("TextFileOutputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[1]=new ColumnInfo(Messages.getString("TextFileOutputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() );
+		colinf[2]=new ColumnInfo(Messages.getString("TextFileOutputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO, formats);
+		colinf[3]=new ColumnInfo(Messages.getString("TextFileOutputDialog.LengthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[4]=new ColumnInfo(Messages.getString("TextFileOutputDialog.PrecisionColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[5]=new ColumnInfo(Messages.getString("TextFileOutputDialog.CurrencyColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[6]=new ColumnInfo(Messages.getString("TextFileOutputDialog.DecimalColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[7]=new ColumnInfo(Messages.getString("TextFileOutputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[8]=new ColumnInfo(Messages.getString("TextFileOutputDialog.NullColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wFields=new TableView(wFieldsComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -792,10 +792,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wTabFolder.setLayoutData(fdTabFolder);
 		
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("System.Button.OK"));
 		
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -849,7 +849,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 						i++;
 					}
 					
-					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, "Select an Environment Variable", "Select an Environment Variable");
+					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar"));
 					if (esd.open()!=null)
 					{
 						int nr = esd.getSelectionNr();
@@ -874,7 +874,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 					{
 						dialog.setFileName(Const.replEnv(wFilename.getText()));
 					}
-					dialog.setFilterNames(new String[] {"Text files", "Comma Seperated Values", "All files"});
+					dialog.setFilterNames(new String[] {Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.AllFiles")});
 					if (dialog.open()!=null)
 					{
 						wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
@@ -1099,7 +1099,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("System.Dialog.GetFieldsFailed.Message"), ke);
 		}
 
 	}

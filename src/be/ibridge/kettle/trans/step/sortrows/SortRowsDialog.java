@@ -136,7 +136,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Connection line
 		wlSortDir=new Label(shell, SWT.RIGHT);
-		wlSortDir.setText(Messages.getString(""));
+		wlSortDir.setText(Messages.getString("SortRowsDialog.SortDir.Label"));
  		props.setLook(wlSortDir);
 		fdlSortDir=new FormData();
 		fdlSortDir.left = new FormAttachment(0, 0);
@@ -216,7 +216,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 						i++;
 					}
 					
-					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("SortRowsDialog.SelectEnvVar.DialogTitle"), Messages.getString("SortRowsDialog.SelectEnvVar.DialogMessage"));
+					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Message"));
 					if (esd.open()!=null)
 					{
 						int nr = esd.getSelectionNr();
@@ -431,7 +431,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("SortRowsDialog.UnableToGetFields.DialogTitle"), Messages.getString("SortRowsDialog.UnableToGetFields.DialogMessage"), ke);
+			new ErrorDialog(shell, props, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("System.Dialog.GetFieldsFailed.Message"), ke);
 		}
 
 	}

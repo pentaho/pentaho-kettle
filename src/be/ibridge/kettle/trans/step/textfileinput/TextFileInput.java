@@ -375,8 +375,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 				}
 			}
 		} catch (Exception e) {
-			throw new KettleException("Error converting line : " + e.toString()
-					+ " in part: " + debug, e);
+			throw new KettleException(Messages.getString("TextFileInput.Exception.ErrorConvertingLineInPart", e.toString(), debug), e);
 		}
 
 		debug = "end of convertLineToStrings";
@@ -494,9 +493,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 							if (info.isErrorLineSkipped())
 								r.setIgnore();
 						} else {
-							throw new KettleException("Couldn't parse field ["
-									+ f.getName() + "] with value [" + pol
-									+ "]", e);
+							throw new KettleException(Messages.getString("TextFileInput.Exception.ErrorPasingField", f.getName()), e);
 						}
 					}
 				} else {
@@ -530,7 +527,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 				}
 			}
 		} catch (Exception e) {
-			throw new KettleException("Error converting line", e);
+			throw new KettleException(Messages.getString("TextFileInput.Exception.ErrorConvertingLine"), e);
 		}
 
 		// Possibly add a filename...
@@ -639,7 +636,7 @@ public class TextFileInput extends BaseStep implements StepInterface {
 					value.setValue(new BigDecimal(pol));
 				} else {
 					throw new KettleValueException(
-							"Unknown numeric type: contact vendor!");
+							Messages.getString("TextFileInput.Exception.UnknownNumericType"));
 				}
 			} catch (Exception e) {
 				throw (e);

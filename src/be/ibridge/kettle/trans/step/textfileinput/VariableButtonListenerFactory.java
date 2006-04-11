@@ -39,7 +39,7 @@ public class VariableButtonListenerFactory
                 }
                 
                 Props props = Props.getInstance();
-                EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, "Select an Environment Variable", "Select an Environment Variable");
+                EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Message"));
                 if (esd.open()!=null)
                 {
                     int nr = esd.getSelectionNr();

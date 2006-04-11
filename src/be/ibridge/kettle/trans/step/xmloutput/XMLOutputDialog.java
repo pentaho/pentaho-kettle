@@ -204,7 +204,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Filename line
 		wlFilename=new Label(wFileComp, SWT.RIGHT);
-		wlFilename.setText(Messages.getString(""));
+		wlFilename.setText(Messages.getString("XMLOutputDialog.Filename.Label"));
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -364,7 +364,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 						mb.setMessage(Messages.getString("XMLOutputDialog.NoFilesFound.DialogMessage"));
-						mb.setText(Messages.getString("XMLOutputDialog.NoFilesFound.DialogTitle"));
+						mb.setText(Messages.getString("System.Dialog.Error.Title"));
 						mb.open(); 
 					}
 				}
@@ -546,7 +546,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		wGet.setToolTipText(Messages.getString("XMLOutputDialog.Get.Tooltip"));
 
 		wMinWidth =new Button(wFieldsComp, SWT.PUSH);
-		wMinWidth.setText(Messages.getString("XMLOutputDialog.Get.Label"));
+		wMinWidth.setText(Messages.getString("XMLOutputDialog.Get.Button"));
 		wMinWidth.setToolTipText(Messages.getString("XMLOutputDialog.Get.Tooltip"));
 
 		setButtonPositions(new Button[] { wGet, wMinWidth}, margin, null);
@@ -664,7 +664,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 						i++;
 					}
 					
-					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("XMLOutputDialog.SelectVar.DialogTitle"), Messages.getString("XMLOutputDialog.SelectVar.DialogMessage"));
+					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Title"));
 					if (esd.open()!=null)
 					{
 						int nr = esd.getSelectionNr();
@@ -907,7 +907,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("XMLOutputDialog.GetFieldsError.DialogTitle"), Messages.getString("XMLOutputDialog.GetFieldsError.DialogMessage"), ke);
+			new ErrorDialog(shell, props, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("XSystem.Dialog.GetFieldsFailed.Message"), ke);
 		}
 
 	}

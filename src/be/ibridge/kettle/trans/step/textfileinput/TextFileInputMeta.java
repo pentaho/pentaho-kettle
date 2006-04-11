@@ -60,7 +60,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
     public final static int    TYPE_TRIM_BOTH  = 3;
 
-    public final static String trimTypeDesc[]  = { "none", "left", "right", "both" };
+    public final static String trimTypeCode[]  = { "none", "left", "right", "both" };
+    
+    public final static String trimTypeDesc[]  = { Messages.getString("TextFileInputMeta.TrimType.None"), Messages.getString("TextFileInputMeta.TrimType.Left"), Messages.getString("TextFileInputMeta.TrimType.Right"), Messages.getString("TextFileInputMeta.TrimType.Both") };
 
     /** Array of filenames */
     private String             fileName[];
@@ -732,7 +734,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             retval.append("        " + XMLHandler.addTagValue("position", field.getPosition()));
             retval.append("        " + XMLHandler.addTagValue("length", field.getLength()));
             retval.append("        " + XMLHandler.addTagValue("precision", field.getPrecision()));
-            retval.append("        " + XMLHandler.addTagValue("trim_type", field.getTrimTypeDesc()));
+            retval.append("        " + XMLHandler.addTagValue("trim_type", field.getTrimTypeCode()));
             retval.append("        " + XMLHandler.addTagValue("repeat", field.isRepeated()));
             retval.append("        </field>" + Const.CR);
         }
@@ -855,7 +857,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
                 field.setPosition(Const.toInt(XMLHandler.getTagValue(fnode, "position"), -1));
                 field.setLength(Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1));
                 field.setPrecision(Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1));
-                field.setTrimType(getTrimType(XMLHandler.getTagValue(fnode, "trim_type")));
+                field.setTrimType(getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")));
 
                 String srepeat = XMLHandler.getTagValue(fnode, "repeat");
                 if (srepeat != null)
@@ -956,7 +958,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
                 field.setPosition((int) rep.getStepAttributeInteger(id_step, i, "field_position"));
                 field.setLength((int) rep.getStepAttributeInteger(id_step, i, "field_length"));
                 field.setPrecision((int) rep.getStepAttributeInteger(id_step, i, "field_precision"));
-                field.setTrimType(getTrimType(rep.getStepAttributeString(id_step, i, "field_trim_type")));
+                field.setTrimType(getTrimTypeByCode(rep.getStepAttributeString(id_step, i, "field_trim_type")));
                 field.setRepeated(rep.getStepAttributeBoolean(id_step, i, "field_repeat"));
 
                 inputFields[i] = field;
@@ -1040,7 +1042,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_position", field.getPosition());
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_length", field.getLength());
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", field.getPrecision());
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type", field.getTrimTypeDesc());
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type", field.getTrimTypeCode());
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat", field.isRepeated());
             }
             
@@ -1064,7 +1066,18 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public final static int getTrimType(String tt)
+    public final static int getTrimTypeByCode(String tt)
+    {
+        if (tt == null) return 0;
+
+        for (int i = 0; i < trimTypeCode.length; i++)
+        {
+            if (trimTypeCode[i].equalsIgnoreCase(tt)) return i;
+        }
+        return 0;
+    }
+
+    public final static int getTrimTypeByDesc(String tt)
     {
         if (tt == null) return 0;
 
@@ -1073,6 +1086,12 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             if (trimTypeDesc[i].equalsIgnoreCase(tt)) return i;
         }
         return 0;
+    }
+
+    public final static String getTrimTypeCode(int i)
+    {
+        if (i < 0 || i >= trimTypeCode.length) return trimTypeCode[0];
+        return trimTypeCode[i];
     }
 
     public final static String getTrimTypeDesc(int i)
@@ -1098,24 +1117,24 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         // See if we get input...
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "This step is not expecting nor reading any input", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TextFileInputMeta.CheckResult.NoInputError"), stepinfo);
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Not receiving any input from other steps.", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TextFileInputMeta.CheckResult.NoInputOk"), stepinfo);
             remarks.add(cr);
         }
 
         FileInputList textFileList = getTextFileList();
         if (textFileList.nrOfFiles() == 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No files can be found to read.", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TextFileInputMeta.CheckResult.ExpectedFilesError"), stepinfo);
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "This step is reading " + textFileList.nrOfFiles() + " files.", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TextFileInputMeta.CheckResult.ExpectedFilesOk", ""+textFileList.nrOfFiles()), stepinfo);
             remarks.add(cr);
         }
     }

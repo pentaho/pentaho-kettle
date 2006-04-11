@@ -93,7 +93,7 @@ public class TextFileCSVImportProgressDialog
                 }
                 catch (Exception e)
                 {
-                    throw new InvocationTargetException(e, "Problem encountered scanning the CSV file in row #"+rownumber+" ("+debug+") : " + e.toString());
+                    throw new InvocationTargetException(e, Messages.getString("TextFileCSVImportProgressDialog.Exception.ErrorScanningFile", ""+rownumber, debug, e.toString()));
                 }
             }
         };
@@ -105,11 +105,11 @@ public class TextFileCSVImportProgressDialog
         }
         catch (InvocationTargetException e)
         {
-            new ErrorDialog(shell, props, "Error scanning CSV file", "An error occured scanning the CSV file!", e);
+            new ErrorDialog(shell, props, Messages.getString("TextFileCSVImportProgressDialog.ErrorScanningFile.Title"), Messages.getString("TextFileCSVImportProgressDialog.ErrorScanningFile.Message"), e);
         }
         catch (InterruptedException e)
         {
-            new ErrorDialog(shell, props, "Error scanning CSV file", "An error occured scanning the CSV file!", e);
+            new ErrorDialog(shell, props, Messages.getString("TextFileCSVImportProgressDialog.ErrorScanningFile.Title"), Messages.getString("TextFileCSVImportProgressDialog.ErrorScanningFile.Message"), e);
         }
   
         return message;
@@ -117,8 +117,8 @@ public class TextFileCSVImportProgressDialog
 
     private String doScan(IProgressMonitor monitor) throws KettleException
     {
-        if (samples>0) monitor.beginTask("Scanning file...", samples+1);
-        else           monitor.beginTask("Scanning file...", 2);
+        if (samples>0) monitor.beginTask(Messages.getString("TextFileCSVImportProgressDialog.Task.ScanningFile"), samples+1);
+        else           monitor.beginTask(Messages.getString("TextFileCSVImportProgressDialog.Task.ScanningFile"), 2);
         LogWriter log = LogWriter.getInstance();
 
         String line = "";
@@ -236,7 +236,7 @@ public class TextFileCSVImportProgressDialog
         boolean errorFound = false;
         while (!errorFound && line != null && (linenr <= samples || samples == 0) && !monitor.isCanceled())
         {
-            monitor.subTask("Scanning line "+linenr);
+            monitor.subTask(Messages.getString("TextFileCSVImportProgressDialog.ScanningLine", ""+linenr));
             if (samples>0) monitor.worked(1);
             
             debug = "convert line #" + linenr + " to row";
@@ -450,7 +450,7 @@ public class TextFileCSVImportProgressDialog
         }
 
         monitor.worked(1);
-        monitor.setTaskName("Analysing results...");
+        monitor.setTaskName(Messages.getString("TextFileCSVImportProgressDialog.Task.AnalyzingResults"));
         
         // Include the results from the number, date & string search!
         // some cleanup of format fields for strings...
@@ -503,38 +503,38 @@ public class TextFileCSVImportProgressDialog
         
         // Show information on items using dialog box
         String message = "";
-        message += "Result after scanning " + (linenr - 1) + " lines." + Const.CR;
-        message += "----------------------------------------------------" + Const.CR;
+        message += Messages.getString("TextFileCSVImportProgressDialog.Info.ResultAfterScanning", ""+(linenr-1));
+        message += Messages.getString("TextFileCSVImportProgressDialog.Info.HorizontalLine");
         for (int i = 0; i < nrfields; i++)
         {
             TextFileInputField field = meta.getInputFields()[i];
 
-            message += "Field nr. " + (i + 1) + " :" + Const.CR;
+            message += Messages.getString("TextFileCSVImportProgressDialog.Info.FieldNumber", ""+(i + 1));
 
-            message += "  Field name           : " + field.getName() + Const.CR;
-            message += "  Field type           : " + field.getTypeDesc() + Const.CR;
+            message += Messages.getString("TextFileCSVImportProgressDialog.Info.FieldName", field.getName());
+            message += Messages.getString("TextFileCSVImportProgressDialog.Info.FieldType", field.getTypeDesc());
 
             switch (field.getType())
             {
             case Value.VALUE_TYPE_NUMBER:
-                message += "  Estimated length     : " + (field.getLength() < 0 ? "-" : "" + field.getLength()) + Const.CR;
-                message += "  Estimated precision  : " + (field.getPrecision() < 0 ? "-" : "" + field.getPrecision()) + Const.CR;
-                message += "  Number format        : " + field.getFormat() + Const.CR;
+                message += Messages.getString("TextFileCSVImportProgressDialog.Info.EstimatedLength", (field.getLength() < 0 ? "-" : "" + field.getLength()));
+                message += Messages.getString("TextFileCSVImportProgressDialog.Info.EstimatedPrecision", field.getPrecision() < 0 ? "-" : "" + field.getPrecision());
+                message += Messages.getString("TextFileCSVImportProgressDialog.Info.NumberFormat", field.getFormat());
                 if (numberFormatCount[i] > 1)
                 {
-                    message += "    WARNING: More then 1 number format seems to match all sampled records:" + Const.CR;
+                    message += Messages.getString("TextFileCSVImportProgressDialog.Info.WarnNumberFormat");
                 }
                 for (int x = 0; x < Const.numberFormats.length; x++)
                 {
                     if (numberFormat[i][x])
                     {
-                        message += "    Number format        : " + Const.numberFormats[x] + Const.CR;
+                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.NumberFormat2", Const.numberFormats[x]);
                         Value minnum = new Value("minnum", minValue[i][x]);
                         Value maxnum = new Value("maxnum", maxValue[i][x]);
                         minnum.setLength(numberLength[i][x], numberPrecision[i][x]);
                         maxnum.setLength(numberLength[i][x], numberPrecision[i][x]);
-                        message += "      Minimum value      : " + minnum.toString() + Const.CR;
-                        message += "      Maximum value      : " + maxnum.toString() + Const.CR;
+                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.NumberMinValue", minnum.toString());
+                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.NumberMaxValue", maxnum.toString());
 
                         try
                         {
@@ -543,8 +543,7 @@ public class TextFileCSVImportProgressDialog
                             double mn = df2.parse(minstr[i]).doubleValue();
                             Value val = new Value("min", mn);
                             val.setLength(numberLength[i][x], numberPrecision[i][x]);
-                            message += "      Example            : " + Const.numberFormats[x] + ", number [" + minstr[i] + "] gives "
-                                    + val.toString() + Const.CR;
+                            message += Messages.getString("TextFileCSVImportProgressDialog.Info.NumberExample", Const.numberFormats[x], minstr[i], val.toString());
                         }
                         catch (Exception e)
                         {
@@ -553,30 +552,30 @@ public class TextFileCSVImportProgressDialog
                         }
                     }
                 }
-                message += "  Nr of null values    : " + nrnull[i] + Const.CR;
+                message += Messages.getString("TextFileCSVImportProgressDialog.Info.NumberNrNullValues", ""+nrnull[i]);
                 break;
             case Value.VALUE_TYPE_STRING:
-                message += "  Maximum length       : " + (field.getLength() < 0 ? "-" : "" + field.getLength()) + Const.CR;
-                message += "  Minimum value        : " + minstr[i] + Const.CR;
-                message += "  Maximum value        : " + maxstr[i] + Const.CR;
-                message += "  Nr of null values    : " + nrnull[i] + Const.CR;
+                message += Messages.getString("TextFileCSVImportProgressDialog.Info.StringMaxLength", ""+field.getLength());
+                message += Messages.getString("TextFileCSVImportProgressDialog.Info.StringMinValue", minstr[i]);
+                message += Messages.getString("TextFileCSVImportProgressDialog.Info.StringMaxValue", maxstr[i]);
+                message += Messages.getString("TextFileCSVImportProgressDialog.Info.StringNrNullValues", ""+nrnull[i]);
                 break;
             case Value.VALUE_TYPE_DATE:
-                message += "  Maximum length       : " + (field.getLength() < 0 ? "-" : "" + field.getLength()) + Const.CR;
-                message += "  Date format          : " + field.getFormat() + Const.CR;
+                message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateMaxLength", field.getLength() < 0 ? "-" : "" + field.getLength());
+                message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateFormat", field.getFormat());
                 if (dateFormatCount[i] > 1)
                 {
-                    message += "    WARNING: More then 1 date format seems to match all sampled records:" + Const.CR;
+                    message += Messages.getString("TextFileCSVImportProgressDialog.Info.WarnDateFormat");
                 }
                 for (int x = 0; x < Const.dateFormats.length; x++)
                 {
                     if (dateFormat[i][x])
                     {
-                        message += "    Date format          : " + Const.dateFormats[x] + Const.CR;
+                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateFormat2", Const.dateFormats[x]);
                         Value mindate = new Value("mindate", minDate[i][x]);
                         Value maxdate = new Value("maxdate", maxDate[i][x]);
-                        message += "      Minimum value      : " + mindate.toString() + Const.CR;
-                        message += "      Maximum value      : " + maxdate.toString() + Const.CR;
+                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateMinValue", mindate.toString());
+                        message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateMaxValue", maxdate.toString());
 
                         daf2.applyPattern(Const.dateFormats[x]);
                         try
@@ -584,8 +583,7 @@ public class TextFileCSVImportProgressDialog
                             Date md = daf2.parse(minstr[i]);
                             Value val = new Value("min", md);
                             val.setLength(field.getLength());
-                            message += "      Example            : " + Const.dateFormats[x] + ", date [" + minstr[i] + "] gives " + val.toString()
-                                    + Const.CR;
+                            message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateExample", Const.dateFormats[x], minstr[i], val.toString());
                         }
                         catch (Exception e)
                         {
@@ -594,14 +592,14 @@ public class TextFileCSVImportProgressDialog
                         }
                     }
                 }
-                message += "  Nr of null values    : " + nrnull[i] + Const.CR;
+                message += Messages.getString("TextFileCSVImportProgressDialog.Info.DateNrNullValues", ""+nrnull[i]);
                 break;
             default:
                 break;
             }
             if (nrnull[i] == linenr - 1)
             {
-                message += "  ALL NULL VALUES!" + Const.CR;
+                message += Messages.getString("TextFileCSVImportProgressDialog.Info.AllNullValues");
             }
             message += Const.CR;
         }

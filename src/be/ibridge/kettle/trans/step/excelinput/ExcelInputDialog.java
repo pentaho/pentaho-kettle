@@ -283,7 +283,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wbbFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbbFilename);
 		wbbFilename.setText(Messages.getString("System.Button.Browse"));
-		wbbFilename.setToolTipText(Messages.getString("ExcelInputDialog.FilenameBrowse.Tooltip"));
+		wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(0, 0);
@@ -803,7 +803,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 						mb.setMessage(Messages.getString("ExcelInputDialog.NoFilesFound.DialogMessage"));
-						mb.setText(Messages.getString("ExcelInputDialog.NoFilesFound.DialogTitle"));
+						mb.setText(Messages.getString("System.Dialog.Error.Title"));
 						mb.open(); 
 					}
 				}
@@ -842,7 +842,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 						i++;
 					}
 					
-					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("ExcelInputDialog.SelectEnvVar.DialogTitle"), Messages.getString("ExcelInputDialog.SelectEnvVar.DialogMessage"));
+					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Message"));
 					if (esd.open()!=null)
 					{
 						int nr = esd.getSelectionNr();
@@ -1202,7 +1202,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wbbWarningDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbbWarningDestDir);
         wbbWarningDestDir.setText(Messages.getString("System.Button.Browse"));
-        wbbWarningDestDir.setToolTipText(Messages.getString("ExcelInputDialog.WarningDestDirBrowse.tooltip"));
+        wbbWarningDestDir.setToolTipText(Messages.getString("System.Tooltip.BrowseForDir"));
         fdbWarningDestDir=new FormData();
         fdbWarningDestDir.right= new FormAttachment(100, 0);
         fdbWarningDestDir.top  = new FormAttachment(previous, margin*4);
@@ -1211,7 +1211,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wbvWarningDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbvWarningDestDir);
         wbvWarningDestDir.setText(Messages.getString("System.Button.Variable"));
-        wbvWarningDestDir.setToolTipText(Messages.getString("ExcelInputDialog.WarningDestDirVariable.tooltip"));
+        wbvWarningDestDir.setToolTipText(Messages.getString("System.Tooltip.VariableToDir"));
         fdbvWarningDestDir=new FormData();
         fdbvWarningDestDir.right= new FormAttachment(wbbWarningDestDir, -margin);
         fdbvWarningDestDir.top  = new FormAttachment(previous, margin*4);
@@ -1227,7 +1227,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wWarningExt.setLayoutData(fdWarningDestExt);
 
         wlWarningExt=new Label(wErrorComp, SWT.RIGHT);
-        wlWarningExt.setText(Messages.getString("ExcelInputDialog.WarningExt.Label"));
+        wlWarningExt.setText(Messages.getString("System.Label.Extension"));
         props.setLook(wlWarningExt);
         fdlWarningDestExt=new FormData();
         fdlWarningDestExt.top  = new FormAttachment(previous, margin*4);
@@ -1272,7 +1272,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wbbErrorDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbbErrorDestDir);
         wbbErrorDestDir.setText(Messages.getString("System.Button.Browse"));
-        wbbErrorDestDir.setToolTipText(Messages.getString("ExcelInputDialog.ErrorDestDirBrowse.Tooltip"));
+        wbbErrorDestDir.setToolTipText(Messages.getString("System.Tooltip.BrowseForDir"));
         fdbErrorDestDir=new FormData();
         fdbErrorDestDir.right= new FormAttachment(100, 0);
         fdbErrorDestDir.top  = new FormAttachment(previous, margin);
@@ -1281,7 +1281,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wbvErrorDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbvErrorDestDir);
         wbvErrorDestDir.setText(Messages.getString("System.Button.Variable"));
-        wbvErrorDestDir.setToolTipText(Messages.getString("ExcelInputDialog.ErrorDestDirVariable"));
+        wbvErrorDestDir.setToolTipText(Messages.getString("System.Tooltip.VariableToDir"));
         fdbvErrorDestDir=new FormData();
         fdbvErrorDestDir.right= new FormAttachment(wbbErrorDestDir, -margin);
         fdbvErrorDestDir.top  = new FormAttachment(previous, margin);
@@ -1297,7 +1297,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wErrorExt.setLayoutData(fdErrorDestExt);
 
         wlErrorExt=new Label(wErrorComp, SWT.RIGHT);
-        wlErrorExt.setText(Messages.getString("ExcelInputDialog.ErrorExt.Label"));
+        wlErrorExt.setText(Messages.getString("System.Label.Extension"));
         props.setLook(wlErrorExt);
         fdlErrorDestExt=new FormData();
         fdlErrorDestExt.top  = new FormAttachment(previous, margin);
@@ -1338,7 +1338,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wbbLineNrDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbbLineNrDestDir);
         wbbLineNrDestDir.setText(Messages.getString("System.Button.Browse"));
-        wbbLineNrDestDir.setToolTipText(Messages.getString("ExcelInputDialog.LineNrDestDirBrowse.Tooltip"));
+        wbbLineNrDestDir.setToolTipText(Messages.getString("System.Tooltip.BrowseForDir"));
         fdbLineNrDestDir=new FormData();
         fdbLineNrDestDir.right= new FormAttachment(100, 0);
         fdbLineNrDestDir.top  = new FormAttachment(previous, margin);
@@ -1347,7 +1347,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wbvLineNrDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbvLineNrDestDir);
         wbvLineNrDestDir.setText(Messages.getString("System.Button.Variable"));
-        wbvLineNrDestDir.setToolTipText(Messages.getString("ExcelInputDialog.LineNrDestDirVariable.Tooltip"));
+        wbvLineNrDestDir.setToolTipText(Messages.getString("System.Tooltip.VariableToDir"));
         fdbvLineNrDestDir=new FormData();
         fdbvLineNrDestDir.right= new FormAttachment(wbbLineNrDestDir, -margin);
         fdbvLineNrDestDir.top  = new FormAttachment(previous, margin);
@@ -1363,7 +1363,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wLineNrExt.setLayoutData(fdLineNrDestExt);
 
         wlLineNrExt=new Label(wErrorComp, SWT.RIGHT);
-        wlLineNrExt.setText(Messages.getString("ExcelInputDialog.LineNrExt.Label"));
+        wlLineNrExt.setText(Messages.getString("System.Label.Extension"));
         props.setLook(wlLineNrExt);
         fdlLineNrDestExt=new FormData();
         fdlLineNrDestExt.top  = new FormAttachment(previous, margin);
@@ -1428,7 +1428,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
                 {
                     MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
                     mb.setMessage(Messages.getString("xcelInputDialog.PreviewErrors.DialogMessage"));
-                    mb.setText(Messages.getString("ExcelInputDialog.PreviewErrors.DialogTitle"));
+                    mb.setText(Messages.getString("System.Dialog.Error.Title"));
                     mb.open(); 
                 }
                 
@@ -1472,7 +1472,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 				mb.setMessage(Messages.getString("ExcelInputDialog.ErrorReadingFile.DialogMessage", file.getPath()));
-				mb.setText(Messages.getString("ExcelInputDialog.ErrorReadingFile.DialogTitle"));
+				mb.setText(Messages.getString("System.Dialog.Error.Title"));
 				mb.open(); 
 			}
 		}
@@ -1598,7 +1598,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 				mb.setMessage(Messages.getString("ExcelInputDialog.ErrorReadingFile2.DialogMessage", file.getPath(), e.toString()));
-				mb.setText(Messages.getString("ExcelInputDialog.ErrorReadingFile2.DialogTitle"));
+				mb.setText(Messages.getString("System.Dialog.Error.Title"));
 				mb.setText("ERROR");
 				mb.open(); 
 			}

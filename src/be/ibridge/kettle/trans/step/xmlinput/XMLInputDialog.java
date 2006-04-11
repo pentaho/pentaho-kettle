@@ -219,7 +219,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		wbbFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbbFilename);
 		wbbFilename.setText(Messages.getString("XMLInputDialog.FilenameBrowse.Button"));
-		wbbFilename.setToolTipText(Messages.getString("XMLInputDialog.FilenameBrowse.Tooltip"));
+		wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(0, 0);
@@ -698,7 +698,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
     					{
     						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
     						mb.setMessage(Messages.getString("XMLInputDialog.NoFileFound.DialogMessage"));
-    						mb.setText(Messages.getString("XMLInputDialog.NoFileFound.DialogTitle"));
+    						mb.setText(Messages.getString("System.Dialog.Error.Title"));
     						mb.open(); 
     					}
                     }
@@ -761,7 +761,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 						i++;
 					}
 					
-					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("XMLInputDialog.EnvVarSelection.DialogTitle"), Messages.getString("XMLInputDialog.EnvVarSelection.DialogMessage"));
+					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Message"));
 					if (esd.open()!=null)
 					{
 						int nr = esd.getSelectionNr();

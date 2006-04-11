@@ -54,8 +54,8 @@ public class TextFileImportWizardPage1 extends WizardPage // implements Listener
 		this.rows=rows;
 		this.fields=fields;
 		
-		setTitle("Fixed width fields entry");
-		setDescription("Mark the boundries of the fields by clicking on the text shown below."+Const.CR+"Clicking again removes the marker while clicking and dragging allows you to position.");
+		setTitle(Messages.getString("TextFileImportWizardPage1.DialogTitle"));
+		setDescription(Messages.getString("TextFileImportWizardPage1.DialogMessage"));
 	}
 	
 	public void createControl(Composite parent)
@@ -115,7 +115,7 @@ public class TextFileImportWizardPage1 extends WizardPage // implements Listener
 		} 
 		else
 		{
-			setErrorMessage("At least one marker is needed!");
+			setErrorMessage(Messages.getString("TextFileImportWizardPage1.ErrorMarkerNeeded"));
 			return false;
 		}
 	}	

@@ -93,14 +93,14 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Calculator");
+		shell.setText(Messages.getString("CalculatorDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -118,7 +118,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 		wStepname.setLayoutData(fdStepname);
 		
         wlFields=new Label(shell, SWT.NONE);
-        wlFields.setText("Fields: ");
+        wlFields.setText(Messages.getString("CalculatorDialog.Fields.Label"));
  		props.setLook(wlFields);
         fdlFields=new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -129,15 +129,15 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         
         final ColumnInfo[] colinf=new ColumnInfo[]
                {
-                    new ColumnInfo("New field",     ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo("Calculation",   ColumnInfo.COLUMN_TYPE_CCOMBO, CalculatorMetaFunction.calcLongDesc ),
-                    new ColumnInfo("Field A",       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-                    new ColumnInfo("Field B",       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-                    new ColumnInfo("Field C",       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
-                    new ColumnInfo("Value type",    ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() ),
-                    new ColumnInfo("Length",        ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo("Precision",     ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo("Remove",        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "N", "Y" } )
+                    new ColumnInfo(Messages.getString("CalculatorDialog.NewFieldColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(Messages.getString("CalculatorDialog.CalculationColumn.Column"),   ColumnInfo.COLUMN_TYPE_CCOMBO, CalculatorMetaFunction.calcLongDesc ),
+                    new ColumnInfo(Messages.getString("CalculatorDialog.FieldAColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+                    new ColumnInfo(Messages.getString("CalculatorDialog.FieldBColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+                    new ColumnInfo(Messages.getString("CalculatorDialog.FieldCColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
+                    new ColumnInfo(Messages.getString("CalculatorDialog.ValueTypeColumn.Column"),    ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() ),
+                    new ColumnInfo(Messages.getString("CalculatorDialog.LengthColumn.Column"),        ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(Messages.getString("CalculatorDialog.PrecisionColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(Messages.getString("CalculatorDialog.RemoveColumn.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") } )
                };
         
         colinf[1].setSelectionAdapter(
@@ -145,7 +145,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, CalculatorMetaFunction.calcLongDesc, "Select the calculation type", "Select the calculation type to perform");
+                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, CalculatorMetaFunction.calcLongDesc, Messages.getString("CalculatorDialog.SelectCalculationType.Title"), Messages.getString("CalculatorDialog.SelectCalculationType.Message"));
                     String string = esd.open();
                     if (string!=null)
                     {
@@ -191,7 +191,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
                     }
                     catch(KettleException e)
                     {
-                        log.logError(toString(), "Sorry, couldn't find previous step fields...");
+                        log.logError(toString(), Messages.getString("CalculatorDialog.Log.UnableToFindInput"));
                     }
                 }
             }
@@ -200,9 +200,9 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -255,7 +255,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
             item.setText(6, Const.NVL(Value.getTypeDesc(fn.getValueType()), ""));
             if (fn.getValueLength()>=0) item.setText(7, ""+fn.getValueLength());
             if (fn.getValuePrecision()>=0) item.setText(8, ""+fn.getValuePrecision());
-            item.setText(9, fn.isRemovedFromResult()?"Y":"N");
+            item.setText(9, fn.isRemovedFromResult()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
         }
         
         wFields.setRowNums();
@@ -287,7 +287,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
             int    valueType       = Value.getType( item.getText(6) );
             int    valueLength     = Const.toInt( item.getText(7), -1 );
             int    valuePrecision  = Const.toInt( item.getText(8), -1 );
-            boolean removed        = "Y".equalsIgnoreCase( item.getText(9) );
+            boolean removed        = Messages.getString("System.Combo.Yes").equalsIgnoreCase( item.getText(9) );
                         
             input.getCalculation()[i] = new CalculatorMetaFunction(fieldName, calcType, fieldA, fieldB, fieldC, valueType, valueLength, valuePrecision, removed);
         }

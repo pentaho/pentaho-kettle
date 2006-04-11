@@ -126,7 +126,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 		this.rows=rows;
 		this.fields=fields;
 		
-		setTitle("Set field names");
+		setTitle(Messages.getString("TextFileImportWizardPage2.DialogTitle"));
 		setDescription("Give a name to the fields in this text file");
 	}
 	
@@ -161,7 +161,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 				
 		// Fieldname line
 		wlFieldname=new Label(composite, SWT.RIGHT);
-		wlFieldname.setText("Fieldname");
+		wlFieldname.setText(Messages.getString("TextFileImportWizardPage2.Fieldname.Label"));
         props.setLook(wlFieldname);
 		fdlFieldname=new FormData();
 		fdlFieldname.left = new FormAttachment(wFields, 0);
@@ -178,7 +178,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 
 		// Position line
 		wlPosition=new Label(composite, SWT.RIGHT);
-		wlPosition.setText("Field position");
+		wlPosition.setText(Messages.getString("TextFileImportWizardPage2.FieldPosition.Label"));
         props.setLook(wlPosition);
 		fdlPosition=new FormData();
 		fdlPosition.left = new FormAttachment(wFields, 0);
@@ -196,7 +196,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 
 		// Topos line
 		wlLength=new Label(composite, SWT.RIGHT);
-		wlLength.setText("Field length");
+		wlLength.setText(Messages.getString("TextFileImportWizardPage2.FieldLength.Label"));
         props.setLook(wlLength);
 		fdlLength=new FormData();
 		fdlLength.left = new FormAttachment(wFields, 0);
@@ -214,7 +214,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 
 		// Fieldtype line
 		wlFieldtype=new Label(composite, SWT.RIGHT);
-		wlFieldtype.setText("Field type ");
+		wlFieldtype.setText(Messages.getString("TextFileImportWizardPage2.FieldType.Label"));
         props.setLook(wlFieldtype);
 		fdlFieldtype=new FormData();
 		fdlFieldtype.left = new FormAttachment(wFields, 0);
@@ -235,7 +235,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 
 		// Format line
 		wlFormat=new Label(composite, SWT.RIGHT);
-		wlFormat.setText("Field formatter");
+		wlFormat.setText(Messages.getString("TextFileImportWizardPage2.FieldFormatter.Label"));
         props.setLook(wlFormat);
         fdlFormat=new FormData();
 		fdlFormat.left = new FormAttachment(wFields, 0);
@@ -252,7 +252,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 
 		// Ignore checkbox
 		wlIgnore=new Label(composite, SWT.RIGHT);
-		wlIgnore.setText("Ignore ");
+		wlIgnore.setText(Messages.getString("TextFileImportWizardPage2.Ignore.Label"));
         props.setLook(wlIgnore);
 		fdlIgnore=new FormData();
 		fdlIgnore.left = new FormAttachment(wFields, 0);
@@ -269,7 +269,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 
 		// Trimtype line
 		wlTrimtype=new Label(composite, SWT.RIGHT);
-		wlTrimtype.setText("Trim type ");
+		wlTrimtype.setText(Messages.getString("TextFileImportWizardPage2.TrimType.Label"));
         props.setLook(wlTrimtype);
 		fdlTrimtype=new FormData();
 		fdlTrimtype.left = new FormAttachment(wFields, 0);
@@ -290,7 +290,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 
 		// Precision line
 		wlPrecision=new Label(composite, SWT.RIGHT);
-		wlPrecision.setText("Precision");
+		wlPrecision.setText(Messages.getString("TextFileImportWizardPage2.Precision.Label"));
         props.setLook(wlPrecision);
 		fdlPrecision=new FormData();
 		fdlPrecision.left = new FormAttachment(wFields, 0);
@@ -307,7 +307,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 
 		// Currency line
 		wlCurrency=new Label(composite, SWT.RIGHT);
-		wlCurrency.setText("Currency symbol");
+		wlCurrency.setText(Messages.getString("TextFileImportWizardPage2.Currency.Label"));
         props.setLook(wlCurrency);
 		fdlCurrency=new FormData();
 		fdlCurrency.left = new FormAttachment(wFields, 0);
@@ -324,7 +324,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 		
 		// Decimal line
 		wlDecimal=new Label(composite, SWT.RIGHT);
-		wlDecimal.setText("Decimal symbol");
+		wlDecimal.setText(Messages.getString("TextFileImportWizardPage2.Decimal.Label"));
         props.setLook(wlDecimal);
 		fdlDecimal=new FormData();
 		fdlDecimal.left = new FormAttachment(wFields, 0);
@@ -341,7 +341,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 
 		// Group line
 		wlGroup=new Label(composite, SWT.RIGHT);
-		wlGroup.setText("Grouping symbol");
+		wlGroup.setText(Messages.getString("TextFileImportWizardPage2.Group.Label"));
 		props.setLook(wlGroup);
 		fdlGroup=new FormData();
 		fdlGroup.left = new FormAttachment(wFields, 0);
@@ -358,7 +358,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 
 		// Ignore checkbox
 		wlRepeat=new Label(composite, SWT.RIGHT);
-		wlRepeat.setText("Repeat ");
+		wlRepeat.setText(Messages.getString("TextFileImportWizardPage2.Repeat.Label"));
         props.setLook(wlRepeat);
 		fdlRepeat=new FormData();
 		fdlRepeat.left = new FormAttachment(wFields, 0);
@@ -375,7 +375,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 
 		// Null line
 		wlNull=new Label(composite, SWT.RIGHT);
-		wlNull.setText("Null if this value ");
+		wlNull.setText(Messages.getString("TextFileImportWizardPage2.Null.Label"));
 		props.setLook(wlNull);
 		fdlNull=new FormData();
 		fdlNull.left = new FormAttachment(wFields, 0);
@@ -392,7 +392,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 
 		// The buttons
 		wPrev = new Button(composite, SWT.PUSH);
-		wPrev.setText(" &Previous ");
+		wPrev.setText(Messages.getString("TextFileImportWizardPage2.Previous.Button"));
 		fdPrev=new FormData();
 		fdPrev.left   = new FormAttachment(left, margin);
 		fdPrev.bottom = new FormAttachment(100, 0);
@@ -400,7 +400,7 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 
 		// Guess button
 		wGuess = new Button(composite, SWT.PUSH);
-		wGuess.setText(" &Guess ");
+		wGuess.setText(Messages.getString("TextFileImportWizardPage2.Guess.Button"));
 		fdGuess=new FormData();
 		fdGuess.left   = new FormAttachment(wPrev, margin);
 		fdGuess.bottom = new FormAttachment(100, 0);
@@ -408,14 +408,14 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 
 		// GuessAll button
 		wGuessAll = new Button(composite, SWT.PUSH);
-		wGuessAll.setText(" Guess &All ");
+		wGuessAll.setText(Messages.getString("TextFileImportWizardPage2.GuessAll.Button"));
 		fdGuessAll=new FormData();
 		fdGuessAll.left   = new FormAttachment(wGuess, 0);
 		fdGuessAll.bottom = new FormAttachment(100, 0);
 		wGuessAll.setLayoutData(fdGuessAll);
 
 		wNext = new Button(composite, SWT.PUSH);
-		wNext.setText(" &Next ");
+		wNext.setText(Messages.getString("TextFileImportWizardPage2.Next.Button"));
 		fdNext=new FormData();
 		fdNext.left   = new FormAttachment(wGuessAll, 0);
 		fdNext.bottom = new FormAttachment(100, 0);
@@ -555,8 +555,8 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 				public void widgetSelected(SelectionEvent e) 
 				{
 					MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
-					mb.setMessage("This will overwrite the type settings of all fields. Are you sure you want to do this?");
-					mb.setText("Question");
+					mb.setMessage(Messages.getString("TextFileImportWizardPage2.OverwriteTypeSettings.DialogMessage"));
+					mb.setText(Messages.getString("TextFileImportWizardPage2.OverwriteTypeSettings.DialogTitle"));
 					int answer = mb.open();
 					if (answer == SWT.YES)
 					{

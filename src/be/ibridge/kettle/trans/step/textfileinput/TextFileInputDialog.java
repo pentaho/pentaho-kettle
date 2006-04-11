@@ -85,7 +85,7 @@ import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 public class TextFileInputDialog extends BaseStepDialog implements StepDialogInterface
 {
-	private static final String[] YES_NO_COMBO = new String[] { "N", "Y" };
+	private static final String[] YES_NO_COMBO = new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Button.Yes") };
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
@@ -300,8 +300,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private int middle, margin;
     private ModifyListener lsMod;
 		
-	private static final String STRING_PREVIEW_ROWS    = "  &Preview rows   "; 
-	
 	public static final int dateLengths[] = new int[]
 		{
 			23, 19, 14, 10, 10, 10, 10, 8, 8, 8, 8, 6, 6
@@ -338,14 +336,14 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Text file input");
+		shell.setText(Messages.getString("TextFileInputDialog.DialogTitle"));
 		
 		middle = props.getMiddlePct();
 		margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -369,7 +367,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		// START OF FILE TAB   ///
 		//////////////////////////
 		wFileTab=new CTabItem(wTabFolder, SWT.NONE);
-		wFileTab.setText("File");
+		wFileTab.setText(Messages.getString("TextFileInputDialog.FileTab.TabTitle"));
 		
 		wFileComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wFileComp);
@@ -381,7 +379,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 		// Filename line
 		wlFilename=new Label(wFileComp, SWT.RIGHT);
-		wlFilename.setText("File or directory ");
+		wlFilename.setText(Messages.getString("TextFileInputDialog.Filename.Label"));
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -391,8 +389,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 		wbbFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbbFilename);
-		wbbFilename.setText("&Browse");
-		wbbFilename.setToolTipText("Browse for a file or directory & add to the list");
+		wbbFilename.setText(Messages.getString("System.Button.Browse"));
+		wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(0, 0);
@@ -400,8 +398,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 		wbvFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbvFilename);
-		wbvFilename.setText("&Variable");
-		wbvFilename.setToolTipText("Insert a variable in the filename or directory");
+		wbvFilename.setText(Messages.getString("System.Button.Variable"));
+		wbvFilename.setToolTipText(Messages.getString("System.Tooltip.VariableToDirOrDir"));
 		fdbvFilename=new FormData();
 		fdbvFilename.right= new FormAttachment(wbbFilename, -margin);
 		fdbvFilename.top  = new FormAttachment(0, 0);
@@ -409,8 +407,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 		wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbaFilename);
-		wbaFilename.setText("&Add");
-		wbaFilename.setToolTipText("Add this entry to the list of files & directories.");
+		wbaFilename.setText(Messages.getString("TextFileInputDialog.FilenameAdd.Button"));
+		wbaFilename.setToolTipText(Messages.getString("TextFileInputDialog.FilenameAdd.Tooltip"));
 		fdbaFilename=new FormData();
 		fdbaFilename.right= new FormAttachment(wbvFilename, -margin);
 		fdbaFilename.top  = new FormAttachment(0, 0);
@@ -426,7 +424,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wFilename.setLayoutData(fdFilename);
 
 		wlFilemask=new Label(wFileComp, SWT.RIGHT);
-		wlFilemask.setText("Regular Expression ");
+		wlFilemask.setText(Messages.getString("TextFileInputDialog.Filemask.Label"));
  		props.setLook(wlFilemask);
 		fdlFilemask=new FormData();
 		fdlFilemask.left = new FormAttachment(0, 0);
@@ -451,7 +449,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
 		// Filename list line
 		wlFilenameList=new Label(wFileComp, SWT.RIGHT);
-		wlFilenameList.setText("Selected files: ");
+		wlFilenameList.setText(Messages.getString("TextFileInputDialog.FilenameList.Label"));
  		props.setLook(wlFilenameList);
 		fdlFilenameList=new FormData();
 		fdlFilenameList.left = new FormAttachment(0, 0);
@@ -462,8 +460,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		// Buttons to the right of the screen...
 		wbdFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbdFilename);
-		wbdFilename.setText("&Delete");
-		wbdFilename.setToolTipText("Delete the selected entries from the list of files.");
+		wbdFilename.setText(Messages.getString("TextFileInputDialog.FilenameDelete.Button"));
+		wbdFilename.setToolTipText(Messages.getString("TextFileInputDialog.FilenameDelete.Tooltip"));
 		fdbdFilename=new FormData();
 		fdbdFilename.right = new FormAttachment(100, 0);
 		fdbdFilename.top  = new FormAttachment (wFilemask, 40);
@@ -471,8 +469,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 		wbeFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbeFilename);
-		wbeFilename.setText("&Edit");
-		wbeFilename.setToolTipText("Edit the selected file and remove from the list.");
+		wbeFilename.setText(Messages.getString("TextFileInputDialog.FilenameEdit.Button"));
+		wbeFilename.setToolTipText(Messages.getString("TextFileInputDialog.FilenameEdit.Tooltip"));
 		fdbeFilename=new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
 		fdbeFilename.top  = new FormAttachment (wbdFilename, margin);
@@ -480,21 +478,21 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 		wbShowFiles=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbShowFiles);
-		wbShowFiles.setText("&Show filename(s)...");
+		wbShowFiles.setText(Messages.getString("TextFileInputDialog.ShowFiles.Button"));
 		fdbShowFiles=new FormData();
 		fdbShowFiles.left   = new FormAttachment(middle, 0);
 		fdbShowFiles.bottom = new FormAttachment(100, 0);
 		wbShowFiles.setLayoutData(fdbShowFiles);
 
 		wFirst=new Button(wFileComp, SWT.PUSH);
-		wFirst.setText(" Show &file content ");
+		wFirst.setText(Messages.getString("TextFileInputDialog.First.Button"));
 		fdFirst=new FormData();
 		fdFirst.left=new FormAttachment(wbShowFiles, margin*2);
 		fdFirst.bottom =new FormAttachment(100, 0);
 		wFirst.setLayoutData(fdFirst);
 
         wFirstHeader=new Button(wFileComp, SWT.PUSH);
-        wFirstHeader.setText(" Show &content from first data line");
+        wFirstHeader.setText(Messages.getString("TextFileInputDialog.FirstHeader.Button"));
         fdFirstHeader=new FormData();
         fdFirstHeader.left=new FormAttachment(wFirst, margin*2);
         fdFirstHeader.bottom =new FormAttachment(100, 0);
@@ -502,11 +500,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
 		
 		ColumnInfo[] colinfo=new ColumnInfo[3];
-		colinfo[ 0]=new ColumnInfo("File/Directory",  ColumnInfo.COLUMN_TYPE_TEXT,    false);
-		colinfo[ 1]=new ColumnInfo("Wildcard",        ColumnInfo.COLUMN_TYPE_TEXT,    false );
-		colinfo[ 1].setToolTip("Enter a regular expression here and a directory in the first column.");
-		colinfo[ 2]=new ColumnInfo("Required",        ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
-		colinfo[ 2].setToolTip("Is this file required? "+ Const.CR + "Only used for files without wildcards.");
+		colinfo[ 0]=new ColumnInfo(Messages.getString("TextFileInputDialog.FileDirColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false);
+		colinfo[ 1]=new ColumnInfo(Messages.getString("TextFileInputDialog.WildcardColumn.Column"),        ColumnInfo.COLUMN_TYPE_TEXT,    false );
+		colinfo[ 1].setToolTip(Messages.getString("TextFileInputDialog.RegExpColumn.Column"));
+		colinfo[ 2]=new ColumnInfo(Messages.getString("TextFileInputDialog.RequiredColumn.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
+		colinfo[ 2].setToolTip(Messages.getString("TextFileInputDialog.RequiredColumn.Tooltip"));
 		
 		wFilenameList = new TableView(wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
@@ -551,13 +549,13 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wTabFolder.setLayoutData(fdTabFolder);
 		
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("System.Button.OK"));
 
 		wPreview=new Button(shell, SWT.PUSH);
-		wPreview.setText(STRING_PREVIEW_ROWS);
+		wPreview.setText(Messages.getString("TextFileInputDialog.Preview.Button"));
 		
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
 
@@ -657,8 +655,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 					else
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage("No files found!  Please check the filename/directory and regular expression options.");
-						mb.setText("ERROR");
+						mb.setMessage(Messages.getString("TextFileInputDialog.NoFilesFound.DialogMessage"));
+						mb.setText(Messages.getString("System.Dialog.Error.Title"));
 						mb.open(); 
 					}
 				}
@@ -732,11 +730,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 						
 						if (wZipped.getSelection())
 						{
-							dialog.setFilterNames(new String[] {"Zip archives", "Text and CSV files", "Comma Seperated Values", "Text files", "All files"});
+							dialog.setFilterNames(new String[] {Messages.getString("System.FileType.ZipFiles"), Messages.getString("TextFileInputDialog.FileType.TextAndCSVFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.AllFiles")});
 						}
 						else
 						{
-							dialog.setFilterNames(new String[] {"Text and CSV files", "Comma Seperated Values", "Text files", "All files"});
+							dialog.setFilterNames(new String[] {Messages.getString("TextFileInputDialog.FileType.TextAndCSVFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.AllFiles")});
 						}
 						
 						if (dialog.open()!=null)
@@ -773,7 +771,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         // START OF CONTENT TAB///
         ///
         wContentTab=new CTabItem(wTabFolder, SWT.NONE);
-        wContentTab.setText("Content");
+        wContentTab.setText(Messages.getString("TextFileInputDialog.ContentTab.TabTitle"));
 
         FormLayout contentLayout = new FormLayout ();
         contentLayout.marginWidth  = 3;
@@ -785,7 +783,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // Filetype line
         wlFiletype=new Label(wContentComp, SWT.RIGHT);
-        wlFiletype.setText("Filetype ");
+        wlFiletype.setText(Messages.getString("TextFileInputDialog.Filetype.Label"));
         props.setLook(wlFiletype);
         fdlFiletype=new FormData();
         fdlFiletype.left = new FormAttachment(0, 0);
@@ -793,7 +791,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdlFiletype.right= new FormAttachment(middle, -margin);
         wlFiletype.setLayoutData(fdlFiletype);
         wFiletype=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
-        wFiletype.setText("Filetype");
+        wFiletype.setText(Messages.getString("TextFileInputDialog.Filetype.Label"));
         props.setLook(wFiletype);
         wFiletype.add("CSV");
         wFiletype.add("Fixed");
@@ -806,7 +804,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wFiletype.setLayoutData(fdFiletype);
 
         wlSeparator=new Label(wContentComp, SWT.RIGHT);
-        wlSeparator.setText("Separator ");
+        wlSeparator.setText(Messages.getString("TextFileInputDialog.Separator.Label"));
         props.setLook(wlSeparator);
         fdlSeparator=new FormData();
         fdlSeparator.left = new FormAttachment(0, 0);
@@ -816,7 +814,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         wbSeparator=new Button(wContentComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbSeparator);
-        wbSeparator.setText("Insert &TAB");
+        wbSeparator.setText(Messages.getString("TextFileInputDialog.Separator.Button"));
         fdbSeparator=new FormData();
         fdbSeparator.right= new FormAttachment(100, 0);
         fdbSeparator.top  = new FormAttachment(wFiletype, 0);
@@ -833,7 +831,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // Enclosure
         wlEnclosure=new Label(wContentComp, SWT.RIGHT);
-        wlEnclosure.setText("Enclosure ");
+        wlEnclosure.setText(Messages.getString("TextFileInputDialog.Enclosure.Label"));
         props.setLook(wlEnclosure);
         fdlEnclosure=new FormData();
         fdlEnclosure.left = new FormAttachment(0, 0);
@@ -851,7 +849,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // Allow Enclosure breaks checkbox
         wlEnclBreaks=new Label(wContentComp, SWT.RIGHT);
-        wlEnclBreaks.setText("Allow breaks in enclosed fields?");
+        wlEnclBreaks.setText(Messages.getString("TextFileInputDialog.EnclBreaks.Label"));
         props.setLook(wlEnclBreaks);
         fdlEnclBreaks=new FormData();
         fdlEnclBreaks.left = new FormAttachment(0, 0);
@@ -871,7 +869,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // Escape
         wlEscape=new Label(wContentComp, SWT.RIGHT);
-        wlEscape.setText("Escape ");
+        wlEscape.setText(Messages.getString("TextFileInputDialog.Escape.Label"));
         props.setLook(wlEscape);
         fdlEscape=new FormData();
         fdlEscape.left = new FormAttachment(0, 0);
@@ -889,7 +887,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // Header checkbox
         wlHeader=new Label(wContentComp, SWT.RIGHT);
-        wlHeader.setText("Header ");
+        wlHeader.setText(Messages.getString("TextFileInputDialog.Header.Label"));
         props.setLook(wlHeader);
         fdlHeader=new FormData();
         fdlHeader.left = new FormAttachment(0, 0);
@@ -905,7 +903,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // NrHeader
         wlNrHeader=new Label(wContentComp, SWT.RIGHT);
-        wlNrHeader.setText("Number of header lines");
+        wlNrHeader.setText(Messages.getString("TextFileInputDialog.NrHeader.Label"));
         props.setLook(wlNrHeader);
         fdlNrHeader=new FormData();
         fdlNrHeader.left = new FormAttachment(wHeader, margin);
@@ -922,7 +920,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wNrHeader.setLayoutData(fdNrHeader);
         
         wlFooter=new Label(wContentComp, SWT.RIGHT);
-        wlFooter.setText("Footer ");
+        wlFooter.setText(Messages.getString("TextFileInputDialog.Footer.Label"));
         props.setLook(wlFooter);
         fdlFooter=new FormData();
         fdlFooter.left = new FormAttachment(0, 0);
@@ -938,7 +936,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // NrFooter
         wlNrFooter=new Label(wContentComp, SWT.RIGHT);
-        wlNrFooter.setText("Number of footer lines");
+        wlNrFooter.setText(Messages.getString("TextFileInputDialog.NrFooter.Label"));
         props.setLook(wlNrFooter);
         fdlNrFooter=new FormData();
         fdlNrFooter.left = new FormAttachment(wFooter, margin);
@@ -956,7 +954,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // Wraps
         wlWraps=new Label(wContentComp, SWT.RIGHT);
-        wlWraps.setText("Wrapped lines?");
+        wlWraps.setText(Messages.getString("TextFileInputDialog.Wraps.Label"));
         props.setLook(wlWraps);
         fdlWraps=new FormData();
         fdlWraps.left = new FormAttachment(0, 0);
@@ -972,7 +970,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // NrWraps
         wlNrWraps=new Label(wContentComp, SWT.RIGHT);
-        wlNrWraps.setText("Number of times wrapped");
+        wlNrWraps.setText(Messages.getString("TextFileInputDialog.NrWraps.Label"));
         props.setLook(wlNrWraps);
         fdlNrWraps=new FormData();
         fdlNrWraps.left = new FormAttachment(wWraps, margin);
@@ -990,7 +988,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // Pages
         wlLayoutPaged=new Label(wContentComp, SWT.RIGHT);
-        wlLayoutPaged.setText("Paged layout (printout)?");
+        wlLayoutPaged.setText(Messages.getString("TextFileInputDialog.LayoutPaged.Label"));
         props.setLook(wlLayoutPaged);
         fdlLayoutPaged=new FormData();
         fdlLayoutPaged.left = new FormAttachment(0, 0);
@@ -1006,7 +1004,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // Nr of lines per page
         wlNrLinesPerPage=new Label(wContentComp, SWT.RIGHT);
-        wlNrLinesPerPage.setText("Number lines per page");
+        wlNrLinesPerPage.setText(Messages.getString("TextFileInputDialog.NrLinesPerPage.Tooltip"));
         props.setLook(wlNrLinesPerPage);
         fdlNrLinesPerPage=new FormData();
         fdlNrLinesPerPage.left = new FormAttachment(wLayoutPaged, margin);
@@ -1024,7 +1022,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // NrPages
         wlNrLinesDocHeader=new Label(wContentComp, SWT.RIGHT);
-        wlNrLinesDocHeader.setText("Document header lines ");
+        wlNrLinesDocHeader.setText(Messages.getString("TextFileInputDialog.NrLinesDocHeader.Label"));
         props.setLook(wlNrLinesDocHeader);
         fdlNrLinesDocHeader=new FormData();
         fdlNrLinesDocHeader.left = new FormAttachment(wLayoutPaged, margin);
@@ -1043,7 +1041,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // Zipped?
         wlZipped=new Label(wContentComp, SWT.RIGHT);
-        wlZipped.setText("Zipped ");
+        wlZipped.setText(Messages.getString("TextFileInputDialog.Zipped.Label"));
         props.setLook(wlZipped);
         fdlZipped=new FormData();
         fdlZipped.left = new FormAttachment(0, 0);
@@ -1052,7 +1050,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wlZipped.setLayoutData(fdlZipped);
         wZipped=new Button(wContentComp, SWT.CHECK );
         props.setLook(wZipped);
-        wZipped.setToolTipText("Only the first entry in the archive is read!");
+        wZipped.setToolTipText(Messages.getString("TextFileInputDialog.Zipped.Tooltip"));
         fdZipped=new FormData();
         fdZipped.left = new FormAttachment(middle, 0);
         fdZipped.top  = new FormAttachment(wNrLinesDocHeader, margin);
@@ -1060,7 +1058,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wZipped.setLayoutData(fdZipped);
 
         wlNoempty=new Label(wContentComp, SWT.RIGHT);
-        wlNoempty.setText("No empty rows ");
+        wlNoempty.setText(Messages.getString("TextFileInputDialog.NoEmpty.Label"));
         props.setLook(wlNoempty);
         fdlNoempty=new FormData();
         fdlNoempty.left = new FormAttachment(0, 0);
@@ -1069,7 +1067,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wlNoempty.setLayoutData(fdlNoempty);
         wNoempty=new Button(wContentComp, SWT.CHECK );
         props.setLook(wNoempty);
-        wNoempty.setToolTipText("Check this to remove empty lines from the output rows.");
+        wNoempty.setToolTipText(Messages.getString("TextFileInputDialog.NoEmpty.Tooltip"));
         fdNoempty=new FormData();
         fdNoempty.left = new FormAttachment(middle, 0);
         fdNoempty.top  = new FormAttachment(wZipped, margin);
@@ -1077,7 +1075,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wNoempty.setLayoutData(fdNoempty);
 
         wlInclFilename=new Label(wContentComp, SWT.RIGHT);
-        wlInclFilename.setText("Include filename in output? ");
+        wlInclFilename.setText(Messages.getString("TextFileInputDialog.InclFilename.Label"));
         props.setLook(wlInclFilename);
         fdlInclFilename=new FormData();
         fdlInclFilename.left = new FormAttachment(0, 0);
@@ -1086,14 +1084,14 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wlInclFilename.setLayoutData(fdlInclFilename);
         wInclFilename=new Button(wContentComp, SWT.CHECK );
         props.setLook(wInclFilename);
-        wInclFilename.setToolTipText("Check this to add a field (String) containing the filename.");
+        wInclFilename.setToolTipText(Messages.getString("TextFileInputDialog.InclFilename.Tooltip"));
         fdInclFilename=new FormData();
         fdInclFilename.left = new FormAttachment(middle, 0);
         fdInclFilename.top  = new FormAttachment(wNoempty, margin);
         wInclFilename.setLayoutData(fdInclFilename);
 
         wlInclFilenameField=new Label(wContentComp, SWT.LEFT);
-        wlInclFilenameField.setText("Filename fieldname ");
+        wlInclFilenameField.setText(Messages.getString("TextFileInputDialog.InclFilenameField.Label"));
         props.setLook(wlInclFilenameField);
         fdlInclFilenameField=new FormData();
         fdlInclFilenameField.left = new FormAttachment(wInclFilename, margin);
@@ -1109,7 +1107,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wInclFilenameField.setLayoutData(fdInclFilenameField);
 
         wlInclRownum=new Label(wContentComp, SWT.RIGHT);
-        wlInclRownum.setText("Rownum in output? ");
+        wlInclRownum.setText(Messages.getString("TextFileInputDialog.InclRownum.Label"));
         props.setLook(wlInclRownum);
         fdlInclRownum=new FormData();
         fdlInclRownum.left = new FormAttachment(0, 0);
@@ -1118,14 +1116,14 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wlInclRownum.setLayoutData(fdlInclRownum);
         wInclRownum=new Button(wContentComp, SWT.CHECK );
         props.setLook(wInclRownum);
-        wInclRownum.setToolTipText("Check this to add a field (String) containing the filename.");
+        wInclRownum.setToolTipText(Messages.getString("TextFileInputDialog.InclRownum.Tooltip"));
         fdRownum=new FormData();
         fdRownum.left = new FormAttachment(middle, 0);
         fdRownum.top  = new FormAttachment(wInclFilenameField, margin);
         wInclRownum.setLayoutData(fdRownum);
 
         wlInclRownumField=new Label(wContentComp, SWT.RIGHT);
-        wlInclRownumField.setText("Rownum fieldname ");
+        wlInclRownumField.setText(Messages.getString("extFileInputDialog.InclRownumField.Label"));
         props.setLook(wlInclRownumField);
         fdlInclRownumField=new FormData();
         fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);
@@ -1141,7 +1139,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wInclRownumField.setLayoutData(fdInclRownumField);
 
         wlFormat=new Label(wContentComp, SWT.RIGHT);
-        wlFormat.setText("Format ");
+        wlFormat.setText(Messages.getString("TextFileInputDialog.Format.Label"));
         props.setLook(wlFormat);
         fdlFormat=new FormData();
         fdlFormat.left = new FormAttachment(0, 0);
@@ -1149,7 +1147,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdlFormat.right= new FormAttachment(middle, -margin);
         wlFormat.setLayoutData(fdlFormat);
         wFormat=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
-        wFormat.setText("Format");
+        wFormat.setText(Messages.getString("TextFileInputDialog.Format.Label"));
         props.setLook(wFormat);
         wFormat.add("DOS");
         wFormat.add("Unix");
@@ -1162,7 +1160,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wFormat.setLayoutData(fdFormat);
 
         wlEncoding=new Label(wContentComp, SWT.RIGHT);
-        wlEncoding.setText("Encoding ");
+        wlEncoding.setText(Messages.getString("TextFileInputDialog.Encoding.Label"));
         props.setLook(wlEncoding);
         fdlEncoding=new FormData();
         fdlEncoding.left = new FormAttachment(0, 0);
@@ -1196,7 +1194,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         );
 
         wlLimit=new Label(wContentComp, SWT.RIGHT);
-        wlLimit.setText("Limit ");
+        wlLimit.setText(Messages.getString("TextFileInputDialog.Limit.Label"));
         props.setLook(wlLimit);
         fdlLimit=new FormData();
         fdlLimit.left = new FormAttachment(0, 0);
@@ -1214,7 +1212,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // Date Lenient checkbox
         wlDateLenient=new Label(wContentComp, SWT.RIGHT);
-        wlDateLenient.setText("Be lenient when parsing dates? ");
+        wlDateLenient.setText(Messages.getString("TextFileInputDialog.DateLenient.Label"));
         props.setLook(wlDateLenient);
         fdlDateLenient=new FormData();
         fdlDateLenient.left = new FormAttachment(0, 0);
@@ -1222,11 +1220,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdlDateLenient.right= new FormAttachment(middle, -margin);
         wlDateLenient.setLayoutData(fdlDateLenient);
         wDateLenient=new Button(wContentComp, SWT.CHECK);
-        wDateLenient.setToolTipText(
-                "This means that we are lenient when parsing date Strings."+Const.CR+
-                "For example 32/01/2006 will be parsed as Feb 1st 2006."+Const.CR+
-                "If this option is off, these dates will generate an error."
-                );
+        wDateLenient.setToolTipText(Messages.getString("TextFileInputDialog.DateLenient.Tooltip"));
         props.setLook(wDateLenient);
         fdDateLenient=new FormData();
         fdDateLenient.left = new FormAttachment(middle, 0);
@@ -1257,7 +1251,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         // START OF ERROR TAB  ///
         ///
         wErrorTab=new CTabItem(wTabFolder, SWT.NONE);
-        wErrorTab.setText("Error Handling");
+        wErrorTab.setText(Messages.getString("TextFileInputDialog.ErrorTab.TabTitle"));
 
         FormLayout errorLayout = new FormLayout ();
         errorLayout.marginWidth  = 3;
@@ -1270,7 +1264,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         // ERROR HANDLING...
         // ErrorIgnored?
         wlErrorIgnored = new Label(wErrorComp, SWT.RIGHT);
-        wlErrorIgnored.setText("Ignore errors? ");
+        wlErrorIgnored.setText(Messages.getString("TextFileInputDialog.ErrorIgnored.Label"));
         props.setLook(wlErrorIgnored);
         fdlErrorIgnored = new FormData();
         fdlErrorIgnored.left = new FormAttachment(0, 0);
@@ -1279,7 +1273,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wlErrorIgnored.setLayoutData(fdlErrorIgnored);
         wErrorIgnored = new Button(wErrorComp, SWT.CHECK);
         props.setLook(wErrorIgnored);
-        wErrorIgnored.setToolTipText("Ignore parsing errors that occur, optionally log information about the errors.");
+        wErrorIgnored.setToolTipText(Messages.getString("TextFileInputDialog.ErrorIgnored.Tooltip"));
         fdErrorIgnored = new FormData();
         fdErrorIgnored.left = new FormAttachment(middle, 0);
         fdErrorIgnored.top = new FormAttachment(0, margin);
@@ -1287,7 +1281,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         // Skip error lines?
         wlSkipErrorLines = new Label(wErrorComp, SWT.RIGHT);
-        wlSkipErrorLines.setText("Skip error lines? ");
+        wlSkipErrorLines.setText(Messages.getString("TextFileInputDialog.SkipErrorLines.Label"));
         props.setLook(wlSkipErrorLines);
         fdlSkipErrorLines = new FormData();
         fdlSkipErrorLines.left = new FormAttachment(0, 0);
@@ -1296,14 +1290,14 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wlSkipErrorLines.setLayoutData(fdlSkipErrorLines);
         wSkipErrorLines = new Button(wErrorComp, SWT.CHECK);
         props.setLook(wSkipErrorLines);
-        wSkipErrorLines.setToolTipText("Skip error lines or use null-values on incompatible types?");
+        wSkipErrorLines.setToolTipText(Messages.getString("TextFileInputDialog.SkipErrorLines.Tooltip"));
         fdSkipErrorLines = new FormData();
         fdSkipErrorLines.left = new FormAttachment(middle, 0);
         fdSkipErrorLines.top = new FormAttachment(wErrorIgnored, margin);
         wSkipErrorLines.setLayoutData(fdSkipErrorLines);
 
         wlErrorCount=new Label(wErrorComp, SWT.RIGHT);
-        wlErrorCount.setText("Error count fieldname ");
+        wlErrorCount.setText(Messages.getString("TextFileInputDialog.ErrorCount.Label"));
         props.setLook(wlErrorCount);
         fdlErrorCount=new FormData();
         fdlErrorCount.left = new FormAttachment(0, 0);
@@ -1320,7 +1314,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wErrorCount.setLayoutData(fdErrorCount);
 
         wlErrorFields=new Label(wErrorComp, SWT.RIGHT);
-        wlErrorFields.setText("Error fields fieldname");
+        wlErrorFields.setText(Messages.getString("TextFileInputDialog.ErrorFields.Label"));
         props.setLook(wlErrorFields);
         fdlErrorFields=new FormData();
         fdlErrorFields.left = new FormAttachment(0, 0);
@@ -1337,7 +1331,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wErrorFields.setLayoutData(fdErrorFields);
 
         wlErrorText=new Label(wErrorComp, SWT.RIGHT);
-        wlErrorText.setText("Error text fieldname");
+        wlErrorText.setText(Messages.getString("TextFileInputDialog.ErrorText.Label"));
         props.setLook(wlErrorText);
         fdlErrorText=new FormData();
         fdlErrorText.left = new FormAttachment(0, 0);
@@ -1361,7 +1355,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         // BadDestDir line
         wlWarnDestDir=new Label(wErrorComp, SWT.RIGHT);
-        wlWarnDestDir.setText("Warning files directory ");
+        wlWarnDestDir.setText(Messages.getString("TextFileInputDialog.WarnDestDir.Label"));
         props.setLook(wlWarnDestDir);
         fdlWarnDestDir=new FormData();
         fdlWarnDestDir.left = new FormAttachment(0, 0);
@@ -1371,8 +1365,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         wbbWarnDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbbWarnDestDir);
-        wbbWarnDestDir.setText("&Browse");
-        wbbWarnDestDir.setToolTipText("Browse for a directory ");
+        wbbWarnDestDir.setText(Messages.getString("System.Button.Browse"));
+        wbbWarnDestDir.setToolTipText(Messages.getString("System.Tooltip.BrowseForDir"));
         fdbBadDestDir=new FormData();
         fdbBadDestDir.right= new FormAttachment(100, 0);
         fdbBadDestDir.top  = new FormAttachment(previous, margin*4);
@@ -1380,8 +1374,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         wbvWarnDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbvWarnDestDir);
-        wbvWarnDestDir.setText("&Variable");
-        wbvWarnDestDir.setToolTipText("Insert a variable in the directory");
+        wbvWarnDestDir.setText(Messages.getString("System.Button.Variable"));
+        wbvWarnDestDir.setToolTipText(Messages.getString("System.Tooltip.VariableToDir"));
         fdbvWarnDestDir=new FormData();
         fdbvWarnDestDir.right= new FormAttachment(wbbWarnDestDir, -margin);
         fdbvWarnDestDir.top  = new FormAttachment(previous, margin*4);
@@ -1397,7 +1391,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wWarnExt.setLayoutData(fdWarnDestExt);
 
         wlWarnExt=new Label(wErrorComp, SWT.RIGHT);
-        wlWarnExt.setText("Extention ");
+        wlWarnExt.setText(Messages.getString("System.Label.Extension"));
         props.setLook(wlWarnExt);
         fdlWarnDestExt=new FormData();
         fdlWarnDestExt.top  = new FormAttachment(previous, margin*4);
@@ -1431,7 +1425,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         // ErrorDestDir line
         wlErrorDestDir=new Label(wErrorComp, SWT.RIGHT);
-        wlErrorDestDir.setText("Error files directory ");
+        wlErrorDestDir.setText(Messages.getString("TextFileInputDialog.ErrorDestDir.Label"));
         props.setLook(wlErrorDestDir);
         fdlErrorDestDir=new FormData();
         fdlErrorDestDir.left = new FormAttachment(0, 0);
@@ -1441,8 +1435,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         wbbErrorDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbbErrorDestDir);
-        wbbErrorDestDir.setText("&Browse");
-        wbbErrorDestDir.setToolTipText("Browse for a directory ");
+        wbbErrorDestDir.setText(Messages.getString("System.Button.Browse"));
+        wbbErrorDestDir.setToolTipText(Messages.getString("System.Tooltip.BrowseForDir"));
         fdbErrorDestDir=new FormData();
         fdbErrorDestDir.right= new FormAttachment(100, 0);
         fdbErrorDestDir.top  = new FormAttachment(previous, margin);
@@ -1450,8 +1444,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         wbvErrorDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbvErrorDestDir);
-        wbvErrorDestDir.setText("&Variable");
-        wbvErrorDestDir.setToolTipText("Insert a variable in the directory");
+        wbvErrorDestDir.setText(Messages.getString("System.Button.Variable"));
+        wbvErrorDestDir.setToolTipText(Messages.getString("System.Tooltip.VariableToDir"));
         fdbvErrorDestDir=new FormData();
         fdbvErrorDestDir.right= new FormAttachment(wbbErrorDestDir, -margin);
         fdbvErrorDestDir.top  = new FormAttachment(previous, margin);
@@ -1467,7 +1461,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wErrorExt.setLayoutData(fdErrorDestExt);
 
         wlErrorExt=new Label(wErrorComp, SWT.RIGHT);
-        wlErrorExt.setText("Extention ");
+        wlErrorExt.setText(Messages.getString("System.Label.Extension"));
         props.setLook(wlErrorExt);
         fdlErrorDestExt=new FormData();
         fdlErrorDestExt.top  = new FormAttachment(previous, margin);
@@ -1497,7 +1491,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                 
         // LineNrDestDir line
         wlLineNrDestDir=new Label(wErrorComp, SWT.RIGHT);
-        wlLineNrDestDir.setText("Failing line numbers files directory ");
+        wlLineNrDestDir.setText(Messages.getString("TextFileInputDialog.LineNrDestDir.Label"));
         props.setLook(wlLineNrDestDir);
         fdlLineNrDestDir=new FormData();
         fdlLineNrDestDir.left = new FormAttachment(0, 0);
@@ -1507,8 +1501,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         wbbLineNrDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbbLineNrDestDir);
-        wbbLineNrDestDir.setText("&Browse");
-        wbbLineNrDestDir.setToolTipText("Browse for a directory ");
+        wbbLineNrDestDir.setText(Messages.getString("System.Button.Browse"));
+        wbbLineNrDestDir.setToolTipText(Messages.getString("System.Tooltip.Browse"));
         fdbLineNrDestDir=new FormData();
         fdbLineNrDestDir.right= new FormAttachment(100, 0);
         fdbLineNrDestDir.top  = new FormAttachment(previous, margin);
@@ -1517,7 +1511,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wbvLineNrDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbvLineNrDestDir);
         wbvLineNrDestDir.setText("&Variable");
-        wbvLineNrDestDir.setToolTipText("Insert a variable in the directory");
+        wbvLineNrDestDir.setToolTipText("System.Tooltip.VariableToDir");
         fdbvLineNrDestDir=new FormData();
         fdbvLineNrDestDir.right= new FormAttachment(wbbLineNrDestDir, -margin);
         fdbvLineNrDestDir.top  = new FormAttachment(previous, margin);
@@ -1533,7 +1527,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wLineNrExt.setLayoutData(fdLineNrDestExt);
 
         wlLineNrExt=new Label(wErrorComp, SWT.RIGHT);
-        wlLineNrExt.setText("Extention ");
+        wlLineNrExt.setText(Messages.getString("System.Label.Extension"));
         props.setLook(wlLineNrExt);
         fdlLineNrDestExt=new FormData();
         fdlLineNrDestExt.top  = new FormAttachment(previous, margin);
@@ -1583,7 +1577,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         // Filters tab...
         //
         wFilterTab = new CTabItem(wTabFolder, SWT.NONE);
-        wFilterTab.setText("Filters");
+        wFilterTab.setText(Messages.getString("TextFileInputDialog.FilterTab.TabTitle"));
         
         FormLayout FilterLayout = new FormLayout ();
         FilterLayout.marginWidth  = Const.FORM_MARGIN;
@@ -1597,12 +1591,12 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         ColumnInfo[] colinf=new ColumnInfo[]
             {
-             new ColumnInfo("Filter string",      ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Filter position",    ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Stop on filter",     ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO )
+             new ColumnInfo(Messages.getString("TextFileInputDialog.FilterStringColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.FilterPositionColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.StopOnFilterColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO )
             };
         
-        colinf[2].setToolTip("set this field to Y if you want to stop processing when the filter is encountered");
+        colinf[2].setToolTip(Messages.getString("TextFileInputDialog.StopOnFilterColumn.Tooltip"));
         
         wFilter=new TableView(wFilterComp, 
                               SWT.FULL_SELECTION | SWT.MULTI, 
@@ -1636,7 +1630,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         // Fields tab...
         //
         wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
-        wFieldsTab.setText("Fields");
+        wFieldsTab.setText(Messages.getString("TextFileInputDialog.FieldsTab.TabTitle"));
         
         FormLayout fieldsLayout = new FormLayout ();
         fieldsLayout.marginWidth  = Const.FORM_MARGIN;
@@ -1647,7 +1641,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         props.setLook(wFieldsComp);
         
         wGet=new Button(wFieldsComp, SWT.PUSH);
-        wGet.setText(" &Get fields ");
+        wGet.setText(Messages.getString("System.Button.GetFields"));
         fdGet=new FormData();
         fdGet.left=new FormAttachment(50, 0);
         fdGet.bottom =new FormAttachment(100, 0);
@@ -1660,21 +1654,21 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         ColumnInfo[] colinf=new ColumnInfo[]
             {
-             new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO,  Value.getTypes(), true ),
-             new ColumnInfo("Format",     ColumnInfo.COLUMN_TYPE_CCOMBO,  formats),
-             new ColumnInfo("Position",   ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Currency",   ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Null if",    ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Trim type",  ColumnInfo.COLUMN_TYPE_CCOMBO,  TextFileInputMeta.trimTypeDesc, true ),
-             new ColumnInfo("Repeat",     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { "Y", "N" }, true )
+             new ColumnInfo(Messages.getString("TextFileInputDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  Value.getTypes(), true ),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.FormatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  formats),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.PositionColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.LengthColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.PrecisionColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.CurrencyColumn.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.DecimalColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.NullIfColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.TrimTypeColumn.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  TextFileInputMeta.trimTypeDesc, true ),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.RepeatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") }, true )
             };
         
-        colinf[11].setToolTip("set this field to Y if you want to repeat values when the next are empty");
+        colinf[11].setToolTip(Messages.getString("TextFileInputDialog.RepeatColumn.Tooltip"));
         
         wFields=new TableView(wFieldsComp, 
                               SWT.FULL_SELECTION | SWT.MULTI, 
@@ -1827,7 +1821,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			String decim    = field.getDecimalSymbol();
 			String def      = field.getNullString();
 			String trim     = field.getTrimTypeDesc();
-			String rep      = field.isRepeated()?"Y":"N";
+			String rep      = field.isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Button.No");
 			
 			if (type    !=null) item.setText( 2, type    );
 			if (format  !=null) item.setText( 3, format  );
@@ -1867,7 +1861,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             TextFileFilter filter = in.getFilter()[i];
             if (filter.getFilterString()  !=null) item.setText(1, filter.getFilterString());
             if (filter.getFilterPosition()>=0   ) item.setText(2, ""+filter.getFilterPosition());
-            item.setText(3, filter.isFilterLastLine()?"Y":"N");
+            item.setText(3, filter.isFilterLastLine()?Messages.getString("System.Button.Yes"):Messages.getString("System.Button.No"));
         }
         
         wFields.removeEmptyRows();
@@ -1977,8 +1971,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			field.setDecimalSymbol( item.getText(8) );
 			field.setGroupSymbol( item.getText(9) );
 			field.setNullString( item.getText(10) );
-			field.setTrimType( TextFileInputMeta.getTrimType(item.getText(11)) );
-			field.setRepeated( "Y".equalsIgnoreCase(item.getText(12)) );		
+			field.setTrimType( TextFileInputMeta.getTrimTypeByDesc(item.getText(11)) );
+			field.setRepeated( Messages.getString("System.Button.Yes").equalsIgnoreCase(item.getText(12)) );		
 			
 			in.getInputFields()[i] = field;
 		}
@@ -1991,7 +1985,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             
             filter.setFilterString( item.getText(1) );
             filter.setFilterPosition( Const.toInt(item.getText(2), -1) );
-            filter.setFilterLastLine( "Y".equalsIgnoreCase( item.getText(3) ) );
+            filter.setFilterLastLine( Messages.getString("System.Button.Yes").equalsIgnoreCase( item.getText(3) ) );
         }
         // Error handling fields...
         in.setErrorIgnored( wErrorIgnored.getSelection() );
@@ -2040,8 +2034,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			if (meta.hasHeader() && nrInputFields>0)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION );
-				mb.setMessage("Do you want to clear the field list before starting?");
-				mb.setText("Question");
+				mb.setMessage(Messages.getString("TextFileInputDialog.ClearFieldList.DialogMessage"));
+				mb.setText(Messages.getString("TextFileInputDialog.ClearFieldList.DialogTitle"));
 				clearFields = mb.open();
 			}
 
@@ -2113,8 +2107,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     }
 
                     // Sample a few lines to determine the correct type of the fields...
-                    String shellText = "Nr of lines to sample.  0 means all lines.";
-                    String lineText = "Number of sample lines (0=all lines)";
+                    String shellText = Messages.getString("TextFileInputDialog.LinesToSample.DialogTitle");
+                    String lineText = Messages.getString("TextFileInputDialog.LinesToSample.DialogMessage");
                     EnterNumberDialog end = new EnterNumberDialog(shell, props, 100, shellText, lineText);
                     int samples = end.open();
                     if (samples >= 0)
@@ -2131,7 +2125,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                             wFields.setRowNums();
                             wFields.optWidth(true);
     
-        					EnterTextDialog etd = new EnterTextDialog(shell, "Scan results", "Result:", message, true);
+        					EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("TextFileInputDialog.ScanResults.DialogTitle"), Messages.getString("TextFileInputDialog.ScanResults.DialogMessage"), message, true);
         					etd.setReadOnly();
         					etd.open();
                         }
@@ -2140,18 +2134,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				else
 				{
                     MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage("I couldn't read the header-line from the input file! (empty file?)");
-					mb.setText("ERROR");
+					mb.setMessage(Messages.getString("TextFileInputDialog.UnableToReadHeaderLine.DialogMessage"));
+					mb.setText(Messages.getString("System.DialogTitle.Error"));
 					mb.open(); 
 				}
 			}
 			catch(IOException e)
 			{
-                new ErrorDialog(shell, props, "I/O Error", "I/O error getting file description:", e);
+                new ErrorDialog(shell, props, Messages.getString("TextFileInputDialog.IOError.DialogTitle"), Messages.getString("TextFileInputDialog.IOError.DialogMessage"), e);
 			}
             catch(KettleException e)
             {
-                new ErrorDialog(shell, props, "Error", "Error getting file description:", e);
+                new ErrorDialog(shell, props, Messages.getString("System.DialogTitle.Error"), Messages.getString("TextFileInputDialog.ErrorGettingFileDesc.DialogMessage"), e);
             }
 			finally
 			{
@@ -2172,8 +2166,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		else
 		{
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("I couldn't find a valid file to work with.  Please check the files, directories & expression.");
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("TextFileInputDialog.NoValidFileFound.DialogMessage"));
+			mb.setText(Messages.getString("System.DialogTitle.Error"));
 			mb.open(); 
 		}
 	}
@@ -2240,7 +2234,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, "Enter preview size", "Enter the number of rows you would like to preview:");
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("TextFileInputDialog.PreviewSize.DialogTitle"), Messages.getString("TextFileInputDialog.PreviewSize.DialogMessage"));
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {
@@ -2255,8 +2249,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                 if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                 {
                     MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                    mb.setMessage("One or more errors occured during preview!  Examine the logfile to see what went wrong.");
-                    mb.setText("ERROR");
+                    mb.setMessage(Messages.getString("TextFileInputDialog.ErrorInPreview.DialogMessage"));
+                    mb.setText(Messages.getString("System.DialogTitle.Error"));
                     mb.open(); 
                 }
                 
@@ -2276,8 +2270,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         {
     		if (info.getTextFileList().nrOfFiles()>0)
     		{
-    			String shellText = "Nr of lines to view.  0 means all lines.";
-    			String lineText = "Number of lines (0=all lines)";
+    			String shellText = Messages.getString("TextFileInputDialog.LinesToView.DialogTitle");
+    			String lineText = Messages.getString("TextFileInputDialog.LinesToView.DialogMessage");
     			EnterNumberDialog end = new EnterNumberDialog(shell, props, 100, shellText, lineText);
     			int nrLines = end.open();
     			if (nrLines>=0)
@@ -2290,15 +2284,15 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                         {
                             firstlines+=(String)linesList.get(i)+Const.CR;
                         }
-                        EnterTextDialog etd = new EnterTextDialog(shell, "Content of first file", (nrLines==0?"All":""+nrLines)+" lines:", firstlines, true);
+                        EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("TextFileInputDialog.ContentOfFirstFile.DialogTitle"), (nrLines==0?Messages.getString("TextFileInputDialog.ContentOfFirstFile.AllLines.DialogMessage") : Messages.getString("TextFileInputDialog.ContentOfFirstFile.NLines.DialogMessage",""+nrLines)), firstlines, true);
                         etd.setReadOnly();
                         etd.open();
                     }
                     else
                     {
                         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                        mb.setMessage("I couldn't read any lines from the specified files.");
-                        mb.setText("Sorry");
+                        mb.setMessage(Messages.getString("TextFileInputDialog.UnableToReadLines.DialogMessage"));
+                        mb.setText(Messages.getString("TextFileInputDialog.UnableToReadLines.DialogTitle"));
                         mb.open(); 
     				}
     			}
@@ -2306,14 +2300,14 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             else
             {
                 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                mb.setMessage("I couldn't find a valid file to work with.  Please check the files, directories & expressions.");
-                mb.setText("ERROR");
+                mb.setMessage(Messages.getString("TextFileInputDialog.NoValidFile.DialogMessage"));
+                mb.setText(Messages.getString("System.DialogTitle.Error"));
                 mb.open(); 
             }
         }
 		catch(KettleException e)
 		{
-            new ErrorDialog(shell, props, "Error", "Error getting data from file", e);
+            new ErrorDialog(shell, props, Messages.getString("System.DialogTitle.Error"), Messages.getString("TextFileInputDialog.ErrorGettingData.DialogMessage"), e);
 		}
 	}
 	
@@ -2402,7 +2396,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			}
 			catch(Exception e)
 			{
-                throw new KettleException("Error getting first "+nrlines+" from file "+file.getPath(), e);
+                throw new KettleException(Messages.getString("TextFileInputDialog.Exception.ErrorGettingFirstLines", ""+nrlines, file.getPath()), e);
 			}
 			finally
 			{
@@ -2466,7 +2460,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     						item.setText( 9,""+field.getGroupSymbol());
     						item.setText(10,""+field.getNullString());
     						item.setText(11,""+field.getTrimTypeDesc());
-    						item.setText(12,   field.isRepeated()?"Y":"N");
+    						item.setText(12,   field.isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
     					}
     					
     				}
@@ -2495,7 +2489,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         }
         catch(Exception e)
         {
-            new ErrorDialog(shell, props, "Error showing fixed wizard", "An unexpected error occured showing the fixed field width wizard", e);
+            new ErrorDialog(shell, props, Messages.getString("TextFileInputDialog.ErrorShowingFixedWizard.DialogTitle"), Messages.getString("TextFileInputDialog.ErrorShowingFixedWizard.DialogMessage"), e);
         }
 	}
 	

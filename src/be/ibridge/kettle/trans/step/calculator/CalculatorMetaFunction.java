@@ -66,28 +66,28 @@ public class CalculatorMetaFunction implements Cloneable
     public static final String calcLongDesc[] = 
         { 
             "-", 
-            "Set field to constant value A",
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.SetFieldToConstant"),
             "A + B", 
             "A - B", 
             "A * B",
             "A / B", 
             "A * A", 
-            "SQRT( A )", 
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.SQRT"), 
             "100 * A / B", 
             "A - ( A * B / 100 )", 
             "A + ( A * B / 100 )", 
             "A + B * C", 
-            "SQRT( A*A + B*B )", 
-            "ROUND( A )",
-            "ROUND( A , B )",
-            "NVL( A, B )",
-            "Date A + B Days",
-            "Year of date A",
-            "Month of date A",
-            "Day of year of date A",
-            "Day of month of date A",
-            "Day of week of date A",
-            "Week of year of date A"
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.Hypotenuse"), 
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.Round"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.Round2"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.NVL"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.DatePlusDays"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.YearOfDate"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.MonthOfDate"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.DayOfYear"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.DayOfMonth"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.DayOfWeek"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.WeekOfYear")
         };
    
     private String fieldName;

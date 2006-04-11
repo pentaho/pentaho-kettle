@@ -884,7 +884,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		// Check output fields
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "+prev.size()+" fields", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TextFileOutputMeta.CheckResult.FieldsReceived", ""+prev.size()), stepinfo);
 			remarks.add(cr);
 			
 			String  error_message="";
@@ -902,13 +902,13 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			}
 			if (error_found) 
 			{
-				error_message="Fields that were not found in input stream:"+Const.CR+Const.CR+error_message;
+				error_message= Messages.getString("TextFileOutputMeta.CheckResult.FieldsNotFound", error_message);
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All output fields are found in the input stream.", stepinfo);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TextFileOutputMeta.CheckResult.AllFieldsFound"), stepinfo);
 				remarks.add(cr);
 			}
 		}
@@ -916,16 +916,16 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TextFileOutputMeta.CheckResult.ExpectedInputOk"), stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TextFileOutputMeta.CheckResult.ExpectedInputError"), stepinfo);
 			remarks.add(cr);
 		}
 		
-		cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, "File specifications are not checked.", stepinfo);
+		cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, Messages.getString("TextFileOutputMeta.CheckResult.FilesNotChecked"), stepinfo);
 		remarks.add(cr);
 	}
 

@@ -21,7 +21,7 @@ public class GlobalMessages
 
     public static final String[] localeCodes = { "en_US", "nl_NL", "zh_CN", "es_ES", "fr_FR", "de_DE" };
     
-    public static final String[] localeDescr = { "English (US)", "Nederlands", "Simplified Chinese", "Español", "Français", "Deutch" };
+    public static final String[] localeDescr = { "English (US)", "Nederlands", "Simplified Chinese", "EspaÃ±ol", "FranÃ§ais", "Deutch" };
     
     protected static Map getLocales()
     {

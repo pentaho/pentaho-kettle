@@ -223,7 +223,12 @@ public class TextFileInputField implements Cloneable
 		return trimtype;
 	}
 
-	public String getTrimTypeDesc()
+	public String getTrimTypeCode()
+	{
+		return TextFileInputMeta.getTrimTypeCode(trimtype);
+	}
+  
+  public String getTrimTypeDesc()
 	{
 		return TextFileInputMeta.getTrimTypeDesc(trimtype);
 	}
