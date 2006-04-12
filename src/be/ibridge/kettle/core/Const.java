@@ -12,9 +12,9 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
 
 package be.ibridge.kettle.core;
+
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.InetAddress;
@@ -39,8 +39,6 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 
-
-
 /**
  * This class is used to define a number of default values for various settings throughout Kettle.
  * It also contains a number of static final methods to make your life easier.
@@ -49,43 +47,43 @@ import be.ibridge.kettle.job.entry.JobEntryInterface;
  * @since 07-05-2003
  *
  */
-public class Const 
+public class Const
 {
 	/**
 	 *  Version number
 	 */
-	public static final String  VERSION = "2.3.0";
-	
+	public static final String VERSION = "2.3.0";
+
 	/**
 	 * Sleep time waiting when buffer is empty
 	 */
-	public static final int  SLEEP_EMPTY_NANOS   = 1;
+	public static final int SLEEP_EMPTY_NANOS = 1;
 
 	/**
 	 * Sleep time waiting when buffer is full
 	 */
-	public static final int  SLEEP_FULL_NANOS    = 1; // luxury problem!
-	
+	public static final int SLEEP_FULL_NANOS = 1; // luxury problem!
+
 	/**
 	 * print update every ... lines
 	 */
-	public static final int  ROWS_UPDATE    = 5000;
-	
+	public static final int ROWS_UPDATE = 5000;
+
 	/**
 	 * Size of rowset: bigger = faster for large amounts of data
 	 */
-	public static final int  ROWS_IN_ROWSET = 350; 
-	
+	public static final int ROWS_IN_ROWSET = 350;
+
 	/**
 	 * Fetch size in rows when querying a database
 	 */
-	public static final int  FETCH_SIZE = 100;
-	
+	public static final int FETCH_SIZE = 100;
+
 	/**
 	 * Sort size: how many rows do we sort in memory at once?
 	 */
 	public static final int SORT_SIZE = 5000;
-	
+
 	/**
 	 * What's the file systems file separator on this operating system?
 	 */
@@ -95,87 +93,88 @@ public class Const
 	 * CR: operating systems specific Cariage Return
 	 */
 	public static final String CR = System.getProperty("line.separator");
-	
+
 	/**
 	 * The Java runtime version
 	 */
-	 public static final String JAVA_VERSION = System.getProperty("java.vm.version");
+	public static final String JAVA_VERSION = System.getProperty("java.vm.version");
 
 	/**
 	 * The images directory
 	 */
 	public static final String IMAGE_DIRECTORY = "/be/ibridge/kettle/images/"; //+FILE_SEPARATOR;
-	
+
 	/**
 	 *  Public directory containing external steps plugins
 	 */
-	public static final String PLUGIN_STEPS_DIRECTORY_PUBLIC = "plugins"+FILE_SEPARATOR+"steps";
+	public static final String PLUGIN_STEPS_DIRECTORY_PUBLIC = "plugins" + FILE_SEPARATOR + "steps";
 
 	/**
 	 *  Private directory containing external steps plugins
 	 */
-	public static final String PLUGIN_STEPS_DIRECTORY_PRIVATE = getKettleDirectory()+FILE_SEPARATOR+"plugins"+FILE_SEPARATOR+"steps"; 
+	public static final String PLUGIN_STEPS_DIRECTORY_PRIVATE = getKettleDirectory() + FILE_SEPARATOR + "plugins" + FILE_SEPARATOR + "steps";
 
-    /**
-     *  Public directory containing external job entries plugins
-     */
-    public static final String PLUGIN_JOBENTRIES_DIRECTORY_PUBLIC = "plugins"+FILE_SEPARATOR+"jobentries"; 
+	/**
+	 *  Public directory containing external job entries plugins
+	 */
+	public static final String PLUGIN_JOBENTRIES_DIRECTORY_PUBLIC = "plugins" + FILE_SEPARATOR + "jobentries";
 
-    /**
-     *  Private directory containing external job entries plugins
-     */
-    public static final String PLUGIN_JOBENTRIES_DIRECTORY_PRIVATE = getKettleDirectory()+FILE_SEPARATOR+"plugins"+FILE_SEPARATOR+"jobentries";
+	/**
+	 *  Private directory containing external job entries plugins
+	 */
+	public static final String PLUGIN_JOBENTRIES_DIRECTORY_PRIVATE = getKettleDirectory() + FILE_SEPARATOR + "plugins" + FILE_SEPARATOR
+			+ "jobentries";
 
 	/**
 	 * Default minimum date range...
 	 */
-	public static final Date MIN_DATE = new Date(  -2208992400000L);  // 1900/01/01 00:00:00.000
-	
+	public static final Date MIN_DATE = new Date(-2208992400000L); // 1900/01/01 00:00:00.000
+
 	/**
 	 * Default maximum date range...
 	 */
-	public static final Date MAX_DATE = new Date(   7258114799468L);  // 2199/12/31 23:59:59.999
+	public static final Date MAX_DATE = new Date(7258114799468L); // 2199/12/31 23:59:59.999
 
 	/**
 	 * The default minimum year in a dimension date range
 	 */
-	public static final int  MIN_YEAR = 1900;
+	public static final int MIN_YEAR = 1900;
 
 	/**
 	 * The default maximum year in a dimension date range
 	 */
-	public static final int  MAX_YEAR = 2199;
-			
+	public static final int MAX_YEAR = 2199;
+
 	/**
 	 * Specifies the number of pixels to the right we have to go in dialog boxes.
 	 */
-	public static final int RIGHT  = 400;
+	public static final int RIGHT = 400;
 
 	/**
 	 * Specifies the length (width) of fields in a number of pixels in dialog boxes.
 	 */
 	public static final int LENGTH = 350;
-	
+
 	/**
 	 * The margin between the different dialog components & widgets
 	 */
 	public static final int MARGIN = 5;
-	
+
 	/**
 	 * The default percentage of the width of screen where we consider the middle of a dialog.
 	 */
 	public static final int MIDDLE_PCT = 35;
-	
+
 	/**
 	 * The default width of an arrow in the Graphical Views
 	 */
 	public static final int ARROW_WIDTH = 1;
-	
+
 	/**
 	 * The horizontal and vertical margin of a dialog box.
 	 */
 	public static final int FORM_MARGIN = 3;
-	
+
 	/**
 	 * The default shadow size on the graphical view.
 	 */
@@ -185,7 +184,7 @@ public class Const
 	 *  The size of relationship symbols
 	 */
 	public static final int SYMBOLSIZE = 10;
-	
+
 	/**
 	 * Max nr. of files to remember
 	 */
@@ -195,27 +194,27 @@ public class Const
 	 * The default locale for the kettle environment (system defined)
 	 */
 	public static final Locale DEFAULT_LOCALE = Locale.getDefault(); // new Locale("nl", "BE");
-	
+
 	/**
 	 * The default decimal separator . or ,
 	 */
-	public static final char   DEFAULT_DECIMAL_SEPARATOR  = (new DecimalFormatSymbols(DEFAULT_LOCALE)).getDecimalSeparator();
-	
+	public static final char DEFAULT_DECIMAL_SEPARATOR = (new DecimalFormatSymbols(DEFAULT_LOCALE)).getDecimalSeparator();
+
 	/**
 	 * The default grouping separator , or .
 	 */
-	public static final char   DEFAULT_GROUPING_SEPARATOR = (new DecimalFormatSymbols(DEFAULT_LOCALE)).getGroupingSeparator();
-	
+	public static final char DEFAULT_GROUPING_SEPARATOR = (new DecimalFormatSymbols(DEFAULT_LOCALE)).getGroupingSeparator();
+
 	/**
 	 * The default currency symbol
 	 */
-	public static final String DEFAULT_CURRENCY_SYMBOL    = (new DecimalFormatSymbols(DEFAULT_LOCALE)).getCurrencySymbol();
-	
+	public static final String DEFAULT_CURRENCY_SYMBOL = (new DecimalFormatSymbols(DEFAULT_LOCALE)).getCurrencySymbol();
+
 	/**
 	 * The default number format
 	 */
-	public static final String DEFAULT_NUMBER_FORMAT      = ((DecimalFormat)(NumberFormat.getInstance())).toPattern();
-	
+	public static final String DEFAULT_NUMBER_FORMAT = ((DecimalFormat) (NumberFormat.getInstance())).toPattern();
+
 	/**
 	 * Default string representing Null String values (empty)
 	 */
@@ -229,28 +228,28 @@ public class Const
 	/**
 	 * Default string representing Null Date values (empty)
 	 */
-	public static final String NULL_DATE   = "";
+	public static final String NULL_DATE = "";
 
-    /**
-     * Default string representing Null BigNumber values (empty)
-     */
-    public static final String NULL_BIGNUMBER   = "";
+	/**
+	 * Default string representing Null BigNumber values (empty)
+	 */
+	public static final String NULL_BIGNUMBER = "";
 
 	/**
 	 * Default string representing Null Boolean values (empty)
 	 */
-	public static final String NULL_BOOLEAN= "";
+	public static final String NULL_BOOLEAN = "";
 
 	/**
 	 * Default string representing Null Integer values (empty)
 	 */
-	public static final String NULL_INTEGER= "";
+	public static final String NULL_INTEGER = "";
 
 	/**
 	 * Default string representing Null Undefined values (empty)
 	 */
-	public static final String NULL_NONE   = "";
-	
+	public static final String NULL_NONE = "";
+
 	/**
 	 * Default font name for the fixed width font
 	 */
@@ -259,100 +258,97 @@ public class Const
 	/**
 	 * Default font size for the fixed width font
 	 */
-	public static final int    FONT_FIXED_SIZE = 9;
+	public static final int FONT_FIXED_SIZE = 9;
 
 	/**
 	 * Default font type for the fixed width font
 	 */
-	public static final int    FONT_FIXED_TYPE = SWT.NORMAL;
-	
+	public static final int FONT_FIXED_TYPE = SWT.NORMAL;
+
 	/**
 	 * Default icon size
 	 */
-	public static final int    ICON_SIZE  = 32;
+	public static final int ICON_SIZE = 32;
 
 	/**
 	 * Default line width for arrows & around icons
 	 */
-	public static final int    LINE_WIDTH =  1;
-	
+	public static final int LINE_WIDTH = 1;
+
 	/**
 	 * Default grid size to which the graphical views snap.
 	 */
-	public static final int    GRID_SIZE = 20;
-	
+	public static final int GRID_SIZE = 20;
+
 	/**
 	 * The minimal size of a note on a graphical view (width & height)
 	 */
-	public static final int    NOTE_MIN_SIZE = 20;
-	
+	public static final int NOTE_MIN_SIZE = 20;
+
 	/**
 	 * The margin between the text of a note and its border.
 	 */
-	public static final int    NOTE_MARGIN   =  5;
+	public static final int NOTE_MARGIN = 5;
 
 	/**
 	 * The default red-component of the background color
 	 */
-	public static final int    COLOR_BACKGROUND_RED   = 255;
+	public static final int COLOR_BACKGROUND_RED = 255;
 
 	/**
 	 * The default green-component of the background color
 	 */
-	public static final int    COLOR_BACKGROUND_GREEN = 255;
+	public static final int COLOR_BACKGROUND_GREEN = 255;
 
 	/**
 	 * The default blue-component of the background color
 	 */
-	public static final int    COLOR_BACKGROUND_BLUE  = 255;
-
+	public static final int COLOR_BACKGROUND_BLUE = 255;
 
 	/**
 	 * The default red-component of the graph background color
 	 */
-	public static final int    COLOR_GRAPH_RED   = 255;
+	public static final int COLOR_GRAPH_RED = 255;
 
 	/**
 	 * The default green-component of the graph background color
 	 */
-	public static final int    COLOR_GRAPH_GREEN = 255;
+	public static final int COLOR_GRAPH_GREEN = 255;
 
 	/**
 	 * The default blue-component of the graph background color
 	 */
-	public static final int    COLOR_GRAPH_BLUE  = 255;
-	
+	public static final int COLOR_GRAPH_BLUE = 255;
 
 	/**
 	 * The default red-component of the tab selected color
 	 */
-	public static final int    COLOR_TAB_RED   = 200;
+	public static final int COLOR_TAB_RED = 200;
 
 	/**
 	 * The default green-component of the tab selected color
 	 */
-	public static final int    COLOR_TAB_GREEN = 200;
+	public static final int COLOR_TAB_GREEN = 200;
 
 	/**
 	 * The default blue-component of the tab selected color
 	 */
-	public static final int    COLOR_TAB_BLUE  = 255;
+	public static final int COLOR_TAB_BLUE = 255;
 
 	/**
 	 * The default undo level for Kettle
-	 */	
-	public static final int    MAX_UNDO = 100;
+	 */
+	public static final int MAX_UNDO = 100;
 
 	/**
 	 * Path to the users home directory
 	 */
 	public static final String USER_HOME_DIRECTORY = System.getProperty("user.home");
-	
+
 	/**
 	 * The base name of the Chef logfile
 	 */
-	public static final String CHEF_LOG_FILE  = "chef";
-	
+	public static final String CHEF_LOG_FILE = "chef";
 
 	/**
 	 * The base name of the Spoon logfile
@@ -364,136 +360,99 @@ public class Const
 	 */
 	public static final String MENU_LOG_FILE = "menu";
 
-
 	/**
 	 * A number of tips that are shown when the application first starts.
 	 */
-	public static final String tips[] = 
-		{
-            "You can create a new step, simply by dragging the step onto the graph view."+Const.CR+
-            "You can find steps and plugins to use in the tree on the left side of the screen under 'Base step types'",
-			
-            "You can define a new hop between 2 steps by using the middle or scrollwheel button."+Const.CR+
-            "Middle-click on the first step and drag onto the second."+Const.CR+
-            "You can also: "+Const.CR+
-            " - use SHIFT+Click and drag from one step to another"+Const.CR+
-            " - Select 2 steps and right click on one of them, then select 'new hop'"+Const.CR+
-            " - Drag 'Hops' onto the canvas",
-            
-			"Inserting a step between 2 steps that are already connected with a hop:"+Const.CR+
-            "simply move the step over the arrow until the arrow becomes drawn in bold."+Const.CR+
-            "Release the mouse-button and you'll be asked if you want to insert the step.",
-            
+	public static final String tips[] = {
+			"You can create a new step, simply by dragging the step onto the graph view." + Const.CR
+					+ "You can find steps and plugins to use in the tree on the left side of the screen under 'Base step types'",
+
+			"You can define a new hop between 2 steps by using the middle or scrollwheel button." + Const.CR
+					+ "Middle-click on the first step and drag onto the second." + Const.CR + "You can also: " + Const.CR
+					+ " - use SHIFT+Click and drag from one step to another" + Const.CR
+					+ " - Select 2 steps and right click on one of them, then select 'new hop'" + Const.CR + " - Drag 'Hops' onto the canvas",
+
+			"Inserting a step between 2 steps that are already connected with a hop:" + Const.CR
+					+ "simply move the step over the arrow until the arrow becomes drawn in bold." + Const.CR
+					+ "Release the mouse-button and you'll be asked if you want to insert the step.",
+
 			"Edit the step description by double clicking on a step using the middle-button",
-            
+
 			"Explore a database by clicking right on a connection and selecting 'explore database'",
-            
-            "Preview the rows that are passing throuqh a step (output) by selecting the step and by pressing F10 (preview)",
-            
-            "Check the settings of steps by first selecting one or more of them."+Const.CR+
-            "Then by using the right-click option 'Check selected steps'",
-            
-            "Click right on the first column in any dialog table (grid) for a list of all the options."
-		}
-		;
+
+			"Preview the rows that are passing throuqh a step (output) by selecting the step and by pressing F10 (preview)",
+
+			"Check the settings of steps by first selecting one or more of them." + Const.CR
+					+ "Then by using the right-click option 'Check selected steps'",
+
+			"Click right on the first column in any dialog table (grid) for a list of all the options." };
 
 	/**
 	 * An array of date conversion formats
 	 */
-	public static final String dateFormats[] = new String[] 
-		{
-			"yyyy/MM/dd HH:mm:ss.SSS", 
-			"yyyy/MM/dd HH:mm:ss",
-			"yyyyMMddHHmmss",
-			"dd/MM/yyyy",
-			"dd-MM-yyyy",
-			"yyyy/MM/dd",
-			"yyyy-MM-dd",
-			"yyyyMMdd",
-			"ddMMyyyy",
-			"d-M-yyyy",
-			"d/M/yyyy",
-			"d-M-yy",
-			"d/M/yy",
-		}
-		;
+	public static final String dateFormats[] = new String[] { "yyyy/MM/dd HH:mm:ss.SSS", "yyyy/MM/dd HH:mm:ss", "yyyyMMddHHmmss", "dd/MM/yyyy",
+			"dd-MM-yyyy", "yyyy/MM/dd", "yyyy-MM-dd", "yyyyMMdd", "ddMMyyyy", "d-M-yyyy", "d/M/yyyy", "d-M-yy", "d/M/yy", };
 
 	/**
 	 * An array of number conversion formats
 	 */
-	public static final String numberFormats[] = new String[] 
+	public static final String numberFormats[] = new String[] { DEFAULT_NUMBER_FORMAT, "0.00", "0000000000000", "#.#", "#", "###,###,###.#######",
+			"###############.###############", "#####.###############%", };
+
+	/**
+	 * Default we store our information in Unicode UTF-8 character set.
+	 */
+	public static final String XML_ENCODING = "UTF-8";
+
+	/** The extention of a Kettle transformation XML file */
+	public static final String STRING_TRANS_DEFAULT_EXT = ".ktr";
+
+	/** The possible extentions a transformation XML file can have. */
+	public static final String STRING_TRANS_FILTER_EXT[] = new String[] { "*.ktr;*.xml", "*.xml", "*.*" };
+
+	/** The discriptions of the possible extentions a transformation XML file can have. */
+	public static final String STRING_TRANS_FILTER_NAMES[] = new String[] { "Kettle Transformations", "XML Files", "All files" };
+
+	/** The extention of a Kettle job XML file */
+	public static final String STRING_JOB_DEFAULT_EXT = ".kjb";
+
+	/** The possible extentions a job XML file can have. */
+	public static final String STRING_JOB_FILTER_EXT[] = new String[] { "*.kjb;*.xml", "*.xml", "*.*" };
+
+	/** The discriptions of the possible extentions a job XML file can have. */
+	public static final String STRING_JOB_FILTER_NAMES[] = new String[] { "Kettle Jobs", "XML Files", "All files" };
+
+	/** rounds double f to any number of places after decimal point
+	 *  Does arithmetic using BigDecimal class to avoid integer overflow while rounding
+	 *  TODO: make the rounding itself optional in the Props for performance reasons.
+	 *  
+	 * @param f The value to round
+	 * @param places The number of decimal places
+	 * @return The rounded floating point value
+	 */
+
+	public static final double round(double f, int places)
 	{
-		DEFAULT_NUMBER_FORMAT,
-		"0.00",
-		"0000000000000",
-		"#.#",
-		"#",
-		"###,###,###.#######", 
-		"###############.###############",
-		"#####.###############%",
+		java.math.BigDecimal bdtemp = new java.math.BigDecimal(f);
+		bdtemp = bdtemp.setScale(places, java.math.BigDecimal.ROUND_HALF_EVEN);
+		return bdtemp.doubleValue();
 	}
-	;
 
-    /**
-     * Default we store our information in Unicode UTF-8 character set.
-     */
-    public static final String XML_ENCODING = "UTF-8";
+	/* OLD code: caused a lot of problems with very small and very large numbers.
+	 * It's a miracle it worked at all.
+	 * Go ahead, have a laugh...
+	 public static final float round(double f, int places)
+	 {
+	 float temp = (float) (f * (Math.pow(10, places)));
 
-    /** The extention of a Kettle transformation XML file */
-    public static final String STRING_TRANS_DEFAULT_EXT    = ".ktr";
-    
-    /** The possible extentions a transformation XML file can have. */
-    public static final String STRING_TRANS_FILTER_EXT[]   = new String[] { "*.ktr;*.xml", "*.xml", "*.*" };
+	 temp = (Math.round(temp));
 
-    /** The discriptions of the possible extentions a transformation XML file can have. */
-    public static final String STRING_TRANS_FILTER_NAMES[] = new String[] { "Kettle Transformations", "XML Files", "All files" };
+	 temp = temp / (int) (Math.pow(10, places));
 
+	 return temp;
 
-    /** The extention of a Kettle job XML file */
-    public static final String STRING_JOB_DEFAULT_EXT    = ".kjb";
-    
-    /** The possible extentions a job XML file can have. */
-    public static final String STRING_JOB_FILTER_EXT[]   = new String[] { "*.kjb;*.xml", "*.xml", "*.*" };
-
-    /** The discriptions of the possible extentions a job XML file can have. */
-    public static final String STRING_JOB_FILTER_NAMES[] = new String[] { "Kettle Jobs", "XML Files", "All files" };
-
-
-
-
-
-
-    /** rounds double f to any number of places after decimal point
-     *  Does arithmetic using BigDecimal class to avoid integer overflow while rounding
-     *  TODO: make the rounding itself optional in the Props for performance reasons.
-     *  
-     * @param f The value to round
-     * @param places The number of decimal places
-     * @return The rounded floating point value
-     */
-    
-    public static final double round(double f, int places) 
-    { 
-        java.math.BigDecimal bdtemp = new java.math.BigDecimal(f); 
-        bdtemp = bdtemp.setScale(places, java.math.BigDecimal.ROUND_HALF_EVEN); 
-        return bdtemp.doubleValue(); 
-    } 
-    
-    /* OLD code: caused a lot of problems with very small and very large numbers.
-     * It's a miracle it worked at all.
-     * Go ahead, have a laugh...
-    public static final float round(double f, int places)
-    {
-        float temp = (float) (f * (Math.pow(10, places)));
-
-        temp = (Math.round(temp));
-
-        temp = temp / (int) (Math.pow(10, places));
-
-        return temp;
-
-    }
-    */
+	 }
+	 */
 
 	/**
 	 * Convert a String into an integer.  If the conversion fails, assign a default value.
@@ -504,7 +463,14 @@ public class Const
 	public static final int toInt(String str, int def)
 	{
 		int retval;
-		try { retval = Integer.parseInt(str); } catch(Exception e) { retval=def; };
+		try
+		{
+			retval = Integer.parseInt(str);
+		} catch (Exception e)
+		{
+			retval = def;
+		}
+		;
 		return retval;
 	}
 
@@ -517,7 +483,14 @@ public class Const
 	public static final long toLong(String str, long def)
 	{
 		long retval;
-		try { retval = Long.parseLong(str); } catch(Exception e) { retval=def; };
+		try
+		{
+			retval = Long.parseLong(str);
+		} catch (Exception e)
+		{
+			retval = def;
+		}
+		;
 		return retval;
 	}
 
@@ -530,10 +503,17 @@ public class Const
 	public static final double toDouble(String str, double def)
 	{
 		double retval;
-		try { retval = Double.parseDouble(str); } catch(Exception e) { retval=def; };
+		try
+		{
+			retval = Double.parseDouble(str);
+		} catch (Exception e)
+		{
+			retval = def;
+		}
+		;
 		return retval;
 	}
-	
+
 	/**
 	 * Convert a String into a date.  
 	 * The date format is <code>yyyy/MM/dd HH:mm:ss.SSS</code>.  
@@ -548,8 +528,7 @@ public class Const
 		try
 		{
 			return df.parse(str);
-		}
-		catch(ParseException e)
+		} catch (ParseException e)
 		{
 			return def;
 		}
@@ -562,12 +541,13 @@ public class Const
 	 */
 	public static final String rtrim(String str)
 	{
-		int max=str.length();
-		while(max>0 && isSpace(str.charAt(max-1))) max--;
-		
-		return str.substring(0,max);
+		int max = str.length();
+		while (max > 0 && isSpace(str.charAt(max - 1)))
+			max--;
+
+		return str.substring(0, max);
 	}
-	
+
 	/**
 	 * Determines whether or not a character is considered a space.
 	 * A character is considered a space in Kettle if it is a space, a tab, a newline or a cariage return.
@@ -576,7 +556,7 @@ public class Const
 	 */
 	public static final boolean isSpace(char c)
 	{
-		return c==' ' || c=='\t' || c=='\r' || c=='\n';
+		return c == ' ' || c == '\t' || c == '\r' || c == '\n';
 	}
 
 	/**
@@ -586,9 +566,10 @@ public class Const
 	 */
 	public static final String ltrim(String str)
 	{
-		int from=0;
-		while(from<str.length() && isSpace(str.charAt(from)) ) from++;
-		
+		int from = 0;
+		while (from < str.length() && isSpace(str.charAt(from)))
+			from++;
+
 		return str.substring(from);
 	}
 
@@ -599,17 +580,20 @@ public class Const
 	 */
 	public static final String trim(String str)
 	{
-		int max=str.length()-1;
-		int min=0;
+		int max = str.length() - 1;
+		int min = 0;
 
-		while (min<=max && isSpace(str.charAt(min))) min++;
-		while(max>=0 && isSpace(str.charAt(max))) max--;
-		
-		if (max<min) return "";
-		
-		return str.substring(min,max+1);
+		while (min <= max && isSpace(str.charAt(min)))
+			min++;
+		while (max >= 0 && isSpace(str.charAt(max)))
+			max--;
+
+		if (max < min)
+			return "";
+
+		return str.substring(min, max + 1);
 	}
-	
+
 	/**
 	 * Right pad a string: adds spaces to a string until a certain length.
 	 * If the length is smaller then the limit specified, the String is truncated.
@@ -619,10 +603,12 @@ public class Const
 	 */
 	public static final String rightPad(String ret, int limit)
 	{
-		if (ret==null) return rightPad(new StringBuffer(), limit);
-		else           return rightPad(new StringBuffer(ret), limit);
+		if (ret == null)
+			return rightPad(new StringBuffer(), limit);
+		else
+			return rightPad(new StringBuffer(ret), limit);
 	}
-	
+
 	/**
 	 * Right pad a StringBuffer: adds spaces to a string until a certain length.
 	 * If the length is smaller then the limit specified, the String is truncated.
@@ -632,20 +618,20 @@ public class Const
 	 */
 	public static final String rightPad(StringBuffer ret, int limit)
 	{
-		int len=ret.length();
+		int len = ret.length();
 		int l;
-		
-		if (len>limit)
+
+		if (len > limit)
 		{
-		  ret.setLength(limit);
-		}
-		else
+			ret.setLength(limit);
+		} else
 		{
-		  for (l=len;l<limit;l++) ret.append(' ');
+			for (l = len; l < limit; l++)
+				ret.append(' ');
 		}
 		return ret.toString();
 	}
-	
+
 	/**
 	 * Replace values in a String with another.
 	 * @param string The original String.
@@ -655,12 +641,12 @@ public class Const
 	 */
 	public static final String replace(String string, String repl, String with)
 	{
-		StringBuffer str=new StringBuffer(string);
-		for (int i=str.length()-1;i>=0;i--)
+		StringBuffer str = new StringBuffer(string);
+		for (int i = str.length() - 1; i >= 0; i--)
 		{
 			if (str.substring(i).startsWith(repl))
 			{
-				str.delete(i, i+repl.length());
+				str.delete(i, i + repl.length());
 				str.insert(i, with);
 			}
 		}
@@ -677,15 +663,15 @@ public class Const
 	public static void repl(StringBuffer str, String code, String repl)
 	{
 		int clength = code.length();
-		
-		int i=str.length()-clength;
-	
-		while (i>=0)
+
+		int i = str.length() - clength;
+
+		while (i >= 0)
 		{
-			String look=str.substring(i, i+clength);
+			String look = str.substring(i, i + clength);
 			if (look.equalsIgnoreCase(code)) // Look for a match!
 			{
-				str.replace(i, i+clength, repl);
+				str.replace(i, i + clength, repl);
 			}
 			i--;
 		}
@@ -697,10 +683,10 @@ public class Const
 	 * @return The number of leading spaces found.
 	 */
 	public static final int nrSpacesBefore(String field)
-	{	
+	{
 		int nr = 0;
 		int len = field.length();
-		while (nr<len && field.charAt(nr)==' ')
+		while (nr < len && field.charAt(nr) == ' ')
 		{
 			nr++;
 		}
@@ -713,16 +699,16 @@ public class Const
 	 * @return The number of trailing spaces found.
 	 */
 	public static final int nrSpacesAfter(String field)
-	{	
+	{
 		int nr = 0;
 		int len = field.length();
-		while (nr<len && field.charAt(field.length()-1-nr)==' ')
+		while (nr < len && field.charAt(field.length() - 1 - nr) == ' ')
 		{
 			nr++;
 		}
 		return nr;
 	}
-	
+
 	/**
 	 * Checks whether or not a String consists only of spaces.
 	 * @param str The string to check
@@ -730,11 +716,12 @@ public class Const
 	 */
 	public static final boolean onlySpaces(String str)
 	{
-		for (int i=0;i<str.length();i++) if (!isSpace(str.charAt(i))) return false;
+		for (int i = 0; i < str.length(); i++)
+			if (!isSpace(str.charAt(i)))
+				return false;
 		return true;
 	}
 
-	
 	/**
 	 * determine the OS name
 	 * @return The name of the OS
@@ -744,32 +731,32 @@ public class Const
 		return System.getProperty("os.name");
 	}
 
-    /** 
-     * @return True if the OS is a Windows diravate. 
-     */
-    public static final boolean isWindows()
-    {
-        return getOS().startsWith("Windows");
-    }
+	/** 
+	 * @return True if the OS is a Windows diravate. 
+	 */
+	public static final boolean isWindows()
+	{
+		return getOS().startsWith("Windows");
+	}
 
 	/**
 	 * Determine the hostname of the machine Kettle is running on
 	 * @return The hostname
 	 */
 	public static final String getHostname()
-	{	
+	{
 		try
 		{
 			Enumeration en = NetworkInterface.getNetworkInterfaces();
 			while (en.hasMoreElements())
 			{
-				NetworkInterface nwi = (NetworkInterface)en.nextElement();
+				NetworkInterface nwi = (NetworkInterface) en.nextElement();
 				//System.out.println("nwi : "+nwi.getName()+" ("+nwi.toString()+")");
 				Enumeration ip = nwi.getInetAddresses();
-				
+
 				while (ip.hasMoreElements())
 				{
-					InetAddress in = (InetAddress)ip.nextElement();
+					InetAddress in = (InetAddress) ip.nextElement();
 					//System.out.println("  ip address bound : "+in.getHostAddress());
 					//System.out.println("  hostname         : "+in.getHostName());
 					//System.out.println("  Cann.hostname    : "+in.getCanonicalHostName());
@@ -780,12 +767,11 @@ public class Const
 					}
 				}
 			}
-		}
-		catch(SocketException e)
+		} catch (SocketException e)
 		{
-				
+
 		}
-		
+
 		return "localhost";
 	}
 
@@ -800,26 +786,25 @@ public class Const
 			Enumeration enumInterfaces = NetworkInterface.getNetworkInterfaces();
 			while (enumInterfaces.hasMoreElements())
 			{
-				NetworkInterface nwi = (NetworkInterface)enumInterfaces.nextElement();
+				NetworkInterface nwi = (NetworkInterface) enumInterfaces.nextElement();
 				Enumeration ip = nwi.getInetAddresses();
 				while (ip.hasMoreElements())
 				{
-					InetAddress in = (InetAddress)ip.nextElement();
-					if (!in.isLoopbackAddress() && in.toString().indexOf(":")<0)
+					InetAddress in = (InetAddress) ip.nextElement();
+					if (!in.isLoopbackAddress() && in.toString().indexOf(":") < 0)
 					{
 						return in.getHostAddress();
 					}
 				}
 			}
-		}
-		catch(SocketException e)
+		} catch (SocketException e)
 		{
-				
+
 		}
-		
+
 		return "127.0.0.1";
 	}
-	
+
 	/**
 	 * Tries to determine the MAC address of the machine Kettle is running on.
 	 * @return The MAC address.
@@ -830,48 +815,40 @@ public class Const
 		String mac = "none";
 		String os = getOS();
 		String s = "";
-		
+
 		//System.out.println("os = "+os+", ip="+ip);
-		
-		if (os.equalsIgnoreCase("Windows NT") ||
-		    os.equalsIgnoreCase("Windows 2000") ||
-		    os.equalsIgnoreCase("Windows XP") ||
-		    os.equalsIgnoreCase("Windows 95") ||
-		    os.equalsIgnoreCase("Windows 98") ||
-		    os.equalsIgnoreCase("Windows Me") ||
-		    os.startsWith("Windows")
-		   )
+
+		if (os.equalsIgnoreCase("Windows NT") || os.equalsIgnoreCase("Windows 2000") || os.equalsIgnoreCase("Windows XP")
+				|| os.equalsIgnoreCase("Windows 95") || os.equalsIgnoreCase("Windows 98") || os.equalsIgnoreCase("Windows Me")
+				|| os.startsWith("Windows"))
 		{
 			try
 			{
-                // System.out.println("EXEC> nbtstat -a "+ip);
-                
-				Process p = Runtime.getRuntime().exec("nbtstat -a "+ip);
+				// System.out.println("EXEC> nbtstat -a "+ip);
+
+				Process p = Runtime.getRuntime().exec("nbtstat -a " + ip);
 
 				// read the standard output of the command
 				BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			
+
 				while (!procDone(p))
 				{
-					while((s=stdInput.readLine()) !=null)
+					while ((s = stdInput.readLine()) != null)
 					{
-                       // System.out.println("NBTSTAT> "+s);
-					   if (s.indexOf("MAC")>=0)
-					   {
+						// System.out.println("NBTSTAT> "+s);
+						if (s.indexOf("MAC") >= 0)
+						{
 							int idx = s.indexOf("=");
-							mac = s.substring(idx+2);
-					   }
+							mac = s.substring(idx + 2);
+						}
 					}
 				}
 				stdInput.close();
-			}
-			catch(Exception e)
+			} catch (Exception e)
 			{
-				
+
 			}
-		}
-		else
-		if (os.equalsIgnoreCase("Linux"))
+		} else if (os.equalsIgnoreCase("Linux"))
 		{
 			try
 			{
@@ -879,55 +856,49 @@ public class Const
 
 				// read the standard output of the command
 				BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			
+
 				while (!procDone(p))
 				{
-					while((s=stdInput.readLine()) !=null)
+					while ((s = stdInput.readLine()) != null)
 					{
-					   int idx = s.indexOf("HWaddr");
-					   if (idx>=0)
-					   {
-							mac = s.substring(idx+7);
-					   }
+						int idx = s.indexOf("HWaddr");
+						if (idx >= 0)
+						{
+							mac = s.substring(idx + 7);
+						}
 					}
 				}
 				stdInput.close();
-			}
-			catch(Exception e)
+			} catch (Exception e)
 			{
-				
-			}	
-		}
-		else
-		if (os.equalsIgnoreCase("Solaris"))
-		{	
+
+			}
+		} else if (os.equalsIgnoreCase("Solaris"))
+		{
 			try
 			{
 				Process p = Runtime.getRuntime().exec("/usr/sbin/ifconfig -a");
 
 				// read the standard output of the command
 				BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			
+
 				while (!procDone(p))
 				{
-					while((s=stdInput.readLine()) !=null)
+					while ((s = stdInput.readLine()) != null)
 					{
-					   int idx = s.indexOf("ether");
-					   if (idx>=0)
-					   {
-							mac = s.substring(idx+6);
-					   }
+						int idx = s.indexOf("ether");
+						if (idx >= 0)
+						{
+							mac = s.substring(idx + 6);
+						}
 					}
 				}
 				stdInput.close();
-			}
-			catch(Exception e)
+			} catch (Exception e)
 			{
-				
+
 			}
-		}
-		else
-		if (os.equalsIgnoreCase("HP-UX"))
+		} else if (os.equalsIgnoreCase("HP-UX"))
 		{
 			try
 			{
@@ -935,42 +906,40 @@ public class Const
 
 				// read the standard output of the command
 				BufferedReader stdInput = new BufferedReader(new InputStreamReader(p.getInputStream()));
-			
+
 				while (!procDone(p))
 				{
-					while((s=stdInput.readLine()) !=null)
+					while ((s = stdInput.readLine()) != null)
 					{
-					   if (s.indexOf("MAC")>=0)
-					   {
+						if (s.indexOf("MAC") >= 0)
+						{
 							int idx = s.indexOf("0x");
-							mac = s.substring(idx+2);
-					   }
+							mac = s.substring(idx + 2);
+						}
 					}
 				}
 				stdInput.close();
-			}
-			catch(Exception e)
+			} catch (Exception e)
 			{
-				
+
 			}
 		}
-		
+
 		return Const.trim(mac);
 	}
 
 	private static final boolean procDone(Process p)
 	{
-		try 
+		try
 		{
 			p.exitValue();
 			return true;
-		}
-		catch(IllegalThreadStateException e) 
+		} catch (IllegalThreadStateException e)
 		{
 			return false;
 		}
 	}
-	
+
 	/**
 	 * Determine the level of where the TreeItem is position in a tree.
 	 * @param ti The TreeItem
@@ -980,12 +949,12 @@ public class Const
 	{
 		int level = 0;
 		TreeItem parent = ti.getParentItem();
-		while (parent!=null)
+		while (parent != null)
 		{
 			level++;
 			parent = parent.getParentItem();
 		}
-		
+
 		return level;
 	}
 
@@ -999,19 +968,19 @@ public class Const
 		int nrlevels = getTreeLevel(ti) + 1;
 		String retval[] = new String[nrlevels];
 		int level = 0;
-		
-		retval[nrlevels-1] = ti.getText();
+
+		retval[nrlevels - 1] = ti.getText();
 		TreeItem parent = ti.getParentItem();
-		while (parent!=null)
+		while (parent != null)
 		{
 			level++;
-			retval[nrlevels-level-1]=parent.getText();
+			retval[nrlevels - level - 1] = parent.getText();
 			parent = parent.getParentItem();
 		}
-		
+
 		return retval;
 	}
-	
+
 	/**
 	 * Return the tree path seperated by Const.FILE_SEPARATOR, starting from a certain depth in the tree.
 	 *
@@ -1022,16 +991,17 @@ public class Const
 	public static final String getTreePath(TreeItem ti, int from)
 	{
 		String path[] = getTreeStrings(ti);
-		
-		if (path==null) return null;
-		
-		String retval="";
-		
-		for (int i=from;i<path.length;i++) 
+
+		if (path == null)
+			return null;
+
+		String retval = "";
+
+		for (int i = from; i < path.length; i++)
 		{
 			if (!path[i].equalsIgnoreCase(Const.FILE_SEPARATOR))
 			{
-				retval+=Const.FILE_SEPARATOR+path[i];
+				retval += Const.FILE_SEPARATOR + path[i];
 			}
 		}
 
@@ -1046,7 +1016,7 @@ public class Const
 	{
 		ti.setExpanded(!ti.getExpanded());
 	}
-	
+
 	/**
 	 * Finds a TreeItem with a certain label (name) in a (part of a) tree.
 	 * @param parent The TreeItem where we start looking.
@@ -1055,17 +1025,18 @@ public class Const
 	 */
 	public static final TreeItem findTreeItem(TreeItem parent, String name)
 	{
-		if (parent.getText().equalsIgnoreCase(name)) return parent;
+		if (parent.getText().equalsIgnoreCase(name))
+			return parent;
 
 		TreeItem ti[] = parent.getItems();
-		for (int i=0;i<ti.length;i++)
+		for (int i = 0; i < ti.length; i++)
 		{
 			TreeItem child = findTreeItem(ti[i], name);
-			if (child!=null) return child;
+			if (child != null)
+				return child;
 		}
 		return null;
 	}
-
 
 	/**
 	 * Determines the Kettle directory in the user's home directory.
@@ -1073,9 +1044,9 @@ public class Const
 	 */
 	public static final String getKettleDirectory()
 	{
-		return System.getProperty("user.home")+FILE_SEPARATOR+".kettle";
+		return System.getProperty("user.home") + FILE_SEPARATOR + ".kettle";
 	}
-	
+
 	/**
 	 * Returns the path to the Kettle local (current directory) repositories XML file.
 	 * @return The local repositories file.
@@ -1085,16 +1056,14 @@ public class Const
 		return "repositories.xml";
 	}
 
-	
 	/**
 	 * Returns the full path to the Kettle repositories XML file.
 	 * @return The Kettle repositories file.
 	 */
 	public static final String getKettleUserRepositoriesFile()
 	{
-		return getKettleDirectory()+FILE_SEPARATOR+getKettleLocalRepositoriesFile();
+		return getKettleDirectory() + FILE_SEPARATOR + getKettleLocalRepositoriesFile();
 	}
-
 
 	/**
 	 * Find a database with a certain name in an arraylist of databases.
@@ -1104,12 +1073,14 @@ public class Const
 	 */
 	public static final DatabaseMeta findDatabase(ArrayList databases, String dbname)
 	{
-		if (databases==null) return null;
-		
-		for (int i=0;i<databases.size();i++)
+		if (databases == null)
+			return null;
+
+		for (int i = 0; i < databases.size(); i++)
 		{
-			DatabaseMeta ci = (DatabaseMeta)databases.get(i);
-			if (ci.getName().equalsIgnoreCase(dbname)) return ci;
+			DatabaseMeta ci = (DatabaseMeta) databases.get(i);
+			if (ci.getName().equalsIgnoreCase(dbname))
+				return ci;
 		}
 		return null;
 	}
@@ -1122,38 +1093,39 @@ public class Const
 	 */
 	public static final DatabaseMeta findDatabase(ArrayList databases, long id)
 	{
-		if (databases==null) return null;
-		
-		for (int i=0;i<databases.size();i++)
+		if (databases == null)
+			return null;
+
+		for (int i = 0; i < databases.size(); i++)
 		{
-			DatabaseMeta ci = (DatabaseMeta)databases.get(i);
-			if (ci.getID() == id) return ci;
+			DatabaseMeta ci = (DatabaseMeta) databases.get(i);
+			if (ci.getID() == id)
+				return ci;
 		}
 		return null;
 	}
-    
-    
-    /**
-     * Select the SAP R/3 databases in the List of databases.
-     * @param databases All the databases
-     * @return SAP R/3 databases in a List of databases.
-     */
+
+	/**
+	 * Select the SAP R/3 databases in the List of databases.
+	 * @param databases All the databases
+	 * @return SAP R/3 databases in a List of databases.
+	 */
 	public static final ArrayList selectSAPR3Databases(ArrayList databases)
-    {
-        ArrayList sap = new ArrayList();
-        
-        Iterator it = databases.iterator();
-        while (it.hasNext())
-        {
-            DatabaseMeta db = (DatabaseMeta) it.next();
-            if (db.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_SAPR3)
-            {
-                sap.add(db);
-            }
-        }
-        
-        return sap;
-    }
+	{
+		ArrayList sap = new ArrayList();
+
+		Iterator it = databases.iterator();
+		while (it.hasNext())
+		{
+			DatabaseMeta db = (DatabaseMeta) it.next();
+			if (db.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_SAPR3)
+			{
+				sap.add(db);
+			}
+		}
+
+		return sap;
+	}
 
 	/**
 	 * Find a jobentry with a certain ID in an arraylist of job entries.
@@ -1163,12 +1135,14 @@ public class Const
 	 */
 	public static final JobEntryInterface findJobEntry(ArrayList jobentries, long id_jobentry)
 	{
-		if (jobentries==null) return null;
-		
-		for (int i=0;i<jobentries.size();i++)
+		if (jobentries == null)
+			return null;
+
+		for (int i = 0; i < jobentries.size(); i++)
 		{
-			JobEntryInterface je = (JobEntryInterface)jobentries.get(i);
-			if (je.getID() == id_jobentry) return je;
+			JobEntryInterface je = (JobEntryInterface) jobentries.get(i);
+			if (je.getID() == id_jobentry)
+				return je;
 		}
 		return null;
 	}
@@ -1181,12 +1155,14 @@ public class Const
 	 */
 	public static final JobEntryCopy findJobEntryCopy(ArrayList jobcopies, long id_jobentry_copy)
 	{
-		if (jobcopies==null) return null;
-		
-		for (int i=0;i<jobcopies.size();i++)
+		if (jobcopies == null)
+			return null;
+
+		for (int i = 0; i < jobcopies.size(); i++)
 		{
-			JobEntryCopy jec = (JobEntryCopy)jobcopies.get(i);
-			if (jec.getID() == id_jobentry_copy) return jec;
+			JobEntryCopy jec = (JobEntryCopy) jobcopies.get(i);
+			if (jec.getID() == id_jobentry_copy)
+				return jec;
 		}
 		return null;
 	}
@@ -1200,40 +1176,41 @@ public class Const
 	public static final String getCommandlineOption(ArrayList args, String option)
 	{
 		String optionStart[] = new String[] { "-", "/" };
-        String optionDelim[] = new String[] { "=", ":" };
-		
-        for (int s=0;s<optionStart.length;s++)
-        {
-            for (int d=0;d<optionDelim.length;d++)
-            {
-                String optstr = optionStart[s]+option+optionDelim[d];
-                String retval=searchCommandLineOption(args, optstr);
-                if (retval!=null) return retval;
-            }
-        }
-        return null;
+		String optionDelim[] = new String[] { "=", ":" };
+
+		for (int s = 0; s < optionStart.length; s++)
+		{
+			for (int d = 0; d < optionDelim.length; d++)
+			{
+				String optstr = optionStart[s] + option + optionDelim[d];
+				String retval = searchCommandLineOption(args, optstr);
+				if (retval != null)
+					return retval;
+			}
+		}
+		return null;
 	}
-    
-    private static final String searchCommandLineOption(ArrayList args, String prefix)
-    {
-        String retval=null;
-        
-        for (int i=args.size()-1;i>=0;i--)
-        {
-            String arg = (String)args.get(i);
-            if (arg!=null && arg.toUpperCase().startsWith(prefix.toUpperCase()) ) 
-            {
-                retval=arg.substring(prefix.length());
-                
-                // remove this options from the arguments list...
-                // This is why we go from back to front...
-                args.remove(i);
-                
-                // System.out.println("Option ["+prefix+"] found: ["+retval+"]");
-            }
-        }
-        return retval;
-    }
+
+	private static final String searchCommandLineOption(ArrayList args, String prefix)
+	{
+		String retval = null;
+
+		for (int i = args.size() - 1; i >= 0; i--)
+		{
+			String arg = (String) args.get(i);
+			if (arg != null && arg.toUpperCase().startsWith(prefix.toUpperCase()))
+			{
+				retval = arg.substring(prefix.length());
+
+				// remove this options from the arguments list...
+				// This is why we go from back to front...
+				args.remove(i);
+
+				// System.out.println("Option ["+prefix+"] found: ["+retval+"]");
+			}
+		}
+		return retval;
+	}
 
 	/**
 	 * Retrieves the content of an environment variable
@@ -1262,49 +1239,50 @@ public class Const
 	 */
 	public static final String replEnv(String string)
 	{
-		if (string==null) return null;
+		if (string == null)
+			return null;
 		StringBuffer str = new StringBuffer(string);
-		
-		int idx=str.indexOf("%%");
-		while ( idx >= 0)
+
+		int idx = str.indexOf("%%");
+		while (idx >= 0)
 		{
 			//OK, so we found a marker, look for the next one...
-			int to = str.indexOf("%%", idx+2);
-			if (to>=0)
+			int to = str.indexOf("%%", idx + 2);
+			if (to >= 0)
 			{
 				// OK, we found the other marker also...
-				String marker = str.substring(idx, to+2);
-				String var    = str.substring(idx+2, to);
-				
-				if (var!=null && var.length()>0)
+				String marker = str.substring(idx, to + 2);
+				String var = str.substring(idx + 2, to);
+
+				if (var != null && var.length() > 0)
 				{
 					// Get the environment variable
 					String newval = getEnvironmentVariable(var, null);
-					
-					if (newval!=null)
+
+					if (newval != null)
 					{
 						// Replace the whole bunch
-						str.replace(idx, to+2, newval);
+						str.replace(idx, to + 2, newval);
 						//System.out.println("Replaced ["+marker+"] with ["+newval+"]");
 
 						// The last position has changed...
-						to+=newval.length()-marker.length();
+						to += newval.length() - marker.length();
 					}
 				}
-				
-			}
-			else // We found the start, but NOT the ending %% without closing %%
+
+			} else
+			// We found the start, but NOT the ending %% without closing %%
 			{
-				to=idx;
+				to = idx;
 			}
-			
+
 			// Look for the next variable to replace...
-			idx=str.indexOf("%%", to+1);
+			idx = str.indexOf("%%", to + 1);
 		}
-		
+
 		return str.toString();
 	}
-	
+
 	/**
 	 * Replaces environment variables in an array of strings.<p>
 	 * See also: replEnv(String string)
@@ -1315,13 +1293,13 @@ public class Const
 	public static final String[] replEnv(String string[])
 	{
 		String retval[] = new String[string.length];
-		for (int i=0;i<string.length;i++)
+		for (int i = 0; i < string.length; i++)
 		{
 			retval[i] = replEnv(string[i]);
 		}
 		return retval;
 	}
-	
+
 	/**
 	 * Implements Oracle style NVL function
 	 * @param source The source argument
@@ -1330,10 +1308,11 @@ public class Const
 	 */
 	public static final String NVL(String source, String def)
 	{
-		if (source==null || source.length()==0) return def;
+		if (source == null || source.length() == 0)
+			return def;
 		return source;
 	}
-	
+
 	/**
 	 * Search for a string in an array of strings and return the index.
 	 * @param lookup The string to search for
@@ -1342,16 +1321,19 @@ public class Const
 	 */
 	public static final int indexOfString(String lookup, String array[])
 	{
-		if (array==null) return -1;
-		if (lookup==null) return -1;
-		
-		for (int i=0;i<array.length;i++)
+		if (array == null)
+			return -1;
+		if (lookup == null)
+			return -1;
+
+		for (int i = 0; i < array.length; i++)
 		{
-			if (lookup.equalsIgnoreCase(array[i])) return i;
+			if (lookup.equalsIgnoreCase(array[i]))
+				return i;
 		}
 		return -1;
 	}
-	
+
 	/**
 	 * Search for a string in an ArrayList of strings and return the index.
 	 * @param lookup The string to search for
@@ -1360,12 +1342,14 @@ public class Const
 	 */
 	public static final int indexOfString(String lookup, ArrayList array)
 	{
-		if (array==null) return -1;
-		
-		for (int i=0;i<array.size();i++)
+		if (array == null)
+			return -1;
+
+		for (int i = 0; i < array.size(); i++)
 		{
-			String compare = (String)array.get(i);
-			if (lookup.equalsIgnoreCase(compare)) return i;
+			String compare = (String) array.get(i);
+			if (lookup.equalsIgnoreCase(compare))
+				return i;
 		}
 		return -1;
 	}
@@ -1377,15 +1361,15 @@ public class Const
 	 */
 	public static final String[] sortStrings(String input[])
 	{
-		for (int i=0;i<input.length;i++)
+		for (int i = 0; i < input.length; i++)
 		{
-			for (int j = 0; j < input.length-1; j++)
+			for (int j = 0; j < input.length - 1; j++)
 			{
-				if (input[j].compareTo(input[j+1])>0)
+				if (input[j].compareTo(input[j + 1]) > 0)
 				{
 					String dummy = input[j];
-					input[j] = input[j+1];
-					input[j+1] = dummy;
+					input[j] = input[j + 1];
+					input[j + 1] = dummy;
 				}
 			}
 		}
@@ -1395,7 +1379,7 @@ public class Const
 	/**
 	 * Convert strings separated by a string into an array of strings.<p>
 	 * <code>
-		 Example: a;b;c;d    ==  new String[] { a, b, c, d }
+	 Example: a;b;c;d    ==  new String[] { a, b, c, d }
 	 * </code>
 	 *  
 	 * @param string The string to split
@@ -1409,36 +1393,35 @@ public class Const
 		 *   Example a;b;c;d    -->    new String[] { a, b, c, d }
 		 */
 		// System.out.println("splitString ["+path+"] using ["+separator+"]");
+		ArrayList list = new ArrayList();
 
-	    ArrayList list = new ArrayList();
-	    
-		if (string==null || string.length()==0)
+		if (string == null || string.length() == 0)
 		{
-			return new String[] { };
+			return new String[] {};
 		}
-		
+
 		int sepLen = separator.length();
 		int from = 0;
-		
-		for (int i=from;i<string.length();i+=sepLen)
+
+		for (int i = from; i < string.length(); i += sepLen)
 		{
-			if (string.substring(i, i+sepLen).equalsIgnoreCase(separator))
+			if (string.substring(i, i + sepLen).equalsIgnoreCase(separator))
 			{
-			    // OK, we found a separator, the string to add to the list
-			    // is [from, i[
-			    list.add(NVL(string.substring(from, i), ""));
-				from=i+sepLen;
+				// OK, we found a separator, the string to add to the list
+				// is [from, i[
+				list.add(NVL(string.substring(from, i), ""));
+				from = i + sepLen;
 			}
 		}
-		
+
 		// Wait, if the string didn't end with a separator, we still have information at the end of the string...
 		// In our example that would be "d"...
-		if (from+sepLen<=string.length())
+		if (from + sepLen <= string.length())
 		{
-		    list.add(NVL(string.substring(from,string.length()), ""));
+			list.add(NVL(string.substring(from, string.length()), ""));
 		}
-				
-		return (String[])list.toArray(new String[list.size()]);
+
+		return (String[]) list.toArray(new String[list.size()]);
 	}
 
 	/**
@@ -1458,66 +1441,64 @@ public class Const
 		 *   Example /a/b/c    -->    new String[] { a, b, c }
 		 */
 		// System.out.println("splitString ["+path+"] using ["+separator+"]");
-
-		if (path==null || path.length()==0 || path.equals(separator))
+		if (path == null || path.length() == 0 || path.equals(separator))
 		{
-			return new String[] { };
+			return new String[] {};
 		}
 		int sepLen = separator.length();
 		int nr_separators = 0;
-		int from = path.startsWith(separator)?sepLen:0;
-		if (from!=0) nr_separators++;
-		
-		for (int i=from;i<path.length();i+=sepLen)
+		int from = path.startsWith(separator) ? sepLen : 0;
+		if (from != 0)
+			nr_separators++;
+
+		for (int i = from; i < path.length(); i += sepLen)
 		{
-			if (path.substring(i, i+sepLen).equalsIgnoreCase(separator))
+			if (path.substring(i, i + sepLen).equalsIgnoreCase(separator))
 			{
 				nr_separators++;
 			}
 		}
-		
+
 		String spath[] = new String[nr_separators];
-		int nr=0;
-		for (int i=from;i<path.length();i+=sepLen)
+		int nr = 0;
+		for (int i = from; i < path.length(); i += sepLen)
 		{
-			if (path.substring(i, i+sepLen).equalsIgnoreCase(separator))
+			if (path.substring(i, i + sepLen).equalsIgnoreCase(separator))
 			{
-				spath[nr]=path.substring(from, i);
+				spath[nr] = path.substring(from, i);
 				// System.out.println(nr+" --> ["+spath[nr]+"], (from,to)=("+from+", "+i+")");
 				nr++;
-				
-				from=i+sepLen;
+
+				from = i + sepLen;
 			}
 		}
-		if (nr<spath.length) 
+		if (nr < spath.length)
 		{
-			spath[nr]=path.substring(from);
+			spath[nr] = path.substring(from);
 			// System.out.println(nr+" --> ["+spath[nr]+"], (from,to)=("+from+", "+path.length()+")");
 		}
-		
+
 		// 
 		// a --> { a }
 		//
-		if (spath.length==0 && path.length()>0)
+		if (spath.length == 0 && path.length() > 0)
 		{
-		    spath=new String[] { path };
+			spath = new String[] { path };
 		}
-		
+
 		return spath;
 	}
-	
-	
+
 	/** 
 	 * Sort the entire ArrayList, if it is not empty
 	 */
 	public static final void quickSort(ArrayList elements)
 	{
-		if (! elements.isEmpty())
+		if (!elements.isEmpty())
 		{
-			quickSort(elements, 0, elements.size()-1);
+			quickSort(elements, 0, elements.size() - 1);
 		}
 	}
-
 
 	/**
 	 * QuickSort.java by Henk Jan Nootenboom, 9 Sep 2002
@@ -1544,8 +1525,8 @@ public class Const
 	 * without fee is hereby granted.
 	 * See http://www.sum-it.nl/security/index.html for copyright laws.
 	 */
-	  private static final void quickSort(ArrayList elements, int lowIndex, int highIndex)
-	  {
+	private static final void quickSort(ArrayList elements, int lowIndex, int highIndex)
+	{
 		int lowToHighIndex;
 		int highToLowIndex;
 		int pivotIndex;
@@ -1559,13 +1540,13 @@ public class Const
 
 		lowToHighIndex = lowIndex;
 		highToLowIndex = highIndex;
-		
+
 		/** Choose a pivot, remember it's value
 		 *  No special action for the pivot element itself.
 		 *  It will be treated just like any other element.
 		 */
 		pivotIndex = (lowToHighIndex + highToLowIndex) / 2;
-		pivotValue = (Comparable)elements.get(pivotIndex);
+		pivotValue = (Comparable) elements.get(pivotIndex);
 
 		/** Split the Vector in two parts.
 		 *
@@ -1581,98 +1562,97 @@ public class Const
 		// loop until low meets high
 		while ((newHighIndex + 1) < newLowIndex) // loop until partition complete
 		{ // loop from low to high to find a candidate for swapping
-		  lowToHighValue = (Comparable)elements.get(lowToHighIndex);
-		  while (lowToHighIndex < newLowIndex
-			& lowToHighValue.compareTo(pivotValue)<0 )
-		  { 
-			newHighIndex = lowToHighIndex; // add element to lower part
-			lowToHighIndex ++;
-			lowToHighValue = (Comparable)elements.get(lowToHighIndex);
-		  }
-
-		  // loop from high to low find other candidate for swapping
-		  highToLowValue = (Comparable)elements.get(highToLowIndex);
-		  while (newHighIndex <= highToLowIndex
-			& (highToLowValue.compareTo(pivotValue)>0)
-			)
-		  { 
-			newLowIndex = highToLowIndex; // add element to higher part
-			highToLowIndex --;
-			highToLowValue = (Comparable)elements.get(highToLowIndex);
-		  }
-
-		  // swap if needed
-		  if (lowToHighIndex == highToLowIndex) // one last element, may go in either part
-		  { 
-			newHighIndex = lowToHighIndex; // move element arbitrary to lower part
-		  }
-		  else if (lowToHighIndex < highToLowIndex) // not last element yet
-		  { 
-			compareResult = lowToHighValue.compareTo(highToLowValue);
-			if (compareResult >= 0) // low >= high, swap, even if equal
-			{ 
-			  parking = lowToHighValue;
-			  elements.set(lowToHighIndex, highToLowValue);
-			  elements.set(highToLowIndex, parking);
-
-			  newLowIndex = highToLowIndex;
-			  newHighIndex = lowToHighIndex;
-
-			  lowToHighIndex ++;
-			  highToLowIndex --;
+			lowToHighValue = (Comparable) elements.get(lowToHighIndex);
+			while (lowToHighIndex < newLowIndex & lowToHighValue.compareTo(pivotValue) < 0)
+			{
+				newHighIndex = lowToHighIndex; // add element to lower part
+				lowToHighIndex++;
+				lowToHighValue = (Comparable) elements.get(lowToHighIndex);
 			}
-		  }
+
+			// loop from high to low find other candidate for swapping
+			highToLowValue = (Comparable) elements.get(highToLowIndex);
+			while (newHighIndex <= highToLowIndex & (highToLowValue.compareTo(pivotValue) > 0))
+			{
+				newLowIndex = highToLowIndex; // add element to higher part
+				highToLowIndex--;
+				highToLowValue = (Comparable) elements.get(highToLowIndex);
+			}
+
+			// swap if needed
+			if (lowToHighIndex == highToLowIndex) // one last element, may go in either part
+			{
+				newHighIndex = lowToHighIndex; // move element arbitrary to lower part
+			} else if (lowToHighIndex < highToLowIndex) // not last element yet
+			{
+				compareResult = lowToHighValue.compareTo(highToLowValue);
+				if (compareResult >= 0) // low >= high, swap, even if equal
+				{
+					parking = lowToHighValue;
+					elements.set(lowToHighIndex, highToLowValue);
+					elements.set(highToLowIndex, parking);
+
+					newLowIndex = highToLowIndex;
+					newHighIndex = lowToHighIndex;
+
+					lowToHighIndex++;
+					highToLowIndex--;
+				}
+			}
 		}
 
 		// Continue recursion for parts that have more than one element
 		if (lowIndex < newHighIndex)
-		{ 
+		{
 			quickSort(elements, lowIndex, newHighIndex); // sort lower subpart
 		}
 		if (newLowIndex < highIndex)
-		{ 
+		{
 			quickSort(elements, newLowIndex, highIndex); // sort higher subpart
 		}
-	  }
+	}
 
-    /**
-     * @return An array of all default conversion formats, to be used in dialogs etc.
-     */
-    public static String[] getConversionFormats()
-    {
-        String dats[] = Const.dateFormats;
-        String nums[] = Const.numberFormats;
-        int totsize = dats.length + nums.length;
-        String formats[] = new String[totsize];
-        for (int x=0;x<dats.length;x++) formats[x] = dats[x];
-        for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
-        
-        return formats;
-    }
-    
-    /**
-     * Sorts the array of Strings, determines the uniquely occuring strings.  
-     * @param strings the array that you want to do a distinct on
-     * @return a sorted array of uniquely occuring strings
-     */
-    public static final String[] getDistinctStrings(String[] strings)
-    {
-        if (strings==null) return null;
-        if (strings.length==0) return new String[] {};
-        
-        String[] sorted = sortStrings(strings);
-        List result = new ArrayList();
-        String previous = "";
-        for (int i=0;i<sorted.length;i++)
-        {
-            if (!sorted[i].equalsIgnoreCase(previous))
-            {
-                result.add(sorted[i]);
-            }
-            previous=sorted[i];
-        }
-        
-        return (String[])result.toArray(new String[result.size()]);
-    }
+	/**
+	 * @return An array of all default conversion formats, to be used in dialogs etc.
+	 */
+	public static String[] getConversionFormats()
+	{
+		String dats[] = Const.dateFormats;
+		String nums[] = Const.numberFormats;
+		int totsize = dats.length + nums.length;
+		String formats[] = new String[totsize];
+		for (int x = 0; x < dats.length; x++)
+			formats[x] = dats[x];
+		for (int x = 0; x < nums.length; x++)
+			formats[dats.length + x] = nums[x];
 
+		return formats;
+	}
+
+	/**
+	 * Sorts the array of Strings, determines the uniquely occuring strings.  
+	 * @param strings the array that you want to do a distinct on
+	 * @return a sorted array of uniquely occuring strings
+	 */
+	public static final String[] getDistinctStrings(String[] strings)
+	{
+		if (strings == null)
+			return null;
+		if (strings.length == 0)
+			return new String[] {};
+
+		String[] sorted = sortStrings(strings);
+		List result = new ArrayList();
+		String previous = "";
+		for (int i = 0; i < sorted.length; i++)
+		{
+			if (!sorted[i].equalsIgnoreCase(previous))
+			{
+				result.add(sorted[i]);
+			}
+			previous = sorted[i];
+		}
+
+		return (String[]) result.toArray(new String[result.size()]);
+	}
 }

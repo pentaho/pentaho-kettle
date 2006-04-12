@@ -83,6 +83,7 @@ import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static final String[] YES_NO_COMBO = new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") };
+	
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
@@ -653,7 +654,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
 		enableFields();
 
-		final int FieldsCols=6;
 		final int FieldsRows=input.getField().length;
 		int FieldsWidth =600;
 		int FieldsHeight=150;
@@ -667,13 +667,18 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		for (int x=0;x<nums.length;x++) formats[dats.length+x] = nums[x];
 		
 		
-		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[ 0]=new ColumnInfo(Messages.getString("ExcelInputDialog.Name.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false);
-		colinf[ 1]=new ColumnInfo(Messages.getString("ExcelInputDialog.Type.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  Value.getTypes() );
-		colinf[ 2]=new ColumnInfo(Messages.getString("ExcelInputDialog.Length.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false);
-		colinf[ 3]=new ColumnInfo(Messages.getString("ExcelInputDialog.Precision.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false);
-		colinf[ 4]=new ColumnInfo(Messages.getString("ExcelInputDialog.TrimType.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  TextFileInputMeta.trimTypeDesc );
-		colinf[ 5]=new ColumnInfo(Messages.getString("ExcelInputDialog.Repeat.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") } );
+		ColumnInfo[] colinf=new ColumnInfo[] { 
+		    new ColumnInfo(Messages.getString("ExcelInputDialog.Name.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			new ColumnInfo(Messages.getString("ExcelInputDialog.Type.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO,  Value.getTypes() ),
+			new ColumnInfo(Messages.getString("ExcelInputDialog.Length.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			new ColumnInfo(Messages.getString("ExcelInputDialog.Precision.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+			new ColumnInfo(Messages.getString("ExcelInputDialog.TrimType.Column"),   ColumnInfo.COLUMN_TYPE_CCOMBO,  TextFileInputMeta.trimTypeDesc ),
+			new ColumnInfo(Messages.getString("ExcelInputDialog.Repeat.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") } ),
+			new ColumnInfo(Messages.getString("ExcelInputDialog.Format.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  Const.getConversionFormats() ),
+			new ColumnInfo(Messages.getString("ExcelInputDialog.Currency.Column"),   ColumnInfo.COLUMN_TYPE_TEXT),
+			new ColumnInfo(Messages.getString("ExcelInputDialog.Decimal.Column"),    ColumnInfo.COLUMN_TYPE_TEXT),
+			new ColumnInfo(Messages.getString("ExcelInputDialog.Grouping.Column"),   ColumnInfo.COLUMN_TYPE_TEXT)
+		};
 		
 		colinf[ 5].setToolTip(Messages.getString("ExcelInputDialog.Repeat.Tooltip"));
 		
@@ -976,6 +981,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			String prec     = ""+in.getField()[i].getPrecision();
 			String trim     = in.getField()[i].getTrimTypeDesc();
 			String rep      = in.getField()[i].isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No");
+			String format   = in.getField()[i].getFormat();
+			String currency = in.getField()[i].getCurrencySymbol();
+			String decimal  = in.getField()[i].getDecimalSymbol();
+			String grouping = in.getField()[i].getGroupSymbol();
 			
 			if (field   !=null) item.setText( 1, field);
 			if (type    !=null) item.setText( 2, type    );
@@ -983,6 +992,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			if (prec    !=null) item.setText( 4, prec    );
 			if (trim    !=null) item.setText( 5, trim    );
 			if (rep     !=null) item.setText( 6, rep     );
+			if (format  !=null) item.setText( 7, format  );
+			if (currency!=null) item.setText( 8, currency);
+			if (decimal !=null) item.setText( 9, decimal );
+			if (grouping!=null) item.setText(10, grouping);
 		}
 		
 		wFields.removeEmptyRows();
@@ -1076,6 +1089,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		for (int i=0;i<nrfields;i++)
 		{
 			TableItem item  = wFields.getNonEmpty(i);
+			in.getField()[i] = new ExcelInputField();
+			
 			in.getField()[i].setName( item.getText(1) );
 			in.getField()[i].setType( Value.getType(item.getText(2)) );
 			String slength  = item.getText(3);
@@ -1085,6 +1100,11 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
 			in.getField()[i].setLength( Const.toInt(slength, -1) );
 			in.getField()[i].setPrecision( Const.toInt(sprec, -1) );
+			
+			in.getField()[i].setFormat( item.getText(7) );
+			in.getField()[i].setCurrencySymbol( item.getText(8) );
+			in.getField()[i].setDecimalSymbol( item.getText(9) );
+			in.getField()[i].setGroupSymbol( item.getText(10) );
 		}	
 		
 		// Error handling fields...
@@ -1427,7 +1447,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
                 if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                 {
                     MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                    mb.setMessage(Messages.getString("xcelInputDialog.PreviewErrors.DialogMessage"));
+                    mb.setMessage(Messages.getString("ExcelInputDialog.PreviewErrors.DialogMessage"));
                     mb.setText(Messages.getString("System.Dialog.Error.Title"));
                     mb.open(); 
                 }

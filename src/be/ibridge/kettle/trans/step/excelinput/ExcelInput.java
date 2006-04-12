@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.TimeZone;
 
 import jxl.BooleanCell;
 import jxl.Cell;
@@ -96,38 +97,101 @@ public class ExcelInput extends BaseStep implements StepInterface {
 				}
 			}
 
-			if (cell.getType().equals(CellType.BOOLEAN)) {
+			if (cell.getType().equals(CellType.BOOLEAN))
+			{
 				v.setValue(((BooleanCell) cell).getValue());
-			} else if (cell.getType().equals(CellType.DATE)) {
-				v.setValue(((DateCell) cell).getDate());
-			} else if (cell.getType().equals(CellType.LABEL)) {
-				v.setValue(((LabelCell) cell).getString());
-				switch (meta.getField()[rowcolumn].getTrimType()) {
-				case ExcelInputMeta.TYPE_TRIM_LEFT:
-					v.ltrim();
-					break;
-				case ExcelInputMeta.TYPE_TRIM_RIGHT:
-					v.rtrim();
-					break;
-				case ExcelInputMeta.TYPE_TRIM_BOTH:
-					v.trim();
-					break;
-				default:
-					break;
+			}
+			else
+			{
+				if (cell.getType().equals(CellType.DATE))
+				{
+					Date date = ((DateCell) cell).getDate();
+					long time = date.getTime();
+					int offset = TimeZone.getDefault().getOffset( time );
+					v.setValue( new Date(time - offset));
 				}
-			} else if (cell.getType().equals(CellType.NUMBER)) {
-				v.setValue(((NumberCell) cell).getValue());
-			} else {
-				logDetailed("Unknown type : " + cell.getType().toString()
-						+ " : [" + cell.getContents() + "]");
-				v.setNull();
+				else
+				{
+					if (cell.getType().equals(CellType.LABEL))
+					{
+						v.setValue(((LabelCell) cell).getString());
+						switch (meta.getField()[rowcolumn].getTrimType())
+						{
+						case ExcelInputMeta.TYPE_TRIM_LEFT:
+							v.ltrim();
+							break;
+						case ExcelInputMeta.TYPE_TRIM_RIGHT:
+							v.rtrim();
+							break;
+						case ExcelInputMeta.TYPE_TRIM_BOTH:
+							v.trim();
+							break;
+						default:
+							break;
+						}
+					}
+					else
+					{
+						if (cell.getType().equals(CellType.NUMBER))
+						{
+							v.setValue(((NumberCell) cell).getValue());
+						}
+						else
+						{
+							logDetailed("Unknown type : " + cell.getType().toString() + " : [" + cell.getContents() + "]");
+							v.setNull();
+						}
+					}
+				}
 			}
 
-			// Change to the appropriate type...
-			// 
-			v.setType(meta.getField()[rowcolumn].getType());
-			v.setLength(meta.getField()[rowcolumn].getLength(), meta
-					.getField()[rowcolumn].getPrecision());
+			ExcelInputField field = meta.getField()[rowcolumn]; 
+			
+			// Change to the appropriate type if needed...
+			//
+			if ( v.getType() != field.getType() )
+			{
+				switch(v.getType())
+				{
+				// Use case: we find a String: convert it using the supplied format to the desired type...
+				//
+				case Value.VALUE_TYPE_STRING: 
+					debug="Convert string to date/number";
+					switch(field.getType())
+					{
+					case Value.VALUE_TYPE_DATE:    v.str2dat(field.getFormat()); break;
+					case Value.VALUE_TYPE_NUMBER:  v.str2num(field.getFormat(), field.getDecimalSymbol(), field.getGroupSymbol(), field.getCurrencySymbol()); break;
+					default: v.setType(field.getType()); break;
+					}
+					break;
+				
+				// Use case: we find a number: convert it using the supplied format to String...
+				//
+				case Value.VALUE_TYPE_NUMBER:
+					debug="Convert number to string";
+					switch(field.getType())
+					{
+					case Value.VALUE_TYPE_STRING:	v.num2str(field.getFormat(), field.getDecimalSymbol(), field.getGroupSymbol(), field.getCurrencySymbol()); break;
+					default: v.setType(field.getType()); break;
+					}
+					break;
+				// Use case: we find a date: convert it using the supplied format to String...
+				//
+				case Value.VALUE_TYPE_DATE:
+					debug="Convert date to string";
+					switch(field.getType())
+					{
+					case Value.VALUE_TYPE_STRING:	v.dat2str(field.getFormat()); break;
+					default: v.setType(field.getType()); break;
+					}
+					break;
+				default: v.setType(field.getType()); 
+				}
+			}
+			
+			// Set the meta-data of the field: length and precision
+			//
+			v.setLength(meta.getField()[rowcolumn].getLength(), meta.getField()[rowcolumn].getPrecision());
 		}
 
 		debug = "filename";

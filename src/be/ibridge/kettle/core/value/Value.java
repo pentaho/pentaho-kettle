@@ -2700,10 +2700,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	// number: NUM2STR( 123.456, '###,##0.000', '.', ',', '€') : currency
 
 	public Value num2str() throws KettleValueException { return num2str(null, null, null, null); }
-	public Value num2str(String arg0) throws KettleValueException { return num2str(arg0, null, null, null); }
-	public Value num2str(String arg0, String arg1) throws KettleValueException { return num2str(arg0, arg1, null, null); }
-	public Value num2str(String arg0, String arg1, String arg2) throws KettleValueException { return num2str(arg0, arg1, arg2, null); }
-	public Value num2str(String arg0, String arg1, String arg2, String arg3) throws KettleValueException
+	public Value num2str(String format) throws KettleValueException { return num2str(format, null, null, null); }
+	public Value num2str(String format, String decimalSymbol) throws KettleValueException { return num2str(format, decimalSymbol, null, null); }
+	public Value num2str(String format, String decimalSymbol, String groupingSymbol) throws KettleValueException { return num2str(format, decimalSymbol, groupingSymbol, null); }
+	public Value num2str(String format, String decimalSymbol, String groupingSymbol, String currencySymbol) throws KettleValueException
 	{
 		if (isNull())
 		{
@@ -2718,11 +2718,11 @@ public class Value implements Cloneable, XMLInterface, Serializable
 				DecimalFormat        df  = (DecimalFormat)nf;
 				DecimalFormatSymbols dfs =new DecimalFormatSymbols();
 			
-				if (arg3!=null) dfs.setCurrencySymbol( arg3 );
-				if (arg2!=null) dfs.setGroupingSeparator( arg2.charAt(0) );
-				if (arg1!=null) dfs.setDecimalSeparator( arg1.charAt(0) );
+				if (currencySymbol!=null && currencySymbol.length()>0) dfs.setCurrencySymbol( currencySymbol );
+				if (groupingSymbol!=null && groupingSymbol.length()>0) dfs.setGroupingSeparator( groupingSymbol.charAt(0) );
+				if (decimalSymbol!=null && decimalSymbol.length()>0) dfs.setDecimalSeparator( decimalSymbol.charAt(0) );
 				df.setDecimalFormatSymbols(dfs); // in case of 4, 3 or 2
-				if (arg0!=null) df.applyPattern(arg0);
+				if (format!=null && format.length()>0) df.applyPattern(format);
 				try
 				{
 					setValue( nf.format(getNumber()) );

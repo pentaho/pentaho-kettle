@@ -459,6 +459,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			for (int i=0;i<nrfields;i++)
 			{
 				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
+				field[i] = new ExcelInputField();
 				
 				field[i].setName( XMLHandler.getTagValue(fnode, "name") );
 				field[i].setType( Value.getType(XMLHandler.getTagValue(fnode, "type")) );
@@ -469,6 +470,12 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 				
 				if (srepeat!=null) field[i].setRepeated( YES.equalsIgnoreCase(srepeat) ); 
 				else               field[i].setRepeated( false );
+				
+                field[i].setFormat(XMLHandler.getTagValue(fnode, "format"));
+                field[i].setCurrencySymbol(XMLHandler.getTagValue(fnode, "currency"));
+                field[i].setDecimalSymbol(XMLHandler.getTagValue(fnode, "decimal"));
+                field[i].setGroupSymbol(XMLHandler.getTagValue(fnode, "group"));
+
 			}
 			
 			for (int i=0;i<nrsheets;i++)
@@ -631,6 +638,12 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("        "+XMLHandler.addTagValue("precision", field[i].getPrecision()));
 			retval.append("        "+XMLHandler.addTagValue("trim_type", field[i].getTrimTypeCode() ) );
 			retval.append("        "+XMLHandler.addTagValue("repeat",    field[i].isRepeated()) );
+
+            retval.append("        " + XMLHandler.addTagValue("format", field[i].getFormat()));
+            retval.append("        " + XMLHandler.addTagValue("currency", field[i].getCurrencySymbol()));
+            retval.append("        " + XMLHandler.addTagValue("decimal", field[i].getDecimalSymbol()));
+            retval.append("        " + XMLHandler.addTagValue("group", field[i].getGroupSymbol()));
+
 			retval.append("        </field>"+Const.CR);
 		}
 		retval.append("      </fields>"+Const.CR);
@@ -702,12 +715,19 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 
 			for (int i=0;i<nrfields;i++)
 			{
+				field[i] = new ExcelInputField();
+				
 				field[i].setName( rep.getStepAttributeString (id_step, i, "field_name") );
 				field[i].setType( Value.getType( rep.getStepAttributeString (id_step, i, "field_type") ) );
 				field[i].setLength( (int)rep.getStepAttributeInteger(id_step, i, "field_length") );
 				field[i].setPrecision( (int)rep.getStepAttributeInteger(id_step, i, "field_precision") );
 				field[i].setTrimType( getTrimTypeByCode(   rep.getStepAttributeString (id_step, i, "field_trim_type") ) );
 				field[i].setRepeated( rep.getStepAttributeBoolean(id_step, i, "field_repeat") );
+				
+                field[i].setFormat(rep.getStepAttributeString(id_step, i, "field_format"));
+                field[i].setCurrencySymbol(rep.getStepAttributeString(id_step, i, "field_currency"));
+                field[i].setDecimalSymbol(rep.getStepAttributeString(id_step, i, "field_decimal"));
+                field[i].setGroupSymbol(rep.getStepAttributeString(id_step, i, "field_group"));
 			}		
 			
             strictTypes = rep.getStepAttributeBoolean(id_step, 0, "strict_types", false);
@@ -762,6 +782,12 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", field[i].getPrecision() );
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type", field[i].getTrimTypeCode() );
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",    field[i].isRepeated());
+				
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_format", field[i].getFormat());
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_currency", field[i].getCurrencySymbol());
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal", field[i].getDecimalSymbol());
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_group", field[i].getGroupSymbol());
+
 			}
 			
             rep.saveStepAttribute(id_transformation, id_step, "strict_types", strictTypes);
