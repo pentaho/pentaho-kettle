@@ -1004,7 +1004,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         // Nr of lines per page
         wlNrLinesPerPage=new Label(wContentComp, SWT.RIGHT);
-        wlNrLinesPerPage.setText(Messages.getString("TextFileInputDialog.NrLinesPerPage.Tooltip"));
+        wlNrLinesPerPage.setText(Messages.getString("TextFileInputDialog.NrLinesPerPage.Label"));
         props.setLook(wlNrLinesPerPage);
         fdlNrLinesPerPage=new FormData();
         fdlNrLinesPerPage.left = new FormAttachment(wLayoutPaged, margin);
@@ -1123,7 +1123,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wInclRownum.setLayoutData(fdRownum);
 
         wlInclRownumField=new Label(wContentComp, SWT.RIGHT);
-        wlInclRownumField.setText(Messages.getString("extFileInputDialog.InclRownumField.Label"));
+        wlInclRownumField.setText(Messages.getString("TextFileInputDialog.InclRownumField.Label"));
         props.setLook(wlInclRownumField);
         fdlInclRownumField=new FormData();
         fdlInclRownumField.left = new FormAttachment(wInclRownum, margin);

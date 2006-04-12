@@ -1085,10 +1085,10 @@ public class Database
 
 	
 
-	// This inserts new record into dimension
-	// Optionally, if the entry already exists, update date range from previous version
-	// of the entry.
-	// 
+	/**
+	 * This inserts new record into a junk dimension
+	 * TODO: fix the bug found by alex here!
+	 */
 	public void combiInsert(Row     row, 
 							   String  table,
 							   String  keyfield, 
