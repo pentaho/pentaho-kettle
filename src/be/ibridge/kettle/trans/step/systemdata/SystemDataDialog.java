@@ -90,14 +90,14 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Get System Data");
+		shell.setText(Messages.getString("SystemDataDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name : ");
+		wlStepname.setText(Messages.getString("System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -115,7 +115,7 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 		wStepname.setLayoutData(fdStepname);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText("Fields: ");
+		wlFields.setText(Messages.getString("SystemDataDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -126,14 +126,14 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, SystemDataMeta.typeLongDesc );
+		colinf[0]=new ColumnInfo(Messages.getString("SystemDataDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[1]=new ColumnInfo(Messages.getString("SystemDataDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, SystemDataMeta.typeLongDesc );
 		colinf[1].setSelectionAdapter(
 		    new SelectionAdapter()
 	        {
 	            public void widgetSelected(SelectionEvent e)
 	            {
-	                EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, SystemDataMeta.typeLongDesc, "Select info type", "Select the information type to retrieve");
+	                EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, SystemDataMeta.typeLongDesc, Messages.getString("SystemDataDialog.SelectInfoType.DialogTitle"), Messages.getString("SystemDataDialog.SelectInfoType.DialogMessage"));
 	                String string = esd.open();
 	                if (string!=null)
 	                {
@@ -162,9 +162,9 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 				
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
 

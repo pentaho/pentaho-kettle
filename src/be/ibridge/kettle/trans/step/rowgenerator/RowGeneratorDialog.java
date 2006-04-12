@@ -97,14 +97,14 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Generate Rows");
+		shell.setText(Messages.getString("RowGeneratorDialog.DialogTitle"));
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("System.Label.StepName"));
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -122,7 +122,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		wStepname.setLayoutData(fdStepname);
 
 		wlLimit=new Label(shell, SWT.RIGHT);
-		wlLimit.setText("Limit ");
+		wlLimit.setText(Messages.getString("RowGeneratorDialog.Limit.Label"));
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -139,7 +139,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		wLimit.setLayoutData(fdLimit);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText("Fields :");
+		wlFields.setText(Messages.getString("RowGeneratorDialog.Fields.Label"));
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -150,15 +150,15 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() );
-		colinf[2]=new ColumnInfo("Format",     ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[3]=new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[4]=new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[5]=new ColumnInfo("Currency",   ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[6]=new ColumnInfo("Decimal",    ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[7]=new ColumnInfo("Group",      ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[8]=new ColumnInfo("Value",      ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[0]=new ColumnInfo(Messages.getString("System.Column.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[1]=new ColumnInfo(Messages.getString("System.Column.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() );
+		colinf[2]=new ColumnInfo(Messages.getString("System.Column.Format"),     ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[3]=new ColumnInfo(Messages.getString("System.Column.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[4]=new ColumnInfo(Messages.getString("System.Column.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[5]=new ColumnInfo(Messages.getString("System.Column.Currency"),   ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[6]=new ColumnInfo(Messages.getString("System.Column.Decimal"),    ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[7]=new ColumnInfo(Messages.getString("System.Column.Group"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[8]=new ColumnInfo(Messages.getString("System.Column.Value"),      ColumnInfo.COLUMN_TYPE_TEXT,   false);
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -176,11 +176,11 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		wFields.setLayoutData(fdFields);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("System.Button.OK"));
         wPreview=new Button(shell, SWT.PUSH);
-        wPreview.setText(" &Preview ");
+        wPreview.setText(Messages.getString("System.Button.Preview"));
         wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
         setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
         
@@ -329,7 +329,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
         
-        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, "Enter preview size", "Enter the number of rows you would like to preview:");
+        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("System.Dialog.EnterPreviewSize.Title"), Messages.getString("System.Dialog.EnterPreviewSize.Message"));
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {
@@ -344,8 +344,8 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
                 if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                 {
                     MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                    mb.setMessage("One or more errors occured during preview!  Examine the logfile to see what went wrong.");
-                    mb.setText("ERROR");
+                    mb.setMessage(Messages.getString("System.Dialog.PreviewError.Message"));
+                    mb.setText(Messages.getString("System.Dialog.PreviewError.Title"));
                     mb.open(); 
                 }
                 

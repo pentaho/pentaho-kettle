@@ -146,7 +146,7 @@ public class RowGenerator extends BaseStep implements StepInterface
                         break;
                         
                     default:
-                        String message = "Please specify the value type of field ["+value.getName()+"] with value ["+stringValue+"] -->";
+                        String message = Messages.getString("RowGenerator.CheckResult.SpecifyTypeError");
                         remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
     
                     }

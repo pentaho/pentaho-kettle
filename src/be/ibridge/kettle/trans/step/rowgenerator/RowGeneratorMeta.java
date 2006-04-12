@@ -452,22 +452,22 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "This step type can't read from the input stream(s).", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("owGeneratorMeta.CheckResult.NoInputStreamsError"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step doesn't read from the input stream(s).", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RowGeneratorMeta.CheckResult.NoInputStreamOk"), stepMeta);
 			remarks.add(cr);
 			
 			if (rowLimit==0.0)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, "Step will not return any rows.", stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("RowGeneratorMeta.CheckResult.WarnNoRows"), stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step will return "+(long)rowLimit+" rows", stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RowGeneratorMeta.CheckResult.WillReturnRows", ""+(long)rowLimit), stepMeta);
 				remarks.add(cr);
 			}
 		}
@@ -475,12 +475,12 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "This is not expecting nor reading data from input steps", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("RowGeneratorMeta.CheckResult.NoInputError"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "No input received from other steps.", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RowGeneratorMeta.CheckResult.NoInputOk"), stepMeta);
 			remarks.add(cr);
 		}
         

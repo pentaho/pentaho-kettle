@@ -126,41 +126,41 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 	public final static String typeLongDesc[] = 
 		{
 			"-",
-			"system date (variable)",
-			"system date (fixed)",
-			"start date range",
-			"end date range",
-			"Yesterday 00:00:00",
-			"Yesterday 23:59:59",
-			"Today 00:00:00",
-			"Today 23:59:59",
-			"Tomorrow 00:00:00",
-			"Tomorrow 23:59:59",
-			"First day of last month 00:00:00",
-			"Last day of last month 23:59:59",
-			"First day of this month 00:00:00",
-			"Last day of this month 23:59:59",
-			"First day of next month 00:00:00",
-			"Last day of next month 23:59:59",
-			"copy of step",
-			"transformation name",
-			"transformation file name",
-			"User that modified the transformation last",
-			"Date when the transformation was modified last",
-			"transformation batch ID",
-            "parent job batch ID",
-			"Hostname",
-			"IP address",
-			"command line argument 1",
-			"command line argument 2",
-			"command line argument 3",
-			"command line argument 4",
-			"command line argument 5",
-			"command line argument 6",
-			"command line argument 7",
-			"command line argument 8",
-			"command line argument 9",
-			"command line argument 10"
+			Messages.getString("SystemDataMeta.TypeDesc.SystemDateVariable"),
+			Messages.getString("SystemDataMeta.TypeDesc.SystemDateFixed"),
+			Messages.getString("SystemDataMeta.TypeDesc.StartDateRange"),
+			Messages.getString("SystemDataMeta.TypeDesc.EndDateRange"),
+			Messages.getString("SystemDataMeta.TypeDesc.YesterdayStart"),
+			Messages.getString("SystemDataMeta.TypeDesc.YesterdayEnd"),
+			Messages.getString("SystemDataMeta.TypeDesc.TodayStart"),
+			Messages.getString("SystemDataMeta.TypeDesc.TodayEnd"),
+			Messages.getString("SystemDataMeta.TypeDesc.TomorrowStart"),
+			Messages.getString("SystemDataMeta.TypeDesc.TomorrowEnd"),
+			Messages.getString("SystemDataMeta.TypeDesc.LastMonthStart"),
+			Messages.getString("SystemDataMeta.TypeDesc.LastMonthEnd"),
+			Messages.getString("SystemDataMeta.TypeDesc.ThisMonthStart"),
+			Messages.getString("SystemDataMeta.TypeDesc.ThisMonthEnd"),
+			Messages.getString("SystemDataMeta.TypeDesc.NextMonthStart"),
+			Messages.getString("SystemDataMeta.TypeDesc.NextMonthEnd"),
+			Messages.getString("SystemDataMeta.TypeDesc.CopyOfStep"),
+			Messages.getString("SystemDataMeta.TypeDesc.TransformationName"),
+			Messages.getString("SystemDataMeta.TypeDesc.TransformationFileName"),
+			Messages.getString("SystemDataMeta.TypeDesc.UserModified"),
+			Messages.getString("SystemDataMeta.TypeDesc.DateModified"),
+			Messages.getString("SystemDataMeta.TypeDesc.BatchID"),
+      Messages.getString("SystemDataMeta.TypeDesc.JobBatchID"),
+			Messages.getString("SystemDataMeta.TypeDesc.Hostname"),
+			Messages.getString("SystemDataMeta.TypeDesc.IPAddress"),
+			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument1"),
+			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument2"),
+			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument3"),
+			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument4"),
+			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument5"),
+			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument6"),
+			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument7"),
+			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument8"),
+			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument9"),
+			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument10")
 		};
 	
 	private String fieldName[];
@@ -414,12 +414,12 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Step is expecting nor reading info from other steps.", stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SystemDataMeta.CheckResult.NoInputError"), stepMeta);
 			remarks.add(cr);
 		}
 		else
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "No input received from other steps.", stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SystemDataMeta.CheckResult.NoInputOk"), stepMeta);
 			remarks.add(cr);
 		}
 	}
