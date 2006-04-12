@@ -72,6 +72,15 @@ public class GlobalMessageUtil {
       return '!' + key + '!';
     }
   }
+  
+  public static String getString(ResourceBundle bundle, String key, String param1, String param2, String param3, String param4,String param5) {
+	    try {
+	      Object[] args = {param1, param2, param3, param4,param5};
+	      return MessageFormat.format(bundle.getString(key), args);      
+	    } catch (Exception e) {
+	      return '!' + key + '!';
+	    }
+	  }
 
   public static String getErrorString(ResourceBundle bundle, String key, String param1, String param2, String param3, String param4) {
     return formatErrorMessage(key, getString(bundle, key, param1, param2, param3, param4));

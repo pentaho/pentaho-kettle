@@ -180,6 +180,30 @@ public class GlobalMessages
         }
     }
     
+    public static String getString(String packageName, String key, String param1, String param2, String param3,String param4)
+    {
+        try
+        {
+            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3,param4);
+        }
+        catch(MissingResourceException e)
+        {
+            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3,param4);
+        }
+    }
+    
+    public static String getString(String packageName, String key, String param1, String param2, String param3,String param4,String param5)
+    {
+        try
+        {
+            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3,param4,param5);
+        }
+        catch(MissingResourceException e)
+        {
+            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3,param4,param5);
+        }
+    }
+    
 
 /*
     public static String getErrorString(String packageName, String key)

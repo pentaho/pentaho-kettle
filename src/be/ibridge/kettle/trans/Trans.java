@@ -555,22 +555,22 @@ public class Trans
 			{
 				if (thr.getErrors()==0)
 				{
-					log.logBasic(toString(), Messages.getString("Trans.Log.ProcessSuccessfullyInfo")+thr.getStepname()+"'."+thr.getCopy()+" ended successfully, processed "+proc+" lines. ("+(proc/seconds)+" lines/s)"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+					log.logBasic(toString(), Messages.getString("Trans.Log.ProcessSuccessfullyInfo",thr.getStepname(),"'."+thr.getCopy(),String.valueOf(proc),String.valueOf((proc/seconds)))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 				}
 				else
 				{
-					log.logError(toString(), Messages.getString("Trans.Log.ProcessErrorInfo")+thr.getStepname()+"'."+thr.getCopy()+" ended with "+thr.getErrors()+" errors after "+proc+" lines. ("+(proc/seconds)+" lines/s)"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+					log.logError(toString(), Messages.getString("Trans.Log.ProcessErrorInfo",thr.getStepname(),"'."+thr.getCopy(),String.valueOf(thr.getErrors()),String.valueOf(proc),String.valueOf(proc/seconds))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 				}							
 			}
 			else
 			{
 				if (thr.getErrors()==0)
 				{
-					log.logBasic(toString(), Messages.getString("Trans.Log.ProcessSuccessfullyInfo2")+thr.getStepname()+"'."+thr.getCopy()+" ended successfully, processed "+proc+" lines in "+seconds+" seconds."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+					log.logBasic(toString(), Messages.getString("Trans.Log.ProcessSuccessfullyInfo",thr.getStepname(),"'."+thr.getCopy(),String.valueOf(proc),String.valueOf((proc/seconds)))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 				}
 				else
 				{
-					log.logError(toString(), Messages.getString("Trans.Log.ProcessErrorInfo")+thr.getStepname()+"'."+thr.getCopy()+" ended with "+thr.getErrors()+" errors after processing "+proc+" lines in "+seconds+" seconds."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
+					log.logError(toString(), Messages.getString("Trans.Log.ProcessErrorInfo2",thr.getStepname(),"'."+thr.getCopy(),String.valueOf(thr.getErrors()),String.valueOf(proc),String.valueOf(seconds))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 				}							
 			}
 		}
@@ -743,7 +743,7 @@ public class Trans
     			if (logcon!=null)
     			{
     			    ldb = new Database(logcon);
-				    log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningLogConnection")+transMeta.getLogConnection()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+				    log.logDetailed(toString(), Messages.getString("Trans.Log.OpeningLogConnection",""+transMeta.getLogConnection())); //$NON-NLS-1$ //$NON-NLS-2$
 					ldb.connect();
 					
 					//
@@ -769,7 +769,7 @@ public class Trans
 						transMeta.getMaxDateField()!=null && transMeta.getMaxDateField().length()>0
 						)
 					{
-						log.logDetailed(toString(), Messages.getString("Trans.Log.LookingForMaxdateConnection")+transMeta.getMaxDateConnection()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+						log.logDetailed(toString(), Messages.getString("Trans.Log.LookingForMaxdateConnection",""+transMeta.getMaxDateConnection())); //$NON-NLS-1$ //$NON-NLS-2$
 						DatabaseMeta maxcon = transMeta.getMaxDateConnection();
 						if (maxcon!=null)
 						{
@@ -801,7 +801,7 @@ public class Trans
 							}
 							catch(KettleException e)
 							{
-								throw new KettleTransException(Messages.getString("Trans.Log.ErrorConnectingToDatabase")+transMeta.getMaxDateConnection()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
+								throw new KettleTransException(Messages.getString("Trans.Exception.ErrorConnectingToDatabase",""+transMeta.getMaxDateConnection()), e); //$NON-NLS-1$ //$NON-NLS-2$
 							}
 							finally
 							{
@@ -810,7 +810,7 @@ public class Trans
 						}
 						else
 						{
-							throw new KettleTransException(Messages.getString("Trans.Exception.MaximumDateConnectionCouldNotBeFound")+transMeta.getMaxDateConnection()+"] couldn't be found!"); //$NON-NLS-1$ //$NON-NLS-2$
+							throw new KettleTransException(Messages.getString("Trans.Exception.MaximumDateConnectionCouldNotBeFound",""+transMeta.getMaxDateConnection())); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 					}
 	
@@ -863,17 +863,17 @@ public class Trans
 										}
 										else
 										{
-											throw new KettleTransException(Messages.getString("Trans.Exception.UnableToGetDependencyInfoFromDB")+td.getDatabase().getName()+"."+td.getTablename()+"."+td.getFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+											throw new KettleTransException(Messages.getString("Trans.Exception.UnableToGetDependencyInfoFromDB",td.getDatabase().getName()+".",td.getTablename()+".",td.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 										}
 									}
 									else
 									{
-										throw new KettleTransException(Messages.getString("Trans.Exception.UnableToGetDependencyInfoFromDB2")+td.getDatabase().getName()+"."+td.getTablename()+"."+td.getFieldname()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+										throw new KettleTransException(Messages.getString("Trans.Exception.UnableToGetDependencyInfoFromDB",td.getDatabase().getName()+".",td.getTablename()+".",td.getFieldname())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 									}
 								}
 								catch(KettleException e)
 								{
-									throw new KettleTransException(Messages.getString("Trans.Exception.ErrorInDatabase")+td.getDatabase()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
+									throw new KettleTransException(Messages.getString("Trans.Exception.ErrorInDatabase",""+td.getDatabase()), e); //$NON-NLS-1$ //$NON-NLS-2$
 								}
 								finally
 								{
@@ -882,7 +882,7 @@ public class Trans
 							}
 							else
 							{
-								throw new KettleTransException(Messages.getString("Trans.Exception.ConnectionCouldNotBeFound")+td.getDatabase()+"] couldn't be found!"); //$NON-NLS-1$ //$NON-NLS-2$
+								throw new KettleTransException(Messages.getString("Trans.Exception.ConnectionCouldNotBeFound",""+td.getDatabase())); //$NON-NLS-1$ //$NON-NLS-2$
 							}
 							log.logDetailed(toString(), Messages.getString("Trans.Log.Maxdepdate")+(new Value("maxdepdate", maxdepdate)).toString()); //$NON-NLS-1$ //$NON-NLS-2$
 						}
@@ -943,7 +943,7 @@ public class Trans
             }
 			catch(KettleException e)
 			{
-				throw new KettleTransException(Messages.getString("Trans.Exception.ErrorWritingLogRecordToTable")+transMeta.getLogTable()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleTransException(Messages.getString("Trans.Exception.ErrorWritingLogRecordToTable",transMeta.getLogTable()), e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			finally
 			{
@@ -1029,7 +1029,7 @@ public class Trans
 			}
 			catch(Exception e)
 			{
-				throw new KettleException(Messages.getString("Trans.Exception.ErrorWritingLogRecordToTable2")+transMeta.getLogTable()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
+				throw new KettleException(Messages.getString("Trans.Exception.ErrorWritingLogRecordToTable")+transMeta.getLogTable()+"]", e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			finally
 			{
