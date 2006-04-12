@@ -1861,15 +1861,22 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	public Value divide(byte       v) throws KettleValueException { return divide(new Value("tmp", (long)v)); }
 	public Value divide(Value v)  throws KettleValueException
 	{
-		switch(getType())
+		if (isNull() || v.isNull())
 		{
-            case VALUE_TYPE_BIGNUMBER : setValue(getBigNumber().divide(v.getBigNumber(), BigDecimal.ROUND_UP)); break;
-			case VALUE_TYPE_NUMBER    : setValue(getNumber()/v.getNumber()); break;
-			case VALUE_TYPE_INTEGER   : setValue(getInteger()/v.getInteger()); break;
-			case VALUE_TYPE_BOOLEAN   : 
-			case VALUE_TYPE_STRING    : 
-			default:
-				throw new KettleValueException("Division can only be done with numeric data!");
+			setNull();
+		}
+		else
+		{
+			switch(getType())
+			{
+	            case VALUE_TYPE_BIGNUMBER : setValue(getBigNumber().divide(v.getBigNumber(), BigDecimal.ROUND_UP)); break;
+				case VALUE_TYPE_NUMBER    : setValue(getNumber()/v.getNumber()); break;
+				case VALUE_TYPE_INTEGER   : setValue(getInteger()/v.getInteger()); break;
+				case VALUE_TYPE_BOOLEAN   : 
+				case VALUE_TYPE_STRING    : 
+				default:
+					throw new KettleValueException("Division can only be done with numeric data!");
+			}
 		}
 		return this;
 	}
@@ -1882,6 +1889,12 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	public Value multiply(Value      v) throws KettleValueException
 	{
 		// a number and a string!
+		if (isNull() || v.isNull())
+		{
+			setNull();
+			return this;
+		}
+
 		if ((v.isString() && isNumeric()) || (v.isNumeric() && isString()))
 		{
 			StringBuffer s;
