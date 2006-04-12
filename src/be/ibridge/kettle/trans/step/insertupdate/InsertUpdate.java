@@ -74,7 +74,10 @@ public class InsertUpdate extends BaseStep implements StepInterface
             }
             data.dbins.prepareInsert(ins, meta.getTableName());
             
-			data.dbupd.prepareUpdate(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup());
+            if (!meta.isUpdateBypassed())
+            {
+            	data.dbupd.prepareUpdate(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup());
+            }
 			
 			debug="first run, lookup values, field positions, etc.";
 			// lookup the values!
@@ -168,35 +171,46 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		}
 		else
 		{
-			logRowlevel("Found row: !"+row.toString());
-			/* Row was found:
-			 *  
-			 * UPDATE row or do nothing?
-			 *
-			 */
-			debug="compare for update";
-			boolean update = false;
-			for (int i=0;i<data.valuenrs.length;i++)
+			
+			
+			if (!meta.isUpdateBypassed())
 			{
-				Value rowvalue = row.getValue(data.valuenrs[i]);
-				lu.addValue(i, rowvalue);
-				Value retvalue = add.getValue(i);
-				if (!rowvalue.equals(retvalue))
+				logRowlevel("Found row for update: !"+row.toString());
+				
+				/* Row was found:
+				 *  
+				 * UPDATE row or do nothing?
+				 *
+				 */
+				debug="compare for update";
+				boolean update = false;
+				for (int i=0;i<data.valuenrs.length;i++)
 				{
-					update=true;
+					Value rowvalue = row.getValue(data.valuenrs[i]);
+					lu.addValue(i, rowvalue);
+					Value retvalue = add.getValue(i);
+					if (!rowvalue.equals(retvalue))
+					{
+						update=true;
+					}
 				}
-			}
-			if (update)
-			{
-				logRowlevel("Update row with: !"+lu.toString());
-				debug="setValuesUpdate()";
-				data.dbupd.setValuesUpdate(lu);
-				debug="updateRow()";
-				data.dbupd.updateRow();
-				linesUpdated++;
+				if (update)
+				{
+					logRowlevel("Update row with: !"+lu.toString());
+					debug="setValuesUpdate()";
+					data.dbupd.setValuesUpdate(lu);
+					debug="updateRow()";
+					data.dbupd.updateRow();
+					linesUpdated++;
+				}
+				else
+				{
+					linesSkipped++;
+				}
 			}
 			else
 			{
+				logRowlevel("Update bypassed: !"+row.toString());
 				linesSkipped++;
 			}
 		}

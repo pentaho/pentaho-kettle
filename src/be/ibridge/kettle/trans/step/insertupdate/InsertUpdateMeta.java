@@ -78,7 +78,10 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 	
     /** Commit size for inserts/updates */
 	private int    commitSize;
-	
+
+    /** Bypass any updates */
+	private boolean updateBypassed;
+
 	public InsertUpdateMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -284,6 +287,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 			csize      = XMLHandler.getTagValue(stepnode, "commit");
 			commitSize=Const.toInt(csize, 0);
 			tableName      = XMLHandler.getTagValue(stepnode, "lookup", "table");
+			updateBypassed = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "update_bypassed"));
 	
 			Node lookup = XMLHandler.getSubNode(stepnode, "lookup");
 			nrkeys    = XMLHandler.countNodes(lookup, "key");
@@ -351,6 +355,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 		
 		retval.append("    "+XMLHandler.addTagValue("connection", database==null?"":database.getName()));
 		retval.append("    "+XMLHandler.addTagValue("commit", commitSize));
+		retval.append("    "+XMLHandler.addTagValue("update_bypassed", updateBypassed));
 		retval.append("    <lookup>"+Const.CR);
 		retval.append("      "+XMLHandler.addTagValue("table", tableName));
 
@@ -387,6 +392,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 			
 			commitSize     = (int)rep.getStepAttributeInteger(id_step, "commit");
 			tableName      =      rep.getStepAttributeString(id_step, "table");
+			updateBypassed =      rep.getStepAttributeBoolean(id_step, "update_bypassed");
 	
 			int nrkeys   = rep.countNrStepAttributes(id_step, "key_name");
 			int nrvalues = rep.countNrStepAttributes(id_step, "value_name");
@@ -421,6 +427,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "id_connection", database==null?-1:database.getID());
 			rep.saveStepAttribute(id_transformation, id_step, "commit",        commitSize);
 			rep.saveStepAttribute(id_transformation, id_step, "table",         tableName);
+			rep.saveStepAttribute(id_transformation, id_step, "update_bypassed", updateBypassed);
 	
 			for (int i=0;i<keyStream.length;i++)
 			{
@@ -783,5 +790,25 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
             return super.getUsedDatabaseConnections();
         }
     }
+
+
+
+	/**
+	 * @return Returns the updateBypassed.
+	 */
+	public boolean isUpdateBypassed()
+	{
+		return updateBypassed;
+	}
+
+
+
+	/**
+	 * @param updateBypassed The updateBypassed to set.
+	 */
+	public void setUpdateBypassed(boolean updateBypassed)
+	{
+		this.updateBypassed = updateBypassed;
+	}
 
 }

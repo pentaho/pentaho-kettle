@@ -81,6 +81,10 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 	private Text				wCommit;
 	private FormData			fdlCommit, fdCommit;
 
+	private Label				wlUpdateBypassed;
+	private Button				wUpdateBypassed;
+	private FormData			fdlUpdateBypassed, fdUpdateBypassed;
+
 	private Button				wGetLU;
 	private FormData			fdGetLU;
 	private Listener			lsGetLU;
@@ -189,12 +193,29 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 		fdCommit.right = new FormAttachment(100, 0);
 		wCommit.setLayoutData(fdCommit);
 
+		// UpdateBypassed line
+		wlUpdateBypassed = new Label(shell, SWT.RIGHT);
+		wlUpdateBypassed.setText("Don't perform any updates: ");
+ 		props.setLook(wlUpdateBypassed);
+		fdlUpdateBypassed = new FormData();
+		fdlUpdateBypassed.left = new FormAttachment(0, 0);
+		fdlUpdateBypassed.top = new FormAttachment(wCommit, margin);
+		fdlUpdateBypassed.right = new FormAttachment(middle, -margin);
+		wlUpdateBypassed.setLayoutData(fdlUpdateBypassed);
+		wUpdateBypassed = new Button(shell, SWT.CHECK);
+ 		props.setLook(wUpdateBypassed);
+		fdUpdateBypassed = new FormData();
+		fdUpdateBypassed.left = new FormAttachment(middle, 0);
+		fdUpdateBypassed.top = new FormAttachment(wCommit, margin);
+		fdUpdateBypassed.right = new FormAttachment(100, 0);
+		wUpdateBypassed.setLayoutData(fdUpdateBypassed);
+
 		wlKey = new Label(shell, SWT.NONE);
 		wlKey.setText("The key(s) to look up the value(s): ");
  		props.setLook(wlKey);
 		fdlKey = new FormData();
 		fdlKey.left = new FormAttachment(0, 0);
-		fdlKey.top = new FormAttachment(wCommit, margin);
+		fdlKey.top = new FormAttachment(wUpdateBypassed, margin);
 		wlKey.setLayoutData(fdlKey);
 
 		int nrKeyCols = 4;
@@ -364,6 +385,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 		log.logDebug(toString(), "getting key info...");
 
 		wCommit.setText("" + input.getCommitSize());
+		wUpdateBypassed.setSelection(input.isUpdateBypassed());
 
 		if (input.getKeyStream() != null)
 			for (i = 0; i < input.getKeyStream().length; i++)
@@ -423,7 +445,8 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 		inf.allocate(nrkeys, nrfields);
 
 		inf.setCommitSize( Const.toInt(wCommit.getText(), 0) );
-
+		inf.setUpdateBypassed( wUpdateBypassed.getSelection() );
+		
 		log.logDebug(toString(), "Found " + nrkeys + " keys");
 		for (int i = 0; i < nrkeys; i++)
 		{
