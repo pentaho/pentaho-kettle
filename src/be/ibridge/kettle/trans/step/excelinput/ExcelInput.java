@@ -102,7 +102,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
 				v.setValue(((DateCell) cell).getDate());
 			} else if (cell.getType().equals(CellType.LABEL)) {
 				v.setValue(((LabelCell) cell).getString());
-				switch (meta.getFieldTrimType()[rowcolumn]) {
+				switch (meta.getField()[rowcolumn].getTrimType()) {
 				case ExcelInputMeta.TYPE_TRIM_LEFT:
 					v.ltrim();
 					break;
@@ -125,9 +125,9 @@ public class ExcelInput extends BaseStep implements StepInterface {
 
 			// Change to the appropriate type...
 			// 
-			v.setType(meta.getFieldType()[rowcolumn]);
-			v.setLength(meta.getFieldLength()[rowcolumn], meta
-					.getFieldPrecision()[rowcolumn]);
+			v.setType(meta.getField()[rowcolumn].getType());
+			v.setLength(meta.getField()[rowcolumn].getLength(), meta
+					.getField()[rowcolumn].getPrecision());
 		}
 
 		debug = "filename";
@@ -231,9 +231,9 @@ public class ExcelInput extends BaseStep implements StepInterface {
 			if (!r.isIgnored()) {
 				// OK, see if we need to repeat values.
 				if (data.previousRow != null) {
-					for (int i = 0; i < meta.getFieldRepeat().length; i++) {
+					for (int i = 0; i < meta.getField().length; i++) {
 						Value field = r.getValue(i);
-						if (field.isNull() && meta.getFieldRepeat()[i]) {
+						if (field.isNull() && meta.getField()[i].isRepeated()) {
 							// Take the value from the previous row.
 							Value repeat = data.previousRow.getValue(i);
 							field.setValue(repeat);

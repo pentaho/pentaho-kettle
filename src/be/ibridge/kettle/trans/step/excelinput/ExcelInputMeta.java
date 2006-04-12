@@ -57,7 +57,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	public final static int TYPE_TRIM_RIGHT = 2;
 	public final static int TYPE_TRIM_BOTH  = 3;
 	
-  public final static String type_trim_code[] = { "none", "left", "right", "both" };
+    public final static String type_trim_code[] = { "none", "left", "right", "both" };
+  
 	public final static String type_trim_desc[] = {
       Messages.getString("ExcelInputMeta.TrimType.None"),
       Messages.getString("ExcelInputMeta.TrimType.Left"),
@@ -134,35 +135,10 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	private  long    rowLimit;
 
 	/**
-	 * The names of the fields to read in the range.
+	 * The fields to read in the range.
 	 * Note: the number of columns in the range has to match field.length
 	 */
-	private  String fieldName[];
-	
-	/**
-	 * The data types of the fields 
-	 */
-	private  int    fieldType[];
-
-	/**
-	 * The lengths of the fields
-	 */
-	private  int fieldLength[];
-	
-	/**
-	 * The precisions of the fields.
-	 */
-	private  int fieldPrecision[];
-	
-	/**
-	 * Specifies how to trim the (text) field
-	 */
-	private  int fieldTrimType[];
-	
-	/**
-	 * Repeat the previous field value if this one is empty
-	 */
-	private  boolean fieldRepeat[];
+	private  ExcelInputField field[];
 	
     /** Strict types : will generate erros */
     private boolean strictTypes;
@@ -203,97 +179,17 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @return Returns the fieldLength.
      */
-    public int[] getFieldLength()
+    public ExcelInputField[] getField()
     {
-        return fieldLength;
+        return field;
     }
     
     /**
      * @param fieldLength The fieldLength to set.
      */
-    public void setFieldLength(int[] fieldLength)
+    public void setField(ExcelInputField[] fields)
     {
-        this.fieldLength = fieldLength;
-    }
-    
-    /**
-     * @return Returns the fieldName.
-     */
-    public String[] getFieldName()
-    {
-        return fieldName;
-    }
-    
-    /**
-     * @param fieldName The fieldName to set.
-     */
-    public void setFieldName(String[] fieldName)
-    {
-        this.fieldName = fieldName;
-    }
-    
-    /**
-     * @return Returns the fieldPrecision.
-     */
-    public int[] getFieldPrecision()
-    {
-        return fieldPrecision;
-    }
-    
-    /**
-     * @param fieldPrecision The fieldPrecision to set.
-     */
-    public void setFieldPrecision(int[] fieldPrecision)
-    {
-        this.fieldPrecision = fieldPrecision;
-    }
-    
-    /**
-     * @return Returns the fieldRepeat.
-     */
-    public boolean[] getFieldRepeat()
-    {
-        return fieldRepeat;
-    }
-    
-    /**
-     * @param fieldRepeat The fieldRepeat to set.
-     */
-    public void setFieldRepeat(boolean[] fieldRepeat)
-    {
-        this.fieldRepeat = fieldRepeat;
-    }
-    
-    /**
-     * @return Returns the fieldTrimType.
-     */
-    public int[] getFieldTrimType()
-    {
-        return fieldTrimType;
-    }
-    
-    /**
-     * @param fieldTrimType The fieldTrimType to set.
-     */
-    public void setFieldTrimType(int[] fieldTrimType)
-    {
-        this.fieldTrimType = fieldTrimType;
-    }
-    
-    /**
-     * @return Returns the fieldType.
-     */
-    public int[] getFieldType()
-    {
-        return fieldType;
-    }
-    
-    /**
-     * @param fieldType The fieldType to set.
-     */
-    public void setFieldType(int[] fieldType)
-    {
-        this.fieldType = fieldType;
+        this.field = fields;
     }
     
     /**
@@ -502,18 +398,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		int nrfiles  = fileName.length;
 		int nrsheets = sheetName.length;
-		int nrfields = fieldName.length;
+		int nrfields = field.length;
 
 		retval.allocate(nrfiles, nrsheets, nrfields);
 		
 		for (int i=0;i<nrfields;i++)
 		{
-			retval.fieldName[i]     = fieldName[i];
-			retval.fieldType[i]     = fieldType[i];
-			retval.fieldLength[i]    = fieldLength[i];
-			retval.fieldPrecision[i] = fieldPrecision[i];
-			retval.fieldTrimType[i] = fieldTrimType[i];
-			retval.fieldRepeat[i]    = fieldRepeat[i];
+			retval.field[i] = (ExcelInputField) field[i].clone();
 		}
 		
 		for (int i=0;i<nrfiles;i++)
@@ -569,15 +460,15 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
 				
-				fieldName[i]        = XMLHandler.getTagValue(fnode, "name");
-				fieldType[i]        = Value.getType(XMLHandler.getTagValue(fnode, "type"));
-				fieldLength[i]      = Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1);
-				fieldPrecision[i]   = Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1);
+				field[i].setName( XMLHandler.getTagValue(fnode, "name") );
+				field[i].setType( Value.getType(XMLHandler.getTagValue(fnode, "type")) );
+				field[i].setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
+				field[i].setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
 				String srepeat      = XMLHandler.getTagValue(fnode, "repeat");
-				fieldTrimType[i]    = getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type"));
+				field[i].setTrimType( getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")) );
 				
-				if (srepeat!=null) fieldRepeat[i] = YES.equalsIgnoreCase(srepeat); 
-				else               fieldRepeat[i]=false;
+				if (srepeat!=null) field[i].setRepeated( YES.equalsIgnoreCase(srepeat) ); 
+				else               field[i].setRepeated( false );
 			}
 			
 			for (int i=0;i<nrsheets;i++)
@@ -615,12 +506,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		startRow   = new int    [nrsheets];
 		startColumn   = new int    [nrsheets];
 		
-		fieldName      = new String [nrfields];
-		fieldType      = new int    [nrfields];
-		fieldLength     = new int    [nrfields];
-		fieldPrecision  = new int    [nrfields];
-		fieldTrimType  = new int    [nrfields];
-		fieldRepeat     = new boolean[nrfields];
+		field = new ExcelInputField[nrfields];
 	}
 	
 	public void setDefault()
@@ -644,12 +530,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (int i=0;i<nrfields;i++)
 		{
-			fieldName[i]      = "field"+i;				
-			fieldType[i]      = Value.VALUE_TYPE_NUMBER;
-			fieldLength[i]    = 9;
-			fieldPrecision[i] = 2;
-			fieldTrimType[i]   = TYPE_TRIM_NONE;
-			fieldRepeat[i]      = false;
+			field[i] = new ExcelInputField();
+			field[i].setName( "field"+i );				
+			field[i].setType( Value.VALUE_TYPE_NUMBER );
+			field[i].setLength( 9 );
+			field[i].setPrecision( 2 );
+			field[i].setTrimType( TYPE_TRIM_NONE );
+			field[i].setRepeated( false );
 		}
 			
 		rowLimit=0L;
@@ -672,12 +559,12 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		else         row=r;         // add to the existing row of values...
 		
 		int i;
-		for (i=0;i<fieldName.length;i++)
+		for (i=0;i<field.length;i++)
 		{
-			int type=fieldType[i];
+			int type=field[i].getType();
 			if (type==Value.VALUE_TYPE_NONE) type=Value.VALUE_TYPE_STRING;
-			Value v=new Value(fieldName[i], type);
-			v.setLength(fieldLength[i], fieldPrecision[i]);
+			Value v=new Value(field[i].getName(), type);
+			v.setLength(field[i].getLength(), field[i].getPrecision());
 			v.setOrigin(name);
 			row.addValue(v);
 		}
@@ -735,15 +622,15 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		 * Describe the fields to read
 		 */
 		retval.append("    <fields>"+Const.CR);
-		for (int i=0;i<fieldName.length;i++)
+		for (int i=0;i<field.length;i++)
 		{
 			retval.append("      <field>"+Const.CR);
-			retval.append("        "+XMLHandler.addTagValue("name",      fieldName[i]));
-			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(fieldType[i])));
-			retval.append("        "+XMLHandler.addTagValue("length",    fieldLength[i]));
-			retval.append("        "+XMLHandler.addTagValue("precision", fieldPrecision[i]));
-			retval.append("        "+XMLHandler.addTagValue("trim_type", getTrimTypeCode( fieldTrimType[i] )));
-			retval.append("        "+XMLHandler.addTagValue("repeat",    fieldRepeat[i]));
+			retval.append("        "+XMLHandler.addTagValue("name",      field[i].getName()) );
+			retval.append("        "+XMLHandler.addTagValue("type",      field[i].getTypeDesc()) );
+			retval.append("        "+XMLHandler.addTagValue("length",    field[i].getLength()) );
+			retval.append("        "+XMLHandler.addTagValue("precision", field[i].getPrecision()));
+			retval.append("        "+XMLHandler.addTagValue("trim_type", field[i].getTrimTypeCode() ) );
+			retval.append("        "+XMLHandler.addTagValue("repeat",    field[i].isRepeated()) );
 			retval.append("        </field>"+Const.CR);
 		}
 		retval.append("      </fields>"+Const.CR);
@@ -815,12 +702,12 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 
 			for (int i=0;i<nrfields;i++)
 			{
-				fieldName[i]     =                rep.getStepAttributeString (id_step, i, "field_name");
-				fieldType[i]     = Value.getType( rep.getStepAttributeString (id_step, i, "field_type") );
-				fieldLength[i]    = (int)          rep.getStepAttributeInteger(id_step, i, "field_length");
-				fieldPrecision[i] = (int)          rep.getStepAttributeInteger(id_step, i, "field_precision");
-				fieldTrimType[i] = getTrimTypeByCode(   rep.getStepAttributeString (id_step, i, "field_trim_type") );
-				fieldRepeat[i]    =                rep.getStepAttributeBoolean(id_step, i, "field_repeat");
+				field[i].setName( rep.getStepAttributeString (id_step, i, "field_name") );
+				field[i].setType( Value.getType( rep.getStepAttributeString (id_step, i, "field_type") ) );
+				field[i].setLength( (int)rep.getStepAttributeInteger(id_step, i, "field_length") );
+				field[i].setPrecision( (int)rep.getStepAttributeInteger(id_step, i, "field_precision") );
+				field[i].setTrimType( getTrimTypeByCode(   rep.getStepAttributeString (id_step, i, "field_trim_type") ) );
+				field[i].setRepeated( rep.getStepAttributeBoolean(id_step, i, "field_repeat") );
 			}		
 			
             strictTypes = rep.getStepAttributeBoolean(id_step, 0, "strict_types", false);
@@ -867,14 +754,14 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "sheet_startcol",  startColumn[i]);
 			}
 	
-			for (int i=0;i<fieldName.length;i++)
+			for (int i=0;i<field.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldName[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      Value.getTypeDesc(fieldType[i]));
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    fieldLength[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldPrecision[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type", getTrimTypeCode( fieldTrimType[i] ));
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",    fieldRepeat[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      field[i].getName() );
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      field[i].getTypeDesc() );
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    field[i].getLength() );
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", field[i].getPrecision() );
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_trim_type", field[i].getTrimTypeCode() );
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_repeat",    field[i].isRepeated());
 			}
 			
             rep.saveStepAttribute(id_transformation, id_step, "strict_types", strictTypes);
@@ -973,9 +860,9 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	public Row getEmptyFields()
 	{
 		Row row = new Row();
-		for (int i=0;i<fieldName.length;i++)
+		for (int i=0;i<field.length;i++)
 		{
-			Value v = new Value(fieldName[i], fieldType[i]);
+			Value v = new Value(field[i].getName(), field[i].getType());
 			row.addValue(v);
 		}
 		

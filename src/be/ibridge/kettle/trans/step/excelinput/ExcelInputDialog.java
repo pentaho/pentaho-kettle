@@ -654,7 +654,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		enableFields();
 
 		final int FieldsCols=6;
-		final int FieldsRows=input.getFieldName().length;
+		final int FieldsRows=input.getField().length;
 		int FieldsWidth =600;
 		int FieldsHeight=150;
 		
@@ -967,15 +967,15 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wLimit.setText(""+in.getRowLimit());
 		
 		log.logDebug(toString(), "getting fields info...");
-		for (int i=0;i<in.getFieldName().length;i++)
+		for (int i=0;i<in.getField().length;i++)
 		{
 			TableItem item = wFields.table.getItem(i);
-			String field    = in.getFieldName()[i];
-			String type     = Value.getTypeDesc(in.getFieldType()[i]);
-			String length   = ""+in.getFieldLength()[i];
-			String prec     = ""+in.getFieldPrecision()[i];
-			String trim     = TextFileInputMeta.getTrimTypeDesc(in.getFieldTrimType()[i]);
-			String rep      = in.getFieldRepeat()[i]?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No");
+			String field    = in.getField()[i].getName();
+			String type     = in.getField()[i].getTypeDesc();
+			String length   = ""+in.getField()[i].getLength();
+			String prec     = ""+in.getField()[i].getPrecision();
+			String trim     = in.getField()[i].getTrimTypeDesc();
+			String rep      = in.getField()[i].isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No");
 			
 			if (field   !=null) item.setText( 1, field);
 			if (type    !=null) item.setText( 2, type    );
@@ -1076,15 +1076,15 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		for (int i=0;i<nrfields;i++)
 		{
 			TableItem item  = wFields.getNonEmpty(i);
-			in.getFieldName()[i]     = item.getText(1);
-			in.getFieldType()[i]     = Value.getType(item.getText(2));
+			in.getField()[i].setName( item.getText(1) );
+			in.getField()[i].setType( Value.getType(item.getText(2)) );
 			String slength  = item.getText(3);
 			String sprec    = item.getText(4);
-			in.getFieldTrimType()[i]  = ExcelInputMeta.getTrimTypeByDesc(item.getText(5));
-			in.getFieldRepeat()[i]    = Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(6));		
+			in.getField()[i].setTrimType( ExcelInputMeta.getTrimTypeByDesc(item.getText(5)) );
+			in.getField()[i].setRepeated( Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(6)) );		
 
-			in.getFieldLength()[i]    = Const.toInt(slength, -1);
-			in.getFieldPrecision()[i] = Const.toInt(sprec, -1);
+			in.getField()[i].setLength( Const.toInt(slength, -1) );
+			in.getField()[i].setPrecision( Const.toInt(sprec, -1) );
 		}	
 		
 		// Error handling fields...
