@@ -1275,14 +1275,14 @@ public class TransMeta implements XMLInterface
 
         if (stepMeta == null) return row;
 
-        log.logDebug(toString(), Messages.getString("TransMeta.Log.FromStepALookingAtPreviousStep") + stepMeta.getName() + ", looking at " + findNrPrevSteps(stepMeta) + " prev. steps."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        log.logDebug(toString(), Messages.getString("TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String.valueOf(findNrPrevSteps(stepMeta)) )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         for (int i = 0; i < findNrPrevSteps(stepMeta); i++)
         {
             StepMeta prevStepMeta = findPrevStep(stepMeta, i);
 
             if (monitor != null)
             {
-                monitor.subTask(Messages.getString("TransMeta.Monitor.CheckingStepTask.Title") + prevStepMeta.getName() + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+                monitor.subTask(Messages.getString("TransMeta.Monitor.CheckingStepTask.Title", prevStepMeta.getName() )); //$NON-NLS-1$ //$NON-NLS-2$
             }
 
             Row add = getStepFields(prevStepMeta, monitor);
@@ -1345,14 +1345,14 @@ public class TransMeta implements XMLInterface
 
         if (stepMeta == null) { return null; }
 
-        log.logDebug(toString(), Messages.getString("TransMeta.Log.FromStepALookingAtPreviousStep2") + stepMeta.getName() + ", looking at " + findNrPrevSteps(stepMeta) + " prev. steps."); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+        log.logDebug(toString(), Messages.getString("TransMeta.Log.FromStepALookingAtPreviousStep", stepMeta.getName(), String.valueOf(findNrPrevSteps(stepMeta)) )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         for (int i = 0; i < findNrPrevSteps(stepMeta); i++)
         {
             StepMeta prevStepMeta = findPrevStep(stepMeta, i);
 
             if (monitor != null)
             {
-                monitor.subTask(Messages.getString("TransMeta.Monitor.CheckingStepTask.Title2") + prevStepMeta.getName() + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+                monitor.subTask(Messages.getString("TransMeta.Monitor.CheckingStepTask.Title", prevStepMeta.getName() )); //$NON-NLS-1$ //$NON-NLS-2$
             }
 
             Row add = getStepFields(prevStepMeta, monitor);
@@ -1414,12 +1414,12 @@ public class TransMeta implements XMLInterface
     public Row getThisStepFields(StepMeta stepMeta, Row row, IProgressMonitor monitor) throws KettleStepException
     {
         // Then this one.
-        log.logDebug(toString(), Messages.getString("TransMeta.Log.GettingFieldsFromStep") + stepMeta.getName() + ", type=" + stepMeta.getStepID()); //$NON-NLS-1$ //$NON-NLS-2$
+        log.logDebug(toString(), Messages.getString("TransMeta.Log.GettingFieldsFromStep",stepMeta.getName(), stepMeta.getStepID())); //$NON-NLS-1$ //$NON-NLS-2$
         String name = stepMeta.getName();
 
         if (monitor != null)
         {
-            monitor.subTask(Messages.getString("TransMeta.Log.GettingFieldsFromStep2") + name + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+            monitor.subTask(Messages.getString("TransMeta.Monitor.GettingFieldsFromStepTask.Title", name )); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         StepMetaInterface stepint = stepMeta.getStepMetaInterface();
@@ -1611,7 +1611,7 @@ public class TransMeta implements XMLInterface
             rep.rollback();
 
             log.logError(toString(), Messages.getString("TransMeta.Log.ErrorSavingTransformationToRepository") + Const.CR + dbe.getMessage()); //$NON-NLS-1$
-            throw new KettleException(Messages.getString("TransMeta.Log.ErrorSavingTransformationToRepository2"), dbe); //$NON-NLS-1$
+            throw new KettleException(Messages.getString("TransMeta.Log.ErrorSavingTransformationToRepository"), dbe); //$NON-NLS-1$
         }
         finally
         {
@@ -1744,7 +1744,7 @@ public class TransMeta implements XMLInterface
             directoryTree = directory.findRoot();
 
             // Get the transformation id
-            log.logDetailed(toString(), Messages.getString("TransMeta.Log.LookingForTransformation") + transname + "] in directory [" + directory.getPath() + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            log.logDetailed(toString(), Messages.getString("TransMeta.Log.LookingForTransformation", transname ,directory.getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
             if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTransformationInfoTask.Title")); //$NON-NLS-1$
             setID(rep.getTransformationID(transname, directory.getID()));
@@ -1761,7 +1761,7 @@ public class TransMeta implements XMLInterface
 
                 if (monitor != null) monitor.beginTask(Messages.getString("TransMeta.Monitor.LoadingTransformationTask.Title") + pathAndName, nrWork); //$NON-NLS-1$
 
-                log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingTransformation") + getName() + "] from repository..."); //$NON-NLS-1$ //$NON-NLS-2$
+                log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingTransformation", getName() )); //$NON-NLS-1$ //$NON-NLS-2$
 
                 // Load the common database connections
 
@@ -1829,9 +1829,9 @@ public class TransMeta implements XMLInterface
                 throw new KettleException(Messages.getString("TransMeta.Exception.TransformationDoesNotExist") + name); //$NON-NLS-1$
             }
 
-            log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadedTransformation2") + transname + "] , directory == null : " + (directory == null)); //$NON-NLS-1$ //$NON-NLS-2$
+            log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadedTransformation2", transname , String.valueOf(directory == null))); //$NON-NLS-1$ //$NON-NLS-2$
 
-            log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadedTransformation") + transname + "] from the directory [" + directory.getPath() + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadedTransformation", transname , directory.getPath() )); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         }
         catch (KettleDatabaseException e)
@@ -1841,7 +1841,7 @@ public class TransMeta implements XMLInterface
         }
         catch (Exception e)
         {
-            log.logError(toString(), Messages.getString("TransMeta.Log.DatabaseErrorOccuredReadingTransformation2") + Const.CR + e); //$NON-NLS-1$
+            log.logError(toString(), Messages.getString("TransMeta.Log.DatabaseErrorOccuredReadingTransformation") + Const.CR + e); //$NON-NLS-1$
             throw new KettleException(Messages.getString("TransMeta.Exception.DatabaseErrorOccuredReadingTransformation2"), e); //$NON-NLS-1$
         }
     }
@@ -2032,7 +2032,7 @@ public class TransMeta implements XMLInterface
 
             // Handle connections
             int n = XMLHandler.countNodes(transnode, "connection"); //$NON-NLS-1$
-            log.logDebug(toString(), Messages.getString("TransMeta.Log.WeHaveConnections") + n + " connections..."); //$NON-NLS-1$ //$NON-NLS-2$
+            log.logDebug(toString(), Messages.getString("TransMeta.Log.WeHaveConnections", String.valueOf(n) )); //$NON-NLS-1$ //$NON-NLS-2$
             for (int i = 0; i < n; i++)
             {
                 log.logDebug(toString(), Messages.getString("TransMeta.Log.LookingAtConnection") + i); //$NON-NLS-1$
@@ -3141,7 +3141,7 @@ public class TransMeta implements XMLInterface
         for (int i = 0; i < nrSteps(); i++)
         {
             StepMeta stepMeta = getStep(i);
-            if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.GettingTheSQLForStepTask.Title") + stepMeta + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+            if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.GettingTheSQLForStepTask.Title",""+stepMeta )); //$NON-NLS-1$ //$NON-NLS-2$
             Row prev = getPrevStepFields(stepMeta);
             SQLStatement sql = stepMeta.getStepMetaInterface().getSQLStatements(this, stepMeta, prev);
             if (sql.getSQL() != null || sql.hasError())
@@ -3238,7 +3238,7 @@ public class TransMeta implements XMLInterface
 
             for (int i = 0; i < steps.length && !stop_checking; i++)
             {
-                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.VerifyingStepTask.Title") + stepnames[i] + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.VerifyingStepTask.Title",stepnames[i])); //$NON-NLS-1$ //$NON-NLS-2$
 
                 StepMeta stepMeta = steps[i];
 
@@ -3259,8 +3259,7 @@ public class TransMeta implements XMLInterface
                     catch (KettleStepException kse)
                     {
                         info = null;
-                        CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingStepInfoFields.Description") //$NON-NLS-1$
-                                + stepMeta + "] :" + Const.CR + kse.getMessage(), stepMeta); //$NON-NLS-1$
+                        CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingStepInfoFields.Description",""+stepMeta , Const.CR + kse.getMessage()), stepMeta); //$NON-NLS-1$
                         remarks.add(cr);
                     }
                 }
@@ -3273,8 +3272,8 @@ public class TransMeta implements XMLInterface
                 }
                 catch (KettleStepException kse)
                 {
-                    CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingInputFields.Description") + stepMeta //$NON-NLS-1$
-                            + "] :" + Const.CR + kse.getMessage(), stepMeta); //$NON-NLS-1$
+                    CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingInputFields.Description", ""+stepMeta 
+                            , Const.CR + kse.getMessage()), stepMeta); //$NON-NLS-1$
                     remarks.add(cr);
                     // This is a severe error: stop checking...
                     // Otherwise we wind up checking time & time again because nothing gets put in the database
@@ -3310,7 +3309,7 @@ public class TransMeta implements XMLInterface
                                     for (int c = 0; c < list.length; c++)
                                     {
                                         if (name.indexOf(list[c]) >= 0)
-                                            values.put(v, Messages.getString("TransMeta.Value.CheckingFieldName.FieldNameContainsUnfriendlyCodes.Description") + list[c] + "  (database unfriendly!)"); //$NON-NLS-1$ //$NON-NLS-2$
+                                            values.put(v, Messages.getString("TransMeta.Value.CheckingFieldName.FieldNameContainsUnfriendlyCodes.Description",String.valueOf(list[c]) )); //$NON-NLS-1$ //$NON-NLS-2$
                                     }
                                 }
                         }
@@ -3329,7 +3328,7 @@ public class TransMeta implements XMLInterface
                                 {
                                     // Give a warning!!
                                     CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING,
-                                            Messages.getString("TransMeta.CheckResult.TypeResultWarning.HaveTheSameNameField.Description") + prevName + "]", stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
+                                            Messages.getString("TransMeta.CheckResult.TypeResultWarning.HaveTheSameNameField.Description", prevName ), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
                                     remarks.add(cr);
                                 }
                                 else
@@ -3377,7 +3376,7 @@ public class TransMeta implements XMLInterface
                         {
                             if (logdb.checkTableExists(getLogTable()))
                             {
-                                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TransMeta.CheckResult.TypeResultOK.LoggingTableExists.Description") + getLogTable() + "] exists.", null); //$NON-NLS-1$ //$NON-NLS-2$
+                                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("TransMeta.CheckResult.TypeResultOK.LoggingTableExists.Description", getLogTable() ), null); //$NON-NLS-1$ //$NON-NLS-2$
                                 remarks.add(cr);
 
                                 Row fields = Database.getTransLogrecordFields(isBatchIdUsed(), isLogfieldUsed());
@@ -3428,8 +3427,7 @@ public class TransMeta implements XMLInterface
                 {
                     Value v = (Value) keys.nextElement();
                     String message = (String) values.get(v);
-                    CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("TransMeta.CheckResult.TypeResultWarning.Description") + v.getName() + "] : " + message + " in step [" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-                            + v.getOrigin() + "]", findStep(v.getOrigin())); //$NON-NLS-1$
+                    CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("TransMeta.CheckResult.TypeResultWarning.Description",v.getName() , message ,v.getOrigin() ), findStep(v.getOrigin())); //$NON-NLS-1$
                     remarks.add(cr);
                 }
             }

@@ -127,7 +127,7 @@ public class Trans
 		preview_steps=prev_steps;
 		preview_sizes=prev_sizes;
 		log.logBasic(toString(), Messages.getString("Trans.Log.TransformationIsInPreviewMode")); //$NON-NLS-1$
-		log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToPreivew")+transMeta.nrSteps()+", nr of hops : "+transMeta.nrTransHops()); //$NON-NLS-1$ //$NON-NLS-2$
+		log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToPreivew",String.valueOf(transMeta.nrSteps()),String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	/*
@@ -855,7 +855,7 @@ public class Trans
 										Value maxvalue = r1.getValue(0);
 										if (maxvalue!=null && !maxvalue.isNull() && maxvalue.getDate()!=null)
 										{
-											log.logDetailed(toString(), Messages.getString("Trans.Log.FoundDateFromTable")+td.getTablename()+"."+td.getFieldname()+" = "+maxvalue.toString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+											log.logDetailed(toString(), Messages.getString("Trans.Log.FoundDateFromTable",td.getTablename(),"."+td.getFieldname()," = "+maxvalue.toString())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 											if ( maxvalue.getDate().getTime() > maxdepdate.getTime())
 											{
 												maxdepdate=maxvalue.getDate();

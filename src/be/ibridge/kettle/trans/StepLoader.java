@@ -203,7 +203,7 @@ public class StepLoader
             }
             catch(Exception e)
             {
-                System.out.println(Messages.getString("StepLoader.RuntimeError.CouldNotFindDirectory.TRANS0002")+pluginDirectory[dirNr]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                System.out.println(Messages.getString("StepLoader.RuntimeError.CouldNotFindDirectory.TRANS0002",pluginDirectory[dirNr])); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
         return true;
