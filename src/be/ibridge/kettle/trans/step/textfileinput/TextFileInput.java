@@ -59,63 +59,66 @@ import be.ibridge.kettle.trans.step.playlist.FilePlayListReplay;
  * @author Matt
  * @since 4-apr-2003
  */
-public class TextFileInput extends BaseStep implements StepInterface {
+public class TextFileInput extends BaseStep implements StepInterface
+{
 	private TextFileInputMeta meta;
 
 	private TextFileInputData data;
 
 	private long lineNumberInFile;
 
-	public TextFileInput(StepMeta stepMeta,
-			StepDataInterface stepDataInterface, int copyNr,
-			TransMeta transMeta, Trans trans) {
+	public TextFileInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
+	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 
-	public static final String getLine(LogWriter log, InputStreamReader reader,
-			String format) {
+	public static final String getLine(LogWriter log, InputStreamReader reader, String format)
+	{
 		//Tom modified for performance
-//		StringBuffer line = new StringBuffer();
+		//		StringBuffer line = new StringBuffer();
 		StringBuffer line = new StringBuffer(256);
 		int c = 0;
 
-		try {
-			while (c >= 0) {
+		try
+		{
+			while (c >= 0)
+			{
 				c = reader.read();
-				if (c == '\n' || c == '\r') {
-					if (format.equalsIgnoreCase("DOS"))
-						c = reader.read(); // skip \n and \r
+				if (c == '\n' || c == '\r')
+				{
+					if (format.equalsIgnoreCase("DOS")) c = reader.read(); // skip \n and \r
 					return line.toString();
 				}
-				if (c >= 0)
-					line.append((char) c);
+				if (c >= 0) line.append((char) c);
 			}
-		} catch (Exception e) {
-			if (line.length() == 0) {
-				log.logError("get line", "Exception reading line: "
-						+ e.toString());
+		}
+		catch (Exception e)
+		{
+			if (line.length() == 0)
+			{
+				log.logError("get line", "Exception reading line: " + e.toString());
 				return null;
 			}
 			return line.toString();
 		}
-		if (line.length() > 0)
-			return line.toString();
+		if (line.length() > 0) return line.toString();
 
 		return null;
 	}
 
-	public static final ArrayList convertLineToStrings(LogWriter log,
-			String line, TextFileInputMeta inf) throws KettleException {
+	public static final ArrayList convertLineToStrings(LogWriter log, String line, TextFileInputMeta inf) throws KettleException
+	{
 		ArrayList strings = new ArrayList();
 		int fieldnr;
 		String pol; // piece of line
 		String debug = "convertLineToStrings start";
 
-		try {
-			if (line == null)
-				return null;
+		try
+		{
+			if (line == null) return null;
 
-			if (inf.getFileType().equalsIgnoreCase("CSV")) {
+			if (inf.getFileType().equalsIgnoreCase("CSV"))
+			{
 				// Split string in pieces, only for CSV!
 
 				fieldnr = 0;
@@ -123,15 +126,14 @@ public class TextFileInput extends BaseStep implements StepInterface {
 				int length = line.length();
 				boolean dencl = false;
 
-				while (pos < length) {
+				while (pos < length)
+				{
 					debug = "convertLineToStrings while start";
 
 					int from = pos;
 					int next;
-					int len_encl = (inf.getEnclosure() == null ? 0 : inf
-							.getEnclosure().length());
-					int len_esc = (inf.getEscapeCharacter() == null ? 0 : inf
-							.getEscapeCharacter().length());
+					int len_encl = (inf.getEnclosure() == null ? 0 : inf.getEnclosure().length());
+					int len_esc = (inf.getEscapeCharacter() == null ? 0 : inf.getEscapeCharacter().length());
 
 					boolean encl_found;
 					boolean contains_escaped_enclosures = false;
@@ -139,203 +141,143 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
 					// Is the field beginning with an enclosure?
 					// "aa;aa";123;"aaa-aaa";000;...
-					if (len_encl > 0
-							&& line.substring(from, from + len_encl)
-									.equalsIgnoreCase(inf.getEnclosure())) {
+					if (len_encl > 0 && line.substring(from, from + len_encl).equalsIgnoreCase(inf.getEnclosure()))
+					{
 						debug = "convertLineToStrings if start";
 
-						log.logRowlevel("convert line to row",
-								"encl substring=["
-										+ line.substring(from, from + len_encl)
-										+ "]");
+						log.logRowlevel("convert line to row", "encl substring=[" + line.substring(from, from + len_encl) + "]");
 						encl_found = true;
 						int p = from + len_encl;
 
-						boolean is_enclosure = len_encl > 0
-								&& p + len_encl < length
-								&& line.substring(p, p + len_encl)
-										.equalsIgnoreCase(inf.getEnclosure());
-						boolean is_escape = len_esc > 0
-								&& p + len_esc < length
-								&& line.substring(p, p + len_esc)
-										.equalsIgnoreCase(
-												inf.getEscapeCharacter());
+						boolean is_enclosure = len_encl > 0 && p + len_encl < length
+								&& line.substring(p, p + len_encl).equalsIgnoreCase(inf.getEnclosure());
+						boolean is_escape = len_esc > 0 && p + len_esc < length
+								&& line.substring(p, p + len_esc).equalsIgnoreCase(inf.getEscapeCharacter());
 
 						boolean enclosure_after = false;
-						if ((is_enclosure || is_escape) && p < length - 1) // Is
-																			// it
-																			// really
-																			// an
-																			// enclosure,
-																			// see
-																			// if
-																			// it's
-																			// not
-																			// repeated
-																			// twice
-																			// or
-																			// escaped
+						
+						// Is it really an enclosure? See if it's not repeated twice or escaped!
+						if ((is_enclosure || is_escape) && p < length - 1) 
 						{
-							String strnext = line.substring(p + len_encl, p + 2
-									* len_encl);
-							if (strnext.equalsIgnoreCase(inf.getEnclosure())) {
+							String strnext = line.substring(p + len_encl, p + 2 * len_encl);
+							if (strnext.equalsIgnoreCase(inf.getEnclosure()))
+							{
 								p++;
 								enclosure_after = true;
 								dencl = true;
 
-								if (is_escape)
-									contains_escaped_enclosures = true; // remember
-																		// to
-																		// replace
-																		// them
-																		// later
-																		// on!
+								// Remember to replace them later on!
+								if (is_escape) contains_escaped_enclosures = true; 
 							}
 						}
 
 						// Look for a closing enclosure!
-						while ((!is_enclosure || enclosure_after)
-								&& p < line.length()) {
-							debug = "convertLineToStrings start while enclosure (p="
-									+ p + ")";
+						while ((!is_enclosure || enclosure_after) && p < line.length())
+						{
+							debug = "convertLineToStrings start while enclosure (p=" + p + ")";
 
 							p++;
 							enclosure_after = false;
-							is_enclosure = len_encl > 0
-									&& p + len_encl < length
-									&& line.substring(p, p + len_encl).equals(
-											inf.getEnclosure());
-							is_escape = len_esc > 0
-									&& p + len_esc < length
-									&& line.substring(p, p + len_esc).equals(
-											inf.getEscapeCharacter());
+							is_enclosure = len_encl > 0 && p + len_encl < length && line.substring(p, p + len_encl).equals(inf.getEnclosure());
+							is_escape = len_esc > 0 && p + len_esc < length && line.substring(p, p + len_esc).equals(inf.getEscapeCharacter());
 
+							// Is it really an enclosure? See if it's not repeated twice or escaped!
 							if ((is_enclosure || is_escape) && p < length - 1) // Is
-																				// it
-																				// really
-																				// an
-																				// enclosure,
-																				// see
-																				// if
-																				// it's
-																				// not
-																				// repeated
-																				// twice
 							{
-								String strnext = line.substring(p + len_encl, p
-										+ 2 * len_encl);
-								if (strnext.equals(inf.getEnclosure())) {
+								String strnext = line.substring(p + len_encl, p + 2 * len_encl);
+								if (strnext.equals(inf.getEnclosure()))
+								{
 									p++;
 									enclosure_after = true;
 									dencl = true;
 
-									if (is_escape)
-										contains_escaped_enclosures = true; // remember
-																			// to
-																			// replace
-																			// them
-																			// later
-																			// on!
+									// Remember to replace them later on!
+									if (is_escape) contains_escaped_enclosures = true; // remember
 								}
 							}
 						}
 
-						if (p >= length)
-							next = p;
-						else
-							next = p + len_encl;
+						if (p >= length) next = p;
+						else next = p + len_encl;
 
-						log.logRowlevel("convert line to row",
-								"End of enclosure @ position " + p);
+						log.logRowlevel("convert line to row", "End of enclosure @ position " + p);
 						debug = "convertLineToStrings end of enclosure";
-					} else {
+					}
+					else
+					{
 						encl_found = false;
 						boolean found = false;
 						int startpoint = from;
 						int tries = 1;
-						do {
+						do
+						{
 							next = line.indexOf(inf.getSeparator(), startpoint);
 
-							// System.out.println("tries="+tries+",
-							// startpoint="+startpoint+", next="+next+",
-							// ["+line.substring(next-len_esc, next+5));
+							// See if this position is preceded by an escape character.
+							if (len_esc > 0 && next - len_esc > 0)
+							{
+								String before = line.substring(next - len_esc, next);
 
-							// See if this position is preceded by an escape
-							// character.
-							if (len_esc > 0 && next - len_esc > 0) {
-								String before = line.substring(next - len_esc,
-										next);
-								// System.out.println("before string:
-								// ["+before+"]");
-								if (inf.getEscapeCharacter().equals(before)) {
-									// System.out.println("ESCAPED SEPARATOR
-									// FOUND");
-									startpoint = next + 1; // take the next
-															// separator, this
-															// one is escaped...
+								if (inf.getEscapeCharacter().equals(before))
+								{
+									// take the next separator, this one is escaped...
+									startpoint = next + 1; 
 									tries++;
 									contains_escaped_separators = true;
-								} else {
+								}
+								else
+								{
 									found = true;
 								}
-							} else {
+							}
+							else
+							{
 								found = true;
 							}
-						} while (!found && next >= 0);
+						}
+						while (!found && next >= 0);
 					}
-					if (next == -1)
-						next = length;
+					if (next == -1) next = length;
 
-					if (encl_found) {
+					if (encl_found)
+					{
 						pol = line.substring(from + len_encl, next - len_encl);
-						log.logRowlevel("convert line to row",
-								"Enclosed field found: [" + pol + "]");
-					} else {
+						log.logRowlevel("convert line to row", "Enclosed field found: [" + pol + "]");
+					}
+					else
+					{
 						debug = "convertLineToStrings get substring";
 						pol = line.substring(from, next);
-						log.logRowlevel("convert line to row",
-								"Normal field found: [" + pol + "]");
+						log.logRowlevel("convert line to row", "Normal field found: [" + pol + "]");
 					}
 
-					if (dencl) {
+					if (dencl)
+					{
 						debug = "convertLineToStrings dencl";
 						StringBuffer sbpol = new StringBuffer(pol);
-						int idx = sbpol.indexOf(inf.getEnclosure()
-								+ inf.getEnclosure());
-						while (idx >= 0) {
-							sbpol
-									.delete(idx, idx
-											+ inf.getEnclosure().length());
-							idx = sbpol.indexOf(inf.getEnclosure()
-									+ inf.getEnclosure());
+						int idx = sbpol.indexOf(inf.getEnclosure() + inf.getEnclosure());
+						while (idx >= 0)
+						{
+							sbpol.delete(idx, idx + inf.getEnclosure().length());
+							idx = sbpol.indexOf(inf.getEnclosure() + inf.getEnclosure());
 						}
 						pol = sbpol.toString();
 					}
 
-					if (contains_escaped_enclosures) // replace the escaped
-														// enclosures with
-														// enclosures...
+					//	replace the escaped enclosures with enclosures... 
+					if (contains_escaped_enclosures) 
 					{
-						String replace = inf.getEscapeCharacter()
-								+ inf.getEnclosure();
+						String replace = inf.getEscapeCharacter() + inf.getEnclosure();
 						String replaceWith = inf.getEnclosure();
-
-						// System.out.println("Replace ["+replace+"] with
-						// ["+replaceWith+"] in ["+pol+"]");
 
 						pol = Const.replace(pol, replace, replaceWith);
 					}
 
-					if (contains_escaped_separators) // replace the escaped
-														// separators with
-														// separators...
+					//replace the escaped separators with separators... 
+					if (contains_escaped_separators) 
 					{
-						String replace = inf.getEscapeCharacter()
-								+ inf.getSeparator();
+						String replace = inf.getEscapeCharacter() + inf.getSeparator();
 						String replaceWith = inf.getSeparator();
-
-						// System.out.println("Replace ["+replace+"] with
-						// ["+replaceWith+"] in ["+pol+"]");
 
 						pol = Const.replace(pol, replace, replaceWith);
 					}
@@ -344,38 +286,43 @@ public class TextFileInput extends BaseStep implements StepInterface {
 					debug = "convertLineToStrings add pol";
 					strings.add(pol);
 
-					// System.out.println("Found new field: ["+pol+"]");
-
 					pos = next + 1;
 					fieldnr++;
 				}
-			} else {
+			}
+			else
+			{
 				debug = "convertLineToStrings : Fixed";
-				// Fixed file format:
-				// Simply get the strings at the required positions...
 
-				for (int i = 0; i < inf.getInputFields().length; i++) {
+				// Fixed file format: Simply get the strings at the required positions...
+				for (int i = 0; i < inf.getInputFields().length; i++)
+				{
 					TextFileInputField field = inf.getInputFields()[i];
-					debug = "convertLineToStrings : Fixed, field ["
-							+ field.getName() + "]";
+					debug = "convertLineToStrings : Fixed, field [" + field.getName() + "]";
 
 					int length = line.length();
 
-					if (field.getPosition() + field.getLength() <= length) {
-						strings.add(line.substring(field.getPosition(), field
-								.getPosition()
-								+ field.getLength()));
-					} else {
-						if (field.getPosition() < length) {
+					if (field.getPosition() + field.getLength() <= length)
+					{
+						strings.add(line.substring(field.getPosition(), field.getPosition() + field.getLength()));
+					}
+					else
+					{
+						if (field.getPosition() < length)
+						{
 							strings.add(line.substring(field.getPosition()));
-						} else {
+						}
+						else
+						{
 							strings.add("");
 						}
 					}
 				}
 			}
-		} catch (Exception e) {
-			throw new KettleException(Messages.getString("TextFileInput.Exception.ErrorConvertingLineInPart", e.toString(), debug), e);
+		}
+		catch (Exception e)
+		{
+			throw new KettleException("Error converting line : " + e.toString() + " in part: " + debug, e);
 		}
 
 		debug = "end of convertLineToStrings";
@@ -383,120 +330,114 @@ public class TextFileInput extends BaseStep implements StepInterface {
 		return strings;
 	}
 
-	public static final Row convertLineToRow(LogWriter log,
-			TextFileLine textFileLine, TextFileInputMeta info,
-			DecimalFormat ldf, DecimalFormatSymbols ldfs,
-			SimpleDateFormat ldaf, DateFormatSymbols ldafs, String fname,
-			long rowNr) throws KettleException {
-		return convertLineToRow(log, textFileLine, info, ldf, ldfs, ldaf,
-				ldafs, fname, rowNr, null);
+	public static final Row convertLineToRow(LogWriter log, TextFileLine textFileLine, TextFileInputMeta info, DecimalFormat ldf,
+			DecimalFormatSymbols ldfs, SimpleDateFormat ldaf, DateFormatSymbols ldafs, String fname, long rowNr) throws KettleException
+	{
+		return convertLineToRow(log, textFileLine, info, ldf, ldfs, ldaf, ldafs, fname, rowNr, null);
 	}
 
-	public static final Row convertLineToRow(LogWriter log,
-			TextFileLine textFileLine, TextFileInputMeta info,
-			DecimalFormat ldf, DecimalFormatSymbols ldfs,
-			SimpleDateFormat ldaf, DateFormatSymbols ldafs, String fname,
-			long rowNr, FileErrorHandler errorHandler)
-			throws KettleException {
+	public static final Row convertLineToRow(LogWriter log, TextFileLine textFileLine, TextFileInputMeta info, DecimalFormat ldf,
+			DecimalFormatSymbols ldfs, SimpleDateFormat ldaf, DateFormatSymbols ldafs, String fname, long rowNr, FileErrorHandler errorHandler)
+			throws KettleException
+	{
 
 		Row r = new Row();
 
-		if (textFileLine == null || textFileLine.line == null
-				|| textFileLine.line.length() == 0)
-			return r;
+		if (textFileLine == null || textFileLine.line == null || textFileLine.line.length() == 0) return r;
 
 		int fieldnr;
 		Value value;
 
 		Value errorCount = null;
-		if (info.isErrorIgnored() && info.getErrorCountField() != null
-				&& info.getErrorCountField().length() > 0) {
+		if (info.isErrorIgnored() && info.getErrorCountField() != null && info.getErrorCountField().length() > 0)
+		{
 			errorCount = new Value(info.getErrorCountField(), 0L);
 		}
 		Value errorFields = null;
-		if (info.isErrorIgnored() && info.getErrorFieldsField() != null
-				&& info.getErrorFieldsField().length() > 0) {
+		if (info.isErrorIgnored() && info.getErrorFieldsField() != null && info.getErrorFieldsField().length() > 0)
+		{
 			errorFields = new Value(info.getErrorFieldsField(), "");
 		}
 		Value errorText = null;
-		if (info.isErrorIgnored() && info.getErrorTextField() != null
-				&& info.getErrorTextField().length() > 0) {
+		if (info.isErrorIgnored() && info.getErrorTextField() != null && info.getErrorTextField().length() > 0)
+		{
 			errorText = new Value(info.getErrorTextField(), "");
 		}
 
 		int nrfields = info.getInputFields().length;
 
-		try {
+		try
+		{
 			// System.out.println("Convertings line to string ["+line+"]");
-			ArrayList strings = convertLineToStrings(log, textFileLine.line,
-					info);
+			ArrayList strings = convertLineToStrings(log, textFileLine.line, info);
 
-			for (fieldnr = 0; fieldnr < nrfields; fieldnr++) {
+			for (fieldnr = 0; fieldnr < nrfields; fieldnr++)
+			{
 				TextFileInputField f = info.getInputFields()[fieldnr];
 
-				String field = fieldnr < nrfields ? f.getName() : "empty"
-						+ fieldnr;
-				int type = fieldnr < nrfields ? f.getType()
-						: Value.VALUE_TYPE_STRING;
+				String field = fieldnr < nrfields ? f.getName() : "empty" + fieldnr;
+				int type = fieldnr < nrfields ? f.getType() : Value.VALUE_TYPE_STRING;
 				String format = fieldnr < nrfields ? f.getFormat() : "";
 				int length = fieldnr < nrfields ? f.getLength() : -1;
 				int precision = fieldnr < nrfields ? f.getPrecision() : -1;
 				String group = fieldnr < nrfields ? f.getGroupSymbol() : "";
 				String decimal = fieldnr < nrfields ? f.getDecimalSymbol() : "";
-				String currency = fieldnr < nrfields ? f.getCurrencySymbol()
-						: "";
+				String currency = fieldnr < nrfields ? f.getCurrencySymbol() : "";
 				String nullif = fieldnr < nrfields ? f.getNullString() : "";
-				int trim_type = fieldnr < nrfields ? f.getTrimType()
-						: TextFileInputMeta.TYPE_TRIM_NONE;
+				int trim_type = fieldnr < nrfields ? f.getTrimType() : TextFileInputMeta.TYPE_TRIM_NONE;
 
-				if (fieldnr < strings.size()) {
+				if (fieldnr < strings.size())
+				{
 					String pol = (String) strings.get(fieldnr);
-					try {
-						value = convertValue(pol, field, type, format, length,
-								precision, group, decimal, currency, nullif,
-								trim_type, ldf, ldfs, ldaf, ldafs);
-					} catch (Exception e) {
-						if (info.isErrorIgnored()) {
+					try
+					{
+						value = convertValue(pol, field, type, format, length, precision, group, decimal, currency, nullif, trim_type, ldf, ldfs,
+								ldaf, ldafs);
+					}
+					catch (Exception e)
+					{
+						if (info.isErrorIgnored())
+						{
 							// OK, give some feedback!
-							String message = "Couldn't parse field [" + field
-									+ "] with value [" + pol + "] : "
-									+ e.getMessage();
+							String message = "Couldn't parse field [" + field + "] with value [" + pol + "] : " + e.getMessage();
 							log.logBasic(fname, "WARNING: " + message);
 
 							value = new Value(field, type);
 							value.setNull();
 
-							if (errorCount != null) {
+							if (errorCount != null)
+							{
 								errorCount.plus(1L);
 							}
-							if (errorFields != null) {
-								StringBuffer sb = new StringBuffer(errorFields
-										.getString());
-								if (sb.length() > 0)
-									sb.append(", ");
+							if (errorFields != null)
+							{
+								StringBuffer sb = new StringBuffer(errorFields.getString());
+								if (sb.length() > 0) sb.append(", ");
 								sb.append(field);
 								errorFields.setValue(sb);
 							}
-							if (errorText != null) {
-								StringBuffer sb = new StringBuffer(errorText
-										.getString());
-								if (sb.length() > 0)
-									sb.append(Const.CR);
+							if (errorText != null)
+							{
+								StringBuffer sb = new StringBuffer(errorText.getString());
+								if (sb.length() > 0) sb.append(Const.CR);
 								sb.append(message);
 								errorText.setValue(sb);
 							}
-							if (errorHandler != null) {
-								errorHandler
-										.handleLineError(textFileLine.lineNumber, AbstractFileErrorHandler.NO_PARTS);
+							if (errorHandler != null)
+							{
+								errorHandler.handleLineError(textFileLine.lineNumber, AbstractFileErrorHandler.NO_PARTS);
 							}
-							
-							if (info.isErrorLineSkipped())
-								r.setIgnore();
-						} else {
-							throw new KettleException(Messages.getString("TextFileInput.Exception.ErrorPasingField", f.getName()), e);
+
+							if (info.isErrorLineSkipped()) r.setIgnore();
+						}
+						else
+						{
+							throw new KettleException("Couldn't parse field [" + f.getName() + "] with value [" + pol + "]", e);
 						}
 					}
-				} else {
+				}
+				else
+				{
 					// No data found: TRAILING NULLCOLS: add null value...
 					value = new Value(field, type);
 					value.setNull();
@@ -507,40 +448,42 @@ public class TextFileInput extends BaseStep implements StepInterface {
 			}
 
 			// Add the error handling fields...
-			if (errorCount != null)
-				r.addValue(errorCount);
-			if (errorFields != null)
-				r.addValue(errorFields);
-			if (errorText != null)
-				r.addValue(errorText);
+			if (errorCount != null) r.addValue(errorCount);
+			if (errorFields != null) r.addValue(errorFields);
+			if (errorText != null) r.addValue(errorText);
 
 			// Support for trailing nullcols!
-			if (fieldnr < info.getInputFields().length) {
-				for (int i = fieldnr; i < info.getInputFields().length; i++) {
+			if (fieldnr < info.getInputFields().length)
+			{
+				for (int i = fieldnr; i < info.getInputFields().length; i++)
+				{
 					TextFileInputField f = info.getInputFields()[i];
 
 					value = new Value(f.getName(), f.getType()); // build a
-																	// value!
+					// value!
 					value.setLength(f.getLength(), f.getPrecision());
 					value.setNull();
 					r.addValue(value);
 				}
 			}
-		} catch (Exception e) {
-			throw new KettleException(Messages.getString("TextFileInput.Exception.ErrorConvertingLine"), e);
+		}
+		catch (Exception e)
+		{
+			throw new KettleException("Error converting line", e);
 		}
 
 		// Possibly add a filename...
-		if (info.includeFilename()) {
+		if (info.includeFilename())
+		{
 			Value inc = new Value(info.getFilenameField(), fname);
 			inc.setLength(100);
 			r.addValue(inc);
 		}
 
 		// Possibly add a row number...
-		if (info.includeRowNumber()) {
-			Value inc = new Value(info.getRowNumberField(),
-					Value.VALUE_TYPE_INTEGER);
+		if (info.includeRowNumber())
+		{
+			Value inc = new Value(info.getRowNumberField(), Value.VALUE_TYPE_INTEGER);
 			inc.setValue(rowNr);
 			inc.setLength(9);
 			r.addValue(inc);
@@ -549,18 +492,18 @@ public class TextFileInput extends BaseStep implements StepInterface {
 		return r;
 	}
 
-	public static final Value convertValue(String pol, String field_name,
-			int field_type, String field_format, int field_length,
-			int field_precision, String num_group, String num_decimal,
-			String num_currency, String nullif, int trim_type,
-			DecimalFormat ldf, DecimalFormatSymbols ldfs,
-			SimpleDateFormat ldaf, DateFormatSymbols ldafs) throws Exception {
+	public static final Value convertValue(String pol, String field_name, int field_type, String field_format, int field_length, int field_precision,
+			String num_group, String num_decimal, String num_currency, String nullif, int trim_type, DecimalFormat ldf, DecimalFormatSymbols ldfs,
+			SimpleDateFormat ldaf, DateFormatSymbols ldafs) throws Exception
+	{
 		Value value = new Value(field_name, field_type); // build a value!
 
 		// If no nullif field is supplied, take the default.
 		String null_value = nullif;
-		if (null_value == null) {
-			switch (field_type) {
+		if (null_value == null)
+		{
+			switch (field_type)
+			{
 			case Value.VALUE_TYPE_BOOLEAN:
 				null_value = Const.NULL_BOOLEAN;
 				break;
@@ -584,99 +527,120 @@ public class TextFileInput extends BaseStep implements StepInterface {
 				break;
 			}
 		}
-		String null_cmp = Const.rightPad(new StringBuffer(null_value), pol
-				.length());
+		String null_cmp = Const.rightPad(new StringBuffer(null_value), pol.length());
 
-		if (pol == null || pol.length() == 0 || pol.equalsIgnoreCase(null_cmp)) {
+		if (pol == null || pol.length() == 0 || pol.equalsIgnoreCase(null_cmp))
+		{
 			value.setNull();
-		} else if (value.isNumeric()) {
-			try {
-				StringBuffer strpol = new StringBuffer(pol);
-
-				switch (trim_type) {
-				case TextFileInputMeta.TYPE_TRIM_LEFT:
-					while (strpol.length() > 0 && strpol.charAt(0) == ' ')
-						strpol.deleteCharAt(0);
-					break;
-				case TextFileInputMeta.TYPE_TRIM_RIGHT:
-					while (strpol.length() > 0
-							&& strpol.charAt(strpol.length() - 1) == ' ')
-						strpol.deleteCharAt(strpol.length() - 1);
-					break;
-				case TextFileInputMeta.TYPE_TRIM_BOTH:
-					while (strpol.length() > 0 && strpol.charAt(0) == ' ')
-						strpol.deleteCharAt(0);
-					while (strpol.length() > 0
-							&& strpol.charAt(strpol.length() - 1) == ' ')
-						strpol.deleteCharAt(strpol.length() - 1);
-					break;
-				default:
-					break;
-				}
-				pol = strpol.toString();
-
-				if (value.isNumber()) {
-					if (field_format != null) {
-						ldf.applyPattern(field_format);
-
-						if (num_decimal != null && num_decimal.length() >= 1)
-							ldfs.setDecimalSeparator(num_decimal.charAt(0));
-						if (num_group != null && num_group.length() >= 1)
-							ldfs.setGroupingSeparator(num_group.charAt(0));
-						if (num_currency != null && num_currency.length() >= 1)
-							ldfs.setCurrencySymbol(num_currency);
-
-						ldf.setDecimalFormatSymbols(ldfs);
-					}
-
-					value.setValue(ldf.parse(pol).doubleValue());
-				} else if (value.isInteger()) {
-					value.setValue(Long.parseLong(pol));
-				} else if (value.isBigNumber()) {
-					value.setValue(new BigDecimal(pol));
-				} else {
-					throw new KettleValueException(
-							Messages.getString("TextFileInput.Exception.UnknownNumericType"));
-				}
-			} catch (Exception e) {
-				throw (e);
-			}
-		} else if (value.isString()) {
-			value.setValue(pol);
-			switch (trim_type) {
-			case TextFileInputMeta.TYPE_TRIM_LEFT:
-				value.ltrim();
-				break;
-			case TextFileInputMeta.TYPE_TRIM_RIGHT:
-				value.rtrim();
-				break;
-			case TextFileInputMeta.TYPE_TRIM_BOTH:
-				value.trim();
-				break;
-			default:
-				break;
-			}
-			if (pol.length() == 0)
-				value.setNull();
-		} else if (value.isDate()) {
-			try {
-				if (field_format != null) {
-					ldaf.applyPattern(field_format);
-					ldaf.setDateFormatSymbols(ldafs);
-				}
-
-				value.setValue(ldaf.parse(pol));
-			} catch (Exception e) {
-				throw (e);
-			}
 		}
+		else
+			if (value.isNumeric())
+			{
+				try
+				{
+					StringBuffer strpol = new StringBuffer(pol);
+
+					switch (trim_type)
+					{
+					case TextFileInputMeta.TYPE_TRIM_LEFT:
+						while (strpol.length() > 0 && strpol.charAt(0) == ' ')
+							strpol.deleteCharAt(0);
+						break;
+					case TextFileInputMeta.TYPE_TRIM_RIGHT:
+						while (strpol.length() > 0 && strpol.charAt(strpol.length() - 1) == ' ')
+							strpol.deleteCharAt(strpol.length() - 1);
+						break;
+					case TextFileInputMeta.TYPE_TRIM_BOTH:
+						while (strpol.length() > 0 && strpol.charAt(0) == ' ')
+							strpol.deleteCharAt(0);
+						while (strpol.length() > 0 && strpol.charAt(strpol.length() - 1) == ' ')
+							strpol.deleteCharAt(strpol.length() - 1);
+						break;
+					default:
+						break;
+					}
+					pol = strpol.toString();
+
+					if (value.isNumber())
+					{
+						if (field_format != null)
+						{
+							ldf.applyPattern(field_format);
+
+							if (num_decimal != null && num_decimal.length() >= 1) ldfs.setDecimalSeparator(num_decimal.charAt(0));
+							if (num_group != null && num_group.length() >= 1) ldfs.setGroupingSeparator(num_group.charAt(0));
+							if (num_currency != null && num_currency.length() >= 1) ldfs.setCurrencySymbol(num_currency);
+
+							ldf.setDecimalFormatSymbols(ldfs);
+						}
+
+						value.setValue(ldf.parse(pol).doubleValue());
+					}
+					else
+						if (value.isInteger())
+						{
+							value.setValue(Long.parseLong(pol));
+						}
+						else
+							if (value.isBigNumber())
+							{
+								value.setValue(new BigDecimal(pol));
+							}
+							else
+							{
+								throw new KettleValueException("Unknown numeric type: contact vendor!");
+							}
+				}
+				catch (Exception e)
+				{
+					throw (e);
+				}
+			}
+			else
+				if (value.isString())
+				{
+					value.setValue(pol);
+					switch (trim_type)
+					{
+					case TextFileInputMeta.TYPE_TRIM_LEFT:
+						value.ltrim();
+						break;
+					case TextFileInputMeta.TYPE_TRIM_RIGHT:
+						value.rtrim();
+						break;
+					case TextFileInputMeta.TYPE_TRIM_BOTH:
+						value.trim();
+						break;
+					default:
+						break;
+					}
+					if (pol.length() == 0) value.setNull();
+				}
+				else
+					if (value.isDate())
+					{
+						try
+						{
+							if (field_format != null)
+							{
+								ldaf.applyPattern(field_format);
+								ldaf.setDateFormatSymbols(ldafs);
+							}
+
+							value.setValue(ldaf.parse(pol));
+						}
+						catch (Exception e)
+						{
+							throw (e);
+						}
+					}
 		value.setLength(field_length, field_precision);
 
 		return value;
 	}
 
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi)
-			throws KettleException {
+	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+	{
 		Row r = null;
 		boolean retval = true;
 		boolean putrow = false;
@@ -692,7 +656,8 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
 			// Open the first file & read the required rows in the buffer, stop
 			// if it fails...
-			if (!openNextFile()) {
+			if (!openNextFile())
+			{
 				closeLastFile();
 				setOutputDone();
 				return false;
@@ -700,86 +665,89 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
 			debug = "first repeat fields";
 			// Count the number of repeat fields...
-			for (int i = 0; i < meta.getInputFields().length; i++) {
-				if (meta.getInputFields()[i].isRepeated())
-					data.nr_repeats++;
+			for (int i = 0; i < meta.getInputFields().length; i++)
+			{
+				if (meta.getInputFields()[i].isRepeated()) data.nr_repeats++;
 			}
-		} else {
-			if (!data.doneReading) {
+		}
+		else
+		{
+			if (!data.doneReading)
+			{
 				int repeats = 1;
-				if (meta.isLineWrapped())
-					repeats = meta.getNrWraps() > 0 ? meta.getNrWraps()
-							: repeats;
+				if (meta.isLineWrapped()) repeats = meta.getNrWraps() > 0 ? meta.getNrWraps() : repeats;
 
 				// Read a number of lines...
-				for (int i = 0; i < repeats && !data.doneReading; i++) {
+				for (int i = 0; i < repeats && !data.doneReading; i++)
+				{
 					debug = "get a new line of data";
-					String line = getLine(log, data.isr, meta.getFileFormat()); // Get
-																				// one
-																				// line
-																				// of
-																				// data;
-					if (line != null) {
+					String line = getLine(log, data.isr, meta.getFileFormat()); // Get one line of data;
+					if (line != null)
+					{
 						linesInput++;
 						lineNumberInFile++;
 						boolean filterOK = true;
 
 						// Filter row?
-						for (int f = 0; f < meta.getFilter().length && filterOK; f++) {
+						for (int f = 0; f < meta.getFilter().length && filterOK; f++)
+						{
 							TextFileFilter filter = meta.getFilter()[f];
-							if (filter.getFilterString() != null
-									&& filter.getFilterString().length() > 0) {
+							if (filter.getFilterString() != null && filter.getFilterString().length() > 0)
+							{
 								int from = filter.getFilterPosition();
-								if (from >= 0) {
-									int to = from
-											+ filter.getFilterString().length();
-									debug = "verify filter : get substring("
-											+ from + ", " + to
-											+ ") line length=" + line.length();
-									if (line.length() >= from
-											&& line.length() >= to) {
-										String sub = line.substring(filter
-												.getFilterPosition(), to);
-										if (sub.equalsIgnoreCase(filter
-												.getFilterString())) {
-											filterOK = false; // skip this
-																// one!
+								if (from >= 0)
+								{
+									int to = from + filter.getFilterString().length();
+									debug = "verify filter : get substring(" + from + ", " + to + ") line length=" + line.length();
+									if (line.length() >= from && line.length() >= to)
+									{
+										String sub = line.substring(filter.getFilterPosition(), to);
+										if (sub.equalsIgnoreCase(filter.getFilterString()))
+										{
+											filterOK = false; // skip this one!
 										}
 									}
-								} else // anywhere on the line
+								}
+								else
+								// anywhere on the line
 								{
-									int idx = line.indexOf(filter
-											.getFilterString());
-									if (idx >= 0) {
+									int idx = line.indexOf(filter.getFilterString());
+									if (idx >= 0)
+									{
 										filterOK = false;
 									}
 								}
 
-								if (!filterOK) {
-									if (filter.isFilterLastLine()) {
+								if (!filterOK)
+								{
+									if (filter.isFilterLastLine())
+									{
 										data.doneReading = true;
 									}
-									repeats++; // grab another line, this one
-												// got filtered
+									repeats++; // grab another line, this one got filtered
 								}
 							}
 						}
 
-						if (filterOK) {
+						if (filterOK)
+						{
 							// logRowlevel("LINE READ: "+line);
-							data.lineBuffer.add(new TextFileLine(line,
-									lineNumberInFile, data.file));
+							data.lineBuffer.add(new TextFileLine(line, lineNumberInFile, data.file));
 						}
-					} else {
+					}
+					else
+					{
 						data.doneReading = true;
 					}
 				}
 			}
 		}
 
-		// If the buffer is empty: open the next file. (if nothing in there,
-		// open the next, etc.)
-		while (data.lineBuffer.size() == 0) {
+		/* If the buffer is empty: open the next file. 
+		 * (if nothing in there, open the next, etc.)
+		 */
+		while (data.lineBuffer.size() == 0)
+		{
 			debug = "empty buffer: open next file";
 			if (!openNextFile()) // Open fails: done processing!
 			{
@@ -790,43 +758,48 @@ public class TextFileInput extends BaseStep implements StepInterface {
 			}
 		}
 
-		// Take the first line available in the buffer & remove the line from
-		// the buffer
+		/* Take the first line available in the buffer & remove the line from
+		   the buffer
+		*/
 		debug = "take first line of buffer";
 		TextFileLine textLine = (TextFileLine) data.lineBuffer.get(0);
 
 		debug = "remove first line of buffer";
 		data.lineBuffer.remove(0);
 
-		if (meta.isLayoutPaged()) {
+		if (meta.isLayoutPaged())
+		{
 			debug = "paged layout";
 
-			// Different rules apply: on each page:
-			// a header
-			// a number of data lines
-			// a footer
-			// 
-			if (!data.doneWithHeader && data.pageLinesRead == 0) // We are
-																	// reading
-																	// header
-																	// lines
+			/* Different rules apply: on each page:
+			   a header
+			   a number of data lines
+			   a footer
+			*/ 
+			if (!data.doneWithHeader && data.pageLinesRead == 0) // We are reading header lines
 			{
 				debug = "paged layout : header line " + data.headerLinesRead;
-				logRowlevel("P-HEADER (" + data.headerLinesRead + ") : "
-						+ textLine.line);
+				logRowlevel("P-HEADER (" + data.headerLinesRead + ") : " + textLine.line);
 				data.headerLinesRead++;
-				if (data.headerLinesRead >= meta.getNrHeaderLines()) {
+				if (data.headerLinesRead >= meta.getNrHeaderLines())
+				{
 					data.doneWithHeader = true;
 				}
-			} else // data lines or footer on a page
+			}
+			else
+			// data lines or footer on a page
 			{
 				debug = "paged layout : data or footer";
-				if (data.pageLinesRead < meta.getNrLinesPerPage()) {
+				if (data.pageLinesRead < meta.getNrLinesPerPage())
+				{
 					// See if we are dealing with wrapped lines:
-					if (meta.isLineWrapped()) {
-						for (int i = 0; i < meta.getNrWraps(); i++) {
+					if (meta.isLineWrapped())
+					{
+						for (int i = 0; i < meta.getNrWraps(); i++)
+						{
 							String extra = "";
-							if (data.lineBuffer.size() > 0) {
+							if (data.lineBuffer.size() > 0)
+							{
 								extra = ((TextFileLine) data.lineBuffer.get(0)).line;
 								data.lineBuffer.remove(0);
 							}
@@ -838,26 +811,27 @@ public class TextFileInput extends BaseStep implements StepInterface {
 					logRowlevel("P-DATA: " + textLine.line);
 					// Read a normal line on a page of data.
 					data.pageLinesRead++;
-					r = convertLineToRow(log, textLine, meta, data.df,
-							data.dfs, data.daf, data.dafs, data.filename,
-							linesWritten + 1, data.dataErrorLineHandler);
-					if (r != null)
-						putrow = true;
-				} else // done reading the data lines, skip the footer lines
+					r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten + 1,
+							data.dataErrorLineHandler);
+					if (r != null) putrow = true;
+				}
+				else
+				// done reading the data lines, skip the footer lines
 				{
 					debug = "paged layout : footer line";
-					if (meta.hasFooter()
-							&& data.footerLinesRead < meta.getNrFooterLines()) {
+					if (meta.hasFooter() && data.footerLinesRead < meta.getNrFooterLines())
+					{
 						logRowlevel("P-FOOTER: " + textLine.line);
 						data.footerLinesRead++;
 					}
 
-					if (!meta.hasFooter()
-							|| data.footerLinesRead >= meta.getNrFooterLines()) {
+					if (!meta.hasFooter() || data.footerLinesRead >= meta.getNrFooterLines())
+					{
 						debug = "paged layout : end of page: restart";
 
-						// OK, we are done reading the footer lines, start again
-						// on 'next page' with the header
+						/* OK, we are done reading the footer lines, start again
+						   on 'next page' with the header
+						 */
 						data.doneWithHeader = false;
 						data.headerLinesRead = 0;
 						data.pageLinesRead = 0;
@@ -866,7 +840,9 @@ public class TextFileInput extends BaseStep implements StepInterface {
 					}
 				}
 			}
-		} else // A normal data line, can also be a header or a footer line
+		}
+		else
+		// A normal data line, can also be a header or a footer line
 		{
 			debug = "normal";
 
@@ -874,27 +850,36 @@ public class TextFileInput extends BaseStep implements StepInterface {
 			{
 				debug = "normal : header line";
 				data.headerLinesRead++;
-				if (data.headerLinesRead >= meta.getNrHeaderLines()) {
+				if (data.headerLinesRead >= meta.getNrHeaderLines())
+				{
 					data.doneWithHeader = true;
 				}
-			} else {
+			}
+			else
+			{
 				debug = "normal : data and footer";
-				// IF we are done reading and we have a footer
-				// AND the number of lines in the buffer is smaller or equal to
-				// the number of footer lines
-				// THEN we can remove the remaining rows from the buffer: they
-				// are all footer rows.
-				if (data.doneReading && meta.hasFooter()
-						&& data.lineBuffer.size() <= meta.getNrFooterLines()) {
+				/* IF we are done reading and we have a footer
+				   AND the number of lines in the buffer is smaller or equal to
+				   the number of footer lines
+				   THEN we can remove the remaining rows from the buffer: they
+				   are all footer rows.
+				 */
+				if (data.doneReading && meta.hasFooter() && data.lineBuffer.size() <= meta.getNrFooterLines())
+				{
 					debug = "normal : footer";
 					data.lineBuffer.clear();
-				} else // Not yet a footer line: it's a normal data line.
+				}
+				else
+				// Not yet a footer line: it's a normal data line.
 				{
 					// See if we are dealing with wrapped lines:
-					if (meta.isLineWrapped()) {
-						for (int i = 0; i < meta.getNrWraps(); i++) {
+					if (meta.isLineWrapped())
+					{
+						for (int i = 0; i < meta.getNrWraps(); i++)
+						{
 							String extra = "";
-							if (data.lineBuffer.size() > 0) {
+							if (data.lineBuffer.size() > 0)
+							{
 								extra = ((TextFileLine) data.lineBuffer.get(0)).line;
 								data.lineBuffer.remove(0);
 							}
@@ -902,23 +887,26 @@ public class TextFileInput extends BaseStep implements StepInterface {
 						}
 					}
 					debug = "normal : data";
-					if (data.filePlayList.isProcessingNeeded(textLine.file, textLine.lineNumber, AbstractFileErrorHandler.NO_PARTS)) {
-						r = convertLineToRow(log, textLine, meta, data.df,
-								data.dfs, data.daf, data.dafs, data.filename,
-								linesWritten + 1, data.dataErrorLineHandler);
-						if (r != null) {
+					if (data.filePlayList.isProcessingNeeded(textLine.file, textLine.lineNumber, AbstractFileErrorHandler.NO_PARTS))
+					{
+						r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten + 1,
+								data.dataErrorLineHandler);
+						if (r != null)
+						{
 							// System.out.println("Found data row: "+r);
 							putrow = true;
 						}
-					} else
-						putrow = false;
+					}
+					else putrow = false;
 				}
 			}
 		}
 
-		if (putrow && r != null && !r.isIgnored()) {
+		if (putrow && r != null && !r.isIgnored())
+		{
 			// See if the previous values need to be repeated!
-			if (data.nr_repeats > 0) {
+			if (data.nr_repeats > 0)
+			{
 				debug = "repeats";
 
 				if (data.previous_row == null) // First invocation...
@@ -926,102 +914,99 @@ public class TextFileInput extends BaseStep implements StepInterface {
 					debug = "init repeats";
 
 					data.previous_row = new Row();
-					for (int i = 0; i < meta.getInputFields().length; i++) {
-						if (meta.getInputFields()[i].isRepeated()) {
+					for (int i = 0; i < meta.getInputFields().length; i++)
+					{
+						if (meta.getInputFields()[i].isRepeated())
+						{
 							Value value = r.getValue(i);
 							data.previous_row.addValue(new Value(value)); // Copy
-																			// the
-																			// first
-																			// row
+							// the
+							// first
+							// row
 						}
 					}
-				} else {
+				}
+				else
+				{
 					debug = "check repeats";
 
 					int repnr = 0;
-					for (int i = 0; i < meta.getInputFields().length; i++) {
-						if (meta.getInputFields()[i].isRepeated()) {
+					for (int i = 0; i < meta.getInputFields().length; i++)
+					{
+						if (meta.getInputFields()[i].isRepeated())
+						{
 							Value value = r.getValue(i);
 							if (value.isNull()) // if it is empty: take the
-												// previous value!
+							// previous value!
 							{
 								Value prev = data.previous_row.getValue(repnr);
 								r.removeValue(i);
 								r.addValue(i, prev);
-							} else // not empty: change the previous_row entry!
+							}
+							else
+							// not empty: change the previous_row entry!
 							{
 								data.previous_row.removeValue(repnr);
-								data.previous_row.addValue(repnr, new Value(
-										value));
+								data.previous_row.addValue(repnr, new Value(value));
 							}
 							repnr++;
 						}
 					}
 				}
 			}
-			
-            // Don't put empty rows out if we don't want those...
-            if (meta.noEmptyLines() && r.size()==0)
-            {
-                logRowlevel("Empty row skipped");
-            }
-            else
-            {
-                logRowlevel("Putting row: " + r.toString());
-                putRow(r);
-            }
+
+			logRowlevel("Putting row: " + r.toString());
+			putRow(r);
+
 		}
 
-		if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0)
-			logBasic("linenr " + linesInput);
+		if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic("linenr " + linesInput);
 
 		debug = "end of readRowOfData";
 
 		return retval;
 	}
 
-	private void handleMissingFiles() throws KettleException {
+	private void handleMissingFiles() throws KettleException
+	{
 		debug = "Required files";
 		List nonExistantFiles = data.files.getNonExistantFiles();
 
-		if (nonExistantFiles.size() != 0) {
+		if (nonExistantFiles.size() != 0)
+		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
 			log.logBasic(debug, "WARNING: Missing " + message);
-			if (meta.isErrorIgnored())
-				for (Iterator iter = nonExistantFiles.iterator(); iter
-						.hasNext();) {
-					data.dataErrorLineHandler.handleNonExistantFile((File) iter
-							.next() );
-				}
-			else
-				throw new KettleException(
-						"Following required files are missing: " + message);
+			if (meta.isErrorIgnored()) for (Iterator iter = nonExistantFiles.iterator(); iter.hasNext();)
+			{
+				data.dataErrorLineHandler.handleNonExistantFile((File) iter.next());
+			}
+			else throw new KettleException("Following required files are missing: " + message);
 		}
 
 		List nonAccessibleFiles = data.files.getNonAccessibleFiles();
-		if (nonAccessibleFiles.size() != 0) {
+		if (nonAccessibleFiles.size() != 0)
+		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
 			log.logBasic(debug, "WARNING: Not accessible " + message);
-			if (meta.isErrorIgnored())
-				for (Iterator iter = nonAccessibleFiles.iterator(); iter
-						.hasNext();) {
-					data.dataErrorLineHandler
-							.handleNonAccessibleFile((File) iter.next() );
-				}
-			else
-				throw new KettleException(
-						"Following required files are not accessible: "
-								+ message);
+			if (meta.isErrorIgnored()) for (Iterator iter = nonAccessibleFiles.iterator(); iter.hasNext();)
+			{
+				data.dataErrorLineHandler.handleNonAccessibleFile((File) iter.next());
+			}
+			else throw new KettleException("Following required files are not accessible: " + message);
 		}
 		debug = "End of Required files";
 	}
 
-	private boolean closeLastFile() {
-		try {
+	private boolean closeLastFile()
+	{
+		try
+		{
 			debug = "closeLastFile: close";
 			// Close previous file!
-			if (data.filename != null) {
-				if (meta.isZipped()) {
+			if (data.filename != null)
+			{
+				if (meta.isZipped())
+				{
 					data.zi.closeEntry();
 					data.zi.close();
 				}
@@ -1031,9 +1016,10 @@ public class TextFileInput extends BaseStep implements StepInterface {
 				data.file = null;
 			}
 			data.dataErrorLineHandler.close();
-		} catch (Exception e) {
-			logError("Couldn't close file : " + data.filename + " --> "
-					+ e.toString());
+		}
+		catch (Exception e)
+		{
+			logError("Couldn't close file : " + data.filename + " --> " + e.toString());
 			stopAll();
 			setErrors(1);
 			return false;
@@ -1044,16 +1030,16 @@ public class TextFileInput extends BaseStep implements StepInterface {
 		return !data.isLastFile;
 	}
 
-	private boolean openNextFile() {
-		try {
+	private boolean openNextFile()
+	{
+		try
+		{
 			lineNumberInFile = 0;
 			debug = "openNextFile : close last file";
-			if (!closeLastFile())
-				return false;
+			if (!closeLastFile()) return false;
 
-			if(data.files.nrOfFiles() == 0)
-				return false;
-			
+			if (data.files.nrOfFiles() == 0) return false;
+
 			// Is this the last file?
 			data.isLastFile = (data.filenr == data.files.nrOfFiles() - 1);
 			data.file = data.files.getFile(data.filenr);
@@ -1066,26 +1052,29 @@ public class TextFileInput extends BaseStep implements StepInterface {
 			data.fr = new FileInputStream(data.file);
 			data.dataErrorLineHandler.handleFile(data.file);
 
-			if (meta.isZipped()) {
+			if (meta.isZipped())
+			{
 				data.zi = new ZipInputStream(data.fr);
 				data.zi.getNextEntry();
 
-				if (meta.getEncoding() != null
-						&& meta.getEncoding().length() > 0) {
-					data.isr = new InputStreamReader(new BufferedInputStream(
-							data.zi), meta.getEncoding());
-				} else {
-					data.isr = new InputStreamReader(new BufferedInputStream(
-							data.zi));
+				if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
+				{
+					data.isr = new InputStreamReader(new BufferedInputStream(data.zi), meta.getEncoding());
 				}
-			} else {
-				if (meta.getEncoding() != null
-						&& meta.getEncoding().length() > 0) {
-					data.isr = new InputStreamReader(new BufferedInputStream(
-							data.fr), meta.getEncoding());
-				} else {
-					data.isr = new InputStreamReader(new BufferedInputStream(
-							data.fr));
+				else
+				{
+					data.isr = new InputStreamReader(new BufferedInputStream(data.zi));
+				}
+			}
+			else
+			{
+				if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
+				{
+					data.isr = new InputStreamReader(new BufferedInputStream(data.fr), meta.getEncoding());
+				}
+				else
+				{
+					data.isr = new InputStreamReader(new BufferedInputStream(data.fr));
 				}
 			}
 
@@ -1097,43 +1086,45 @@ public class TextFileInput extends BaseStep implements StepInterface {
 			// /////////////////////////////////////////////////////////////////////////////
 			// Read the first lines...
 
-			// Keep track of the status of the file: are there any lines left to
-			// read?
+			/* Keep track of the status of the file: are there any lines left to read?
+			 */
 			data.doneReading = false;
 
-			// OK, read a number of lines in the buffer:
-			// The header rows
-			// The nr rows in the page : optional
-			// The footer rows
+			/* OK, read a number of lines in the buffer:
+			   The header rows
+			   The nr rows in the page : optional
+			   The footer rows
+			 */
 			int bufferSize = 1; // try to read at least one line.
 			bufferSize += meta.hasHeader() ? meta.getNrHeaderLines() : 0;
 			bufferSize += meta.isLayoutPaged() ? meta.getNrLinesPerPage() : 0;
 			bufferSize += meta.hasFooter() ? meta.getNrFooterLines() : 0;
 
 			// See if we need to skip the document header lines...
-			if (meta.isLayoutPaged()) {
-				for (int i = 0; i < meta.getNrLinesDocHeader(); i++) {
+			if (meta.isLayoutPaged())
+			{
+				for (int i = 0; i < meta.getNrLinesDocHeader(); i++)
+				{
 					// Just skip these...
-					getLine(log, data.isr, meta.getFileFormat()); // header
-																	// and
-																	// footer:
-																	// not
-																	// wrapped
+					getLine(log, data.isr, meta.getFileFormat()); // header and footer: not wrapped
 					lineNumberInFile++;
 				}
 			}
 
 			String line;
-			for (int i = 0; i < bufferSize && !data.doneReading; i++) {
+			for (int i = 0; i < bufferSize && !data.doneReading; i++)
+			{
 				line = getLine(log, data.isr, meta.getFileFormat());
-				if (line != null) {
+				if (line != null)
+				{
 					// logRowlevel("LINE READ: "+line);
 					linesInput++;
 					lineNumberInFile++;
-					data.lineBuffer.add(new TextFileLine(line,
-							lineNumberInFile, data.file)); // Store it in the
-															// line buffer...
-				} else {
+					data.lineBuffer.add(new TextFileLine(line, lineNumberInFile, data.file)); // Store it in the
+					// line buffer...
+				}
+				else
+				{
 					data.doneReading = true;
 				}
 			}
@@ -1145,9 +1136,10 @@ public class TextFileInput extends BaseStep implements StepInterface {
 
 			// Set a flags
 			data.doneWithHeader = !meta.hasHeader();
-		} catch (Exception e) {
-			logError("Couldn't open file #" + data.filenr + " : "
-					+ data.filename + " (" + debug + ") --> " + e.toString());
+		}
+		catch (Exception e)
+		{
+			logError("Couldn't open file #" + data.filenr + " : " + data.filename + " (" + debug + ") --> " + e.toString());
 			stopAll();
 			setErrors(1);
 			return false;
@@ -1155,16 +1147,19 @@ public class TextFileInput extends BaseStep implements StepInterface {
 		return true;
 	}
 
-	public boolean init(StepMetaInterface smi, StepDataInterface sdi) {
+	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
+	{
 		meta = (TextFileInputMeta) smi;
 		data = (TextFileInputData) sdi;
 
-		if (super.init(smi, sdi)) {
+		if (super.init(smi, sdi))
+		{
 			initErrorHandling();
 			initReplayFactory();
 			data.setDateFormatLenient(meta.isDateFormatLenient());
 			data.files = meta.getTextFileList();
-			if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0) {
+			if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
+			{
 				logError("No file(s) specified! Stop processing.");
 				return false;
 			}
@@ -1173,36 +1168,28 @@ public class TextFileInput extends BaseStep implements StepInterface {
 		return false;
 	}
 
-	private void initReplayFactory() {
+	private void initReplayFactory()
+	{
 		Date replayDate = getTrans().getReplayDate();
-		if (replayDate == null)
-			data.filePlayList = FilePlayListAll.INSTANCE;
-		else
-			data.filePlayList = new FilePlayListReplay(replayDate,
-					meta.getLineNumberFilesDestinationDirectory(), meta
-							.getLineNumberFilesExtension(), meta
-							.getErrorFilesDestinationDirectory(), meta
-							.getErrorLineFilesExtension(), meta.getEncoding());
+		if (replayDate == null) data.filePlayList = FilePlayListAll.INSTANCE;
+		else data.filePlayList = new FilePlayListReplay(replayDate, meta.getLineNumberFilesDestinationDirectory(),
+				meta.getLineNumberFilesExtension(), meta.getErrorFilesDestinationDirectory(), meta.getErrorLineFilesExtension(), meta.getEncoding());
 	}
 
-	private void initErrorHandling() {
+	private void initErrorHandling()
+	{
 		List dataErrorLineHandlers = new ArrayList(2);
 		if (meta.getLineNumberFilesDestinationDirectory() != null)
-			dataErrorLineHandlers
-					.add(new FileErrorHandlerContentLineNumber(getTrans()
-							.getCurrentDate(), meta
-							.getLineNumberFilesDestinationDirectory(), meta
-							.getLineNumberFilesExtension(), meta.getEncoding(), this));
+			dataErrorLineHandlers.add(new FileErrorHandlerContentLineNumber(getTrans().getCurrentDate(), meta
+					.getLineNumberFilesDestinationDirectory(), meta.getLineNumberFilesExtension(), meta.getEncoding(), this));
 		if (meta.getErrorFilesDestinationDirectory() != null)
-			dataErrorLineHandlers.add(new FileErrorHandlerMissingFiles(
-					getTrans().getCurrentDate(), meta
-							.getErrorFilesDestinationDirectory(), meta
-							.getErrorLineFilesExtension(), meta.getEncoding(), this));
-		data.dataErrorLineHandler = new CompositeFileErrorHandler(
-				dataErrorLineHandlers);
+			dataErrorLineHandlers.add(new FileErrorHandlerMissingFiles(getTrans().getCurrentDate(), meta.getErrorFilesDestinationDirectory(), meta
+					.getErrorLineFilesExtension(), meta.getEncoding(), this));
+		data.dataErrorLineHandler = new CompositeFileErrorHandler(dataErrorLineHandlers);
 	}
 
-	public void dispose(StepMetaInterface smi, StepDataInterface sdi) {
+	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
+	{
 		meta = (TextFileInputMeta) smi;
 		data = (TextFileInputData) sdi;
 
@@ -1213,16 +1200,22 @@ public class TextFileInput extends BaseStep implements StepInterface {
 	// Run is were the action happens!
 	//
 	//
-	public void run() {
-		try {
+	public void run()
+	{
+		try
+		{
 			logBasic("Starting to run...");
 			while (processRow(meta, data) && !isStopped())
 				;
-		} catch (Exception e) {
+		}
+		catch (Exception e)
+		{
 			logError("Unexpected error in '" + debug + "' : " + e.toString());
 			setErrors(1);
 			stopAll();
-		} finally {
+		}
+		finally
+		{
 			dispose(meta, data);
 			logSummary();
 			markStop();
