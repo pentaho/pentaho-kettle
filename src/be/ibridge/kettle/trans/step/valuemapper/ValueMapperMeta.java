@@ -171,9 +171,9 @@ public class ValueMapperMeta extends BaseStepMeta implements StepMetaInterface
             // Lengths etc?
             // Take the max length of all the strings...
             int maxlen = -1;
-            for (int i=0;i<sourceValue.length;i++)
+            for (int i=0;i<targetValue.length;i++)
             {
-                if (sourceValue[i]!=null && sourceValue[i].length()>maxlen) maxlen=sourceValue[i].length();
+                if (targetValue[i]!=null && targetValue[i].length()>maxlen) maxlen=targetValue[i].length();
             }
             extra.setLength(maxlen);
             extra.setOrigin(name);
