@@ -646,7 +646,10 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         boolean isTableNameInField = wNameInField.getSelection();
         
         // Can't truncate when doing partitioning or with table name in field
-        boolean useTruncate        = !( usePartitioning || isTableNameInField );
+        boolean enableTruncate        = !( usePartitioning || isTableNameInField );
+        
+        // Do we need to turn partitioning off?
+        boolean useTruncate           = wTruncate.getSelection() && enableTruncate;
         
         // Use the table-name specified or get it from a field?
         boolean useTablename       = !( isTableNameInField );
@@ -675,8 +678,8 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
         wlTable.setEnabled( useTablename );
         wTable.setEnabled( useTablename );
         
-        wlTruncate.setEnabled(useTruncate);
-        wTruncate.setEnabled(useTruncate);
+        wlTruncate.setEnabled(enableTruncate);
+        wTruncate.setEnabled(enableTruncate);
         
         wlReturnField.setEnabled(returnKeys);
         wReturnField.setEnabled(returnKeys);
