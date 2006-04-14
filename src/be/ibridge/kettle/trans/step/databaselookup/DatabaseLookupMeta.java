@@ -91,8 +91,11 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 	private int     cacheSize;      
     
     /** Have the lookup fail if multiple results were found, renders the orderByClause useless */
-    private boolean failOnMultipleResults;
+    private boolean failingOnMultipleResults;
 	
+    /** Have the lookup eat the incoming row when nothing gets found */
+    private boolean eatingRowOnLookupFailure;
+    
 	public DatabaseLookupMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -313,7 +316,26 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		this.tablename = tablename;
 	}
 	
-	
+    /**
+     * @return Returns the failOnMultipleResults.
+     */
+    public boolean isFailingOnMultipleResults()
+    {
+        return failingOnMultipleResults;
+    }
+
+
+    /**
+     * @param failOnMultipleResults The failOnMultipleResults to set.
+     */
+    public void setFailingOnMultipleResults(boolean failOnMultipleResults)
+    {
+        this.failingOnMultipleResults = failOnMultipleResults;
+    }
+
+
+    
+    
 	
 	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
 		throws KettleXMLException
@@ -414,7 +436,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 				}
 			}		
 			orderByClause = XMLHandler.getTagValue(lookup, "orderby"); //Optional, can by null
-            failOnMultipleResults = "Y".equalsIgnoreCase(XMLHandler.getTagValue(lookup, "fail_on_multiple")); 
+            failingOnMultipleResults = "Y".equalsIgnoreCase(XMLHandler.getTagValue(lookup, "fail_on_multiple")); 
+            eatingRowOnLookupFailure = "Y".equalsIgnoreCase(XMLHandler.getTagValue(lookup, "eat_row_on_failure")); 
 		}
 		catch(Exception e)
 		{
@@ -453,7 +476,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		}
 		
 		orderByClause = "";
-        failOnMultipleResults = false;
+        failingOnMultipleResults = false;
+        eatingRowOnLookupFailure = false;
 	}
 
 	public Row getFields(Row r, String name, Row info)
@@ -498,8 +522,10 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		retval.append("    <lookup>"+Const.CR);
 		retval.append("      "+XMLHandler.addTagValue("table", tablename));
 		retval.append("      "+XMLHandler.addTagValue("orderby", orderByClause));
-        retval.append("      "+XMLHandler.addTagValue("fail_on_multiple", failOnMultipleResults));
+        retval.append("      "+XMLHandler.addTagValue("fail_on_multiple", failingOnMultipleResults));
+        retval.append("      "+XMLHandler.addTagValue("eat_row_on_failure", eatingRowOnLookupFailure));
 
+        
 		for (int i=0;i<streamKeyField1.length;i++)
 		{
 			retval.append("      <key>"+Const.CR);
@@ -533,12 +559,13 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection"); 
 			databaseMeta       = Const.findDatabase( databases, id_connection);
 			
-			cached                =      rep.getStepAttributeBoolean(id_step, "cache");
-			cacheSize             = (int)rep.getStepAttributeInteger(id_step, "cache_size");
-			tablename             =      rep.getStepAttributeString (id_step, "lookup_table"); 
-			orderByClause         =      rep.getStepAttributeString (id_step, "lookup_orderby"); 
-            failOnMultipleResults =      rep.getStepAttributeBoolean(id_step, "fail_on_multiple"); 
-	
+			cached                   =      rep.getStepAttributeBoolean(id_step, "cache");
+			cacheSize                = (int)rep.getStepAttributeInteger(id_step, "cache_size");
+			tablename                =      rep.getStepAttributeString (id_step, "lookup_table"); 
+			orderByClause            =      rep.getStepAttributeString (id_step, "lookup_orderby"); 
+            failingOnMultipleResults =      rep.getStepAttributeBoolean(id_step, "fail_on_multiple"); 
+            eatingRowOnLookupFailure =      rep.getStepAttributeBoolean(id_step, "eat_row_on_failure"); 
+            
 			int nrkeys   = rep.countNrStepAttributes(id_step, "lookup_key_name");
 			int nrvalues = rep.countNrStepAttributes(id_step, "return_value_name");
 			
@@ -572,13 +599,15 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "id_connection",   databaseMeta==null?-1:databaseMeta.getID());
-			rep.saveStepAttribute(id_transformation, id_step, "cache",           cached);
-			rep.saveStepAttribute(id_transformation, id_step, "cache_size",      cacheSize);
-			rep.saveStepAttribute(id_transformation, id_step, "lookup_table",    tablename);
-			rep.saveStepAttribute(id_transformation, id_step, "lookup_orderby",  orderByClause);
-            rep.saveStepAttribute(id_transformation, id_step, "fail_on_multiple",failOnMultipleResults);
+			rep.saveStepAttribute(id_transformation, id_step, "id_connection",      databaseMeta==null?-1:databaseMeta.getID());
+			rep.saveStepAttribute(id_transformation, id_step, "cache",              cached);
+			rep.saveStepAttribute(id_transformation, id_step, "cache_size",         cacheSize);
+			rep.saveStepAttribute(id_transformation, id_step, "lookup_table",       tablename);
+			rep.saveStepAttribute(id_transformation, id_step, "lookup_orderby",     orderByClause);
+            rep.saveStepAttribute(id_transformation, id_step, "fail_on_multiple",   failingOnMultipleResults);
+            rep.saveStepAttribute(id_transformation, id_step, "eat_row_on_failure", eatingRowOnLookupFailure);
 			
+            
 			for (int i=0;i<streamKeyField1.length;i++)
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name",      streamKeyField1[i]);
@@ -866,13 +895,13 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
 
 
-    /**
-     * @return Returns the failOnMultipleResults.
-     */
-    public boolean isFailOnMultipleResults()
-    {
-        return failOnMultipleResults;
-    }
+	/**
+	 * @return Returns the eatingRowOnLookupFailure.
+	 */
+	public boolean isEatingRowOnLookupFailure()
+	{
+		return eatingRowOnLookupFailure;
+	}
 
 
 
@@ -881,12 +910,13 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
 
 
-    /**
-     * @param failOnMultipleResults The failOnMultipleResults to set.
-     */
-    public void setFailOnMultipleResults(boolean failOnMultipleResults)
-    {
-        this.failOnMultipleResults = failOnMultipleResults;
-    }
+	/**
+	 * @param eatingRowOnLookupFailure The eatingRowOnLookupFailure to set.
+	 */
+	public void setEatingRowOnLookupFailure(boolean eatingRowOnLookupFailure)
+	{
+		this.eatingRowOnLookupFailure = eatingRowOnLookupFailure;
+	}
 
+    
 }

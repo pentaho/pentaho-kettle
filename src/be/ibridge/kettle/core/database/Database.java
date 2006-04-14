@@ -2458,18 +2458,21 @@ public class Database
 		}
 	}
 	
+	public void setLookup(String table, String codes[], String condition[], 
+            String gets[], String rename[], String orderby
+            ) throws KettleDatabaseException
+    {
+		setLookup(table, codes, condition, gets, rename, orderby, false);
+    }
+
 	// Lookup certain fields in a table
 	public void setLookup(String table, String codes[], String condition[], 
-	                         String gets[], String rename[], String orderby)
-		throws KettleDatabaseException
+	                      String gets[], String rename[], String orderby,
+	                      boolean checkForMultipleResults) throws KettleDatabaseException
 	{
-		String sql;
-	
-		int i;
+		String sql = "SELECT ";
 		
-		sql = "SELECT ";
-		
-		for (i=0;i<gets.length;i++)
+		for (int i=0;i<gets.length;i++)
 		{
 			if (i!=0) sql += ", ";
 			sql += gets[i];
@@ -2481,7 +2484,7 @@ public class Database
 		
 		sql += " FROM "+table+" WHERE ";
 		
-		for (i=0;i<codes.length;i++)
+		for (int i=0;i<codes.length;i++)
 		{
 			if (i!=0) sql += " AND ";
 			sql += codes[i];
@@ -2509,7 +2512,10 @@ public class Database
 		{
 			log.logDetailed(toString(), "Setting preparedStatement to ["+sql+"]");
 			prepStatementLookup=connection.prepareStatement(databaseMeta.stripCR(sql));
-			prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
+			if (!checkForMultipleResults)
+			{
+				prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
+			}
 		}
 		catch(SQLException ex) 
 		{
@@ -2928,7 +2934,7 @@ public class Database
             {
                 if (res.next()) 
                 {
-                    throw new KettleDatabaseException("Only 1 row was expected as a result of a lookup, and more then 1 were found!");
+                    throw new KettleDatabaseException("Only 1 row was expected as a result of a lookup, and at least 2 were found!");
                 }
             }
 			debug = "res.close()";

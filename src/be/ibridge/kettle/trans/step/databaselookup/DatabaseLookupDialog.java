@@ -92,6 +92,10 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
     private Button       wFailMultiple;
     private FormData     fdlFailMultiple, fdFailMultiple;
 
+    private Label        wlEatRows;
+    private Button       wEatRows;
+    private FormData     fdlEatRows, fdEatRows;
+
 	private Button wGet, wGetLU;
 	private Listener lsGet, lsGetLU;
 
@@ -315,6 +319,30 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
             }
         );
 
+        // EatRows?
+        wlEatRows=new Label(shell, SWT.RIGHT);
+        wlEatRows.setText("Do not pass the row if the lookup fails ");
+        props.setLook(wlEatRows);
+        fdlEatRows=new FormData();
+        fdlEatRows.left   = new FormAttachment(0, 0);
+        fdlEatRows.right  = new FormAttachment(middle, -margin);
+        fdlEatRows.bottom = new FormAttachment(wFailMultiple, -margin);
+        wlEatRows.setLayoutData(fdlEatRows);
+        wEatRows=new Button(shell, SWT.CHECK);
+        props.setLook(wEatRows);
+        fdEatRows=new FormData();
+        fdEatRows.left   = new FormAttachment(middle, 0);
+        fdEatRows.bottom = new FormAttachment(wFailMultiple, -margin);
+        wEatRows.setLayoutData(fdEatRows);
+        wEatRows.addSelectionListener(new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent e)
+                {
+                    setFlags();
+                }
+            }
+        );
+
         
         // THE UPDATE/INSERT TABLE
         wlReturn=new Label(shell, SWT.NONE);
@@ -346,7 +374,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
         fdReturn.left  = new FormAttachment(0, 0);
         fdReturn.top   = new FormAttachment(wlReturn, margin);
         fdReturn.right = new FormAttachment(100, 0);
-        fdReturn.bottom= new FormAttachment(wFailMultiple, -margin);
+        fdReturn.bottom= new FormAttachment(wEatRows, -margin);
         wReturn.setLayoutData(fdReturn);
 
 
@@ -443,7 +471,8 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 			wConnection.setText( transMeta.getDatabase(0).getName() );
 		}
 		if (input.getOrderByClause()!=null)      wOrderBy.setText(input.getOrderByClause());
-		wFailMultiple.setSelection(input.isFailOnMultipleResults());
+		wFailMultiple.setSelection(input.isFailingOnMultipleResults());
+		wEatRows.setSelection(input.isEatingRowOnLookupFailure());
         
 		wStepname.selectAll();
 		wKey.setRowNums();
@@ -502,7 +531,8 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		input.setTablename( wTable.getText() ); 
 		input.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
 		input.setOrderByClause( wOrderBy.getText() );
-		input.setFailOnMultipleResults( wFailMultiple.getSelection() );
+		input.setFailingOnMultipleResults( wFailMultiple.getSelection() );
+		input.setEatingRowOnLookupFailure( wEatRows.getSelection() );
         
 		stepname = wStepname.getText(); // return value
 

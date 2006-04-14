@@ -49,8 +49,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private synchronized void lookupValues(Row row)
-		throws KettleException
+	/**
+	 * Performs the lookup based on the meta-data and the input row.
+	 * @param row The row to use as lookup data and the row to add the returned lookup fields to
+	 * @return true if we can pass the rows to the next steps, false if we can't.
+	 * @throws KettleException In case something goes wrong.
+	 */
+	private synchronized boolean lookupValues(Row row) throws KettleException
 	{
 		Row lu;
 		Row add;
@@ -76,7 +81,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			}
 
 			debug = "first row: set lookup statement";
-			data.db.setLookup(meta.getTablename(), meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(), meta.getOrderByClause());
+			data.db.setLookup(meta.getTablename(), meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(), meta.getOrderByClause(), meta.isFailingOnMultipleResults());
+			
 			// lookup the values!
 			logDetailed("Checking row: "+row.toString());
 			data.keynrs = new int[meta.getStreamKeyField1().length];
@@ -176,13 +182,17 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			debug = "setValuesLookup()";
 			data.db.setValuesLookup(lu);
 			debug = "getLookup()";
-			add=data.db.getLookup(meta.isFailOnMultipleResults());
+			add=data.db.getLookup(meta.isFailingOnMultipleResults());
 			cache_now=true;
 		}
 				
 		debug = "add null values to result";
 		if (add==null) // nothing was found, unknown code: add default values
 		{
+			if (meta.isEatingRowOnLookupFailure())
+			{
+				return false;
+			}
             logRowlevel("No result found after database lookup! (add defaults)");
 			add=new Row();
 			for (int i=0;i<meta.getReturnValueField().length;i++)
@@ -238,6 +248,8 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		}
 
 		debug = "end of lookupValues()";
+		
+		return true;
 	}
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
@@ -257,11 +269,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 
 		try
 		{
-			lookupValues(r); // add new values to the row in rowset[0].
-			putRow(r);       // copy row to output rowset(s);
-			
-            logRowlevel("Wrote row to next step: "+r);
-			if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
+			if (lookupValues(r))
+			{
+				// add new values to the row in rowset[0].
+				putRow(r);       // copy row to output rowset(s);
+	            logRowlevel("Wrote row to next step: "+r);
+				if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
+			}
 		}
 		catch(KettleException e)
 		{
