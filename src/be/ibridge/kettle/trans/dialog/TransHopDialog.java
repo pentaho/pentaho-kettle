@@ -113,14 +113,14 @@ public class TransHopDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Hop: From --> To");
+		shell.setText(Messages.getString("TransHopDialog.Shell.Label")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
         
 		// From step line
 		wlFrom=new Label(shell, SWT.RIGHT);
-		wlFrom.setText("From step: ");
+		wlFrom.setText(Messages.getString("TransHopDialog.FromStep.Label")); //$NON-NLS-1$
  		props.setLook(wlFrom);
 		fdlFrom=new FormData();
 		fdlFrom.left = new FormAttachment(0, 0);
@@ -128,7 +128,7 @@ public class TransHopDialog extends Dialog
 		fdlFrom.top  = new FormAttachment(0, margin);
 		wlFrom.setLayoutData(fdlFrom);
 		wFrom=new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wFrom.setText("Select the source");
+		wFrom.setText(Messages.getString("TransHopDialog.FromStepDropdownList.Label")); //$NON-NLS-1$
  		props.setLook(wFrom);
 
 		for (int i=0;i<transMeta.nrSteps();i++)
@@ -146,7 +146,7 @@ public class TransHopDialog extends Dialog
 
 		// To line
 		wlTo=new Label(shell, SWT.RIGHT);
-		wlTo.setText("To step: ");
+		wlTo.setText(Messages.getString("TransHopDialog.TargetStep.Label")); //$NON-NLS-1$
  		props.setLook(wlTo);
 		fdlTo=new FormData();
 		fdlTo.left = new FormAttachment(0, 0);
@@ -154,7 +154,7 @@ public class TransHopDialog extends Dialog
 		fdlTo.top  = new FormAttachment(wFrom, margin);
 		wlTo.setLayoutData(fdlTo);
 		wTo=new CCombo(shell, SWT.BORDER | SWT.READ_ONLY);
-		wTo.setText("Select the destination");
+		wTo.setText(Messages.getString("TransHopDialog.TargetStepDropdownList.Label")); //$NON-NLS-1$
  		props.setLook(wTo);
 
 		for (int i=0;i<transMeta.nrSteps();i++)
@@ -171,7 +171,7 @@ public class TransHopDialog extends Dialog
 		wTo.setLayoutData(fdTo);
 		
 		wFlip = new Button(shell, SWT.PUSH);
-		wFlip.setText("&From <-> To");
+		wFlip.setText(Messages.getString("TransHopDialog.FromTo.Button")); //$NON-NLS-1$
 		fdFlip = new FormData();
 		fdFlip.left = new FormAttachment(middle, margin);
 		fdFlip.top  = new FormAttachment(wTo, margin*2);
@@ -179,7 +179,7 @@ public class TransHopDialog extends Dialog
 	
 		// Enabled?
 		wlEnabled=new Label(shell, SWT.RIGHT);
-		wlEnabled.setText("Enable hop?");
+		wlEnabled.setText(Messages.getString("TransHopDialog.EnableHop.Label")); //$NON-NLS-1$
  		props.setLook(wlEnabled);
 		fdlEnabled=new FormData();
 		fdlEnabled.left = new FormAttachment(0, 0);
@@ -205,9 +205,9 @@ public class TransHopDialog extends Dialog
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("TransHopDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("TransHopDialog.Cancel.Button")); //$NON-NLS-1$
 		fdOK=new FormData();
 		fdOK.left       = new FormAttachment(33, 0);
 		fdOK.top        = new FormAttachment(wEnabled, margin*2);
@@ -279,8 +279,8 @@ public class TransHopDialog extends Dialog
 			input.setFromStep(fromBackup);
 			input.setToStep(toBackup);
 			MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-			mb.setMessage("This hop causes a loop in the transformation.  Loops are not allowed!");
-			mb.setText("Warning!");
+			mb.setMessage(Messages.getString("TransHopDialog.LoopsNotAllowed.DialogMessage")); //$NON-NLS-1$
+			mb.setText(Messages.getString("TransHopDialog.LoopsNotAllowed.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
 		else
@@ -288,8 +288,8 @@ public class TransHopDialog extends Dialog
 			if (input.getFromStep()==null)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-				mb.setMessage("Step ["+wFrom.getText()+"] doesn't exist!");
-				mb.setText("Warning!");
+				mb.setMessage(Messages.getString("TransHopDialog.StepDoesNotExist.DialogMessage",wFrom.getText())); //$NON-NLS-1$ //$NON-NLS-2$
+				mb.setText(Messages.getString("TransHopDialog.StepDoesNotExist.DialogTitle")); //$NON-NLS-1$
 				mb.open();
 			}
 			else
@@ -297,8 +297,8 @@ public class TransHopDialog extends Dialog
 				if (input.getToStep()==null)
 				{
 					MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-					mb.setMessage("Step ["+wTo.getText()+"] doesn't exist!");
-					mb.setText("Warning!");
+					mb.setMessage(Messages.getString("TransHopDialog.StepDoesNotExist.DialogMessage",wTo.getText())); //$NON-NLS-1$ //$NON-NLS-2$
+					mb.setText(Messages.getString("TransHopDialog.StepDoesNotExist.DialogTitle")); //$NON-NLS-1$
 					mb.open();
 				}
 				else
@@ -306,8 +306,8 @@ public class TransHopDialog extends Dialog
 					if (input.getFromStep().equals(input.getToStep()))
 					{
 						MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING );
-						mb.setMessage("A hop can't go to the same step!");
-						mb.setText("Warning!");
+						mb.setMessage(Messages.getString("TransHopDialog.CannotGoToSameStep.DialogMessage")); //$NON-NLS-1$
+						mb.setText(Messages.getString("TransHopDialog.CannotGoToSameStep.DialogTitle")); //$NON-NLS-1$
 						mb.open();
 					}
 					else

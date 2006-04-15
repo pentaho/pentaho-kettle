@@ -63,7 +63,7 @@ public class TransPreviewProgressDialog
 				}
 				catch(KettleException e)
 				{
-					throw new InvocationTargetException(e, "Error loading transformation");
+					throw new InvocationTargetException(e, Messages.getString("TransPreviewProgressDialog.Exception.ErrorLoadingTransformation")); //$NON-NLS-1$
 				}
 			}
 		};
@@ -97,12 +97,12 @@ public class TransPreviewProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, Props.getInstance(), "Error loading transformation", "An error occured loading the transformation!", e);
+			new ErrorDialog(shell, Props.getInstance(), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			transMeta = null;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, Props.getInstance(), "Error loading transformation", "An error occured loading the transformation!", e);
+			new ErrorDialog(shell, Props.getInstance(), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			transMeta = null;
 		}
 
@@ -117,7 +117,7 @@ public class TransPreviewProgressDialog
         int nrRows=0;
         for (int i=0 ; i<previewSize.length ; i++) nrRows+=previewSize[i];
         
-        progressMonitor.beginTask("Starting transformation in preview...", 100);
+        progressMonitor.beginTask(Messages.getString("TransPreviewProgressDialog.Monitor.BeginTask.Title"), 100); //$NON-NLS-1$
         
         // Log preview activity to a String:
         log.startStringCapture();
@@ -162,7 +162,7 @@ public class TransPreviewProgressDialog
         // Log preview activity to a String:
         log.startStringCapture();
         loggingText = log.getString();
-        log.setString("");
+        log.setString(""); //$NON-NLS-1$
         
         progressMonitor.done();
     }

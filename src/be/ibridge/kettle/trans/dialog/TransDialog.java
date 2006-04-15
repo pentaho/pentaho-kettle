@@ -227,7 +227,7 @@ public class TransDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Transformation properties");
+		shell.setText(Messages.getString("TransDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -239,7 +239,7 @@ public class TransDialog extends Dialog
 		// START OF TRANS TAB///
 		///
 		wTransTab=new CTabItem(wTabFolder, SWT.NONE);
-		wTransTab.setText("Transformation");
+		wTransTab.setText(Messages.getString("TransDialog.TransTab.Label")); //$NON-NLS-1$
 		
 		Composite wTransComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wTransComp);
@@ -252,7 +252,7 @@ public class TransDialog extends Dialog
 
 		// Transformation name:
 		wlTransname=new Label(wTransComp, SWT.RIGHT);
-		wlTransname.setText("Transformation name :");
+		wlTransname.setText(Messages.getString("TransDialog.Transname.Label")); //$NON-NLS-1$
  		props.setLook(wlTransname);
 		fdlTransname=new FormData();
 		fdlTransname.left = new FormAttachment(0, 0);
@@ -270,7 +270,7 @@ public class TransDialog extends Dialog
 		
 		// Directory:
 		wlDirectory=new Label(wTransComp, SWT.RIGHT);
-		wlDirectory.setText("Directory :");
+		wlDirectory.setText(Messages.getString("TransDialog.Directory.Label")); //$NON-NLS-1$
  		props.setLook(wlDirectory);
 		fdlDirectory=new FormData();
 		fdlDirectory.left = new FormAttachment(0, 0);
@@ -279,7 +279,7 @@ public class TransDialog extends Dialog
 		wlDirectory.setLayoutData(fdlDirectory);
 
 		wbDirectory=new Button(wTransComp, SWT.PUSH);
-		wbDirectory.setText("...");
+		wbDirectory.setText("..."); //$NON-NLS-1$
  		props.setLook(wbDirectory);
 		fdbDirectory=new FormData();
 		fdbDirectory.right= new FormAttachment(100, 0);
@@ -322,7 +322,7 @@ public class TransDialog extends Dialog
 
 		// Modified User:
 		wlModUser=new Label(wTransComp, SWT.RIGHT);
-		wlModUser.setText("Last modified by ");
+		wlModUser.setText(Messages.getString("TransDialog.LastModifiedUser.Label")); //$NON-NLS-1$
  		props.setLook(wlModUser);
 		fdlModUser=new FormData();
 		fdlModUser.left = new FormAttachment(0, 0);
@@ -341,7 +341,7 @@ public class TransDialog extends Dialog
 
 		// Modified Date:
 		wlModDate=new Label(wTransComp, SWT.RIGHT);
-		wlModDate.setText("Last modified at ");
+		wlModDate.setText(Messages.getString("TransDialog.LastModifiedDate.Label")); //$NON-NLS-1$
  		props.setLook(wlModDate);
 		fdlModDate=new FormData();
 		fdlModDate.left = new FormAttachment(0, 0);
@@ -376,7 +376,7 @@ public class TransDialog extends Dialog
 		// START OF LOG TAB///
 		///
 		wLogTab=new CTabItem(wTabFolder, SWT.NONE);
-		wLogTab.setText("Logging");
+		wLogTab.setText(Messages.getString("TransDialog.LogTab.Label")); //$NON-NLS-1$
 
 		FormLayout LogLayout = new FormLayout ();
 		LogLayout.marginWidth  = Const.MARGIN;
@@ -389,7 +389,7 @@ public class TransDialog extends Dialog
 
 		// Log step: lines read...
 		wlReadStep=new Label(wLogComp, SWT.RIGHT);
-		wlReadStep.setText("READ log step: ");
+		wlReadStep.setText(Messages.getString("TransDialog.ReadStep.Label")); //$NON-NLS-1$
  		props.setLook(wlReadStep);
 		fdlReadStep=new FormData();
 		fdlReadStep.left = new FormAttachment(0, 0);
@@ -407,7 +407,7 @@ public class TransDialog extends Dialog
 
 		// Log step: lines input...
 		wlInputStep=new Label(wLogComp, SWT.RIGHT);
-		wlInputStep.setText("INPUT log step: ");
+		wlInputStep.setText(Messages.getString("TransDialog.InputStep.Label")); //$NON-NLS-1$
  		props.setLook(wlInputStep);
 		fdlInputStep=new FormData();
 		fdlInputStep.left = new FormAttachment(0, 0);
@@ -425,7 +425,7 @@ public class TransDialog extends Dialog
 
 		// Log step: lines written...
 		wlWriteStep=new Label(wLogComp, SWT.RIGHT);
-		wlWriteStep.setText("WRITE log step: ");
+		wlWriteStep.setText(Messages.getString("TransDialog.WriteStep.Label")); //$NON-NLS-1$
  		props.setLook(wlWriteStep);
 		fdlWriteStep=new FormData();
 		fdlWriteStep.left = new FormAttachment(0, 0);
@@ -443,7 +443,7 @@ public class TransDialog extends Dialog
 
 		// Log step: lines to output...
 		wlOutputStep=new Label(wLogComp, SWT.RIGHT);
-		wlOutputStep.setText("OUTPUT log step: ");
+		wlOutputStep.setText(Messages.getString("TransDialog.OutputStep.Label")); //$NON-NLS-1$
  		props.setLook(wlOutputStep);
 		fdlOutputStep=new FormData();
 		fdlOutputStep.left = new FormAttachment(0, 0);
@@ -461,7 +461,7 @@ public class TransDialog extends Dialog
 
 		// Log step: update...
 		wlUpdateStep=new Label(wLogComp, SWT.RIGHT);
-		wlUpdateStep.setText("UPDATE log step: ");
+		wlUpdateStep.setText(Messages.getString("TransDialog.UpdateStep.Label")); //$NON-NLS-1$
  		props.setLook(wlUpdateStep);
 		fdlUpdateStep=new FormData();
 		fdlUpdateStep.left = new FormAttachment(0, 0);
@@ -489,7 +489,7 @@ public class TransDialog extends Dialog
 
 		// Log table connection...
 		wlLogconnection=new Label(wLogComp, SWT.RIGHT);
-		wlLogconnection.setText("Log Connection: ");
+		wlLogconnection.setText(Messages.getString("TransDialog.LogConnection.Label")); //$NON-NLS-1$
  		props.setLook(wlLogconnection);
 		fdlLogconnection=new FormData();
 		fdlLogconnection.left = new FormAttachment(0, 0);
@@ -498,7 +498,7 @@ public class TransDialog extends Dialog
 		wlLogconnection.setLayoutData(fdlLogconnection);
 
 		wbLogconnection=new Button(wLogComp, SWT.PUSH);
-		wbLogconnection.setText("&New...");
+		wbLogconnection.setText(Messages.getString("TransDialog.LogconnectionButton.Label")); //$NON-NLS-1$
 		wbLogconnection.addSelectionListener(new SelectionAdapter() 
 		{
 			public void widgetSelected(SelectionEvent e) 
@@ -530,7 +530,7 @@ public class TransDialog extends Dialog
 
 		// Log table...:
 		wlLogtable=new Label(wLogComp, SWT.RIGHT);
-		wlLogtable.setText("Log table:");
+		wlLogtable.setText(Messages.getString("TransDialog.Logtable.Label")); //$NON-NLS-1$
  		props.setLook(wlLogtable);
 		fdlLogtable=new FormData();
 		fdlLogtable.left = new FormAttachment(0, 0);
@@ -548,7 +548,7 @@ public class TransDialog extends Dialog
 
 
 		wlBatch=new Label(wLogComp, SWT.RIGHT);
-		wlBatch.setText("Use Batch-ID? ");
+		wlBatch.setText(Messages.getString("TransDialog.LogBatch.Label")); //$NON-NLS-1$
  		props.setLook(wlBatch);
 		fdlBatch=new FormData();
 		fdlBatch.left = new FormAttachment(0, 0);
@@ -564,7 +564,7 @@ public class TransDialog extends Dialog
 		wBatch.setLayoutData(fdBatch);
 
 		wlLogfield=new Label(wLogComp, SWT.RIGHT);
-		wlLogfield.setText("Use logfield to store logging in? ");
+		wlLogfield.setText(Messages.getString("TransDialog.Logfield.Label")); //$NON-NLS-1$
  		props.setLook(wlLogfield);
 		fdlLogfield=new FormData();
 		fdlLogfield.left = new FormAttachment(0, 0);
@@ -597,7 +597,7 @@ public class TransDialog extends Dialog
 		// START OF DATE TAB///
 		///
 		wDateTab=new CTabItem(wTabFolder, SWT.NONE);
-		wDateTab.setText("Dates");
+		wDateTab.setText(Messages.getString("TransDialog.DateTab.Label")); //$NON-NLS-1$
 
 		FormLayout DateLayout = new FormLayout ();
 		DateLayout.marginWidth  = Const.MARGIN;
@@ -609,7 +609,7 @@ public class TransDialog extends Dialog
 
 		// Max date table connection...
 		wlMaxdateconnection=new Label(wDateComp, SWT.RIGHT);
-		wlMaxdateconnection.setText("Maxdate Connection: ");
+		wlMaxdateconnection.setText(Messages.getString("TransDialog.MaxdateConnection.Label")); //$NON-NLS-1$
  		props.setLook(wlMaxdateconnection);
 		fdlMaxdateconnection=new FormData();
 		fdlMaxdateconnection.left = new FormAttachment(0, 0);
@@ -627,7 +627,7 @@ public class TransDialog extends Dialog
 
 		// Maxdate table...:
 		wlMaxdatetable=new Label(wDateComp, SWT.RIGHT);
-		wlMaxdatetable.setText("Maxdate table:");
+		wlMaxdatetable.setText(Messages.getString("TransDialog.MaxdateTable.Label")); //$NON-NLS-1$
  		props.setLook(wlMaxdatetable);
 		fdlMaxdatetable=new FormData();
 		fdlMaxdatetable.left = new FormAttachment(0, 0);
@@ -645,7 +645,7 @@ public class TransDialog extends Dialog
 
 		// Maxdate field...:
 		wlMaxdatefield=new Label(wDateComp, SWT.RIGHT);
-		wlMaxdatefield.setText("Maxdate field:");
+		wlMaxdatefield.setText(Messages.getString("TransDialog.MaxdateField.Label")); //$NON-NLS-1$
  		props.setLook(wlMaxdatefield);
 		fdlMaxdatefield=new FormData();
 		fdlMaxdatefield.left = new FormAttachment(0, 0);
@@ -663,7 +663,7 @@ public class TransDialog extends Dialog
 
 		// Maxdate offset...:
 		wlMaxdateoffset=new Label(wDateComp, SWT.RIGHT);
-		wlMaxdateoffset.setText("Maxdate offset (seconds):");
+		wlMaxdateoffset.setText(Messages.getString("TransDialog.MaxdateOffset.Label")); //$NON-NLS-1$
  		props.setLook(wlMaxdateoffset);
 		fdlMaxdateoffset=new FormData();
 		fdlMaxdateoffset.left = new FormAttachment(0, 0);
@@ -681,7 +681,7 @@ public class TransDialog extends Dialog
 
 		// Maxdate diff...:
 		wlMaxdatediff=new Label(wDateComp, SWT.RIGHT);
-		wlMaxdatediff.setText("Max. date difference (seconds):");
+		wlMaxdatediff.setText(Messages.getString("TransDialog.Maxdatediff.Label")); //$NON-NLS-1$
  		props.setLook(wlMaxdatediff);
 		fdlMaxdatediff=new FormData();
 		fdlMaxdatediff.left = new FormAttachment(0, 0);
@@ -725,7 +725,7 @@ public class TransDialog extends Dialog
 		// START OF Dep TAB///
 		///
 		wDepTab=new CTabItem(wTabFolder, SWT.NONE);
-		wDepTab.setText("Dependencies");
+		wDepTab.setText(Messages.getString("TransDialog.DepTab.Label")); //$NON-NLS-1$
 
 		FormLayout DepLayout = new FormLayout ();
 		DepLayout.marginWidth  = Const.MARGIN;
@@ -736,7 +736,7 @@ public class TransDialog extends Dialog
 		wDepComp.setLayout(DepLayout);
 
 		wlFields=new Label(wDepComp, SWT.RIGHT);
-		wlFields.setText("Dependencies : ");
+		wlFields.setText(Messages.getString("TransDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -747,9 +747,9 @@ public class TransDialog extends Dialog
 		final int FieldsRows=transMeta.nrDependencies();
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Connection", ColumnInfo.COLUMN_TYPE_CCOMBO, conns);
-		colinf[1]=new ColumnInfo("Table",      ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[2]=new ColumnInfo("Field",      ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		colinf[0]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Connection.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, conns); //$NON-NLS-1$
+		colinf[1]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Table.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		colinf[2]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Field.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		
 		wFields=new TableView(wDepComp, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -760,7 +760,7 @@ public class TransDialog extends Dialog
 							  );
 
 		wGet=new Button(wDepComp, SWT.PUSH);
-		wGet.setText(" &Get dependencies ");
+		wGet.setText(Messages.getString("TransDialog.GetDependenciesButton.Label")); //$NON-NLS-1$
 
 		fdGet = new FormData();
 		fdGet.bottom = new FormAttachment(100, 0);
@@ -792,7 +792,7 @@ public class TransDialog extends Dialog
 		// START OF PERFORMANCE TAB///
 		///
 		wPerfTab=new CTabItem(wTabFolder, SWT.NONE);
-		wPerfTab.setText("Performance");
+		wPerfTab.setText(Messages.getString("TransDialog.PerformanceTab.Label")); //$NON-NLS-1$
 		
 		Composite wPerfComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wPerfComp);
@@ -805,7 +805,7 @@ public class TransDialog extends Dialog
 
 		// Rows in Rowset:
 		wlSizeRowset=new Label(wPerfComp, SWT.RIGHT);
-		wlSizeRowset.setText("Nr of rows in rowset :");
+		wlSizeRowset.setText(Messages.getString("TransDialog.SizeRowset.Label")); //$NON-NLS-1$
  		props.setLook(wlSizeRowset);
 		fdlSizeRowset=new FormData();
 		fdlSizeRowset.left = new FormAttachment(0, 0);
@@ -847,11 +847,11 @@ public class TransDialog extends Dialog
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("TransDialog.OKButton.Label")); //$NON-NLS-1$
 		wSQL=new Button(shell, SWT.PUSH);
-		wSQL.setText(" &SQL ");
+		wSQL.setText(Messages.getString("TransDialog.SQLButton.Label")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("TransDialog.CancelButton.Label")); //$NON-NLS-1$
 		
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wSQL, wCancel }, Const.MARGIN, null);
 		
@@ -905,7 +905,7 @@ public class TransDialog extends Dialog
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), "getting transformation info...");
+		log.logDebug(toString(), Messages.getString("TransDialog.Log.GettingTransformationInfo")); //$NON-NLS-1$
 
 		if (transMeta.getName()!=null)         wTransname.setText        ( transMeta.getName());
 		if (transMeta.getModifiedUser()!=null)     wModUser.setText          ( transMeta.getModifiedUser() );
@@ -926,8 +926,8 @@ public class TransDialog extends Dialog
 		if (transMeta.getMaxDateConnection()!=null) wMaxdateconnection.setText( transMeta.getMaxDateConnection().getName());
 		if (transMeta.getMaxDateTable()!=null)      wMaxdatetable.setText     ( transMeta.getMaxDateTable());
 		if (transMeta.getMaxDateField()!=null)      wMaxdatefield.setText     ( transMeta.getMaxDateField());
-		wMaxdateoffset.setText(""+transMeta.getMaxDateOffset());
-		wMaxdatediff.setText(""+transMeta.getMaxDateDifference());
+		wMaxdateoffset.setText(""+transMeta.getMaxDateOffset()); //$NON-NLS-1$
+		wMaxdatediff.setText(""+transMeta.getMaxDateDifference()); //$NON-NLS-1$
 		
 		for (i=0;i<transMeta.nrDependencies();i++)
 		{
@@ -942,7 +942,7 @@ public class TransDialog extends Dialog
 			if (field!=null) item.setText(3, field);
 		}
 		
-		wSizeRowset.setText(""+transMeta.getSizeRowset());
+		wSizeRowset.setText(""+transMeta.getSizeRowset()); //$NON-NLS-1$
 		
 		wFields.setRowNums();
 		wFields.optWidth(true);
@@ -989,8 +989,8 @@ public class TransDialog extends Dialog
 		catch(Exception e)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-			mb.setText("Not a number!");
-			mb.setMessage("The offset number could not be parsed!");
+			mb.setText(Messages.getString("TransDialog.InvalidOffsetNumber.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(Messages.getString("TransDialog.InvalidOffsetNumber.DialogMessage")); //$NON-NLS-1$
 			mb.open();
 			wMaxdateoffset.setFocus();
 			wMaxdateoffset.selectAll();
@@ -1004,8 +1004,8 @@ public class TransDialog extends Dialog
 		catch(Exception e)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-			mb.setText("Not a number!");
-			mb.setMessage("The date difference number could not be parsed!");
+			mb.setText(Messages.getString("TransDialog.InvalidDateDifferenceNumber.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(Messages.getString("TransDialog.InvalidDateDifferenceNumber.DialogMessage")); //$NON-NLS-1$
 			mb.open();
 			wMaxdatediff.setFocus();
 			wMaxdatediff.selectAll();
@@ -1035,14 +1035,14 @@ public class TransDialog extends Dialog
 			try
 			{
 				rep.moveTransformation(transMeta.getName(), idDirFrom, newDirectory.getID() );
-		 		log.logDetailed(getClass().getName(), "Moved directory to ["+newDirectory.getPath()+"]");
+		 		log.logDetailed(getClass().getName(), Messages.getString("TransDialog.Log.MovedDirectoryTo",newDirectory.getPath())); //$NON-NLS-1$ //$NON-NLS-2$
 				transMeta.setDirectory( newDirectory );
 			}
 			catch(KettleException ke)
 			{
 		 		transMeta.setDirectory( dirFrom );
 		 		OK=false;
-		 		new ErrorDialog(shell, props, "Error moving transformation", "There was an error moving the transformation to another directory!", ke);
+		 		new ErrorDialog(shell, props, Messages.getString("TransDialog.ErrorMovingTransformation.DialogTitle"), Messages.getString("TransDialog.ErrorMovingTransformation.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 
@@ -1091,8 +1091,8 @@ public class TransDialog extends Dialog
 	{
 		if (sql==null) return null;
 		
-		int idxfrom = sql.toUpperCase().indexOf("FROM");
-		int idxto   = sql.toUpperCase().indexOf("WHERE");
+		int idxfrom = sql.toUpperCase().indexOf("FROM"); //$NON-NLS-1$
+		int idxto   = sql.toUpperCase().indexOf("WHERE"); //$NON-NLS-1$
 		if (idxfrom==-1) return null;
 		if (idxto==-1) idxto=sql.length();
 		return sql.substring(idxfrom+5, idxto);
@@ -1127,16 +1127,16 @@ public class TransDialog extends Dialog
 						else
 						{
 							MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-							mb.setText("OK!");
-							mb.setMessage("No sql needs to be executed.  The log table looks great!");
+							mb.setText(Messages.getString("TransDialog.NoSqlNedds.DialogTitle")); //$NON-NLS-1$
+							mb.setMessage(Messages.getString("TransDialog.NoSqlNedds.DialogMessage")); //$NON-NLS-1$
 							mb.open(); 
 						}
 					}
 					catch(KettleException e)
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setText("ERROR!");
-						mb.setMessage("An error occurred: "+Const.CR+e.getMessage());
+						mb.setText(Messages.getString("TransDialog.ErrorOccurred.DialogTitle")); //$NON-NLS-1$
+						mb.setMessage(Messages.getString("TransDialog.ErrorOccurred.DialogMessage")+Const.CR+e.getMessage()); //$NON-NLS-1$
 						mb.open(); 
 					}
 					finally
@@ -1147,24 +1147,24 @@ public class TransDialog extends Dialog
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setText("ERROR");
-					mb.setMessage("Please enter a logtable-name!");
+					mb.setText(Messages.getString("TransDialog.NeedLogtableName.DialogTitle")); //$NON-NLS-1$
+					mb.setMessage(Messages.getString("TransDialog.NeedLogtableName.DialogMessage")); //$NON-NLS-1$
 					mb.open(); 
 				}
 			}
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setText("ERROR");
-				mb.setMessage("I couldn't find any fields to create the logtable!");
+				mb.setText(Messages.getString("TransDialog.CouldnotFindAnyFields.DialogTitle")); //$NON-NLS-1$
+				mb.setMessage(Messages.getString("TransDialog.CouldnotFindAnyFields.DialogMessage")); //$NON-NLS-1$
 				mb.open(); 
 			}
 		}
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setText("ERROR");
-			mb.setMessage("Please select a valid logtable connection!");
+			mb.setText(Messages.getString("TransDialog.NeedValidLogtableConnection.DialogTitle")); //$NON-NLS-1$
+			mb.setMessage(Messages.getString("TransDialog.NeedValidLogtableConnection.DialogMessage")); //$NON-NLS-1$
 			mb.open(); 
 		}
 	}

@@ -58,7 +58,7 @@ public class TransSaveProgressDialog
 				}
 				catch(KettleException e)
 				{
-					throw new InvocationTargetException(e, "Error saving transformation: "+e.toString());
+					throw new InvocationTargetException(e, Messages.getString("TransSaveProgressDialog.Exception.ErrorSavingTransformation")+e.toString()); //$NON-NLS-1$
 				}
 			}
 		};
@@ -70,12 +70,12 @@ public class TransSaveProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, "Error saving transformation", "An error occured saving the transformation!", e);
+			new ErrorDialog(shell, props, Messages.getString("TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle"), Messages.getString("TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			retval=false;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, "Error saving transformation", "An error occured saving the transformation!", e);
+			new ErrorDialog(shell, props, Messages.getString("TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle"), Messages.getString("TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			retval=false;
 		}
 

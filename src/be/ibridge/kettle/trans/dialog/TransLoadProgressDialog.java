@@ -59,7 +59,7 @@ public class TransLoadProgressDialog
 				}
 				catch(KettleException e)
 				{
-					throw new InvocationTargetException(e, "Error loading transformation");
+					throw new InvocationTargetException(e, Messages.getString("TransLoadProgressDialog.Exception.ErrorLoadingTransformation")); //$NON-NLS-1$
 				}
 			}
 		};
@@ -71,12 +71,12 @@ public class TransLoadProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, Props.getInstance(), "Error loading transformation", "An error occured loading the transformation!", e);
+			new ErrorDialog(shell, Props.getInstance(), Messages.getString("TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			transInfo = null;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, Props.getInstance(), "Error loading transformation", "An error occured loading the transformation!", e);
+			new ErrorDialog(shell, Props.getInstance(), Messages.getString("TransLoadProgressDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("TransLoadProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			transInfo = null;
 		}
 
