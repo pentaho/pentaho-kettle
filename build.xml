@@ -62,6 +62,7 @@
 	    	   target="1.4"
 	    	   source="1.4"
 	           deprecation="true"
+	    	   debug="true"
 	    	>
 
 	    	<classpath id="cp-kettle">
