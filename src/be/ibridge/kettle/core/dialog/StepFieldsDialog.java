@@ -44,6 +44,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
 /**
@@ -63,7 +64,6 @@ public class StepFieldsDialog extends Dialog
 	private FormData     fdlFields, fdFields;
 
 	private Button wEdit, wCancel;
-	private FormData fdEdit, fdCancel;
 	private Listener lsEdit, lsCancel;
 
 	private Row           input;
@@ -101,7 +101,6 @@ public class StepFieldsDialog extends Dialog
 		shell.setLayout(formLayout);
 		shell.setText("Step fields and their origin");
 		
-		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Filename line
@@ -116,7 +115,7 @@ public class StepFieldsDialog extends Dialog
 		wStepname.setText(stepname);
 		props.setLook(wStepname);
 		fdStepname=new FormData();
-		fdStepname.left = new FormAttachment(middle, 0);
+		fdStepname.left = new FormAttachment(wlStepname, margin);
 		fdStepname.top  = new FormAttachment(0, margin);
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
@@ -160,15 +159,9 @@ public class StepFieldsDialog extends Dialog
 		wEdit.setText(" &Edit origin step ");
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(" &Cancel ");
-		fdEdit=new FormData();
-		fdEdit.left=new FormAttachment(33, 0);
-		fdEdit.bottom =new FormAttachment(100, 0);
-		wEdit.setLayoutData(fdEdit);
-		fdCancel=new FormData();
-		fdCancel.left=new FormAttachment(66, 0);
-		fdCancel.bottom =new FormAttachment(100, 0);
-		wCancel.setLayoutData(fdCancel);
 
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wEdit, wCancel }, margin, wFields);
+		
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		lsEdit       = new Listener() { public void handleEvent(Event e) { edit();     } };
