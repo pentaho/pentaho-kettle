@@ -75,6 +75,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.DragAndDropContainer;
 import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
@@ -974,7 +975,7 @@ public class Spoon
         leftSash = new SashForm(sashform, SWT.VERTICAL);
         
         // Now set up the main CSH tree
-        selectionTree = new Tree(leftSash, SWT.MULTI | SWT.BORDER);
+        selectionTree = new Tree(leftSash, SWT.SINGLE | SWT.BORDER);
         // props.setLook(selectionTree);
         selectionTree.setLayout(new FillLayout());
         
@@ -1112,7 +1113,7 @@ public class Spoon
         final Tree fTree = tree;
         
         // Drag & Drop for steps
-        Transfer[] ttypes = new Transfer[] {TextTransfer.getInstance() };
+        Transfer[] ttypes = new Transfer[] { TextTransfer.getInstance() };
         
         DragSource ddSource = new DragSource(fTree, DND.DROP_MOVE | DND.DROP_COPY);
         ddSource.setTransfer(ttypes);
@@ -1124,36 +1125,47 @@ public class Spoon
                 {
                     TreeItem ti[] = fTree.getSelection();
                     
-                    String data = new String();
-                    for (int i=0;i<ti.length;i++) 
-                    {
-                        String ts[] = Const.getTreeStrings(ti[i]);
+                    String data = null;
+                    int type = 0;
+
+                    String ts[] = Const.getTreeStrings(ti[0]);
                         
-                        if (ts!=null && ts.length > 0 &&
-                            ( ts[0].equalsIgnoreCase(STRING_BASE) ||
-                              ts[0].equalsIgnoreCase(STRING_PLUGIN) ||
-                              ts[0].equalsIgnoreCase(STRING_HISTORY)
-                            )
-                           )
-                        {
-                            data+="#BASE STEP#"+ti[i].getText()+Const.CR;
-                        }
-                        else
-                        if (ts!=null && ts.length > 0 && ts[0].equalsIgnoreCase(STRING_CONNECTIONS))
-                        {
-                            data+="#CONNECTION#"+ti[i].getText()+Const.CR;
-                        }
-                        else
-                        if (ts!=null && ts.length > 0 && ts[0].equalsIgnoreCase(STRING_HOPS))
-                        {
-                            data+="#HOP#"+ti[i].getText()+Const.CR;;
-                        }
-                        else
-                        {
-                            data+=ti[i].getText()+Const.CR;
-                        }
-                    } 
-                    event.data = data;
+                    if (ts!=null && ts.length > 0)
+                    {
+                    	// Drop of existing hidden step onto canvas?
+	                    if (ts[0].equalsIgnoreCase(STRING_STEPS))
+	                    {
+	                    	type = DragAndDropContainer.TYPE_STEP;
+	                        data=ti[0].getText(); // name of the step.
+	                    }
+	                    else
+                    	if ( ts[0].equalsIgnoreCase(STRING_BASE) ||
+                             ts[0].equalsIgnoreCase(STRING_PLUGIN) ||
+                             ts[0].equalsIgnoreCase(STRING_HISTORY)
+                        )
+	                    {
+	                    	type = DragAndDropContainer.TYPE_BASE_STEP_TYPE;
+	                        data=ti[0].getText(); // Step type
+	                    }
+	                    else
+	                    if (ts[0].equalsIgnoreCase(STRING_CONNECTIONS))
+	                    {
+	                    	type = DragAndDropContainer.TYPE_DATABASE_CONNECTION;
+	                        data=ti[0].getText(); // Database connection name to use
+	                    }
+	                    else
+	                    if (ts[0].equalsIgnoreCase(STRING_HOPS))
+	                    {
+	                    	type = DragAndDropContainer.TYPE_TRANS_HOP;
+	                        data=ti[0].getText(); // nothing for really ;-)
+	                    }
+	                    else
+	                    {
+	                    	return; // ignore anything else you drag.
+	                    }
+
+                    	event.data = new DragAndDropContainer(type, data).getXML();
+                    }
                 }
     
                 public void dragFinished(DragSourceEvent event) {}
@@ -3083,6 +3095,10 @@ public class Spoon
                     props.addPluginHistory(stepPlugin.getID());
         
                     refreshTree();
+                }
+                else
+                {
+                	return null; // Cancel pressed in dialog.
                 }
                 setShellText();
             }   
