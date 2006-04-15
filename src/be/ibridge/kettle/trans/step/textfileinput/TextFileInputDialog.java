@@ -399,7 +399,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wbvFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbvFilename);
 		wbvFilename.setText(Messages.getString("System.Button.Variable"));
-		wbvFilename.setToolTipText(Messages.getString("System.Tooltip.VariableToDirOrDir"));
+		wbvFilename.setToolTipText(Messages.getString("System.Tooltip.VariableToFileOrDir"));
 		fdbvFilename=new FormData();
 		fdbvFilename.right= new FormAttachment(wbbFilename, -margin);
 		fdbvFilename.top  = new FormAttachment(0, 0);
