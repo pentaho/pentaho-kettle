@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.zip.ZipInputStream;
 
 import be.ibridge.kettle.core.Const;
@@ -396,11 +397,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 					}
 					catch (Exception e)
 					{
+						// OK, give some feedback!
+						String message = "Couldn't parse field [" + field + "] with value [" + pol + "], format ["+format+"] ldaf=["+ldaf.toLocalizedPattern()+"]";
+						
 						if (info.isErrorIgnored())
 						{
-							// OK, give some feedback!
-							String message = "Couldn't parse field [" + field + "] with value [" + pol + "] : " + e.getMessage();
-							log.logBasic(fname, "WARNING: " + message);
+							log.logBasic(fname, "WARNING: " + message+" : " + e.getMessage());
 
 							value = new Value(field, type);
 							value.setNull();
@@ -432,7 +434,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						}
 						else
 						{
-							throw new KettleException("Couldn't parse field [" + f.getName() + "] with value [" + pol + "]", e);
+							throw new KettleException(message, e);
 						}
 					}
 				}
@@ -534,6 +536,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			value.setNull();
 		}
 		else
+		{
 			if (value.isNumeric())
 			{
 				try
@@ -577,11 +580,13 @@ public class TextFileInput extends BaseStep implements StepInterface
 						value.setValue(ldf.parse(pol).doubleValue());
 					}
 					else
+					{
 						if (value.isInteger())
 						{
 							value.setValue(Long.parseLong(pol));
 						}
 						else
+						{
 							if (value.isBigNumber())
 							{
 								value.setValue(new BigDecimal(pol));
@@ -590,6 +595,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 							{
 								throw new KettleValueException("Unknown numeric type: contact vendor!");
 							}
+						}
+					}
 				}
 				catch (Exception e)
 				{
@@ -597,6 +604,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				}
 			}
 			else
+			{
 				if (value.isString())
 				{
 					value.setValue(pol);
@@ -617,6 +625,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					if (pol.length() == 0) value.setNull();
 				}
 				else
+				{
 					if (value.isDate())
 					{
 						try
@@ -634,6 +643,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 							throw (e);
 						}
 					}
+				}
+			}
+		}
+		
 		value.setLength(field_length, field_precision);
 
 		return value;
@@ -1157,6 +1170,15 @@ public class TextFileInput extends BaseStep implements StepInterface
 			initErrorHandling();
 			initReplayFactory();
 			data.setDateFormatLenient(meta.isDateFormatLenient());
+			
+			// If the date format locale is not the default: change the simple date format
+			if ( !meta.getDateFormatLocale().equals(Locale.getDefault()))
+			{
+				// The format will be overwritten, this is simply the default...
+				logDetailed("Applying date format locale: "+meta.getDateFormatLocale());
+				data.daf = new SimpleDateFormat("yyy/MM/dd HH:mm:ss.SSS", meta.getDateFormatLocale());
+			}
+				
 			data.files = meta.getTextFileList();
 			if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
 			{

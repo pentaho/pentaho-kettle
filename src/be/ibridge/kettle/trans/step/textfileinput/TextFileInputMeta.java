@@ -23,6 +23,7 @@ package be.ibridge.kettle.trans.step.textfileinput;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.Locale;
 
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
@@ -178,9 +179,13 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     
     /** The extension of line number files */
     private String lineNumberFilesExtension;
-    
+
+    /** Indicate whether or not we want to date fields strictly according to the format or lenient */
     private boolean dateFormatLenient;
 
+    /** Specifies the Locale of the Date format, null means the default */
+    private Locale dateFormatLocale;
+    
     /** If error line are skipped, you can replay without introducing doubles.*/
 	private boolean errorLineSkipped;
     
@@ -534,6 +539,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             retval.filter[i] = (TextFileFilter) filter[i].clone();
         }
 
+        retval.dateFormatLocale = (Locale) dateFormatLocale.clone();  
+        
         return retval;
     }
 
@@ -580,7 +587,6 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         lineNumberFilesExtension = "line";
         dateFormatLenient = true;
         
-
         int nrfiles = 0;
         int nrfields = 0;
         int nrfilters = 0;
@@ -599,6 +605,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             inputFields[i] = new TextFileInputField("field" + (i + 1), 1, -1);
         }
 
+        dateFormatLocale = Locale.getDefault();
+        
         rowLimit = 0L;
     }
 
@@ -754,7 +762,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    " + XMLHandler.addTagValue("error_line_files_extension", errorFilesExtension)); 
         retval.append("    " + XMLHandler.addTagValue("line_number_files_destination_directory", lineNumberFilesDestinationDirectory));
         retval.append("    " + XMLHandler.addTagValue("line_number_files_extension", lineNumberFilesExtension));
+        
         retval.append("    " + XMLHandler.addTagValue("date_format_lenient", dateFormatLenient));
+        retval.append("    " + XMLHandler.addTagValue("date_format_locale", dateFormatLocale.toString()));
         
 
         return retval.toString();
@@ -883,7 +893,17 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             lineNumberFilesDestinationDirectory = XMLHandler.getTagValue(stepnode, "line_number_files_destination_directory");
             lineNumberFilesExtension = XMLHandler.getTagValue(stepnode, "line_number_files_extension");
             // Backward compatible
+            
             dateFormatLenient = ! NO.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "date_format_lenient"));
+            String dateLocale = XMLHandler.getTagValue(stepnode, "date_format_locale");
+            if (dateLocale!=null)
+            {
+            	dateFormatLocale = new Locale(dateLocale);
+            }
+            else
+            {
+            	dateFormatLocale = Locale.getDefault();
+            }
         }
         catch (Exception e)
         {
@@ -976,7 +996,18 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             errorFilesExtension = rep.getStepAttributeString(id_step, "error_line_files_ext"); 
             lineNumberFilesDestinationDirectory = rep.getStepAttributeString(id_step, "line_number_files_dest_dir");
             lineNumberFilesExtension = rep.getStepAttributeString(id_step, "line_number_files_ext");
+            
             dateFormatLenient = rep.getStepAttributeBoolean(id_step, 0, "date_format_lenient", true);
+            
+            String dateLocale = rep.getStepAttributeString(id_step, 0, "date_format_locale");
+            if (dateLocale!=null)
+            {
+            	dateFormatLocale = new Locale(dateLocale);
+            }
+            else
+            {
+            	dateFormatLocale = Locale.getDefault();
+            }
         }
         catch (Exception e)
         {
@@ -1058,7 +1089,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "error_line_files_ext", errorFilesExtension); 
             rep.saveStepAttribute(id_transformation, id_step, "line_number_files_dest_dir", lineNumberFilesDestinationDirectory);
             rep.saveStepAttribute(id_transformation, id_step, "line_number_files_ext", lineNumberFilesExtension);
+
             rep.saveStepAttribute(id_transformation, id_step, "date_format_lenient", dateFormatLenient);            
+            rep.saveStepAttribute(id_transformation, id_step, "date_format_locale", dateFormatLocale.toString());            
         }
         catch (Exception e)
         {
@@ -1387,6 +1420,22 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setErrorLineSkipped(boolean errorLineSkipped) {
 		this.errorLineSkipped = errorLineSkipped;
+	}
+
+	/**
+	 * @return Returns the dateFormatLocale.
+	 */
+	public Locale getDateFormatLocale()
+	{
+		return dateFormatLocale;
+	}
+
+	/**
+	 * @param dateFormatLocale The dateFormatLocale to set.
+	 */
+	public void setDateFormatLocale(Locale dateFormatLocale)
+	{
+		this.dateFormatLocale = dateFormatLocale;
 	}
 
 	

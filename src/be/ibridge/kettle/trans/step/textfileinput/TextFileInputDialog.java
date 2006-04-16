@@ -27,6 +27,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Vector;
 import java.util.zip.ZipInputStream;
 
@@ -232,6 +233,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private Button       wDateLenient;
     private FormData     fdlDateLenient, fdDateLenient;
 
+	private Label        wlDateLocale;
+	private CCombo       wDateLocale;
+	private FormData     fdlDateLocale, fdDateLocale;
+    
 
 
     // ERROR HANDLING...
@@ -1227,6 +1232,36 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdDateLenient.top  = new FormAttachment(wLimit, margin);
         wDateLenient.setLayoutData(fdDateLenient);
 
+        wlDateLocale=new Label(wContentComp, SWT.RIGHT);
+        wlDateLocale.setText(Messages.getString("TextFileInputDialog.DateLocale.Label"));
+        props.setLook(wlDateLocale);
+        fdlDateLocale=new FormData();
+        fdlDateLocale.left = new FormAttachment(0, 0);
+        fdlDateLocale.top  = new FormAttachment(wDateLenient, margin);
+        fdlDateLocale.right= new FormAttachment(middle, -margin);
+        wlDateLocale.setLayoutData(fdlDateLocale);
+        wDateLocale=new CCombo(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wDateLocale.setToolTipText(Messages.getString("TextFileInputDialog.DateLocale.Tooltip"));
+        props.setLook(wDateLocale);
+        wDateLocale.addModifyListener(lsMod);
+        fdDateLocale=new FormData();
+        fdDateLocale.left = new FormAttachment(middle, 0);
+        fdDateLocale.top  = new FormAttachment(wDateLenient, margin);
+        fdDateLocale.right= new FormAttachment(100, 0);
+        wDateLocale.setLayoutData(fdDateLocale);
+        
+        Runnable runnable = new Runnable()
+		{
+			public void run()
+			{
+		        Locale locale[] =  Locale.getAvailableLocales();
+		        for (int i=0;i<locale.length;i++)
+		        {
+		        	wDateLocale.add( locale[i].toString() );
+		        }
+			}
+		};
+        shell.getDisplay().asyncExec(runnable);
               
         fdContentComp = new FormData();
         fdContentComp.left  = new FormAttachment(0, 0);
@@ -1864,6 +1899,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             item.setText(3, filter.isFilterLastLine()?Messages.getString("System.Button.Yes"):Messages.getString("System.Button.No"));
         }
         
+        // Date locale
+        wDateLocale.setText(in.getDateFormatLocale().toString());
+        
         wFields.removeEmptyRows();
         wFields.setRowNums();
         wFields.optWidth(true);
@@ -2000,6 +2038,17 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         in.setErrorLineFilesExtension( wErrorExt.getText() ); 
         in.setLineNumberFilesDestinationDirectory( wLineNrDestDir.getText() );
         in.setLineNumberFilesExtension( wLineNrExt.getText() );
+        
+        // Date format Locale
+        Locale locale = new Locale(wDateLocale.getText());
+        if (!locale.equals(Locale.getDefault()))
+        {
+        	in.setDateFormatLocale(locale);
+        }
+        else
+        {
+        	in.setDateFormatLocale(Locale.getDefault());
+        }
 	}
 	
 	private void get()
@@ -2248,10 +2297,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                 
                 if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                 {
-                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                    mb.setMessage(Messages.getString("TextFileInputDialog.ErrorInPreview.DialogMessage"));
-                    mb.setText(Messages.getString("System.DialogTitle.Error"));
-                    mb.open(); 
+                	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.Error.Title"),  Messages.getString("TextFileInputDialog.ErrorInPreview.DialogMessage"), loggingText, true );
+                	etd.setReadOnly();
+                	etd.open();
                 }
                 
                 PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
