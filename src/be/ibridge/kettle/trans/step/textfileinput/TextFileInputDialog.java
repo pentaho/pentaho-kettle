@@ -85,7 +85,7 @@ import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 public class TextFileInputDialog extends BaseStepDialog implements StepDialogInterface
 {
-	private static final String[] YES_NO_COMBO = new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Button.Yes") };
+	private static final String[] YES_NO_COMBO = new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") };
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
