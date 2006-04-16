@@ -92,16 +92,16 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
         StringBuffer retval = new StringBuffer();
 		
 		retval.append(super.getXML());
-		
-		retval.append("      "+XMLHandler.addTagValue("server",         server));
-		retval.append("      "+XMLHandler.addTagValue("destination",    destination));
-		retval.append("      "+XMLHandler.addTagValue("replyto",        replyto));
-		retval.append("      "+XMLHandler.addTagValue("subject",        subject));
-		retval.append("      "+XMLHandler.addTagValue("include_date",   include_date));
-		retval.append("      "+XMLHandler.addTagValue("contact_person", contact_person));
-		retval.append("      "+XMLHandler.addTagValue("contact_phone",  contact_phone));
-		retval.append("      "+XMLHandler.addTagValue("comment",        comment));
-		retval.append("      "+XMLHandler.addTagValue("include_files",   includeFiles));
+
+        retval.append("      ").append(XMLHandler.addTagValue("server", server));
+        retval.append("      ").append(XMLHandler.addTagValue("destination", destination));
+        retval.append("      ").append(XMLHandler.addTagValue("replyto", replyto));
+        retval.append("      ").append(XMLHandler.addTagValue("subject", subject));
+        retval.append("      ").append(XMLHandler.addTagValue("include_date", include_date));
+        retval.append("      ").append(XMLHandler.addTagValue("contact_person", contact_person));
+        retval.append("      ").append(XMLHandler.addTagValue("contact_phone", contact_phone));
+        retval.append("      ").append(XMLHandler.addTagValue("comment", comment));
+        retval.append("      ").append(XMLHandler.addTagValue("include_files", includeFiles));
 
 		return retval.toString();
 	}
@@ -371,42 +371,33 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 				    if (invalid != null) 
 				    {
 				    	log.logError(toString(), "    ** Invalid Addresses");
-				    	if (invalid != null) 
-				    	{
-				    		for (int i = 0; i < invalid.length; i++) 
-				    		{
-				    			log.logError(toString(), "         " + invalid[i]);
-				    			result.setNrErrors(1);
-				    		}
-				    	}
+     		    		for (int i = 0; i < invalid.length; i++)
+			    		{
+			    			log.logError(toString(), "         " + invalid[i]);
+			    			result.setNrErrors(1);
+			    		}
 				    }
 				    
 				    Address[] validUnsent = sfex.getValidUnsentAddresses();
 				    if (validUnsent != null) 
 				    {
 				    	log.logError(toString(), "    ** ValidUnsent Addresses");
-				    	if (validUnsent != null) 
-				    	{
-				    		for (int i = 0; i < validUnsent.length; i++) 
-				    		{
-				    			log.logError(toString(), "         "+validUnsent[i]);
-				    			result.setNrErrors(1);
-				    		}
-				    	}
+			    		for (int i = 0; i < validUnsent.length; i++)
+			    		{
+			    			log.logError(toString(), "         "+validUnsent[i]);
+			    			result.setNrErrors(1);
+			    		}
 				    }
 				    
 				    Address[] validSent = sfex.getValidSentAddresses();
 				    if (validSent != null) 
 				    {
 				    	//System.out.println("    ** ValidSent Addresses");
-				    	if (validSent != null) 
-				    	{
-				    		for (int i = 0; i < validSent.length; i++) 
-				    		{
-				    			log.logError(toString(), "         "+validSent[i]);
-				    			result.setNrErrors(1);
-				    		}
-				    	}
+			    		for (int i = 0; i < validSent.length; i++)
+			    		{
+			    			log.logError(toString(), "         "+validSent[i]);
+			    			result.setNrErrors(1);
+			    		}
 				    }
 				}
 				if (ex instanceof MessagingException)
