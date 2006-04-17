@@ -1,10 +1,13 @@
 package be.ibridge.kettle.i18n;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 import java.util.MissingResourceException;
+import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
 public class GlobalMessages
@@ -41,8 +44,8 @@ public class GlobalMessages
     {
         threadLocales.set(newLocale);
     }
-
-    private static String buildHashKey(Locale locale, String packageName)
+    
+    private static String getLocaleString(Locale locale)
     {
         String locString = locale.toString();
         if (locString.length()==5 && locString.charAt(2)=='_') // Force upper-lowercase format
@@ -50,7 +53,12 @@ public class GlobalMessages
             locString=locString.substring(0,2).toLowerCase()+"_"+locString.substring(3).toUpperCase();
             // System.out.println("locString="+locString);
         }
-        return packageName + "_" + locString;
+        return locString;
+    }
+
+    private static String buildHashKey(Locale locale, String packageName)
+    {
+        return packageName + "_" + getLocaleString(locale);
     }
 
     private static String buildBundleName(String packageName)
@@ -60,6 +68,7 @@ public class GlobalMessages
 
     private static ResourceBundle getBundle(Locale locale, String packageName) throws MissingResourceException
     {
+    	/*
         ResourceBundle bundle = (ResourceBundle) locales.get(buildHashKey(locale, packageName));
         if (bundle == null)
         {
@@ -67,6 +76,33 @@ public class GlobalMessages
             locales.put(buildHashKey(locale, packageName), bundle);
         }
         return bundle;
+        */
+    	
+    	String filename = buildHashKey(locale, packageName);
+    	filename = "/"+filename.replace(".", "/") + ".properties";
+    	
+    	try
+    	{
+    	    ResourceBundle bundle = (ResourceBundle) locales.get(filename);
+            if (bundle == null)
+            {
+            	InputStream inputStream = LanguageChoice.getInstance().getClass().getResourceAsStream(filename);
+            	if (inputStream!=null)
+            	{
+            		bundle = new PropertyResourceBundle(inputStream);
+            		locales.put(filename, bundle);
+            	}
+            	else
+            	{
+            		throw new MissingResourceException("Unable to find properties file ["+filename+"]", locale.toString(), packageName);
+            	}
+            }
+            return bundle;
+    	}
+    	catch(IOException e)
+    	{
+    		throw new MissingResourceException("Unable to find properties file ["+filename+"] : "+e.toString(), locale.toString(), packageName);
+    	}
     }
 
     public static String getSystemString(String key)
@@ -136,11 +172,13 @@ public class GlobalMessages
     {
         try
         {
-            return getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME).getString(key);
+        	ResourceBundle bundle = getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME); 
+            return bundle.getString(key);
         }
         catch(MissingResourceException e)
         {
-            return getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME).getString(key);
+        	ResourceBundle bundle = getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME);
+        	return bundle.getString(key);
         }
     }
 
