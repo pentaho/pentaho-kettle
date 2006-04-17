@@ -171,7 +171,7 @@ public class BaseStepDialog extends Dialog
 			// Also, set the tooltip the same as the name if we don't have one...
 			if (buttons[i].getToolTipText()==null)
 			{
-				buttons[i].setToolTipText( Const.replace(buttons[i].getText(), "&", ""));
+				buttons[i].setToolTipText( Const.replace(buttons[i].getText(), "&", "")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 	}
@@ -212,7 +212,7 @@ public class BaseStepDialog extends Dialog
 		addDatabases(wConnection);
 
 		wlConnection=new Label(parent, SWT.RIGHT);
-		wlConnection.setText("Connection ");
+		wlConnection.setText(Messages.getString("BaseStepDialog.Connection.Label")); //$NON-NLS-1$
  		props.setLook(wlConnection);
 		fdlConnection=new FormData();
 		fdlConnection.left = new FormAttachment(0, 0);
@@ -225,7 +225,7 @@ public class BaseStepDialog extends Dialog
 		// NEW button
 		//
 		wbnConnection=new Button(parent, SWT.PUSH);
-		wbnConnection.setText("&New...");
+		wbnConnection.setText(Messages.getString("BaseStepDialog.NewConnectionButton.Label")); //$NON-NLS-1$
 		wbnConnection.addSelectionListener(new SelectionAdapter() 
 		{
 			public void widgetSelected(SelectionEvent e) 
@@ -251,7 +251,7 @@ public class BaseStepDialog extends Dialog
 		// Edit button
 		//
 		wbeConnection=new Button(parent, SWT.PUSH);
-		wbeConnection.setText("&Edit...");
+		wbeConnection.setText(Messages.getString("BaseStepDialog.EditConnectionButton.Label")); //$NON-NLS-1$
 		wbeConnection.addSelectionListener(new SelectionAdapter() 
 		{
 			public void widgetSelected(SelectionEvent e) 

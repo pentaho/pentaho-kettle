@@ -79,23 +79,23 @@ public class StepMeta implements Cloneable, Comparable
 
 	public String getXML()
 	{
-		String retval="";
+		String retval=""; //$NON-NLS-1$
 		
-		retval+="  <step>"+Const.CR;
-		retval+="    "+XMLHandler.addTagValue("name",        getName());
-		retval+="    "+XMLHandler.addTagValue("type",        getStepID());
-		retval+="    "+XMLHandler.addTagValue("description", description);
-		retval+="    "+XMLHandler.addTagValue("distribute",  distributes);
-		retval+="    "+XMLHandler.addTagValue("copies",      copies);
+		retval+="  <step>"+Const.CR; //$NON-NLS-1$
+		retval+="    "+XMLHandler.addTagValue("name",        getName()); //$NON-NLS-1$ //$NON-NLS-2$
+		retval+="    "+XMLHandler.addTagValue("type",        getStepID()); //$NON-NLS-1$ //$NON-NLS-2$
+		retval+="    "+XMLHandler.addTagValue("description", description); //$NON-NLS-1$ //$NON-NLS-2$
+		retval+="    "+XMLHandler.addTagValue("distribute",  distributes); //$NON-NLS-1$ //$NON-NLS-2$
+		retval+="    "+XMLHandler.addTagValue("copies",      copies); //$NON-NLS-1$ //$NON-NLS-2$
 
 		retval+=stepMetaInterface.getXML();
 			
-		retval+="    <GUI>"+Const.CR;
-		retval+="      <xloc>"+location.x+"</xloc>"+Const.CR;
-		retval+="      <yloc>"+location.y+"</yloc>"+Const.CR;
-		retval+="      <draw>"+(drawstep?"Y":"N")+"</draw>"+Const.CR;
-		retval+="      </GUI>"+Const.CR;
-		retval+="    </step>"+Const.CR+Const.CR;
+		retval+="    <GUI>"+Const.CR; //$NON-NLS-1$
+		retval+="      <xloc>"+location.x+"</xloc>"+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
+		retval+="      <yloc>"+location.y+"</yloc>"+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
+		retval+="      <draw>"+(drawstep?"Y":"N")+"</draw>"+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		retval+="      </GUI>"+Const.CR; //$NON-NLS-1$
+		retval+="    </step>"+Const.CR+Const.CR; //$NON-NLS-1$
 		
 		return retval;
 	}
@@ -116,10 +116,10 @@ public class StepMeta implements Cloneable, Comparable
 
 		try
 		{
-			stepname = XMLHandler.getTagValue(stepnode, "name");
-			stepid   = XMLHandler.getTagValue(stepnode, "type");
+			stepname = XMLHandler.getTagValue(stepnode, "name"); //$NON-NLS-1$
+			stepid   = XMLHandler.getTagValue(stepnode, "type"); //$NON-NLS-1$
 	
-			log.logDebug("StepMeta()", "looking for the right step node ("+stepname+")");
+			log.logDebug("StepMeta()", Messages.getString("StepMeta.Log.LookingForTheRightStepNode",stepname)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	
 			// Create a new StepMetaInterface object...
 			StepPlugin sp = steploader.findStepPluginWithID(stepid);
@@ -129,7 +129,7 @@ public class StepMeta implements Cloneable, Comparable
             }
             else
             {
-                throw new KettleStepLoaderException("Unable to load class for step/plugin with id ["+stepid+"]."+Const.CR+"Check if the plugin is available in the plugins subdirectory of the Kettle distribution.");
+                throw new KettleStepLoaderException(Messages.getString("StepMeta.Exception.UnableToLoadClass",stepid+Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             }
 			
 			// Load the specifics from XML...
@@ -137,31 +137,31 @@ public class StepMeta implements Cloneable, Comparable
 			{
 				stepMetaInterface.loadXML(stepnode, databases, counters);
 			}
-			log.logDebug("StepMeta()", "specifics loaded for "+stepname);
+			log.logDebug("StepMeta()", Messages.getString("StepMeta.Log.SpecificLoadedStep",stepname)); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			/* Handle info general to all step types...*/
-			description    = XMLHandler.getTagValue(stepnode, "description");
-			copies         = Const.toInt(XMLHandler.getTagValue(stepnode, "copies"), 1);
-			String sdistri = XMLHandler.getTagValue(stepnode, "distribute");
-			distributes     = "Y".equalsIgnoreCase(sdistri);
+			description    = XMLHandler.getTagValue(stepnode, "description"); //$NON-NLS-1$
+			copies         = Const.toInt(XMLHandler.getTagValue(stepnode, "copies"), 1); //$NON-NLS-1$
+			String sdistri = XMLHandler.getTagValue(stepnode, "distribute"); //$NON-NLS-1$
+			distributes     = "Y".equalsIgnoreCase(sdistri); //$NON-NLS-1$
 			if (sdistri==null) distributes=true; // default=distribute
 	
 			// Handle GUI information: location & drawstep?
 			String xloc, yloc;
 			int x,y;
-			xloc=XMLHandler.getTagValue(stepnode, "GUI", "xloc");
-			yloc=XMLHandler.getTagValue(stepnode, "GUI", "yloc");
+			xloc=XMLHandler.getTagValue(stepnode, "GUI", "xloc"); //$NON-NLS-1$ //$NON-NLS-2$
+			yloc=XMLHandler.getTagValue(stepnode, "GUI", "yloc"); //$NON-NLS-1$ //$NON-NLS-2$
 			try{ x=Integer.parseInt(xloc); } catch(Exception e) { x=0; }
 			try{ y=Integer.parseInt(yloc); } catch(Exception e) { y=0; }
 			location=new Point(x,y);
 			
-			drawstep = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "GUI", "draw"));
+			drawstep = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "GUI", "draw")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	
-			log.logDebug("StepMeta()", "end of readXML()");
+			log.logDebug("StepMeta()", Messages.getString("StepMeta.Log.EndOfReadXML")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to load step info from XML step node", e);
+			throw new KettleXMLException(Messages.getString("StepMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -384,22 +384,22 @@ public class StepMeta implements Cloneable, Comparable
 			{
 				setID(id_step);
 				
-				stepname = r.searchValue("NAME").getString();
+				stepname = r.searchValue("NAME").getString(); //$NON-NLS-1$
 				//System.out.println("stepname = "+stepname);
-				description = r.searchValue("DESCRIPTION").getString();
+				description = r.searchValue("DESCRIPTION").getString(); //$NON-NLS-1$
 				//System.out.println("description = "+description);
 				
-				long id_step_type = r.searchValue("ID_STEP_TYPE").getInteger();
+				long id_step_type = r.searchValue("ID_STEP_TYPE").getInteger(); //$NON-NLS-1$
 				//System.out.println("id_step_type = "+id_step_type);
 				Row steptyperow = rep.getStepType(id_step_type);
 				
-				stepid     = steptyperow.searchValue("CODE").getString();
-				distributes = r.searchValue("DISTRIBUTE").getBoolean();
-				copies     = (int)r.searchValue("COPIES").getInteger();
-				int x = (int)r.searchValue("GUI_LOCATION_X").getInteger();
-				int y = (int)r.searchValue("GUI_LOCATION_Y").getInteger();
+				stepid     = steptyperow.searchValue("CODE").getString(); //$NON-NLS-1$
+				distributes = r.searchValue("DISTRIBUTE").getBoolean(); //$NON-NLS-1$
+				copies     = (int)r.searchValue("COPIES").getInteger(); //$NON-NLS-1$
+				int x = (int)r.searchValue("GUI_LOCATION_X").getInteger(); //$NON-NLS-1$
+				int y = (int)r.searchValue("GUI_LOCATION_Y").getInteger(); //$NON-NLS-1$
 				location = new Point(x,y);
-				drawstep = r.searchValue("GUI_DRAW").getBoolean();
+				drawstep = r.searchValue("GUI_DRAW").getBoolean(); //$NON-NLS-1$
 				
 				// Generate the appropriate class...
 				StepPlugin sp = steploader.findStepPluginWithID(stepid);
@@ -409,7 +409,7 @@ public class StepMeta implements Cloneable, Comparable
                 }
                 else
                 {
-                    throw new KettleStepLoaderException("Unable to load class for step/plugin with id ["+stepid+"]."+Const.CR+"Check if the plugin is available in the plugins subdirectory of the Kettle distribution.");
+                    throw new KettleStepLoaderException(Messages.getString("StepMeta.Exception.UnableToLoadClass",stepid+Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 }
 
 				stepMetaInterface = BaseStep.getStepInfo(sp, steploader);
@@ -421,12 +421,12 @@ public class StepMeta implements Cloneable, Comparable
 			}
 			else
 			{
-				throw new KettleException("Step information for id_step="+id_step+" could not be found!");
+				throw new KettleException(Messages.getString("StepMeta.Exception.StepInfoCouldNotBeFound",String.valueOf(id_step))); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Step with id "+getID()+" could not be loaded from the repository!", dbe);
+			throw new KettleException(Messages.getString("StepMeta.Exception.StepCouldNotBeLoaded",String.valueOf(getID())), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -436,7 +436,7 @@ public class StepMeta implements Cloneable, Comparable
 	{
 		try
 		{
-			log.logDebug(toString(), "STEP SAVE insert general...");
+			log.logDebug(toString(), Messages.getString("StepMeta.Log.SaveNewStep")); //$NON-NLS-1$
 			// Insert new Step in repository
 			setID(rep.insertStep(	id_transformation,
 									getName(), 
@@ -452,12 +452,12 @@ public class StepMeta implements Cloneable, Comparable
 	
 			// The id_step is known, as well as the id_transformation
 			// This means we can now save the attributes of the step...
-			log.logDebug(toString(), "STEP SAVE details...");
+			log.logDebug(toString(), Messages.getString("StepMeta.Log.SaveStepDetails")); //$NON-NLS-1$
 			stepMetaInterface.saveRep(rep, id_transformation, getID());
 		}
 		catch(KettleException e)
 		{
-			throw new KettleException("Unable to save step info to the repository for id_transformation="+id_transformation, e);
+			throw new KettleException(Messages.getString("StepMeta.Exception.UnableToSaveStepInfo",String.valueOf(id_transformation)), e); //$NON-NLS-1$
 		}
 	}
 
