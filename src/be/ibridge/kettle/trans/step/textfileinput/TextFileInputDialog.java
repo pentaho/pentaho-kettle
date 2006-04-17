@@ -1257,7 +1257,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		        Locale locale[] =  Locale.getAvailableLocales();
 		        for (int i=0;i<locale.length;i++)
 		        {
-		        	wDateLocale.add( locale[i].toString() );
+		        	if (!wDateLocale.isDisposed()) wDateLocale.add( locale[i].toString());
 		        }
 			}
 		};
