@@ -79,7 +79,7 @@ public class GlobalMessages
         */
     	
     	String filename = buildHashKey(locale, packageName);
-    	filename = "/"+filename.replace(".", "/") + ".properties";
+    	filename = "/"+filename.replace('.', '/') + ".properties";
     	
     	try
     	{
