@@ -56,5 +56,14 @@ public class Messages {
             return GlobalMessages.getSystemString(key, param1, param2);
         }
     }
+    
+    public static String getString(String key, String param1, String param2, String param3,String param4,String param5,String param6) {
+        try {
+            return be.ibridge.kettle.i18n.GlobalMessages.getString(packageName, key, param1, param2, param3,param4,param5,param6);
+        } catch (MissingResourceException e) {
+        
+            return GlobalMessages.getSystemString(key, param1, param2);
+        }
+    }
 
 }

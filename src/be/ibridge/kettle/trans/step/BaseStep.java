@@ -141,259 +141,259 @@ public class BaseStep extends Thread
 	public static final String type_desc[] = 
 		{
 			null,
-			"TextFileInput",
-			"TextFileOutput",
-			"TableInput",
-			"TableOutput",
-			"SelectValues",
-			"FilterRows",
-			"DBLookup",
-			"SortRows",              
-			"StreamLookup",  
-			"Sequence",
-			"DimensionLookup",
-			"CombinationLookup",
-			"Dummy",
-			"JoinRows",
-			"AggregateRows",
-			"SystemInfo",
-			"RowGenerator",
-			"ScriptValue",
-			"DBProc",               
-			"InsertUpdate",
-			"Update",
-			"Delete",
-			"Normaliser",         
-			"FieldSplitter",
-			"Unique",
-			"GroupBy",
-			"RowsFromResult",
-			"RowsToResult",
-			"CubeInput",
-			"CubeOutput",
-			"DBJoin",
-			"XBaseInput",
-			"ExcelInput",
-			"NullIf",
-            "Calculator",
-            "ExecSQL",
-            "Mapping",
-            "MappingInput",
-            "MappingOutput",
-            "XMLInput",
-            "XMLOutput",
-            "MergeRows",
-            "Constant",
-            "Denormaliser",
-            "Flattener",
-            "ValueMapper"
+			Messages.getString("BaseStep.TypeDesc.TextFileInput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.TextFileOutput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.TableInput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.TableOutput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.SelectValues"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.FilterRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.DBLookup"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.SortRows"),               //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.StreamLookup"),   //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.Sequence"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.DimensionLookup"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.CombinationLookup"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.Dummy"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.JoinRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.AggregateRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.SystemInfo"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.RowGenerator"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.ScriptValue"), //$NON-NLS-1$
+			Messages.getString("BaseStep.DBProc"),                //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.InsertUpdate"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.Update"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.Delete"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.Normaliser"),          //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.FieldSplitter"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.Unique"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.GroupBy"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.RowsFromResult"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.RowsToResult"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.CubeInput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.CubeOutput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.DBJoin"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.XBaseInput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.ExcelInput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.NullIf"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.Calculator"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.ExecSQL"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.Mapping"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.MappingInput"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.MappingOutput"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.XMLInput"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.XMLOutput"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.MergeRows"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.Constant"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.Denormaliser"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.Flatterner"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.ValueMapper") //$NON-NLS-1$
 		};
 
 	public static final String type_long_desc[] = 
 		{
 			null,
-			"Text file input",
-			"Text file output",
-			"Table input",
-			"Table output",
-			"Select values",
-			"Filter rows",
-			"Database lookup",
-			"Sort rows",
-			"Stream lookup",             
-			"Add sequence",              
-			"Dimension update/lookup",
-			"Combination update/lookup",
-			"Dummy (do nothing)",
-			"Join Rows (cartesian product)",
-			"Aggregate Rows",
-			"Get System Info",
-			"Generate Rows",
-			"Java Script Value",
-			"Call DB Procedure",
-			"Insert / Update",
-			"Update",
-			"Delete",
-			"Row Normaliser",           
-			"Split Fields",
-			"Unique rows",
-			"Group by",
-			"Get rows from result",
-			"Copy rows to result",
-			"Cube input",
-			"Cube output",
-			"Database join",
-			"XBase input",
-			"Excel Input",
-			"Null if...",
-            "Calculator",
-            "Execute SQL script",
-            "Mapping (sub-transformation)",
-            "Mapping input specification",
-            "Mapping output specification",
-            "XML Input",
-            "XML Output",
-            "Merge Rows",
-            "Add constants",
-            "Row denormaliser",
-            "Row flattener",
-            "Value Mapper"
+			Messages.getString("BaseStep.TypeLongDesc.TextFileInput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.TableInput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.Output"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.SelectValues"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.FilterRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.DatabaseLookup"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.SortRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.StreamLookup"),              //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.AddSequence"),               //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.DimensionUpdate"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.CombinationUpdate"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.Dummy"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.JoinRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.AggregateRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.GetSystemInfo"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.GenerateRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.JavaScript"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.CallDBProcedure"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.InsertOrUpdate"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.Update"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.Delete"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.RowNormaliser"),            //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.SplitFields"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.UniqueRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.GroupBy"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.GetRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.CopyRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.CubeInput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.CubeOutput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.DatabaseJoin"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.XBaseInput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.ExcelInput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.NullIf"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.Caculator"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.ExcuteSQL"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.MappingSubTransformation"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.MappingInput"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.MappingOutput"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.XMLInput"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.XMLOutput"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.MergeRows"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.AddConstants"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.RowDenormaliser"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.RowFalttener"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.ValueMapper") //$NON-NLS-1$
 		};
 
 	public static final String type_tooltip_desc[] = 
 		{
 			null,
-			"Read data from a text file in several formats."+Const.CR+"This data can then be passed on to the next step(s)...",
-			"Write rows to a text file.",
-			"Read information from a database table.",
-			"Write information to a database table",
-			"Select or remove fields in a row."+Const.CR+"Optionally, set the field meta-data: type, length and precision.",
-			"Filter rows using simple equations",
-			"Look up values in a database using field values",
-			"Sort rows based upon field values (ascending or descending)",        
-			"Look up values coming from another stream in the transformation.",             
-			"Get the next value from an sequence",              // 10
-			"Update a slowly changing dimension in a data warehouse"+Const.CR+"Alternatively, look up information in this dimension.",
-			"Update a junk dimension in a data warehouse"+Const.CR+"Alternatively, look up information in this dimension."+Const.CR+"The primary key of a junk dimension are all the fields.",
-			"This step type doesn't do anything."+Const.CR+"It's useful however when testing things or in certain situations where you want to split streams.",
-			"This output of this step is the cartesian product of the input streams."+Const.CR+"The number of rows is the multiplication of the number of rows in the input streams.",
-			"This step type allows you to aggregate rows."+Const.CR+"It can't do groupings.",
-			"Get information from the system like system date, arguments, etc.",
-			"Generate a number of empty or equal rows.",
-			"Create java scripts to calculate new fields, alter existing ones or manipulate a row.",
-			"Get back information by calling a database procedure.", // 20
-			"Update or insert rows in a database based upon keys.",  
-			"Update data in a database table based upon keys",
-			"Delete data in a database table based upon keys",
-			"De-normalised information can be normalised using this step type.",            
-			"When you want to split a single field into more then one, use this step type.",
-			"Remove double rows and leave only unique occurences."+Const.CR+"This works only on a sorted input."+Const.CR+"If the input is not sorted, only double consecutive rows are handled correctly.",
-			"Builds aggregates in a group by fashion."+Const.CR+"This works only on a sorted input."+Const.CR+"If the input is not sorted, only double consecutive rows are handled correctly.",
-			"This allows you to read rows from a previous entry in a job.",
-			"Use this step to write rows to the executing job."+Const.CR+"The information will then be passed to the next entry in this job.",
-			"Read rows of data from a data cube.",
-			"Write rows of data to a data cube",                            // 30
-			"Execute a database query using stream values as parameters",   
-			"Reads records from an XBase type of database file (DBF)",
-			"Read data from a Microsoft Excel Workbook.  This works with Excel sheets of Excel 95, 97 and 2000.",
-			"Sets a field value to null if it is equal to a constant value",
-            "Create new fields by performing simple calculations",
-            "Execute an SQL script, optionally parameterized using input rows",
-            "Run a mapping (sub-transformation), use MappingInput and MappingOutput to specify the fields interface",
-            "Specify the input interface of a mapping",
-            "Specify the output interface of a mapping",
-            "Read data from an XML file",
-            "Wite data to an XML file",
-            "Merge two streams of rows, sorted on a certain key.  The two streams are compared and the equals, changed, deleted and new rows are flagged.",
-            "Add one or more constants to the input rows",
-            "Denormalises rows by looking up key-value pairs and by assigning them to new fields in the output rows."+Const.CR+"This method aggregates and needs the input rows to be sorted on the grouping fields",
-            "Flattens consequetive rows based on the order in which they appear in the input stream",
-            "Maps values of a certain field from one value to another"
+			Messages.getString("BaseStep.TypeTooltipDesc.TextInputFile",Const.CR), //$NON-NLS-1$ //$NON-NLS-2$
+			Messages.getString("BaseStep.TypeTooltipDesc.TextOutputFile"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.TableInput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.TableOutput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.SelectValues",Const.CR), //$NON-NLS-1$ //$NON-NLS-2$
+			Messages.getString("BaseStep.TypeTooltipDesc.FilterRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.Databaselookup"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.Sortrows"),         //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.Streamlookup"),              //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.Addsequence"),              // 10 //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.Dimensionupdate",Const.CR), //$NON-NLS-1$ //$NON-NLS-2$
+			Messages.getString("BaseStep.TypeTooltipDesc.CombinationUpdate",Const.CR,Const.CR), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			Messages.getString("BaseStep.TypeTooltipDesc.Dummy",Const.CR), //$NON-NLS-1$ //$NON-NLS-2$
+			Messages.getString("BaseStep.TypeTooltipDesc.JoinRows",Const.CR), //$NON-NLS-1$ //$NON-NLS-2$
+			Messages.getString("BaseStep.TypeTooltipDesc.AggregateRows",Const.CR), //$NON-NLS-1$ //$NON-NLS-2$
+			Messages.getString("BaseStep.TypeTooltipDesc.GetSystemInfo"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.GenerateRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.JavaScriptValue"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.CallDBProcedure"), // 20 //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.InsertOrUpdate"),   //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.Update"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.Delete"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.RowNormaliser"),             //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.SplitFields"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.Uniquerows",Const.CR,Const.CR), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			Messages.getString("BaseStep.TypeTooltipDesc.Groupby",Const.CR,Const.CR), //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			Messages.getString("BaseStep.TypeTooltipDesc.GetRowsFromResult"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.CopyRowsToResult",Const.CR), //$NON-NLS-1$ //$NON-NLS-2$
+			Messages.getString("BaseStep.TypeTooltipDesc.Cubeinput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.Cubeoutput"),                            // 30 //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.Databasejoin"),    //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.XBaseinput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.ExcelInput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeTooltipDesc.Nullif"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.Calculator"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.ExecuteSQL"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.MappingSubTransformation"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.MappingInputSpecification"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.MappingOutputSpecification"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.XMLInput"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.XMLOutput"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.MergeRows"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.Addconstants"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.RowsDenormalises",Const.CR), //$NON-NLS-1$ //$NON-NLS-2$
+            Messages.getString("BaseStep.TypeTooltipDesc.Rowflattener"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.MapValues") //$NON-NLS-1$
 		};
 
 	public static final String image_filename[] =
 		{
 		 	null,
-			"TFI.png",
-			"TFO.png",
-			"TIP.png",
-			"TOP.png",
-			"SEL.png",
-			"FLT.png",
-			"DLU.png",
-			"SRT.png",
-			"SLU.png",
-			"SEQ.png",
-			"DIM.png",
-			"CMB.png",
-			"DUM.png",
-			"JRW.png",
-			"AGG.png",
-			"SYS.png",
-			"GEN.png",
-			"SCR.png",
-			"PRC.png",
-			"INU.png",
-			"UPD.png",
-			"Delete.png",
-			"NRM.png",
-			"SPL.png",
-			"UNQ.png",
-			"GRP.png",
-			"FCH.png",
-			"TCH.png",
-			"CIP.png",
-			"COP.png",
-			"DBJ.png",
-			"XBI.png",
-			"XLI.png",
-			"NUI.png",
-            "CLC.png",
-            "SQL.png",
-            "MAP.png",
-            "MPI.png",
-            "MPO.png",
-            "XIN.png",
-            "XOU.png",
-            "MRG.png",
-            "CST.png",
-            "UNP.png",
-            "FLA.png",
-            "VMP.png"
+			"TFI.png", //$NON-NLS-1$
+			"TFO.png", //$NON-NLS-1$
+			"TIP.png", //$NON-NLS-1$
+			"TOP.png", //$NON-NLS-1$
+			"SEL.png", //$NON-NLS-1$
+			"FLT.png", //$NON-NLS-1$
+			"DLU.png", //$NON-NLS-1$
+			"SRT.png", //$NON-NLS-1$
+			"SLU.png", //$NON-NLS-1$
+			"SEQ.png", //$NON-NLS-1$
+			"DIM.png", //$NON-NLS-1$
+			"CMB.png", //$NON-NLS-1$
+			"DUM.png", //$NON-NLS-1$
+			"JRW.png", //$NON-NLS-1$
+			"AGG.png", //$NON-NLS-1$
+			"SYS.png", //$NON-NLS-1$
+			"GEN.png", //$NON-NLS-1$
+			"SCR.png", //$NON-NLS-1$
+			"PRC.png", //$NON-NLS-1$
+			"INU.png", //$NON-NLS-1$
+			"UPD.png", //$NON-NLS-1$
+			"Delete.png", //$NON-NLS-1$
+			"NRM.png", //$NON-NLS-1$
+			"SPL.png", //$NON-NLS-1$
+			"UNQ.png", //$NON-NLS-1$
+			"GRP.png", //$NON-NLS-1$
+			"FCH.png", //$NON-NLS-1$
+			"TCH.png", //$NON-NLS-1$
+			"CIP.png", //$NON-NLS-1$
+			"COP.png", //$NON-NLS-1$
+			"DBJ.png", //$NON-NLS-1$
+			"XBI.png", //$NON-NLS-1$
+			"XLI.png", //$NON-NLS-1$
+			"NUI.png", //$NON-NLS-1$
+            "CLC.png", //$NON-NLS-1$
+            "SQL.png", //$NON-NLS-1$
+            "MAP.png", //$NON-NLS-1$
+            "MPI.png", //$NON-NLS-1$
+            "MPO.png", //$NON-NLS-1$
+            "XIN.png", //$NON-NLS-1$
+            "XOU.png", //$NON-NLS-1$
+            "MRG.png", //$NON-NLS-1$
+            "CST.png", //$NON-NLS-1$
+            "UNP.png", //$NON-NLS-1$
+            "FLA.png", //$NON-NLS-1$
+            "VMP.png" //$NON-NLS-1$
 		};
 	
 	public static final String category[] = 
 		{
 			null,
-			"Input", 		    // "TextFileInput",
-			"Output", 		    // "TextFileOutput",
-			"Input", 		    // "TableInput",
-			"Output", 		    // "TableOutput",
-			"Transform", 	    // "SelectValues",
-			"Transform", 	    // "FilterRows",
-			"Lookup", 		    // "DBLookup",
-			"Transform", 	    // "SortRows",              
-			"Lookup", 		    // "StreamLookup",  
-			"Transform", 	    // "Sequence",
-			"Data Warehouse",   // "DimensionLookup",
-			"Data Warehouse",   // "CombinationLookup",
-			"Transform", 	    // "Dummy",
-			"Transform", 	    // "JoinRows",
-			"Transform", 	    // "AggregateRows",
-			"Input", 		    // "SystemInfo",
-			"Input", 		    // "RowGenerator",
-			"Transform", 	    // "ScriptValue",
-			"Lookup", 		    // "DBProc",               
-			"Output", 		    // "InsertUpdate",
-			"Output",           // "Update",
-			"Output",           // "Delete",
-			"Transform", 	    // "Normaliser",         
-			"Extra", 	        // "FieldSplitter",
-			"Transform", 	    // "Unique",
-			"Transform", 	    // "GroupBy",
-			"Extra", 		    // "RowsFromResult",
-			"Extra", 		    // "RowsToResult",
-			"Extra", 		    // "CubeInput",
-			"Extra", 		    // "CubeOutput",
-			"Lookup", 		    // "DBJoin",
-			"Input", 		    // "XBaseInput"
-			"Input",            // "ExcelInput"
-			"Extra",            // "NullIf"
-            "Transform",        // "Calculator"
-            "Extra",            // "ExecSQL"
-            "Mapping",          // "Mapping"
-            "Mapping",          // "MappingInput"
-            "Mapping",          // "MappingOutput"
-            "Input",            // "XMLInput"
-            "Output",           // "XMLOutut"
-            "Transform",        // "MergRows"
-            "Transform",        // "Constant"
-            "Transform",        // "Denormaliser"
-            "Transform",        // "Flattener"
-            "Transform",        // "ValueMapper"
+			"Input", 		    // "TextFileInput", //$NON-NLS-1$
+			"Output", 		    // "TextFileOutput", //$NON-NLS-1$
+			"Input", 		    // "TableInput", //$NON-NLS-1$
+			"Output", 		    // "TableOutput", //$NON-NLS-1$
+			"Transform", 	    // "SelectValues", //$NON-NLS-1$
+			"Transform", 	    // "FilterRows", //$NON-NLS-1$
+			"Lookup", 		    // "DBLookup", //$NON-NLS-1$
+			"Transform", 	    // "SortRows",               //$NON-NLS-1$
+			"Lookup", 		    // "StreamLookup",   //$NON-NLS-1$
+			"Transform", 	    // "Sequence", //$NON-NLS-1$
+			"Data Warehouse",   // "DimensionLookup", //$NON-NLS-1$
+			"Data Warehouse",   // "CombinationLookup", //$NON-NLS-1$
+			"Transform", 	    // "Dummy", //$NON-NLS-1$
+			"Transform", 	    // "JoinRows", //$NON-NLS-1$
+			"Transform", 	    // "AggregateRows", //$NON-NLS-1$
+			"Input", 		    // "SystemInfo", //$NON-NLS-1$
+			"Input", 		    // "RowGenerator", //$NON-NLS-1$
+			"Transform", 	    // "ScriptValue", //$NON-NLS-1$
+			"Lookup", 		    // "DBProc",                //$NON-NLS-1$
+			"Output", 		    // "InsertUpdate", //$NON-NLS-1$
+			"Output",           // "Update", //$NON-NLS-1$
+			"Output",           // "Delete", //$NON-NLS-1$
+			"Transform", 	    // "Normaliser",          //$NON-NLS-1$
+			"Extra", 	        // "FieldSplitter", //$NON-NLS-1$
+			"Transform", 	    // "Unique", //$NON-NLS-1$
+			"Transform", 	    // "GroupBy", //$NON-NLS-1$
+			"Extra", 		    // "RowsFromResult", //$NON-NLS-1$
+			"Extra", 		    // "RowsToResult", //$NON-NLS-1$
+			"Extra", 		    // "CubeInput", //$NON-NLS-1$
+			"Extra", 		    // "CubeOutput", //$NON-NLS-1$
+			"Lookup", 		    // "DBJoin", //$NON-NLS-1$
+			"Input", 		    // "XBaseInput" //$NON-NLS-1$
+			"Input",            // "ExcelInput" //$NON-NLS-1$
+			"Extra",            // "NullIf" //$NON-NLS-1$
+            "Transform",        // "Calculator" //$NON-NLS-1$
+            "Extra",            // "ExecSQL" //$NON-NLS-1$
+            "Mapping",          // "Mapping" //$NON-NLS-1$
+            "Mapping",          // "MappingInput" //$NON-NLS-1$
+            "Mapping",          // "MappingOutput" //$NON-NLS-1$
+            "Input",            // "XMLInput" //$NON-NLS-1$
+            "Output",           // "XMLOutut" //$NON-NLS-1$
+            "Transform",        // "MergRows" //$NON-NLS-1$
+            "Transform",        // "Constant" //$NON-NLS-1$
+            "Transform",        // "Denormaliser" //$NON-NLS-1$
+            "Transform",        // "Flattener" //$NON-NLS-1$
+            "Transform",        // "ValueMapper" //$NON-NLS-1$
 		};
 
-    public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Mapping", "Experimental" };
+    public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Mapping", "Experimental" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
     
 	private static final int MIN_PRIORITY    =  1;
 	private static final int LOW_PRIORITY    =  3;
@@ -504,7 +504,7 @@ public class BaseStep extends Thread
 			terminator_rows = null;
 		}
 		
-		debug="-";
+		debug="-"; //$NON-NLS-1$
 		
 		output_rowset_nr=-1;
 		start_time = null;
@@ -512,8 +512,8 @@ public class BaseStep extends Thread
 		
 		distributed = stepMeta.distributes;
 		
-		if (distributed)	logDetailed("distribution activated");
-		else 			logDetailed("distribution de-activated");
+		if (distributed)	logDetailed(Messages.getString("BaseStep.Log.DistributionActivated")); //$NON-NLS-1$
+		else 			logDetailed(Messages.getString("BaseStep.Log.DistributionDeactivated")); //$NON-NLS-1$
 		
         rowListeners = new ArrayList();
         interestingFiles = new ArrayList();
@@ -621,23 +621,23 @@ public class BaseStep extends Thread
 		
 		if (isAlive())
 		{
-			retval="running";
+			retval=Messages.getString("BaseStep.status.Running"); //$NON-NLS-1$
 		}
 		else
 		{
 			if (isInitialising())
 			{
-				retval="init";
+				retval=Messages.getString("BaseStep.status.Init"); //$NON-NLS-1$
 			}
 			else
 			{
 				if (isStopped())
 				{
-					retval="stopped";
+					retval=Messages.getString("BaseStep.status.Stopped"); //$NON-NLS-1$
 				}
 				else
 				{
-					retval="finished";
+					retval=Messages.getString("BaseStep.status.Finished"); //$NON-NLS-1$
 				}
 			}
 		}
@@ -775,7 +775,7 @@ public class BaseStep extends Thread
 			}
 			catch(Exception e)
 			{
-				logError("Error occured setting priorityFrom");
+				logError(Messages.getString("BaseStep.Log.ErrorSettingPriority")); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				return;
@@ -786,7 +786,7 @@ public class BaseStep extends Thread
 				try{ sleep(sleeptime); } 
 				catch(Exception e) 
 				{
-					logError("Interupted while trying to put a new row in a buffer: "+e.toString()); 
+					logError(Messages.getString("BaseStep.Log.ErrorInThreadSleeping")+e.toString());  //$NON-NLS-1$
 					setErrors(1); 
 					stopAll(); 
 					return; 
@@ -798,7 +798,7 @@ public class BaseStep extends Thread
         
 		if (stopped)
 		{
-			logDebug("Stopped while putting a row on the buffer");
+			logDebug(Messages.getString("BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
 			stopAll();
 			return;
 		}
@@ -852,7 +852,7 @@ public class BaseStep extends Thread
             // we deleted the rowset because it was
             // finished
             //
-            throw new KettleStepException("Unable to find rowset for target step ["+to+"]"); 
+            throw new KettleStepException(Messages.getString("BaseStep.Exception.UnableToFindRowset",to));  //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         putRowTo(row, output_rowset_nr);
@@ -898,7 +898,7 @@ public class BaseStep extends Thread
 			try{ sleep(sleeptime); } 
 			catch(Exception e) 
 			{
-				logError("Interupted while trying to put a new row in a buffer: "+e.toString()); 
+				logError(Messages.getString("BaseStep.Log.ErrorInThreadSleeping")+e.toString());  //$NON-NLS-1$
 				setErrors(1); 
 				stopAll(); 
 				return; 
@@ -908,7 +908,7 @@ public class BaseStep extends Thread
 		}
 		if (stopped)
 		{
-			logDebug("Stopped while putting a row on the buffer");
+			logDebug(Messages.getString("BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
 			stopAll();
 			return;
 		}
@@ -976,7 +976,7 @@ public class BaseStep extends Thread
 				switches=0;
 				try { sleep(0, sleeptime); } catch(Exception e) 
 				{ 
-					logError("Sleep interupted! Stopping: "+e.toString());
+					logError(Messages.getString("BaseStep.Log.SleepInterupted")+e.toString()); //$NON-NLS-1$
 					setErrors(1); 
 					stopAll(); 
 					return null; 
@@ -987,7 +987,7 @@ public class BaseStep extends Thread
 		}
 		if (stopped) 
 		{
-			logDebug("Stopped looking for more rows."); 
+			logDebug(Messages.getString("BaseStep.Log.StopLookingForMoreRows"));  //$NON-NLS-1$
 			stopAll(); 
 			return null; 
 		} 
@@ -1038,7 +1038,7 @@ public class BaseStep extends Thread
 		{
 			try { sleep(0, sleeptime); } catch(Exception e) 
 			{
-				logError("Sleep interupted while looking for more rows from step ["+in.getOriginStepName()+"] --> "+e.toString());
+				logError(Messages.getString("BaseStep.Log.SleepInterupted2",in.getOriginStepName())+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 				setErrors(1);
 				stopAll();
 				return null;
@@ -1048,7 +1048,7 @@ public class BaseStep extends Thread
 		
 		if (stopped)
 		{
-			logError("Interupted while looking for more rows from step ["+in.getOriginStepName()+"]");
+			logError(Messages.getString("BaseStep.Log.SleepInterupted3",in.getOriginStepName())); //$NON-NLS-1$ //$NON-NLS-2$
 			stopAll();
 			return null;
 		}
@@ -1111,7 +1111,7 @@ public class BaseStep extends Thread
 	//
 	public void setOutputDone()
 	{
-		logDebug("Signaling 'output done' to "+outputRowSets.size()+" output rowsets.");
+		logDebug(Messages.getString("BaseStep.Log.OutputDone",String.valueOf(outputRowSets.size()))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<outputRowSets.size();i++)
 		{
 			RowSet rs=(RowSet)outputRowSets.get(i);
@@ -1138,7 +1138,7 @@ public class BaseStep extends Thread
         
 		StepMeta stepMeta = transMeta.findStep(stepname);
 
-		logDetailed("Starting allocation of buffers & new threads...");
+		logDetailed(Messages.getString("BaseStep.Log.StartingBuffersAllocation")); //$NON-NLS-1$
 		
 		// How many next steps are there? 0, 1 or more??
 		// How many steps do we send output to?
@@ -1152,17 +1152,17 @@ public class BaseStep extends Thread
 
 		in_handling = 0;  // we start with input[0];
 
-		logDetailed("Step info: nrinput="+nrinput+" nroutput="+nroutput);
+		logDetailed(Messages.getString("BaseStep.Log.StepInfo",String.valueOf(nrinput),String.valueOf(nroutput))); //$NON-NLS-1$ //$NON-NLS-2$
 				
 		for (i=0;i<nrinput;i++)
 		{
 			prev[i]=transMeta.findPrevStep(stepMeta, i, true); // sir.getHopFromWithTo(stepname, i);
-			logDetailed("Got previous step from ["+stepname+"] #"+i+" --> "+prev[i].getName());
+			logDetailed(Messages.getString("BaseStep.Log.GotPreviousStep",stepname,String.valueOf(i),prev[i].getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			
 			// Looking at the previous step, you can have either 1 rowset to look at or more then one.
 			prevcopies = prev[i].getCopies();
 			nextcopies = stepMeta.getCopies(); 
-			logDetailed("input rel is  "+prevcopies+":"+nextcopies);
+			logDetailed(Messages.getString("BaseStep.Log.InputRowInfo",String.valueOf(prevcopies),String.valueOf(nextcopies))); //$NON-NLS-1$ //$NON-NLS-2$
 	
 			if      (prevcopies==1 && nextcopies==1) { disptype=Trans.TYPE_DISP_1_1; nrcopies = 1; } 
 			else if (prevcopies==1 && nextcopies >1) { disptype=Trans.TYPE_DISP_1_N; nrcopies = 1; } 
@@ -1170,8 +1170,8 @@ public class BaseStep extends Thread
 			else if (prevcopies==nextcopies)         { disptype=Trans.TYPE_DISP_N_N; nrcopies = 1; } // > 1!
 			else 
 			{
-				log.logError(toString(), "Only 1-1, 1-n, n-1 and n-n relationships are allowed!");
-				log.logError(toString(), "This means you can't have x-y relationships!");
+				log.logError(toString(), Messages.getString("BaseStep.Log.AllowedRelationships")); //$NON-NLS-1$
+				log.logError(toString(), Messages.getString("BaseStep.Log.XYRelationshipsNotAllowed")); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				return;
@@ -1189,11 +1189,11 @@ public class BaseStep extends Thread
 				if (rs!=null) 
 				{
 					inputRowSets.add(rs);
-					logDetailed("Found input rowset ["+rs.getName()+"]");
+					logDetailed(Messages.getString("BaseStep.Log.FoundInputRowset",rs.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 				} 
 				else
 				{
-					logError("Unable to find input rowset!");
+					logError(Messages.getString("BaseStep.Log.UnableToFindInputRowset")); //$NON-NLS-1$
 					setErrors(1);
 					stopAll();
 					return;
@@ -1208,7 +1208,7 @@ public class BaseStep extends Thread
 			prevcopies = stepMeta.getCopies();
 			nextcopies = next[i].getCopies();
 
-			logDetailed("output rel. is  "+prevcopies+":"+nextcopies);
+			logDetailed(Messages.getString("BaseStep.Log.OutputRowInfo",String.valueOf(prevcopies),String.valueOf(nextcopies))); //$NON-NLS-1$ //$NON-NLS-2$
 
 			if      (prevcopies==1 && nextcopies==1) { disptype=Trans.TYPE_DISP_1_1; nrcopies = 1;          } 
 			else if (prevcopies==1 && nextcopies >1) { disptype=Trans.TYPE_DISP_1_N; nrcopies = nextcopies; } 
@@ -1216,8 +1216,8 @@ public class BaseStep extends Thread
 			else if (prevcopies==nextcopies)         { disptype=Trans.TYPE_DISP_N_N; nrcopies = 1;          } // > 1!
 			else 
 			{
-				log.logError(toString(), "Only 1-1, 1-n, n-1 and n-n relationships are allowed!");
-				log.logError(toString(), "This means you can't have x-y relationships!");
+				log.logError(toString(), Messages.getString("BaseStep.Log.AllowedRelationships")); //$NON-NLS-1$
+				log.logError(toString(), Messages.getString("BaseStep.Log.XYRelationshipsNotAllowed")); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				return;
@@ -1235,11 +1235,11 @@ public class BaseStep extends Thread
 				if (rs!=null) 
 				{
 					outputRowSets.add(rs);
-					logDetailed("Found output rowset ["+rs.getName()+"]");
+					logDetailed(Messages.getString("BaseStep.Log.FoundOutputRowset",rs.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 				} 
 				else
 				{
-					logError("Unable to find output rowset!");
+					logError(Messages.getString("BaseStep.Log.UnableToFindOutputRowset")); //$NON-NLS-1$
 					setErrors(1);
 					stopAll();
 					return;
@@ -1247,37 +1247,37 @@ public class BaseStep extends Thread
 			}
 		}
 
-		logDetailed("Finished dispatching");
+		logDetailed(Messages.getString("BaseStep.Log.FinishedDispatching")); //$NON-NLS-1$
 	}
 	
 	public void logMinimal(String s)
 	{
-		log.println(LogWriter.LOG_LEVEL_MINIMAL, stepname+"."+stepcopy, s);
+		log.println(LogWriter.LOG_LEVEL_MINIMAL, stepname+"."+stepcopy, s); //$NON-NLS-1$
 	}
 	
 	public void logBasic(String s)
 	{
-		log.println(LogWriter.LOG_LEVEL_BASIC, stepname+"."+stepcopy, s);
+		log.println(LogWriter.LOG_LEVEL_BASIC, stepname+"."+stepcopy, s); //$NON-NLS-1$
 	}
 
 	public void logError(String s)
 	{
-		log.println(LogWriter.LOG_LEVEL_ERROR, stepname+"."+stepcopy, s);
+		log.println(LogWriter.LOG_LEVEL_ERROR, stepname+"."+stepcopy, s); //$NON-NLS-1$
 	}
 
 	public void logDetailed(String s)
 	{
-		log.println(LogWriter.LOG_LEVEL_DETAILED, stepname+"."+stepcopy, s);
+		log.println(LogWriter.LOG_LEVEL_DETAILED, stepname+"."+stepcopy, s); //$NON-NLS-1$
 	}
 
 	public void logDebug(String s)
 	{
-		log.println(LogWriter.LOG_LEVEL_DEBUG, stepname+"."+stepcopy, s);
+		log.println(LogWriter.LOG_LEVEL_DEBUG, stepname+"."+stepcopy, s); //$NON-NLS-1$
 	}
 
 	public void logRowlevel(String s)
 	{
-		log.println(LogWriter.LOG_LEVEL_ROWLEVEL, stepname+"."+stepcopy, s);
+		log.println(LogWriter.LOG_LEVEL_ROWLEVEL, stepname+"."+stepcopy, s); //$NON-NLS-1$
 	}
 	
 	public int getNextClassNr()
@@ -1363,13 +1363,13 @@ public class BaseStep extends Thread
 	{
 		Row r = new Row();
 		
-		r.addValue( new Value("stepname",      sname)          );
-		r.addValue( new Value("copy",          (double)copynr) );
-		r.addValue( new Value("lines_read",    (double)lines_read)  );
-		r.addValue( new Value("lines_written", (double)lines_written)  );
-		r.addValue( new Value("lines_updated", (double)lines_updated)  );
-		r.addValue( new Value("lines_skipped", (double)lines_skipped)  );
-		r.addValue( new Value("errors",        (double)errors) );
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.Stepname"),      sname)          ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.Copy"),          (double)copynr) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.LinesReaded"),    (double)lines_read)  ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.LinesWritten"), (double)lines_written)  ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.LinesUpdated"), (double)lines_updated)  ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.LinesSkipped"), (double)lines_skipped)  ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.Errors"),        (double)errors) ); //$NON-NLS-1$
 		r.addValue( start_date );
 		r.addValue( end_date );
 		
@@ -1380,18 +1380,18 @@ public class BaseStep extends Thread
 	{
 		Row r = new Row();
 		int i;
-		Value sname = new Value("stepname",  ""              );
+		Value sname = new Value(Messages.getString("BaseStep.ColumnName.Stepname"),  ""              ); //$NON-NLS-1$ //$NON-NLS-2$
 		sname.setLength(256); 
 		r.addValue( sname );
 		
-		r.addValue( new Value("copy",          0.0             ) );
-		r.addValue( new Value("lines_read",    0.0             ) );
-		r.addValue( new Value("lines_written", 0.0             ) );
-		r.addValue( new Value("lines_updated", 0.0             ) );
-		r.addValue( new Value("lines_skipped", 0.0             ) );
-		r.addValue( new Value("errors",        0.0             ) );
-		r.addValue( new Value("start_date",    Const.MIN_DATE  ) );
-		r.addValue( new Value("end_date",      Const.MAX_DATE  ) );
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.Copy"),          0.0             ) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.LinesReaded"),    0.0             ) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.LinesWritten"), 0.0             ) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.LinesUpdated"), 0.0             ) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.LinesSkipped"), 0.0             ) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.Errors"),        0.0             ) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.StartDate"),    Const.MIN_DATE  ) ); //$NON-NLS-1$
+		r.addValue( new Value(Messages.getString("BaseStep.ColumnName.EndDate"),      Const.MAX_DATE  ) ); //$NON-NLS-1$
 		
 		for (i=0;i<r.size();i++)
 		{
@@ -1403,7 +1403,7 @@ public class BaseStep extends Thread
 	
 	public String toString()
 	{
-		return stepname+"."+getCopy();
+		return stepname+"."+getCopy(); //$NON-NLS-1$
 	}
 	
 	private int calcPutPriority(RowSet rs)
@@ -1477,7 +1477,7 @@ public class BaseStep extends Thread
 	
 	public void logSummary()
 	{
-		logBasic("Finished processing (I="+linesInput+", O="+linesOutput+", R="+linesRead+", W="+linesWritten+", U="+linesUpdated+", E="+getErrors());
+		logBasic(Messages.getString("BaseStep.Log.SummaryInfo",String.valueOf(linesInput),String.valueOf(linesOutput),String.valueOf(linesRead),String.valueOf(linesWritten),String.valueOf(linesUpdated),String.valueOf(getErrors()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$
 	}
     
     public String getStepID()
