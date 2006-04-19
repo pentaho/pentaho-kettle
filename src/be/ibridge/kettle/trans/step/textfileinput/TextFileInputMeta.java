@@ -65,6 +65,10 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     
     public final static String trimTypeDesc[]  = { Messages.getString("TextFileInputMeta.TrimType.None"), Messages.getString("TextFileInputMeta.TrimType.Left"), Messages.getString("TextFileInputMeta.TrimType.Right"), Messages.getString("TextFileInputMeta.TrimType.Both") };
 
+    
+    private static final String STRING_BASE64_PREFIX = "Base64: ";
+
+    
     /** Array of filenames */
     private String             fileName[];
 
@@ -713,7 +717,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             if (filterString!=null)
             {
                 filterBytes = filterString.getBytes();
-                filterPrefix = "Base64: ";
+                filterPrefix = STRING_BASE64_PREFIX;
             }
             String filterEncoded = filterPrefix + Base64.encodeBytes( filterBytes );
             
@@ -839,9 +843,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
                     filter[i].setFilterPosition( Const.toInt(XMLHandler.getTagValue(fnode, "filter_position"), -1) );
                     
                     String filterString = XMLHandler.getTagValue(fnode, "filter_string");
-                    if (filterString.startsWith("Base64: "))
+                    if (filterString!=null && filterString.startsWith(STRING_BASE64_PREFIX))
                     {
-                        filter[i].setFilterString( new String(Base64.decode(filterString)));
+                        filter[i].setFilterString( new String(Base64.decode(filterString.substring(STRING_BASE64_PREFIX.length()))));
                     }
                     else
                     {
