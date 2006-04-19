@@ -245,4 +245,71 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 	{
 		return "select o.name from sysobjects o, sysusers u where  xtype in ( 'FN', 'P' ) and o.uid = u.uid and upper(u.name) = '"+getUsername().toUpperCase()+"'";
 	}
+	/* (non-Javadoc)
+	 * @see be.ibridge.kettle.core.database.DatabaseInterface#getReservedWords()
+	 */
+	public String[] getReservedWords()
+	{
+		return new String[]
+		{
+			/* Transact-SQL Reference: Reserved Keywords
+			 * Includes future keywords: could be reserved in future releases of SQL Server as new features are
+			 * implemented.
+			 * REMARK: When SET QUOTED_IDENTIFIER is ON (default), identifiers can be delimited by double quotation 
+			 * marks, and literals must be delimited by single quotation marks. 
+			 * When SET QUOTED_IDENTIFIER is OFF, identifiers cannot be quoted and 
+			 * must follow all Transact-SQL rules for identifiers.
+			 */
+			"ABSOLUTE", "ACTION", "ADD", "ADMIN", "AFTER", "AGGREGATE", "ALIAS", "ALL", "ALLOCATE", "ALTER", "AND", 
+			"ANY", "ARE", "ARRAY", "AS", "ASC", "ASSERTION", "AT", "AUTHORIZATION", 
+			"BACKUP", "BEFORE", "BEGIN", "BETWEEN", "BINARY", "BIT", "BLOB", "BOOLEAN", "BOTH", "BREADTH", "BREAK", 
+			"BROWSE", "BULK", "BY", 
+			"CALL", "CASCADE", "CASCADED", "CASE", "CAST", "CATALOG", "CHAR", "CHARACTER", "CHECK", "CHECKPOINT", 
+			"CLASS", "CLOB", "CLOSE", "CLUSTERED", "COALESCE", "COLLATE", "COLLATION", "COLUMN", "COMMIT", 
+			"COMPLETION", "COMPUTE", "CONNECT", "CONNECTION", "CONSTRAINT", "CONSTRAINTS", "CONSTRUCTOR", 
+			"CONTAINS", "CONTAINSTABLE", "CONTINUE", "CONVERT", "CORRESPONDING", "CREATE", "CROSS", "CUBE", 
+			"CURRENT", "CURRENT_DATE", "CURRENT_PATH", "CURRENT_ROLE", "CURRENT_TIME", "CURRENT_TIMESTAMP", 
+			"CURRENT_USER", "CURSOR", "CYCLE", 
+			"DATA", "DATABASE", "DATE", "DAY", "DBCC", "DEALLOCATE", "DEC", "DECIMAL", "DECLARE", "DEFAULT", 
+			"DEFERRABLE", "DEFERRED", "DELETE", "DENY", "DEPTH", "DEREF", "DESC", "DESCRIBE", "DESCRIPTOR", 
+			"DESTROY", "DESTRUCTOR", "DETERMINISTIC", "DIAGNOSTICS", "DICTIONARY", "DISCONNECT", "DISK", "DISTINCT", 
+			"DISTRIBUTED", "DOMAIN", "DOUBLE", "DROP", "DUMMY", "DUMP", "DYNAMIC", 
+			"EACH", "ELSE", "END", "END-EXEC", "EQUALS", "ERRLVL", "ESCAPE", "EVERY", "EXCEPT", "EXCEPTION", "EXEC", 
+			"EXECUTE", "EXISTS", "EXIT", "EXTERNAL", 
+			"FALSE", "FETCH", "FILE", "FILLFACTOR", "FIRST", "FLOAT", "FOR", "FOREIGN", "FOUND", "FREE", "FREETEXT", 
+			"FREETEXTTABLE", "FROM", "FULL", "FUNCTION", 
+			"GENERAL", "GET", "GLOBAL", "GO", "GOTO", "GRANT", "GROUP", "GROUPING", 
+			"HAVING", "HOLDLOCK", "HOST", "HOUR", 
+			"IDENTITY", "IDENTITY_INSERT", "IDENTITYCOL", "IF", "IGNORE", "IMMEDIATE", "IN", "INDEX", "INDICATOR", 
+			"INITIALIZE", "INITIALLY", "INNER", "INOUT", "INPUT", "INSERT", "INT", "INTEGER", "INTERSECT", "INTERVAL", 
+			"INTO", "IS", "ISOLATION", "ITERATE", 
+			"JOIN", 
+			"KEY", "KILL", 
+			"LANGUAGE", "LARGE", "LAST", "LATERAL", "LEADING", "LEFT", "LESS", "LEVEL", "LIKE", "LIMIT", "LINENO", 
+			"LOAD", "LOCAL", "LOCALTIME", "LOCALTIMESTAMP", "LOCATOR", 
+			"MAP", "MATCH", "MINUTE", "MODIFIES", "MODIFY", "MODULE", "MONTH", 
+			"NAMES", "NATIONAL", "NATURAL", "NCHAR", "NCLOB", "NEW", "NEXT", "NO", "NOCHECK", "NONCLUSTERED", "NONE", 
+			"NOT", "NULL", "NULLIF", "NUMERIC", 
+			"OBJECT", "OF", "OFF", "OFFSETS", "OLD", "ON", "ONLY", "OPEN", "OPENDATASOURCE", "OPENQUERY", "OPENROWSET", 
+			"OPENXML", "OPERATION", "OPTION", "OR", "ORDER", "ORDINALITY", "OUT", "OUTER", "OUTPUT", "OVER", 
+			"PAD", "PARAMETER", "PARAMETERS", "PARTIAL", "PATH", "PERCENT", "PLAN", "POSTFIX", "PRECISION", "PREFIX", 
+			"PREORDER", "PREPARE", "PRESERVE", "PRIMARY", "PRINT", "PRIOR", "PRIVILEGES", "PROC", "PROCEDURE", "PUBLIC", 
+			"RAISERROR", "READ", "READS", "READTEXT", "REAL", "RECONFIGURE", "RECURSIVE", "REF", "REFERENCES", "REFERENCING", 
+			"RELATIVE", "REPLICATION", "RESTORE", "RESTRICT", "RESULT", "RETURN", "RETURNS", "REVOKE", "RIGHT", "ROLE", 
+			"ROLLBACK", "ROLLUP", "ROUTINE", "ROW", "ROWCOUNT", "ROWGUIDCOL", "ROWS", "RULE", 
+			"SAVE", "SAVEPOINT", "SCHEMA", "SCOPE", "SCROLL", "SEARCH", "SECOND", "SECTION", "SELECT", "SEQUENCE", "SESSION", 
+			"SESSION_USER", "SET", "SETS", "SETUSER", "SHUTDOWN", "SIZE", "SMALLINT", "SOME", "SPACE", "SPECIFIC", 
+			"SPECIFICTYPE", "SQL", "SQLEXCEPTION", "SQLSTATE", "SQLWARNING", "START", "STATE", "STATEMENT", "STATIC", 
+			"STATISTICS", "STRUCTURE", "SYSTEM_USER", 
+			"TABLE", "TEMPORARY", "TERMINATE", "TEXTSIZE", "THAN", "THEN", "TIME", "TIMESTAMP", "TIMEZONE_HOUR", 
+			"TIMEZONE_MINUTE", "TO", "TOP", "TRAILING", "TRAN", "TRANSACTION", "TRANSLATION", "TREAT", "TRIGGER", "TRUE", 
+			"TRUNCATE", "TSEQUAL", 
+			"UNDER", "UNION", "UNIQUE", "UNKNOWN", "UNNEST", "UPDATE", "UPDATETEXT", "USAGE", "USE", "USER", "USING", 
+			"VALUE", "VALUES", "VARCHAR", "VARIABLE", "VARYING", "VIEW", 
+			"WAITFOR", "WHEN", "WHENEVER", "WHERE", "WHILE", "WITH", "WITHOUT", "WORK", "WRITE", "WRITETEXT", 
+			"YEAR", 
+			"ZONE"				
+        };
+	}
+	
 }
