@@ -1892,7 +1892,8 @@ public class TransMeta implements XMLInterface
 
     public String getXML()
     {
-        Props props = Props.getInstance();
+        Props props = null;
+        if (Props.isInitialized()) Props.getInstance();
         
         StringBuffer retval = new StringBuffer();
 
@@ -1946,7 +1947,7 @@ public class TransMeta implements XMLInterface
         for (int i = 0; i < nrDatabases(); i++)
         {
             DatabaseMeta dbMeta = getDatabase(i);
-            if (props.areOnlyUsedConnectionsSavedToXML())
+            if (props!=null && props.areOnlyUsedConnectionsSavedToXML())
             {
                 if (isDatabaseConnectionUsed(dbMeta)) retval.append(dbMeta.getXML());
             }
@@ -3985,7 +3986,7 @@ public class TransMeta implements XMLInterface
         }
 
         // OK, so perhaps, we can use the arguments from a previous execution?
-        String[] saved = Props.getInstance().getLastArguments();
+        String[] saved = Props.isInitialized() ? Props.getInstance().getLastArguments() : null;
 
         // Set the default values on it...
         // Also change the name to "Argument 1" .. "Argument 10"
