@@ -35,6 +35,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
@@ -73,7 +74,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 
-	public static final String getLine(LogWriter log, InputStreamReader reader, String format)
+	public static final String getLine(LogWriter log, InputStreamReader reader, String format) throws KettleFileException
 	{
 		//Tom modified for performance
 		//		StringBuffer line = new StringBuffer();
@@ -87,7 +88,16 @@ public class TextFileInput extends BaseStep implements StepInterface
 				c = reader.read();
 				if (c == '\n' || c == '\r')
 				{
-					if (format.equalsIgnoreCase("DOS")) c = reader.read(); // skip \n and \r
+					if (format.equalsIgnoreCase("DOS")) 
+					{
+						c = reader.read(); // skip \n and \r
+					     if( c != '\r' && c != '\n' ) 
+					     { // make sure its really a linefeed or cariage return
+					       // raise an error this is not a DOS file 
+					       // so we have pulled a character from the next line
+					       throw new KettleFileException("DOS format was specified by only a single line feed character was found, not 2");
+					     }
+					}
 					return line.toString();
 				}
 				if (c >= 0) line.append((char) c);
