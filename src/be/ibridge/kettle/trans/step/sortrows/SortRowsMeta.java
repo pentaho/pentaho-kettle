@@ -320,23 +320,25 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			
 			// Check the sort directory
-			File f = new File(Const.replEnv(directory));
+            String realDirectory = Const.replEnv(directory);
+            
+			File f = new File(realDirectory);
 			if (f.exists())
 			{
 				if (f.isDirectory())
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.DirectoryExists", directory), stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SortRowsMeta.CheckResult.DirectoryExists", realDirectory), stepMeta);
 					remarks.add(cr);
 				}
 				else
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.ExistsButNoDirectory", directory), stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.ExistsButNoDirectory", realDirectory), stepMeta);
 					remarks.add(cr);
 				}
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.DirectoryNotExists", directory), stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SortRowsMeta.CheckResult.DirectoryNotExists", realDirectory), stepMeta);
 				remarks.add(cr);
 			}
 		}

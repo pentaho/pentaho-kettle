@@ -302,23 +302,24 @@ public class JoinRowsMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 			
 			// Check the sort directory
-			File f = new File(directory);
+            String realDirectory = Const.replEnv(directory); 
+			File f = new File( realDirectory );
 			if (f.exists())
 			{
 				if (f.isDirectory())
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "["+directory+"] exists and is a directory", stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "["+realDirectory+"] exists and is a directory", stepMeta);
 					remarks.add(cr);
 				}
 				else
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "["+directory+"] exists but is not a directory", stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "["+realDirectory+"] exists but is not a directory", stepMeta);
 					remarks.add(cr);
 				}
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Directory ["+directory+"] doesn't exist!", stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Directory ["+realDirectory+"] doesn't exist!", stepMeta);
 				remarks.add(cr);
 			}
 		}
