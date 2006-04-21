@@ -1758,7 +1758,7 @@ public class SpoonGraph extends Canvas
 
     public void drawTrans(GC gc)
     {
-        if (spoon.props.isAntiAliasingEnabled() && Const.getOS().startsWith("Windows")) gc.setAntialias(SWT.ON); //$NON-NLS-1$
+        if (spoon.props.isAntiAliasingEnabled()) gc.setAntialias(SWT.ON);
 
         shadowsize = spoon.props.getShadowSize();
 
@@ -1780,7 +1780,7 @@ public class SpoonGraph extends Canvas
         }
 
         gc.setFont(GUIResource.getInstance().getFontGraph());
-        gc.setBackground(GUIResource.getInstance().getColorBackground());
+        gc.setBackground(GUIResource.getInstance().getColorGraph());
 
         if (shadowsize > 0)
         {
@@ -2281,7 +2281,7 @@ public class SpoonGraph extends Canvas
         for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
         {
             StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected())
+            if (stepMeta.isSelected() && stepMeta.isDrawn())
             {
                 steps[nr] = stepMeta;
                 Point p = stepMeta.getLocation();
@@ -2330,7 +2330,7 @@ public class SpoonGraph extends Canvas
         for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
         {
             StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected())
+            if (stepMeta.isSelected() && stepMeta.isDrawn())
             {
                 Point p = stepMeta.getLocation();
                 if (p.x < min) min = p.x;
@@ -2340,7 +2340,7 @@ public class SpoonGraph extends Canvas
         for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
         {
             StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected())
+            if (stepMeta.isSelected() && stepMeta.isDrawn())
             {
                 steps[nr] = stepMeta;
                 Point p = stepMeta.getLocation();
@@ -2369,7 +2369,7 @@ public class SpoonGraph extends Canvas
         for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
         {
             StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected())
+            if (stepMeta.isSelected() && stepMeta.isDrawn())
             {
                 Point p = stepMeta.getLocation();
                 if (p.x > max) max = p.x;
@@ -2379,7 +2379,7 @@ public class SpoonGraph extends Canvas
         for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
         {
             StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected())
+            if (stepMeta.isSelected() && stepMeta.isDrawn())
             {
                 steps[nr] = stepMeta;
                 Point p = stepMeta.getLocation();
@@ -2408,7 +2408,7 @@ public class SpoonGraph extends Canvas
         for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
         {
             StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected())
+            if (stepMeta.isSelected() && stepMeta.isDrawn())
             {
                 Point p = stepMeta.getLocation();
                 if (p.y < min) min = p.y;
@@ -2418,7 +2418,7 @@ public class SpoonGraph extends Canvas
         for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
         {
             StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected())
+            if (stepMeta.isSelected() && stepMeta.isDrawn())
             {
                 steps[nr] = stepMeta;
                 Point p = stepMeta.getLocation();
@@ -2447,7 +2447,7 @@ public class SpoonGraph extends Canvas
         for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
         {
             StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected())
+            if (stepMeta.isSelected() && stepMeta.isDrawn())
             {
                 Point p = stepMeta.getLocation();
                 if (p.y > max) max = p.y;
@@ -2457,7 +2457,7 @@ public class SpoonGraph extends Canvas
         for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
         {
             StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected())
+            if (stepMeta.isSelected() && stepMeta.isDrawn())
             {
                 steps[nr] = stepMeta;
                 Point p = stepMeta.getLocation();
@@ -2490,7 +2490,7 @@ public class SpoonGraph extends Canvas
         for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
         {
             StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected())
+            if (stepMeta.isSelected() && stepMeta.isDrawn())
             {
                 Point p = stepMeta.getLocation();
                 if (p.x < min) min = p.x;
@@ -2557,7 +2557,7 @@ public class SpoonGraph extends Canvas
         for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
         {
             StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected())
+            if (stepMeta.isSelected() && stepMeta.isDrawn())
             {
                 Point p = stepMeta.getLocation();
                 if (p.y < min) min = p.y;

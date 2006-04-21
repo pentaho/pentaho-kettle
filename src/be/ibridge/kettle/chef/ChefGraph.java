@@ -595,7 +595,7 @@ public class ChefGraph extends Canvas
 					String entry = strtok.nextToken();
 					//System.out.println("new entry: "+entry);
 					
-					JobEntryCopy jge = chef.jobMeta.findJobEntry(entry, 0);
+					JobEntryCopy jge = chef.jobMeta.findJobEntry(entry, 0, true);
 
 					if (jge != null)  // Create duplicate of existing entry 
 					{
@@ -1900,11 +1900,11 @@ public class ChefGraph extends Canvas
         
         for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
         {
-            JobEntryCopy si = chef.jobMeta.getJobEntry(i);
-            if (si.isSelected())
+            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
+            if (entryCopy.isSelected() && entryCopy.isDrawn())
             {
-                jobentries[nr] = si;
-                Point p = si.getLocation();
+                jobentries[nr] = entryCopy;
+                Point p = entryCopy.getLocation();
                 before[nr] = new Point(p.x, p.y);
                 
                 // What's the modulus ?
@@ -1949,10 +1949,10 @@ public class ChefGraph extends Canvas
         // First look for the minimum x coordinate...
         for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
         {
-            JobEntryCopy si = chef.jobMeta.getJobEntry(i);
-            if (si.isSelected())
+            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
+            if (entryCopy.isSelected() && entryCopy.isDrawn())
             {
-                Point p = si.getLocation();
+                Point p = entryCopy.getLocation();
                 if (p.x < min) min = p.x;
             }
         }
@@ -1960,13 +1960,13 @@ public class ChefGraph extends Canvas
         // Then apply the coordinate...
         for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
         {
-            JobEntryCopy si = chef.jobMeta.getJobEntry(i);
-            if (si.isSelected())
+            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
+            if (entryCopy.isSelected() && entryCopy.isDrawn())
             {
-                jobentries[nr] = si;
-                Point p = si.getLocation();
+                jobentries[nr] = entryCopy;
+                Point p = entryCopy.getLocation();
                 before[nr] = new Point(p.x, p.y);
-                si.setLocation(min, p.y);
+                entryCopy.setLocation(min, p.y);
                 after[nr] = new Point(min, p.y);
                 nr++;
             }
@@ -1987,23 +1987,23 @@ public class ChefGraph extends Canvas
         // First look for the maximum x coordinate...
         for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
         {
-            JobEntryCopy si = chef.jobMeta.getJobEntry(i);
-            if (si.isSelected())
+            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
+            if (entryCopy.isSelected() && entryCopy.isDrawn())
             {
-                Point p = si.getLocation();
+                Point p = entryCopy.getLocation();
                 if (p.x > max) max = p.x;
             }
         }
         // Then apply the coordinate...
         for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
         {
-            JobEntryCopy si = chef.jobMeta.getJobEntry(i);
-            if (si.isSelected())
+            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
+            if (entryCopy.isSelected() && entryCopy.isDrawn())
             {
-                jobentries[nr] = si;
-                Point p = si.getLocation();
+                jobentries[nr] = entryCopy;
+                Point p = entryCopy.getLocation();
                 before[nr] = new Point(p.x, p.y);
-                si.setLocation(max, p.y);
+                entryCopy.setLocation(max, p.y);
                 after[nr] = new Point(max, p.y);
                 nr++;
            }
@@ -2024,23 +2024,23 @@ public class ChefGraph extends Canvas
         // First look for the minimum y coordinate...
         for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
         {
-            JobEntryCopy si = chef.jobMeta.getJobEntry(i);
-            if (si.isSelected())
+            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
+            if (entryCopy.isSelected() && entryCopy.isDrawn())
             {
-                Point p = si.getLocation();
+                Point p = entryCopy.getLocation();
                 if (p.y < min) min = p.y;
             }
         }
         // Then apply the coordinate...
         for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
         {
-            JobEntryCopy si = chef.jobMeta.getJobEntry(i);
-            if (si.isSelected())
+            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
+            if (entryCopy.isSelected() && entryCopy.isDrawn())
             {
-                jobentries[nr] = si;
-                Point p = si.getLocation();
+                jobentries[nr] = entryCopy;
+                Point p = entryCopy.getLocation();
                 before[nr] = new Point(p.x, p.y);
-                si.setLocation(p.x, min);
+                entryCopy.setLocation(p.x, min);
                 after[nr] = new Point(p.x, min);
                 nr++;
            }
@@ -2061,23 +2061,23 @@ public class ChefGraph extends Canvas
         // First look for the maximum y coordinate...
         for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
         {
-            JobEntryCopy si = chef.jobMeta.getJobEntry(i);
-            if (si.isSelected())
+            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
+            if (entryCopy.isSelected() && entryCopy.isDrawn())
             {
-                Point p = si.getLocation();
+                Point p = entryCopy.getLocation();
                 if (p.y > max) max = p.y;
             }
         }
         // Then apply the coordinate...
         for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
         {
-            JobEntryCopy si = chef.jobMeta.getJobEntry(i);
-            if (si.isSelected())
+            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
+            if (entryCopy.isSelected() && entryCopy.isDrawn())
             {
-                jobentries[nr] = si;
-                Point p = si.getLocation();
+                jobentries[nr] = entryCopy;
+                Point p = entryCopy.getLocation();
                 before[nr] = new Point(p.x, p.y);
-                si.setLocation(p.x, max);
+                entryCopy.setLocation(p.x, max);
                 after[nr] = new Point(p.x, max);
                 nr++;
             }
@@ -2102,10 +2102,10 @@ public class ChefGraph extends Canvas
         int selnr = 0;
         for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
         {
-            JobEntryCopy si = chef.jobMeta.getJobEntry(i);
-            if (si.isSelected())
+            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
+            if (entryCopy.isSelected() && entryCopy.isDrawn())
             {
-                Point p = si.getLocation();
+                Point p = entryCopy.getLocation();
                 if (p.x < min) min = p.x;
                 if (p.x > max) max = p.x;
                 order[selnr] = i;
@@ -2167,10 +2167,10 @@ public class ChefGraph extends Canvas
         int selnr = 0;
         for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
         {
-            JobEntryCopy si = chef.jobMeta.getJobEntry(i);
-            if (si.isSelected())
+            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
+            if (entryCopy.isSelected() && entryCopy.isDrawn())
             {
-                Point p = si.getLocation();
+                Point p = entryCopy.getLocation();
                 if (p.y < min) min = p.y;
                 if (p.y > max) max = p.y;
                 order[selnr] = i;
