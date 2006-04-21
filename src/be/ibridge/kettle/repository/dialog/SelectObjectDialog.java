@@ -44,6 +44,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 
@@ -170,6 +171,16 @@ public class SelectObjectDialog extends Dialog
 		// Detect [X] or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
+        try
+        {
+            rep.refreshRepositoryDirectoryTree();
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, props, Messages.getString("SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Title"), 
+                    Messages.getString("SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        
 		getData();
 		
 		WindowProperty winprop = props.getScreen(shell.getText());

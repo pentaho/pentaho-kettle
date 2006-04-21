@@ -45,6 +45,8 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.dialog.EnterStringDialog;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
+import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 
@@ -115,6 +117,17 @@ public class SelectDirectoryDialog extends Dialog
  		wTree = new Tree(shell, SWT.SINGLE | SWT.BORDER );
  		props.setLook( 		wTree);
  				
+        try
+        {
+            rep.refreshRepositoryDirectoryTree();
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, props, Messages.getString("SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Title"), 
+                    Messages.getString("SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            return null;
+        }
+        
 		if (!getData()) return null;
  		
  		// Buttons
