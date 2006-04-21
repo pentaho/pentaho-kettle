@@ -177,7 +177,7 @@ public class StepFieldsDialog extends Dialog
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
 		
-		wFields.cursor.addMouseListener(new MouseListener()
+		wFields.table.addMouseListener(new MouseListener()
         {
             public void mouseDoubleClick(MouseEvent arg0)
             {
