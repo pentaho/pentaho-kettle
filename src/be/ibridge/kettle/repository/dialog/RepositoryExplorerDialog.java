@@ -896,7 +896,9 @@ public class RepositoryExplorerDialog extends Dialog
 
 	public void dispose()
 	{
-		props.setScreen(new WindowProperty(shell));
+        rep.rollback();
+
+        props.setScreen(new WindowProperty(shell));
 		shell.dispose();
 	}
 	
@@ -1325,10 +1327,10 @@ public class RepositoryExplorerDialog extends Dialog
 		{
 			if (!name.equals(newname))
 			{
-				long id = rep.getTransformationID(name, repdir.getID());
+				long id = rep.getJobID(name, repdir.getID());
 				if (id>0)
 				{
-					// System.out.println("Renaming job ["+name+"] with ID = "+id);
+					System.out.println("Renaming job ["+name+"] with ID = "+id);
 					rep.renameJob(id, newname);
 					retval=true;
 				}
