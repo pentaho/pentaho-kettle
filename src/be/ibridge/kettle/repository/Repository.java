@@ -517,7 +517,10 @@ public class Repository
 	{
 		Row par = new Row();
 		par.addValue(new Value("value", value));
-		Row result = database.getOneRow("SELECT " + idfield + " FROM " + tablename + " WHERE " + lookupfield + " = ?", par);
+		Row result = database.getOneRow("SELECT "  
+				+ database.getDatabaseMeta().quoteField(idfield) 
+				+ " FROM " + tablename + " WHERE " 
+				+ database.getDatabaseMeta().quoteField(lookupfield) + " = ?", par);
 		if (result != null && result.getValue(0).isNumeric())
 			return result.getValue(0).getInteger();
 		return -1;
@@ -529,8 +532,13 @@ public class Repository
 		Row par = new Row();
 		par.addValue(new Value("value", value));
 		par.addValue(new Value("key", key));
-		Row result = database.getOneRow("SELECT " + idfield + " FROM " + tablename + " WHERE " + lookupfield + " = ? AND "
-									+ lookupkey + " = ?", par);
+		Row result = database.getOneRow("SELECT " 
+									+ database.getDatabaseMeta().quoteField(idfield)
+									+ " FROM " + tablename + " WHERE "
+									+ database.getDatabaseMeta().quoteField(lookupfield) 
+									+ " = ? AND " 
+									+ database.getDatabaseMeta().quoteField(lookupkey) 
+									+ " = ?", par);
 		if (result != null && result.getValue(0).isNumeric())
 			return result.getValue(0).getInteger();
 		return -1;
@@ -540,7 +548,9 @@ public class Repository
 			throws KettleDatabaseException
 	{
 		Row par = new Row();
-		String sql = "SELECT " + idfield + " FROM " + tablename + " ";
+		String sql = "SELECT "  
+			+ database.getDatabaseMeta().quoteField(idfield)
+			+ " FROM " + tablename + " ";
 		for (int i = 0; i < lookupkey.length; i++)
 		{
 			if (i == 0)
@@ -548,7 +558,7 @@ public class Repository
 			else
 				sql += "AND   ";
 			par.addValue(new Value(lookupkey[i], key[i]));
-			sql += lookupkey[i] + " = ? ";
+			sql += database.getDatabaseMeta().quoteField(lookupkey[i]) + " = ? ";
 		}
 		Row result = database.getOneRow(sql, par);
 		if (result != null && result.getValue(0).isNumeric())
@@ -561,11 +571,14 @@ public class Repository
 	{
 		Row par = new Row();
 		par.addValue(new Value(lookupfield, value));
-		String sql = "SELECT " + idfield + " FROM " + tablename + " WHERE " + lookupfield + " = ? ";
+		String sql = "SELECT " 
+			+ database.getDatabaseMeta().quoteField(idfield)
+			+ " FROM " + tablename + " WHERE "
+			+ database.getDatabaseMeta().quoteField(lookupfield) + " = ? ";
 		for (int i = 0; i < lookupkey.length; i++)
 		{
 			par.addValue(new Value(lookupkey[i], key[i]));
-			sql += "AND " + lookupkey[i] + " = ? ";
+			sql += "AND " + database.getDatabaseMeta().quoteField(lookupkey[i]) + " = ? ";
 		}
 
 		Row result = database.getOneRow(sql, par);
@@ -592,7 +605,9 @@ public class Repository
 	private String getStringWithID(String tablename, String keyfield, long id, String fieldname)
 			throws KettleDatabaseException
 	{
-		String sql = "SELECT " + fieldname + " FROM " + tablename + " WHERE " + keyfield + " = ?";
+		String sql = "SELECT " 
+			+ database.getDatabaseMeta().quoteField(fieldname) + " FROM " + tablename + " WHERE " 
+			+ database.getDatabaseMeta().quoteField(keyfield) + " = ?";
 		Row par = new Row();
 		par.addValue(new Value(keyfield, id));
 		Row result = database.getOneRow(sql, par);
@@ -781,7 +796,8 @@ public class Repository
 	private long getNextTableID(String tablename, String idfield) throws KettleDatabaseException
 	{
 		long retval = -1;
-		Row r = database.getOneRow("SELECT max(" + idfield + ") FROM " + tablename);
+		Row r = database.getOneRow("SELECT max(" 
+				+ database.getDatabaseMeta().quoteField(idfield) + ") FROM " + tablename);
 		if (r != null)
 		{
 			Value id = r.getValue(0);
@@ -1268,11 +1284,11 @@ public class Repository
 		table.addValue(new Value("VALUE_STR", value_str));
 		table.addValue(new Value("IS_NULL", isnull));
 
-		String sql = "SELECT ID_VALUE FROM " + tablename + " ";
-		sql += "WHERE NAME       = ? ";
-		sql += "AND   VALUE_TYPE = ? ";
-		sql += "AND   VALUE_STR  = ? ";
-		sql += "AND   IS_NULL    = ? ";
+		String sql = "SELECT " + database.getDatabaseMeta().quoteField("ID_VALUE") + " FROM " + tablename + " ";
+		sql += "WHERE " + database.getDatabaseMeta().quoteField("NAME") + "       = ? ";
+		sql += "AND   " + database.getDatabaseMeta().quoteField("VALUE_TYPE") + " = ? ";
+		sql += "AND   " + database.getDatabaseMeta().quoteField("VALUE_STR") + "  = ? ";
+		sql += "AND   " + database.getDatabaseMeta().quoteField("IS_NULL") + "    = ? ";
 
 		Row result = database.getOneRow(sql, table);
 		if (result != null && result.getValue(0).isNumeric())
@@ -2442,7 +2458,8 @@ public class Repository
 	
 	private Row getOneRow(String tablename, String keyfield, long id) throws KettleDatabaseException
 	{
-		String sql = "SELECT * FROM " + tablename + " WHERE " + keyfield + " = " + id;
+		String sql = "SELECT * FROM " + tablename + " WHERE " 
+			+ database.getDatabaseMeta().quoteField(keyfield) + " = " + id;
 
 		return database.getOneRow(sql);
 	}
@@ -3106,7 +3123,8 @@ public class Repository
 			for (int i = 1; i < code.length; i++)
 			{
 				Row lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT ID_DATABASE_TYPE FROM " + tablename + " WHERE CODE = '" + code[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT ID_DATABASE_TYPE FROM " + tablename + " WHERE " 
+                		+ database.getDatabaseMeta().quoteField("CODE") +" = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = getNextDatabaseTypeID();
@@ -3172,7 +3190,8 @@ public class Repository
 			for (int i = 0; i < code.length; i++)
 			{
                 Row lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT ID_DATABASE_CONTYPE FROM " + tablename + " WHERE CODE = '" + code[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT ID_DATABASE_CONTYPE FROM " + tablename + " WHERE " 
+                		+ database.getDatabaseMeta().quoteField("CODE") + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = getNextDatabaseConnectionTypeID();
@@ -3803,7 +3822,8 @@ public class Repository
 			for (int i = 1; i < code.length; i++)
 			{
                 Row lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT ID_LOGLEVEL FROM " + tablename + " WHERE CODE = '" + code[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT ID_LOGLEVEL FROM " + tablename + " WHERE " 
+                		+ database.getDatabaseMeta().quoteField("CODE") + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = getNextLoglevelID();
@@ -4135,7 +4155,8 @@ public class Repository
 			for (int i = 0; i < code.length; i++)
 			{
                 Row lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT ID_PROFILE FROM " + tablename + " WHERE NAME = '" + code[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT ID_PROFILE FROM " + tablename + " WHERE "
+                		+ database.getDatabaseMeta().quoteField("NAME") + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = getNextProfileID();
@@ -4210,7 +4231,8 @@ public class Repository
 			for (int i = 0; i < user.length; i++)
 			{
                 Row lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT ID_USER FROM " + tablename + " WHERE LOGIN = '" + user[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT ID_USER FROM " + tablename + " WHERE "
+                		+ database.getDatabaseMeta().quoteField("LOGIN") + " = '" + user[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = getNextUserID();
@@ -4286,7 +4308,8 @@ public class Repository
 			for (int i = 1; i < code.length; i++)
 			{
                 Row lookup = null;
-                if (upgrade) lookup = database.getOneRow("SELECT ID_PERMISSION FROM " + tablename + " WHERE CODE = '" + code[i] + "'");
+                if (upgrade) lookup = database.getOneRow("SELECT ID_PERMISSION FROM " + tablename + " WHERE " 
+                		+ database.getDatabaseMeta().quoteField("CODE") + " = '" + code[i] + "'");
 				if (lookup == null)
 				{
 					long nextid = getNextPermissionID();
