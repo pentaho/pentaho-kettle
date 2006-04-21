@@ -2485,7 +2485,7 @@ public class TransMeta implements XMLInterface
         for (i = 0; i < nrSteps(); i++)
         {
             StepMeta stepMeta = getStep(i);
-            if (stepMeta.isSelected()) count++;
+            if (stepMeta.isSelected() && stepMeta.isDrawn()) count++;
         }
         return count;
     }
@@ -2503,7 +2503,7 @@ public class TransMeta implements XMLInterface
         for (i = 0; i < nrSteps(); i++)
         {
             StepMeta stepMeta = getStep(i);
-            if (stepMeta.isSelected())
+            if (stepMeta.isSelected() && stepMeta.isDrawn())
             {
                 if (nr == count) return stepMeta;
                 count++;
