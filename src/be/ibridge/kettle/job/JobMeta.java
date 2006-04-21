@@ -535,7 +535,7 @@ public class JobMeta implements Cloneable, XMLInterface
 				//System.out.println("Reading entry:\n"+entrynode);
 				
 				JobEntryCopy je = new JobEntryCopy(entrynode, databases, null);
-				JobEntryCopy prev = findJobEntry(je.getName(), 0);
+				JobEntryCopy prev = findJobEntry(je.getName(), 0, true);
 				if (prev!=null)
 				{
 					if (je.getNr()==0) // See if the #0 already exists!
@@ -550,7 +550,7 @@ public class JobMeta implements Cloneable, XMLInterface
 						je.setEntry(prev.getEntry());
 						
 						// See if entry.5 already exists...
-						prev = findJobEntry(je.getName(), je.getNr());
+						prev = findJobEntry(je.getName(), je.getNr(), true);
 						if (prev!=null) // remove the old one!
 						{
 							int idx = indexOfJobEntry(prev);
@@ -582,8 +582,8 @@ public class JobMeta implements Cloneable, XMLInterface
 			}
 
 			// Do we have the special entries?
-			if (findJobEntry(STRING_SPECIAL_START, 0)==null) addStart();
-			if (findJobEntry(STRING_SPECIAL_DUMMY, 0)==null) addDummy();
+			if (findJobEntry(STRING_SPECIAL_START, 0, true)==null) addStart();
+			if (findJobEntry(STRING_SPECIAL_DUMMY, 0, true)==null) addDummy();
 		}
 		catch(Exception e)
 		{
@@ -969,14 +969,17 @@ public class JobMeta implements Cloneable, XMLInterface
 	 * @param nr The number of the job entry copy
 	 * @return The JobEntryCopy or null if nothing was found!
 	 */
-	public JobEntryCopy findJobEntry(String name, int nr)
+	public JobEntryCopy findJobEntry(String name, int nr, boolean searchHiddenToo)
 	{
 		for (int i=0;i<nrJobEntries();i++)
 		{
 			JobEntryCopy jec = getJobEntry(i);
 			if (jec.getName().equalsIgnoreCase(name) && jec.getNr()==nr)
 			{
-				return jec;
+                if (searchHiddenToo || jec.isDrawn())
+                {
+                    return jec;
+                }
 			}
 		}
 		return null;
@@ -1172,11 +1175,11 @@ public class JobMeta implements Cloneable, XMLInterface
 	{
 		int nr=1;
 		
-		JobEntryCopy e = findJobEntry(basename+" "+nr, 0); 
+		JobEntryCopy e = findJobEntry(basename+" "+nr, 0, true); 
 		while(e!=null)
 		{
 			nr++;
-			e = findJobEntry(basename+" "+nr, 0);
+			e = findJobEntry(basename+" "+nr, 0, true);
 		}
 		return nr;
 	}
@@ -1184,12 +1187,12 @@ public class JobMeta implements Cloneable, XMLInterface
 	public int findUnusedNr(String name)
 	{
 		int nr=1;
-		JobEntryCopy je = findJobEntry(name, nr);
+		JobEntryCopy je = findJobEntry(name, nr, true);
 		while (je!=null)
 		{
 			nr++;
 			//log.logDebug("findUnusedNr()", "Trying unused nr: "+nr);
-			je = findJobEntry(name, nr);
+			je = findJobEntry(name, nr, true);
 		}
 		return nr;
 	}
@@ -1506,7 +1509,7 @@ public class JobMeta implements Cloneable, XMLInterface
 		for (i = 0; i < nrJobEntries(); i++) 
 		{
 			JobEntryCopy je = getJobEntry(i);
-			if (je.isSelected()) count++;
+			if (je.isSelected() && je.isDrawn()) count++;
 		}
 		return count;
 	}

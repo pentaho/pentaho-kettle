@@ -86,8 +86,8 @@ public class JobHopMeta implements Cloneable, XMLInterface
 			from_nr = Const.toInt(sfrom_nr, 0);
 			to_nr = Const.toInt(sto_nr, 0);
 			
-			from_entry = job.findJobEntry(from_name, from_nr);
-			to_entry = job.findJobEntry(to_name, to_nr);
+			from_entry = job.findJobEntry(from_name, from_nr, true);
+			to_entry = job.findJobEntry(to_name, to_nr, true);
 			
 			if (senabled==null) enabled=true; else enabled="Y".equalsIgnoreCase(senabled);
 			if (sevaluation==null) evaluation=true; else evaluation="Y".equalsIgnoreCase(sevaluation);

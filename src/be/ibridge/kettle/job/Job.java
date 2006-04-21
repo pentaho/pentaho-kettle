@@ -133,7 +133,7 @@ public class Job extends Thread
 		// Where do we start?
 		JobEntryCopy startpoint;
 		beginProcessing();
-		startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0);
+		startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
 		if (startpoint == null) 
 		{
 			throw new KettleJobException("Couldn't find starting point in this job.");
@@ -166,7 +166,7 @@ public class Job extends Thread
         // Where do we start?
         JobEntryCopy startpoint;
 
-        startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0);
+        startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
         if (startpoint == null) 
         {
             throw new KettleJobException("Couldn't find starting point in this job.");
