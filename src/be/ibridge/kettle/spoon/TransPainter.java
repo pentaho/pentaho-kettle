@@ -66,7 +66,7 @@ public class TransPainter
     {
         this.transMeta     = transMeta;
         
-        this.background    = GUIResource.getInstance().getColorBackground();
+        this.background    = GUIResource.getInstance().getColorGraph();
         this.black         = GUIResource.getInstance().getColorBlack();
         this.red           = GUIResource.getInstance().getColorRed();
         this.yellow        = GUIResource.getInstance().getColorYellow();

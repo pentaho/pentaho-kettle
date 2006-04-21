@@ -52,8 +52,6 @@ public class GUIResource
     /* * * Fonts * * */
     private Font fontGraph;
     private Font fontNote;
-    // private Font fontGrid;
-    // private Font fontDefault;
     private Font fontFixed;
 
     /* * * Images * * */
@@ -125,8 +123,6 @@ public class GUIResource
         
         if (props.getGraphFont()   != null) fontGraph   = new Font(display, props.getGraphFont());
         if (props.getNoteFont()    != null) fontNote    = new Font(display, props.getNoteFont());
-        // if (props.getGridFont()    != null) fontGrid    = new Font(display, props.getGridFont());
-        // if (props.getDefaultFont() != null) fontDefault = new Font(display, props.getDefaultFont());
         if (props.getFixedFont()   != null) fontFixed   = new Font(display, props.getFixedFont());
         
         // Load all images from files...
@@ -160,8 +156,6 @@ public class GUIResource
         
         if (fontGraph  !=null) fontGraph  .dispose();
         if (fontNote   !=null) fontNote   .dispose();
-        // if (fontGrid   !=null) fontGrid   .dispose();
-        // if (fontDefault!=null) fontDefault.dispose();
         if (fontFixed  !=null) fontFixed  .dispose();
         
         // Images
