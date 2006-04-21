@@ -110,14 +110,14 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Get sequence value from database");
+		shell.setText(Messages.getString("AddSequenceDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("AddSequenceDialog.StepName.Label")); //$NON-NLS-1$
  		props.setLook(		wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -136,7 +136,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 
 		// Valuename line
 		wlValuename=new Label(shell, SWT.RIGHT);
-		wlValuename.setText("Name of value ");
+		wlValuename.setText(Messages.getString("AddSequenceDialog.Valuename.Label")); //$NON-NLS-1$
  		props.setLook(wlValuename);
 		fdlValuename=new FormData();
 		fdlValuename.left = new FormAttachment(0, 0);
@@ -144,7 +144,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		fdlValuename.right= new FormAttachment(middle, -margin);
 		wlValuename.setLayoutData(fdlValuename);
 		wValuename=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wValuename.setText("");
+		wValuename.setText(""); //$NON-NLS-1$
  		props.setLook(wValuename);
 		wValuename.addModifyListener(lsMod);
 		fdValuename=new FormData();
@@ -154,7 +154,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		wValuename.setLayoutData(fdValuename);
 
 		wlUseDatabase=new Label(shell, SWT.RIGHT);
-		wlUseDatabase.setText("Use DB to get sequence? ");
+		wlUseDatabase.setText(Messages.getString("AddSequenceDialog.UseDatabase.Label")); //$NON-NLS-1$
  		props.setLook(wlUseDatabase);
 		fdlUseDatabase=new FormData();
 		fdlUseDatabase.left = new FormAttachment(0, 0);
@@ -163,7 +163,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		wlUseDatabase.setLayoutData(fdlUseDatabase);
 		wUseDatabase=new Button(shell, SWT.CHECK );
  		props.setLook(wUseDatabase);
-		wUseDatabase.setToolTipText("Check this to use a database (probably Oracle) to get the value of a sequence.");
+		wUseDatabase.setToolTipText(Messages.getString("AddSequenceDialog.UseDatabase.Tooltip")); //$NON-NLS-1$
 		fdUseDatabase=new FormData();
 		fdUseDatabase.left = new FormAttachment(middle, 0);
 		fdUseDatabase.top  = new FormAttachment(wValuename, margin);
@@ -187,7 +187,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 
 		// Seqname line
 		wlSeqname=new Label(shell, SWT.RIGHT);
-		wlSeqname.setText("Sequence name ");
+		wlSeqname.setText(Messages.getString("AddSequenceDialog.Seqname.Label")); //$NON-NLS-1$
  		props.setLook(wlSeqname);
 		fdlSeqname=new FormData();
 		fdlSeqname.left = new FormAttachment(0, 0);
@@ -195,7 +195,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		fdlSeqname.top  = new FormAttachment(wConnection, margin);
 		wlSeqname.setLayoutData(fdlSeqname);
 		wSeqname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wSeqname.setText("");
+		wSeqname.setText(""); //$NON-NLS-1$
  		props.setLook(wSeqname);
 		wSeqname.addModifyListener(lsMod);
 		fdSeqname=new FormData();
@@ -206,7 +206,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 
 
 		wlUseCounter=new Label(shell, SWT.RIGHT);
-		wlUseCounter.setText("Use counter to calculate sequence? ");
+		wlUseCounter.setText(Messages.getString("AddSequenceDialog.UseCounter.Label")); //$NON-NLS-1$
  		props.setLook(wlUseCounter);
 		fdlUseCounter=new FormData();
 		fdlUseCounter.left = new FormAttachment(0, 0);
@@ -215,7 +215,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		wlUseCounter.setLayoutData(fdlUseCounter);
 		wUseCounter=new Button(shell, SWT.CHECK );
  		props.setLook(wUseCounter);
-		wUseCounter.setToolTipText("Check this to use an internal Kettle counter to calculate the value of the sequence.");
+		wUseCounter.setToolTipText(Messages.getString("AddSequenceDialog.UseCounter.Tooltip")); //$NON-NLS-1$
 		fdUseCounter=new FormData();
 		fdUseCounter.left = new FormAttachment(middle, 0);
 		fdUseCounter.top  = new FormAttachment(wSeqname, margin);
@@ -233,7 +233,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 
 		// StartAt line
 		wlStartAt=new Label(shell, SWT.RIGHT);
-		wlStartAt.setText("Start at value ");
+		wlStartAt.setText(Messages.getString("AddSequenceDialog.StartAt.Label")); //$NON-NLS-1$
  		props.setLook(wlStartAt);
 		fdlStartAt=new FormData();
 		fdlStartAt.left = new FormAttachment(0, 0);
@@ -241,7 +241,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		fdlStartAt.top  = new FormAttachment(wUseCounter, margin);
 		wlStartAt.setLayoutData(fdlStartAt);
 		wStartAt=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wStartAt.setText("");
+		wStartAt.setText(""); //$NON-NLS-1$
  		props.setLook(wStartAt);
 		wStartAt.addModifyListener(lsMod);
 		fdStartAt=new FormData();
@@ -252,7 +252,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 
 		// IncrBy line
 		wlIncrBy=new Label(shell, SWT.RIGHT);
-		wlIncrBy.setText("Increment by ");
+		wlIncrBy.setText(Messages.getString("AddSequenceDialog.IncrBy.Label")); //$NON-NLS-1$
  		props.setLook(wlIncrBy);
 		fdlIncrBy=new FormData();
 		fdlIncrBy.left = new FormAttachment(0, 0);
@@ -260,7 +260,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		fdlIncrBy.top  = new FormAttachment(wStartAt, margin);
 		wlIncrBy.setLayoutData(fdlIncrBy);
 		wIncrBy=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wIncrBy.setText("");
+		wIncrBy.setText(""); //$NON-NLS-1$
  		props.setLook(wIncrBy);
 		wIncrBy.addModifyListener(lsMod);
 		fdIncrBy=new FormData();
@@ -271,7 +271,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 
 		// MaxVal line
 		wlMaxVal=new Label(shell, SWT.RIGHT);
-		wlMaxVal.setText("Maximum value ");
+		wlMaxVal.setText(Messages.getString("AddSequenceDialog.MaxVal.Label")); //$NON-NLS-1$
  		props.setLook(wlMaxVal);
 		fdlMaxVal=new FormData();
 		fdlMaxVal.left = new FormAttachment(0, 0);
@@ -279,7 +279,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		fdlMaxVal.top  = new FormAttachment(wIncrBy, margin);
 		wlMaxVal.setLayoutData(fdlMaxVal);
 		wMaxVal=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wMaxVal.setText("");
+		wMaxVal.setText(""); //$NON-NLS-1$
  		props.setLook(wMaxVal);
 		wMaxVal.addModifyListener(lsMod);
 		fdMaxVal=new FormData();
@@ -291,9 +291,9 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("AddSequenceDialog.OKButton.Label")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("AddSequenceDialog.CancelButton.Label")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wMaxVal);
 
@@ -351,7 +351,7 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 	 */ 
 	public void getData()
 	{
-		log.logDebug(toString(), "getting key info...");
+		log.logDebug(toString(), Messages.getString("AddSequenceDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 
 		if (input.getValuename()!=null) wValuename.setText(input.getValuename());
 		
@@ -364,9 +364,9 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		if (input.getSequenceName()!=null) wSeqname.setText(input.getSequenceName());
 		
 		wUseCounter.setSelection(input.isCounterUsed());
-		wStartAt.setText(""+input.getStartAt());
-		wIncrBy.setText(""+input.getIncrementBy());
-		wMaxVal.setText(""+input.getMaxValue());
+		wStartAt.setText(""+input.getStartAt()); //$NON-NLS-1$
+		wIncrBy.setText(""+input.getIncrementBy()); //$NON-NLS-1$
+		wMaxVal.setText(""+input.getMaxValue()); //$NON-NLS-1$
 		
 		enableFields();
 		wStepname.selectAll();
@@ -395,8 +395,8 @@ public class AddSequenceDialog extends BaseStepDialog implements StepDialogInter
 		if (input.isDatabaseUsed() && transMeta.findDatabase(connection)==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Please select a valid connection!");
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("AddSequenceDialog.NoValidConnectionError.DialogMessage")); //$NON-NLS-1$
+			mb.setText(Messages.getString("AddSequenceDialog.NoValidConnectionError.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
 		

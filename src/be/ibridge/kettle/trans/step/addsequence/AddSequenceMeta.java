@@ -210,30 +210,30 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			valuename  = XMLHandler.getTagValue(stepnode, "valuename");
+			valuename  = XMLHandler.getTagValue(stepnode, "valuename"); //$NON-NLS-1$
 			
-			useDatabase = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_database"));
-			String conn  = XMLHandler.getTagValue(stepnode, "connection");
+			useDatabase = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_database")); //$NON-NLS-1$ //$NON-NLS-2$
+			String conn  = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
 			database   = Const.findDatabase(databases, conn);
-			sequenceName      = XMLHandler.getTagValue(stepnode, "seqname");
+			sequenceName      = XMLHandler.getTagValue(stepnode, "seqname"); //$NON-NLS-1$
 			
-			useCounter  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_counter"));
-			startAt     = Const.toLong(XMLHandler.getTagValue(stepnode, "start_at"), 1);
-			incrementBy = Const.toLong(XMLHandler.getTagValue(stepnode, "increment_by"), 1);
-			maxValue    = Const.toLong(XMLHandler.getTagValue(stepnode, "max_value"), 999999999L);
+			useCounter  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_counter")); //$NON-NLS-1$ //$NON-NLS-2$
+			startAt     = Const.toLong(XMLHandler.getTagValue(stepnode, "start_at"), 1); //$NON-NLS-1$
+			incrementBy = Const.toLong(XMLHandler.getTagValue(stepnode, "increment_by"), 1); //$NON-NLS-1$
+			maxValue    = Const.toLong(XMLHandler.getTagValue(stepnode, "max_value"), 999999999L); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Error loading step info from XML", e);
+			throw new KettleXMLException(Messages.getString("AddSequenceMeta.Exception.ErrorLoadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 	
 	public void setDefault()
 	{
-		valuename  = "valuename";
+		valuename  = "valuename"; //$NON-NLS-1$
 		
 		useDatabase = false;
-		sequenceName    = "SEQ_";
+		sequenceName    = "SEQ_"; //$NON-NLS-1$
 		database = null;
 		
 		useCounter  = true;
@@ -260,15 +260,15 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("      "+XMLHandler.addTagValue("valuename", valuename));
-		retval.append("      "+XMLHandler.addTagValue("use_database", useDatabase));
-		retval.append("      "+XMLHandler.addTagValue("connection", database==null?"":database.getName()));
-		retval.append("      "+XMLHandler.addTagValue("seqname", sequenceName));
+		retval.append("      "+XMLHandler.addTagValue("valuename", valuename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      "+XMLHandler.addTagValue("use_database", useDatabase)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      "+XMLHandler.addTagValue("connection", database==null?"":database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("      "+XMLHandler.addTagValue("seqname", sequenceName)); //$NON-NLS-1$ //$NON-NLS-2$
 
-		retval.append("      "+XMLHandler.addTagValue("use_counter", useCounter));
-		retval.append("      "+XMLHandler.addTagValue("start_at", startAt));
-		retval.append("      "+XMLHandler.addTagValue("increment_by", incrementBy));
-		retval.append("      "+XMLHandler.addTagValue("max_value", maxValue));
+		retval.append("      "+XMLHandler.addTagValue("use_counter", useCounter)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      "+XMLHandler.addTagValue("start_at", startAt)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      "+XMLHandler.addTagValue("increment_by", incrementBy)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      "+XMLHandler.addTagValue("max_value", maxValue)); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		return retval.toString();
 	}
@@ -278,21 +278,21 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			valuename        =      rep.getStepAttributeString (id_step, "valuename");
+			valuename        =      rep.getStepAttributeString (id_step, "valuename"); //$NON-NLS-1$
 	
-			useDatabase     =      rep.getStepAttributeBoolean(id_step, "use_database"); 
-			long id_connection =    rep.getStepAttributeInteger(id_step, "id_connection"); 
+			useDatabase     =      rep.getStepAttributeBoolean(id_step, "use_database");  //$NON-NLS-1$
+			long id_connection =    rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
 			database = Const.findDatabase( databases, id_connection);
-			sequenceName          =      rep.getStepAttributeString (id_step, "seqname");
+			sequenceName          =      rep.getStepAttributeString (id_step, "seqname"); //$NON-NLS-1$
 	
-			useCounter      =      rep.getStepAttributeBoolean(id_step, "use_counter"); 
-			startAt         =      rep.getStepAttributeInteger(id_step, "start_at"); 
-			incrementBy     =      rep.getStepAttributeInteger(id_step, "increment_by"); 
-			maxValue        =      rep.getStepAttributeInteger(id_step, "max_value");
+			useCounter      =      rep.getStepAttributeBoolean(id_step, "use_counter");  //$NON-NLS-1$
+			startAt         =      rep.getStepAttributeInteger(id_step, "start_at");  //$NON-NLS-1$
+			incrementBy     =      rep.getStepAttributeInteger(id_step, "increment_by");  //$NON-NLS-1$
+			maxValue        =      rep.getStepAttributeInteger(id_step, "max_value"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unable to read step information from the repository for id_step="+id_step, e);
+			throw new KettleException(Messages.getString("AddSequenceMeta.Exception.UnableToReadStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -301,23 +301,23 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "valuename",       valuename);
+			rep.saveStepAttribute(id_transformation, id_step, "valuename",       valuename); //$NON-NLS-1$
 			
-			rep.saveStepAttribute(id_transformation, id_step, "use_database",    useDatabase);
-			rep.saveStepAttribute(id_transformation, id_step, "id_connection",   database==null?-1:database.getID());
-			rep.saveStepAttribute(id_transformation, id_step, "seqname",         sequenceName);
+			rep.saveStepAttribute(id_transformation, id_step, "use_database",    useDatabase); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "id_connection",   database==null?-1:database.getID()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "seqname",         sequenceName); //$NON-NLS-1$
 					
-			rep.saveStepAttribute(id_transformation, id_step, "use_counter",     useCounter);
-			rep.saveStepAttribute(id_transformation, id_step, "start_at",        startAt);
-			rep.saveStepAttribute(id_transformation, id_step, "increment_by",    incrementBy);
-			rep.saveStepAttribute(id_transformation, id_step, "max_value",       maxValue);
+			rep.saveStepAttribute(id_transformation, id_step, "use_counter",     useCounter); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "start_at",        startAt); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "increment_by",    incrementBy); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "max_value",       maxValue); //$NON-NLS-1$
 			
 			// Also, save the step-database relationship!
 			if (database!=null) rep.insertStepDatabase(id_transformation, id_step, database.getID());
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unable to save step info to the repository for id_step="+id_step, e);
+			throw new KettleException(Messages.getString("AddSequenceMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -333,16 +333,16 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 				db.connect();
 				if (db.checkSequenceExists(sequenceName))
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Sequence exits.", stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("AddSequenceMeta.CheckResult.SequenceExists.Title"), stepMeta); //$NON-NLS-1$
 				}
 				else
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "The sequence ["+sequenceName+"] couldn't be found", stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("AddSequenceMeta.CheckResult.SequenceCouldNotBeFound.Title",sequenceName), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 			catch(KettleException e)
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Unable to connect to database to verify sequence because of an error: "+Const.CR+e.getMessage(), stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("AddSequenceMeta.CheckResult.UnableToConnectDB.Title")+Const.CR+e.getMessage(), stepMeta); //$NON-NLS-1$
 			}
 			finally
 			{
@@ -353,12 +353,12 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("AddSequenceMeta.CheckResult.StepIsReceving.Title"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("AddSequenceMeta.CheckResult.NoInputReceived.Title"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}
@@ -388,7 +388,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 				}
 				catch(KettleException e)
 				{
-					retval.setError("I was unable to connect to the database to verify the status of the table."+Const.CR+e.getMessage());
+					retval.setError(Messages.getString("AddSequenceMeta.ErrorMessage.UnableToConnectDB")+Const.CR+e.getMessage()); //$NON-NLS-1$
 				}
 				finally
 				{
@@ -397,7 +397,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			else
 			{
-				retval.setError("There is no connection defined in this step.");
+				retval.setError(Messages.getString("AddSequenceMeta.ErrorMessage.NoConnectionDefined")); //$NON-NLS-1$
 			}
 		}
 

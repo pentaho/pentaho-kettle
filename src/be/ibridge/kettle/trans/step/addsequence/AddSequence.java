@@ -62,7 +62,7 @@ public class AddSequence extends BaseStep implements StepInterface
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				throw new KettleStepException("Error reading next value of sequence ["+meta.getSequenceName()+"] from database", dbe);
+				throw new KettleStepException(Messages.getString("AddSequence.Exception.ErrorReadingSequence",meta.getSequenceName()), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		else
@@ -82,7 +82,7 @@ public class AddSequence extends BaseStep implements StepInterface
 		else
 		{
 			// This should never happen, but if it does, don't continue!!!
-			throw new KettleStepException("No method is specified in this step!");
+			throw new KettleStepException(Messages.getString("AddSequence.Exception.NoSpecifiedMethod")); //$NON-NLS-1$
 		}
 		
 		if (next!=null)
@@ -91,7 +91,7 @@ public class AddSequence extends BaseStep implements StepInterface
 		}
 		else
 		{
-			throw new KettleStepException("Couldn't find next value for sequence : "+meta.getValuename());
+			throw new KettleStepException(Messages.getString("AddSequence.Exception.CouldNotFindNextValueForSequence")+meta.getValuename()); //$NON-NLS-1$
 		}
 
 		return true;
@@ -112,19 +112,19 @@ public class AddSequence extends BaseStep implements StepInterface
 			return false;
 		}
 
-        log.logRowlevel(toString(), "Read row #"+linesRead+" : "+r);
+        log.logRowlevel(toString(), Messages.getString("AddSequence.Log.ReadRow")+linesRead+" : "+r); //$NON-NLS-1$ //$NON-NLS-2$
 
 		try
 		{
 			addSequence(r); // add new values to the row in rowset[0].			
 			putRow(r);       // copy row to output rowset(s);
 			
-            log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+r);
-			if ((linesRead>0) && (linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
+            log.logRowlevel(toString(), Messages.getString("AddSequence.Log.WriteRow")+linesWritten+" : "+r); //$NON-NLS-1$ //$NON-NLS-2$
+			if ((linesRead>0) && (linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("AddSequence.Log.LineNumber")+linesRead); //$NON-NLS-1$
 		}
 		catch(KettleException e)
 		{
-			logError("Because of an error, this step can't continue: "+e.getMessage());
+			logError(Messages.getString("AddSequence.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -147,18 +147,18 @@ public class AddSequence extends BaseStep implements StepInterface
 				try
 				{
 					data.getDb().connect();
-					logBasic("Connected to database...");
+					logBasic(Messages.getString("AddSequence.Log.ConnectedDB")); //$NON-NLS-1$
 					return true;
 				}
 				catch(KettleDatabaseException dbe)
 				{
-					logError("Step couldn't connect to the database: "+dbe.getMessage());
+					logError(Messages.getString("AddSequence.Log.CouldNotConnectToDB")+dbe.getMessage()); //$NON-NLS-1$
 				}
 			}
 			else
 			if (meta.isCounterUsed())
 			{
-				data.setLookup( "@@sequence:"+meta.getValuename() );
+				data.setLookup( "@@sequence:"+meta.getValuename() ); //$NON-NLS-1$
 
 				if (getTransMeta().getCounters()!=null)
 				{
@@ -168,12 +168,12 @@ public class AddSequence extends BaseStep implements StepInterface
 				}
 				else
 				{
-					logError("Sorry, Transformation counters hash table not allocated! (internal error)");
+					logError(Messages.getString("AddSequence.Log.TransformationCountersHashtableNotAllocated")); //$NON-NLS-1$
 				}
 			}
 			else
 			{
-				logError("You need to select to create a sequence either using a database or an internal counter.");
+				logError(Messages.getString("AddSequence.Log.NeedToSelectSequence")); //$NON-NLS-1$
 			}
 		}
 		return false;
@@ -199,12 +199,12 @@ public class AddSequence extends BaseStep implements StepInterface
 	{		
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("AddSequence.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("AddSequence.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}

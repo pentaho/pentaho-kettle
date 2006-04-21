@@ -1,6 +1,8 @@
 package be.ibridge.kettle.trans;
 
+import junit.framework.Test;
 import junit.framework.TestCase;
+import junit.framework.TestSuite;
 
 public class MessagesTest extends TestCase {
 
@@ -38,6 +40,14 @@ public class MessagesTest extends TestCase {
 		// TODO Auto-generated method stub
 		System.out.println(be.ibridge.kettle.trans.Messages.getString("Trans.Log.AllocatedRowsets","10","copy table","1"));
 		
+	}
+	
+	public static Test suite() {
+		TestSuite suite = new TestSuite("Test for be.ibridge.kettle.trans");
+		//$JUnit-BEGIN$
+		suite.addTestSuite(MessagesTest.class);
+		//$JUnit-END$
+		return suite;
 	}
 
 }
