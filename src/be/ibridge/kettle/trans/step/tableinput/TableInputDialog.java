@@ -246,7 +246,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         lsPreview  = new Listener() { public void handleEvent(Event e) { preview(); } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();      } };
 		lsbTable   = new Listener() { public void handleEvent(Event e) { getSQL();  } };
-        lsDateform = new Listener() { public void handleEvent(Event e) { updateEachRowCheckbox(); } };
+        lsDateform = new Listener() { public void handleEvent(Event e) { setFags(); } };
         
 		wCancel.addListener  (SWT.Selection, lsCancel);
         wPreview.addListener (SWT.Selection, lsPreview);
@@ -345,7 +345,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 			String tableName = (String)std.open();
 			if (tableName != null)
 			{
-				String sql = "SELECT *"+Const.CR+"FROM "+tableName+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
+				String sql = "SELECT *"+Const.CR+"FROM "+inf.quoteField(tableName)+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
 				wSQL.setText(sql);
 
 				MessageBox yn = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_QUESTION);
@@ -369,7 +369,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 							{
 								Value field=fields.getValue(i);
 								if (i==0) sql+="  "; else sql+=", "; //$NON-NLS-1$ //$NON-NLS-2$
-								sql+=field.getName()+Const.CR;
+								sql+=inf.quoteField(field.getName())+Const.CR;
 							}
 							sql+="FROM "+tableName+Const.CR; //$NON-NLS-1$
 							wSQL.setText(sql);
@@ -407,19 +407,28 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 					
 	}
 	
-    private void updateEachRowCheckbox()
+    private void setFags()
     {
         if (wDatefrom.getText() != null && wDatefrom.getText().length() > 0)
         {
+            // The foreach check box... 
             wEachRow.setEnabled(true);
             wlEachRow.setEnabled(true);
+            
+            // The preview button...
+            wPreview.setEnabled(false);
         }
         else
         {
+            // The foreach check box... 
             wEachRow.setEnabled(false);
             wEachRow.setSelection(false);
             wlEachRow.setEnabled(false);
+            
+            // The preview button...
+            wPreview.setEnabled(true);
         }
+        
     }
 
     /**
@@ -429,7 +438,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
      */
     private void preview()
     {
-        // Create the excel reader step...
+        // Create the table input reader step...
         TableInputMeta oneMeta = new TableInputMeta();
         getInfo(oneMeta);
         

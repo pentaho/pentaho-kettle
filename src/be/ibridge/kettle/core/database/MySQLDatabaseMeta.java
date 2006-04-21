@@ -124,7 +124,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 */
 	public boolean supportsViews()
 	{
-		return false;
+		return true;
 	}
 	
 	/**
@@ -284,7 +284,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 */
 	public String getStartQuote()
 	{
-		return "";
+		return "`";
 	}
 	
 	/**
@@ -293,7 +293,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 */
 	public String getEndQuote()
 	{
-		return "_";
+		return "`";
 	}
     
     /**

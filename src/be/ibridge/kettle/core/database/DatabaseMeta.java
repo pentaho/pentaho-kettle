@@ -1327,18 +1327,30 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		return databaseInterface.getEndQuote();
 	}
 	
-	/**
-	 * Checks the field specified for reserved words and quotes them.
-	 * @param field The field to check
-	 * @return The new field with quote when needed.
-	 */
+    /**
+     * Returns a quoted field if this is needed: contains spaces, is a reserved word, ...
+     * @param field The fieldname to check for quoting
+     * @return The quoted field (if this is needed.
+     */
 	public String quoteField(String field)
 	{
-		if (isReservedWord(field) && quoteReservedWords())
+		if (isInNeedOfQuoting(field) && quoteReservedWords())
 			 return getStartQuote()+field+getEndQuote();
 		else return field;
 	}
 	
+    /**
+     * Determines whether or not this field is in need of quoting:<br> 
+     * - When the fieldname contains spaces<br>
+     * - When the fieldname is a reserved word<br>
+     * @param fieldname the fieldname to check if there is a need for quoting
+     * @return true if the fieldname needs to be quoted.
+     */
+    public boolean isInNeedOfQuoting(String fieldname)
+    {
+        return isReservedWord(fieldname) || hasSpacesInField(fieldname);
+    }
+    
 	/**
 	 * Returns true if the string specified is a reserved word on this database type.
 	 * @param word The word to check
@@ -1351,6 +1363,17 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		return false;
 	}
 
+    /**
+     * Detects if a field has spaces in the name.  We need to quote the field in that case. 
+     * @param fieldname The fieldname to check for spaces
+     * @return true if the fieldname contains spaces
+     */
+    public boolean hasSpacesInField(String fieldname)
+    {
+        if (fieldname.indexOf(" ")>=0) return true; 
+        return false;
+    }
+    
 	/**
 	 * Checks the fields specified for reserved words and quotes them.
 	 * @param fields the list of fields to check
@@ -1370,7 +1393,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		}
 		return hasReservedWords;
 	}
-
+	
 	/**
 	 * Checks the fields specified for reserved words
 	 * @param fields the list of fields to check
@@ -1632,5 +1655,18 @@ public class DatabaseMeta implements Cloneable, XMLInterface
     public boolean supportsBooleanDataType()
     {
         return databaseInterface.supportsBooleanDataType();
+    }
+
+    /**
+     * Changes the names of the fields to their quoted equivalent if this is needed
+     * @param fields The row of fields to change
+     */
+    public void quoteReservedWords(Row fields)
+    {
+        for (int i=0;i<fields.size();i++)
+        {
+            Value v = fields.getValue(i);
+            v.setName( quoteField(v.getName()) );
+        }
     }
 }

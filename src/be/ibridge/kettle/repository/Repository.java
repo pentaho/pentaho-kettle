@@ -78,6 +78,7 @@ public class Repository
 
 	private int					majorVersion;
 	private int					minorVersion;
+    private DatabaseMeta databaseMeta;
 
     /** The maximum length of a text field in a Kettle repository : 2.000.000 is enough for everyone ;-) */ 
     private static final int REP_STRING_LENGTH      = 2000000;
@@ -92,7 +93,8 @@ public class Repository
 		steploader = StepLoader.getInstance();
 		
 		database = new Database(repinfo.getConnection());
-
+		databaseMeta = database.getDatabaseMeta();
+            
 		psStepAttributesLookup = null;
 		psStepAttributesInsert = null;
 		pstmt_entry_attributes = null;
@@ -197,13 +199,11 @@ public class Repository
             {
     			try
     			{
-    				directoryTree = new RepositoryDirectory(this);
+    				refreshRepositoryDirectoryTree();
     			}
     			catch (KettleException e)
     			{
-    				log.logError(toString(), "Unable to read the directory tree from the repository!" + Const.CR
-    											+ e.getMessage());
-    				directoryTree = new RepositoryDirectory();
+    				log.logError(toString(), e.toString());
     			}
             }
             else
@@ -219,6 +219,20 @@ public class Repository
 
 		return retval;
 	}
+    
+    public void refreshRepositoryDirectoryTree() throws KettleException
+    {
+        try
+        {
+            directoryTree = new RepositoryDirectory(this);
+        }
+        catch (KettleException e)
+        {
+            directoryTree = new RepositoryDirectory();
+            throw new KettleException("Unable to read the directory tree from the repository!", e);
+        }
+
+    }
 
 	public void disconnect()
 	{
@@ -517,10 +531,8 @@ public class Repository
 	{
 		Row par = new Row();
 		par.addValue(new Value("value", value));
-		Row result = database.getOneRow("SELECT "  
-				+ database.getDatabaseMeta().quoteField(idfield) 
-				+ " FROM " + tablename + " WHERE " 
-				+ database.getDatabaseMeta().quoteField(lookupfield) + " = ?", par);
+		Row result = database.getOneRow("SELECT " + databaseMeta.quoteField(idfield) + " FROM " + databaseMeta.quoteField(tablename)+ " WHERE " + databaseMeta.quoteField(lookupfield) + " = ?", par);
+
 		if (result != null && result.getValue(0).isNumeric())
 			return result.getValue(0).getInteger();
 		return -1;
@@ -532,14 +544,10 @@ public class Repository
 		Row par = new Row();
 		par.addValue(new Value("value", value));
 		par.addValue(new Value("key", key));
-		Row result = database.getOneRow("SELECT " 
-									+ database.getDatabaseMeta().quoteField(idfield)
-									+ " FROM " + tablename + " WHERE "
-									+ database.getDatabaseMeta().quoteField(lookupfield) 
-									+ " = ? AND " 
-									+ database.getDatabaseMeta().quoteField(lookupkey) 
-									+ " = ?", par);
-		if (result != null && result.getValue(0).isNumeric())
+		Row result = database.getOneRow("SELECT " + databaseMeta.quoteField(idfield) + " FROM " + databaseMeta.quoteField(tablename) + " WHERE " + databaseMeta.quoteField( lookupfield ) + " = ? AND "
+									+ databaseMeta.quoteField(lookupkey) + " = ?", par);
+
+        if (result != null && result.getValue(0).isNumeric())
 			return result.getValue(0).getInteger();
 		return -1;
 	}
@@ -548,9 +556,8 @@ public class Repository
 			throws KettleDatabaseException
 	{
 		Row par = new Row();
-		String sql = "SELECT "  
-			+ database.getDatabaseMeta().quoteField(idfield)
-			+ " FROM " + tablename + " ";
+		String sql = "SELECT " + databaseMeta.quoteField(idfield) + " FROM " + databaseMeta.quoteField(tablename) + " ";
+
 		for (int i = 0; i < lookupkey.length; i++)
 		{
 			if (i == 0)
@@ -558,7 +565,7 @@ public class Repository
 			else
 				sql += "AND   ";
 			par.addValue(new Value(lookupkey[i], key[i]));
-			sql += database.getDatabaseMeta().quoteField(lookupkey[i]) + " = ? ";
+			sql += databaseMeta.quoteField(lookupkey[i]) + " = ? ";
 		}
 		Row result = database.getOneRow(sql, par);
 		if (result != null && result.getValue(0).isNumeric())
@@ -571,14 +578,13 @@ public class Repository
 	{
 		Row par = new Row();
 		par.addValue(new Value(lookupfield, value));
-		String sql = "SELECT " 
-			+ database.getDatabaseMeta().quoteField(idfield)
-			+ " FROM " + tablename + " WHERE "
-			+ database.getDatabaseMeta().quoteField(lookupfield) + " = ? ";
+
+		String sql = "SELECT " + databaseMeta.quoteField(idfield) + " FROM " + databaseMeta.quoteField(tablename) + " WHERE " + databaseMeta.quoteField(lookupfield) + " = ? ";
+
 		for (int i = 0; i < lookupkey.length; i++)
 		{
 			par.addValue(new Value(lookupkey[i], key[i]));
-			sql += "AND " + database.getDatabaseMeta().quoteField(lookupkey[i]) + " = ? ";
+			sql += "AND " + databaseMeta.quoteField(lookupkey[i]) + " = ? ";
 		}
 
 		Row result = database.getOneRow(sql, par);
@@ -605,9 +611,7 @@ public class Repository
 	private String getStringWithID(String tablename, String keyfield, long id, String fieldname)
 			throws KettleDatabaseException
 	{
-		String sql = "SELECT " 
-			+ database.getDatabaseMeta().quoteField(fieldname) + " FROM " + tablename + " WHERE " 
-			+ database.getDatabaseMeta().quoteField(keyfield) + " = ?";
+		String sql = "SELECT " + databaseMeta.quoteField(fieldname) + " FROM " + databaseMeta.quoteField(tablename) + " WHERE " + databaseMeta.quoteField(keyfield) + " = ?";
 		Row par = new Row();
 		par.addValue(new Value(keyfield, id));
 		Row result = database.getOneRow(sql, par);
@@ -796,8 +800,8 @@ public class Repository
 	private long getNextTableID(String tablename, String idfield) throws KettleDatabaseException
 	{
 		long retval = -1;
-		Row r = database.getOneRow("SELECT max(" 
-				+ database.getDatabaseMeta().quoteField(idfield) + ") FROM " + tablename);
+
+		Row r = database.getOneRow("SELECT MAX(" + databaseMeta.quoteField(idfield) + ") FROM " + databaseMeta.quoteField(tablename));
 		if (r != null)
 		{
 			Value id = r.getValue(0);
@@ -4589,6 +4593,7 @@ public class Repository
 	public void setDatabase(Database database)
 	{
 		this.database = database;
+        this.databaseMeta = database.getDatabaseMeta();
 	}
 
     /**

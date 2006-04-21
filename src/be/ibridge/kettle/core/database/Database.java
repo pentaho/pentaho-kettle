@@ -1268,7 +1268,7 @@ public class Database
 	{
 		String ins="";
 		
-		ins+="INSERT INTO "+tableName+"(";
+		ins+="INSERT INTO "+databaseMeta.quoteField(tableName)+"(";
 		
 		// now add the names in the row:
 		for (int i=0;i<fields.size();i++)
@@ -2981,7 +2981,7 @@ public class Database
 		String retval;
 		
 		// First, check for reserved SQL in the input row r...
-		databaseMeta.replaceReservedWords(fields);
+		databaseMeta.quoteReservedWords(fields);
 		
 		if (checkTableExists(tablename))
 		{
@@ -3048,6 +3048,9 @@ public class Database
 		// Get the fields that are in the table now:
 		Row tabFields = getTableFields(tablename);
 		
+        // Don't forget to quote these as well...
+        databaseMeta.quoteReservedWords(tabFields);
+        
 		// Find the missing fields
 		Row missing = new Row();
 		for (int i=0;i<fields.size();i++)
