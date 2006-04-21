@@ -134,6 +134,8 @@ public class SpoonGraph extends Canvas
 
     private int              shadowsize;
 
+	private Menu mPop;
+
     public SpoonGraph(Composite par, int style, LogWriter l, Spoon sp)
     {
         super(par, style);
@@ -1032,11 +1034,14 @@ public class SpoonGraph extends Canvas
     {
         final int mousex = x;
         final int mousey = y;
+        
+        // Dispose the menu if it was allocated beforehand...
+        if (mPop!=null && !mPop.isDisposed()) mPop.dispose();
 
         final StepMeta stepMeta = spoon.getTransMeta().getStep(x, y, iconsize);
         if (stepMeta != null) // We clicked on a Step!
         {
-            Menu mPop = new Menu((Control) this);
+            mPop = new Menu((Control) this);
             MenuItem miNewHop = null;
             MenuItem miHideStep = null;
 
@@ -1367,7 +1372,7 @@ public class SpoonGraph extends Canvas
             final TransHopMeta hi = findHop(x, y);
             if (hi != null) // We clicked on a HOP!
             {
-                Menu mPop = new Menu((Control) this);
+                mPop = new Menu((Control) this);
                 MenuItem miEditHop = new MenuItem(mPop, SWT.CASCADE);
                 miEditHop.setText(Messages.getString("SpoonGraph.PopupMenu.EditHop")); //$NON-NLS-1$
                 MenuItem miFlipHop = new MenuItem(mPop, SWT.CASCADE);
@@ -1499,7 +1504,7 @@ public class SpoonGraph extends Canvas
                 // No step, hop or note: clicked on the background....
                 {
                     // The popup-menu...
-                    Menu mPop = new Menu((Control) this);
+                    mPop = new Menu((Control) this);
 
                     MenuItem miNoteNew = new MenuItem(mPop, SWT.CASCADE);
                     miNoteNew.setText(Messages.getString("SpoonGraph.PopupMenu.NewNote")); //$NON-NLS-1$
