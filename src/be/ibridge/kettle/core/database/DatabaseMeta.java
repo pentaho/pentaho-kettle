@@ -1327,6 +1327,11 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		return databaseInterface.getEndQuote();
 	}
 	
+	/**
+	 * Checks the field specified for reserved words and quotes them.
+	 * @param field The field to check
+	 * @return The new field with quote when needed.
+	 */
 	public String quoteField(String field)
 	{
 		if (isReservedWord(field) && quoteReservedWords())
@@ -1365,7 +1370,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		}
 		return hasReservedWords;
 	}
-	
+
 	/**
 	 * Checks the fields specified for reserved words
 	 * @param fields the list of fields to check
