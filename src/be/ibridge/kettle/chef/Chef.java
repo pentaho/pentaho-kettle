@@ -973,7 +973,7 @@ public class Chef
 				}
 				else
 				{
-					JobEntryCopy getjge = jobMeta.findJobEntry(name, 0);
+					JobEntryCopy getjge = jobMeta.findJobEntry(name, 0, true);
 					if (getjge!=null)
 					{
 						editChefGraphEntry(getjge);
@@ -2007,7 +2007,7 @@ public class Chef
 
 	public void dupeChefGraphEntry(String name)
 	{
-		JobEntryCopy jge = jobMeta.findJobEntry(name, 0);
+		JobEntryCopy jge = jobMeta.findJobEntry(name, 0, true);
 		if (jge!=null)
 		{
 			JobEntryCopy dupejge = (JobEntryCopy)jge.clone();
