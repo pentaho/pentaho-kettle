@@ -847,11 +847,11 @@ public class TransDialog extends Dialog
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("TransDialog.OKButton.Label")); //$NON-NLS-1$
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wSQL=new Button(shell, SWT.PUSH);
-		wSQL.setText(Messages.getString("TransDialog.SQLButton.Label")); //$NON-NLS-1$
+		wSQL.setText(Messages.getString("System.Button.SQL")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("TransDialog.CancelButton.Label")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		
 		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wSQL, wCancel }, Const.MARGIN, null);
 		
