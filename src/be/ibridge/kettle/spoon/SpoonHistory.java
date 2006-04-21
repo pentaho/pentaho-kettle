@@ -189,7 +189,7 @@ public class SpoonHistory extends Composite
                 }
             }
         );
-        wFields.cursor.addKeyListener(new KeyListener()
+        wFields.table.addKeyListener(new KeyListener()
             {
                 public void keyReleased(KeyEvent e)
                 {
