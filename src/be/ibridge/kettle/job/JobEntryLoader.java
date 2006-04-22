@@ -190,6 +190,7 @@ public class JobEntryLoader
                                 }
                                 catch (Exception e)
                                 {
+                                    e.printStackTrace();
                                     System.out.println("Error reading plugin XML file: " + e.toString());
                                     return false;
                                 }
