@@ -513,8 +513,7 @@ public class RepositoryDirectory
 		{
 			String trans[]   = rep.getTransformationNames(getID());
 			String jobs[]    = rep.getJobNames(getID());
-			String schemas[] = rep.getSchemaNames(getID());
-			if (trans.length==0 && jobs.length==0 && schemas.length==0)
+			if (trans.length==0 && jobs.length==0)
 			{
 				rep.deleteDirectory(getID());
 			}

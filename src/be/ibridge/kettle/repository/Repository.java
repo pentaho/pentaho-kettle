@@ -1793,7 +1793,8 @@ public class Repository
 		int nr = getNrTransformations(id_directory);
 
 		String retval[] = new String[nr];
-		String sql = "SELECT NAME FROM R_TRANSFORMATION WHERE ID_DIRECTORY = " + id_directory + " ORDER BY NAME";
+        String nameField = databaseMeta.quoteField("NAME");
+		String sql = "SELECT "+nameField+" FROM R_TRANSFORMATION WHERE ID_DIRECTORY = " + id_directory + " ORDER BY "+nameField;
 
 		ResultSet rs = database.openQuery(sql);
 		if (rs != null)
@@ -1816,7 +1817,8 @@ public class Repository
 	{
 		int nr = getNrJobs(id_directory);
 		String retval[] = new String[nr];
-		String sql = "SELECT NAME FROM R_JOB WHERE ID_DIRECTORY = " + id_directory + " ORDER BY NAME";
+        String nameField = databaseMeta.quoteField("NAME");
+		String sql = "SELECT "+nameField+" FROM R_JOB WHERE ID_DIRECTORY = " + id_directory + " ORDER BY "+nameField;
 
 		ResultSet rs = database.openQuery(sql);
 		if (rs != null)
@@ -1832,30 +1834,6 @@ public class Repository
 			database.closeQuery(rs);
 		}
 
-		return Const.sortStrings(retval);
-	}
-
-	public String[] getSchemaNames(long id_directory) throws KettleDatabaseException
-	{
-		int nr = getNrSchemas(id_directory);
-		String retval[] = new String[nr];
-		/*
-		 String sql = "SELECT NAME FROM R_SCHEMA WHERE ID_DIRECTORY = "+id_directory+" ORDER BY NAME";
-		 
-		 ResultSet rs = db.openQuery(sql);
-		 if (rs!=null)
-		 {
-		 Row r = db.getRow(rs);
-		 int i = 0;
-		 while (r!=null)
-		 {
-		 retval[i] = r.getValue(0).getString(); 
-		 r = db.getRow(rs);
-		 i++;
-		 }
-		 db.closeQuery(rs);
-		 }
-		 */
 		return Const.sortStrings(retval);
 	}
 
@@ -1887,7 +1865,8 @@ public class Repository
 	{
 		int nr = getNrJobs();
 		String retval[] = new String[nr];
-		String sql = "SELECT NAME FROM R_JOB ORDER BY NAME";
+        String nameField = databaseMeta.quoteField("NAME");
+		String sql = "SELECT "+nameField+" FROM R_JOB ORDER BY "+nameField;
 
 		ResultSet rs = database.openQuery(sql);
 		if (rs != null)
@@ -2065,7 +2044,8 @@ public class Repository
 		int nr = getNrDatabases();
 		String retval[] = new String[nr];
 
-		String sql = "SELECT NAME FROM R_DATABASE ORDER BY NAME";
+        String nameField = databaseMeta.quoteField("NAME");
+		String sql = "SELECT "+nameField+" FROM R_DATABASE ORDER BY "+nameField;
 
 		ResultSet rs = database.openQuery(sql);
 		if (rs != null)
@@ -2224,7 +2204,8 @@ public class Repository
 		int nr = getNrUsers();
 		String retval[] = new String[nr];
 
-		String sql = "SELECT LOGIN FROM R_USER ORDER BY LOGIN";
+        String loginField = databaseMeta.quoteField("LOGIN");
+		String sql = "SELECT "+loginField+" FROM R_USER ORDER BY "+loginField;
 
 		ResultSet rs = database.openQuery(sql);
 		if (rs != null)
@@ -2336,7 +2317,8 @@ public class Repository
 		int nr = getNrProfiles();
 		String retval[] = new String[nr];
 
-		String sql = "SELECT NAME FROM R_PROFILE ORDER BY NAME";
+        String nameField = databaseMeta.quoteField("NAME");
+		String sql = "SELECT "+nameField+" FROM R_PROFILE ORDER BY "+nameField;
 
 		ResultSet rs = database.openQuery(sql);
 		if (rs != null)
@@ -2992,7 +2974,8 @@ public class Repository
 
 	public void renameTransformation(long id_transformation, String newname) throws KettleDatabaseException
 	{
-		String sql = "UPDATE R_TRANSFORMATION SET NAME = ? WHERE ID_TRANSFORMATION = ?";
+        String nameField = databaseMeta.quoteField("NAME");
+		String sql = "UPDATE R_TRANSFORMATION SET "+nameField+" = ? WHERE ID_TRANSFORMATION = ?";
 
 		Row table = new Row();
 		table.addValue(new Value("NAME", newname));
@@ -3003,7 +2986,8 @@ public class Repository
 
 	public void renameUser(long id_user, String newname) throws KettleDatabaseException
 	{
-		String sql = "UPDATE R_USER SET NAME = ? WHERE ID_USER = ?";
+        String nameField = databaseMeta.quoteField("NAME");
+		String sql = "UPDATE R_USER SET "+nameField+" = ? WHERE ID_USER = ?";
 
 		Row table = new Row();
 		table.addValue(new Value("NAME", newname));
@@ -3014,7 +2998,8 @@ public class Repository
 
 	public void renameProfile(long id_profile, String newname) throws KettleDatabaseException
 	{
-		String sql = "UPDATE R_PROFILE SET NAME = ? WHERE ID_PROFILE = ?";
+        String nameField = databaseMeta.quoteField("NAME");
+		String sql = "UPDATE R_PROFILE SET "+nameField+" = ? WHERE ID_PROFILE = ?";
 
 		Row table = new Row();
 		table.addValue(new Value("NAME", newname));
@@ -3025,7 +3010,8 @@ public class Repository
 
 	public void renameDatabase(long id_database, String newname) throws KettleDatabaseException
 	{
-		String sql = "UPDATE R_DATABASE SET NAME = ? WHERE ID_DATABASE = ?";
+        String nameField = databaseMeta.quoteField("NAME");
+		String sql = "UPDATE R_DATABASE SET "+nameField+" = ? WHERE ID_DATABASE = ?";
 
 		Row table = new Row();
 		table.addValue(new Value("NAME", newname));
@@ -3050,7 +3036,8 @@ public class Repository
 
 	public void renameJob(long id_job, String newname) throws KettleDatabaseException
 	{
-		String sql = "UPDATE R_JOB SET NAME = ? WHERE ID_JOB = ?";
+        String nameField = databaseMeta.quoteField("NAME");
+		String sql = "UPDATE R_JOB SET "+nameField+" = ? WHERE ID_JOB = ?";
 
 		Row table = new Row();
 		table.addValue(new Value("NAME", newname));

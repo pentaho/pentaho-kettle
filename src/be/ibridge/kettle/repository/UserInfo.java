@@ -119,8 +119,7 @@ public class UserInfo
 		// Verify the password:
 		if ( getID()<0 || !passwd.equals(getPassword()) )
 		{
-            System.out.println("Password: "+getPassword());
-			throw new KettleDatabaseException("Incorrect password or login!");
+            throw new KettleDatabaseException("Incorrect password or login!");
 		}
 	}
 	
