@@ -42,6 +42,8 @@ import be.ibridge.kettle.core.value.Value;
  */
 public class XMLHandler
 {
+    private static XMLHandlerCache cache = XMLHandlerCache.getInstance();
+    
 	/**
 	 * The header string to specify encoding in UTF-8 for XML files
 	 * 
@@ -374,15 +376,32 @@ public class XMLHandler
 		return null; 
 	}
 
+    /**
+     * Get a subnode in a node by nr.<br>
+     * This method uses caching and assumes you loop over subnodes in sequential order (nr is increasing by 1 each call)
+     * 
+     * @param n The node to look in
+     * @param tag The tag to count
+     * @param nr The position in the node
+     * @return The subnode found or null in case the position was invalid.
+     */
+    public static final Node getSubNodeByNr(Node n, String tag, int nr)
+    {
+        return getSubNodeByNr(n, tag, nr, true);
+    }
+    
 	/**
-	 * Get a subnode in a node by nr.
+	 * Get a subnode in a node by nr.<br>  
+     * It optially allows you to use caching.<br>
+     * Caching assumes that you loop over subnodes in sequential order (nr is increasing by 1 each call)
 	 * 
 	 * @param n The node to look in
 	 * @param tag The tag to count
 	 * @param nr The position in the node
+     * @param useCache set this to false if you don't want to use caching. For example in cases where you want to loop over subnodes of a certain tag in reverse or random order.
 	 * @return The subnode found or null in case the position was invalid.
 	 */
-	public static final Node getSubNodeByNr(Node n, String tag, int nr)
+	public static final Node getSubNodeByNr(Node n, String tag, int nr, boolean useCache)
 	{
 		NodeList children;
 		Node childnode;
@@ -392,13 +411,27 @@ public class XMLHandler
 		int count=0;
 		// Find the child-nodes of this Node n:
 		children=n.getChildNodes();
-		for (int i=0;i<children.getLength();i++)  // Try all children
+        
+        XMLHandlerCacheEntry entry = new XMLHandlerCacheEntry(n, tag);
+        int lastChildNr = cache.getLastChildNr(entry);
+        if (lastChildNr<0)
+        {
+            lastChildNr=0;
+        }
+        else
+        {
+            count=nr; // we assume we found the previous nr-1 at the lastChildNr
+            lastChildNr++; // we left off at the previouso one, so continue with the next.
+        }
+        
+		for (int i=lastChildNr;i<children.getLength();i++)  // Try all children
 		{
 			childnode=children.item(i);
 			if (childnode.getNodeName().equalsIgnoreCase(tag))  // We found the right tag
 			{
 				if (count==nr)
 				{
+                    cache.storeCache(entry, i);
 					return childnode;
 				}
 				count++;
