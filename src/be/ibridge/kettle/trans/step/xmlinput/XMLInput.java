@@ -61,6 +61,8 @@ public class XMLInput extends BaseStep implements StepInterface
 		
 		logRowlevel(Messages.getString("XMLInput.Log.ReadRow", row.toString()));
         
+        linesInput++;
+        
         putRow(row);
         
         if (meta.getRowLimit()>0 && data.rownr>=meta.getRowLimit())  // limit has been reached: stop now.
@@ -324,6 +326,8 @@ public class XMLInput extends BaseStep implements StepInterface
             
             // Open the XML document
             data.document = XMLHandler.loadXMLFile(data.filename);
+            
+            logDetailed(Messages.getString("XMLInput.Log.FileOpened", data.filename));
             
             // Position in the file...
             data.section = data.document;

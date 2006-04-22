@@ -1010,6 +1010,12 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	private void get()
 	{
+        boolean finished = false;
+        
+        EnterNumberDialog dialog = new EnterNumberDialog(shell, props, 1000, "Number of elements to scan", "Enter the number of elements to scan (0=all)");
+        int maxElements = dialog.open();
+        int elementsFound=0;
+        
         try
         {
     		XMLInputMeta meta = new XMLInputMeta();
@@ -1021,7 +1027,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
             // Keep the list of positions
             ArrayList path = new ArrayList(); // ArrayList of XMLInputFieldPosition
             
-            for (int f=0;f<meta.getFiles().length;f++)
+            for (int f=0;f<meta.getFiles().length && !finished;f++)
             {
                 // Open the file...
                 Node rootNode = XMLHandler.loadXMLFile(meta.getFiles()[f]);
@@ -1041,10 +1047,16 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
                 // Count the number of rootnodes
                 String itemElement = meta.getInputPosition()[meta.getInputPosition().length-1];
                 int nrItems = XMLHandler.countNodes(rootNode, itemElement);
-                for (int i=0;i<nrItems;i++)
+                for (int i=0;i<nrItems && !finished;i++)
                 {
                     Node itemNode = XMLHandler.getSubNodeByNr(rootNode, itemElement, i);
                     getValues(itemNode, row, path);
+                    
+                    elementsFound++;
+                    if (elementsFound>=maxElements && maxElements>0)
+                    {
+                        finished=true;
+                    }
                 }
             }
             
