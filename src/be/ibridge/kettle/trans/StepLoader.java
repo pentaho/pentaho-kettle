@@ -193,6 +193,7 @@ public class StepLoader
 		                        }
 		                        catch (Exception e)
 		                        {
+                                    e.printStackTrace();
 		                            System.out.println(Messages.getString("StepLoader.RuntimeError.UnableToReadPluginXML.TRANS0001") + e.toString()); //$NON-NLS-1$
 		                            return false;
 		                        }
