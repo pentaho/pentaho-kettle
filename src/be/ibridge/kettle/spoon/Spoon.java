@@ -48,7 +48,6 @@ import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.DeviceData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
@@ -125,7 +124,6 @@ import be.ibridge.kettle.spoon.dialog.TipsDialog;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage1;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage2;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage3;
-import be.ibridge.kettle.test.Sleak;
 import be.ibridge.kettle.trans.DatabaseImpact;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
@@ -4262,12 +4260,12 @@ public class Spoon
         for (int i=0;i<a.length;i++) args.add(a[i]);
         
         // Sleak resource debugging...
-        DeviceData data = new DeviceData();
-        data.tracking = true;
-        // Display display = new Display();
-        Display display = new Display(data);
-        Sleak sleak = new Sleak();
-        sleak.open();
+        //DeviceData data = new DeviceData();
+        //data.tracking = true;
+        Display display = new Display();
+        //Display display = new Display(data);
+        //Sleak sleak = new Sleak();
+        //sleak.open();
         
         Splash splash = new Splash(display);
         

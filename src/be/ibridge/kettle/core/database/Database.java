@@ -1089,7 +1089,7 @@ public class Database
 	 * This inserts new record into a junk dimension
 	 * TODO: fix the bug found by alex here!
 	 */
-	public void combiInsert(Row     row, 
+	public void combiInsert(   Row     row, 
 							   String  table,
 							   String  keyfield, 
 	                           boolean autoinc,
@@ -1115,12 +1115,12 @@ public class Database
 			 * ;
 			 */
 			 
-			String sql="INSERT INTO "+table+"( ";
+			String sql="INSERT INTO "+databaseMeta.quoteField(table)+"( ";
 			comma=false;
 
 			if (!autoinc) // NO AUTOINCREMENT 
 			{
-				sql+=keyfield;
+				sql+=databaseMeta.quoteField(keyfield);
 				comma=true;
 			}
 			else
@@ -1133,14 +1133,14 @@ public class Database
 			if (crc)
 			{
 				if (comma) sql+=", ";
-				sql+=crcfield;
+				sql+=databaseMeta.quoteField(crcfield);
 				comma=true;
 			}
 			
 			for (i=0;i<keylookup.length;i++)
 			{
 				if (comma) sql+=", "; 
-				sql+=keylookup[i];
+				sql+=databaseMeta.quoteField(keylookup[i]);
 				comma=true;
 			}
 			
