@@ -1080,8 +1080,8 @@ public class EnterOptionsDialog extends Dialog
 		noteFont = new Font(display, noteFontData);
 		
 		backgroundRGB = props.getBackgroundRGB();
-		if (backgroundRGB!=null) background = new Color(display, backgroundRGB);
-        else background = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+		if (backgroundRGB==null) backgroundRGB = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB();
+        background = new Color(display, backgroundRGB);
 
 		graphColorRGB = props.getGraphColorRGB();
 		graphColor = new Color(display, graphColorRGB);
