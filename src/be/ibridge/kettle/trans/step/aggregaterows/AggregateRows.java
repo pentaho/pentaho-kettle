@@ -167,14 +167,14 @@ public class AggregateRows extends BaseStep implements StepInterface
 		
 		if (linesRead==0)
 		{
-			logError("Start of aggreg.rows, row="+r.toString());
-			logError("Start of aggreg.rows, row.size()="+r.size());
+			logError(Messages.getString("AggregateRows.Log.RowInfo")+r.toString()); //$NON-NLS-1$
+			logError(Messages.getString("AggregateRows.Log.RowSize")+r.size()); //$NON-NLS-1$
 			for (int i=0;i<meta.getFieldName().length;i++) 
 			{
 				data.fieldnrs[i]=r.searchValueIndex(meta.getFieldName()[i]);
 				if (data.fieldnrs[i]<0)
 				{
-					logError("Couldn't find field '"+meta.getFieldName()[i]+"' in row!");
+					logError(Messages.getString("AggregateRows.Log.CouldNotFindField",meta.getFieldName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -185,7 +185,7 @@ public class AggregateRows extends BaseStep implements StepInterface
 		
 		AddAggregate(r);
 		
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesRead);
+		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("AggregateRows.Log.LineNumber")+linesRead); //$NON-NLS-1$
 		
 		return true;
 	}
@@ -213,12 +213,12 @@ public class AggregateRows extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("AggregateRows.Log.StartToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}	
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("AggregateRows.Log.UnexpectedErrorInfo")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}

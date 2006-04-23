@@ -92,14 +92,14 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Aggregate Rows");
+		shell.setText(Messages.getString("AggregateRowsDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("AggregateRowsDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -118,16 +118,16 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("AggregateRowsDialog.OKButton.Label")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(" &Get Fields ");
+		wGet.setText(Messages.getString("AggregateRowsDialog.GetButton.Label")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("AggregateRowsDialog.CancelButton.Label")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText("Fields :");
+		wlFields.setText(Messages.getString("AggregateRowsDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -138,9 +138,9 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[1]=new ColumnInfo("New name",   ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[2]=new ColumnInfo("Aggr Type",  ColumnInfo.COLUMN_TYPE_CCOMBO, AggregateRowsMeta.aggregateTypeDesc);
+		colinf[0]=new ColumnInfo(Messages.getString("AggregateRowsDialog.ColumnInfo.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		colinf[1]=new ColumnInfo(Messages.getString("AggregateRowsDialog.ColumnInfo.NewName"),   ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		colinf[2]=new ColumnInfo(Messages.getString("AggregateRowsDialog.ColumnInfo.AgrregateType"),  ColumnInfo.COLUMN_TYPE_CCOMBO, AggregateRowsMeta.aggregateTypeDesc); //$NON-NLS-1$
 		
 		wFields=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -212,7 +212,7 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 		for (i=0;i<input.getFieldName().length;i++)
 		{
 			TableItem ti = new TableItem(table, SWT.NONE);
-			ti.setText(0, ""+(i+1));
+			ti.setText(0, ""+(i+1)); //$NON-NLS-1$
 			if (input.getFieldName()[i]  !=null) ti.setText(1, input.getFieldName()[i]);
 			if (input.getFieldNewName()[i]!=null && !input.getFieldNewName()[i].equals(input.getFieldNewName()[i])) 
 				ti.setText(2, input.getFieldNewName()[i]);
@@ -221,7 +221,7 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 		if (table.getItemCount()==0)
 		{
 			TableItem ti = new TableItem(table, SWT.NONE);
-			ti.setText(0, "001");
+			ti.setText(0, "001"); //$NON-NLS-1$
 		}
 
 		wStepname.selectAll();
@@ -270,7 +270,7 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 				{
 					Value v = r.getValue(i);
 					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(0, ""+(count+i+1));
+					ti.setText(0, ""+(count+i+1)); //$NON-NLS-1$
 					ti.setText(1, v.getName());
 					ti.setText(2, v.getName());
 				}
@@ -282,14 +282,14 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 			{
 				MessageBox mb;
 				mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-				mb.setMessage("Couldn't retrieve fields from previous step."+Const.CR+"Please connect the step to another one first.");
-				mb.setText("SORRY");
+				mb.setMessage(Messages.getString("AggregateRowsDialog.CouldNotRetrieveFields.DialogMessage",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+				mb.setText(Messages.getString("AggregateRowsDialog.CouldNotRetrieveFields.DialogTitle")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("AggregateRowsDialog.GetFieldsFailed.DialogTitle"), Messages.getString("AggregateRowsDialog.GetFieldsFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
