@@ -87,6 +87,7 @@ import be.ibridge.kettle.core.SourceToTargetMapping;
 import be.ibridge.kettle.core.TransAction;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.XMLHandlerCache;
 import be.ibridge.kettle.core.clipboard.ImageDataTransfer;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
@@ -445,6 +446,8 @@ public class Spoon
         impact  = new ArrayList();
         impactHasRun = false;
         transMeta.clear();
+        XMLHandlerCache.getInstance().clear();
+        
         setUndoMenu();
     }
     
