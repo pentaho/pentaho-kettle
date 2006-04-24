@@ -1415,6 +1415,7 @@ public class Chef
 
                     refreshGraph();
                     refreshTree(true);
+                    setUndoMenu();
                 }
             }
             else // Read a job from the repository!
@@ -1435,6 +1436,7 @@ public class Chef
                     }
                     refreshGraph();
                     refreshTree(true);
+                    setUndoMenu();
                 }
             }
         }
@@ -1455,6 +1457,7 @@ public class Chef
 			setFilename(null);
 			refreshTree();
 			refreshGraph();
+            setUndoMenu();
 		}
 	}
 	
