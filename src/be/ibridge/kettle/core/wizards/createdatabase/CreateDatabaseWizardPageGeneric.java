@@ -33,7 +33,6 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.database.GenericDatabaseMeta;
-import be.ibridge.kettle.core.database.SAPR3DatabaseMeta;
 
 
 /**
