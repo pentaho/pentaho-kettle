@@ -2103,7 +2103,7 @@ public class Repository
 					long id_directory = transRow.getInteger("ID_DIRECTORY", -1L);
 					RepositoryDirectory dir = directoryTree.findDirectory(id_directory);
 					
-					transList[i]=dir.getPath()+Const.FILE_SEPARATOR+transName;
+					transList[i]=dir.getPath()+RepositoryDirectory.DIRECTORY_SEPARATOR+transName;
 				}
 			}
 			
