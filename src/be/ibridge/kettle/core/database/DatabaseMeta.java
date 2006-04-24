@@ -1334,10 +1334,34 @@ public class DatabaseMeta implements Cloneable, XMLInterface
      */
 	public String quoteField(String field)
 	{
-		if (isInNeedOfQuoting(field) && quoteReservedWords())
-			 return getStartQuote()+field+getEndQuote();
-		else return field;
+		if (isReservedWord(field) && quoteReservedWords())
+        {
+            return handleCase(getStartQuote()+field+getEndQuote());            
+        }
+        else
+        {
+            if (hasSpacesInField(field))
+            {
+                return getStartQuote()+field+getEndQuote();
+            }
+            else
+            {
+                return field;
+            }
+        }
 	}
+    
+    private String handleCase(String field)
+    {
+        if (databaseInterface.isDefaultingToUppercase()) 
+        {
+            return field.toUpperCase();
+        }
+        else
+        {
+            return field.toLowerCase();
+        }
+    }
 	
     /**
      * Determines whether or not this field is in need of quoting:<br> 

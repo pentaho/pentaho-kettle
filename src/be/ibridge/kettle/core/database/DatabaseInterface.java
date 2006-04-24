@@ -517,4 +517,10 @@ public interface DatabaseInterface extends Cloneable
      * @return true if the database supports a boolean, bit, logical, ... datatype
      */
     public boolean supportsBooleanDataType();
+    
+    /**
+     * @return true if the database defaults to naming tables and fields in uppercase.
+     * True for most databases except for stuborn stuff like Postgres ;-)
+     */
+    public boolean isDefaultingToUppercase();
 }
