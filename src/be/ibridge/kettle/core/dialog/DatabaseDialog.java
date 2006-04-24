@@ -48,6 +48,7 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.database.GenericDatabaseMeta;
+import be.ibridge.kettle.core.database.SAPR3DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
@@ -754,9 +755,9 @@ public class DatabaseDialog extends Dialog
 		wData.setText( NVL(connection.getDataTablespace(), "") );
 		wIndex.setText( NVL(connection.getIndexTablespace(), "") );
         
-        wSAPLanguage.setText( connection.getAttributes().getProperty("SAPLanguage", ""));
-        wSAPSystemNumber.setText( connection.getAttributes().getProperty("SAPSystemNumber", ""));
-        wSAPClient.setText( connection.getAttributes().getProperty("SAPClient", ""));
+        wSAPLanguage.setText( connection.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, ""));
+        wSAPSystemNumber.setText( connection.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, ""));
+        wSAPClient.setText( connection.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT, ""));
 
         wURL.setText(         connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL, ""));
         wDriverClass.setText( connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, ""));
@@ -901,9 +902,9 @@ public class DatabaseDialog extends Dialog
 		info.setIndexTablespace( wIndex.getText() );
 		
         // SAP Attributes...
-        info.getAttributes().put("SAPLanguage",     wSAPLanguage.getText());
-        info.getAttributes().put("SAPSystemNumber", wSAPSystemNumber.getText());
-        info.getAttributes().put("SAPClient",       wSAPClient.getText());
+        info.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE,     wSAPLanguage.getText());
+        info.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, wSAPSystemNumber.getText());
+        info.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT,       wSAPClient.getText());
 
         // Generic settings...
         info.getAttributes().put(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL,          wURL.getText());
