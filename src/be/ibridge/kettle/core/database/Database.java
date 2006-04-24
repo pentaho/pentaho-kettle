@@ -2310,20 +2310,9 @@ public class Database
                     precision=rm.getScale(i);
  					break;
 				}
+                // TODO: grab the comment as a description to the field, later
 				// comment=rm.getColumnLabel(i);
                 
-                // TODO: change this hack!
-                /*
-                if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ACCESS)
-                {
-                    if (valtype==Value.VALUE_TYPE_INTEGER)
-                    {
-                        valtype=Value.VALUE_TYPE_NUMBER;
-                        length = -1;
-                        precision     = -1;
-                    }
-                }
-                */
                 
 				v=new Value(name, valtype);
 				v.setLength(length, precision);
