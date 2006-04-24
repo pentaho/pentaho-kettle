@@ -1656,10 +1656,9 @@ public class Spoon
         int pos = transMeta.indexOfDatabase(db);                
         if (db!=null)
         {
-            addUndoDelete(new DatabaseMeta[] { (DatabaseMeta)db.clone() }, new int[] { pos });
-            transMeta.removeDatabase(pos);
-
-            // Also delete from repository?
+            boolean worked=false;
+            
+            // delete from repository?
             if (rep!=null)
             {
                 if (!rep.getUserInfo().isReadonly())
@@ -1668,6 +1667,8 @@ public class Spoon
                     {
                         long id_database = rep.getDatabaseID(db.getName());
                         rep.delDatabase(id_database);
+            
+                        worked=true;
                     }
                     catch(KettleDatabaseException dbe)
                     {
@@ -1679,6 +1680,12 @@ public class Spoon
                 {
                     new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Title"),Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Message",name) , new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyUser")));//"Error deleting connection ["+db+"] from repository!" //This user is read-only!
                 }
+            }
+
+            if (rep==null || worked)
+            {
+                addUndoDelete(new DatabaseMeta[] { (DatabaseMeta)db.clone() }, new int[] { pos });
+                transMeta.removeDatabase(pos);
             }
 
             refreshTree();
