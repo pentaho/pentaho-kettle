@@ -2267,7 +2267,21 @@ public class Database
                     precision=rm.getScale(i);
 					if (length    >=126) length=-1;
 					if (precision >=126) precision=-1;
-					if (precision==0 && length<18 && length>0)  valtype=Value.VALUE_TYPE_INTEGER;
+                    
+                    if (type==java.sql.Types.DOUBLE || type==java.sql.Types.FLOAT || type==java.sql.Types.REAL)
+                    {
+                        if (precision==0) 
+                        {
+                            precision=-1; // precision is obviously incorrect if the type if Double/Float/Real
+                        }
+                    }
+                    else
+                    {
+                        if (precision==0 && length<18 && length>0)  // Among others Oracle is affected here.  
+                        {
+                            valtype=Value.VALUE_TYPE_INTEGER;
+                        }
+                    }
                     if (length>18 || precision>18) valtype=Value.VALUE_TYPE_BIGNUMBER;
 					if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE)
 					{
@@ -2299,6 +2313,7 @@ public class Database
 				// comment=rm.getColumnLabel(i);
                 
                 // TODO: change this hack!
+                /*
                 if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ACCESS)
                 {
                     if (valtype==Value.VALUE_TYPE_INTEGER)
@@ -2308,6 +2323,7 @@ public class Database
                         precision     = -1;
                     }
                 }
+                */
                 
 				v=new Value(name, valtype);
 				v.setLength(length, precision);
