@@ -102,4 +102,14 @@ public class XMLHandlerCache
    {
        this.cacheHits = cacheHits;
    }
+   
+   /**
+    * Clears the cache
+    *
+    */
+   public synchronized void clear()
+   {
+       this.hashtable.clear();
+       this.list.clear();
+   }
 }
