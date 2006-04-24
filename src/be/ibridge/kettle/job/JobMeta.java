@@ -141,7 +141,7 @@ public class JobMeta implements Cloneable, XMLInterface
 
 		undo = new ArrayList();
 		undo_position=-1;
-		
+        
 		addDefaults();
 		setChanged(false);
 
@@ -1548,32 +1548,6 @@ public class JobMeta implements Cloneable, XMLInterface
 		return null;
 	}
 
-    /**
-     * TODO: finish this method...
-     * 
-     
-	public void getSQL()
-	{
-		ArrayList stats = new ArrayList();
-		
-		for (int i=0;i<nrJobEntries();i++)
-		{
-			JobEntryCopy jec = getJobEntry(i);
-			if (jec.getType() == JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION)
-			{
-				JobEntryTrans jet = (JobEntryTrans)jec.getEntry();
-				String transname = jet.getTransname();
-				String directory = jet.getDirectory().getPath();
-                
-			}
-			else
-			if (jec.getType() == JobEntryInterface.TYPE_JOBENTRY_JOB)
-			{
-				
-			}
-		}
-	}
-    */
 
 	public String toString()
 	{
