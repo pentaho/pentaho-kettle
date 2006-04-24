@@ -11,6 +11,10 @@ import be.ibridge.kettle.core.value.Value;
  */
 public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
+    public static final String ATTRIBUTE_SAP_LANGUAGE = "SAPLanguage";
+    public static final String ATTRIBUTE_SAP_SYSTEM_NUMBER = "SAPSystemNumber";
+    public static final String ATTRIBUTE_SAP_CLIENT = "SAPClient";
+    
 	/**
 	 * Construct a new database connection.
 	 * 
