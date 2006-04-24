@@ -422,5 +422,14 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
     {
         return null; // commit unlocks everything!
     }
+    
+    /**
+     * @return true if the database defaults to naming tables and fields in uppercase.
+     * True for most databases except for stuborn stuff like Postgres ;-)
+     */
+    public boolean isDefaultingToUppercase()
+    {
+        return false;
+    }
 
 }
