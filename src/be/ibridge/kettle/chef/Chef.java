@@ -123,7 +123,6 @@ import be.ibridge.kettle.repository.dialog.RepositoriesDialog;
 import be.ibridge.kettle.repository.dialog.RepositoryExplorerDialog;
 import be.ibridge.kettle.repository.dialog.SelectObjectDialog;
 import be.ibridge.kettle.repository.dialog.UserDialog;
-import be.ibridge.kettle.spoon.Messages;
 import be.ibridge.kettle.spoon.dialog.GetJobSQLProgressDialog;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.TransHopMeta;
@@ -728,8 +727,8 @@ public class Chef
             else
             {
                 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-                mb.setMessage(Messages.getString("Message.MessageBox.NoSQLNeedEexecuted"));//As far as I can tell, no SQL statements need to be executed before this transformation can run.
-                mb.setText(Messages.getString("Message.MessageBox.SQL"));//"SQL"
+                mb.setMessage("As far as I can tell, no SQL statements need to be executed before this job can run.");
+                mb.setText("SQL");
                 mb.open();
             }
         }
@@ -1114,40 +1113,53 @@ public class Chef
 		}
 	}
 
-	public void delConnection(String name)
-	{
-		DatabaseMeta db = jobMeta.findDatabase(name);
-		int pos = jobMeta.indexOfDatabase(db);
-		if (db!=null)
-		{
-			addUndoDelete(new DatabaseMeta[] { (DatabaseMeta)db.clone() }, new int[] { pos });
-			jobMeta.removeDatabase(pos);
-			
-			// Also add to repository?
-			if (rep!=null)
-			{
-				if (!rep.getUserInfo().isReadonly())
-				{
-					try
-					{
-						long id_database = rep.getDatabaseID(db.getName());
-						rep.delDatabase(id_database);
-					}
-					catch(KettleDatabaseException dbe)
-					{
-						new ErrorDialog(shell, props, "Can't delete", "Error deleting connection ["+db+"] from repository :"+dbe.getMessage());
-					}
-				}
-				else
-				{
-					new ErrorDialog(shell, props, "Can't delete", "Error deleting connection ["+db+"] from repository: user is read-only!");
-				}
-			}
-			
-			refreshTree();
-		}
-		setShellText();
-	}
+       /**
+     * Delete a database connection
+     * @param name The name of the database connection.
+     */
+    public void delConnection(String name)
+    {
+        DatabaseMeta db = jobMeta.findDatabase(name);
+        int pos = jobMeta.indexOfDatabase(db);                
+        if (db!=null)
+        {
+            boolean worked=false;
+            
+            // delete from repository?
+            if (rep!=null)
+            {
+                if (!rep.getUserInfo().isReadonly())
+                {
+                    try
+                    {
+                        long id_database = rep.getDatabaseID(db.getName());
+                        rep.delDatabase(id_database);
+            
+                        worked=true;
+                    }
+                    catch(KettleDatabaseException dbe)
+                    {
+                        
+                        new ErrorDialog(shell, props, "ERROR", "Error deleting connection ["+db+"] from repository!", dbe);
+                    }
+                }
+                else
+                {
+                    new ErrorDialog(shell, props, "This user is read-only!",  "Error deleting connection ["+db+"] from repository!");
+                }
+            }
+
+            if (rep==null || worked)
+            {
+                addUndoDelete(new DatabaseMeta[] { (DatabaseMeta)db.clone() }, new int[] { pos });
+                jobMeta.removeDatabase(pos);
+            }
+
+            refreshTree();
+        }
+        setShellText();
+    }
+
 		
 	public void newJobHop(JobEntryCopy fr, JobEntryCopy to)
 	{
