@@ -139,4 +139,5 @@ public class CreateDatabaseWizardPageInformix extends WizardPage
 		IWizard wiz = getWizard();
 		return wiz.getPage("2");
 	}
+	
 }

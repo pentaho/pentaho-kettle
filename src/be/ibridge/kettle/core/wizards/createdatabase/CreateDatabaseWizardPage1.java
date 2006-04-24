@@ -280,12 +280,20 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		case DatabaseMeta.TYPE_ACCESS_ODBC:
 			nextPage = wiz.getPage("odbc");; // ODBC
 			break;
-		default: // Native 
-			nextPage = wiz.getPage("jdbc");
-			if (nextPage!=null) 
-			{
-				// Set the port number...
-				((CreateDatabaseWizardPageJDBC)nextPage).setData();
+		case DatabaseMeta.TYPE_ACCESS_PLUGIN:
+			nextPage = wiz.getPage(info.getDatabaseTypeDesc());; // e.g. SAPR3
+			break;		
+		default: // Generic or Native
+			if(info.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_GENERIC)
+			{	// Generic
+				nextPage = wiz.getPage("generic");; // generic
+			} else { // Native
+				nextPage = wiz.getPage("jdbc");
+				if (nextPage!=null) 
+				{
+					// Set the port number...
+					((CreateDatabaseWizardPageJDBC)nextPage).setData();
+				}
 			}
 			break;
 		}

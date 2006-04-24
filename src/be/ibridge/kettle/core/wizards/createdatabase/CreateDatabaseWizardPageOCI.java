@@ -16,9 +16,12 @@
 
 package be.ibridge.kettle.core.wizards.createdatabase;
 
+import org.eclipse.jface.wizard.IWizard;
 import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -86,6 +89,13 @@ public class CreateDatabaseWizardPageOCI extends WizardPage
 		fdTNS.left    = new FormAttachment(middle, margin);
 		fdTNS.right   = new FormAttachment(100, 0);
 		wTNS.setLayoutData(fdTNS);
+		wTNS.addModifyListener(new ModifyListener()
+				{
+					public void modifyText(ModifyEvent arg0)
+					{
+						setPageComplete(false);
+					}
+				});					
 		
 		// set the composite as the control for this page
 		setControl(composite);
@@ -126,20 +136,7 @@ public class CreateDatabaseWizardPageOCI extends WizardPage
 	 */
 	public IWizardPage getNextPage()
 	{
-		IWizardPage nextPage;
-		switch(info.getDatabaseType())
-		{
-		case DatabaseMeta.TYPE_DATABASE_ORACLE:
-			nextPage = null; // Oracle
-			break;
-		case DatabaseMeta.TYPE_DATABASE_INFORMIX:
-			nextPage = null; // Informix
-			break;
-		default: 
-			nextPage = null; // page 2
-			break;
-		}
-		
-		return nextPage;
+		IWizard wiz = getWizard();
+		return wiz.getPage("2");
 	}
 }

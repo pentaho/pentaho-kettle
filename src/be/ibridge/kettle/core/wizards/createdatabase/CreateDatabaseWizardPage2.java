@@ -147,7 +147,6 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 				test();
 			}
 		});
-		
 
 		// set the composite as the control for this page
 		setControl(composite);
@@ -176,6 +175,8 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 			info.setPassword(wPassword.getText());
 		}
 
+		wTest.setEnabled( info.getDatabaseType() != DatabaseMeta.TYPE_DATABASE_SAPR3 );
+		
 		return info;
 	}
 

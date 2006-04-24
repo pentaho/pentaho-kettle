@@ -64,7 +64,13 @@ public class CreateDatabaseWizard {
         pageodbc.createControl(shell);
         
         final CreateDatabaseWizardPageOracle pageoracle = new CreateDatabaseWizardPageOracle("oracle", props, newDBInfo);
-
+        
+        final CreateDatabaseWizardPageSAPR3 pageSAPR3 = new CreateDatabaseWizardPageSAPR3("SAPR3", props, newDBInfo);
+        pageSAPR3.createControl(shell);
+        
+        final CreateDatabaseWizardPageGeneric pageGeneric = new CreateDatabaseWizardPageGeneric("generic", props, newDBInfo);
+        pageGeneric.createControl(shell);
+        
         final CreateDatabaseWizardPage2 page2 = new CreateDatabaseWizardPage2("2", props, newDBInfo);
         page2.createControl(shell);
 
@@ -96,6 +102,8 @@ public class CreateDatabaseWizard {
         wizard.addPage(pagejdbc);
         wizard.addPage(pageoracle);
         wizard.addPage(pageifx);
+        wizard.addPage(pageSAPR3);
+        wizard.addPage(pageGeneric);
         wizard.addPage(page2);
                 
         WizardDialog wd = new WizardDialog(shell, wizard);

@@ -238,4 +238,5 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 		
 		return nextPage;
 	}
+	
 }
