@@ -88,14 +88,14 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Cube file input");
+		shell.setText(Messages.getString("CubeInputDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("CubeInputDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -114,7 +114,7 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Filename line
 		wlFilename=new Label(shell, SWT.RIGHT);
-		wlFilename.setText("Filename ");
+		wlFilename.setText(Messages.getString("CubeInputDialog.Filename.Label")); //$NON-NLS-1$
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -123,7 +123,7 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
 		wlFilename.setLayoutData(fdlFilename);
 		wbFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbFilename);
-		wbFilename.setText("&Browse...");
+		wbFilename.setText(Messages.getString("CubeInputDialog.FilenameButton.Label")); //$NON-NLS-1$
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
 		fdbFilename.top  = new FormAttachment(wStepname, margin+5);
@@ -140,7 +140,7 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Limit input ...
 		wlLimit=new Label(shell, SWT.RIGHT);
-		wlLimit.setText("Limit size ");
+		wlLimit.setText(Messages.getString("CubeInputDialog.Limit.Label")); //$NON-NLS-1$
  		props.setLook(wlLimit);
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
@@ -158,9 +158,9 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("CubeInputDialog.OKButton.Label")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("CubeInputDialog.CancelButton.Label")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wLimit);
 
@@ -178,15 +178,15 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
 				public void widgetSelected(SelectionEvent e) 
 				{
 					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-					dialog.setFilterExtensions(new String[] {"*.cube", "*"});
+					dialog.setFilterExtensions(new String[] {"*.cube", "*"}); //$NON-NLS-1$ //$NON-NLS-2$
 					if (wFilename.getText()!=null)
 					{
 						dialog.setFileName(wFilename.getText());
 					}
-					dialog.setFilterNames(new String[] {"Cube files", "All files"});
+					dialog.setFilterNames(new String[] {Messages.getString("CubeInputDialog.FilterNames.CubeFiles"), Messages.getString("CubeInputDialog.FilterNames.AllFiles")}); //$NON-NLS-1$ //$NON-NLS-2$
 					if (dialog.open()!=null)
 					{
-						wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
+						wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName()); //$NON-NLS-1$
 					}
 				}
 			}
@@ -221,7 +221,7 @@ public class CubeInputDialog extends BaseStepDialog implements StepDialogInterfa
 	public void getData()
 	{
 		if (input.getFilename() != null) wFilename.setText(input.getFilename());
-		wLimit.setText(""+(int)input.getRowLimit());
+		wLimit.setText(""+(int)input.getRowLimit()); //$NON-NLS-1$
 
 		wStepname.selectAll();
 	}

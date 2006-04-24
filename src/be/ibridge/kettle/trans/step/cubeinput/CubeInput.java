@@ -76,7 +76,7 @@ public class CubeInput extends BaseStep implements StepInterface
 			return false;
 		}
 
-		if ((linesInput>0) && (linesInput%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesInput);
+		if ((linesInput>0) && (linesInput%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("CubeInput.Log.LineNumber")+linesInput); //$NON-NLS-1$
 
 		return true;
 	}
@@ -101,13 +101,13 @@ public class CubeInput extends BaseStep implements StepInterface
 				}
 				catch(KettleFileException kfe)
 				{
-					logError("INIT: Unable to read metadata from cube file: "+kfe.getMessage());
+					logError(Messages.getString("CubeInput.Log.UnableToReadMetadata")+kfe.getMessage()); //$NON-NLS-1$
 					return false;
 				}
 			}
 			catch(IOException e)
 			{
-				logError("Error reading from data cube : "+e.toString());
+				logError(Messages.getString("CubeInput.Log.ErrorReadingFromDataCube")+e.toString()); //$NON-NLS-1$
 			}
 		}
 		return false;
@@ -125,7 +125,7 @@ public class CubeInput extends BaseStep implements StepInterface
 		}
 		catch(IOException e)
 		{
-			logError("Error closing cube input file: "+e.toString());
+			logError(Messages.getString("CubeInput.Log.ErrorClosingCube")+e.toString()); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 		}
@@ -141,12 +141,12 @@ public class CubeInput extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("CubeInput.Log.StartingToRun")); //$NON-NLS-1$
 			while (!isStopped() && processRow(meta, data) );
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("CubeInput.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}

@@ -110,18 +110,18 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			filename  = XMLHandler.getTagValue(stepnode, "file", "name");
-			rowLimit  = Const.toInt( XMLHandler.getTagValue(stepnode, "limit"), 0);
+			filename  = XMLHandler.getTagValue(stepnode, "file", "name"); //$NON-NLS-1$ //$NON-NLS-2$
+			rowLimit  = Const.toInt( XMLHandler.getTagValue(stepnode, "limit"), 0); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to load step info from XML", e);
+			throw new KettleXMLException(Messages.getString("CubeInputMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
 	public void setDefault()
 	{
-		filename = "";
+		filename = ""; //$NON-NLS-1$
 		rowLimit   = 0;
 	}
 	
@@ -153,11 +153,11 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(KettleFileException kfe)
 		{
-			throw new KettleStepException("Unable to read metadata from cube file", kfe);
+			throw new KettleStepException(Messages.getString("CubeInputMeta.Exception.UnableToReadMetaData"), kfe); //$NON-NLS-1$
 		}
 		catch(IOException e)
 		{
-			throw new KettleStepException("Error opening/reading cube file", e);
+			throw new KettleStepException(Messages.getString("CubeInputMeta.Exception.ErrorOpeningOrReadingCubeFile"), e); //$NON-NLS-1$
 		}
 		finally
 		{
@@ -168,7 +168,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			catch(IOException ioe)
 			{
-				throw new KettleStepException("Unable to close cube file", ioe);
+				throw new KettleStepException(Messages.getString("CubeInputMeta.Exception.UnableToCloseCubeFile"), ioe); //$NON-NLS-1$
 			}
 		}
 		
@@ -184,10 +184,10 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("    <file>"+Const.CR);
-		retval.append("      "+XMLHandler.addTagValue("name", filename));
-		retval.append("      </file>"+Const.CR);
-		retval.append("    "+XMLHandler.addTagValue("limit",    rowLimit));
+		retval.append("    <file>"+Const.CR); //$NON-NLS-1$
+		retval.append("      "+XMLHandler.addTagValue("name", filename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      </file>"+Const.CR); //$NON-NLS-1$
+		retval.append("    "+XMLHandler.addTagValue("limit",    rowLimit)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		return retval.toString();
 	}
@@ -197,12 +197,12 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			filename         =      rep.getStepAttributeString (id_step, "file_name");
-			rowLimit         = (int)rep.getStepAttributeInteger(id_step, "limit");
+			filename         =      rep.getStepAttributeString (id_step, "file_name"); //$NON-NLS-1$
+			rowLimit         = (int)rep.getStepAttributeInteger(id_step, "limit"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unexpected error reading step information from the repository", e);
+			throw new KettleException(Messages.getString("CubeInputMeta.Exception.UnexpectedErrorWhileReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -211,12 +211,12 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "file_name",   filename);
-			rep.saveStepAttribute(id_transformation, id_step, "limit",       rowLimit);
+			rep.saveStepAttribute(id_transformation, id_step, "file_name",   filename); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "limit",       rowLimit); //$NON-NLS-1$
 		}
 		catch(KettleException e)
 		{
-			throw new KettleException("Unable to save step information for id_step="+id_step, e);
+			throw new KettleException(Messages.getString("CubeInputMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -224,7 +224,7 @@ public class CubeInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		CheckResult cr;
 		
-		cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, "File specifications are not checked.", stepinfo);
+		cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, Messages.getString("CubeInputMeta.CheckResult.FileSpecificationsNotChecked"), stepinfo); //$NON-NLS-1$
 		remarks.add(cr);
 	}
 	
