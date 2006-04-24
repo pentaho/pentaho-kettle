@@ -17,6 +17,7 @@
 package be.ibridge.kettle.trans.step.xmlinput;
 
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
@@ -277,6 +278,11 @@ public class XMLInput extends BaseStep implements StepInterface
         
         data.previousRow = new Row(row); // copy it to make sure the next step doesn't change it in between... 
         data.rownr++;
+        
+        // Throw away the information in the item?
+        NodeList nodeList = itemNode.getChildNodes();
+        for (int i=0;i<nodeList.getLength();i++) itemNode.removeChild(nodeList.item(i));
+        
         
         debug="end of getRowFromXML()";
         return row;
