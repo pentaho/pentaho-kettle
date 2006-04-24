@@ -1021,9 +1021,15 @@ public class Chef
 			log.logDebug(toString(), "(DELETE) Trying to delete #"+i+"/"+(ti.length-1)+" : "+name[i]);
 			if (parent[i] != null)
 			{
-				deleteChefGraphEntry(name[i]);
-				//String type = parent[i].getText();
-				//log.logBasic(toString(), "Delete JobEntry ["+name[i]+"] of type ["+parent[i].getText()+"]");
+                String type = parent[i].getText();
+                if (type.equalsIgnoreCase(STRING_CONNECTIONS))
+                {
+                    delConnection(name[i]);
+                }
+                if (type.equalsIgnoreCase(STRING_JOBENTRIES))
+                {
+                    deleteChefGraphEntry(name[i]);
+                }
 			} 
 		}
 	}
