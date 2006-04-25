@@ -166,14 +166,16 @@ public class ScriptValues extends BaseStep implements StepInterface
 		}
 		catch(JavaScriptException jse)
 		{
-			logError("Javascript error: "+jse.toString());
-			setErrors(1);
+            logError("Javascript error: "+jse.toString());
+            logError("Error stack trace: "+Const.CR+Const.getStackTracker(jse));
+            setErrors(1);
 			stopAll();
 			return false;
 		}
 		catch(Exception e)
 		{
 			logError("Javascript error: "+e.toString());
+            logError("Error stack trace: "+Const.CR+Const.getStackTracker(e));
 			setErrors(1);
 			stopAll();
 			return false;
@@ -238,6 +240,7 @@ public class ScriptValues extends BaseStep implements StepInterface
 		catch(Exception e)
 		{
 			logError("Unexpected error in '"+debug+"' : "+e.toString());
+            logError("Error stack trace: "+Const.CR+Const.getStackTracker(e));
 			setErrors(1);
 			stopAll();
 		}
