@@ -188,7 +188,7 @@ public class StepLoader
 		                            {
 		                                int idx = pluginList.indexOf(sp);
 			                            pluginList.set(idx, sp);
-		                                System.out.println(Messages.getString("StepLoader.Log.ReplaceExistingPlugid")+id); //$NON-NLS-1$
+		                                // System.out.println(Messages.getString("StepLoader.Log.ReplaceExistingPlugid")+id); //$NON-NLS-1$
 		                            }
 		                        }
 		                        catch (Exception e)

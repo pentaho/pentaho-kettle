@@ -185,7 +185,7 @@ public class JobEntryLoader
                                     {
                                         int idx = pluginList.indexOf(sp);
                                         pluginList.set(idx, sp);
-                                        System.out.println("Replaced existing plugin with ID : "+id);
+                                        // System.out.println("Replaced existing plugin with ID : "+id);
                                     }
                                 }
                                 catch (Exception e)
