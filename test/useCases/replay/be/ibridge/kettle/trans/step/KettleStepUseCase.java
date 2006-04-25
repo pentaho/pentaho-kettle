@@ -66,6 +66,7 @@ public abstract class KettleStepUseCase extends TestCase {
 	public void expectFiles(String directory, int expected) {
 		String[] files = new File(directory).list(new FilenameFilter() {
 			public boolean accept(File dir, String name) {
+                System.out.println("dir: ["+dir.getPath()+"] Name : "+name);
 				return !(name.endsWith(".svn"));
 			}
 		});
