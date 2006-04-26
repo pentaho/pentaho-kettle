@@ -36,5 +36,6 @@
 	<classpathentry output="testClasses" kind="src" path="test/useCases/replay"/>
 	<classpathentry kind="lib" path="test/libext/junit.jar"/>
 	<classpathentry kind="lib" path="libext/postgresql-8.1-405.jdbc3.jar"/>
+	<classpathentry kind="src" path="test/useCases/normal"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
