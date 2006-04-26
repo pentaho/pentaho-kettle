@@ -107,7 +107,6 @@ import be.ibridge.kettle.job.JobPlugin;
 import be.ibridge.kettle.job.dialog.JobDialog;
 import be.ibridge.kettle.job.dialog.JobLoadProgressDialog;
 import be.ibridge.kettle.job.dialog.JobSaveProgressDialog;
-import be.ibridge.kettle.job.entry.JobEntryBase;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
@@ -1900,11 +1899,14 @@ public class Chef
 
 	public JobEntryCopy newChefGraphEntry(String type_desc)
 	{
+        JobEntryLoader jobLoader = JobEntryLoader.getInstance();
+        JobPlugin jobPlugin = null; 
+        
 		try
 		{
-			int type = JobEntryBase.getType(type_desc);
-			
-			if (type!=JobEntryInterface.TYPE_JOBENTRY_NONE)
+            jobPlugin = jobLoader.findJobEntriesWithDescription(type_desc);
+
+			if (jobPlugin!=null)
 			{
 				// System.out.println("new job entry of type: "+type+" ["+type_desc+"]");
 				
@@ -1914,10 +1916,10 @@ public class Chef
 				String entry_name = basename+" "+nr;
 				
 				// Generate the appropriate class...
-				JobEntryInterface jei = JobEntryBase.newJobEntryInterface(type);
+                JobEntryInterface jei = jobLoader.getJobEntryClass(jobPlugin); 
 				jei.setName(entry_name);
 		
-				JobEntryDialogInterface d = JobEntryBase.newJobEntryDialog(shell, jei, rep, jobMeta);               
+                JobEntryDialogInterface d = jei.getDialog(shell,jei,jobMeta,entry_name,rep);
 				if (d.open()!=null)
 				{
 					JobEntryCopy jge = new JobEntryCopy(log);
@@ -1958,7 +1960,7 @@ public class Chef
     		
     		JobEntryInterface jei = je.getEntry();
     		
-    		JobEntryDialogInterface d = JobEntryBase.newJobEntryDialog(shell, jei, rep, jobMeta);
+    		JobEntryDialogInterface d = jei.getDialog(shell,jei,jobMeta,je.getName(),rep); 
     		if (d!=null)
     		{
     			if (d.open()!=null)
@@ -1982,7 +1984,7 @@ public class Chef
     		}
 
         }
-        catch(KettleException e)
+        catch(Exception e)
         {
             new ErrorDialog(shell, props, "Error editing job entry", "Error editing job entry", e);
         }
