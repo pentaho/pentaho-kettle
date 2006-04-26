@@ -18,12 +18,14 @@ import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -56,6 +58,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	
 	public  String  arguments[];
 	public  boolean argFromPrevious;
+    public  boolean execPerRow;
 
 	public  boolean setLogfile;
 	public  String  logfile, logext;
@@ -155,6 +158,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             retval.append("      "+XMLHandler.addTagValue("directory",         directoryPath)); // don't loose this info (backup/recovery)
         }
 		retval.append("      "+XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
+        retval.append("      "+XMLHandler.addTagValue("exec_per_row",      execPerRow));
 		retval.append("      "+XMLHandler.addTagValue("set_logfile",       setLogfile));
 		retval.append("      "+XMLHandler.addTagValue("logfile",           logfile));
 		retval.append("      "+XMLHandler.addTagValue("logext",            logext));
@@ -186,13 +190,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             // directory = rep.getDirectoryTree().findDirectory(directoryPath);
 
             argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
+            execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "exec_per_row") );
 			setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
 			addDate = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_date") );
 			addTime = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_time") );
 			logfile = XMLHandler.getTagValue(entrynode, "logfile");
 			logext = XMLHandler.getTagValue(entrynode, "logext");
 			loglevel = LogWriter.getLogLevel( XMLHandler.getTagValue(entrynode, "loglevel"));
-
 
 			// How many arguments?
 			int argnr = 0;
@@ -222,6 +226,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
      	
 			filename         = rep.getJobEntryAttributeString(id_jobentry, "filename");
 			argFromPrevious  = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
+            execPerRow       = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
 	
 			setLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
 			addDate          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
@@ -261,6 +266,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory()!=null?getDirectory().getPath():"");
 			rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
+            rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_date", addDate);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
@@ -292,6 +298,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		directory = new RepositoryDirectory();
 		arguments=null;
 		argFromPrevious=false;
+        execPerRow=false;
 		addDate=false;
 		addTime=false;
 		logfile=null;
@@ -323,61 +330,115 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		
 		log.logBasic(toString(), "Opening transformation: ["+getTransname()+"] in directory ["+directory.getPath()+"]");
 		
-		try
-		{
-            log.logDetailed(toString(), "Starting transformation...(file="+getFileName()+", name="+getName()+"), repinfo="+getDescription());
+        int iteration = 0;
+        String args[] = arguments;
+        Row resultRow = null;
+        boolean first = true;
+        List rows = prev_result.getRows();
+        
+        while( ( first && !execPerRow ) || ( execPerRow && rows!=null && iteration<rows.size() && result.getNrErrors()==0 ) )
+        {
+            first=false;
+            if (rows!=null) resultRow = (Row) rows.get(iteration);
             
-            TransMeta transMeta = getTransMeta(rep);
-            
-            if (parentJob.getJobMeta().isBatchIdPassed())
-            {
-                transMeta.setJobBatchId(parentJob.getJobMeta().getBatchId());
-            }
-
-            // Create the transformation from meta-data
-            Trans trans = new Trans(logwriter, transMeta);
-            
-            // Set the result rows for the next one...
-            trans.getTransMeta().setSourceRows(prev_result.rows);
-            
-			// Set rows of previous result for this transformations input!
-			trans.setSourceRows(prev_result.rows);
-				
-			// Execute!
-			if (!trans.execute(arguments))
-			{
-				result.setNrErrors(1);
-			}
-			else
-			{
-				while (!trans.isFinished() && !parentJob.isStopped())
-				{
-					try { Thread.sleep(100);}
-					catch(InterruptedException e) { }
-				}
-				
-				if (parentJob.isStopped())
-				{
-					trans.stopAll();
-					trans.waitUntilFinished();
-					trans.endProcessing("stop");
-				}
-				else
-				{
-					trans.endProcessing("end");
-				}
-				result = trans.getResult();
-				result.setEntryNr( nr );
-				if (setLogfile) {
-					result.interestingFiles.add(new File(logFilename));
-				}
-			}
-		}
-		catch(KettleException e)
-		{
-			log.logError(toString(), "Unable to open transformation: "+e.getMessage());
-			result.setNrErrors(1);
-		}
+    		try
+    		{
+                log.logDetailed(toString(), "Starting transformation...(file="+getFileName()+", name="+getName()+"), repinfo="+getDescription());
+                
+                TransMeta transMeta = getTransMeta(rep);
+                
+                if (parentJob.getJobMeta().isBatchIdPassed())
+                {
+                    transMeta.setJobBatchId(parentJob.getJobMeta().getBatchId());
+                }
+    
+                // Create the transformation from meta-data
+                Trans trans = new Trans(logwriter, transMeta);
+                
+                // Set the result rows for the next one...
+                trans.getTransMeta().setSourceRows(prev_result.rows);
+                
+                if (execPerRow) // Execute for each input row
+                {
+                    if (argFromPrevious) // Copy the input row to the (command line) arguments
+                    {
+                        args = null;
+                        if (resultRow!=null)
+                        {
+                            args = new String[resultRow.size()];
+                            for (int i=0;i<resultRow.size();i++)
+                            {
+                                args[i] = resultRow.getValue(i).toString();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Just pass a single row
+                        ArrayList newList = new ArrayList();
+                        newList.add(resultRow);
+                        trans.setSourceRows(newList);
+                    }
+                }
+                else
+                {
+                    if (argFromPrevious)
+                    {
+                        // Only put the first Row on the arguments
+                        args = null;
+                        if (resultRow!=null)
+                        {
+                            args = new String[resultRow.size()];
+                            for (int i=0;i<resultRow.size();i++)
+                            {
+                                args[i] = resultRow.getValue(i).toString();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Keep it as it was...
+                        trans.setSourceRows(prev_result.rows);
+                    }
+                }
+                    				
+    			// Execute!
+    			if (!trans.execute(args))
+    			{
+    				result.setNrErrors(1);
+    			}
+    			else
+    			{
+    				while (!trans.isFinished() && !parentJob.isStopped())
+    				{
+    					try { Thread.sleep(100);}
+    					catch(InterruptedException e) { }
+    				}
+    				
+    				if (parentJob.isStopped())
+    				{
+    					trans.stopAll();
+    					trans.waitUntilFinished();
+    					trans.endProcessing("stop");
+    				}
+    				else
+    				{
+    					trans.endProcessing("end");
+    				}
+    				result = trans.getResult();
+    				result.setEntryNr( nr );
+    				if (setLogfile) {
+    					result.interestingFiles.add(new File(logFilename));
+    				}
+    			}
+    		}
+    		catch(KettleException e)
+    		{
+    			log.logError(toString(), "Unable to open transformation: "+e.getMessage());
+    			result.setNrErrors(1);
+    		}
+            iteration++;
+        }
 		
 		if (setLogfile) logwriter.close();
 		
