@@ -4,7 +4,12 @@ import java.net.InetAddress;
 
 import be.ibridge.kettle.core.exception.KettleJobException;
 
-import com.jcraft.jsch.*;
+import com.jcraft.jsch.Channel;
+import com.jcraft.jsch.ChannelSftp;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.Session;
+import com.jcraft.jsch.SftpException;
 import com.jcraft.jsch.ChannelSftp.LsEntry;
 
 public class SFTPClient {

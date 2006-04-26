@@ -18,7 +18,6 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.chef.Chef;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Point;
@@ -81,8 +80,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 		return retval.toString();
 	}
 	
-	public JobEntryCopy(Node entrynode, ArrayList databases, Repository rep)
-		throws KettleXMLException
+	public JobEntryCopy(Node entrynode, ArrayList databases, Repository rep) throws KettleXMLException
 	{
 		try
 		{
@@ -107,8 +105,6 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 				int x=Const.toInt(XMLHandler.getTagValue(entrynode, "xloc"), 0);
 				int y=Const.toInt(XMLHandler.getTagValue(entrynode, "yloc"), 0);
 				setLocation(x, y);
-				
-				// System.out.println("name=["+getName()+"], drawn="+isDrawn()+", location="+getLocation());
 			}
 		}
 		catch(Exception e)

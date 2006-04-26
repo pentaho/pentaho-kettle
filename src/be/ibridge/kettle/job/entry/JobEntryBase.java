@@ -16,7 +16,6 @@
 package be.ibridge.kettle.job.entry;
 import java.util.ArrayList;
 
-import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Row;
@@ -24,31 +23,6 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.job.JobMeta;
-import be.ibridge.kettle.job.entry.eval.JobEntryEval;
-import be.ibridge.kettle.job.entry.eval.JobEntryEvalDialog;
-import be.ibridge.kettle.job.entry.fileexists.JobEntryFileExists;
-import be.ibridge.kettle.job.entry.fileexists.JobEntryFileExistsDialog;
-import be.ibridge.kettle.job.entry.ftp.JobEntryFTP;
-import be.ibridge.kettle.job.entry.ftp.JobEntryFTPDialog;
-import be.ibridge.kettle.job.entry.http.JobEntryHTTP;
-import be.ibridge.kettle.job.entry.http.JobEntryHTTPDialog;
-import be.ibridge.kettle.job.entry.job.JobEntryJob;
-import be.ibridge.kettle.job.entry.job.JobEntryJobDialog;
-import be.ibridge.kettle.job.entry.mail.JobEntryMail;
-import be.ibridge.kettle.job.entry.mail.JobEntryMailDialog;
-import be.ibridge.kettle.job.entry.sftp.JobEntrySFTP;
-import be.ibridge.kettle.job.entry.sftp.JobEntrySFTPDialog;
-import be.ibridge.kettle.job.entry.shell.JobEntryShell;
-import be.ibridge.kettle.job.entry.shell.JobEntryShellDialog;
-import be.ibridge.kettle.job.entry.special.JobEntrySpecial;
-import be.ibridge.kettle.job.entry.special.JobEntrySpecialDialog;
-import be.ibridge.kettle.job.entry.sql.JobEntrySQL;
-import be.ibridge.kettle.job.entry.sql.JobEntrySQLDialog;
-import be.ibridge.kettle.job.entry.tableexists.JobEntryTableExists;
-import be.ibridge.kettle.job.entry.tableexists.JobEntryTableExistsDialog;
-import be.ibridge.kettle.job.entry.trans.JobEntryTrans;
-import be.ibridge.kettle.job.entry.trans.JobEntryTransDialog;
 import be.ibridge.kettle.repository.Repository;
 
 

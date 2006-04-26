@@ -3,7 +3,7 @@ package be.ibridge.kettle.core.logging;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.apache.log4j.*;
+import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 
 import be.ibridge.kettle.core.Const;
