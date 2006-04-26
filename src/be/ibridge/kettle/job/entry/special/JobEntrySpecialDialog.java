@@ -29,7 +29,6 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
-import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInterface {
@@ -60,7 +59,7 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
 	private CCombo wDayOfWeek;
 	private Spinner wDayOfMonth;
 	
-	public JobEntrySpecialDialog(Shell parent, JobEntrySpecial scheduler, Repository rep)
+	public JobEntrySpecialDialog(Shell parent, JobEntrySpecial scheduler)
 	{
 		super(parent, SWT.NONE);
 		props=Props.getInstance();

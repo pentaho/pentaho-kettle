@@ -44,7 +44,6 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
-import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -109,7 +108,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 	private Props    props;
 	private Display  display;
 	
-	public JobEntryMailDialog(Shell parent, JobEntryMail jm, Repository rep)
+	public JobEntryMailDialog(Shell parent, JobEntryMail jm)
 	{
 		super(parent, SWT.NONE);
 		props=Props.getInstance();

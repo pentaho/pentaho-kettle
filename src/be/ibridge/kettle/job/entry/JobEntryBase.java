@@ -126,21 +126,6 @@ public class JobEntryBase implements Cloneable
 	{
 		return JobEntryInterface.type_desc[type];
 	}
-
-	public static final int getType(String desc)
-	{
-		String d[] = JobEntryInterface.type_desc;
-		for (int i=1;i< d.length;i++)
-		{
-			if (d[i].equalsIgnoreCase(desc)) return i;
-		}
-		d=JobEntryInterface.type_desc_long;
-		for (int i=1;i< d.length;i++)
-		{
-			if (d[i].equalsIgnoreCase(desc)) return i;
-		}
-		return JobEntryInterface.TYPE_JOBENTRY_NONE;
-	}
 	
 	public void setName(String name)
 	{
@@ -241,7 +226,8 @@ public class JobEntryBase implements Cloneable
 //		retval.append("      "+XMLHandler.addTagValue("description",       getDescription()));
 		retval.append("      ").append(XMLHandler.addTagValue("description",       getDescription()));
 //		retval.append("      "+XMLHandler.addTagValue("type",              getTypeDesc()));
-		retval.append("      ").append(XMLHandler.addTagValue("type",              getTypeDesc()));
+        if (type!=JobEntryInterface.TYPE_JOBENTRY_NONE)
+            retval.append("      ").append(XMLHandler.addTagValue("type",              getTypeDesc()));
 	
 		return retval.toString();
 	}	
@@ -311,6 +297,7 @@ public class JobEntryBase implements Cloneable
 	 * @param type The type of job entry to allocate
 	 * @return The appropriate JobEntryInterface class
 	 */
+    /*
 	public static final JobEntryInterface newJobEntryInterface(int type)
 		throws KettleException
 	{
@@ -335,12 +322,13 @@ public class JobEntryBase implements Cloneable
 		
 		return jei;
 	}
-
+*/
 	/**
 	 * Allocate the appropriate class for the given type.
 	 * @param type The type of job entry to allocate
 	 * @return The appropriate JobEntryInterface class
 	 */
+    /*
 	public static final JobEntryInterface newJobEntryInterface(int type, Repository rep, long id_jobentry, ArrayList databases)
 		throws KettleException
 	{
@@ -348,40 +336,8 @@ public class JobEntryBase implements Cloneable
 		jei.loadRep(rep, id_jobentry, databases);
 		return jei;
 	}
+    */
 	
-	/**
-	 * Start the appropriate dialog for a given class interface
-	 * @param parent The parent Shell
-	 * @param jei JobEntryInterface to build the dialog for.
-	 * @param rep The repository to connect to.
-	 * @param jobinfo The job we're working with.
-	 * @return A new dialog for the job entry.
-	 */
-	public static final JobEntryDialogInterface newJobEntryDialog(Shell parent, JobEntryInterface jei, Repository rep, JobMeta jobinfo) throws KettleException
-	{
-		if (jei==null) return null;
-		
-		JobEntryDialogInterface d = null;
-		switch(jei.getType())
-		{
-		case JobEntryInterface.TYPE_JOBENTRY_EVALUATION     : d = new JobEntryEvalDialog(parent, (JobEntryEval)jei); break;
-		case JobEntryInterface.TYPE_JOBENTRY_JOB            : d = new JobEntryJobDialog(parent, (JobEntryJob)jei, rep); break;
-		case JobEntryInterface.TYPE_JOBENTRY_MAIL           : d = new JobEntryMailDialog(parent, (JobEntryMail)jei, rep); break;
-		case JobEntryInterface.TYPE_JOBENTRY_SHELL          : d = new JobEntryShellDialog(parent, (JobEntryShell)jei, rep); break;
-		case JobEntryInterface.TYPE_JOBENTRY_SQL            : d = new JobEntrySQLDialog(parent, (JobEntrySQL)jei, rep, jobinfo); break;
-		case JobEntryInterface.TYPE_JOBENTRY_FTP            : d = new JobEntryFTPDialog(parent, (JobEntryFTP)jei, rep, jobinfo); break;
-		case JobEntryInterface.TYPE_JOBENTRY_TABLE_EXISTS   : d = new JobEntryTableExistsDialog(parent, (JobEntryTableExists)jei, rep, jobinfo); break;
-		case JobEntryInterface.TYPE_JOBENTRY_FILE_EXISTS    : d = new JobEntryFileExistsDialog(parent, (JobEntryFileExists)jei, rep, jobinfo); break;
-		case JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION : d = new JobEntryTransDialog(parent, (JobEntryTrans)jei, rep); break;
-        case JobEntryInterface.TYPE_JOBENTRY_SPECIAL        : d = new JobEntrySpecialDialog(parent, (JobEntrySpecial)jei, rep); break;
-        case JobEntryInterface.TYPE_JOBENTRY_SFTP           : d = new JobEntrySFTPDialog(parent, (JobEntrySFTP)jei, rep, jobinfo); break;
-        case JobEntryInterface.TYPE_JOBENTRY_HTTP           : d = new JobEntryHTTPDialog(parent, (JobEntryHTTP)jei, rep, jobinfo); break;
-		default:
-            throw new KettleException("Unable to find dialog for job interface: "+jei.getName());
-		}
-		return d;
-	}
-
 	public Object clone()
 	{
 		JobEntryBase je;

@@ -51,7 +51,6 @@ import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
-import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -84,7 +83,7 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 
 	private boolean changed;
 	
-	public JobEntryFileExistsDialog(Shell parent, JobEntryFileExists je, Repository rep, JobMeta ji)
+	public JobEntryFileExistsDialog(Shell parent, JobEntryFileExists je, JobMeta ji)
 	{
 			super(parent, SWT.NONE);
 			props=Props.getInstance();

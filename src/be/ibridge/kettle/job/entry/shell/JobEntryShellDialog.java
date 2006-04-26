@@ -48,7 +48,6 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
-import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -117,7 +116,7 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 	private Props    props;
 	private Display  display;
 	
-	public JobEntryShellDialog(Shell parent, JobEntryShell je, Repository rep)
+	public JobEntryShellDialog(Shell parent, JobEntryShell je)
 	{
 		super(parent, SWT.NONE);
 		props=Props.getInstance();

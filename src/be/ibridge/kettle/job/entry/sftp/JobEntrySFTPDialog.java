@@ -46,7 +46,6 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
-import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -105,7 +104,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 
 	private boolean changed;
 	
-	public JobEntrySFTPDialog(Shell parent, JobEntrySFTP je, Repository rep, JobMeta ji)
+	public JobEntrySFTPDialog(Shell parent, JobEntrySFTP je, JobMeta ji)
 	{
 			super(parent, SWT.NONE);
 			props=Props.getInstance();

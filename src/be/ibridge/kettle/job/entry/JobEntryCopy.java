@@ -18,6 +18,7 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.chef.Chef;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Point;
@@ -27,6 +28,8 @@ import be.ibridge.kettle.core.XMLInterface;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.job.JobEntryLoader;
+import be.ibridge.kettle.job.JobPlugin;
 import be.ibridge.kettle.repository.Repository;
 
 
@@ -83,11 +86,15 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 	{
 		try
 		{
-			String stype = XMLHandler.getTagValue(entrynode, "type");
-			int type = JobEntryCopy.getType(stype);
+            String stype = XMLHandler.getTagValue(entrynode, "type");
+            String description = XMLHandler.getTagValue(entrynode, "name");
+            
+            JobPlugin jobPlugin = JobEntryLoader.getInstance().findJobEntriesWithID(stype);
+            if (jobPlugin==null)
+                System.out.println("null jobPlugin for " + stype);
 			
 			// Get an empty JobEntry of the appropriate class...
-			entry = JobEntryBase.newJobEntryInterface(type);		
+            entry = JobEntryLoader.getInstance().getJobEntryClass(jobPlugin); 
 			if (entry!=null)
 			{
 				// System.out.println("New JobEntryInterface built of type: "+entry.getTypeDesc());
@@ -153,11 +160,11 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 					if (rt!=null)
 					{
 						String jet_code = rt.searchValue("CODE").getString();
-						int jet_type = JobEntryBase.getType(jet_code);
-						
-						// Instantiate a new copy of that type of JobEntry
-						entry = JobEntryBase.newJobEntryInterface(jet_type);
-						
+                        
+                        JobEntryLoader jobLoader = JobEntryLoader.getInstance();
+                        JobPlugin jobPlugin = jobLoader.findJobEntriesWithDescription(jet_code);
+                        entry = jobLoader.getJobEntryClass(jobPlugin); 
+                        
 						// Load the attributes for that jobentry
 						entry.loadRep(rep, id_jobentry, databases);
 						jobentries.add(entry);

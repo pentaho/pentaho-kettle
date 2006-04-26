@@ -16,6 +16,7 @@
 package be.ibridge.kettle.job.entry;
 import java.util.ArrayList;
 
+import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Result;
@@ -23,6 +24,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleJobException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.job.Job;
+import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.eval.JobEntryEval;
 import be.ibridge.kettle.job.entry.fileexists.JobEntryFileExists;
 import be.ibridge.kettle.job.entry.ftp.JobEntryFTP;
@@ -160,5 +162,7 @@ public interface JobEntryInterface
 	public boolean isSpecial();
     
     public ArrayList getSQLStatements(Repository repository) throws KettleException;
+    
+    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep);
 }
 

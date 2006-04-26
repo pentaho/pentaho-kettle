@@ -46,7 +46,6 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
-import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -132,7 +131,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 
 	private boolean changed;
 	
-	public JobEntryHTTPDialog(Shell parent, JobEntryHTTP je, Repository rep, JobMeta ji)
+	public JobEntryHTTPDialog(Shell parent, JobEntryHTTP je, JobMeta ji)
 	{
 			super(parent, SWT.NONE);
 			props=Props.getInstance();

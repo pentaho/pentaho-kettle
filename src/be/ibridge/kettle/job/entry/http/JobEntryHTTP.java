@@ -33,6 +33,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
@@ -46,7 +47,9 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.Job;
+import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
+import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 
@@ -592,5 +595,9 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
     public void setTargetFilenameExtention(String uploadFilenameExtention)
     {
         this.targetFilenameExtention = uploadFilenameExtention;
+    }
+    
+    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
+        return new JobEntryHTTPDialog(shell,this,jobMeta);
     }
 }

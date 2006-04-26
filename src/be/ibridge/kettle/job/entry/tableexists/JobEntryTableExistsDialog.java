@@ -50,7 +50,6 @@ import be.ibridge.kettle.core.dialog.DatabaseDialog;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
-import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -90,7 +89,7 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 
 	private boolean changed;
 	
-	public JobEntryTableExistsDialog(Shell parent, JobEntryTableExists je, Repository rep, JobMeta ji)
+	public JobEntryTableExistsDialog(Shell parent, JobEntryTableExists je, JobMeta ji)
 	{
 		super(parent, SWT.NONE);
 		props=Props.getInstance();

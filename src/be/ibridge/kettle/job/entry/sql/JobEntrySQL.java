@@ -16,6 +16,7 @@
 package be.ibridge.kettle.job.entry.sql;
 import java.util.ArrayList;
 
+import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
@@ -28,7 +29,9 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.job.Job;
+import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
+import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 
@@ -203,4 +206,8 @@ public class JobEntrySQL extends JobEntryBase implements JobEntryInterface
 		return true;
 	}
 
+    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
+        return new JobEntrySQLDialog(shell,this,jobMeta);
+    }
+    
 }

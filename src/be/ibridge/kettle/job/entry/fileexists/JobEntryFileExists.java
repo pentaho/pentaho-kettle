@@ -17,6 +17,7 @@ package be.ibridge.kettle.job.entry.fileexists;
 import java.io.File;
 import java.util.ArrayList;
 
+import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
@@ -27,7 +28,9 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.job.Job;
+import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
+import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 
@@ -157,4 +160,8 @@ public class JobEntryFileExists extends JobEntryBase implements JobEntryInterfac
 	{
 		return true;
 	}
+    
+    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
+        return new JobEntryFileExistsDialog(shell,this,jobMeta);
+    }
 }

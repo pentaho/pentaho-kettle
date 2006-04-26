@@ -18,6 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
@@ -30,6 +31,7 @@ import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
+import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -467,5 +469,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         this.runEveryResultRow = runEveryResultRow;
     }
 
+    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
+        return new JobEntryJobDialog(shell,this,rep);
+    }
+    
 }
 

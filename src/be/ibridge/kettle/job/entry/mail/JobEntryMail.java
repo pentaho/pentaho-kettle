@@ -34,6 +34,7 @@ import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
 
+import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.chef.JobTracker;
@@ -46,7 +47,9 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.Job;
+import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
+import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 
@@ -440,5 +443,9 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 	public void setIncludeFiles(boolean includeFiles) {
 		this.includeFiles = includeFiles;
 	}
+    
+    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
+        return new JobEntryMailDialog(shell,this);
+    }
 
 }

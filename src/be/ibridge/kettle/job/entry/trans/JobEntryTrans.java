@@ -19,6 +19,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 
+import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.LogWriter;
@@ -29,7 +30,9 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleJobException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.job.Job;
+import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
+import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -447,5 +450,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     {
         this.directoryPath = directoryPath;
     }
-
+    
+    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
+        return new JobEntryTransDialog(shell,this,rep);
+    }
 }
