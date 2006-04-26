@@ -158,12 +158,19 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 						String jet_code = rt.searchValue("CODE").getString();
                         
                         JobEntryLoader jobLoader = JobEntryLoader.getInstance();
-                        JobPlugin jobPlugin = jobLoader.findJobEntriesWithDescription(jet_code);
-                        entry = jobLoader.getJobEntryClass(jobPlugin); 
-                        
-						// Load the attributes for that jobentry
-						entry.loadRep(rep, id_jobentry, databases);
-						jobentries.add(entry);
+                        JobPlugin jobPlugin = jobLoader.findJobEntriesWithID(jet_code);
+                        if (jobPlugin!=null)
+                        {
+                            entry = jobLoader.getJobEntryClass(jobPlugin); 
+                            
+    						// Load the attributes for that jobentry
+    						entry.loadRep(rep, id_jobentry, databases);
+    						jobentries.add(entry);
+                        }
+                        else
+                        {
+                            throw new KettleException("JobEntryLoader was unable to find Job Entry Plugin with description ["+jet_code+"].");
+                        }
 					}
 					else
 					{
