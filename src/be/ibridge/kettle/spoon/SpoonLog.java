@@ -608,6 +608,7 @@ public class SpoonLog extends Composite
 	}
 	
 	private boolean refresh_busy;
+	private SpoonHistoryRefresher spoonHistoryRefresher;
 	
 	private void refreshView()
 	{
@@ -723,6 +724,7 @@ public class SpoonLog extends Composite
 			try
 			{
 				trans.endProcessing("end"); //$NON-NLS-1$
+				spoonHistoryRefresher.markRefreshNeeded();
 			}
 			catch(KettleException e)
 			{
@@ -893,5 +895,9 @@ public class SpoonLog extends Composite
     {
         return running;
     }
+
+	public void setSpoonHistoryRefresher(SpoonHistoryRefresher spoonHistoryRefresher) {
+		this.spoonHistoryRefresher = spoonHistoryRefresher;
+	}
 
 }

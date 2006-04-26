@@ -1369,6 +1369,10 @@ public class Spoon
         tabfolder.addKeyListener(defKeys);
         tabfolder.addKeyListener(modKeys);
         
+        SpoonHistoryRefresher spoonHistoryRefresher = new SpoonHistoryRefresher(tiTabsHist, spoonhist);
+		tabfolder.addSelectionListener(spoonHistoryRefresher);
+		spoonlog.setSpoonHistoryRefresher(spoonHistoryRefresher);
+        
         tiTabsGraph.setControl(spoongraph);
         tiTabsList.setControl(spoonlog);
         tiTabsHist.setControl(spoonhist);

@@ -61,7 +61,7 @@ import be.ibridge.kettle.trans.TransMeta;
  * @author Matt
  * @since  16-mar-2006
  */
-public class SpoonHistory extends Composite
+public class SpoonHistory extends Composite 
 {
 	private ColumnInfo[] colinf;	
 	
@@ -78,6 +78,8 @@ public class SpoonHistory extends Composite
 	private final SpoonLog spoonLog;
 
 	private final Shell shell;
+
+	private boolean refreshNeeded = true;
 	
 	public SpoonHistory(Composite parent, int style, Spoon sp, LogWriter l, String fname, SpoonLog spoonLog, Shell shell)
 	{
@@ -263,7 +265,7 @@ public class SpoonHistory extends Composite
                         
                         Row params = new Row();
                         params.addValue(new Value("transname", transMeta.getName())); //$NON-NLS-1$
-                        ResultSet resultSet = database.openQuery("SELECT * FROM "+transMeta.getLogTable()+" WHERE TRANSNAME = ?", params); //$NON-NLS-1$ //$NON-NLS-2$
+                        ResultSet resultSet = database.openQuery("SELECT * FROM "+transMeta.getLogTable()+" WHERE TRANSNAME = ? ORDER BY ID_BATCH desc", params); //$NON-NLS-1$ //$NON-NLS-2$
                         
                         rowList = new ArrayList();
                         Row row = database.getRow(resultSet);
@@ -283,7 +285,9 @@ public class SpoonHistory extends Composite
                             {
                                 row = (Row) rowList.get(i);
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
-                                item.setText( 1, row.getString("ID_BATCH", ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                String batchID = row.getString("ID_BATCH", "");
+                                if(batchID != null)
+                                	item.setText( 1, batchID);           //$NON-NLS-1$ //$NON-NLS-2$
                                 item.setText( 2, row.getString("STATUS", ""));           //$NON-NLS-1$ //$NON-NLS-2$
                                 item.setText( 3, row.getString("LINES_READ", ""));           //$NON-NLS-1$ //$NON-NLS-2$
                                 item.setText( 4, row.getString("LINES_WRITTEN", ""));           //$NON-NLS-1$ //$NON-NLS-2$
@@ -365,6 +369,17 @@ public class SpoonHistory extends Composite
     public String toString()
 	{
 		return Spoon.APP_NAME;
+	}
+
+	public synchronized void refreshHistoryIfNeeded() {
+		if (refreshNeeded) {
+			refreshNeeded = false;
+			refreshHistory();
+		}
+	}
+
+	public synchronized void markRefreshNeeded() {
+		refreshNeeded = true;
 	}
 
 }
