@@ -99,6 +99,7 @@ public class JobEntryLoader
 			String jarfiles[]     = null; // Not used
 			JobPlugin sp = new JobPlugin(JobPlugin.TYPE_NATIVE, id, long_desc, tooltip, directory, jarfiles, iconfile, classname);
 			pluginList.add(sp);
+            // System.out.println("Added job entry plugin id="+sp.getID()+", description="+sp.getDescription());
         }
 
 		return true;
@@ -180,12 +181,13 @@ public class JobEntryLoader
                                     if (findJobPluginWithID(id)==null)
                                     {
                                         pluginList.add(sp);
+                                        // System.out.println("Added job entry plugin id="+sp.getID()+", description="+sp.getDescription());
                                     }
                                     else
                                     {
                                         int idx = pluginList.indexOf(sp);
                                         pluginList.set(idx, sp);
-                                        // System.out.println("Replaced existing plugin with ID : "+id);
+                                        // System.out.println("Replaced job entry plugin id="+sp.getID()+", description="+sp.getDescription());
                                     }
                                 }
                                 catch (Exception e)
@@ -288,7 +290,7 @@ public class JobEntryLoader
         } 
         else
         {
-            throw new KettleStepLoaderException("No valid step/plugin specified.");
+            throw new KettleStepLoaderException("No valid step/plugin specified (plugin=null).");
         }
     }
 
