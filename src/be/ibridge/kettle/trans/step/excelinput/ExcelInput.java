@@ -81,9 +81,11 @@ public class ExcelInput extends BaseStep implements StepInterface {
             Value v = r.getValue(rowcolumn);
             debug = "Value v = " + v;
 
+            boolean typeIsOK=false;
             try
             {
                 checkType(cell, v);
+                typeIsOK=true;
             }
             catch (KettleException ex)
             {
@@ -214,11 +216,18 @@ public class ExcelInput extends BaseStep implements StepInterface {
             {
                 if (!meta.isErrorIgnored()) throw ex;
                 logBasic("Warning processing [" + debug + "] from Excel file [" + data.filename + "] : " + ex.toString());
-                data.errorHandler.handleLineError(excelInputRow.rownr, excelInputRow.sheetName);
-                if (meta.isErrorLineSkipped())
+                if (meta.isStrictTypes() && typeIsOK) // typeIsOK to check if we didn't log an error already for this one.
                 {
-                    r.setIgnore();
-                    return r;
+                    data.errorHandler.handleLineError(excelInputRow.rownr, excelInputRow.sheetName);
+                    if (meta.isErrorLineSkipped())
+                    {
+                        r.setIgnore();
+                        return r;
+                    }
+                }
+                else
+                {
+                    v.setNull();
                 }
             }
             
@@ -260,41 +269,45 @@ public class ExcelInput extends BaseStep implements StepInterface {
 		return r;
 	}
 
-	private void checkType(Cell cell, Value v) throws KettleException {
-		if (!meta.isStrictTypes())
-			return;
-		CellType cellType = cell.getType();
-		if (cellType.equals(CellType.BOOLEAN)) {
-			if (!(v.getType() == Value.VALUE_TYPE_STRING
-					|| v.getType() == Value.VALUE_TYPE_NONE || v.getType() == Value.VALUE_TYPE_BOOLEAN))
-				throw new KettleException("Invalid type Boolean, expected "
-						+ v.getTypeDesc());
-		} else if (cellType.equals(CellType.DATE)) {
-			if (!(v.getType() == Value.VALUE_TYPE_STRING
-					|| v.getType() == Value.VALUE_TYPE_NONE || v.getType() == Value.VALUE_TYPE_DATE))
-				throw new KettleException("Invalid type Date: "
-						+ cell.getContents() + ", expected " + v.getTypeDesc());
-		} else if (cellType.equals(CellType.LABEL)) {
-			if (v.getType() == Value.VALUE_TYPE_BOOLEAN
-					|| v.getType() == Value.VALUE_TYPE_DATE
-					|| v.getType() == Value.VALUE_TYPE_INTEGER
-					|| v.getType() == Value.VALUE_TYPE_NUMBER)
-				throw new KettleException("Invalid type Label: "
-						+ cell.getContents() + ", expected " + v.getTypeDesc());
-		} else if (cellType.equals(CellType.EMPTY)) {
-			// ok
-		} else if (cellType.equals(CellType.NUMBER)) {
-			if (!(v.getType() == Value.VALUE_TYPE_STRING
-					|| v.getType() == Value.VALUE_TYPE_NONE
-					|| v.getType() == Value.VALUE_TYPE_INTEGER
-					|| v.getType() == Value.VALUE_TYPE_BIGNUMBER || v.getType() == Value.VALUE_TYPE_NUMBER))
-				throw new KettleException("Invalid type Number: "
-						+ cell.getContents() + ", expected " + v.getTypeDesc());
-		} else {
-			throw new KettleException("Unsupported type " + cellType
-					+ " with value: " + cell.getContents());
-		}
-	}
+	private void checkType(Cell cell, Value v) throws KettleException
+    {
+        if (!meta.isStrictTypes()) return;
+        CellType cellType = cell.getType();
+        if (cellType.equals(CellType.BOOLEAN))
+        {
+            if (!(v.getType() == Value.VALUE_TYPE_STRING || v.getType() == Value.VALUE_TYPE_NONE || v.getType() == Value.VALUE_TYPE_BOOLEAN))
+                throw new KettleException("Invalid type Boolean, expected " + v.getTypeDesc());
+        }
+        else
+            if (cellType.equals(CellType.DATE))
+            {
+                if (!(v.getType() == Value.VALUE_TYPE_STRING || v.getType() == Value.VALUE_TYPE_NONE || v.getType() == Value.VALUE_TYPE_DATE))
+                    throw new KettleException("Invalid type Date: " + cell.getContents() + ", expected " + v.getTypeDesc());
+            }
+            else
+                if (cellType.equals(CellType.LABEL))
+                {
+                    if (v.getType() == Value.VALUE_TYPE_BOOLEAN || v.getType() == Value.VALUE_TYPE_DATE || v.getType() == Value.VALUE_TYPE_INTEGER
+                            || v.getType() == Value.VALUE_TYPE_NUMBER)
+                        throw new KettleException("Invalid type Label: " + cell.getContents() + ", expected " + v.getTypeDesc());
+                }
+                else
+                    if (cellType.equals(CellType.EMPTY))
+                    {
+                        // ok
+                    }
+                    else
+                        if (cellType.equals(CellType.NUMBER))
+                        {
+                            if (!(v.getType() == Value.VALUE_TYPE_STRING || v.getType() == Value.VALUE_TYPE_NONE
+                                    || v.getType() == Value.VALUE_TYPE_INTEGER || v.getType() == Value.VALUE_TYPE_BIGNUMBER || v.getType() == Value.VALUE_TYPE_NUMBER))
+                                throw new KettleException("Invalid type Number: " + cell.getContents() + ", expected " + v.getTypeDesc());
+                        }
+                        else
+                        {
+                            throw new KettleException("Unsupported type " + cellType + " with value: " + cell.getContents());
+                        }
+    }
 
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi)
 			throws KettleException {
