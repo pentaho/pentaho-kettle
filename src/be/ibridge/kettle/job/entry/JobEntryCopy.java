@@ -85,7 +85,6 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 		try
 		{
             String stype = XMLHandler.getTagValue(entrynode, "type");
-            String description = XMLHandler.getTagValue(entrynode, "name");
             
             JobPlugin jobPlugin = JobEntryLoader.getInstance().findJobEntriesWithID(stype);
             if (jobPlugin==null)
