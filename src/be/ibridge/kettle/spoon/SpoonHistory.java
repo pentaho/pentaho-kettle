@@ -81,6 +81,8 @@ public class SpoonHistory extends Composite
 
 	private boolean refreshNeeded = true;
 	
+	private Object refreshNeededLock = new Object();
+	
 	public SpoonHistory(Composite parent, int style, Spoon sp, LogWriter l, String fname, SpoonLog spoonLog, Shell shell)
 	{
 		super(parent, style);
@@ -371,15 +373,22 @@ public class SpoonHistory extends Composite
 		return Spoon.APP_NAME;
 	}
 
-	public synchronized void refreshHistoryIfNeeded() {
-		if (refreshNeeded) {
+	public void refreshHistoryIfNeeded() {
+		boolean reallyRefresh = false;
+		synchronized (refreshNeededLock) {
+			reallyRefresh = refreshNeeded;
 			refreshNeeded = false;
+		}
+		
+		if (reallyRefresh) {
 			refreshHistory();
 		}
 	}
 
-	public synchronized void markRefreshNeeded() {
-		refreshNeeded = true;
+	public void markRefreshNeeded() {
+		synchronized (refreshNeededLock) {
+			refreshNeeded = true;
+		}
 	}
 
 }
