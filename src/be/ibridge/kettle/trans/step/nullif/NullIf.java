@@ -70,7 +70,7 @@ public class NullIf extends BaseStep implements StepInterface
 		        data.keynr[i] = r.searchValueIndex(meta.getFieldName()[i]);
 				if (data.keynr[i]<0)
 				{
-					logError("Couldn't find field '"+meta.getFieldValue()[i]+"' in row!");
+					logError("Couldn't find field '"+meta.getFieldName()[i]+"' in row!");
 					setErrors(1);
 					stopAll();
 					return false;
