@@ -128,7 +128,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Combination Lookup / Update");
+		shell.setText(Messages.getString("CombinationLookupDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -145,7 +145,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("CombinationLookupDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 
 		fdlStepname=new FormData();
@@ -181,7 +181,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		
 		// Table line...
 		wlTable=new Label(shell, SWT.RIGHT);
-		wlTable.setText("Target table ");
+		wlTable.setText(Messages.getString("CombinationLookupDialog.Target.Label")); //$NON-NLS-1$
  		props.setLook(wlTable);
 		fdlTable=new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
@@ -198,7 +198,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wTable.setLayoutData(fdTable);
 		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbTable);
-		wbTable.setText("&Browse...");
+		wbTable.setText(Messages.getString("CombinationLookupDialog.BrowseTable.Button")); //$NON-NLS-1$
 		fdbTable=new FormData();
 		fdbTable.left = new FormAttachment(wTable, margin);
 		fdbTable.right= new FormAttachment(100, 0);
@@ -207,7 +207,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 		// Commit size ...
 		wlCommit=new Label(shell, SWT.RIGHT);
-		wlCommit.setText("Commit size ");
+		wlCommit.setText(Messages.getString("CombinationLookupDialog.Commitsize.Label")); //$NON-NLS-1$
  		props.setLook(wlCommit);
 		fdlCommit=new FormData();
 		fdlCommit.left = new FormAttachment(0, 0);
@@ -226,7 +226,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		// The Lookup fields: usualy the key
 		//
 		wlKey=new Label(shell, SWT.NONE);
-		wlKey.setText("Key fields (to look up row in table): ");
+		wlKey.setText(Messages.getString("CombinationLookupDialog.Keyfields.Label")); //$NON-NLS-1$
  		props.setLook(wlKey);
 		fdlKey=new FormData();
 		fdlKey.left  = new FormAttachment(0, 0);
@@ -238,8 +238,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		int nrKeyRows=(input.getKeyField()!=null?input.getKeyField().length:1);
 		
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo("Field in stream", ColumnInfo.COLUMN_TYPE_TEXT, false);
-		ciKey[1]=new ColumnInfo("Dimension field", ColumnInfo.COLUMN_TYPE_TEXT, false);
+		ciKey[0]=new ColumnInfo(Messages.getString("CombinationLookupDialog.ColumnInfo.FieldInStream"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciKey[1]=new ColumnInfo(Messages.getString("CombinationLookupDialog.ColumnInfo.DimensionField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 		
 		wKey=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -251,19 +251,19 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("CombinationLookupDialog.OK.Button")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(" &Get Fields ");
+		wGet.setText(Messages.getString("CombinationLookupDialog.GetFields.Button")); //$NON-NLS-1$
 		wCreate=new Button(shell, SWT.PUSH);
-		wCreate.setText(" &SQL ");
+		wCreate.setText(Messages.getString("CombinationLookupDialog.SQL.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("CombinationLookupDialog.Cancel.Button")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wGet, wCreate, wCancel }, margin, null);
 
 		// Technical key field:
 		wlHashfield=new Label(shell, SWT.RIGHT);
-		wlHashfield.setText("Hashcode field in table ");
+		wlHashfield.setText(Messages.getString("CombinationLookupDialog.Hashfield.Label")); //$NON-NLS-1$
  		props.setLook(wlHashfield);
 		fdlHashfield=new FormData();
 		fdlHashfield.left  = new FormAttachment(0, 0);
@@ -281,7 +281,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 		// Output the input rows or one (1) log-record? 
 		wlHashcode=new Label(shell, SWT.RIGHT);
-		wlHashcode.setText("Use hashcode?");
+		wlHashcode.setText(Messages.getString("CombinationLookupDialog.Hashcode.Label")); //$NON-NLS-1$
  		props.setLook(wlHashcode);
 		fdlHashcode=new FormData();
 		fdlHashcode.left  = new FormAttachment(0, 0);
@@ -306,7 +306,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 		// Replace lookup fields in the output stream?
 		wlReplace=new Label(shell, SWT.RIGHT);
-		wlReplace.setText("Remove lookup fields?");
+		wlReplace.setText(Messages.getString("CombinationLookupDialog.Replace.Label")); //$NON-NLS-1$
  		props.setLook(wlReplace);
 		fdlReplace=new FormData();
 		fdlReplace.left  = new FormAttachment(0, 0);
@@ -331,7 +331,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 		// Sequence key field:
 		wlSeq=new Label(shell, SWT.RIGHT);
-		wlSeq.setText("Optional Sequence ");
+		wlSeq.setText(Messages.getString("CombinationLookupDialog.Sequence.Label")); //$NON-NLS-1$
  		props.setLook(wlSeq);
 		fdlSeq=new FormData();
 		fdlSeq.left  = new FormAttachment(0, 0);
@@ -350,7 +350,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 
 		// Use an autoincrement field?
 		wlAutoinc=new Label(shell, SWT.RIGHT);
-		wlAutoinc.setText("use auto increment field?");
+		wlAutoinc.setText(Messages.getString("CombinationLookupDialog.Autoincrement.Label")); //$NON-NLS-1$
  		props.setLook(wlAutoinc);
 		fdlAutoinc=new FormData();
 		fdlAutoinc.left  = new FormAttachment(0, 0);
@@ -364,11 +364,11 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		fdAutoinc.right = new FormAttachment(100, 0);
 		fdAutoinc.bottom= new FormAttachment(wReplace, -margin);
 		wAutoinc.setLayoutData(fdAutoinc);
-		wAutoinc.setToolTipText("If this field is disabled, get the next value from the indicated sequence."+Const.CR+"If no sequence is supplied, Kettle will generate the appropriate keys");
+		wAutoinc.setToolTipText(Messages.getString("CombinationLookupDialog.AutoincButton.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		// Technical key field:
 		wlTk=new Label(shell, SWT.RIGHT);
-		wlTk.setText("Technical key field ");
+		wlTk.setText(Messages.getString("CombinationLookupDialog.TechnicalKey.Label")); //$NON-NLS-1$
  		props.setLook(wlTk);
 		fdlTk=new FormData();
 		fdlTk.left   = new FormAttachment(0, 0);
@@ -461,7 +461,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), "getting key info...");
+		log.logDebug(toString(), Messages.getString("CombinationLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		if (input.getKeyField()!=null)
 		for (i=0;i<input.getKeyField().length;i++)
@@ -491,7 +491,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		}
 		if (input.getHashField()!=null)    wHashfield.setText(input.getHashField());
 		
-		wCommit.setText(""+input.getCommitSize());
+		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
 
 		wKey.setRowNums();
 		wKey.optWidth(true);
@@ -515,8 +515,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		if (transMeta.findDatabase(wConnection.getText())==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Please select a valid connection!");
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("CombinationLookupDialog.NoValidConnection.DialogMessage")); //$NON-NLS-1$
+			mb.setText(Messages.getString("CombinationLookupDialog.NoValidConnection.DialogTitle")); //$NON-NLS-1$
 			mb.open();
 		}
 		
@@ -529,7 +529,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		
 		in.allocate(nrkeys);
 
-		log.logDebug(toString(), "Found "+nrkeys+" keys");
+		log.logDebug(toString(), Messages.getString("CombinationLookupDialog.Log.SomeKeysFound",String.valueOf(nrkeys))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<nrkeys;i++)
 		{
 			TableItem item = wKey.getNonEmpty(i);
@@ -555,7 +555,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		int connr = wConnection.getSelectionIndex();
 		DatabaseMeta inf = transMeta.getDatabase(connr);
 					
-		log.logDebug(toString(), "Looking at connection: "+inf.toString());
+		log.logDebug(toString(), Messages.getString("CombinationLookupDialog.LookatConnection")+inf.toString()); //$NON-NLS-1$
 	
 		DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, props, SWT.NONE, inf, transMeta.getDatabases());
 		std.setSelectedTable(wTable.getText());
@@ -580,10 +580,10 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 				{
 					Value v = r.getValue(i);
 					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(0, ""+(count+i+1));
+					ti.setText(0, String.valueOf((count+i+1))); //$NON-NLS-1$
 					ti.setText(1, v.getName());
 					ti.setText(2, v.getName());
-					ti.setText(3, "N");
+					ti.setText(3, "N"); //$NON-NLS-1$
 				}
 				wKey.removeEmptyRows();
 				wKey.setRowNums();
@@ -592,7 +592,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("CombinationLookupDialog.UnableToGetFieldsError.DialogTitle"), Messages.getString("CombinationLookupDialog.UnableToGetFieldsError.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -607,7 +607,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 			CombinationLookupMeta info = new CombinationLookupMeta();
 			getInfo(info);
 			String name = stepname;  // new name might not yet be linked to other steps! 
-			StepMeta stepMeta = new StepMeta(log, "CombinationLookup", name, info);
+			StepMeta stepMeta = new StepMeta(log, Messages.getString("CombinationLookupDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
 			Row prev = transMeta.getPrevStepFields(stepname);
 			
 			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev);
@@ -621,8 +621,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-					mb.setMessage("No SQL needs to be executed to make this step function properly.");
-					mb.setText("OK");
+					mb.setMessage(Messages.getString("CombinationLookupDialog.NoSQLNeeds.DialogMessage")); //$NON-NLS-1$
+					mb.setText(Messages.getString("CombinationLookupDialog.NoSQLNeeds.DialogTitle")); //$NON-NLS-1$
 					mb.open(); 
 				}
 			}
@@ -630,13 +630,13 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 				mb.setMessage(sql.getError());
-				mb.setText("ERROR");
+				mb.setText(Messages.getString("CombinationLookupDialog.SQLError.DialogTitle")); //$NON-NLS-1$
 				mb.open(); 
 			}
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Get SQL failed", "Unable to create the SQL statement because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("CombinationLookupDialog.UnableToCreateSQL.DialogTitle"), Messages.getString("CombinationLookupDialog.UnableToCreateSQL.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	

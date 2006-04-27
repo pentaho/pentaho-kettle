@@ -88,7 +88,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				data.keynrs[i]=row.searchValueIndex(meta.getKeyField()[i]);
 				if (data.keynrs[i]<0) // couldn't find field!
 				{
-					throw new KettleStepException("Field ["+meta.getKeyField()[i]+"] couldn't be found!");
+					throw new KettleStepException(Messages.getString("CombinationLookup.Exception.FieldNotFound",meta.getKeyField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				} 
 			}
 			
@@ -173,7 +173,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				if (meta.getDatabase().supportsSequences() && meta.getSequenceFrom()!=null && meta.getSequenceFrom().length()>0)
 				{
 					val_key=data.db.getNextSequenceValue(meta.getSequenceFrom(), meta.getTechnicalKeyField());
-					if (val_key!=null) logRowlevel("Found next sequence value: "+val_key.toString());
+					if (val_key!=null) logRowlevel(Messages.getString("CombinationLookup.Log.FoundNextSequenceValue")+val_key.toString()); //$NON-NLS-1$
 				}
 				else
 				// Use our own sequence here...
@@ -195,7 +195,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				
 				linesOutput++;
 				
-				log.logRowlevel(toString(), "added dimension entry with key="+val_key);
+				log.logRowlevel(toString(), Messages.getString("CombinationLookup.Log.AddedDimensionEntry")+val_key); //$NON-NLS-1$
 				
 				// Also store it in our Hashtable...
 				storeInCache(lu, val_key);
@@ -234,11 +234,11 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			lookupValues(r); // add new values to the row in rowset[0].
 			putRow(r);       // copy row to output rowset(s);
 				
-			if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
+			if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("CombinationLookup.Log.LineNumber")+linesRead); //$NON-NLS-1$
 		}
 		catch(KettleException e)
 		{
-			logError("Because of an error, this step can't continue: "+e.getMessage());
+			logError(Messages.getString("CombinationLookup.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -258,14 +258,14 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			try
 			{
 				data.db.connect();
-				logBasic("Connected to database...");
+				logBasic(Messages.getString("CombinationLookup.Log.ConnectedToDB")); //$NON-NLS-1$
 				data.db.setCommit(meta.getCommitSize());
 			
 				return true;
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				logError("Unable to connect to database: "+dbe.getMessage());
+				logError(Messages.getString("CombinationLookup.Log.UnableToConnectDB")+dbe.getMessage()); //$NON-NLS-1$
 			}
 		}
 		return false;
@@ -285,7 +285,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 	// Run is were the action happens!
 	public void run()
 	{
-		logBasic("Starting to run...");
+		logBasic(Messages.getString("CombinationLookup.Log.StartingToRun")); //$NON-NLS-1$
 		
 		try
 		{
@@ -293,7 +293,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("CombinationLookup.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}
