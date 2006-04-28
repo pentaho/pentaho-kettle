@@ -465,7 +465,7 @@ public class TableView extends Composite
 						if (activeTableRow>=maxrows)
 						{
 							TableItem item = new TableItem(table, SWT.NONE, activeTableRow);
-							item.setText(1, "field"+(table.getItemCount()-1));
+							item.setText(1, "");
 							setRowNums();
 						}
 
@@ -475,6 +475,13 @@ public class TableView extends Composite
 						{
 							edit(activeTableRow, activeTableColumn);
 						}
+                        else
+                        {
+                        	if (e.keyCode == SWT.ARROW_DOWN && activeTableRow==maxrows-1)
+                        	{
+                        		insertRowAfter();
+                        	}
+                        }
                         
 					}
 					else
@@ -548,7 +555,7 @@ public class TableView extends Composite
 						if (activeTableRow>=maxrows)
 						{
 							TableItem item = new TableItem(table, SWT.NONE, activeTableRow);
-							item.setText(1, "field"+(table.getItemCount()-1));
+							item.setText(1, "");
 							setRowNums();
 						}
 						if (sel)
@@ -589,7 +596,6 @@ public class TableView extends Composite
 						// Shift is pressed down: reset start of selection
                         // No start of selection known? reset as well.
 						selectionStart=activeTableRow;
-                        System.out.println("reset selection start to "+activeTableRow);
 					}
 					previous_shift = shift;
 					
@@ -624,7 +630,6 @@ public class TableView extends Composite
                         if (activeTableRow<0) activeTableRow=0;
                         
 						selectRows(activeTableRow, selectionStart);
-                        System.out.println("Selected items ["+activeTableRow+"-"+selectionStart+"]");
                         
 						table.showItem(activeTableItem);
                         return;
@@ -660,12 +665,19 @@ public class TableView extends Composite
 					{
                         switch(e.keyCode)
                         {
-                        case SWT.ARROW_DOWN: activeTableRow++; if (activeTableRow>=maxrows) activeTableRow = maxrows-1; break;
+                        case SWT.ARROW_DOWN: 
+                        	activeTableRow++; 
+                        	if (activeTableRow>=maxrows) 
+                        	{ 
+                        		insertRowAfter(); 
+                        	}
+                        	break;
                         case SWT.ARROW_UP  : activeTableRow--; if (activeTableRow<0) activeTableRow=0; break;
                         case SWT.HOME      : activeTableRow=0;   break;
                         case SWT.END       : activeTableRow=maxrows-1; break;
                         default: break;
                         }
+                        setPosition(activeTableRow, activeTableColumn);
                         table.deselectAll();
 						table.select(activeTableRow);
                         return;
@@ -821,7 +833,7 @@ public class TableView extends Composite
 							if (activeTableRow>=maxrows)
 							{
 								TableItem item = new TableItem(table, SWT.NONE, activeTableRow);
-								item.setText(1, "field"+(table.getItemCount()-1));
+								item.setText(1, "");
 								setRowNums();
 							}
 							//row = table.getItem(rownr);
@@ -874,8 +886,10 @@ public class TableView extends Composite
                             if (!visible) return;
                             index++;
                         }
-
-                        
+                        // OK, so they clicked in the table and we did not go into the invisible: below the last line!
+                        // Position on last row, 1st column and add a new line...
+                        setPosition(table.getItemCount()-1, 1);
+                        insertRowAfter();
                     }
                 }
             }
@@ -1083,18 +1097,15 @@ public class TableView extends Composite
 	
 	private void editSelected()
 	{
-        TableItem row = activeTableItem;
-        if (row==null) return;
-        int colnr = activeTableColumn;
-        int rownr = table.indexOf(row);
+        if (activeTableItem==null) return;
         
-		if (colnr>0)
+		if (activeTableColumn>0)
 		{
-			edit(rownr, colnr);
+			edit(activeTableRow, activeTableColumn);
 		}
 		else
 		{
-			selectRows(rownr, rownr);
+			selectRows(activeTableRow, activeTableRow);
 		}
 	}
 	
@@ -1125,13 +1136,15 @@ public class TableView extends Composite
         int rownr = table.indexOf(row);
         
 		TableItem item = new TableItem(table, SWT.NONE, rownr);		
-		item.setText(1, "field"+(table.getItemCount()-1));
+		item.setText(1, "");
 		
 		// Add undo information
 		TransAction ta = new TransAction();
 		String str[] = getItemText(item);
 		ta.setNew(new String[][] { str }, new int[] { rownr });
 		addUndo(ta);
+		
+		setRowNums();
 		
 		edit(rownr, 1);
 	}
@@ -1143,13 +1156,15 @@ public class TableView extends Composite
         int rownr = table.indexOf(row);
         
 		TableItem item = new TableItem(table, SWT.NONE, rownr+1);
-		item.setText(1, "field"+(table.getItemCount()-1));
+		item.setText(1, "");
 
 		// Add undo information
 		TransAction ta = new TransAction();
 		String str[] = getItemText(item);
 		ta.setNew(new String[][] { str }, new int[] { rownr+1 });
 		addUndo(ta);
+		
+		setRowNums();
 
 		edit(rownr+1, 1);	
 	}
@@ -1598,6 +1613,7 @@ public class TableView extends Composite
 
 	private void edit(int rownr, int colnr)
 	{
+		setPosition(rownr, colnr);
 		edit(rownr, colnr, true, (char)0);
 	}
 
