@@ -15,6 +15,7 @@
  
 package be.ibridge.kettle.job;
 
+import java.util.ArrayList;
 import java.util.Date;
 
 import be.ibridge.kettle.chef.JobTracker;
@@ -56,6 +57,12 @@ public class Job extends Thread
 	private Date      startDate, endDate, currentDate, logDate, depDate;
 	
 	private boolean active, stopped;
+    
+    /**
+     * The rows that were passed onto this job by a previous transformation.  
+     * These rows are passed onto the first job entry in this job (on the result object)
+     */
+    private ArrayList sourceRows;
 	
 	public Job(LogWriter lw, String name, String file, String args[])
 	{
@@ -64,7 +71,7 @@ public class Job extends Thread
 		jobMeta = new JobMeta(log);
 		jobMeta.setName(name);
 		jobMeta.setFilename(file);
-		jobMeta.arguments=args;
+		jobMeta.setArguments(args);
 		active=false;
 		stopped=false;
         jobTracker = new JobTracker(jobMeta);
@@ -198,8 +205,23 @@ public class Job extends Thread
         JobEntryResult jerBefore = new JobEntryResult(null, "Job entry started", reason, startpoint);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerBefore));
 
-		// Execute this entry...
-		Result result = jei.execute(prev_result, nr, rep, this);
+        Result prevResult = prev_result;
+        // If we don't have any result yet or if there are no result rows available, use the results from the parent job
+        if (prev_result==null)
+        {
+            prevResult = new Result();
+            prevResult.setRows(sourceRows);
+        }
+        else
+        {
+            if (prevResult.getRows()==null)
+            {
+                prevResult.setRows(sourceRows);
+            }
+        }
+
+        // Execute this entry...
+        Result result = jei.execute(prevResult, nr, rep, this);
 		
 		// Save this result as well...
         JobEntryResult jerAfter = new JobEntryResult(result, "Job entry ended", null, startpoint);
@@ -251,7 +273,7 @@ public class Job extends Thread
 		// In this case, return the previous result.
 		if (res==null)
 		{
-			res=prev_result;
+			res=prevResult;
 		}
 
 		return res;
@@ -472,7 +494,16 @@ public class Job extends Thread
     {
         this.jobTracker = jobTracker;
     }
+
+    public void setSourceRows(ArrayList sourceRows)
+    {
+        this.sourceRows = sourceRows;
+    }
 	
+    public ArrayList getSourceRows()
+    {
+        return sourceRows;
+    }
 }
 
 

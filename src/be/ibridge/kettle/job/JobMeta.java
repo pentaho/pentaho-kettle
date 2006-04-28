@@ -72,7 +72,7 @@ public class JobMeta implements Cloneable, XMLInterface
 
 	private  RepositoryDirectory directory;
 	
-	public  String     arguments[];
+	private  String     arguments[];
 	
 	private  boolean        changed, changed_entries, changed_hops, changed_notes;
 	private  DatabaseMeta   logconnection;
@@ -1687,6 +1687,22 @@ public class JobMeta implements Cloneable, XMLInterface
     public void setLogTable(String logTable)
     {
         this.logTable = logTable;
+    }
+
+    /**
+     * @return Returns the arguments.
+     */
+    public String[] getArguments()
+    {
+        return arguments;
+    }
+
+    /**
+     * @param arguments The arguments to set.
+     */
+    public void setArguments(String[] arguments)
+    {
+        this.arguments = arguments;
     }
 
 

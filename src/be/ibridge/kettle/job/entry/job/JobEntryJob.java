@@ -17,6 +17,7 @@ package be.ibridge.kettle.job.entry.job;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
@@ -24,6 +25,7 @@ import org.w3c.dom.Node;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -56,8 +58,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
 	public  String  arguments[];
 	public  boolean argFromPrevious;
-    private boolean runEveryResultRow;
-
+    public  boolean execPerRow;
     
 	public  boolean setLogfile;
 	public  String  logfile, logext;
@@ -67,8 +68,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	public  boolean parallel;
     private String directoryPath;
 
-	
-	public JobEntryJob(String name)
+    public JobEntryJob(String name)
 	{
 		super(name, "");
 		setType(JobEntryInterface.TYPE_JOBENTRY_JOB);
@@ -158,7 +158,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             retval.append("      "+XMLHandler.addTagValue("directory",         directoryPath)); // don't loose this info (backup/recovery)
         }
 		retval.append("      "+XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
-        retval.append("      "+XMLHandler.addTagValue("run_every_result_row", runEveryResultRow));
+        retval.append("      "+XMLHandler.addTagValue("exec_per_row", execPerRow));
 		retval.append("      "+XMLHandler.addTagValue("set_logfile",       setLogfile));
 		retval.append("      "+XMLHandler.addTagValue("logfile",           logfile));
 		retval.append("      "+XMLHandler.addTagValue("logext",            logext));
@@ -184,7 +184,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			setFileName( XMLHandler.getTagValue(entrynode, "filename") );
 			setJobName( XMLHandler.getTagValue(entrynode, "jobname") );
 			argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
-            runEveryResultRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "run_every_result_row") );
+            execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "exec_per_row") );
             setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
 			addDate = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_date") );
 			addTime = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_time") );
@@ -227,7 +227,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			
 			filename          = rep.getJobEntryAttributeString(id_jobentry, "filename");
 			argFromPrevious   = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
-            runEveryResultRow = rep.getJobEntryAttributeBoolean(id_jobentry, "run_every_result_row");
+            execPerRow = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
 	
 			setLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
 			addDate          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
@@ -267,7 +267,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             rep.saveJobEntryAttribute(id_job, getID(), "dir_path", getDirectory()!=null?getDirectory().getPath():"");
             rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
-            rep.saveJobEntryAttribute(id_job, getID(), "run_every_result_row", runEveryResultRow);
+            rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_date", addDate);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
@@ -292,90 +292,132 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
 	{
-		LogWriter log = LogWriter.getInstance();
-
-		Result result = prev_result;
-		result.setEntryNr( nr );
-		
-		LogWriter logwriter = log;
-		if (setLogfile) logwriter = LogWriter.getInstance(getLogFilename(), true, loglevel);
-		
-		try
-		{
-            JobMeta jobMeta = null;
-            if (rep!=null && jobname!=null && jobname.length()>0 && directory!=null) // load from the repository...
-            {
-                log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+jobname+"]");
-                jobMeta = new JobMeta(logwriter, rep, jobname, directory);
-            }
-            else // Get it from the XML file
-            if (filename!=null)
-            {
-                log.logDetailed(toString(), "Loading job from XML file : ["+filename+"]");
-                jobMeta = new JobMeta(logwriter, filename);
-            }
+        LogWriter log = LogWriter.getInstance();
+        
+        try
+        {
+    		Result result = prev_result;
+    		result.setEntryNr( nr );
+    		
+    		LogWriter logwriter = log;
+    		if (setLogfile) logwriter = LogWriter.getInstance(getLogFilename(), true, loglevel);
+    		
+            int iteration = 0;
+            String args[] = arguments;
+            Row resultRow = null;
+            boolean first = true;
+            List rows = prev_result.getRows();
             
-            if (jobMeta==null)
+            while( ( first && !execPerRow ) || ( execPerRow && rows!=null && iteration<rows.size() && result.getNrErrors()==0 ) )
             {
-                throw new KettleException("Unable to load the job: please specify the name and repository directory OR a filename");
-            }
-            
-            Job job = new Job(logwriter, StepLoader.getInstance(), rep, jobMeta);
-            
-            parentJob.getJobTracker().addJobTracker(job.getJobTracker()); // Link the job with the sub-job
-            job.getJobTracker().setParentJobTracker(parentJob.getJobTracker()); // Link both ways!
-            
-            if (parentJob.getJobMeta().isBatchIdPassed())
-            {
-                job.getJobMeta().setBatchId(parentJob.getJobMeta().getBatchId());
-            }
-			
-            int runNr = 0;
-            int nrRuns = 1;
-            boolean forEvery = false;
-            if (prev_result.getRows()!=null) nrRuns = prev_result.getRows().size();
-            
-            while (runNr<nrRuns && result.getResult())
-            {
-                // So, for every result row, the job is executed with the one line as the resultset.
-                // We can then make a step that sets environment variables etc.
-                // 
-                Result pass;
-                if (forEvery)
+                first=false;
+                if (rows!=null) resultRow = (Row) rows.get(iteration);
+    
+                JobMeta jobMeta = null;
+                if (rep!=null && jobname!=null && jobname.length()>0 && directory!=null) // load from the repository...
                 {
-                    pass = (Result) prev_result.clone();
-                    ArrayList passRows = new ArrayList();
-                    passRows.add(prev_result.getRows().get(runNr));
-                    pass.setRows(passRows);
+                    log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+jobname+"]");
+                    jobMeta = new JobMeta(logwriter, rep, jobname, directory);
+                }
+                else // Get it from the XML file
+                if (filename!=null)
+                {
+                    log.logDetailed(toString(), "Loading job from XML file : ["+filename+"]");
+                    jobMeta = new JobMeta(logwriter, filename);
+                }
+                
+                if (jobMeta==null)
+                {
+                    throw new KettleException("Unable to load the job: please specify the name and repository directory OR a filename");
+                }
+                
+                Job job = new Job(logwriter, StepLoader.getInstance(), rep, jobMeta);
+                
+                parentJob.getJobTracker().addJobTracker(job.getJobTracker()); // Link the job with the sub-job
+                job.getJobTracker().setParentJobTracker(parentJob.getJobTracker()); // Link both ways!
+                
+                if (parentJob.getJobMeta().isBatchIdPassed())
+                {
+                    job.getJobMeta().setBatchId(parentJob.getJobMeta().getBatchId());
+                }
+    			
+                if (execPerRow) // Execute for each input row
+                {
+                    if (argFromPrevious) // Copy the input row to the (command line) arguments
+                    {
+                        args = null;
+                        if (resultRow!=null)
+                        {
+                            args = new String[resultRow.size()];
+                            for (int i=0;i<resultRow.size();i++)
+                            {
+                                args[i] = resultRow.getValue(i).toString();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Just pass a single row
+                        ArrayList newList = new ArrayList();
+                        newList.add(resultRow);
+                        job.setSourceRows(newList);
+                    }
                 }
                 else
                 {
-                    pass = prev_result;
+                    if (argFromPrevious)
+                    {
+                        // Only put the first Row on the arguments
+                        args = null;
+                        if (resultRow!=null)
+                        {
+                            args = new String[resultRow.size()];
+                            for (int i=0;i<resultRow.size();i++)
+                            {
+                                args[i] = resultRow.getValue(i).toString();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Keep it as it was...
+                        job.setSourceRows(prev_result.rows);
+                    }
                 }
+    
+                job.getJobMeta().setArguments( args );
                 
                 JobEntryJobRunner runner = new JobEntryJobRunner( job, prev_result, nr);
     			new Thread(runner).start();
-    			
-    			while (!runner.isFinished() && !parentJob.isStopped())
-    			{
-    				try { Thread.sleep(100);}
-    				catch(InterruptedException e) { }
-    			}
-    			
-    			// if the parent-job was stopped, stop the sub-job too... 
-    			if (parentJob.isStopped())
-    			{
-    				job.stopAll();
-    				runner.waitUntilFinished(); // Wait until finished!
-    				job.endProcessing("stop");
-    			}
-    			else
-    			{
-    				job.endProcessing("end");
-    			}
-    			
-    			Result oneResult = runner.getResult();
-                if (runNr==0)
+        		
+                try
+                {
+        			while (!runner.isFinished() && !parentJob.isStopped())
+        			{
+        				try { Thread.sleep(100);}
+        				catch(InterruptedException e) { }
+        			}
+            			
+        			// if the parent-job was stopped, stop the sub-job too... 
+        			if (parentJob.isStopped())
+        			{
+        				job.stopAll();
+        				runner.waitUntilFinished(); // Wait until finished!
+        				job.endProcessing("stop");
+        			}
+        			else
+        			{
+        				job.endProcessing("end");
+        			}
+                }
+        		catch(KettleException je)
+        		{
+        			log.logError(toString(), "Unable to open job entry job with name ["+getName()+"] : "+Const.CR+je.toString());
+        			result.setNrErrors(1);
+        		}
+    
+                Result oneResult = runner.getResult();
+                if (iteration==0)
                 {
                     result = oneResult;
                 }
@@ -383,28 +425,34 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 {
                     result.add(oneResult);
                 }
-                
-                runNr++;
+    
+                iteration++;
             }
-		}
-		catch(KettleException je)
-		{
-			log.logError(toString(), "Unable to open job entry job with name ["+getName()+"] : "+Const.CR+je.toString());
-			result.setNrErrors(1);
-		}
-		
-		if (setLogfile) logwriter.close();
-		
-		if (result.getNrErrors() > 0)
-		{
-			result.setResult( false );
-		}
-		else
-		{
-			result.setResult( true );
-		}
-
-		return result;
+    		
+    		if (setLogfile) logwriter.close();
+    		
+    		if (result.getNrErrors() > 0)
+    		{
+    			result.setResult( false );
+    		}
+    		else
+    		{
+    			result.setResult( true );
+    		}
+    
+    		return result;
+        }
+        catch(KettleException ke)
+        {
+            log.logError(toString(), "Error running job entry 'job' : "+ke.toString());
+            log.logError(toString(), Const.getStackTracker(ke));
+            
+            Result result = new Result();
+            result.setResult(false);
+            result.setNrErrors(1L);
+            
+            return result;
+        }
 	}
 	
 	
@@ -456,17 +504,17 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
     /**
      * @return Returns the runEveryResultRow.
      */
-    public boolean isRunEveryResultRow()
+    public boolean isExecPerRow()
     {
-        return runEveryResultRow;
+        return execPerRow;
     }
 
     /**
      * @param runEveryResultRow The runEveryResultRow to set.
      */
-    public void setRunEveryResultRow(boolean runEveryResultRow)
+    public void setExecPerRow(boolean runEveryResultRow)
     {
-        this.runEveryResultRow = runEveryResultRow;
+        this.execPerRow = runEveryResultRow;
     }
 
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {

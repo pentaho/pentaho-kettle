@@ -69,6 +69,7 @@ import be.ibridge.kettle.trans.step.rowsfromresult.RowsFromResultMeta;
 import be.ibridge.kettle.trans.step.rowstoresult.RowsToResultMeta;
 import be.ibridge.kettle.trans.step.scriptvalues.ScriptValuesMeta;
 import be.ibridge.kettle.trans.step.selectvalues.SelectValuesMeta;
+import be.ibridge.kettle.trans.step.setvariable.SetVariableMeta;
 import be.ibridge.kettle.trans.step.sortrows.SortRowsMeta;
 import be.ibridge.kettle.trans.step.sql.ExecSQLMeta;
 import be.ibridge.kettle.trans.step.streamlookup.StreamLookupMeta;
@@ -135,81 +136,83 @@ public class BaseStep extends Thread
             ConstantMeta.class,
             DenormaliserMeta.class,
             FlattenerMeta.class,
-            ValueMapperMeta.class
+            ValueMapperMeta.class,
+            SetVariableMeta.class
 		};
 	
 	public static final String type_desc[] = 
 		{
 			null,
-			Messages.getString("BaseStep.TypeDesc.TextFileInput"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.TextFileOutput"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.TableInput"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.TableOutput"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.TextFileInput"),    //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.TextFileOutput"),  //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.TableInput"),     //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.TableOutput"),   //$NON-NLS-1$
 			Messages.getString("BaseStep.TypeDesc.SelectValues"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.FilterRows"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.DBLookup"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.SortRows"),               //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.FilterRows"),  //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.DBLookup"),   //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.SortRows"),        //$NON-NLS-1$
 			Messages.getString("BaseStep.TypeDesc.StreamLookup"),   //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.Sequence"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.DimensionLookup"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.Sequence"),      //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.DimensionLookup"),    //$NON-NLS-1$
 			Messages.getString("BaseStep.TypeDesc.CombinationLookup"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.Dummy"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.JoinRows"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.AggregateRows"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.SystemInfo"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.Dummy"),            //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.JoinRows"),        //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.AggregateRows"),  //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.SystemInfo"),    //$NON-NLS-1$
 			Messages.getString("BaseStep.TypeDesc.RowGenerator"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.ScriptValue"), //$NON-NLS-1$
-			Messages.getString("BaseStep.DBProc"),                //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.ScriptValue"),    //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.DBProc"),        //$NON-NLS-1$
 			Messages.getString("BaseStep.TypeDesc.InsertUpdate"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.Update"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.Delete"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.Normaliser"),          //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.FieldSplitter"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.Unique"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.GroupBy"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.RowsFromResult"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.RowsToResult"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.CubeInput"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.CubeOutput"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.DBJoin"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.XBaseInput"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.ExcelInput"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.NullIf"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.Update"),      //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.Delete"),     //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.Normaliser"),             //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.FieldSplitter"),         //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.Unique"),               //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.GroupBy"),             //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.RowsFromResult"),     //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.RowsToResult"),      //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.CubeInput"),        //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.CubeOutput"),      //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.DBJoin"),         //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.XBaseInput"),    //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.ExcelInput"),   //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeDesc.NullIf"),      //$NON-NLS-1$
             Messages.getString("BaseStep.TypeDesc.Calculator"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.ExecSQL"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.Mapping"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.MappingInput"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.ExecSQL"),   //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.Mapping"),  //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.MappingInput"),   //$NON-NLS-1$
             Messages.getString("BaseStep.TypeDesc.MappingOutput"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.XMLInput"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.XMLOutput"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.MergeRows"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.Constant"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.Denormaliser"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.Flatterner"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.ValueMapper") //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.XMLInput"),     //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.XMLOutput"),   //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.MergeRows"),  //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.Constant"),  //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.Denormaliser"),  //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.Flatterner"),   //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.ValueMapper"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeDesc.SetVariable") //$NON-NLS-1$
 		};
 
 	public static final String type_long_desc[] = 
 		{
 			null,
-			Messages.getString("BaseStep.TypeLongDesc.TextFileInput"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeLongDesc.TableInput"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeLongDesc.Output"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeLongDesc.SelectValues"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeLongDesc.FilterRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.TextFileInput"),        //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"),      //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.TableInput"),         //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.Output"),            //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.SelectValues"),     //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.FilterRows"),      //$NON-NLS-1$
 			Messages.getString("BaseStep.TypeLongDesc.DatabaseLookup"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeLongDesc.SortRows"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeLongDesc.StreamLookup"),              //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeLongDesc.AddSequence"),               //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeLongDesc.DimensionUpdate"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.SortRows"),      //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.StreamLookup"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.AddSequence"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.DimensionUpdate"),    //$NON-NLS-1$
 			Messages.getString("BaseStep.TypeLongDesc.CombinationUpdate"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeLongDesc.Dummy"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeLongDesc.JoinRows"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeLongDesc.AggregateRows"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.Dummy"),            //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.JoinRows"),        //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.AggregateRows"),  //$NON-NLS-1$
 			Messages.getString("BaseStep.TypeLongDesc.GetSystemInfo"), //$NON-NLS-1$
 			Messages.getString("BaseStep.TypeLongDesc.GenerateRows"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeLongDesc.JavaScript"), //$NON-NLS-1$
+			Messages.getString("BaseStep.TypeLongDesc.JavaScript"),  //$NON-NLS-1$
 			Messages.getString("BaseStep.TypeLongDesc.CallDBProcedure"), //$NON-NLS-1$
 			Messages.getString("BaseStep.TypeLongDesc.InsertOrUpdate"), //$NON-NLS-1$
 			Messages.getString("BaseStep.TypeLongDesc.Update"), //$NON-NLS-1$
@@ -237,7 +240,8 @@ public class BaseStep extends Thread
             Messages.getString("BaseStep.TypeLongDesc.AddConstants"), //$NON-NLS-1$
             Messages.getString("BaseStep.TypeLongDesc.RowDenormaliser"), //$NON-NLS-1$
             Messages.getString("BaseStep.TypeLongDesc.RowFalttener"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeLongDesc.ValueMapper") //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.ValueMapper"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.SetVariables"), //$NON-NLS-1$
 		};
 
 	public static final String type_tooltip_desc[] = 
@@ -288,7 +292,8 @@ public class BaseStep extends Thread
             Messages.getString("BaseStep.TypeTooltipDesc.Addconstants"), //$NON-NLS-1$
             Messages.getString("BaseStep.TypeTooltipDesc.RowsDenormalises",Const.CR), //$NON-NLS-1$ //$NON-NLS-2$
             Messages.getString("BaseStep.TypeTooltipDesc.Rowflattener"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeTooltipDesc.MapValues") //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.MapValues"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.SetVariables") //$NON-NLS-1$
 		};
 
 	public static final String image_filename[] =
@@ -339,7 +344,8 @@ public class BaseStep extends Thread
             "CST.png", //$NON-NLS-1$
             "UNP.png", //$NON-NLS-1$
             "FLA.png", //$NON-NLS-1$
-            "VMP.png" //$NON-NLS-1$
+            "VMP.png", //$NON-NLS-1$
+            "VAR.png"  //$NON-NLS-1$
 		};
 	
 	public static final String category[] = 
@@ -391,6 +397,7 @@ public class BaseStep extends Thread
             "Transform",        // "Denormaliser" //$NON-NLS-1$
             "Transform",        // "Flattener" //$NON-NLS-1$
             "Transform",        // "ValueMapper" //$NON-NLS-1$
+            "Extra",            // "SetVariables" // $NON-NLS-1$
 		};
 
     public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Mapping", "Experimental" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
