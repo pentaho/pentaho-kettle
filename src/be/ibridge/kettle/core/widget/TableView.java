@@ -103,10 +103,9 @@ public class TableView extends Composite
 	private int     	  selectionStart;
 	
 	public  Table         table;
-	// public  TableCursor   cursor; 
+
 	private TableEditor editor;
 	private TableColumn[] tablecolumn;
-	// private ArrayList     items;
 	
 	private Props         props;
 
@@ -249,15 +248,6 @@ public class TableView extends Composite
 		
 		setRowNums();
 		
-        /*
-		cursor = new TableCursor(table, SWT.NONE);
-		cursor.setVisible(true);
-        props.setLook(cursor, Props.WIDGET_STYLE_TABLE);
-		
-		cursor.layout();
-		cursor.pack();
-		*/
-        
 		// create a ControlEditor field to edit the contents of a cell
 		editor = new TableEditor(table);
         editor.grabHorizontal = true;
@@ -1524,6 +1514,7 @@ public class TableView extends Composite
 		{
 			setPosition(rowbefore, 1);
 			table.setSelection(rowbefore);
+			activeTableRow=rowbefore;
 		}
 
 		setRowNums();
@@ -1600,18 +1591,9 @@ public class TableView extends Composite
 	
 	private void setPosition(int rownr, int colnr)
 	{
-        /*
-		if (rownr<table.getItemCount() && table.getItemCount()>0)
-		{
-			TableItem row   = table.getItem(rownr);
-	
-			cursor.setSelection(row, colnr);
-			cursor.setFocus();
-			cursor.setVisible(true);
-			table.showItem(row);
-			table.setSelection(new TableItem[] { row });
-		}
-        */
+		activeTableColumn=colnr;
+		activeTableRow=rownr;
+		activeTableItem=table.getItem(rownr);
 	}
 
 	private void edit(int rownr, int colnr)
