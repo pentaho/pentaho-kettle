@@ -30,6 +30,7 @@ import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleJobException;
 import be.ibridge.kettle.job.Job;
+import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
@@ -128,6 +129,14 @@ public class Kitchen
 			log.logError("Spoon", "Error loading steps... halting Kitchen!");
 			System.exit(8);
 		}
+        
+        /* Load the plugins etc.*/
+        JobEntryLoader jeloader = JobEntryLoader.getInstance();
+        if (!jeloader.read())
+        {
+            log.logError("Spoon", "Error loading job entries & plugins... halting Kitchen!");
+            return;
+        }
 
 		Date start, stop;
 		Calendar cal;
