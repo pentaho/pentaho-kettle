@@ -1035,13 +1035,20 @@ public class SpoonGraph extends Canvas
         final int mousex = x;
         final int mousey = y;
         
-        // Dispose the menu if it was allocated beforehand...
-        if (mPop!=null && !mPop.isDisposed()) mPop.dispose();
+        // Re-use the popup menu if it was allocated beforehand...
+        if (mPop==null)
+        {
+            mPop = new Menu((Control) this);
+        }
+        else
+        {
+        	MenuItem children[] = mPop.getItems();
+        	for (int i=0;i<children.length;i++) children[i].dispose();
+        }
 
         final StepMeta stepMeta = spoon.getTransMeta().getStep(x, y, iconsize);
         if (stepMeta != null) // We clicked on a Step!
         {
-            mPop = new Menu((Control) this);
             MenuItem miNewHop = null;
             MenuItem miHideStep = null;
 
@@ -1372,7 +1379,6 @@ public class SpoonGraph extends Canvas
             final TransHopMeta hi = findHop(x, y);
             if (hi != null) // We clicked on a HOP!
             {
-                mPop = new Menu((Control) this);
                 MenuItem miEditHop = new MenuItem(mPop, SWT.CASCADE);
                 miEditHop.setText(Messages.getString("SpoonGraph.PopupMenu.EditHop")); //$NON-NLS-1$
                 MenuItem miFlipHop = new MenuItem(mPop, SWT.CASCADE);
@@ -1468,8 +1474,6 @@ public class SpoonGraph extends Canvas
                 {
                     // Delete note
                     // Edit note
-                    Menu mPop = new Menu((Control) this);
-
                     MenuItem miNoteEdit = new MenuItem(mPop, SWT.CASCADE);
                     miNoteEdit.setText(Messages.getString("SpoonGraph.PopupMenu.EditNote")); //$NON-NLS-1$
                     MenuItem miNoteDel = new MenuItem(mPop, SWT.CASCADE);
@@ -1501,11 +1505,8 @@ public class SpoonGraph extends Canvas
                     setMenu(mPop);
                 }
                 else
-                // No step, hop or note: clicked on the background....
                 {
-                    // The popup-menu...
-                    mPop = new Menu((Control) this);
-
+                	// No step, hop or note: clicked on the background....
                     MenuItem miNoteNew = new MenuItem(mPop, SWT.CASCADE);
                     miNoteNew.setText(Messages.getString("SpoonGraph.PopupMenu.NewNote")); //$NON-NLS-1$
                     miNoteNew.addSelectionListener(new SelectionAdapter()
