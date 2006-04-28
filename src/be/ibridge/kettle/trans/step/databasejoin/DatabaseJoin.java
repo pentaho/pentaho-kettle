@@ -51,28 +51,28 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 	private synchronized void lookupValues(Row row)
 		throws KettleException
 	{
-		debug = "Start of lookupValues()";
+		debug = Messages.getString("DatabaseJoin.Log.StartOfLookupValues"); //$NON-NLS-1$
 		if (first)
 		{
 			first=false;
-			debug = "first row: set lookup statement";
+			debug = Messages.getString("DatabaseJoin.Log.SetLookupStatement"); //$NON-NLS-1$
 
-			logDetailed("Checking row: "+row.toString());
+			logDetailed(Messages.getString("DatabaseJoin.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
 			data.keynrs = new int[meta.getParameterField().length];
 			
-			debug = "first row: get key fieldnrs";
+			debug = Messages.getString("DatabaseJoin.Log.GetKeyfiedNumbers"); //$NON-NLS-1$
 			for (int i=0;i<meta.getParameterField().length;i++)
 			{
 				data.keynrs[i]=row.searchValueIndex(meta.getParameterField()[i]);
 				if (data.keynrs[i]<0)
 				{
-					throw new KettleStepException("Field ["+meta.getParameterField()[i]+"] is required and couldn't be found!");
+					throw new KettleStepException(Messages.getString("DatabaseJoin.Exception.FieldNotFound",meta.getParameterField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		}
 		
 		// Construct the parameters row...
-		debug = "get parameters";
+		debug = Messages.getString("DatabaseJoin.Log.GetParameters"); //$NON-NLS-1$
 		Row param = new Row();
 		for (int i=0;i<data.keynrs.length;i++)
 		{
@@ -80,11 +80,11 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 		}
 		
 		// Set the values on the prepared statement (for faster exec.)
-		debug = "open query & resultset";
+		debug = Messages.getString("DatabaseJoin.Log.OpenQuery"); //$NON-NLS-1$
 		ResultSet rs = data.db.openQuery(data.pstmt, param);
 		
 		// Get a row from the database...
-		debug = "get row";
+		debug = Messages.getString("DatabaseJoin.Log.GetRow"); //$NON-NLS-1$
 		Row add = data.db.getRow(rs);
 		linesInput++;
 		
@@ -97,7 +97,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			newrow.addRow(add);
 			putRow(newrow);
 			
-			logRowlevel("Put out row: "+add);
+			logRowlevel(Messages.getString("DatabaseJoin.Log.PutoutRow")+add); //$NON-NLS-1$
 			
 			// Get a new row
 			if (meta.getRowLimit()==0 || counter<meta.getRowLimit()) 
@@ -121,10 +121,10 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			putRow(newrow);
 		}
 		
-		debug = "close query";
+		debug = Messages.getString("DatabaseJoin.Log.CloseQuery"); //$NON-NLS-1$
 		data.db.closeQuery(rs);
 		
-		debug = "end of lookupValues()";
+		debug = Messages.getString("DatabaseJoin.Log.EndOfLookupValues"); //$NON-NLS-1$
 	}
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
@@ -143,11 +143,11 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 		{
 			lookupValues(r); // add new values to the row in rowset[0].
 			
-			if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
+			if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("DatabaseJoin.Log.LineNumber")+linesRead); //$NON-NLS-1$
 		}
 		catch(KettleException e)
 		{
-			logError("Because of an error, this step can't continue: "+e.getMessage());
+			logError(Messages.getString("DatabaseJoin.Log.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -169,7 +169,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			{
 				data.db.connect();
 				
-				logBasic("Connected to database...");
+				logBasic(Messages.getString("DatabaseJoin.Log.ConnectedToDB")); //$NON-NLS-1$
 	
 				// Prepare the SQL statement
 				data.pstmt = data.db.prepareSQL(meta.getSql());
@@ -179,7 +179,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			}
 			catch(KettleException e)
 			{
-				logError("A database error occurred, stopping everything: "+e.getMessage());
+				logError(Messages.getString("DatabaseJoin.Log.DatabaseError")+e.getMessage()); //$NON-NLS-1$
 				data.db.disconnect();
 			}
 		}
@@ -201,7 +201,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 	// Run is were the action happens!
 	public void run()
 	{
-		logBasic("Starting to run...");
+		logBasic(Messages.getString("DatabaseJoin.Log.StartingToRun")); //$NON-NLS-1$
 		
 		try
 		{
@@ -209,7 +209,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in part : ["+debug+"]");
+			logError(Messages.getString("DatabaseJoin.Log.UnexpectedError")+debug+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 			logError(e.toString());
 			setErrors(1);
 			stopAll();

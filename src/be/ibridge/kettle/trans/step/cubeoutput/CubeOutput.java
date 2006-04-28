@@ -75,7 +75,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 		
 		putRow(r);       // in case we want it to go further...
 		
-		if ((linesOutput>0) && (linesOutput%Const.ROWS_UPDATE)==0)logBasic("linenr "+linesOutput);
+		if ((linesOutput>0) && (linesOutput%Const.ROWS_UPDATE)==0)logBasic(Messages.getString("CubeOutput.Log.LineNumber")+linesOutput); //$NON-NLS-1$
 		
 		return result;
 	}
@@ -98,7 +98,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Error writing line :"+e.toString());
+			logError(Messages.getString("CubeOutput.Log.ErrorWritingLine")+e.toString()); //$NON-NLS-1$
 			return false;
 		}
 
@@ -120,13 +120,13 @@ public class CubeOutput extends BaseStep implements StepInterface
 				data.fos=new GZIPOutputStream(new FileOutputStream(fil));
 				data.dos=new DataOutputStream(data.fos);
 			
-				debug="start";
+				debug=Messages.getString("CubeOutput.Debug.Status"); //$NON-NLS-1$
 
 				return true;
 			}
 			catch(IOException ioe)
 			{
-				logError("Error opening cube output file: "+ioe.toString());
+				logError(Messages.getString("CubeOutput.Log.ErrorOpeningCubeOutputFile")+ioe.toString()); //$NON-NLS-1$
 			}
 		}
 		return false;
@@ -142,7 +142,7 @@ public class CubeOutput extends BaseStep implements StepInterface
         }
         catch(IOException e)
         {
-            logError("Error closing file "+meta.getFilename());
+            logError(Messages.getString("CubeOutput.Log.ErrorClosingFile")+meta.getFilename()); //$NON-NLS-1$
             setErrors(1);
             stopAll();
         }
@@ -155,12 +155,12 @@ public class CubeOutput extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("CubeOutput.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("CubeOutput.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}

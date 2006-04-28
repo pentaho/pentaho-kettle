@@ -306,52 +306,52 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		{
 			String commit;
 			
-			tablename      = XMLHandler.getTagValue(stepnode, "table");
-			String con = XMLHandler.getTagValue(stepnode, "connection");
+			tablename      = XMLHandler.getTagValue(stepnode, "table"); //$NON-NLS-1$
+			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
 			database = Const.findDatabase(databases, con);
-			commit     = XMLHandler.getTagValue(stepnode, "commit");
+			commit     = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
 			commitSize = Const.toInt(commit, 0);
 			
-			replaceFields ="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "replace"));
-			useHash    ="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "crc"));
+			replaceFields ="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "replace")); //$NON-NLS-1$ //$NON-NLS-2$
+			useHash    ="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "crc")); //$NON-NLS-1$ //$NON-NLS-2$
 			
-			hashField  = XMLHandler.getTagValue(stepnode, "crcfield");
+			hashField  = XMLHandler.getTagValue(stepnode, "crcfield"); //$NON-NLS-1$
 	
-			Node keys = XMLHandler.getSubNode(stepnode, "fields");
-			int nrkeys    = XMLHandler.countNodes(keys, "key");
+			Node keys = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+			int nrkeys    = XMLHandler.countNodes(keys, "key"); //$NON-NLS-1$
 			
 			allocate(nrkeys);
 			
 			// Read keys to dimension 
 			for (int i=0;i<nrkeys;i++)
 			{
-				Node knode = XMLHandler.getSubNodeByNr(keys, "key", i);
-				keyField[i]      = XMLHandler.getTagValue(knode, "name");
-				keyLookup[i]= XMLHandler.getTagValue(knode, "lookup");
+				Node knode = XMLHandler.getSubNodeByNr(keys, "key", i); //$NON-NLS-1$
+				keyField[i]      = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
+				keyLookup[i]= XMLHandler.getTagValue(knode, "lookup"); //$NON-NLS-1$
 			}
 	
 			// If this is empty: use auto-increment field!
-			sequenceFrom = XMLHandler.getTagValue(stepnode, "sequence");
+			sequenceFrom = XMLHandler.getTagValue(stepnode, "sequence"); //$NON-NLS-1$
 			
-			Node fields = XMLHandler.getSubNode(stepnode, "fields");
-			Node retkey = XMLHandler.getSubNode(fields, "return");
-			technicalKeyField     = XMLHandler.getTagValue(retkey, "name");
-			useAutoinc  = !"N".equalsIgnoreCase(XMLHandler.getTagValue(retkey, "use_autoinc"));
+			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+			Node retkey = XMLHandler.getSubNode(fields, "return"); //$NON-NLS-1$
+			technicalKeyField     = XMLHandler.getTagValue(retkey, "name"); //$NON-NLS-1$
+			useAutoinc  = !"N".equalsIgnoreCase(XMLHandler.getTagValue(retkey, "use_autoinc")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to load step info from XML", e);
+			throw new KettleXMLException(Messages.getString("CombinationLookupMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
 	public void setDefault()
 	{		
-		tablename      = "dim table name";
+		tablename      = Messages.getString("CombinationLookupMeta.DimensionTableName.Label"); //$NON-NLS-1$
 		database = null;
 		commitSize = 0;
 		replaceFields    = true;
 		useHash        = true;
-		hashField   = "hashcode";
+		hashField   = "hashcode"; //$NON-NLS-1$
 
 		int nrkeys    = 0;
 		
@@ -360,11 +360,11 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		// Read keys to dimension 
 		for (int i=0;i<nrkeys;i++)
 		{
-			keyField[i]      ="key"+i;
-			keyLookup[i]="keylookup"+i;
+			keyField[i]      ="key"+i; //$NON-NLS-1$
+			keyLookup[i]="keylookup"+i; //$NON-NLS-1$
 		}
 
-		technicalKeyField     = "technical /surrogate key field";
+		technicalKeyField     = "technical /surrogate key field"; //$NON-NLS-1$
 		useAutoinc  = true;
 	}
 
@@ -398,31 +398,31 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("      "+XMLHandler.addTagValue("table", tablename));
-		retval.append("      "+XMLHandler.addTagValue("connection", database==null?"":database.getName()));
-		retval.append("      "+XMLHandler.addTagValue("commit", commitSize));
-		retval.append("      "+XMLHandler.addTagValue("replace", replaceFields));
-		retval.append("      "+XMLHandler.addTagValue("crc", useHash));
-		retval.append("      "+XMLHandler.addTagValue("crcfield", hashField));
+		retval.append("      "+XMLHandler.addTagValue("table", tablename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      "+XMLHandler.addTagValue("connection", database==null?"":database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("      "+XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      "+XMLHandler.addTagValue("replace", replaceFields)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      "+XMLHandler.addTagValue("crc", useHash)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      "+XMLHandler.addTagValue("crcfield", hashField)); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		retval.append("      <fields>"+Const.CR);
+		retval.append("      <fields>"+Const.CR); //$NON-NLS-1$
 		for (int i=0;i<keyField.length;i++)
 		{
-			retval.append("        <key>"+Const.CR);
-			retval.append("          "+XMLHandler.addTagValue("name",   keyField[i]));
-			retval.append("          "+XMLHandler.addTagValue("lookup", keyLookup[i]));
-			retval.append("          </key>"+Const.CR);
+			retval.append("        <key>"+Const.CR); //$NON-NLS-1$
+			retval.append("          "+XMLHandler.addTagValue("name",   keyField[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("          "+XMLHandler.addTagValue("lookup", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("          </key>"+Const.CR); //$NON-NLS-1$
 		}
 
-		retval.append("        <return>"+Const.CR);
-		retval.append("          "+XMLHandler.addTagValue("name", technicalKeyField));
-		retval.append("          "+XMLHandler.addTagValue("use_autoinc", useAutoinc));
-		retval.append("        </return>"+Const.CR);
+		retval.append("        <return>"+Const.CR); //$NON-NLS-1$
+		retval.append("          "+XMLHandler.addTagValue("name", technicalKeyField)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          "+XMLHandler.addTagValue("use_autoinc", useAutoinc)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("        </return>"+Const.CR); //$NON-NLS-1$
 
-		retval.append("      </fields>"+Const.CR);
+		retval.append("      </fields>"+Const.CR); //$NON-NLS-1$
 
 		// If sequence is empty: use auto-increment field!
-		retval.append("      "+XMLHandler.addTagValue("sequence", sequenceFrom));
+		retval.append("      "+XMLHandler.addTagValue("sequence", sequenceFrom)); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		return retval.toString();
 	}
@@ -432,32 +432,32 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	{
 		try
 		{
-			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection"); 
+			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
 			database = Const.findDatabase( databases, id_connection);
 			
-			tablename            =      rep.getStepAttributeString (id_step, "table");
-			commitSize       = (int)rep.getStepAttributeInteger(id_step, "commit");
-			replaceFields          =      rep.getStepAttributeBoolean(id_step, "replace");
-			useHash             =      rep.getStepAttributeBoolean(id_step, "crc");
-			hashField        =      rep.getStepAttributeString (id_step, "crcfield");
+			tablename            =      rep.getStepAttributeString (id_step, "table"); //$NON-NLS-1$
+			commitSize       = (int)rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
+			replaceFields          =      rep.getStepAttributeBoolean(id_step, "replace"); //$NON-NLS-1$
+			useHash             =      rep.getStepAttributeBoolean(id_step, "crc"); //$NON-NLS-1$
+			hashField        =      rep.getStepAttributeString (id_step, "crcfield"); //$NON-NLS-1$
 	
-			int nrkeys   = rep.countNrStepAttributes(id_step, "lookup_key_name");
+			int nrkeys   = rep.countNrStepAttributes(id_step, "lookup_key_name"); //$NON-NLS-1$
 			
 			allocate(nrkeys);
 			
 			for (int i=0;i<nrkeys;i++)
 			{
-				keyField[i]       = rep.getStepAttributeString(id_step, i, "lookup_key_name");
-				keyLookup[i] = rep.getStepAttributeString(id_step, i, "lookup_key_field");
+				keyField[i]       = rep.getStepAttributeString(id_step, i, "lookup_key_name"); //$NON-NLS-1$
+				keyLookup[i] = rep.getStepAttributeString(id_step, i, "lookup_key_field"); //$NON-NLS-1$
 			}
 	
-			technicalKeyField     =      rep.getStepAttributeString (id_step, "return_name");
-			useAutoinc  =      rep.getStepAttributeBoolean(id_step, "use_autoinc");
-			sequenceFrom     =      rep.getStepAttributeString (id_step, "sequence");
+			technicalKeyField     =      rep.getStepAttributeString (id_step, "return_name"); //$NON-NLS-1$
+			useAutoinc  =      rep.getStepAttributeBoolean(id_step, "use_autoinc"); //$NON-NLS-1$
+			sequenceFrom     =      rep.getStepAttributeString (id_step, "sequence"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unexpected error reading step information from the repository", e);
+			throw new KettleException(Messages.getString("CombinationLookupMeta.Exception.UnexpectedErrorWhileReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -467,30 +467,30 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	{
 		try
 		{
-			long id      = rep.saveStepAttribute(id_transformation, id_step, "table",          tablename);
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "id_connection",  database==null?-1:database.getID());
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "commit",         commitSize);
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "replace",        replaceFields);
+			long id      = rep.saveStepAttribute(id_transformation, id_step, "table",          tablename); //$NON-NLS-1$
+			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "id_connection",  database==null?-1:database.getID()); //$NON-NLS-1$
+			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "commit",         commitSize); //$NON-NLS-1$
+			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "replace",        replaceFields); //$NON-NLS-1$
 			
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "crc",            useHash);
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "crcfield",       hashField);
+			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "crc",            useHash); //$NON-NLS-1$
+			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "crcfield",       hashField); //$NON-NLS-1$
 			
 			for (int i=0;i<keyField.length;i++)
 			{
-				if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name",      keyField[i]);
-				if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_field",     keyLookup[i]);
+				if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name",      keyField[i]); //$NON-NLS-1$
+				if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_field",     keyLookup[i]); //$NON-NLS-1$
 			}
 	
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "return_name",         technicalKeyField);
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "use_autoinc",         useAutoinc);
-			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "sequence",            sequenceFrom);
+			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "return_name",         technicalKeyField); //$NON-NLS-1$
+			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "use_autoinc",         useAutoinc); //$NON-NLS-1$
+			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "sequence",            sequenceFrom); //$NON-NLS-1$
 			
 			// Also, save the step-database relationship!
 			if (database!=null) rep.insertStepDatabase(id_transformation, id_step, database.getID());
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
+			throw new KettleException(Messages.getString("CombinationLookupMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -499,7 +499,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	public void check(ArrayList remarks, StepMeta stepMeta, Row prev, String input[], String output[], Row info)
 	{
 		CheckResult cr;
-		String error_message = "";
+		String error_message = ""; //$NON-NLS-1$
 		
 		if (database!=null)
 		{
@@ -512,7 +512,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 				{
 					boolean first=true;
 					boolean error_found=false;
-					error_message = "";
+					error_message = ""; //$NON-NLS-1$
 					
 					Row r = db.getTableFields(tablename);
 					if (r!=null)
@@ -527,10 +527,10 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 								if (first)
 								{
 									first=false;
-									error_message+="Missing compare fields in target table:"+Const.CR;
+									error_message+=Messages.getString("CombinationLookupMeta.CheckResult.MissingCompareFields")+Const.CR; //$NON-NLS-1$
 								}
 								error_found=true;
-								error_message+="\t\t"+lufield+Const.CR; 
+								error_message+="\t\t"+lufield+Const.CR;  //$NON-NLS-1$
 							}
 						}
 						if (error_found)
@@ -539,26 +539,26 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 						}
 						else
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All lookup fields found in the table.", stepMeta);
+							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("CombinationLookupMeta.CheckResult.AllFieldsFound"), stepMeta); //$NON-NLS-1$
 						}
 						remarks.add(cr);
 						
 						/* Also, check the fields: tk, version, from-to, ... */
 						if ( r.searchValueIndex(technicalKeyField)<0)
 						{
-							error_message="Technical key ["+technicalKeyField+"] not found in target table."+Const.CR;
+							error_message=Messages.getString("CombinationLookupMeta.CheckResult.TechnicalKeyNotFound",technicalKeyField)+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
 							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 						}
 						else
 						{
-							error_message="Technical key ["+technicalKeyField+"] found in target table."+Const.CR;
+							error_message=Messages.getString("CombinationLookupMeta.CheckResult.TechnicalKeyFound",technicalKeyField)+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
 							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
 						}
 						remarks.add(cr);
 					}
 					else
 					{
-						error_message="Couldn't read the table info, please check the table-name & permissions.";
+						error_message=Messages.getString("CombinationLookupMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
 						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
 					}
@@ -568,7 +568,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 				if (prev!=null && prev.size()>0)
 				{
 					boolean first=true;
-					error_message = "";
+					error_message = ""; //$NON-NLS-1$
 					boolean error_found = false;
 					
 					for (int i=0;i<keyField.length;i++)
@@ -579,10 +579,10 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 							if (first)
 							{
 								first=false;
-								error_message+="Missing fields, not found in input from previous steps:"+Const.CR;
+								error_message+=Messages.getString("CombinationLookupMeta.CheckResult.MissingFields")+Const.CR; //$NON-NLS-1$
 							}
 							error_found=true;
-							error_message+="\t\t"+keyField[i]+Const.CR; 
+							error_message+="\t\t"+keyField[i]+Const.CR;  //$NON-NLS-1$
 						}
 					}
 					if (error_found)
@@ -591,13 +591,13 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 					}
 					else
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All fields found in the input stream.", stepMeta);
+						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("CombinationLookupMeta.CheckResult.AllFieldsFoundInInputStream"), stepMeta); //$NON-NLS-1$
 					}
 					remarks.add(cr);
 				}
 				else
 				{
-					error_message="Couldn't read fields from the previous step."+Const.CR;
+					error_message=Messages.getString("CombinationLookupMeta.CheckResult.CouldNotReadFields")+Const.CR; //$NON-NLS-1$
 					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
@@ -608,13 +608,13 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 					Value last = db.checkSequence(sequenceFrom);
 					if (last!=null)
 					{
-						error_message = "No problem reading sequence "+sequenceFrom+", it's at value "+last;
+						error_message = Messages.getString("CombinationLookupMeta.CheckResult.ReadingSequenceOK",sequenceFrom,""+last); //$NON-NLS-1$ //$NON-NLS-2$
 						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
 						remarks.add(cr);
 					}
 					else
 					{
-						error_message+="Error reading sequence "+sequenceFrom+"!";
+						error_message+=Messages.getString("CombinationLookupMeta.CheckResult.ErrorReadingSequence")+sequenceFrom+"!"; //$NON-NLS-1$ //$NON-NLS-2$
 						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 						remarks.add(cr);
 					}
@@ -622,7 +622,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 			}
 			catch(KettleException e)
 			{
-				error_message = "An error occurred: "+e.getMessage();
+				error_message = Messages.getString("CombinationLookupMeta.CheckResult.ErrorOccurred")+e.getMessage(); //$NON-NLS-1$
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
@@ -633,7 +633,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		}
 		else
 		{
-			error_message = "Please select or create a connection!";
+			error_message = Messages.getString("CombinationLookupMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
@@ -641,12 +641,12 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("CombinationLookupMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("CombinationLookupMeta.CheckResult.NoInputReceived"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 
@@ -686,7 +686,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 						// Then the rest of the fields in the lookup-section
 						for (int i=0;i<keyLookup.length;i++) 
 						{
-							String error_fields="";
+							String error_fields=""; //$NON-NLS-1$
 							Value vkey = prev.searchValue(keyLookup[i]);
 							if (vkey!=null)
 							{
@@ -694,12 +694,12 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 							}
 							else
 							{
-								if (error_fields.length()>0) error_fields+=", ";
+								if (error_fields.length()>0) error_fields+=", "; //$NON-NLS-1$
 								error_fields+=keyLookup[i];
 							}
 							if (error_fields.length()>0)
 							{
-								retval.setError("Can't find fields : "+error_fields);
+								retval.setError(Messages.getString("CombinationLookupMeta.ReturnValue.CannotFindFields")+error_fields); //$NON-NLS-1$
 							}
 						}
 						
@@ -717,7 +717,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 						
 						// What fields do we put int the index?
 						// Only the hashcode or all fields?
-						String cr_index = "";
+						String cr_index = ""; //$NON-NLS-1$
 						String idx_fields[] = null;
 						if (useHash)
 						{
@@ -727,7 +727,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 							}
 							else
 							{
-								retval.setError("No hashfield is specified.  Please enter a name for the hashfield.");
+								retval.setError(Messages.getString("CombinationLookupMeta.ReturnValue.NotHashFieldSpecified")); //$NON-NLS-1$
 							}
 						}
 						else  // index on all key fields...
@@ -744,7 +744,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 							}
 							else
 							{
-								retval.setError("No fields are specified.  Please specify the fields to combine in this table.");
+								retval.setError(Messages.getString("CombinationLookupMeta.ReturnValue.NotFieldsSpecified")); //$NON-NLS-1$
 							}
 						}
 						
@@ -753,7 +753,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 							!db.checkIndexExists(tablename, idx_fields)
 						   )
 						{
-							String indexname = "idx_"+tablename+"_lookup";
+							String indexname = "idx_"+tablename+"_lookup"; //$NON-NLS-1$ //$NON-NLS-2$
 							cr_index = db.getCreateIndexStatement(tablename, indexname, idx_fields, false, false, false, true);
 							cr_index+=Const.CR;
 						}
@@ -761,7 +761,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 						//
 						// Don't forget the sequence (optional)
 						//
-						String cr_seq="";
+						String cr_seq=""; //$NON-NLS-1$
 						if ((database.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE) &&
 						     sequenceFrom!=null && sequenceFrom.length()>0
 						  )
@@ -778,22 +778,22 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 					}
 					catch(KettleException e)
 					{
-						retval.setError("An error occurred: "+Const.CR+e.getMessage());
+						retval.setError(Messages.getString("CombinationLookupMeta.ReturnValue.ErrorOccurred")+Const.CR+e.getMessage()); //$NON-NLS-1$
 					}
 				}
 				else
 				{
-					retval.setError("No table is defined on this connection.");
+					retval.setError(Messages.getString("CombinationLookupMeta.ReturnValue.NotTableDefined")); //$NON-NLS-1$
 				}
 			}
 			else
 			{
-				retval.setError("Not receiving any fields from previous steps. Check the previous steps for errors & the connecting hops.");
+				retval.setError(Messages.getString("CombinationLookupMeta.ReturnValue.NotReceivingField")); //$NON-NLS-1$
 			}
 		}
 		else
 		{
-			retval.setError("There is no connection defined in this step.");
+			retval.setError(Messages.getString("CombinationLookupMeta.ReturnValue.NotConnectionDefined")); //$NON-NLS-1$
 		}
 
 		return retval;
@@ -828,9 +828,9 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 											tablename,
 											keyLookup[i],
 											keyField[i],
-											v!=null?v.getOrigin():"?",
-											"",
-											useHash?"read and insert":"key lookup and insert"
+											v!=null?v.getOrigin():"?", //$NON-NLS-1$
+											"", //$NON-NLS-1$
+											useHash?Messages.getString("CombinationLookupMeta.ReadAndInsert.Label"):Messages.getString("CombinationLookupMeta.LookupAndInsert.Label") //$NON-NLS-1$ //$NON-NLS-2$
 											);
 			impact.add(ii);
 		}
@@ -844,10 +844,10 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 											database.getDatabaseName(),
 											tablename,
 											hashField,
-											"",
-											"",
-											"",
-											"key lookup on hash-field"
+											"", //$NON-NLS-1$
+											"", //$NON-NLS-1$
+											"", //$NON-NLS-1$
+											Messages.getString("CombinationLookupMeta.KeyLookup.Label") //$NON-NLS-1$
 											);
 			impact.add(ii);
 		}

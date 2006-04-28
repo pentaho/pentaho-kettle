@@ -86,26 +86,26 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			filename  = XMLHandler.getTagValue(stepnode, "file", "name");
+			filename  = XMLHandler.getTagValue(stepnode, "file", "name"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to load step info from XML", e);
+			throw new KettleXMLException(Messages.getString("CubeOutputMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
 	public void setDefault()
 	{
-		filename   = "file";
+		filename   = "file"; //$NON-NLS-1$
 	}
 	
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("    <file>"+Const.CR);
-		retval.append("      "+XMLHandler.addTagValue("name",       filename));
-		retval.append("      </file>"+Const.CR);
+		retval.append("    <file>"+Const.CR); //$NON-NLS-1$
+		retval.append("      "+XMLHandler.addTagValue("name",       filename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      </file>"+Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}
@@ -115,11 +115,11 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			filename         =      rep.getStepAttributeString (id_step, "file_name");
+			filename         =      rep.getStepAttributeString (id_step, "file_name"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unexpected error reading step information from the repository", e);
+			throw new KettleException(Messages.getString("CubeOutputMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -128,11 +128,11 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "file_name",   filename);
+			rep.saveStepAttribute(id_transformation, id_step, "file_name",   filename); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
+			throw new KettleException(Messages.getString("CubeOutputMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -143,11 +143,11 @@ public class CubeOutputMeta extends BaseStepMeta implements StepMetaInterface
 		// Check output fields
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "+prev.size()+" fields", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("CubeOutputMeta.CheckResult.ReceivingFields",String.valueOf(prev.size())), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 		}
 		
-		cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, "File specifications are not checked.", stepinfo);
+		cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, Messages.getString("CubeOutputMeta.CheckResult.FileSpecificationsNotChecked"), stepinfo); //$NON-NLS-1$
 		remarks.add(cr);
 	}
 
