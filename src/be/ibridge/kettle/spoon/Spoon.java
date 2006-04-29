@@ -107,6 +107,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
 import be.ibridge.kettle.i18n.LanguageChoice;
+import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.repository.PermissionMeta;
 import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
@@ -4336,6 +4337,14 @@ public class Spoon
         if (!stloader.read())
         {
             log.logError(APP_NAME, Messages.getString("Spoon.Log.ErrorLoadingAndHaltSystem"));//Error loading steps & plugins... halting Spoon!
+            return;
+        }
+        
+        /* Load the plugins etc. we need to load jobentry*/
+        JobEntryLoader jeloader = JobEntryLoader.getInstance();
+        if (!jeloader.read())
+        {
+            log.logError("Spoon", "Error loading job entries & plugins... halting Kitchen!");
             return;
         }
 

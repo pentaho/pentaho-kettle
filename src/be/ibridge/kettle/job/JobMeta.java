@@ -496,7 +496,10 @@ public class JobMeta implements Cloneable, XMLInterface
 		throws KettleXMLException
 	{
 		try
-		{			
+		{		
+            // clear the jobs;
+            clear();
+            
 			//
 			// get job info:
 			//

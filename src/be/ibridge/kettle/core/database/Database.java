@@ -649,6 +649,8 @@ public class Database
 				break;
 			default:
 				debug="default";
+            // placeholder
+                ps.setNull(pos, java.sql.Types.VARCHAR);
  				break;
 			}
 		}

@@ -315,7 +315,7 @@ public class RepositoryImportProgressDialog extends Dialog
 				Node jobsnode = XMLHandler.getSubNode(repnode, "jobs");
 				if (jobsnode!=null) // Load jobs...
 				{
-					int nrjobs = XMLHandler.countNodes(transsnode, "job");
+					int nrjobs = XMLHandler.countNodes(jobsnode, "job");
 
 					wBar.setMinimum(0);
 					wBar.setMaximum(nrjobs);

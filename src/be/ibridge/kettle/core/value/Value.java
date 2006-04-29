@@ -312,6 +312,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		else
 		{
 			clearValue();
+            setNull(true);
 		}
 	}
 
@@ -2710,7 +2711,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	// number: NUM2STR( 123.456, '###,##0.000') : format 
 	// number: NUM2STR( 123.456, '###,##0.000', '.') : grouping
 	// number: NUM2STR( 123.456, '###,##0.000', '.', ',') : decimal
-	// number: NUM2STR( 123.456, '###,##0.000', '.', ',', '€') : currency
+	// number: NUM2STR( 123.456, '###,##0.000', '.', ',', '?') : currency
 
 	public Value num2str() throws KettleValueException { return num2str(null, null, null, null); }
 	public Value num2str(String format) throws KettleValueException { return num2str(format, null, null, null); }
