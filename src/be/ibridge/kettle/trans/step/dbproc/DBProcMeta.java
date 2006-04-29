@@ -229,30 +229,30 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 			int i;
 			int nrargs;
 			
-			String con = XMLHandler.getTagValue(stepnode, "connection");
+			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
 			database = Const.findDatabase(databases, con);
-			procedure  = XMLHandler.getTagValue(stepnode, "procedure");
+			procedure  = XMLHandler.getTagValue(stepnode, "procedure"); //$NON-NLS-1$
 	
-			Node lookup = XMLHandler.getSubNode(stepnode, "lookup");
-			nrargs    = XMLHandler.countNodes(lookup, "arg");
+			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
+			nrargs    = XMLHandler.countNodes(lookup, "arg"); //$NON-NLS-1$
 	
 			allocate(nrargs);
 	
 			for (i=0;i<nrargs;i++)
 			{
-				Node anode = XMLHandler.getSubNodeByNr(lookup, "arg", i);
+				Node anode = XMLHandler.getSubNodeByNr(lookup, "arg", i); //$NON-NLS-1$
 				
-				argument    [i] = XMLHandler.getTagValue(anode, "name");
-				argumentDirection [i] = XMLHandler.getTagValue(anode, "direction");
-				argumentType[i] = Value.getType(XMLHandler.getTagValue(anode, "type"));
+				argument    [i] = XMLHandler.getTagValue(anode, "name"); //$NON-NLS-1$
+				argumentDirection [i] = XMLHandler.getTagValue(anode, "direction"); //$NON-NLS-1$
+				argumentType[i] = Value.getType(XMLHandler.getTagValue(anode, "type")); //$NON-NLS-1$
 			}
 			
-			resultName = XMLHandler.getTagValue(stepnode, "result", "name"); //Optional, can be null
-			resultType = Value.getType(XMLHandler.getTagValue(stepnode, "result", "type"));
+			resultName = XMLHandler.getTagValue(stepnode, "result", "name"); //Optional, can be null //$NON-NLS-1$ //$NON-NLS-2$
+			resultType = Value.getType(XMLHandler.getTagValue(stepnode, "result", "type")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to read step information from XML", e);
+			throw new KettleXMLException(Messages.getString("DBProcMeta.Exception.UnableToReadStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -269,12 +269,12 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 
 		for (i=0;i<nrargs;i++)
 		{
-			argument    [i]="arg"+i;
-			argumentDirection [i]="IN";
+			argument    [i]="arg"+i; //$NON-NLS-1$
+			argumentDirection [i]="IN"; //$NON-NLS-1$
 			argumentType[i]=Value.VALUE_TYPE_NUMBER;
 		}
 
-		resultName = "result";
+		resultName = "result"; //$NON-NLS-1$
 		resultType = Value.VALUE_TYPE_NUMBER;
 	}
 
@@ -287,7 +287,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 		int i;
 		for (i=0;i<argument.length;i++)
 		{
-			if (argumentDirection[i].equalsIgnoreCase("OUT") || argumentDirection[i].equalsIgnoreCase("INOUT"))
+			if (argumentDirection[i].equalsIgnoreCase("OUT") || argumentDirection[i].equalsIgnoreCase("INOUT")) //$NON-NLS-1$ //$NON-NLS-2$
 			{
 				Value v=new Value(argument[i], argumentType[i]);
 				v.setOrigin(name);
@@ -308,25 +308,25 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("    "+XMLHandler.addTagValue("connection", database==null?"":database.getName()));
-		retval.append("    "+XMLHandler.addTagValue("procedure", procedure));
-		retval.append("    <lookup>"+Const.CR);
+		retval.append("    "+XMLHandler.addTagValue("connection", database==null?"":database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("    "+XMLHandler.addTagValue("procedure", procedure)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    <lookup>"+Const.CR); //$NON-NLS-1$
 
 		for (int i=0;i<argument.length;i++)
 		{
-			retval.append("      <arg>"+Const.CR);
-			retval.append("        "+XMLHandler.addTagValue("name",      argument[i]));
-			retval.append("        "+XMLHandler.addTagValue("direction", argumentDirection[i]));
-			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(argumentType[i])));
-			retval.append("        </arg>"+Const.CR);
+			retval.append("      <arg>"+Const.CR); //$NON-NLS-1$
+			retval.append("        "+XMLHandler.addTagValue("name",      argument[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("direction", argumentDirection[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(argumentType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        </arg>"+Const.CR); //$NON-NLS-1$
 		}
 
-		retval.append("      </lookup>"+Const.CR);
+		retval.append("      </lookup>"+Const.CR); //$NON-NLS-1$
 
-		retval.append("    <result>"+Const.CR);
-		retval.append("      "+XMLHandler.addTagValue("name", resultName));
-		retval.append("      "+XMLHandler.addTagValue("type", Value.getTypeDesc(resultType)));
-		retval.append("      </result>"+Const.CR);
+		retval.append("    <result>"+Const.CR); //$NON-NLS-1$
+		retval.append("      "+XMLHandler.addTagValue("name", resultName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      "+XMLHandler.addTagValue("type", Value.getTypeDesc(resultType))); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      </result>"+Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}
@@ -336,26 +336,26 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection"); 
+			long id_connection =   rep.getStepAttributeInteger(id_step, "id_connection");  //$NON-NLS-1$
 			database = Const.findDatabase( databases, id_connection);
-			procedure = rep.getStepAttributeString(id_step, "procedure");
+			procedure = rep.getStepAttributeString(id_step, "procedure"); //$NON-NLS-1$
 	
-			int nrargs = rep.countNrStepAttributes(id_step, "arg_name");
+			int nrargs = rep.countNrStepAttributes(id_step, "arg_name"); //$NON-NLS-1$
 			allocate(nrargs);
 			
 			for (int i=0;i<nrargs;i++)
 			{
-				argument[i]     = rep.getStepAttributeString(id_step, i, "arg_name");
-				argumentDirection[i]  = rep.getStepAttributeString(id_step, i, "arg_direction");
-				argumentType[i] = Value.getType( rep.getStepAttributeString(id_step, i, "arg_type") );
+				argument[i]     = rep.getStepAttributeString(id_step, i, "arg_name"); //$NON-NLS-1$
+				argumentDirection[i]  = rep.getStepAttributeString(id_step, i, "arg_direction"); //$NON-NLS-1$
+				argumentType[i] = Value.getType( rep.getStepAttributeString(id_step, i, "arg_type") ); //$NON-NLS-1$
 			}
 			
-			resultName =                rep.getStepAttributeString(id_step, "result_name");
-			resultType = Value.getType( rep.getStepAttributeString(id_step, "result_type") );
+			resultName =                rep.getStepAttributeString(id_step, "result_name"); //$NON-NLS-1$
+			resultType = Value.getType( rep.getStepAttributeString(id_step, "result_type") ); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unexpected error reading step information from the repository", e);
+			throw new KettleException(Messages.getString("DBProcMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -364,25 +364,25 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "id_connection", database==null?-1:database.getID());
-			rep.saveStepAttribute(id_transformation, id_step, "procedure",     procedure);
+			rep.saveStepAttribute(id_transformation, id_step, "id_connection", database==null?-1:database.getID()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "procedure",     procedure); //$NON-NLS-1$
 	
 			for (int i=0;i<argument.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "arg_name",      argument[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "arg_direction", argumentDirection[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "arg_type",      Value.getTypeDesc(argumentType[i]));
+				rep.saveStepAttribute(id_transformation, id_step, i, "arg_name",      argument[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "arg_direction", argumentDirection[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "arg_type",      Value.getTypeDesc(argumentType[i])); //$NON-NLS-1$
 			}
 			
-			rep.saveStepAttribute(id_transformation, id_step, "result_name",     resultName);
-			rep.saveStepAttribute(id_transformation, id_step, "result_type",     Value.getTypeDesc(resultType));
+			rep.saveStepAttribute(id_transformation, id_step, "result_name",     resultName); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "result_type",     Value.getTypeDesc(resultType)); //$NON-NLS-1$
 			
 			// Also, save the step-database relationship!
 			if (database!=null) rep.insertStepDatabase(id_transformation, id_step, database.getID());
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
+			throw new KettleException(Messages.getString("DBProcMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -390,7 +390,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 	public void check(ArrayList remarks, StepMeta stepMeta, Row prev, String input[], String output[], Row info)
 	{
 		CheckResult cr;
-		String error_message = "";
+		String error_message = ""; //$NON-NLS-1$
 		
 		if (database!=null)
 		{
@@ -403,7 +403,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 				if (prev!=null && prev.size()>0)
 				{
 					boolean first=true;
-					error_message = "";
+					error_message = ""; //$NON-NLS-1$
 					boolean error_found = false;
 					
 					for (int i=0;i<argument.length;i++)
@@ -414,10 +414,10 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 							if (first)
 							{
 								first=false;
-								error_message+="Missing arguments, not found in input from previous steps:"+Const.CR;
+								error_message+=Messages.getString("DBProcMeta.CheckResult.MissingArguments")+Const.CR; //$NON-NLS-1$
 							}
 							error_found=true;
-							error_message+="\t\t"+argument[i]+Const.CR; 
+							error_message+="\t\t"+argument[i]+Const.CR;  //$NON-NLS-1$
 						}
 						else // Argument exists in input stream: same type?
 						{
@@ -426,7 +426,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 							    )
 							{
 								error_found=true;
-								error_message+="\t\t"+argument[i]+" (found but wrong type: "+v.getTypeDesc()+" vs. "+Value.getTypeDesc(argumentType[i])+")"+Const.CR; 
+								error_message+="\t\t"+argument[i]+Messages.getString("DBProcMeta.CheckResult.WrongTypeArguments",v.getTypeDesc(),Value.getTypeDesc(argumentType[i]))+Const.CR;  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 							}
 						}
 					}
@@ -436,27 +436,27 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 					}
 					else
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All arguments found in the input stream.", stepMeta);
+						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DBProcMeta.CheckResult.AllArgumentsOK"), stepMeta); //$NON-NLS-1$
 					}
 					remarks.add(cr);
 				}
 				else
 				{
-					error_message="Couldn't read fields from the previous step."+Const.CR;
+					error_message=Messages.getString("DBProcMeta.CheckResult.CouldNotReadFields")+Const.CR; //$NON-NLS-1$
 					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
 			}
 			catch(KettleException e)
 			{
-				error_message = "A an error occurred: "+e.getMessage();
+				error_message = Messages.getString("DBProcMeta.CheckResult.ErrorOccurred")+e.getMessage(); //$NON-NLS-1$
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 		}
 		else
 		{
-			error_message = "Please select or create a connection!";
+			error_message = Messages.getString("DBProcMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
@@ -464,12 +464,12 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DBProcMeta.CheckResult.ReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("DBProcMeta.CheckResult.NoInpuReceived"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 

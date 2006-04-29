@@ -60,13 +60,13 @@ public class DBProc extends BaseStep implements StepInterface
 			
 			for (i=0;i<meta.getArgument().length;i++)
 			{
-				if (!meta.getArgumentDirection()[i].equalsIgnoreCase("OUT")) // IN or INOUT
+				if (!meta.getArgumentDirection()[i].equalsIgnoreCase("OUT")) // IN or INOUT //$NON-NLS-1$
 				{
 					data.argnrs[i]=row.searchValueIndex(meta.getArgument()[i]);
 					if (data.argnrs[i]<0)
 					{
-						logError("Error finding field: "+meta.getArgument()[i]+"]");
-						throw new KettleStepException("Couldn't find field '"+meta.getArgument()[i]+"' in row!");
+						logError(Messages.getString("DBProc.Log.ErrorFindingField")+meta.getArgument()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+						throw new KettleStepException(Messages.getString("DBProc.Exception.CouldnotFindField",meta.getArgument()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 				else
@@ -104,11 +104,11 @@ public class DBProc extends BaseStep implements StepInterface
 			runProc(r); // add new values to the row in rowset[0].
 			putRow(r);  // copy row to output rowset(s);
 				
-			if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
+			if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("DBProc.LineNumber")+linesRead); //$NON-NLS-1$
 		}
 		catch(KettleException e)
 		{
-			logError("Because of an error, this step can't continue: "+e.getMessage());
+			logError(Messages.getString("DBProc.ErrorInStepRunning")+e.getMessage()); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -130,13 +130,13 @@ public class DBProc extends BaseStep implements StepInterface
 			{
 				data.db.connect();
 				
-				logBasic("Connected to database...");
+				logBasic(Messages.getString("DBProc.Log.ConnectedToDB")); //$NON-NLS-1$
 				
 				return true;
 			}
 			catch(KettleException e)
 			{
-				logError("An error occurred, processing will be stopped: "+e.getMessage());
+				logError(Messages.getString("DBProc.Log.DBException")+e.getMessage()); //$NON-NLS-1$
 				data.db.disconnect();
 			}
 		}
@@ -157,7 +157,7 @@ public class DBProc extends BaseStep implements StepInterface
 	// Run is were the action happens!
 	public void run()
 	{
-		logBasic("Starting to run...");
+		logBasic(Messages.getString("DBProc.Log.StartingToRun")); //$NON-NLS-1$
 		
 		try
 		{
@@ -165,7 +165,7 @@ public class DBProc extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("DBProc.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}
