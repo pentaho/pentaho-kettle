@@ -1,6 +1,15 @@
 #!/bin/sh
 
 # **************************************************
+# ** Set these to the location of your mozilla
+# ** installation directory.  Use a Mozilla with
+# ** Gtk2 and Fte enabled.
+# **************************************************
+
+export MOZILLA_FIVE_HOME=/usr/local/mozilla
+export LD_LIBRARY_PATH=/usr/local/mozilla
+
+# **************************************************
 # ** Libraries used by Kettle:                    **
 # **************************************************
 
