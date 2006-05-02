@@ -144,6 +144,77 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
 
+		// Some buttons
+		wOK=new Button(shell, SWT.PUSH);
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+        wPreview=new Button(shell, SWT.PUSH);
+        wPreview.setText(Messages.getString("System.Button.Preview")); //$NON-NLS-1$
+		wCancel=new Button(shell, SWT.PUSH);
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+
+		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
+
+		// Limit input ...
+		wlLimit=new Label(shell, SWT.RIGHT);
+		wlLimit.setText(Messages.getString("TableInputDialog.LimitSize")); //$NON-NLS-1$
+ 		props.setLook(wlLimit);
+		fdlLimit=new FormData();
+		fdlLimit.left = new FormAttachment(0, 0);
+		fdlLimit.right= new FormAttachment(middle, -margin);
+		fdlLimit.bottom = new FormAttachment(wOK, -2*margin);
+		wlLimit.setLayoutData(fdlLimit);
+		wLimit=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wLimit);
+		wLimit.addModifyListener(lsMod);
+		fdLimit=new FormData();
+		fdLimit.left = new FormAttachment(middle, 0);
+		fdLimit.right= new FormAttachment(100, 0);
+		fdLimit.bottom = new FormAttachment(wOK, -2*margin);
+		wLimit.setLayoutData(fdLimit);
+
+        // Execute for each row?
+        wlEachRow = new Label(shell, SWT.RIGHT);
+        wlEachRow.setText(Messages.getString("TableInputDialog.ExecuteForEachRow")); //$NON-NLS-1$
+        props.setLook(wlEachRow);
+        fdlEachRow = new FormData();
+        fdlEachRow.left = new FormAttachment(0, 0);
+        fdlEachRow.right = new FormAttachment(middle, -margin);
+        fdlEachRow.bottom = new FormAttachment(wLimit, -margin);
+        wlEachRow.setLayoutData(fdlEachRow);
+        wEachRow = new Button(shell, SWT.CHECK);
+        props.setLook(wEachRow);
+        fdEachRow = new FormData();
+        fdEachRow.left = new FormAttachment(middle, 0);
+        fdEachRow.right = new FormAttachment(100, 0);
+        fdEachRow.bottom = new FormAttachment(wLimit, -margin);
+        wEachRow.setLayoutData(fdEachRow);
+
+
+		// Read date from...
+		wlDatefrom=new Label(shell, SWT.RIGHT);
+		wlDatefrom.setText(Messages.getString("TableInputDialog.InsertDataFromStep")); //$NON-NLS-1$
+ 		props.setLook(wlDatefrom);
+		fdlDatefrom=new FormData();
+		fdlDatefrom.left = new FormAttachment(0, 0);
+		fdlDatefrom.right= new FormAttachment(middle, -margin);
+		fdlDatefrom.bottom = new FormAttachment(wEachRow, -margin);
+		wlDatefrom.setLayoutData(fdlDatefrom);
+		wDatefrom=new CCombo(shell, SWT.BORDER );
+ 		props.setLook(wDatefrom);
+
+		for (int i=0;i<transMeta.findNrPrevSteps(stepname);i++)
+		{
+			StepMeta stepMeta = transMeta.findPrevStep(stepname, i);
+			wDatefrom.add(stepMeta.getName());
+		}
+		
+		wDatefrom.addModifyListener(lsMod);
+		fdDatefrom=new FormData();
+		fdDatefrom.left = new FormAttachment(middle, 0);
+		fdDatefrom.right= new FormAttachment(100, 0);
+		fdDatefrom.bottom = new FormAttachment(wEachRow, -margin);
+		wDatefrom.setLayoutData(fdDatefrom);
+
 		// Table line...
 		wlSQL=new Label(shell, SWT.NONE);
 		wlSQL.setText(Messages.getString("TableInputDialog.SQL")); //$NON-NLS-1$
@@ -168,79 +239,10 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdSQL.left  = new FormAttachment(0, 0);
 		fdSQL.top   = new FormAttachment(wlSQL, margin  );
 		fdSQL.right = new FormAttachment(100, 0);
-		fdSQL.bottom= new FormAttachment(100, -100      );
+		fdSQL.bottom= new FormAttachment(wDatefrom, -margin );
 		wSQL.setLayoutData(fdSQL);
-		
-		// Read date from...
-		wlDatefrom=new Label(shell, SWT.RIGHT);
-		wlDatefrom.setText(Messages.getString("TableInputDialog.InsertDataFromStep")); //$NON-NLS-1$
- 		props.setLook(wlDatefrom);
-		fdlDatefrom=new FormData();
-		fdlDatefrom.left = new FormAttachment(0, 0);
-		fdlDatefrom.right= new FormAttachment(middle, -margin);
-		fdlDatefrom.top  = new FormAttachment(wSQL, margin);
-		wlDatefrom.setLayoutData(fdlDatefrom);
-		wDatefrom=new CCombo(shell, SWT.BORDER );
- 		props.setLook(wDatefrom);
 
-		for (int i=0;i<transMeta.findNrPrevSteps(stepname);i++)
-		{
-			StepMeta stepMeta = transMeta.findPrevStep(stepname, i);
-			wDatefrom.add(stepMeta.getName());
-		}
-		
-		wDatefrom.addModifyListener(lsMod);
-		fdDatefrom=new FormData();
-		fdDatefrom.left = new FormAttachment(middle, 0);
-		fdDatefrom.top  = new FormAttachment(wSQL, margin);
-		fdDatefrom.right= new FormAttachment(100, 0);
-		wDatefrom.setLayoutData(fdDatefrom);
 
-        // Execute for each row?
-        wlEachRow = new Label(shell, SWT.RIGHT);
-        wlEachRow.setText(Messages.getString("TableInputDialog.ExecuteForEachRow")); //$NON-NLS-1$
-        props.setLook(wlEachRow);
-        fdlEachRow = new FormData();
-        fdlEachRow.left = new FormAttachment(0, 0);
-        fdlEachRow.right = new FormAttachment(middle, -margin);
-        fdlEachRow.top = new FormAttachment(wDatefrom, margin);
-        wlEachRow.setLayoutData(fdlEachRow);
-        wEachRow = new Button(shell, SWT.CHECK);
-        props.setLook(wEachRow);
-        fdEachRow = new FormData();
-        fdEachRow.left = new FormAttachment(middle, 0);
-        fdEachRow.top = new FormAttachment(wDatefrom, margin);
-        fdEachRow.right = new FormAttachment(100, 0);
-        wEachRow.setLayoutData(fdEachRow);
-
-		// Limit input ...
-		wlLimit=new Label(shell, SWT.RIGHT);
-		wlLimit.setText(Messages.getString("TableInputDialog.LimitSize")); //$NON-NLS-1$
- 		props.setLook(wlLimit);
-		fdlLimit=new FormData();
-		fdlLimit.left = new FormAttachment(0, 0);
-		fdlLimit.right= new FormAttachment(middle, -margin);
-		fdlLimit.top  = new FormAttachment(wEachRow, margin);
-		wlLimit.setLayoutData(fdlLimit);
-		wLimit=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wLimit);
-		wLimit.addModifyListener(lsMod);
-		fdLimit=new FormData();
-		fdLimit.left = new FormAttachment(middle, 0);
-		fdLimit.top  = new FormAttachment(wEachRow, margin);
-		fdLimit.right= new FormAttachment(100, 0);
-		wLimit.setLayoutData(fdLimit);
-
-		// Some buttons
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
-        wPreview=new Button(shell, SWT.PUSH);
-        wPreview.setText(Messages.getString("System.Button.Preview")); //$NON-NLS-1$
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
-
-		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
-		
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();  } };
         lsPreview  = new Listener() { public void handleEvent(Event e) { preview(); } };
