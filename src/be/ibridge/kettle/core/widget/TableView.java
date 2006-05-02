@@ -1131,6 +1131,8 @@ public class TableView extends Composite
 
 	private void insertRowBefore()
 	{
+		if (readonly) return;
+		
         TableItem row = activeTableItem;
         if (row==null) return;
         int rownr = table.indexOf(row);
@@ -1151,6 +1153,8 @@ public class TableView extends Composite
 
 	private void insertRowAfter()
 	{
+		if (readonly) return;
+		
         TableItem row = activeTableItem;
         if (row==null) return;
         int rownr = table.indexOf(row);
