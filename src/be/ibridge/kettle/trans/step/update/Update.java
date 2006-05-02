@@ -63,7 +63,7 @@ public class Update extends BaseStep implements StepInterface
 			
 			debug="first run, lookup values, field positions, etc.";
 			// lookup the values!
-			logDetailed("Checking row: "+row.toString());
+			if (log.isDetailed()) logDetailed("Checking row: "+row.toString());
 			data.keynrs  = new int[meta.getKeyStream().length];
 			data.keynrs2 = new int[meta.getKeyStream().length];
 			for (int i=0;i<meta.getKeyStream().length;i++)
@@ -84,7 +84,7 @@ public class Update extends BaseStep implements StepInterface
 					throw new KettleStepException("Field ["+meta.getKeyStream2()[i]+"] is required and couldn't be found!");
 				}
 				
-				logDebug("Field ["+meta.getKeyStream()[i]+"] has nr. "+data.keynrs[i]);
+				if (log.isDebug()) logDebug("Field ["+meta.getKeyStream()[i]+"] has nr. "+data.keynrs[i]);
 			}
 			// Cache the position of the compare fields in Row row
 			//
@@ -97,7 +97,7 @@ public class Update extends BaseStep implements StepInterface
 				{
 					throw new KettleStepException("Field ["+meta.getUpdateStream()[i]+"] is required and couldn't be found!");
 				}
-				logDebug("Field ["+meta.getUpdateStream()[i]+"] has nr. "+data.valuenrs[i]);
+				if (log.isDebug()) logDebug("Field ["+meta.getUpdateStream()[i]+"] has nr. "+data.valuenrs[i]);
 			}
 		}
 		
@@ -117,7 +117,7 @@ public class Update extends BaseStep implements StepInterface
 		debug="setValues()";
 		data.dblup.setValuesLookup(lu);
 		
-		logDebug("Values set for lookup: "+lu.toString()+", input row: "+row);
+		if (log.isDebug()) logDebug("Values set for lookup: "+lu.toString()+", input row: "+row);
 		debug="getLookup()";
 		add=data.dblup.getLookup();  // Got back the complete row!
 		linesInput++;
@@ -141,7 +141,7 @@ public class Update extends BaseStep implements StepInterface
 		}
 		else
 		{
-			logRowlevel("Found row: !"+add.toString());
+			if (log.isRowLevel()) logRowlevel("Found row: !"+add.toString());
 			/* Row was found:
 			 *  
 			 * UPDATE row or do nothing?
@@ -161,7 +161,7 @@ public class Update extends BaseStep implements StepInterface
 			}
 			if (update)
 			{
-				logRowlevel("Update row with: !"+lu.toString());
+				if (log.isRowLevel()) logRowlevel("Update row with: !"+lu.toString());
 				debug="setValuesUpdate()";
 				data.dbupd.setValuesUpdate(lu);
 				debug="updateRow()";

@@ -106,12 +106,12 @@ public class StreamLookup extends BaseStep implements StepInterface
 			logError("No lookup step specified.");
 			return false;
 		}
-		logDetailed("Reading from stream ["+meta.getLookupFromStep().getName()+"]");
+		if (log.isDetailed()) logDetailed("Reading from stream ["+meta.getLookupFromStep().getName()+"]");
 		
 		r=getRowFrom(meta.getLookupFromStep().getName()); // rows are originating from "lookup_from"
 		while (r!=null)
 		{
-            logRowlevel("Read lookup row: "+r.toString());
+			if (log.isRowLevel()) logRowlevel("Read lookup row: "+r.toString());
 
             key_part   = new Row();
             value_part = new Row();
@@ -181,7 +181,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 				}
 				else
 				{
-					logDetailed("Field ["+meta.getKeystream()[i]+"] has nr ["+data.keynrs[i]+"]");
+					if (log.isDetailed()) logDetailed("Field ["+meta.getKeystream()[i]+"] has nr ["+data.keynrs[i]+"]");
 				}
 			}
 			
@@ -199,7 +199,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 				{
 					// Just take the first element in the hashtable...
 					add=data.firstrow;
-					logRowlevel("Got row without keys: "+add);
+					if (log.isRowLevel()) logRowlevel("Got row without keys: "+add);
 				}
 			}
 			catch(Exception e)
@@ -249,7 +249,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 			{
 				// Just take the first element in the hashtable...
 				add=data.firstrow;
-				logRowlevel("Got row without keys: "+add);
+				if (log.isRowLevel()) logRowlevel("Got row without keys: "+add);
 			}
 		}
 		catch(Exception e)
@@ -323,7 +323,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 		Row r=getRow();      // Get row from input rowset & set row busy!
 		if (r==null)         // no more input to be expected...
 		{
-			logDetailed("Stopped processing with empty row after "+linesRead+" rows.");
+			if (log.isDetailed()) logDetailed("Stopped processing with empty row after "+linesRead+" rows.");
 			setOutputDone();
 			return false;
 		}

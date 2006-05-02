@@ -129,7 +129,7 @@ public class SelectValues extends BaseStep implements StepInterface
 			}
 			else
 			{
-				logDetailed("WARNING: Mixing streams with different nr of fields.");
+				if (log.isDetailed()) logDetailed("WARNING: Mixing streams with different nr of fields.");
 			}
 			
 		}
@@ -333,7 +333,7 @@ public class SelectValues extends BaseStep implements StepInterface
 			setOutputDone();
 			return false;
 		}
-        logRowlevel("Got row from previous step: "+r);
+		if (log.isRowLevel()) logRowlevel("Got row from previous step: "+r);
 
 		err=true;
 		
@@ -348,7 +348,7 @@ public class SelectValues extends BaseStep implements StepInterface
 		} 
 
 		putRow(r);      // copy row to possible alternate rowset(s).
-        logRowlevel("Wrote row to next step: "+r);
+		if (log.isRowLevel()) logRowlevel("Wrote row to next step: "+r);
 
 		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
 			

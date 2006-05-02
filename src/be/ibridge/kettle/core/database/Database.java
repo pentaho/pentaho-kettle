@@ -941,14 +941,21 @@ public class Database
 		log.logDebug(toString(), "Row inserted!");
 		if (keyfield==null)
 		{
-			Row keys = getGeneratedKeys(prepStatementInsert);
-			if (keys.size()>0)
+			try
 			{
-				technicalKey.setValue(keys.getValue(0).getInteger());
+				Row keys = getGeneratedKeys(prepStatementInsert);
+				if (keys.size()>0)
+				{
+					technicalKey.setValue(keys.getValue(0).getInteger());
+				}
+				else
+				{
+					throw new KettleDatabaseException("Unable to retrieve value of auto-generated technical key : no value found!");
+				}
 			}
-			else
+			catch(Exception e)
 			{
-				throw new KettleDatabaseException("Unable to retrieve value of auto-generated technical key : no value found!");
+				throw new KettleDatabaseException("Unable to retrieve value of auto-generated technical key : unexpected error: ", e);
 			}
 		}
 		
@@ -990,9 +997,12 @@ public class Database
 		try
 		{
 			keys=ps.getGeneratedKeys(); // 1 row of keys
-			return getRow(keys);
+			ResultSetMetaData resultSetMetaData = keys.getMetaData();
+			Row rowInfo = getRowInfo(resultSetMetaData);
+
+			return getRow(keys, resultSetMetaData, rowInfo);
 		}
-		catch(SQLException ex) 
+		catch(Exception ex) 
 		{
 			throw new KettleDatabaseException("Unable to retrieve key(s) from auto-increment field(s)", ex);
 		}
@@ -2395,7 +2405,33 @@ public class Database
 	 * @param rs The resultset to get the row from
 	 * @return one row or null if no row was found on the resultset or if an error occurred.
 	 */
-	public Row getRow(ResultSet rs)
+	public Row getRow(ResultSet rs) throws KettleDatabaseException
+	{
+		if (rsmd==null)
+		{
+			try
+			{
+				rsmd = rs.getMetaData();
+			}
+			catch(SQLException e)
+			{
+				throw new KettleDatabaseException("Unable to retrieve metadata from resultset", e);
+			}
+		}
+		if (rowinfo==null)
+        {
+			rowinfo = getRowInfo(rsmd);
+        }
+		
+		return getRow(rs, rsmd, rowinfo);
+	}
+
+	/**
+	 * Get a row from the resultset.
+	 * @param rs The resultset to get the row from
+	 * @return one row or null if no row was found on the resultset or if an error occurred.
+	 */
+	public Row getRow(ResultSet rs, ResultSetMetaData resultSetMetaData, Row rowInfo)
 		throws KettleDatabaseException
 	{
 		Row row;
@@ -2404,17 +2440,14 @@ public class Database
 		
 		try
 		{
-			if (rsmd==null) rsmd = rs.getMetaData();
-			if (rowinfo==null) rowinfo = getRowInfo(rsmd);
-			
-			nrcols=rsmd.getColumnCount();
+			nrcols=resultSetMetaData.getColumnCount();
 						
 			if (rs.next())
 			{
 				row=new Row();
 				for (i=0;i<nrcols;i++)
 				{
-					val=new Value(rowinfo.getValue(i)); // copy info from meta-data.
+					val=new Value(rowInfo.getValue(i)); // copy info from meta-data.
 					switch(val.getType())
 					{
 					case Value.VALUE_TYPE_BOOLEAN   : val.setValue( rs.getBoolean(i+1) ); break;
@@ -2436,7 +2469,6 @@ public class Database
 					if (rs.wasNull()) val.setNull(); // null value!
 					
 					row.addValue(val);
-					
 				}
 			}
 			else

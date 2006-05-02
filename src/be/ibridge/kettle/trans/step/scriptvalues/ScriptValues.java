@@ -79,13 +79,13 @@ public class ScriptValues extends BaseStep implements StepInterface
 			String valname = row.getValue(i).getName();
 			if (meta.getScript().indexOf(valname)>=0)
 			{
-				logDetailed("Value #"+i+" -  ["+valname+"] is used in the script.");
+				if (log.isDetailed()) logDetailed("Value #"+i+" -  ["+valname+"] is used in the script.");
 				data.fields_used[nr]=i;
 				nr++;
 			}
 		}
 		
-		logDetailed("This script is using "+data.fields_used.length+" values from the input stream(s)");
+		if (log.isDetailed()) logDetailed("This script is using "+data.fields_used.length+" values from the input stream(s)");
 	}
 
 	

@@ -156,7 +156,7 @@ public class ExecSQL extends BaseStep implements StepInterface
         }
 
         debug = "Execute sql: "+sql;        
-        logRowlevel("Executing SQL script:"+Const.CR+sql);
+        if (log.isRowLevel()) logRowlevel("Executing SQL script:"+Const.CR+sql);
         data.result = data.db.execStatements(sql.toString());
 
         debug = "Get result";        
@@ -210,7 +210,7 @@ public class ExecSQL extends BaseStep implements StepInterface
             try
             {
                 data.db.connect();
-                logDetailed("Connected to database...");
+                if (log.isDetailed()) logDetailed("Connected to database...");
 
                 // If the SQL needs to be executed once, this is a starting step somewhere.
                 if (!meta.isExecutedEachInputRow())

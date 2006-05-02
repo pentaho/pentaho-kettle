@@ -144,7 +144,7 @@ public class JoinRows extends BaseStep implements StepInterface
 			// Rowset 0:
 			r = getRowFrom(0);
 			
-			logRowlevel("Read row from stream #0 : "+(r==null?"<null>":r.toString()));
+			if (log.isRowLevel()) logRowlevel("Read row from stream #0 : "+(r==null?"<null>":r.toString()));
 		}
 		else
 		{
@@ -190,7 +190,7 @@ public class JoinRows extends BaseStep implements StepInterface
 					stopAll();
 					return null;
 				}
-				logRowlevel("Read row from file #"+filenr+" : "+r);
+				if (log.isRowLevel()) logRowlevel("Read row from file #"+filenr+" : "+r);
 
 				data.position[filenr]++;
 				
@@ -309,7 +309,7 @@ public class JoinRows extends BaseStep implements StepInterface
 	    		r.writeData(data.dataOutputStream[data.filenr]);
 	    		data.size[data.filenr]++;
 
-	    		logRowlevel(r.toString());
+	    		if (log.isRowLevel()) logRowlevel(r.toString());
 	    		
 	    		//
 	    		// Perhaps we want to cache this data??
@@ -324,7 +324,7 @@ public class JoinRows extends BaseStep implements StepInterface
 	    		else
 	    		{
 	    			// we can't cope with this many rows: reset the cache...
-	    			logDetailed("More then "+meta.getCacheSize()+" rows found: clearing cache from step ["+data.rs[data.filenr].getOriginStepName()+"]");
+	    			if (log.isDetailed()) logDetailed("More then "+meta.getCacheSize()+" rows found: clearing cache from step ["+data.rs[data.filenr].getOriginStepName()+"]");
 	    			data.cache[data.filenr]=null;
 	    		}
 

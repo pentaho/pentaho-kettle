@@ -360,22 +360,22 @@ public class LogWriter
     
     public boolean isBasic()
     {
-        return level==LOG_LEVEL_BASIC;
+        return level>=LOG_LEVEL_BASIC;
     }
 
     public boolean isDetailed()
     {
-        return level==LOG_LEVEL_DETAILED;
+        return level>=LOG_LEVEL_DETAILED;
     }
 
     public boolean isDebug()
     {
-        return level==LOG_LEVEL_DEBUG;
+        return level>=LOG_LEVEL_DEBUG;
     }
 
     public boolean isRowLevel()
     {
-        return level==LOG_LEVEL_ROWLEVEL;
+        return level>=LOG_LEVEL_ROWLEVEL;
     }
 
     /**

@@ -151,7 +151,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		if (data.datefieldnr>=0)	val_date = row.getValue(data.datefieldnr);
 		else val_date = data.val_datnow;
 		
-		logDebug("lookup row : "+lu.toString()+" val_date="+val_date.toString());
+		if (log.isDebug()) logDebug("lookup row : "+lu.toString()+" val_date="+val_date.toString());
 		
 		debug = "setDimValues()";
 		data.db.setDimValues(lu, val_date );
@@ -198,7 +198,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 			if (add==null) // The dimension entry was not found, we need to add it!
 			{
 				debug = "insert";
-				logRowlevel("No dimension entry found: INSERT (lookup= "+lu+")");
+				if (log.isRowLevel()) logRowlevel("No dimension entry found: INSERT (lookup= "+lu+")");
 				//logDetailed("Entry not found: add value!");
 				// Date range: ]-oo,+oo[ 
 				val_datfrom = new Value("MIN", meta.getMinDate());
@@ -219,7 +219,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				if (meta.getDatabaseMeta().supportsSequences() && meta.getSequenceName()!=null && meta.getSequenceName().length()>0)
 				{
 					technicalKey=data.db.getNextSequenceValue(meta.getSequenceName(), meta.getKeyField());
-					if (technicalKey!=null) logRowlevel("Found next sequence value: "+technicalKey.toString());
+					if (technicalKey!=null && log.isRowLevel()) logRowlevel("Found next sequence value: "+technicalKey.toString());
 				}
 				else
 				// Use our own sequence here...
@@ -253,11 +253,11 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				add=new Row();
 				if (meta.getKeyRename()!=null && meta.getKeyRename().length()>0) technicalKey.setName(meta.getKeyRename());
 				add.addValue(technicalKey);
-				logRowlevel("added dimension entry with key="+add.toString());
+				if (log.isRowLevel()) logRowlevel("added dimension entry with key="+add.toString());
 			}
 			else  // The entry was found: do we need to insert, update or both?
 			{
-				logRowlevel("Dimension entry found : "+add);
+				if (log.isRowLevel()) logRowlevel("Dimension entry found : "+add);
 				debug = "update";
                 
 				// What's the key?  The first value of the return row
@@ -309,7 +309,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				{
 					if (!identical)
 					{
-						logRowlevel("UPDATE row with values: "+row);
+						if (log.isRowLevel()) logRowlevel("UPDATE row with values: "+row);
 						/*
 						 * UPDATE d_customer
 						 * SET    fieldlookup[] = row.getValue(fieldnrs)
@@ -321,14 +321,14 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					}
 					else
 					{
-						logRowlevel("SKIP line: identical!");
+						if (log.isRowLevel()) logRowlevel("SKIP line: identical!");
 						// Don't do anything, everything is file in de dimension.
 						linesSkipped++;
 					}
 				}
 				else
 				{
-					logRowlevel("INSERT new version: val_key="+technicalKey.toString());
+					if (log.isRowLevel()) logRowlevel("INSERT new version: val_key="+technicalKey.toString());
 					
 					val_datfrom = data.val_datnow;
 					val_datto   = new Value("MAX", meta.getMaxDate());
@@ -345,7 +345,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 					if (meta.getDatabaseMeta().supportsSequences() && meta.getSequenceName()!=null && meta.getSequenceName().length()>0)
 					{
 						technicalKey=data.db.getNextSequenceValue(meta.getSequenceName(), meta.getKeyField());
-						if (technicalKey!=null) logRowlevel("Found next sequence value: "+technicalKey.toString());
+						if (technicalKey!=null && log.isRowLevel()) logRowlevel("Found next sequence value: "+technicalKey.toString());
 					}
 					else
 					// Use our own sequence here...
@@ -388,12 +388,12 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				add=new Row();
 				if (meta.getKeyRename()!=null && meta.getKeyRename().length()>0) technicalKey.setName(meta.getKeyRename());
 				add.addValue(technicalKey);
-                logRowlevel("Technical key = "+technicalKey);
+				if (log.isRowLevel()) logRowlevel("Technical key = "+technicalKey);
 			}
 		}
 		
 		debug = "add values to row";
-        logRowlevel("Values to add to row: "+add);
+		if (log.isRowLevel()) logRowlevel("Values to add to row: "+add);
 		for (int i=0;i<add.size();i++)
 		{
 			row.addValue( add.getValue(i) );
@@ -435,7 +435,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		}
 		catch(KettleException e)
 		{
-			logError("Because of an error, this step can't continue: "+e.getMessage());
+			logError("Because of an error in ["+debug+"], this step can't continue: "+e.getMessage());
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)

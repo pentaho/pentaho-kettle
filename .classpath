@@ -24,7 +24,6 @@
 	<classpathentry kind="lib" path="libext/javadbf.jar"/>
 	<classpathentry kind="lib" path="libext/db2jcc_license_cu.jar"/>
 	<classpathentry kind="lib" path="libext/gis-shape.jar"/>
-	<classpathentry sourcepath="C:/Soft/SWT/3.1M7/win32/src.zip" kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="lib" path="libext/sapdbc.jar"/>
 	<classpathentry kind="lib" path="libext/edbc.jar"/>
 	<classpathentry kind="src" path="extra"/>
@@ -37,5 +36,7 @@
 	<classpathentry kind="lib" path="test/libext/junit.jar"/>
 	<classpathentry kind="lib" path="libext/postgresql-8.1-405.jdbc3.jar"/>
 	<classpathentry kind="src" path="test/useCases/normal"/>
+	<classpathentry kind="lib" path="libswt/linux/swt.jar"/>
+	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

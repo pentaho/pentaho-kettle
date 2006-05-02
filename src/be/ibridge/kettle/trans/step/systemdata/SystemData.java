@@ -240,7 +240,7 @@ public class SystemData extends BaseStep implements StepInterface
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		Row r=getSystemData();
-		logRowlevel("System info returned: "+r);
+		if (log.isRowLevel()) logRowlevel("System info returned: "+r);
 		putRow(r);     // Just one row!
 		linesRead++;
 		setOutputDone();

@@ -136,7 +136,7 @@ public class SortRows extends BaseStep implements StepInterface
 				{
 					filename=((File)data.files.get(f)).toString();
 					debug="opening file "+filename;
-					logDetailed("Opening tmp-file: ["+filename+"]");
+					if (log.isDetailed()) logDetailed("Opening tmp-file: ["+filename+"]");
 					FileInputStream fi=new FileInputStream( (File)data.files.get(f) );
 					DataInputStream di=new DataInputStream( fi );
 					data.fis.add(fi);
@@ -146,7 +146,7 @@ public class SortRows extends BaseStep implements StepInterface
 					int buffersize=di.readInt();
 					debug="buffersize = "+buffersize;
 					
-					logDetailed("["+filename+"] expecting "+buffersize+" rows...");
+					if (log.isDetailed()) logDetailed("["+filename+"] expecting "+buffersize+" rows...");
 					
 					if (buffersize>0)
 					{
@@ -183,7 +183,7 @@ public class SortRows extends BaseStep implements StepInterface
 				for (i=0;i<data.rowbuffer.size() && !isStopped();i++)
 				{
 					Row b = (Row)data.rowbuffer.get(i);
-					logRowlevel("--BR#"+i+": "+b.toString());
+					if (log.isRowLevel()) logRowlevel("--BR#"+i+": "+b.toString());
 				}
 				//
 				
@@ -202,7 +202,7 @@ public class SortRows extends BaseStep implements StepInterface
 				retval=r1;
 		
 				data.rowbuffer.remove(smallest);
-				logRowlevel("Smallest row selected on ["+smallest+"] : "+retval);
+				if (log.isRowLevel()) logRowlevel("Smallest row selected on ["+smallest+"] : "+retval);
 				
 				// now get another Row for position smallest
 				
@@ -277,7 +277,7 @@ public class SortRows extends BaseStep implements StepInterface
 			r=getBuffer();
 			while (r!=null  && !isStopped())
 			{
-				logRowlevel("Read row: "+r.toString());
+				if (log.isRowLevel()) logRowlevel("Read row: "+r.toString());
 				
 				putRow(r); // copy row to possible alternate rowset(s).
 
@@ -336,12 +336,12 @@ public class SortRows extends BaseStep implements StepInterface
 	 */
 	public synchronized void quickSort(Vector elements)
 	{
-		logDetailed("Starting quickSort algorithm..."); 
+		if (log.isDetailed()) logDetailed("Starting quickSort algorithm..."); 
 		if (! elements.isEmpty())
 		{ 
 			this.quickSort(elements, 0, elements.size()-1);
 		}
-		logDetailed("QuickSort algorithm has finished.");
+		if (log.isDetailed()) logDetailed("QuickSort algorithm has finished.");
 	}
 
 

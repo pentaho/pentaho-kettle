@@ -84,7 +84,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			data.db.setLookup(meta.getTablename(), meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(), meta.getOrderByClause(), meta.isFailingOnMultipleResults());
 			
 			// lookup the values!
-			logDetailed("Checking row: "+row.toString());
+			if (log.isDetailed()) logDetailed("Checking row: "+row.toString());
 			data.keynrs = new int[meta.getStreamKeyField1().length];
 			data.keynrs2= new int[meta.getStreamKeyField1().length];
 			
@@ -106,7 +106,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 				{
 					throw new KettleStepException("Field ["+meta.getStreamKeyField2()[i]+"] is required and couldn't be found!");
 				}
-				logDebug("Field ["+meta.getStreamKeyField1()[i]+"] has nr. "+data.keynrs[i]);
+				if (log.isDebug()) logDebug("Field ["+meta.getStreamKeyField1()[i]+"] has nr. "+data.keynrs[i]);
 			}
 			
 			data.nullif = new Value[meta.getReturnValueField().length];
@@ -177,7 +177,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		
 		if (add==null)
 		{
-            logRowlevel("Added "+meta.getStreamKeyField1().length+" values to lookup row: "+lu);
+			if (log.isRowLevel()) logRowlevel("Added "+meta.getStreamKeyField1().length+" values to lookup row: "+lu);
             
 			debug = "setValuesLookup()";
 			data.db.setValuesLookup(lu);
@@ -193,7 +193,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			{
 				return false;
 			}
-            logRowlevel("No result found after database lookup! (add defaults)");
+			if (log.isRowLevel()) logRowlevel("No result found after database lookup! (add defaults)");
 			add=new Row();
 			for (int i=0;i<meta.getReturnValueField().length;i++)
 			{
@@ -211,7 +211,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		}
         else
         {
-            logRowlevel("Found result after database lookup: "+add);
+        	if (log.isRowLevel()) logRowlevel("Found result after database lookup: "+add);
         }
 
 		debug = "Store result in cache";
@@ -265,7 +265,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			return false;
 		}
 
-        logRowlevel("Got row from previous step: "+r);
+		if (log.isRowLevel()) logRowlevel("Got row from previous step: "+r);
 
 		try
 		{
@@ -273,7 +273,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			{
 				// add new values to the row in rowset[0].
 				putRow(r);       // copy row to output rowset(s);
-	            logRowlevel("Wrote row to next step: "+r);
+				if (log.isRowLevel()) logRowlevel("Wrote row to next step: "+r);
 				if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
 			}
 		}

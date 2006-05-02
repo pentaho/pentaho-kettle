@@ -57,7 +57,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			first=false;
 			debug = Messages.getString("DatabaseJoin.Log.SetLookupStatement"); //$NON-NLS-1$
 
-			logDetailed(Messages.getString("DatabaseJoin.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
+			if (log.isDetailed()) logDetailed(Messages.getString("DatabaseJoin.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
 			data.keynrs = new int[meta.getParameterField().length];
 			
 			debug = Messages.getString("DatabaseJoin.Log.GetKeyfiedNumbers"); //$NON-NLS-1$
@@ -97,7 +97,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			newrow.addRow(add);
 			putRow(newrow);
 			
-			logRowlevel(Messages.getString("DatabaseJoin.Log.PutoutRow")+add); //$NON-NLS-1$
+			if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseJoin.Log.PutoutRow")+add); //$NON-NLS-1$
 			
 			// Get a new row
 			if (meta.getRowLimit()==0 || counter<meta.getRowLimit()) 

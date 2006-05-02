@@ -57,7 +57,7 @@ public class NullIf extends BaseStep implements StepInterface
 			return false;
 		}
 		
-		logRowlevel("Convert field values to NULL for row: "+r);
+		if (log.isRowLevel()) logRowlevel("Convert field values to NULL for row: "+r);
 		
 		if (first)
 		{

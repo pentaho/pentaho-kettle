@@ -802,7 +802,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			if (!data.doneWithHeader && data.pageLinesRead == 0) // We are reading header lines
 			{
 				debug = "paged layout : header line " + data.headerLinesRead;
-				logRowlevel("P-HEADER (" + data.headerLinesRead + ") : " + textLine.line);
+				if (log.isRowLevel()) logRowlevel("P-HEADER (" + data.headerLinesRead + ") : " + textLine.line);
 				data.headerLinesRead++;
 				if (data.headerLinesRead >= meta.getNrHeaderLines())
 				{
@@ -831,7 +831,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					}
 
 					debug = "paged layout : data line";
-					logRowlevel("P-DATA: " + textLine.line);
+					if (log.isRowLevel()) logRowlevel("P-DATA: " + textLine.line);
 					// Read a normal line on a page of data.
 					data.pageLinesRead++;
 					r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten + 1,
@@ -844,7 +844,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					debug = "paged layout : footer line";
 					if (meta.hasFooter() && data.footerLinesRead < meta.getNrFooterLines())
 					{
-						logRowlevel("P-FOOTER: " + textLine.line);
+						if (log.isRowLevel()) logRowlevel("P-FOOTER: " + textLine.line);
 						data.footerLinesRead++;
 					}
 
@@ -859,7 +859,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						data.headerLinesRead = 0;
 						data.pageLinesRead = 0;
 						data.footerLinesRead = 0;
-						logRowlevel("RESTART PAGE");
+						if (log.isRowLevel()) logRowlevel("RESTART PAGE");
 					}
 				}
 			}
@@ -978,7 +978,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				}
 			}
 
-			logRowlevel("Putting row: " + r.toString());
+			if (log.isRowLevel()) logRowlevel("Putting row: " + r.toString());
 			putRow(r);
 
 		}
@@ -1185,7 +1185,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			if ( !meta.getDateFormatLocale().equals(Locale.getDefault()))
 			{
 				// The format will be overwritten, this is simply the default...
-				logDetailed("Applying date format locale: "+meta.getDateFormatLocale());
+				if (log.isDetailed()) logDetailed("Applying date format locale: "+meta.getDateFormatLocale());
 				data.daf = new SimpleDateFormat("yyy/MM/dd HH:mm:ss.SSS", meta.getDateFormatLocale());
 			}
 				

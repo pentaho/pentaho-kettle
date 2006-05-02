@@ -60,7 +60,7 @@ public class XMLInput extends BaseStep implements StepInterface
 		    return false;     // This is the end of this step.
 		}
 		
-		logRowlevel(Messages.getString("XMLInput.Log.ReadRow", row.toString()));
+		if (log.isRowLevel()) logRowlevel(Messages.getString("XMLInput.Log.ReadRow", row.toString()));
         
         linesInput++;
         
@@ -140,7 +140,7 @@ public class XMLInput extends BaseStep implements StepInterface
                         }
                         else
                         {
-                            logDebug(Messages.getString("XMLInput.Log.UnableToFindPosition", pos.toString(), node.toString()));
+                        	if (log.isDebug()) logDebug(Messages.getString("XMLInput.Log.UnableToFindPosition", pos.toString(), node.toString()));
                         }
                         node=subNode;
                     }
@@ -156,7 +156,7 @@ public class XMLInput extends BaseStep implements StepInterface
                         }
                         else
                         {
-                            logDebug(Messages.getString("XMLInput.Log.UnableToFindPosition", pos.toString(), node.toString()));
+                        	if (log.isDebug()) logDebug(Messages.getString("XMLInput.Log.UnableToFindPosition", pos.toString(), node.toString()));
                         }
                         node=subNode;
                     }
@@ -317,7 +317,7 @@ public class XMLInput extends BaseStep implements StepInterface
 		{
             if (data.filenr>=data.files.length) // finished processing!
             {
-                logDetailed(Messages.getString("XMLInput.Log.FinishedProcessing"));
+            	if (log.isDetailed()) logDetailed(Messages.getString("XMLInput.Log.FinishedProcessing"));
                 return false;
             }
             
@@ -333,7 +333,7 @@ public class XMLInput extends BaseStep implements StepInterface
             // Open the XML document
             data.document = XMLHandler.loadXMLFile(data.filename);
             
-            logDetailed(Messages.getString("XMLInput.Log.FileOpened", data.filename));
+            if (log.isDetailed()) logDetailed(Messages.getString("XMLInput.Log.FileOpened", data.filename));
             
             // Position in the file...
             data.section = data.document;

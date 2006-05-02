@@ -60,7 +60,7 @@ public class Delete extends BaseStep implements StepInterface
 			
 			debug="first run, lookup values, field positions, etc.";
 			// lookup the values!
-			logDetailed("Checking row: "+row.toString());
+			if (log.isDetailed()) logDetailed("Checking row: "+row.toString());
 			data.keynrs  = new int[meta.getKeyStream().length];
 			data.keynrs2 = new int[meta.getKeyStream().length];
 			for (int i=0;i<meta.getKeyStream().length;i++)
@@ -81,7 +81,7 @@ public class Delete extends BaseStep implements StepInterface
 					throw new KettleStepException("Field ["+meta.getKeyStream2()[i]+"] is required and couldn't be found!");
 				}
 				
-				logDebug("Field ["+meta.getKeyStream()[i]+"] has nr. "+data.keynrs[i]);
+				if (log.isDebug()) logDebug("Field ["+meta.getKeyStream()[i]+"] has nr. "+data.keynrs[i]);
 			}
 		}
 		
@@ -101,7 +101,7 @@ public class Delete extends BaseStep implements StepInterface
 		debug="setValues()";
 		data.dbupd.setValuesUpdate(lu);
 		
-		logDebug("Values set for delete: "+lu.toString()+", input row: "+row);
+		if (log.isDebug()) logDebug("Values set for delete: "+lu.toString()+", input row: "+row);
 		debug="getLookup()";
 
 		data.dbupd.updateRow();

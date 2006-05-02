@@ -519,8 +519,8 @@ public class BaseStep extends Thread
 		
 		distributed = stepMeta.distributes;
 		
-		if (distributed)	logDetailed(Messages.getString("BaseStep.Log.DistributionActivated")); //$NON-NLS-1$
-		else 			logDetailed(Messages.getString("BaseStep.Log.DistributionDeactivated")); //$NON-NLS-1$
+		if (distributed) if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.DistributionActivated")); //$NON-NLS-1$
+		else 			 if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.DistributionDeactivated")); //$NON-NLS-1$
 		
         rowListeners = new ArrayList();
         interestingFiles = new ArrayList();
@@ -805,7 +805,7 @@ public class BaseStep extends Thread
         
 		if (stopped)
 		{
-			logDebug(Messages.getString("BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
+			if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
 			stopAll();
 			return;
 		}
@@ -915,7 +915,7 @@ public class BaseStep extends Thread
 		}
 		if (stopped)
 		{
-			logDebug(Messages.getString("BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
+			if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopPuttingARow")); //$NON-NLS-1$
 			stopAll();
 			return;
 		}
@@ -994,7 +994,7 @@ public class BaseStep extends Thread
 		}
 		if (stopped) 
 		{
-			logDebug(Messages.getString("BaseStep.Log.StopLookingForMoreRows"));  //$NON-NLS-1$
+			if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.StopLookingForMoreRows"));  //$NON-NLS-1$
 			stopAll(); 
 			return null; 
 		} 
@@ -1118,7 +1118,7 @@ public class BaseStep extends Thread
 	//
 	public void setOutputDone()
 	{
-		logDebug(Messages.getString("BaseStep.Log.OutputDone",String.valueOf(outputRowSets.size()))); //$NON-NLS-1$ //$NON-NLS-2$
+		if (log.isDebug()) logDebug(Messages.getString("BaseStep.Log.OutputDone",String.valueOf(outputRowSets.size()))); //$NON-NLS-1$ //$NON-NLS-2$
 		for (int i=0;i<outputRowSets.size();i++)
 		{
 			RowSet rs=(RowSet)outputRowSets.get(i);
@@ -1145,7 +1145,7 @@ public class BaseStep extends Thread
         
 		StepMeta stepMeta = transMeta.findStep(stepname);
 
-		logDetailed(Messages.getString("BaseStep.Log.StartingBuffersAllocation")); //$NON-NLS-1$
+		if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.StartingBuffersAllocation")); //$NON-NLS-1$
 		
 		// How many next steps are there? 0, 1 or more??
 		// How many steps do we send output to?

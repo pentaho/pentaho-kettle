@@ -92,7 +92,7 @@ public class TableOutput extends BaseStep implements StepInterface
 
 		if (r==null) // Stop: last line or error encountered 
 		{
-			logDetailed("Last line inserted: stop");
+			if (log.isDetailed()) logDetailed("Last line inserted: stop");
 			return false;
 		} 
 
@@ -169,7 +169,7 @@ public class TableOutput extends BaseStep implements StepInterface
         {
             debug="prepareInsert for table ["+tableName+"]";
             String sql = data.db.getInsertStatement(tableName, r);
-            logDetailed("Prepared statement : "+sql);
+            if (log.isDetailed()) logDetailed("Prepared statement : "+sql);
             insertStatement = data.db.prepareSQL(sql, meta.isReturningGeneratedKeys());
             data.preparedStatements.put(tableName, insertStatement);
         }

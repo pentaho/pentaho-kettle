@@ -91,7 +91,7 @@ public class MergeRows extends BaseStep implements StepInterface
             }
         }
 
-        logRowlevel("ONE: "+data.one+" / TWO: "+data.two);
+        if (log.isRowLevel()) logRowlevel("ONE: "+data.one+" / TWO: "+data.two);
         
         if (data.one==null && data.two==null)
         {

@@ -49,7 +49,7 @@ public class TableInput extends BaseStep implements StepInterface
 	
 	private synchronized Row readStartDate()
     {
-        logDetailed("Reading from step [" + meta.getLookupStepname() + "]");
+		if (log.isDetailed()) logDetailed("Reading from step [" + meta.getLookupStepname() + "]");
 
         Row parameters = new Row();
 
@@ -78,15 +78,15 @@ public class TableInput extends BaseStep implements StepInterface
             {
                 if (meta.isExecuteEachInputRow())
                 {
-                    logDetailed("Reading single row from stream [" + meta.getLookupStepname() + "]");
+                	if (log.isDetailed()) logDetailed("Reading single row from stream [" + meta.getLookupStepname() + "]");
                     parameters = getRowFrom(meta.getLookupStepname());
-                    logDetailed("Query parameters found = " + parameters.toString());
+                    if (log.isDetailed()) logDetailed("Query parameters found = " + parameters.toString());
                 }
                 else
                 {
-                    logDetailed("Reading query parameters from stream [" + meta.getLookupStepname() + "]");
+                	if (log.isDetailed()) logDetailed("Reading query parameters from stream [" + meta.getLookupStepname() + "]");
                     parameters = readStartDate(); // Read values in lookup table (look)
-                    logDetailed("Query parameters found = " + parameters.toString());
+                    if (log.isDetailed()) logDetailed("Query parameters found = " + parameters.toString());
                 }
             }
             else
@@ -233,7 +233,7 @@ public class TableInput extends BaseStep implements StepInterface
 			{
 				data.db.connect();
                 data.db.setCommit(100); // needed for PGSQL it seems...
-				logDetailed("Connected to database...");
+                if (log.isDetailed()) logDetailed("Connected to database...");
 
 				return true;
 			}

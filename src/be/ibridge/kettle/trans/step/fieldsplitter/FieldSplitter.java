@@ -77,7 +77,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 		Value value=null;
 		if (use_ids)
 		{
-			logDebug("Using IDs!!");
+			if (log.isDebug()) logDebug("Using IDs!!");
 			// pol all split fields
 			// Loop over the specified field list
 			// If we spot the corresponding id[] entry in pol, add the value
@@ -88,7 +88,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 			while(v.getString()!=null && prev<v.getString().length() && i<pol.length)
 			{
 				pol[i]=polNext(v.getString(), meta.getDelimiter(), prev);
-				logDebug("pol="+pol[i]+", prev="+prev);
+				if (log.isDebug()) logDebug("pol="+pol[i]+", prev="+prev);
 				prev+=pol[i].length()+meta.getDelimiter().length();
 				i++;
 			}
@@ -115,7 +115,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 				}
 
 				if (split==null) split="";
-				logDebug("Split="+split);
+				if (log.isDebug()) logDebug("Split="+split);
 
 				try
 				{
@@ -148,12 +148,12 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 		}
 		else
 		{
-			logDebug("Using position of value!!");
+			if (log.isDebug()) logDebug("Using position of value!!");
 			int prev=0;
 			for (int i=0;i<meta.getField().length;i++)
 			{
 				String pol = polNext(v.getString(), meta.getDelimiter(), prev);
-				logDebug("pol="+pol+", prev="+prev);
+				if (log.isDebug()) logDebug("pol="+pol+", prev="+prev);
 				prev+=(pol==null?0:pol.length()) + meta.getDelimiter().length();
 				
 				try

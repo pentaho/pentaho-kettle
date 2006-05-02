@@ -173,7 +173,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				if (meta.getDatabase().supportsSequences() && meta.getSequenceFrom()!=null && meta.getSequenceFrom().length()>0)
 				{
 					val_key=data.db.getNextSequenceValue(meta.getSequenceFrom(), meta.getTechnicalKeyField());
-					if (val_key!=null) logRowlevel(Messages.getString("CombinationLookup.Log.FoundNextSequenceValue")+val_key.toString()); //$NON-NLS-1$
+					if (val_key!=null && log.isRowLevel()) logRowlevel(Messages.getString("CombinationLookup.Log.FoundNextSequenceValue")+val_key.toString()); //$NON-NLS-1$
 				}
 				else
 				// Use our own sequence here...

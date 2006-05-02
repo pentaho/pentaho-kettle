@@ -140,7 +140,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
                         }
                         else
                         {
-                            logDetailed("Unknown type : " + cell.getType().toString() + " : [" + cell.getContents() + "]");
+                        	if (log.isDetailed()) logDetailed("Unknown type : " + cell.getType().toString() + " : [" + cell.getContents() + "]");
                             v.setNull();
                         }
                     }
@@ -322,16 +322,14 @@ public class ExcelInput extends BaseStep implements StepInterface {
 		// See if we're not done processing...
 		// We are done processing if the filenr >= number of files.
 		if (data.filenr >= data.files.nrOfFiles()) {
-			logDetailed("No more files to be processes! (" + data.filenr
-					+ " files done)");
+			if (log.isDetailed()) logDetailed("No more files to be processes! (" + data.filenr + " files done)");
 			setOutputDone(); // signal end to receiver(s)
 			return false; // end of data or error.
 		}
 
 		if (meta.getRowLimit() > 0 && data.rownr > meta.getRowLimit()) {
 			// The close of the workbook is in dispose()
-			logDetailed("Row limit of [" + meta.getRowLimit()
-					+ "] reached: stop processing.");
+			if (log.isDetailed()) logDetailed("Row limit of [" + meta.getRowLimit() + "] reached: stop processing.");
 			setOutputDone(); // signal end to receiver(s)
 			return false; // end of data or error.
 		}
@@ -418,8 +416,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
 				data.filename = data.file.getPath();
 				addInterestingFile(data.file);
 				debug = "open workbook #" + data.filenr + " : " + data.filename;
-				logDetailed("Opening workbook #" + data.filenr + " : "
-						+ data.filename);
+				if (log.isDetailed()) logDetailed("Opening workbook #" + data.filenr + " : " + data.filename);
 				data.workbook = Workbook.getWorkbook(data.file);
 				data.errorHandler.handleFile(data.file);
 				// Start at the first sheet again...
@@ -431,7 +428,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
 
 			// What sheet were we handling?
 			debug = "Get sheet #" + data.filenr + "." + data.sheetnr;
-			logDetailed(debug);
+			if (log.isDetailed()) logDetailed(debug);
 			String sheetName = meta.getSheetName()[data.sheetnr];
 			Sheet sheet = data.workbook
 					.getSheet(sheetName);
@@ -463,15 +460,14 @@ public class ExcelInput extends BaseStep implements StepInterface {
 					else {
 						debug = "Get line #" + lineNr + " from sheet #"
 								+ data.filenr + "." + data.sheetnr;
-						logRowlevel(debug);
+						if (log.isRowLevel()) logRowlevel(debug);
 						
 
-						logRowlevel("Read line with " + line.length + " cells");
+						if (log.isRowLevel()) logRowlevel("Read line with " + line.length + " cells");
 						ExcelInputRow excelInputRow = new ExcelInputRow(sheet
 								.getName(), lineNr, line);
 						Row r = fillRow(data.row, data.colnr, excelInputRow);
-						logRowlevel("Converted line to row #" + lineNr + " : "
-								+ r);
+						if (log.isRowLevel()) logRowlevel("Converted line to row #" + lineNr + " : " + r);
 
 						if (line.length > 0 || !meta.ignoreEmptyRows()) {
 							// Put the row
@@ -483,8 +479,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
 						}
 					}
 				} catch (ArrayIndexOutOfBoundsException e) {
-					logRowlevel("Out of index error: move to next sheet! ("
-							+ debug + ")");
+					if (log.isRowLevel()) logRowlevel("Out of index error: move to next sheet! ("+debug+")");
 					// We tried to read below the last line in the sheet.
 					// Go to the next sheet...
 					nextsheet = true;
@@ -617,7 +612,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
 		try {
 			data.errorHandler.close();
 		} catch (KettleException e) {
-			logDebug("Could not close errorHandler");
+			if (log.isDebug()) logDebug("Could not close errorHandler");
 		}
 
 		super.dispose(smi, sdi);
