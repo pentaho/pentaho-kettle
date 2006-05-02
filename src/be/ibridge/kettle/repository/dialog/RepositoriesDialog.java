@@ -297,7 +297,7 @@ public class RepositoriesDialog
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wNorep, wCancel }, margin, null);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wNorep, wCancel }, margin, wPassword);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -340,7 +340,14 @@ public class RepositoriesDialog
 		getData();
 		
 		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
+		if (winprop != null)
+		{
+			winprop.setShell(shell);
+		}
+		else
+		{
+			shell.pack();
+		}
 	
 		shell.open();
 		while (!shell.isDisposed())

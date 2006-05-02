@@ -71,7 +71,8 @@ public class WindowProperty
 		
 		if (!sized)
 		{
-			shell.pack();
+			// shell.pack();
+			shell.layout();
 		}
         
         // Sometimes the size of the shell is WAY too great!
