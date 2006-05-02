@@ -899,12 +899,12 @@ public class Database
 
 			try
 			{
-				log.logDetailed(toString(), "Preparing update: "+Const.CR+sql+Const.CR);
+				log.logDetailed(toString(), "Preparing update: "+Const.CR+sql_upd+Const.CR);
 				prepStatementUpdate=connection.prepareStatement(databaseMeta.stripCR(sql_upd));
 			}
 			catch(SQLException ex) 
 			{
-				throw new KettleDatabaseException("Unable to prepare dimension update :"+Const.CR+sql, ex);
+				throw new KettleDatabaseException("Unable to prepare dimension update :"+Const.CR+sql_upd, ex);
 			}
 		}
 		
