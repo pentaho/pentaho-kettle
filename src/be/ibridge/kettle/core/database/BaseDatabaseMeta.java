@@ -504,6 +504,17 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	{
 		return DatabaseMeta.CLOB_LENGTH;
 	}
+
+	/**
+	 * Get the maximum length of a text field (VARCHAR) for this database connection.
+	 * If this size is exceeded use a CLOB.
+	 * @return The maximum VARCHAR field length for this database type. (mostly identical to getMaxTextFieldLength() - CLOB_LENGTH)
+	 */
+	public int getMaxVARCHARLength()
+	{
+		return DatabaseMeta.CLOB_LENGTH;
+	}
+
 	
 	/**
 	 * @return true if the database supports transactions.

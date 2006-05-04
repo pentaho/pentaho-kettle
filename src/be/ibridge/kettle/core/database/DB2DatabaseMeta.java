@@ -196,7 +196,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 			}
 			break;
 		case Value.VALUE_TYPE_STRING:
-			if (length>=DatabaseMeta.CLOB_LENGTH)
+			if (length>getMaxVARCHARLength() || length>=DatabaseMeta.CLOB_LENGTH)
 			{
 				retval+="CLOB";
 			}
@@ -309,5 +309,15 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
     {
         return null; // lock release on commit point.
     }
+
+	/**
+	 * Get the maximum length of a text field (VARCHAR) for this database connection.
+	 * If this size is exceeded use a CLOB.
+	 * @return The maximum VARCHAR field length for this database type. (mostly identical to getMaxTextFieldLength() - CLOB_LENGTH)
+	 */
+	public int getMaxVARCHARLength()
+	{
+		return 32672;
+	}
 }
 

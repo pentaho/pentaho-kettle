@@ -371,6 +371,13 @@ public interface DatabaseInterface extends Cloneable
 	public int getMaxTextFieldLength();
 
 	/**
+	 * Get the maximum length of a text field (VARCHAR) for this database connection.
+	 * If this size is exceeded use a CLOB.
+	 * @return The maximum VARCHAR field length for this database type. (mostly identical to getMaxTextFieldLength() - CLOB_LENGTH)
+	 */
+	public int getMaxVARCHARLength();
+
+	/**
 	 * Generates the SQL statement to add a column to the specified table
 	 * @param tablename The table to add
 	 * @param v The column defined as a value
