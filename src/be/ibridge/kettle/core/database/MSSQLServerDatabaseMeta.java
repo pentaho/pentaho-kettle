@@ -12,7 +12,7 @@ import be.ibridge.kettle.core.value.Value;
  */
 public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public MSSQLServerDatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public MSSQLServerDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}
@@ -70,7 +70,7 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 		}
 		else
 		{
-			return "jdbc:jtds:sqlserver://"+getHostname()+":"+getDatabasePortNumber()+"/"+getDatabaseName();
+			return "jdbc:jtds:sqlserver://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
 		}
 	}
 

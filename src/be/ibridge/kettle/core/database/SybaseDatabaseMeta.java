@@ -16,7 +16,7 @@ public class SybaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * Construct a new database connection.
 	 * 
 	 */
-	public SybaseDatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public SybaseDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}
@@ -87,7 +87,7 @@ public class SybaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		else
 		{
 		    // jdbc:jtds:<server_type>://<server>[:<port>][/<database>][;<property>=<value>[;...]]
-			return "jdbc:jtds:sybase://"+getHostname()+":"+getDatabasePortNumber()+"/"+getDatabaseName();
+			return "jdbc:jtds:sybase://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
 		}
 	}
 

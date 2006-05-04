@@ -16,7 +16,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * Construct a new database connection.
 	 * 
 	 */
-	public GuptaDatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public GuptaDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}
@@ -82,7 +82,7 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		}
 		else
 		{
-			return "jdbc:sqlbase://"+getHostname()+":"+getDatabasePortNumber()+"/"+getDatabaseName();
+			return "jdbc:sqlbase://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
 		}
 	}
 

@@ -16,7 +16,7 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * Construct a new database connection.
 	 * 
 	 */
-	public FirebirdDatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public FirebirdDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}
@@ -82,7 +82,7 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		}
 		else
 		{
-			return "jdbc:firebirdsql://"+getHostname()+":"+getDatabasePortNumber()+"/"+getDatabaseName();
+			return "jdbc:firebirdsql://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
 		}
 	}
 

@@ -9,6 +9,7 @@ import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransHopMeta;
@@ -68,7 +69,7 @@ public class TransBuilder
     public static final TransMeta buildCopyTable(String transformationName, String sourceDatabaseName, String sourceTableName, String[] sourceFields, String targetDatabaseName, String targetTableName, String[] targetFields) throws KettleException
     {
         LogWriter log = LogWriter.getInstance();
-        
+        EnvUtil.environmentInit();
         try
         {
             //
@@ -190,6 +191,7 @@ public class TransBuilder
      */
     public static void main(String[] args) throws Exception
     {
+    	EnvUtil.environmentInit();
         // Init the logging...
         LogWriter log = LogWriter.getInstance("TransBuilder.log", true, LogWriter.LOG_LEVEL_DETAILED);
         

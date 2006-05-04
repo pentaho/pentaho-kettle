@@ -16,7 +16,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * Construct a new database connection.
 	 * 
 	 */
-	public AS400DatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public AS400DatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}

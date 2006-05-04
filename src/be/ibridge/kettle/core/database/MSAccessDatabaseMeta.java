@@ -12,7 +12,7 @@ import be.ibridge.kettle.core.value.Value;
  */
 public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public MSAccessDatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public MSAccessDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}

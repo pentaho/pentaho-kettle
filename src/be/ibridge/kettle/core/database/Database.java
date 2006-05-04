@@ -42,8 +42,10 @@ import be.ibridge.kettle.core.DBCacheEntry;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseBatchException;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.step.dimensionlookup.DimensionLookupMeta;
 
@@ -205,7 +207,10 @@ public class Database
 
 		try 
 		{
-			connection = DriverManager.getConnection(databaseMeta.getURL(), databaseMeta.getUsername(), databaseMeta.getPassword());
+			String url = StringUtil.environmentSubstitute(databaseMeta.getURL());
+			String userName = StringUtil.environmentSubstitute(databaseMeta.getUsername());
+			String password = StringUtil.environmentSubstitute(databaseMeta.getPassword());
+			connection = DriverManager.getConnection(url, userName, password);
 		} 
 		catch(SQLException e) 
 		{

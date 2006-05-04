@@ -45,6 +45,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.core.database.BaseDatabaseMeta;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.database.GenericDatabaseMeta;
@@ -748,7 +749,7 @@ public class DatabaseDialog extends Dialog
 		
 		wHostName.setText( NVL(connection.getHostname(), "") );
 		wDBName.setText( NVL(connection.getDatabaseName(), "") );
-		wPort.setText( ""+connection.getDatabasePortNumber() );
+		wPort.setText( NVL(connection.getDatabasePortNumberString(), "") );
 		wServername.setText( NVL(connection.getServername(), "") );
 		wUsername.setText( NVL(connection.getUsername(), "") );
 		wPassword.setText( NVL(connection.getPassword(), "") );
@@ -884,8 +885,8 @@ public class DatabaseDialog extends Dialog
 		info.setDBName( wDBName.getText() );
 		
 		// Port number
-		info.setDBPort( Const.toInt( Const.trim(wPort.getText() ), 0) );
-		
+		info.setDBPort( wPort.getText() );
+				
 		// Username
 		info.setUsername( wUsername.getText() );
 		

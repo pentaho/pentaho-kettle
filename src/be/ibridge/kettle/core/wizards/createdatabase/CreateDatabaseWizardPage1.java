@@ -259,7 +259,7 @@ public class CreateDatabaseWizardPage1 extends WizardPage
 		}
 		
 		// Also, set the default port in case of JDBC:
-		info.setDBPort(info.getDefaultDatabasePort());
+		info.setDBPort(String.valueOf(info.getDefaultDatabasePort()));
 		
 		return info;
 	}

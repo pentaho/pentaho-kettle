@@ -108,15 +108,15 @@ public interface DatabaseInterface extends Cloneable
 	public void setDatabaseName(String databaseName);
 	
 	/**
-	 * @return Returns the databasePortNumber.
+	 * @return Returns the databasePortNumber as a string.
 	 */
-	public int getDatabasePortNumber();
+	public String getDatabasePortNumberString();
 	
 	/**
-	 * @param databasePortNumber The databasePortNumber to set.
+	 * @param databasePortNumber The databasePortNumber to set as a string.
 	 */
-	public void setDatabasePortNumber(int databasePortNumber);
-	
+	public void setDatabasePortNumberString(String databasePortNumberString);
+
 	/**
 	 * @return Returns the hostname.
 	 */

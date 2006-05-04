@@ -121,7 +121,7 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 		wlPort.setLayoutData(fdlPort);
 		wPort = new Text(composite, SWT.SINGLE | SWT.BORDER);
  		props.setLook(wPort);
-		if (info.getDatabasePortNumber()>0) wPort.setText(""+info.getDatabasePortNumber());
+		wPort.setText(info.getDatabasePortNumberString());
 		fdPort = new FormData();
 		fdPort.top    = new FormAttachment(wHostname, margin);
 		fdPort.left   = new FormAttachment(middle, margin);
@@ -167,8 +167,7 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 	{
 		wHostname.setText(Const.NVL(info.getHostname(), ""));
 		
-		if (info.getDatabasePortNumber()>0) wPort.setText(""+info.getDatabasePortNumber()); 
-		else wPort.setText("");
+		wPort.setText(info.getDatabasePortNumberString()); 
 		
 		wDBName.setText(Const.NVL(info.getDatabaseName(), ""));
 	}
@@ -202,7 +201,7 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 		
 		if (wPort.getText()!=null && wPort.getText().length()>0)
 		{
-			info.setDBPort(Const.toInt(wPort.getText(), -1));
+			info.setDBPort(wPort.getText());
 		}
 		
 		if (wDBName.getText()!=null && wDBName.getText().length()>0)

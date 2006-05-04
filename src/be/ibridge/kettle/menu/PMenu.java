@@ -87,6 +87,7 @@ import be.ibridge.kettle.core.dialog.DatabaseExplorerDialog;
 import be.ibridge.kettle.core.dialog.EnterOptionsDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.schema.RelationshipMeta;
@@ -2659,6 +2660,7 @@ public class PMenu
 	
 	public static void main (String [] args) 
 	{
+		EnvUtil.environmentInit();
 		// Set default Locale:
 		Locale.setDefault(Const.DEFAULT_LOCALE);
 				

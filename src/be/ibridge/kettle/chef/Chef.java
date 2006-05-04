@@ -98,6 +98,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
 import be.ibridge.kettle.job.JobEntryLoader;
@@ -2942,6 +2943,7 @@ public class Chef
 	
 	public static void main (String [] a)
 	{
+		EnvUtil.environmentInit();
 	    ArrayList args = new ArrayList();
 	    for (int i=0;i<a.length;i++) args.add(a[i]);
 

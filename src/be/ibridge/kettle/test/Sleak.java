@@ -31,6 +31,8 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import be.ibridge.kettle.core.util.EnvUtil;
+
 public class Sleak {
 	Display display;
 	Shell shell;
@@ -278,6 +280,7 @@ void layout () {
 }
 
 public static void main (String [] args) {
+	EnvUtil.environmentInit();
 	Display display = new Display ();
 	Sleak sleak = new Sleak ();
 	sleak.open ();

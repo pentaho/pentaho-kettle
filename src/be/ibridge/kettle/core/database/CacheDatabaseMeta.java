@@ -23,7 +23,7 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param user The username
 	 * @param pass The password
 	 */
-	public CacheDatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public CacheDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}
@@ -94,7 +94,7 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		}
 		else
 		{
-			return "jdbc:Cache://"+getHostname()+":"+getDatabasePortNumber()+"/"+getDatabaseName();
+			return "jdbc:Cache://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
 		}
 	}
 

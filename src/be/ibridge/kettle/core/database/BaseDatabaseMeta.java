@@ -32,13 +32,17 @@ import be.ibridge.kettle.core.value.Value;
  * @author Matt
  * @since  11-mrt-2005
  */
-abstract class BaseDatabaseMeta implements Cloneable
+public abstract class BaseDatabaseMeta implements Cloneable
 {
+    /**
+     * The port number of the database as string: allows for parameterisation.
+     */
+    public static final String ATTRIBUTE_PORT_NUMBER            = "PORT_NUMBER"; 
+	
 	private String name;
 	private int    accessType;        // Database.TYPE_ODBC / NATIVE / OCI
 	private String hostname;
 	private String databaseName;
-	private int    databasePortNumber;
 	private String username;
 	private String password;
 	private String servername;   // Informix only!
@@ -65,14 +69,14 @@ abstract class BaseDatabaseMeta implements Cloneable
 	 * @param user The username
 	 * @param pass The password
 	 */
-	public BaseDatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public BaseDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
         this();
 		this.name = name;
 		this.accessType = DatabaseMeta.getAccessType(access);
 		this.hostname = host;
 		this.databaseName = db;
-		this.databasePortNumber = port;
+		setDatabasePortNumberString(port);
 		this.username = user;
 		this.password = pass;
 		this.servername = null;
@@ -149,19 +153,19 @@ abstract class BaseDatabaseMeta implements Cloneable
 	}
 	
 	/**
-	 * @return Returns the databasePortNumber.
+	 * @param databasePortNumberString The databasePortNumber string to set.
 	 */
-	public int getDatabasePortNumber()
+	public void setDatabasePortNumberString(String databasePortNumberString)
 	{
-		return databasePortNumber;
+        getAttributes().put(BaseDatabaseMeta.ATTRIBUTE_PORT_NUMBER, databasePortNumberString);
 	}
 	
 	/**
-	 * @param databasePortNumber The databasePortNumber to set.
+	 * @return Returns the databasePortNumber string.
 	 */
-	public void setDatabasePortNumber(int databasePortNumber)
+	public String getDatabasePortNumberString()
 	{
-		this.databasePortNumber = databasePortNumber;
+		return getAttributes().getProperty(ATTRIBUTE_PORT_NUMBER, "0");
 	}
 	
 	/**

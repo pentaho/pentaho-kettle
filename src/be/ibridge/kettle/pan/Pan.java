@@ -27,6 +27,7 @@ import java.util.Date;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -41,6 +42,8 @@ public class Pan
 {
 	public static void main(String[] a)
 	{
+		EnvUtil.environmentInit();
+		
 	    ArrayList args = new ArrayList();
 	    for (int i=0;i<a.length;i++) 
 	    {

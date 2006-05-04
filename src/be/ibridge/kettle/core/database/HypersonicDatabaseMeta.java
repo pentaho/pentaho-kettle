@@ -16,7 +16,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 	 * Construct a new database connection.
 	 * 
 	 */
-	public HypersonicDatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public HypersonicDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}
@@ -74,7 +74,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 		}
 		else
 		{
-			return "jdbc:hsqldb:hsql://"+getHostname()+":"+getDatabasePortNumber()+"/"+getDatabaseName();
+			return "jdbc:hsqldb:hsql://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
 		}
 	}
 

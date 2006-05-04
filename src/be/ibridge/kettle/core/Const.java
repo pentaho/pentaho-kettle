@@ -425,6 +425,9 @@ public class Const
 	/** The discriptions of the possible extentions a job XML file can have. */
 	public static final String STRING_JOB_FILTER_NAMES[] = new String[] { "Kettle Jobs", "XML Files", "All files" };
 
+	/** Name of the kettle parameters file */
+	public static final String KETTLE_PROPERTIES = "kettle.properties";
+	
 	/** rounds double f to any number of places after decimal point
 	 *  Does arithmetic using BigDecimal class to avoid integer overflow while rounding
 	 *  TODO: make the rounding itself optional in the Props for performance reasons.
@@ -1238,7 +1241,7 @@ public class Const
 	 * @param string The source string where text is going to be replaced.
 	 *  
 	 * @return The expanded string.
-	 * 
+	 * @deprecated use StringUtil.environmentSubstitute(): handles both Windows and unix conventions
 	 */
 	public static final String replEnv(String string)
 	{

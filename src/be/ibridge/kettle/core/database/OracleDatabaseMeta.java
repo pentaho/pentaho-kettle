@@ -23,7 +23,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 	 * @param user The username
 	 * @param pass The password
 	 */
-	public OracleDatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public OracleDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}
@@ -111,13 +111,13 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		else
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
 		{
-			return "jdbc:oracle:thin:@"+getHostname()+":"+getDatabasePortNumber()+":"+getDatabaseName();
+			return "jdbc:oracle:thin:@"+getHostname()+":"+getDatabasePortNumberString()+":"+getDatabaseName();
 		}
 		else // OCI
 		{
-			if (getDatabaseName()!=null && getDatabaseName().length()>0 && getDatabasePortNumber()!=0)
+			if (getDatabaseName()!=null && getDatabaseName().length()>0)
 			{
-				return "jdbc:oracle:oci:@(description=(address=(host="+getHostname()+")(protocol=tcp)(port="+getDatabasePortNumber()+"))(connect_data=(sid="+getDatabaseName()+")))";
+				return "jdbc:oracle:oci:@(description=(address=(host="+getHostname()+")(protocol=tcp)(port="+getDatabasePortNumberString()+"))(connect_data=(sid="+getDatabaseName()+")))";
 			}
 			else
 			{

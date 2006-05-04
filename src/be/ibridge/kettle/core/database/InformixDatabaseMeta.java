@@ -16,7 +16,7 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	 * Construct a new database connection.
 	 * 
 	 */
-	public InformixDatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public InformixDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}
@@ -86,7 +86,7 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		}
 		else
 		{
-			return "jdbc:informix-sqli://"+getHostname()+":"+getDatabasePortNumber()+"/"+getDatabaseName()+":INFORMIXSERVER="+getServername();
+			return "jdbc:informix-sqli://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName()+":INFORMIXSERVER="+getServername();
 		}
 	}
 

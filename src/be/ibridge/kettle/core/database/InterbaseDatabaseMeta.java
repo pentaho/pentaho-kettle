@@ -16,7 +16,7 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	 * Construct a new database connection.
 	 * 
 	 */
-	public InterbaseDatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public InterbaseDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}
@@ -82,7 +82,7 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 		}
 		else
 		{
-			return "jdbc:interbase://"+getHostname()+":"+getDatabasePortNumber()+"/"+getDatabaseName();
+			return "jdbc:interbase://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
 		}
 	}
 

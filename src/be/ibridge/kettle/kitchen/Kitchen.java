@@ -29,6 +29,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleJobException;
+import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobMeta;
@@ -46,6 +47,8 @@ public class Kitchen
 	
 	public static void main(String[] a)
 	{
+		EnvUtil.environmentInit();
+		
 	    ArrayList args = new ArrayList();
 	    for (int i=0;i<a.length;i++) 
 	    {

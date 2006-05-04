@@ -12,7 +12,7 @@ import be.ibridge.kettle.core.value.Value;
  */
 public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public IngresDatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public IngresDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}
@@ -70,7 +70,7 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		}
 		else
 		{
-			return "jdbc:edbc://"+getHostname()+":"+getDatabasePortNumber()+"/"+getDatabaseName();
+			return "jdbc:edbc://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
 		}
 	}
 

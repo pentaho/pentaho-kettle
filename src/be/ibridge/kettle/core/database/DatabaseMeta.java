@@ -173,7 +173,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
      * Connect to the database using plugin specific method. (SAP R/3)
      */
     public static final int TYPE_ACCESS_PLUGIN        =  3;
-
+    
 	/**
 	 * Short description of the access type, used in XML and the repository.
 	 */
@@ -213,7 +213,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	 * @param user The username
 	 * @param pass The password
 	 */
-	public DatabaseMeta(String name, String type, String access, String host, String db, int port, String user, String pass)
+	public DatabaseMeta(String name, String type, String access, String host, String db, String port, String user, String pass)
 	{
 		setValues(name, type, access, host, db, port, user, pass);
 	}
@@ -233,7 +233,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	 */
 	public void setDefault()
 	{
-		setValues("", "MYSQL", "Native", "", "", 3306, "", "");
+		setValues("", "MYSQL", "Native", "", "", "3306", "", "");
 	}
 	
 	/**
@@ -323,7 +323,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 
 				setHostname( r.getString("HOST_NAME", "") );
 				setDBName( r.getString("DATABASE_NAME", "") );
-				setDBPort( (int)r.getInteger("PORT", -1L) );
+				setDBPort( String.valueOf(r.getInteger("PORT", -1L)) );
 				setUsername( r.getString("USERNAME", "") );
 				setPassword( r.getString("PASSWORD", "") );
 				setServername( r.getString("SERVERNAME", "") );
@@ -385,7 +385,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 											getAccessTypeDesc(getAccessType()), 
 											getHostname(), 
 											getDatabaseName(), 
-											getDatabasePortNumber(), 
+											getDatabasePortNumberString(), 
 											getUsername(), 
 											getPassword(),
 											getServername(),
@@ -403,7 +403,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 											getAccessTypeDesc(getAccessType()), 
 											getHostname(), 
 											getDatabaseName(), 
-											getDatabasePortNumber(), 
+											getDatabasePortNumberString(), 
 											getUsername(), 
 											getPassword(),
 											getServername(),
@@ -458,7 +458,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 			getAccessTypeDesc(),
 			getHostname(),
 			getDatabaseName(),
-			getDatabasePortNumber(),
+			getDatabasePortNumberString(),
 			getUsername(),
 			getPassword()
 			);
@@ -470,7 +470,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		return di; 
 	}
 
-	public void setValues(String name, String type, String access, String host, String db, int port, String user, String pass)
+	public void setValues(String name, String type, String access, String host, String db, String port, String user, String pass)
 	{
 		try
 		{
@@ -509,7 +509,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		setAccessType(oldInterface.getAccessType());
 		setHostname(oldInterface.getHostname());
 		setDBName(oldInterface.getDatabaseName());
-		setDBPort(oldInterface.getDatabasePortNumber());
+		setDBPort(oldInterface.getDatabasePortNumberString());
 		setUsername(oldInterface.getUsername());
 		setPassword(oldInterface.getPassword());
 		setServername(oldInterface.getServername());
@@ -622,14 +622,14 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	{
 		databaseInterface.setHostname(hostname);
 	}
-
+	
 	/**
-	 * Return the port on which the database listens.
+	 * Return the port on which the database listens as a String. Allows for parameterisation.
 	 * @return The database port.
 	 */
-	public int getDatabasePortNumber()
+	public String getDatabasePortNumberString()
 	{
-		return databaseInterface.getDatabasePortNumber();
+		return databaseInterface.getDatabasePortNumberString();
 	}
 	
 	/**
@@ -637,9 +637,9 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	 * 
 	 * @param db_port The port number on which the database listens
 	 */
-	public void setDBPort(int db_port)
+	public void setDBPort(String db_port)
 	{
-		databaseInterface.setDatabasePortNumber(db_port);
+		databaseInterface.setDatabasePortNumberString(db_port);
 	}
 	
 	/**
@@ -811,7 +811,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 			setAccessType( getAccessType(acc) );
 
 			setDBName( XMLHandler.getTagValue(con, "database") );
-			setDBPort( Const.toInt( XMLHandler.getTagValue(con, "port"), -1));
+			setDBPort( XMLHandler.getTagValue(con, "port") );
 			setUsername( XMLHandler.getTagValue(con, "username") );
 			setPassword( XMLHandler.getTagValue(con, "password") );
 			setServername( XMLHandler.getTagValue(con, "servername") );
@@ -853,7 +853,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		retval.append("    "+XMLHandler.addTagValue("type",       getDatabaseTypeDesc()));
 		retval.append("    "+XMLHandler.addTagValue("access",     getAccessTypeDesc()));
 		retval.append("    "+XMLHandler.addTagValue("database",   getDatabaseName()));
-		retval.append("    "+XMLHandler.addTagValue("port",       getDatabasePortNumber()));
+		retval.append("    "+XMLHandler.addTagValue("port",       getDatabasePortNumberString()));
 		retval.append("    "+XMLHandler.addTagValue("username",   getUsername()));
 		retval.append("    "+XMLHandler.addTagValue("password",   "Encrypted "+Encr.encryptPassword(getPassword())) );	
 		retval.append("    "+XMLHandler.addTagValue("servername", getServername()));
@@ -1554,7 +1554,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
             // server hostname
             r = new Row(); r.addValue(new Value(par, "Server hostname")); r.addValue(new Value(val, getHostname())); list.add(r);
             // Port number
-            r = new Row(); r.addValue(new Value(par, "Service port")); r.addValue(new Value(val, (long)getDatabasePortNumber())); list.add(r);
+            r = new Row(); r.addValue(new Value(par, "Service port")); r.addValue(new Value(val, getDatabasePortNumberString())); list.add(r);
             // Username
             r = new Row(); r.addValue(new Value(par, "Username")); r.addValue(new Value(val, getUsername())); list.add(r);
             // Informix server

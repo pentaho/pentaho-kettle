@@ -12,7 +12,7 @@ import be.ibridge.kettle.core.value.Value;
  */
 public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
-	public MySQLDatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public MySQLDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}
@@ -99,7 +99,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		}
 		else
 		{
-			return "jdbc:mysql://"+getHostname()+":"+getDatabasePortNumber()+"/"+getDatabaseName()+"?defaultFetchSize=500&useCursorFetch=true";
+			return "jdbc:mysql://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName()+"?defaultFetchSize=500&useCursorFetch=true";
 		}
 	}
 

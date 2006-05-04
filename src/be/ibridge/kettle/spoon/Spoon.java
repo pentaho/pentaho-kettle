@@ -104,6 +104,7 @@ import be.ibridge.kettle.core.dialog.ShowBrowserDialog;
 import be.ibridge.kettle.core.dialog.Splash;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
 import be.ibridge.kettle.i18n.LanguageChoice;
@@ -4271,6 +4272,7 @@ public class Spoon
      */
     public static void main (String [] a) 
     {
+    	EnvUtil.environmentInit();
         ArrayList args = new ArrayList();
         for (int i=0;i<a.length;i++) args.add(a[i]);
         

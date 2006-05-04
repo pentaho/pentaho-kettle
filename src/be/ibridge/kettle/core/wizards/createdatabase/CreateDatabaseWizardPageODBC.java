@@ -125,7 +125,7 @@ public class CreateDatabaseWizardPageODBC extends WizardPage
 			info.setDBName(wDSN.getText());
 		}
 		
-		info.setDBPort(-1);
+		info.setDBPort("");
 		info.setServername(null);
 		
 		return info;

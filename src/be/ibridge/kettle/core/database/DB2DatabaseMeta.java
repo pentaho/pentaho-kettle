@@ -23,7 +23,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	 * @param user The username
 	 * @param pass The password
 	 */
-	public DB2DatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public DB2DatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}
@@ -86,7 +86,7 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 		}
 		else
 		{
-			return "jdbc:db2://"+getHostname()+":"+getDatabasePortNumber()+"/"+getDatabaseName();
+			return "jdbc:db2://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
 		}
 	}
 

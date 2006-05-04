@@ -125,7 +125,7 @@ public class CreateDatabaseWizardPageOCI extends WizardPage
 			info.setDBName(wTNS.getText());
 		}
 		
-		info.setDBPort(-1);
+		info.setDBPort("");
 		info.setServername(null);
 		
 		return info;

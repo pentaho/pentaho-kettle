@@ -940,7 +940,7 @@ public class Repository
 		database.closeInsert();
 	}
 
-	public long insertDatabase(String name, String type, String access, String host, String dbname, long port,
+	public long insertDatabase(String name, String type, String access, String host, String dbname, String port,
 			String user, String pass, String servername, String data_tablespace, String index_tablespace)
 			throws KettleDatabaseException
 	{
@@ -979,7 +979,7 @@ public class Repository
 		table.addValue(new Value("ID_DATABASE_CONTYPE", id_database_contype));
 		table.addValue(new Value("HOST_NAME", host));
 		table.addValue(new Value("DATABASE_NAME", dbname));
-		table.addValue(new Value("PORT", port));
+		table.addValue(new Value("PORT", (long)Const.toInt(port, -1)));
 		table.addValue(new Value("USERNAME", user));
 		table.addValue(new Value("PASSWORD", "Encrypted " + Encr.encryptPassword(pass)));
 		table.addValue(new Value("SERVERNAME", servername));
@@ -1392,7 +1392,7 @@ public class Repository
 	/////////////////////////////////////////////////////////////////////////////////////
 
 	public void updateDatabase(long id_database, String name, String type, String access, String host, String dbname,
-			long port, String user, String pass, String servername, String data_tablespace, String index_tablespace)
+			String port, String user, String pass, String servername, String data_tablespace, String index_tablespace)
 			throws KettleDatabaseException
 	{
 		long id_database_type = getDatabaseTypeID(type);
@@ -1404,7 +1404,7 @@ public class Repository
 		table.addValue(new Value("ID_DATABASE_CONTYPE", id_database_contype));
 		table.addValue(new Value("HOST_NAME", host));
 		table.addValue(new Value("DATABASE_NAME", dbname));
-		table.addValue(new Value("PORT", port));
+		table.addValue(new Value("PORT", (long)Const.toInt(port, -1)));
 		table.addValue(new Value("USERNAME", user));
 		table.addValue(new Value("PASSWORD", "Encrypted " + Encr.encryptPassword(pass)));
 		table.addValue(new Value("SERVERNAME", servername));

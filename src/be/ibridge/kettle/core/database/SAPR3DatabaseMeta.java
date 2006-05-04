@@ -19,7 +19,7 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * Construct a new database connection.
 	 * 
 	 */
-	public SAPR3DatabaseMeta(String name, String access, String host, String db, int port, String user, String pass)
+	public SAPR3DatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
 		super(name, access, host, db, port, user, pass);
 	}
