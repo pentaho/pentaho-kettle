@@ -112,7 +112,7 @@ public class TransPainter
 
     private void drawTrans(GC gc)
     {
-        if (props.isAntiAliasingEnabled() && Const.getOS().startsWith("Windows")) gc.setAntialias(SWT.ON);
+        if (props.isAntiAliasingEnabled()) gc.setAntialias(SWT.ON);
         
         shadowsize = props.getShadowSize();
 
