@@ -65,6 +65,7 @@ import be.ibridge.kettle.core.dialog.EnterListDialog;
 import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.Trans;
@@ -820,7 +821,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wFilename.setToolTipText(Const.replEnv( wFilename.getText() ) );
+					wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
 				}
 			}
 		);
@@ -852,7 +853,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 					{
 						int nr = esd.getSelectionNr();
 						wFilename.insert("%%"+key[nr]+"%%");
-						wFilename.setToolTipText(Const.replEnv( wFilename.getText() ) );
+						wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
 					}
 				}
 				
@@ -872,7 +873,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 						DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
 						if (wFilename.getText()!=null)
 						{
-							String fpath = Const.replEnv(wFilename.getText());
+							String fpath = StringUtil.environmentSubstitute(wFilename.getText());
 							dialog.setFilterPath( fpath );
 						}
 						
@@ -888,7 +889,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 						dialog.setFilterExtensions(new String[] {"*.xls;*.XLS", "*"});
 						if (wFilename.getText()!=null)
 						{
-							String fname = Const.replEnv(wFilename.getText());
+							String fname = StringUtil.environmentSubstitute(wFilename.getText());
 							dialog.setFileName( fname );
 						}
 						
@@ -1128,7 +1129,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         {
             public void modifyText(ModifyEvent e)
             {
-                textField.setToolTipText(Const.replEnv( textField.getText() ) );
+                textField.setToolTipText(StringUtil.environmentSubstitute( textField.getText() ) );
             }
         };
     }

@@ -31,6 +31,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.Trans;
@@ -661,7 +662,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		SimpleDateFormat daf     = new SimpleDateFormat();
 
 		// Replace possible environment variables...
-		String retval=Const.replEnv( fileName );
+		String retval=StringUtil.environmentSubstitute( fileName );
 		
 		Date now = new Date();
 		

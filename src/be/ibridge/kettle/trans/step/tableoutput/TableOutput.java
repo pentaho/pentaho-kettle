@@ -26,6 +26,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseBatchException;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -156,7 +157,7 @@ public class TableOutput extends BaseStep implements StepInterface
         }
         else
         {
-            tableName = Const.replEnv( meta.getTablename() );
+            tableName = StringUtil.environmentSubstitute( meta.getTablename() );
         }
         
         if (tableName==null || tableName.length()==0)
@@ -260,7 +261,7 @@ public class TableOutput extends BaseStep implements StepInterface
                 {
                     if (meta.truncateTable() && getCopy()==0) // Only the first one truncates!!!
     				{
-    					data.db.truncateTable(Const.replEnv( meta.getTablename() ));
+    					data.db.truncateTable(StringUtil.environmentSubstitute( meta.getTablename() ));
     				}
                 }
                 

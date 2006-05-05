@@ -9,9 +9,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
-import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
+import be.ibridge.kettle.core.util.StringUtil;
 
 public class VariableButtonListenerFactory
 {
@@ -44,7 +44,7 @@ public class VariableButtonListenerFactory
                 {
                     int nr = esd.getSelectionNr();
                     destination.insert("%%"+key[nr]+"%%");
-                    destination.setToolTipText(Const.replEnv( destination.getText() ) );
+                    destination.setToolTipText(StringUtil.environmentSubstitute( destination.getText() ) );
                 }
             }
         };

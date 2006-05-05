@@ -72,6 +72,7 @@ import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.Trans;
@@ -706,7 +707,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 						DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
 						if (wFilename.getText()!=null)
 						{
-							String fpath = Const.replEnv(wFilename.getText());
+							String fpath = StringUtil.environmentSubstitute(wFilename.getText());
 							dialog.setFilterPath( fpath );
 						}
 						
@@ -729,7 +730,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 						}
 						if (wFilename.getText()!=null)
 						{
-							String fname = Const.replEnv(wFilename.getText());
+							String fname = StringUtil.environmentSubstitute(wFilename.getText());
 							dialog.setFileName( fname );
 						}
 						
@@ -1737,7 +1738,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         {
             public void modifyText(ModifyEvent e)
             {
-                textField.setToolTipText(Const.replEnv( textField.getText() ) );
+                textField.setToolTipText(StringUtil.environmentSubstitute( textField.getText() ) );
             }
         };
     }

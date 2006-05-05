@@ -29,6 +29,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleValueException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -380,7 +381,7 @@ public class GroupBy extends BaseStep implements StepInterface
             {
                 try
                 {
-                    data.tempFile = File.createTempFile(meta.getPrefix(), ".tmp", new File(Const.replEnv(meta.getDirectory())));
+                    data.tempFile = File.createTempFile(meta.getPrefix(), ".tmp", new File(StringUtil.environmentSubstitute(meta.getDirectory())));
                     data.fos=new FileOutputStream(data.tempFile);
                     data.dos=new DataOutputStream(data.fos);
                     data.firstRead = true;

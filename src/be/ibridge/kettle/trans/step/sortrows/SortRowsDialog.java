@@ -52,6 +52,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.TransMeta;
@@ -189,7 +190,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wSortDir.setToolTipText(Const.replEnv( wSortDir.getText() ) );
+					wSortDir.setToolTipText(StringUtil.environmentSubstitute( wSortDir.getText() ) );
 				}
 			}
 		);

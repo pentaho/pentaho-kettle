@@ -12,9 +12,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.step.BaseStep;
 
 public abstract class AbstractFileErrorHandler implements FileErrorHandler {
@@ -67,7 +67,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 			name = processingFilename + sourceAdding + "." + dateString;
 		else
 			name = processingFilename + sourceAdding + "." + dateString + "." + extension;
-		return new File(Const.replEnv(destinationDirectory), name);
+		return new File(StringUtil.environmentSubstitute(destinationDirectory), name);
 	}
 
 	public static File getReplayFilename(String destinationDirectory,

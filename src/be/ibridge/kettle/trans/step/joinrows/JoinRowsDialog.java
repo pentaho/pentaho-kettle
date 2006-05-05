@@ -50,6 +50,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.widget.ConditionEditor;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -197,7 +198,7 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
             {
                 public void modifyText(ModifyEvent e)
                 {
-                    wSortDir.setToolTipText(Const.replEnv( wSortDir.getText() ) );
+                    wSortDir.setToolTipText(StringUtil.environmentSubstitute( wSortDir.getText() ) );
                 }
             }
         );

@@ -48,6 +48,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
@@ -177,7 +178,7 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wFilename.setToolTipText(Const.replEnv( wFilename.getText() ) );
+					wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
 				}
 			}
 		);		
@@ -209,7 +210,7 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 					{
 						int nr = esd.getSelectionNr();
 						wFilename.insert("%%"+key[nr]+"%%");
-						wFilename.setToolTipText(Const.replEnv( wFilename.getText() ) );
+						wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
 					}
 				}
 				
@@ -227,7 +228,7 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 					dialog.setFilterExtensions(new String[] {"*.txt", "*.csv", "*"});
 					if (wFilename.getText()!=null)
 					{
-						dialog.setFileName(Const.replEnv(wFilename.getText()));
+						dialog.setFileName(StringUtil.environmentSubstitute(wFilename.getText()));
 					}
 					dialog.setFilterNames(new String[] {"Text files", "Comma Seperated Values", "All files"});
 					if (dialog.open()!=null)

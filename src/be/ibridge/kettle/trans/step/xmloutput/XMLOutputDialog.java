@@ -62,6 +62,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.TransMeta;
@@ -242,7 +243,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wFilename.setToolTipText(Const.replEnv( wFilename.getText() ) );
+					wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
 				}
 			}
 		);
@@ -636,7 +637,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wFilename.setToolTipText(Const.replEnv( wFilename.getText() ) );
+					wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
 				}
 			}
 		);
@@ -669,7 +670,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 					{
 						int nr = esd.getSelectionNr();
 						wFilename.insert("%%"+key[nr]+"%%");
-						wFilename.setToolTipText(Const.replEnv( wFilename.getText() ) );
+						wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
 					}
 				}
 				
@@ -687,7 +688,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 					dialog.setFilterExtensions(new String[] {"*.txt", "*.csv", "*"});
 					if (wFilename.getText()!=null)
 					{
-						dialog.setFileName(Const.replEnv(wFilename.getText()));
+						dialog.setFileName(StringUtil.environmentSubstitute(wFilename.getText()));
 					}
 					dialog.setFilterNames(new String[] {Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.AllFiles")});
 					if (dialog.open()!=null)

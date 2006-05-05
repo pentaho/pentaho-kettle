@@ -36,7 +36,7 @@
 	<classpathentry kind="lib" path="test/libext/junit.jar"/>
 	<classpathentry kind="lib" path="libext/postgresql-8.1-405.jdbc3.jar"/>
 	<classpathentry kind="src" path="test/useCases/normal"/>
-	<classpathentry kind="lib" path="libswt/linux/swt.jar"/>
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
+	<classpathentry kind="lib" path="libext/xdbjdbc.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

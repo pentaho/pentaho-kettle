@@ -28,6 +28,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleFileException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -83,7 +84,7 @@ public class SortRows extends BaseStep implements StepInterface
 			
 			try
 			{
-				fil=File. createTempFile(meta.getPrefix(), ".tmp", new File(Const.replEnv(meta.getDirectory())));
+				fil=File. createTempFile(meta.getPrefix(), ".tmp", new File(StringUtil.environmentSubstitute(meta.getDirectory())));
 				fil.deleteOnExit();
 				data.files.add(fil);   // Remember the files!
 				

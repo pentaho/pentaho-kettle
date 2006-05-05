@@ -46,6 +46,7 @@ import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
@@ -253,7 +254,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		{
 			public void modifyText(ModifyEvent arg0)
 			{
-				wFilename.setToolTipText(Const.replEnv(wFilename.getText()));
+				wFilename.setToolTipText(StringUtil.environmentSubstitute(wFilename.getText()));
 			}
 		});
 		
@@ -308,7 +309,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 					{
 						int nr = esd.getSelectionNr();
 						wFilename.insert("%%"+key[nr]+"%%");
-						wFilename.setToolTipText(Const.replEnv(wFilename.getText()));
+						wFilename.setToolTipText(StringUtil.environmentSubstitute(wFilename.getText()));
 					}
 				}
 				
@@ -347,7 +348,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		if (input.getDbfFileName() != null) 
 		{
 			wFilename.setText(input.getDbfFileName());
-			wFilename.setToolTipText(Const.replEnv(input.getDbfFileName()));
+			wFilename.setToolTipText(StringUtil.environmentSubstitute(input.getDbfFileName()));
 		}
 		wLimit.setText(""+(int)input.getRowLimit());
 		wAddRownr.setSelection(input.isRowNrAdded());

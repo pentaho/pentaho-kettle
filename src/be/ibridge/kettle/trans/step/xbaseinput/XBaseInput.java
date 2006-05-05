@@ -19,6 +19,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XBase;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -94,7 +95,7 @@ public class XBaseInput extends BaseStep implements StepInterface
 	    if (super.init(smi, sdi))
 	    {
 			// Replace possible environment variables...
-			String file_dbf = Const.replEnv( meta.getDbfFileName() ); 
+			String file_dbf = StringUtil.environmentSubstitute( meta.getDbfFileName() ); 
 					
 			data.xbi=new XBase(file_dbf);
             try

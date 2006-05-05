@@ -30,6 +30,7 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.Trans;
@@ -167,7 +168,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 		if (r==null) row=new Row(); // give back values
 		else         row=r;         // add to the existing row of values...
 
-		XBase xbi = new XBase(Const.replEnv(dbfFileName));
+		XBase xbi = new XBase(StringUtil.environmentSubstitute(dbfFileName));
 		// System.out.println("File version: "+xbi.getVersionInfo());
 		try
 		{
@@ -257,7 +258,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "DBF filename specified", stepinfo);
             remarks.add(cr);
 
-            XBase xbi = new XBase(Const.replEnv(dbfFileName));
+            XBase xbi = new XBase(StringUtil.environmentSubstitute(dbfFileName));
             try
             {
                 xbi.open();

@@ -61,6 +61,7 @@ import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.TransMeta;
@@ -734,7 +735,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			{
 				public void modifyText(ModifyEvent e)
 				{
-					wFilename.setToolTipText(Const.replEnv( wFilename.getText() ) );
+					wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
 				}
 			}
 		);
@@ -766,7 +767,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 					{
 						int nr = esd.getSelectionNr();
 						wFilename.insert("%%"+key[nr]+"%%");
-						wFilename.setToolTipText(Const.replEnv( wFilename.getText() ) );
+						wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
 					}
 				}
 				
@@ -786,7 +787,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 						DirectoryDialog dialog = new DirectoryDialog(shell, SWT.OPEN);
 						if (wFilename.getText()!=null)
 						{
-							String fpath = Const.replEnv(wFilename.getText());
+							String fpath = StringUtil.environmentSubstitute(wFilename.getText());
 							dialog.setFilterPath( fpath );
 						}
 						
@@ -802,7 +803,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 						dialog.setFilterExtensions(new String[] {"*.xml;*.XML", "*"});
 						if (wFilename.getText()!=null)
 						{
-							String fname = Const.replEnv(wFilename.getText());
+							String fname = StringUtil.environmentSubstitute(wFilename.getText());
 							dialog.setFileName( fname );
 						}
 						

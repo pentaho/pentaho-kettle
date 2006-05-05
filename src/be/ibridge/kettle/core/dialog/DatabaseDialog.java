@@ -45,7 +45,6 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.core.database.BaseDatabaseMeta;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.database.GenericDatabaseMeta;

@@ -25,11 +25,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
-import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.RowSet;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleFileException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -103,7 +103,7 @@ public class JoinRows extends BaseStep implements StepInterface
 				
 				for (int i=1;i<inputRowSets.size();i++)
 				{
-                    String directoryName = Const.replEnv(meta.getDirectory());
+                    String directoryName = StringUtil.environmentSubstitute(meta.getDirectory());
 					data.file[i]=File.createTempFile(meta.getPrefix(), ".tmp", new File(directoryName));
 					data.file[i].deleteOnExit();
 					

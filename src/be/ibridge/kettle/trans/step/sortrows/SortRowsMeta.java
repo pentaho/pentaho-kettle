@@ -29,6 +29,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -320,7 +321,7 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			
 			// Check the sort directory
-            String realDirectory = Const.replEnv(directory);
+            String realDirectory = StringUtil.environmentSubstitute(directory);
             
 			File f = new File(realDirectory);
 			if (f.exists())

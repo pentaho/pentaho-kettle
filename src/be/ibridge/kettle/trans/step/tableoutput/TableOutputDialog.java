@@ -53,6 +53,7 @@ import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
@@ -600,7 +601,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
                     {
                         int nr = esd.getSelectionNr();
                         wTable.insert("%%"+key[nr]+"%%");
-                        wTable.setToolTipText(Const.replEnv( wTable.getText() ) );
+                        wTable.setToolTipText(StringUtil.environmentSubstitute( wTable.getText() ) );
                     }
                 }
                 
