@@ -1448,7 +1448,7 @@ public class ChefGraph extends Canvas
     
 	public void drawJob(GC gc) 
 	{
-        if (chef.props.isAntiAliasingEnabled() && Const.getOS().startsWith("Windows")) gc.setAntialias(SWT.ON);
+        if (chef.props.isAntiAliasingEnabled()) gc.setAntialias(SWT.ON);
         
 		shadowsize = chef.props.getShadowSize();
 
