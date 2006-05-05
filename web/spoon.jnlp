@@ -48,6 +48,7 @@
   <jar href="libext/sapdbc.jar"/>
   <jar href="libext/SQLBaseJDBC.jar"/>
   <jar href="libext/xbasej.jar"/>
+  <jar href="libext/xdbjdbc.jar"/>
 
   <jar href="libswt/jface.jar"/>
   <jar href="libswt/runtime.jar"/>
