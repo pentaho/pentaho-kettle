@@ -152,6 +152,10 @@ public class DatabaseMeta implements Cloneable, XMLInterface
      */
     public static final int TYPE_DATABASE_INTERBASE  = 19;
 
+    /**
+    * Connection to an ExtenDB database
+    */
+    public static final int TYPE_DATABASE_EXTENDB    = 20;
     
 
 	/**
