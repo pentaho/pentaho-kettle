@@ -248,11 +248,18 @@ public class ChefLog extends Composite
 						{
 							public void run() 
 							{
-                                if (wAuto.getSelection())
-                                {
-    								readLog(); 
-    								refreshView();
-                                }
+								// Chef if the widgets are not disposed.  
+								// This happens is the rest of the window is not yet disposed.
+								// We ARE running in a different thread after all.
+								//
+								if (!wAuto.isDisposed() && !wText.isDisposed() && !wStart.isDisposed() && !wTree.isDisposed())
+								{
+	                                if (wAuto.getSelection())
+	                                {
+	    								readLog(); 
+	    								refreshView();
+	                                }
+								}
 							}
 						}
 					);
