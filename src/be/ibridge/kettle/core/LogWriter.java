@@ -22,6 +22,8 @@ import java.io.IOException;
 
 import org.apache.log4j.Logger;
 
+import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.logging.Log4jConsoleAppender;
 import be.ibridge.kettle.core.logging.Log4jFileAppender;
 import be.ibridge.kettle.core.logging.Log4jKettleLayout;
@@ -145,9 +147,17 @@ public class LogWriter
 	 * @param level The log level
 	 * @return the LogWriter object
 	 */
-	public static final LogWriter getInstance(String filename, boolean exact, int level)
+	public static final LogWriter getInstance(String filename, boolean exact, int level) throws KettleException
 	{
-		if (logWriter != null) return logWriter;
+		if (logWriter != null) 
+	    {
+			// OK, see if we have a file appender already for this 
+			if (logWriter.rootLogger.getAppender(LogWriter.createFileAppenderName(filename, exact))==null)
+			{
+				logWriter.addFileAppender(filename, exact);
+			}
+			return logWriter;
+	    }
 		
 		logWriter = new LogWriter(filename, exact, level);
 		return logWriter;
@@ -163,22 +173,7 @@ public class LogWriter
                 
 		try
 		{
-            if (!exact)
-            {
-                file = File.createTempFile(filename+".", ".log");
-                file.deleteOnExit();
-            }
-            else
-            {
-                file = new File(filename);
-            }
-            realFilename = file.getAbsoluteFile();
-
-            fileAppender = new Log4jFileAppender(realFilename);
-            fileAppender.setLayout(layout);
-            fileAppender.setName("AppendToFile");
-                        
-            rootLogger.addAppender(fileAppender);
+			addFileAppender(filename, exact);
 		}
 		catch(Exception e)
 		{
@@ -186,6 +181,45 @@ public class LogWriter
 		}
 	}
 	
+	private void addFileAppender(String filename, boolean exact) throws KettleException
+	{
+		try
+		{
+	        if (!exact)
+	        {
+	            file = File.createTempFile(filename+".", ".log");
+	            file.deleteOnExit();
+	        }
+	        else
+	        {
+	            file = new File(filename);
+	        }
+	        realFilename = file.getAbsoluteFile();
+	
+	        fileAppender = new Log4jFileAppender(realFilename);
+	        fileAppender.setLayout(layout);
+	        fileAppender.setName(LogWriter.createFileAppenderName(filename, exact));
+	                    
+	        rootLogger.addAppender(fileAppender);
+		}
+		catch(IOException e)
+		{
+			throw new KettleFileException("Unable to add Kettle file appender to Log4J", e);
+		}
+    }
+	
+	public static final String createFileAppenderName(String filename, boolean exact)
+	{
+		if (!exact)
+		{
+			return "<temp file> : "+filename;
+		}
+		else
+		{
+			return filename;
+		}
+	}
+
 	public int getType()
 	{
 		return type;

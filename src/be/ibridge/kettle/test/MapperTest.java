@@ -25,6 +25,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.SourceToTargetMapping;
 import be.ibridge.kettle.core.dialog.EnterMappingDialog;
+import be.ibridge.kettle.core.exception.KettleException;
 
 
 
@@ -38,7 +39,7 @@ import be.ibridge.kettle.core.dialog.EnterMappingDialog;
 public class MapperTest 
 {
 
-	public static void main(String[] args) 
+	public static void main(String[] args) throws KettleException
 	{
 		String source[] = { "src1", "src2", "src3", "src4", "src5", "src6", "src7" }; 
         String target[] = { "tgt1", "tgt2", "tgt3", "tgt4", "tgt5", "tgt6", "tgt7" }; 

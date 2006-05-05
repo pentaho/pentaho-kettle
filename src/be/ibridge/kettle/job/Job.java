@@ -122,14 +122,13 @@ public class Job extends Thread
 			execute(); // Run the job
 			endProcessing("end");
 		}
-		catch(KettleJobException je)
+		catch(KettleException je)
 		{
 			System.out.println("A serious error occurred!"+Const.CR+je.getMessage());
 		}
 	}
 
-	public Result execute()
-		throws KettleJobException
+	public Result execute() throws KettleException
 	{
         // Start the tracking...
         JobEntryResult jerStart = new JobEntryResult(null, "Start of job execution", "start", null);
@@ -167,8 +166,7 @@ public class Job extends Thread
 	 * @return Result of the job execution
 	 * @throws KettleJobException
 	 */
-	public Result execute(int nr, Result result)
-		throws KettleJobException
+	public Result execute(int nr, Result result) throws KettleException
 	{
         // Where do we start?
         JobEntryCopy startpoint;
@@ -185,7 +183,7 @@ public class Job extends Thread
 	}
 	
 	private Result execute(int nr, Result prev_result, JobEntryCopy startpoint, JobEntryCopy previous, String reason)
-		throws KettleJobException
+		throws KettleException
 	{
 		Result res = null;
        

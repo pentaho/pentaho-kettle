@@ -313,7 +313,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	 * @param prev_result The result of the previous execution
 	 * @return The Result of the execution.
 	 */
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleJobException
+	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException
 	{
 		LogWriter log       = LogWriter.getInstance();
 		Result result = prev_result;

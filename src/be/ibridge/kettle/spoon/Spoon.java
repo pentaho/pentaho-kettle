@@ -4270,23 +4270,16 @@ public class Spoon
      * 
      * @param a Arguments are available in the "Get System Info" step.
      */
-    public static void main (String [] a) 
+    public static void main (String [] a) throws KettleException
     {
     	EnvUtil.environmentInit();
         ArrayList args = new ArrayList();
         for (int i=0;i<a.length;i++) args.add(a[i]);
         
-        // Sleak resource debugging...
-        //DeviceData data = new DeviceData();
-        //data.tracking = true;
         Display display = new Display();
-        //Display display = new Display(data);
-        //Sleak sleak = new Sleak();
-        //sleak.open();
         
         Splash splash = new Splash(display);
         
-        // System.out.println("Welcome to Spoon!");
         String repname   = Const.getCommandlineOption(args, Messages.getString("Spoon.CommandlineOption.Repname"));//"rep"
         String username  = Const.getCommandlineOption(args, Messages.getString("Spoon.CommandlineOption.Username"));//"user"
         String password  = Const.getCommandlineOption(args, Messages.getString("Spoon.CommandlineOption.Password"));//"pass"

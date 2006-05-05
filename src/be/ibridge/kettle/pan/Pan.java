@@ -40,7 +40,7 @@ import be.ibridge.kettle.trans.TransMeta;
 
 public class Pan
 {
-	public static void main(String[] a)
+	public static void main(String[] a) throws KettleException
 	{
 		EnvUtil.environmentInit();
 		

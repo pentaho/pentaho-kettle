@@ -185,16 +185,6 @@ public class SpoonLog extends Composite
 							  spoon.props
 							  );
 		
-		/*
-		fdFields=new FormData();
-		fdFields.left   = new FormAttachment(0, 0);
-		fdFields.top    = new FormAttachment(wOnlyActive, 0);
-		fdFields.right  = new FormAttachment(100, 0);
-		fdFields.bottom = new FormAttachment(100, 0);
-		fdFields.left   = new FormAttachment(0, 0);
-		wFields.setLayoutData(fdFields);
-		*/
-		
 		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
 		spoon.props.setLook(wText);
 		wText.setVisible(true);

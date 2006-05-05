@@ -21,7 +21,6 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleJobException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
@@ -125,7 +124,7 @@ public interface JobEntryInterface
             JobEntryHTTP.class,
 		};
 
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleJobException;
+	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException;
 	
 	public void    clear();
 	public long    getID();

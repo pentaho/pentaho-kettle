@@ -290,7 +290,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		}
 	}	
 	
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
+	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException
 	{
         LogWriter log = LogWriter.getInstance();
         

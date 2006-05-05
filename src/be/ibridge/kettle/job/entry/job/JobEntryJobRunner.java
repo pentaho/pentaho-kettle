@@ -7,7 +7,7 @@ package be.ibridge.kettle.job.entry.job;
 
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
-import be.ibridge.kettle.core.exception.KettleJobException;
+import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.job.Job;
 
 /**
@@ -54,7 +54,7 @@ public class JobEntryJobRunner implements Runnable
 		{
 			result = job.execute(entryNr+1, result);
 		}
-		catch(KettleJobException e)
+		catch(KettleException e)
 		{
 			log.logError(toString(), "An error occurred executing this job entry : "+e.getMessage());
 			result.setNrErrors(1);

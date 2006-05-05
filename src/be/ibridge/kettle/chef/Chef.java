@@ -2941,7 +2941,7 @@ public class Chef
 		return this.getClass().getName();
 	}
 	
-	public static void main (String [] a)
+	public static void main (String [] a) throws KettleException
 	{
 		EnvUtil.environmentInit();
 	    ArrayList args = new ArrayList();

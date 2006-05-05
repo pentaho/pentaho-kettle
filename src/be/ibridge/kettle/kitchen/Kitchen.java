@@ -45,7 +45,7 @@ public class Kitchen
 {
 	public static final String STRING_KITCHEN = "Kitchen";
 	
-	public static void main(String[] a)
+	public static void main(String[] a) throws KettleException
 	{
 		EnvUtil.environmentInit();
 		
