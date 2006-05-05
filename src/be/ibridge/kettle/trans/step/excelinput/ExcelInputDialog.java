@@ -22,9 +22,7 @@ package be.ibridge.kettle.trans.step.excelinput;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.Iterator;
-import java.util.Properties;
 
 import jxl.Cell;
 import jxl.CellType;
@@ -827,39 +825,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		);
 		
 		// Listen to the Variable... button
-		wbvFilename.addSelectionListener
-		(
-			new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					Properties sp = System.getProperties();
-					Enumeration keys = sp.keys();
-					int size = sp.values().size();
-					String key[] = new String[size];
-					String val[] = new String[size];
-					String str[] = new String[size];
-					int i=0;
-					while (keys.hasMoreElements())
-					{
-						key[i] = (String)keys.nextElement();
-						val[i] = sp.getProperty(key[i]);
-						str[i] = key[i]+"  ["+val[i]+"]";
-						i++;
-					}
-					
-					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Message"));
-					if (esd.open()!=null)
-					{
-						int nr = esd.getSelectionNr();
-						wFilename.insert("%%"+key[nr]+"%%");
-						wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
-					}
-				}
-				
-			}
-		);
-
+		wbvFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
 
 		// Listen to the Browse... button
 		wbbFilename.addSelectionListener

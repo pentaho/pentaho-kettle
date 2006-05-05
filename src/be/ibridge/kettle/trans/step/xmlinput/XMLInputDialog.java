@@ -70,6 +70,7 @@ import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 
 public class XMLInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -741,39 +742,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		);
 		
 		// Listen to the Variable... button
-		wbvFilename.addSelectionListener
-		(
-			new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					Properties sp = System.getProperties();
-					Enumeration keys = sp.keys();
-					int size = sp.values().size();
-					String key[] = new String[size];
-					String val[] = new String[size];
-					String str[] = new String[size];
-					int i=0;
-					while (keys.hasMoreElements())
-					{
-						key[i] = (String)keys.nextElement();
-						val[i] = sp.getProperty(key[i]);
-						str[i] = key[i]+"  ["+val[i]+"]";
-						i++;
-					}
-					
-					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Message"));
-					if (esd.open()!=null)
-					{
-						int nr = esd.getSelectionNr();
-						wFilename.insert("%%"+key[nr]+"%%");
-						wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
-					}
-				}
-				
-			}
-		);
-
+		wbvFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
 
 		// Listen to the Browse... button
 		wbbFilename.addSelectionListener

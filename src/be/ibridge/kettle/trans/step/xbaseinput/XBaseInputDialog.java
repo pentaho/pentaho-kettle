@@ -21,9 +21,6 @@
 
 package be.ibridge.kettle.trans.step.xbaseinput;
 
-import java.util.Enumeration;
-import java.util.Properties;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -45,12 +42,12 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 
 public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -272,7 +269,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 					}
 						
 					dialog.setFilterNames(new String[] {"DBF files", "All files"});
-						
+					
 					if (dialog.open()!=null)
 					{
 						String str = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
@@ -283,39 +280,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		);
 
 		// Listen to the Variable... button
-		wbcFilename.addSelectionListener
-		(
-			new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					Properties sp = System.getProperties();
-					Enumeration keys = sp.keys();
-					int size = sp.values().size();
-					String key[] = new String[size];
-					String val[] = new String[size];
-					String str[] = new String[size];
-					int i=0;
-					while (keys.hasMoreElements())
-					{
-						key[i] = (String)keys.nextElement();
-						val[i] = sp.getProperty(key[i]);
-						str[i] = key[i]+"  ["+val[i]+"]";
-						i++;
-					}
-					
-					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, "Select an Environment Variable", "Select an Environment Variable");
-					if (esd.open()!=null)
-					{
-						int nr = esd.getSelectionNr();
-						wFilename.insert("%%"+key[nr]+"%%");
-						wFilename.setToolTipText(StringUtil.environmentSubstitute(wFilename.getText()));
-					}
-				}
-				
-			}
-		);
-
+		wbcFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );

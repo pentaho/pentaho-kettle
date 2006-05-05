@@ -43,7 +43,7 @@ public class VariableButtonListenerFactory
                 if (esd.open()!=null)
                 {
                     int nr = esd.getSelectionNr();
-                    destination.insert("%%"+key[nr]+"%%");
+                    destination.insert("${"+key[nr]+"}");
                     destination.setToolTipText(StringUtil.environmentSubstitute( destination.getText() ) );
                 }
             }

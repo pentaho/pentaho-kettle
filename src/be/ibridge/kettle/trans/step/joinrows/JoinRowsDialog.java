@@ -21,9 +21,6 @@
 
 package be.ibridge.kettle.trans.step.joinrows;
 
-import java.util.Enumeration;
-import java.util.Properties;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
@@ -47,7 +44,6 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.Condition;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
-import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
@@ -57,6 +53,7 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
+import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 
 public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterface
@@ -204,38 +201,7 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
         );
 
         // Listen to the Variable... button
-        wbcSortDir.addSelectionListener
-        (
-            new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e) 
-                {
-                    Properties sp = System.getProperties();
-                    Enumeration keys = sp.keys();
-                    int size = sp.values().size();
-                    String key[] = new String[size];
-                    String val[] = new String[size];
-                    String str[] = new String[size];
-                    int i=0;
-                    while (keys.hasMoreElements())
-                    {
-                        key[i] = (String)keys.nextElement();
-                        val[i] = sp.getProperty(key[i]);
-                        str[i] = key[i]+"  ["+val[i]+"]";
-                        i++;
-                    }
-                    
-                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, "Select an Environment Variable", "Select an Environment Variable");
-                    if (esd.open()!=null)
-                    {
-                        int nr = esd.getSelectionNr();
-                        wSortDir.insert("%%"+key[nr]+"%%");
-                    }
-                }
-                
-            }
-        );
-        
+        wbcSortDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wSortDir));
         
 		// Table line...
 		wlPrefix=new Label(shell, SWT.RIGHT);

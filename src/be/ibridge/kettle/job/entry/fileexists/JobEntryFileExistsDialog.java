@@ -21,9 +21,6 @@
 
 package be.ibridge.kettle.job.entry.fileexists;
 
-import java.util.Enumeration;
-import java.util.Properties;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -47,12 +44,12 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
-import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
+import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 
 /**
@@ -184,39 +181,7 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 		);		
 
 		// Listen to the Variable... button
-		wbcFilename.addSelectionListener
-		(
-			new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					Properties sp = System.getProperties();
-					Enumeration keys = sp.keys();
-					int size = sp.values().size();
-					String key[] = new String[size];
-					String val[] = new String[size];
-					String str[] = new String[size];
-					int i=0;
-					while (keys.hasMoreElements())
-					{
-						key[i] = (String)keys.nextElement();
-						val[i] = sp.getProperty(key[i]);
-						str[i] = key[i]+"  ["+val[i]+"]";
-						i++;
-					}
-					
-					EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, "Select an Environment Variable", "Select an Environment Variable");
-					if (esd.open()!=null)
-					{
-						int nr = esd.getSelectionNr();
-						wFilename.insert("%%"+key[nr]+"%%");
-						wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
-					}
-				}
-				
-			}
-		);
-
+		wbcFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
 
 		wbFilename.addSelectionListener
 		(
