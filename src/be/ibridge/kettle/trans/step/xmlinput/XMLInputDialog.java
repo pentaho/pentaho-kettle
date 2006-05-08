@@ -22,8 +22,6 @@
 package be.ibridge.kettle.trans.step.xmlinput;
 
 import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.Properties;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
