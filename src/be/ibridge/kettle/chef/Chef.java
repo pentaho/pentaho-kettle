@@ -1073,6 +1073,9 @@ public class Chef
 				
 				saveConnection(db);
 				
+				// It's saved, remove the changed flag
+				db.setChanged(false);
+				
 				if (!name.equalsIgnoreCase(newname)) refreshTree();
 			}
 		}
@@ -1884,6 +1887,9 @@ public class Chef
 				{
 					db.saveRep(rep);
 					log.logDetailed(toString(), "Saved database connection ["+db+"] to the repository.");
+					
+                    // Put a commit behind it!
+                    rep.commit();
 				}
 				catch(KettleException ke)
 				{
