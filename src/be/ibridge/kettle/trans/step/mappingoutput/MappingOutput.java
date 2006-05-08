@@ -139,7 +139,7 @@ public class MappingOutput extends BaseStep implements StepInterface
 		}
 	}
 
-    public synchronized void setConnectorStep(Mapping mapping)
+    public void setConnectorStep(Mapping mapping)
     {
         data.mapping = mapping;
     }

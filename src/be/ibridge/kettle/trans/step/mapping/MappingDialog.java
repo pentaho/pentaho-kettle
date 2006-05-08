@@ -20,6 +20,8 @@
 
 package be.ibridge.kettle.trans.step.mapping;
 
+import java.util.List;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -44,6 +46,9 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.SourceToTargetMapping;
+import be.ibridge.kettle.core.dialog.EnterMappingDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.widget.TableView;
@@ -381,13 +386,44 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             {
                 MappingInputMeta mappingInputMeta = (MappingInputMeta) inputStepMeta.getStepMetaInterface();
                 
-                System.out.println("Getting input fields... ("+mappingInputMeta.getFieldName().length+")");
-                for (int i=0;i<mappingInputMeta.getFieldName().length;i++)
+                String[] source = mappingInputMeta.getFieldName();
+                
+                Row prev = null;
+                try
                 {
-                    TableItem item = new TableItem(wInputFields.table, SWT.NONE);
-                    item.setText(2, mappingInputMeta.getFieldName()[i]);
+                	prev=transMeta.getPrevStepFields(stepname);
+                }
+                catch(KettleException e)
+                {
+                	new ErrorDialog(shell, props, "Error getting previous fields", "There was an error getting the fields entering this step", e);
                 }
                 
+                if (prev!=null)
+                {
+	                String[] target = prev.getFieldNames();
+	                
+	                EnterMappingDialog dialog = new EnterMappingDialog(shell, source, target);
+	                List mappings = dialog.open();
+	                if (mappings!=null)
+	                {
+	                	for (int i=0;i<mappings.size();i++)
+	                	{
+	                		TableItem item = new TableItem(wInputFields.table, SWT.NONE);
+	                		SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
+	                		item.setText(2, mapping.getSourceString(source));
+	                		item.setText(1, mapping.getTargetString(target));
+	                	}
+	                }
+                }
+                else
+                {
+	                log.logDetailed(stepname, "Getting input fields... ("+source.length+")");
+	                for (int i=0;i<source.length;i++)
+	                {
+	                    TableItem item = new TableItem(wInputFields.table, SWT.NONE);
+	                    item.setText(2, source[i]);
+	                }
+                }
                 wInputFields.removeEmptyRows();
                 wInputFields.setRowNums();
                 wInputFields.optWidth(true);
@@ -427,6 +463,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
                     {
                         TableItem item = new TableItem(wOutputFields.table, SWT.NONE);
                         item.setText(1, mappingOutputMeta.getFieldName()[i]);
+                        item.setText(2, mappingOutputMeta.getFieldName()[i]);
                     }
                 }
                 

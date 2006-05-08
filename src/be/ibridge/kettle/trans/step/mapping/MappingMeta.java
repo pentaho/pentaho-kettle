@@ -246,6 +246,36 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     
     public Row getFields(Row r, String name, Row info) throws KettleStepException
     {
+    	// Change the names of the fields if this is required by the mapping.
+    	for (int i=0;i<inputField.length;i++)
+		{
+			if (inputField[i]!=null && inputField[i].length()>0)
+			{
+				if (inputMapping[i]!=null && inputMapping[i].length()>0)
+				{
+					if (!inputField[i].equals(inputMapping[i])) // rename these!
+					{
+						int idx = r.searchValueIndex(inputField[i]);
+						if (idx<0)
+						{
+							throw new KettleStepException("Mapping target field ["+inputField[i]+"] is not present in the input rows!");
+						}
+						r.getValue(idx).setName(inputMapping[i]);
+					}
+				}
+				else
+				{
+					throw new KettleStepException("Mapping target field #"+i+" is not specified for input ["+inputField[i]+"]!");
+				}
+			}
+			else
+			{
+				throw new KettleStepException("Input field #"+i+" is not specified!");
+			}
+		}
+
+    	// Then see which fields get added to the row.
+    	// 
         if (mappingTransMeta!=null)
         {
             StepMeta stepMeta = mappingTransMeta.getMappingOutputStep();
@@ -319,12 +349,14 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             }
         }
         
+        if (inputField!=null)
         for (int i=0;i<inputField.length;i++)
         {
             rep.saveStepAttribute(id_transformation, id_step, i, "input_field",   inputField[i]);
             rep.saveStepAttribute(id_transformation, id_step, i, "input_mapping", inputMapping[i]);
         }
         
+        if (outputField!=null)
         for (int i=0;i<outputField.length;i++)
         {
             rep.saveStepAttribute(id_transformation, id_step, i, "output_field",   outputField[i]);
@@ -334,11 +366,11 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 
     private void loadMappingMeta(Repository rep) throws KettleException
     {
-        // OK, load the meta-data from file...
-        // NOTE: id_transformation is saved, but is useless...
         if (fileName!=null && fileName.length()>0)
         {
-            mappingTransMeta = new TransMeta(fileName);
+        	// OK, load the meta-data from file...
+            // NOTE: id_transformation is saved, but is useless...
+                mappingTransMeta = new TransMeta(fileName);
         }
         else
         {
@@ -374,18 +406,6 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
 
-        // See if we have input streams leading to this step!
-        if (mappingTransMeta!=null)
-        {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "A mapping (transformation) is specified.", stepinfo);
-            remarks.add(cr);
-        }
-        else
-        {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No mapping is specified!", stepinfo);
-            remarks.add(cr);
-        }
-
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
@@ -398,7 +418,92 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 			remarks.add(cr);
 		}
         
-        // TODO: add code for mapping translation, verify correctness.
+    	// Change the names of the fields if this is required by the mapping.
+    	for (int i=0;i<inputField.length;i++)
+		{
+			if (inputField[i]!=null && inputField[i].length()>0)
+			{
+				if (inputMapping[i]!=null && inputMapping[i].length()>0)
+				{
+					if (!inputField[i].equals(inputMapping[i])) // rename these!
+					{
+						int idx = prev.searchValueIndex(inputField[i]);
+						if (idx<0)
+						{
+							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Mapping target field ["+inputField[i]+"] is not present in the input rows!", stepinfo);
+							remarks.add(cr);
+						}
+					}
+				}
+				else
+				{
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Mapping target field #"+i+" is not specified for input ["+inputField[i]+"]!", stepinfo);
+					remarks.add(cr);
+				}
+			}
+			else
+			{
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Input field #"+i+" is not specified!", stepinfo);
+				remarks.add(cr);
+			}
+		}
+
+    	// Then check the fields that get added to the row.
+    	// 
+        if (mappingTransMeta!=null)
+        {
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "A mapping (transformation) is specified.", stepinfo);
+            remarks.add(cr);
+
+            StepMeta stepMeta = mappingTransMeta.getMappingOutputStep();
+            
+            if (stepMeta!=null)
+            {
+	            // See which fields are coming out of the mapping output step of the sub-transformation
+	            // For these fields we check the existance
+	            //
+	            Row fields = null;
+	            try
+	            {
+	            	fields = mappingTransMeta.getStepFields(stepMeta);
+	
+	            	boolean allOK = true;
+	                
+	                // Check the fields...
+	                for (int i=0;i<outputMapping.length;i++)
+	                {
+	                    Value v = fields.searchValue(outputMapping[i]);
+	                    if (v==null) // Not found!
+	                    {
+	                        cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Mapping output field specified couldn't be found in the mapping: "+outputMapping[i], stepinfo);
+	                        remarks.add(cr);
+	                        allOK=false;
+	                    }
+	                }
+	                
+	                if (allOK)
+	                {
+	                    cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All output mapping fields could be found in the mapping.", stepinfo);
+	                    remarks.add(cr);
+	                }
+	            }
+	            catch(KettleStepException e)
+	            {
+	                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Unable to get the step output fields for mapping output step ["+stepMeta.getName()+"]", stepinfo);
+	                remarks.add(cr);
+	            }
+            }
+            else
+            {
+                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No mapping output step was specified in the mapping!", stepinfo);
+                remarks.add(cr);
+            }
+        }
+        else
+        {
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "There is no mapping specified!", stepinfo);
+            remarks.add(cr);
+        }
 	}
 	
 	public StepDialogInterface getDialog(Shell shell, StepMetaInterface info, TransMeta transMeta, String name)

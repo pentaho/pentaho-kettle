@@ -16,6 +16,8 @@
 
 package be.ibridge.kettle.trans.step.mapping;
 
+import java.util.ArrayList;
+
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
@@ -32,6 +34,8 @@ public class MappingData extends BaseStepData implements StepDataInterface
     public Trans trans;
     public MappingInput  mappingInput;
     public MappingOutput mappingOutput;
+	public ArrayList renameFieldIndexes;
+	public ArrayList renameFieldNames;
     
 	/**
 	 * 

@@ -23,6 +23,7 @@ public class SourceToTargetMapping
     {
         return sourcePosition;
     }
+    
     /**
      * @param sourcePosition The sourcePosition to set.
      */
@@ -45,5 +46,14 @@ public class SourceToTargetMapping
         this.targetPosition = targetPosition;
     }
     
-    
+    public String getSourceString(String source[])
+    {
+    	return source[sourcePosition];
+    }
+
+    public String getTargetString(String target[])
+    {
+    	return target[targetPosition];
+    }
+
 }
