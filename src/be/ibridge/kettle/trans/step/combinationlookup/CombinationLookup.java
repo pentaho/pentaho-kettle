@@ -201,7 +201,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 
 				String tkFieldName = meta.getTechnicalKeyField();
 				if (autoinc) tkFieldName=null;
-				if (meta.getSequenceFrom()!=null && meta.getSequenceFrom().length()>0) tkFieldName=null;
+				// if (meta.getSequenceFrom()!=null && meta.getSequenceFrom().length()>0) tkFieldName=null;
 
 				debug="New entry: combiInsert";
 
