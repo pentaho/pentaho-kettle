@@ -54,19 +54,27 @@ import be.ibridge.kettle.trans.step.StepMeta;
 
 public class CheckResultDialog extends Dialog
 {
+	private static final String STRING_HIDE_SUCESSFUL = " Hide &successful results ";
+	private static final String STRING_SHOW_SUCESSFUL = " Show &successful results ";
+
+	private static final String STRING_HIDE_REMARKS = "Remarks: ";
+	private static final String STRING_SHOW_REMARKS = "Warnings and errors: ";
+
 	private ArrayList    remarks;
 		
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
 
-	private Button wClose, wView, wEdit;
-	private Listener lsClose, lsView, lsEdit;
+	private Button wClose, wView, wEdit, wNoOK;
+	private Listener lsClose, lsView, lsEdit, lsNoOK;
 
 	private Shell    shell;
 	private Props    props;
 	
 	private Color    red, green, yellow;
+	
+	private boolean  show_successful_results = false;
 	
 	private String stepname;
 	
@@ -106,7 +114,7 @@ public class CheckResultDialog extends Dialog
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
-		wlFields=new Label(shell, SWT.RIGHT);
+		wlFields=new Label(shell, SWT.LEFT);
 		wlFields.setText("Remarks: ");
  		props.setLook(wlFields);
 		fdlFields=new FormData();
@@ -116,7 +124,7 @@ public class CheckResultDialog extends Dialog
 		wlFields.setLayoutData(fdlFields);
 		
 		int FieldsCols=3;
-		int FieldsRows=remarks.size();
+		int FieldsRows=1;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
 		colinf[0]=new ColumnInfo("Stepname", ColumnInfo.COLUMN_TYPE_TEXT,   false, true);
@@ -148,20 +156,25 @@ public class CheckResultDialog extends Dialog
 		wEdit=new Button(shell, SWT.PUSH);
 		wEdit.setText(" &Edit origin step");
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wClose, wView, wEdit  }, margin, null);
+		wNoOK=new Button(shell, SWT.PUSH);
+		wNoOK.setText(STRING_SHOW_SUCESSFUL);
+
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wClose, wView, wEdit, wNoOK }, margin, null);
 
 		// Add listeners
 		lsClose = new Listener() { public void handleEvent(Event e) { close(); } };
 		lsView  = new Listener() { public void handleEvent(Event e) { view(); } };
 		lsEdit  = new Listener() { public void handleEvent(Event e) { edit(); } };
+		lsNoOK  = new Listener() { public void handleEvent(Event e) { noOK(); } };
 
+		
 		wClose.addListener(SWT.Selection, lsClose    );
 		wView .addListener(SWT.Selection, lsView     );
 		wEdit .addListener(SWT.Selection, lsEdit     );
+		wNoOK .addListener(SWT.Selection, lsNoOK     );
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { close(); } } );
-
 
 		getData();
 		
@@ -175,6 +188,14 @@ public class CheckResultDialog extends Dialog
 		}
 		return stepname;
 	}
+	
+	private void noOK() 
+	{
+		show_successful_results=!show_successful_results;
+		
+		getData();
+	};
+
 
 	public void dispose()
 	{
@@ -187,30 +208,54 @@ public class CheckResultDialog extends Dialog
 	 */ 
 	public void getData()
 	{
+		wFields.table.removeAll();
+		
 		for (int i=0;i<remarks.size();i++)
 		{
 			CheckResult cr = (CheckResult)remarks.get(i);
-			TableItem ti = wFields.table.getItem(i); 
-
-			StepMeta stepMeta = cr.getStepInfo();
-			if (stepMeta!=null) ti.setText(1, stepMeta.getName());
-			else          ti.setText(1, "<global>");
-			ti.setText(2, cr.getType()+" - "+cr.getTypeDesc());
-			ti.setText(3, cr.getText());
-
-			Color col = ti.getBackground();
-			switch(cr.getType())
+			if (show_successful_results || cr.getType()!=CheckResult.TYPE_RESULT_OK)
 			{
-				case CheckResult.TYPE_RESULT_OK:      col=green;  break;
-				case CheckResult.TYPE_RESULT_ERROR:   col=red;    break;
-				case CheckResult.TYPE_RESULT_WARNING: col=yellow; break;
-				case CheckResult.TYPE_RESULT_COMMENT: 
-				default:break;
+				TableItem ti = new TableItem(wFields.table, SWT.NONE); 
+	
+				StepMeta stepMeta = cr.getStepInfo();
+				if (stepMeta!=null) ti.setText(1, stepMeta.getName());
+				else          ti.setText(1, "<global>");
+				ti.setText(2, cr.getType()+" - "+cr.getTypeDesc());
+				ti.setText(3, cr.getText());
+	
+				Color col = ti.getBackground();
+				switch(cr.getType())
+				{
+					case CheckResult.TYPE_RESULT_OK:      col=green;  break;
+					case CheckResult.TYPE_RESULT_ERROR:   col=red;    break;
+					case CheckResult.TYPE_RESULT_WARNING: col=yellow; break;
+					case CheckResult.TYPE_RESULT_COMMENT: 
+					default:break;
+				}
+				ti.setBackground(col);
 			}
-			ti.setBackground(col);
 		}
+		
+		if (wFields.table.getItemCount()==0) 
+		{
+			wFields.clearAll(false);
+		}
+		
 		wFields.setRowNums();
 		wFields.optWidth(true);
+		
+		if (show_successful_results) 
+		{
+			wlFields.setText(STRING_HIDE_REMARKS);
+			wNoOK.setText(STRING_HIDE_SUCESSFUL);
+		}
+		else 
+		{
+			wlFields.setText(STRING_SHOW_REMARKS);
+			wNoOK.setText(STRING_SHOW_SUCESSFUL);
+		}
+
+		
 	}
 	
 	// View message:

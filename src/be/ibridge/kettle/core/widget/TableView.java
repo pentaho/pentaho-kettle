@@ -1188,7 +1188,7 @@ public class TableView extends Composite
 		{
 			table.removeAll();
 			new TableItem(table, SWT.NONE);
-			edit(0,1);
+			if (!readonly) edit(0,1);
 		}
 	}
 

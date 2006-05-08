@@ -42,7 +42,6 @@ import be.ibridge.kettle.core.DBCacheEntry;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
-import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseBatchException;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.util.StringUtil;
@@ -1119,128 +1118,145 @@ public class Database
 							  )
 		throws KettleDatabaseException
 	{
-		int i;
-		boolean comma;
-		
-		if (prepStatementInsert==null) // first time: construct prepared statement
+		String debug="Combination insert";
+		try
 		{
-			/* Construct the SQL statement...
-			 *
-			 * INSERT INTO 
-			 * d_test(keyfield, [crcfield,] keylookup[])
-			 * VALUES(val_key, [val_crc], row values with keynrs[])
-			 * ;
-			 */
-			 
-			String sql="INSERT INTO "+databaseMeta.quoteField(table)+"( ";
-			comma=false;
-
-			if (!autoinc) // NO AUTOINCREMENT 
-			{
-				sql+=databaseMeta.quoteField(keyfield);
-				comma=true;
-			}
-			else
-			if (databaseMeta.needsPlaceHolder()) 
-			{
-				sql+="0";   // placeholder on informix!  Will be replaced in table by real autoinc value.
-				comma=true;
-			} 
+			boolean comma;
 			
-			if (crc)
+			if (prepStatementInsert==null) // first time: construct prepared statement
 			{
-				if (comma) sql+=", ";
-				sql+=databaseMeta.quoteField(crcfield);
-				comma=true;
-			}
-			
-			for (i=0;i<keylookup.length;i++)
-			{
-				if (comma) sql+=", "; 
-				sql+=databaseMeta.quoteField(keylookup[i]);
-				comma=true;
-			}
-			
-			sql+=") VALUES (";
-			
-			comma=false;
-			
-			if (keyfield!=null)
-			{
-				sql+="?";
-				comma=true;
-			}
-			if (crc)
-			{
-				if (comma) sql+=",";
-				sql+="?";
-				comma=true;
-			}
-
-			for (i=0;i<keylookup.length;i++)
-			{
-				if (comma) sql+=","; else comma=true;
-				sql+="?";
-			}
-			
-			sql+=" )";
-
-			try
-			{
-				if (keyfield==null)
+				debug="First: construct prepared statement";
+				/* Construct the SQL statement...
+				 *
+				 * INSERT INTO 
+				 * d_test(keyfield, [crcfield,] keylookup[])
+				 * VALUES(val_key, [val_crc], row values with keynrs[])
+				 * ;
+				 */
+				 
+				String sql="INSERT INTO "+databaseMeta.quoteField(table)+"( ";
+				comma=false;
+	
+				if (!autoinc) // NO AUTOINCREMENT 
 				{
-					log.logDetailed(toString(), "SQL with return keys: "+sql);
-					prepStatementInsert=connection.prepareStatement(databaseMeta.stripCR(sql), Statement.RETURN_GENERATED_KEYS);
+					sql+=databaseMeta.quoteField(keyfield);
+					comma=true;
 				}
 				else
+				if (databaseMeta.needsPlaceHolder()) 
 				{
-					log.logDetailed(toString(), "SQL without return keys: "+sql);
-					prepStatementInsert=connection.prepareStatement(databaseMeta.stripCR(sql));
+					sql+="0";   // placeholder on informix!  Will be replaced in table by real autoinc value.
+					comma=true;
+				} 
+				
+				if (crc)
+				{
+					if (comma) sql+=", ";
+					sql+=databaseMeta.quoteField(crcfield);
+					comma=true;
+				}
+				
+				for (int i=0;i<keylookup.length;i++)
+				{
+					if (comma) sql+=", "; 
+					sql+=databaseMeta.quoteField(keylookup[i]);
+					comma=true;
+				}
+				
+				sql+=") VALUES (";
+				
+				comma=false;
+				
+				if (keyfield!=null)
+				{
+					sql+="?";
+					comma=true;
+				}
+				if (crc)
+				{
+					if (comma) sql+=",";
+					sql+="?";
+					comma=true;
+				}
+	
+				for (int i=0;i<keylookup.length;i++)
+				{
+					if (comma) sql+=","; else comma=true;
+					sql+="?";
+				}
+				
+				sql+=" )";
+	
+				try
+				{
+					debug="First: prepare statement";
+					if (keyfield==null)
+					{
+						log.logDetailed(toString(), "SQL with return keys: "+sql);
+						prepStatementInsert=connection.prepareStatement(databaseMeta.stripCR(sql), Statement.RETURN_GENERATED_KEYS);
+					}
+					else
+					{
+						log.logDetailed(toString(), "SQL without return keys: "+sql);
+						prepStatementInsert=connection.prepareStatement(databaseMeta.stripCR(sql));
+					}
+				}
+				catch(SQLException ex) 
+				{
+					throw new KettleDatabaseException("Unable to prepare combi insert statement : "+Const.CR+sql, ex);
+				}
+				catch(Exception ex)
+				{
+					throw new KettleDatabaseException("Unable to prepare combi insert statement : "+Const.CR+sql, ex);
 				}
 			}
-			catch(SQLException ex) 
+			
+			debug="Create new insert row rins";
+			Row rins=new Row();
+			
+			if (!autoinc) rins.addValue(val_key);
+			if (crc)
 			{
-				throw new KettleDatabaseException("Unable to prepare combi insert statement : "+Const.CR+sql, ex);
+				rins.addValue(val_crc);
 			}
-			catch(Exception ex)
+			for (int i=0;i<keynrs.length;i++)
 			{
-				throw new KettleDatabaseException("Unable to prepare combi insert statement : "+Const.CR+sql, ex);
+				rins.addValue( row.getValue(keynrs[i]));
+			}
+			
+			if (log.isRowLevel()) log.logRowlevel(toString(), "rins="+rins.toString());
+			
+			debug="Set values on insert";
+			// INSERT NEW VALUE!
+			setValues(rins, prepStatementInsert);
+			
+			debug="Insert row";
+			insertRow(prepStatementInsert);
+			
+			debug="Retrieve key";
+			if (keyfield==null)
+			{
+				try
+				{
+					ResultSet keys=prepStatementInsert.getGeneratedKeys(); // 1 key
+					if (keys.next()) val_key.setValue(keys.getDouble(1));
+					else 
+	                {
+	                    throw new KettleDatabaseException("Unable to retrieve auto-increment of combi insert key : "+keyfield+", no fields in resultset");
+	                }
+					keys.close();
+				}
+				catch(SQLException ex) 
+				{
+					throw new KettleDatabaseException("Unable to retrieve auto-increment of combi insert key : "+keyfield, ex);
+				}
 			}
 		}
-		
-		Row rins=new Row();
-		
-		if (!autoinc) rins.addValue(val_key);
-		if (crc)
+		catch(Exception e)
 		{
-			rins.addValue(val_crc);
-		}
-		for (i=0;i<keynrs.length;i++)
-		{
-			rins.addValue( row.getValue(keynrs[i]));
-		}
-		
-		//log.logRowlevel("rins="+rins.toString());
-		
-		// INSERT NEW VALUE!
-		setValues(rins, prepStatementInsert);
-		insertRow(prepStatementInsert);
-		if (keyfield==null)
-		{
-			try
-			{
-				ResultSet keys=pstmt.getGeneratedKeys(); // 1 key
-				if (keys.next()) val_key.setValue(keys.getDouble(1));
-				else 
-                {
-                    throw new KettleDatabaseException("Unable to retrieve auto-increment of combi insert key : "+keyfield+", no fields in resultset");
-                }
-				keys.close();
-			}
-			catch(SQLException ex) 
-			{
-				throw new KettleDatabaseException("Unable to retrieve auto-increment of combi insert key : "+keyfield, ex);
-			}
+			log.logError(toString(), Const.getStackTracker(e));
+			throw new KettleDatabaseException("Unexpected error in combination insert in part ["+debug+"] : "+e.toString(), e);
+			
 		}
 	}
 	
