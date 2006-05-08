@@ -1606,6 +1606,9 @@ public class Spoon
                 
                 saveConnection(db);
                 
+                // The connection is saved, clear the changed flag.
+                db.setChanged(false);
+                
                 if (!name.equalsIgnoreCase(newname)) refreshTree();
             }
         }
@@ -2157,6 +2160,9 @@ public class Spoon
                 {
                     db.saveRep(rep);
                     log.logDetailed(toString(), Messages.getString("Spoon.Log.SavedDatabaseConnection",db.getDatabaseName()));//"Saved database connection ["+db+"] to the repository."
+                    
+                    // Put a commit behind it!
+                    rep.commit();
                 }
                 catch(KettleException ke)
                 {//

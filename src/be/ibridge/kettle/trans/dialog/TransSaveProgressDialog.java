@@ -66,7 +66,7 @@ public class TransSaveProgressDialog
 		try
 		{
 			ProgressMonitorDialog pmd = new ProgressMonitorDialog(shell);
-			pmd.run(false, false, op);
+			pmd.run(true, true, op);
 		}
 		catch (InvocationTargetException e)
 		{

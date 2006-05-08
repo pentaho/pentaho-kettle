@@ -1504,6 +1504,8 @@ public class TransMeta implements XMLInterface
     {
         try
         {
+        	if (monitor!=null) monitor.subTask(Messages.getString("TransMeta.Monitor.LockingRepository")); //$NON-NLS-1$
+        	
             rep.lockRepository(); // make sure we're they only one using the repository at the moment
 
             // Clear attribute id cache
@@ -1516,6 +1518,8 @@ public class TransMeta implements XMLInterface
             if (monitor != null) monitor.beginTask(Messages.getString("TransMeta.Monitor.SavingTransformationTask.Title") + getPathAndName(), nrWorks); //$NON-NLS-1$
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingOfTransformationStarted")); //$NON-NLS-1$
 
+            if (monitor.isCanceled()) throw new KettleDatabaseException();
+            
             // Before we start, make sure we have a valid transformation ID!
             // Two possibilities:
             // 1) We have a ID: keep it
@@ -1544,6 +1548,8 @@ public class TransMeta implements XMLInterface
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingNotes")); //$NON-NLS-1$
             for (int i = 0; i < nrNotes(); i++)
             {
+                if (monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
+
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.SavingNoteTask.Title") + (i + 1) + "/" + nrNotes()); //$NON-NLS-1$ //$NON-NLS-2$
                 NotePadMeta ni = getNote(i);
                 ni.saveRep(rep, getID());
@@ -1554,6 +1560,8 @@ public class TransMeta implements XMLInterface
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
             for (int i = 0; i < nrDatabases(); i++)
             {
+                if (monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
+
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
                 DatabaseMeta ci = getDatabase(i);
                 ci.saveRep(rep);
@@ -1568,6 +1576,8 @@ public class TransMeta implements XMLInterface
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingSteps")); //$NON-NLS-1$
             for (int i = 0; i < nrSteps(); i++)
             {
+                if (monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
+                
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.SavingStepTask.Title") + (i + 1) + "/" + nrSteps()); //$NON-NLS-1$ //$NON-NLS-2$
                 StepMeta stepMeta = getStep(i);
                 stepMeta.saveRep(rep, getID());
@@ -1579,6 +1589,8 @@ public class TransMeta implements XMLInterface
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingHops")); //$NON-NLS-1$
             for (int i = 0; i < nrTransHops(); i++)
             {
+                if (monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
+
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.SavingHopTask.Title") + (i + 1) + "/" + nrTransHops()); //$NON-NLS-1$ //$NON-NLS-2$
                 TransHopMeta hi = getTransHop(i);
                 hi.saveRep(rep, getID());
@@ -1592,11 +1604,16 @@ public class TransMeta implements XMLInterface
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingDependencies")); //$NON-NLS-1$
             for (int i = 0; i < nrDependencies(); i++)
             {
+                if (monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
+
                 TransDependency td = getDependency(i);
                 td.saveRep(rep, getID());
             }
 
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingFinished")); //$NON-NLS-1$
+
+        	if (monitor!=null) monitor.subTask(Messages.getString("TransMeta.Monitor.UnlockingRepository")); //$NON-NLS-1$
+            rep.unlockRepository();
 
             // Perform a commit!
             rep.commit();
