@@ -367,17 +367,14 @@ public class ExcelInput extends BaseStep implements StepInterface {
 		List nonExistantFiles = data.files.getNonExistantFiles();
 
 		if (nonExistantFiles.size() != 0) {
-			String message = FileInputList
-					.getRequiredFilesDescription(nonExistantFiles);
+			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
 			log.logBasic(debug, "WARNING: Missing " + message);
 			if (meta.isErrorIgnored())
-				for (Iterator iter = nonExistantFiles.iterator(); iter
-						.hasNext();) {
+				for (Iterator iter = nonExistantFiles.iterator(); iter.hasNext();) {
 					data.errorHandler.handleNonExistantFile((File) iter.next());
 				}
 			else
-				throw new KettleException(
-						"Following required files are missing: " + message);
+				throw new KettleException("Following required files are missing: " + message);
 		}
 
 		List nonAccessibleFiles = data.files.getNonAccessibleFiles();
@@ -392,9 +389,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
 							.next());
 				}
 			else
-				throw new KettleException(
-						"Following required files are not accessible: "
-								+ message);
+				throw new KettleException("Following required files are not accessible: " + message);
 		}
 		debug = "End of Required files";
 	}
@@ -458,8 +453,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
 					{	retval.setIgnore();
 					}
 					else {
-						debug = "Get line #" + lineNr + " from sheet #"
-								+ data.filenr + "." + data.sheetnr;
+						debug = "Get line #" + lineNr + " from sheet #"	+ data.filenr + "." + data.sheetnr;
 						if (log.isRowLevel()) logRowlevel(debug);
 						
 
@@ -505,9 +499,7 @@ public class ExcelInput extends BaseStep implements StepInterface {
 				}
 			}
 		} catch (Exception e) {
-			logError("Error processing row in [" + debug
-					+ "] from Excel file [" + data.filename + "] : "
-					+ e.toString());
+			logError("Error processing row in [" + debug + "] from Excel file [" + data.filename + "] : " + e.toString());
 			setErrors(1);
 			stopAll();
 			return null;
