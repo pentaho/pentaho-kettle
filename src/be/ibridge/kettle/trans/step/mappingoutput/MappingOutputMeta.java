@@ -190,7 +190,7 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
                 fieldLength[i] = Const.toInt(slength, -1);
                 fieldPrecision[i] = Const.toInt(sprecision, -1);
 
-                fieldAdded[i] = "Y".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "precision") );
+                fieldAdded[i] = "Y".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "added") );
 }
         }
         catch (Exception e)

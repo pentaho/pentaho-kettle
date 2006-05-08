@@ -176,8 +176,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         Node inputNode  = XMLHandler.getSubNode(stepnode, "input");
         Node outputNode = XMLHandler.getSubNode(stepnode, "output");
 
-        int nrInput  = XMLHandler.countNodes(inputNode, "field");
-        int nrOutput = XMLHandler.countNodes(outputNode, "field");
+        int nrInput  = XMLHandler.countNodes(inputNode, "connector");
+        int nrOutput = XMLHandler.countNodes(outputNode, "connector");
 
         allocate(nrInput, nrOutput);
         
@@ -279,25 +279,31 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         if (mappingTransMeta!=null)
         {
             StepMeta stepMeta = mappingTransMeta.getMappingOutputStep();
-            
-            stepMeta.getStepMetaInterface().getFields(r, name, info);
-
-            // Change the output fields that are specified...
-            for (int i=0;i<outputMapping.length;i++)
+            if (stepMeta!=null)
             {
-                Value v = r.searchValue(outputMapping[i]);
-                if (v!=null)
+            	stepMeta.getStepMetaInterface().getFields(r, name, info);
+            	
+                // Change the output fields that are specified...
+                for (int i=0;i<outputMapping.length;i++)
                 {
-                    v.setName(outputField[i]);
-                    v.setOrigin(name);
+                    Value v = r.searchValue(outputMapping[i]);
+                    if (v!=null)
+                    {
+                        v.setName(outputField[i]);
+                        v.setOrigin(name);
+            		}
+            		else
+            		{
+            			throw new KettleStepException("Unable to find field : "+outputMapping[i]);
+            		}
                 }
-                else
-                {
-                    throw new KettleStepException("Mapping output field specified couldn't be found: "+outputMapping[i]);
-                }
+                
+                return r;
             }
-            
-            return r;
+            else
+            {
+            	throw new KettleStepException("Please use one (1) mapping output step in the mapping (sub-transformation)");
+            }
         }
         else
         {
