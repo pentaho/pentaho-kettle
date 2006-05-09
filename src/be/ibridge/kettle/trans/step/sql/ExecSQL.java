@@ -150,7 +150,7 @@ public class ExecSQL extends BaseStep implements StepInterface
         // Replace the values in the SQL string...
 		for (int i=0;i<data.markerPositions.size();i++)
         {
-            Value value = row.getValue( data.argumentIndexes[i]);
+            Value value = row.getValue( data.argumentIndexes[data.markerPositions.size()-i-1]);
 		    int pos = ((Integer)data.markerPositions.get(i)).intValue();
             sql.replace(pos, pos+1, value.getString()); // replace the '?' with the String in the row.
         }
