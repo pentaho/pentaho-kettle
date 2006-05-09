@@ -27,6 +27,7 @@
 	  <property name="distrib"				location="distrib"/>
 	  <property name="docs"					location="docs"/>
 	  <property name="api"					location="${docs}/api/"/>
+	  <property name="tips"					location="${docs}/tips/"/>
 	  <property name="web"					location="web"/>
 	  <property name="extra"        		location="extra"/>
 	  <property name="webstart"				location="webstart"/>
@@ -238,7 +239,13 @@
 	  			<fileset dir="${docs}" includes="**/*.pdf"
 	  			excludes="**/Spoon-2.0.pdf **/*.dot **/*.sxw  **/*.vpn" />
 	  			</copy>
-	  	
+
+	        <!-- tips -->
+	  		<mkdir dir="${distrib}/docs/tips"/>
+	  		<copy todir="${distrib}/docs/tips">
+	  			<fileset dir="${tips}" includes="**/*"/> 
+	  			</copy>
+
 	        <!-- extra stuff -->
 	  		<mkdir dir="${distrib}/extra"/>
 	  		<copy todir="${distrib}/extra">
