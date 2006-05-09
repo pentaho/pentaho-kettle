@@ -15,6 +15,7 @@
 
 package be.ibridge.kettle.trans;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -59,7 +60,9 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 public class TransMeta implements XMLInterface
 {
     private static LogWriter    log                = LogWriter.getInstance();
-
+    
+    private File                inputFile;
+    
     private ArrayList           databases;
 
     private ArrayList           steps;
@@ -4118,5 +4121,13 @@ public class TransMeta implements XMLInterface
     public void setJobBatchId(long jobBatchId)
     {
         this.jobBatchId = jobBatchId;
+    }
+
+    public File getInputFile() {
+        return inputFile;
+    }
+
+    public void setInputFile(File inputFile) {
+        this.inputFile = inputFile;
     }
 }
