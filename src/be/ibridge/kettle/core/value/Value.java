@@ -1541,7 +1541,12 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			
 		case VALUE_TYPE_NUMBER :
             {
-			    return Double.compare(getNumber(), v.getNumber());
+			    int cmp = Double.compare(getNumber(), v.getNumber());
+			    if (cmp!=0)
+			    {
+			    	System.out.println("Different!");
+			    }
+			    return cmp;
             }
 
 		case VALUE_TYPE_STRING:
@@ -1549,10 +1554,17 @@ public class Value implements Cloneable, XMLInterface, Serializable
     			String one = Const.rtrim(getString());
     			String two = Const.rtrim(v.getString());
                 
+    			int cmp=0;
                 if (caseInsensitive) 
-                    return one.compareToIgnoreCase(two);
-                else 
-                    return one.compareTo(two);
+                {
+                    cmp = one.compareToIgnoreCase(two);
+                }
+                else
+                {
+                    cmp = one.compareTo(two);
+                }
+                
+                return cmp;
             }
             
 		case VALUE_TYPE_INTEGER:

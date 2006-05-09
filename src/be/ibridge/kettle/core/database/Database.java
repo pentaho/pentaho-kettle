@@ -2060,8 +2060,8 @@ public class Database
 		if (bitmap && databaseMeta.supportsBitmapIndex()) 
 			cr_index += "BITMAP ";
 		
-		cr_index += "INDEX "+indexname+Const.CR+" ";
-		cr_index += "ON "+tablename+Const.CR;
+		cr_index += "INDEX "+databaseMeta.quoteField(indexname)+Const.CR+" ";
+		cr_index += "ON "+databaseMeta.quoteField(tablename)+Const.CR;
 		cr_index += "( "+Const.CR;
 		for (int i=0;i<idx_fields.length;i++)
 		{
@@ -2092,7 +2092,7 @@ public class Database
 		
 		if (databaseMeta.supportsSequences())
 		{
-			cr_seq += "CREATE SEQUENCE "+sequence+" "+Const.CR;  // Works for both Oracle and PostgreSQL :-)
+			cr_seq += "CREATE SEQUENCE "+databaseMeta.quoteField(sequence)+" "+Const.CR;  // Works for both Oracle and PostgreSQL :-)
 			cr_seq += "START WITH "+start_at+" "+Const.CR;
 			cr_seq += "INCREMENT BY "+increment_by+" "+Const.CR;
 			if (max_value>0) cr_seq += "MAXVALUE "+max_value+Const.CR;
@@ -2103,8 +2103,7 @@ public class Database
 		return cr_seq;
 	}
 	
-	public Row getQueryFields(String sql, boolean param, Row inform)
-		throws KettleDatabaseException
+	public Row getQueryFields(String sql, boolean param, Row inform) throws KettleDatabaseException
 	{
 		Row fields;
 		DBCache dbcache = DBCache.getInstance();
@@ -2535,19 +2534,19 @@ public class Database
 		for (int i=0;i<gets.length;i++)
 		{
 			if (i!=0) sql += ", ";
-			sql += gets[i];
+			sql += databaseMeta.quoteField(gets[i]);
 			if (rename!=null && rename[i]!=null && !gets[i].equalsIgnoreCase(rename[i]))
 			{
-				sql+=" AS "+rename[i];
+				sql+=" AS "+databaseMeta.quoteField(rename[i]);
 			}
 		}
 		
-		sql += " FROM "+table+" WHERE ";
+		sql += " FROM "+databaseMeta.quoteField(table)+" WHERE ";
 		
 		for (int i=0;i<codes.length;i++)
 		{
 			if (i!=0) sql += " AND ";
-			sql += codes[i];
+			sql += databaseMeta.quoteField(codes[i]);
 			if ("BETWEEN".equalsIgnoreCase(condition[i]))
 			{
 				sql+=" BETWEEN ? AND ? ";
@@ -2590,7 +2589,7 @@ public class Database
 	
 		int i;
 		
-		sql = "UPDATE "+table+Const.CR+"SET ";
+		sql = "UPDATE "+databaseMeta.quoteField(table)+Const.CR+"SET ";
 		
 		for (i=0;i<sets.length;i++)
 		{
@@ -2604,7 +2603,7 @@ public class Database
 		for (i=0;i<codes.length;i++)
 		{
 			if (i!=0) sql += "AND   ";
-			sql += codes[i];
+			sql += databaseMeta.quoteField(codes[i]);
 			if ("BETWEEN".equalsIgnoreCase(condition[i]))
 			{
 				sql+=" BETWEEN ? AND ? ";
@@ -3059,7 +3058,7 @@ public class Database
 	{
 		String retval;
 		
-		retval = "CREATE TABLE "+tablename+Const.CR;
+		retval = "CREATE TABLE "+databaseMeta.quoteField(tablename)+Const.CR;
 		retval+= "("+Const.CR;
 		for (int i=0;i<fields.size();i++)
 		{
@@ -3104,6 +3103,7 @@ public class Database
 		throws KettleDatabaseException
 	{
 		String retval="";
+		String tableName = databaseMeta.quoteField(tablename);
 		
 		// Get the fields that are in the table now:
 		Row tabFields = getTableFields(tablename);
@@ -3128,7 +3128,7 @@ public class Database
 			for (int i=0;i<missing.size();i++)
 			{
 				Value v=missing.getValue(i);
-				retval+=databaseMeta.getAddColumnStatement(tablename, v, tk, use_autoinc, pk, true);
+				retval+=databaseMeta.getAddColumnStatement(tableName, v, tk, use_autoinc, pk, true);
 			}
 		}
 
@@ -3149,7 +3149,7 @@ public class Database
 			for (int i=0;i<surplus.size();i++)
 			{
 				Value v=surplus.getValue(i);
-				retval+=databaseMeta.getDropColumnStatement(tablename, v, tk, use_autoinc, pk, true);
+				retval+=databaseMeta.getDropColumnStatement(tableName, v, tk, use_autoinc, pk, true);
 			}
 		}
 		
@@ -3184,7 +3184,7 @@ public class Database
 			for (int i=0;i<modify.size();i++)
 			{
 				Value v=modify.getValue(i);
-				retval+=databaseMeta.getModifyColumnStatement(tablename, v, tk, use_autoinc, pk, true);
+				retval+=databaseMeta.getModifyColumnStatement(tableName, v, tk, use_autoinc, pk, true);
 			}
 		}
 
@@ -3803,10 +3803,9 @@ public class Database
 	}
 
 
-	public ArrayList getFirstRows(String table_name, int limit, IProgressMonitor monitor)
-		throws KettleDatabaseException
+	public ArrayList getFirstRows(String table_name, int limit, IProgressMonitor monitor) throws KettleDatabaseException
 	{
-		String sql = "SELECT * FROM "+table_name;
+		String sql = "SELECT * FROM "+databaseMeta.quoteField(table_name);
 		
         if (limit>0)
 		{

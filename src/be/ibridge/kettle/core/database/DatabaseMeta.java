@@ -93,7 +93,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	public static final int TYPE_DATABASE_POSTGRES    =  7;
 
 	/**
-	 * Connection to an Intersystems Caché database
+	 * Connection to an Intersystems Cachï¿½ database
 	 */
 	public static final int TYPE_DATABASE_CACHE       =  8;
 
@@ -1271,7 +1271,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	
 	public String getSQLQueryFields(String tableName)
 	{
-	    return databaseInterface.getSQLQueryFields(tableName);
+	    return databaseInterface.getSQLQueryFields(quoteField(tableName));
 	}
 	
 	public String getAddColumnStatement(String tablename, Value v, String tk, boolean use_autoinc, String pk, boolean semicolon)
@@ -1501,7 +1501,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	 */
 	public String getTruncateTableStatement(String tableName)
 	{
-	    return databaseInterface.getTruncateTableStatement(tableName);
+	    return databaseInterface.getTruncateTableStatement( quoteField(tableName) );
 	}
 
     /**

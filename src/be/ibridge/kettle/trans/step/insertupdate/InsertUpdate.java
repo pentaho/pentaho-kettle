@@ -171,8 +171,6 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		}
 		else
 		{
-			
-			
 			if (!meta.isUpdateBypassed())
 			{
 				if (log.isRowLevel()) logRowlevel("Found row for update: !"+row.toString());
@@ -189,7 +187,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 					Value rowvalue = row.getValue(data.valuenrs[i]);
 					lu.addValue(i, rowvalue);
 					Value retvalue = add.getValue(i);
-					if (!rowvalue.equals(retvalue))
+					if (!retvalue.equals(rowvalue)) // Take table value as the driver.
 					{
 						update=true;
 					}
