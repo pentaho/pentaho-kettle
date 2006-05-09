@@ -1698,7 +1698,12 @@ public class TableView extends Composite
 					String str = text.getText();
 					int strmax = dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x+5;
 					int colmax = tablecolumn[column_number].getWidth(); 
-					if (strmax>colmax) tablecolumn[column_number].setWidth(strmax+20);
+					if (strmax>colmax) 
+					{
+						tablecolumn[column_number].setWidth(strmax+20);
+						// On linux, this causes the text to select everything...
+						// This is because the focus is lost and re-gained.  Nothing we can do about it now.
+					}
 				}
 			}
 		);
