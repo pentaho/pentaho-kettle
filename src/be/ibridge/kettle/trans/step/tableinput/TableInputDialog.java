@@ -373,7 +373,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 								if (i==0) sql+="  "; else sql+=", "; //$NON-NLS-1$ //$NON-NLS-2$
 								sql+=inf.quoteField(field.getName())+Const.CR;
 							}
-							sql+="FROM "+tableName+Const.CR; //$NON-NLS-1$
+							sql+="FROM "+inf.quoteField(tableName)+Const.CR; //$NON-NLS-1$
 							wSQL.setText(sql);
 						}
 						else
