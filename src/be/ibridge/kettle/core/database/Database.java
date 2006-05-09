@@ -1431,7 +1431,7 @@ public class Database
 		}
 		catch(SQLException ex) 
 		{
-		    // System.out.println("SQLException: "+ex.getMessage());
+		    log.logError(toString(), Const.getStackTracker(ex));
 			throw new KettleDatabaseException("Error inserting row", ex);
 		}
 		catch(Exception e)
