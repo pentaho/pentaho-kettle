@@ -1700,11 +1700,12 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
              new ColumnInfo(Messages.getString("TextFileInputDialog.DecimalColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("TextFileInputDialog.GroupColumn.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("TextFileInputDialog.NullIfColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
+             new ColumnInfo(Messages.getString("TextFileInputDialog.IfNullColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,    false),
              new ColumnInfo(Messages.getString("TextFileInputDialog.TrimTypeColumn.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  TextFileInputMeta.trimTypeDesc, true ),
              new ColumnInfo(Messages.getString("TextFileInputDialog.RepeatColumn.Column"),     ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] { Messages.getString("System.Combo.Yes"), Messages.getString("System.Combo.No") }, true )
             };
         
-        colinf[11].setToolTip(Messages.getString("TextFileInputDialog.RepeatColumn.Tooltip"));
+        colinf[12].setToolTip(Messages.getString("TextFileInputDialog.RepeatColumn.Tooltip"));
         
         wFields=new TableView(wFieldsComp, 
                               SWT.FULL_SELECTION | SWT.MULTI, 
@@ -1856,6 +1857,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			String group    = field.getGroupSymbol();
 			String decim    = field.getDecimalSymbol();
 			String def      = field.getNullString();
+            String ifNull   = field.getIfNullValue();
 			String trim     = field.getTrimTypeDesc();
 			String rep      = field.isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Button.No");
 			
@@ -1868,8 +1870,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			if (decim   !=null) item.setText( 8, decim   );
 			if (group   !=null) item.setText( 9, group   );
 			if (def     !=null) item.setText(10, def     );
-			if (trim    !=null) item.setText(11, trim    );
-			if (rep     !=null) item.setText(12, rep     );
+            if (ifNull  !=null) item.setText(11, ifNull     );
+			if (trim    !=null) item.setText(12, trim    );
+			if (rep     !=null) item.setText(13, rep     );
 		}
 		
         if ( in.getEncoding()!=null ) wEncoding.setText( in.getEncoding() );
@@ -2010,8 +2013,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			field.setDecimalSymbol( item.getText(8) );
 			field.setGroupSymbol( item.getText(9) );
 			field.setNullString( item.getText(10) );
-			field.setTrimType( TextFileInputMeta.getTrimTypeByDesc(item.getText(11)) );
-			field.setRepeated( Messages.getString("System.Button.Yes").equalsIgnoreCase(item.getText(12)) );		
+            field.setIfNullValue(item.getText(11));
+			field.setTrimType( TextFileInputMeta.getTrimTypeByDesc(item.getText(12)) );
+			field.setRepeated( Messages.getString("System.Button.Yes").equalsIgnoreCase(item.getText(13)) );		
 			
 			in.getInputFields()[i] = field;
 		}

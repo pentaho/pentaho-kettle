@@ -743,6 +743,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             retval.append("        " + XMLHandler.addTagValue("decimal", field.getDecimalSymbol()));
             retval.append("        " + XMLHandler.addTagValue("group", field.getGroupSymbol()));
             retval.append("        " + XMLHandler.addTagValue("nullif", field.getNullString()));
+            retval.append("        " + XMLHandler.addTagValue("ifnull", field.getIfNullValue()));
             retval.append("        " + XMLHandler.addTagValue("position", field.getPosition()));
             retval.append("        " + XMLHandler.addTagValue("length", field.getLength()));
             retval.append("        " + XMLHandler.addTagValue("precision", field.getPrecision()));
@@ -868,6 +869,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
                 field.setDecimalSymbol(XMLHandler.getTagValue(fnode, "decimal"));
                 field.setGroupSymbol(XMLHandler.getTagValue(fnode, "group"));
                 field.setNullString(XMLHandler.getTagValue(fnode, "nullif"));
+                field.setIfNullValue(XMLHandler.getTagValue(fnode, "ifnull"));
                 field.setPosition(Const.toInt(XMLHandler.getTagValue(fnode, "position"), -1));
                 field.setLength(Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1));
                 field.setPrecision(Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1));
@@ -979,6 +981,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
                 field.setDecimalSymbol(rep.getStepAttributeString(id_step, i, "field_decimal"));
                 field.setGroupSymbol(rep.getStepAttributeString(id_step, i, "field_group"));
                 field.setNullString(rep.getStepAttributeString(id_step, i, "field_nullif"));
+                field.setIfNullValue(rep.getStepAttributeString(id_step, i, "field_ifnull"));
                 field.setPosition((int) rep.getStepAttributeInteger(id_step, i, "field_position"));
                 field.setLength((int) rep.getStepAttributeInteger(id_step, i, "field_length"));
                 field.setPrecision((int) rep.getStepAttributeInteger(id_step, i, "field_precision"));
@@ -1074,6 +1077,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal", field.getDecimalSymbol());
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_group", field.getGroupSymbol());
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_nullif", field.getNullString());
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_ifnull", field.getIfNullValue());
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_position", field.getPosition());
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_length", field.getLength());
                 rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", field.getPrecision());

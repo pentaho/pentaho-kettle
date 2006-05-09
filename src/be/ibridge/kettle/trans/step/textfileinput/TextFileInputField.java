@@ -47,6 +47,7 @@ public class TextFileInputField implements Cloneable
 	private String 	groupSymbol;
 	private boolean repeat;
 	private String 	nullString;
+    private String  ifNullValue;
     
 	private String 	samples[];
 
@@ -105,7 +106,7 @@ public class TextFileInputField implements Cloneable
 		this.precision      = -1;
 		this.repeat         = false;
 		this.nullString    = ""; 
-        
+        this.ifNullValue   = "";
         //this.containsDot=false;
         //this.containsComma=false;
 	}
@@ -302,6 +303,14 @@ public class TextFileInputField implements Cloneable
 	{
 		this.nullString = null_string;
 	}
+    
+    public String getIfNullValue() {
+        return ifNullValue;
+    }
+
+    public void setIfNullValue(String ifNullValue) {
+        this.ifNullValue = ifNullValue;
+    }
 	
 	public String toString()
 	{
@@ -664,4 +673,5 @@ public class TextFileInputField implements Cloneable
 			return;
 		} 
 	}
+
 }

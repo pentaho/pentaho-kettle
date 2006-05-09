@@ -398,6 +398,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				String decimal = fieldnr < nrfields ? f.getDecimalSymbol() : "";
 				String currency = fieldnr < nrfields ? f.getCurrencySymbol() : "";
 				String nullif = fieldnr < nrfields ? f.getNullString() : "";
+                String ifnull = fieldnr < nrfields ? f.getIfNullValue() : "";
 				int trim_type = fieldnr < nrfields ? f.getTrimType() : TextFileInputMeta.TYPE_TRIM_NONE;
 
 				if (fieldnr < strings.size())
@@ -405,7 +406,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					String pol = (String) strings.get(fieldnr);
 					try
 					{
-						value = convertValue(pol, field, type, format, length, precision, group, decimal, currency, nullif, trim_type, ldf, ldfs,
+						value = convertValue(pol, field, type, format, length, precision, group, decimal, currency, nullif,ifnull, trim_type, ldf, ldfs,
 								ldaf, ldafs);
 					}
 					catch (Exception e)
@@ -508,7 +509,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 	}
 
 	public static final Value convertValue(String pol, String field_name, int field_type, String field_format, int field_length, int field_precision,
-			String num_group, String num_decimal, String num_currency, String nullif, int trim_type, DecimalFormat ldf, DecimalFormatSymbols ldfs,
+			String num_group, String num_decimal, String num_currency, String nullif, String ifNull, int trim_type, DecimalFormat ldf, DecimalFormatSymbols ldfs,
 			SimpleDateFormat ldaf, DateFormatSymbols ldafs) throws Exception
 	{
 		Value value = new Value(field_name, field_type); // build a value!
@@ -546,9 +547,14 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 		if (pol == null || pol.length() == 0 || pol.equalsIgnoreCase(null_cmp))
 		{
-			value.setNull();
+            if (ifNull!=null && ifNull.length()!=0)
+                pol = ifNull;
 		}
-		else
+        
+        if (pol == null || pol.length() == 0 || pol.equalsIgnoreCase(null_cmp)) {
+            value.setNull();
+        }
+        else
 		{
 			if (value.isNumeric())
 			{
