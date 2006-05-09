@@ -68,16 +68,6 @@ public class GlobalMessages
 
     private static ResourceBundle getBundle(Locale locale, String packageName) throws MissingResourceException
     {
-    	/*
-        ResourceBundle bundle = (ResourceBundle) locales.get(buildHashKey(locale, packageName));
-        if (bundle == null)
-        {
-            bundle = ResourceBundle.getBundle(buildHashKey(locale, packageName), locale);
-            locales.put(buildHashKey(locale, packageName), bundle);
-        }
-        return bundle;
-        */
-    	
     	String filename = buildHashKey(locale, packageName);
     	filename = "/"+filename.replace('.', '/') + ".properties";
     	
@@ -167,6 +157,86 @@ public class GlobalMessages
             }
         }
     }
+    
+    public static String getSystemString(String key, String param1, String param2, String param3)
+    {
+        try
+        {
+            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3);
+        }
+        catch (MissingResourceException e)
+        {
+            try
+            {
+                return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3);
+            }
+            catch (MissingResourceException fe)
+            {
+                fe.printStackTrace();
+                return '!' + key + '!';
+            }
+        }
+    }
+
+    public static String getSystemString(String key, String param1, String param2, String param3, String param4)
+    {
+        try
+        {
+            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3, param4);
+        }
+        catch (MissingResourceException e)
+        {
+            try
+            {
+                return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3, param4);
+            }
+            catch (MissingResourceException fe)
+            {
+                fe.printStackTrace();
+                return '!' + key + '!';
+            }
+        }
+    }
+
+    public static String getSystemString(String key, String param1, String param2, String param3, String param4, String param5)
+    {
+        try
+        {
+            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3, param4, param5);
+        }
+        catch (MissingResourceException e)
+        {
+            try
+            {
+                return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3, param4, param5);
+            }
+            catch (MissingResourceException fe)
+            {
+                fe.printStackTrace();
+                return '!' + key + '!';
+            }
+        }
+    }
+
+    public static String getSystemString(String key, String param1, String param2, String param3, String param4, String param5, String param6)
+    {
+        try
+        {
+            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3, param4, param5, param6);
+        }
+        catch (MissingResourceException e)
+        {
+            try
+            {
+                return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), buildBundleName(SYSTEM_BUNDLE_PACKAGE)), key, param1, param2, param3, param4, param5, param6);
+            }
+            catch (MissingResourceException fe)
+            {
+                fe.printStackTrace();
+                return '!' + key + '!';
+            }
+        }
+    }
 
     public static String getString(String packageName, String key)
     {
@@ -222,23 +292,23 @@ public class GlobalMessages
     {
         try
         {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3,param4);
+            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3, param4);
         }
         catch(MissingResourceException e)
         {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3,param4);
+            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3, param4);
         }
     }
     
-    public static String getString(String packageName, String key, String param1, String param2, String param3,String param4,String param5)
+    public static String getString(String packageName, String key, String param1, String param2, String param3, String param4, String param5)
     {
         try
         {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3,param4,param5);
+            return GlobalMessageUtil.getString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3, param4, param5);
         }
         catch(MissingResourceException e)
         {
-            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3,param4,param5);
+            return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3, param4, param5);
         }
     }
     
@@ -253,48 +323,4 @@ public class GlobalMessages
             return GlobalMessageUtil.getString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2, param3,param4,param5,param6);
         }
     }
-    
-
-/*
-    public static String getErrorString(String packageName, String key)
-    {
-        return GlobalMessageUtil.formatErrorMessage(key, getString(packageName + "." + BUNDLE_NAME, key));
-    }
-
-    public static String getErrorString(String packageName, String key, String param1)
-    {
-        try
-        {
-            return GlobalMessageUtil.getErrorString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1);
-        }
-        catch(MissingResourceException e)
-        {
-            return GlobalMessageUtil.getErrorString(getBundle(langChoice.getFailoverLocale(), packageName + "." + BUNDLE_NAME), key, param1);
-        }
-    }
-
-    public static String getErrorString(String packageName, String key, String param1, String param2)
-    {
-        try
-        {
-            return GlobalMessageUtil.getErrorString(getBundle(langChoice.getDefaultLocale(), packageName + "." + BUNDLE_NAME), key, param1, param2);
-        }
-        catch(MissingResourceException e)
-        {
-            return GlobalMessageUtil.getErrorString(getBundle(langChoice.getFailoverLocale(), packageName), key, param1, param2);
-        }
-    }
-
-    public static String getErrorString(String packageName, String key, String param1, String param2, String param3)
-    {
-        try
-        {
-            return GlobalMessageUtil.getErrorString(getBundle(langChoice.getDefaultLocale(), packageName), key, param1, param2, param3);
-        }
-        catch(MissingResourceException e)
-        {
-            return GlobalMessageUtil.getErrorString(getBundle(langChoice.getFailoverLocale(), packageName), key, param1, param2, param3);
-        }
-    }
-*/
 }
