@@ -61,15 +61,15 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		Row add;
 		boolean cache_now=false;		
 		
-		debug = "Start of lookupValues()";
+		debug = "Start of lookupValues()"; //$NON-NLS-1$
 		if (first)
 		{
             first=false;
             
-			debug = "first row: start";
+			debug = "first row: start"; //$NON-NLS-1$
 			if (meta.isCached())
 			{
-				debug = "first row: cache allocate";
+				debug = "first row: cache allocate"; //$NON-NLS-1$
 				if (meta.getCacheSize()>0)
 				{
 					data.look=new Hashtable((int)(meta.getCacheSize()*1.5));
@@ -80,38 +80,38 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 				}
 			}
 
-			debug = "first row: set lookup statement";
+			debug = "first row: set lookup statement"; //$NON-NLS-1$
 			data.db.setLookup(meta.getTablename(), meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(), meta.getOrderByClause(), meta.isFailingOnMultipleResults());
 			
 			// lookup the values!
-			if (log.isDetailed()) logDetailed("Checking row: "+row.toString());
+			if (log.isDetailed()) logDetailed(Messages.getString("DatabaseLookup.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
 			data.keynrs = new int[meta.getStreamKeyField1().length];
 			data.keynrs2= new int[meta.getStreamKeyField1().length];
 			
-			debug = "first row: get key fieldnrs";
+			debug = "first row: get key fieldnrs"; //$NON-NLS-1$
 			for (int i=0;i<meta.getStreamKeyField1().length;i++)
 			{
 				data.keynrs[i]=row.searchValueIndex(meta.getStreamKeyField1()[i]);
 				if (data.keynrs[i]<0 &&  // couldn't find field!
-                    !"IS NULL".equalsIgnoreCase(meta.getKeyCondition()[i]) &&   // No field needed!
-				    !"IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i])  // No field needed!
+                    !"IS NULL".equalsIgnoreCase(meta.getKeyCondition()[i]) &&   // No field needed! //$NON-NLS-1$
+				    !"IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i])  // No field needed! //$NON-NLS-1$
                    )
 				{
-					throw new KettleStepException("Field ["+meta.getStreamKeyField1()[i]+"] is required and couldn't be found!");
+					throw new KettleStepException(Messages.getString("DatabaseLookup.ERROR0001.FieldRequired1.Exception")+meta.getStreamKeyField1()[i]+Messages.getString("DatabaseLookup.ERROR0001.FieldRequired2.Exception")); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				data.keynrs2[i]=row.searchValueIndex(meta.getStreamKeyField2()[i]);
 				if (data.keynrs2[i]<0 &&  // couldn't find field!
-				    "BETWEEN".equalsIgnoreCase(meta.getKeyCondition()[i])   // 2 fields needed!
+				    "BETWEEN".equalsIgnoreCase(meta.getKeyCondition()[i])   // 2 fields needed! //$NON-NLS-1$
 				   )
 				{
-					throw new KettleStepException("Field ["+meta.getStreamKeyField2()[i]+"] is required and couldn't be found!");
+					throw new KettleStepException(Messages.getString("DatabaseLookup.ERROR0001.FieldRequired3.Exception")+meta.getStreamKeyField2()[i]+Messages.getString("DatabaseLookup.ERROR0001.FieldRequired4.Exception")); //$NON-NLS-1$ //$NON-NLS-2$
 				}
-				if (log.isDebug()) logDebug("Field ["+meta.getStreamKeyField1()[i]+"] has nr. "+data.keynrs[i]);
+				if (log.isDebug()) logDebug(Messages.getString("DatabaseLookup.Log.FieldHasIndex1")+meta.getStreamKeyField1()[i]+Messages.getString("DatabaseLookup.Log.FieldHasIndex2")+data.keynrs[i]); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			
 			data.nullif = new Value[meta.getReturnValueField().length];
 
-			debug = "first row: get value fieldnrs";
+			debug = "first row: get value fieldnrs"; //$NON-NLS-1$
 			for (int i=0;i<meta.getReturnValueField().length;i++)
 			{
 				data.nullif[i] = new Value(meta.getReturnValueNewName()[i], meta.getReturnValueDefaultType()[i]);
@@ -141,18 +141,18 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 					}
 					else
 					{
-						throw new KettleStepException("Field ["+meta.getTableKeyField()[i]+"] couldn't be found in the table!");
+						throw new KettleStepException(Messages.getString("DatabaseLookup.ERROR0001.FieldRequired5.Exception")+meta.getTableKeyField()[i]+Messages.getString("DatabaseLookup.ERROR0001.FieldRequired6.Exception")); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 			}
 			else
 			{
-				throw new KettleStepException("Unable to determine the fields of table ["+meta.getTablename()+"]");
+				throw new KettleStepException(Messages.getString("DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable")+meta.getTablename()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		
 		lu = new Row();
-		debug = "Adding values to lookup row";
+		debug = "Adding values to lookup row"; //$NON-NLS-1$
 		for (int i=0;i<meta.getStreamKeyField1().length;i++)
 		{
 			if (data.keynrs[i]>=0)
@@ -177,23 +177,23 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		
 		if (add==null)
 		{
-			if (log.isRowLevel()) logRowlevel("Added "+meta.getStreamKeyField1().length+" values to lookup row: "+lu);
+			if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow1")+meta.getStreamKeyField1().length+Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow2")+lu); //$NON-NLS-1$ //$NON-NLS-2$
             
-			debug = "setValuesLookup()";
+			debug = "setValuesLookup()"; //$NON-NLS-1$
 			data.db.setValuesLookup(lu);
-			debug = "getLookup()";
+			debug = "getLookup()"; //$NON-NLS-1$
 			add=data.db.getLookup(meta.isFailingOnMultipleResults());
 			cache_now=true;
 		}
 				
-		debug = "add null values to result";
+		debug = "add null values to result"; //$NON-NLS-1$
 		if (add==null) // nothing was found, unknown code: add default values
 		{
 			if (meta.isEatingRowOnLookupFailure())
 			{
 				return false;
 			}
-			if (log.isRowLevel()) logRowlevel("No result found after database lookup! (add defaults)");
+			if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.NoResultsFoundAfterLookup")); //$NON-NLS-1$
 			add=new Row();
 			for (int i=0;i<meta.getReturnValueField().length;i++)
 			{
@@ -211,10 +211,10 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		}
         else
         {
-        	if (log.isRowLevel()) logRowlevel("Found result after database lookup: "+add);
+        	if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.FoundResultsAfterLookup")+add); //$NON-NLS-1$
         }
 
-		debug = "Store result in cache";
+		debug = "Store result in cache"; //$NON-NLS-1$
 		// Store in cache if we need to!
 		if (meta.isCached() && cache_now)
 		{
@@ -241,13 +241,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			}
 		} 
 	
-		debug = "Add values to resulting row...";
+		debug = "Add values to resulting row..."; //$NON-NLS-1$
 		for (int i=0;i<add.size();i++)
 		{
 			row.addValue( add.getValue(i) );
 		}
 
-		debug = "end of lookupValues()";
+		debug = "end of lookupValues()"; //$NON-NLS-1$
 		
 		return true;
 	}
@@ -265,7 +265,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			return false;
 		}
 
-		if (log.isRowLevel()) logRowlevel("Got row from previous step: "+r);
+		if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.GotRowFromPreviousStep")+r); //$NON-NLS-1$
 
 		try
 		{
@@ -273,13 +273,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			{
 				// add new values to the row in rowset[0].
 				putRow(r);       // copy row to output rowset(s);
-				if (log.isRowLevel()) logRowlevel("Wrote row to next step: "+r);
-				if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
+				if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.WroteRowToNextStep")+r); //$NON-NLS-1$
+				if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead); //$NON-NLS-1$
 			}
 		}
 		catch(KettleException e)
 		{
-			logError("Because of an error, this step can't continue: "+e.getMessage());
+			logError(Messages.getString("DatabaseLookup.ERROR003.UnexpectedErrorDuringProcessing")+e.getMessage()); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -300,13 +300,13 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			try
 			{
 				data.db.connect();
-				logBasic("Connected to database...");
+				logBasic(Messages.getString("DatabaseLookup.Log.ConnectedToDatabase")); //$NON-NLS-1$
 				
 				return true;
 			}
 			catch(Exception e)
 			{
-				logError("An error cause this step to stop: "+e.toString());
+				logError(Messages.getString("DatabaseLookup.ERROR0004.UnexpectedErrorDuringInit")+e.toString()); //$NON-NLS-1$
 				data.db.disconnect();
 			}
 		}
@@ -328,16 +328,16 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 	// Run is were the action happens!
 	public void run()
 	{
-		logBasic("Starting to run...");
+		logBasic(Messages.getString("DatabaseLookup.Log.StartingToRun")); //$NON-NLS-1$
 		
 		try
 		{
-			logBasic("Connected to database...");	
+			logBasic(Messages.getString("DatabaseLookup.Log.ConnectedToDatabase2"));	 //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("An error cause this step to stop: "+e.getMessage());
+			logError(Messages.getString("DatabaseLookup.ERROR003.UnexpectedErrorDuringProcessing2")+e.getMessage()); //$NON-NLS-1$
 			logError(e.toString());
 			setErrors(1);
 			stopAll();

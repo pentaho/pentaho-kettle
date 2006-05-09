@@ -1,4 +1,4 @@
-package be.ibridge.kettle.trans.step.addsequence;
+package be.ibridge.kettle.trans.step.uniquerows;
 
 import be.ibridge.kettle.i18n.BaseMessages;
 
