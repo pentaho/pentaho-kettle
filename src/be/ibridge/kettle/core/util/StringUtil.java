@@ -35,9 +35,10 @@ public class StringUtil
 	 *            the close delimiter for variables.
 	 * @return the string with the substitution applied.
 	 */
-	public static String substitute(String aString, Map variablesValues,
-			String open, String close)
+	public static String substitute(String aString, Map variablesValues, String open, String close)
 	{
+		if (aString==null) return null;
+		
 		StringBuffer buffer = new StringBuffer();
 
 		String rest = aString;
