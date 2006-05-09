@@ -355,7 +355,6 @@ public class RepositoryExplorerDialog extends Dialog
                                 xml+="</dragdrop>"+Const.CR; //$NON-NLS-1$
                                 event.data=xml;
                                 event.doit=true;
-
                             }
     					}
     				}
