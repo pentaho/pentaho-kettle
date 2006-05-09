@@ -328,6 +328,26 @@ public class RepositoryExplorerDialog extends Dialog
     							}
     						}
                             else
+    						if (cat==ITEM_CATEGORY_JOB)
+    						{
+                                debug="drag set: drag around job"; //$NON-NLS-1$
+    							RepositoryDirectory repdir = getDirectory(ti[0]);
+    							if (repdir!=null)
+    							{
+    								//
+    								// Pass info as a piece of XML
+    								//
+    								String xml=XMLHandler.getXMLHeader();
+    								xml+="<dragdrop>"+Const.CR; //$NON-NLS-1$
+    								xml+="  "+XMLHandler.addTagValue("directory", repdir.getPath()); //$NON-NLS-1$ //$NON-NLS-2$
+    								xml+="  "+XMLHandler.addTagValue("job", ti[0].getText()); //$NON-NLS-1$ //$NON-NLS-2$
+    								xml+="</dragdrop>"+Const.CR; //$NON-NLS-1$
+    								
+    								event.data = xml;
+    								event.doit = true;
+    							}
+    						}
+                            else
                             {
                                 debug="do nothing"; //$NON-NLS-1$
                                 String xml=XMLHandler.getXMLHeader();
@@ -384,9 +404,8 @@ public class RepositoryExplorerDialog extends Dialog
         				{
                             debug="Get category"; //$NON-NLS-1$
         					int category = getItemCategory(ti);
-        					if (category==ITEM_CATEGORY_TRANSFORMATION_DIRECTORY ||
-        					    category==ITEM_CATEGORY_TRANSFORMATION
-        					   )
+
+        					if (category==ITEM_CATEGORY_TRANSFORMATION_DIRECTORY || category==ITEM_CATEGORY_TRANSFORMATION)
         					{
                                 debug="Get directory"; //$NON-NLS-1$
         						RepositoryDirectory repdir = getDirectory(ti);
@@ -403,6 +422,28 @@ public class RepositoryExplorerDialog extends Dialog
                                         MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK );
                                         mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnableToMove.Message")); //$NON-NLS-1$
                                         mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnableToMove.Title")); //$NON-NLS-1$
+                                        mb.open();
+                                    }
+        						}
+        					}
+                            else
+        					if (category==ITEM_CATEGORY_JOB_DIRECTORY || category==ITEM_CATEGORY_JOB)
+        					{
+                                debug="Get directory"; //$NON-NLS-1$
+        						RepositoryDirectory repdir = getDirectory(ti);
+        						if (repdir!=null)
+        						{
+        							event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
+        							
+        							if (moveJob((String)event.data, repdir))
+        							{
+        								refreshTree();
+        							}
+                                    else
+                                    {
+                                        MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK );
+                                        mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnableToMove.Message")); //$NON-NLS-1$
+                                        mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnableToMove.Title")); //$NON-NLS-1$
                                         mb.open();
                                     }
         						}
@@ -1207,8 +1248,6 @@ public class RepositoryExplorerDialog extends Dialog
 		return retval;
 	}
 	
-    // TODO: add moveJob function too...
-    //
 	public boolean moveTransformation(String xml, RepositoryDirectory repdir)
 	{
         debug = "Move transformation"; //$NON-NLS-1$
@@ -1251,6 +1290,50 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		return retval;
 	}
+	
+	public boolean moveJob(String xml, RepositoryDirectory repdir)
+	{
+        debug = "Move Job"; //$NON-NLS-1$
+        
+		boolean retval=false;
+		
+		try
+		{
+            debug = "parse xml"; //$NON-NLS-1$
+			Document doc = XMLHandler.loadXMLString(xml);
+			
+			String dirname = XMLHandler.getTagValue(doc, "dragdrop", "directory"); //$NON-NLS-1$ //$NON-NLS-2$
+			String jobname = XMLHandler.getTagValue(doc, "dragdrop", "job"); //$NON-NLS-1$ //$NON-NLS-2$
+            
+            if (dirname!=null && jobname!=null)
+            {
+                debug = "dirname="+dirname+", jobname="+jobname; //$NON-NLS-1$ //$NON-NLS-2$
+    
+    			// OK, find this transformation...
+    			RepositoryDirectory fromdir = rep.getDirectoryTree().findDirectory(dirname);
+    			if (fromdir!=null)
+    			{
+                    debug = "fromdir found: move job!"; //$NON-NLS-1$
+    				rep.moveJob(jobname, fromdir.getID(), repdir.getID());
+    				retval=true;
+    			}
+    			else
+    			{
+    				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+    				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.ErrorMoving.Message")+dirname+"]"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+    				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.ErrorMoving.Title")); //$NON-NLS-1$
+    				mb.open();
+    			}
+            }
+		}
+		catch(Exception dbe)
+		{
+			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnexpectedError.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+		}
+		
+		return retval;
+	}
+
 
 	public boolean renameJob(String name, RepositoryDirectory repdir)
 	{
