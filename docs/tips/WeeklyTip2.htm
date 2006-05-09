@@ -1,0 +1,49 @@
+<html>
+<Title>The Weekly Kettle Tip #2: Quick pointers</Title>
+<body>
+This weeks Kettle tip was not written by me or one of the Kettle developers. 
+It comes from people in Daytona Beach (FL) that have been using Kettle for a while now.  
+I'm reposting their experiences and pointers unchanged (with permission) in the hope 
+that it will help others.
+<hr>
+<h2>Pointers using Kettle.</h2>
+<h3>Setting</h3>
+We were new to using Kettle and want to use kettle as an ETL tool to load a
+datawarehouse from 50 different sources.
+
+<h3>Mapping</h3>
+1st misconception - Assumed mapping meant mapping one field to another (i.e.
+pulling data from a source table and mapping it to a destination table). <br>
+To peform this type of Mapping use the Select Value Step (this allows you to
+extract data from source and pass it on to the successor step (i.e. map
+input field name to output field name)).
+<h3>Constant values</h3>
+Use of Constant Step - allows you to map a fixed value to an output step
+(i.e. say you have a field STATE and you want to put FL in each record in
+the destination table, you would use a constant step). <br>
+In the constant step you can map many constants/fixed values with one step.
+
+<h3>Table Output</h3>
+Not all field in the destination table have to have a value put into them.<br>
+The tool may give you warnings (in the validation step), but its not
+necessary to have every field in the destination have a value being passed
+it.
+<h3>Commit size</h3>
+To improve performance of transformations, add the value to the commit size
+in the table output step.<br><br>
+Example:<br>
+<br>
+If commit size is specified an appropriate size in the "Table Output" step,
+this will cause major boost to performance of a transformation.<br>
+We were testing with 5000 records, using the default size of 0, it took 160 seconds.<br>
+Increasing the size to 1000 made the process run in 3.5 seconds. <br>
+
+<br>
+<hr>
+<br>
+I hope you found these tips useful and if you have others, feel free to post them here, or send them over to me.<br>
+<br>
+Kind regards,<br>
+Matt<p>
+</body>
+</html>
