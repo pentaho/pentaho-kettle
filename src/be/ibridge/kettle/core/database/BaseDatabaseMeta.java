@@ -157,7 +157,7 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	 */
 	public void setDatabasePortNumberString(String databasePortNumberString)
 	{
-        getAttributes().put(BaseDatabaseMeta.ATTRIBUTE_PORT_NUMBER, databasePortNumberString);
+        if (databasePortNumberString!=null) getAttributes().put(BaseDatabaseMeta.ATTRIBUTE_PORT_NUMBER, databasePortNumberString);
 	}
 	
 	/**
