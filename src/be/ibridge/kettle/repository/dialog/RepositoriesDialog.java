@@ -335,8 +335,10 @@ public class RepositoriesDialog
 		wPassword.setLayoutData(fdPassword);
 
 		Composite compButtons = new Composite(shell, SWT.NONE);
-		compButtons.setLayout(new FillLayout());
-
+		FillLayout fillLayout = new FillLayout();
+		fillLayout.spacing=2*Const.MARGIN;
+		compButtons.setLayout(fillLayout);
+		
 		wOK=new Button(compButtons, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wNorep=new Button(compButtons, SWT.PUSH);
