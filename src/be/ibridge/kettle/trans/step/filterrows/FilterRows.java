@@ -44,12 +44,23 @@ public class FilterRows extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private synchronized boolean keepRow(Row row)
+	private synchronized boolean keepRow(Row row) throws KettleException
 	{
-		debug="before evaluate condition";
-		boolean ret=meta.getCondition().evaluate(row);
-        debug="after evaluate condition";
-		return ret;
+		try
+		{
+			debug="before evaluate condition";
+			boolean ret=meta.getCondition().evaluate(row);
+	        debug="after evaluate condition";
+			return ret;
+		}
+		catch(Exception e)
+		{
+			String message = "Unexpected error found in evaluation function : "+e.toString(); 
+			logError(message);
+			logError("Error occurred for row: "+row);
+			logError(Const.getStackTracker(e));
+			throw new KettleException(message, e);
+		}
 	}
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
