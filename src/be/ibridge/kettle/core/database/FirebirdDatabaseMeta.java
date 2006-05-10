@@ -103,6 +103,15 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	}
 
 	/**
+	 * @param tableName The table to be truncated.
+	 * @return The SQL statement to truncate a table: remove all rows from it without a transaction
+	 * No such luck for firebird, I'm afraid.
+	 */
+	public String getTruncateTableStatement(String tableName)
+	{
+	    return "DELETE FROM "+tableName;
+	}
+	/**
 	 * Generates the SQL statement to add a column to the specified table
 	 * @param tablename The table to add
 	 * @param v The column defined as a value
@@ -183,7 +192,7 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 					{
 						if (length>9)
 						{
-							retval+="INT64";
+							retval+="BIGINT";
 						}
 						else
 						{
