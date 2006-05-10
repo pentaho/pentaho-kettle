@@ -424,8 +424,8 @@ public class BaseStep extends Thread
 	public  long linesUpdated; // # lines updated in database (dimension)
 	public  long linesSkipped; // # lines passed without alteration (dimension)
 	
-	public  long get_sleeps;    // # total get sleep time in nano-seconds
-	public  long put_sleeps;    // # total put sleep time in nano-seconds
+	private  long nrGetSleeps;    // # total get sleep time in nano-seconds
+	private  long nrPutSleeps;    // # total put sleep time in nano-seconds
 
 	private boolean distributed;
 	private long errors;
@@ -494,8 +494,8 @@ public class BaseStep extends Thread
 		linesUpdated = 0L;
 		linesSkipped = 0L;
 				
-		get_sleeps=0L;
-		put_sleeps=0L;
+		nrGetSleeps=0L;
+		nrPutSleeps=0L;
 		
 		inputRowSets=null;
 		outputRowSets=null;
@@ -790,7 +790,7 @@ public class BaseStep extends Thread
 			
 			while(rs.isFull() && !stopped) 
 			{			
-				try{ sleep(sleeptime); } 
+				try{ if (sleeptime>0) sleep(0, sleeptime); else super.notifyAll(); } 
 				catch(Exception e) 
 				{
 					logError(Messages.getString("BaseStep.Log.ErrorInThreadSleeping")+e.toString());  //$NON-NLS-1$
@@ -798,8 +798,8 @@ public class BaseStep extends Thread
 					stopAll(); 
 					return; 
 				}
-				put_sleeps+=sleeptime;
-				if (sleeptime<500) sleeptime*=1.2; else sleeptime=500;
+				nrPutSleeps+=sleeptime;
+				if (sleeptime<100) sleeptime=((int)(sleeptime*1.2))+1; else sleeptime=100;
 			}
 		}
         
@@ -902,7 +902,7 @@ public class BaseStep extends Thread
 		sleeptime=transMeta.getSleepTimeFull();
 		while(rs.isFull() && !stopped) 
 		{			
-			try{ sleep(sleeptime); } 
+			try{ if (sleeptime>0) sleep(0, sleeptime); else super.notifyAll(); } 
 			catch(Exception e) 
 			{
 				logError(Messages.getString("BaseStep.Log.ErrorInThreadSleeping")+e.toString());  //$NON-NLS-1$
@@ -910,8 +910,8 @@ public class BaseStep extends Thread
 				stopAll(); 
 				return; 
 			}
-			put_sleeps+=sleeptime;
-			if (sleeptime<500) sleeptime*=1.2; else sleeptime=500;
+			nrPutSleeps+=sleeptime;
+			if (sleeptime<100) sleeptime=((int)(sleeptime*1.2))+1; else sleeptime=100;
 		}
 		if (stopped)
 		{
@@ -981,15 +981,16 @@ public class BaseStep extends Thread
 			if (switches>=inputRowSets.size()) // every n looks, wait a bit! Don't use too much CPU!
 			{
 				switches=0;
-				try { sleep(0, sleeptime); } catch(Exception e) 
+				try { if (sleeptime>0) sleep(0, sleeptime); else super.notifyAll(); } 
+				catch(Exception e) 
 				{ 
 					logError(Messages.getString("BaseStep.Log.SleepInterupted")+e.toString()); //$NON-NLS-1$
 					setErrors(1); 
 					stopAll(); 
 					return null; 
 				}
-				if (sleeptime<5000) sleeptime*=1.2; else sleeptime=5000; 
-				get_sleeps+=sleeptime;
+				if (sleeptime<100) sleeptime*=1.2; else sleeptime=100; 
+				nrGetSleeps+=sleeptime;
 			}
 		}
 		if (stopped) 
@@ -1043,14 +1044,15 @@ public class BaseStep extends Thread
 		RowSet in=(RowSet)inputRowSets.get(input_rowset_nr);
 		while (in.isEmpty() && !in.isDone() && !stopped) 
 		{
-			try { sleep(0, sleeptime); } catch(Exception e) 
+			try { if (sleeptime>0) sleep(0, sleeptime); else super.notifyAll(); } 
+			catch(Exception e) 
 			{
 				logError(Messages.getString("BaseStep.Log.SleepInterupted2",in.getOriginStepName())+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 				setErrors(1);
 				stopAll();
 				return null;
 			}
-			get_sleeps+=sleeptime;
+			nrGetSleeps+=sleeptime;
 		}  
 		
 		if (stopped)
@@ -1563,5 +1565,37 @@ public class BaseStep extends Thread
     
 	public List getInterestingFiles() {
 		return interestingFiles;
+	}
+
+	/**
+	 * @return Returns the total sleep time in ns in case nothing was found in an input buffer for this step.
+	 */
+	public long getNrGetSleeps()
+	{
+		return nrGetSleeps;
+	}
+
+	/**
+	 * @param nrGetSleeps the total sleep time in ns in case nothing was found in an input buffer for this step.
+	 */
+	public void setNrGetSleeps(long nrGetSleeps)
+	{
+		this.nrGetSleeps = nrGetSleeps;
+	}
+
+	/**
+	 * @return Returns the total sleep time in ns in case the output buffer was full for this step.
+	 */
+	public long getNrPutSleeps()
+	{
+		return nrPutSleeps;
+	}
+
+	/**
+	 * @param nrPutSleeps the total sleep time in ns in case the output buffer was full for this step.
+	 */
+	public void setNrPutSleeps(long nrPutSleeps)
+	{
+		this.nrPutSleeps = nrPutSleeps;
 	}
 }

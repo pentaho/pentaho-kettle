@@ -147,22 +147,21 @@ public class SpoonLog extends Composite
 		
 		sash.setLayout(new FillLayout());
 
-		final int FieldsCols=12;
-		final int FieldsRows=1;
-		
-		colinf=new ColumnInfo[FieldsCols];
-		colinf[ 0]=new ColumnInfo(Messages.getString("SpoonLog.Column.Stepname"),       ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
-		colinf[ 1]=new ColumnInfo(Messages.getString("SpoonLog.Column.Copynr"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
-		colinf[ 2]=new ColumnInfo(Messages.getString("SpoonLog.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
-		colinf[ 3]=new ColumnInfo(Messages.getString("SpoonLog.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
-		colinf[ 4]=new ColumnInfo(Messages.getString("SpoonLog.Column.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
-		colinf[ 5]=new ColumnInfo(Messages.getString("SpoonLog.Column.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
-		colinf[ 6]=new ColumnInfo(Messages.getString("SpoonLog.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
-		colinf[ 7]=new ColumnInfo(Messages.getString("SpoonLog.Column.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
-		colinf[ 8]=new ColumnInfo(Messages.getString("SpoonLog.Column.Active"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
-		colinf[ 9]=new ColumnInfo(Messages.getString("SpoonLog.Column.Time"),           ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
-		colinf[10]=new ColumnInfo(Messages.getString("SpoonLog.Column.Speed"),    ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
-		colinf[11]=new ColumnInfo(Messages.getString("SpoonLog.Column.PriorityBufferSizes"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true); //$NON-NLS-1$
+		colinf=new ColumnInfo[] {
+		  new ColumnInfo(Messages.getString("SpoonLog.Column.Stepname"),            ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		  new ColumnInfo(Messages.getString("SpoonLog.Column.Copynr"),              ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		  new ColumnInfo(Messages.getString("SpoonLog.Column.Read"),                ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		  new ColumnInfo(Messages.getString("SpoonLog.Column.Written"),             ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		  new ColumnInfo(Messages.getString("SpoonLog.Column.Input"),               ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		  new ColumnInfo(Messages.getString("SpoonLog.Column.Output"),              ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		  new ColumnInfo(Messages.getString("SpoonLog.Column.Updated"),             ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		  new ColumnInfo(Messages.getString("SpoonLog.Column.Errors"),              ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		  new ColumnInfo(Messages.getString("SpoonLog.Column.Active"),              ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		  new ColumnInfo(Messages.getString("SpoonLog.Column.Time"),                ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		  new ColumnInfo(Messages.getString("SpoonLog.Column.Speed"),               ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		  new ColumnInfo(Messages.getString("SpoonLog.Column.PriorityBufferSizes"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		  new ColumnInfo(Messages.getString("SpoonLog.Column.Sleeps"),              ColumnInfo.COLUMN_TYPE_TEXT, false, true)  //$NON-NLS-1$
+		};
 		
 		colinf[ 1].setAllignement(SWT.RIGHT);
 		colinf[ 2].setAllignement(SWT.RIGHT);
@@ -175,13 +174,14 @@ public class SpoonLog extends Composite
 		colinf[ 9].setAllignement(SWT.RIGHT);
 		colinf[10].setAllignement(SWT.RIGHT);
 		colinf[11].setAllignement(SWT.RIGHT);
+		colinf[12].setAllignement(SWT.RIGHT);
 
 		wFields=new TableView(sash, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
 							  colinf, 
-							  FieldsRows,  
+							  1,  
 							  true, // readonly!
-							  null,
+							  null, // Listener
 							  spoon.props
 							  );
 		
@@ -666,7 +666,7 @@ public class SpoonLog extends Composite
 					fields[10] = ""+Math.floor((lapsed*10) + 0.5)/10; //$NON-NLS-1$
 					fields[11] = lapsed==0?"-":""+( in_speed>out_speed?in_speed:out_speed ); //$NON-NLS-1$ //$NON-NLS-2$
 					fields[12] = rt.isAlive()?""+rt.getPriority()+"/"+rt.rowsetInputSize()+"/"+rt.rowsetOutputSize():"-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-					
+					fields[13] = ""+rt.getNrGetSleeps()+"/"+rt.getNrPutSleeps();
 					// Anti-flicker: if nothing has changed, don't change it on the screen!
 					for (int f=1;f<fields.length;f++)
 					{
