@@ -1521,7 +1521,7 @@ public class TransMeta implements XMLInterface
             if (monitor != null) monitor.beginTask(Messages.getString("TransMeta.Monitor.SavingTransformationTask.Title") + getPathAndName(), nrWorks); //$NON-NLS-1$
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingOfTransformationStarted")); //$NON-NLS-1$
 
-            if (monitor.isCanceled()) throw new KettleDatabaseException();
+            if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException();
             
             // Before we start, make sure we have a valid transformation ID!
             // Two possibilities:
@@ -1551,7 +1551,7 @@ public class TransMeta implements XMLInterface
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingNotes")); //$NON-NLS-1$
             for (int i = 0; i < nrNotes(); i++)
             {
-                if (monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
+                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
 
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.SavingNoteTask.Title") + (i + 1) + "/" + nrNotes()); //$NON-NLS-1$ //$NON-NLS-2$
                 NotePadMeta ni = getNote(i);
@@ -1563,7 +1563,7 @@ public class TransMeta implements XMLInterface
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingDatabaseConnections")); //$NON-NLS-1$
             for (int i = 0; i < nrDatabases(); i++)
             {
-                if (monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
+                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
 
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
                 DatabaseMeta ci = getDatabase(i);
@@ -1579,7 +1579,7 @@ public class TransMeta implements XMLInterface
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingSteps")); //$NON-NLS-1$
             for (int i = 0; i < nrSteps(); i++)
             {
-                if (monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
+                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
                 
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.SavingStepTask.Title") + (i + 1) + "/" + nrSteps()); //$NON-NLS-1$ //$NON-NLS-2$
                 StepMeta stepMeta = getStep(i);
@@ -1592,7 +1592,7 @@ public class TransMeta implements XMLInterface
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingHops")); //$NON-NLS-1$
             for (int i = 0; i < nrTransHops(); i++)
             {
-                if (monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
+                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
 
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.SavingHopTask.Title") + (i + 1) + "/" + nrTransHops()); //$NON-NLS-1$ //$NON-NLS-2$
                 TransHopMeta hi = getTransHop(i);
@@ -1607,7 +1607,7 @@ public class TransMeta implements XMLInterface
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingDependencies")); //$NON-NLS-1$
             for (int i = 0; i < nrDependencies(); i++)
             {
-                if (monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
+                if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
 
                 TransDependency td = getDependency(i);
                 td.saveRep(rep, getID());
