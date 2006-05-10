@@ -84,22 +84,38 @@ public class TextFileInput extends BaseStep implements StepInterface
 			while (c >= 0)
 			{
 				c = reader.read();
-				if (c == '\n' || c == '\r')
-				{
-					if (format.equalsIgnoreCase("DOS")) 
+				
+				if (!format.equalsIgnoreCase("mixed"))
+				{	// no mixed mode
+					if (c == '\n' || c == '\r')
 					{
-						c = reader.read(); // skip \n and \r
-					     if( c != '\r' && c != '\n' ) 
-					     { 
-					       // make sure its really a linefeed or cariage return
-					       // raise an error this is not a DOS file 
-					       // so we have pulled a character from the next line
-					       throw new KettleFileException("DOS format was specified but only a single line feed character was found, not 2");
-					     }
+						if (format.equalsIgnoreCase("DOS")) 
+						{
+							c = reader.read(); // skip \n and \r
+						     if( c != '\r' && c != '\n' ) 
+						     { 
+						       // make sure its really a linefeed or cariage return
+						       // raise an error this is not a DOS file 
+						       // so we have pulled a character from the next line
+						       throw new KettleFileException("DOS format was specified but only a single line feed character was found, not 2");					    		 
+						     }
+						}
+						return line.toString();
 					}
-					return line.toString();
+					if (c >= 0) line.append((char) c);	
 				}
-				if (c >= 0) line.append((char) c);
+				else // in mixed mode we suppose the LF is the last char and CR is ignored
+					// not for MAC OS 9 but works for Mac OS X. Mac OS 9 can use UNIX-Format
+				{
+					if (c == '\n')
+					{
+						return line.toString();
+					}
+					else if (c != '\r')
+					{
+						if (c >= 0) line.append((char) c);
+					}
+				}
 			}
 		}
 		catch(KettleFileException e)

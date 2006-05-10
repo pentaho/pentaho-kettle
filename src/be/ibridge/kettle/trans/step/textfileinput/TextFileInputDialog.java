@@ -1157,6 +1157,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         props.setLook(wFormat);
         wFormat.add("DOS");
         wFormat.add("Unix");
+        wFormat.add("mixed");
         wFormat.select(0);
         wFormat.addModifyListener(lsMod);
         fdFormat=new FormData();

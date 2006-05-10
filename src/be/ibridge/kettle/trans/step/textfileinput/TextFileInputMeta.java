@@ -139,7 +139,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     /** The name of the field in the output containing the row number */
     private String             rowNumberField;
 
-    /** The file format: DOS or UNIX */
+    /** The file format: DOS or UNIX or mixed*/
     private String             fileFormat;
 
     /** The maximum number or lines to read */
