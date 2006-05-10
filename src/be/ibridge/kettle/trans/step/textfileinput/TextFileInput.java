@@ -721,53 +721,21 @@ public class TextFileInput extends BaseStep implements StepInterface
 					{
 						linesInput++;
 						lineNumberInFile++;
-						boolean filterOK = true;
-
 						// Filter row?
-						for (int f = 0; f < meta.getFilter().length && filterOK; f++)
-						{
-							TextFileFilter filter = meta.getFilter()[f];
-							if (filter.getFilterString() != null && filter.getFilterString().length() > 0)
-							{
-								int from = filter.getFilterPosition();
-								if (from >= 0)
-								{
-									int to = from + filter.getFilterString().length();
-									debug = "verify filter : get substring(" + from + ", " + to + ") line length=" + line.length();
-									if (line.length() >= from && line.length() >= to)
-									{
-										String sub = line.substring(filter.getFilterPosition(), to);
-										if (sub.equalsIgnoreCase(filter.getFilterString()))
-										{
-											filterOK = false; // skip this one!
-										}
-									}
-								}
-								else
-								// anywhere on the line
-								{
-									int idx = line.indexOf(filter.getFilterString());
-									if (idx >= 0)
-									{
-										filterOK = false;
-									}
-								}
-
-								if (!filterOK)
-								{
-									if (filter.isFilterLastLine())
-									{
-										data.doneReading = true;
-									}
-									repeats++; // grab another line, this one got filtered
-								}
-							}
-						}
-
+						boolean isFilterLastLine = false;
+						boolean filterOK = checkFilterRow(line, isFilterLastLine);
 						if (filterOK)
 						{
 							// logRowlevel("LINE READ: "+line);
 							data.lineBuffer.add(new TextFileLine(line, lineNumberInFile, data.file));
+						} 
+						else
+						{
+							if (isFilterLastLine)
+							{
+								data.doneReading = true;
+							}
+							repeats++; // grab another line, this one got filtered
 						}
 					}
 					else
@@ -1002,6 +970,52 @@ public class TextFileInput extends BaseStep implements StepInterface
 		return retval;
 	}
 
+	/**
+	 * Check if the line should be taken.
+	 * @param line
+	 * @param isFilterLastLine (dummy input param, only set when return value is false)
+	 * @return true when the line should be taken (when false, isFilterLastLine will be set)
+	 */
+	private boolean checkFilterRow(String line, boolean isFilterLastLine) {
+		boolean filterOK=true;
+		for (int f = 0; f < meta.getFilter().length && filterOK; f++)
+		{
+			TextFileFilter filter = meta.getFilter()[f];
+			if (filter.getFilterString() != null && filter.getFilterString().length() > 0)
+			{
+				int from = filter.getFilterPosition();
+				if (from >= 0)
+				{
+					int to = from + filter.getFilterString().length();
+					debug = "verify filter : get substring(" + from + ", " + to + ") line length=" + line.length();
+					if (line.length() >= from && line.length() >= to)
+					{
+						String sub = line.substring(filter.getFilterPosition(), to);
+						if (sub.equalsIgnoreCase(filter.getFilterString()))
+						{
+							filterOK = false; // skip this one!
+						}
+					}
+				}
+				else
+				// anywhere on the line
+				{
+					int idx = line.indexOf(filter.getFilterString());
+					if (idx >= 0)
+					{
+						filterOK = false;
+					}
+				}
+
+				if (!filterOK)
+				{
+					isFilterLastLine=filter.isFilterLastLine();
+				}
+			}
+		}
+		return filterOK;
+	}
+
 	private void handleMissingFiles() throws KettleException
 	{
 		debug = "Required files";
@@ -1155,8 +1169,31 @@ public class TextFileInput extends BaseStep implements StepInterface
 					// logRowlevel("LINE READ: "+line);
 					linesInput++;
 					lineNumberInFile++;
-					data.lineBuffer.add(new TextFileLine(line, lineNumberInFile, data.file)); // Store it in the
-					// line buffer...
+					// when there is no header, check the filter for the first line
+					if (!meta.hasHeader())
+					{
+						// Filter row?
+						boolean isFilterLastLine = false;
+						boolean filterOK = checkFilterRow(line, isFilterLastLine);
+						if (filterOK)
+						{
+							data.lineBuffer.add(new TextFileLine(line, lineNumberInFile, data.file)); // Store it in the
+							// line buffer...
+						} 
+						else
+						{
+							if (isFilterLastLine)
+							{
+								data.doneReading = true;
+							}
+							bufferSize++; // grab another line, this one got filtered
+						}
+					}
+					else //there is a header, so don´t checkFilterRow
+					{
+						data.lineBuffer.add(new TextFileLine(line, lineNumberInFile, data.file)); // Store it in the
+						// line buffer...
+					}
 				}
 				else
 				{
