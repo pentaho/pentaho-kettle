@@ -212,6 +212,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
 		fdbJobname.top   = new FormAttachment(wName, margin*2);
 		fdbJobname.right = new FormAttachment(100, 0);
 		wbJobname.setLayoutData(fdbJobname);
+		wbJobname.setEnabled(rep!=null);
 
 		wJobname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wJobname);
@@ -528,6 +529,8 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
     					{
     						wJobname.setText(jobname);
     						wDirectory.setText(sod.getDirectory().getPath());
+    						// Copy it to the job entry name too...
+    						wName.setText(wName.getText());
     					}
                     }
 				}

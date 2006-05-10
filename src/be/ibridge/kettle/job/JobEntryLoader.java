@@ -88,10 +88,10 @@ public class JobEntryLoader
 
 	public boolean readNatives()
     {
-		for (int i=1;i< JobEntryInterface.type_desc.length;i++)
+		for (int i=1;i< JobEntryInterface.typeCode.length;i++)
         {
-			String id             = JobEntryInterface.type_desc[i];
-			String long_desc  	  = JobEntryInterface.type_desc_long[i];
+			String id             = JobEntryInterface.typeCode[i];
+			String long_desc  	  = JobEntryInterface.typeDesc[i];
 			String tooltip        = JobEntryInterface.type_tooltip_desc[i];
 			String iconfile       = Const.IMAGE_DIRECTORY + JobEntryInterface.icon_filename[i];
 			String classname      = JobEntryInterface.type_classname[i].getName();

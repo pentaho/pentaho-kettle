@@ -19,6 +19,7 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -49,6 +50,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
+import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleJobException;
@@ -80,12 +82,13 @@ public class ChefLog extends Composite
 	private Text   wText;
 	private Button wStart;	
 	private Button wRefresh;
+	private Button wError;
 	private Button wClear;
     private Button wLog;
 	private Button wAuto;
 
-	private FormData fdText, fdSash, fdStart, fdRefresh, fdClear, fdLog, fdAuto; 
-	private SelectionListener lsStart, lsRefresh, lsClear, lsLog;
+	private FormData fdText, fdSash, fdStart, fdRefresh, fdError, fdClear, fdLog, fdAuto; 
+	private SelectionListener lsStart, lsRefresh, lsError, lsClear, lsLog;
 	private StringBuffer message;
 
 	private FileInputStream in;
@@ -164,6 +167,9 @@ public class ChefLog extends Composite
 		wRefresh = new Button(this, SWT.PUSH);
 		wRefresh.setText("&Refresh log");
 
+		wError = new Button(this, SWT.PUSH);
+		wError.setText(Messages.getString("ChefLog.Button.ShowErrorLines")); //$NON-NLS-1$
+
 		wClear = new Button(this, SWT.PUSH);
 		wClear.setText("&Clear log");
 
@@ -176,11 +182,12 @@ public class ChefLog extends Composite
 
 		fdStart    = new FormData(); 
 		fdRefresh  = new FormData(); 
+		fdError    = new FormData(); 
 		fdClear    = new FormData(); 
 		fdLog      = new FormData(); 
         fdAuto     = new FormData(); 
 
-		fdStart.left   = new FormAttachment(15, 0);  
+		fdStart.left   = new FormAttachment(0, 10);  
 		fdStart.bottom = new FormAttachment(100, 0);
 		wStart.setLayoutData(fdStart);
 
@@ -188,7 +195,11 @@ public class ChefLog extends Composite
 		fdRefresh.bottom = new FormAttachment(100, 0);
 		wRefresh.setLayoutData(fdRefresh);
 
-		fdClear.left   = new FormAttachment(wRefresh, 10);  
+		fdError.left   = new FormAttachment(wRefresh, 10);  
+		fdError.bottom = new FormAttachment(100, 0);
+		wError.setLayoutData(fdError);
+
+		fdClear.left   = new FormAttachment(wError, 10);  
 		fdClear.bottom = new FormAttachment(100, 0);
 		wClear.setLayoutData(fdClear);
 
@@ -275,6 +286,14 @@ public class ChefLog extends Composite
 			}
 		};
 
+		lsError = new SelectionAdapter() 
+		{
+			public void widgetSelected(SelectionEvent e) 
+			{
+				showErrors();
+			}
+		};
+
 		lsClear = new SelectionAdapter() 
 		{
 			public void widgetSelected(SelectionEvent e) 
@@ -293,6 +312,7 @@ public class ChefLog extends Composite
 		
 		wRefresh.addSelectionListener(lsRefresh);
 		wStart.addSelectionListener(lsStart);
+		wError.addSelectionListener(lsError);
 		wClear.addSelectionListener(lsClear);
 		wLog.addSelectionListener(lsLog);
 
@@ -579,5 +599,61 @@ public class ChefLog extends Composite
     {
         return job!=null;
     }
+    
+	public void showErrors()
+	{
+		String all = wText.getText();
+		ArrayList err = new ArrayList();
+		
+		int i = 0;
+		int startpos = 0;
+		int crlen = Const.CR.length();
+		
+		while (i<all.length()-crlen)
+		{
+			if (all.substring(i, i+crlen).equalsIgnoreCase(Const.CR))
+			{
+				String line = all.substring(startpos, i);
+				if (line.toUpperCase().indexOf(Messages.getString("ChefLog.System.ERROR"))>=0 || //$NON-NLS-1$
+				    line.toUpperCase().indexOf(Messages.getString("ChefLog.System.EXCEPTION"))>=0 //$NON-NLS-1$
+				    ) 
+				{
+					err.add(line);
+				}
+				// New start of line
+				startpos=i+crlen;
+			}
+			
+			i++;
+		}
+		String line = all.substring(startpos);
+		if (line.toUpperCase().indexOf(Messages.getString("ChefLog.System.ERROR"))>=0 || //$NON-NLS-1$
+		    line.toUpperCase().indexOf(Messages.getString("ChefLog.System.EXCEPTION"))>=0 //$NON-NLS-1$
+		    ) 
+		{
+			err.add(line);
+		}
+		
+		if (err.size()>0)
+		{
+			String err_lines[] = new String[err.size()];
+			for (i=0;i<err_lines.length;i++) err_lines[i] = (String)err.get(i);
+			
+			EnterSelectionDialog esd = new EnterSelectionDialog(shell, chef.props, err_lines, Messages.getString("SpoonLog.Dialog.ErrorLines.Title"), Messages.getString("SpoonLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+			line = esd.open();
+			if (line!=null)
+			{
+				for (i=0;i<chef.getJobMeta().nrJobEntries();i++)
+				{
+					JobEntryCopy entryCopy = chef.getJobMeta().getJobEntry(i);
+					if (line.indexOf( entryCopy.getName() ) >=0 )
+					{
+						chef.editChefGraphEntry( entryCopy );
+					}
+				}
+				// System.out.println("Error line selected: "+line);
+			}
+		}
+	}
 
 }

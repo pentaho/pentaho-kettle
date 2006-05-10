@@ -178,7 +178,7 @@ public class Chef
     public static final String STRING_BASE_JOBENTRIES   = "Base job-entry types";
     public static final String STRING_PLUGIN_JOBENTRIES = "Plugin job-entry types";
     
-	public static final String STRING_SPECIAL      = JobEntryInterface.type_desc_long[JobEntryInterface.TYPE_JOBENTRY_SPECIAL];
+	public static final String STRING_SPECIAL      = JobEntryInterface.typeDesc[JobEntryInterface.TYPE_JOBENTRY_SPECIAL];
 	
 	private static final String APPL_TITLE      = "Chef : The Job Editor";
 
@@ -945,7 +945,7 @@ public class Chef
 				}
 				else
 				{
-					newChefGraphEntry(name);
+					newChefGraphEntry(name, true);
 				}
 			}
 			else  // Double-click on entry: edit it!
@@ -1904,7 +1904,7 @@ public class Chef
 	}
 
 
-	public JobEntryCopy newChefGraphEntry(String type_desc)
+	public JobEntryCopy newChefGraphEntry(String type_desc, boolean openit)
 	{
         JobEntryLoader jobLoader = JobEntryLoader.getInstance();
         JobPlugin jobPlugin = null; 
@@ -1926,8 +1926,27 @@ public class Chef
                 JobEntryInterface jei = jobLoader.getJobEntryClass(jobPlugin); 
 				jei.setName(entry_name);
 		
-                JobEntryDialogInterface d = jei.getDialog(shell,jei,jobMeta,entry_name,rep);
-				if (d.open()!=null)
+				if (openit)
+				{
+	                JobEntryDialogInterface d = jei.getDialog(shell,jei,jobMeta,entry_name,rep);
+					if (d.open()!=null)
+					{
+						JobEntryCopy jge = new JobEntryCopy(log);
+						jge.setEntry(jei);
+						jge.setLocation(50,50);
+						jge.setNr(0);
+						jobMeta.addJobEntry(jge);
+						addUndoNew(new JobEntryCopy[] { jge }, new int[] { jobMeta.indexOfJobEntry(jge) });
+						refreshGraph();
+						refreshTree();
+						return jge;
+					}
+					else
+					{
+						return null;
+					}
+				}
+				else
 				{
 					JobEntryCopy jge = new JobEntryCopy(log);
 					jge.setEntry(jei);
@@ -1938,10 +1957,6 @@ public class Chef
 					refreshGraph();
 					refreshTree();
 					return jge;
-				}
-				else
-				{
-					return null;
 				}
 			}
 			else
@@ -2002,7 +2017,7 @@ public class Chef
 	{
 		JobEntryTrans je = new JobEntryTrans();
 		je.setType(type);
-		String basename = JobEntryTrans.type_desc_long[type]; 
+		String basename = JobEntryTrans.typeDesc[type]; 
 		int nr = jobMeta.generateJobEntryNameNr(basename);
 		je.setName(basename+" "+nr);
 

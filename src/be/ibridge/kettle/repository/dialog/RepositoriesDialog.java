@@ -22,16 +22,23 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -54,7 +61,6 @@ import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryMeta;
 import be.ibridge.kettle.repository.UserInfo;
 import be.ibridge.kettle.trans.StepLoader;
-import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to select, create or update a repository and log in to it.
@@ -81,6 +87,9 @@ public class RepositoriesDialog
 	private Label        wlPassword;
 	private Text         wPassword;
 	private FormData     fdlPassword, fdPassword;
+	
+	private Canvas       wCanvas;
+	private FormData     fdCanvas;
 
 	private Button wOK, wNorep, wCancel;
 	private Listener lsOK, lsNorep, lsCancel;
@@ -115,7 +124,7 @@ public class RepositoriesDialog
 		steploader = StepLoader.getInstance();
 		this.toolName = toolName;
 		
-		shell = new Shell(disp, SWT.DIALOG_TRIM | SWT.RESIZE | SWT.MAX | SWT.MIN );
+		shell = new Shell(disp, SWT.DIALOG_TRIM | SWT.MAX | SWT.MIN );
 		shell.setText(Messages.getString("RepositoriesDialog.Dialog.Main.Title")); //$NON-NLS-1$
 
 		log=LogWriter.getInstance();
@@ -148,6 +157,31 @@ public class RepositoriesDialog
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
+		final Image logo = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+Const.FILE_SEPARATOR+"PentahoLogo.png"));
+		final Rectangle bounds = logo.getBounds();
+		shell.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent arg0) { logo.dispose(); } });
+		logo.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+		logo.getImageData().setAlpha(0,0,0);
+		
+		wCanvas = new Canvas(shell, SWT.NO_BACKGROUND);
+		fdCanvas = new FormData();
+		fdCanvas.left   = new FormAttachment(0, 0); 
+		fdCanvas.right  = new FormAttachment(0, bounds.width);
+		fdCanvas.top    = new FormAttachment(0, 0);
+		fdCanvas.bottom = new FormAttachment(0, bounds.height);
+		wCanvas.setLayoutData(fdCanvas);
+
+		wCanvas.addPaintListener(new PaintListener()
+			{
+				public void paintControl(PaintEvent pe)
+				{
+					pe.gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+					pe.gc.fillRectangle(0,0, bounds.width, bounds.height);
+					pe.gc.drawImage(logo, 0, 0);
+				}
+			}
+		);
+		
 		// Kettle welcome
 		wlKettle = new Label(shell, SWT.CENTER);
 		wlKettle.setText(Messages.getString("RepositoriesDialog.Label.Welcome")+toolName); //$NON-NLS-1$
@@ -158,7 +192,7 @@ public class RepositoriesDialog
         fdlKettle=new FormData();
 		fdlKettle.left = new FormAttachment(0, 0);
 		fdlKettle.right= new FormAttachment(100, 0);
-		fdlKettle.top  = new FormAttachment(0, margin);
+		fdlKettle.top  = new FormAttachment(wCanvas, margin);
 		wlKettle.setLayoutData(fdlKettle);
 
 		// Repository selector
@@ -290,15 +324,27 @@ public class RepositoriesDialog
 		fdPassword.top    = new FormAttachment(wUsername, margin);
 		wPassword.setLayoutData(fdPassword);
 
-		wOK=new Button(shell, SWT.PUSH);
+		Composite compButtons = new Composite(shell, SWT.NONE);
+		compButtons.setLayout(new FillLayout());
+
+		wOK=new Button(compButtons, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
-		wNorep=new Button(shell, SWT.PUSH);
+		wNorep=new Button(compButtons, SWT.PUSH);
 		wNorep.setText(Messages.getString("RepositoriesDialog.Button.NoRepository")); //$NON-NLS-1$
-		wCancel=new Button(shell, SWT.PUSH);
+		wCancel=new Button(compButtons, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		
+		compButtons.layout();
+		compButtons.pack();
+		
+		// Position the composite at the bottom in the center of the shell...
+		FormData fdComp = new FormData();
+		int left = (shell.getBounds().width - compButtons.getBounds().width)/2;
+		fdComp.left = new FormAttachment(0, left); 
+		fdComp.top  = new FormAttachment(wPassword, margin*3);
+		compButtons.setLayoutData(fdComp);
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wNorep, wCancel }, margin, wPassword);
-
+		
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		lsNorep    = new Listener() { public void handleEvent(Event e) { norep(); } };
@@ -338,7 +384,8 @@ public class RepositoriesDialog
 		wPassword.addSelectionListener( lsDef );
 
 		getData();
-		
+
+		/**
 		WindowProperty winprop = props.getScreen(shell.getText());
 		if (winprop != null)
 		{
@@ -348,6 +395,9 @@ public class RepositoriesDialog
 		{
 			shell.pack();
 		}
+		*/
+		
+		shell.pack();
 	
 		shell.open();
 		while (!shell.isDisposed())

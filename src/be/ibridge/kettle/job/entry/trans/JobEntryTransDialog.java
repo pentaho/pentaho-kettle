@@ -212,6 +212,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		fdbTransname.top   = new FormAttachment(wName, margin*2);
 		fdbTransname.right = new FormAttachment(100, 0);
 		wbTransname.setLayoutData(fdbTransname);
+		wbTransname.setEnabled(rep!=null);
 
 		wTransname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTransname);
@@ -550,6 +551,8 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
     					{
     						wTransname.setText(transname);
     						wDirectory.setText(sod.getDirectory().getPath());
+    						// Copy it to the job entry name too...
+    						wName.setText(wName.getText());
     					}
                     }
 				}

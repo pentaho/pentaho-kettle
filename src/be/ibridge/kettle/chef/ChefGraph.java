@@ -655,7 +655,7 @@ public class ChefGraph extends Canvas
 					{
 						log.logDebug(toString(), "New entry of type ["+entry+"]"); 
 						
-						jge = chef.newChefGraphEntry(entry);
+						jge = chef.newChefGraphEntry(entry, false);
 						if (jge != null) 
 						{
 							jge.setLocation(p.x, p.y);

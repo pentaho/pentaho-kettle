@@ -63,12 +63,12 @@ public interface JobEntryInterface
     public static final int TYPE_JOBENTRY_SFTP           = 11;
     public static final int TYPE_JOBENTRY_HTTP           = 12;
 
-	public final static String type_desc[] =
+	public final static String typeCode[] =
 		{
 			"-", "TRANS", "JOB", "SHELL", "MAIL", "SQL", "FTP", "TABLE_EXISTS", "FILE_EXISTS", "EVAL", "SPECIAL", "SFTP", "HTTP"
 		};
 
-	public final static String type_desc_long[] =
+	public final static String typeDesc[] =
 		{
 			"-", "Transformation", "Job", "Shell", "Mail", "SQL", "FTP files", "Table exists", "File exists", "Evaluation", "Special entries", "SFTP files", "Get a file using HTTP"
 		};
@@ -143,9 +143,9 @@ public interface JobEntryInterface
 	public void    saveRep(Repository rep, long id_job) throws KettleException;
 	
 	public int     getType();
+	public String  getTypeCode();
 	public String  getTypeDesc();
-	public void    setType(int type);
-	
+
 	public boolean isStart();
 	public boolean isDummy();
 	public Object  clone();

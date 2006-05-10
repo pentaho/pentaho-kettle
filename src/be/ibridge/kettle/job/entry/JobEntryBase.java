@@ -91,14 +91,24 @@ public class JobEntryBase implements Cloneable
 		return type;
 	}
 	
+	public String getTypeCode()
+	{
+		return JobEntryInterface.typeCode[type];
+	}
+	
+	public static final String getTypeCode(int type)
+	{
+		return JobEntryInterface.typeCode[type];
+	}
+	
 	public String getTypeDesc()
 	{
-		return JobEntryInterface.type_desc[type];
+		return JobEntryInterface.typeDesc[type];
 	}
 	
 	public static final String getTypeDesc(int type)
 	{
-		return JobEntryInterface.type_desc[type];
+		return JobEntryInterface.typeDesc[type];
 	}
 	
 	public void setName(String name)
@@ -201,7 +211,7 @@ public class JobEntryBase implements Cloneable
 		retval.append("      ").append(XMLHandler.addTagValue("description",       getDescription()));
 //		retval.append("      "+XMLHandler.addTagValue("type",              getTypeDesc()));
         if (type!=JobEntryInterface.TYPE_JOBENTRY_NONE)
-            retval.append("      ").append(XMLHandler.addTagValue("type",              getTypeDesc()));
+            retval.append("      ").append(XMLHandler.addTagValue("type",              getTypeCode()));
 	
 		return retval.toString();
 	}	
@@ -233,7 +243,7 @@ public class JobEntryBase implements Cloneable
 	{
 		try
 		{
-			setID( rep.insertJobEntry(id_job, getName(), getDescription(), getTypeDesc()) );
+			setID( rep.insertJobEntry(id_job, getName(), getDescription(), getTypeCode()) );
 		}
 		catch(KettleDatabaseException dbe)
 		{

@@ -4536,9 +4536,9 @@ public class Repository
 	public void updateJobEntryTypes() throws KettleDatabaseException
 	{
 		// We should only do an update if something has changed...
-		for (int i = 1; i < JobEntryInterface.type_desc.length; i++)
+		for (int i = 1; i < JobEntryInterface.typeCode.length; i++)
 		{
-			long id = getJobEntryTypeID(JobEntryInterface.type_desc[i]);
+			long id = getJobEntryTypeID(JobEntryInterface.typeCode[i]);
 			if (id < 0) // Not found, we need to add this one...
 			{
 				// We need to add this one ...
@@ -4546,8 +4546,8 @@ public class Repository
 
 				Row table = new Row();
 				table.addValue(new Value("ID_JOBENTRY_TYPE", id));
-				table.addValue(new Value("CODE", JobEntryInterface.type_desc[i]));
-				table.addValue(new Value("DESCRIPTION", JobEntryInterface.type_desc_long[i]));
+				table.addValue(new Value("CODE", JobEntryInterface.typeCode[i]));
+				table.addValue(new Value("DESCRIPTION", JobEntryInterface.typeDesc[i]));
 
 				database.prepareInsert(table, "R_JOBENTRY_TYPE");
 

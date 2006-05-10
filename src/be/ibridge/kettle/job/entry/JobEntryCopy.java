@@ -208,7 +208,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 			
 			// OK, the entry is saved.
 			// Get the entry type...
-			long id_jobentry_type = rep.getJobEntryTypeID( entry.getTypeDesc() );
+			long id_jobentry_type = rep.getJobEntryTypeID( entry.getTypeCode() );
 			
 			// Oops, not found: update the repository!
 			if (id_jobentry_type<0)
@@ -216,7 +216,7 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 			    rep.updateJobEntryTypes();
 			    
 			    // Try again!
-			    id_jobentry_type = rep.getJobEntryTypeID( entry.getTypeDesc() );
+			    id_jobentry_type = rep.getJobEntryTypeID( entry.getTypeCode() );
 			}
 			
 			// Save the entry copy..
@@ -389,14 +389,14 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 	public static final int getType(String dsc)
 	{
 		if (dsc!=null) 
-		for (int i=0;i<JobEntryInterface.type_desc.length;i++)
+		for (int i=0;i<JobEntryInterface.typeCode.length;i++)
 		{
-			if (JobEntryInterface.type_desc[i].equalsIgnoreCase(dsc)) return i; 
+			if (JobEntryInterface.typeCode[i].equalsIgnoreCase(dsc)) return i; 
 		}
 		// Try the long description!
-		for (int i=0;i<JobEntryInterface.type_desc_long.length;i++)
+		for (int i=0;i<JobEntryInterface.typeDesc.length;i++)
 		{
-			if (JobEntryInterface.type_desc_long[i].equalsIgnoreCase(dsc)) return i; 
+			if (JobEntryInterface.typeDesc[i].equalsIgnoreCase(dsc)) return i; 
 		}
 		
 		return JobEntryInterface.TYPE_JOBENTRY_NONE;
@@ -404,9 +404,9 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 	
 	public static final String getTypeDesc(int ty)
 	{
-		if (ty>0 && ty<JobEntryInterface.type_desc.length) return JobEntryInterface.type_desc[ty];
+		if (ty>0 && ty<JobEntryInterface.typeCode.length) return JobEntryInterface.typeCode[ty];
 		
-		return JobEntryInterface.type_desc[0]; 
+		return JobEntryInterface.typeCode[0]; 
 	}
 
 	public void setSelected(boolean sel)

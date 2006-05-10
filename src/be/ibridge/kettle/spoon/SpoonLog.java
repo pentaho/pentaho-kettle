@@ -42,7 +42,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Table;
@@ -94,7 +93,6 @@ public class SpoonLog extends Composite
 	private ColumnInfo[] colinf;	
 	private TableView    wFields;
 	
-	private Label  wlOnlyActive;
 	private Button wOnlyActive;
 
 	private Text   wText;
@@ -107,7 +105,7 @@ public class SpoonLog extends Composite
     private long   lastUpdateView;
     private long   lastUpdateLog;
 
-	private FormData fdText, fdSash, fdStart, fdPreview, fdError, fdClear, fdLog, fdlOnlyActive, fdOnlyActive; 
+	private FormData fdText, fdSash, fdStart, fdPreview, fdError, fdClear, fdLog, fdOnlyActive; 
 	
 	private boolean running, preview;
 	public  boolean preview_shown = false;
@@ -199,9 +197,9 @@ public class SpoonLog extends Composite
 		wClear.setText(Messages.getString("SpoonLog.Button.ClearLog")); //$NON-NLS-1$
 		wLog = new Button(this, SWT.PUSH);
 		wLog.setText(Messages.getString("SpoonLog.Button.LogSettings")); //$NON-NLS-1$
-		wlOnlyActive=new Label(this, SWT.RIGHT);
-		wlOnlyActive.setText(Messages.getString("SpoonLog.Button.ShowOnlyActiveSteps")); //$NON-NLS-1$
+
 		wOnlyActive=new Button(this, SWT.CHECK);
+		wOnlyActive.setText(Messages.getString("SpoonLog.Button.ShowOnlyActiveSteps")); //$NON-NLS-1$
 
 		fdStart    = new FormData(); 
 		fdPreview  = new FormData(); 
@@ -209,7 +207,7 @@ public class SpoonLog extends Composite
 		fdClear    = new FormData(); 
 		fdLog      = new FormData(); 
 
-		fdStart.left   = new FormAttachment(15, 0);  
+		fdStart.left   = new FormAttachment(0, 10);  
 		fdStart.bottom = new FormAttachment(100, 0);
 		wStart.setLayoutData(fdStart);
 
@@ -229,16 +227,10 @@ public class SpoonLog extends Composite
 		fdLog.bottom = new FormAttachment(100, 0);
 		wLog.setLayoutData(fdLog);
 
-        spoon.props.setLook(wlOnlyActive);
-		fdlOnlyActive=new FormData();
-		fdlOnlyActive.left  = new FormAttachment(wLog, 10);
-		fdlOnlyActive.top   = new FormAttachment(wLog, 0, SWT.CENTER);
-		wlOnlyActive.setLayoutData(fdlOnlyActive);
-
         spoon.props.setLook(wOnlyActive);
 		fdOnlyActive=new FormData();
-		fdOnlyActive.left  = new FormAttachment(wlOnlyActive, Const.MARGIN);
-		fdOnlyActive.top   = new FormAttachment(wLog, 0, SWT.CENTER);
+		fdOnlyActive.left   = new FormAttachment(wLog, Const.MARGIN);
+		fdOnlyActive.bottom = new FormAttachment(100, 0);
 		wOnlyActive.setLayoutData(fdOnlyActive);
 		wOnlyActive.addSelectionListener(new SelectionAdapter()
 		{
