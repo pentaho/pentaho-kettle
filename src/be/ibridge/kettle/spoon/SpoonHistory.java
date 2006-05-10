@@ -289,18 +289,18 @@ public class SpoonHistory extends Composite
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
                                 String batchID = row.getString("ID_BATCH", "");
                                 if(batchID != null)
-                                	item.setText( 1, batchID);           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( 2, row.getString("STATUS", ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( 3, row.getString("LINES_READ", ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( 4, row.getString("LINES_WRITTEN", ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( 5, row.getString("LINES_UPDATED", ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( 6, row.getString("LINES_INPUT", ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( 7, row.getString("LINES_OUTPUT", ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( 8, row.getString("ERRORS", ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText( 9, row.getString("STARTDATE", ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText(10, row.getString("ENDDATE", ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText(11, row.getString("LOGDATE", ""));           //$NON-NLS-1$ //$NON-NLS-2$
-                                item.setText(12, row.getString("DEPDATE", ""));   //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 1, batchID);           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 2, Const.NVL( row.getString("STATUS", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 3, Const.NVL( row.getString("LINES_READ", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 4, Const.NVL( row.getString("LINES_WRITTEN", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 5, Const.NVL( row.getString("LINES_UPDATED", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 6, Const.NVL( row.getString("LINES_INPUT", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 7, Const.NVL( row.getString("LINES_OUTPUT", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 8, Const.NVL( row.getString("ERRORS", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText( 9, Const.NVL( row.getString("STARTDATE", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText(10, Const.NVL( row.getString("ENDDATE", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText(11, Const.NVL( row.getString("LOGDATE", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
+                                item.setText(12, Const.NVL( row.getString("DEPDATE", ""), ""));   //$NON-NLS-1$ //$NON-NLS-2$
                                 String replayDate = row.getString("REPLAYDATE", ""); //$NON-NLS-1$ //$NON-NLS-2$
                                 if(replayDate == null)
                                 	replayDate = Const.NULL_STRING;
