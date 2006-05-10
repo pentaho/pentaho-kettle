@@ -57,22 +57,33 @@ public class WindowProperty
 	
 	public void setShell(Shell shell)
 	{
+		setShell(shell, false);
+	}
+	
+	public void setShell(Shell shell, boolean onlyPosition)
+	{
 		boolean sized=false;
 		
-		shell.setMaximized(maximized);
+		if (!onlyPosition)
+		{
+			shell.setMaximized(maximized);
+		}
 		Rectangle r = rectangle;
 		if (r!=null && r.x>=0 && r.y>=0 && r.width>=0 && r.height>=0)
 		{
-			if (r.x>0 && r.y>0) shell.setSize(r.width, r.height);
+			if (r.x>0 && r.y>0) if (!onlyPosition) shell.setSize(r.width, r.height);
 			if (r.width>0 && r.height>0) shell.setLocation(r.x, r.y);
 			
 			sized=true;
 		}
 		
-		if (!sized)
+		if (!onlyPosition)
 		{
-			// shell.pack();
-			shell.layout();
+			if (!sized)
+			{
+				// shell.pack();
+				shell.layout();
+			}
 		}
         
         // Sometimes the size of the shell is WAY too great!
@@ -100,7 +111,10 @@ public class WindowProperty
         if (resizex || resizey)
         {
             // Make the shell smaller
-            shell.setSize(shRect.width, shRect.height);
+        	if (!onlyPosition)
+        	{
+        		shell.setSize(shRect.width, shRect.height);
+        	}
             
             // re-set the position
             if (resizex) shLoc.x=0;
@@ -174,4 +188,5 @@ public class WindowProperty
 	{
 		return ((WindowProperty)obj).getName().equalsIgnoreCase(name);
 	}
+
 }

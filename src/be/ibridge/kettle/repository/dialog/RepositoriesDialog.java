@@ -34,13 +34,11 @@ import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -63,6 +61,7 @@ import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryMeta;
 import be.ibridge.kettle.repository.UserInfo;
 import be.ibridge.kettle.trans.StepLoader;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
  * This dialog allows you to select, create or update a repository and log in to it.
@@ -166,10 +165,11 @@ public class RepositoriesDialog
 		wCanvas = new Canvas(shell, SWT.NO_BACKGROUND);
 		fdCanvas = new FormData();
 		fdCanvas.left   = new FormAttachment(0, 0); 
-		fdCanvas.right  = new FormAttachment(0, bounds.width);
+		fdCanvas.right  = new FormAttachment(100, 0);
 		fdCanvas.top    = new FormAttachment(0, 0);
 		fdCanvas.bottom = new FormAttachment(0, bounds.height);
 		wCanvas.setLayoutData(fdCanvas);
+		wCanvas.setSize(bounds.width, bounds.height);
 
 		wCanvas.addPaintListener(new PaintListener()
 			{
@@ -334,30 +334,15 @@ public class RepositoriesDialog
 		fdPassword.top    = new FormAttachment(wUsername, margin);
 		wPassword.setLayoutData(fdPassword);
 
-		Composite compButtons = new Composite(shell, SWT.NONE);
-		FillLayout fillLayout = new FillLayout();
-		fillLayout.spacing=2*Const.MARGIN;
-		compButtons.setLayout(fillLayout);
-		props.setLook(compButtons);
-		
-		wOK=new Button(compButtons, SWT.PUSH);
+		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
-		wNorep=new Button(compButtons, SWT.PUSH);
+		wNorep=new Button(shell, SWT.PUSH);
 		wNorep.setText(Messages.getString("RepositoriesDialog.Button.NoRepository")); //$NON-NLS-1$
-		wCancel=new Button(compButtons, SWT.PUSH);
+		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		
-		compButtons.layout();
-		compButtons.pack();
-		
-		// Position the composite at the bottom in the center of the shell...
-		FormData fdComp = new FormData();
-		int left = (shell.getBounds().width - compButtons.getBounds().width)/2;
-		fdComp.left = new FormAttachment(0, left); 
-		fdComp.top  = new FormAttachment(wPassword, margin*3);
-		compButtons.setLayoutData(fdComp);
-
-		
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wNorep, wCancel }, Const.MARGIN, null);
+				
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		lsNorep    = new Listener() { public void handleEvent(Event e) { norep(); } };
@@ -397,21 +382,16 @@ public class RepositoriesDialog
 		wPassword.addSelectionListener( lsDef );
 
 		getData();
-
-		/**
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop != null)
-		{
-			winprop.setShell(shell);
-		}
-		else
-		{
-			shell.pack();
-		}
-		*/
 		
 		shell.pack();
+		shell.setSize(bounds.width, shell.getBounds().height+wOK.getBounds().height+30);
 	
+		WindowProperty winprop = props.getScreen(shell.getText());
+		if (winprop!=null)
+		{
+			winprop.setShell(shell, true); // Only keep the position!
+		}
+
 		shell.open();
 		while (!shell.isDisposed())
 		{
