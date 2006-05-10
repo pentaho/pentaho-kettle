@@ -81,7 +81,7 @@ public class RepositoriesDialog
 	private FormData     fdlRepository, fdRepository, fdnRepository, fdeRepository, fddRepository;
 
 	private Label        wlUsername;
-	private CCombo       wUsername;
+	private Text         wUsername;
 	private FormData     fdlUsername, fdUsername;
 
 	private Label        wlPassword;
@@ -297,7 +297,7 @@ public class RepositoriesDialog
 		fdlUsername.right= new FormAttachment(middle, -margin);
 		fdlUsername.top  = new FormAttachment(wdRepository, margin);
 		wlUsername.setLayoutData(fdlUsername);
-		wUsername = new CCombo(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wUsername = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
  		props.setLook(wUsername);
 		fdUsername = new FormData();
 		fdUsername.left = new FormAttachment(middle, 0); 
@@ -573,6 +573,7 @@ public class RepositoriesDialog
         }
 	}
 	
+	/*
 	public void fillUsernames()
 	{
 		String repname = wRepository.getText();
@@ -602,6 +603,7 @@ public class RepositoriesDialog
 			}
 		}
 	}
+	*/
 	
 	public RepositoryMeta getRepository()
 	{
