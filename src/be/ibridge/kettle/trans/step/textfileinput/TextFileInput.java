@@ -508,9 +508,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 		return r;
 	}
 
-	public static final Value convertValue(String pol, String field_name, int field_type, String field_format, int field_length, int field_precision,
-			String num_group, String num_decimal, String num_currency, String nullif, String ifNull, int trim_type, DecimalFormat ldf, DecimalFormatSymbols ldfs,
-			SimpleDateFormat ldaf, DateFormatSymbols ldafs) throws Exception
+	public static final Value convertValue( String pol, String field_name, int field_type, String field_format, 
+			                                int field_length, int field_precision, String num_group, String num_decimal, 
+			                                String num_currency, String nullif, String ifNull, int trim_type, 
+			                                DecimalFormat ldf, DecimalFormatSymbols ldfs, 
+			                                SimpleDateFormat ldaf, DateFormatSymbols ldafs
+			                               ) throws Exception
 	{
 		Value value = new Value(field_name, field_type); // build a value!
 
