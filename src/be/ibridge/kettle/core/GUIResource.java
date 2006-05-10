@@ -65,6 +65,7 @@ public class GUIResource
     private Image     imageStart;
     private Image     imageDummy;
     private Image     imageSpoon;
+    private Image     imagePentaho;
     
     private Image     imageSplash;
 
@@ -157,32 +158,6 @@ public class GUIResource
         if (fontGraph  !=null) fontGraph  .dispose();
         if (fontNote   !=null) fontNote   .dispose();
         if (fontFixed  !=null) fontFixed  .dispose();
-        
-        // Images
-        /*
-        Enumeration en = imagesStepsSmall.elements();
-        while (en.hasMoreElements())
-        {
-            Image im = (Image) en.nextElement();
-            im.dispose();
-        }
-
-        en = imagesSteps.elements();
-        while (en.hasMoreElements())
-        {
-            Image im = (Image) en.nextElement();
-            im.dispose();
-        }
-        
-        imageHop.dispose();
-        imageBol.dispose();
-        imageConnection.dispose();
-        imageCredits.dispose();
-        imageKettle.dispose();
-        imageStart.dispose();
-        imageDummy.dispose();
-        imageSpoon.dispose();
-        */
     }
     
     /**
@@ -268,6 +243,7 @@ public class GUIResource
         imageDummy       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "DUM.png"));
         imageSpoon       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoon32.png"));
         imageSplash      = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_splash.png"));
+        imagePentaho     = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "PentahoLogo.png"));
     }
 
     /**
@@ -546,6 +522,14 @@ public class GUIResource
     }
 
     /**
+     * @return Returns the image Pentaho.
+     */
+    public Image getImagePentaho ()
+    {
+        return imagePentaho;
+    }
+
+    /**
      * @return Returns the imagesSteps.
      */
     public Hashtable getImagesSteps()
@@ -576,14 +560,4 @@ public class GUIResource
     {
         return imageSplash;
     }
-
-    /**
-     * @param imageSplash The imageSplash to set.
-     */
-    public void setImageSplash(Image imageSplash)
-    {
-        this.imageSplash = imageSplash;
-    }
-   
-    
 }

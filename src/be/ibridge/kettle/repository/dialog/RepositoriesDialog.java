@@ -124,7 +124,7 @@ public class RepositoriesDialog
 		steploader = StepLoader.getInstance();
 		this.toolName = toolName;
 		
-		shell = new Shell(disp, SWT.DIALOG_TRIM | SWT.MAX | SWT.MIN );
+		shell = new Shell(disp, SWT.DIALOG_TRIM | SWT.MAX | SWT.MIN | SWT.RESIZE );
 		shell.setText(Messages.getString("RepositoriesDialog.Dialog.Main.Title")); //$NON-NLS-1$
 
 		log=LogWriter.getInstance();
@@ -154,14 +154,13 @@ public class RepositoriesDialog
 		shell.setText(Messages.getString("RepositoriesDialog.Label.SelectRepository")); //$NON-NLS-1$
         shell.setImage(GUIResource.getInstance().getImageSpoon());
 
-		int middle = props.getMiddlePct();
+		int middle = 20;
 		int margin = Const.MARGIN;
+		int right  = 30;
 
-		final Image logo = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+Const.FILE_SEPARATOR+"PentahoLogo.png"));
+		final Image logo = GUIResource.getInstance().getImagePentaho();
 		final Rectangle bounds = logo.getBounds();
 		shell.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent arg0) { logo.dispose(); } });
-		logo.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-		logo.getImageData().setAlpha(0,0,0);
 		
 		wCanvas = new Canvas(shell, SWT.NO_BACKGROUND);
 		fdCanvas = new FormData();
@@ -191,7 +190,7 @@ public class RepositoriesDialog
         wlKettle.setFont(f);
         fdlKettle=new FormData();
 		fdlKettle.left = new FormAttachment(0, 0);
-		fdlKettle.right= new FormAttachment(100, 0);
+		fdlKettle.right= new FormAttachment(100, -right);
 		fdlKettle.top  = new FormAttachment(wCanvas, margin);
 		wlKettle.setLayoutData(fdlKettle);
 
@@ -213,7 +212,7 @@ public class RepositoriesDialog
 
 		// Button positions...
 		fddRepository = new FormData();		
-		fddRepository.right= new FormAttachment(100, 0);
+		fddRepository.right= new FormAttachment(100, -right);
 		fddRepository.top  = new FormAttachment(wlKettle, 20);
 		wdRepository.setLayoutData(fddRepository);
 
@@ -302,7 +301,7 @@ public class RepositoriesDialog
  		props.setLook(wUsername);
 		fdUsername = new FormData();
 		fdUsername.left = new FormAttachment(middle, 0); 
-		fdUsername.right= new FormAttachment(100, 0);
+		fdUsername.right= new FormAttachment(100, -right);
 		fdUsername.top  = new FormAttachment(wdRepository, margin);
 		wUsername.setLayoutData(fdUsername);
 
@@ -320,7 +319,7 @@ public class RepositoriesDialog
 		wPassword.setEchoChar('*');
 		fdPassword = new FormData();
 		fdPassword.left   = new FormAttachment(middle, 0); 
-		fdPassword.right  = new FormAttachment(100, 0);
+		fdPassword.right  = new FormAttachment(100, -right);
 		fdPassword.top    = new FormAttachment(wUsername, margin);
 		wPassword.setLayoutData(fdPassword);
 
