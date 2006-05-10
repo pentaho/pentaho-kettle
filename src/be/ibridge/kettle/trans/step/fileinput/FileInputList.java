@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.util.StringUtil;
 
 public class FileInputList {
 	private List files = new ArrayList();
@@ -29,12 +30,12 @@ public class FileInputList {
 		return buffer.toString();
 	}
 
-	public static String[] createFilePathList(String[] fileName,
-			String[] fileMask, String[] fileRequired) {
-		List fileList = createFileList(fileName, fileMask, fileRequired)
-				.getFiles();
+	public static String[] createFilePathList(String[] fileName, String[] fileMask, String[] fileRequired)
+	{
+		List fileList = createFileList(fileName, fileMask, fileRequired).getFiles();
 		String[] filePaths = new String[fileList.size()];
-		for (int i = 0; i < filePaths.length; i++) {
+		for (int i = 0; i < filePaths.length; i++)
+		{
 			filePaths[i] = ((File) fileList.get(i)).getPath();
 		}
 		return filePaths;
@@ -45,8 +46,8 @@ public class FileInputList {
 		FileInputList fileInputList = new FileInputList();
 
 		// Replace possible environment variables...
-		final String realfile[] = Const.replEnv(fileName);
-		final String realmask[] = Const.replEnv(fileMask);
+		final String realfile[] = StringUtil.environmentSubstitute(fileName);
+		final String realmask[] = StringUtil.environmentSubstitute(fileMask);
 
 		for (int i = 0; i < realfile.length; i++) {
 			final String onefile = realfile[i];

@@ -88,6 +88,22 @@ public class StringUtil
 		aString = substituteUnix(aString, systemProperties);
 		return aString;
 	}
+	
+	/**
+	 * Replaces environment variables in an array of strings.<p>
+	 * See also: environmentSubstitute(String string)
+	 * @param string The array of strings that wants its variables to be replaced.
+	 * @return the array with the environment variables replaced.
+	 */
+	public static final String[] environmentSubstitute(String string[])
+	{
+		String retval[] = new String[string.length];
+		for (int i = 0; i < string.length; i++)
+		{
+			retval[i] = environmentSubstitute(string[i]);
+		}
+		return retval;
+	}
 
 	/**
 	 * Substitutes variables in <code>aString</code>. Variables are of the

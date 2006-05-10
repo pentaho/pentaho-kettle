@@ -37,6 +37,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.Trans;
@@ -523,8 +524,8 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		String files[]=null;
 		
 		// Replace possible environment variables...
-		final String realfile[] = Const.replEnv(fileName);
-		final String realmask[] = Const.replEnv(fileMask);
+		final String realfile[] = StringUtil.environmentSubstitute(fileName);
+		final String realmask[] = StringUtil.environmentSubstitute(fileMask);
 		
 		ArrayList filelist = new ArrayList();
 		

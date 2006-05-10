@@ -1294,14 +1294,14 @@ public class Const
 	 * See also: replEnv(String string)
 	 * @param string The array of strings that wants its variables to be replaced.
 	 * @return the array with the environment variables replaced.
-	 * 
+	 * @deprecated please use StringUtil.environmentSubstitute now.
 	 */
 	public static final String[] replEnv(String string[])
 	{
 		String retval[] = new String[string.length];
 		for (int i = 0; i < string.length; i++)
 		{
-			retval[i] = replEnv(string[i]);
+			retval[i] = Const.replEnv(string[i]);
 		}
 		return retval;
 	}
