@@ -79,13 +79,13 @@ public class ScriptValues extends BaseStep implements StepInterface
 			String valname = row.getValue(i).getName();
 			if (meta.getScript().indexOf(valname)>=0)
 			{
-				if (log.isDetailed()) logDetailed("Value #"+i+" -  ["+valname+"] is used in the script.");
+				if (log.isDetailed()) logDetailed(Messages.getString("ScriptValues.Log.UsedValueName",String.valueOf(i),valname)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				data.fields_used[nr]=i;
 				nr++;
 			}
 		}
 		
-		if (log.isDetailed()) logDetailed("This script is using "+data.fields_used.length+" values from the input stream(s)");
+		if (log.isDetailed()) logDetailed(Messages.getString("ScriptValues.Log.UsingValuesFromInputStream",String.valueOf(data.fields_used.length))); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
 	
@@ -96,54 +96,54 @@ public class ScriptValues extends BaseStep implements StepInterface
 			// Determine the indexes of the fields used!
 			determineUsedFields(row);
 			
-			debug="first row";
+			debug=Messages.getString("ScriptValues.DebugMessage.FirstRow"); //$NON-NLS-1$
 			data.cx = Context.enter();
 			data.scope = data.cx.initStandardObjects(null);
 			
 			first = false;
 			Scriptable jsvalue = Context.toObject(this, data.scope);
-			data.scope.put("_step_", data.scope, jsvalue);
+			data.scope.put("_step_", data.scope, jsvalue); //$NON-NLS-1$
 			
 			//StringReader in = new StringReader(info.script);
 			
 			try
 			{
-				debug="compile reader";
-				data.script=data.cx.compileString(meta.getScript(), "script", 1, null);
+				debug=Messages.getString("ScriptValues.DebugMessage.CompileReader"); //$NON-NLS-1$
+				data.script=data.cx.compileString(meta.getScript(), "script", 1, null); //$NON-NLS-1$
 				// script=cx.compileReader(scope, in, "script", 1, null);
 			}
 			catch(Exception e)
 			{
-				logError("Couldn't compile javascript: "+e.toString());
+				logError(Messages.getString("ScriptValues.Log.CouldNotCompileJavascript")+e.toString()); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				return false;
 			}
 		}
 
-		debug="toObject row";
+		debug=Messages.getString("ScriptValues.DebugMessage.ToObjectRow"); //$NON-NLS-1$
 		Scriptable jsrow = Context.toObject(row, data.scope);
-		data.scope.put("row", data.scope, jsrow);
+		data.scope.put("row", data.scope, jsrow); //$NON-NLS-1$
 
-		debug="toObject row values";
+		debug=Messages.getString("ScriptValues.DebugMessage.ToObjectRowValues"); //$NON-NLS-1$
 		for (int i=0;i<data.fields_used.length;i++)
 		{
 			Value val = row.getValue(data.fields_used[i]); 
-			debug="toObject row value #"+i;
+			debug=Messages.getString("ScriptValues.DebugMessage.ToObjectRowValue")+i; //$NON-NLS-1$
 			Scriptable jsarg = Context.toObject(val, data.scope);
-			debug="toObject row value #"+i+" name==null?"+(val.getName()==null)+" row="+row;
+			debug=Messages.getString("ScriptValues.DebugMessage.ToObjectRowValue2")+i+" name==null?"+(val.getName()==null)+" row="+row; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			data.scope.put(val.getName(), data.scope, jsarg);
 		}
 		
-		debug="toObject Value class";
+		debug=Messages.getString("ScriptValues.DebugMessage.ToObjectValueClass"); //$NON-NLS-1$
 		Scriptable jsval = Context.toObject(Value.class, data.scope);
-		data.scope.put("Value", data.scope, jsval);
+		data.scope.put("Value", data.scope, jsval); //$NON-NLS-1$
 
 		try
 		{
 			//ScriptableObject.defineClass(scope, Value.class);
 
-			debug="exec";
+			debug=Messages.getString("ScriptValues.DebugMessage.Exec"); //$NON-NLS-1$
 			//result = cx.evaluateString(scope, info.script, "<cmd>", 1, null);
 			data.script.exec(data.cx, data.scope);
 			
@@ -166,16 +166,16 @@ public class ScriptValues extends BaseStep implements StepInterface
 		}
 		catch(JavaScriptException jse)
 		{
-            logError("Javascript error: "+jse.toString());
-            logError("Error stack trace: "+Const.CR+Const.getStackTracker(jse));
+            logError(Messages.getString("ScriptValues.Log.JavascriptError")+jse.toString()); //$NON-NLS-1$
+            logError(Messages.getString("ScriptValues.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(jse)); //$NON-NLS-1$
             setErrors(1);
 			stopAll();
 			return false;
 		}
 		catch(Exception e)
 		{
-			logError("Javascript error: "+e.toString());
-            logError("Error stack trace: "+Const.CR+Const.getStackTracker(e));
+			logError(Messages.getString("ScriptValues.Log.JavascriptError")+e.toString()); //$NON-NLS-1$
+            logError(Messages.getString("ScriptValues.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			return false;
@@ -193,7 +193,7 @@ public class ScriptValues extends BaseStep implements StepInterface
 
 		if (r==null)  // no more input to be expected...
 		{
-			debug="end";
+			debug=Messages.getString("ScriptValues.DebugMessage.End"); //$NON-NLS-1$
 			if (data.cx!=null) Context.exit();
 			setOutputDone();
 			return false;
@@ -202,14 +202,14 @@ public class ScriptValues extends BaseStep implements StepInterface
 		// add new values to the row.
 		if (!addValues(r))
 		{
-			debug="no more new values";
+			debug=Messages.getString("ScriptValues.DebugMessage.NoMoreNewValues"); //$NON-NLS-1$
 			if (data.cx!=null) Context.exit();
 			setOutputDone();  // signal end to receiver(s)
 			return false;
 		}
 		putRow(r);       // copy row to output rowset(s);
 			
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
+		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("ScriptValues.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
 		return true;
 	}
@@ -234,13 +234,13 @@ public class ScriptValues extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("ScriptValues.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
-            logError("Error stack trace: "+Const.CR+Const.getStackTracker(e));
+			logError(Messages.getString("ScriptValues.Log.UnexpectedeError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Messages.getString("ScriptValues.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 		}
