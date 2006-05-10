@@ -85,11 +85,7 @@ public class Row implements XMLInterface, Comparable, Serializable
 	 */
 	public Value getValue(int index)
 	{
-		if (index<list.size()){
-			return (Value)list.get(index);
-		} else {
-			return null;
-		}
+		return (Value)list.get(index);
 	}
 	
 	/**
@@ -175,9 +171,7 @@ public class Row implements XMLInterface, Comparable, Serializable
      */
     public void removeValue(int idx)
     {
-    	if (idx<list.size()){
-    		list.remove(idx);
-    	}
+        list.remove(idx);
     }
     
     /**
