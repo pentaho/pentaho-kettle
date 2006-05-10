@@ -350,7 +350,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		database = null;
 		commitSize = 0;
 		replaceFields    = true;
-		useHash        = true;
+		useHash        = false;
 		hashField   = "hashcode"; //$NON-NLS-1$
 
 		int nrkeys    = 0;
@@ -365,7 +365,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		}
 
 		technicalKeyField     = "technical /surrogate key field"; //$NON-NLS-1$
-		useAutoinc  = true;
+		useAutoinc  = false;
 	}
 
 	public Row getFields(Row r, String name, Row info)
