@@ -131,6 +131,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 						meta.getFieldDecimal()[i],
 						meta.getFieldCurrency()[i],
 						meta.getFieldDefault()[i],
+						"", // --> The default String value in case a field is empty.
 						TextFileInputMeta.TYPE_TRIM_BOTH,
 						data.df, data.dfs,
 						data.daf, data.dafs
@@ -170,6 +171,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 						meta.getFieldDecimal()[i],
 						meta.getFieldCurrency()[i],
 						meta.getFieldDefault()[i],
+						"", // --> The default String value in case a field is empty.
 						TextFileInputMeta.TYPE_TRIM_BOTH,
 						data.df, data.dfs,
 						data.daf, data.dafs
