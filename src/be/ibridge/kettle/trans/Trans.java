@@ -95,6 +95,8 @@ public class Trans
 	private String preview_steps[];
 	private int    preview_sizes[];
 
+	private boolean safeModeEnabled;
+
 	public class StepMetaDataCombi
 	{
 		public String stepname;
@@ -227,7 +229,10 @@ public class Trans
 		
 		if (transMeta.getName()==null)
 		{
-			log.logMinimal(toString(), Messages.getString("Trans.Log.DispacthingStartedForFilename",transMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
+			if (transMeta.getFilename()!=null)
+			{
+				log.logMinimal(toString(), Messages.getString("Trans.Log.DispacthingStartedForFilename",transMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
+			}
 		}
 		else
 		{
@@ -237,6 +242,11 @@ public class Trans
 		if (transMeta.getArguments()!=null)
 		{
 			log.logMinimal(toString(), Messages.getString("Trans.Log.NumberOfArgumentsDetected", String.valueOf(transMeta.getArguments().length) )); //$NON-NLS-1$
+		}
+		
+		if (isSafeModeEnabled())
+		{
+			log.logBasic(toString(), Messages.getString("Trans.Log.SafeModeIsEnabled",transMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		if (getReplayDate() != null) {
@@ -346,8 +356,12 @@ public class Trans
 
 					// Allocate the step
 					StepInterface step=combi.meta.getStep(stepMeta, data, c, transMeta, this);
-					combi.step = step;
 					
+					// Possibly, enable safe mode in the steps...
+					((BaseStep)step).setSafeModeEnabled(safeModeEnabled);
+
+					// Save the step too
+					combi.step = step;
 					
 					// Add to the bunch...
 					steps.add(combi);
@@ -395,6 +409,7 @@ public class Trans
 		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid=(StepMetaDataCombi)steps.get(i);
+			
 			if (sid.step.init(sid.meta, sid.data)) 
 			{
 				sid.data.setStatus(StepDataInterface.STATUS_IDLE);
@@ -1305,6 +1320,23 @@ public class Trans
 
 	public void setReplayDate(Date replayDate) {
 		this.replayDate = replayDate;
+	}
+
+	/**
+	 * Turn on safe mode during running: the transformation will run slower but with more checking enabled.
+	 * @param safeMode true for safe mode
+	 */
+	public void setSafeModeEnabled(boolean safeModeEnabled)
+	{
+		this.safeModeEnabled = safeModeEnabled;
+	}
+
+	/**
+	 * @return Returns true if the safe mode is enabled: the transformation will run slower but with more checking enabled
+	 */
+	public boolean isSafeModeEnabled()
+	{
+		return safeModeEnabled;
 	}
 
 }

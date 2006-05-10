@@ -468,7 +468,7 @@ public class BaseStep extends Thread
      * All too often people send in bugs when it is really the mixing of different types of rows 
      * that is causing the problem.
      */
-    private boolean extraCheckingEnabled;
+    private boolean safeModeEnabled;
     
     /**
      * This contains the first row received and will be the reference row. 
@@ -1030,38 +1030,46 @@ public class BaseStep extends Thread
 		nextInputStream(); // Look for the next input stream to get row from.
 
 		// OK, before we return the row, let's see if we need to check on mixing row compositions...
-		if (extraCheckingEnabled)
+		if (safeModeEnabled)
 		{
-			if (referenceRow==null)
-			{
-				referenceRow=new Row(row); // copy it!
-			}
-			else
-			{
-				// See if the row we got has the same layout as the reference row.
-				// First check the number of fields
-				if (referenceRow.size()!=row.size())
-				{
-					throw new RuntimeException("We detected rows with varying number of fields, this is not allowed in a transformation.  " +
-							"Check your settings. (first row contained "+referenceRow.size()+" elements, this one contains "+row.size()+" : "+row);
-				}
-				else
-				{
-					// Check field by field for the position of the names...
-					for (int i=0;i<referenceRow.size();i++)
-					{
-						String referenceName = referenceRow.getValue(i).getName();
-						String compareName = row.getValue(i).getName();
-						if (!referenceName.equalsIgnoreCase(compareName))
-						{
-							throw new RuntimeException("Field #"+i+" is not the same as the first row received: you're mixing rows with different layout! ("+referenceName+"!="+compareName+")");
-						}
-					}
-				}
-			}
+			safeModeChecking(row);
 		} // Extra checking
 		
 		return row;
+	}
+
+	private void safeModeChecking(Row row)
+	{
+		String saveDebug=debug;
+		debug="Safe mode checking";
+		if (referenceRow==null)
+		{
+			referenceRow=new Row(row); // copy it!
+		}
+		else
+		{
+			// See if the row we got has the same layout as the reference row.
+			// First check the number of fields
+			if (referenceRow.size()!=row.size())
+			{
+				throw new RuntimeException("We detected rows with varying number of fields, this is not allowed in a transformation.  " +
+						"Check your settings. (first row contained "+referenceRow.size()+" elements, this one contains "+row.size()+" : "+row);
+			}
+			else
+			{
+				// Check field by field for the position of the names...
+				for (int i=0;i<referenceRow.size();i++)
+				{
+					String referenceName = referenceRow.getValue(i).getName();
+					String compareName = row.getValue(i).getName();
+					if (!referenceName.equalsIgnoreCase(compareName))
+					{
+						throw new RuntimeException("Field #"+i+" is not the same as the first row received: you're mixing rows with different layout! ("+referenceName+"!="+compareName+")");
+					}
+				}
+			}
+		}
+		debug=saveDebug;
 	}
 
 	/**
@@ -1645,18 +1653,18 @@ public class BaseStep extends Thread
 	}
 
 	/**
-	 * @return Returns the extraCheckingEnabled.
+	 * @return Returns true is this step is running in safe mode, with extra checking enabled...
 	 */
-	public boolean isExtraCheckingEnabled()
+	public boolean isSafeModeEnabled()
 	{
-		return extraCheckingEnabled;
+		return safeModeEnabled;
 	}
 
 	/**
-	 * @param extraCheckingEnabled The extraCheckingEnabled to set.
+	 * @param safeModeEnabled set to true is this step has to be running in safe mode, with extra checking enabled...
 	 */
-	public void setExtraCheckingEnabled(boolean extraCheckingEnabled)
+	public void setSafeModeEnabled(boolean safeModeEnabled)
 	{
-		this.extraCheckingEnabled = extraCheckingEnabled;
+		this.safeModeEnabled = safeModeEnabled;
 	}
 }
