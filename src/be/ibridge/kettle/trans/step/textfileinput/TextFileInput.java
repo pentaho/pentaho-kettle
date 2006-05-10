@@ -978,6 +978,14 @@ public class TextFileInput extends BaseStep implements StepInterface
 	 */
 	private boolean checkFilterRow(String line, boolean isFilterLastLine) {
 		boolean filterOK=true;
+		
+		// check for noEmptyLines
+		if (meta.noEmptyLines() && line.length() == 0)
+		{
+			filterOK=false;
+		}
+		
+		// check the filters
 		for (int f = 0; f < meta.getFilter().length && filterOK; f++)
 		{
 			TextFileFilter filter = meta.getFilter()[f];
