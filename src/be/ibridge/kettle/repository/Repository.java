@@ -2515,7 +2515,7 @@ public class Repository
 	    if (psStepAttributesInsert!=null)
 	    {
 		    database.insertFinished(psStepAttributesInsert, true); // batch mode!
-			database.closePreparedStatement(psStepAttributesInsert);
+			// database.closePreparedStatement(psStepAttributesInsert);
 			psStepAttributesInsert = null;
 	    }
 	}
