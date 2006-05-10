@@ -91,10 +91,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	/**
 	 * The descriptions of the value types.
 	 */
-	private static final String value_type_desc[]=
+	private static final String valueTypeCode[]=
 		{
-			"-",
-			"Number", "String", "Date", "Boolean", "Integer", "BigNumber"
+			"-",                                                          // $NON-NLS-1$
+			"Number", "String", "Date", "Boolean", "Integer", "BigNumber" // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$ $NON-NLS-4$ $NON-NLS-5$ $NON-NLS-6$
 		};
 	
 	private ValueInterface value;
@@ -1125,7 +1125,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public static final String getTypeDesc(int t)
 	{
-		return value_type_desc[t];
+		return valueTypeCode[t];
 	}
 	
 	/**
@@ -1137,9 +1137,9 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	{
 		int i;
 		
-		for (i=1;i<value_type_desc.length;i++)
+		for (i=1;i<valueTypeCode.length;i++)
 		{
-			if (value_type_desc[i].equalsIgnoreCase(desc))
+			if (valueTypeCode[i].equalsIgnoreCase(desc))
 			{
 				return i; 
 			}
@@ -1154,10 +1154,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public static final String[] getTypes()
 	{
-		String retval[] = new String[value_type_desc.length-1];
-		for (int i=1;i<value_type_desc.length;i++)
+		String retval[] = new String[valueTypeCode.length-1];
+		for (int i=1;i<valueTypeCode.length;i++)
 		{
-			retval[i-1]=value_type_desc[i];
+			retval[i-1]=valueTypeCode[i];
 		}
 		return retval;
 	}
@@ -1168,10 +1168,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public static final String[] getAllTypes()
 	{
-		String retval[] = new String[value_type_desc.length];
-		for (int i=0;i<value_type_desc.length;i++)
+		String retval[] = new String[valueTypeCode.length];
+		for (int i=0;i<valueTypeCode.length;i++)
 		{
-			retval[i]=value_type_desc[i];
+			retval[i]=valueTypeCode[i];
 		}
 		return retval;
 	}

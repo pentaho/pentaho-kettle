@@ -181,7 +181,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	/**
 	 * Short description of the access type, used in XML and the repository.
 	 */
-	public static final String access_type_desc[] = 
+	public static final String dbAccessTypeCode[] = 
 		{
 			"Native",
 			"ODBC",
@@ -192,7 +192,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	/**
 	 * Longer description for user interactions.
 	 */
-	public static final String db_access_desc_long[] = 
+	public static final String dbAccessTypeDesc[] = 
 		{
 			"Native (JDBC)",
 			"ODBC",
@@ -606,7 +606,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	 */
 	public String getAccessTypeDesc()
 	{
-		return access_type_desc[getAccessType()];
+		return dbAccessTypeCode[getAccessType()];
 	}
 
 	/**
@@ -1009,16 +1009,16 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		
 		if (dbaccess==null) return TYPE_ACCESS_NATIVE;
 		
-		for (i=0;i<access_type_desc.length;i++)
+		for (i=0;i<dbAccessTypeCode.length;i++)
 		{
-			if (access_type_desc[i].equalsIgnoreCase(dbaccess))
+			if (dbAccessTypeCode[i].equalsIgnoreCase(dbaccess))
 			{
 				return i;
 			}
 		}
-		for (i=0;i<db_access_desc_long.length;i++)
+		for (i=0;i<dbAccessTypeDesc.length;i++)
 		{
-			if (db_access_desc_long[i].equalsIgnoreCase(dbaccess))
+			if (dbAccessTypeDesc[i].equalsIgnoreCase(dbaccess))
 			{
 				return i;
 			}
@@ -1030,17 +1030,17 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	public final static String getAccessTypeDesc(int dbaccess)
 	{ 
 		if (dbaccess<0) return null;
-		if (dbaccess>access_type_desc.length) return null;
+		if (dbaccess>dbAccessTypeCode.length) return null;
 		
-		return access_type_desc[dbaccess];
+		return dbAccessTypeCode[dbaccess];
 	}
 
 	public final static String getAccessTypeDescLong(int dbaccess)
 	{ 
 		if (dbaccess<0) return null;
-		if (dbaccess>db_access_desc_long.length) return null;
+		if (dbaccess>dbAccessTypeDesc.length) return null;
 		
-		return db_access_desc_long[dbaccess];
+		return dbAccessTypeDesc[dbaccess];
 	}
 	
 	public final static String[] getDBTypeDescLongList()

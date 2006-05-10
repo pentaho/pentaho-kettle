@@ -140,56 +140,56 @@ public class BaseStep extends Thread
             SetVariableMeta.class
 		};
 	
-	public static final String type_desc[] = 
+	public static final String typeCode[] = 
 		{
 			null,
-			Messages.getString("BaseStep.TypeDesc.TextFileInput"),    //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.TextFileOutput"),  //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.TableInput"),     //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.TableOutput"),   //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.SelectValues"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.FilterRows"),  //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.DBLookup"),   //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.SortRows"),        //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.StreamLookup"),   //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.Sequence"),      //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.DimensionLookup"),    //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.CombinationLookup"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.Dummy"),            //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.JoinRows"),        //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.AggregateRows"),  //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.SystemInfo"),    //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.RowGenerator"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.ScriptValue"),    //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.DBProc"),        //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.InsertUpdate"), //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.Update"),      //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.Delete"),     //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.Normaliser"),             //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.FieldSplitter"),         //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.Unique"),               //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.GroupBy"),             //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.RowsFromResult"),     //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.RowsToResult"),      //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.CubeInput"),        //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.CubeOutput"),      //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.DBJoin"),         //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.XBaseInput"),    //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.ExcelInput"),   //$NON-NLS-1$
-			Messages.getString("BaseStep.TypeDesc.NullIf"),      //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.Calculator"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.ExecSQL"),   //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.Mapping"),  //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.MappingInput"),   //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.MappingOutput"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.XMLInput"),     //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.XMLOutput"),   //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.MergeRows"),  //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.Constant"),  //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.Denormaliser"),  //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.Flatterner"),   //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.ValueMapper"), //$NON-NLS-1$
-            Messages.getString("BaseStep.TypeDesc.SetVariable") //$NON-NLS-1$
+			"TextFileInput",    //$NON-NLS-1$
+			"TextFileOutput",  //$NON-NLS-1$
+			"TableInput",     //$NON-NLS-1$
+			"TableOutput",   //$NON-NLS-1$
+			"SelectValues", //$NON-NLS-1$
+			"FilterRows",  //$NON-NLS-1$
+			"DBLookup",   //$NON-NLS-1$
+			"SortRows",        //$NON-NLS-1$
+			"StreamLookup",   //$NON-NLS-1$
+			"Sequence",      //$NON-NLS-1$
+			"DimensionLookup",    //$NON-NLS-1$
+			"CombinationLookup", //$NON-NLS-1$
+			"Dummy",            //$NON-NLS-1$
+			"JoinRows",        //$NON-NLS-1$
+			"AggregateRows",  //$NON-NLS-1$
+			"SystemInfo",    //$NON-NLS-1$
+			"RowGenerator", //$NON-NLS-1$
+			"ScriptValue",    //$NON-NLS-1$
+			"DBProc",        //$NON-NLS-1$
+			"InsertUpdate", //$NON-NLS-1$
+			"Update",      //$NON-NLS-1$
+			"Delete",     //$NON-NLS-1$
+			"Normaliser",             //$NON-NLS-1$
+			"FieldSplitter",         //$NON-NLS-1$
+			"Unique",               //$NON-NLS-1$
+			"GroupBy",             //$NON-NLS-1$
+			"RowsFromResult",     //$NON-NLS-1$
+			"RowsToResult",      //$NON-NLS-1$
+			"CubeInput",        //$NON-NLS-1$
+			"CubeOutput",      //$NON-NLS-1$
+			"DBJoin",         //$NON-NLS-1$
+			"XBaseInput",    //$NON-NLS-1$
+			"ExcelInput",   //$NON-NLS-1$
+			"NullIf",      //$NON-NLS-1$
+            "Calculator", //$NON-NLS-1$
+            "ExecSQL",   //$NON-NLS-1$
+            "Mapping",  //$NON-NLS-1$
+            "MappingInput",   //$NON-NLS-1$
+            "MappingOutput", //$NON-NLS-1$
+            "XMLInput",     //$NON-NLS-1$
+            "XMLOutput",   //$NON-NLS-1$
+            "MergeRows",  //$NON-NLS-1$
+            "Constant",  //$NON-NLS-1$
+            "Denormaliser",  //$NON-NLS-1$
+            "Flatterner",   //$NON-NLS-1$
+            "ValueMapper", //$NON-NLS-1$
+            "SetVariable" //$NON-NLS-1$
 		};
 
 	public static final String type_long_desc[] = 
@@ -410,10 +410,10 @@ public class BaseStep extends Thread
 	
 	private    TransMeta transMeta;
 	private    StepMeta  stepMeta;
-	private    String stepname;
+	private    String    stepname;
 	protected  LogWriter log;
-	private    Trans trans;
-	public     String debug;
+	private    Trans     trans;
+	public     String    debug;
 	public     ArrayList previewBuffer;
 	public     int       previewSize;
 	
@@ -427,13 +427,13 @@ public class BaseStep extends Thread
 	private  long nrGetSleeps;    // # total get sleep time in nano-seconds
 	private  long nrPutSleeps;    // # total put sleep time in nano-seconds
 
-	private boolean distributed;
-	private long errors;
+	private boolean  distributed;
+	private long     errors;
 	
-	private StepMeta next[];
-	private StepMeta prev[];
-	private int     in_handling, out_handling;
-	public    ArrayList thr;
+	private StepMeta    next[];
+	private StepMeta    prev[];
+	private int         in_handling, out_handling;
+	public  ArrayList   thr;
     
 	protected ArrayList inputRowSets;
 	protected ArrayList outputRowSets;
@@ -462,6 +462,19 @@ public class BaseStep extends Thread
      * After execution, these can be added to result.
      */
     private List interestingFiles;
+    
+    /**
+     * Set this to true if you want to have extra checking enabled on the rows that are entering this step.
+     * All too often people send in bugs when it is really the mixing of different types of rows 
+     * that is causing the problem.
+     */
+    private boolean extraCheckingEnabled;
+    
+    /**
+     * This contains the first row received and will be the reference row. 
+     * We used it to perform extra checking: see if we don't get rows with "mixed" contents.
+     */
+    private Row     referenceRow;
 	
 	/**
 	 * This is the base step that forms that basis for all steps.  You can derive from this class to implement your own steps.
@@ -1016,6 +1029,38 @@ public class BaseStep extends Thread
 		
 		nextInputStream(); // Look for the next input stream to get row from.
 
+		// OK, before we return the row, let's see if we need to check on mixing row compositions...
+		if (extraCheckingEnabled)
+		{
+			if (referenceRow==null)
+			{
+				referenceRow=new Row(row); // copy it!
+			}
+			else
+			{
+				// See if the row we got has the same layout as the reference row.
+				// First check the number of fields
+				if (referenceRow.size()!=row.size())
+				{
+					throw new RuntimeException("We detected rows with varying number of fields, this is not allowed in a transformation.  " +
+							"Check your settings. (first row contained "+referenceRow.size()+" elements, this one contains "+row.size()+" : "+row);
+				}
+				else
+				{
+					// Check field by field for the position of the names...
+					for (int i=0;i<referenceRow.size();i++)
+					{
+						String referenceName = referenceRow.getValue(i).getName();
+						String compareName = row.getValue(i).getName();
+						if (!referenceName.equalsIgnoreCase(compareName))
+						{
+							throw new RuntimeException("Field #"+i+" is not the same as the first row received: you're mixing rows with different layout! ("+referenceName+"!="+compareName+")");
+						}
+					}
+				}
+			}
+		} // Extra checking
+		
 		return row;
 	}
 
@@ -1597,5 +1642,21 @@ public class BaseStep extends Thread
 	public void setNrPutSleeps(long nrPutSleeps)
 	{
 		this.nrPutSleeps = nrPutSleeps;
+	}
+
+	/**
+	 * @return Returns the extraCheckingEnabled.
+	 */
+	public boolean isExtraCheckingEnabled()
+	{
+		return extraCheckingEnabled;
+	}
+
+	/**
+	 * @param extraCheckingEnabled The extraCheckingEnabled to set.
+	 */
+	public void setExtraCheckingEnabled(boolean extraCheckingEnabled)
+	{
+		this.extraCheckingEnabled = extraCheckingEnabled;
 	}
 }

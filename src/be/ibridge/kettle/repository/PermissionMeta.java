@@ -38,7 +38,7 @@ public class PermissionMeta
 	public static final int TYPE_PERMISSION_JOB              = 4;
 	public static final int TYPE_PERMISSION_SCHEMA           = 5;
 	
-	public static final String permission_type_desc[] =
+	public static final String permissionTypeCode[] =
 		{
 			"-",
 			"READONLY",
@@ -48,7 +48,7 @@ public class PermissionMeta
 			"SCHEMA"
 		};
 
-	public static final String permissionTypeLongDesc[] =
+	public static final String permissionTypeDesc[] =
 		{
 			"-",
 			"Read only access",
@@ -101,20 +101,20 @@ public class PermissionMeta
 	
 	public static final String getTypeDesc(int i)
 	{
-		if (i<0 || i>=permission_type_desc.length) return null;
-		return permission_type_desc[i];
+		if (i<0 || i>=permissionTypeCode.length) return null;
+		return permissionTypeCode[i];
 	}
 	
 	public static final int getType(String str)
 	{
-		for (int i=0;i<permission_type_desc.length;i++)
+		for (int i=0;i<permissionTypeCode.length;i++)
 		{
-			if (permission_type_desc[i].equalsIgnoreCase(str)) return i;
+			if (permissionTypeCode[i].equalsIgnoreCase(str)) return i;
 		}
 		
-		for (int i=0;i<permissionTypeLongDesc.length;i++)
+		for (int i=0;i<permissionTypeDesc.length;i++)
 		{
-			if (permissionTypeLongDesc[i].equalsIgnoreCase(str)) return i;
+			if (permissionTypeDesc[i].equalsIgnoreCase(str)) return i;
 		}
 		
 		return TYPE_PERMISSION_NONE;

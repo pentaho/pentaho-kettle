@@ -40,7 +40,7 @@ public class DatabaseImpact
     public static final int TYPE_IMPACT_DELETE     = 5;
     public static final int TYPE_IMPACT_UPDATE     = 6;
 	
-	public static final String type_desc[] = 
+	public static final String typeDesc[] = 
 		{
 		 Messages.getString("DatabaseImpact.TypeDesc.Label.None"), //$NON-NLS-1$
 		 Messages.getString("DatabaseImpact.TypeDesc.Label.Read"), //$NON-NLS-1$
@@ -123,14 +123,14 @@ public class DatabaseImpact
 	
 	public String getTypeDesc()
 	{
-		return type_desc[type];
+		return typeDesc[type];
 	}
 	
 	public static final int getTypeDesc(String typedesc)
 	{
-		for (int i=1;i<type_desc.length;i++)
+		for (int i=1;i<typeDesc.length;i++)
 		{
-			if (type_desc[i].equalsIgnoreCase(typedesc)) return i;
+			if (typeDesc[i].equalsIgnoreCase(typedesc)) return i;
 		}
 		return TYPE_IMPACT_NONE;
 	}

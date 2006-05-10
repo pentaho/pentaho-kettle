@@ -83,7 +83,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 	public final static int TYPE_SYSTEM_INFO_ARGUMENT_09      = 34;	
 	public final static int TYPE_SYSTEM_INFO_ARGUMENT_10      = 35;	
 
-	public final static String type_desc[] = 
+	public final static String typeCode[] = 
 		{
 			"-",
 			"system date (variable)",
@@ -123,7 +123,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 			"command line argument 10"
 		};
 
-	public final static String typeLongDesc[] = 
+	public final static String typeDesc[] = 
 		{
 			"-",
 			Messages.getString("SystemDataMeta.TypeDesc.SystemDateVariable"),
@@ -261,18 +261,18 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public static final int getType(String type)
 	{
-		for (int i=0;i<type_desc.length;i++)
+		for (int i=0;i<typeCode.length;i++)
 		{
-			if (type_desc[i].equalsIgnoreCase(type)) return i;
-			if (typeLongDesc[i].equalsIgnoreCase(type)) return i;
+			if (typeCode[i].equalsIgnoreCase(type)) return i;
+			if (typeDesc[i].equalsIgnoreCase(type)) return i;
 		}
 		return 0;
 	}
 	
 	public static final String getTypeDesc(int t)
 	{
-		if (t<0 || t>=type_desc.length) return null;
-		return type_desc[t];
+		if (t<0 || t>=typeCode.length) return null;
+		return typeCode[t];
 	}
 
 	public void setDefault()
@@ -362,7 +362,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			retval.append("      <field>"+Const.CR);
 			retval.append("        "+XMLHandler.addTagValue("name", fieldName[i]));
-			retval.append("        "+XMLHandler.addTagValue("type", type_desc[fieldType[i]]));
+			retval.append("        "+XMLHandler.addTagValue("type", typeCode[fieldType[i]]));
 			retval.append("        </field>"+Const.CR);
 		}
 		retval.append("      </fields>"+Const.CR);

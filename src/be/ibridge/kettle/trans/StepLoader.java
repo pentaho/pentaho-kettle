@@ -85,9 +85,9 @@ public class StepLoader
 
     public boolean readNatives()
     {
-        for (int i = 1; i < BaseStep.type_desc.length; i++)
+        for (int i = 1; i < BaseStep.typeCode.length; i++)
         {
-            String id = BaseStep.type_desc[i];
+            String id = BaseStep.typeCode[i];
             String long_desc = BaseStep.type_long_desc[i];
             String tooltip = BaseStep.type_tooltip_desc[i];
             String iconfile = Const.IMAGE_DIRECTORY + BaseStep.image_filename[i];

@@ -213,9 +213,9 @@ public class ProfileDialog extends Dialog
 		if (profile.getName()!=null) wName.setText(profile.getName());
 		if (profile.getDescription()!=null) wDesc.setText(profile.getDescription());
 		
-		for (int i=1;i<PermissionMeta.permissionTypeLongDesc.length;i++)
+		for (int i=1;i<PermissionMeta.permissionTypeDesc.length;i++)
 		{
-			wPermission.add(PermissionMeta.permissionTypeLongDesc[i]);
+			wPermission.add(PermissionMeta.permissionTypeDesc[i]);
 		}
 		
 		int sel[] = new int[profile.nrPermissions()];

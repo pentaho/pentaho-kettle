@@ -3173,8 +3173,8 @@ public class Repository
 			//
 			// Populate with data...
 			//
-			code = DatabaseMeta.access_type_desc;
-			desc = DatabaseMeta.db_access_desc_long;
+			code = DatabaseMeta.dbAccessTypeCode;
+			desc = DatabaseMeta.dbAccessTypeDesc;
 
 			database.prepareInsert(table, tablename);
 
@@ -4291,8 +4291,8 @@ public class Repository
 			//
 			// Populate with data...
 			//
-			code = PermissionMeta.permission_type_desc;
-			desc = PermissionMeta.permissionTypeLongDesc;
+			code = PermissionMeta.permissionTypeCode;
+			desc = PermissionMeta.permissionTypeDesc;
 
 			database.prepareInsert(table, tablename);
 
@@ -4383,10 +4383,10 @@ public class Repository
             log.logDetailed(toString(), "Administrator profile id = "+id_profile);
             String perms[] = new String[]
 				{ 
-                    PermissionMeta.permission_type_desc[PermissionMeta.TYPE_PERMISSION_ADMIN],
-                    PermissionMeta.permission_type_desc[PermissionMeta.TYPE_PERMISSION_TRANSFORMATION],
-                    PermissionMeta.permission_type_desc[PermissionMeta.TYPE_PERMISSION_JOB],
-                    PermissionMeta.permission_type_desc[PermissionMeta.TYPE_PERMISSION_SCHEMA] 
+                    PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_ADMIN],
+                    PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_TRANSFORMATION],
+                    PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_JOB],
+                    PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_SCHEMA] 
 				};
 			
 			for (int i=0;i < perms.length ; i++)
@@ -4424,9 +4424,9 @@ public class Repository
             log.logDetailed(toString(), "User profile id = "+id_profile);
             perms = new String[]
                 { 
-                      PermissionMeta.permission_type_desc[PermissionMeta.TYPE_PERMISSION_TRANSFORMATION],
-                      PermissionMeta.permission_type_desc[PermissionMeta.TYPE_PERMISSION_JOB],
-                      PermissionMeta.permission_type_desc[PermissionMeta.TYPE_PERMISSION_SCHEMA] 
+                      PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_TRANSFORMATION],
+                      PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_JOB],
+                      PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_SCHEMA] 
                 };
 
             for (int i = 0; i < perms.length; i++)

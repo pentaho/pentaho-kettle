@@ -29,6 +29,8 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
@@ -95,7 +97,7 @@ public class RepositoriesDialog
 	private Listener lsOK, lsNorep, lsCancel;
 	
 	private SelectionListener lsDef;
-	private KeyListener       lsKey, lsJmp;
+	private KeyListener       lsRepo, lsJmp;
 
 	private   Display       display;
 	private   Shell         shell;
@@ -160,7 +162,6 @@ public class RepositoriesDialog
 
 		final Image logo = GUIResource.getInstance().getImagePentaho();
 		final Rectangle bounds = logo.getBounds();
-		shell.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent arg0) { logo.dispose(); } });
 		
 		wCanvas = new Canvas(shell, SWT.NO_BACKGROUND);
 		fdCanvas = new FormData();
@@ -174,7 +175,7 @@ public class RepositoriesDialog
 			{
 				public void paintControl(PaintEvent pe)
 				{
-					pe.gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+					pe.gc.setBackground(GUIResource.getInstance().getColorBackground());
 					pe.gc.fillRectangle(0,0, bounds.width, bounds.height);
 					pe.gc.drawImage(logo, 0, 0);
 				}
@@ -183,9 +184,9 @@ public class RepositoriesDialog
 		
 		// Kettle welcome
 		wlKettle = new Label(shell, SWT.CENTER);
-		wlKettle.setText(Messages.getString("RepositoriesDialog.Label.Welcome")+toolName); //$NON-NLS-1$
+		wlKettle.setText(Messages.getString("RepositoriesDialog.Label.Welcome")+toolName+"  v"+Const.VERSION); //$NON-NLS-1$ $NON-NLS-2$
 		props.setLook(wlKettle);
-        final Font f = new Font(shell.getDisplay(), "Arial", 18, SWT.BOLD | SWT.ITALIC); //$NON-NLS-1$
+        final Font f = new Font(shell.getDisplay(), "Arial", 18, SWT.NORMAL); //$NON-NLS-1$
         wlKettle.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) {  f.dispose(); } });
         wlKettle.setFont(f);
         fdlKettle=new FormData();
@@ -287,6 +288,16 @@ public class RepositoriesDialog
 				}
 			}
 		);
+		
+		wRepository.addTraverseListener(new TraverseListener()
+			{
+				public void keyTraversed(TraverseEvent e)
+				{
+					wUsername.setFocus();
+					e.doit=false;
+				}
+			}
+		);
 
 		// Username
 		wlUsername = new Label(shell, SWT.RIGHT ); 
@@ -359,9 +370,9 @@ public class RepositoriesDialog
 
 		
 		lsDef = new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		lsKey = new KeyAdapter() { public void keyPressed(KeyEvent e) 
+		lsRepo = new KeyAdapter() { public void keyPressed(KeyEvent e) 
 				{ 
-					if (e.character == SWT.CR) ok(); 
+					if (e.character == SWT.CR) wUsername.setFocus(); 
 				} 
 			};
 		lsJmp = new KeyAdapter() { public void keyPressed(KeyEvent e) 
@@ -378,7 +389,7 @@ public class RepositoriesDialog
 				} 
 			};
 
-		wRepository.addKeyListener(lsKey);
+		wRepository.addKeyListener(lsRepo);
 		wUsername.addKeyListener( lsJmp );
 		wPassword.addSelectionListener( lsDef );
 

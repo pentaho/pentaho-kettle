@@ -32,7 +32,7 @@ public class CheckResult
 	public static final int TYPE_RESULT_WARNING = 3;
 	public static final int TYPE_RESULT_ERROR   = 4;
 	
-	public static final String type_desc[] =
+	public static final String typeDesc[] =
 		{
 			"",
 			"OK",
@@ -64,7 +64,7 @@ public class CheckResult
 	
 	public String getTypeDesc()
 	{
-		return type_desc[type];
+		return typeDesc[type];
 	}
 	
 	public String getText()
@@ -79,7 +79,7 @@ public class CheckResult
 	
 	public String toString()
 	{
-		if (stepMeta!=null) return type_desc[type]+" : "+text+" ("+stepMeta.getName()+")";
-		return type_desc[type]+" : "+text;
+		if (stepMeta!=null) return typeDesc[type]+" : "+text+" ("+stepMeta.getName()+")";
+		return typeDesc[type]+" : "+text;
 	}
 }
