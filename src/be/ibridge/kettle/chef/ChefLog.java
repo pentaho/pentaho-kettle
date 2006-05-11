@@ -68,8 +68,8 @@ import be.ibridge.kettle.spoon.dialog.LogSettingsDialog;
  */
 public class ChefLog extends Composite
 {
-	public final static String START_TEXT = "St&art Job"; 
-	public final static String STOP_TEXT  = "St&op Job"; 
+	public final static String START_TEXT = Messages.getString("ChefLog.Button.Start");  //$NON-NLS-1$
+	public final static String STOP_TEXT  = Messages.getString("ChefLog.Button.Stop");  //$NON-NLS-1$
 
 	private Color white;
 	private Shell shell;
@@ -126,27 +126,27 @@ public class ChefLog extends Composite
         wTree.setHeaderVisible(true);
         
         TreeColumn column1 = new TreeColumn(wTree, SWT.LEFT);
-        column1.setText("Job / Job Entry");
+        column1.setText(Messages.getString("ChefLog.Column.JobJobEntry")); //$NON-NLS-1$
         column1.setWidth(200);
         
         TreeColumn column2 = new TreeColumn(wTree, SWT.LEFT);
-        column2.setText("Comment");
+        column2.setText(Messages.getString("ChefLog.Column.Comment")); //$NON-NLS-1$
         column2.setWidth(200);
         
         TreeColumn column3 = new TreeColumn(wTree, SWT.LEFT);
-        column3.setText("Result");
+        column3.setText(Messages.getString("ChefLog.Column.Result")); //$NON-NLS-1$
         column3.setWidth(100);
 
         TreeColumn column4 = new TreeColumn(wTree, SWT.LEFT);
-        column4.setText("Reason");
+        column4.setText(Messages.getString("ChefLog.Column.Reason")); //$NON-NLS-1$
         column4.setWidth(200);
 
         TreeColumn column5 = new TreeColumn(wTree, SWT.RIGHT);
-        column5.setText("Nr");
+        column5.setText(Messages.getString("ChefLog.Column.Nr")); //$NON-NLS-1$
         column5.setWidth(50);
 
         TreeColumn column6 = new TreeColumn(wTree, SWT.RIGHT);
-        column6.setText("Log date");
+        column6.setText(Messages.getString("ChefLog.Column.LogDate")); //$NON-NLS-1$
         column6.setWidth(120);
 
 		FormData fdTable=new FormData();
@@ -165,19 +165,19 @@ public class ChefLog extends Composite
 		wStart.setText(START_TEXT);
 
 		wRefresh = new Button(this, SWT.PUSH);
-		wRefresh.setText("&Refresh log");
+		wRefresh.setText(Messages.getString("ChefLog.Button.RefreshLog")); //$NON-NLS-1$
 
 		wError = new Button(this, SWT.PUSH);
 		wError.setText(Messages.getString("ChefLog.Button.ShowErrorLines")); //$NON-NLS-1$
 
 		wClear = new Button(this, SWT.PUSH);
-		wClear.setText("&Clear log");
+		wClear.setText(Messages.getString("ChefLog.Button.ClearLog")); //$NON-NLS-1$
 
 		wLog = new Button(this, SWT.PUSH);
-		wLog.setText("&Log settings");
+		wLog.setText(Messages.getString("ChefLog.Button.LogSettings")); //$NON-NLS-1$
 
         wAuto = new Button(this, SWT.CHECK);
-        wAuto.setText("&Auto refresh");
+        wAuto.setText(Messages.getString("ChefLog.Button.AutoRefresh")); //$NON-NLS-1$
         wAuto.setSelection(true);
 
 		fdStart    = new FormData(); 
@@ -235,7 +235,7 @@ public class ChefLog extends Composite
 		}
 		catch(Exception e)
 		{
-			System.out.println("Couldn't create input-pipe connection to output-pipe!");
+			System.out.println(Messages.getString("ChefLog.Error.CouldNotCreateInputPipe")); //$NON-NLS-1$
 		}
 		
 		lsRefresh = new SelectionAdapter() 
@@ -336,20 +336,20 @@ public class ChefLog extends Composite
 			{
 				if (chef.props.getAutoSave()) 
 				{
-					log.logDetailed(toString(), "Save file automatically before running...");
-					System.out.println("Save file automatically before running...");
+					log.logDetailed(toString(), Messages.getString("ChefLog.Log.AutoSaveFileBeforeRunning")); //$NON-NLS-1$
+					System.out.println(Messages.getString("ChefLog.Log.AutoSaveFileBeforeRunning2")); //$NON-NLS-1$
 					chef.saveFile();
 				}
 				else
 				{
 					MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-																			 "File has changed!", 
+																			 Messages.getString("ChefLog.Dialog.SaveChangedFile.Title"),  //$NON-NLS-1$
 																			 null,
-																			 "You need to save your job before you can run it."+Const.CR+"Do you want to save the job now?"+Const.CR,
+																			 Messages.getString("ChefLog.Dialog.SaveChangedFile.Message")+Const.CR+Messages.getString("ChefLog.Dialog.SaveChangedFile.Message2")+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
 																			 MessageDialog.QUESTION,
-																			 new String[] { "Yes", "No" },
+																			 new String[] { Messages.getString("ChefLog.System.Button.YES"), Messages.getString("ChefLog.System.Button.NO") }, //$NON-NLS-1$ //$NON-NLS-2$
 																			 0,
-																			 "Automatically save the job.",
+																			 Messages.getString("ChefLog.Dialog.SaveChangedFile.Toggle"), //$NON-NLS-1$
 																			 chef.props.getAutoSave()
 																			 );
 					int answer = md.open();
@@ -374,21 +374,21 @@ public class ChefLog extends Composite
 						job = new Job(log, chef.jobMeta.getName(), chef.jobMeta.getFilename(), null);
 						job.open(chef.rep, chef.jobMeta.getFilename(), chef.jobMeta.getName(), chef.jobMeta.getDirectory().getPath());
 
-                        log.logMinimal(Chef.APP_NAME, "Starting job...");
+                        log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.StartingJob")); //$NON-NLS-1$
 						job.start();
 						readLog();
 					}
 					catch(KettleException e)
 					{
-						new ErrorDialog(shell, chef.props, "Can't open job", "Job failed to open", e); 
+						new ErrorDialog(shell, chef.props, Messages.getString("ChefLog.Dialog.CanNotOpenJob.Title"), Messages.getString("ChefLog.Dialog.CanNotOpenJob.Message"), e);  //$NON-NLS-1$ //$NON-NLS-2$
 						job=null;
 					}
 				}
 				else
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText("Warning!");
-					m.setMessage("The job is running, don't start it twice!");	
+					m.setText(Messages.getString("ChefLog.Dialog.JobIsAlreadyRunning.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("ChefLog.Dialog.JobIsAlreadyRunning.Message"));	 //$NON-NLS-1$
 					m.open();
 				}
 			}
@@ -397,23 +397,23 @@ public class ChefLog extends Composite
 				if (chef.jobMeta.hasChanged())
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText("File has changed!");
-					m.setMessage("Please save your job first!");	
+					m.setText(Messages.getString("ChefLog.Dialog.JobHasChangedSave.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("ChefLog.Dialog.JobHasChangedSave.Message"));	 //$NON-NLS-1$
 					m.open();
 				}
 				else
 				if (chef.rep!=null && chef.jobMeta.getName()==null)
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText("This job has no name!");
-					m.setMessage("Please give your job a name to identify it by!");	
+					m.setText(Messages.getString("ChefLog.Dialog.PleaseGiveThisJobAName.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("ChefLog.Dialog.PleaseGiveThisJobAName.Message"));	 //$NON-NLS-1$
 					m.open();
 				}
 				else
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					m.setText("No filename!");
-					m.setMessage("Before running, please save your job first!");	
+					m.setText(Messages.getString("ChefLog.Dialog.NoFilenameSaveYourJobFirst.Title")); //$NON-NLS-1$
+					m.setMessage(Messages.getString("ChefLog.Dialog.NoFilenameSaveYourJobFirst.Message"));	 //$NON-NLS-1$
 					m.open();
 				}
 			}
@@ -425,16 +425,16 @@ public class ChefLog extends Composite
 				if (job!=null) 
 				{
 					job.stopAll();
-					job.endProcessing("stop");
+					job.endProcessing("stop"); //$NON-NLS-1$
 					job=null;
-                    log.logMinimal(Chef.APP_NAME, "Job was stopped.");
+                    log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.JobWasStopped")); //$NON-NLS-1$
 				}
 			}
 			catch(KettleJobException je)
 			{
 				MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-				m.setText("Error!");
-				m.setMessage("I was unable to log the stop signal to the log table:"+Const.CR+je.toString());	
+				m.setText(Messages.getString("ChefLog.Dialog.UnableToSaveStopLineInLoggingTable.Title")); //$NON-NLS-1$
+				m.setMessage(Messages.getString("ChefLog.Dialog.UnableToSaveStopLineInLoggingTable.Message")+Const.CR+je.toString());	 //$NON-NLS-1$
 				m.open();
 			}
 			finally
@@ -490,7 +490,7 @@ public class ChefLog extends Composite
             TreeItem treeItem = new TreeItem(wTree, SWT.NONE);
             String jobName = jobTracker.getJobMeta().getName();
             if(jobName==null) {
-            	jobName = "No Name";
+            	jobName = Messages.getString("ChefLog.Tree.StringToDisplayWhenJobHasNoName"); //$NON-NLS-1$
             }
             treeItem.setText( 0,jobName);
             for (int i=0;i<jobTracker.nrJobTrackers();i++)
@@ -511,7 +511,7 @@ public class ChefLog extends Composite
                 if (jobTracker.nrJobTrackers()>0)
                 {
                     // This is a sub-job: display the name at the top of the list...
-                    treeItem.setText( 0, "Job: "+jobTracker.getJobMeta().getName() );
+                    treeItem.setText( 0, Messages.getString("ChefLog.Tree.JobPrefix")+jobTracker.getJobMeta().getName() ); //$NON-NLS-1$
                     
                     // then populare the sub-job entries ...
                     for (int i=0;i<jobTracker.nrJobTrackers();i++)
@@ -531,7 +531,7 @@ public class ChefLog extends Composite
                         }
                         else
                         {
-                            treeItem.setText( 0, "Job: "+jobTracker.getJobMeta().getName());
+                            treeItem.setText( 0, Messages.getString("ChefLog.Tree.JobPrefix2")+jobTracker.getJobMeta().getName()); //$NON-NLS-1$
                         }
                         String comment = result.getComment();
                         if (comment!=null)
@@ -541,8 +541,8 @@ public class ChefLog extends Composite
                         Result res = result.getResult();
                         if (res!=null)
                         {
-                            treeItem.setText(2, res.getResult()?"Success":"Failure");
-                            treeItem.setText(4, ""+res.getEntryNr());
+                            treeItem.setText(2, res.getResult()?Messages.getString("ChefLog.Tree.Success"):Messages.getString("ChefLog.Tree.Failure")); //$NON-NLS-1$ //$NON-NLS-2$
+                            treeItem.setText(4, ""+res.getEntryNr()); //$NON-NLS-1$
                         }
                         String reason = result.getReason();
                         if (reason!=null)
@@ -552,7 +552,7 @@ public class ChefLog extends Composite
                         Date logDate = result.getLogDate();
                         if (logDate!=null)
                         {
-                            treeItem.setText(5, new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(logDate));
+                            treeItem.setText(5, new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(logDate)); //$NON-NLS-1$
                         }
                     }
                 }
@@ -570,7 +570,7 @@ public class ChefLog extends Composite
 		if (job!=null && !job.isActive())
         {
             job=null;
-            log.logMinimal(Chef.APP_NAME, "Job has ended.");
+            log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.JobHasEnded")); //$NON-NLS-1$
         }
 		
 		if (!wStart.isDisposed())
@@ -581,7 +581,7 @@ public class ChefLog extends Composite
 	
     private void clearLog()
 	{
-		wText.setText("");
+		wText.setText(""); //$NON-NLS-1$
 	}
 	
 	private void setLog()

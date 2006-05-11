@@ -267,7 +267,7 @@ public class ChefGraph extends Canvas
 						Point loc = ni.getLocation();
 						previous_note_location = new Point(loc.x, loc.y);
 						noteoffset = new Point(real.x - loc.x, real.y - loc.y);
-						System.out.println("We hit a note!!");
+						// System.out.println("We hit a note!!");
 					}
 					else
 					{
@@ -375,13 +375,13 @@ public class ChefGraph extends Canvas
 							if (!chef.props.getAutoSplit())
 							{
 								MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-																						 "Split hop?", 
+																						 Messages.getString("ChefGraph.Dialog.SplitHop.Title"),  //$NON-NLS-1$
 																						 null,
-																						 "Do you want to split this hop?"+Const.CR+hi.from_entry.getName()+" --> "+hi.to_entry.getName(),
+																						 Messages.getString("ChefGraph.Dialog.SplitHop.Message")+Const.CR+hi.from_entry.getName()+" --> "+hi.to_entry.getName(), //$NON-NLS-1$ //$NON-NLS-2$
 																						 MessageDialog.QUESTION,
-																						 new String[] { "Yes", "No" },
+																						 new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
 																						 0,
-																						 "Don't ask again",
+																						 Messages.getString("ChefGraph.Dialog.SplitHop.Toggle"), //$NON-NLS-1$
 																						 chef.props.getAutoSplit()
 																						 );
 								id = md.open();
@@ -599,14 +599,14 @@ public class ChefGraph extends Canvas
 
 					if (jge != null)  // Create duplicate of existing entry 
 					{
-						log.logDebug(toString(), "DROP "+jge.toString()+", type="+ JobEntryCopy.getTypeDesc(jge.getType())+", start="+jge.isStart()+", drawn="+jge.isDrawn());
+						log.logDebug(toString(), "DROP "+jge.toString()+", type="+ JobEntryCopy.getTypeDesc(jge.getType())+", start="+jge.isStart()+", drawn="+jge.isDrawn()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 						
 						// There can be only 1 start!
 						if (jge.isStart() && jge.isDrawn()) 
 						{
 							MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_ERROR);
-							mb.setMessage("You can only use the start icon once in a job.");
-							mb.setText("Sorry!");
+							mb.setMessage(Messages.getString("ChefGraph.Dialog.OnlyUseStartOnce.Message")); //$NON-NLS-1$
+							mb.setText(Messages.getString("ChefGraph.Dialog.OnlyUseStartOnce.Title")); //$NON-NLS-1$
 							mb.open();
 
 							return;
@@ -624,7 +624,7 @@ public class ChefGraph extends Canvas
 							if (newjge!=null)
 							{
 								// newjge.setEntry(jge.getEntry());
-								log.logDebug(toString(), "entry aft = "+((Object)jge.getEntry()).toString());
+								log.logDebug(toString(), "entry aft = "+((Object)jge.getEntry()).toString()); //$NON-NLS-1$
 								
 								newjge.setNr(chef.jobMeta.findUnusedNr(newjge.getName()));
 								
@@ -633,12 +633,12 @@ public class ChefGraph extends Canvas
 							}
 							else
 							{
-								log.logDebug(toString(), "jge is not cloned!");
+								log.logDebug(toString(), "jge is not cloned!"); //$NON-NLS-1$
 							}
 						}
 						else
 						{
-							log.logDebug(toString(), jge.toString()+" is not drawn");
+							log.logDebug(toString(), jge.toString()+" is not drawn"); //$NON-NLS-1$
 							jge_changed=true;
 						}
 						newjge.setLocation(p.x, p.y);
@@ -649,11 +649,11 @@ public class ChefGraph extends Canvas
 						}
 						redraw();
 						chef.refreshTree();
-						log.logBasic("DropTargetEvent", "DROP "+newjge.toString()+"!, type="+ JobEntryCopy.getTypeDesc(newjge.getType()));
+						log.logBasic("DropTargetEvent", "DROP "+newjge.toString()+"!, type="+ JobEntryCopy.getTypeDesc(newjge.getType())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					} 
 					else // Entry doesn't exist: create new one.
 					{
-						log.logDebug(toString(), "New entry of type ["+entry+"]"); 
+						log.logDebug(toString(), "New entry of type ["+entry+"]");  //$NON-NLS-1$ //$NON-NLS-2$
 						
 						jge = chef.newChefGraphEntry(entry, false);
 						if (jge != null) 
@@ -850,7 +850,7 @@ public class ChefGraph extends Canvas
 			if (sels == 2) 
 			{
 				miNewHop = new MenuItem(mPop, SWT.CASCADE);
-				miNewHop.setText("New hop");
+				miNewHop.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.NewHop")); //$NON-NLS-1$
 			}
 
 			final JobEntryInterface entry = je.getEntry();
@@ -860,7 +860,7 @@ public class ChefGraph extends Canvas
 			case JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION:
 				{
 					MenuItem miLaunch = new MenuItem(mPop, SWT.CASCADE);
-					miLaunch.setText("Launch Spoon");
+					miLaunch.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.LaunchSpoon")); //$NON-NLS-1$
 							
 					miLaunch.addSelectionListener(new SelectionAdapter() 
 						{
@@ -875,7 +875,7 @@ public class ChefGraph extends Canvas
 			case JobEntryInterface.TYPE_JOBENTRY_JOB:
 				{
 					MenuItem miLaunch = new MenuItem(mPop, SWT.CASCADE);
-					miLaunch.setText("Launch Chef");
+					miLaunch.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.LaunchChef")); //$NON-NLS-1$
 				
 					miLaunch.addSelectionListener(new SelectionAdapter() 
 						{
@@ -890,43 +890,43 @@ public class ChefGraph extends Canvas
 			default: break;
 			}
 			MenuItem miEditStep = new MenuItem(mPop, SWT.CASCADE);
-			miEditStep.setText("Edit job entry");
+			miEditStep.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.Edit")); //$NON-NLS-1$
 			
 			MenuItem miEditDesc = new MenuItem(mPop, SWT.CASCADE);
-			miEditDesc.setText("Edit job entry description");
+			miEditDesc.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.EditDescription")); //$NON-NLS-1$
 			
 			new MenuItem(mPop, SWT.SEPARATOR);
 			//----------------------------------------------------------
 			
 			MenuItem miDupeStep = new MenuItem(mPop, SWT.CASCADE);
-			miDupeStep.setText("Duplicate job entry");
+			miDupeStep.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.Duplicate")); //$NON-NLS-1$
 
 			MenuItem miCopy = new MenuItem(mPop, SWT.CASCADE);
-			miCopy.setText("Copy selected entries to clipboard\tCTRL-C");
+			miCopy.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.CopyToClipboard")); //$NON-NLS-1$
 			
 			
             // Allign & Distribute options...
             new MenuItem(mPop, SWT.SEPARATOR);
             MenuItem miPopAD = new MenuItem(mPop, SWT.CASCADE);
-            miPopAD.setText("Allign / Distribute");
+            miPopAD.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute")); //$NON-NLS-1$
 
             Menu mPopAD = new Menu(miPopAD);
             MenuItem miPopALeft = new MenuItem(mPopAD, SWT.CASCADE);
-            miPopALeft.setText("Allign left\tCTRL-LEFT");
+            miPopALeft.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.Left")); //$NON-NLS-1$
             MenuItem miPopARight = new MenuItem(mPopAD, SWT.CASCADE);
-            miPopARight.setText("Allign right\tCTRL-RIGHT");
+            miPopARight.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.Right")); //$NON-NLS-1$
             MenuItem miPopATop = new MenuItem(mPopAD, SWT.CASCADE);
-            miPopATop.setText("Allign top\tCTRL-UP");
+            miPopATop.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.Top")); //$NON-NLS-1$
             MenuItem miPopABottom = new MenuItem(mPopAD, SWT.CASCADE);
-            miPopABottom.setText("Allign bottom\tCTRL-DOWN");
+            miPopABottom.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.Bottom")); //$NON-NLS-1$
             new MenuItem(mPopAD, SWT.SEPARATOR);
             MenuItem miPopDHoriz = new MenuItem(mPopAD, SWT.CASCADE);
-            miPopDHoriz.setText("Distribute horizontally\tALT-RIGHT");
+            miPopDHoriz.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.Horizontally")); //$NON-NLS-1$
             MenuItem miPopDVertic = new MenuItem(mPopAD, SWT.CASCADE);
-            miPopDVertic.setText("Distribute vertically\tALT-UP");
+            miPopDVertic.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.Vertically")); //$NON-NLS-1$
             new MenuItem(mPopAD, SWT.SEPARATOR);
             MenuItem miPopSSnap = new MenuItem(mPopAD, SWT.CASCADE);
-            miPopSSnap.setText("Snap to grid (size " + Const.GRID_SIZE + ")\tALT-HOME");
+            miPopSSnap.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.AllignDistribute.SnapToGrid") + Const.GRID_SIZE + ")\tALT-HOME"); //$NON-NLS-1$ //$NON-NLS-2$
             miPopAD.setMenu(mPopAD);
 
             miPopALeft.addSelectionListener(new SelectionAdapter()
@@ -1009,8 +1009,8 @@ public class ChefGraph extends Canvas
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					String title = "Step description dialog";
-					String message = "Step description:";
+					String title = Messages.getString("ChefGraph.Dialog.EditDescription.Title"); //$NON-NLS-1$
+					String message = Messages.getString("ChefGraph.Dialog.EditDescription.Message"); //$NON-NLS-1$
 					EnterTextDialog dd = new EnterTextDialog(shell, title, message, je.getDescription());
 					String des = dd.open();
 					if (des != null) je.setDescription(des);
@@ -1035,7 +1035,7 @@ public class ChefGraph extends Canvas
 			{
 				new MenuItem(mPop, SWT.SEPARATOR);
 				MenuItem miDetach = new MenuItem(mPop, SWT.CASCADE);
-				miDetach.setText("Detach entry");
+				miDetach.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Detach")); //$NON-NLS-1$
 				miDetach.addSelectionListener(new SelectionAdapter()
 				{
 					public void widgetSelected(SelectionEvent e)
@@ -1049,7 +1049,7 @@ public class ChefGraph extends Canvas
 			{
 				new MenuItem(mPop, SWT.SEPARATOR);
 				MenuItem miHide = new MenuItem(mPop, SWT.CASCADE);
-				miHide.setText("Hide entry");
+				miHide.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.Hide")); //$NON-NLS-1$
 				miHide.addSelectionListener(new SelectionAdapter() 
 				{
 					public void widgetSelected(SelectionEvent e) 
@@ -1077,19 +1077,19 @@ public class ChefGraph extends Canvas
 				
 				// Evaluation...
 				MenuItem miPopEval = new MenuItem(mPop, SWT.CASCADE);
-				miPopEval.setText("Evaluation");
+				miPopEval.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Evaluation")); //$NON-NLS-1$
 
 				Menu mPopAD = new Menu(miPopEval);
 				MenuItem miPopEvalUncond = new MenuItem(mPopAD, SWT.CASCADE | SWT.CHECK);
-				miPopEvalUncond.setText("Unconditional");
+				miPopEvalUncond.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Evaluation.Unconditional")); //$NON-NLS-1$
 				miPopEvalUncond.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {	hi.setUnconditional(); chef.refreshGraph();}} );
 				
 				MenuItem miPopEvalTrue = new MenuItem(mPopAD, SWT.CASCADE | SWT.CHECK);
-				miPopEvalTrue.setText("Follow when result is true");
+				miPopEvalTrue.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Evaluation.FollowWhenOK")); //$NON-NLS-1$
 				miPopEvalTrue.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {	hi.setConditional(); hi.setEvaluation(true); chef.refreshGraph(); }} );
 				
 				MenuItem miPopEvalFalse = new MenuItem(mPopAD, SWT.CASCADE | SWT.CHECK);
-				miPopEvalFalse.setText("Follow when result is false");
+				miPopEvalFalse.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Evaluation.FollowWhenFailed")); //$NON-NLS-1$
 				miPopEvalFalse.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {	hi.setConditional(); hi.setEvaluation(false); chef.refreshGraph(); }} );
 
 				if (hi.isUnconditional())
@@ -1128,12 +1128,12 @@ public class ChefGraph extends Canvas
 
 
 				MenuItem miFlipHop = new MenuItem(mPop, SWT.CASCADE);
-				miFlipHop.setText("Flip direction");
+				miFlipHop.setText(Messages.getString("ChefGraph.PopupMenu.Hop.FlipDirection")); //$NON-NLS-1$
 				MenuItem miDisHop = new MenuItem(mPop, SWT.CASCADE);
-				if (hi.isEnabled()) miDisHop.setText("Disable hop");
-				else                miDisHop.setText("Enable hop");
+				if (hi.isEnabled()) miDisHop.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Disable")); //$NON-NLS-1$
+				else                miDisHop.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Enable")); //$NON-NLS-1$
 				MenuItem miDelHop = new MenuItem(mPop, SWT.CASCADE);
-				miDelHop.setText("Delete hop");
+				miDelHop.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Delete")); //$NON-NLS-1$
 
 				
 				miFlipHop.addSelectionListener(new SelectionAdapter() 
@@ -1149,8 +1149,8 @@ public class ChefGraph extends Canvas
 							{
 								chef.refreshGraph();
 								MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
-								mb.setMessage("This hop flip causes a loop!  Loops are not allowed.");
-								mb.setText("Warning!");
+								mb.setMessage(Messages.getString("ChefGraph.Dialog.HopFlipCausesLoop.Message")); //$NON-NLS-1$
+								mb.setText(Messages.getString("ChefGraph.Dialog.HopFlipCausesLoop.Title")); //$NON-NLS-1$
 								mb.open();
 	
 								dummy = hi.from_entry;
@@ -1203,8 +1203,8 @@ public class ChefGraph extends Canvas
 					// Edit note
 					Menu mPop = new Menu((Control)this);
 
-					MenuItem miNoteEdit = new MenuItem(mPop, SWT.CASCADE); miNoteEdit.setText("Edit note");
-					MenuItem miNoteDel  = new MenuItem(mPop, SWT.CASCADE); miNoteDel .setText("Delete note");
+					MenuItem miNoteEdit = new MenuItem(mPop, SWT.CASCADE); miNoteEdit.setText(Messages.getString("ChefGraph.PopupMenu.Note.Edit")); //$NON-NLS-1$
+					MenuItem miNoteDel  = new MenuItem(mPop, SWT.CASCADE); miNoteDel .setText(Messages.getString("ChefGraph.PopupMenu.Note.Delete")); //$NON-NLS-1$
 
 					miNoteEdit.addSelectionListener(
 						new SelectionAdapter() 
@@ -1240,16 +1240,16 @@ public class ChefGraph extends Canvas
 					// New note
 					Menu mPop = new Menu((Control)this);
 
-					MenuItem miNoteNew = new MenuItem(mPop, SWT.CASCADE); miNoteNew.setText("New note");
+					MenuItem miNoteNew = new MenuItem(mPop, SWT.CASCADE); miNoteNew.setText(Messages.getString("ChefGraph.PopupMenu.Note.New")); //$NON-NLS-1$
 					miNoteNew.addSelectionListener(
 						new SelectionAdapter() 
 						{ 
 							public void widgetSelected(SelectionEvent e) 
 							{ 
 								selrect=null;
-								String title = "Notes";
-								String message = "Note text:";
-								EnterTextDialog dd = new EnterTextDialog(shell, title, message, "");
+								String title = Messages.getString("ChefGraph.Dialog.EditNote.Title"); //$NON-NLS-1$
+								String message = Messages.getString("ChefGraph.Dialog.EditNote.Message"); //$NON-NLS-1$
+								EnterTextDialog dd = new EnterTextDialog(shell, title, message, ""); //$NON-NLS-1$
 								String n = dd.open();
 								if (n!=null) 
 								{
@@ -1356,8 +1356,8 @@ public class ChefGraph extends Canvas
 			catch(KettleException ke)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("Sorry, an error occurred loading the new transformation from the repository:"+Const.CR+ke.getMessage());
-				mb.setText("Error!");
+				mb.setMessage(Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message")+Const.CR+ke.getMessage()); //$NON-NLS-1$
+				mb.setText(Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
@@ -1375,8 +1375,8 @@ public class ChefGraph extends Canvas
 			catch(KettleXMLException xe)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("Sorry, an error occurred loading the new transformation from the XML file:"+Const.CR+xe.getMessage());
-				mb.setText("Error!");
+				mb.setMessage(Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Message")+Const.CR+xe.getMessage()); //$NON-NLS-1$
+				mb.setText(Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 
@@ -1401,8 +1401,8 @@ public class ChefGraph extends Canvas
 			catch(KettleException e)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("Sorry, I was unable to load the job from the repository."+Const.CR+e.getMessage());
-				mb.setText("Error!");
+				mb.setMessage(Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message")+Const.CR+e.getMessage()); //$NON-NLS-1$
+				mb.setText(Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
@@ -1421,8 +1421,8 @@ public class ChefGraph extends Canvas
 			catch(KettleException e)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("Sorry, I was unable to load the job from XML file."+Const.CR+e.getMessage());
-				mb.setText("Error!");
+				mb.setMessage(Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Message")+Const.CR+e.getMessage()); //$NON-NLS-1$
+				mb.setText(Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 		}
@@ -1566,7 +1566,7 @@ public class ChefGraph extends Canvas
 		gc.setBackground(GUIResource.getInstance().getColorWhite());
 		gc.drawRectangle(offset.x + x - 1, offset.y + y - 1, iconsize + 1, iconsize + 1);
 		//gc.setXORMode(true);
-		Point textsize = new Point(gc.textExtent(""+name).x, gc.textExtent(""+name).y);
+		Point textsize = new Point(gc.textExtent(""+name).x, gc.textExtent(""+name).y); //$NON-NLS-1$ //$NON-NLS-2$
 
 		gc.setBackground(GUIResource.getInstance().getColorBackground());
 		gc.setLineWidth(1);
@@ -1577,7 +1577,7 @@ public class ChefGraph extends Canvas
 		if (shadowsize>0)
 		{
 			gc.setForeground(GUIResource.getInstance().getColorLightGray());
-			gc.drawText(""+name, xpos+shadowsize, ypos+shadowsize, SWT.DRAW_TRANSPARENT);
+			gc.drawText(""+name, xpos+shadowsize, ypos+shadowsize, SWT.DRAW_TRANSPARENT); //$NON-NLS-1$
 		}
 		
 		gc.setForeground(GUIResource.getInstance().getColorBlack());
@@ -1780,8 +1780,8 @@ public class ChefGraph extends Canvas
 	private void editNote(NotePadMeta ni)
 	{	
 		NotePadMeta before = (NotePadMeta)ni.clone();
-		String title = "Notes";
-		String message = "Note text:";
+		String title = Messages.getString("ChefGraph.Dialog.EditNote.Title"); //$NON-NLS-1$
+		String message = Messages.getString("ChefGraph.Dialog.EditNote.Message"); //$NON-NLS-1$
 		EnterTextDialog dd = new EnterTextDialog(shell, title, message, ni.getNote());
 		String n = dd.open();
 		if (n!=null) 
@@ -2282,7 +2282,7 @@ public class ChefGraph extends Canvas
                 }
                 catch(Exception e)
                 {
-                    log.logError(toString(), "Unable to find required image file ["+(Const.IMAGE_DIRECTORY + png[i])+" : "+e.toString());
+                    log.logError(toString(), Messages.getString("ChefGraph.Log.Error.UnableToFindImageFile")+(Const.IMAGE_DIRECTORY + png[i])+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
                     images[i] = new Image(shell.getDisplay(), Const.ICON_SIZE, Const.ICON_SIZE);
                     GC gc = new GC(images[i]);
                     gc.drawRectangle(0,0,Const.ICON_SIZE, Const.ICON_SIZE);

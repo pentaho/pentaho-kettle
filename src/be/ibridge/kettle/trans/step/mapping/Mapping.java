@@ -222,7 +222,7 @@ public class Mapping extends BaseStep implements StepInterface
                 // store some logging, close shop.
                 try
                 {
-	                data.trans.endProcessing("end");
+	                data.trans.endProcessing("end"); //$NON-NLS-1$
                 }
                 catch(KettleException e)
                 {

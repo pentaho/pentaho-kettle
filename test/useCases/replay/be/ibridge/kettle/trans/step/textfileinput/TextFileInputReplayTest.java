@@ -42,7 +42,7 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(1, trans.getErrors());
 		expectFiles(directory, 2);
 	}
@@ -55,7 +55,7 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(1, trans.getErrors());
 		expectFiles(directory, 2);
 	}
@@ -68,7 +68,7 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 2);
 		expectContent(directory + "input.txt." + getDateFormatted() + ".error",
@@ -84,7 +84,7 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 3);
 		expectContent(directory + "input.txt." + getDateFormatted() + ".line",
@@ -99,7 +99,7 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 3);
 		expectContent(directory + "input.txt." + getDateFormatted() + ".line",
@@ -114,7 +114,7 @@ public class TextFileInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 3);
 		expectContent(

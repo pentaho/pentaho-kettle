@@ -16,7 +16,7 @@ public class TextFileInputTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 2);
 	}

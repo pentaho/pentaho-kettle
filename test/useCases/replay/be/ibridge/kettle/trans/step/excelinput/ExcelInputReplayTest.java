@@ -16,7 +16,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 2);
 	}
@@ -29,7 +29,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 2);
 	}
@@ -42,7 +42,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 2);
 	}
@@ -55,9 +55,9 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
-		expectFiles(directory, 2);
+		expectFiles(directory, 2); 
 		expectContent(directory + "input.xls." + getDateFormatted() + ".error",
 				FileErrorHandlerMissingFiles.THIS_FILE_DOES_NOT_EXIST
 						+ Const.CR);
@@ -71,7 +71,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(1, trans.getErrors());
 		expectFiles(directory, 2);
 	}
@@ -84,7 +84,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 4);
 		expectContent(directory + "input.xls_Sheet1." + getDateFormatted()
@@ -101,7 +101,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 4);
 		expectContent(directory + "input.xls_Sheet1." + getDateFormatted()
@@ -118,7 +118,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 3);
 		expectContent(
@@ -135,7 +135,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 4);
 		expectContent(directory + "input.xls_Sheet1." + getDateFormatted()
@@ -154,7 +154,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 4);
 		expectContent(directory + "input.xls_Sheet1." + getDateFormatted()
@@ -173,7 +173,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 9);
 		expectContent(directory + "input3.xls_Sheet1." + getDateFormatted()
@@ -195,7 +195,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 9);
 		expectContent(directory + "input3.xls_Sheet1." + getDateFormatted()
@@ -217,7 +217,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 14);
 		expectContent(directory + "input1.xls_sh2." + getDateFormatted()
@@ -237,7 +237,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 20);
 		expectContent(directory + "input1.xls_sh2." + getDateFormatted()
@@ -265,7 +265,7 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		boolean ok = trans.execute(null);
 		assertTrue(ok);
 		trans.waitUntilFinished();
-		trans.endProcessing("end");
+		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
 		expectFiles(directory, 4);
 		expectContent(directory + "input.xls_sh2." + getDateFormatted()

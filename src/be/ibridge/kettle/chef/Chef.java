@@ -143,7 +143,7 @@ import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
  */
 public class Chef
 {
-    public static final String APP_NAME = "Chef";
+    public static final String APP_NAME = Messages.getString("Chef.Application.Name"); //$NON-NLS-1$
 
 	private LogWriter log;
 	public  Display disp;
@@ -153,7 +153,7 @@ public class Chef
 
 	public  Repository rep;
 	
-	public JobMeta jobMeta; // TODO: make private with getter / setter
+	public JobMeta jobMeta;
 	private ChefGraph chefgraph;
 
 	private ChefLog    cheflog;
@@ -174,18 +174,18 @@ public class Chef
 	private Listener lsNew, lsEdit, lsDupe, lsDel, lsSQL, lsCache, lsExpl;
 	private SelectionAdapter lsEditDef, lsNewDef, lsEditSel;
 
-	public static final String STRING_CONNECTIONS       = "Connections";
-    public static final String STRING_JOBENTRIES        = "Job-entries";
-    public static final String STRING_BASE_JOBENTRIES   = "Base job-entry types";
-    public static final String STRING_PLUGIN_JOBENTRIES = "Plugin job-entry types";
+	public static final String STRING_CONNECTIONS       = Messages.getString("Chef.Tree.Connections"); //$NON-NLS-1$
+    public static final String STRING_JOBENTRIES        = Messages.getString("Chef.Tree.JobEntries"); //$NON-NLS-1$
+    public static final String STRING_BASE_JOBENTRIES   = Messages.getString("Chef.Tree.BaseJobEntryTypes"); //$NON-NLS-1$
+    public static final String STRING_PLUGIN_JOBENTRIES = Messages.getString("Chef.Tree.PluginJobEntries"); //$NON-NLS-1$
     
 	public static final String STRING_SPECIAL      = JobEntryInterface.typeDesc[JobEntryInterface.TYPE_JOBENTRY_SPECIAL];
 	
-	private static final String APPL_TITLE      = "Chef : The Job Editor";
+	private static final String APPL_TITLE      = Messages.getString("Chef.Application.Title"); //$NON-NLS-1$
 
-	private static final String STRING_DEFAULT_EXT    = ".kjb";
-	private static final String STRING_FILTER_EXT  [] = { "*.kjb;*.xml", "*.xml", "*.*" };
-	private static final String STRING_FILTER_NAMES[] = { "Kettle Jobs", "XML files", "All files" };
+	private static final String STRING_DEFAULT_EXT    = ".kjb"; //$NON-NLS-1$
+	private static final String STRING_FILTER_EXT  [] = { "*.kjb;*.xml", "*.xml", "*.*" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+	private static final String STRING_FILTER_NAMES[] = { Messages.getString("Chef.FileType.KettleJobs"), Messages.getString("Chef.FileType.XMLJobs"), Messages.getString("Chef.FileType.AllJobs") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	
 	private Tree tMain;
 	private TreeItem tiSection[];
@@ -380,17 +380,17 @@ public class Chef
 		 * File menu
 		 * 
 		 */		
-		MenuItem mFile = new MenuItem(mBar, SWT.CASCADE); mFile.setText("&File");
+		MenuItem mFile = new MenuItem(mBar, SWT.CASCADE); mFile.setText(Messages.getString("Chef.Menu.File")); //$NON-NLS-1$
 		  msFile = new Menu(shell, SWT.DROP_DOWN);
 		  mFile.setMenu(msFile);
-		  MenuItem miFileNew    = new MenuItem(msFile, SWT.CASCADE); miFileNew.setText("&New\tCTRL-N");
-		  MenuItem miFileOpen   = new MenuItem(msFile, SWT.CASCADE); miFileOpen.setText("&Open\tCTRL-O");
-		  MenuItem miFileSave   = new MenuItem(msFile, SWT.CASCADE); miFileSave.setText("&Save\tCTRL-S");
-		  MenuItem miFileSaveAs = new MenuItem(msFile, SWT.CASCADE); miFileSaveAs.setText("Save &as...");
+		  MenuItem miFileNew    = new MenuItem(msFile, SWT.CASCADE); miFileNew.setText(Messages.getString("Chef.Menu.File.New")); //$NON-NLS-1$
+		  MenuItem miFileOpen   = new MenuItem(msFile, SWT.CASCADE); miFileOpen.setText(Messages.getString("Chef.Menu.File.Open")); //$NON-NLS-1$
+		  MenuItem miFileSave   = new MenuItem(msFile, SWT.CASCADE); miFileSave.setText(Messages.getString("Chef.Menu.File.Save")); //$NON-NLS-1$
+		  MenuItem miFileSaveAs = new MenuItem(msFile, SWT.CASCADE); miFileSaveAs.setText(Messages.getString("Chef.Menu.File.SaveAs")); //$NON-NLS-1$
 		  new MenuItem(msFile, SWT.SEPARATOR);
-		  MenuItem miFilePrint  = new MenuItem(msFile, SWT.CASCADE); miFilePrint.setText("&Print\tCTRL-P");
+		  MenuItem miFilePrint  = new MenuItem(msFile, SWT.CASCADE); miFilePrint.setText(Messages.getString("Chef.Menu.File.Print")); //$NON-NLS-1$
 		  new MenuItem(msFile, SWT.SEPARATOR);
-		  MenuItem miFileQuit   = new MenuItem(msFile, SWT.CASCADE); miFileQuit.setText("&Quit");
+		  MenuItem miFileQuit   = new MenuItem(msFile, SWT.CASCADE); miFileQuit.setText(Messages.getString("Chef.Menu.File.Quit")); //$NON-NLS-1$
  		  miFileSep3 = new MenuItem(msFile, SWT.SEPARATOR);
 		  addMenuLast();
 
@@ -413,17 +413,17 @@ public class Chef
 		 * 
 		 */		
 
-		MenuItem mEdit = new MenuItem(mBar, SWT.CASCADE); mEdit.setText("&Edit");
+		MenuItem mEdit = new MenuItem(mBar, SWT.CASCADE); mEdit.setText(Messages.getString("Chef.Menu.Edit")); //$NON-NLS-1$
 		Menu msEdit = new Menu(shell, SWT.DROP_DOWN);
 		mEdit.setMenu(msEdit);
 		miEditUndo         = new MenuItem(msEdit, SWT.CASCADE);
 		miEditRedo         = new MenuItem(msEdit, SWT.CASCADE);
 		setUndoMenu();
 		new MenuItem(msEdit, SWT.SEPARATOR);
-		MenuItem miEditUnselectAll  = new MenuItem(msEdit, SWT.CASCADE); miEditUnselectAll.setText("&Clear selection\tESC");
-		MenuItem miEditSelectAll    = new MenuItem(msEdit, SWT.CASCADE); miEditSelectAll.setText("&Select all steps\tCTRL-A");
+		MenuItem miEditUnselectAll  = new MenuItem(msEdit, SWT.CASCADE); miEditUnselectAll.setText(Messages.getString("Chef.Menu.Edit.ClearSelection")); //$NON-NLS-1$
+		MenuItem miEditSelectAll    = new MenuItem(msEdit, SWT.CASCADE); miEditSelectAll.setText(Messages.getString("Chef.Menu.Edit.SelectAllSteps")); //$NON-NLS-1$
 		new MenuItem(msEdit, SWT.SEPARATOR);
-		MenuItem miEditOptions      = new MenuItem(msEdit, SWT.CASCADE); miEditOptions.setText("&Options...");
+		MenuItem miEditOptions      = new MenuItem(msEdit, SWT.CASCADE); miEditOptions.setText(Messages.getString("Chef.Menu.Edit.Options")); //$NON-NLS-1$
 
 		Listener lsEditUndo        = new Listener() { public void handleEvent(Event e) { undoAction(); } };
 		Listener lsEditRedo        = new Listener() { public void handleEvent(Event e) { redoAction(); } };
@@ -438,14 +438,14 @@ public class Chef
 	    miEditOptions    .addListener(SWT.Selection, lsEditOptions);
 
 		// main Repository menu...
-	    MenuItem mRep = new MenuItem(mBar, SWT.CASCADE); mRep.setText("&Repository");
+	    MenuItem mRep = new MenuItem(mBar, SWT.CASCADE); mRep.setText(Messages.getString("Chef.Menu.Repository")); //$NON-NLS-1$
 		  Menu msRep = new Menu(shell, SWT.DROP_DOWN);
 		  mRep.setMenu(msRep);
-		  MenuItem miRepConnect    = new MenuItem(msRep, SWT.CASCADE); miRepConnect.setText("&Connect to repository \tCTRL-R");
-		  MenuItem miRepDisconnect = new MenuItem(msRep, SWT.CASCADE); miRepDisconnect.setText("&Disconnect repository \tCTRL-D");
-		  MenuItem miRepExplore    = new MenuItem(msRep, SWT.CASCADE); miRepExplore.setText("&Explore repository \tCTRL-E");
+		  MenuItem miRepConnect    = new MenuItem(msRep, SWT.CASCADE); miRepConnect.setText(Messages.getString("Chef.Menu.Repository.Connect")); //$NON-NLS-1$
+		  MenuItem miRepDisconnect = new MenuItem(msRep, SWT.CASCADE); miRepDisconnect.setText(Messages.getString("Chef.Menu.Repository.Disconnect")); //$NON-NLS-1$
+		  MenuItem miRepExplore    = new MenuItem(msRep, SWT.CASCADE); miRepExplore.setText(Messages.getString("Chef.Menu.Repository.Explore")); //$NON-NLS-1$
 		  new MenuItem(msRep, SWT.SEPARATOR);
-		  MenuItem miRepUser       = new MenuItem(msRep, SWT.CASCADE); miRepUser.setText("&Edit current user\tCTRL-U");
+		  MenuItem miRepUser       = new MenuItem(msRep, SWT.CASCADE); miRepUser.setText(Messages.getString("Chef.Menu.Repository.EditUser")); //$NON-NLS-1$
 		
 		  Listener lsRepConnect     = new Listener() { public void handleEvent(Event e) { openRepository();    } };
 		  Listener lsRepDisconnect  = new Listener() { public void handleEvent(Event e) { closeRepository();   } };
@@ -463,14 +463,14 @@ public class Chef
 		 */		
 
 		MenuItem mJob = new MenuItem(mBar, SWT.CASCADE); 
-		mJob.setText("&Job");
+		mJob.setText(Messages.getString("Chef.Menu.Job")); //$NON-NLS-1$
 		Menu msJob = new Menu(shell, SWT.DROP_DOWN);
 		mJob.setMenu(msJob);
-		MenuItem miJobRun           = new MenuItem(msJob, SWT.CASCADE);   miJobRun.setText("&Run...\tF9");
+		MenuItem miJobRun           = new MenuItem(msJob, SWT.CASCADE);   miJobRun.setText(Messages.getString("Chef.Menu.Job.Run")); //$NON-NLS-1$
 		new MenuItem(msJob, SWT.SEPARATOR);
-		MenuItem miJobCopy = new MenuItem(msJob, SWT.CASCADE); 		      miJobCopy.setText("&Copy job to clipboard");
+		MenuItem miJobCopy = new MenuItem(msJob, SWT.CASCADE); 		      miJobCopy.setText(Messages.getString("Chef.Menu.Job.CopyToClipboard")); //$NON-NLS-1$
 		new MenuItem(msJob, SWT.SEPARATOR);
-		MenuItem miJobInfo          = new MenuItem(msJob, SWT.CASCADE);   miJobInfo.setText("&Settings...\tCTRL-J");
+		MenuItem miJobInfo          = new MenuItem(msJob, SWT.CASCADE);   miJobInfo.setText(Messages.getString("Chef.Menu.Job.Settings")); //$NON-NLS-1$
 		
 		Listener lsJobInfo        = new Listener() { public void handleEvent(Event e) { setJob();  } };
 		miJobInfo.addListener (SWT.Selection, lsJobInfo );
@@ -479,17 +479,17 @@ public class Chef
 		
 		
 		// Wizard menu
-		MenuItem mWizard = new MenuItem(mBar, SWT.CASCADE); mWizard.setText("&Wizard");
+		MenuItem mWizard = new MenuItem(mBar, SWT.CASCADE); mWizard.setText(Messages.getString("Chef.Menu.Wizard")); //$NON-NLS-1$
 		  Menu msWizard = new Menu(shell, SWT.DROP_DOWN );
 		  mWizard.setMenu(msWizard);
 
 		  MenuItem miWizardNewConnection = new MenuItem(msWizard, SWT.CASCADE); 
-		  miWizardNewConnection.setText("&Create database connection wizard...\tF3");
+		  miWizardNewConnection.setText(Messages.getString("Chef.Menu.Wizard.CreateDatabaseConnection")); //$NON-NLS-1$
 		  Listener lsWizardNewConnection= new Listener() { public void handleEvent(Event e) { createDatabaseWizard();  } };
 		  miWizardNewConnection.addListener(SWT.Selection, lsWizardNewConnection);
 
 		  MenuItem miWizardRipDatabase = new MenuItem(msWizard, SWT.CASCADE); 
-		  miWizardRipDatabase.setText("&Copy tables wizard...\tF10");
+		  miWizardRipDatabase.setText(Messages.getString("Chef.Menu.Wizard.CopyTables")); //$NON-NLS-1$
 		  Listener lsWizardRipDatabase= new Listener() { public void handleEvent(Event e) { ripDBWizard();  } };
 		  miWizardRipDatabase.addListener(SWT.Selection, lsWizardRipDatabase);
 
@@ -498,10 +498,10 @@ public class Chef
 		 * 
 		 */		
 
-		MenuItem mHelp = new MenuItem(mBar, SWT.CASCADE); mHelp.setText("&Help");
+		MenuItem mHelp = new MenuItem(mBar, SWT.CASCADE); mHelp.setText(Messages.getString("Chef.Menu.Help")); //$NON-NLS-1$
 		  Menu msHelp = new Menu(shell, SWT.DROP_DOWN);
 		  mHelp.setMenu(msHelp);
-		  MenuItem miHelpAbout       = new MenuItem(msHelp, SWT.CASCADE); miHelpAbout.setText("&About");
+		  MenuItem miHelpAbout       = new MenuItem(msHelp, SWT.CASCADE); miHelpAbout.setText(Messages.getString("Chef.Menu.Help.About")); //$NON-NLS-1$
 		
 		  Listener lsHelpAbout		 = new Listener() { public void handleEvent(Event e) { helpAbout();      } };
 		  miHelpAbout     .addListener (SWT.Selection, lsHelpAbout  );
@@ -530,7 +530,7 @@ public class Chef
 		  MenuItem miFileLast = new MenuItem(msFile, SWT.CASCADE);
 		  char chr  = (char)('1'+i );
 		  int accel =  SWT.CTRL | chr;
-		  String repository = ( lr[i]!=null && lr[i].length()>0 ) ? ( "["+lr[i]+"] " ) : "";
+		  String repository = ( lr[i]!=null && lr[i].length()>0 ) ? ( "["+lr[i]+"] " ) : ""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		  String filename = RepositoryDirectory.DIRECTORY_SEPARATOR + lf[i];
 		  if (!lt[i]) filename = lf[i];
 		  
@@ -541,11 +541,11 @@ public class Chef
 		  if (i<9)
 		  {
 		  	miFileLast.setAccelerator(accel);
-			miFileLast.setText("&"+chr+"  "+repository+filename+ "\tCTRL-"+chr);
+			miFileLast.setText("&"+chr+"  "+repository+filename+ "\tCTRL-"+chr); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		  }
 		  else
 		  {
-		  	miFileLast.setText("   "+repository+filename);
+		  	miFileLast.setText("   "+repository+filename); //$NON-NLS-1$
 		  }
 		  
 		  final String  fn = lf[i];   // filename
@@ -577,8 +577,8 @@ public class Chef
 				      			{
 				      				rep=null;
 				      				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-									mb.setMessage("I was unable to connect to this repository!");
-									mb.setText("Error!");
+									mb.setMessage(Messages.getString("Chef.Dialog.UnableToConnectToRepository.Message")); //$NON-NLS-1$
+									mb.setText(Messages.getString("Chef.Dialog.UnableToConnectToRepository.Title")); //$NON-NLS-1$
 									mb.open();
 				      			}
 				      		}
@@ -603,21 +603,21 @@ public class Chef
 			      					}
 			      					else
 			      					{
-			      						throw new KettleException("The directory specified doesn't exist: "+fd);
+			      						throw new KettleException(Messages.getString("Chef.Exception.RepositoryDirectoryDoesNotExist")+fd); //$NON-NLS-1$
 			      					}
 								}
 			      				catch(KettleException ke)
 								{
 									jobMeta.clear();
-									new ErrorDialog(shell, props, "Error loading job", "I was unable to load this job from the repository!", ke);
+									new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.ErrorLoadingJob.Title"), Messages.getString("Chef.ErrorDialog.ErrorLoadingJob.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 								}
 				      		}
 				      		else
 				      		{
 								jobMeta.clear();
 			      				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-								mb.setMessage("Can't load this job.  Please connect to the correct repository first.");
-								mb.setText("Error!");
+								mb.setMessage(Messages.getString("Chef.Dialog.CanNotLoadJobConnectToRepositoryFirst.Message")); //$NON-NLS-1$
+								mb.setText(Messages.getString("Chef.Dialog.CanNotLoadJobConnectToRepositoryFirst.Title")); //$NON-NLS-1$
 								mb.open();
 				      		}
 				      	}
@@ -631,7 +631,7 @@ public class Chef
 				      		catch(KettleException ke)
 							{
 								jobMeta.clear();
-								new ErrorDialog(shell, props, "Error loading job", "I was unable to load this job from the XML file!", ke);
+								new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.UnableToLoadJobFromXML.Title"), Messages.getString("Chef.ErrorDialog.UnableToLoadJobFromXML.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 							}
 				      	}
 				      	
@@ -651,49 +651,49 @@ public class Chef
 		tBar = new ToolBar(shell, SWT.HORIZONTAL | SWT.FLAT );
 		//tBar.setSize(200, 20);
 		final ToolItem tiFileNew = new ToolItem(tBar, SWT.PUSH);
-		final Image imFileNew = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"new.png")); 
+		final Image imFileNew = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"new.png"));  //$NON-NLS-1$
 		tiFileNew.setImage(imFileNew);
 		tiFileNew.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newFile(); }});
-		tiFileNew.setToolTipText("New file, clear all settings");
+		tiFileNew.setToolTipText(Messages.getString("Chef.ToolBarButton.NewFile.ToolTip")); //$NON-NLS-1$
 
 		final ToolItem tiFileOpen = new ToolItem(tBar, SWT.PUSH);
-		final Image imFileOpen = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"open.png")); 
+		final Image imFileOpen = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"open.png"));  //$NON-NLS-1$
 		tiFileOpen.setImage(imFileOpen);
 		tiFileOpen.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { openFile(false); }});
-		tiFileOpen.setToolTipText("Open file");
+		tiFileOpen.setToolTipText(Messages.getString("Chef.ToolBarButton.OpenFile.ToolTip")); //$NON-NLS-1$
 
 		final ToolItem tiFileSave = new ToolItem(tBar, SWT.PUSH);
-		final Image imFileSave = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"save.png")); 
+		final Image imFileSave = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"save.png"));  //$NON-NLS-1$
 		tiFileSave.setImage(imFileSave);
 		tiFileSave.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveFile(); }});
-		tiFileSave.setToolTipText("Save current file");
+		tiFileSave.setToolTipText(Messages.getString("Chef.ToolBarButton.SaveCurrentFile.ToolTip")); //$NON-NLS-1$
 
 		final ToolItem tiFileSaveAs = new ToolItem(tBar, SWT.PUSH);
-		final Image imFileSaveAs = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"saveas.png")); 
+		final Image imFileSaveAs = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"saveas.png"));  //$NON-NLS-1$
 		tiFileSaveAs.setImage(imFileSaveAs);
 		tiFileSaveAs.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { saveFileAs(); }});
-		tiFileSaveAs.setToolTipText("Save file with different name");
+		tiFileSaveAs.setToolTipText(Messages.getString("Chef.ToolBarButton.SaveFileAs.ToolTip")); //$NON-NLS-1$
 
 		new ToolItem(tBar, SWT.SEPARATOR);
 		final ToolItem tiFilePrint = new ToolItem(tBar, SWT.PUSH);
-		final Image imFilePrint = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"print.png")); 
+		final Image imFilePrint = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"print.png"));  //$NON-NLS-1$
 		tiFilePrint.setImage(imFilePrint);
 		tiFilePrint.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { printFile(); }});
-		tiFilePrint.setToolTipText("Print");
+		tiFilePrint.setToolTipText(Messages.getString("Chef.ToolBarButton.Print.ToolTip")); //$NON-NLS-1$
 
 		new ToolItem(tBar, SWT.SEPARATOR);
 		final ToolItem tiFileRun = new ToolItem(tBar, SWT.PUSH);
-		final Image imFileRun = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"run.png")); 
+		final Image imFileRun = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"run.png"));  //$NON-NLS-1$
 		tiFileRun.setImage(imFileRun);
 		tiFileRun.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { tabfolder.setSelection(1); cheflog.startstop(); }});
-		tiFileRun.setToolTipText("Run this job");
+		tiFileRun.setToolTipText(Messages.getString("Chef.ToolBarButton.RunThisJob.ToolTip")); //$NON-NLS-1$
 
         new ToolItem(tBar, SWT.SEPARATOR);
         final ToolItem tiSQL = new ToolItem(tBar, SWT.PUSH);
-        final Image imSQL = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"SQLbutton.png")); 
+        final Image imSQL = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"SQLbutton.png"));  //$NON-NLS-1$
         tiSQL.setImage(imSQL);
         tiSQL.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSQL(); }});
-        tiSQL.setToolTipText("Generate the SQL needed to run this job");
+        tiSQL.setToolTipText(Messages.getString("Chef.ToolBarButton.GenerateSQL.ToolTip")); //$NON-NLS-1$
 
 		tBar.addDisposeListener(new DisposeListener() 
 			{
@@ -728,8 +728,8 @@ public class Chef
             else
             {
                 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-                mb.setMessage("As far as I can tell, no SQL statements need to be executed before this job can run.");
-                mb.setText("SQL");
+                mb.setMessage(Messages.getString("Chef.Dialog.NoSQLNeeded.Message")); //$NON-NLS-1$
+                mb.setText(Messages.getString("Chef.Dialog.NoSQLNeeded.Title")); //$NON-NLS-1$
                 mb.open();
             }
         }
@@ -771,7 +771,7 @@ public class Chef
         for (int i=0;i<baseJobEntries.length;i++)
         {
             JobPlugin plugin = baseJobEntries[i];
-            if (!plugin.getID().equals("SPECIAL"))
+            if (!plugin.getID().equals("SPECIAL")) //$NON-NLS-1$
             {
                TreeItem tiBase = new TreeItem(tiBaseEntries, SWT.NONE);
                tiBase.setText(baseJobEntries[i].getDescription());
@@ -851,7 +851,7 @@ public class Chef
 	private void setMenu(SelectionEvent e)
 	{
 		TreeItem ti = (TreeItem)e.item;
-		log.logDebug(toString(), "Clicked on  "+ti.getText());
+		log.logDebug(toString(), Messages.getString("Chef.Log.ClickedOn")+ti.getText()); //$NON-NLS-1$
 		
 		Menu mCSH = new Menu(shell, SWT.POP_UP);
 
@@ -859,7 +859,7 @@ public class Chef
 		TreeItem parent = ti.getParentItem();
 		if (parent==null) // Top level
 		{
-			MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText("New");
+			MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Chef.TreeMenu.New")); //$NON-NLS-1$
 			miNew.addListener( SWT.Selection, lsNew );
 		}
 		else
@@ -867,15 +867,15 @@ public class Chef
 			String section = parent.getText();
 			if (section.equalsIgnoreCase(STRING_CONNECTIONS))
 			{
-				MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText("New");
-				MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText("Edit");
-				MenuItem miDupe = new MenuItem(mCSH, SWT.PUSH); miDupe.setText("Duplicate");
-				MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText("Delete");
+				MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Chef.TreeMenu.Connection.New")); //$NON-NLS-1$
+				MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Chef.TreeMenu.Connection.Edit")); //$NON-NLS-1$
+				MenuItem miDupe = new MenuItem(mCSH, SWT.PUSH); miDupe.setText(Messages.getString("Chef.TreeMenu.Connection.Duplicate")); //$NON-NLS-1$
+				MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Chef.TreeMenu.Connection.Delete")); //$NON-NLS-1$
 				new MenuItem(mCSH, SWT.SEPARATOR);
-				MenuItem miSQL  = new MenuItem(mCSH, SWT.PUSH); miSQL.setText("SQL Editor");
-				MenuItem miCache= new MenuItem(mCSH, SWT.PUSH); miCache.setText("Clear DB Cache of "+ti.getText());
+				MenuItem miSQL  = new MenuItem(mCSH, SWT.PUSH); miSQL.setText(Messages.getString("Chef.TreeMenu.Connection.SQLEditor")); //$NON-NLS-1$
+				MenuItem miCache= new MenuItem(mCSH, SWT.PUSH); miCache.setText(Messages.getString("Chef.TreeMenu.Connection.ClearDBCache")+ti.getText()); //$NON-NLS-1$
 				new MenuItem(mCSH, SWT.SEPARATOR);
-				MenuItem miExpl = new MenuItem(mCSH, SWT.PUSH); miExpl.setText("Explore");
+				MenuItem miExpl = new MenuItem(mCSH, SWT.PUSH); miExpl.setText(Messages.getString("Chef.TreeMenu.Connection.Explore")); //$NON-NLS-1$
 				miNew.addListener( SWT.Selection, lsNew );   
 				miEdit.addListener(SWT.Selection, lsEdit );
 				miDupe.addListener(SWT.Selection, lsDupe );
@@ -887,10 +887,10 @@ public class Chef
 			else
 			if (!ti.getText().equalsIgnoreCase(STRING_SPECIAL) && !section.equalsIgnoreCase(STRING_SPECIAL))
 			{
-				MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText("New");
-				MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText("Edit");
-				MenuItem miDupe = new MenuItem(mCSH, SWT.PUSH); miDupe.setText("Duplicate");
-				MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText("Delete");
+				MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Chef.TreeMenu.JobEntry.New")); //$NON-NLS-1$
+				MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Chef.TreeMenu.JobEntry.Edit")); //$NON-NLS-1$
+				MenuItem miDupe = new MenuItem(mCSH, SWT.PUSH); miDupe.setText(Messages.getString("Chef.TreeMenu.JobEntry.Duplicate")); //$NON-NLS-1$
+				MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Chef.TreeMenu.JobEntry.Delete")); //$NON-NLS-1$
 				miNew.addListener( SWT.Selection, lsNew );   
 				miEdit.addListener(SWT.Selection, lsEdit );
 				miDupe.addListener(SWT.Selection, lsDupe );
@@ -908,10 +908,10 @@ public class Chef
 		tabfolder= new CTabFolder(child, SWT.BORDER);
 		props.setLook(tabfolder, Props.WIDGET_STYLE_TAB);
 
-		tiTabsGraph = new CTabItem(tabfolder, SWT.NONE); tiTabsGraph.setText("Graphical view");
-		tiTabsGraph.setToolTipText("Displays the job graphically.");
-		tiTabsList  = new CTabItem(tabfolder, SWT.NULL); tiTabsList.setText("Log view");
-		tiTabsList.setToolTipText("Displays the log of the running job.");
+		tiTabsGraph = new CTabItem(tabfolder, SWT.NONE); tiTabsGraph.setText(Messages.getString("Chef.Tab.GraphicalView.Text")); //$NON-NLS-1$
+		tiTabsGraph.setToolTipText(Messages.getString("Chef.Tab.GraphicalView.ToolTip")); //$NON-NLS-1$
+		tiTabsList  = new CTabItem(tabfolder, SWT.NULL); tiTabsList.setText(Messages.getString("Chef.Tab.LogView.Text")); //$NON-NLS-1$
+		tiTabsList.setToolTipText(Messages.getString("Chef.Tab.LogView.ToolTip")); //$NON-NLS-1$
 		
 		chefgraph = new ChefGraph(tabfolder, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND, this);
 		cheflog   = new ChefLog(tabfolder, SWT.NONE, this);
@@ -926,7 +926,7 @@ public class Chef
 
 	public String getRepositoryName()
 	{
-		return rep==null?"":rep.getName();
+		return rep==null?"":rep.getName(); //$NON-NLS-1$
 	}
 		
 	public void newSelected() // Double click in tree
@@ -1019,7 +1019,7 @@ public class Chef
 		// Then call editConnection or editStep or editTrans
 		for (i=name.length-1;i>=0;i--)
 		{
-			log.logDebug(toString(), "(DELETE) Trying to delete #"+i+"/"+(ti.length-1)+" : "+name[i]);
+			log.logDebug(toString(), Messages.getString("Chef.Log.TryingToDelete")+i+"/"+(ti.length-1)+" : "+name[i]); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			if (parent[i] != null)
 			{
                 String type = parent[i].getText();
@@ -1049,7 +1049,7 @@ public class Chef
 			if (type.equalsIgnoreCase(STRING_CONNECTIONS))
 			{
 				DatabaseMeta ci = jobMeta.findDatabase(name);
-				SQLEditor sql = new SQLEditor(shell, SWT.NONE, ci, jobMeta.dbcache, "");
+				SQLEditor sql = new SQLEditor(shell, SWT.NONE, ci, jobMeta.dbcache, ""); //$NON-NLS-1$
 				sql.open();
 			}
 			
@@ -1100,7 +1100,7 @@ public class Chef
 		if (db!=null)
 		{
 			DatabaseMeta newdb = (DatabaseMeta)db.clone();
-			String dupename = "(copy of) "+name; 
+			String dupename = Messages.getString("Chef.JobEntryName.Duplicate.Prefix")+name;  //$NON-NLS-1$
 			newdb.setName(dupename);
 			jobMeta.addDatabase(pos+1, newdb);
 			refreshTree();
@@ -1150,12 +1150,12 @@ public class Chef
                     catch(KettleDatabaseException dbe)
                     {
                         
-                        new ErrorDialog(shell, props, "ERROR", "Error deleting connection ["+db+"] from repository!", dbe);
+                        new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.ErrorDeletingConnection.Title"), Messages.getString("Chef.ErrorDialog.ErrorDeletingConnection.Message")+db+Messages.getString("Chef.ErrorDialog.ErrorDeletingConnection.Message2"), dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     }
                 }
                 else
                 {
-                    new ErrorDialog(shell, props, "This user is read-only!",  "Error deleting connection ["+db+"] from repository!");
+                    new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Title"),  Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Message")+db+Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 }
             }
 
@@ -1173,7 +1173,7 @@ public class Chef
 		
 	public void newJobHop(JobEntryCopy fr, JobEntryCopy to)
 	{
-		log.logBasic(toString(), "new JobHop("+fr.getName()+", "+to.getName()+")");
+		log.logBasic(toString(), Messages.getString("Chef.Log.NewJobHop")+fr.getName()+", "+to.getName()+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		JobHopMeta hi = new JobHopMeta(fr, to);
 		jobMeta.addJobHop(hi);
 		addUndoNew(new JobHopMeta[] {hi}, new int[] { jobMeta.indexOfJobHop(hi)} );
@@ -1187,8 +1187,8 @@ public class Chef
 		if (jobMeta.hasChanged())
 		{
 			MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_WARNING );
-			mb.setMessage("This model has changed.  Are you sure you want open a new file?");
-			mb.setText("Warning!");
+			mb.setMessage(Messages.getString("Chef.Dialog.OpenNewFileHasChanged.Message")); //$NON-NLS-1$
+			mb.setText(Messages.getString("Chef.Dialog.OpenNewFileHasChanged.Title")); //$NON-NLS-1$
 			answer = mb.open()==SWT.YES;
 		}
 		return answer;
@@ -1206,12 +1206,12 @@ public class Chef
 			if (rep!=null) rep.disconnect();
 			
 			rep = new Repository(log, rd.getRepository(), rd.getUser());
-			if (!rep.connect("Spoon"))
+			if (!rep.connect(Messages.getString("Chef.AppName.RepositoryConnect"))) //$NON-NLS-1$
 			{
 				rep=null;
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("An error occured connecting to the repository!"+Const.CR+"See the log for more information.");
-				mb.setText("Error!");
+				mb.setMessage(Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Message1")+Const.CR+Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
+				mb.setText(Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Title")); //$NON-NLS-1$
 				mb.open();
 			}
 			
@@ -1316,8 +1316,8 @@ public class Chef
 					catch(KettleException e)
 					{
 						MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-						mb.setMessage("Sorry, I was unable to change this user in the repository: "+Const.CR+e.getMessage());
-						mb.setText("Edit user");
+						mb.setMessage(Messages.getString("Chef.Dialog.UnableToChangeUser.Message")+Const.CR+e.getMessage()); //$NON-NLS-1$
+						mb.setText(Messages.getString("Chef.Dialog.UnableToChangeUser.Title")); //$NON-NLS-1$
 						mb.open();
 					}
 			 	}
@@ -1325,8 +1325,8 @@ public class Chef
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.ICON_WARNING | SWT.OK);
-				mb.setMessage("Sorry, you are not allowed to change this user.");
-				mb.setText("Edit user");
+				mb.setMessage(Messages.getString("Chef.Dialog.NotAllowedToChangeUser.Message")); //$NON-NLS-1$
+				mb.setText(Messages.getString("Chef.Dialog.NotAllowedToChangeUser.Title")); //$NON-NLS-1$
 				mb.open();
 			}		
 		}
@@ -1381,8 +1381,8 @@ public class Chef
 					else
 					{
 						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage("Couldn't find connection, please refresh the tree (F5)!");
-						mb.setText("Error!");
+						mb.setMessage(Messages.getString("Chef.Dialog.UnableToFindConnection.Message")); //$NON-NLS-1$
+						mb.setText(Messages.getString("Chef.Dialog.UnableToFindConnection.Title")); //$NON-NLS-1$
 						mb.open();
 					}
 				} 
@@ -1418,8 +1418,8 @@ public class Chef
                     {
                         jobMeta.clear();
                         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                        mb.setMessage("Error opening : "+fname+Const.CR+xe.getMessage());
-                        mb.setText("Error!");
+                        mb.setMessage(Messages.getString("Chef.Dialog.ErrorOpeningJob.Message")+fname+Const.CR+xe.getMessage()); //$NON-NLS-1$
+                        mb.setText(Messages.getString("Chef.Dialog.ErrorOpeningJob.Title")); //$NON-NLS-1$
                         mb.open();
                     }
 
@@ -1456,8 +1456,8 @@ public class Chef
 	{
 		// AYS: Y/N??
 		MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_WARNING );
-		mb.setMessage("Are you sure you want to clear all information?");
-		mb.setText("Warning!");
+		mb.setMessage(Messages.getString("Chef.Dialog.ConfirmNewFile.Message")); //$NON-NLS-1$
+		mb.setText(Messages.getString("Chef.Dialog.ConfirmNewFile.Title")); //$NON-NLS-1$
 		int answer = mb.open();
 		
 		if (answer == SWT.YES)
@@ -1485,13 +1485,13 @@ public class Chef
         boolean exit        = true;
         boolean showWarning = true;
         
-        log.logDetailed(toString(), "Quit application.");
+        log.logDetailed(toString(), "Quit application."); //$NON-NLS-1$
         saveSettings();
         if (jobMeta.hasChanged())
         {
             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
-            mb.setMessage("File has changed!  Do you want to save first?");
-            mb.setText("Warning!");
+            mb.setMessage(Messages.getString("Chef.Dialog.FileChangedSaveFirst.Message")); //$NON-NLS-1$
+            mb.setText(Messages.getString("Chef.Dialog.FileChangedSaveFirst.Title")); //$NON-NLS-1$
             int answer = mb.open();
         
             switch(answer)
@@ -1514,17 +1514,17 @@ public class Chef
              (exit && showWarning && props.showExitWarning() )
            )
         {
-            String message = "Are you sure you want to exit?"; 
-            if (cheflog.isRunning()) message = "There is a running job.  Are you sure you want to exit?";
+            String message = Messages.getString("Chef.Dialog.ExitApplicationAreYouSure.Message");  //$NON-NLS-1$
+            if (cheflog.isRunning()) message = Messages.getString("Chef.Dialog.ExitApplicationAreYouSure.MessageRunning"); //$NON-NLS-1$
             
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                    "Warning!", 
+                    Messages.getString("Chef.Dialog.ExitApplicationAreYouSure.Title"),  //$NON-NLS-1$
                     null,
                     message,
                     MessageDialog.WARNING,
-                    new String[] { "Yes", "No" },
+                    new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
                     1,
-                    "Please, don't show this warning anymore.",
+                    Messages.getString("Chef.Dialog.ExitApplicationAreYouSure.Toggle"), //$NON-NLS-1$
                     !props.showExitWarning()
                );
                int idx = md.open();
@@ -1552,7 +1552,7 @@ public class Chef
 
 	public void saveFile()
 	{
-		log.logDetailed(toString(), "Save file...");
+		log.logDetailed(toString(), "Save file..."); //$NON-NLS-1$
 		if (rep!=null)
 		{
 			saveRepository();
@@ -1577,7 +1577,7 @@ public class Chef
 
 	public void saveRepository(boolean ask_name)
 	{
-		log.logDetailed(toString(), "Save to repository...");
+		log.logDetailed(toString(), "Save to repository..."); //$NON-NLS-1$
 		if (rep!=null)
 		{
 			boolean answer = true;
@@ -1587,8 +1587,8 @@ public class Chef
 				if (!ask)
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-					mb.setMessage("Please give this job a name before saving it in the database.");
-					mb.setText("This job has no name.");
+					mb.setMessage(Messages.getString("Chef.Dialog.GiveJobANameBeforeSaving.Message")); //$NON-NLS-1$
+					mb.setText(Messages.getString("Chef.Dialog.GiveJobANameBeforeSaving.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 				ask=false;
@@ -1603,15 +1603,15 @@ public class Chef
 					if (jobMeta.showReplaceWarning(rep))
 					{
 						MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-						mb.setMessage("There already is a job called ["+jobMeta.getName()+"] in the repository."+Const.CR+"Do you want to overwrite the job?");
-						mb.setText("Overwrite?");
+						mb.setMessage(Messages.getString("Chef.Dialog.JobExistsOverwrite.Message1")+jobMeta.getName()+Messages.getString("Chef.Dialog.JobExistsOverwrite.Message2")+Const.CR+Messages.getString("Chef.Dialog.JobExistsOverwrite.Message3")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						mb.setText(Messages.getString("Chef.Dialog.JobExistsOverwrite.Title")); //$NON-NLS-1$
 						response = mb.open();
 					}
 					
 					if (response == SWT.YES)
 					{
 						// Keep info on who & when this transformation was changed...
-						jobMeta.modified_date = new Value("MODIFIED_DATE", Value.VALUE_TYPE_DATE); 				
+						jobMeta.modified_date = new Value("MODIFIED_DATE", Value.VALUE_TYPE_DATE); 				 //$NON-NLS-1$
 						jobMeta.modified_date.sysdate();
 						jobMeta.modified_user = rep.getUserInfo().getLogin();
 
@@ -1621,13 +1621,13 @@ public class Chef
 							if (!props.getSaveConfirmation())
 							{
 								MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-																						 "Save OK!", 
+																						 Messages.getString("Chef.Dialog.JobWasStoredInTheRepository.Title"),  //$NON-NLS-1$
 																						 null,
-																						 "This job was stored in repository",
+																						 Messages.getString("Chef.Dialog.JobWasStoredInTheRepository.Message"), //$NON-NLS-1$
 																						 MessageDialog.QUESTION,
-																						 new String[] { "OK!" },
+																						 new String[] { Messages.getString("System.Button.OK") }, //$NON-NLS-1$
 																						 0,
-																						 "Don't show this message again.",
+																						 Messages.getString("Chef.Dialog.JobWasStoredInTheRepository.Toggle"), //$NON-NLS-1$
 																						 props.getSaveConfirmation()
 																						 );
 								md.open();
@@ -1646,8 +1646,8 @@ public class Chef
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.CLOSE | SWT.ICON_ERROR);
-					mb.setMessage("Sorry, the user you're logged on with, can only read from the repository");
-					mb.setText("Job not saved!");
+					mb.setMessage(Messages.getString("Chef.Dialog.UserCanOnlyReadFromTheRepositoryJobNotSaved.Message")); //$NON-NLS-1$
+					mb.setText(Messages.getString("Chef.Dialog.UserCanOnlyReadFromTheRepositoryJobNotSaved.Title")); //$NON-NLS-1$
 					mb.open();
 				}
 			}
@@ -1655,15 +1655,15 @@ public class Chef
 		else
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setMessage("There is no repository connection available.");
-			mb.setText("No repository available.");
+			mb.setMessage(Messages.getString("Chef.Dialog.NoRepositoryConnectionAvailable.Message")); //$NON-NLS-1$
+			mb.setText(Messages.getString("Chef.Dialog.NoRepositoryConnectionAvailable.Title")); //$NON-NLS-1$
 			mb.open();
 		}
 	}
 
 	public void saveFileAs()
 	{
-		log.logBasic(toString(), "Save file as...");
+		log.logBasic(toString(), "Save file as..."); //$NON-NLS-1$
 
 		FileDialog dialog = new FileDialog(shell, SWT.SAVE);
 		//dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
@@ -1689,8 +1689,8 @@ public class Chef
 			if (f.exists())
 			{
 				MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES | SWT.ICON_WARNING);
-				mb.setMessage("This file already exists.  Do you want to overwrite it?");
-				mb.setText("This file already exists!");
+				mb.setMessage(Messages.getString("Chef.Dialog.FileExistsOverWrite.Message")); //$NON-NLS-1$
+				mb.setText(Messages.getString("Chef.Dialog.FileExistsOverWrite.Title")); //$NON-NLS-1$
 				id = mb.open();
 			}
 			if (id==SWT.YES)
@@ -1710,21 +1710,21 @@ public class Chef
             dos.close();
 
             // Handle last opened files...
-			props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, RepositoryDirectory.DIRECTORY_SEPARATOR, false, "");
+			props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, RepositoryDirectory.DIRECTORY_SEPARATOR, false, ""); //$NON-NLS-1$
 			saveSettings();
 			addMenuLast();
 
-			log.logDebug(toString(), "File written to ["+fname+"]");
+			log.logDebug(toString(), "File written to ["+fname+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 			jobMeta.setFilename( fname );
 			jobMeta.clearChanged();
 			setShellText();
 		}
 		catch(Exception e)
 		{
-			log.logDebug(toString(), "Error opening file for writing! --> "+e.toString());
+			log.logDebug(toString(), "Error opening file for writing! --> "+e.toString()); //$NON-NLS-1$
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setMessage("Error saving file:"+Const.CR+e.toString());
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("Chef.Dialog.ErrorSavingFile.Message")+Const.CR+e.toString()); //$NON-NLS-1$
+			mb.setText(Messages.getString("Chef.Dialog.ErrorSavingFile.Title")); //$NON-NLS-1$
 			mb.open();
 		}
 	}
@@ -1732,11 +1732,11 @@ public class Chef
 	public void helpAbout()
 	{
 		MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION | SWT.CENTER);
-		String mess = "Kettle - Chef version "+Const.VERSION+Const.CR+Const.CR+Const.CR;
-		mess+="(c) 2001-2004 i-Bridge bvba"+Const.CR+"         www.kettle.be"+Const.CR;
+		String mess = Messages.getString("Chef.Dialog.About.KettleChefVersion")+Const.VERSION+Const.CR+Const.CR+Const.CR; //$NON-NLS-1$
+		mess+=Messages.getString("Chef.Dialog.About.Company")+Const.CR+Messages.getString("Chef.Dialog.About.WebSite")+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
 		        
         mb.setMessage(mess);
-		mb.setText("Chef");
+		mb.setText(Messages.getString("Chef.Application.Name")); //$NON-NLS-1$
 		mb.open();
 	}
 	
@@ -1813,7 +1813,7 @@ public class Chef
 
 	public void refreshTree(boolean complete)
 	{
-		log.logDetailed(toString(), "refreshTree() called");
+		log.logDetailed(toString(), "refreshTree() called"); //$NON-NLS-1$
 	
         // Get some TreeItems...
         //
@@ -1887,19 +1887,19 @@ public class Chef
 				try
 				{
 					db.saveRep(rep);
-					log.logDetailed(toString(), "Saved database connection ["+db+"] to the repository.");
+					log.logDetailed(toString(), "Saved database connection ["+db+"] to the repository."); //$NON-NLS-1$ //$NON-NLS-2$
 					
                     // Put a commit behind it!
                     rep.commit();
 				}
 				catch(KettleException ke)
 				{
-					new ErrorDialog(shell, props, "Error saving connection", "Error saving connection ["+db+"] to repository!", ke); 
+					new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Title"), Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Message1")+db+Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Message2"), ke);  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			}
 			else
 			{
-				new ErrorDialog(shell, props, "Error saving connection", "Can't save database connection!", new KettleException("This repository user is read-only!")); 
+				new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.ReadOnlyUserErrorSavingConnection.Title"), Messages.getString("Chef.ErrorDialog.ReadOnlyUserErrorSavingConnection.Message"), new KettleException(Messages.getString("Chef.ErrorDialog.ReadOnlyUserErrorSavingConnection.Exception")));  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 	}
@@ -1921,7 +1921,7 @@ public class Chef
 				// Determine name & number for this entry.
 				String basename = type_desc;
 				int nr = jobMeta.generateJobEntryNameNr(basename);
-				String entry_name = basename+" "+nr;
+				String entry_name = basename+" "+nr; //$NON-NLS-1$
 				
 				// Generate the appropriate class...
                 JobEntryInterface jei = jobLoader.getJobEntryClass(jobPlugin); 
@@ -1967,7 +1967,7 @@ public class Chef
 		}
 		catch(Throwable e)
 		{
-			new ErrorDialog(shell, props, "Severe error creating resources.", "Error creating new chefgraphentry",new Exception(e)); 
+			new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.UnexpectedErrorCreatingNewChefGraphEntry.Title"), Messages.getString("Chef.ErrorDialog.UnexpectedErrorCreatingNewChefGraphEntry.Message"),new Exception(e));  //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		}
 	}
@@ -1976,7 +1976,7 @@ public class Chef
 	{
         try
         {
-    		log.logBasic(toString(), "edit job graph entry: "+je.getName());
+    		log.logBasic(toString(), "edit job graph entry: "+je.getName()); //$NON-NLS-1$
     		
     		JobEntryCopy before =(JobEntryCopy)je.clone_deep();
     		boolean entry_changed=false;
@@ -2001,15 +2001,15 @@ public class Chef
     		else
     		{
     			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-    			mb.setMessage("This job entry can't be changed!");
-    			mb.setText("Sorry...");
+    			mb.setMessage(Messages.getString("Chef.Dialog.JobEntryCanNotBeChanged.Message")); //$NON-NLS-1$
+    			mb.setText(Messages.getString("Chef.Dialog.JobEntryCanNotBeChanged.Title")); //$NON-NLS-1$
     			mb.open();
     		}
 
         }
         catch(Exception e)
         {
-            new ErrorDialog(shell, props, "Error editing job entry", "Error editing job entry", e);
+            new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.ErrorEditingJobEntry.Title"), Messages.getString("Chef.ErrorDialog.ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
 	}
 
@@ -2020,7 +2020,7 @@ public class Chef
 		je.setType(type);
 		String basename = JobEntryTrans.typeDesc[type]; 
 		int nr = jobMeta.generateJobEntryNameNr(basename);
-		je.setName(basename+" "+nr);
+		je.setName(basename+" "+nr); //$NON-NLS-1$
 
 		setShellText();
 		
@@ -2076,14 +2076,14 @@ public class Chef
 		if (jec==null || jec.length==0) return;
 		
 		String xml = XMLHandler.getXMLHeader();
-		xml+="<jobentries>"+Const.CR;
+		xml+="<jobentries>"+Const.CR; //$NON-NLS-1$
 
 		for (int i=0;i<jec.length;i++)
 		{
 			xml+=jec[i].getXML();
 		}
 		
-		xml+="    </jobentries>"+Const.CR;
+		xml+="    </jobentries>"+Const.CR; //$NON-NLS-1$
 		
 		toClipboard(xml);
 	}
@@ -2097,9 +2097,9 @@ public class Chef
 			// De-select all, re-select pasted steps...
 			jobMeta.unselectAll();
 			
-			Node entriesnode = XMLHandler.getSubNode(doc, "jobentries");
-			int nr = XMLHandler.countNodes(entriesnode, "entry");
-			log.logDebug(toString(), "I found "+nr+" job entries to paste on location: "+loc);
+			Node entriesnode = XMLHandler.getSubNode(doc, "jobentries"); //$NON-NLS-1$
+			int nr = XMLHandler.countNodes(entriesnode, "entry"); //$NON-NLS-1$
+			log.logDebug(toString(), "I found "+nr+" job entries to paste on location: "+loc); //$NON-NLS-1$ //$NON-NLS-2$
 			JobEntryCopy entries[] = new JobEntryCopy[nr];
 			
 			//Point min = new Point(loc.x, loc.y);
@@ -2107,7 +2107,7 @@ public class Chef
 			
 			for (int i=0;i<nr;i++)
 			{
-				Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i);
+				Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i); //$NON-NLS-1$
 				entries[i] = new JobEntryCopy(entrynode, jobMeta.getDatabases(), rep);
 
 				String name = jobMeta.getAlternativeJobentryName(entries[i].getName());
@@ -2153,7 +2153,7 @@ public class Chef
 		}
 		catch(KettleException e)
 		{
-		    new ErrorDialog(shell, props, "Error pasting job entries...", "I was unable to paste job entries to this job", e);
+		    new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.ErrorPasingJobEntries.Title"), Messages.getString("Chef.ErrorDialog.ErrorPasingJobEntries.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
@@ -2175,21 +2175,21 @@ public class Chef
 
 		if (rep!=null)
 		{
-			String repository = "["+getRepositoryName()+"]";
+			String repository = "["+getRepositoryName()+"]"; //$NON-NLS-1$ //$NON-NLS-2$
 			String transname  = jobMeta.getName();
-			if (transname==null) transname="[no name]";
-			shell.setText(APPL_TITLE+" - "+repository+"   "+transname+(jobMeta.hasChanged()?" (changed)":""));
+			if (transname==null) transname=Messages.getString("Chef.ShellText.NoJobName"); //$NON-NLS-1$
+			shell.setText(APPL_TITLE+" - "+repository+"   "+transname+(jobMeta.hasChanged()?Messages.getString("Chef.ShellText.Changed"):"")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 		else
 		{
-			String repository = "[no repository]";
+			String repository = Messages.getString("Chef.ShellText.NoRepository"); //$NON-NLS-1$
 			if (fname!=null)
 			{
-				shell.setText(APPL_TITLE+" - "+repository+"   File: "+fname+(jobMeta.hasChanged()?" (changed)":""));
+				shell.setText(APPL_TITLE+" - "+repository+Messages.getString("Chef.ShellText.File")+fname+(jobMeta.hasChanged()?Messages.getString("Chef.ShellText.Changed2"):"")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			}
 			else
 			{
-				shell.setText(APPL_TITLE+" - "+repository+"   "+(jobMeta.hasChanged()?" (changed)":""));
+				shell.setText(APPL_TITLE+" - "+repository+"   "+(jobMeta.hasChanged()?Messages.getString("Chef.ShellText.Changed3"):"")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			}
 		}
 	}
@@ -2279,18 +2279,18 @@ public class Chef
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-				monitor.beginTask("Building new job...", tables.length);
+				monitor.beginTask(Messages.getString("Chef.RipDB.Monitor.BuildingNewJob"), tables.length); //$NON-NLS-1$
 				monitor.worked(0);
 				JobEntryCopy previous = start;
 				
 				// Loop over the table-names...
 				for (int i=0;i<tables.length && !monitor.isCanceled();i++)
 				{
-					monitor.setTaskName("Processing table ["+tables[i]+"]...");
+					monitor.setTaskName(Messages.getString("Chef.RipDB.Monitor.ProcessingTable")+tables[i]+"]..."); //$NON-NLS-1$ //$NON-NLS-2$
 					//
 					// Create the new transformation...
 					//
-					String transname = "copy ["+sourceDbInfo+"].["+tables[i]+"] to ["+targetDbInfo+"]";
+					String transname = Messages.getString("Chef.RipDB.Monitor.Transname1")+sourceDbInfo+"].["+tables[i]+Messages.getString("Chef.RipDB.Monitor.Transname2")+targetDbInfo+"]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 					
 					TransMeta ti = new TransMeta((String)null, transname, null);
 					
@@ -2299,30 +2299,30 @@ public class Chef
 					//
 					// Add a note
 					//
-					String note = "Reads information from table ["+tables[i]+"] on database ["+sourceDbInfo+"]"+Const.CR;
-					note+="After that, it writes the information to table ["+tables[i]+"] on database ["+targetDbInfo+"]";
+					String note = Messages.getString("Chef.RipDB.Monitor.Note1")+tables[i]+Messages.getString("Chef.RipDB.Monitor.Note2")+sourceDbInfo+"]"+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					note+=Messages.getString("Chef.RipDB.Monitor.Note3")+tables[i]+Messages.getString("Chef.RipDB.Monitor.Note4")+targetDbInfo+"]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					NotePadMeta ni = new NotePadMeta(note, 150, 10, -1, -1);
 					ti.addNote(ni);
 					
 					//
 					// Add the TableInputMeta step...
 					// 
-					String fromstepname = "read from ["+tables[i]+"]";
+					String fromstepname = Messages.getString("Chef.RipDB.Monitor.FromStep.Name")+tables[i]+"]"; //$NON-NLS-1$ //$NON-NLS-2$
 					TableInputMeta tii = new TableInputMeta();
 					tii.setDatabaseMeta( sourceDbInfo );
-					tii.setSQL( "SELECT * FROM "+tables[i] );
+					tii.setSQL( "SELECT * FROM "+tables[i] ); //$NON-NLS-1$
 					
 					String fromstepid = StepLoader.getInstance().getStepPluginID(tii);
 					StepMeta fromstep = new StepMeta(log, fromstepid, fromstepname, (StepMetaInterface)tii );
 					fromstep.setLocation(150,100);
 					fromstep.setDraw(true);
-					fromstep.setDescription("Reads information from table ["+tables[i]+"] on database ["+sourceDbInfo+"]");
+					fromstep.setDescription(Messages.getString("Chef.RipDB.Monitor.FromStep.Description")+tables[i]+Messages.getString("Chef.RipDB.Monitor.FromStep.Description2")+sourceDbInfo+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					ti.addStep(fromstep);
 					
 					//
 					// Add the TableOutputMeta step...
 					//
-					String tostepname = "write to ["+tables[i]+"]";
+					String tostepname = Messages.getString("Chef.RipDB.Monitor.ToStep.Name")+tables[i]+"]"; //$NON-NLS-1$ //$NON-NLS-2$
 					TableOutputMeta toi = new TableOutputMeta();
 					toi.setDatabase( targetDbInfo );
 					toi.setTablename( tables[i] );
@@ -2333,7 +2333,7 @@ public class Chef
 					StepMeta tostep = new StepMeta(log, tostepid, tostepname, (StepMetaInterface)toi );
 					tostep.setLocation(500,100);
 					tostep.setDraw(true);
-					tostep.setDescription("Write information to table ["+tables[i]+"] on database ["+targetDbInfo+"]");
+					tostep.setDescription(Messages.getString("Chef.RipDB.Monitor.ToStep.Description1")+tables[i]+Messages.getString("Chef.RipDB.Monitor.ToStep.Description2")+targetDbInfo+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					ti.addStep(tostep);
 					
 					//
@@ -2348,14 +2348,14 @@ public class Chef
 					// First set the limit to 1 to speed things up!
 					String tmpSql = tii.getSQL();
 					tii.setSQL( tii.getSQL()+sourceDbInfo.getLimitClause(1) );
-					String sql = "";
+					String sql = ""; //$NON-NLS-1$
 					try
 					{
 						sql = ti.getSQLStatementsString();
 					}
 					catch(KettleStepException kse)
 					{
-						throw new InvocationTargetException(kse, "Error getting SQL from transformation ["+ti+"] : "+kse.getMessage());
+						throw new InvocationTargetException(kse, Messages.getString("Chef.RipDB.Exception.ErrorGettingSQLFromTransformation")+ti+"] : "+kse.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					// remove the limit
 					tii.setSQL( tmpSql );
@@ -2369,7 +2369,7 @@ public class Chef
 					}
 					catch(KettleException dbe)
 					{
-						throw new InvocationTargetException(dbe, "Unable to save transformation to the repository");
+						throw new InvocationTargetException(dbe, Messages.getString("Chef.RipDB.Exception.UnableToSaveTransformationToRepository")); //$NON-NLS-1$
 					}
 					
 					// We can now continue with the population of the job...
@@ -2386,11 +2386,11 @@ public class Chef
 					//
 					if (sql!=null && sql.length()>0)
 					{
-						String jesqlname = "Create table ["+tables[i]+"]";
+						String jesqlname = Messages.getString("Chef.RipDB.JobEntrySQL.Name")+tables[i]+"]"; //$NON-NLS-1$ //$NON-NLS-2$
 						JobEntrySQL jesql = new JobEntrySQL(jesqlname);
 						jesql.setDatabase(targetDbInfo);
 						jesql.setSQL(sql);
-						jesql.setDescription("This executes the SQL to create table ["+targetDbInfo+"].["+tables[i]+"]");
+						jesql.setDescription(Messages.getString("Chef.RipDB.JobEntrySQL.Description")+targetDbInfo+"].["+tables[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						
 						JobEntryCopy jecsql = new JobEntryCopy(log);
 						jecsql.setEntry(jesql);
@@ -2407,13 +2407,13 @@ public class Chef
 					//
 					// Add the jobentry for the transformation too...
 					//
-					String jetransname = "Copy data to ["+tables[i]+"]";
+					String jetransname = Messages.getString("Chef.RipDB.JobEntryTrans.Name")+tables[i]+"]"; //$NON-NLS-1$ //$NON-NLS-2$
 					JobEntryTrans jetrans = new JobEntryTrans(jetransname);
 					jetrans.setTransname(ti.getName());
 					jetrans.setDirectory(ti.getDirectory());
 					
 					JobEntryCopy jectrans = new JobEntryCopy(log, jetrans);
-					jectrans.setDescription("This job entry executes the transformation to copy data"+Const.CR+"from: ["+sourceDbInfo+"].["+tables[i]+"]"+Const.CR+"to:   ["+targetDbInfo+"].["+tables[i]+"]");
+					jectrans.setDescription(Messages.getString("Chef.RipDB.JobEntryTrans.Description1")+Const.CR+Messages.getString("Chef.RipDB.JobEntryTrans.Description2")+sourceDbInfo+"].["+tables[i]+"]"+Const.CR+Messages.getString("Chef.RipDB.JobEntryTrans.Description3")+targetDbInfo+"].["+tables[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 					jectrans.setDrawn();
 					location.x+=400;
 					jectrans.setLocation(new Point(location.x, location.y));
@@ -2439,12 +2439,12 @@ public class Chef
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, "Error ripping database", "An error occured ripping the database!", e);
+			new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, "Error ripping database", "An error occured ripping the database!", e);
+			new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		}
 		finally
@@ -2470,11 +2470,11 @@ public class Chef
 	 */
 	private void ripDBWizard()
 	{
-		final RipDatabaseWizardPage1 page1 = new RipDatabaseWizardPage1("1", jobMeta.databases);
+		final RipDatabaseWizardPage1 page1 = new RipDatabaseWizardPage1("1", jobMeta.databases); //$NON-NLS-1$
 		page1.createControl(shell);
-		final RipDatabaseWizardPage2 page2 = new RipDatabaseWizardPage2 ("2");
+		final RipDatabaseWizardPage2 page2 = new RipDatabaseWizardPage2 ("2"); //$NON-NLS-1$
 		page2.createControl(shell);
-		final RipDatabaseWizardPage3 page3 = new RipDatabaseWizardPage3 ("3", rep);
+		final RipDatabaseWizardPage3 page3 = new RipDatabaseWizardPage3 ("3", rep); //$NON-NLS-1$
 		page3.createControl(shell);
 
 		Wizard wizard = new Wizard() 
@@ -2902,23 +2902,23 @@ public class Chef
 		if (prev!=null) 
 		{
 			miEditUndo.setEnabled(true);
-			miEditUndo.setText("Undo : "+prev.toString()+" \tCTRL-Z");
+			miEditUndo.setText(Messages.getString("Chef.Menu.Edit.Undo")+prev.toString()+" \tCTRL-Z"); //$NON-NLS-1$ //$NON-NLS-2$
 		} 
 		else            
 		{
 			miEditUndo.setEnabled(false);
-			miEditUndo.setText("Undo : not available \tCTRL-Z");
+			miEditUndo.setText(Messages.getString("Chef.Menu.Edit.UndoNotAvailable")); //$NON-NLS-1$
 		} 
 
 		if (next!=null) 
 		{
 			miEditRedo.setEnabled(true);
-			miEditRedo.setText("Redo : "+next.toString()+" \tCTRL-Y");
+			miEditRedo.setText(Messages.getString("Chef.Menu.Edit.Redo")+next.toString()+" \tCTRL-Y"); //$NON-NLS-1$ //$NON-NLS-2$
 		} 
 		else            
 		{
 			miEditRedo.setEnabled(false);
-			miEditRedo.setText("Redo : not available \tCTRL-Y");			
+			miEditRedo.setText(Messages.getString("Chef.Menu.Edit.RedoNotAvailable"));			 //$NON-NLS-1$
 		} 
 
 	}
@@ -2977,22 +2977,22 @@ public class Chef
 
 		CommandLineOption options[] = new CommandLineOption[] 
             {
-			    new CommandLineOption("rep", "Repository name", optionRepname=new StringBuffer()),
-			    new CommandLineOption("user", "Repository username", optionUsername=new StringBuffer()),
-			    new CommandLineOption("pass", "Repository password", optionPassword=new StringBuffer()),
-			    new CommandLineOption("job", "The name of the job to load", optionJobname=new StringBuffer()),
-			    new CommandLineOption("dir", "The directory (don't forget the leading /)", optionDirname=new StringBuffer()),
-			    new CommandLineOption("file", "The filename (Transformation in XML) to launch", optionFilename=new StringBuffer()),
-			    new CommandLineOption("logfile", "The logging file to write to", optionLogfile=new StringBuffer()),
-			    new CommandLineOption("log", "The logging file to write to (deprecated)", optionLogfile=new StringBuffer(), false, true),
+			    new CommandLineOption("rep", Messages.getString("Chef.CommandLine.RepositoryName.Description"), optionRepname=new StringBuffer()), //$NON-NLS-1$ //$NON-NLS-2$
+			    new CommandLineOption("user", Messages.getString("Chef.CommandLine.Username.Description"), optionUsername=new StringBuffer()), //$NON-NLS-1$ //$NON-NLS-2$
+			    new CommandLineOption("pass", Messages.getString("Chef.CommandLine.Password.Description"), optionPassword=new StringBuffer()), //$NON-NLS-1$ //$NON-NLS-2$
+			    new CommandLineOption("job", Messages.getString("Chef.CommandLine.JobName.Description"), optionJobname=new StringBuffer()), //$NON-NLS-1$ //$NON-NLS-2$
+			    new CommandLineOption("dir", Messages.getString("Chef.CommandLine.RepositoryDirectory.Description"), optionDirname=new StringBuffer()), //$NON-NLS-1$ //$NON-NLS-2$
+			    new CommandLineOption("file", Messages.getString("Chef.CommandLine.Filename.Description"), optionFilename=new StringBuffer()), //$NON-NLS-1$ //$NON-NLS-2$
+			    new CommandLineOption("logfile", Messages.getString("Chef.CommandLine.LogFile.Description"), optionLogfile=new StringBuffer()), //$NON-NLS-1$ //$NON-NLS-2$
+			    new CommandLineOption("log", Messages.getString("Chef.CommandLine.LogFileDeprecated.Description"), optionLogfile=new StringBuffer(), false, true), //$NON-NLS-1$ //$NON-NLS-2$
             };
 
 		// Parse the options...
 		CommandLineOption.parseArguments(args, options);
 
-        String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
-        String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
-        String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);
+        String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null); //$NON-NLS-1$
+        String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null); //$NON-NLS-1$
+        String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null); //$NON-NLS-1$
         
         if (kettleRepname !=null && kettleRepname .length()>0) optionRepname  = new StringBuffer(kettleRepname);
         if (kettleUsername!=null && kettleUsername.length()>0) optionUsername = new StringBuffer(kettleUsername);
@@ -3010,13 +3010,13 @@ public class Chef
             log=LogWriter.getInstance( optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC );
         }
         
-        if (log.getRealFilename()!=null) log.logBasic(APP_NAME, "Logging goes to "+log.getRealFilename());
+        if (log.getRealFilename()!=null) log.logBasic(APP_NAME, Messages.getString("Chef.Log.LoggingGoesTo")+log.getRealFilename()); //$NON-NLS-1$
         		
 		/* Load the plugins etc.*/
 		StepLoader stloader = StepLoader.getInstance();
 		if (!stloader.read())
 		{
-			log.logError(APP_NAME, "Error loading steps... halting Chef!");
+			log.logError(APP_NAME, Messages.getString("Chef.Log.Error.LoadingSteps")); //$NON-NLS-1$
 			return;
 		}
         
@@ -3024,7 +3024,7 @@ public class Chef
         JobEntryLoader jeloader = JobEntryLoader.getInstance();
         if (!jeloader.read())
         {
-            log.logError(APP_NAME, "Error loading job entries & plugins... halting Chef!");
+            log.logError(APP_NAME, Messages.getString("Chef.Log.Error.LoadingJobEntries")); //$NON-NLS-1$
             return;
         }
 
@@ -3032,18 +3032,18 @@ public class Chef
 		final Chef win = new Chef(log, display,  null);
 		win.setDestroy(true);
 		
-		log.logDetailed(APP_NAME, "Main window is created.");
+		log.logDetailed(APP_NAME, "Main window is created."); //$NON-NLS-1$
 		
 		RepositoryMeta repinfo = null;
 		UserInfo userinfo = null;
 		
 		if (Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) && win.props.showRepositoriesDialogAtStartup())
 		{		
-            log.logDetailed(APP_NAME, "Asking for repository");
+            log.logDetailed(APP_NAME, "Asking for repository"); //$NON-NLS-1$
 
 			int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_JOB };
 			splash.hide();
-			RepositoriesDialog rd = new RepositoriesDialog(win.disp, SWT.NONE, perms, "Chef");
+			RepositoriesDialog rd = new RepositoriesDialog(win.disp, SWT.NONE, perms, Messages.getString("Chef.Application.Name")); //$NON-NLS-1$
 			if (rd.open())
 			{
 				repinfo = rd.getRepository();
@@ -3051,8 +3051,8 @@ public class Chef
 				if (!userinfo.useJobs())
 				{
 					MessageBox mb = new MessageBox(win.shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage("Sorry, this repository user can't work with jobs from the repository.");
-					mb.setText("Error!");
+					mb.setMessage(Messages.getString("Chef.Message.UserHasNoRightsToWorkWithJobs.Message")); //$NON-NLS-1$
+					mb.setText(Messages.getString("Chef.Message.UserHasNoRightsToWorkWithJobs.Title")); //$NON-NLS-1$
 					mb.open();
 					
 					userinfo = null;
@@ -3087,7 +3087,7 @@ public class Chef
 						{
 							// Define and connect to the repository...
 							win.rep = new Repository(log, repinfo, userinfo);
-							if (win.rep.connect("Chef"))
+							if (win.rep.connect(Messages.getString("Chef.Application.Name"))) //$NON-NLS-1$
 							{
 								if (Const.isEmpty(optionDirname)) optionDirname=new StringBuffer(RepositoryDirectory.DIRECTORY_SEPARATOR);
 	
@@ -3104,23 +3104,23 @@ public class Chef
 								}
 								else
 								{
-                                    log.logError(APP_NAME, "Can't verify username and password.");
+                                    log.logError(APP_NAME, Messages.getString("Chef.Log.Error.VerifyingUsernamePassword")); //$NON-NLS-1$
 									win.rep=null;
 								}
 							}
 							else
 							{
-                                log.logError(APP_NAME, "Can't connect to the repository.");
+                                log.logError(APP_NAME, Messages.getString("Chef.Log.Error.ConnectingToRepository")); //$NON-NLS-1$
 							}
 						}
 						else
 						{
-                            log.logError(APP_NAME, "No repository provided, can't load the job.");
+                            log.logError(APP_NAME, Messages.getString("Chef.Log.Error.NoRepositoryProvidedCanNotLoadJob")); //$NON-NLS-1$
 						}
 					}
 					else
 					{
-                        log.logError(APP_NAME, "No repositories defined on this system.");
+                        log.logError(APP_NAME, Messages.getString("Chef.Log.Error.NoRepositoriesOnThisSystem")); //$NON-NLS-1$
 					}
 				}
 				else
@@ -3136,7 +3136,7 @@ public class Chef
 				if (repinfo!=null && userinfo!=null)
 				{
 					win.rep = new Repository(log, repinfo, userinfo);
-					if (!win.rep.connect("Spoon"))
+					if (!win.rep.connect(Messages.getString("Chef.Application.Name"))) //$NON-NLS-1$
 					{
 						win.rep = null;
 					}
@@ -3162,7 +3162,7 @@ public class Chef
 									RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(lastdirs[0]);
 									if (repdir!=null)
 									{
-                                        log.logDetailed(APP_NAME, "Auto loading job ["+lastfiles[0]+"] from repository directory ["+repdir.getPath()+"]");
+                                        log.logDetailed(APP_NAME, Messages.getString("Chef.Log.AutoLoading")+lastfiles[0]+Messages.getString("Chef.Log.AutoLoading2")+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 										// win.jobinfo = new JobInfo(log, win.rep, lastfiles[0], repdir);
 										JobLoadProgressDialog jlpd = new JobLoadProgressDialog(log, win.props, win.shell, win.rep, lastfiles[0], repdir);
 										JobMeta jobInfo = jlpd.open();
@@ -3188,7 +3188,7 @@ public class Chef
 		}
 		catch(KettleException ke)
 		{
-            log.logError(APP_NAME, "Error loading job: "+ke.getMessage());
+            log.logError(APP_NAME, Messages.getString("Chef.Log.Error.ErrorLoadingJob")+ke.getMessage()); //$NON-NLS-1$
 		}
 
 		win.open ();
@@ -3200,7 +3200,7 @@ public class Chef
 		}
 		win.dispose();
 		
-        log.logBasic(APP_NAME, APP_NAME+" has ended.");
+        log.logBasic(APP_NAME, APP_NAME+Messages.getString("Chef.Log.ApplicationHasEnded")); //$NON-NLS-1$
 
 		// Close the logfile...
 		log.close();

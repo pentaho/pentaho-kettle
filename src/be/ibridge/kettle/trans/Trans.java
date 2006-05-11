@@ -948,7 +948,7 @@ public class Trans
                                transMeta.getBatchId(), 
                                false, 
                                transMeta.getName(), 
-                               Messages.getString("Trans.Dialog.Description.Start"),  //$NON-NLS-1$
+                               "start",  //$NON-NLS-1$
                                0L, 0L, 0L, 0L, 0L, 0L, 
                                startDate, endDate, logDate, depDate,currentDate,
                                null
@@ -1004,8 +1004,7 @@ public class Trans
 	// Handle logging at end
 	// TODO: perform an update in the logging table when the batch ID is known and an entry exists in the table...
 	//
-	public boolean endProcessing(String status)
-		throws KettleException
+	public boolean endProcessing(String status) throws KettleException
 	{
 		if (preview) return true;
 		
