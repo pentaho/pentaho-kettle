@@ -58,66 +58,38 @@ public class Pan
 		Trans          trans    = null;
 
 		// The options: 
-		StringBuffer optionRepname   = new StringBuffer();
-		StringBuffer optionUsername  = new StringBuffer();
-		StringBuffer optionPassword  = new StringBuffer();
-		StringBuffer optionTransname = new StringBuffer();
-		StringBuffer optionDirname   = new StringBuffer();
-		StringBuffer optionFilename  = new StringBuffer();
-		StringBuffer optionLoglevel  = new StringBuffer();
-		StringBuffer optionLogfile   = new StringBuffer();
-		StringBuffer optionListdir   = new StringBuffer();
-		StringBuffer optionListtrans = new StringBuffer();
-		StringBuffer optionListrep   = new StringBuffer();
-        StringBuffer optionExprep    = new StringBuffer();
-        StringBuffer optionNorep     = new StringBuffer();
-        StringBuffer optionSafemode  = new StringBuffer();
+		StringBuffer optionRepname, optionUsername, optionPassword, optionTransname, optionDirname, optionFilename, optionLoglevel;
+		StringBuffer optionLogfile, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode;
         
 		CommandLineOption options[] = new CommandLineOption[] 
             {
-			    new CommandLineOption("rep", "Repository name", optionRepname),
-			    new CommandLineOption("user", "Repository username", optionUsername),
-			    new CommandLineOption("pass", "Repository password", optionPassword),
-			    new CommandLineOption("trans", "The name of the transformation to launch", optionTransname),
-			    new CommandLineOption("dir", "The directory (don't forget the leading /)", optionDirname),
-			    new CommandLineOption("file", "The filename (Transformation in XML) to launch", optionFilename),
-			    new CommandLineOption("level", "The logging level (Basic, Detailed, Debug, Rowlevel, Error, Nothing)", optionLoglevel),
-			    new CommandLineOption("logfile", "The logging file to write to", optionLogfile),
-			    new CommandLineOption("log", "The logging file to write to (deprecated)", optionLogfile, false, true),
-			    new CommandLineOption("listdir", "List the directories in the repository", optionListdir, true, false),
-			    new CommandLineOption("listtrans", "List the transformations in the specified directory", optionListtrans, true, false),
-			    new CommandLineOption("listrep", "List the available repositories", optionListrep, true, false),
-		        new CommandLineOption("exprep", "Export all repository objects to one XML file", optionExprep, true, false),
-		        new CommandLineOption("norep", "Do not log into the repository", optionNorep, true, false),
-		        new CommandLineOption("safemode", "Run in safe mode: with extra checking enabled", optionSafemode, true, false),
+			    new CommandLineOption("rep", "Repository name", optionRepname=new StringBuffer()),
+			    new CommandLineOption("user", "Repository username", optionUsername=new StringBuffer()),
+			    new CommandLineOption("pass", "Repository password", optionPassword=new StringBuffer()),
+			    new CommandLineOption("trans", "The name of the transformation to launch", optionTransname=new StringBuffer()),
+			    new CommandLineOption("dir", "The directory (don't forget the leading /)", optionDirname=new StringBuffer()),
+			    new CommandLineOption("file", "The filename (Transformation in XML) to launch", optionFilename=new StringBuffer()),
+			    new CommandLineOption("level", "The logging level (Basic, Detailed, Debug, Rowlevel, Error, Nothing)", optionLoglevel=new StringBuffer()),
+			    new CommandLineOption("logfile", "The logging file to write to", optionLogfile=new StringBuffer()),
+			    new CommandLineOption("log", "The logging file to write to (deprecated)", optionLogfile=new StringBuffer(), false, true),
+			    new CommandLineOption("listdir", "List the directories in the repository", optionListdir=new StringBuffer(), true, false),
+			    new CommandLineOption("listtrans", "List the transformations in the specified directory", optionListtrans=new StringBuffer(), true, false),
+			    new CommandLineOption("listrep", "List the available repositories", optionListrep=new StringBuffer(), true, false),
+		        new CommandLineOption("exprep", "Export all repository objects to one XML file", optionExprep=new StringBuffer(), true, false),
+		        new CommandLineOption("norep", "Do not log into the repository", optionNorep=new StringBuffer(), true, false),
+		        new CommandLineOption("safemode", "Run in safe mode: with extra checking enabled", optionSafemode=new StringBuffer(), true, false),
             };
 
 		if (args.size()==0 ) 
 		{
-		    System.out.println("Options:");
-		    for (int i=0;i<options.length;i++) 
-		    {
-		    	if (!options[i].isHiddenOption()) System.out.println(options[i].getUsageDescription());
-		    }
-		    System.out.println("");
-		    
+			CommandLineOption.printUsage(options);
             System.exit(9);
 		}
 
-		for (int i=0;i<options.length;i++)
-		{
-			boolean found=false;
-			for (int j=0;j<args.size() && !found;j++)
-			{
-				String argument = options[i].extractAndSetArgument((String)args.get(j));
-				if (argument!=null) 
-				{
-					found=true;
-					args.remove(j); // We covered it: remove from the list
-				}
-			}
-		}
-        String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
+		// Parse the options...
+		CommandLineOption.parseArguments(args, options);
+		
+		String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
         String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
         String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);
         

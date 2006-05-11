@@ -33,6 +33,7 @@ import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobMeta;
+import be.ibridge.kettle.pan.CommandLineOption;
 import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -58,70 +59,59 @@ public class Kitchen
 		RepositoryMeta repinfo  = null;
 		UserInfo       userinfo = null;
 		Job            job      = null;
+		
+		StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionDirname, optionFilename, optionLoglevel;
+        StringBuffer optionLogfile, optionListdir, optionListjobs, optionListrep, optionNorep;
+
+		CommandLineOption options[] = new CommandLineOption[] 
+            {
+			    new CommandLineOption("rep", "Repository name", optionRepname=new StringBuffer()),
+			    new CommandLineOption("user", "Repository username", optionUsername=new StringBuffer()),
+			    new CommandLineOption("pass", "Repository password", optionPassword=new StringBuffer()),
+			    new CommandLineOption("job", "The name of the transformation to launch", optionJobname=new StringBuffer()),
+			    new CommandLineOption("dir", "The directory (don't forget the leading /)", optionDirname=new StringBuffer()),
+			    new CommandLineOption("file", "The filename (Job XML) to launch", optionFilename=new StringBuffer()),
+			    new CommandLineOption("level", "The logging level (Basic, Detailed, Debug, Rowlevel, Error, Nothing)", optionLoglevel=new StringBuffer()),
+			    new CommandLineOption("logfile", "The logging file to write to", optionLogfile=new StringBuffer()),
+			    new CommandLineOption("log", "The logging file to write to (deprecated)", optionLogfile=new StringBuffer(), false, true),
+			    new CommandLineOption("listdir", "List the directories in the repository", optionListdir=new StringBuffer(), true, false),
+			    new CommandLineOption("listjobs", "List the jobs in the specified directory", optionListjobs=new StringBuffer(), true, false),
+			    new CommandLineOption("listrep", "List the available repositories", optionListrep=new StringBuffer(), true, false),
+		        new CommandLineOption("norep", "Do not log into the repository", optionNorep=new StringBuffer(), true, false),
+            };
 
 		if (args.size()==0 ) 
 		{
-		    System.out.println("Options:");
-		    System.out.println("  -rep      : Repository name");
-		    System.out.println("  -user     : Repository username");
-		    System.out.println("  -pass     : Repository password");
-		    System.out.println("  -job      : The name of the job to launch");
-		    System.out.println("  -dir      : The directory (don't forget the leading / or \\)");
-		    System.out.println("  -file     : The filename (Job XML) to launch");
-		    System.out.println("  -level    : The logging level	(Basic, Detailed, Debug, Rowlevel, Error, Nothing)");
-		    System.out.println("  -logfile  : The logging file to write to");
-		    System.out.println("  -listdir  : List the directories in the repository");
-		    System.out.println("  -listjobs : List the jobs in the specified directory");
-		    System.out.println("  -listrep  : List the defined repositories");
-            System.out.println("  -norep    : Don't log into the repository");
-		    System.out.println("");
-		    
+		    CommandLineOption.printUsage(options);
 		    System.exit(9);
 		}
-
-		String repname   = Const.getCommandlineOption(args, "rep");
-		String username  = Const.getCommandlineOption(args, "user");
-		String password  = Const.getCommandlineOption(args, "pass");
-		String jobname   = Const.getCommandlineOption(args, "job");
-		String dirname   = Const.getCommandlineOption(args, "dir");
-		String filename  = Const.getCommandlineOption(args, "file");
-		String loglevel  = Const.getCommandlineOption(args, "level");
-        String logfile   = Const.getCommandlineOption(args, "log");
-        if (logfile==null)
-        {
-            logfile   = Const.getCommandlineOption(args, "logfile");
-        }
-		String listdir   = Const.getCommandlineOption(args, "listdir");
-		String listjobs  = Const.getCommandlineOption(args, "listjobs");
-		String listrep   = Const.getCommandlineOption(args, "listrep");
-        String norep     = Const.getCommandlineOption(args, "norep");
 
         String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
         String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
         String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);
         
-        if (kettleRepname !=null && kettleRepname .length()>0) repname  = kettleRepname;
-        if (kettleUsername!=null && kettleUsername.length()>0) username = kettleUsername;
-        if (kettlePassword!=null && kettlePassword.length()>0) password = kettlePassword;
+        if (!Const.isEmpty(kettleRepname )) optionRepname  = new StringBuffer(kettleRepname );
+        if (!Const.isEmpty(kettleUsername)) optionUsername = new StringBuffer(kettleUsername);
+        if (!Const.isEmpty(kettlePassword)) optionPassword = new StringBuffer(kettlePassword);
         
 		// System.out.println("Level="+loglevel);
         LogWriter log;
-        if (logfile==null)
+        if (Const.isEmpty(optionLogfile))
         {
             log=LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
         }
         else
         {
-            log=LogWriter.getInstance( logfile, true, LogWriter.LOG_LEVEL_BASIC );
+            log=LogWriter.getInstance( optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC );
         }
         
-        if (loglevel!=null) 
+        if (!Const.isEmpty(optionLoglevel)) 
         {
-            log.setLogLevel(loglevel);
+            log.setLogLevel(optionLoglevel.toString());
             log.logMinimal(STRING_KITCHEN, "Logging is at level : "+log.getLogLevelDesc());
         } 
 		
-        if (repname!=null && username!=null) log.logDetailed(STRING_KITCHEN, "Repository and username supplied");
+        if (!Const.isEmpty(optionRepname) && !Const.isEmpty(optionUsername)) log.logDetailed(STRING_KITCHEN, "Repository and username supplied");
 
 		log.logMinimal(STRING_KITCHEN, "Start of run.");
 		
@@ -150,24 +140,23 @@ public class Kitchen
 		log.logDebug(STRING_KITCHEN, "Allocate new job.");
 		JobMeta jobinfo = new JobMeta(log);
         
-        
         // In case we use a repository...
         Repository repository = null;
 
 		try
 		{
 			// Read kettle job specified on command-line?
-			if (repname!=null || filename!=null)
+			if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename))
 			{
 				log.logDebug(STRING_KITCHEN, "Parsing command line options.");
-				if (repname!=null && !"Y".equalsIgnoreCase(norep))
+				if (optionRepname!=null && !"Y".equalsIgnoreCase(optionNorep.toString()))
 				{
 					log.logDebug(STRING_KITCHEN, "Loading available repositories.");
 					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
 					if (repsinfo.readData())
 					{
-						log.logDebug(STRING_KITCHEN, "Finding repository ["+repname+"]");
-						repinfo = repsinfo.findRepository(repname);
+						log.logDebug(STRING_KITCHEN, "Finding repository ["+optionRepname+"]");
+						repinfo = repsinfo.findRepository(optionRepname.toString());
 						if (repinfo!=null)
 						{
 							// Define and connect to the repository...
@@ -178,29 +167,29 @@ public class Kitchen
 								RepositoryDirectory directory = repository.getDirectoryTree(); // Default = root
 								
 								// Find the directory name if one is specified...
-								if (dirname!=null)
+								if (!Const.isEmpty(optionDirname))
 								{
-									directory = repository.getDirectoryTree().findDirectory(dirname);
+									directory = repository.getDirectoryTree().findDirectory(optionDirname.toString());
 								}
 								
 								if (directory!=null)
 								{
 									// Check username, password
 									log.logDebug(STRING_KITCHEN, "Check supplied username and password.");
-									userinfo = new UserInfo(repository, username, password);
+									userinfo = new UserInfo(repository, optionUsername.toString(), optionPassword.toString());
 									if (userinfo.getID()>0)
 									{
 									    // Load a job
-										if (jobname!=null && jobname.length()>0)
+										if (!Const.isEmpty(optionJobname))
 										{
 											log.logDebug(STRING_KITCHEN, "Load the job info...");
-											jobinfo =  new JobMeta(log, repository, jobname, directory);
+											jobinfo =  new JobMeta(log, repository, optionJobname.toString(), directory);
 											log.logDebug(STRING_KITCHEN, "Allocate job...");
 											job = new Job(log, steploader, repository, jobinfo);
 										}
 										else
 										// List the jobs in the repository
-										if ("Y".equalsIgnoreCase(listjobs))
+										if ("Y".equalsIgnoreCase(optionListjobs.toString()))
 										{
 										    log.logDebug(STRING_KITCHEN, "Getting list of jobs in directory: "+directory);
 											String jobnames[] = repository.getJobNames(directory.getID());
@@ -211,7 +200,7 @@ public class Kitchen
 										}
 										else
 										// List the directories in the repository
-										if ("Y".equalsIgnoreCase(listdir))
+										if ("Y".equalsIgnoreCase(optionListdir.toString()))
 										{
 											String dirnames[] = repository.getDirectoryNames(directory.getID());
 											for (int i=0;i<dirnames.length;i++)
@@ -219,7 +208,6 @@ public class Kitchen
 												System.out.println(dirnames[i]);
 											}
 										}
-	
 									}
 									else
 									{
@@ -230,7 +218,7 @@ public class Kitchen
 								}
 								else
 								{
-									System.out.println("ERROR: Can't find the supplied directory ["+dirname+"]");
+									System.out.println("ERROR: Can't find the supplied directory ["+optionDirname+"]");
 									userinfo=null;
 									repinfo=null;
 								}
@@ -252,14 +240,14 @@ public class Kitchen
 				}
 				
                 // Try to load if from file anyway.
-				if (filename!=null && job==null)
+				if (!Const.isEmpty(optionFilename) && job==null)
 				{
-					jobinfo = new JobMeta(log, filename);
+					jobinfo = new JobMeta(log, optionFilename.toString());
 					job = new Job(log, steploader, null, jobinfo);
 				}
 			}
 			else
-			if ("Y".equalsIgnoreCase(listrep))
+			if ("Y".equalsIgnoreCase(optionListrep.toString()))
 			{
 				RepositoriesMeta ri = new RepositoriesMeta(log);
 				if (ri.readData())
@@ -286,7 +274,10 @@ public class Kitchen
 
 		if (job==null)
 		{
-			if (!"Y".equalsIgnoreCase(listjobs) &&  !"Y".equalsIgnoreCase(listdir) && !"Y".equalsIgnoreCase(listrep) )
+			if (!"Y".equalsIgnoreCase(optionListjobs.toString()) &&  
+				!"Y".equalsIgnoreCase(optionListdir.toString()) && 
+				!"Y".equalsIgnoreCase(optionListrep.toString()) 
+			    )
 			{
 				System.out.println("ERROR: Kitchen can't continue because the job couldn't be loaded.");			    
 			}

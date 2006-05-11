@@ -113,6 +113,7 @@ import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.job.entry.sql.JobEntrySQL;
 import be.ibridge.kettle.job.entry.trans.JobEntryTrans;
+import be.ibridge.kettle.pan.CommandLineOption;
 import be.ibridge.kettle.repository.PermissionMeta;
 import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
@@ -2972,34 +2973,41 @@ public class Chef
 		Splash splash = new Splash(display);
 		
 		// System.out.println("Welcome to Chef!");
-		String repname   = Const.getCommandlineOption(args, "rep");
-		String username  = Const.getCommandlineOption(args, "user");
-		String password  = Const.getCommandlineOption(args, "pass");
-		String jobname   = Const.getCommandlineOption(args, "job");
-		String filename  = Const.getCommandlineOption(args, "file");
-		String dirname   = Const.getCommandlineOption(args, "dir");
-        String logfile   = Const.getCommandlineOption(args, "log");
+		StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionFilename, optionDirname, optionLogfile;
+
+		CommandLineOption options[] = new CommandLineOption[] 
+            {
+			    new CommandLineOption("rep", "Repository name", optionRepname=new StringBuffer()),
+			    new CommandLineOption("user", "Repository username", optionUsername=new StringBuffer()),
+			    new CommandLineOption("pass", "Repository password", optionPassword=new StringBuffer()),
+			    new CommandLineOption("job", "The name of the job to load", optionJobname=new StringBuffer()),
+			    new CommandLineOption("dir", "The directory (don't forget the leading /)", optionDirname=new StringBuffer()),
+			    new CommandLineOption("file", "The filename (Transformation in XML) to launch", optionFilename=new StringBuffer()),
+			    new CommandLineOption("logfile", "The logging file to write to", optionLogfile=new StringBuffer()),
+			    new CommandLineOption("log", "The logging file to write to (deprecated)", optionLogfile=new StringBuffer(), false, true),
+            };
+
+		// Parse the options...
+		CommandLineOption.parseArguments(args, options);
 
         String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
         String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
         String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);
         
-        if (kettleRepname !=null && kettleRepname .length()>0) repname  = kettleRepname;
-        if (kettleUsername!=null && kettleUsername.length()>0) username = kettleUsername;
-        if (kettlePassword!=null && kettlePassword.length()>0) password = kettlePassword;
-
-		// if (args.length==1 && filename==null) filename=args[1]; // try to load first argument...
+        if (kettleRepname !=null && kettleRepname .length()>0) optionRepname  = new StringBuffer(kettleRepname);
+        if (kettleUsername!=null && kettleUsername.length()>0) optionUsername = new StringBuffer(kettleUsername);
+        if (kettlePassword!=null && kettlePassword.length()>0) optionPassword = new StringBuffer(kettlePassword);
 
 		Locale.setDefault(Const.DEFAULT_LOCALE);
 				
         LogWriter log;
-        if (logfile==null)
+        if (Const.isEmpty(optionLogfile))
         {
             log=LogWriter.getInstance(Const.SPOON_LOG_FILE, false, LogWriter.LOG_LEVEL_BASIC);
         }
         else
         {
-            log=LogWriter.getInstance( logfile, true, LogWriter.LOG_LEVEL_BASIC );
+            log=LogWriter.getInstance( optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC );
         }
         
         if (log.getRealFilename()!=null) log.logBasic(APP_NAME, "Logging goes to "+log.getRealFilename());
@@ -3029,7 +3037,7 @@ public class Chef
 		RepositoryMeta repinfo = null;
 		UserInfo userinfo = null;
 		
-		if (repname==null && filename==null && win.props.showRepositoriesDialogAtStartup())
+		if (Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) && win.props.showRepositoriesDialogAtStartup())
 		{		
             log.logDetailed(APP_NAME, "Asking for repository");
 
@@ -3067,31 +3075,31 @@ public class Chef
 		try
 		{
 			// Read kettle job specified on command-line?
-			if (repname!=null || filename!=null)
+			if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename))
 			{
-				if (repname!=null)
+				if (!Const.isEmpty(optionRepname))
 				{
 					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
 					if (repsinfo.readData())
 					{
-						repinfo = repsinfo.findRepository(repname);
+						repinfo = repsinfo.findRepository(optionRepname.toString());
 						if (repinfo!=null)
 						{
 							// Define and connect to the repository...
 							win.rep = new Repository(log, repinfo, userinfo);
 							if (win.rep.connect("Chef"))
 							{
-								if (dirname==null) dirname=RepositoryDirectory.DIRECTORY_SEPARATOR;
+								if (Const.isEmpty(optionDirname)) optionDirname=new StringBuffer(RepositoryDirectory.DIRECTORY_SEPARATOR);
 	
 								// Check username, password
-								win.rep.userinfo = new UserInfo(win.rep, username, password);
+								win.rep.userinfo = new UserInfo(win.rep, optionUsername.toString(), optionPassword.toString());
 								
 								if (win.rep.getUserInfo().getID()>0)
 								{
-									RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(dirname);
+									RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(optionDirname.toString());
 									
-									win.jobMeta = new JobMeta(log, win.rep, jobname, repdir);
-									win.setFilename(repname);
+									win.jobMeta = new JobMeta(log, win.rep, optionJobname.toString(), repdir);
+									win.setFilename(optionFilename.toString());
 									win.jobMeta.clearChanged();
 								}
 								else
@@ -3116,11 +3124,11 @@ public class Chef
 					}
 				}
 				else
-				if (filename!=null)
+				if (!Const.isEmpty(optionFilename))
 				{
-					win.jobMeta = new JobMeta(log, filename);
+					win.jobMeta = new JobMeta(log, optionFilename.toString());
 					win.jobMeta.clearChanged();
-					}
+				}
 			} // Nothing on commandline...
 			else
 			{

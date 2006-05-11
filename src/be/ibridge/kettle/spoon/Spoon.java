@@ -109,6 +109,7 @@ import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
 import be.ibridge.kettle.i18n.LanguageChoice;
 import be.ibridge.kettle.job.JobEntryLoader;
+import be.ibridge.kettle.pan.CommandLineOption;
 import be.ibridge.kettle.repository.PermissionMeta;
 import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
@@ -4286,22 +4287,31 @@ public class Spoon
         
         Splash splash = new Splash(display);
         
-        String repname   = Const.getCommandlineOption(args, Messages.getString("Spoon.CommandlineOption.Repname"));//"rep"
-        String username  = Const.getCommandlineOption(args, Messages.getString("Spoon.CommandlineOption.Username"));//"user"
-        String password  = Const.getCommandlineOption(args, Messages.getString("Spoon.CommandlineOption.Password"));//"pass"
-        String transname = Const.getCommandlineOption(args, Messages.getString("Spoon.CommandlineOption.Transname"));//"trans"
-        String filename  = Const.getCommandlineOption(args, Messages.getString("Spoon.CommandlineOption.Filename"));//"file"
-        String dirname   = Const.getCommandlineOption(args, Messages.getString("Spoon.CommandlineOption.Dirname"));//"dir"
-        String logfile   = Const.getCommandlineOption(args, Messages.getString("Spoon.CommandlineOption.Logfile"));//"log"
-        String loglevel  = Const.getCommandlineOption(args, Messages.getString("Spoon.CommandlineOption.Loglevel"));//"level"
+        StringBuffer optionRepname, optionUsername, optionPassword, optionTransname, optionFilename, optionDirname, optionLogfile, optionLoglevel;
+
+		CommandLineOption options[] = new CommandLineOption[] 
+            {
+			    new CommandLineOption("rep", "Repository name", optionRepname=new StringBuffer()),
+			    new CommandLineOption("user", "Repository username", optionUsername=new StringBuffer()),
+			    new CommandLineOption("pass", "Repository password", optionPassword=new StringBuffer()),
+			    new CommandLineOption("trans", "The name of the transformation to launch", optionTransname=new StringBuffer()),
+			    new CommandLineOption("dir", "The directory (don't forget the leading /)", optionDirname=new StringBuffer()),
+			    new CommandLineOption("file", "The filename (Transformation in XML) to launch", optionFilename=new StringBuffer()),
+			    new CommandLineOption("level", "The logging level (Basic, Detailed, Debug, Rowlevel, Error, Nothing)", optionLoglevel=new StringBuffer()),
+			    new CommandLineOption("logfile", "The logging file to write to", optionLogfile=new StringBuffer()),
+			    new CommandLineOption("log", "The logging file to write to (deprecated)", optionLogfile=new StringBuffer(), false, true),
+            };
+
+		// Parse the options...
+		CommandLineOption.parseArguments(args, options);
 
         String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
         String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
         String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);
         
-        if (kettleRepname !=null && kettleRepname .length()>0) repname  = kettleRepname;
-        if (kettleUsername!=null && kettleUsername.length()>0) username = kettleUsername;
-        if (kettlePassword!=null && kettlePassword.length()>0) password = kettlePassword;
+        if (Const.isEmpty(kettleRepname )) optionRepname  = new StringBuffer(kettleRepname);
+        if (Const.isEmpty(kettleUsername)) optionUsername = new StringBuffer(kettleUsername);
+        if (Const.isEmpty(kettlePassword)) optionPassword = new StringBuffer(kettlePassword);
         
         // Before anything else, check the runtime version!!!
         String version = Const.JAVA_VERSION;
@@ -4316,20 +4326,20 @@ public class Spoon
         Locale.setDefault(Const.DEFAULT_LOCALE);
         
         LogWriter log;
-        if (logfile==null)
+        if (Const.isEmpty(optionLogfile))
         {
             log=LogWriter.getInstance(Const.SPOON_LOG_FILE, false, LogWriter.LOG_LEVEL_BASIC);
         }
         else
         {
-            log=LogWriter.getInstance( logfile, true, LogWriter.LOG_LEVEL_BASIC );
+            log=LogWriter.getInstance( optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC );
         }
 
         if (log.getRealFilename()!=null) log.logBasic(APP_NAME, Messages.getString("Spoon.Log.LoggingToFile")+log.getRealFilename());//"Logging goes to "
         
-        if (loglevel!=null) 
+        if (!Const.isEmpty(optionLoglevel)) 
         {
-            log.setLogLevel(loglevel);
+            log.setLogLevel(optionLoglevel.toString());
             log.logBasic(APP_NAME, Messages.getString("Spoon.Log.LoggingAtLevel")+log.getLogLevelDesc());//"Logging is at level : "
         }
         
@@ -4358,7 +4368,7 @@ public class Spoon
         RepositoryMeta repinfo = null;
         UserInfo userinfo = null;
         
-        if (repname==null && filename==null && win.props.showRepositoriesDialogAtStartup())
+        if (Const.isEmpty(optionRepname) && Const.isEmpty(optionFilename) && win.props.showRepositoriesDialogAtStartup())
         {       
             log.logBasic(APP_NAME, Messages.getString("Spoon.Log.AskingForRepository"));//"Asking for repository"
 
@@ -4395,37 +4405,37 @@ public class Spoon
         try
         {
             // Read kettle transformation specified on command-line?
-            if (repname!=null || filename!=null)
+            if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename))
             {           
-                if (repname!=null)
+                if (!Const.isEmpty(optionRepname))
                 {
                     RepositoriesMeta repsinfo = new RepositoriesMeta(log);
                     if (repsinfo.readData())
                     {
-                        repinfo = repsinfo.findRepository(repname);
+                        repinfo = repsinfo.findRepository(optionRepname.toString());
                         if (repinfo!=null)
                         {
                             // Define and connect to the repository...
                             win.rep = new Repository(log, repinfo, userinfo);
                             if (win.rep.connect(Messages.getString("Spoon.Application.Name")))//"Spoon"
                             {
-                                if (dirname==null) dirname=RepositoryDirectory.DIRECTORY_SEPARATOR;
+                                if (Const.isEmpty(optionDirname)) optionDirname=new StringBuffer(RepositoryDirectory.DIRECTORY_SEPARATOR);
                                 
                                 // Check username, password
-                                win.rep.userinfo = new UserInfo(win.rep, username, password);
+                                win.rep.userinfo = new UserInfo(win.rep, optionUsername.toString(), optionPassword.toString());
                                 
                                 if (win.rep.userinfo.getID()>0)
                                 {
-                                    RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(dirname);
+                                    RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(optionDirname.toString());
                                     if (repdir!=null)
                                     {
-                                        win.transMeta = new TransMeta(win.rep, transname, repdir);
-                                        win.setFilename(repname);
+                                        win.transMeta = new TransMeta(win.rep, optionTransname.toString(), repdir);
+                                        win.setFilename(optionRepname.toString());
                                         win.transMeta.clearChanged();
                                     }
                                     else
                                     {
-                                        log.logError(APP_NAME, Messages.getString("Spoon.Log.UnableFindDirectory",dirname));//"Can't find directory ["+dirname+"] in the repository."
+                                        log.logError(APP_NAME, Messages.getString("Spoon.Log.UnableFindDirectory",optionDirname.toString()));//"Can't find directory ["+dirname+"] in the repository."
                                     }
                                 }
                                 else
@@ -4451,10 +4461,10 @@ public class Spoon
                     }
                 }
                 else
-                if (filename!=null)
+                if (!Const.isEmpty(optionFilename))
                 {
-                    win.transMeta = new TransMeta(filename);
-                    win.setFilename(filename);
+                    win.transMeta = new TransMeta(optionFilename.toString());
+                    win.setFilename(optionFilename.toString());
                     win.transMeta.clearChanged();
                 }
             }
