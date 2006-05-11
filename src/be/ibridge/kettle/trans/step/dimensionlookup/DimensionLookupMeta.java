@@ -65,7 +65,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	public final static int		TYPE_UPDATE_DIM_UPDATE			= 1;
 	public final static int		TYPE_UPDATE_DIM_PUNCHTHROUGH	= 2;
 
-	public final static String	typeDesc[]						= { "Insert", "Update", "Punch through" };
+	public final static String	typeDesc[]						= { Messages.getString("DimensionLookupMeta.TypeDesc.Insert"), Messages.getString("DimensionLookupMeta.TypeDesc.Update"), Messages.getString("DimensionLookupMeta.TypeDesc.PunchThrough") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 	public final static String	typeDescLookup[]				= Value.getTypes();
 
@@ -509,7 +509,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 				if (typeDesc[i].equalsIgnoreCase(ty))
 					return i;
 			}
-			if ("Y".equalsIgnoreCase(ty))
+			if ("Y".equalsIgnoreCase(ty)) //$NON-NLS-1$
 				return TYPE_UPDATE_DIM_PUNCHTHROUGH;
 
 			return TYPE_UPDATE_DIM_INSERT; // INSERT is the default: don't lose information.
@@ -539,68 +539,68 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			int nrkeys, nrfields;
 			String commit;
 
-			tableName = XMLHandler.getTagValue(stepnode, "table");
-			String con = XMLHandler.getTagValue(stepnode, "connection");
+			tableName = XMLHandler.getTagValue(stepnode, "table"); //$NON-NLS-1$
+			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
 			databaseMeta = Const.findDatabase(databases, con);
-			commit = XMLHandler.getTagValue(stepnode, "commit");
+			commit = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
 			commitSize = Const.toInt(commit, 0);
 
-			upd = XMLHandler.getTagValue(stepnode, "update");
-			if (upd.equalsIgnoreCase("Y"))
+			upd = XMLHandler.getTagValue(stepnode, "update"); //$NON-NLS-1$
+			if (upd.equalsIgnoreCase("Y")) //$NON-NLS-1$
 				update = true;
 			else
 				update = false;
 
-			Node fields = XMLHandler.getSubNode(stepnode, "fields");
+			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
 
-			nrkeys = XMLHandler.countNodes(fields, "key");
-			nrfields = XMLHandler.countNodes(fields, "field");
+			nrkeys = XMLHandler.countNodes(fields, "key"); //$NON-NLS-1$
+			nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
 
 			allocate(nrkeys, nrfields);
 
 			// Read keys to dimension
 			for (int i = 0; i < nrkeys; i++)
 			{
-				Node knode = XMLHandler.getSubNodeByNr(fields, "key", i);
+				Node knode = XMLHandler.getSubNodeByNr(fields, "key", i); //$NON-NLS-1$
 
-				keyStream[i] = XMLHandler.getTagValue(knode, "name");
-				keyLookup[i] = XMLHandler.getTagValue(knode, "lookup");
+				keyStream[i] = XMLHandler.getTagValue(knode, "name"); //$NON-NLS-1$
+				keyLookup[i] = XMLHandler.getTagValue(knode, "lookup"); //$NON-NLS-1$
 			}
 
 			// Only one date is supported
 			// No datefield: use system date...
-			Node dnode = XMLHandler.getSubNode(fields, "date");
-			dateField = XMLHandler.getTagValue(dnode, "name");
-			dateFrom = XMLHandler.getTagValue(dnode, "from");
-			dateTo = XMLHandler.getTagValue(dnode, "to");
+			Node dnode = XMLHandler.getSubNode(fields, "date"); //$NON-NLS-1$
+			dateField = XMLHandler.getTagValue(dnode, "name"); //$NON-NLS-1$
+			dateFrom = XMLHandler.getTagValue(dnode, "from"); //$NON-NLS-1$
+			dateTo = XMLHandler.getTagValue(dnode, "to"); //$NON-NLS-1$
 
 			for (int i = 0; i < nrfields; i++)
 			{
-				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
+				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 
-				fieldStream[i] = XMLHandler.getTagValue(fnode, "name");
-				fieldLookup[i] = XMLHandler.getTagValue(fnode, "lookup");
-				upd = XMLHandler.getTagValue(fnode, "update");
+				fieldStream[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+				fieldLookup[i] = XMLHandler.getTagValue(fnode, "lookup"); //$NON-NLS-1$
+				upd = XMLHandler.getTagValue(fnode, "update"); //$NON-NLS-1$
 				fieldUpdate[i] = getUpdateType(update, upd);
 			}
 
 			if (update)
 			{
 				// If this is empty: use auto-increment field!
-				sequenceName = XMLHandler.getTagValue(stepnode, "sequence");
+				sequenceName = XMLHandler.getTagValue(stepnode, "sequence"); //$NON-NLS-1$
 			}
 
-			maxYear = Const.toInt(XMLHandler.getTagValue(stepnode, "max_year"), Const.MAX_YEAR);
-			minYear = Const.toInt(XMLHandler.getTagValue(stepnode, "min_year"), Const.MIN_YEAR);
+			maxYear = Const.toInt(XMLHandler.getTagValue(stepnode, "max_year"), Const.MAX_YEAR); //$NON-NLS-1$
+			minYear = Const.toInt(XMLHandler.getTagValue(stepnode, "min_year"), Const.MIN_YEAR); //$NON-NLS-1$
 
-			keyField = XMLHandler.getTagValue(fields, "return", "name");
-			keyRename = XMLHandler.getTagValue(fields, "return", "rename");
-			autoIncrement = !"N".equalsIgnoreCase(XMLHandler.getTagValue(fields, "return", "use_autoinc"));
-			versionField = XMLHandler.getTagValue(fields, "return", "version");
+			keyField = XMLHandler.getTagValue(fields, "return", "name"); //$NON-NLS-1$ //$NON-NLS-2$
+			keyRename = XMLHandler.getTagValue(fields, "return", "rename"); //$NON-NLS-1$ //$NON-NLS-2$
+			autoIncrement = !"N".equalsIgnoreCase(XMLHandler.getTagValue(fields, "return", "use_autoinc")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			versionField = XMLHandler.getTagValue(fields, "return", "version"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch (Exception e)
 		{
-			throw new KettleXMLException("Unable to load step info from XML", e);
+			throw new KettleXMLException(Messages.getString("DimensionLookupMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -608,7 +608,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		int nrkeys, nrfields;
 
-		tableName = "dim table name";
+		tableName = Messages.getString("DimensionLookupMeta.DefualtTableName"); //$NON-NLS-1$
 		databaseMeta = null;
 		commitSize = 0;
 		update = true;
@@ -621,30 +621,30 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		// Read keys to dimension
 		for (int i = 0; i < nrkeys; i++)
 		{
-			keyStream[i] = "key" + i;
-			keyLookup[i] = "keylookup" + i;
+			keyStream[i] = "key" + i; //$NON-NLS-1$
+			keyLookup[i] = "keylookup" + i; //$NON-NLS-1$
 		}
 
 		for (int i = 0; i < nrfields; i++)
 		{
-			fieldStream[i] = "field" + i;
-			fieldLookup[i] = "lookup" + i;
+			fieldStream[i] = "field" + i; //$NON-NLS-1$
+			fieldLookup[i] = "lookup" + i; //$NON-NLS-1$
 			fieldUpdate[i] = DimensionLookupMeta.TYPE_UPDATE_DIM_INSERT;
 		}
 
 		// Only one date is supported
 		// No datefield: use system date...
-		dateField = "";
-		dateFrom = "date_from";
-		dateTo = "date_to";
+		dateField = ""; //$NON-NLS-1$
+		dateFrom = "date_from"; //$NON-NLS-1$
+		dateTo = "date_to"; //$NON-NLS-1$
 
 		minYear = Const.MIN_YEAR;
 		maxYear = Const.MAX_YEAR;
 
-		keyField = "";
-		keyRename = "";
+		keyField = ""; //$NON-NLS-1$
+		keyRename = ""; //$NON-NLS-1$
 		autoIncrement = true;
-		versionField = "version";
+		versionField = "version"; //$NON-NLS-1$
 	}
 
 	public Row getFields(Row r, String name, Row info) throws KettleStepException
@@ -681,7 +681,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                         v = extraFields.searchValue(fieldLookup[i]);
                         if (v==null)
                         {
-                            String message = "Unable to find return field ["+fieldLookup[i]+"] in the dimension table.";
+                            String message = Messages.getString("DimensionLookupMeta.Exception.UnableToFindReturnField",fieldLookup[i]); //$NON-NLS-1$ //$NON-NLS-2$
                             log.logError(toString(), message);
                             throw new KettleStepException(message);
                         }
@@ -697,14 +697,14 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                 }
                 else
                 {
-                    String message = "Unable to retrieve data type of return fields because no database connection was specified";
+                    String message = Messages.getString("DimensionLookupMeta.Exception.UnableToRetrieveDataTypeOfReturnField"); //$NON-NLS-1$
                     log.logError(toString(), message);
                     throw new KettleStepException(message);
                 }
             }
             catch(Exception e)
             {
-                String message = "Unable to retrieve data type of return fields because of an unexpected error";
+                String message = Messages.getString("DimensionLookupMeta.Exception.UnableToRetrieveDataTypeOfReturnField2"); //$NON-NLS-1$
                 log.logError(toString(), message);
                 throw new KettleStepException(message, e);
             }
@@ -717,51 +717,51 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("      " + XMLHandler.addTagValue("table", tableName));
-		retval.append("      " + XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName()));
-		retval.append("      " + XMLHandler.addTagValue("commit", commitSize));
-		retval.append("      " + XMLHandler.addTagValue("update", update));
+		retval.append("      " + XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      " + XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("      " + XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      " + XMLHandler.addTagValue("update", update)); //$NON-NLS-1$ //$NON-NLS-2$
 
-		retval.append("      <fields>" + Const.CR);
+		retval.append("      <fields>" + Const.CR); //$NON-NLS-1$
 		for (int i = 0; i < keyStream.length; i++)
 		{
-			retval.append("        <key>" + Const.CR);
-			retval.append("          " + XMLHandler.addTagValue("name", keyStream[i]));
-			retval.append("          " + XMLHandler.addTagValue("lookup", keyLookup[i]));
-			retval.append("          </key>" + Const.CR);
+			retval.append("        <key>" + Const.CR); //$NON-NLS-1$
+			retval.append("          " + XMLHandler.addTagValue("name", keyStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("          " + XMLHandler.addTagValue("lookup", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("          </key>" + Const.CR); //$NON-NLS-1$
 		}
 
-		retval.append("        <date>" + Const.CR);
-		retval.append("          " + XMLHandler.addTagValue("name", dateField));
-		retval.append("          " + XMLHandler.addTagValue("from", dateFrom));
-		retval.append("          " + XMLHandler.addTagValue("to", dateTo));
-		retval.append("          </date>" + Const.CR);
+		retval.append("        <date>" + Const.CR); //$NON-NLS-1$
+		retval.append("          " + XMLHandler.addTagValue("name", dateField)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          " + XMLHandler.addTagValue("from", dateFrom)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          " + XMLHandler.addTagValue("to", dateTo)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          </date>" + Const.CR); //$NON-NLS-1$
 
 		if (fieldStream != null)
 			for (int i = 0; i < fieldStream.length; i++)
 			{
 				if (fieldStream[i] != null)
 				{
-					retval.append("        <field>" + Const.CR);
-					retval.append("          " + XMLHandler.addTagValue("name", fieldStream[i]));
-					retval.append("          " + XMLHandler.addTagValue("lookup", fieldLookup[i]));
-					retval.append("          " + XMLHandler.addTagValue("update", getUpdateType(update, fieldUpdate[i])));
-					retval.append("          </field>" + Const.CR);
+					retval.append("        <field>" + Const.CR); //$NON-NLS-1$
+					retval.append("          " + XMLHandler.addTagValue("name", fieldStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					retval.append("          " + XMLHandler.addTagValue("lookup", fieldLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					retval.append("          " + XMLHandler.addTagValue("update", getUpdateType(update, fieldUpdate[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+					retval.append("          </field>" + Const.CR); //$NON-NLS-1$
 				}
 			}
-		retval.append("        <return>" + Const.CR);
-		retval.append("          " + XMLHandler.addTagValue("name", keyField));
-		retval.append("          " + XMLHandler.addTagValue("rename", keyRename));
-		retval.append("          " + XMLHandler.addTagValue("use_autoinc", autoIncrement));
-		retval.append("          " + XMLHandler.addTagValue("version", versionField));
-		retval.append("        </return>" + Const.CR);
+		retval.append("        <return>" + Const.CR); //$NON-NLS-1$
+		retval.append("          " + XMLHandler.addTagValue("name", keyField)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          " + XMLHandler.addTagValue("rename", keyRename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          " + XMLHandler.addTagValue("use_autoinc", autoIncrement)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          " + XMLHandler.addTagValue("version", versionField)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("        </return>" + Const.CR); //$NON-NLS-1$
 
-		retval.append("      </fields>" + Const.CR);
+		retval.append("      </fields>" + Const.CR); //$NON-NLS-1$
 
 		// If sequence is empty: use auto-increment field!
-		retval.append("      " + XMLHandler.addTagValue("sequence", sequenceName));
-		retval.append("      " + XMLHandler.addTagValue("min_year", minYear));
-		retval.append("      " + XMLHandler.addTagValue("max_year", maxYear));
+		retval.append("      " + XMLHandler.addTagValue("sequence", sequenceName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      " + XMLHandler.addTagValue("min_year", minYear)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      " + XMLHandler.addTagValue("max_year", maxYear)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		return retval.toString();
 	}
@@ -770,47 +770,47 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		try
 		{
-			long id_connection = rep.getStepAttributeInteger(id_step, "id_connection");
+			long id_connection = rep.getStepAttributeInteger(id_step, "id_connection"); //$NON-NLS-1$
 			databaseMeta = Const.findDatabase(databases, id_connection);
 
-			tableName = rep.getStepAttributeString(id_step, "table");
-			commitSize = (int) rep.getStepAttributeInteger(id_step, "commit");
-			update = rep.getStepAttributeBoolean(id_step, "update");
+			tableName = rep.getStepAttributeString(id_step, "table"); //$NON-NLS-1$
+			commitSize = (int) rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
+			update = rep.getStepAttributeBoolean(id_step, "update"); //$NON-NLS-1$
 
-			int nrkeys = rep.countNrStepAttributes(id_step, "lookup_key_name");
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
+			int nrkeys = rep.countNrStepAttributes(id_step, "lookup_key_name"); //$NON-NLS-1$
+			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
 
 			allocate(nrkeys, nrfields);
 
 			for (int i = 0; i < nrkeys; i++)
 			{
-				keyStream[i] = rep.getStepAttributeString(id_step, i, "lookup_key_name");
-				keyLookup[i] = rep.getStepAttributeString(id_step, i, "lookup_key_field");
+				keyStream[i] = rep.getStepAttributeString(id_step, i, "lookup_key_name"); //$NON-NLS-1$
+				keyLookup[i] = rep.getStepAttributeString(id_step, i, "lookup_key_field"); //$NON-NLS-1$
 			}
 
-			dateField = rep.getStepAttributeString(id_step, "date_name");
-			dateFrom = rep.getStepAttributeString(id_step, "date_from");
-			dateTo = rep.getStepAttributeString(id_step, "date_to");
+			dateField = rep.getStepAttributeString(id_step, "date_name"); //$NON-NLS-1$
+			dateFrom = rep.getStepAttributeString(id_step, "date_from"); //$NON-NLS-1$
+			dateTo = rep.getStepAttributeString(id_step, "date_to"); //$NON-NLS-1$
 
 			for (int i = 0; i < nrfields; i++)
 			{
-				fieldStream[i] = rep.getStepAttributeString(id_step, i, "field_name");
-				fieldLookup[i] = rep.getStepAttributeString(id_step, i, "field_lookup");
-				fieldUpdate[i] = getUpdateType(update, rep.getStepAttributeString(id_step, i, "field_update"));
+				fieldStream[i] = rep.getStepAttributeString(id_step, i, "field_name"); //$NON-NLS-1$
+				fieldLookup[i] = rep.getStepAttributeString(id_step, i, "field_lookup"); //$NON-NLS-1$
+				fieldUpdate[i] = getUpdateType(update, rep.getStepAttributeString(id_step, i, "field_update")); //$NON-NLS-1$
 			}
 
-			keyField = rep.getStepAttributeString(id_step, "return_name");
-			keyRename = rep.getStepAttributeString(id_step, "return_rename");
-			autoIncrement = rep.getStepAttributeBoolean(id_step, "use_autoinc");
-			versionField = rep.getStepAttributeString(id_step, "version_field");
+			keyField = rep.getStepAttributeString(id_step, "return_name"); //$NON-NLS-1$
+			keyRename = rep.getStepAttributeString(id_step, "return_rename"); //$NON-NLS-1$
+			autoIncrement = rep.getStepAttributeBoolean(id_step, "use_autoinc"); //$NON-NLS-1$
+			versionField = rep.getStepAttributeString(id_step, "version_field"); //$NON-NLS-1$
 
-			sequenceName = rep.getStepAttributeString(id_step, "sequence");
-			minYear = (int) rep.getStepAttributeInteger(id_step, "min_year");
-			maxYear = (int) rep.getStepAttributeInteger(id_step, "max_year");
+			sequenceName = rep.getStepAttributeString(id_step, "sequence"); //$NON-NLS-1$
+			minYear = (int) rep.getStepAttributeInteger(id_step, "min_year"); //$NON-NLS-1$
+			maxYear = (int) rep.getStepAttributeInteger(id_step, "max_year"); //$NON-NLS-1$
 		}
 		catch (Exception e)
 		{
-			throw new KettleException("Unexpected error reading step information from the repository", e);
+			throw new KettleException(Messages.getString("DimensionLookupMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -818,43 +818,43 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "table", tableName);
+			rep.saveStepAttribute(id_transformation, id_step, "table", tableName); //$NON-NLS-1$
 			rep
-					.saveStepAttribute(id_transformation, id_step, "id_connection", databaseMeta == null ? -1 : databaseMeta
+					.saveStepAttribute(id_transformation, id_step, "id_connection", databaseMeta == null ? -1 : databaseMeta //$NON-NLS-1$
 							.getID());
-			rep.saveStepAttribute(id_transformation, id_step, "commit", commitSize);
-			rep.saveStepAttribute(id_transformation, id_step, "update", update);
+			rep.saveStepAttribute(id_transformation, id_step, "commit", commitSize); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "update", update); //$NON-NLS-1$
 
 			for (int i = 0; i < keyStream.length; i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name", keyStream[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_field", keyLookup[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_name", keyStream[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "lookup_key_field", keyLookup[i]); //$NON-NLS-1$
 			}
 
-			rep.saveStepAttribute(id_transformation, id_step, "date_name", dateField);
-			rep.saveStepAttribute(id_transformation, id_step, "date_from", dateFrom);
-			rep.saveStepAttribute(id_transformation, id_step, "date_to", dateTo);
+			rep.saveStepAttribute(id_transformation, id_step, "date_name", dateField); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "date_from", dateFrom); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "date_to", dateTo); //$NON-NLS-1$
 
 			if (fieldStream != null)
 				for (int i = 0; i < fieldStream.length; i++)
 				{
 					if (fieldStream[i] != null)
 					{
-						rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldStream[i]);
-						rep.saveStepAttribute(id_transformation, id_step, i, "field_lookup", fieldLookup[i]);
-						rep.saveStepAttribute(id_transformation, id_step, i, "field_update",
+						rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldStream[i]); //$NON-NLS-1$
+						rep.saveStepAttribute(id_transformation, id_step, i, "field_lookup", fieldLookup[i]); //$NON-NLS-1$
+						rep.saveStepAttribute(id_transformation, id_step, i, "field_update", //$NON-NLS-1$
 												getUpdateType(update, fieldUpdate[i]));
 					}
 				}
 
-			rep.saveStepAttribute(id_transformation, id_step, "return_name", keyField);
-			rep.saveStepAttribute(id_transformation, id_step, "return_rename", keyRename);
-			rep.saveStepAttribute(id_transformation, id_step, "use_autoinc", autoIncrement);
-			rep.saveStepAttribute(id_transformation, id_step, "version_field", versionField);
+			rep.saveStepAttribute(id_transformation, id_step, "return_name", keyField); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "return_rename", keyRename); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "use_autoinc", autoIncrement); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "version_field", versionField); //$NON-NLS-1$
 
-			rep.saveStepAttribute(id_transformation, id_step, "sequence", sequenceName);
-			rep.saveStepAttribute(id_transformation, id_step, "min_year", minYear);
-			rep.saveStepAttribute(id_transformation, id_step, "max_year", maxYear);
+			rep.saveStepAttribute(id_transformation, id_step, "sequence", sequenceName); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "min_year", minYear); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "max_year", maxYear); //$NON-NLS-1$
 
 			// Also, save the step-database relationship!
 			if (databaseMeta != null)
@@ -862,7 +862,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		}
 		catch (KettleDatabaseException dbe)
 		{
-			throw new KettleException("Unable to load dimension lookup info from the repository", dbe);
+			throw new KettleException(Messages.getString("DimensionLookupMeta.Exception.UnableToLoadDimensionLookupInfoFromRepository"), dbe); //$NON-NLS-1$
 		}
 	}
 
@@ -904,13 +904,13 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		// See if we have input streams leading to this step!
 		if (input.length > 0)
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.",
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DimensionLookupMeta.CheckResult.StepReceiveInfoOK"), //$NON-NLS-1$
 					stepinfo);
 			remarks.add(cr);
 		}
 		else
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!",
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("DimensionLookupMeta.CheckResult.NoInputReceiveFromOtherSteps"), //$NON-NLS-1$
 					stepinfo);
 			remarks.add(cr);
 		}
@@ -921,7 +921,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		LogWriter log = LogWriter.getInstance();
 		
 		CheckResult cr;
-		String error_message = "";
+		String error_message = ""; //$NON-NLS-1$
 
 		if (databaseMeta != null)
 		{
@@ -933,7 +933,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 				{
 					boolean first = true;
 					boolean error_found = false;
-					error_message = "";
+					error_message = ""; //$NON-NLS-1$
 
 					Row r = db.getTableFields(tableName);
 					if (r != null)
@@ -941,18 +941,18 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 						for (int i = 0; i < fieldLookup.length; i++)
 						{
 							String lufield = fieldLookup[i];
-							log.logDebug(toString(), "Check lookupfield #" + i + " --> " + lufield
-														+ " in lookup table...");
+							log.logDebug(toString(), Messages.getString("DimensionLookupMeta.Log.CheckLookupField") + i + " --> " + lufield //$NON-NLS-1$ //$NON-NLS-2$
+														+ " in lookup table..."); //$NON-NLS-1$
 							Value v = r.searchValue(lufield);
 							if (v == null)
 							{
 								if (first)
 								{
 									first = false;
-									error_message += "Missing compare fields in target table:" + Const.CR;
+									error_message += Messages.getString("DimensionLookupMeta.CheckResult.MissingCompareFieldsInTargetTable") + Const.CR; //$NON-NLS-1$
 								}
 								error_found = true;
-								error_message += "\t\t" + lufield + Const.CR;
+								error_message += "\t\t" + lufield + Const.CR; //$NON-NLS-1$
 							}
 						}
 						if (error_found)
@@ -962,7 +962,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 						else
 						{
 							cr = new CheckResult(CheckResult.TYPE_RESULT_OK,
-									"All lookup fields found in the dimension table.", stepinfo);
+									Messages.getString("DimensionLookupMeta.CheckResult.AllLookupFieldFound"), stepinfo); //$NON-NLS-1$
 						}
 						remarks.add(cr);
 
@@ -971,13 +971,13 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                         {
     						if (r.searchValueIndex(keyField) < 0)
     						{
-    							error_message = "Technical key [" + keyField + "] not found in target dimension table."
+    							error_message = Messages.getString("DimensionLookupMeta.CheckResult.TechnicalKeyNotFound",keyField ) //$NON-NLS-1$ //$NON-NLS-2$
     											+ Const.CR;
     							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
     						}
     						else
     						{
-    							error_message = "Technical key [" + keyField + "] found in target dimension table."
+    							error_message = Messages.getString("DimensionLookupMeta.CheckResult.TechnicalKeyFound",keyField ) //$NON-NLS-1$ //$NON-NLS-2$
     											+ Const.CR;
     							cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepinfo);
     						}
@@ -985,7 +985,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                         }
                         else
                         {
-                            error_message = "Please specify a fieldname to store the technical/surrogate key of the dimension in." + Const.CR;
+                            error_message = Messages.getString("DimensionLookupMeta.CheckResult.TechnicalKeyRequired") + Const.CR; //$NON-NLS-1$
                             remarks.add( new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo) );
                         }
 
@@ -993,20 +993,20 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 						{
 							if (r.searchValueIndex(versionField) < 0)
 							{
-								error_message = "Version field [" + versionField
-												+ "] not found in target dimension table." + Const.CR;
+								error_message = Messages.getString("DimensionLookupMeta.CheckResult.VersionFieldNotFound", versionField //$NON-NLS-1$
+												) + Const.CR; //$NON-NLS-1$
 								cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 							}
 							else
 							{
-								error_message = "Version field [" + versionField + "] found in target dimension table." + Const.CR;
+								error_message = Messages.getString("DimensionLookupMeta.CheckResult.VersionFieldFound", versionField ) + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
 								cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepinfo);
 							}
 							remarks.add(cr);
 						}
                         else
                         {
-                            error_message = "Please specify a fieldname to store the version of the dimension entry in." + Const.CR;
+                            error_message = Messages.getString("DimensionLookupMeta.CheckResult.VersionKeyRequired") + Const.CR; //$NON-NLS-1$
                             remarks.add( new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo) );
                         }
 
@@ -1014,21 +1014,21 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 						{
 							if (r.searchValueIndex(dateFrom) < 0)
 							{
-								error_message = "Start of daterange field [" + dateFrom
-												+ "] not found in target dimension table." + Const.CR;
+								error_message = Messages.getString("DimensionLookupMeta.CheckResult.StartPointOfDaterangeNotFound", dateFrom //$NON-NLS-1$
+												) + Const.CR; //$NON-NLS-1$
 								cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 							}
 							else
 							{
-								error_message = "Start of daterange field [" + dateFrom
-												+ "] found in target dimension table." + Const.CR;
+								error_message = Messages.getString("DimensionLookupMeta.CheckResult.StartPointOfDaterangeFound", dateFrom //$NON-NLS-1$
+												) + Const.CR; //$NON-NLS-1$
 								cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepinfo);
 							}
 							remarks.add(cr);
 						}
                         else
                         {
-                            error_message = "Please specify a fieldname to store the start of the date range of the dimension entry in." + Const.CR;
+                            error_message = Messages.getString("DimensionLookupMeta.CheckResult.StartKeyRequired") + Const.CR; //$NON-NLS-1$
                             remarks.add( new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo) );
                         }
 
@@ -1036,27 +1036,27 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 						{
 							if (r.searchValueIndex(dateTo) < 0)
 							{
-								error_message = "End of daterange field [" + dateTo
-												+ "] not found in target dimension table." + Const.CR;
+								error_message = Messages.getString("DimensionLookupMeta.CheckResult.EndPointOfDaterangeNotFound", dateTo //$NON-NLS-1$
+												) + Const.CR; //$NON-NLS-1$
 								cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 							}
 							else
 							{
-								error_message = "End of daterange field [" + dateTo
-												+ "] found in target dimension table." + Const.CR;
+								error_message = Messages.getString("DimensionLookupMeta.CheckResult.EndPointOfDaterangeFound", dateTo //$NON-NLS-1$
+												) + Const.CR; //$NON-NLS-1$
 								cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepinfo);
 							}
 							remarks.add(cr);
 						}
                         else
                         {
-                            error_message = "Please specify a fieldname to store the end of the date range of the dimension entry in." + Const.CR;
+                            error_message = Messages.getString("DimensionLookupMeta.CheckResult.EndKeyRequired") + Const.CR; //$NON-NLS-1$
                             remarks.add( new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo) );
                         }
 					}
 					else
 					{
-						error_message = "Couldn't read the table info, please check the table-name & permissions.";
+						error_message = Messages.getString("DimensionLookupMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
 						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 						remarks.add(cr);
 					}
@@ -1066,23 +1066,22 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 				if (prev != null && prev.size() > 0)
 				{
 					boolean first = true;
-					error_message = "";
+					error_message = ""; //$NON-NLS-1$
 					boolean error_found = false;
 
 					for (int i = 0; i < fieldStream.length; i++)
 					{
-						log.logDebug(toString(), "Check field #" + i + " --> " + fieldStream[i]
-													+ ", in inputstream from previous steps");
+						log.logDebug(toString(), Messages.getString("DimensionLookupMeta.Log.CheckField" ,i + " --> " + fieldStream[i])); //$NON-NLS-1$
 						Value v = prev.searchValue(fieldStream[i]);
 						if (v == null)
 						{
 							if (first)
 							{
 								first = false;
-								error_message += "Missing fields, not found in input from previous steps:" + Const.CR;
+								error_message += Messages.getString("DimensionLookupMeta.CheckResult.MissongFields") + Const.CR; //$NON-NLS-1$
 							}
 							error_found = true;
-							error_message += "\t\t" + fieldStream[i] + Const.CR;
+							error_message += "\t\t" + fieldStream[i] + Const.CR; //$NON-NLS-1$
 						}
 					}
 					if (error_found)
@@ -1091,14 +1090,14 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 					}
 					else
 					{
-						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All fields found in the input stream.",
+						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DimensionLookupMeta.CheckResult.AllFieldsFound"), //$NON-NLS-1$
 								stepinfo);
 					}
 					remarks.add(cr);
 				}
 				else
 				{
-					error_message = "Couldn't read fields from the previous step." + Const.CR;
+					error_message = Messages.getString("DimensionLookupMeta.CheckResult.CouldNotReadFieldsFromPreviousStep") + Const.CR; //$NON-NLS-1$
 					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 					remarks.add(cr);
 				}
@@ -1108,13 +1107,13 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 				{
 					if (db.checkSequenceExists(sequenceName))
 					{
-						error_message = "Sequence " + sequenceName + " exists.";
+						error_message = Messages.getString("DimensionLookupMeta.CheckResult.SequenceExists", sequenceName ); //$NON-NLS-1$ //$NON-NLS-2$
 						cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepinfo);
 						remarks.add(cr);
 					}
 					else
 					{
-						error_message += "Sequence " + sequenceName + " couldn't be found!";
+						error_message += Messages.getString("DimensionLookupMeta.CheckResult.SequenceCouldNotFound", sequenceName ); //$NON-NLS-1$ //$NON-NLS-2$
 						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 						remarks.add(cr);
 					}
@@ -1122,14 +1121,14 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			}
 			catch (KettleException e)
 			{
-				error_message = "Couldn't connect to database, please check the connection: " + e.getMessage();
+				error_message = Messages.getString("DimensionLookupMeta.CheckResult.CouldNotConectToDB") + e.getMessage(); //$NON-NLS-1$
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			}
 		}
 		else
 		{
-			error_message = "Please select a connection name!";
+			error_message = Messages.getString("DimensionLookupMeta.CheckResult.InvalidConnectionName"); //$NON-NLS-1$
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 			remarks.add(cr);
 		}
@@ -1139,7 +1138,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 	{
 		int i;
 		boolean error_found = false;
-		String error_message = "";
+		String error_message = ""; //$NON-NLS-1$
 		boolean first;
 		CheckResult cr;
 
@@ -1170,10 +1169,10 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 									if (first)
 									{
 										first = false;
-										error_message += "Keys with a problem:" + Const.CR;
+										error_message += Messages.getString("DimensionLookupMeta.CheckResult.KeyhasProblem") + Const.CR; //$NON-NLS-1$
 									}
 									error_found = true;
-									error_message += "\t\t" + keyField + " (not present in input stream)" + Const.CR;
+									error_message += "\t\t" + keyField +Messages.getString("DimensionLookupMeta.CheckResult.KeyNotPresentInStream") + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
 								}
 								else
 								{
@@ -1185,11 +1184,11 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 										if (first)
 										{
 											first = false;
-											error_message += "Keys with a problem:" + Const.CR;
+											error_message += Messages.getString("DimensionLookupMeta.CheckResult.KeyhasProblem2") + Const.CR; //$NON-NLS-1$
 										}
 										error_found = true;
-										error_message += "\t\t" + dimfield + " (not present in dimension table "
-															+ tableName + ")" + Const.CR;
+										error_message += "\t\t" + dimfield +Messages.getString("DimensionLookupMeta.CheckResult.KeyNotPresentInDimensiontable") //$NON-NLS-1$ //$NON-NLS-2$
+															+ tableName + ")" + Const.CR; //$NON-NLS-1$
 									}
 									else
 									{
@@ -1199,13 +1198,13 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 											if (first)
 											{
 												first = false;
-												error_message += "Keys with a problem:" + Const.CR;
+												error_message += Messages.getString("DimensionLookupMeta.CheckResult.KeyhasProblem3") + Const.CR; //$NON-NLS-1$
 											}
 											warning_found = true;
-											error_message += "\t\t" + strfield + " (" + strvalue.getOrigin()
-																+ ") is not of the same type as " + dimfield + " ("
-																+ tableName + ")" + Const.CR;
-											error_message += "\t\tThis is a warning and in many cases (for ex. Oracle) the conversion is handled by the database.";
+											error_message += "\t\t" + strfield + " (" + strvalue.getOrigin() //$NON-NLS-1$ //$NON-NLS-2$
+																+Messages.getString("DimensionLookupMeta.CheckResult.KeyNotTheSameTypeAs") + dimfield + " (" //$NON-NLS-1$ //$NON-NLS-2$
+																+ tableName + ")" + Const.CR; //$NON-NLS-1$
+											error_message += Messages.getString("DimensionLookupMeta.CheckResult.WarningInfoInDBConversion"); //$NON-NLS-1$
 										}
 									}
 								}
@@ -1223,7 +1222,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 								{
 									cr = new CheckResult(
 											CheckResult.TYPE_RESULT_OK,
-											"All keys fields found in the input stream and dimension table. (with matching types)",
+											Messages.getString("DimensionLookupMeta.CheckResult.AllKeysFieldsFound"), //$NON-NLS-1$
 											stepinfo);
 								}
 							remarks.add(cr);
@@ -1242,11 +1241,11 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 										if (first)
 										{
 											first = false;
-											error_message += "Fields to retrieve that don't exist in the dimension:"
+											error_message += Messages.getString("DimensionLookupMeta.CheckResult.FieldsToRetrieveNotExistInDimension") //$NON-NLS-1$
 																+ Const.CR;
 										}
 										error_found = true;
-										error_message += "\t\t" + lufield + Const.CR;
+										error_message += "\t\t" + lufield + Const.CR; //$NON-NLS-1$
 									}
 								}
 							}
@@ -1257,20 +1256,20 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 							else
 							{
 								cr = new CheckResult(CheckResult.TYPE_RESULT_OK,
-										"All fields to retrieve are found in the dimension.", stepinfo);
+										Messages.getString("DimensionLookupMeta.CheckResult.AllFieldsToRetrieveFound"), stepinfo); //$NON-NLS-1$
 							}
 							remarks.add(cr);
 
 							/* Also, check the fields: tk, version, from-to, ... */
 							if (tableFields.searchValueIndex(keyField) < 0)
 							{
-								error_message = "Technical key [" + keyField + "] not found in dimension lookup table."
+								error_message = Messages.getString("DimensionLookupMeta.CheckResult.TechnicalKeyNotFound", keyField ) //$NON-NLS-1$ //$NON-NLS-2$
 												+ Const.CR;
 								cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 							}
 							else
 							{
-								error_message = "Technical key [" + keyField + "] found in dimension lookup table."
+								error_message = Messages.getString("DimensionLookupMeta.CheckResult.TechnicalKeyFound",keyField ) //$NON-NLS-1$ //$NON-NLS-2$
 												+ Const.CR;
 								cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepinfo);
 							}
@@ -1278,13 +1277,13 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 							if (tableFields.searchValueIndex(versionField) < 0)
 							{
-								error_message = "Version field [" + versionField
-												+ "] not found in dimension lookup table." + Const.CR;
+								error_message = Messages.getString("DimensionLookupMeta.CheckResult.VersionFieldNotFound",versionField //$NON-NLS-1$
+												) + Const.CR; //$NON-NLS-1$
 								cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 							}
 							else
 							{
-								error_message = "Version field [" + versionField + "] found in dimension lookup table."
+								error_message = Messages.getString("DimensionLookupMeta.CheckResult.VersionFieldFound", versionField ) //$NON-NLS-1$ //$NON-NLS-2$
 												+ Const.CR;
 								cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepinfo);
 							}
@@ -1292,42 +1291,42 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 							if (tableFields.searchValueIndex(dateFrom) < 0)
 							{
-								error_message = "Start of daterange field [" + dateFrom
-												+ "] not found in dimension lookup table." + Const.CR;
+								error_message = Messages.getString("DimensionLookupMeta.CheckResult.StartOfDaterangeFieldNotFound", dateFrom //$NON-NLS-1$
+												) + Const.CR; //$NON-NLS-1$
 								cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 							}
 							else
 							{
-								error_message = "Start of daterange field [" + dateFrom
-												+ "] found in dimension lookup table." + Const.CR;
+								error_message = Messages.getString("DimensionLookupMeta.CheckResult.StartOfDaterangeFieldFound", dateFrom //$NON-NLS-1$
+												) + Const.CR; //$NON-NLS-1$
 								cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepinfo);
 							}
 							remarks.add(cr);
 
 							if (tableFields.searchValueIndex(dateTo) < 0)
 							{
-								error_message = "End of daterange field [" + dateTo
-												+ "] not found in dimension lookup table." + Const.CR;
+								error_message = Messages.getString("DimensionLookupMeta.CheckResult.EndOfDaterangeFieldNotFound", dateTo //$NON-NLS-1$
+												) + Const.CR; //$NON-NLS-1$
 								cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 							}
 							else
 							{
-								error_message = "End of daterange field [" + dateTo
-												+ "] found in dimension lookup table.";
+								error_message = Messages.getString("DimensionLookupMeta.CheckResult.EndOfDaterangeFieldFound", dateTo //$NON-NLS-1$
+												); //$NON-NLS-1$
 								cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepinfo);
 							}
 							remarks.add(cr);
 						}
 						else
 						{
-							error_message = "Couldn't read fields from the previous step." + Const.CR;
+							error_message = Messages.getString("DimensionLookupMeta.CheckResult.CouldNotReadFieldsFromPreviousStep") + Const.CR; //$NON-NLS-1$
 							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 							remarks.add(cr);
 						}
 					}
 					else
 					{
-						error_message = "Couldn't read the table info, please check the table-name & permissions.";
+						error_message = Messages.getString("DimensionLookupMeta.CheckResult.CouldNotReadTableInfo"); //$NON-NLS-1$
 						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 						remarks.add(cr);
 					}
@@ -1335,14 +1334,14 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			}
 			catch (KettleException e)
 			{
-				error_message = "Couldn't connect to database, please check the connection: " + e.getMessage();
+				error_message = Messages.getString("DimensionLookupMeta.CheckResult.CouldNotConnectDB") + e.getMessage(); //$NON-NLS-1$
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 				remarks.add(cr);
 			}
 		}
 		else
 		{
-			error_message = "Please select or create a connection!";
+			error_message = Messages.getString("DimensionLookupMeta.CheckResult.InvalidConnection"); //$NON-NLS-1$
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 			remarks.add(cr);
 		}
@@ -1362,7 +1361,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			}
 			catch (KettleDatabaseException dbe)
 			{
-				log.logError(toString(), "A database error occurred: " + dbe.getMessage());
+				log.logError(toString(), Messages.getString("DimensionLookupMeta.Log.DatabaseErrorOccurred") + dbe.getMessage()); //$NON-NLS-1$
 			}
 			finally
 			{
@@ -1379,7 +1378,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 		if (update) // Only bother in case of update, not lookup!
 		{
-			log.logDebug(toString(), "Update!");
+			log.logDebug(toString(), Messages.getString("DimensionLookupMeta.Log.Update")); //$NON-NLS-1$
 			if (databaseMeta != null)
 			{
 				if (prev != null && prev.size() > 0)
@@ -1391,7 +1390,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 						{
 							db.connect();
 
-							String sql = "";
+							String sql = ""; //$NON-NLS-1$
 
 							// How does the table look like?
 							//
@@ -1419,7 +1418,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 							Value vdateto = new Value(dateTo, Value.VALUE_TYPE_DATE);
 							fields.addValue(vdateto);
 
-							String errors = "";
+							String errors = ""; //$NON-NLS-1$
 
 							// Then the keys
 							//
@@ -1435,7 +1434,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 								else
 								{
 									if (errors.length() > 0)
-										errors += ", ";
+										errors += ", "; //$NON-NLS-1$
 									errors += keyStream[i];
 								}
 							}
@@ -1455,25 +1454,25 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 								else
 								{
 									if (errors.length() > 0)
-										errors += ", ";
+										errors += ", "; //$NON-NLS-1$
 									errors += fieldStream[i];
 								}
 							}
 
 							if (errors.length() > 0)
 							{
-								retval.setError("Unable to find these fields in the input stream: " + errors);
+								retval.setError(Messages.getString("DimensionLookupMeta.ReturnValue.UnableToFindFields") + errors); //$NON-NLS-1$
 							}
 
 							log
-									.logDebug(toString(), "Get DDL for table [" + tableName + "] : "
+									.logDebug(toString(), Messages.getString("DimensionLookupMeta.Log.GetDDLForTable") + tableName + "] : " //$NON-NLS-1$ //$NON-NLS-2$
 															+ fields.toStringMeta());
 
 							sql += db.getDDL(tableName, fields, (sequenceName != null && sequenceName.length() == 0) ? keyField
 																											: null,
 												autoIncrement, null, true);
 
-							log.logDebug(toString(), "sql = " + sql);
+							log.logDebug(toString(), "sql =" + sql); //$NON-NLS-1$
 
 							String idx_fields[] = null;
 
@@ -1487,13 +1486,13 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 							else
 							{
 								retval
-										.setError("No key fields are specified.  Please specify the fields use as key for this dimension.");
+										.setError(Messages.getString("DimensionLookupMeta.ReturnValue.NoKeyFieldsSpecified")); //$NON-NLS-1$
 							}
 
 							if (idx_fields != null && idx_fields.length > 0
 								&& !db.checkIndexExists(tableName, idx_fields))
 							{
-								String indexname = "idx_" + tableName + "_lookup";
+								String indexname = "idx_" + tableName + "_lookup"; //$NON-NLS-1$ //$NON-NLS-2$
 								sql += db.getCreateIndexStatement(tableName, indexname, idx_fields, false, false,
 																	false, true);
 							}
@@ -1504,7 +1503,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 							{
 								if (!db.checkIndexExists(tableName, idx_fields))
 								{
-									String indexname = "idx_" + tableName + "_tk";
+									String indexname = "idx_" + tableName + "_tk"; //$NON-NLS-1$ //$NON-NLS-2$
 									sql += db.getCreateIndexStatement(tableName, indexname, idx_fields, true, false,
 																		true, true);
 								}
@@ -1512,7 +1511,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 							else
 							{
 								retval
-										.setError("Please specifiy the name of the technical key field (a.k.a. the surrogate key)");
+										.setError(Messages.getString("DimensionLookupMeta.ReturnValue.TechnicalKeyFieldRequired")); //$NON-NLS-1$
 							}
 
 							// The optional Oracle sequence
@@ -1528,7 +1527,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 						}
 						catch (KettleDatabaseException dbe)
 						{
-							retval.setError("An error occurred: " + dbe.getMessage());
+							retval.setError(Messages.getString("DimensionLookupMeta.ReturnValue.ErrorOccurred") + dbe.getMessage()); //$NON-NLS-1$
 						}
 						finally
 						{
@@ -1537,18 +1536,18 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 					}
 					else
 					{
-						retval.setError("No table is defined on this connection.");
+						retval.setError(Messages.getString("DimensionLookupMeta.ReturnValue.NoTableDefinedOnConnection")); //$NON-NLS-1$
 					}
 				}
 				else
 				{
 					retval
-							.setError("Not receiving any fields from previous steps. Check the previous steps for errors & the connecting hops.");
+							.setError(Messages.getString("DimensionLookupMeta.ReturnValue.NotReceivingAnyFields")); //$NON-NLS-1$
 				}
 			}
 			else
 			{
-				retval.setError("There is no connection defined in this step.");
+				retval.setError(Messages.getString("DimensionLookupMeta.ReturnValue.NoConnectionDefiendInStep")); //$NON-NLS-1$
 			}
 		}
 
@@ -1573,9 +1572,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                             tableName, 
                             keyLookup[i],
                             keyStream[i],
-                            v!=null?v.getOrigin():"?",
-                            "",
-                            "Type = "+v.toStringMeta()
+                            v!=null?v.getOrigin():"?", //$NON-NLS-1$
+                            "", //$NON-NLS-1$
+                            "Type = "+v.toStringMeta() //$NON-NLS-1$
                             );
                     impact.add(ii);
                 }
@@ -1592,9 +1591,9 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                             tableName,
                             fieldLookup[i],
                             fieldLookup[i],
-                            v!=null?v.getOrigin():"?",
-                            "",
-                            "Type = "+v.toStringMeta()
+                            v!=null?v.getOrigin():"?", //$NON-NLS-1$
+                            "", //$NON-NLS-1$
+                            "Type = "+v.toStringMeta() //$NON-NLS-1$
                             );
                     impact.add(ii);
                 }
@@ -1615,8 +1614,8 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                             keyLookup[i],
                             keyStream[i],
                             v.getOrigin(),
-                            "",
-                            "Type = "+v.toStringMeta()
+                            "", //$NON-NLS-1$
+                            "Type = "+v.toStringMeta() //$NON-NLS-1$
                             );
                     impact.add(ii);
                 }
@@ -1634,8 +1633,8 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
                             fieldLookup[i],
                             fieldLookup[i],
                             v.getOrigin(),
-                            "",
-                            "Type = "+v.toStringMeta()
+                            "", //$NON-NLS-1$
+                            "Type = "+v.toStringMeta() //$NON-NLS-1$
                             );
                     impact.add(ii);
                 }
