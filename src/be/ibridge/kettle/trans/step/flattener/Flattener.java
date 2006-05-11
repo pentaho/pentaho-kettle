@@ -49,7 +49,7 @@ public class Flattener extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		debug="processRow";
+		debug=Messages.getString("Flattener.Debug.ProcessRow"); //$NON-NLS-1$
 		
 		Row r=getRow();    // get row!
 		if (r==null)  // no more input to be expected...
@@ -76,7 +76,7 @@ public class Flattener extends BaseStep implements StepInterface
             data.fieldNr = r.searchValueIndex(meta.getFieldName() );
             if (data.fieldNr<0)
             {
-                logError("field ["+meta.getFieldName()+"] couldn't be found!");
+                logError(Messages.getString("Flattener.Log.FieldCouldNotFound",meta.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
                 setErrors(1);
                 stopAll();
                 return false;
@@ -123,7 +123,7 @@ public class Flattener extends BaseStep implements StepInterface
         // Keep track in case we want to send out the last couple of flattened values.
         data.previousRow = r;
 
-        if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesRead);
+        if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("Flattener.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
 		return true;
 	}
@@ -147,12 +147,12 @@ public class Flattener extends BaseStep implements StepInterface
 	{		
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("Flattener.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("Flattener.Log.UnexpectedErrorIn")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}

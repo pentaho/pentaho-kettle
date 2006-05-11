@@ -27,12 +27,12 @@ public class FlattenerTargetField
 
     public static final String typeAggrDesc[] = 
         {
-            "-", "SUM", "AVERAGE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA"    
+            "-", Messages.getString("FlattenerTargetField.TypeAggrDesc.SUM"), Messages.getString("FlattenerTargetField.TypeAggrDesc.AVERAGE"), Messages.getString("FlattenerTargetField.TypeAggrDesc.MIN"), Messages.getString("FlattenerTargetField.TypeAggrDesc.MAX"), Messages.getString("FlattenerTargetField.TypeAggrDesc.COUNT_ALL"), Messages.getString("FlattenerTargetField.TypeAggrDesc.CONCAT_COMMA")     //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
         };
 
     public static final String typeAggrLongDesc[] = 
         {
-            "-", "Sum", "Average", "Minimum", "Maximum", "Number of Values", "Concatinate strings separated by ,"   
+            "-", Messages.getString("FlattenerTargetField.TypeAggrLongDesc.SUM"), Messages.getString("FlattenerTargetField.TypeAggrLongDesc.AVERAGE"), Messages.getString("FlattenerTargetField.TypeAggrLongDesc.MIN"), Messages.getString("FlattenerTargetField.TypeAggrLongDesc.MAX"), Messages.getString("FlattenerTargetField.TypeAggrLongDesc.COUNT_ALL"), Messages.getString("FlattenerTargetField.TypeAggrLongDesc.CONCAT_COMMA")    //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
         };
 
 

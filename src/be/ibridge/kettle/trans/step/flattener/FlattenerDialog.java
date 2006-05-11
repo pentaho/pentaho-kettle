@@ -92,14 +92,14 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Flattener");
+		shell.setText(Messages.getString("FlattenerDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 		
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("FlattenerDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -119,7 +119,7 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 
         // Key field...
         wlField=new Label(shell, SWT.RIGHT);
-        wlField.setText("The field to flatten");
+        wlField.setText(Messages.getString("FlattenerDialog.FlattenField.Label")); //$NON-NLS-1$
         props.setLook(wlField);
         fdlField=new FormData();
         fdlField.left = new FormAttachment(0, 0);
@@ -136,7 +136,7 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
         wField.setLayoutData(fdField);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText("The target fields after flattening: ");
+		wlFields.setText(Messages.getString("FlattenerDialog.TargetField.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left  = new FormAttachment(0, 0);
@@ -147,7 +147,7 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 		int nrKeyRows=(input.getTargetField()!=null?input.getTargetField().length:1);
 		
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo("Target field",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciKey[0]=new ColumnInfo(Messages.getString("FlattenerDialog.ColumnInfo.TargetField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -166,9 +166,9 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("FlattenerDialog.Ok.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("FlattenerDialog.Cancel.Butto")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -208,7 +208,7 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), "getting key info...");
+		log.logDebug(toString(), Messages.getString("FlattenerDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
         if (input.getFieldName()!= null) wField.setText(input.getFieldName());
 

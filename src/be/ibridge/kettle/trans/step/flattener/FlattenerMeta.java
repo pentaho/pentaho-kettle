@@ -111,7 +111,7 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
         if (fieldName != null && fieldName.length() > 0)
         {
             int idx = row.searchValueIndex(fieldName);
-            if (idx < 0) { throw new KettleStepException("Unable to locate [" + fieldName + "] in the input fields"); }
+            if (idx < 0) { throw new KettleStepException(Messages.getString("FlattenerMeta.Exception.UnableToLocateFieldInInputFields", fieldName )); } //$NON-NLS-1$ //$NON-NLS-2$
             
             Value v = row.getValue(idx);
             row.removeValue(idx);
@@ -127,7 +127,7 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
         }
         else
         {
-            throw new KettleStepException("The field to flatten is not specified");
+            throw new KettleStepException(Messages.getString("FlattenerMeta.Exception.FlattenFieldRequired")); //$NON-NLS-1$
         }
 
         return row;
@@ -137,22 +137,22 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            fieldName = XMLHandler.getTagValue(stepnode, "field_name");
+            fieldName = XMLHandler.getTagValue(stepnode, "field_name"); //$NON-NLS-1$
 
-            Node fields = XMLHandler.getSubNode(stepnode, "fields");
-            int nrfields = XMLHandler.countNodes(fields, "field");
+            Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+            int nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
 
             allocate(nrfields);
 
             for (int i = 0; i < nrfields; i++)
             {
-                Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
-                targetField[i] = XMLHandler.getTagValue(fnode, "name");
+                Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+                targetField[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
             }
         }
         catch (Exception e)
         {
-            throw new KettleXMLException("Unable to load step info from XML", e);
+            throw new KettleXMLException(Messages.getString("FlattenerMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
         }
     }
 
@@ -160,16 +160,16 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer();
 
-        retval.append("      " + XMLHandler.addTagValue("field_name", fieldName));
+        retval.append("      " + XMLHandler.addTagValue("field_name", fieldName)); //$NON-NLS-1$ //$NON-NLS-2$
 
-        retval.append("      <fields>" + Const.CR);
+        retval.append("      <fields>" + Const.CR); //$NON-NLS-1$
         for (int i = 0; i < targetField.length; i++)
         {
-            retval.append("        <field>" + Const.CR);
-            retval.append("          " + XMLHandler.addTagValue("name", targetField[i]));
-            retval.append("          </field>" + Const.CR);
+            retval.append("        <field>" + Const.CR); //$NON-NLS-1$
+            retval.append("          " + XMLHandler.addTagValue("name", targetField[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("          </field>" + Const.CR); //$NON-NLS-1$
         }
-        retval.append("        </fields>" + Const.CR);
+        retval.append("        </fields>" + Const.CR); //$NON-NLS-1$
 
         return retval.toString();
     }
@@ -178,20 +178,20 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            fieldName = rep.getStepAttributeString(id_step, "field_name");
+            fieldName = rep.getStepAttributeString(id_step, "field_name"); //$NON-NLS-1$
 
-            int nrvalues = rep.countNrStepAttributes(id_step, "target_field");
+            int nrvalues = rep.countNrStepAttributes(id_step, "target_field"); //$NON-NLS-1$
 
             allocate(nrvalues);
 
             for (int i = 0; i < nrvalues; i++)
             {
-                targetField[i] = rep.getStepAttributeString(id_step, i, "target_field");
+                targetField[i] = rep.getStepAttributeString(id_step, i, "target_field"); //$NON-NLS-1$
             }
         }
         catch (Exception e)
         {
-            throw new KettleException("Unexpected error reading step information from the repository", e);
+            throw new KettleException(Messages.getString("FlattenerMeta.Exception.UnexpectedErrorInReadingStepInfoFromRepository"), e); //$NON-NLS-1$
         }
     }
 
@@ -199,16 +199,16 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            rep.saveStepAttribute(id_transformation, id_step, "field_name", fieldName);
+            rep.saveStepAttribute(id_transformation, id_step, "field_name", fieldName); //$NON-NLS-1$
 
             for (int i = 0; i < targetField.length; i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "target_field", targetField[i]);
+                rep.saveStepAttribute(id_transformation, id_step, i, "target_field", targetField[i]); //$NON-NLS-1$
             }
         }
         catch (Exception e)
         {
-            throw new KettleException("Unable to save step information to the repository for id_step=" + id_step, e);
+            throw new KettleException(Messages.getString("FlattenerMeta.Exception.UnableToSaveStepInfoToRepository") + id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -218,12 +218,12 @@ public class FlattenerMeta extends BaseStepMeta implements StepMetaInterface
 
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepMeta);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("FlattenerMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepMeta);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("FlattenerMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepMeta); //$NON-NLS-1$
             remarks.add(cr);
         }
     }
