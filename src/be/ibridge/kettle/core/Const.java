@@ -1178,6 +1178,7 @@ public class Const
 	 * @param args The command line arguments
 	 * @param option The option to look for
 	 * @return The value of the commandline option specified.
+	 * @deprecated
 	 */
 	public static final String getCommandlineOption(ArrayList args, String option)
 	{
@@ -1197,6 +1198,12 @@ public class Const
 		return null;
 	}
 
+	/**
+	 * Searches a command line option with a certain prefix in a list of command line options
+	 * @param args The list to search
+	 * @param prefix The prefix to look for
+	 * @return The content.
+	 */
 	private static final String searchCommandLineOption(ArrayList args, String prefix)
 	{
 		String retval = null;
@@ -1673,5 +1680,25 @@ public class Const
         String string = stringWriter.getBuffer().toString();
         try { stringWriter.close(); } catch(IOException ioe) {} // is this really required?
         return string;
+    }
+    
+    /**
+     * Check if the string supplied is empty.  A String is empty when it is null or when the length is 0
+     * @param string The string to check
+     * @return true if the string supplied is empty
+     */
+    public static final boolean isEmpty(String string)
+    {
+    	return string==null || string.length()==0;
+    }
+    
+    /**
+     * Check if the stringBuffer supplied is empty.  A StringBuffer is empty when it is null or when the length is 0
+     * @param string The stringBuffer to check
+     * @return true if the stringBuffer supplied is empty
+     */
+    public static final boolean isEmpty(StringBuffer string)
+    {
+    	return string==null || string.toString().length()==0;
     }
 }

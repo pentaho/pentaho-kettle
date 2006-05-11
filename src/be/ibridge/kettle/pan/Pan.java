@@ -57,81 +57,106 @@ public class Pan
 		UserInfo       userinfo = null;
 		Trans          trans    = null;
 
+		// The options: 
+		StringBuffer optionRepname   = new StringBuffer();
+		StringBuffer optionUsername  = new StringBuffer();
+		StringBuffer optionPassword  = new StringBuffer();
+		StringBuffer optionTransname = new StringBuffer();
+		StringBuffer optionDirname   = new StringBuffer();
+		StringBuffer optionFilename  = new StringBuffer();
+		StringBuffer optionLoglevel  = new StringBuffer();
+		StringBuffer optionLogfile   = new StringBuffer();
+		StringBuffer optionListdir   = new StringBuffer();
+		StringBuffer optionListtrans = new StringBuffer();
+		StringBuffer optionListrep   = new StringBuffer();
+        StringBuffer optionExprep    = new StringBuffer();
+        StringBuffer optionNorep     = new StringBuffer();
+        StringBuffer optionSafemode  = new StringBuffer();
+        
+		CommandLineOption options[] = new CommandLineOption[] 
+            {
+			    new CommandLineOption("rep", "Repository name", optionRepname),
+			    new CommandLineOption("user", "Repository username", optionUsername),
+			    new CommandLineOption("pass", "Repository password", optionPassword),
+			    new CommandLineOption("trans", "The name of the transformation to launch", optionTransname),
+			    new CommandLineOption("dir", "The directory (don't forget the leading /)", optionDirname),
+			    new CommandLineOption("file", "The filename (Transformation in XML) to launch", optionFilename),
+			    new CommandLineOption("level", "The logging level (Basic, Detailed, Debug, Rowlevel, Error, Nothing)", optionLoglevel),
+			    new CommandLineOption("logfile", "The logging file to write to", optionLogfile),
+			    new CommandLineOption("log", "The logging file to write to (deprecated)", optionLogfile, false, true),
+			    new CommandLineOption("listdir", "List the directories in the repository", optionListdir, true, false),
+			    new CommandLineOption("listtrans", "List the transformations in the specified directory", optionListtrans, true, false),
+			    new CommandLineOption("listrep", "List the available repositories", optionListrep, true, false),
+		        new CommandLineOption("exprep", "Export all repository objects to one XML file", optionExprep, true, false),
+		        new CommandLineOption("norep", "Do not log into the repository", optionNorep, true, false),
+		        new CommandLineOption("safemode", "Run in safe mode: with extra checking enabled", optionSafemode, true, false),
+            };
+
 		if (args.size()==0 ) 
 		{
 		    System.out.println("Options:");
-		    System.out.println("  -rep       : Repository name");
-		    System.out.println("  -user      : Repository username");
-		    System.out.println("  -pass      : Repository password");
-		    System.out.println("  -trans     : The name of the transformation to launch");
-		    System.out.println("  -dir       : The directory (don't forget the leading / or \\)");
-		    System.out.println("  -file      : The filename (Transformation in XML) to launch");
-		    System.out.println("  -level     : The logging level	(Basic, Detailed, Debug, Rowlevel, Error, Nothing)");
-		    System.out.println("  -logfile   : The logging file to write to");
-		    System.out.println("  -listdir   : List the directories in the repository");
-		    System.out.println("  -listtrans : List the transformations in the specified directory");
-            System.out.println("  -exprep    : Export all repository objects to one XML file");
-            System.out.println("  -norep     : do not log into the repository");
+		    for (int i=0;i<options.length;i++) 
+		    {
+		    	if (!options[i].isHiddenOption()) System.out.println(options[i].getUsageDescription());
+		    }
 		    System.out.println("");
 		    
             System.exit(9);
 		}
 
-		String repname   = Const.getCommandlineOption(args, "rep");
-		String username  = Const.getCommandlineOption(args, "user");
-		String password  = Const.getCommandlineOption(args, "pass");
-		String transname = Const.getCommandlineOption(args, "trans");
-		String dirname   = Const.getCommandlineOption(args, "dir");
-		String filename  = Const.getCommandlineOption(args, "file");
-		String loglevel  = Const.getCommandlineOption(args, "level");
-		String logfile   = Const.getCommandlineOption(args, "log");
-        if (logfile==null)
-        {
-            logfile   = Const.getCommandlineOption(args, "logfile");
-        }
-		String listdir   = Const.getCommandlineOption(args, "listdir");
-		String listtrans = Const.getCommandlineOption(args, "listtrans");
-		String listrep   = Const.getCommandlineOption(args, "listrep");
-        String exprep    = Const.getCommandlineOption(args, "exprep");
-        String norep     = Const.getCommandlineOption(args, "norep");
-		
+		for (int i=0;i<options.length;i++)
+		{
+			boolean found=false;
+			for (int j=0;j<args.size() && !found;j++)
+			{
+				String argument = options[i].extractAndSetArgument((String)args.get(j));
+				if (argument!=null) 
+				{
+					found=true;
+					args.remove(j); // We covered it: remove from the list
+				}
+			}
+		}
         String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
         String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
         String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);
         
-        if (kettleRepname !=null && kettleRepname .length()>0) repname  = kettleRepname;
-        if (kettleUsername!=null && kettleUsername.length()>0) username = kettleUsername;
-        if (kettlePassword!=null && kettlePassword.length()>0) password = kettlePassword;
-        
-        /**
-        System.out.println("Options:");
-        System.out.println("-------------");
-        if (repname!=null)   System.out.println("repository name :        "+repname);
-        if (username!=null)  System.out.println("username :               "+username);
-        if (password!=null)  System.out.println("password is set");
-        if (dirname!=null)   System.out.println("directory :              "+dirname);
-        if (loglevel!=null)  System.out.println("logging level :          "+loglevel);
-        if (listdir!=null)   System.out.println("list directories");
-        if (listtrans!=null) System.out.println("list transformations");
-        if (exprep!=null)    System.out.println("export repository to:    "+exprep);
-        */ 
+        if (kettleRepname !=null && kettleRepname .length()>0) optionRepname  = new StringBuffer(kettleRepname);
+        if (kettleUsername!=null && kettleUsername.length()>0) optionUsername = new StringBuffer(kettleUsername);
+        if (kettlePassword!=null && kettlePassword.length()>0) optionPassword = new StringBuffer(kettlePassword);
         
 		LogWriter log;
-        if (logfile==null)
+        if (Const.isEmpty(optionLogfile))
         {
-            log=LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
+            log=LogWriter.getInstance( LogWriter.LOG_LEVEL_DEBUG );
         }
         else
         {
-            log=LogWriter.getInstance( logfile, true, LogWriter.LOG_LEVEL_BASIC );
+            log=LogWriter.getInstance( optionLogfile.toString(), true, LogWriter.LOG_LEVEL_BASIC );
         }
         
-        if (loglevel!=null) 
+        if (!Const.isEmpty(optionLoglevel)) 
         {
-            log.setLogLevel(loglevel);
+            log.setLogLevel(optionLoglevel.toString());
             log.logMinimal("Pan", "Logging is at level : "+log.getLogLevelDesc());
         }
         
+        /////////////////////////////////////////////////////////////////////////////////////////////////////
+        // This is where the action starts.
+        // Print the options before we start processing when running in Debug or Rowlevel
+        // 
+        if (log.isDebug())
+        {
+		    System.out.println("Arguments:");
+		    for (int i=0;i<options.length;i++) 
+		    {
+		    	if (!options[i].isHiddenOption()) System.out.println(Const.rightPad(options[i].getOption(),12)+" : "+options[i].getArgument());
+		    }
+		    System.out.println("");
+        }
+        /////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
         log.logMinimal("Pan", "Start of run.");
 		
 		/* Load the plugins etc.*/
@@ -153,18 +178,19 @@ public class Pan
 
 		try
 		{
+			log.logDebug("Pan", "Starting to look at options...");
 			// Read kettle transformation specified on command-line?
-			if (repname!=null || filename!=null)
+			if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename))
 			{			
 				log.logDebug("Pan", "Parsing command line options.");
-				if (repname!=null && !"Y".equalsIgnoreCase(norep))
+				if (!Const.isEmpty(optionRepname) && !"Y".equalsIgnoreCase(optionNorep.toString()))
 				{
 					log.logDebug("Pan", "Loading available repositories.");
 					RepositoriesMeta repsinfo = new RepositoriesMeta(log);
 					if (repsinfo.readData())
 					{
-						log.logDebug("Pan", "Finding repository ["+repname+"]");
-						repinfo = repsinfo.findRepository(repname);
+						log.logDebug("Pan", "Finding repository ["+optionRepname+"]");
+						repinfo = repsinfo.findRepository(optionRepname.toString());
 						if (repinfo!=null)
 						{
 							// Define and connect to the repository...
@@ -175,29 +201,29 @@ public class Pan
 								RepositoryDirectory directory = rep.getDirectoryTree(); // Default = root
 								
 								// Find the directory name if one is specified...
-								if (dirname!=null)
+								if (!Const.isEmpty(optionDirname))
 								{
-									directory = rep.getDirectoryTree().findDirectory(dirname);
+									directory = rep.getDirectoryTree().findDirectory(optionDirname.toString());
 								}
 								
 								if (directory!=null)
 								{
 									// Check username, password
 									log.logDebug("Pan", "Check supplied username and password.");
-									userinfo = new UserInfo(rep, username, password);
+									userinfo = new UserInfo(rep, optionUsername.toString(), optionPassword.toString());
 									if (userinfo.getID()>0)
 									{
 										// Load a transformation
-										if (transname!=null && transname.length()>0)
+										if (!Const.isEmpty(optionTransname))
 										{
 											log.logDebug("Pan", "Load the transformation info...");
-											transMeta = new TransMeta(rep, transname, directory);
+											transMeta = new TransMeta(rep, optionTransname.toString(), directory);
 											log.logDebug("Pan", "Allocate transformation...");
 											trans = new Trans(log, transMeta);
 										}
 										else
 										// List the transformations in the repository
-										if ("Y".equalsIgnoreCase(listtrans))
+										if ("Y".equalsIgnoreCase(optionListtrans.toString()))
 										{
 										    log.logDebug("Pan", "Getting list of transformations in directory: "+directory);
 											String transnames[] = rep.getTransformationNames(directory.getID());
@@ -208,7 +234,7 @@ public class Pan
 										}
 										else
 										// List the directories in the repository
-										if ("Y".equalsIgnoreCase(listdir))
+										if ("Y".equalsIgnoreCase(optionListdir.toString()))
 										{
 											String dirnames[] = rep.getDirectoryNames(directory.getID());
 											for (int i=0;i<dirnames.length;i++)
@@ -218,11 +244,11 @@ public class Pan
 										}
                                         else
                                         // Export the repository
-                                        if (exprep!=null && exprep.length()>0)
+                                        if (!Const.isEmpty(optionExprep))
                                         {
-                                            System.out.println("Exporting all objects in the repository to file ["+exprep+"]");
-                                            rep.exportAllObjects(null, exprep);
-                                            System.out.println("Finished exporting all objects in the repository to file ["+exprep+"]");
+                                            System.out.println("Exporting all objects in the repository to file ["+optionExprep+"]");
+                                            rep.exportAllObjects(null, optionExprep.toString());
+                                            System.out.println("Finished exporting all objects in the repository to file ["+optionExprep+"]");
                                         }
 										else
 										{
@@ -238,7 +264,7 @@ public class Pan
 								}
 								else
 								{
-									System.out.println("ERROR: Can't find the specified directory ["+dirname+"]");
+									System.out.println("ERROR: Can't find the specified directory ["+optionDirname+"]");
 									userinfo=null;
 									repinfo=null;
 								}
@@ -259,35 +285,37 @@ public class Pan
 						System.out.println("ERROR: No repositories defined on this system.");
 					}
 				}
-				else
-				if ("Y".equalsIgnoreCase(listrep))
-				{
-					RepositoriesMeta ri = new RepositoriesMeta(log);
-					if (ri.readData())
-					{
-						System.out.println("List of repositories:");
-						for (int i=0;i<ri.nrRepositories();i++)
-						{
-							RepositoryMeta rinfo = ri.getRepository(i);
-							System.out.println("#"+(i+1)+" : "+rinfo.getName()+" ["+rinfo.getDescription()+"] ");
-						}
-					}
-					else
-					{
-						System.out.println("ERROR: Unable to read/parse the repositories XML file.");
-					}
-				}
-				
-                // Try to load the transformation from file, even if it failed to load from the repository
+
+				// Try to load the transformation from file, even if it failed to load from the repository
                 // You could implement some failover mechanism this way.
                 //
-				if (trans==null && filename!=null)
+				if (trans==null && !Const.isEmpty(optionFilename))
 				{
-                    log.logDetailed("Pan", "Loading transformation from XML file ["+filename+"]");
-					transMeta = new TransMeta(filename);
+                    log.logDetailed("Pan", "Loading transformation from XML file ["+optionFilename+"]");
+					transMeta = new TransMeta(optionFilename.toString());
 					trans = new Trans(log, transMeta);
 				}
 			}
+			
+			if ("Y".equalsIgnoreCase(optionListrep.toString()))
+			{
+				log.logDebug("Pan", "Getting the list of repositories...");
+				RepositoriesMeta ri = new RepositoriesMeta(log);
+				if (ri.readData())
+				{
+					System.out.println("List of repositories:");
+					for (int i=0;i<ri.nrRepositories();i++)
+					{
+						RepositoryMeta rinfo = ri.getRepository(i);
+						System.out.println("#"+(i+1)+" : "+rinfo.getName()+" ["+rinfo.getDescription()+"] ");
+					}
+				}
+				else
+				{
+					System.out.println("ERROR: Unable to read/parse the repositories XML file.");
+				}
+			}
+
 		}
 		catch(KettleException e)
 		{
@@ -298,10 +326,10 @@ public class Pan
 
 		if (trans==null)
 		{
-			if (!"Y".equalsIgnoreCase(listtrans) && 
-                !"Y".equalsIgnoreCase(listdir) && 
-                !"Y".equalsIgnoreCase(listrep) &&
-                ( exprep==null || exprep.length()==0 )
+			if (!"Y".equalsIgnoreCase(optionListtrans.toString()) && 
+                !"Y".equalsIgnoreCase(optionListdir.toString()) && 
+                !"Y".equalsIgnoreCase(optionListrep.toString()) &&
+                Const.isEmpty(optionExprep)
                )
             {
                 System.out.println("ERROR: Pan can't continue because the transformation couldn't be loaded.");
@@ -311,6 +339,12 @@ public class Pan
 		
 		try
 		{
+			// See if we want to run in safe mode:
+			if ("Y".equalsIgnoreCase(optionSafemode.toString()))
+			{
+				trans.setSafeModeEnabled(true);
+			}
+			
 		    // allocate & run the required sub-threads
 			boolean ok = trans.execute((String[])args.toArray(new String[args.size()])); 
 			trans.waitUntilFinished();
