@@ -4309,9 +4309,9 @@ public class Spoon
         String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
         String kettlePassword = Const.getEnvironmentVariable("KETTLE_PASSWORD", null);
         
-        if (Const.isEmpty(kettleRepname )) optionRepname  = new StringBuffer(kettleRepname);
-        if (Const.isEmpty(kettleUsername)) optionUsername = new StringBuffer(kettleUsername);
-        if (Const.isEmpty(kettlePassword)) optionPassword = new StringBuffer(kettlePassword);
+        if (!Const.isEmpty(kettleRepname )) optionRepname  = new StringBuffer(kettleRepname);
+        if (!Const.isEmpty(kettleUsername)) optionUsername = new StringBuffer(kettleUsername);
+        if (!Const.isEmpty(kettlePassword)) optionPassword = new StringBuffer(kettlePassword);
         
         // Before anything else, check the runtime version!!!
         String version = Const.JAVA_VERSION;
