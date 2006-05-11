@@ -50,38 +50,38 @@ public class Delete extends BaseStep implements StepInterface
 	{
 		Row lu;
 	
-		debug="Start of deleteValues";
+		debug=Messages.getString("Delete.Debug.StartOfDeleteValues"); //$NON-NLS-1$
 		if (first)
 		{
-			debug="first run, initialize";
+			debug=Messages.getString("Delete.Debug.Initialize"); //$NON-NLS-1$
 			first=false;
 			
 			data.dbupd.prepareDelete(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition());
 			
-			debug="first run, lookup values, field positions, etc.";
+			debug=Messages.getString("Delete.Debug.LookupValues"); //$NON-NLS-1$
 			// lookup the values!
-			if (log.isDetailed()) logDetailed("Checking row: "+row.toString());
+			if (log.isDetailed()) logDetailed(Messages.getString("Delete.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
 			data.keynrs  = new int[meta.getKeyStream().length];
 			data.keynrs2 = new int[meta.getKeyStream().length];
 			for (int i=0;i<meta.getKeyStream().length;i++)
 			{
 				data.keynrs[i]=row.searchValueIndex(meta.getKeyStream()[i]);
 				if (data.keynrs[i]<0 &&  // couldn't find field!
-                    !"IS NULL".equalsIgnoreCase(meta.getKeyCondition()[i]) &&   // No field needed!
-				    !"IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i])  // No field needed!
+                    !"IS NULL".equalsIgnoreCase(meta.getKeyCondition()[i]) &&   // No field needed! //$NON-NLS-1$
+				    !"IS NOT NULL".equalsIgnoreCase(meta.getKeyCondition()[i])  // No field needed! //$NON-NLS-1$
                    )
 				{
-					throw new KettleStepException("Field ["+meta.getKeyStream()[i]+"] is required and couldn't be found!");
+					throw new KettleStepException(Messages.getString("Delete.Exception.FieldRequired",meta.getKeyStream()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				data.keynrs2[i]=row.searchValueIndex(meta.getKeyStream2()[i]);
 				if (data.keynrs2[i]<0 &&  // couldn't find field!
-				    "BETWEEN".equalsIgnoreCase(meta.getKeyCondition()[i])   // 2 fields needed!
+				    "BETWEEN".equalsIgnoreCase(meta.getKeyCondition()[i])   // 2 fields needed! //$NON-NLS-1$
 				   )
 				{
-					throw new KettleStepException("Field ["+meta.getKeyStream2()[i]+"] is required and couldn't be found!");
+					throw new KettleStepException(Messages.getString("Delete.Exception.FieldRequired",meta.getKeyStream2()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 				
-				if (log.isDebug()) logDebug("Field ["+meta.getKeyStream()[i]+"] has nr. "+data.keynrs[i]);
+				if (log.isDebug()) logDebug(Messages.getString("Delete.Log.FieldInfo",meta.getKeyStream()[i])+data.keynrs[i]); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 		
@@ -98,11 +98,11 @@ public class Delete extends BaseStep implements StepInterface
 			}
 		}
 		
-		debug="setValues()";
+		debug=Messages.getString("Delete.Debug.SetValues"); //$NON-NLS-1$
 		data.dbupd.setValuesUpdate(lu);
 		
-		if (log.isDebug()) logDebug("Values set for delete: "+lu.toString()+", input row: "+row);
-		debug="getLookup()";
+		if (log.isDebug()) logDebug(Messages.getString("Delete.Log.SetValuesForDelete",lu.toString(),""+row)); //$NON-NLS-1$ //$NON-NLS-2$
+		debug=Messages.getString("Delete.Debug.GetLookup"); //$NON-NLS-1$
 
 		data.dbupd.updateRow();
 		linesUpdated++;
@@ -125,11 +125,11 @@ public class Delete extends BaseStep implements StepInterface
 			deleteValues(r); // add new values to the row in rowset[0].
 			putRow(r);       // copy row to output rowset(s);
 			
-			if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
+			if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("Delete.Log.LineNumber")+linesRead); //$NON-NLS-1$
 		}
 		catch(KettleException e)
 		{
-			logError("Error in step, asking everyone to stop because of:"+e.getMessage());
+			logError(Messages.getString("Delete.Log.ErrorInStep")+e.getMessage()); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
@@ -151,7 +151,7 @@ public class Delete extends BaseStep implements StepInterface
 			{
 				data.dbupd.connect();
 				
-				logBasic("Connected to database...");
+				logBasic(Messages.getString("Delete.Log.ConnectedToDB")); //$NON-NLS-1$
 				
 				data.dbupd.setCommit(meta.getCommitSize());
 
@@ -159,7 +159,7 @@ public class Delete extends BaseStep implements StepInterface
 			}
 			catch(KettleException ke)
 			{
-				logError("An error occurred, processing will be stopped: "+ke.getMessage());
+				logError(Messages.getString("Delete.Log.ErrorOccurred")+ke.getMessage()); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 			}
@@ -179,7 +179,7 @@ public class Delete extends BaseStep implements StepInterface
         }
         catch(KettleDatabaseException e)
         {
-            log.logError(toString(), "Unable to commit Update connection ["+data.dbupd+"] :"+e.toString());
+            log.logError(toString(), Messages.getString("Delete.Log.UnableToCommitUpdateConnection")+data.dbupd+"] :"+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             setErrors(1);
         }
         
@@ -194,12 +194,12 @@ public class Delete extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("Delete.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("Delete.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}
