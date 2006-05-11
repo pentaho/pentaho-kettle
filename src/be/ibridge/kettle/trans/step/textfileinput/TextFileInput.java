@@ -78,6 +78,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 	{
 		StringBuffer line = new StringBuffer(256);
 		int c = 0;
+		boolean mixedMode=format.equalsIgnoreCase("mixed"); // for a small performance optimization
 
 		try
 		{
@@ -85,7 +86,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			{
 				c = reader.read();
 				
-				if (!format.equalsIgnoreCase("mixed"))
+				if (!mixedMode)
 				{	// no mixed mode
 					if (c == '\n' || c == '\r')
 					{
