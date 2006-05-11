@@ -55,7 +55,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		debug="processRow";
+		debug=Messages.getString("Denormaliser.Debug.ProcessRow"); //$NON-NLS-1$
 		
 		Row r=getRow();    // get row!
 		if (r==null)  // no more input to be expected...
@@ -78,7 +78,7 @@ public class Denormaliser extends BaseStep implements StepInterface
             data.keyFieldNr = r.searchValueIndex(meta.getKeyField() );
             if (data.keyFieldNr<0)
             {
-                logError("Key field name ["+meta.getKeyField()+"] couldn't be found!");
+                logError(Messages.getString("Denormaliser.Log.KeyFieldNotFound",meta.getKeyField())); //$NON-NLS-1$ //$NON-NLS-2$
                 setErrors(1);
                 stopAll();
                 return false;
@@ -92,7 +92,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 				int idx = r.searchValueIndex(field.getFieldName());
 				if (idx<0)
 				{
-					logError("Unpivot field name ["+field.getFieldName()+"] couldn't be found!");
+					logError(Messages.getString("Denormaliser.Log.UnpivotFieldNotFound",field.getFieldName())); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -115,7 +115,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 				data.groupnrs[i] = r.searchValueIndex(meta.getGroupField()[i]);
 				if (data.groupnrs[i]<0)
 				{
-					logError("Grouping field ["+meta.getGroupField()[i]+"] couldn't be found!");
+					logError(Messages.getString("Denormaliser.Log.GroupingFieldNotFound",meta.getGroupField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -144,7 +144,7 @@ public class Denormaliser extends BaseStep implements StepInterface
         
 		if (!sameGroup(data.previous, r))
 		{
-            debug="Different group";
+            debug=Messages.getString("Denormaliser.Debg.DifferentGroup"); //$NON-NLS-1$
             // System.out.println("Different group!");
             
     		buildResult(data.previous);
@@ -155,13 +155,13 @@ public class Denormaliser extends BaseStep implements StepInterface
 		}
         else
         {
-            debug="unPivot()";
+            debug=Messages.getString("Denormaliser.Debug.UnPivot"); //$NON-NLS-1$
             deNormalise(r);
         }
 
 		data.previous=new Row(r);
         
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesRead);
+		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("Denormaliser.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
 		return true;
 	}
@@ -198,7 +198,7 @@ public class Denormaliser extends BaseStep implements StepInterface
     // Is the row r of the same group as previous?
 	private boolean sameGroup(Row previous, Row r)
 	{
-		debug="sameGroup";
+		debug=Messages.getString("Denormaliser.Debug.SameGroup"); //$NON-NLS-1$
 		
 		for (int i=0;i<data.groupnrs.length;i++)
 		{
@@ -214,7 +214,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 	/** Initialize a new group... */
 	private void newGroup()
 	{
-		debug="newAggregate";
+		debug=Messages.getString("Denormaliser.Debug.NewAggregate"); //$NON-NLS-1$
         
         data.targetResult = new Row();
         
@@ -399,12 +399,12 @@ public class Denormaliser extends BaseStep implements StepInterface
 	{		
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("Denormaliser.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("Denormaliser.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}

@@ -61,7 +61,7 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 
 public class DenormaliserDialog extends BaseStepDialog implements StepDialogInterface
 {
-    public static final String STRING_SORT_WARNING_PARAMETER = "PivotSortWarning";
+    public static final String STRING_SORT_WARNING_PARAMETER = "PivotSortWarning"; //$NON-NLS-1$
     
 	private Label        wlGroup;
 	private TableView    wGroup;
@@ -109,14 +109,14 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Denormaliser");
+		shell.setText(Messages.getString("DenormaliserDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 		
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("DenormaliserDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -136,7 +136,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 
         // Key field...
         wlKeyField=new Label(shell, SWT.RIGHT);
-        wlKeyField.setText("The key field ");
+        wlKeyField.setText(Messages.getString("DenormaliserDialog.KeyField.Label")); //$NON-NLS-1$
         props.setLook(wlKeyField);
         fdlKeyField=new FormData();
         fdlKeyField.left = new FormAttachment(0, 0);
@@ -153,7 +153,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
         wKeyField.setLayoutData(fdKeyField);
 
 		wlGroup=new Label(shell, SWT.NONE);
-		wlGroup.setText("The fields that make up the grouping: ");
+		wlGroup.setText(Messages.getString("DenormaliserDialog.Group.Label")); //$NON-NLS-1$
  		props.setLook(wlGroup);
 		fdlGroup=new FormData();
 		fdlGroup.left  = new FormAttachment(0, 0);
@@ -164,7 +164,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		int nrKeyRows=(input.getGroupField()!=null?input.getGroupField().length:1);
 		
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo("Group field",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciKey[0]=new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.GroupField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		
 		wGroup=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -175,7 +175,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 						      );
 
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(" &Get Fields ");
+		wGet.setText(Messages.getString("DenormaliserDialog.GetFields.Button")); //$NON-NLS-1$
 		fdGet = new FormData();
 		fdGet.top   = new FormAttachment(wlGroup, margin);
 		fdGet.right = new FormAttachment(100, 0);
@@ -190,7 +190,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 
 		// THE unpivot target field fields
 		wlTarget=new Label(shell, SWT.NONE);
-		wlTarget.setText("Target fields:");
+		wlTarget.setText(Messages.getString("DenormaliserDialog.Target.Label")); //$NON-NLS-1$
  		props.setLook(wlTarget);
 		fdlTarget=new FormData();
 		fdlTarget.left  = new FormAttachment(0, 0);
@@ -203,21 +203,21 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
         
 		ColumnInfo[] ciTarget=new ColumnInfo[]
           {
-    		 new ColumnInfo("Target fieldname",     ColumnInfo.COLUMN_TYPE_TEXT,   false),
-    		 new ColumnInfo("Value fieldname",      ColumnInfo.COLUMN_TYPE_TEXT,   false),
-    		 new ColumnInfo("Key value",            ColumnInfo.COLUMN_TYPE_TEXT,   false),
-             new ColumnInfo("Type",                 ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getAllTypes(), false),
-             new ColumnInfo("Format",               ColumnInfo.COLUMN_TYPE_CCOMBO,  formats),
-             new ColumnInfo("Length",               ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Precision",            ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Currency",             ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Decimal",              ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Group",                ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Null if",              ColumnInfo.COLUMN_TYPE_TEXT,    false),
-             new ColumnInfo("Aggregation",          ColumnInfo.COLUMN_TYPE_CCOMBO,  DenormaliserTargetField.typeAggrLongDesc, false),
+    		 new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.TargetFieldname"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+    		 new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.ValueFieldname"),      ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+    		 new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Keyvalue"),            ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Type"),                 ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getAllTypes(), false), //$NON-NLS-1$
+             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Format"),               ColumnInfo.COLUMN_TYPE_CCOMBO,  formats), //$NON-NLS-1$
+             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Length"),               ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
+             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Precision"),            ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
+             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Currency"),             ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
+             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Decimal"),              ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
+             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Group"),                ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
+             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.NullIf"),              ColumnInfo.COLUMN_TYPE_TEXT,    false), //$NON-NLS-1$
+             new ColumnInfo(Messages.getString("DenormaliserDialog.ColumnInfo.Aggregation"),          ColumnInfo.COLUMN_TYPE_CCOMBO,  DenormaliserTargetField.typeAggrLongDesc, false), //$NON-NLS-1$
           };
         
-        ciTarget[ciTarget.length-1].setToolTip("This is the aggregation to will be calculated in case of a key-value collision.  None means: overwrite value");
+        ciTarget[ciTarget.length-1].setToolTip(Messages.getString("DenormaliserDialog.CiTarget.Title")); //$NON-NLS-1$
 		
 		wTarget=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -228,7 +228,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 							  );
 
 		wGetAgg=new Button(shell, SWT.PUSH);
-		wGetAgg.setText(" &Get lookup fields ");
+		wGetAgg.setText(Messages.getString("DenormaliserDialog.GetLookupFields.Button")); //$NON-NLS-1$
 		fdGetAgg = new FormData();
 		fdGetAgg.top   = new FormAttachment(wlTarget, margin);
 		fdGetAgg.right = new FormAttachment(100, 0);
@@ -236,9 +236,9 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("DenormaliserDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("DenormaliserDialog.Cancel.Button")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -289,7 +289,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), "getting key info...");
+		log.logDebug(toString(), Messages.getString("DenormaliserDialog.Log.Getting.KeyInfo")); //$NON-NLS-1$
 		
         if (input.getKeyField()!= null) wKeyField.setText(input.getKeyField());
 
@@ -312,8 +312,8 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
             if (field.getKeyValue() != null )             item.setText( 3, field.getKeyValue());
             if (field.getTargetTypeDesc() != null )       item.setText( 4, field.getTargetTypeDesc());
             if (field.getTargetFormat() != null )         item.setText( 5, field.getTargetFormat());
-            if (field.getTargetLength()>=0)               item.setText( 6, ""+field.getTargetLength());
-            if (field.getTargetPrecision()>=0)            item.setText( 7, ""+field.getTargetPrecision());
+            if (field.getTargetLength()>=0)               item.setText( 6, ""+field.getTargetLength()); //$NON-NLS-1$
+            if (field.getTargetPrecision()>=0)            item.setText( 7, ""+field.getTargetPrecision()); //$NON-NLS-1$
             if (field.getTargetCurrencySymbol() != null ) item.setText( 8, field.getTargetCurrencySymbol());
             if (field.getTargetDecimalSymbol() != null )  item.setText( 9, field.getTargetDecimalSymbol());
             if (field.getTargetGroupingSymbol() != null ) item.setText(10, field.getTargetGroupingSymbol());
@@ -372,20 +372,20 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		
 		stepname = wStepname.getText();
         
-        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ))
+        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                 "Warning!", 
+                 Messages.getString("DenormaliserDialog.Unpivot.DialogTitle"),  //$NON-NLS-1$
                  null,
-                 "The 'Unpivot' function needs the input to be sorted on the specified grouping keys." + Const.CR + "If you don't sort the input, the results may not be correct!"+Const.CR,
+                 Messages.getString("DenormaliserDialog.Unpivot.DialogMessage",Const.CR,Const.CR), //$NON-NLS-1$ //$NON-NLS-2$
                  MessageDialog.WARNING,
-                 new String[] { "I understand" },
+                 new String[] { Messages.getString("DenormaliserDialog.WarningMessage.Option.1") }, //$NON-NLS-1$
                  0,
-                 "Please, don't show this warning anymore.",
-                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )
+                 Messages.getString("DenormaliserDialog.WarningMessage.Option.2"), //$NON-NLS-1$
+                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
             );
             md.open();
-            props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y");
+            props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
             props.saveProps();
         }
 					
@@ -413,7 +413,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("DenormaliserDialog.FailedToGetFields.DialogTitle"), Messages.getString("DenormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -437,11 +437,11 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
                         if (!wKeyField.getText().equalsIgnoreCase(v.getName())) // Not the key field
                         {
         					TableItem ti = new TableItem(table, SWT.NONE);
-        					ti.setText(1, "Field"+nr); // the target fieldname
+        					ti.setText(1, Messages.getString("DenormaliserDialog.TargetFieldname.Label")+nr); // the target fieldname //$NON-NLS-1$
         					ti.setText(2, v.getName());
                             ti.setText(4, v.getTypeDesc());
-        					if (v.getLength()>=0) ti.setText(6, ""+v.getLength());
-                            if (v.getPrecision()>=0) ti.setText(7, ""+v.getPrecision());
+        					if (v.getLength()>=0) ti.setText(6, ""+v.getLength()); //$NON-NLS-1$
+                            if (v.getPrecision()>=0) ti.setText(7, ""+v.getPrecision()); //$NON-NLS-1$
                         }
                     }
 				}
@@ -452,7 +452,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("DenormaliserDialog.FailedToGetFields.DialogTitle"), Messages.getString("DenormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
