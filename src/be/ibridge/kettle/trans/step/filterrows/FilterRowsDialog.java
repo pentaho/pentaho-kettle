@@ -104,14 +104,14 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Filter rows");
+		shell.setText(Messages.getString("FilterRowsDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("FilterRowsDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -130,7 +130,7 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Send 'True' data to...
 		wlTrueTo=new Label(shell, SWT.RIGHT);
-		wlTrueTo.setText("Send 'True' data to step:");
+		wlTrueTo.setText(Messages.getString("FilterRowsDialog.SendTrueTo.Label")); //$NON-NLS-1$
  		props.setLook(wlTrueTo);
 		fdlTrueTo=new FormData();
 		fdlTrueTo.left = new FormAttachment(0, 0);
@@ -159,7 +159,7 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Send 'False' data to...
 		wlFalseTo=new Label(shell, SWT.RIGHT);
-		wlFalseTo.setText("Send 'false' data to step:");
+		wlFalseTo.setText(Messages.getString("FilterRowsDialog.SendFalseTo.Label")); //$NON-NLS-1$
  		props.setLook(wlFalseTo);
 		fdlFalseTo=new FormData();
 		fdlFalseTo.left = new FormAttachment(0, 0);
@@ -188,7 +188,7 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 
 		
 		wlCondition=new Label(shell, SWT.NONE);
-		wlCondition.setText("The condition: ");
+		wlCondition.setText(Messages.getString("FilterRowsDialog.Condition.Label")); //$NON-NLS-1$
  		props.setLook(wlCondition);
 		fdlCondition=new FormData();
 		fdlCondition.left  = new FormAttachment(0, 0);
@@ -203,14 +203,14 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 		catch(KettleException ke)
 		{
 			inputfields = new Row();
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("FilterRowsDialog.FailedToGetFields.DialogTitle"), Messages.getString("FilterRowsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("FilterRowsDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("FilterRowsDialog.Cancel.Button")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 

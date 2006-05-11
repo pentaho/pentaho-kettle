@@ -48,16 +48,16 @@ public class FilterRows extends BaseStep implements StepInterface
 	{
 		try
 		{
-			debug="before evaluate condition";
+			debug=Messages.getString("FilterRows.0"); //$NON-NLS-1$
 			boolean ret=meta.getCondition().evaluate(row);
-	        debug="after evaluate condition";
+	        debug=Messages.getString("FilterRows.Debug.AfterEvaluateCondition"); //$NON-NLS-1$
 			return ret;
 		}
 		catch(Exception e)
 		{
-			String message = "Unexpected error found in evaluation function : "+e.toString(); 
+			String message = Messages.getString("FilterRows.Exception.UnexpectedErrorFoundInEvaluationFuction")+e.toString();  //$NON-NLS-1$
 			logError(message);
-			logError("Error occurred for row: "+row);
+			logError(Messages.getString("FilterRows.Log.ErrorOccurredForRow")+row); //$NON-NLS-1$
 			logError(Const.getStackTracker(e));
 			throw new KettleException(message, e);
 		}
@@ -100,7 +100,7 @@ public class FilterRows extends BaseStep implements StepInterface
 		    }
 		}
 		
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
+		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("FilterRows.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
 		return true;
 	}
@@ -117,7 +117,7 @@ public class FilterRows extends BaseStep implements StepInterface
         {
             if (meta.getSendTrueStepname()!=null ^ meta.getSendFalseStepname()!=null)
             {
-                logError("Both the 'true' and the 'false' steps need to be supplied, or neither");
+                logError(Messages.getString("FilterRows.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
             }
             else
             {
@@ -133,12 +133,12 @@ public class FilterRows extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("FilterRows.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("FilterRows.Log.UnexpectedErrorIn")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}
