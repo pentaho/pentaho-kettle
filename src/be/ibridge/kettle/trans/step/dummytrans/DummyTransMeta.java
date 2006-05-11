@@ -83,24 +83,24 @@ public class DummyTransMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("DummyTransMeta.CheckResult.NotReceivingFields"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "+prev.size()+" fields", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DummyTransMeta.CheckResult.StepRecevingData",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("DummyTransMeta.CheckResult.StepRecevingData2"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("DummyTransMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

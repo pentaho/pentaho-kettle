@@ -77,14 +77,14 @@ public class DummyTransDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Dummy Transformation");
+		shell.setText(Messages.getString("DummyTransDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("DummyTransDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -103,9 +103,9 @@ public class DummyTransDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("DummyTransDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("DummyTransDialog.Cancel.Button")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wStepname);
 
