@@ -20,7 +20,7 @@ public class FileErrorHandlerContentLineNumber extends AbstractFileErrorHandler 
 			getWriter(filePart).write(String.valueOf(lineNr));
 			getWriter(filePart).write(Const.CR);
 		} catch (Exception e) {
-			throw new KettleException("Could not create write line:" + lineNr,
+			throw new KettleException(Messages.getString("FileErrorHandlerContentLineNumber.Exception.CouldNotCreateWriteLine") + lineNr, //$NON-NLS-1$
 					e);
 
 		}

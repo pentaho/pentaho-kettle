@@ -18,9 +18,9 @@ import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.step.BaseStep;
 
 public abstract class AbstractFileErrorHandler implements FileErrorHandler {
-	private static final String DD_MMYYYY_HHMMSS = "ddMMyyyy-hhmmss";
+	private static final String DD_MMYYYY_HHMMSS = "ddMMyyyy-hhmmss"; //$NON-NLS-1$
 
-	public static final String NO_PARTS = "NO_PARTS";
+	public static final String NO_PARTS = "NO_PARTS"; //$NON-NLS-1$
 
 	private final LogWriter log = LogWriter.getInstance();
 
@@ -59,14 +59,14 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 	public static File getReplayFilename(String destinationDirectory,
 			String processingFilename, String dateString, String extension, Object source) {
 		String name = null;
-		String sourceAdding = "";
+		String sourceAdding = ""; //$NON-NLS-1$
 		if (source != NO_PARTS) {
 			sourceAdding = "_" + source.toString();
 		}
 		if (extension == null || extension.length() == 0)
-			name = processingFilename + sourceAdding + "." + dateString;
+			name = processingFilename + sourceAdding + "." + dateString; //$NON-NLS-1$
 		else
-			name = processingFilename + sourceAdding + "." + dateString + "." + extension;
+			name = processingFilename + sourceAdding + "." + dateString + "." + extension; //$NON-NLS-1$ //$NON-NLS-2$
 		return new File(StringUtil.environmentSubstitute(destinationDirectory), name);
 	}
 
@@ -97,7 +97,7 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 						new FileOutputStream(file), encoding);
 		} catch (Exception e) {
 			throw new KettleException(
-					"Could not create FileErrorHandler for file:"
+					Messages.getString("AbstractFileErrorHandler.Exception.CouldNotCreateFileErrorHandlerForFile") //$NON-NLS-1$
 							+ file.getPath(), e);
 		}
 		writers.put(source, outputStreamWriter);
@@ -116,13 +116,13 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 			try {
 				outputStreamWriter.flush();
 			} catch (IOException exception) {
-				log.logError("Could not flush content to file", exception
+				log.logError(Messages.getString("AbstractFileErrorHandler.Log.CouldNotFlushContentToFile"), exception //$NON-NLS-1$
 						.getLocalizedMessage());
 			}
 			try {
 				outputStreamWriter.close();
 			} catch (IOException exception) {
-				throw new KettleException("Could not close file", exception);
+				throw new KettleException(Messages.getString("AbstractFileErrorHandler.Exception.CouldNotCloseFile"), exception); //$NON-NLS-1$
 			} finally {
 				outputStreamWriter = null;
 			}

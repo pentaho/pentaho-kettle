@@ -10,9 +10,9 @@ import be.ibridge.kettle.trans.step.BaseStep;
 public class FileErrorHandlerMissingFiles extends
 		AbstractFileErrorHandler {
 
-	public static final String THIS_FILE_DOES_NOT_EXIST = "This file does not exist";
+	public static final String THIS_FILE_DOES_NOT_EXIST = Messages.getString("FileErrorHandlerMissingFiles.FILE_DOES_NOT_EXIST"); //$NON-NLS-1$
 
-	public static final String THIS_FILE_WAS_NOT_ACCESSIBLE = "This file was not accessible";
+	public static final String THIS_FILE_WAS_NOT_ACCESSIBLE = Messages.getString("FileErrorHandlerMissingFiles.FILE_WAS_NOT_ACCESSIBLE"); //$NON-NLS-1$
 
 	public FileErrorHandlerMissingFiles(Date date,
 			String destinationDirectory, String fileExtension, String encoding, BaseStep baseStep) {
@@ -29,7 +29,7 @@ public class FileErrorHandlerMissingFiles extends
 			getWriter(NO_PARTS).write(THIS_FILE_DOES_NOT_EXIST);
 			getWriter(NO_PARTS).write(Const.CR);
 		} catch (Exception e) {
-			throw new KettleException("Could not create NonExistantFile for :"
+			throw new KettleException(Messages.getString("FileErrorHandlerMissingFiles.Exception.CouldNotCreateNonExistantFile") //$NON-NLS-1$
 					+ file.getPath(), e);
 		}
 	}
@@ -41,7 +41,7 @@ public class FileErrorHandlerMissingFiles extends
 			getWriter(NO_PARTS).write(Const.CR);
 		} catch (Exception e) {
 			throw new KettleException(
-					"Could not create NonAccessibleFile for :" + file.getPath(),
+					Messages.getString("FileErrorHandlerMissingFiles.Exception.CouldNotCreateNonAccessibleFile") + file.getPath(), //$NON-NLS-1$
 					e);
 		}
 	}
