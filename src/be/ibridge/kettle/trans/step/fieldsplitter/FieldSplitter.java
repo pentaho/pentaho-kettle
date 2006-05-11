@@ -53,7 +53,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 			data.fieldnr=r.searchValueIndex(meta.getSplitField());
 			if (data.fieldnr<0)
 			{
-				logError("Couldn't find field to split ["+meta.getSplitField()+"] in input stream!");
+				logError(Messages.getString("FieldSplitter.Log.CouldNotFindFieldToSplit",meta.getSplitField())); //$NON-NLS-1$ //$NON-NLS-2$
 				setErrors(1);
 				stopAll();
 				return false;
@@ -65,7 +65,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 		
 		if (!v.isString())
 		{
-			logError("Can only split string fields.  ["+meta.getSplitField()+"] is not a string!");
+			logError(Messages.getString("FieldSplitter.Log.SplitFieldNotValid",meta.getSplitField())); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 			return false;
@@ -77,7 +77,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 		Value value=null;
 		if (use_ids)
 		{
-			if (log.isDebug()) logDebug("Using IDs!!");
+			if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.UsingIds")); //$NON-NLS-1$
 			// pol all split fields
 			// Loop over the specified field list
 			// If we spot the corresponding id[] entry in pol, add the value
@@ -88,7 +88,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 			while(v.getString()!=null && prev<v.getString().length() && i<pol.length)
 			{
 				pol[i]=polNext(v.getString(), meta.getDelimiter(), prev);
-				if (log.isDebug()) logDebug("pol="+pol[i]+", prev="+prev);
+				if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.SplitFieldsInfo",pol[i],String.valueOf(prev))); //$NON-NLS-1$ //$NON-NLS-2$
 				prev+=pol[i].length()+meta.getDelimiter().length();
 				i++;
 			}
@@ -114,8 +114,8 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 					split=sb.toString();
 				}
 
-				if (split==null) split="";
-				if (log.isDebug()) logDebug("Split="+split);
+				if (split==null) split=""; //$NON-NLS-1$
+				if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.SplitInfo")+split); //$NON-NLS-1$
 
 				try
 				{
@@ -131,7 +131,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 						meta.getFieldDecimal()[i],
 						meta.getFieldCurrency()[i],
 						meta.getFieldDefault()[i],
-						"", // --> The default String value in case a field is empty.
+						"", // --> The default String value in case a field is empty. //$NON-NLS-1$
 						TextFileInputMeta.TYPE_TRIM_BOTH,
 						data.df, data.dfs,
 						data.daf, data.dafs
@@ -139,7 +139,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 				}
 				catch(Exception e)
 				{
-					logError("Error converting value ["+split+"], when splitting field ["+meta.getSplitField()+"]!");
+					logError(Messages.getString("FieldSplitter.Log.ErrorConvertingSplitValue",split,meta.getSplitField()+"]!")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -149,12 +149,12 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 		}
 		else
 		{
-			if (log.isDebug()) logDebug("Using position of value!!");
+			if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.UsingPositionOfValue")); //$NON-NLS-1$
 			int prev=0;
 			for (int i=0;i<meta.getField().length;i++)
 			{
 				String pol = polNext(v.getString(), meta.getDelimiter(), prev);
-				if (log.isDebug()) logDebug("pol="+pol+", prev="+prev);
+				if (log.isDebug()) logDebug(Messages.getString("FieldSplitter.Log.SplitFieldsInfo",pol,String.valueOf(prev))); //$NON-NLS-1$ //$NON-NLS-2$
 				prev+=(pol==null?0:pol.length()) + meta.getDelimiter().length();
 				
 				try
@@ -171,7 +171,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 						meta.getFieldDecimal()[i],
 						meta.getFieldCurrency()[i],
 						meta.getFieldDefault()[i],
-						"", // --> The default String value in case a field is empty.
+						"", // --> The default String value in case a field is empty. //$NON-NLS-1$
 						TextFileInputMeta.TYPE_TRIM_BOTH,
 						data.df, data.dfs,
 						data.daf, data.dafs
@@ -179,7 +179,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 				}
 				catch(Exception e)
 				{
-					logError("Error converting value ["+pol+"], when splitting field ["+meta.getSplitField()+"]!");
+					logError(Messages.getString("FieldSplitter.Log.ErrorConvertingSplitValue",pol,meta.getSplitField()+"]!")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -195,12 +195,12 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 	{
 		String retval;
 		
-		if (str==null || start>=str.length()) return "";
+		if (str==null || start>=str.length()) return ""; //$NON-NLS-1$
 		
 		int next = str.indexOf(del, start);
 		if (next == start) // ;; or ,, : two consecutive delimiters
 		{
-			retval="";
+			retval=""; //$NON-NLS-1$
 		}
 		else 
 		if (next > start) // part of string
@@ -235,7 +235,7 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 				
 		putRow(r);
 
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
+		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("FieldSplitter.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
 		return true;
 	}
@@ -261,12 +261,12 @@ import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("FieldSplitter.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("FieldSplitter.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}

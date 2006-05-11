@@ -94,14 +94,14 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Field splitter");
+		shell.setText(Messages.getString("FieldSplitterDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("FieldSplitterDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -120,7 +120,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 
 		// Typefield line
 		wlSplitfield=new Label(shell, SWT.RIGHT);
-		wlSplitfield.setText("Field to split ");
+		wlSplitfield.setText(Messages.getString("FieldSplitterDialog.SplitField.Label")); //$NON-NLS-1$
  		props.setLook(wlSplitfield);
 		fdlSplitfield=new FormData();
 		fdlSplitfield.left = new FormAttachment(0, 0);
@@ -128,7 +128,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		fdlSplitfield.top  = new FormAttachment(wStepname, margin);
 		wlSplitfield.setLayoutData(fdlSplitfield);
 		wSplitfield=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wSplitfield.setText("");
+		wSplitfield.setText(""); //$NON-NLS-1$
  		props.setLook(wSplitfield);
 		wSplitfield.addModifyListener(lsMod);
 		fdSplitfield=new FormData();
@@ -139,7 +139,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 
 		// Typefield line
 		wlDelimiter=new Label(shell, SWT.RIGHT);
-		wlDelimiter.setText("Delimiter ");
+		wlDelimiter.setText(Messages.getString("FieldSplitterDialog.Delimiter.Label")); //$NON-NLS-1$
  		props.setLook(wlDelimiter);
 		fdlDelimiter=new FormData();
 		fdlDelimiter.left = new FormAttachment(0, 0);
@@ -147,7 +147,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		fdlDelimiter.top  = new FormAttachment(wSplitfield, margin);
 		wlDelimiter.setLayoutData(fdlDelimiter);
 		wDelimiter=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wDelimiter.setText("");
+		wDelimiter.setText(""); //$NON-NLS-1$
  		props.setLook(wDelimiter);
 		wDelimiter.addModifyListener(lsMod);
 		fdDelimiter=new FormData();
@@ -157,7 +157,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		wDelimiter.setLayoutData(fdDelimiter);
 
 		wlFields=new Label(shell, SWT.RIGHT);
-		wlFields.setText("Fields ");
+		wlFields.setText(Messages.getString("FieldSplitterDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -165,9 +165,9 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		wlFields.setLayoutData(fdlFields);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("FieldSplitterDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("FieldSplitterDialog.Cancel.Button")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -176,17 +176,17 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		final int FieldsRows=input.getField().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[ 0]=new ColumnInfo("New field",   ColumnInfo.COLUMN_TYPE_TEXT,   false );
-		colinf[ 1]=new ColumnInfo("ID",          ColumnInfo.COLUMN_TYPE_TEXT,   false );
-		colinf[ 2]=new ColumnInfo("Remove ID?",  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" } );
-		colinf[ 3]=new ColumnInfo("Type",        ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() );
-		colinf[ 4]=new ColumnInfo("Length",      ColumnInfo.COLUMN_TYPE_TEXT,   false );
-		colinf[ 5]=new ColumnInfo("Precision",   ColumnInfo.COLUMN_TYPE_TEXT,   false );
-		colinf[ 6]=new ColumnInfo("Format",      ColumnInfo.COLUMN_TYPE_TEXT,   false );
-		colinf[ 7]=new ColumnInfo("Group",       ColumnInfo.COLUMN_TYPE_TEXT,   false );
-		colinf[ 8]=new ColumnInfo("Decimal",     ColumnInfo.COLUMN_TYPE_TEXT,   false );
-		colinf[ 9]=new ColumnInfo("Currency",    ColumnInfo.COLUMN_TYPE_TEXT,   false );
-		colinf[10]=new ColumnInfo("Nullif",      ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[ 0]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.NewField"),   ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[ 1]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.ID"),          ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[ 2]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.RemoveID"),  ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "Y", "N" } ); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		colinf[ 3]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Type"),        ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() ); //$NON-NLS-1$
+		colinf[ 4]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Length"),      ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[ 5]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Precision"),   ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[ 6]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Format"),      ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[ 7]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Group"),       ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[ 8]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Decimal"),     ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[ 9]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Currency"),    ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[10]=new ColumnInfo(Messages.getString("FieldSplitterDialog.ColumnInfo.Nullif"),      ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -244,10 +244,10 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 			TableItem ti = wFields.table.getItem(i);
 			if (input.getField()[i]   != null) ti.setText( 1, input.getField()[i]); 
 			if (input.getFieldID()[i]      != null) ti.setText( 2, input.getFieldID()[i]); 
-							              ti.setText( 3, input.removeID()[i]?"Y":"N"); 
+							              ti.setText( 3, input.removeID()[i]?"Y":"N");  //$NON-NLS-1$ //$NON-NLS-2$
 							              ti.setText( 4, Value.getTypeDesc(input.getFieldType()[i]));
-							              ti.setText( 5, ""+input.getFieldLength()[i]); 
-							              ti.setText( 6, ""+input.getFieldPrecision()[i]); 
+							              ti.setText( 5, ""+input.getFieldLength()[i]);  //$NON-NLS-1$
+							              ti.setText( 6, ""+input.getFieldPrecision()[i]);  //$NON-NLS-1$
 			if (input.getFieldFormat()[i]  != null) ti.setText( 7, input.getFieldFormat()[i]); 
 			if (input.getFieldGroup()[i]   != null) ti.setText( 8, input.getFieldGroup()[i]); 
 			if (input.getFieldDecimal()[i] != null) ti.setText( 9, input.getFieldDecimal()[i]); 
@@ -284,7 +284,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 			TableItem ti      = wFields.getNonEmpty(i);
 			input.getField()[i]    = ti.getText(  1 ); 
 			input.getFieldID()[i]       = ti.getText(  2 );
-			input.removeID()[i]    = "Y".equalsIgnoreCase( ti.getText( 3 ) ); 
+			input.removeID()[i]    = "Y".equalsIgnoreCase( ti.getText( 3 ) );  //$NON-NLS-1$
 			input.getFieldType()[i]     = Value.getType( ti.getText( 4 ) );
 			input.getFieldLength()   [i] = Const.toInt( ti.getText( 5 ), -1 );
 			input.getFieldPrecision()[i] = Const.toInt( ti.getText( 6 ), -1 );

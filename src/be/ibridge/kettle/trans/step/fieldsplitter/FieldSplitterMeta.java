@@ -401,31 +401,31 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			splitField = XMLHandler.getTagValue(stepnode, "splitfield");
-			delimiter  = XMLHandler.getTagValue(stepnode, "delimiter");
+			splitField = XMLHandler.getTagValue(stepnode, "splitfield"); //$NON-NLS-1$
+			delimiter  = XMLHandler.getTagValue(stepnode, "delimiter"); //$NON-NLS-1$
 			
-			Node fields = XMLHandler.getSubNode(stepnode, "fields");
-			int nrfields   = XMLHandler.countNodes(fields, "field");
+			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+			int nrfields   = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
 	
 			allocate(nrfields);
 					
 			for (int i=0;i<nrfields;i++)
 			{
-				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
+				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 				
-				field     [i]  = XMLHandler.getTagValue(fnode, "name"); 
-				fieldID       [i]  = XMLHandler.getTagValue(fnode, "id");
-				String sidrem  = XMLHandler.getTagValue(fnode, "idrem");
-				String stype   = XMLHandler.getTagValue(fnode, "type");
-				fieldFormat    [i]  = XMLHandler.getTagValue(fnode, "format");
-				fieldGroup     [i]  = XMLHandler.getTagValue(fnode, "group");
-				fieldDecimal   [i]  = XMLHandler.getTagValue(fnode, "decimal");
-				fieldCurrency  [i]  = XMLHandler.getTagValue(fnode, "currency");
-				String slen    = XMLHandler.getTagValue(fnode, "length");
-				String sprc    = XMLHandler.getTagValue(fnode, "precision");
-				fieldDefault    [i]  = XMLHandler.getTagValue(fnode, "nullif");
+				field     [i]  = XMLHandler.getTagValue(fnode, "name");  //$NON-NLS-1$
+				fieldID       [i]  = XMLHandler.getTagValue(fnode, "id"); //$NON-NLS-1$
+				String sidrem  = XMLHandler.getTagValue(fnode, "idrem"); //$NON-NLS-1$
+				String stype   = XMLHandler.getTagValue(fnode, "type"); //$NON-NLS-1$
+				fieldFormat    [i]  = XMLHandler.getTagValue(fnode, "format"); //$NON-NLS-1$
+				fieldGroup     [i]  = XMLHandler.getTagValue(fnode, "group"); //$NON-NLS-1$
+				fieldDecimal   [i]  = XMLHandler.getTagValue(fnode, "decimal"); //$NON-NLS-1$
+				fieldCurrency  [i]  = XMLHandler.getTagValue(fnode, "currency"); //$NON-NLS-1$
+				String slen    = XMLHandler.getTagValue(fnode, "length"); //$NON-NLS-1$
+				String sprc    = XMLHandler.getTagValue(fnode, "precision"); //$NON-NLS-1$
+				fieldDefault    [i]  = XMLHandler.getTagValue(fnode, "nullif"); //$NON-NLS-1$
 				
-				removeID[i] = "Y".equalsIgnoreCase(sidrem);
+				removeID[i] = "Y".equalsIgnoreCase(sidrem); //$NON-NLS-1$
 				fieldType[i]  = Value.getType(stype);
 				fieldLength   [i]=Const.toInt(slen, -1); 
 				fieldPrecision[i]=Const.toInt(sprc, -1); 
@@ -433,14 +433,14 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to load step info from XML", e);
+			throw new KettleXMLException(Messages.getString("FieldSplitterMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
 	public void setDefault()
 	{
-		splitField = "";
-		delimiter  = ",";
+		splitField = ""; //$NON-NLS-1$
+		delimiter  = ","; //$NON-NLS-1$
 		
 		int nrfields   = 0;
 
@@ -448,17 +448,17 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (int i=0;i<nrfields;i++)
 		{
-			field          [i]  = "field"+i; 
-			fieldID        [i]  = "id"+i;
+			field          [i]  = "field"+i;  //$NON-NLS-1$
+			fieldID        [i]  = "id"+i; //$NON-NLS-1$
 			removeID       [i]  = true;
 			fieldType      [i]  = Value.VALUE_TYPE_NUMBER;
-			fieldFormat    [i]  = "";
-			fieldGroup     [i]  = "";
-			fieldDecimal   [i]  = "";
-			fieldCurrency  [i]  = "";
+			fieldFormat    [i]  = ""; //$NON-NLS-1$
+			fieldGroup     [i]  = ""; //$NON-NLS-1$
+			fieldDecimal   [i]  = ""; //$NON-NLS-1$
+			fieldCurrency  [i]  = ""; //$NON-NLS-1$
 			fieldLength    [i]  = -1; 
 			fieldPrecision [i]  = -1; 
-			fieldDefault   [i]  = "";
+			fieldDefault   [i]  = ""; //$NON-NLS-1$
 		}
 	}
 
@@ -496,26 +496,26 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 
-		retval.append("   "+XMLHandler.addTagValue("splitfield", splitField));
-		retval.append("   "+XMLHandler.addTagValue("delimiter", delimiter));
+		retval.append("   "+XMLHandler.addTagValue("splitfield", splitField)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("   "+XMLHandler.addTagValue("delimiter", delimiter)); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		retval.append("    <fields>");
+		retval.append("    <fields>"); //$NON-NLS-1$
 		for (int i=0;i<field.length;i++)
 		{
-			retval.append("      <field>");
-			retval.append("        "+XMLHandler.addTagValue("name",      field[i]));
-			retval.append("        "+XMLHandler.addTagValue("id",        fieldID[i]));
-			retval.append("        "+XMLHandler.addTagValue("idrem",     removeID[i]));
-			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(fieldType[i])));
-			retval.append("        "+XMLHandler.addTagValue("format",    fieldFormat[i]));
-			retval.append("        "+XMLHandler.addTagValue("group",     fieldGroup[i]));
-			retval.append("        "+XMLHandler.addTagValue("decimal",   fieldDecimal[i]));
-			retval.append("        "+XMLHandler.addTagValue("length",    fieldLength[i]));
-			retval.append("        "+XMLHandler.addTagValue("precision", fieldPrecision[i]));
-			retval.append("        "+XMLHandler.addTagValue("nullif",    fieldDefault[i]));
-			retval.append("        </field>");
+			retval.append("      <field>"); //$NON-NLS-1$
+			retval.append("        "+XMLHandler.addTagValue("name",      field[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("id",        fieldID[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("idrem",     removeID[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(fieldType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("format",    fieldFormat[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("group",     fieldGroup[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("decimal",   fieldDecimal[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("length",    fieldLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("precision", fieldPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("nullif",    fieldDefault[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        </field>"); //$NON-NLS-1$
 		}
-		retval.append("      </fields>");
+		retval.append("      </fields>"); //$NON-NLS-1$
 
 		return retval.toString();
 	}
@@ -525,30 +525,30 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			splitField  = rep.getStepAttributeString(id_step, "splitfield");
-			delimiter   = rep.getStepAttributeString(id_step, "delimiter");
+			splitField  = rep.getStepAttributeString(id_step, "splitfield"); //$NON-NLS-1$
+			delimiter   = rep.getStepAttributeString(id_step, "delimiter"); //$NON-NLS-1$
 			
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
+			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
 			
 			allocate(nrfields);
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				field[i]       =       rep.getStepAttributeString (id_step, i, "field_name");
-				fieldID[i]         =       rep.getStepAttributeString (id_step, i, "field_id");
-				removeID[i]       =       rep.getStepAttributeBoolean(id_step, i, "field_idrem");
-				fieldType[i]        =  Value.getType( rep.getStepAttributeString (id_step, i, "field_type") );
-				fieldFormat[i]      =       rep.getStepAttributeString (id_step, i, "field_format");
-				fieldGroup[i]       =       rep.getStepAttributeString (id_step, i, "field_group");
-				fieldDecimal[i]     =       rep.getStepAttributeString (id_step, i, "field_decimal");
-				fieldLength[i]      =  (int)rep.getStepAttributeInteger(id_step, i, "field_length");
-				fieldPrecision[i]   =  (int)rep.getStepAttributeInteger(id_step, i, "field_precision");
-				fieldDefault[i]      =       rep.getStepAttributeString (id_step, i, "field_nullif");
+				field[i]       =       rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
+				fieldID[i]         =       rep.getStepAttributeString (id_step, i, "field_id"); //$NON-NLS-1$
+				removeID[i]       =       rep.getStepAttributeBoolean(id_step, i, "field_idrem"); //$NON-NLS-1$
+				fieldType[i]        =  Value.getType( rep.getStepAttributeString (id_step, i, "field_type") ); //$NON-NLS-1$
+				fieldFormat[i]      =       rep.getStepAttributeString (id_step, i, "field_format"); //$NON-NLS-1$
+				fieldGroup[i]       =       rep.getStepAttributeString (id_step, i, "field_group"); //$NON-NLS-1$
+				fieldDecimal[i]     =       rep.getStepAttributeString (id_step, i, "field_decimal"); //$NON-NLS-1$
+				fieldLength[i]      =  (int)rep.getStepAttributeInteger(id_step, i, "field_length"); //$NON-NLS-1$
+				fieldPrecision[i]   =  (int)rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
+				fieldDefault[i]      =       rep.getStepAttributeString (id_step, i, "field_nullif"); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unexpected error reading step information from the repository", e);
+			throw new KettleException(Messages.getString("FieldSplitterMeta.Exception.UnexpectedErrorInReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -557,58 +557,58 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "splitfield", splitField);
-			rep.saveStepAttribute(id_transformation, id_step, "delimiter",  delimiter);
+			rep.saveStepAttribute(id_transformation, id_step, "splitfield", splitField); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "delimiter",  delimiter); //$NON-NLS-1$
 	
 			for (int i=0;i<field.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      field[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_id",        fieldID[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_idrem",     removeID[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      Value.getTypeDesc(fieldType[i]));
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",    fieldFormat[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_group",     fieldGroup[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal",   fieldDecimal[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    fieldLength[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldPrecision[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_nullif",    fieldDefault[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      field[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_id",        fieldID[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_idrem",     removeID[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      Value.getTypeDesc(fieldType[i])); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_format",    fieldFormat[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_group",     fieldGroup[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_decimal",   fieldDecimal[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    fieldLength[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldPrecision[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_nullif",    fieldDefault[i]); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
+			throw new KettleException(Messages.getString("FieldSplitterMeta.Exception.UnalbeToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
 	public void check(ArrayList remarks, StepMeta stepMeta, Row prev, String input[], String output[], Row info)
 	{
-		String error_message="";
+		String error_message=""; //$NON-NLS-1$
 		CheckResult cr;
 		
 		// Look up fields in the input stream <prev>
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "+prev.size()+" fields", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("FieldSplitterMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 			
-			error_message = "";
+			error_message = ""; //$NON-NLS-1$
 			
 			Value v = prev.searchValue(splitField);
 			if (v==null)
 			{
-				error_message="Field to split ["+splitField+"] is not present in the input stream!";
+				error_message=Messages.getString("FieldSplitterMeta.CheckResult.SplitedFieldNotPresentInInputStream",splitField); //$NON-NLS-1$ //$NON-NLS-2$
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Splitfield ["+splitField+"]found in the input stream.", stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("FieldSplitterMeta.CheckResult.SplitedFieldFoundInInputStream",splitField), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 				remarks.add(cr);
 			}
 		}
 		else
 		{
-			error_message="Couldn't read fields from the previous step."+Const.CR;
+			error_message=Messages.getString("FieldSplitterMeta.CheckResult.CouldNotReadFieldsFromPreviousStep")+Const.CR; //$NON-NLS-1$
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 			remarks.add(cr);
 		}
@@ -616,12 +616,12 @@ public class FieldSplitterMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("FieldSplitterMeta.CheckResult.StepReceivingInfoFromOtherStep"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("FieldSplitterMeta.CheckResult.NoInputReceivedFromOtherStep"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}
