@@ -61,7 +61,7 @@
     <filefield></filefield>
     <limit>0</limit>
     <file>
-      <name>%%user.dir%%\test\useCases\replay\excelInputReplayErrorIgnoreFalse\input.xls</name>
+      <name>%%user.dir%%/test/useCases/replay/excelInputReplayErrorIgnoreFalse/input.xls</name>
       <filemask></filemask>
       </file>
     <fields>

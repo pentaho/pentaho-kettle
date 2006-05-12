@@ -61,7 +61,7 @@
     <filefield></filefield>
     <limit>0</limit>
     <file>
-      <name>%%user.dir%%\test\useCases\replay\excelInputReplayGoodIgnoreFalse\input.xls</name>
+      <name>%%user.dir%%/test/useCases/replay/excelInputReplayGoodIgnoreFalse/input.xls</name>
       <filemask></filemask>
       </file>
     <fields>
@@ -112,13 +112,13 @@
       </sheets>
     <error_ignored>N</error_ignored>
     <strict_types>Y</strict_types>
-    <bad_line_files_destination_directory>%%user.dir%%\test\useCases\replay\excelInputReplayGoodIgnoreFalse\</bad_line_files_destination_directory>
+    <bad_line_files_destination_directory>%%user.dir%%/test/useCases/replay/excelInputReplayGoodIgnoreFalse/</bad_line_files_destination_directory>
     <bad_line_files_extension>bad</bad_line_files_extension>
-    <error_line_files_destination_directory>%%user.dir%%\test\useCases\replay\excelInputReplayGoodIgnoreFalse\</error_line_files_destination_directory>
+    <error_line_files_destination_directory>%%user.dir%%/test/useCases/replay/excelInputReplayGoodIgnoreFalse/</error_line_files_destination_directory>
     <error_line_files_extension>error</error_line_files_extension>
-    <data_error_line_files_destination_directory>%%user.dir%%\test\useCases\replay\excelInputReplayGoodIgnoreFalse\</data_error_line_files_destination_directory>
+    <data_error_line_files_destination_directory>%%user.dir%%/test/useCases/replay/excelInputReplayGoodIgnoreFalse/</data_error_line_files_destination_directory>
     <data_error_line_files_extension>dataerror</data_error_line_files_extension>
-    <line_number_files_destination_directory>%%user.dir%%\test\useCases\replay\excelInputReplayGoodIgnoreFalse\</line_number_files_destination_directory>
+    <line_number_files_destination_directory>%%user.dir%%/test/useCases/replay/excelInputReplayGoodIgnoreFalse/</line_number_files_destination_directory>
     <line_number_files_extension>line</line_number_files_extension>
     <GUI>
       <xloc>133</xloc>

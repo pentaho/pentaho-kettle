@@ -72,7 +72,7 @@
     <format>DOS</format>
     <encoding></encoding>
     <file>
-      <name>%%user.dir%%\test\useCases\replay\textFileInputReplayGoodIgnoreTrue\input.txt</name>
+      <name>%%user.dir%%/test/useCases/replay/textFileInputReplayGoodIgnoreTrue/input.txt</name>
       <filemask></filemask>
       <type>CSV</type>
       <zipped>N</zipped>
@@ -142,11 +142,11 @@
     <error_count_field>Ecount</error_count_field>
     <error_fields_field>Efields</error_fields_field>
     <error_text_field>Etext</error_text_field>
-    <bad_line_files_destination_directory>%%user.dir%%\test\useCases\replay\textFileInputReplayGoodIgnoreTrue</bad_line_files_destination_directory>
+    <bad_line_files_destination_directory>%%user.dir%%/test/useCases/replay/textFileInputReplayGoodIgnoreTrue</bad_line_files_destination_directory>
     <bad_line_files_extension>bad</bad_line_files_extension>
-    <error_line_files_destination_directory>%%user.dir%%\test\useCases\replay\textFileInputReplayGoodIgnoreTrue</error_line_files_destination_directory>
+    <error_line_files_destination_directory>%%user.dir%%/test/useCases/replay/textFileInputReplayGoodIgnoreTrue</error_line_files_destination_directory>
     <error_line_files_extension>error</error_line_files_extension>
-    <line_number_files_destination_directory>%%user.dir%%\test\useCases\replay\textFileInputReplayGoodIgnoreTrue</line_number_files_destination_directory>
+    <line_number_files_destination_directory>%%user.dir%%/test/useCases/replay/textFileInputReplayGoodIgnoreTrue</line_number_files_destination_directory>
     <line_number_files_extension>line</line_number_files_extension>
     <date_format_lenient>Y</date_format_lenient>
     <GUI>

@@ -61,7 +61,7 @@
     <filefield></filefield>
     <limit>0</limit>
     <file>
-      <name>%%user.dir%%\test\useCases\replay\excelInputReplayErrorIgnoreTrueRowNrOnly\input.xls</name>
+      <name>%%user.dir%%/test/useCases/replay/excelInputReplayErrorIgnoreTrueRowNrOnly/input.xls</name>
       <filemask></filemask>
       </file>
     <fields>
@@ -118,7 +118,7 @@
     <error_line_files_extension>error</error_line_files_extension>
     <data_error_line_files_destination_directory></data_error_line_files_destination_directory>
     <data_error_line_files_extension>dataerror</data_error_line_files_extension>
-    <line_number_files_destination_directory>%%user.dir%%\test\useCases\replay\excelInputReplayErrorIgnoreTrueRowNrOnly\</line_number_files_destination_directory>
+    <line_number_files_destination_directory>%%user.dir%%/test/useCases/replay/excelInputReplayErrorIgnoreTrueRowNrOnly/</line_number_files_destination_directory>
     <line_number_files_extension>line</line_number_files_extension>
     <GUI>
       <xloc>133</xloc>

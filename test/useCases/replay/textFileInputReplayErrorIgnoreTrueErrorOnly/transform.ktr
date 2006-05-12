@@ -72,10 +72,10 @@
     <format>DOS</format>
     <encoding></encoding>
     <file>
-      <name>%%user.dir%%\test\useCases\replay\textFileInputReplayErrorIgnoreTrueErrorOnly\input.txt</name>
+      <name>%%user.dir%%/test/useCases/replay/textFileInputReplayErrorIgnoreTrueErrorOnly/input.txt</name>
       <filemask></filemask>
       <file_required>Y</file_required>
-      <name>%%user.dir%%\test\useCases\replay\textFileInputReplayErrorIgnoreTrueErrorOnly\input2.txt</name>
+      <name>%%user.dir%%/test/useCases/replay/textFileInputReplayErrorIgnoreTrueErrorOnly/input2.txt</name>
       <filemask></filemask>
       <file_required>Y</file_required>
       <type>CSV</type>
@@ -148,7 +148,7 @@
     <error_text_field>Etext</error_text_field>
     <bad_line_files_destination_directory></bad_line_files_destination_directory>
     <bad_line_files_extension>bad</bad_line_files_extension>
-    <error_line_files_destination_directory>%%user.dir%%\test\useCases\replay\textFileInputReplayErrorIgnoreTrueErrorOnly</error_line_files_destination_directory>
+    <error_line_files_destination_directory>%%user.dir%%/test/useCases/replay/textFileInputReplayErrorIgnoreTrueErrorOnly</error_line_files_destination_directory>
     <error_line_files_extension>error</error_line_files_extension>
     <line_number_files_destination_directory></line_number_files_destination_directory>
     <line_number_files_extension>line</line_number_files_extension>

@@ -63,7 +63,7 @@
     <filefield></filefield>
     <limit>0</limit>
     <file>
-      <name>%%user.dir%%\test\useCases\replay\excelInputOutputSkipErrorLineTrue\input.xls</name>
+      <name>%%user.dir%%/test/useCases/replay/excelInputOutputSkipErrorLineTrue/input.xls</name>
       <filemask></filemask>
       <file_required>Y</file_required>
       </file>
@@ -95,11 +95,11 @@
     <strict_types>Y</strict_types>
     <error_ignored>Y</error_ignored>
     <error_line_skipped>Y</error_line_skipped>
-    <bad_line_files_destination_directory>%%user.dir%%\test\useCases\replay\excelInputOutputSkipErrorLineTrue</bad_line_files_destination_directory>
+    <bad_line_files_destination_directory>%%user.dir%%/test/useCases/replay/excelInputOutputSkipErrorLineTrue</bad_line_files_destination_directory>
     <bad_line_files_extension>warning</bad_line_files_extension>
-    <error_line_files_destination_directory>%%user.dir%%\test\useCases\replay\excelInputOutputSkipErrorLineTrue</error_line_files_destination_directory>
+    <error_line_files_destination_directory>%%user.dir%%/test/useCases/replay/excelInputOutputSkipErrorLineTrue</error_line_files_destination_directory>
     <error_line_files_extension>error</error_line_files_extension>
-    <line_number_files_destination_directory>%%user.dir%%\test\useCases\replay\excelInputOutputSkipErrorLineTrue</line_number_files_destination_directory>
+    <line_number_files_destination_directory>%%user.dir%%/test/useCases/replay/excelInputOutputSkipErrorLineTrue</line_number_files_destination_directory>
     <line_number_files_extension>line</line_number_files_extension>
     <GUI>
       <xloc>226</xloc>
@@ -122,7 +122,7 @@
     <format>DOS</format>
     <encoding></encoding>
     <file>
-      <name>%%user.dir%%\test\useCases\replay\excelInputOutputSkipErrorLineTrue\result</name>
+      <name>%%user.dir%%/test/useCases/replay/excelInputOutputSkipErrorLineTrue/result</name>
       <extention>out</extention>
       <append>N</append>
       <split>N</split>

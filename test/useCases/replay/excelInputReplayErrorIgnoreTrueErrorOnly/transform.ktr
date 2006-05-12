@@ -61,10 +61,10 @@
     <filefield></filefield>
     <limit>0</limit>
     <file>
-      <name>%%user.dir%%\test\useCases\replay\excelInputReplayErrorIgnoreTrueErrorOnly\input1.xls</name>
+      <name>%%user.dir%%/test/useCases/replay/excelInputReplayErrorIgnoreTrueErrorOnly/input1.xls</name>
       <filemask></filemask>
       <file_required>Y</file_required>
-      <name>%%user.dir%%\test\useCases\replay\excelInputReplayErrorIgnoreTrueErrorOnly\input2.xls</name>
+      <name>%%user.dir%%/test/useCases/replay/excelInputReplayErrorIgnoreTrueErrorOnly/input2.xls</name>
       <filemask></filemask>
       <file_required>Y</file_required>
       </file>
@@ -112,11 +112,11 @@
     <strict_types>Y</strict_types>
     <error_ignored>Y</error_ignored>
     <error_line_skipped>N</error_line_skipped>
-    <bad_line_files_destination_directory>%%user.dir%%\test\useCases\replay\excelInputReplayErrorIgnoreTrueErrorOnly</bad_line_files_destination_directory>
+    <bad_line_files_destination_directory>%%user.dir%%/test/useCases/replay/excelInputReplayErrorIgnoreTrueErrorOnly</bad_line_files_destination_directory>
     <bad_line_files_extension>warning</bad_line_files_extension>
-    <error_line_files_destination_directory>%%user.dir%%\test\useCases\replay\excelInputReplayErrorIgnoreTrueErrorOnly</error_line_files_destination_directory>
+    <error_line_files_destination_directory>%%user.dir%%/test/useCases/replay/excelInputReplayErrorIgnoreTrueErrorOnly</error_line_files_destination_directory>
     <error_line_files_extension>error</error_line_files_extension>
-    <line_number_files_destination_directory>%%user.dir%%\test\useCases\replay\excelInputReplayErrorIgnoreTrueErrorOnly</line_number_files_destination_directory>
+    <line_number_files_destination_directory>%%user.dir%%/test/useCases/replay/excelInputReplayErrorIgnoreTrueErrorOnly</line_number_files_destination_directory>
     <line_number_files_extension>line</line_number_files_extension>
     <GUI>
       <xloc>197</xloc>

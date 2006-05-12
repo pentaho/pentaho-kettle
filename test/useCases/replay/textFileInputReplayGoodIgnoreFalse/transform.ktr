@@ -72,7 +72,7 @@
     <format>DOS</format>
     <encoding></encoding>
     <file>
-      <name>%%user.dir%%\test\useCases\replay\textFileInputReplayGoodIgnoreFalse\input.txt</name>
+      <name>%%user.dir%%/test/useCases/replay/textFileInputReplayGoodIgnoreFalse/input.txt</name>
       <filemask></filemask>
       <type>CSV</type>
       <zipped>N</zipped>

@@ -72,16 +72,16 @@
     <format>DOS</format>
     <encoding></encoding>
     <file>
-      <name>%%user.dir%%\test\useCases\replay\textFileInputDoReplayMixed\input1.txt</name>
+      <name>%%user.dir%%/test/useCases/replay/textFileInputDoReplayMixed/input1.txt</name>
       <filemask></filemask>
       <file_required>Y</file_required>
-      <name>%%user.dir%%\test\useCases\replay\textFileInputDoReplayMixed\input2.txt</name>
+      <name>%%user.dir%%/test/useCases/replay/textFileInputDoReplayMixed/input2.txt</name>
       <filemask></filemask>
       <file_required>Y</file_required>
-      <name>%%user.dir%%\test\useCases\replay\textFileInputDoReplayMixed\input3.txt</name>
+      <name>%%user.dir%%/test/useCases/replay/textFileInputDoReplayMixed/input3.txt</name>
       <filemask></filemask>
       <file_required>Y</file_required>
-      <name>%%user.dir%%\test\useCases\replay\textFileInputDoReplayMixed\input4.txt</name>
+      <name>%%user.dir%%/test/useCases/replay/textFileInputDoReplayMixed/input4.txt</name>
       <filemask></filemask>
       <file_required>Y</file_required>
       <type>CSV</type>
@@ -152,11 +152,11 @@
     <error_count_field></error_count_field>
     <error_fields_field></error_fields_field>
     <error_text_field></error_text_field>
-    <bad_line_files_destination_directory>%%user.dir%%\test\useCases\replay\textFileInputDoReplayMixed</bad_line_files_destination_directory>
+    <bad_line_files_destination_directory>%%user.dir%%/test/useCases/replay/textFileInputDoReplayMixed</bad_line_files_destination_directory>
     <bad_line_files_extension>bad</bad_line_files_extension>
-    <error_line_files_destination_directory>%%user.dir%%\test\useCases\replay\textFileInputDoReplayMixed</error_line_files_destination_directory>
+    <error_line_files_destination_directory>%%user.dir%%/test/useCases/replay/textFileInputDoReplayMixed</error_line_files_destination_directory>
     <error_line_files_extension>error</error_line_files_extension>
-    <line_number_files_destination_directory>%%user.dir%%\test\useCases\replay\textFileInputDoReplayMixed</line_number_files_destination_directory>
+    <line_number_files_destination_directory>%%user.dir%%/test/useCases/replay/textFileInputDoReplayMixed</line_number_files_destination_directory>
     <line_number_files_extension>line</line_number_files_extension>
     <date_format_lenient>Y</date_format_lenient>
     <GUI>
