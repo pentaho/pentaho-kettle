@@ -85,6 +85,8 @@ public class Kitchen
 		    CommandLineOption.printUsage(options);
 		    System.exit(9);
 		}
+        
+        CommandLineOption.parseArguments(args, options);
 
         String kettleRepname  = Const.getEnvironmentVariable("KETTLE_REPOSITORY", null);
         String kettleUsername = Const.getEnvironmentVariable("KETTLE_USER", null);
