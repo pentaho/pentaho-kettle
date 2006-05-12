@@ -70,7 +70,6 @@ import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
-import be.ibridge.kettle.trans.step.textfileinput.Messages;
 import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 

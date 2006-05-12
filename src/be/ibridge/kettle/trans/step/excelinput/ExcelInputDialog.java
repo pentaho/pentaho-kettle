@@ -76,7 +76,6 @@ import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 import be.ibridge.kettle.trans.step.textfileinput.DirectoryDialogButtonListenerFactory;
-import be.ibridge.kettle.trans.step.textfileinput.Messages;
 import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
 import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 

@@ -59,7 +59,6 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
-import be.ibridge.kettle.trans.step.textfileinput.Messages;
 
 
 public class TableInputDialog extends BaseStepDialog implements StepDialogInterface
