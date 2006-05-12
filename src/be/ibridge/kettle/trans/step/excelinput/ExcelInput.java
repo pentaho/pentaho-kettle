@@ -30,6 +30,7 @@ import jxl.LabelCell;
 import jxl.NumberCell;
 import jxl.Sheet;
 import jxl.Workbook;
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
@@ -639,7 +640,11 @@ public class ExcelInput extends BaseStep implements StepInterface
 		}
 		catch (KettleException e)
 		{
-			if (log.isDebug()) logDebug("Could not close errorHandler");
+			if (log.isDebug()) 
+            {
+                logDebug("Could not close errorHandler: "+e.toString());
+                logDebug(Const.getStackTracker(e));
+            }
 		}
 
 		super.dispose(smi, sdi);
