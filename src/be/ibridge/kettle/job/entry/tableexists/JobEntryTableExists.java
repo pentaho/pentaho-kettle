@@ -110,6 +110,12 @@ public class JobEntryTableExists extends JobEntryBase implements JobEntryInterfa
 			{
 				connection = Const.findDatabase(databases, id_db);
 			}
+			else
+			{
+				// This is were we end up in normally, the previous lines are for backward compatibility.
+				connection = Const.findDatabase(databases, rep.getJobEntryAttributeString(id_jobentry, "connection"));
+			}
+
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -125,7 +131,7 @@ public class JobEntryTableExists extends JobEntryBase implements JobEntryInterfa
 			super.saveRep(rep, id_job);
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "tablename", tablename);
-			rep.saveJobEntryAttribute(id_job, getID(), "id_database", connection==null?-1L:connection.getID());
+			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
 		}
 		catch(KettleDatabaseException dbe)
 		{

@@ -131,6 +131,13 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
+		wOK=new Button(shell, SWT.PUSH);
+		wOK.setText(" &OK ");
+		wCancel=new Button(shell, SWT.PUSH);
+		wCancel.setText(" &Cancel ");
+
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
+
 		// Filename line
 		wlName=new Label(shell, SWT.RIGHT);
 		wlName.setText("Job Entry name ");
@@ -195,6 +202,14 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 		wConnection.setLayoutData(fdConnection);
 
 
+		wlPosition=new Label(shell, SWT.NONE);
+		wlPosition.setText("Linenr: 0        ");
+ 		props.setLook(wlPosition);
+		fdlPosition=new FormData();
+		fdlPosition.left   = new FormAttachment(0, 0);
+		fdlPosition.bottom = new FormAttachment(wOK, -margin);
+		wlPosition.setLayoutData(fdlPosition);
+
 		// Script line
 		wlSQL=new Label(shell, SWT.NONE);
 		wlSQL.setText("SQL Script: ");
@@ -210,23 +225,10 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 		fdSQL.left   = new FormAttachment(0, 0);
 		fdSQL.top    = new FormAttachment(wlSQL, margin);
 		fdSQL.right  = new FormAttachment(100, -5);
-		fdSQL.bottom = new FormAttachment(100, -50);
+		fdSQL.bottom = new FormAttachment(wlPosition, -margin);
 		wSQL.setLayoutData(fdSQL);
 
-		wlPosition=new Label(shell, SWT.NONE);
-		wlPosition.setText("Linenr: 0        ");
- 		props.setLook(wlPosition);
-		fdlPosition=new FormData();
-		fdlPosition.left = new FormAttachment(0, 0);
-		fdlPosition.top  = new FormAttachment(wSQL, margin);
-		wlPosition.setLayoutData(fdlPosition);
 
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
-
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wlPosition);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
