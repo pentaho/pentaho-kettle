@@ -367,7 +367,7 @@ public class TableOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		database = null;
 		tablename      = "";
-		commitSize = 0;
+		commitSize = 100;
         
         partitioningEnabled = false;
         partitioningMonthly = true;

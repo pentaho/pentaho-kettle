@@ -326,7 +326,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 		keyStream        = null;
 		updateLookup      = null;
 		database = null;
-		commitSize     = 0;
+		commitSize     = 100;
 		tableName      = "lookup table";
 
 		int nrkeys   = 0;
