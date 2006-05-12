@@ -141,14 +141,14 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			dbfFileName              = XMLHandler.getTagValue(stepnode, "file_dbf");
-			rowLimit              = Const.toInt(XMLHandler.getTagValue(stepnode, "limit"), 0);
-			rowNrAdded             = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "add_rownr"));
-			rowNrField           = XMLHandler.getTagValue(stepnode, "field_rownr");
+			dbfFileName              = XMLHandler.getTagValue(stepnode, "file_dbf"); //$NON-NLS-1$
+			rowLimit              = Const.toInt(XMLHandler.getTagValue(stepnode, "limit"), 0); //$NON-NLS-1$
+			rowNrAdded             = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "add_rownr")); //$NON-NLS-1$ //$NON-NLS-2$
+			rowNrField           = XMLHandler.getTagValue(stepnode, "field_rownr"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to read step information from XML", e);
+			throw new KettleXMLException(Messages.getString("XBaseInputMeta.Exception.UnableToReadStepInformationFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -183,7 +183,7 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(KettleException ke)
 	    {
-			throw new KettleStepException("Unable to read meta-data from XBase file!", ke);
+			throw new KettleStepException(Messages.getString("XBaseInputMeta.Exception.UnableToReadMetaDataFromXBaseFile"), ke); //$NON-NLS-1$
 	    }
         finally
         {
@@ -204,10 +204,10 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		StringBuffer retval=new StringBuffer();
 		
-		retval.append("    "+XMLHandler.addTagValue("file_dbf",    dbfFileName));
-		retval.append("    "+XMLHandler.addTagValue("limit",       rowLimit));
-		retval.append("    "+XMLHandler.addTagValue("add_rownr",   rowNrAdded));
-		retval.append("    "+XMLHandler.addTagValue("field_rownr", rowNrField));
+		retval.append("    "+XMLHandler.addTagValue("file_dbf",    dbfFileName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("limit",       rowLimit)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("add_rownr",   rowNrAdded)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("field_rownr", rowNrField)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		return retval.toString();
 	}
@@ -217,14 +217,14 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			dbfFileName              =      rep.getStepAttributeString (id_step, "file_dbf");
-			rowLimit              = (int)rep.getStepAttributeInteger(id_step, "limit");
-			rowNrAdded             =      rep.getStepAttributeBoolean(id_step, "add_rownr");
-			rowNrField           =      rep.getStepAttributeString (id_step, "field_rownr");
+			dbfFileName              =      rep.getStepAttributeString (id_step, "file_dbf"); //$NON-NLS-1$
+			rowLimit              = (int)rep.getStepAttributeInteger(id_step, "limit"); //$NON-NLS-1$
+			rowNrAdded             =      rep.getStepAttributeBoolean(id_step, "add_rownr"); //$NON-NLS-1$
+			rowNrField           =      rep.getStepAttributeString (id_step, "field_rownr"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unexpected error reading step information from the repository", e);
+			throw new KettleException(Messages.getString("XBaseInputMeta.Exception.UnexpectedErrorReadingMetaDataFromRepository"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -233,14 +233,14 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "file_dbf",        dbfFileName);
-			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
-			rep.saveStepAttribute(id_transformation, id_step, "add_rownr",       rowNrAdded);
-			rep.saveStepAttribute(id_transformation, id_step, "field_rownr",     rowNrField);
+			rep.saveStepAttribute(id_transformation, id_step, "file_dbf",        dbfFileName); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "add_rownr",       rowNrAdded); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "field_rownr",     rowNrField); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
+			throw new KettleException(Messages.getString("XBaseInputMeta.Exception.UnableToSaveMetaDataToRepository")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
@@ -250,29 +250,29 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (dbfFileName==null)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Please select or create a DBF file to use", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XBaseInputMeta.Remark.PleaseSelectFileToUse"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "DBF filename specified", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XBaseInputMeta.Remark.FileToUseIsSpecified"), stepinfo); //$NON-NLS-1$
             remarks.add(cr);
 
             XBase xbi = new XBase(StringUtil.environmentSubstitute(dbfFileName));
             try
             {
                 xbi.open();
-                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "DBF File opened OK : exists!", stepinfo);
+                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("XBaseInputMeta.Remark.FileExistsAndCanBeOpened"), stepinfo); //$NON-NLS-1$
                 remarks.add(cr);
                 
                 Row r = xbi.getFields();
             
-                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, r.size()+" fields could be determined in the DBF file", stepinfo);
+                cr = new CheckResult(CheckResult.TYPE_RESULT_OK, r.size()+Messages.getString("XBaseInputMeta.Remark.OutputFieldsCouldBeDetermined"), stepinfo); //$NON-NLS-1$
                 remarks.add(cr);
             }
             catch(KettleException ke)
             {
-                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No fields could be found in the DBF file because of an error: "+Const.CR+ke.getMessage(), stepinfo);
+                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("XBaseInputMeta.Remark.NoFieldsCouldBeFoundInFileBecauseOfError")+Const.CR+ke.getMessage(), stepinfo); //$NON-NLS-1$
                 remarks.add(cr);
             }
             finally

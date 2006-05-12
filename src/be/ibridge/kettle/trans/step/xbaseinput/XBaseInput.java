@@ -51,14 +51,14 @@ public class XBaseInput extends BaseStep implements StepInterface
 		meta=(XBaseInputMeta)smi;
 		data=(XBaseInputData)sdi;
 
-		debug="Get row from DBF file";
+		debug="Get row from DBF file"; //$NON-NLS-1$
 		Row row=data.xbi.getRow(data.fields);
 		if (row==null) 
 		{
-			debug="No more rows.";
+			debug="No more rows."; //$NON-NLS-1$
 			if (data.xbi.hasError())
 			{
-				logError("Unable to continue because of errors");
+				logError(Messages.getString("XBaseInput.Log.Error.UnexpectedErrorCanNotContinue")); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 			}
@@ -68,7 +68,7 @@ public class XBaseInput extends BaseStep implements StepInterface
 		
 		linesInput++;
 		
-		debug="Do we need to add a rownr?";
+		debug="Do we need to add a rownr?"; //$NON-NLS-1$
 		// Add a rownr???
 		if (meta.isRowNrAdded() && meta.getRowNrField()!=null && meta.getRowNrField().length()>0)
 		{
@@ -78,12 +78,12 @@ public class XBaseInput extends BaseStep implements StepInterface
 			row.addValue(rownr);
 		}
 				
-		debug="Send the row to the next step.";
+		debug="Send the row to the next step."; //$NON-NLS-1$
 		putRow(row);        // fill the rowset(s). (wait for empty)
 
-		if ((linesInput>0) && (linesInput%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesInput);
+		if ((linesInput>0) && (linesInput%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("XBaseInput.Log.LineNr")+linesInput); //$NON-NLS-1$
 
-		debug="End of readRowOfData.";
+		debug="End of readRowOfData."; //$NON-NLS-1$
 		return true;
 	}
 	
@@ -104,13 +104,13 @@ public class XBaseInput extends BaseStep implements StepInterface
 				// Add memo-file to structure!
 				// xbi.setMemo("D:\\Projects\\Kettle\\testsuite\\CTS\\i-brid\\CTSLAY.DBT");
 	
-				logBasic("Opened XBase database file... ");
+				logBasic(Messages.getString("XBaseInput.Log.OpenedXBaseFile")); //$NON-NLS-1$
 				data.fields = data.xbi.getFields();
 				return true;
             }
             catch(KettleException e)
 			{
-				logError("Couldn't open or read the XBase database ("+file_dbf+") because of an error: "+e.getMessage());
+				logError(Messages.getString("XBaseInput.Log.Error.CouldNotOpenXBaseFile1")+file_dbf+Messages.getString("XBaseInput.Log.Error.CouldNotOpenXBaseFile2")+e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 	    }
 		return false;
@@ -118,7 +118,7 @@ public class XBaseInput extends BaseStep implements StepInterface
 	
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		logBasic("Finished reading records, closing file(s).");
+		logBasic(Messages.getString("XBaseInput.Log.FinishedReadingRecords")); //$NON-NLS-1$
 		data.xbi.close();
 		
 		super.dispose(smi, sdi);
@@ -131,12 +131,12 @@ public class XBaseInput extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");		
+			logBasic(Messages.getString("XBaseInput.Log.StartingToRun"));		 //$NON-NLS-1$
 			while (!isStopped() && processRow(meta, data) );
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("XBaseInput.Log.Error.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}
