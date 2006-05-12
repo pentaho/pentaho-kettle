@@ -507,7 +507,7 @@ public class RepositoryDirectory
 		}
 	}
 	
-	public boolean delFromRep(Repository rep)
+	public void delFromRep(Repository rep) throws KettleException
 	{
 		try
 		{
@@ -519,15 +519,12 @@ public class RepositoryDirectory
 			}
 			else
 			{
-                LogWriter.getInstance().logError(toString(), "This directory is not empty!");
-				return false;
+                throw new KettleException("This directory is not empty!");
 			}
-			
-			return true;
 		}
 		catch(Exception e)
 		{
-			return false;
+			throw new KettleException("Unexpected error deleting repository directory", e);
 		}
 	}
 

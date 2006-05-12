@@ -175,7 +175,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		return retval.toString();
 	}
 
-    public void loadXML(Node entrynode, ArrayList databases) throws KettleXMLException
+    public void loadXML(Node entrynode, ArrayList databases, Repository rep) throws KettleXMLException
 	{
 		try 
 		{
@@ -185,9 +185,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			transname = XMLHandler.getTagValue(entrynode, "transname") ;
             
             directoryPath = XMLHandler.getTagValue(entrynode, "directory");
-            
-            // Sorry, mixing XML and repositories is not going to work.
-            // directory = rep.getDirectoryTree().findDirectory(directoryPath);
+            if (rep!=null) // import from XML into a repository for example... (or copy/paste) 
+            {
+            	directory = rep.getDirectoryTree().findDirectory(directoryPath);
+            }
 
             argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
             execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "exec_per_row") );
@@ -211,7 +212,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			throw new KettleXMLException("Unable to load transformation job entry from XML node", e);
 		}
 	}
-   
+    
 	
 	// Load the jobentry from repository
 	public void loadRep(Repository rep, long id_jobentry, ArrayList databases) throws KettleException

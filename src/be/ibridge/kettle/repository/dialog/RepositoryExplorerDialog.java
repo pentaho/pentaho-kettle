@@ -2273,16 +2273,18 @@ public class RepositoryExplorerDialog extends Dialog
 	
 	public void delDirectory(TreeItem ti, RepositoryDirectory repdir)
 	{
-		if (repdir.delFromRep(rep))
+		try
 		{
+			repdir.delFromRep(rep);
 			refreshTree();
 		}
-		else
+		catch(KettleException e)
 		{
-			MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-			mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Delete.ErrorRemoving.Message1")+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Delete.ErrorRemoving.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
-			mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Delete.ErrorRemoving.Title")); //$NON-NLS-1$
-			mb.open();
+			new ErrorDialog(shell, props, 
+					Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Delete.ErrorRemoving.Title"), //$NON-NLS-1$
+					Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Delete.ErrorRemoving.Message1"), //$NON-NLS-1$
+					e
+			); 
 		}
 	}
 	

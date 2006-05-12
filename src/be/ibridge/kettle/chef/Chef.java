@@ -626,7 +626,7 @@ public class Chef
 				      	{
 				      		try
 							{
-				      			jobMeta = new JobMeta(log, fn);
+				      			jobMeta = new JobMeta(log, fn, rep);
 							}
 				      		catch(KettleException ke)
 							{
@@ -1410,7 +1410,7 @@ public class Chef
                 {
                     try
                     {
-                        jobMeta = new JobMeta(log, fname);
+                        jobMeta = new JobMeta(log, fname, rep);
                         props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, null, false, null);
                         addMenuLast();
                     }
@@ -3126,7 +3126,7 @@ public class Chef
 				else
 				if (!Const.isEmpty(optionFilename))
 				{
-					win.jobMeta = new JobMeta(log, optionFilename.toString());
+					win.jobMeta = new JobMeta(log, optionFilename.toString(), win.rep);
 					win.jobMeta.clearChanged();
 				}
 			} // Nothing on commandline...
@@ -3176,7 +3176,7 @@ public class Chef
 							}
 							else // Load from XML?
 							{
-								win.jobMeta = new JobMeta(log, lastfiles[0]);
+								win.jobMeta = new JobMeta(log, lastfiles[0], win.rep);
 							}
 							win.setFilename(lastfiles[0]);
 						}

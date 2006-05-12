@@ -137,7 +137,7 @@ public interface JobEntryInterface
 	public void    setChanged(boolean ch);
 	public boolean hasChanged();
 
-	public void    loadXML(Node entrynode, ArrayList databases) throws KettleXMLException;
+	public void    loadXML(Node entrynode, ArrayList databases, Repository rep) throws KettleXMLException;
 	public String  getXML();
 	public void    loadRep(Repository rep, long id_jobentry, ArrayList databases) throws KettleException;
 	public void    saveRep(Repository rep, long id_job) throws KettleException;

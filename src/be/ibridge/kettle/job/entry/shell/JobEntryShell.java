@@ -101,8 +101,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		return retval.toString();
 	}
 				
-	public void loadXML(Node entrynode, ArrayList databases)
-		throws KettleXMLException
+	public void loadXML(Node entrynode, ArrayList databases, Repository rep) throws KettleXMLException
 	{
 		try
 		{

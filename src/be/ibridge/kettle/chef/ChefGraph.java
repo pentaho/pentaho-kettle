@@ -1066,6 +1066,19 @@ public class ChefGraph extends Canvas
 					}
 				});
 			}
+			if (je.isDrawn()) 
+			{
+				MenuItem miDelete = new MenuItem(mPop, SWT.CASCADE);
+				miDelete.setText(Messages.getString("ChefGraph.PopupMenu.JobEntry.Delete")); //$NON-NLS-1$
+				miDelete.addSelectionListener(new SelectionAdapter() 
+				{
+					public void widgetSelected(SelectionEvent e) 
+					{
+						chef.deleteChefGraphEntry(je.getName());
+						redraw();
+					}
+				});
+			}
 			setMenu(mPop);
 		} 
 		else // Clear the menu
@@ -1411,7 +1424,7 @@ public class ChefGraph extends Canvas
 			try
 			{
 				Chef ch = new Chef(log, chef.disp, null);
-				ch.jobMeta = new JobMeta(log, entry.getFileName());
+				ch.jobMeta = new JobMeta(log, entry.getFileName(), chef.rep);
 				ch.jobMeta.setFilename( entry.getFileName() );
 				ch.jobMeta.clearChanged();
 				ch.refreshTree();

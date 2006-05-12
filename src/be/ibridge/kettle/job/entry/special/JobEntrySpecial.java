@@ -97,8 +97,7 @@ public class JobEntrySpecial extends JobEntryBase implements JobEntryInterface
 		return retval.toString();
 	}
 
-	public void loadXML(Node entrynode, ArrayList databases)
-		throws KettleXMLException
+	public void loadXML(Node entrynode, ArrayList databases, Repository rep) throws KettleXMLException
 	{
 		try
 		{

@@ -175,7 +175,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		return retval.toString();
 	}
 					
-	public void loadXML(Node entrynode, ArrayList databases) throws KettleXMLException
+	public void loadXML(Node entrynode, ArrayList databases, Repository rep) throws KettleXMLException
 	{
 		try
 		{
@@ -193,9 +193,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 			loglevel = LogWriter.getLogLevel( XMLHandler.getTagValue(entrynode, "loglevel"));
 	
             directoryPath = XMLHandler.getTagValue(entrynode, "directory");
-            
-            // Sorry, mixing XML and repositories is not going to work.
-            // directory = rep.getDirectoryTree().findDirectory(directoryPath);
+            if (rep!=null) // import from XML into a repository for example... (or copy/paste)  
+            {
+            	directory = rep.getDirectoryTree().findDirectory(directoryPath);
+            }
 	
 			// How many arguments?
 			int argnr = 0;
@@ -323,7 +324,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 if (filename!=null)
                 {
                     log.logDetailed(toString(), "Loading job from XML file : ["+filename+"]");
-                    jobMeta = new JobMeta(logwriter, filename);
+                    jobMeta = new JobMeta(logwriter, filename, rep);
                 }
                 
                 if (jobMeta==null)
@@ -497,7 +498,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         }
         else
         {
-            return new JobMeta(LogWriter.getInstance(), getFileName());
+            return new JobMeta(LogWriter.getInstance(), getFileName(), rep);
         }
     }
 

@@ -552,7 +552,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
     						wTransname.setText(transname);
     						wDirectory.setText(sod.getDirectory().getPath());
     						// Copy it to the job entry name too...
-    						wName.setText(wName.getText());
+    						wName.setText(wTransname.getText());
     					}
                     }
 				}

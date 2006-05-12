@@ -444,7 +444,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(" &Cancel ");
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wNonProxyHosts);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };

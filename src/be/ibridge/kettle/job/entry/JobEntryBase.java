@@ -276,52 +276,6 @@ public class JobEntryBase implements Cloneable
 		}
 	}
 	
-	/**
-	 * Allocate the appropriate class for the given type.
-	 * @param type The type of job entry to allocate
-	 * @return The appropriate JobEntryInterface class
-	 */
-    /*
-	public static final JobEntryInterface newJobEntryInterface(int type)
-		throws KettleException
-	{
-		JobEntryInterface jei = null;
-		switch(type)
-		{
-		case JobEntryInterface.TYPE_JOBENTRY_EVALUATION     : jei = new JobEntryEval(); break;
-		case JobEntryInterface.TYPE_JOBENTRY_JOB            : jei = new JobEntryJob(); break;
-		case JobEntryInterface.TYPE_JOBENTRY_MAIL           : jei = new JobEntryMail(); break;
-		case JobEntryInterface.TYPE_JOBENTRY_SHELL          : jei = new JobEntryShell(); break;
-		case JobEntryInterface.TYPE_JOBENTRY_SPECIAL        : jei = new JobEntrySpecial(); break;
-		case JobEntryInterface.TYPE_JOBENTRY_SQL            : jei = new JobEntrySQL(); break;
-		case JobEntryInterface.TYPE_JOBENTRY_TABLE_EXISTS   : jei = new JobEntryTableExists(); break;
-		case JobEntryInterface.TYPE_JOBENTRY_FILE_EXISTS    : jei = new JobEntryFileExists(); break;
-		case JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION : jei = new JobEntryTrans(); break;
-		case JobEntryInterface.TYPE_JOBENTRY_FTP            : jei = new JobEntryFTP(); break;
-        case JobEntryInterface.TYPE_JOBENTRY_SFTP           : jei = new JobEntrySFTP(); break;
-        case JobEntryInterface.TYPE_JOBENTRY_HTTP           : jei = new JobEntryHTTP(); break;
-		default: 
-			throw new KettleException("Unknown job entry type : "+type);
-		}
-		
-		return jei;
-	}
-*/
-	/**
-	 * Allocate the appropriate class for the given type.
-	 * @param type The type of job entry to allocate
-	 * @return The appropriate JobEntryInterface class
-	 */
-    /*
-	public static final JobEntryInterface newJobEntryInterface(int type, Repository rep, long id_jobentry, ArrayList databases)
-		throws KettleException
-	{
-		JobEntryInterface jei = newJobEntryInterface(type);
-		jei.loadRep(rep, id_jobentry, databases);
-		return jei;
-	}
-    */
-	
 	public Object clone()
 	{
 		JobEntryBase je;

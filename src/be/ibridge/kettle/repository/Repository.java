@@ -4478,7 +4478,12 @@ public class Repository
 
 	public boolean dropRepositorySchema() throws KettleDatabaseException
 	{
-
+		// Make sure we close shop before dropping everything. 
+		// Some DB's can't handle the drop otherwise.
+		//
+		closeStepAttributeInsertPreparedStatement();
+		closeLookupJobEntryAttribute();
+		
 		for (int i = 0; i < repositoryTableNames.length; i++)
 		{
 			try
@@ -4492,6 +4497,10 @@ public class Repository
 			}
 		}
         log.logBasic(toString(), "Dropped all "+repositoryTableNames.length+" repository tables.");
+        
+        // perform commit, for some DB's drop is not autocommit.
+        if (!database.isAutoCommit()) database.commit(); 
+        
 		return true;
 	}
 

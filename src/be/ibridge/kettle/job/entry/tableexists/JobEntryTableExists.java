@@ -80,8 +80,7 @@ public class JobEntryTableExists extends JobEntryBase implements JobEntryInterfa
 		return retval.toString();
 	}
 	
-	public void loadXML(Node entrynode, ArrayList databases)
-		throws KettleXMLException
+	public void loadXML(Node entrynode, ArrayList databases, Repository rep) throws KettleXMLException
 	{
 		try
 		{

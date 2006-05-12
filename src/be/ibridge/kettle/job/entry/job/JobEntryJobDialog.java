@@ -557,7 +557,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
 						try
 						{
 							wFilename.setText(dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName());
-							JobMeta job = new JobMeta(log, wFilename.getText());
+							JobMeta job = new JobMeta(log, wFilename.getText(), rep);
 							if (job.getName()!=null) wName.setText(job.getName());
 							else  wName.setText(dialog.getFileName()); 
 						}

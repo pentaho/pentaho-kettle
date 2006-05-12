@@ -162,7 +162,7 @@ public class RepositoryImportProgressDialog extends Dialog
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { dispose(); } } );
 		
 		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
+		if (winprop!=null) winprop.setShell(shell, 640, 480); else shell.pack();
 		
 		shell.open();
 		
@@ -192,6 +192,7 @@ public class RepositoryImportProgressDialog extends Dialog
 	{
 	    String rest = wLogging.getText();
 	    wLogging.setText(rest+line+Const.CR);
+	    wLogging.setSelection(wLogging.getText().length()); // make it scroll
 	}
 	
 	private void importAll()
@@ -325,7 +326,7 @@ public class RepositoryImportProgressDialog extends Dialog
 						Node jobnode = XMLHandler.getSubNodeByNr(jobsnode, "job", i);
 						
 						// Load the job from the XML node.
-						JobMeta ji = new JobMeta(log, jobnode);
+						JobMeta ji = new JobMeta(log, jobnode, rep);
 						
 						wLabel.setText("Importing job "+(i+1)+"/"+nrjobs+" : "+ji.getName());
 
@@ -379,7 +380,7 @@ public class RepositoryImportProgressDialog extends Dialog
 																					 new String[] { "Yes", "No" },
 																					 1,
 																					 "Don't ask me again.",
-																					 askOverwrite
+																					 !askOverwrite
 																					 );
 							int answer = md.open();
 							overwrite = answer==0;

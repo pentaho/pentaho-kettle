@@ -75,7 +75,7 @@ public class JobEntryFileExists extends JobEntryBase implements JobEntryInterfac
 		return retval.toString();
 	}
 	
-	public void loadXML(Node entrynode, ArrayList databases)
+	public void loadXML(Node entrynode, ArrayList databases, Repository rep)
 		throws KettleXMLException
 	{
 		try

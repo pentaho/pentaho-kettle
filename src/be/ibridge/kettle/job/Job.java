@@ -98,7 +98,7 @@ public class Job extends Thread
 		}
 		else
 		{
-			jobMeta = new JobMeta(log, fname);
+			jobMeta = new JobMeta(log, fname, rep);
 		}
 	}
 

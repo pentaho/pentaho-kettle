@@ -453,9 +453,10 @@ public class JobMeta implements Cloneable, XMLInterface
 	 * Load the job from the XML file specified.
 	 * @param log the logging channel
 	 * @param fname The filename to load as a job
+	 * @param rep The repository to bind againt, null if there is no repository available.
 	 * @throws KettleXMLException
 	 */
-	public JobMeta(LogWriter log, String fname)
+	public JobMeta(LogWriter log, String fname, Repository rep)
 		throws KettleXMLException
 	{
 		this.log = log;
@@ -471,7 +472,7 @@ public class JobMeta implements Cloneable, XMLInterface
 				// The jobnode
 				Node jobnode = XMLHandler.getSubNode(doc, "job");
 				
-				loadXML(jobnode);
+				loadXML(jobnode, rep);
 			}
 			else
 			{
@@ -484,15 +485,15 @@ public class JobMeta implements Cloneable, XMLInterface
 		}
 	}
 	
-	public JobMeta(LogWriter log, Node jobnode)
+	public JobMeta(LogWriter log, Node jobnode, Repository rep)
 		throws KettleXMLException
 	{
 		this.log = log;
 		
-		loadXML(jobnode);
+		loadXML(jobnode, rep);
 	}
 
-	public void loadXML(Node jobnode)
+	public void loadXML(Node jobnode, Repository rep)
 		throws KettleXMLException
 	{
 		try
@@ -537,7 +538,7 @@ public class JobMeta implements Cloneable, XMLInterface
 				Node entrynode = XMLHandler.getSubNodeByNr(entriesnode, "entry", i);
 				//System.out.println("Reading entry:\n"+entrynode);
 				
-				JobEntryCopy je = new JobEntryCopy(entrynode, databases, null);
+				JobEntryCopy je = new JobEntryCopy(entrynode, databases, rep);
 				JobEntryCopy prev = findJobEntry(je.getName(), 0, true);
 				if (prev!=null)
 				{

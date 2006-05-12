@@ -59,8 +59,18 @@ public class WindowProperty
 	{
 		setShell(shell, false);
 	}
-	
+
 	public void setShell(Shell shell, boolean onlyPosition)
+	{
+		setShell(shell, onlyPosition, -1, -1);
+	}
+
+	public void setShell(Shell shell, int minWidth, int minHeight)
+	{
+		setShell(shell, false, minWidth, minHeight);
+	}
+
+	public void setShell(Shell shell, boolean onlyPosition, int minWidth, int minHeight)
 	{
 		boolean sized=false;
 		
@@ -141,6 +151,14 @@ public class WindowProperty
         if (moveLeft||moveUp)
         {
             shell.setLocation(shLoc.x, shLoc.y);
+        }
+        
+        if (minWidth>0 || minHeight>0)
+        {
+    		Rectangle bounds = shell.getBounds();
+    		if (bounds.width<minWidth) bounds.width = 640;
+    		if (bounds.height<minHeight) bounds.height = 480;
+    		shell.setSize(bounds.width, bounds.height);
         }
 	}
 

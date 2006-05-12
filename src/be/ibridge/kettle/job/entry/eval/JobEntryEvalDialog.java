@@ -115,6 +115,13 @@ public class JobEntryEvalDialog extends Dialog implements JobEntryDialogInterfac
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
+		wOK=new Button(shell, SWT.PUSH);
+		wOK.setText(" &OK ");
+		wCancel=new Button(shell, SWT.PUSH);
+		wCancel.setText(" &Cancel ");
+
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null); // at the bottom
+
 		// Filename line
 		wlName=new Label(shell, SWT.NONE);
 		wlName.setText("Step name : ");
@@ -132,6 +139,15 @@ public class JobEntryEvalDialog extends Dialog implements JobEntryDialogInterfac
 		fdName.right= new FormAttachment(100, 0);
 		wName.setLayoutData(fdName);
 
+		wlPosition=new Label(shell, SWT.NONE);
+		wlPosition.setText("Linenr: 0        ");
+ 		props.setLook(wlPosition);
+		fdlPosition=new FormData();
+		fdlPosition.left  = new FormAttachment(0, 0);
+		fdlPosition.bottom = new FormAttachment(wOK, -margin);
+		wlPosition.setLayoutData(fdlPosition);
+
+
 		// Script line
 		wlScript=new Label(shell, SWT.NONE);
 		wlScript.setText("Script: ");
@@ -148,23 +164,8 @@ public class JobEntryEvalDialog extends Dialog implements JobEntryDialogInterfac
 		fdScript.left   = new FormAttachment(0, 0);
 		fdScript.top    = new FormAttachment(wlScript, margin);
 		fdScript.right  = new FormAttachment(100, -5);
-		fdScript.bottom = new FormAttachment(100, -50);
+		fdScript.bottom = new FormAttachment(wlPosition, -margin);
 		wScript.setLayoutData(fdScript);
-
-		wlPosition=new Label(shell, SWT.NONE);
-		wlPosition.setText("Linenr: 0        ");
- 		props.setLook(wlPosition);
-		fdlPosition=new FormData();
-		fdlPosition.left = new FormAttachment(0, 0);
-		fdlPosition.top  = new FormAttachment(wScript, margin);
-		wlPosition.setLayoutData(fdlPosition);
-
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
-
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wlPosition);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
