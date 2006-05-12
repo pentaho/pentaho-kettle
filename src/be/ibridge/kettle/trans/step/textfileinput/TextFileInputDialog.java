@@ -2295,22 +2295,23 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         {
             TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
             progressDialog.open();
-            
+
+            Trans trans = progressDialog.getTrans();
+            String loggingText = progressDialog.getLoggingText();
+
             if (!progressDialog.isCancelled())
             {
-                Trans trans = progressDialog.getTrans();
-                String loggingText = progressDialog.getLoggingText();
-                
                 if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                 {
-                	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.Error.Title"),  Messages.getString("TextFileInputDialog.ErrorInPreview.DialogMessage"), loggingText, true );
+                	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
+                			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
                 	etd.setReadOnly();
                 	etd.open();
                 }
-                
-                PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
-                prd.open();
             }
+            
+            PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
+            prd.open();
         }
     }
 

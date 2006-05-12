@@ -56,18 +56,21 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
+import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.TransPreviewFactory;
 import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.textfileinput.Messages;
 import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 
@@ -1161,7 +1164,18 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
                 
                 if (!progressDialog.isCancelled())
                 {
-                    PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()));
+                    Trans trans = progressDialog.getTrans();
+                    String loggingText = progressDialog.getLoggingText();
+                    
+                    if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
+                    {
+                    	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
+                    			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+                    	etd.setReadOnly();
+                    	etd.open();
+                    }
+                    
+                    PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
                     prd.open();
                 }
             }

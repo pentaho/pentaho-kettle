@@ -47,6 +47,7 @@ import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseExplorerDialog;
 import be.ibridge.kettle.core.dialog.EnterNumberDialog;
+import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
@@ -58,6 +59,7 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
+import be.ibridge.kettle.trans.step.textfileinput.Messages;
 
 
 public class TableInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -452,23 +454,23 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         {
             TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
             progressDialog.open();
-            
+
+            Trans trans = progressDialog.getTrans();
+            String loggingText = progressDialog.getLoggingText();
+
             if (!progressDialog.isCancelled())
             {
-                Trans trans = progressDialog.getTrans();
-                String loggingText = progressDialog.getLoggingText();
-                
                 if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                 {
-                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                    mb.setMessage(Messages.getString("TableInputDialog.ErrorsDuringPreviewCheckLogfile")); //$NON-NLS-1$
-                    mb.setText(Messages.getString("TableInputDialog.DialogCaptionError5")); //$NON-NLS-1$
-                    mb.open(); 
+                	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
+                			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+                	etd.setReadOnly();
+                	etd.open();
                 }
-                
-                PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
-                prd.open();
             }
+            
+            PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
+            prd.open();
         }
     }
 }

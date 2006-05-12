@@ -37,7 +37,6 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -45,6 +44,7 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.dialog.EnterNumberDialog;
+import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
@@ -335,23 +335,23 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         {
             TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
             progressDialog.open();
-            
+
+            Trans trans = progressDialog.getTrans();
+            String loggingText = progressDialog.getLoggingText();
+
             if (!progressDialog.isCancelled())
             {
-                Trans trans = progressDialog.getTrans();
-                String loggingText = progressDialog.getLoggingText();
-                
                 if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                 {
-                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                    mb.setMessage(Messages.getString("System.Dialog.PreviewError.Message"));
-                    mb.setText(Messages.getString("System.Dialog.PreviewError.Title"));
-                    mb.open(); 
+                	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  
+                			Messages.getString("System.Dialog.PreviewError.Message"), loggingText, true );
+                	etd.setReadOnly();
+                	etd.open();
                 }
-                
-                PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
-                prd.open();
             }
+            
+            PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
+            prd.open();
         }
     }
 
