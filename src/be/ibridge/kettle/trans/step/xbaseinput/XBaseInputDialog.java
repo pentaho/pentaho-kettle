@@ -241,7 +241,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFieldRownr);
+		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wFieldRownr);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
