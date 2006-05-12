@@ -37,9 +37,13 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
@@ -48,8 +52,12 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 
 public class RowsFromResultDialog extends BaseStepDialog implements StepDialogInterface
 {
-	private RowsFromResultMeta input;
+    private Label        wlFields;
+    private TableView    wFields;
+    private FormData     fdlFields, fdFields;
 
+	private RowsFromResultMeta input;
+    
 	public RowsFromResultDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -102,13 +110,47 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 		
-		// Some buttons
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
-		
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wStepname);
+        
+        wlFields=new Label(shell, SWT.NONE);
+        wlFields.setText("Fields :");
+        props.setLook(wlFields);
+        fdlFields=new FormData();
+        fdlFields.left = new FormAttachment(0, 0);
+        fdlFields.top  = new FormAttachment(wStepname, margin);
+        wlFields.setLayoutData(fdlFields);
+        
+        final int FieldsRows=input.getName().length;
+        
+        ColumnInfo[] colinf=new ColumnInfo[] 
+            {
+                new ColumnInfo("Fieldname", ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+                new ColumnInfo("Type",      ColumnInfo.COLUMN_TYPE_CCOMBO,  Value.getAllTypes()),
+                new ColumnInfo("Length",    ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+                new ColumnInfo("Precision", ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+            };
+        
+        wFields=new TableView(shell, 
+                              SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
+                              colinf, 
+                              FieldsRows,  
+                              lsMod,
+                              props
+                              );
+
+        // Some buttons
+        wOK=new Button(shell, SWT.PUSH);
+        wOK.setText("  &OK  ");
+        wCancel=new Button(shell, SWT.PUSH);
+        wCancel.setText("  &Cancel  ");
+        
+        setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
+        
+        fdFields=new FormData();
+        fdFields.left = new FormAttachment(0, 0);
+        fdFields.top  = new FormAttachment(wlFields, margin);
+        fdFields.right  = new FormAttachment(100, 0);
+        fdFields.bottom = new FormAttachment(wOK, -margin*2);
+        wFields.setLayoutData(fdFields);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -144,6 +186,17 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 	public void getData()
 	{
 		wStepname.selectAll();
+        
+        for (int i=0;i<input.getName().length;i++)
+        {
+            TableItem item = wFields.table.getItem(i);
+            item.setText(1, input.getName()[i]);
+            item.setText(2, Value.getTypeDesc(input.getType()[i]));
+            int len = input.getLength()[i];
+            int prc = input.getPrecision()[i];
+            item.setText(3, len>=0?""+len:"");
+            item.setText(4, prc>=0?""+prc:"");
+        }
 	}
 	
 	private void cancel()
@@ -156,7 +209,16 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 	private void ok()
 	{
 		stepname = wStepname.getText(); // return value
-		
+		int nrfields = wFields.nrNonEmpty();
+        input.allocate(nrfields);
+        for (int i=0;i<nrfields;i++)
+        {
+            TableItem item = wFields.getNonEmpty(i);
+            input.getName()[i]      = item.getText(1);
+            input.getType()[i]      = Value.getType( item.getText(2));
+            input.getLength()[i]    = Const.toInt( item.getText(3), -1);
+            input.getPrecision()[i] = Const.toInt( item.getText(4), -1);
+        }
 		dispose();
 	}
 }
