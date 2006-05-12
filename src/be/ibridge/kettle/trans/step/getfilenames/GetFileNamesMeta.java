@@ -177,6 +177,7 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
             retval.append("      " + XMLHandler.addTagValue("filemask", fileMask[i]));
             retval.append("      " + XMLHandler.addTagValue("file_required", fileRequired[i]));
         }
+        retval.append("  </file>" + Const.CR);
 
         return retval.toString();
     }
