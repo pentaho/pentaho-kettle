@@ -347,7 +347,7 @@ public class ChefLog extends Composite
 																			 null,
 																			 Messages.getString("ChefLog.Dialog.SaveChangedFile.Message")+Const.CR+Messages.getString("ChefLog.Dialog.SaveChangedFile.Message2")+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
 																			 MessageDialog.QUESTION,
-																			 new String[] { Messages.getString("ChefLog.System.Button.YES"), Messages.getString("ChefLog.System.Button.NO") }, //$NON-NLS-1$ //$NON-NLS-2$
+																			 new String[] { Messages.getString("System.Button.Yes"), Messages.getString("System.Button.No") }, //$NON-NLS-1$ //$NON-NLS-2$
 																			 0,
 																			 Messages.getString("ChefLog.Dialog.SaveChangedFile.Toggle"), //$NON-NLS-1$
 																			 chef.props.getAutoSave()
@@ -639,7 +639,7 @@ public class ChefLog extends Composite
 			String err_lines[] = new String[err.size()];
 			for (i=0;i<err_lines.length;i++) err_lines[i] = (String)err.get(i);
 			
-			EnterSelectionDialog esd = new EnterSelectionDialog(shell, chef.props, err_lines, Messages.getString("SpoonLog.Dialog.ErrorLines.Title"), Messages.getString("SpoonLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+			EnterSelectionDialog esd = new EnterSelectionDialog(shell, chef.props, err_lines, Messages.getString("ChefLog.Dialog.ErrorLines.Title"), Messages.getString("ChefLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();
 			if (line!=null)
 			{
