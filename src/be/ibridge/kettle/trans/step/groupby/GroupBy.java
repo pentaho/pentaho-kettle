@@ -61,7 +61,7 @@ public class GroupBy extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		debug="processRow";
+		debug="processRow"; //$NON-NLS-1$
 		
 		Row r=getRow();    // get row!
 		if (r==null)  // no more input to be expected...
@@ -110,7 +110,7 @@ public class GroupBy extends BaseStep implements StepInterface
 				data.subjectnrs[i] = r.searchValueIndex(meta.getSubjectField()[i]);
 				if (data.subjectnrs[i]<0)
 				{
-					logError("Aggregate subject field ["+meta.getSubjectField()[i]+"] couldn't be found!");
+					logError(Messages.getString("GroupBy.Log.AggregateSubjectFieldCouldNotFound",meta.getSubjectField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -122,7 +122,7 @@ public class GroupBy extends BaseStep implements StepInterface
 				data.groupnrs[i] = r.searchValueIndex(meta.getGroupField()[i]);
 				if (data.groupnrs[i]<0)
 				{
-					logError("Grouping field ["+meta.getGroupField()[i]+"] couldn't be found!");
+					logError(Messages.getString("GroupBy.Log.GroupFieldCouldNotFound",meta.getGroupField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -187,7 +187,7 @@ public class GroupBy extends BaseStep implements StepInterface
 		data.previous=new Row(r);
         
 
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesRead);
+		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("GroupBy.LineNumber")+linesRead); //$NON-NLS-1$
 			
 		return true;
 	}
@@ -195,7 +195,7 @@ public class GroupBy extends BaseStep implements StepInterface
 	// Is the row r of the same group as previous?
 	private boolean sameGroup(Row previous, Row r)
 	{
-		debug="sameGroup";
+		debug="sameGroup"; //$NON-NLS-1$
 		
 		for (int i=0;i<data.groupnrs.length;i++)
 		{
@@ -211,17 +211,17 @@ public class GroupBy extends BaseStep implements StepInterface
 	// Calculate the aggregates in the row...
 	private void calcAggregate(Row r)
 	{
-		debug="calcAggregate start";
+		debug=Messages.getString("GroupBy.Debug.CalcAggregateStart"); //$NON-NLS-1$
 		
 		for (int i=0;i<data.subjectnrs.length;i++)
 		{
-			debug="calcAggregate start loop";
+			debug=Messages.getString("GroupBy.Debug.CalcAggregateStartLoop"); //$NON-NLS-1$
 			Value subj = r.getValue(data.subjectnrs[i]);
 			Value value = data.agg.getValue(i);
 			
 			//System.out.println("  calcAggregate value, i="+i+", agg.size()="+agg.size()+", subj="+subj+", value="+value);
 			
-			debug="calcAggregate switch";
+			debug=Messages.getString("GroupBy.Debug.CalcAggregateSwitch"); //$NON-NLS-1$
 			switch(meta.getAggregateType()[i])
 			{
 				case GroupByMeta.TYPE_GROUP_SUM            :
@@ -243,20 +243,20 @@ public class GroupBy extends BaseStep implements StepInterface
                 case GroupByMeta.TYPE_GROUP_CONCAT_COMMA   :
                     if (!subj.isNull()) 
                     {
-                        if (value.getStringLength()>0) value.setValue(value.getString()+", ");
+                        if (value.getStringLength()>0) value.setValue(value.getString()+", "); //$NON-NLS-1$
                         value.setValue(value.getString()+subj.getString());
                     }
                     break; 
 				default: break;
 			}
 		}
-		debug="calcAggregate end";
+		debug=Messages.getString("GroupBy.Debug.CalcAggregateEnd"); //$NON-NLS-1$
 	}
 
 	// Initialize a group..
 	private void newAggregate(Row r)
 	{
-		debug="newAggregate";
+		debug=Messages.getString("GroupBy.Debug.NewAggregate"); //$NON-NLS-1$
 		
 		// Put all the counters at 0
 		for (int i=0;i<data.counts.length;i++) data.counts[i]=0;
@@ -287,7 +287,7 @@ public class GroupBy extends BaseStep implements StepInterface
 					break;
                 case GroupByMeta.TYPE_GROUP_CONCAT_COMMA   :
                     v = new Value(meta.getAggregateField()[i], Value.VALUE_TYPE_STRING);
-                    v.setValue("");
+                    v.setValue(""); //$NON-NLS-1$
                     break; 
 				default: break;
 			}
@@ -302,20 +302,20 @@ public class GroupBy extends BaseStep implements StepInterface
 	
 	private Row buildResult(Row r) throws KettleValueException
 	{
-		debug="buildResult";
+		debug="buildResult"; //$NON-NLS-1$
 		
 		Row result = new Row();
-		debug="buildResult 1";
+		debug="buildResult 1"; //$NON-NLS-1$
 		for (int i=0;i<data.groupnrs.length;i++)
 		{
 			Value gr = r.getValue(data.groupnrs[i]);
 			result.addValue(gr);
 		}
-		debug="buildResult 2";
+		debug="buildResult 2"; //$NON-NLS-1$
         
         result.addRow(getAggregateResult());
         
-		debug="buildResult end";
+		debug="buildResult end"; //$NON-NLS-1$
 		return result;
 	}
     
@@ -329,7 +329,7 @@ public class GroupBy extends BaseStep implements StepInterface
             switch(meta.getAggregateType()[i])
             {
                 case GroupByMeta.TYPE_GROUP_SUM            : break; 
-                case GroupByMeta.TYPE_GROUP_AVERAGE        : ag.divide(new Value("c", data.counts[i])); break; 
+                case GroupByMeta.TYPE_GROUP_AVERAGE        : ag.divide(new Value("c", data.counts[i])); break;  //$NON-NLS-1$
                 case GroupByMeta.TYPE_GROUP_COUNT_ALL      : ag.setValue(data.counts[i]); break;
                 case GroupByMeta.TYPE_GROUP_MIN            : break; 
                 case GroupByMeta.TYPE_GROUP_MAX            : break; 
@@ -381,14 +381,14 @@ public class GroupBy extends BaseStep implements StepInterface
             {
                 try
                 {
-                    data.tempFile = File.createTempFile(meta.getPrefix(), ".tmp", new File(StringUtil.environmentSubstitute(meta.getDirectory())));
+                    data.tempFile = File.createTempFile(meta.getPrefix(), ".tmp", new File(StringUtil.environmentSubstitute(meta.getDirectory()))); //$NON-NLS-1$
                     data.fos=new FileOutputStream(data.tempFile);
                     data.dos=new DataOutputStream(data.fos);
                     data.firstRead = true;
                 }
                 catch(IOException e)
                 {
-                    throw new KettleFileException("Unable to create temporary file", e);
+                    throw new KettleFileException(Messages.getString("GroupBy.Exception.UnableToCreateTemporaryFile"), e); //$NON-NLS-1$
                 }
             }
             // OK, save the oldest rows to disk!
@@ -414,7 +414,7 @@ public class GroupBy extends BaseStep implements StepInterface
                 }
                 catch(IOException e)
                 {
-                    throw new KettleFileException("Unable to read back row from temporary file!", e);
+                    throw new KettleFileException(Messages.getString("GroupBy.Exception.UnableToReadBackRowFromTemporaryFile"), e); //$NON-NLS-1$
                 }
             }
             
@@ -449,7 +449,7 @@ public class GroupBy extends BaseStep implements StepInterface
         }
         catch(IOException e)
         {
-            throw new KettleFileException("Unable to close input stream!", e);
+            throw new KettleFileException(Messages.getString("GroupBy.Exception.UnableToCloseInputStream"), e); //$NON-NLS-1$
         }
     }
     
@@ -462,7 +462,7 @@ public class GroupBy extends BaseStep implements StepInterface
         }
         catch(IOException e)
         {
-            throw new KettleFileException("Unable to close input stream!", e);
+            throw new KettleFileException(Messages.getString("GroupBy.Exception.UnableToCloseInputStream"), e); //$NON-NLS-1$
         }
     }
 
@@ -490,12 +490,12 @@ public class GroupBy extends BaseStep implements StepInterface
 	{		
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("GroupBy.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("GroupBy.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}

@@ -64,7 +64,7 @@ import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 {
-    public static final String STRING_SORT_WARNING_PARAMETER = "GroupSortWarning";
+    public static final String STRING_SORT_WARNING_PARAMETER = "GroupSortWarning"; //$NON-NLS-1$
 	private Label        wlGroup;
 	private TableView    wGroup;
 	private FormData     fdlGroup, fdGroup;
@@ -123,14 +123,14 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Group By");
+		shell.setText(Messages.getString("GroupByDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 		
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("GroupByDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -149,7 +149,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Include all rows?
 		wlAllRows=new Label(shell, SWT.RIGHT);
-		wlAllRows.setText("Include all rows? ");
+		wlAllRows.setText(Messages.getString("GroupByDialog.AllRows.Label")); //$NON-NLS-1$
  		props.setLook(wlAllRows);
 		fdlAlllRows=new FormData();
 		fdlAlllRows.left = new FormAttachment(0, 0);
@@ -174,7 +174,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		);
         
         wlSortDir=new Label(shell, SWT.RIGHT);
-        wlSortDir.setText("Sort directory ");
+        wlSortDir.setText(Messages.getString("GroupByDialog.SortDir.Label")); //$NON-NLS-1$
         props.setLook(wlSortDir);
         fdlSortDir=new FormData();
         fdlSortDir.left = new FormAttachment(0, 0);
@@ -184,7 +184,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
         wbSortDir=new Button(shell, SWT.PUSH| SWT.CENTER);
         props.setLook(wbSortDir);
-        wbSortDir.setText("&Browse...");
+        wbSortDir.setText(Messages.getString("GroupByDialog.Browse.Button")); //$NON-NLS-1$
         fdbSortDir=new FormData();
         fdbSortDir.right= new FormAttachment(100, 0);
         fdbSortDir.top  = new FormAttachment(wAllRows, margin);
@@ -192,7 +192,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
         wbcSortDir=new Button(shell, SWT.PUSH| SWT.CENTER);
         props.setLook(wbcSortDir);
-        wbcSortDir.setText("&Variable...");
+        wbcSortDir.setText(Messages.getString("GroupByDialog.SortDir.Button")); //$NON-NLS-1$
         fdbcSortDir=new FormData();
         fdbcSortDir.right= new FormAttachment(wbSortDir, -margin);
         fdbcSortDir.top  = new FormAttachment(wAllRows, margin);
@@ -236,7 +236,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
         // Table line...
         wlPrefix=new Label(shell, SWT.RIGHT);
-        wlPrefix.setText("TMP-file prefix ");
+        wlPrefix.setText(Messages.getString("GroupByDialog.FilePrefix.Label")); //$NON-NLS-1$
         props.setLook(wlPrefix);
         fdlPrefix=new FormData();
         fdlPrefix.left = new FormAttachment(0, 0);
@@ -253,7 +253,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
         wPrefix.setLayoutData(fdPrefix);
 
 		wlGroup=new Label(shell, SWT.NONE);
-		wlGroup.setText("The fields that make up the group: ");
+		wlGroup.setText(Messages.getString("GroupByDialog.Group.Label")); //$NON-NLS-1$
  		props.setLook(wlGroup);
 		fdlGroup=new FormData();
 		fdlGroup.left  = new FormAttachment(0, 0);
@@ -264,7 +264,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		int nrKeyRows=(input.getGroupField()!=null?input.getGroupField().length:1);
 		
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo("Group field",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciKey[0]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.GroupField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		
 		wGroup=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -275,7 +275,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 						      );
 
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(" &Get Fields ");
+		wGet.setText(Messages.getString("GroupByDialog.GetFields.Button")); //$NON-NLS-1$
 		fdGet = new FormData();
 		fdGet.top   = new FormAttachment(wlGroup, margin);
 		fdGet.right = new FormAttachment(100, 0);
@@ -290,7 +290,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
 		// THE Aggregate fields
 		wlAgg=new Label(shell, SWT.NONE);
-		wlAgg.setText("Aggregates :");
+		wlAgg.setText(Messages.getString("GroupByDialog.Aggregates.Label")); //$NON-NLS-1$
  		props.setLook(wlAgg);
 		fdlAgg=new FormData();
 		fdlAgg.left  = new FormAttachment(0, 0);
@@ -301,9 +301,9 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		int UpInsRows= (input.getAggregateField()!=null?input.getAggregateField().length:1);
 		
 		ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
-		ciReturn[0]=new ColumnInfo("Name",     ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		ciReturn[1]=new ColumnInfo("Subject",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		ciReturn[2]=new ColumnInfo("Type",     ColumnInfo.COLUMN_TYPE_CCOMBO, GroupByMeta.typeGroupLongDesc);
+		ciReturn[0]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.Name"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciReturn[1]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.Subject"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciReturn[2]=new ColumnInfo(Messages.getString("GroupByDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, GroupByMeta.typeGroupLongDesc); //$NON-NLS-1$
 		
 		wAgg=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -314,7 +314,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 							  );
 
 		wGetAgg=new Button(shell, SWT.PUSH);
-		wGetAgg.setText(" &Get lookup fields ");
+		wGetAgg.setText(Messages.getString("GroupByDialog.GetLookupFields.Button")); //$NON-NLS-1$
 		fdGetAgg = new FormData();
 		fdGetAgg.top   = new FormAttachment(wlAgg, margin);
 		fdGetAgg.right = new FormAttachment(100, 0);
@@ -322,9 +322,9 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("GroupByDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("GroupByDialog.Cancel.Button")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -375,7 +375,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), "getting key info...");
+		log.logDebug(toString(), Messages.getString("GroupByDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		wAllRows.setSelection(input.passAllRows());
 		
@@ -438,20 +438,20 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		
 		stepname = wStepname.getText();
         
-        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ))
+        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                 "Warning!", 
+                 Messages.getString("GroupByDialog.GroupByWarningDialog.DialogTitle"),  //$NON-NLS-1$
                  null,
-                 "The 'group by' function needs the input to be sorted on the specified keys." + Const.CR + "If you don't sort the input, the results may not be correct!"+Const.CR,
+                 Messages.getString("GroupByDialog.GroupByWarningDialog.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
                  MessageDialog.WARNING,
-                 new String[] { "I understand" },
+                 new String[] { Messages.getString("GroupByDialog.GroupByWarningDialog.Option1") }, //$NON-NLS-1$
                  0,
-                 "Please, don't show this warning anymore.",
-                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )
+                 Messages.getString("GroupByDialog.GroupByWarningDialog.Option2"), //$NON-NLS-1$
+                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
             );
             md.open();
-            props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y");
+            props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
             props.saveProps();
         }
 					
@@ -479,7 +479,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("GroupByDialog.FailedToGetFields.DialogTitle"), Messages.getString("GroupByDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -497,7 +497,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 					TableItem ti = new TableItem(table, SWT.NONE);
 					ti.setText(1, v.getName());
 					ti.setText(2, v.getName());
-					ti.setText(3, "");
+					ti.setText(3, ""); //$NON-NLS-1$
 				}
 				wAgg.removeEmptyRows();
 				wAgg.setRowNums();
@@ -506,7 +506,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("GroupByDialog.FailedToGetFields.DialogTitle"), Messages.getString("GroupByDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
