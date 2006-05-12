@@ -18,7 +18,11 @@ public class ExcelInputReplayTest extends KettleStepUseCase {
 		trans.waitUntilFinished();
 		trans.endProcessing("end"); //$NON-NLS-1$
 		assertEquals(0, trans.getErrors());
-		expectFiles(directory, 2);
+        
+		// Changed from 2 to 4: if you don't want to have the .line files, you don't specify them.  
+        // So, ignore=true will create the .line files, one per sheet: 2 extra files = 4 files.
+        // 
+		expectFiles(directory, 4);   
 	}
 
 	public void testInputOKIgnoreErrorsTrue() throws Exception {
