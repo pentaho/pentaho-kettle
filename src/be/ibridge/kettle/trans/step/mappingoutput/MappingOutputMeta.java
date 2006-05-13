@@ -173,29 +173,29 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            Node fields = XMLHandler.getSubNode(stepnode, "fields");
-            int nrfields = XMLHandler.countNodes(fields, "field");
+            Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+            int nrfields = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
 
             allocate(nrfields);
 
             for (int i = 0; i < nrfields; i++)
             {
-                Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
+                Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 
-                fieldName[i] = XMLHandler.getTagValue(fnode, "name");
-                fieldType[i] = Value.getType(XMLHandler.getTagValue(fnode, "type"));
-                String slength = XMLHandler.getTagValue(fnode, "length");
-                String sprecision = XMLHandler.getTagValue(fnode, "precision");
+                fieldName[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+                fieldType[i] = Value.getType(XMLHandler.getTagValue(fnode, "type")); //$NON-NLS-1$
+                String slength = XMLHandler.getTagValue(fnode, "length"); //$NON-NLS-1$
+                String sprecision = XMLHandler.getTagValue(fnode, "precision"); //$NON-NLS-1$
 
                 fieldLength[i] = Const.toInt(slength, -1);
                 fieldPrecision[i] = Const.toInt(sprecision, -1);
 
-                fieldAdded[i] = "Y".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "added") );
+                fieldAdded[i] = "Y".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "added") ); //$NON-NLS-1$ //$NON-NLS-2$
 }
         }
         catch (Exception e)
         {
-            throw new KettleXMLException("Unable to load step info from XML", e);
+            throw new KettleXMLException(Messages.getString("MappingOutputMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
         }
     }
     
@@ -203,21 +203,21 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer();
 
-        retval.append("    <fields>" + Const.CR);
+        retval.append("    <fields>" + Const.CR); //$NON-NLS-1$
         for (int i = 0; i < fieldName.length; i++)
         {
             if (fieldName[i] != null && fieldName[i].length() != 0)
             {
-                retval.append("      <field>" + Const.CR);
-                retval.append("        " + XMLHandler.addTagValue("name", fieldName[i]));
-                retval.append("        " + XMLHandler.addTagValue("type", Value.getTypeDesc(fieldType[i])));
-                retval.append("        " + XMLHandler.addTagValue("length", fieldLength[i]));
-                retval.append("        " + XMLHandler.addTagValue("precision", fieldPrecision[i]));
-                retval.append("        " + XMLHandler.addTagValue("added", fieldAdded[i]?"Y":"N"));
-                retval.append("        </field>" + Const.CR);
+                retval.append("      <field>" + Const.CR); //$NON-NLS-1$
+                retval.append("        " + XMLHandler.addTagValue("name", fieldName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        " + XMLHandler.addTagValue("type", Value.getTypeDesc(fieldType[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        " + XMLHandler.addTagValue("length", fieldLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        " + XMLHandler.addTagValue("precision", fieldPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
+                retval.append("        " + XMLHandler.addTagValue("added", fieldAdded[i]?"Y":"N")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                retval.append("        </field>" + Const.CR); //$NON-NLS-1$
             }
         }
-        retval.append("      </fields>" + Const.CR);
+        retval.append("      </fields>" + Const.CR); //$NON-NLS-1$
 
         return retval.toString();
     }
@@ -230,7 +230,7 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
 
         for (i = 0; i < nrfields; i++)
         {
-            fieldName[i] = "field" + i;
+            fieldName[i] = "field" + i; //$NON-NLS-1$
             fieldType[i] = Value.VALUE_TYPE_STRING;
             fieldLength[i] = 30;
             fieldPrecision[i] = -1;
@@ -286,22 +286,22 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
-            int nrfields = rep.countNrStepAttributes(id_step, "field_name");
+            int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
 
             allocate(nrfields);
 
             for (int i = 0; i < nrfields; i++)
             {
-                fieldName[i] = rep.getStepAttributeString(id_step, i, "field_name");
-                fieldType[i] = Value.getType( rep.getStepAttributeString(id_step, i, "field_type") );
-                fieldLength[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_length");
-                fieldPrecision[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_precision");
-                fieldAdded[i] = rep.getStepAttributeBoolean(id_step, i, "field_added");
+                fieldName[i] = rep.getStepAttributeString(id_step, i, "field_name"); //$NON-NLS-1$
+                fieldType[i] = Value.getType( rep.getStepAttributeString(id_step, i, "field_type") ); //$NON-NLS-1$
+                fieldLength[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_length"); //$NON-NLS-1$
+                fieldPrecision[i] = (int) rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
+                fieldAdded[i] = rep.getStepAttributeBoolean(id_step, i, "field_added"); //$NON-NLS-1$
             }
         }
         catch (Exception e)
         {
-            throw new KettleException("Unexpected error reading step information from the repository", e);
+            throw new KettleException(Messages.getString("MappingOutputMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
         }
     }
 
@@ -313,17 +313,17 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
             {
                 if (fieldName[i] != null && fieldName[i].length() != 0)
                 {
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldName[i]);
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_type", Value.getTypeDesc(fieldType[i]));
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_length", fieldLength[i]);
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldPrecision[i]);
-                    rep.saveStepAttribute(id_transformation, id_step, i, "field_added", fieldAdded[i]);
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_name", fieldName[i]); //$NON-NLS-1$
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_type", Value.getTypeDesc(fieldType[i])); //$NON-NLS-1$
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_length", fieldLength[i]); //$NON-NLS-1$
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", fieldPrecision[i]); //$NON-NLS-1$
+                    rep.saveStepAttribute(id_transformation, id_step, i, "field_added", fieldAdded[i]); //$NON-NLS-1$
                 }
             }
         }
         catch (Exception e)
         {
-            throw new KettleException("Unable to save step information to the repository for id_step=" + id_step, e);
+            throw new KettleException(Messages.getString("MappingOutputMeta.Exception.UnableToSaveStepInfo") + id_step, e); //$NON-NLS-1$
         }
     }
 
@@ -332,24 +332,24 @@ public class MappingOutputMeta extends BaseStepMeta implements StepMetaInterface
         CheckResult cr;
         if (prev == null || prev.size() == 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("MappingOutputMeta.CheckResult.NotReceivingFields"), stepinfo); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving " + prev.size() + " fields", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("MappingOutputMeta.CheckResult.StepReceivingDatasOK",prev.size() + ""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
             remarks.add(cr);
         }
 
         // See if we have input streams leading to this step!
         if (input.length > 0)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("MappingOutputMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
             remarks.add(cr);
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("MappingOutputMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
             remarks.add(cr);
         }
     }

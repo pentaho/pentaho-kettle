@@ -75,7 +75,7 @@ public class MappingOutput extends BaseStep implements StepInterface
             }
         }
         
-        System.out.println("r = "+r);
+        System.out.println("r = "+r); //$NON-NLS-1$
 
         // Change the output fields that are specified...
         // TODO: use indexes to speed up the lookups, no time for this at the moment...
@@ -88,7 +88,7 @@ public class MappingOutput extends BaseStep implements StepInterface
             }
             else
             {
-                throw new KettleStepException("Mapping output field specified couldn't be found: "+data.outputMapping[i]);
+                throw new KettleStepException(Messages.getString("MappingOutput.Exception.MappingOutputFieldNotFound")+data.outputMapping[i]); //$NON-NLS-1$
             }
         }
         
@@ -97,7 +97,7 @@ public class MappingOutput extends BaseStep implements StepInterface
         
 		data.mapping.putRow(r);     // copy row to possible alternate rowset(s).
 
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesRead);
+		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("MappingOutput.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
 		return true;
 	}
@@ -122,12 +122,12 @@ public class MappingOutput extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("MappingOutput.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("MappingOutput.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}

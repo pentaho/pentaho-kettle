@@ -90,14 +90,14 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         formLayout.marginHeight = Const.FORM_MARGIN;
 
         shell.setLayout(formLayout);
-        shell.setText("Mapping Output Specification");
+        shell.setText(Messages.getString("MappingOutputDialog.Shell.Title")); //$NON-NLS-1$
 
         int middle = props.getMiddlePct();
         int margin = Const.MARGIN;
 
         // Stepname line
         wlStepname = new Label(shell, SWT.RIGHT);
-        wlStepname.setText("Step name ");
+        wlStepname.setText(Messages.getString("MappingOutputDialog.Stepname.Label")); //$NON-NLS-1$
         props.setLook(wlStepname);
         fdlStepname = new FormData();
         fdlStepname.left = new FormAttachment(0, 0);
@@ -116,7 +116,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
 
         
         wlFields = new Label(shell, SWT.NONE);
-        wlFields.setText("The fields that are added or removed by this mapping:");
+        wlFields.setText(Messages.getString("MappingOutputDialog.Fields.Label")); //$NON-NLS-1$
         props.setLook(wlFields);
         fdlFields = new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -127,11 +127,11 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
 
         ColumnInfo[] colinf = new ColumnInfo[] 
         { 
-            new ColumnInfo("Name", ColumnInfo.COLUMN_TYPE_TEXT, false),
-            new ColumnInfo("Type", ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes()),
-            new ColumnInfo("Length", ColumnInfo.COLUMN_TYPE_TEXT, false), 
-            new ColumnInfo("Precision", ColumnInfo.COLUMN_TYPE_TEXT, false),
-            new ColumnInfo("Added (N=Removed)", ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y", "N"}, true) 
+            new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Name"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Type"), ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes()), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Length"), ColumnInfo.COLUMN_TYPE_TEXT, false),  //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("MappingOutputDialog.ColumnInfo.Added"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y", "N"}, true)  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         };
 
         wFields = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, colinf, FieldsRows, lsMod, props);
@@ -145,11 +145,11 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
 
         // Some buttons
         wOK = new Button(shell, SWT.PUSH);
-        wOK.setText("  &OK  ");
+        wOK.setText(Messages.getString("MappingOutputDialog.OK.Button")); //$NON-NLS-1$
         wGet = new Button(shell, SWT.PUSH);
-        wGet.setText("  &Get fields  ");
+        wGet.setText(Messages.getString("MappingOutputDialog.GetFields.Button")); //$NON-NLS-1$
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText("  &Cancel  ");
+        wCancel.setText(Messages.getString("MappingOutputDialog.Cancel.Button")); //$NON-NLS-1$
 
         setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, wFields);
 
@@ -228,9 +228,9 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
                 int length    = input.getFieldLength()[i];
                 int prec      = input.getFieldPrecision()[i];
                 if (type  !=null) item.setText(2, type  );
-                if (length>=0   ) item.setText(3, ""+length);
-                if (prec>=0     ) item.setText(4, ""+prec  );
-                item.setText(5, input.getFieldAdded()[i]?"Y":"N");
+                if (length>=0   ) item.setText(3, ""+length); //$NON-NLS-1$
+                if (prec>=0     ) item.setText(4, ""+prec  ); //$NON-NLS-1$
+                item.setText(5, input.getFieldAdded()[i]?"Y":"N"); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
         
@@ -266,7 +266,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
             input.getFieldLength()[i]    = Const.toInt(slength, -1); 
             input.getFieldPrecision()[i] = Const.toInt(sprec  , -1); 
             
-            input.getFieldAdded()[i] = "Y".equalsIgnoreCase(item.getText(5));
+            input.getFieldAdded()[i] = "Y".equalsIgnoreCase(item.getText(5)); //$NON-NLS-1$
         }
 
         dispose();
@@ -289,9 +289,9 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
                     TableItem ti = new TableItem(table, SWT.NONE);
                     ti.setText(1, v.getName());
                     ti.setText(2, v.getTypeDesc());
-                    if (v.getLength()>=0)    ti.setText(3, ""+v.getLength() );
-                    if (v.getPrecision()>=0) ti.setText(4, ""+v.getPrecision() );
-                    ti.setText(5, "Y");
+                    if (v.getLength()>=0)    ti.setText(3, ""+v.getLength() ); //$NON-NLS-1$
+                    if (v.getPrecision()>=0) ti.setText(4, ""+v.getPrecision() ); //$NON-NLS-1$
+                    ti.setText(5, "Y"); //$NON-NLS-1$
                 }
                 tv.removeEmptyRows();
                 tv.setRowNums();
@@ -300,6 +300,6 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         }
         catch(KettleException ke)
         {
-            new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
+            new ErrorDialog(shell, props, Messages.getString("MappingOutputDialog.FailedToGetFields.DiaogTitle"), Messages.getString("MappingOutputDialog.FailedToGetFields.DiaogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }}
