@@ -115,14 +115,14 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Join rows");
+		shell.setText(Messages.getString("JoinRowsDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("JoinRowsDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -141,7 +141,7 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Connection line
 		wlSortDir=new Label(shell, SWT.RIGHT);
-		wlSortDir.setText("Temp directory ");
+		wlSortDir.setText(Messages.getString("JoinRowsDialog.TempDir.Label")); //$NON-NLS-1$
  		props.setLook(wlSortDir);
 		fdlSortDir=new FormData();
 		fdlSortDir.left = new FormAttachment(0, 0);
@@ -151,7 +151,7 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 		wbSortDir=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbSortDir);
-		wbSortDir.setText("&Browse...");
+		wbSortDir.setText(Messages.getString("JoinRowsDialog.Browse.Button")); //$NON-NLS-1$
 		fdbSortDir=new FormData();
 		fdbSortDir.right= new FormAttachment(100, 0);
 		fdbSortDir.top  = new FormAttachment(wStepname, margin);
@@ -159,14 +159,14 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
         wbcSortDir=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(        wbcSortDir);
-        wbcSortDir.setText("&Variable...");
+        wbcSortDir.setText(Messages.getString("JoinRowsDialog.Variable.Button")); //$NON-NLS-1$
         fdbcSortDir=new FormData();
         fdbcSortDir.right= new FormAttachment(wbSortDir, -margin);
         fdbcSortDir.top  = new FormAttachment(wStepname, margin);
         wbcSortDir.setLayoutData(fdbcSortDir);
 
     	wSortDir=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wSortDir.setText("temp");
+		wSortDir.setText(Messages.getString("JoinRowsDialog.Temp.Label")); //$NON-NLS-1$
  		props.setLook(wSortDir);
 		wSortDir.addModifyListener(lsMod);
 		fdSortDir=new FormData();
@@ -205,7 +205,7 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
         
 		// Table line...
 		wlPrefix=new Label(shell, SWT.RIGHT);
-		wlPrefix.setText("TMP-file prefix ");
+		wlPrefix.setText(Messages.getString("JoinRowsDialog.TempFilePrefix.Label")); //$NON-NLS-1$
  		props.setLook(wlPrefix);
 		fdlPrefix=new FormData();
 		fdlPrefix.left = new FormAttachment(0, 0);
@@ -220,11 +220,11 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		fdPrefix.top   = new FormAttachment(wbSortDir, margin*2);
 		fdPrefix.right = new FormAttachment(100, 0);
 		wPrefix.setLayoutData(fdPrefix);
-		wPrefix.setText("srt");
+		wPrefix.setText(Messages.getString("JoinRowsDialog.Prefix.Label")); //$NON-NLS-1$
 
 		// Cache size...
 		wlCache=new Label(shell, SWT.RIGHT);
-		wlCache.setText("Max. cache size (in rows)");
+		wlCache.setText(Messages.getString("JoinRowsDialog.Cache.Label")); //$NON-NLS-1$
  		props.setLook(wlCache);
 		fdlCache=new FormData();
 		fdlCache.left = new FormAttachment(0, 0);
@@ -242,7 +242,7 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Read date from...
 		wlMainStep=new Label(shell, SWT.RIGHT);
-		wlMainStep.setText("Main step to read from");
+		wlMainStep.setText(Messages.getString("JoinRowsDialog.MainStep.Label")); //$NON-NLS-1$
  		props.setLook(wlMainStep);
 		fdlMainStep=new FormData();
 		fdlMainStep.left = new FormAttachment(0, 0);
@@ -268,7 +268,7 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// Condition widget...
 		wlCondition=new Label(shell, SWT.NONE);
-		wlCondition.setText("The condition: ");
+		wlCondition.setText(Messages.getString("JoinRowsDialog.Condition.Label")); //$NON-NLS-1$
  		props.setLook(wlCondition);
 		fdlCondition=new FormData();
 		fdlCondition.left  = new FormAttachment(0, 0);
@@ -283,13 +283,13 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		catch(KettleException ke)
 		{
 			inputfields = new Row();
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("JoinRowsDialog.FailedToGetFields.DialogTitle"), Messages.getString("JoinRowsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("JoinRowsDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("JoinRowsDialog.Cancel.Button")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
@@ -343,7 +343,7 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 	{
 		if (input.getPrefix() != null) wPrefix.setText(input.getPrefix());
 		if (input.getDirectory() != null) wSortDir.setText(input.getDirectory());
-		wCache.setText(""+input.getCacheSize());
+		wCache.setText(""+input.getCacheSize()); //$NON-NLS-1$
 		if (input.getLookupStepname() != null) wMainStep.setText(input.getLookupStepname());
 		
 		wStepname.selectAll();

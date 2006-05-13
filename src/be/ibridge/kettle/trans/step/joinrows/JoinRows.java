@@ -104,7 +104,7 @@ public class JoinRows extends BaseStep implements StepInterface
 				for (int i=1;i<inputRowSets.size();i++)
 				{
                     String directoryName = StringUtil.environmentSubstitute(meta.getDirectory());
-					data.file[i]=File.createTempFile(meta.getPrefix(), ".tmp", new File(directoryName));
+					data.file[i]=File.createTempFile(meta.getPrefix(), ".tmp", new File(directoryName)); //$NON-NLS-1$
 					data.file[i].deleteOnExit();
 					
 					data.size[i]     = 0;
@@ -124,7 +124,7 @@ public class JoinRows extends BaseStep implements StepInterface
 			}
 			catch(IOException e)
 			{
-				logError("Error creating temporary file(s) : "+e.toString());
+				logError(Messages.getString("JoinRows.Log.ErrorCreatingTemporaryFiles")+e.toString()); //$NON-NLS-1$
 			}
 		}
 				
@@ -139,43 +139,43 @@ public class JoinRows extends BaseStep implements StepInterface
 		// Do we read from the first rowset or a file?
 		if (filenr==0)
 		{
-			debug="Get row from rowset #"+filenr;
+			debug=Messages.getString("JoinRows.Debug.GetRowFromRowset")+filenr; //$NON-NLS-1$
 			
 			// Rowset 0:
 			r = getRowFrom(0);
 			
-			if (log.isRowLevel()) logRowlevel("Read row from stream #0 : "+(r==null?"<null>":r.toString()));
+			if (log.isRowLevel()) logRowlevel(Messages.getString("JoinRows.Log.ReadRowFromStream")+(r==null?"<null>":r.toString())); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		else
 		{
 			if (data.cache[filenr]==null)
 			{
-				debug="Get row from file #"+filenr;
+				debug=Messages.getString("JoinRows.Debug.GetRowFromFile")+filenr; //$NON-NLS-1$
 				// See if we need to open the file?
 				if (data.dataInputStream[filenr]==null)
 				{
 					try
 					{
-		    			debug="Open file input stream #"+filenr;
+		    			debug=Messages.getString("JoinRows.Debug.OpenFileInputStream")+filenr; //$NON-NLS-1$
 						data.fileInputStream[filenr] = new FileInputStream(data.file[filenr]);
-		    			debug="Open data input stream #"+filenr;
+		    			debug=Messages.getString("JoinRows.Debug.OpenFileInputStream")+filenr; //$NON-NLS-1$
 						data.dataInputStream[filenr] = new DataInputStream(data.fileInputStream[filenr]);
 					}
 					catch(FileNotFoundException fnfe)
 					{
-						logError("Unable to find/open temporary file ["+data.file[filenr]+"] : "+fnfe.toString());
+						logError(Messages.getString("JoinRows.Log.UnableToFindOrOpenTemporaryFile")+data.file[filenr]+"] : "+fnfe.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 						setErrors(1);
 						stopAll();
 						return null;
 					}
 				}
 				
-				debug="Read row from the data input stream #"+filenr;
+				debug=Messages.getString("JoinRows.Debug.ReadRowFromDataInputStream")+filenr; //$NON-NLS-1$
 				// Read a row from the temporary file
 				
 				if (data.size[filenr]==0)
 				{
-					logBasic("No rows coming from step ["+data.rs[filenr].getOriginStepName()+"]");
+					logBasic(Messages.getString("JoinRows.Log.NoRowsComingFromStep")+data.rs[filenr].getOriginStepName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 					return null;
 				}
 				
@@ -185,12 +185,12 @@ public class JoinRows extends BaseStep implements StepInterface
 				}
 				catch(KettleFileException e)
 				{
-					logError("Unable to read data from temporary file #"+filenr+" ["+data.file[filenr]+"]");
+					logError(Messages.getString("JoinRows.Log.UnableToReadDataFromTempFile")+filenr+" ["+data.file[filenr]+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					setErrors(1);
 					stopAll();
 					return null;
 				}
-				if (log.isRowLevel()) logRowlevel("Read row from file #"+filenr+" : "+r);
+				if (log.isRowLevel()) logRowlevel(Messages.getString("JoinRows.Log.ReadRowFromFile")+filenr+" : "+r); //$NON-NLS-1$ //$NON-NLS-2$
 
 				data.position[filenr]++;
 				
@@ -198,7 +198,7 @@ public class JoinRows extends BaseStep implements StepInterface
 				// The file will then be re-opened if needed later on.
 				if (data.position[filenr]>=data.size[filenr])
 				{
-	    			debug="Close stream #"+filenr;
+	    			debug=Messages.getString("JoinRows.Debug.CloseStream")+filenr; //$NON-NLS-1$
 					try
 					{
 						data.dataInputStream[filenr].close();
@@ -212,7 +212,7 @@ public class JoinRows extends BaseStep implements StepInterface
 					}
 					catch(IOException ioe)
 					{
-						logError("Unable to close input stream to file ["+data.file[filenr]+"] : "+ioe.toString());
+						logError(Messages.getString("JoinRows.Log.UnableToCloseInputStream")+data.file[filenr]+"] : "+ioe.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 						setErrors(1);
 						stopAll();
 						return null;
@@ -221,11 +221,11 @@ public class JoinRows extends BaseStep implements StepInterface
 			}
 			else
 			{
-				debug="Get row from cache #"+filenr+" size="+data.cache[filenr].size();
+				debug=Messages.getString("JoinRows.Debug.GetRowFromCache",filenr+"")+data.cache[filenr].size(); //$NON-NLS-1$ //$NON-NLS-2$
 
 				if (data.size[filenr]==0)
 				{
-					logBasic("No rows coming from step ["+data.rs[filenr].getOriginStepName()+"]");
+					logBasic(Messages.getString("JoinRows.Log.NoRowsComingFromStep")+data.rs[filenr].getOriginStepName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 					return null;
 				}
 				r = (Row)data.cache[filenr].get(data.position[data.filenr]);
@@ -236,7 +236,7 @@ public class JoinRows extends BaseStep implements StepInterface
 				// The file will then be re-opened if needed later on.
 				if (data.position[filenr]>=data.size[filenr])
 				{
-					debug="Position=0, restart=true for filenr="+filenr;
+					debug="Position=0, restart=true for filenr="+filenr; //$NON-NLS-1$
 					data.position[filenr]=0;
 					data.restart[filenr]=true;  // indicate that we restarted.
 				}
@@ -251,7 +251,7 @@ public class JoinRows extends BaseStep implements StepInterface
 		meta=(JoinRowsMeta)smi;
 		data=(JoinRowsData)sdi;
 
-		debug="data.caching="+data.caching;
+		debug="data.caching="+data.caching; //$NON-NLS-1$
 		if (data.caching)
 		{
 			  ///////////////////////////////
@@ -272,20 +272,20 @@ public class JoinRows extends BaseStep implements StepInterface
 			// We need to open a new outputstream
 			if (data.dataOutputStream[data.filenr]==null)
 			{
-				debug="Opening file outputstream #"+data.filenr;
+				debug=Messages.getString("JoinRows.Debug.OpeningFileOutputStream")+data.filenr; //$NON-NLS-1$
 				try
 				{
 					// Open the temp file
-					debug="Opening file outputstream #"+data.filenr+" file==null?"+(data.file[data.filenr]==null);
+					debug=Messages.getString("JoinRows.Debug.OpeningFileOutputStream")+data.filenr+" file==null?"+(data.file[data.filenr]==null); //$NON-NLS-1$ //$NON-NLS-2$
 					data.fileOutputStream[data.filenr] = new FileOutputStream(data.file[data.filenr]);
 
 					// Open the data output stream...
-					debug="Opening data outputstream #"+data.filenr;
+					debug=Messages.getString("JoinRows.Debug.OpeningFileOutputStream")+data.filenr; //$NON-NLS-1$
 					data.dataOutputStream[data.filenr] = new DataOutputStream(data.fileOutputStream[data.filenr]);
 				}
 				catch(FileNotFoundException fnfe)
 				{
-					logError("Unable to open outputstream to temporary file ["+data.file[data.filenr].toString()+"] : "+fnfe.toString());
+					logError(Messages.getString("JoinRows.Log.UnableToOpenOutputstream")+data.file[data.filenr].toString()+"] : "+fnfe.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 					stopAll();
 					setErrors(1);
 					return false;
@@ -294,7 +294,7 @@ public class JoinRows extends BaseStep implements StepInterface
 
 	    	// Read a line from the appropriate rowset...
 			String fromStep = data.rs[data.filenr].getOriginStepName();
-			debug="Get row from step ["+fromStep+"]";
+			debug=Messages.getString("JoinRows.Debug.GetRowFromStep")+fromStep+"]"; //$NON-NLS-1$ //$NON-NLS-2$
 	    	Row r = getRowFrom(fromStep);
 	    	
 	    	if (r!=null) // We read a row from one of the input streams...
@@ -305,7 +305,7 @@ public class JoinRows extends BaseStep implements StepInterface
 					data.row[data.filenr] = new Row(r); // "Clone" the row, so it becomes independend.
 	    		}
 
-				debug="Write the data to temp file #"+data.filenr;
+				debug=Messages.getString("JoinRows.Debug.WriteDataToTempFile")+data.filenr; //$NON-NLS-1$
 	    		r.writeData(data.dataOutputStream[data.filenr]);
 	    		data.size[data.filenr]++;
 
@@ -324,14 +324,14 @@ public class JoinRows extends BaseStep implements StepInterface
 	    		else
 	    		{
 	    			// we can't cope with this many rows: reset the cache...
-	    			if (log.isDetailed()) logDetailed("More then "+meta.getCacheSize()+" rows found: clearing cache from step ["+data.rs[data.filenr].getOriginStepName()+"]");
+	    			if (log.isDetailed()) logDetailed(Messages.getString("JoinRows.Log.RowsFound",meta.getCacheSize()+"",data.rs[data.filenr].getOriginStepName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 	    			data.cache[data.filenr]=null;
 	    		}
 
 	    	}
 	    	else // No more rows found on rowset!!
 	    	{
-				debug="Close outputstream #"+data.filenr;
+				debug=Messages.getString("JoinRows.Debug.CloseOutputStream")+data.filenr; //$NON-NLS-1$
 	    		// Close outputstream.
 	    		try
 				{
@@ -342,7 +342,7 @@ public class JoinRows extends BaseStep implements StepInterface
 	   			}
 	    		catch(IOException ioe)
 				{
-	    			logError("Error closing outputstream #"+data.filenr+" : ["+data.file[data.filenr].toString()+"] : "+ioe.toString());
+	    			logError(Messages.getString("JoinRows.Log.ErrorInClosingOutputStream")+data.filenr+" : ["+data.file[data.filenr].toString()+"] : "+ioe.toString()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 	    		
 	    		// Advance to the next file/input-stream...
@@ -371,7 +371,7 @@ public class JoinRows extends BaseStep implements StepInterface
 			//
 			if (data.filenr>=data.file.length-1)
 			{
-				debug="Stich together #"+data.filenr;
+				debug="Stich together #"+data.filenr; //$NON-NLS-1$
 				// Stich the output row together
 				Row sum = new Row();
 				for (int i=0;i<=data.filenr;i++)
@@ -396,7 +396,7 @@ public class JoinRows extends BaseStep implements StepInterface
 				// 
 				while (data.restart[data.filenr])
 				{
-					debug="Go back to file #"+(data.filenr-1);
+					debug="Go back to file #"+(data.filenr-1); //$NON-NLS-1$
 					// Get row from the previous file
 					data.filenr--;
 				}
@@ -431,12 +431,12 @@ public class JoinRows extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("JoinRows.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("JoinRows.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}
