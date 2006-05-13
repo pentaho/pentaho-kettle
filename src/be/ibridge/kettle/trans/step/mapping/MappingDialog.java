@@ -117,14 +117,14 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Mapping (excute sub-transformation)");
+		shell.setText(Messages.getString("MappingDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("MappingDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -143,7 +143,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         
         // Transformation line
         wlTransformation=new Label(shell, SWT.RIGHT);
-        wlTransformation.setText("Transformation ");
+        wlTransformation.setText(Messages.getString("MappingDialog.Transformation.Label")); //$NON-NLS-1$
         props.setLook(wlTransformation);
         fdlTransformation=new FormData();
         fdlTransformation.left = new FormAttachment(0, 0);
@@ -152,7 +152,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wlTransformation.setLayoutData(fdlTransformation);
 
         weTransformation=new Button(shell, SWT.PUSH );
-        weTransformation.setText(" Edit ");
+        weTransformation.setText(Messages.getString("MappingDialog.Edit.Button")); //$NON-NLS-1$
         props.setLook(weTransformation);
         fdeTransformation=new FormData();
         fdeTransformation.right= new FormAttachment(100, 0);
@@ -160,7 +160,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         weTransformation.setLayoutData(fdeTransformation);
 
         wbTransformation=new Button(shell, SWT.PUSH );
-        wbTransformation.setText(" Select ");
+        wbTransformation.setText(Messages.getString("MappingDialog.Select.Button")); //$NON-NLS-1$
         props.setLook(wbTransformation);
         fdbTransformation=new FormData();
         fdbTransformation.right= new FormAttachment(weTransformation, 0);
@@ -203,10 +203,10 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         
         ColumnInfo[] colinfo=new ColumnInfo[]
         {
-            new ColumnInfo("Input Field",    ColumnInfo.COLUMN_TYPE_TEXT,    false ),
-            new ColumnInfo("Input Mapping",  ColumnInfo.COLUMN_TYPE_TEXT,    false )
+            new ColumnInfo(Messages.getString("MappingDialog.ColumnInfo.InputField"),    ColumnInfo.COLUMN_TYPE_TEXT,    false ), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("MappingDialog.ColumnInfo.InputMapping"),  ColumnInfo.COLUMN_TYPE_TEXT,    false ) //$NON-NLS-1$
         };
-        colinfo[ 1].setToolTip("Enter a regular expression here and a directory in the first column.");
+        colinfo[ 1].setToolTip(Messages.getString("MappingDialog.InputMapping.ToolTip")); //$NON-NLS-1$
         
         wInputFields = new TableView(shell, 
                               SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
@@ -224,7 +224,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wInputFields.setLayoutData(fdInputFields);
         
         wbInput = new Button(shell, SWT.PUSH);
-        wbInput.setText("Get from mapping");
+        wbInput.setText(Messages.getString("MappingDialog.GetFromMapping.Button")); //$NON-NLS-1$
         fdbInput=new FormData();
         fdbInput.left   = new FormAttachment(0, 0);
         fdbInput.right  = new FormAttachment(50, -margin);
@@ -246,8 +246,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         
         ColumnInfo[] colinfoOutput = new ColumnInfo[] 
         { 
-            new ColumnInfo("Output Mapping", ColumnInfo.COLUMN_TYPE_TEXT, false),
-            new ColumnInfo("Output Field",   ColumnInfo.COLUMN_TYPE_TEXT, false) 
+            new ColumnInfo(Messages.getString("MappingDialog.ColumnInfo.OutputMapping"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("MappingDialog.ColumnInfo.OutputField"),   ColumnInfo.COLUMN_TYPE_TEXT, false)  //$NON-NLS-1$
         };
 
         wOutputFields = new TableView(shell, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfoOutput, input.getOutputField() != null ? input
@@ -261,7 +261,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wOutputFields.setLayoutData(fdOutputFields);
 
         wbOutput = new Button(shell, SWT.PUSH);
-        wbOutput.setText("Get from mapping");
+        wbOutput.setText(Messages.getString("MappingDialog.GetFromMapping.Button")); //$NON-NLS-1$
         fdbOutput=new FormData();
         fdbOutput.left   = new FormAttachment(50, 0);
         fdbOutput.right  = new FormAttachment(100, 0);
@@ -279,9 +279,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("MappingDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("MappingDialog.Cancel.Button")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wbInput);
 
@@ -333,7 +333,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             }
             catch(KettleException ke)
             {
-                new ErrorDialog(shell, props, "Error", "Error selecting object from repository", ke);
+                new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorSelectingObject.DialogTitle"), Messages.getString("MappingDialog.ErrorSelectingObject.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
         else
@@ -352,7 +352,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
                 }
                 catch(KettleException e)
                 {
-                    new ErrorDialog(shell, props, "Error loading transformation", "There was an error loading the transformation from XML file:", e);
+                    new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
         }
@@ -369,8 +369,8 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         else
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage("Please select a transformation first!");
-            mb.setText("Sorry");
+            mb.setMessage(Messages.getString("MappingDialog.TransformationSelecting.DialogMessage")); //$NON-NLS-1$
+            mb.setText(Messages.getString("MappingDialog.TransformationSelecting.DialogTitle")); //$NON-NLS-1$
             mb.open();
         }
     }
@@ -395,7 +395,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
                 }
                 catch(KettleException e)
                 {
-                	new ErrorDialog(shell, props, "Error getting previous fields", "There was an error getting the fields entering this step", e);
+                	new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorGettingPreviousFields.DialogTitle"), Messages.getString("MappingDialog.ErrorGettingPreviousFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 
                 if (prev!=null)
@@ -417,7 +417,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
                 }
                 else
                 {
-	                log.logDetailed(stepname, "Getting input fields... ("+source.length+")");
+	                log.logDetailed(stepname, Messages.getString("MappingDialog.Log.GettingInputFields")+source.length+")"); //$NON-NLS-1$ //$NON-NLS-2$
 	                for (int i=0;i<source.length;i++)
 	                {
 	                    TableItem item = new TableItem(wInputFields.table, SWT.NONE);
@@ -431,16 +431,16 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             else
             {
                 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                mb.setMessage("You need to add a MappingInput step to the selected mapping (sub-transformation)!");
-                mb.setText("Sorry");
+                mb.setMessage(Messages.getString("MappingDialog.MappingInputStepNeeded.DialogMessage")); //$NON-NLS-1$
+                mb.setText(Messages.getString("MappingDialog.MappingInputStepNeeded.DialogTitle")); //$NON-NLS-1$
                 mb.open();
             }
         }
         else
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage("Sorry, no mapping is specified, I can't get the input fields!");
-            mb.setText("Sorry");
+            mb.setMessage(Messages.getString("MappingDialog.NoMappingSpecified.DialogMessage")); //$NON-NLS-1$
+            mb.setText(Messages.getString("MappingDialog.NoMappingSpecified.DialogTitle")); //$NON-NLS-1$
             mb.open();
         }
     }
@@ -455,7 +455,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             if (outputStepMeta!=null)
             {
                 MappingOutputMeta mappingOutputMeta = (MappingOutputMeta) outputStepMeta.getStepMetaInterface();
-                System.out.println("Getting input fields... ("+mappingOutputMeta.getFieldName().length+")");
+                System.out.println(Messages.getString("MappingDialog.Log.GettingInputFields")+mappingOutputMeta.getFieldName().length+")"); //$NON-NLS-1$ //$NON-NLS-2$
 
                 for (int i=0;i<mappingOutputMeta.getFieldName().length;i++)
                 {
@@ -474,16 +474,16 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             else
             {
                 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                mb.setMessage("You need to add a MappingOutput step to the selected mapping (sub-transformation)!");
-                mb.setText("Sorry");
+                mb.setMessage(Messages.getString("MappingDialog.MappingOutputStepNeeded.DialogMessage")); //$NON-NLS-1$
+                mb.setText(Messages.getString("MappingDialog.MappingOutputStepNeeded.DialogTitle")); //$NON-NLS-1$
                 mb.open();
             }
         }
         else
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage("Sorry, no mapping is specified, I can't get the output fields!");
-            mb.setText("Sorry");
+            mb.setMessage(Messages.getString("MappingDialog.NoMappingSpecified2.DialogMessage")); //$NON-NLS-1$
+            mb.setText(Messages.getString("MappingDialog.NoMappingSpecified2.DialogTitle")); //$NON-NLS-1$
             mb.open();
         }
     }

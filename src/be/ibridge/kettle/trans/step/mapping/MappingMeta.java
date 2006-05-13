@@ -157,7 +157,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         }
         catch(KettleException e)
         {
-            throw new KettleXMLException("Error loading transformation step from XML", e);
+            throw new KettleXMLException(Messages.getString("MappingMeta.Exception.ErrorLoadingTransformationStepFromXML"), e); //$NON-NLS-1$
         }
 	}
 
@@ -169,30 +169,30 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 	
 	private void readData(Node stepnode) throws KettleException
 	{
-        transName      = XMLHandler.getTagValue(stepnode, "trans_name");
-        fileName       = XMLHandler.getTagValue(stepnode, "filename");
-        directoryPath  = XMLHandler.getTagValue(stepnode, "directory_path");
+        transName      = XMLHandler.getTagValue(stepnode, "trans_name"); //$NON-NLS-1$
+        fileName       = XMLHandler.getTagValue(stepnode, "filename"); //$NON-NLS-1$
+        directoryPath  = XMLHandler.getTagValue(stepnode, "directory_path"); //$NON-NLS-1$
         
-        Node inputNode  = XMLHandler.getSubNode(stepnode, "input");
-        Node outputNode = XMLHandler.getSubNode(stepnode, "output");
+        Node inputNode  = XMLHandler.getSubNode(stepnode, "input"); //$NON-NLS-1$
+        Node outputNode = XMLHandler.getSubNode(stepnode, "output"); //$NON-NLS-1$
 
-        int nrInput  = XMLHandler.countNodes(inputNode, "connector");
-        int nrOutput = XMLHandler.countNodes(outputNode, "connector");
+        int nrInput  = XMLHandler.countNodes(inputNode, "connector"); //$NON-NLS-1$
+        int nrOutput = XMLHandler.countNodes(outputNode, "connector"); //$NON-NLS-1$
 
         allocate(nrInput, nrOutput);
         
         for (int i=0;i<nrInput;i++)
         {
-            Node inputConnector = XMLHandler.getSubNodeByNr(inputNode, "connector", i);
-            inputField[i]   = XMLHandler.getTagValue(inputConnector, "field");
-            inputMapping[i] = XMLHandler.getTagValue(inputConnector, "mapping");
+            Node inputConnector = XMLHandler.getSubNodeByNr(inputNode, "connector", i); //$NON-NLS-1$
+            inputField[i]   = XMLHandler.getTagValue(inputConnector, "field"); //$NON-NLS-1$
+            inputMapping[i] = XMLHandler.getTagValue(inputConnector, "mapping"); //$NON-NLS-1$
         }
         
         for (int i=0;i<nrOutput;i++)
         {
-            Node outputConnector = XMLHandler.getSubNodeByNr(outputNode, "connector", i);
-            outputField[i]   = XMLHandler.getTagValue(outputConnector, "field");
-            outputMapping[i] = XMLHandler.getTagValue(outputConnector, "mapping");
+            Node outputConnector = XMLHandler.getSubNodeByNr(outputNode, "connector", i); //$NON-NLS-1$
+            outputField[i]   = XMLHandler.getTagValue(outputConnector, "field"); //$NON-NLS-1$
+            outputMapping[i] = XMLHandler.getTagValue(outputConnector, "mapping"); //$NON-NLS-1$
         }
         
         loadMappingMeta(null);
@@ -212,30 +212,30 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         
         if (mappingTransMeta!=null)
         {
-            retval.append("    "+XMLHandler.addTagValue("trans_name", mappingTransMeta.getName()));
+            retval.append("    "+XMLHandler.addTagValue("trans_name", mappingTransMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
             if (mappingTransMeta.getDirectory()!=null)
             {
-                retval.append("    "+XMLHandler.addTagValue("directory_path", mappingTransMeta.getDirectory().getPath()));
+                retval.append("    "+XMLHandler.addTagValue("directory_path", mappingTransMeta.getDirectory().getPath())); //$NON-NLS-1$ //$NON-NLS-2$
             }
             if (mappingTransMeta.getFilename()!=null)
             {
-                retval.append("    "+XMLHandler.addTagValue("filename", mappingTransMeta.getFilename()));
+                retval.append("    "+XMLHandler.addTagValue("filename", mappingTransMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
         
-        retval.append("  <input>"+Const.CR);
+        retval.append("  <input>"+Const.CR); //$NON-NLS-1$
         for (int i=0;i<inputField.length;i++)
         {
-            retval.append("    <connector>"+XMLHandler.addTagValue("field", inputField[i], false)+"  "+XMLHandler.addTagValue("mapping", inputMapping[i], false)+"</connector>"+Const.CR);
+            retval.append("    <connector>"+XMLHandler.addTagValue("field", inputField[i], false)+"  "+XMLHandler.addTagValue("mapping", inputMapping[i], false)+"</connector>"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         }
-        retval.append("    </input>"+Const.CR);
+        retval.append("    </input>"+Const.CR); //$NON-NLS-1$
         
-        retval.append("  <output>"+Const.CR);
+        retval.append("  <output>"+Const.CR); //$NON-NLS-1$
         for (int i=0;i<outputField.length;i++)
         {
-            retval.append("    <connector>"+XMLHandler.addTagValue("field", outputField[i], false)+"  "+XMLHandler.addTagValue("mapping", outputMapping[i], false)+"</connector>"+Const.CR);
+            retval.append("    <connector>"+XMLHandler.addTagValue("field", outputField[i], false)+"  "+XMLHandler.addTagValue("mapping", outputMapping[i], false)+"</connector>"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         }
-        retval.append("    </output>"+Const.CR);
+        retval.append("    </output>"+Const.CR); //$NON-NLS-1$
         
         return retval.toString();
     }
@@ -258,19 +258,19 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 						int idx = r.searchValueIndex(inputField[i]);
 						if (idx<0)
 						{
-							throw new KettleStepException("Mapping target field ["+inputField[i]+"] is not present in the input rows!");
+							throw new KettleStepException(Messages.getString("MappingMeta.Exception.MappingTargetFieldNotPresent",inputField[i])); //$NON-NLS-1$ //$NON-NLS-2$
 						}
 						r.getValue(idx).setName(inputMapping[i]);
 					}
 				}
 				else
 				{
-					throw new KettleStepException("Mapping target field #"+i+" is not specified for input ["+inputField[i]+"]!");
+					throw new KettleStepException(Messages.getString("MappingMeta.Exception.MappingTargetFieldNotSpecified",i+"",inputField[i])); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			}
 			else
 			{
-				throw new KettleStepException("Input field #"+i+" is not specified!");
+				throw new KettleStepException(Messages.getString("MappingMeta.Exception.InputFieldNotSpecified",i+"")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 
@@ -294,7 +294,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             		}
             		else
             		{
-            			throw new KettleStepException("Unable to find field : "+outputMapping[i]);
+            			throw new KettleStepException(Messages.getString("MappingMeta.Exception.UnableToFindField")+outputMapping[i]); //$NON-NLS-1$
             		}
                 }
                 
@@ -302,36 +302,36 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             }
             else
             {
-            	throw new KettleStepException("Please use one (1) mapping output step in the mapping (sub-transformation)");
+            	throw new KettleStepException(Messages.getString("MappingMeta.Exception.MappingOutputStepRequired")); //$NON-NLS-1$
             }
         }
         else
         {
-            throw new KettleStepException("Unable to get fields from Mapping: no mapping is selected.");
+            throw new KettleStepException(Messages.getString("MappingMeta.Exception.UnableToGetFieldsFromMapping")); //$NON-NLS-1$
         }
     }
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
 	{
-        transName        = rep.getStepAttributeString(id_step, "trans_name");
-        fileName         = rep.getStepAttributeString(id_step, "filename");
-        directoryPath    = rep.getStepAttributeString(id_step, "directory_path");
+        transName        = rep.getStepAttributeString(id_step, "trans_name"); //$NON-NLS-1$
+        fileName         = rep.getStepAttributeString(id_step, "filename"); //$NON-NLS-1$
+        directoryPath    = rep.getStepAttributeString(id_step, "directory_path"); //$NON-NLS-1$
         
-        int nrInput  = rep.countNrStepAttributes(id_step, "input_field");
-        int nrOutput = rep.countNrStepAttributes(id_step, "output_field");
+        int nrInput  = rep.countNrStepAttributes(id_step, "input_field"); //$NON-NLS-1$
+        int nrOutput = rep.countNrStepAttributes(id_step, "output_field"); //$NON-NLS-1$
 
         allocate(nrInput, nrOutput);
         
         for (int i=0;i<nrInput;i++)
         {
-            inputField[i]   = rep.getStepAttributeString(id_step, i, "input_field");
-            inputMapping[i] = rep.getStepAttributeString(id_step, i, "input_mapping");
+            inputField[i]   = rep.getStepAttributeString(id_step, i, "input_field"); //$NON-NLS-1$
+            inputMapping[i] = rep.getStepAttributeString(id_step, i, "input_mapping"); //$NON-NLS-1$
         }
 
         for (int i=0;i<nrOutput;i++)
         {
-            outputField[i]   = rep.getStepAttributeString(id_step, i, "output_field");
-            outputMapping[i] = rep.getStepAttributeString(id_step, i, "output_mapping");
+            outputField[i]   = rep.getStepAttributeString(id_step, i, "output_field"); //$NON-NLS-1$
+            outputMapping[i] = rep.getStepAttributeString(id_step, i, "output_mapping"); //$NON-NLS-1$
         }
 
         loadMappingMeta(rep);
@@ -343,14 +343,14 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         {
             if (mappingTransMeta.getFilename()!=null)
             {
-                rep.saveStepAttribute(id_transformation, id_step, "filename", mappingTransMeta.getFilename());
+                rep.saveStepAttribute(id_transformation, id_step, "filename", mappingTransMeta.getFilename()); //$NON-NLS-1$
             }
             else
             {
-                rep.saveStepAttribute(id_transformation, id_step, "trans_name", mappingTransMeta.getName());
+                rep.saveStepAttribute(id_transformation, id_step, "trans_name", mappingTransMeta.getName()); //$NON-NLS-1$
                 if (mappingTransMeta.getDirectory()!=null)
                 {
-                    rep.saveStepAttribute(id_transformation, id_step, "directory_path", mappingTransMeta.getDirectory().getPath());
+                    rep.saveStepAttribute(id_transformation, id_step, "directory_path", mappingTransMeta.getDirectory().getPath()); //$NON-NLS-1$
                 }
             }
         }
@@ -358,15 +358,15 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         if (inputField!=null)
         for (int i=0;i<inputField.length;i++)
         {
-            rep.saveStepAttribute(id_transformation, id_step, i, "input_field",   inputField[i]);
-            rep.saveStepAttribute(id_transformation, id_step, i, "input_mapping", inputMapping[i]);
+            rep.saveStepAttribute(id_transformation, id_step, i, "input_field",   inputField[i]); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, i, "input_mapping", inputMapping[i]); //$NON-NLS-1$
         }
         
         if (outputField!=null)
         for (int i=0;i<outputField.length;i++)
         {
-            rep.saveStepAttribute(id_transformation, id_step, i, "output_field",   outputField[i]);
-            rep.saveStepAttribute(id_transformation, id_step, i, "output_mapping", outputMapping[i]);
+            rep.saveStepAttribute(id_transformation, id_step, i, "output_field",   outputField[i]); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, i, "output_mapping", outputMapping[i]); //$NON-NLS-1$
         }
     }
 
@@ -391,7 +391,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
                 }
                 else
                 {
-                    throw new KettleException("Unable to load transformation ["+transName+"] : can't find directory "+directoryPath);
+                    throw new KettleException(Messages.getString("MappingMeta.Exception.UnableToLoadTransformation",transName)+directoryPath); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
         }
@@ -403,24 +403,24 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("MappingMeta.CheckResult.NotReceivingAnyFields"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "+prev.size()+" fields", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("MappingMeta.CheckResult.StepReceivingFields",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 		}
 
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("MappingMeta.CheckResult.StepReceivingFieldsFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("MappingMeta.CheckResult.NoInputReceived"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
         
@@ -436,20 +436,20 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 						int idx = prev.searchValueIndex(inputField[i]);
 						if (idx<0)
 						{
-							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Mapping target field ["+inputField[i]+"] is not present in the input rows!", stepinfo);
+							cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("MappingMeta.CheckResult.MappingTargetFieldNotPresent",inputField[i]), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 							remarks.add(cr);
 						}
 					}
 				}
 				else
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Mapping target field #"+i+" is not specified for input ["+inputField[i]+"]!", stepinfo);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("MappingMeta.CheckResult.MappingTargetFieldNotSepecified",i+"",inputField[i]), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					remarks.add(cr);
 				}
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Input field #"+i+" is not specified!", stepinfo);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("MappingMeta.CheckResult.InputFieldNotSpecified",i+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 				remarks.add(cr);
 			}
 		}
@@ -458,7 +458,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     	// 
         if (mappingTransMeta!=null)
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "A mapping (transformation) is specified.", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("MappingMeta.CheckResult.MappingTransformationSpecified"), stepinfo); //$NON-NLS-1$
             remarks.add(cr);
 
             StepMeta stepMeta = mappingTransMeta.getMappingOutputStep();
@@ -481,7 +481,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 	                    Value v = fields.searchValue(outputMapping[i]);
 	                    if (v==null) // Not found!
 	                    {
-	                        cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Mapping output field specified couldn't be found in the mapping: "+outputMapping[i], stepinfo);
+	                        cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("MappingMeta.CheckResult.MappingOutFieldSpecifiedCouldNotFound")+outputMapping[i], stepinfo); //$NON-NLS-1$
 	                        remarks.add(cr);
 	                        allOK=false;
 	                    }
@@ -489,25 +489,25 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 	                
 	                if (allOK)
 	                {
-	                    cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All output mapping fields could be found in the mapping.", stepinfo);
+	                    cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("MappingMeta.CheckResult.AllOutputMappingFieldCouldBeFound"), stepinfo); //$NON-NLS-1$
 	                    remarks.add(cr);
 	                }
 	            }
 	            catch(KettleStepException e)
 	            {
-	                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Unable to get the step output fields for mapping output step ["+stepMeta.getName()+"]", stepinfo);
+	                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("MappingMeta.CheckResult.UnableToGetStepOutputFields")+stepMeta.getName()+"]", stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 	                remarks.add(cr);
 	            }
             }
             else
             {
-                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No mapping output step was specified in the mapping!", stepinfo);
+                cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("MappingMeta.CheckResult.NoMappingOutputStepSpecified"), stepinfo); //$NON-NLS-1$
                 remarks.add(cr);
             }
         }
         else
         {
-            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "There is no mapping specified!", stepinfo);
+            cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("MappingMeta.CheckResult.NoMappingSpecified"), stepinfo); //$NON-NLS-1$
             remarks.add(cr);
         }
 	}

@@ -96,7 +96,7 @@ public class Mapping extends BaseStep implements StepInterface
 							int idx = r.searchValueIndex(meta.getInputField()[i]);
 							if (idx<0)
 							{
-								logError("Mapping target field ["+meta.getInputField()[i]+"] is not present in the input rows!");
+								logError(Messages.getString("Mapping.Log.TargetFieldNotPresent",meta.getInputField()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 								setErrors(1);
 								stopAll();
 								data.trans.stopAll();
@@ -104,12 +104,12 @@ public class Mapping extends BaseStep implements StepInterface
 							}
 							data.renameFieldIndexes.add(new Integer(idx));
 							data.renameFieldNames.add(meta.getInputMapping()[i]);
-							if (log.isRowLevel()) logRowlevel("#"+data.renameFieldIndexes.size()+" : index="+i+", new name="+meta.getInputMapping()[i]);
+							if (log.isRowLevel()) logRowlevel(Messages.getString("Mapping.Log.RenameFieldInfo",data.renameFieldIndexes.size()+"",i+"",meta.getInputMapping()[i])); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						}
 					}
 					else
 					{
-						logError("Mapping target field #"+i+" is not specified for input ["+meta.getInputField()[i]+"]!");
+						logError(Messages.getString("Mapping.Log.TargetFieldNotSpecified",i+"",meta.getInputField()[i])+"]!"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						setErrors(1);
 						stopAll();
 						data.trans.stopAll();
@@ -118,7 +118,7 @@ public class Mapping extends BaseStep implements StepInterface
 				}
 				else
 				{
-					logError("Input field #"+i+" is not specified!");
+					logError(Messages.getString("Mapping.Log.InputFieldNotSpecified",i+"")); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					data.trans.stopAll();
@@ -136,7 +136,7 @@ public class Mapping extends BaseStep implements StepInterface
 		
         data.mappingInput.putRow(r);     // copy row to possible alternate rowset(s) in the mapping.
         
-        if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesRead);
+        if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("Mapping.Log.LineNumber")+linesRead); //$NON-NLS-1$
 
         //
         // The problem now is to get a row back from the mapping...
@@ -172,7 +172,7 @@ public class Mapping extends BaseStep implements StepInterface
                 data.mappingInput = data.trans.findMappingInput();
                 if (data.mappingInput==null)
                 {
-                    logError("Couldn't find MappingInput step in the mapping.");
+                    logError(Messages.getString("Mapping.Log.CouldNotFindMappingInputStep")); //$NON-NLS-1$
                     return false;
                 }
                 
@@ -180,7 +180,7 @@ public class Mapping extends BaseStep implements StepInterface
                 data.mappingOutput = data.trans.findMappingOutput();
                 if (data.mappingOutput==null)
                 {
-                    logError("Couldn't find MappingOutput step in the mapping.");
+                    logError(Messages.getString("Mapping.Log.CouldNotFindMappingInputStep2")); //$NON-NLS-1$
                     return false;
                 }
                 
@@ -201,12 +201,12 @@ public class Mapping extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("Mapping.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("Mapping.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 			data.trans.stopAll();
@@ -226,13 +226,13 @@ public class Mapping extends BaseStep implements StepInterface
                 }
                 catch(KettleException e)
                 {
-                	log.logError(toString(), "Unable to log end of transformation: "+e.toString());
+                	log.logError(toString(), Messages.getString("Mapping.Log.UnableToLogEndOfTransformation")+e.toString()); //$NON-NLS-1$
                 }
                 
         		// See if there was an error in the sub-transformation, in that case, flag error etc.
         		if (data.trans.getErrors()>0)
         		{
-        			logError("An error occurred in the sub-transformation, halting processing");
+        			logError(Messages.getString("Mapping.Log.ErrorOccurredInSubTransformation")); //$NON-NLS-1$
         			setErrors(1);
         		}
             }
