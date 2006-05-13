@@ -109,14 +109,14 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Filter rows");
+		shell.setText(Messages.getString("MergeRowsDialog.Shell.Label")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("MergeRowsDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -138,7 +138,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         
 		// Send 'True' data to...
 		wlReference=new Label(shell, SWT.RIGHT);
-		wlReference.setText("Reference rows origin:");
+		wlReference.setText(Messages.getString("MergeRowsDialog.Reference.Label")); //$NON-NLS-1$
  		props.setLook(wlReference);
 		fdlReference=new FormData();
 		fdlReference.left = new FormAttachment(0, 0);
@@ -162,7 +162,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Send 'False' data to...
 		wlCompare=new Label(shell, SWT.RIGHT);
-		wlCompare.setText("Compare rows origin:");
+		wlCompare.setText(Messages.getString("MergeRowsDialog.Compare.Label")); //$NON-NLS-1$
  		props.setLook(wlCompare);
 		fdlCompare=new FormData();
 		fdlCompare.left = new FormAttachment(0, 0);
@@ -187,7 +187,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         
         // Stepname line
         wlFlagfield=new Label(shell, SWT.RIGHT);
-        wlFlagfield.setText("Flag fieldname ");
+        wlFlagfield.setText(Messages.getString("MergeRowsDialog.FlagField.Label")); //$NON-NLS-1$
         props.setLook(wlFlagfield);
         fdlFlagfield=new FormData();
         fdlFlagfield.left = new FormAttachment(0, 0);
@@ -206,7 +206,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         
         // THE KEYS TO MATCH...
         wlKeys=new Label(shell, SWT.NONE);
-        wlKeys.setText("Keys to match :");
+        wlKeys.setText(Messages.getString("MergeRowsDialog.Keys.Label")); //$NON-NLS-1$
         props.setLook(wlKeys);
         fdlKeys=new FormData();
         fdlKeys.left  = new FormAttachment(0, 0);
@@ -216,7 +216,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         int nrKeyRows= (input.getKeyFields()!=null?input.getKeyFields().length:1);
         
         ColumnInfo[] ciKeys=new ColumnInfo[] {
-            new ColumnInfo("Key field", ColumnInfo.COLUMN_TYPE_TEXT, false),
+            new ColumnInfo(Messages.getString("MergeRowsDialog.ColumnInfo.KeyField"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
         };
             
         wKeys=new TableView(shell, 
@@ -235,7 +235,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         wKeys.setLayoutData(fdKeys);
 
         wbKeys=new Button(shell, SWT.PUSH);
-        wbKeys.setText(" Get &key fields ");
+        wbKeys.setText(Messages.getString("MergeRowsDialog.KeyFields.Button")); //$NON-NLS-1$
         fdbKeys = new FormData();
         fdbKeys.top   = new FormAttachment(wKeys, margin);
         fdbKeys.left  = new FormAttachment(0, 0);
@@ -254,7 +254,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 
         // VALUES TO COMPARE
         wlValues=new Label(shell, SWT.NONE);
-        wlValues.setText("Values to compare :");
+        wlValues.setText(Messages.getString("MergeRowsDialog.Values.Label")); //$NON-NLS-1$
         props.setLook(wlValues);
         fdlValues=new FormData();
         fdlValues.left  = new FormAttachment(50, 0);
@@ -264,7 +264,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         int nrValueRows= (input.getValueFields()!=null?input.getValueFields().length:1);
         
         ColumnInfo[] ciValues=new ColumnInfo[] {
-            new ColumnInfo("Value field", ColumnInfo.COLUMN_TYPE_TEXT, false),
+            new ColumnInfo(Messages.getString("MergeRowsDialog.ColumnInfo.ValueField"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
         };
             
         wValues=new TableView(shell, 
@@ -284,7 +284,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 
         
         wbValues=new Button(shell, SWT.PUSH);
-        wbValues.setText(" Get &value fields ");
+        wbValues.setText(Messages.getString("MergeRowsDialog.ValueFields.Button")); //$NON-NLS-1$
         fdbValues = new FormData();
         fdbValues.top   = new FormAttachment(wValues, margin);
         fdbValues.left  = new FormAttachment(50,  0);
@@ -302,9 +302,9 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("MergeRowsDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("MergeRowsDialog.Cancel.Button")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wbKeys);
 
@@ -418,7 +418,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, "Error getting fields", "Unable to get the fields because of an error: ", e);
+            new ErrorDialog(shell, props, Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogTitle"), Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
     
@@ -445,7 +445,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, "Error getting fields", "Unable to get the fields because of an error: ", e);
+            new ErrorDialog(shell, props, Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogTitle"), Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 }

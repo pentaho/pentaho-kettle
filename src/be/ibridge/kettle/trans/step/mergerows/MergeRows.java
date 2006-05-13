@@ -38,10 +38,10 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class MergeRows extends BaseStep implements StepInterface
 {
-    private static final Value VALUE_IDENTICAL  = new Value("flag", "identical");
-    private static final Value VALUE_CHANGED    = new Value("flag", "changed");
-    private static final Value VALUE_NEW        = new Value("flag", "new");
-    private static final Value VALUE_DELETED    = new Value("flag", "deleted");
+    private static final Value VALUE_IDENTICAL  = new Value("flag", "identical"); //$NON-NLS-1$ //$NON-NLS-2$
+    private static final Value VALUE_CHANGED    = new Value("flag", "changed"); //$NON-NLS-1$ //$NON-NLS-2$
+    private static final Value VALUE_NEW        = new Value("flag", "new"); //$NON-NLS-1$ //$NON-NLS-2$
+    private static final Value VALUE_DELETED    = new Value("flag", "deleted"); //$NON-NLS-1$ //$NON-NLS-2$
     
 	private MergeRowsMeta meta;
 	private MergeRowsData data;
@@ -70,7 +70,7 @@ public class MergeRows extends BaseStep implements StepInterface
                 data.keyNrs[i] = data.one.searchValueIndex(meta.getKeyFields()[i]);
                 if (data.keyNrs[i]<0)
                 {
-                    String message = "Unable to find field ["+meta.getKeyFields()[i]+"] in reference stream."; 
+                    String message = Messages.getString("MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
                     logError(message);
                     throw new KettleStepException(message);
                 }
@@ -83,7 +83,7 @@ public class MergeRows extends BaseStep implements StepInterface
                 data.valueNrs[i] = data.one.searchValueIndex(meta.getValueFields()[i]);
                 if (data.valueNrs[i]<0)
                 {
-                    String message = "Unable to find field ["+meta.getValueFields()[i]+"] in reference stream."; 
+                    String message = Messages.getString("MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getValueFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
                     logError(message);
                     throw new KettleStepException(message);
                 }
@@ -91,7 +91,7 @@ public class MergeRows extends BaseStep implements StepInterface
             }
         }
 
-        if (log.isRowLevel()) logRowlevel("ONE: "+data.one+" / TWO: "+data.two);
+        if (log.isRowLevel()) logRowlevel(Messages.getString("MergeRows.Log.DataInfo",data.one+"")+data.two); //$NON-NLS-1$ //$NON-NLS-2$
         
         if (data.one==null && data.two==null)
         {
@@ -154,7 +154,7 @@ public class MergeRows extends BaseStep implements StepInterface
             }
         }
         
-        if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
+        if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("MergeRows.LineNumber")+linesRead); //$NON-NLS-1$
 			
 		return true;
 	}
@@ -171,7 +171,7 @@ public class MergeRows extends BaseStep implements StepInterface
         {
             if (meta.getReferenceStepName()!=null ^ meta.getCompareStepName()!=null)
             {
-                logError("Both the 'true' and the 'false' steps need to be supplied, or neither");
+                logError(Messages.getString("MergeRows.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
             }
             else
             {
@@ -187,12 +187,12 @@ public class MergeRows extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("MergeRows.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("MergeRows.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}

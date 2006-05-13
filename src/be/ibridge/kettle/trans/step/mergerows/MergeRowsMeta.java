@@ -210,27 +210,27 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 
-        retval.append("    <keys>"+Const.CR);
+        retval.append("    <keys>"+Const.CR); //$NON-NLS-1$
         for (int i=0;i<keyFields.length;i++)
         {
-            retval.append("      "+XMLHandler.addTagValue("key", keyFields[i]));
+            retval.append("      "+XMLHandler.addTagValue("key", keyFields[i])); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        retval.append("    </keys>"+Const.CR);
+        retval.append("    </keys>"+Const.CR); //$NON-NLS-1$
         
-        retval.append("    <values>"+Const.CR);
+        retval.append("    <values>"+Const.CR); //$NON-NLS-1$
         for (int i=0;i<valueFields.length;i++)
         {
-            retval.append("      "+XMLHandler.addTagValue("value", valueFields[i]));
+            retval.append("      "+XMLHandler.addTagValue("value", valueFields[i])); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        retval.append("    </values>"+Const.CR);
+        retval.append("    </values>"+Const.CR); //$NON-NLS-1$
 
-        retval.append(XMLHandler.addTagValue("flag_field", flagField));        
+        retval.append(XMLHandler.addTagValue("flag_field", flagField));         //$NON-NLS-1$
 
-		retval.append(XMLHandler.addTagValue("reference", getReferenceStepName()));		
-		retval.append(XMLHandler.addTagValue("compare", getCompareStepName()));		
-		retval.append("    <compare>"+Const.CR);
+		retval.append(XMLHandler.addTagValue("reference", getReferenceStepName()));		 //$NON-NLS-1$
+		retval.append(XMLHandler.addTagValue("compare", getCompareStepName()));		 //$NON-NLS-1$
+		retval.append("    <compare>"+Const.CR); //$NON-NLS-1$
 				
-		retval.append("    </compare>"+Const.CR);
+		retval.append("    </compare>"+Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}
@@ -241,34 +241,34 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{ 
             
-            Node keysnode   = XMLHandler.getSubNode(stepnode, "keys");
-            Node valuesnode = XMLHandler.getSubNode(stepnode, "values");
+            Node keysnode   = XMLHandler.getSubNode(stepnode, "keys"); //$NON-NLS-1$
+            Node valuesnode = XMLHandler.getSubNode(stepnode, "values"); //$NON-NLS-1$
             
-		    int nrKeys   = XMLHandler.countNodes(keysnode, "key");
-            int nrValues = XMLHandler.countNodes(valuesnode, "value");
+		    int nrKeys   = XMLHandler.countNodes(keysnode, "key"); //$NON-NLS-1$
+            int nrValues = XMLHandler.countNodes(valuesnode, "value"); //$NON-NLS-1$
             
             allocate(nrKeys, nrValues);
             
             for (int i=0;i<nrKeys;i++) 
             {
-                Node keynode = XMLHandler.getSubNodeByNr(keysnode, "key", i);
+                Node keynode = XMLHandler.getSubNodeByNr(keysnode, "key", i); //$NON-NLS-1$
                 keyFields[i] = XMLHandler.getNodeValue(keynode);
             }
             
             for (int i=0;i<nrValues;i++) 
             {
-                Node valuenode = XMLHandler.getSubNodeByNr(valuesnode, "value", i);
+                Node valuenode = XMLHandler.getSubNodeByNr(valuesnode, "value", i); //$NON-NLS-1$
                 valueFields[i] = XMLHandler.getNodeValue(valuenode);
             }
             
-            flagField = XMLHandler.getTagValue(stepnode, "flag_field");
+            flagField = XMLHandler.getTagValue(stepnode, "flag_field"); //$NON-NLS-1$
             
-			compareStepName = XMLHandler.getTagValue(stepnode, "compare");
-			referenceStepName = XMLHandler.getTagValue(stepnode, "reference");
+			compareStepName = XMLHandler.getTagValue(stepnode, "compare"); //$NON-NLS-1$
+			referenceStepName = XMLHandler.getTagValue(stepnode, "reference"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to load step info from XML", e);
+			throw new KettleXMLException(Messages.getString("MergeRowsMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -288,28 +288,28 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-            int nrKeys = rep.countNrStepAttributes(id_step, "key_field");
-            int nrValues = rep.countNrStepAttributes(id_step, "value_field");
+            int nrKeys = rep.countNrStepAttributes(id_step, "key_field"); //$NON-NLS-1$
+            int nrValues = rep.countNrStepAttributes(id_step, "value_field"); //$NON-NLS-1$
             
 			allocate(nrKeys, nrValues);
             
             for (int i=0;i<nrKeys;i++)
             {
-                keyFields[i] = rep.getStepAttributeString(id_step, i, "key_field");
+                keyFields[i] = rep.getStepAttributeString(id_step, i, "key_field"); //$NON-NLS-1$
             }
             for (int i=0;i<nrValues;i++)
             {
-                valueFields[i] = rep.getStepAttributeString(id_step, i, "value_field");
+                valueFields[i] = rep.getStepAttributeString(id_step, i, "value_field"); //$NON-NLS-1$
             }
 
-            flagField  =   rep.getStepAttributeString (id_step, "flag_field"); 
+            flagField  =   rep.getStepAttributeString (id_step, "flag_field");  //$NON-NLS-1$
 
-			referenceStepName  =   rep.getStepAttributeString (id_step, "reference"); 
-			compareStepName =      rep.getStepAttributeString (id_step, "compare"); 
+			referenceStepName  =   rep.getStepAttributeString (id_step, "reference");  //$NON-NLS-1$
+			compareStepName =      rep.getStepAttributeString (id_step, "compare");  //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unexpected error reading step information from the repository", e);
+			throw new KettleException(Messages.getString("MergeRowsMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -320,22 +320,22 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
             for (int i=0;i<keyFields.length;i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "key_field", keyFields[i]);
+                rep.saveStepAttribute(id_transformation, id_step, i, "key_field", keyFields[i]); //$NON-NLS-1$
             }
 
             for (int i=0;i<valueFields.length;i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "value_field", valueFields[i]);
+                rep.saveStepAttribute(id_transformation, id_step, i, "value_field", valueFields[i]); //$NON-NLS-1$
             }
 
-            rep.saveStepAttribute(id_transformation, id_step, "flag_field", flagField);
+            rep.saveStepAttribute(id_transformation, id_step, "flag_field", flagField); //$NON-NLS-1$
 
-			rep.saveStepAttribute(id_transformation, id_step, "reference", getReferenceStepName());
-			rep.saveStepAttribute(id_transformation, id_step, "compare", getCompareStepName());
+			rep.saveStepAttribute(id_transformation, id_step, "reference", getReferenceStepName()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "compare", getCompareStepName()); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
+			throw new KettleException(Messages.getString("MergeRowsMeta.Exception.UnableToSaveStepInfo")+id_step, e); //$NON-NLS-1$
 		}
 	}
 	
@@ -388,7 +388,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
         */
         
-        CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, "This step is not yet verified: not yet implemented.", stepinfo);
+        CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("MergeRowsMeta.CheckResult.StepNotVerified"), stepinfo); //$NON-NLS-1$
         remarks.add(cr);
 
 	}
