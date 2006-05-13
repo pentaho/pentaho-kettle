@@ -85,14 +85,14 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Mapping Input Specification");
+		shell.setText(Messages.getString("MappingInputDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("MappingInputDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -111,7 +111,7 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		
         
         wlFields=new Label(shell, SWT.NONE);
-        wlFields.setText("The required input fields for this mapping (sub-transformation) :");
+        wlFields.setText(Messages.getString("MappingInputDialog.Fields.Label")); //$NON-NLS-1$
         props.setLook(wlFields);
         fdlFields=new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -122,10 +122,10 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
         
         ColumnInfo[] colinf=new ColumnInfo[]
             {
-                new ColumnInfo("Name",       ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() ),
-                new ColumnInfo("Length",     ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                new ColumnInfo("Precision",  ColumnInfo.COLUMN_TYPE_TEXT,   false)
+                new ColumnInfo(Messages.getString("MappingInputDialog.ColumnInfo.Name"),       ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("MappingInputDialog.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() ), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("MappingInputDialog.ColumnInfo.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("MappingInputDialog.ColumnInfo.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false) //$NON-NLS-1$
             };
         
         wFields=new TableView(shell, 
@@ -146,9 +146,9 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
         
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("MappingInputDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("MappingInputDialog.Cancel.Button")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
 
@@ -196,8 +196,8 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
                 int length    = input.getFieldLength()[i];
                 int prec      = input.getFieldPrecision()[i];
                 if (type  !=null) item.setText(2, type  );
-                if (length>=0   ) item.setText(3, ""+length);
-                if (prec>=0     ) item.setText(4, ""+prec  );
+                if (length>=0   ) item.setText(3, ""+length); //$NON-NLS-1$
+                if (prec>=0     ) item.setText(4, ""+prec  ); //$NON-NLS-1$
             }
         }
         
