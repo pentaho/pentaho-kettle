@@ -26,7 +26,6 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 /**
  * @author Matt
  * @since 24-jan-2005
- *
  */
 public class CombinationLookupData extends BaseStepData implements StepDataInterface
 {
@@ -36,13 +35,11 @@ public class CombinationLookupData extends BaseStepData implements StepDataInter
 	public Hashtable cache;  
 
 	/**
-	 * 
+	 *  Default Constructor
 	 */
 	public CombinationLookupData()
 	{
-		super();
-		
+		super();	
 		db=null;
 	}
-
 }

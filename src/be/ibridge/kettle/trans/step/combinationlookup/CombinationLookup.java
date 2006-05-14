@@ -34,19 +34,24 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 
 /**
- * Manages or loooks up information in a junk dimension.<p>
+ * Manages or looks up information in a Type 1 or junk dimension.<p>
  * <p> 
-	 1) Lookup combination field1..n in a dimension<p>
-	 2) If this combination exists, return technical key<p>
-	 3) If this combination doesn't exist, insert & return technical key<p>
-	 4) if replace is Y, remove all key fields from output.<p>
+ 	 1) Lookup combination field1..n in a dimension<p>
+ 	 2) If this combination exists, return technical key<p>
+     3) If this combination doesn't exist, insert & return technical key<p>
+ 	 4) if replace is Y, remove all key fields from output.<p>
 	 <p>
  * @author Matt
- * @since 22-jul-2003
- * 
+ * @since 22-jul-2003 
  */
 public class CombinationLookup extends BaseStep implements StepInterface
 {
+	private final static int CREATION_METHOD_AUTOINC  = 1;
+    private final static int CREATION_METHOD_SEQUENCE = 2;
+	private final static int CREATION_METHOD_TABLEMAX = 3;
+	
+	private int techKeyCreation;
+	
 	private CombinationLookupMeta meta;	
 	private CombinationLookupData data;
 	
@@ -56,6 +61,35 @@ public class CombinationLookup extends BaseStep implements StepInterface
 		
 		meta=(CombinationLookupMeta)getStepMeta().getStepMetaInterface();
 		data=(CombinationLookupData)stepDataInterface;
+	}
+
+	private void setTechKeyCreation(int method)
+	{
+		techKeyCreation = method;
+	}
+
+	private int getTechKeyCreation()
+	{
+		return techKeyCreation;
+	}
+	
+	private void determineTechKeyCreation()
+	{
+		String keyCreation = meta.getTechKeyCreation();
+		if (meta.getDatabase().supportsAutoinc() && 
+			CombinationLookupMeta.CREATION_METHOD_AUTOINC.equals(keyCreation) )
+		{
+		    setTechKeyCreation(CREATION_METHOD_AUTOINC);
+		}
+		else if (meta.getDatabase().supportsSequences() && 
+		  	     CombinationLookupMeta.CREATION_METHOD_SEQUENCE.equals(keyCreation) )
+		{
+		    setTechKeyCreation(CREATION_METHOD_SEQUENCE);
+		}
+		else
+		{
+			setTechKeyCreation(CREATION_METHOD_TABLEMAX);
+		}		
 	}
 	
 	private Value lookupInCache(Row row)
@@ -79,6 +113,8 @@ public class CombinationLookup extends BaseStep implements StepInterface
 		
 		if (first)
 		{
+			determineTechKeyCreation();
+			
 			debug="First: lookup keys etc";
 			first=false;
 			
@@ -177,31 +213,27 @@ public class CombinationLookup extends BaseStep implements StepInterface
 
 				// First try to use an AUTOINCREMENT field
 				boolean autoinc=false;
-				if (meta.getDatabase().supportsAutoinc() && meta.isUseAutoinc())
+				switch ( getTechKeyCreation() )
 				{
-					autoinc=true;
-					val_key=new Value(meta.getTechnicalKeyField(), 0.0); // value to accept new key...
-				}
-				else
-				// Try to get the value by looking at a SEQUENCE (oracle mostly)
-				if (meta.getDatabase().supportsSequences() && meta.getSequenceFrom()!=null && meta.getSequenceFrom().length()>0)
-				{
-					val_key=data.db.getNextSequenceValue(meta.getSequenceFrom(), meta.getTechnicalKeyField());
-					if (val_key!=null && log.isRowLevel()) logRowlevel(Messages.getString("CombinationLookup.Log.FoundNextSequenceValue")+val_key.toString()); //$NON-NLS-1$
-				}
-				else
-				// Use our own sequence here...
-				{
-					// What's the next value for the technical key?
-					val_key=new Value(meta.getTechnicalKeyField(), 0.0); // value to accept new key...
-					data.db.getNextValue(getTransMeta().getCounters(), meta.getTablename(), val_key);
-				}
-	
+				    case CREATION_METHOD_TABLEMAX:
+				    	//  Use our own counter: what's the next value for the technical key?
+				        val_key=new Value(meta.getTechnicalKeyField(), 0.0); // value to accept new key...
+				        data.db.getNextValue(getTransMeta().getCounters(), meta.getTablename(), val_key);
+                        break;
+				    case CREATION_METHOD_AUTOINC:
+				    	autoinc=true;
+						val_key=new Value(meta.getTechnicalKeyField(), 0.0); // value to accept new key...
+						break;
+				    case CREATION_METHOD_SEQUENCE:						
+						val_key=data.db.getNextSequenceValue(meta.getSequenceFrom(), meta.getTechnicalKeyField());
+						if (val_key!=null && log.isRowLevel()) logRowlevel(Messages.getString("CombinationLookup.Log.FoundNextSequenceValue")+val_key.toString()); //$NON-NLS-1$
+						break;					
+				}	
+				
 				debug="New entry: calc tkFieldName";
 
 				String tkFieldName = meta.getTechnicalKeyField();
 				if (autoinc) tkFieldName=null;
-				// if (meta.getSequenceFrom()!=null && meta.getSequenceFrom().length()>0) tkFieldName=null;
 
 				debug="New entry: combiInsert";
 
@@ -226,7 +258,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			}
 			else
 			{
-				debug="Found: store in cache";
+				debug="Found: stored in cache";
 
 				val_key = add.getValue(0); // Only one value possible here...
 				storeInCache(lu, val_key);
@@ -244,7 +276,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			}
 		}
 		
-		debug="add TK";
+		debug="add Technical Key";
 
 		// Add the technical key...
 		row.addValue( val_key );
@@ -313,6 +345,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 	
 	//
 	// Run is were the action happens!
+	//
 	public void run()
 	{
 		logBasic(Messages.getString("CombinationLookup.Log.StartingToRun")); //$NON-NLS-1$
@@ -339,5 +372,4 @@ public class CombinationLookup extends BaseStep implements StepInterface
 	{
 		return this.getClass().getName();
 	}
-
 }
