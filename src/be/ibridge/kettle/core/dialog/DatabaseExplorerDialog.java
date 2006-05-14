@@ -115,7 +115,6 @@ public class DatabaseExplorerDialog extends Dialog
 
 	public void setSelectedTable(String selectedTable)
 	{
-		// System.out.println("Table to select: "+selectedTable);
 		this.selectTable = selectedTable;
 	}
 	
@@ -595,9 +594,11 @@ public class DatabaseExplorerDialog extends Dialog
 			{
 				String schemaName = parent.getText();
 				String tablePart  = ti[0].getText();
-				
+
 				String tab = null;
-				if (schemaName.equalsIgnoreCase(STRING_TABLES))
+ 				if (STRING_TABLES.equalsIgnoreCase(schemaName) ||
+ 					STRING_VIEWS.equalsIgnoreCase(schemaName) ||
+ 					STRING_SYNONYMS.equalsIgnoreCase(schemaName))
 				{
 					tab = tablePart;
 				}
@@ -639,5 +640,4 @@ public class DatabaseExplorerDialog extends Dialog
 	{
 		return this.getClass().getName();
 	}
-
 }
