@@ -20,6 +20,7 @@
  */
 
 package be.ibridge.kettle.trans.step;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -137,45 +138,83 @@ public class BaseStepDialog extends Dialog
 			buttons[i].pack(true);
 			Rectangle r = buttons[i].getBounds();
 			if (largest==null || r.width > largest.width) largest = r;
-		}
-		
-		// Make buttons a bit larger... (nicer)
-		largest.width+=10;
-		
-		// What's the total size of the shell...
-		Rectangle sb = composite.getBounds();
-		// --> sb.width is the room we have.
-		// So let's put the buttons as close to the center as possible
-		
-		int spaceLeft = sb.width - ( largest.width*buttons.length + (buttons.length-1)*margin ); 
-		int leftpct = 100 * spaceLeft / ( 2 * sb.width ); 
-		
-		// OEPS, this doesn't work as the shell isn't displayed yet!!!
-		// No real solution, just put it at 20% always...
-		leftpct = 20;
-		
-		// System.out.println("Shell width: "+sb.width+", spaceLeft="+spaceLeft+", leftpct="+leftpct);
-		
-		// System.out.println("width="+sb.width+", spaceLeft="+spaceLeft+", leftpct="+leftpct);
-		
-		// Set the layouts of the buttons...
-		for (int i=0;i<buttons.length;i++)
-		{
-			FormData fd = new FormData();
-			fd.left   = new FormAttachment(leftpct, i*(margin+largest.width));
-			if (lastControl!=null) fd.top = new FormAttachment(lastControl, margin*3);
-			fd.right  = new FormAttachment(leftpct, i*(margin+largest.width)+largest.width);
-			if (lastControl==null) fd.bottom = new FormAttachment(100, 0);
-			buttons[i].setLayoutData(fd);
 			
 			// Also, set the tooltip the same as the name if we don't have one...
 			if (buttons[i].getToolTipText()==null)
 			{
 				buttons[i].setToolTipText( Const.replace(buttons[i].getText(), "&", "")); //$NON-NLS-1$ //$NON-NLS-2$
-			}
+			} 
 		}
-	}
+		
+		// Make buttons a bit larger... (nicer)
+		largest.width+=10;
+		if ( (largest.width % 2) == 1 ) largest.width++;
+				
+		int middle_left  = 0;
+		int middle_right = 0;
+		int middle = buttons.length / 2;
+		if ( (buttons.length % 2) != 0 ) 
+		{
+			// odd number of buttons... the center of the middle 
+			// button will be on the center of the parent
+			middle_left  = middle;
+			middle_right = middle;
 
+			FormData fd1 = new FormData();	
+			fd1.left   = new FormAttachment(50, -(largest.width + margin)/2);
+			fd1.right  = new FormAttachment(50, (largest.width + margin)/2);
+			if (lastControl!=null) fd1.top = new FormAttachment(lastControl, margin*3);
+			if (lastControl==null) fd1.bottom = new FormAttachment(100, 0);
+
+			buttons[middle].setLayoutData(fd1);					
+		}
+		else
+		{
+			// Even number of buttons
+			middle_left  = middle - 1;
+			middle_right = middle;
+
+			FormData fd1 = new FormData();	
+			fd1.left   = new FormAttachment(50, -(largest.width + margin) - margin);
+			fd1.right  = new FormAttachment(50, -margin);
+			if (lastControl!=null) fd1.top = new FormAttachment(lastControl, margin*3);
+			if (lastControl==null) fd1.bottom = new FormAttachment(100, 0);
+			buttons[middle_left].setLayoutData(fd1);			
+
+			FormData fd2 = new FormData();	
+			fd2.left     = new FormAttachment(buttons[middle_left], margin);
+			fd2.right    = new FormAttachment(buttons[middle_right], largest.width + margin); // 2
+			if (lastControl!=null) fd2.top = new FormAttachment(lastControl, margin*3);
+			if (lastControl==null) fd2.bottom = new FormAttachment(100, 0);
+			buttons[middle_right].setLayoutData(fd2);							
+		}
+		
+		for ( int ydx = middle_right+1; ydx < buttons.length; ydx++ )
+		{
+			// Do the buttons to the right of the middle button
+			FormData fd = new FormData();
+			fd.left = new FormAttachment(buttons[ydx-1], margin);
+			fd.right = new FormAttachment(buttons[ydx], largest.width + margin);
+			if (lastControl!=null) fd.top = new FormAttachment(lastControl, margin*3);
+			if (lastControl==null) fd.bottom = new FormAttachment(100, 0);
+			
+			buttons[ydx].setLayoutData(fd);							
+		}
+	
+		for ( int zdx = middle_left-1; zdx >= 0; zdx-- )
+		{
+			// Do the buttons to the left of the middle button
+			FormData fd = new FormData();
+			fd.left = new FormAttachment(buttons[zdx+1], -(2 * (largest.width + margin)) - margin);
+			fd.right = new FormAttachment(buttons[zdx], largest.width + margin);
+			if (lastControl!=null) fd.top = new FormAttachment(lastControl, margin*3);
+			if (lastControl==null) fd.bottom = new FormAttachment(100, 0);
+			
+			buttons[zdx].setLayoutData(fd);							
+
+		}
+	}		
+	
 	public void addDatabases(CCombo wConnection)
 	{
 		for (int i=0;i<transMeta.nrDatabases();i++)
