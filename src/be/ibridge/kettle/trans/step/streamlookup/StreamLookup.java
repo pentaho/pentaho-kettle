@@ -81,8 +81,8 @@ public class StreamLookup extends BaseStep implements StepInterface
 				catch(Exception e) { data.nullIf[i].setValue(0L); data.nullIf[i].setNull(); }
 				break;
 			case Value.VALUE_TYPE_BOOLEAN: 
-				if ("TRUE".equalsIgnoreCase(meta.getValueDefault()[i]) ||
-				    "Y".equalsIgnoreCase(meta.getValueDefault()[i]) ) 
+				if ("TRUE".equalsIgnoreCase(meta.getValueDefault()[i]) || //$NON-NLS-1$
+				    "Y".equalsIgnoreCase(meta.getValueDefault()[i]) )  //$NON-NLS-1$
 				    data.nullIf[i].setValue(true); 
 				else
 				    data.nullIf[i].setValue(false); 
@@ -103,15 +103,15 @@ public class StreamLookup extends BaseStep implements StepInterface
 			
 		if (meta.getLookupFromStep()==null)
 		{
-			logError("No lookup step specified.");
+			logError(Messages.getString("StreamLookup.Log.NoLookupStepSpecified")); //$NON-NLS-1$
 			return false;
 		}
-		if (log.isDetailed()) logDetailed("Reading from stream ["+meta.getLookupFromStep().getName()+"]");
+		if (log.isDetailed()) logDetailed(Messages.getString("StreamLookup.Log.ReadingFromStream")+meta.getLookupFromStep().getName()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 		
 		r=getRowFrom(meta.getLookupFromStep().getName()); // rows are originating from "lookup_from"
 		while (r!=null)
 		{
-			if (log.isRowLevel()) logRowlevel("Read lookup row: "+r.toString());
+			if (log.isRowLevel()) logRowlevel(Messages.getString("StreamLookup.Log.ReadLookupRow")+r.toString()); //$NON-NLS-1$
 
             key_part   = new Row();
             value_part = new Row();
@@ -122,7 +122,7 @@ public class StreamLookup extends BaseStep implements StepInterface
                 Value keyValue = r.searchValue(meta.getKeylookup()[i]);
                 if (keyValue==null)
                 {
-                    throw new KettleStepException("Unable to find field ["+meta.getKeylookup()[i]+"] in the source rows");
+                    throw new KettleStepException(Messages.getString("StreamLookup.Exception.UnableToFindField",meta.getKeylookup()[i])); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 key_part.addValue(keyValue);
             }
@@ -138,7 +138,7 @@ public class StreamLookup extends BaseStep implements StepInterface
                 Value returnValue = r.searchValue(meta.getValue()[v]);
 				if (returnValue==null)
 				{
-                    throw new KettleStepException("Unable to find field ["+meta.getValue()[v]+"] in the source rows");
+                    throw new KettleStepException(Messages.getString("StreamLookup.Exception.UnableToFindField",meta.getValue()[v])); //$NON-NLS-1$ //$NON-NLS-2$
 				}
                 value_part.addValue(returnValue);
 			}
@@ -158,11 +158,11 @@ public class StreamLookup extends BaseStep implements StepInterface
 		Row lu=new Row();
 		Row add=null;		
 
-		debug = "start lookupValues";
+		debug = Messages.getString("StreamLookup.Debug.StartLookupValues"); //$NON-NLS-1$
 
 		if (first)
 		{
-			debug = "First part";
+			debug = Messages.getString("StreamLookup.Debug.FirstPart"); //$NON-NLS-1$
 			first=false;
 			
 			// read the lookup values!
@@ -174,21 +174,21 @@ public class StreamLookup extends BaseStep implements StepInterface
 				data.keynrs[i]=row.searchValueIndex(meta.getKeystream()[i]);
 				if (data.keynrs[i]<0)
 				{
-					logError("Field ["+meta.getKeystream()[i]+"] not found in row ["+row+"]");
+					logError(Messages.getString("StreamLookup.Log.FieldNotFound",meta.getKeystream()[i],""+row)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 					setErrors(1);
 					stopAll();
 					return false;
 				}
 				else
 				{
-					if (log.isDetailed()) logDetailed("Field ["+meta.getKeystream()[i]+"] has nr ["+data.keynrs[i]+"]");
+					if (log.isDetailed()) logDetailed(Messages.getString("StreamLookup.Log.FieldInfo",meta.getKeystream()[i],""+data.keynrs[i])); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			}
 			
 			// Handle the NULL values (not found...)
 			handleNullIf();
             
-			debug = "first: do lookup";
+			debug = Messages.getString("StreamLookup.Debug.FirstDoLookupValues"); //$NON-NLS-1$
 			try
 			{
 				if (meta.getKeystream().length>0)
@@ -199,7 +199,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 				{
 					// Just take the first element in the hashtable...
 					add=data.firstrow;
-					if (log.isRowLevel()) logRowlevel("Got row without keys: "+add);
+					if (log.isRowLevel()) logRowlevel(Messages.getString("StreamLookup.Log.GotRowWithoutKeys")+add); //$NON-NLS-1$
 				}
 			}
 			catch(Exception e)
@@ -212,16 +212,16 @@ public class StreamLookup extends BaseStep implements StepInterface
 		if (stopped) return false;
 		
 		// Copy value references to lookup table.
-		debug = "Copy value references to lookup table";
+		debug = Messages.getString("StreamLookup.Debug.CopyValueReference"); //$NON-NLS-1$
 		for (int i=0;i<meta.getKeystream().length;i++) 
         {
             int valueNr = data.keynrs[i];
             Value value = row.getValue(valueNr); 
             lu.addValue( value );
         }
-        debug="Handle conflicting types";
+        debug=Messages.getString("StreamLookup.Debug.HandleConflictingTypes"); //$NON-NLS-1$
         // Handle conflicting types (Number-Integer-String conversion to lookup type in hashtable)
-        debug = "lookup size="+lu.size();
+        debug = Messages.getString("StreamLookup.Debug.LookupSize")+lu.size(); //$NON-NLS-1$
         if (data.keyTypes!=null)
         {
             for (int i=0;i<lu.size();i++)
@@ -240,7 +240,7 @@ public class StreamLookup extends BaseStep implements StepInterface
         
 		try
 		{
-			debug = "do lookup";
+			debug = "do lookup"; //$NON-NLS-1$
 			if (meta.getKeystream().length>0)
 			{
 				add=(Row)data.look.get(lu);
@@ -249,7 +249,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 			{
 				// Just take the first element in the hashtable...
 				add=data.firstrow;
-				if (log.isRowLevel()) logRowlevel("Got row without keys: "+add);
+				if (log.isRowLevel()) logRowlevel(Messages.getString("StreamLookup.Log.GotRowWithoutKeys")+add); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -259,7 +259,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 		
 		if (add==null) // nothing was found, unknown code: add null-values
 		{
-			debug = "add null values";
+			debug = Messages.getString("StreamLookup.Debug.AddNullValues"); //$NON-NLS-1$
 			add=new Row();
 			for (int i=0;i<meta.getValue().length;i++)
 			{
@@ -267,13 +267,13 @@ public class StreamLookup extends BaseStep implements StepInterface
 			}
 		} 
 		
-		debug = "add returned values";
+		debug = Messages.getString("StreamLookup.Debug.AddReturnedValues"); //$NON-NLS-1$
 		try
 		{
 		for (int i=0;i<add.size();i++)
 		{
 			Value v = add.getValue(i);
-		    debug = "add returned value #"+i+" : "+v.toString()+" ("+v.toStringMeta()+")";
+		    debug = Messages.getString("StreamLookup.Debug.AddReturnedValues2")+i+" : "+v.toString()+" ("+v.toStringMeta()+")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 			//v.setName(info.valuename[i]);
 		    
 			if (v.getType() != meta.getValueDefaultType()[i])
@@ -292,7 +292,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 		    throw new RuntimeException(e);
 		}
 	
-		debug = "Finished lookupValues";
+		debug = Messages.getString("StreamLookup.Debug.FinishedLookupValues"); //$NON-NLS-1$
 
 		return true;
 	}
@@ -306,14 +306,14 @@ public class StreamLookup extends BaseStep implements StepInterface
 	    {
 	        data.readLookupValues = false;
 	        
-			logBasic("Reading lookup values from step ["+meta.getLookupFromStep()+"]");
+			logBasic(Messages.getString("StreamLookup.Log.ReadingLookupValuesFromStep")+meta.getLookupFromStep()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 			if (readLookupValues()) // Read values in lookup table (look)
 			{
-				logBasic("Read "+data.look.size()+" values in memory for lookup!");
+				logBasic(Messages.getString("StreamLookup.Log.ReadValuesInMemory",data.look.size()+"")); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			else
 			{
-				logError("Unable to read data from lookup-stream.");
+				logError(Messages.getString("StreamLookup.Log.UnableToReadDataFromLookupStream")); //$NON-NLS-1$
 				setErrors(1);
 				stopAll();
 				return false;
@@ -323,7 +323,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 		Row r=getRow();      // Get row from input rowset & set row busy!
 		if (r==null)         // no more input to be expected...
 		{
-			if (log.isDetailed()) logDetailed("Stopped processing with empty row after "+linesRead+" rows.");
+			if (log.isDetailed()) logDetailed(Messages.getString("StreamLookup.Log.StoppedProcessingWithEmpty",linesRead+"")); //$NON-NLS-1$ //$NON-NLS-2$
 			setOutputDone();
 			return false;
 		}
@@ -337,7 +337,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 		
 		putRow(r);       // copy row to output rowset(s);
 			
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0)  logBasic("linenr "+linesRead);
+		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0)  logBasic(Messages.getString("StreamLookup.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
 		return true;
 	}
@@ -367,12 +367,12 @@ public class StreamLookup extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("StreamLookup.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data)  && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("StreamLookup.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}

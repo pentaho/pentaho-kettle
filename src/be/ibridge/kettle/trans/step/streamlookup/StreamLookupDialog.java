@@ -108,14 +108,14 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Stream Value Lookup");
+		shell.setText(Messages.getString("StreamLookupDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("StreamLookupDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -134,7 +134,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 
 		// Source step line...
 		wlStep=new Label(shell, SWT.RIGHT);
-		wlStep.setText("Source step ");
+		wlStep.setText(Messages.getString("StreamLookupDialog.SourceStep.Label")); //$NON-NLS-1$
  		props.setLook(wlStep);
 		fdlStep=new FormData();
 		fdlStep.left = new FormAttachment(0, 0);
@@ -160,7 +160,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		wStep.setLayoutData(fdStep);
 
 		wlKey=new Label(shell, SWT.NONE);
-		wlKey.setText("The key(s) to look up the value(s): ");
+		wlKey.setText(Messages.getString("StreamLookupDialog.Key.Label")); //$NON-NLS-1$
  		props.setLook(wlKey);
 		fdlKey=new FormData();
 		fdlKey.left  = new FormAttachment(0, 0);
@@ -171,8 +171,8 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		int nrKeyRows=(input.getKeystream()!=null?input.getKeystream().length:1);
 		
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo("Field",        ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		ciKey[1]=new ColumnInfo("LookupField",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+		ciKey[0]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Field"),        ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciKey[1]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.LookupField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
 		
 		wKey=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -191,7 +191,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 
 		// THE UPDATE/INSERT TABLE
 		wlReturn=new Label(shell, SWT.NONE);
-		wlReturn.setText("Specify the fields to retrieve :");
+		wlReturn.setText(Messages.getString("StreamLookupDialog.ReturnFields.Label")); //$NON-NLS-1$
  		props.setLook(wlReturn);
 		fdlReturn=new FormData();
 		fdlReturn.left  = new FormAttachment(0, 0);
@@ -202,10 +202,10 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		int UpInsRows= (input.getValue()!=null?input.getValue().length:1);
 		
 		ColumnInfo[] ciReturn=new ColumnInfo[UpInsCols];
-		ciReturn[0]=new ColumnInfo("Field",    ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		ciReturn[1]=new ColumnInfo("New name", ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		ciReturn[2]=new ColumnInfo("Default",  ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		ciReturn[3]=new ColumnInfo("Type",     ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() );
+		ciReturn[0]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Field"),    ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciReturn[1]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.NewName"), ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciReturn[2]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Default"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ciReturn[3]=new ColumnInfo(Messages.getString("StreamLookupDialog.ColumnInfo.Type"),     ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() ); //$NON-NLS-1$
 		
 		wReturn=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL, 
@@ -223,7 +223,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		wReturn.setLayoutData(fdReturn);
 
 		wlSortedInput=new Label(shell, SWT.RIGHT);
-		wlSortedInput.setText("Both streams are sorted on lookup key? ");
+		wlSortedInput.setText(Messages.getString("StreamLookupDialog.SortedInput.Label")); //$NON-NLS-1$
  		props.setLook(wlSortedInput);
 		fdlSortedInput=new FormData();
 		fdlSortedInput.left = new FormAttachment(0, 0);
@@ -247,13 +247,13 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		);
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("StreamLookupDialog.OK.Button")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(" &Get Fields ");
+		wGet.setText(Messages.getString("StreamLookupDialog.GetFields.Button")); //$NON-NLS-1$
 		wGetLU=new Button(shell, SWT.PUSH);
-		wGetLU.setText(" Get &lookup fields ");
+		wGetLU.setText(Messages.getString("StreamLookupDialog.GetLookupFields.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("StreamLookupDialog.Cancel.Button")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wGet, wGetLU, wCancel }, margin, wSortedInput);
 
@@ -296,7 +296,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 	public void getData()
 	{
 		int i;
-		log.logDebug(toString(), "getting key info...");
+		log.logDebug(toString(), Messages.getString("StreamLookupDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
 		if (input.getKeystream()!=null)
 		for (i=0;i<input.getKeystream().length;i++)
@@ -344,7 +344,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		input.allocate(nrkeys, nrvalues);
 		input.setInputSorted(wSortedInput.getSelection());
 
-		log.logDebug(toString(), "Found "+nrkeys+" keys");
+		log.logDebug(toString(), Messages.getString("StreamLookupDialog.Log.FoundKeys",nrkeys+"")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (i=0;i<nrkeys;i++)
 		{
 			TableItem item     = wKey.getNonEmpty(i);
@@ -352,7 +352,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 			input.getKeylookup()[i] = item.getText(2);
 		}
 		
-		log.logDebug(toString(), "Found "+nrvalues+" fields");
+		log.logDebug(toString(), Messages.getString("StreamLookupDialog.Log.FoundFields",nrvalues+"")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (i=0;i<nrvalues;i++)
 		{
 			TableItem item        = wReturn.getNonEmpty(i);
@@ -368,8 +368,8 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		if (input.getLookupFromStep()==null)
 		{
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Step ["+wStep.getText()+"] can't be found: please select an existing source step!");
-			mb.setText("ERROR");
+			mb.setMessage(Messages.getString("StreamLookupDialog.StepCanNotFound.DialogMessage",wStep.getText())); //$NON-NLS-1$ //$NON-NLS-2$
+			mb.setText(Messages.getString("StreamLookupDialog.StepCanNotFound.DialogTitle")); //$NON-NLS-1$
 			mb.open(); 
 		}
 
@@ -400,7 +400,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("StreamLookupDialog.FailedToGetFields.DialogTitle"), Messages.getString("StreamLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -420,8 +420,8 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 						Value v = r.getValue(i);
 						TableItem ti = new TableItem(table, SWT.NONE);
 						ti.setText(1, v.getName());
-						ti.setText(2, "");
-						ti.setText(3, "");
+						ti.setText(2, ""); //$NON-NLS-1$
+						ti.setText(3, ""); //$NON-NLS-1$
 						ti.setText(4, v.getTypeDesc());
 					}
 					wReturn.removeEmptyRows();
@@ -431,22 +431,22 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 				else
 				{
 					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage("Couldn't find any fields, please check the source step!");
-					mb.setText("ERROR");
+					mb.setMessage(Messages.getString("StreamLookupDialog.CouldNotFindFields.DialogMessage")); //$NON-NLS-1$
+					mb.setText(Messages.getString("StreamLookupDialog.CouldNotFindFields.DialogTitle")); //$NON-NLS-1$
 					mb.open(); 
 				}
 			}
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage("Please select a step name!");
-				mb.setText("ERROR");
+				mb.setMessage(Messages.getString("StreamLookupDialog.StepNameRequired.DialogMessage")); //$NON-NLS-1$
+				mb.setText(Messages.getString("StreamLookupDialog.StepNameRequired.DialogTitle")); //$NON-NLS-1$
 				mb.open(); 
 			}
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get the fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("StreamLookupDialog.FailedToGetFields.DialogTitle"), Messages.getString("StreamLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
