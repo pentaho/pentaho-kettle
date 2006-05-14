@@ -44,7 +44,7 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 /*
  * Created on 14-may-2003
- * 
+ *
  * TODO: In the distant future the use_autoinc flag should be removed since its
  *       functionality is now taken over by techKeyCreation (which is cleaner).
  */
@@ -82,10 +82,10 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
 	/** Use the auto-increment feature of the database to generate keys. */
 	private boolean useAutoinc;
-	
+
 	/** Which method to use for the creation of the tech key */
 	private String techKeyCreation = null;
-	
+
 	public static String CREATION_METHOD_AUTOINC  = "autoinc";
 	public static String CREATION_METHOD_SEQUENCE = "sequence";
 	public static String CREATION_METHOD_TABLEMAX = "tablemax";
@@ -113,7 +113,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
 	/**
 	 * Set the way how the technical key field should be created.
-	 * 
+	 *
 	 * @param techKeyCreation which method to use for the creation
 	 *                        of the technical key.
 	 */
@@ -124,14 +124,14 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
 	/**
 	 * Get the way how the technical key field should be created.
-	 * 
+	 *
 	 * @return creation way for the technical key.
 	 */
     public String getTechKeyCreation()
     {
         return this.techKeyCreation;
     }
-    
+
 	/**
 	 * @return Returns the commitSize.
 	 */
@@ -187,7 +187,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	{
 		return keyLookup;
 	}
-	
+
 	/**
 	 * @param keyLookup The keyLookup to set.
 	 */
@@ -203,7 +203,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	{
 		return replaceFields;
 	}
-	
+
 	/**
 	 * @param replaceFields The replaceFields to set.
 	 */
@@ -219,7 +219,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	{
 		return sequenceFrom;
 	}
-	
+
 	/**
 	 * @param sequenceFrom The sequenceFrom to set.
 	 */
@@ -360,7 +360,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 			Node retkey = XMLHandler.getSubNode(fields, "return"); //$NON-NLS-1$
 			technicalKeyField = XMLHandler.getTagValue(retkey, "name"); //$NON-NLS-1$
 			useAutoinc = !"N".equalsIgnoreCase(XMLHandler.getTagValue(retkey, "use_autoinc")); //$NON-NLS-1$ //$NON-NLS-2$
-			
+
 			setTechKeyCreation(XMLHandler.getTagValue(retkey, "creation_method")); //$NON-NLS-1$
 		}
 		catch(Exception e)
@@ -510,7 +510,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "return_name",         technicalKeyField); //$NON-NLS-1$
 			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "sequence",            sequenceFrom); //$NON-NLS-1$
 			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "creation_method",     techKeyCreation); //$NON-NLS-1$
-			
+
 			// For the moment still save 'use_autoinc' for backwards compatibility (Sven Boden).
 			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "use_autoinc",         useAutoinc); //$NON-NLS-1$
 
@@ -628,7 +628,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 					remarks.add(cr);
 				}
-							
+
 				// Check sequence
     			if (database.supportsSequences() && CREATION_METHOD_SEQUENCE.equals(getTechKeyCreation()) )
 				{
@@ -636,9 +636,9 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     				{
 						error_message+=Messages.getString("CombinationLookupMeta.CheckResult.ErrorNoSequenceName") + "!"; //$NON-NLS-1$ //$NON-NLS-2$
 						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
-						remarks.add(cr);    					
+						remarks.add(cr);
     				}
-    				else 
+    				else
     				{
     				    // It doesn't make sense to check the sequence name
     					// if it's not filled in.
@@ -657,19 +657,19 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 					    }
     				}
 				}
-				
+
 				if ( techKeyCreation != null )
 				{
 				    // post 2.2 version
 					if ( !(CREATION_METHOD_AUTOINC.equals(techKeyCreation) ||
 					       CREATION_METHOD_SEQUENCE.equals(techKeyCreation) ||
 					       CREATION_METHOD_TABLEMAX.equals(techKeyCreation)) )
-					{						
+					{
 						error_message+=Messages.getString("CombinationLookupMeta.CheckResult.ErrorTechKeyCreation")+ ": " + techKeyCreation +"!"; //$NON-NLS-1$ //$NON-NLS-2$
 						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
-						remarks.add(cr);						
+						remarks.add(cr);
 					}
-					
+
 				}
 			}
 			catch(KettleException e)
@@ -708,7 +708,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		SQLStatement retval = new SQLStatement(stepMeta.getName(), database, null); // default: nothing to do!
 
 		int i;
-		
+
 		if (database!=null)
 		{
 			if (prev!=null && prev.size()>0)
@@ -719,8 +719,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 					try
 					{
 						boolean doHash = false;
-						String cr_table = null;						
-						
+						String cr_table = null;
+
 						db.connect();
 
 						// OK, what do we put in the new table??
@@ -729,7 +729,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 						// First, the new technical key...
 						Value vkeyfield = new Value(technicalKeyField, Value.VALUE_TYPE_INTEGER);
 						vkeyfield.setLength(10,0);
-						
+
 						// Then the hashcode (optional)
 						Value vhashfield = null;
 						if (useHash && hashField != null && hashField.length()>0)
@@ -737,93 +737,106 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 							vhashfield = new Value(hashField, Value.VALUE_TYPE_INTEGER);
 							vhashfield.setLength(15,0);
 							doHash = true;
-						}						    
-						
+						}
+
 						if ( ! db.checkTableExists(tablename) )
 						{
 							// Add technical key field.
 							fields.addValue(vkeyfield);
-							
-							int cnt = prev.size();
-							for (i=0;i<cnt;i++) 
+
+							String keyLookup[] = getKeyLookup();
+							if ( keyLookup != null )
 							{
-								String error_field=""; //$NON-NLS-1$
-								
-								Value v = prev.getValue(i);
-								String name = v.getName();
-								if ( name.equals(vkeyfield.getName()) ||
-									 (doHash == true && name.equals(vhashfield.getName())) )
+								int cnt = prev.size();
+								for (i=0;i<cnt;i++)
 								{
-									error_field+=name;
+									String error_field=""; //$NON-NLS-1$
+
+									Value v = prev.getValue(i);
+									Value newValue = (Value)v.clone();
+									String name = keyLookup[i];
+									newValue.setName(name);
+									if ( name.equals(vkeyfield.getName()) ||
+											(doHash == true && name.equals(vhashfield.getName())) )
+									{
+										error_field+=name;
+									}
+									if (error_field.length()>0)
+									{
+										retval.setError(Messages.getString("CombinationLookupMeta.ReturnValue.NameCollision", error_field)); //$NON-NLS-1$
+									}
+									fields.addValue(newValue);
 								}
-								if (error_field.length()>0)
-								{
-									retval.setError(Messages.getString("CombinationLookupMeta.ReturnValue.NameCollision", error_field)); //$NON-NLS-1$								
-								}
-								fields.addValue(v);														
 							}
-							
+
 							if ( doHash == true )
 							{
 								fields.addValue(vhashfield);
-							}								
+							}
 						}
-						else 
+						else
 						{
 							// Table already exists
-							
+
 							// Get the fields that are in the table now:
 							Row tabFields = db.getTableFields(tablename);
-							
+
 							// Don't forget to quote these as well...
 							database.quoteReservedWords(tabFields);
-							
+
 							if (tabFields.searchValue( vkeyfield.getName() ) == null )
 							{
 								// Add technical key field if it didn't exist yet
 								fields.addValue(vkeyfield);
 							}
-							
-							// Add the already existing fields 
+
+							// Add the already existing fields
 							int cnt = tabFields.size();
-							for ( i=0;i<cnt;i++ ) 
+							for ( i=0;i<cnt;i++ )
 							{
-								Value v = tabFields.getValue(i);								
-								
+								Value v = tabFields.getValue(i);
+
 								fields.addValue(v);
-							}								
-							
+							}
+
 							// Find the missing fields in the real table
-							cnt = prev.size();
-							for ( i=0;i<cnt;i++ ) 
+							String keyLookup[] = getKeyLookup();
+							if ( keyLookup != null )
 							{
-								Value v = prev.getValue(i);								
-								
-								if ( tabFields.searchValue( v.getName() )==null )
+								cnt = prev.size();
+								for ( i=0;i<cnt;i++ )
 								{
-									fields.addValue(v); // nope --> add
+									Value v = prev.getValue(i);
+									Value newValue = (Value)v.clone();
+									String name = keyLookup[i];
+									newValue.setName(name);
+
+									if ( tabFields.searchValue( newValue.getName() )==null )
+									{
+										fields.addValue(newValue); // nope --> add
+									}
 								}
-							}								
-							
+							}
+
 							if (doHash == true && tabFields.searchValue( vhashfield.getName() ) == null )
 							{
-								// Add hash field 
+								// Add hash field
 								fields.addValue(vhashfield);
 							}
 						}
-						
+
 						cr_table = db.getDDL(tablename,
 								             fields,
-								             (CREATION_METHOD_SEQUENCE.equals(getTechKeyCreation()) && 
+								             (CREATION_METHOD_SEQUENCE.equals(getTechKeyCreation()) &&
 										     sequenceFrom!=null && sequenceFrom.length()==0)?technicalKeyField:null,
 											 CREATION_METHOD_AUTOINC.equals(getTechKeyCreation()),
 											 null,
-											 true);					
-						
+											 true);
+
 						//
 						// OK, now let's build the index
 						//
-						
+
 						// What fields do we put int the index?
 						// Only the hashcode or all fields?
 						String cr_index = ""; //$NON-NLS-1$
@@ -857,9 +870,9 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 								retval.setError(Messages.getString("CombinationLookupMeta.ReturnValue.NotFieldsSpecified")); //$NON-NLS-1$
 							}
 						}
-						
+
 						// OK, now get the create index statement...
-						
+
 						if ( technicalKeyField != null )
 						{
 							String techKeyArr[] = new String [] { technicalKeyField };
@@ -870,8 +883,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 								cr_uniq_index+=Const.CR;
 							}
 						}
-						
-						
+
+
 						// OK, now get the create lookup index statement...
 						if (idx_fields!=null && idx_fields.length>0 &&
 								!db.checkIndexExists(tablename, idx_fields)
@@ -881,7 +894,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 							cr_index = db.getCreateIndexStatement(tablename, indexname, idx_fields, false, false, false, true);
 							cr_index+=Const.CR;
 						}
-						
+
 						//
 						// Don't forget the sequence (optional)
 						//
@@ -986,42 +999,42 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
             return super.getUsedDatabaseConnections();
         }
     }
-    
-    public boolean equals(Object other) 
+
+    public boolean equals(Object other)
     {
         if (other == this) return true;
         if (other == null) return false;
         if (getClass() != other.getClass()) return false;
         CombinationLookupMeta o = (CombinationLookupMeta)other;
-        
+
         if ( getCommitSize() != o.getCommitSize() ) return false;
-        if ( ! getTechKeyCreation().equals(o.getTechKeyCreation()) ) return false;        
-        if ( replaceFields() != o.replaceFields() ) return false;        
+        if ( ! getTechKeyCreation().equals(o.getTechKeyCreation()) ) return false;
+        if ( replaceFields() != o.replaceFields() ) return false;
         if ( useHash() != o.useHash() )	return false;
         if ( replaceFields() != o.replaceFields() )	return false;
         if ( (getSequenceFrom() == null && o.getSequenceFrom() != null) ||
         	 (getSequenceFrom() != null && o.getSequenceFrom() == null) ||
         	 (getSequenceFrom() != null && o.getSequenceFrom() != null &&
-        	  ! getSequenceFrom().equals(o.getSequenceFrom())) )		 
+        	  ! getSequenceFrom().equals(o.getSequenceFrom())) )
         	 return false;
         if ( (getTablename() == null && o.getTablename() != null) ||
            	 (getTablename() != null && o.getTablename() == null) ||
            	 (getTablename() != null && o.getTablename() != null &&
-           	  ! getTablename().equals(o.getTablename())) )		 
+           	  ! getTablename().equals(o.getTablename())) )
            	 return false;
-        	 
+
         if ( (getHashField() == null && o.getHashField() != null) ||
              (getHashField() != null && o.getHashField() == null) ||
              (getHashField() != null && o.getHashField() != null &&
-              ! getHashField().equals(o.getHashField())) )		 
+              ! getHashField().equals(o.getHashField())) )
           	 return false;
 
         if ( (getTechnicalKeyField() == null && o.getTechnicalKeyField() != null) ||
              (getTechnicalKeyField() != null && o.getTechnicalKeyField() == null) ||
              (getTechnicalKeyField() != null && o.getTechnicalKeyField() != null &&
-             ! getTechnicalKeyField().equals(o.getTechnicalKeyField())) )		 
+             ! getTechnicalKeyField().equals(o.getTechnicalKeyField())) )
    	       return false;
-        
+
         // comparison missing for the following, but can be added later
         // if required.
     	//     getKeyField()
