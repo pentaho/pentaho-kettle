@@ -91,13 +91,13 @@ public class ExecSQL extends BaseStep implements StepInterface
         meta=(ExecSQLMeta)smi;
         data=(ExecSQLData)sdi;
 
-        debug = "execute SQ start";        
+        debug = Messages.getString("ExecSQL.Debug.ExecuteSQLStart");         //$NON-NLS-1$
 
         Row row = null;
         
         if (!meta.isExecutedEachInputRow())
         {
-            debug = "exec once: return result";        
+            debug = Messages.getString("ExecSQL.Debug.ExecuteOnce");         //$NON-NLS-1$
 
             row = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField()); 
             putRow(row);
@@ -119,7 +119,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 		{
             first=false;
             
-            debug = "Find the indexes of the arguments";        
+            debug = Messages.getString("ExecSQL.Debug.FindIndexsOfArguments");         //$NON-NLS-1$
             // Find the indexes of the arguments
             data.argumentIndexes = new int[meta.getArguments().length];
             for (int i=0;i<meta.getArguments().length;i++)
@@ -127,12 +127,12 @@ public class ExecSQL extends BaseStep implements StepInterface
                 data.argumentIndexes[i] = row.searchValueIndex(meta.getArguments()[i]);
                 if (data.argumentIndexes[i]<0)
                 {
-                    logError("Error finding field: "+meta.getArguments()[i]+"]");
-                    throw new KettleStepException("Couldn't find field '"+meta.getArguments()[i]+"' in row!");
+                    logError(Messages.getString("ExecSQL.Log.ErrorFindingField")+meta.getArguments()[i]+"]"); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new KettleStepException(Messages.getString("ExecSQL.Exception.CouldNotFindField",meta.getArguments()[i])); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
             
-            debug = "Find the locations of the question marks in the String...";        
+            debug = Messages.getString("ExecSQL.Debug.FindLocationsOfQuestionMarks");         //$NON-NLS-1$
             // Find the locations of the question marks in the String...
             // We replace the question marks with the values...
             // We ignore quotes etc. to make inserts easier...
@@ -146,7 +146,7 @@ public class ExecSQL extends BaseStep implements StepInterface
             }
 		}
 
-        debug = "Replace the values in the SQL string...";        
+        debug = Messages.getString("ExecSQL.Debug.ReplaceValuesInSQLString");         //$NON-NLS-1$
         // Replace the values in the SQL string...
 		for (int i=0;i<data.markerPositions.size();i++)
         {
@@ -155,11 +155,11 @@ public class ExecSQL extends BaseStep implements StepInterface
             sql.replace(pos, pos+1, value.getString()); // replace the '?' with the String in the row.
         }
 
-        debug = "Execute sql: "+sql;        
-        if (log.isRowLevel()) logRowlevel("Executing SQL script:"+Const.CR+sql);
+        debug = Messages.getString("ExecSQL.Debug.ExecuteSQL")+sql;         //$NON-NLS-1$
+        if (log.isRowLevel()) logRowlevel(Messages.getString("ExecSQL.Log.ExecutingSQLScript")+Const.CR+sql); //$NON-NLS-1$
         data.result = data.db.execStatements(sql.toString());
 
-        debug = "Get result";        
+        debug = Messages.getString("ExecSQL.Debug.GetResult");         //$NON-NLS-1$
         Row add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());
         row.addRow(add);
         
@@ -167,7 +167,7 @@ public class ExecSQL extends BaseStep implements StepInterface
         
 		putRow(row);  // send it out!    
 
-        if ((linesWritten>0) && (linesWritten%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesWritten);
+        if ((linesWritten>0) && (linesWritten%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("ExecSQL.Log.LineNumber")+linesWritten); //$NON-NLS-1$
 
 		return true;
 	}
@@ -177,7 +177,7 @@ public class ExecSQL extends BaseStep implements StepInterface
            meta=(ExecSQLMeta)smi;
             data=(ExecSQLData)sdi;
 
-        logBasic("Finished reading query, closing connection.");
+        logBasic(Messages.getString("ExecSQL.Log.FinishingReadingQuery")); //$NON-NLS-1$
 
         data.db.disconnect();
 
@@ -210,7 +210,7 @@ public class ExecSQL extends BaseStep implements StepInterface
             try
             {
                 data.db.connect();
-                if (log.isDetailed()) logDetailed("Connected to database...");
+                if (log.isDetailed()) logDetailed(Messages.getString("ExecSQL.Log.ConnectedToDB")); //$NON-NLS-1$
 
                 // If the SQL needs to be executed once, this is a starting step somewhere.
                 if (!meta.isExecutedEachInputRow())
@@ -221,7 +221,7 @@ public class ExecSQL extends BaseStep implements StepInterface
             }
             catch(KettleException e)
             {
-                logError("An error occurred, processing will be stopped: "+e.getMessage());
+                logError(Messages.getString("ExecSQL.Log.ErrorOccurred")+e.getMessage()); //$NON-NLS-1$
                 setErrors(1);
                 stopAll();
             }
@@ -238,12 +238,12 @@ public class ExecSQL extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("ExecSQL.Log.StartingToRun")); //$NON-NLS-1$
 			while (!isStopped() && processRow(meta, data) );
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("ExecSQL.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}
