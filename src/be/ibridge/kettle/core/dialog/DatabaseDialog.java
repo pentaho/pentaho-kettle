@@ -915,7 +915,7 @@ public class DatabaseDialog extends Dialog
 		{
             String message = "";
             for (int i=0;i<remarks.length;i++) message+="    * "+remarks[i]+Const.CR;
-			throw new KettleException("Incorrect database paramater(s)!  Check these settings :"+Const.CR+message);
+			throw new KettleException("Incorrect database parameter(s)!  Check these settings :"+Const.CR+message);
 		}
 	}
 	
