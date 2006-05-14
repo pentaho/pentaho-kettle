@@ -23,6 +23,7 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.CheckResult;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -374,20 +375,34 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     {
         if (fileName!=null && fileName.length()>0)
         {
-        	// OK, load the meta-data from file...
-            // NOTE: id_transformation is saved, but is useless...
+            try
+            {
+            	// OK, load the meta-data from file...
                 mappingTransMeta = new TransMeta(fileName);
+            }
+            catch(Exception e)
+            {
+                LogWriter.getInstance().logError("Loading Mapping from XML", "Unable to load transformation ["+transName+"] : "+e.toString());
+                LogWriter.getInstance().logError("Loading Mapping from XML", Const.getStackTracker(e));
+            }
         }
         else
         {
             // OK, load the meta-data from the repository...
-            // NOTE: filename is saved, but is useless in this context...
             if (transName!=null && directoryPath!=null && rep!=null)
             {
                 RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(directoryPath);
                 if (repdir!=null)
                 {
-                    mappingTransMeta = new TransMeta(rep, transName, repdir);
+                    try
+                    {
+                        mappingTransMeta = new TransMeta(rep, transName, repdir);
+                    }
+                    catch(Exception e)
+                    {
+                        LogWriter.getInstance().logError("Loading Mapping from repository", "Unable to load transformation ["+transName+"] : "+e.toString());
+                        LogWriter.getInstance().logError("Loading Mapping from repository", Const.getStackTracker(e));
+                    }
                 }
                 else
                 {
