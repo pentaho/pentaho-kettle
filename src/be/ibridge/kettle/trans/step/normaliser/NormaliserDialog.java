@@ -94,14 +94,14 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Row Normaliser");
+		shell.setText(Messages.getString("NormaliserDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("NormaliserDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -120,7 +120,7 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
 
 		// Typefield line
 		wlTypefield=new Label(shell, SWT.RIGHT);
-		wlTypefield.setText("Type field ");
+		wlTypefield.setText(Messages.getString("NormaliserDialog.TypeField.Label")); //$NON-NLS-1$
  		props.setLook(wlTypefield);
 		fdlTypefield=new FormData();
 		fdlTypefield.left = new FormAttachment(0, 0);
@@ -128,7 +128,7 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
 		fdlTypefield.top  = new FormAttachment(wStepname, margin);
 		wlTypefield.setLayoutData(fdlTypefield);
 		wTypefield=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wTypefield.setText("");
+		wTypefield.setText(""); //$NON-NLS-1$
  		props.setLook(wTypefield);
 		wTypefield.addModifyListener(lsMod);
 		fdTypefield=new FormData();
@@ -138,7 +138,7 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
 		wTypefield.setLayoutData(fdTypefield);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText("Fields ");
+		wlFields.setText(Messages.getString("NormaliserDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -146,11 +146,11 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
 		wlFields.setLayoutData(fdlFields);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("NormaliserDialog.OK.Button")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText(" &Get Fields ");
+		wGet.setText(Messages.getString("NormaliserDialog.GetFields.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("NormaliserDialog.Cancel.Button")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
 
@@ -158,9 +158,9 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Fieldname",  ColumnInfo.COLUMN_TYPE_TEXT,   false );
-		colinf[1]=new ColumnInfo("Type",       ColumnInfo.COLUMN_TYPE_TEXT,   false );
-		colinf[2]=new ColumnInfo("new field",  ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[0]=new ColumnInfo(Messages.getString("NormaliserDialog.ColumnInfo.Fieldname"),  ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[1]=new ColumnInfo(Messages.getString("NormaliserDialog.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[2]=new ColumnInfo(Messages.getString("NormaliserDialog.ColumnInfo.NewField"),  ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -279,7 +279,7 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("NormaliserDialog.FailedToGetFields.DialogTitle"), Messages.getString("NormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 }

@@ -180,31 +180,31 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			typeField  = XMLHandler.getTagValue(stepnode, "typefield");
+			typeField  = XMLHandler.getTagValue(stepnode, "typefield"); //$NON-NLS-1$
 			
-			Node fields = XMLHandler.getSubNode(stepnode, "fields");
-			int nrfields   = XMLHandler.countNodes(fields, "field");
+			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+			int nrfields   = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
 			
 			allocate(nrfields);
 			
 			for (int i=0;i<nrfields;i++)
 			{
-				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
+				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 				
-				fieldName     [i] = XMLHandler.getTagValue(fnode, "name");
-				fieldValue[i] = XMLHandler.getTagValue(fnode, "value");
-				fieldNorm [i] = XMLHandler.getTagValue(fnode, "norm");
+				fieldName     [i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+				fieldValue[i] = XMLHandler.getTagValue(fnode, "value"); //$NON-NLS-1$
+				fieldNorm [i] = XMLHandler.getTagValue(fnode, "norm"); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to load step info from XML", e);
+			throw new KettleXMLException(Messages.getString("NormaliserMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
 	public void setDefault()
 	{
-		typeField = "typefield";
+		typeField = "typefield"; //$NON-NLS-1$
 		
 		int nrfields = 0;
 	
@@ -212,9 +212,9 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (int i=0;i<nrfields;i++)
 		{
-			fieldName     [i] = "field"+i;
-			fieldValue[i] = "value"+i;
-			fieldNorm [i] = "value"+i;
+			fieldName     [i] = "field"+i; //$NON-NLS-1$
+			fieldValue[i] = "value"+i; //$NON-NLS-1$
+			fieldNorm [i] = "value"+i; //$NON-NLS-1$
 		}
 	}
 
@@ -301,18 +301,18 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("   "+XMLHandler.addTagValue("typefield", typeField));
+		retval.append("   "+XMLHandler.addTagValue("typefield", typeField)); //$NON-NLS-1$ //$NON-NLS-2$
 		
-		retval.append("    <fields>");
+		retval.append("    <fields>"); //$NON-NLS-1$
 		for (int i=0;i<fieldName.length;i++)
 		{
-			retval.append("      <field>");
-			retval.append("        "+XMLHandler.addTagValue("name",  fieldName[i]));
-			retval.append("        "+XMLHandler.addTagValue("value", fieldValue[i]));
-			retval.append("        "+XMLHandler.addTagValue("norm",  fieldNorm[i]));
-			retval.append("        </field>");
+			retval.append("      <field>"); //$NON-NLS-1$
+			retval.append("        "+XMLHandler.addTagValue("name",  fieldName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("value", fieldValue[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("norm",  fieldNorm[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        </field>"); //$NON-NLS-1$
 		}
-		retval.append("      </fields>");
+		retval.append("      </fields>"); //$NON-NLS-1$
 
 		return retval.toString();
 	}
@@ -322,22 +322,22 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			typeField = rep.getStepAttributeString(id_step, "typefield");
+			typeField = rep.getStepAttributeString(id_step, "typefield"); //$NON-NLS-1$
 			
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
+			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
 			
 			allocate(nrfields);
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				fieldName[i]       =  rep.getStepAttributeString (id_step, i, "field_name");
-				fieldValue[i]  =  rep.getStepAttributeString (id_step, i, "field_value");
-				fieldNorm[i]   =  rep.getStepAttributeString (id_step, i, "field_norm");
+				fieldName[i]       =  rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
+				fieldValue[i]  =  rep.getStepAttributeString (id_step, i, "field_value"); //$NON-NLS-1$
+				fieldNorm[i]   =  rep.getStepAttributeString (id_step, i, "field_norm"); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unexpected error reading step information from the repository", e);
+			throw new KettleException(Messages.getString("NormaliserMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -347,35 +347,35 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "typefield", typeField);
+			rep.saveStepAttribute(id_transformation, id_step, "typefield", typeField); //$NON-NLS-1$
 	
 			for (int i=0;i<fieldName.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldName[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_value",     fieldValue[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_norm",      fieldNorm[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldName[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_value",     fieldValue[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_norm",      fieldNorm[i]); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
+			throw new KettleException(Messages.getString("NormaliserMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
 		}
 	}
 
 
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
 	{
-		String error_message="";
+		String error_message=""; //$NON-NLS-1$
 		CheckResult cr;
 		
 		// Look up fields in the input stream <prev>
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "+prev.size()+" fields", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("NormaliserMeta.CheckResult.StepReceivingFieldsOK",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 			
 			boolean first=true;
-			error_message = "";
+			error_message = ""; //$NON-NLS-1$
 			boolean error_found = false;
 			
 			for (int i=0;i<fieldName.length;i++)
@@ -388,10 +388,10 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface
 					if (first)
 					{
 						first=false;
-						error_message+="Fields to normalise, not found in input stream:"+Const.CR;
+						error_message+=Messages.getString("NormaliserMeta.CheckResult.FieldsNotFound")+Const.CR; //$NON-NLS-1$
 					}
 					error_found=true;
-					error_message+="\t\t"+lufield+Const.CR; 
+					error_message+="\t\t"+lufield+Const.CR;  //$NON-NLS-1$
 				}
 			}
 			if (error_found)
@@ -400,13 +400,13 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All fields to normalise are found in the input stream.", stepinfo);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("NormaliserMeta.CheckResult.AllFieldsFound"), stepinfo); //$NON-NLS-1$
 			}
 			remarks.add(cr);
 		}
 		else
 		{
-			error_message="Couldn't read fields from the previous step."+Const.CR;
+			error_message=Messages.getString("NormaliserMeta.CheckResult.CouldNotReadFieldsFromPreviousStep")+Const.CR; //$NON-NLS-1$
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 			remarks.add(cr);
 		}
@@ -414,12 +414,12 @@ public class NormaliserMeta extends BaseStepMeta implements StepMetaInterface
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("NormaliserMeta.CheckResult.StepReceivingInfoOK"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("NormaliserMeta.CheckResult.NoInputReceivedError"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}
