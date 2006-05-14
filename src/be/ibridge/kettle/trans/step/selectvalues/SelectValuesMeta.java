@@ -304,41 +304,41 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			Node fields = XMLHandler.getSubNode(step, "fields");
+			Node fields = XMLHandler.getSubNode(step, "fields"); //$NON-NLS-1$
 	
-			int nrfields   = XMLHandler.countNodes(fields, "field");
-			int nrremove   = XMLHandler.countNodes(fields, "remove");
-			int nrmeta     = XMLHandler.countNodes(fields, "meta");
+			int nrfields   = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
+			int nrremove   = XMLHandler.countNodes(fields, "remove"); //$NON-NLS-1$
+			int nrmeta     = XMLHandler.countNodes(fields, "meta"); //$NON-NLS-1$
 			allocate(nrfields, nrremove, nrmeta);
 			
 			for (int i=0;i<nrfields;i++)
 			{
-				Node line = XMLHandler.getSubNodeByNr(fields, "field", i);
-				selectName     [i] = XMLHandler.getTagValue(line, "name");
-				selectRename   [i] = XMLHandler.getTagValue(line, "rename");
-				selectLength   [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2);
-				selectPrecision[i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2);
+				Node line = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+				selectName     [i] = XMLHandler.getTagValue(line, "name"); //$NON-NLS-1$
+				selectRename   [i] = XMLHandler.getTagValue(line, "rename"); //$NON-NLS-1$
+				selectLength   [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2); //$NON-NLS-1$
+				selectPrecision[i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2); //$NON-NLS-1$
 			}
 	
 			for (int i=0;i<nrremove;i++)
 			{
-				Node line = XMLHandler.getSubNodeByNr(fields, "remove", i);
-				deleteName     [i] = XMLHandler.getTagValue(line, "name");
+				Node line = XMLHandler.getSubNodeByNr(fields, "remove", i); //$NON-NLS-1$
+				deleteName     [i] = XMLHandler.getTagValue(line, "name"); //$NON-NLS-1$
 			}
 	
 			for (int i=0;i<nrmeta;i++)
 			{
-				Node line = XMLHandler.getSubNodeByNr(fields, "meta", i);
-				metaName     [i] = XMLHandler.getTagValue(line, "name");
-				metaRename   [i] = XMLHandler.getTagValue(line, "rename");
-				metaType     [i] = Value.getType(XMLHandler.getTagValue(line, "type"));
-				metaLength   [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2);
-				metaPrecision[i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2);
+				Node line = XMLHandler.getSubNodeByNr(fields, "meta", i); //$NON-NLS-1$
+				metaName     [i] = XMLHandler.getTagValue(line, "name"); //$NON-NLS-1$
+				metaRename   [i] = XMLHandler.getTagValue(line, "rename"); //$NON-NLS-1$
+				metaType     [i] = Value.getType(XMLHandler.getTagValue(line, "type")); //$NON-NLS-1$
+				metaLength   [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2); //$NON-NLS-1$
+				metaPrecision[i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to read step information from XML", e);
+			throw new KettleXMLException(Messages.getString("SelectValuesMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -352,21 +352,21 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (int i=0;i<nrfields;i++)
 		{
-			selectName     [i] = "fieldname"+(i+1);
-			selectRename   [i] = "";
+			selectName     [i] = "fieldname"+(i+1); //$NON-NLS-1$
+			selectRename   [i] = ""; //$NON-NLS-1$
 			selectLength   [i] = -2;
 			selectPrecision[i] = -2;
 		}
 
 		for (int i=0;i<nrremove;i++)
 		{
-			deleteName     [i] = "fieldname"+(i+1);
+			deleteName     [i] = "fieldname"+(i+1); //$NON-NLS-1$
 		}
 
 		for (int i=0;i<nrmeta;i++)
 		{
-			metaName     [i] = "fieldname"+(i+1);
-			metaRename   [i] = "";
+			metaName     [i] = "fieldname"+(i+1); //$NON-NLS-1$
+			metaRename   [i] = ""; //$NON-NLS-1$
 			metaType     [i] = Value.VALUE_TYPE_NONE;
 			metaLength   [i] = -2;
 			metaPrecision[i] = -2;
@@ -481,33 +481,33 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("    <fields>");
+		retval.append("    <fields>"); //$NON-NLS-1$
 		for (int i=0;i<selectName.length;i++)
 		{
-			retval.append("      <field>");
-			retval.append("        "+XMLHandler.addTagValue("name",      selectName[i]));
-			retval.append("        "+XMLHandler.addTagValue("rename",    selectRename[i]));
-			retval.append("        "+XMLHandler.addTagValue("length",    selectLength[i]));
-			retval.append("        "+XMLHandler.addTagValue("precision", selectPrecision[i]));
-			retval.append("        </field>");
+			retval.append("      <field>"); //$NON-NLS-1$
+			retval.append("        "+XMLHandler.addTagValue("name",      selectName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("rename",    selectRename[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("length",    selectLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("precision", selectPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        </field>"); //$NON-NLS-1$
 		}
 		for (int i=0;i<deleteName.length;i++)
 		{
-			retval.append("      <remove>");
-			retval.append("        "+XMLHandler.addTagValue("name",      deleteName[i]));
-			retval.append("        </remove>");
+			retval.append("      <remove>"); //$NON-NLS-1$
+			retval.append("        "+XMLHandler.addTagValue("name",      deleteName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        </remove>"); //$NON-NLS-1$
 		}
 		for (int i=0;i<metaName.length;i++)
 		{
-			retval.append("      <meta>");
-			retval.append("        "+XMLHandler.addTagValue("name",      metaName[i]));
-			retval.append("        "+XMLHandler.addTagValue("rename",    metaRename[i]));
-			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(metaType[i])) );
-			retval.append("        "+XMLHandler.addTagValue("length",    metaLength[i]));
-			retval.append("        "+XMLHandler.addTagValue("precision", metaPrecision[i]));
-			retval.append("        </meta>");
+			retval.append("      <meta>"); //$NON-NLS-1$
+			retval.append("        "+XMLHandler.addTagValue("name",      metaName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("rename",    metaRename[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(metaType[i])) ); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("length",    metaLength[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("precision", metaPrecision[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        </meta>"); //$NON-NLS-1$
 		}
-		retval.append("      </fields>");
+		retval.append("      </fields>"); //$NON-NLS-1$
 
 		return retval.toString();
 	}
@@ -517,37 +517,37 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
-			int nrremove = rep.countNrStepAttributes(id_step, "remove_name");
-			int nrmeta   = rep.countNrStepAttributes(id_step, "meta_name");
+			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
+			int nrremove = rep.countNrStepAttributes(id_step, "remove_name"); //$NON-NLS-1$
+			int nrmeta   = rep.countNrStepAttributes(id_step, "meta_name"); //$NON-NLS-1$
 			
 			allocate(nrfields, nrremove, nrmeta);
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				selectName[i]      =      rep.getStepAttributeString (id_step, i, "field_name");
-				selectRename[i]    =      rep.getStepAttributeString (id_step, i, "field_rename");
-				selectLength[i]    = (int)rep.getStepAttributeInteger(id_step, i, "field_length");
-				selectPrecision[i] = (int)rep.getStepAttributeInteger(id_step, i, "field_precision");
+				selectName[i]      =      rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
+				selectRename[i]    =      rep.getStepAttributeString (id_step, i, "field_rename"); //$NON-NLS-1$
+				selectLength[i]    = (int)rep.getStepAttributeInteger(id_step, i, "field_length"); //$NON-NLS-1$
+				selectPrecision[i] = (int)rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
 			}
 
 			for (int i=0;i<nrremove;i++)
 			{
-				deleteName[i]      =      rep.getStepAttributeString(id_step, i, "remove_name");
+				deleteName[i]      =      rep.getStepAttributeString(id_step, i, "remove_name"); //$NON-NLS-1$
 			}
 
 			for (int i=0;i<nrmeta;i++)
 			{
-				metaName[i]      =      rep.getStepAttributeString (id_step, i, "meta_name");
-				metaRename[i]    =      rep.getStepAttributeString (id_step, i, "meta_rename");
-				metaType[i]      = (int)rep.getStepAttributeInteger(id_step, i, "meta_type");
-				metaLength[i]    = (int)rep.getStepAttributeInteger(id_step, i, "meta_length");
-				metaPrecision[i] = (int)rep.getStepAttributeInteger(id_step, i, "meta_precision");
+				metaName[i]      =      rep.getStepAttributeString (id_step, i, "meta_name"); //$NON-NLS-1$
+				metaRename[i]    =      rep.getStepAttributeString (id_step, i, "meta_rename"); //$NON-NLS-1$
+				metaType[i]      = (int)rep.getStepAttributeInteger(id_step, i, "meta_type"); //$NON-NLS-1$
+				metaLength[i]    = (int)rep.getStepAttributeInteger(id_step, i, "meta_length"); //$NON-NLS-1$
+				metaPrecision[i] = (int)rep.getStepAttributeInteger(id_step, i, "meta_precision"); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unexpected error reading step information from the repository", e);
+			throw new KettleException(Messages.getString("SelectValuesMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -558,29 +558,29 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			for (int i=0;i<selectName.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      selectName[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_rename",    selectRename[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    selectLength[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", selectPrecision[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      selectName[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_rename",    selectRename[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    selectLength[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", selectPrecision[i]); //$NON-NLS-1$
 			}
 	
 			for (int i=0;i<deleteName.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "remove_name",      deleteName[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "remove_name",      deleteName[i]); //$NON-NLS-1$
 			}
 	
 			for (int i=0;i<metaName.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_name",      metaName[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_rename",    metaRename[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_type",      metaType[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_length",    metaLength[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "meta_precision", metaPrecision[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_name",      metaName[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_rename",    metaRename[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_type",      metaType[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_length",    metaLength[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "meta_precision", metaPrecision[i]); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
+			throw new KettleException(Messages.getString("SelectValuesMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
 		}
 
 	}
@@ -591,13 +591,13 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 		
 		if (prev!=null && prev.size()>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "+prev.size()+" fields", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SelectValuesMeta.CheckResult.StepReceivingFields",prev.size()+""), stepMeta); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 
 			/*
 			 * Take care of the normal SELECT fields...
 			 */
-			String  error_message="";
+			String  error_message=""; //$NON-NLS-1$
 			boolean error_found=false;
 			
 			// Starting from selected fields in ...
@@ -606,20 +606,20 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 				int idx = prev.searchValueIndex(selectName[i]);
 				if (idx<0)
 				{
-					error_message+="\t\t"+selectName[i]+Const.CR;
+					error_message+="\t\t"+selectName[i]+Const.CR; //$NON-NLS-1$
 					error_found=true;
 				} 
 			}
 			if (error_found) 
 			{
-				error_message="Selected fields that were not found in input stream:"+Const.CR+Const.CR+error_message;
+				error_message=Messages.getString("SelectValuesMeta.CheckResult.SelectedFieldsNotFound")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
 
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All selected fields are found in the input stream, coming from previous steps", stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SelectValuesMeta.CheckResult.AllSelectedFieldsFound"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			}
 			
@@ -632,20 +632,20 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 					int idx = Const.indexOfString(pv.getName(), selectName);
 					if (idx<0) 
 					{
-						error_message+="\t\t"+pv.getName()+" ("+pv.getTypeDesc()+")"+Const.CR;
+						error_message+="\t\t"+pv.getName()+" ("+pv.getTypeDesc()+")"+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						error_found=true;
 					} 
 				}
 				if (error_found) 
 				{
-					error_message="Fields in input stream, not found in selection:"+Const.CR+Const.CR+error_message;
+					error_message=Messages.getString("SelectValuesMeta.CheckResult.FieldsNotFound")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
 	
 					cr = new CheckResult(CheckResult.TYPE_RESULT_COMMENT, error_message, stepMeta);
 					remarks.add(cr);
 				}
 				else
 				{
-					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All selected fields, coming from previous steps, are found in the selection", stepMeta);
+					cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SelectValuesMeta.CheckResult.AllSelectedFieldsFound2"), stepMeta); //$NON-NLS-1$
 					remarks.add(cr);
 				}
 			}
@@ -654,7 +654,7 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 			 * How about the DE-SELECT (remove) fields...
 			 */
 		
-			error_message="";
+			error_message=""; //$NON-NLS-1$
 			error_found=false;
 			
 			// Starting from selected fields in ...
@@ -663,27 +663,27 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 				int idx = prev.searchValueIndex(deleteName[i]);
 				if (idx<0)
 				{
-					error_message+="\t\t"+deleteName[i]+Const.CR;
+					error_message+="\t\t"+deleteName[i]+Const.CR; //$NON-NLS-1$
 					error_found=true;
 				} 
 			}
 			if (error_found) 
 			{
-				error_message="De-Selected fields that were not found in input stream:"+Const.CR+Const.CR+error_message;
+				error_message=Messages.getString("SelectValuesMeta.CheckResult.DeSelectedFieldsNotFound")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
 
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All de-selected fields in the table are found in the input stream, coming from previous steps", stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SelectValuesMeta.CheckResult.AllDeSelectedFieldsFound"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			}
 
 			/*
 			 * How about the Meta-fields...?
 			 */
-			error_message="";
+			error_message=""; //$NON-NLS-1$
 			error_found=false;
 			
 			// Starting from selected fields in ...
@@ -692,45 +692,45 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 				int idx = prev.searchValueIndex(metaName[i]);
 				if (idx<0)
 				{
-					error_message+="\t\t"+metaName[i]+Const.CR;
+					error_message+="\t\t"+metaName[i]+Const.CR; //$NON-NLS-1$
 					error_found=true;
 				} 
 			}
 			if (error_found) 
 			{
-				error_message="Meta-data fields that were not found in input stream:"+Const.CR+Const.CR+error_message;
+				error_message=Messages.getString("SelectValuesMeta.CheckResult.MetadataFieldsNotFound")+Const.CR+Const.CR+error_message; //$NON-NLS-1$
 
 				cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "All meta-data fields are found in the input stream, coming from previous steps", stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SelectValuesMeta.CheckResult.AllMetadataFieldsFound"), stepMeta); //$NON-NLS-1$
 				remarks.add(cr);
 			}
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "Couldn't find fields from previous steps, check the hops...!", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SelectValuesMeta.CheckResult.FieldsNotFound2"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SelectValuesMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepMeta);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SelectValuesMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		
 		// Check for doubles in the selected fields...
 		int cnt[] = new int[selectName.length];
 		boolean error_found = false;
-		String error_message="";
+		String error_message=""; //$NON-NLS-1$
 		
 		for (int i=0;i<selectName.length;i++)
 		{
@@ -744,13 +744,13 @@ public class SelectValuesMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				if (!error_found) // first time...
 				{
-					error_message="Duplicate fields specified:"+Const.CR;
+					error_message=Messages.getString("SelectValuesMeta.CheckResult.DuplicateFieldsSpecified")+Const.CR; //$NON-NLS-1$
 				}
 				else
 				{
 					error_found=true;
 				}
-				error_message+="\t\trow #"+i+" : "+selectName[i]+"  ("+cnt[i]+" occurences)"+Const.CR;
+				error_message+=Messages.getString("SelectValuesMeta.CheckResult.OccurentRow",i+" : "+selectName[i]+"  ("+cnt[i])+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 				error_found=true;
 			}
 		}

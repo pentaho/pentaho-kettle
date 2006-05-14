@@ -56,11 +56,11 @@ public class SelectValues extends BaseStep implements StepInterface
 	*/
 	private synchronized boolean selectValues(Row row)
 	{
-		debug="Start of selectValues";
+		debug=Messages.getString("SelectValues.Debug.StartOfSelectValues"); //$NON-NLS-1$
 		
 		if (data.firstselect)
 		{
-			debug="Init (first)";
+			debug=Messages.getString("SelectValues.Debug.InitFirst"); //$NON-NLS-1$
 			data.firstselect=false;
 
 			data.fieldnrs=new int[meta.getSelectName().length];
@@ -71,7 +71,7 @@ public class SelectValues extends BaseStep implements StepInterface
 				data.fieldnrs[i]=row.searchValueIndex(meta.getSelectName()[i]);
 				if (data.fieldnrs[i]<0)
 				{
-					logError("Couldn't find field '"+meta.getSelectName()[i]+"' in row!");
+					logError(Messages.getString("SelectValues.Log.CouldNotFindField",meta.getSelectName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -91,7 +91,7 @@ public class SelectValues extends BaseStep implements StepInterface
 					
 					if (cnt[i]>1)
 					{
-						logError("Field '"+one+"' is specified twice (or more) with the same name!");
+						logError(Messages.getString("SelectValues.Log.FieldCouldNotSpecifiedMoreThanTwice",one)); //$NON-NLS-1$ //$NON-NLS-2$
 						setErrors(1);
 						stopAll();
 						return false;
@@ -100,11 +100,11 @@ public class SelectValues extends BaseStep implements StepInterface
 			}
 		}
 
-		debug="get fields values";
+		debug=Messages.getString("SelectValues.Debug.GetFieldsValues"); //$NON-NLS-1$
 		// Get the field values
 		for (int i=0;i<meta.getSelectName().length;i++)
 		{
-			debug="get start loop (fieldnrs["+i+"]="+data.fieldnrs[i]+")";
+			debug=Messages.getString("SelectValues.Debug.GetStartLoop")+i+"]="+data.fieldnrs[i]+")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
             
 			// Normally this can't happen, except when streams are mixed with different
 			// number of fields.
@@ -129,11 +129,11 @@ public class SelectValues extends BaseStep implements StepInterface
 			}
 			else
 			{
-				if (log.isDetailed()) logDetailed("WARNING: Mixing streams with different nr of fields.");
+				if (log.isDetailed()) logDetailed(Messages.getString("SelectValues.Log.MixingStreamWithDifferentFields")); //$NON-NLS-1$
 			}
 			
 		}
-		debug="add values to row in correct order...";
+		debug=Messages.getString("SelectValues.Debug.AddValuesToRow"); //$NON-NLS-1$
 		for (int i=0;i<meta.getSelectName().length;i++) // Add in the same order as before!
 		{
 			if (i>=row.size()) 
@@ -142,17 +142,17 @@ public class SelectValues extends BaseStep implements StepInterface
             }
 			else
             {
-                debug="add values to row in correct order... data.values["+i+"] : "+data.values[i].toStringMeta();
+                debug=Messages.getString("SelectValues.Debug.AddValuesToRow2")+i+"] : "+data.values[i].toStringMeta(); //$NON-NLS-1$ //$NON-NLS-2$
                 row.setValue(i, data.values[i]);
             }
 		}
-		debug="remove unwanted/unselected fields.";
+		debug=Messages.getString("SelectValues.Debug.RemoveUnusedFields"); //$NON-NLS-1$
 		for (int i=row.size()-1;i>=meta.getSelectName().length;i--)
 		{
 			row.removeValue(i);
 		}
 
-		debug="End of selectValues";
+		debug=Messages.getString("SelectValues.Debug.EndOfSelectedValues"); //$NON-NLS-1$
 
 		return true;
 	}
@@ -168,11 +168,11 @@ public class SelectValues extends BaseStep implements StepInterface
 	*/
 	private synchronized boolean removeValues(Row row)
 	{		
-		debug="Start of removeValues";
+		debug=Messages.getString("SelectValues.Debug.StartOfRemoveValues"); //$NON-NLS-1$
 		
 		if (data.firstdeselect)
 		{
-			debug="Init (first)";
+			debug=Messages.getString("SelectValues.Debug.InitFirst2"); //$NON-NLS-1$
 			data.firstdeselect=false;
 
 			// System.out.println("Fields to remove: "+info.dname.length);
@@ -183,7 +183,7 @@ public class SelectValues extends BaseStep implements StepInterface
 				data.removenrs[i]=row.searchValueIndex(meta.getDeleteName()[i]);
 				if (data.removenrs[i]<0)
 				{
-					logError("Couldn't find field '"+meta.getDeleteName()[i]+"' in row!");
+					logError(Messages.getString("SelectValues.Log.CouldNotFindField",meta.getDeleteName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -201,7 +201,7 @@ public class SelectValues extends BaseStep implements StepInterface
 					
 					if (cnt[i]>1)
 					{
-						logError("Field '"+meta.getDeleteName()[i]+"' is specified twice with the same name!");
+						logError(Messages.getString("SelectValues.Log.FieldCouldNotSpecifiedMoreThanTwice2",meta.getDeleteName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 						setErrors(1);
 						stopAll();
 						return false;
@@ -236,13 +236,13 @@ public class SelectValues extends BaseStep implements StepInterface
 		 *  Take into account that field indexes change once you remove them!!!
 		 *  Therefor removenrs is sorted in reverse on index...
 		 */
-		debug="remove field values";
+		debug=Messages.getString("SelectValues.Debug.RemoveFieldValues"); //$NON-NLS-1$
 		for (int i=0;i<data.removenrs.length;i++)
 		{
 			row.removeValue(data.removenrs[i]);
 		}
 
-		debug="End of removeValues";
+		debug=Messages.getString("SelectValues.Debug.EndOfRemoveValues"); //$NON-NLS-1$
 
 		return true;
 	}
@@ -258,11 +258,11 @@ public class SelectValues extends BaseStep implements StepInterface
 	*/
 	private synchronized boolean metadataValues(Row row)
 	{
-		debug="Start of metadataValues";
+		debug=Messages.getString("SelectValues.Debug.StartOfMetadataValues"); //$NON-NLS-1$
 		
 		if (data.firstmetadata)
 		{
-			debug="Init (first)";
+			debug=Messages.getString("SelectValues.Debug.InitFirst3"); //$NON-NLS-1$
 			data.firstmetadata=false;
 
 			data.metanrs=new int[meta.getMetaName().length];
@@ -272,7 +272,7 @@ public class SelectValues extends BaseStep implements StepInterface
 				data.metanrs[i]=row.searchValueIndex(meta.getMetaName()[i]);
 				if (data.metanrs[i]<0)
 				{
-					logError("Couldn't find field '"+meta.getMetaName()[i]+"' in row!");
+					logError(Messages.getString("SelectValues.Log.CouldNotFindField",meta.getMetaName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -290,7 +290,7 @@ public class SelectValues extends BaseStep implements StepInterface
 					
 					if (cnt[i]>1)
 					{
-						logError("Field '"+meta.getMetaName()[i]+"' is specified twice with the same name!");
+						logError(Messages.getString("SelectValues.Log.FieldCouldNotSpecifiedMoreThanTwice2",meta.getMetaName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 						setErrors(1);
 						stopAll();
 						return false;
@@ -302,7 +302,7 @@ public class SelectValues extends BaseStep implements StepInterface
 		/*
 		 * Change the meta-data! 
 		 */
-		debug="change metadata of fields";
+		debug=Messages.getString("SelectValues.Debug.ChangeMetadataOfFields"); //$NON-NLS-1$
 		for (int i=0;i<data.metanrs.length;i++)
 		{
 			Value v = row.getValue(data.metanrs[i]);
@@ -313,7 +313,7 @@ public class SelectValues extends BaseStep implements StepInterface
 			if (meta.getMetaPrecision()[i]!=-2)                              v.setPrecision(meta.getMetaPrecision()[i]);
 		}
 
-		debug="End of metadataValues";
+		debug=Messages.getString("SelectValues.Debug.EndOfMetadataValues"); //$NON-NLS-1$
 
 		return true;
 	}
@@ -333,7 +333,7 @@ public class SelectValues extends BaseStep implements StepInterface
 			setOutputDone();
 			return false;
 		}
-		if (log.isRowLevel()) logRowlevel("Got row from previous step: "+r);
+		if (log.isRowLevel()) logRowlevel(Messages.getString("SelectValues.Log.GotRowFromPreviousStep")+r); //$NON-NLS-1$
 
 		err=true;
 		
@@ -348,9 +348,9 @@ public class SelectValues extends BaseStep implements StepInterface
 		} 
 
 		putRow(r);      // copy row to possible alternate rowset(s).
-		if (log.isRowLevel()) logRowlevel("Wrote row to next step: "+r);
+		if (log.isRowLevel()) logRowlevel(Messages.getString("SelectValues.Log.WroteRowToNextStep")+r); //$NON-NLS-1$
 
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead);
+		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("SelectValues.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
 		return true;
 	}
@@ -378,7 +378,7 @@ public class SelectValues extends BaseStep implements StepInterface
 			if (!atLeaseOne)
 			{
 				setErrors(1);
-				logError("At lease one of select, remove or meta screens should contain data.");
+				logError(Messages.getString("SelectValues.Log.InputShouldContainData")); //$NON-NLS-1$
 			}
 			
 			return atLeaseOne; // One of those three has to work!
@@ -396,12 +396,12 @@ public class SelectValues extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("SelectValues.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("SelectValues.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}

@@ -115,14 +115,14 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Select / Rename values");
+		shell.setText(Messages.getString("SelectValuesDialog.Shell.Label")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("SelectValuesDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -148,7 +148,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		//////////////////////////
 		
 		wSelectTab=new CTabItem(wTabFolder, SWT.NONE);
-		wSelectTab.setText("Select && Alter");
+		wSelectTab.setText(Messages.getString("SelectValuesDialog.SelectTab.TabItem")); //$NON-NLS-1$
 		
 		wSelectComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wSelectComp);
@@ -159,7 +159,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		wSelectComp.setLayout(selectLayout);
 		
 		wlFields=new Label(wSelectComp, SWT.NONE);
-		wlFields.setText("Fields :");
+		wlFields.setText(Messages.getString("SelectValuesDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -170,10 +170,10 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		final int FieldsRows=input.getSelectName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Fieldname", ColumnInfo.COLUMN_TYPE_TEXT,   false );
-		colinf[1]=new ColumnInfo("Rename to", ColumnInfo.COLUMN_TYPE_TEXT,   false );
-		colinf[2]=new ColumnInfo("Length",    ColumnInfo.COLUMN_TYPE_TEXT,   false );
-		colinf[3]=new ColumnInfo("Precision", ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colinf[0]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[1]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.RenameTo"), ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[2]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Length"),    ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
+		colinf[3]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
 		
 		wFields=new TableView(wSelectComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -184,7 +184,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 						      );
 
 		wGetSelect = new Button(wSelectComp, SWT.PUSH);
-		wGetSelect.setText("Get fields to select");
+		wGetSelect.setText(Messages.getString("SelectValuesDialog.GetSelect.Button")); //$NON-NLS-1$
 		wGetSelect.addListener(SWT.Selection, lsGet);
 		fdGetSelect = new FormData();
 		fdGetSelect.right = new FormAttachment(100, 0);
@@ -216,7 +216,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		// START OF REMOVE TAB 
 		/////////////////////////////////////////////////////////////
 		wRemoveTab=new CTabItem(wTabFolder, SWT.NONE);
-		wRemoveTab.setText("Remove");
+		wRemoveTab.setText(Messages.getString("SelectValuesDialog.RemoveTab.TabItem")); //$NON-NLS-1$
 
 		FormLayout contentLayout = new FormLayout ();
 		contentLayout.marginWidth  = margin;
@@ -227,7 +227,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		wRemoveComp.setLayout(contentLayout);
 
 		wlRemove=new Label(wRemoveComp, SWT.NONE);
-		wlRemove.setText("Fields to remove :");
+		wlRemove.setText(Messages.getString("SelectValuesDialog.Remove.Label")); //$NON-NLS-1$
  		props.setLook(wlRemove);
 		fdlRemove=new FormData();
 		fdlRemove.left = new FormAttachment(0, 0);
@@ -238,7 +238,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		final int RemoveRows=input.getDeleteName().length;
 		
 		ColumnInfo[] colrem=new ColumnInfo[RemoveCols];
-		colrem[0]=new ColumnInfo("Fieldname", ColumnInfo.COLUMN_TYPE_TEXT,   false );
+		colrem[0]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
 		
 		wRemove=new TableView(wRemoveComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -249,7 +249,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 						      );
 
 		wGetRemove = new Button(wRemoveComp, SWT.PUSH);
-		wGetRemove.setText("Get fields to remove");
+		wGetRemove.setText(Messages.getString("SelectValuesDialog.GetRemove.Button")); //$NON-NLS-1$
 		wGetRemove.addListener(SWT.Selection, lsGet);
 		fdGetRemove = new FormData();
 		fdGetRemove.right = new FormAttachment(100, 0);
@@ -283,7 +283,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		//////////////////////////
 		
 		wMetaTab=new CTabItem(wTabFolder, SWT.NONE);
-		wMetaTab.setText("Meta-data");
+		wMetaTab.setText(Messages.getString("SelectValuesDialog.MetaTab.TabItem")); //$NON-NLS-1$
 		
 		wMetaComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wMetaComp);
@@ -294,7 +294,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		wMetaComp.setLayout(metaLayout);
 		
 		wlMeta=new Label(wMetaComp, SWT.NONE);
-		wlMeta.setText("Fields to alter the meta-data for :");
+		wlMeta.setText(Messages.getString("SelectValuesDialog.Meta.Label")); //$NON-NLS-1$
  		props.setLook(wlMeta);
 		fdlMeta=new FormData();
 		fdlMeta.left = new FormAttachment(0, 0);
@@ -305,11 +305,11 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		final int MetaRows=input.getMetaName().length;
 		
 		ColumnInfo[] colmeta=new ColumnInfo[MetaCols];
-		colmeta[0]=new ColumnInfo("Fieldname",   ColumnInfo.COLUMN_TYPE_TEXT,     false );
-		colmeta[1]=new ColumnInfo("Rename to",   ColumnInfo.COLUMN_TYPE_TEXT,     false );
-		colmeta[2]=new ColumnInfo("Type",        ColumnInfo.COLUMN_TYPE_CCOMBO,   Value.getAllTypes(), true);
-		colmeta[3]=new ColumnInfo("Length",      ColumnInfo.COLUMN_TYPE_TEXT,     false );
-		colmeta[4]=new ColumnInfo("Precision",   ColumnInfo.COLUMN_TYPE_TEXT,     false );
+		colmeta[0]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Fieldname"),   ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
+		colmeta[1]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Renameto"),   ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
+		colmeta[2]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Type"),        ColumnInfo.COLUMN_TYPE_CCOMBO,   Value.getAllTypes(), true); //$NON-NLS-1$
+		colmeta[3]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Length"),      ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
+		colmeta[4]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Precision"),   ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
 		
 		wMeta=new TableView(wMetaComp, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -320,7 +320,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 						      );
 
 		wGetMeta = new Button(wMetaComp, SWT.PUSH);
-		wGetMeta.setText("Get fields to change");
+		wGetMeta.setText(Messages.getString("SelectValuesDialog.GetMeta.Button")); //$NON-NLS-1$
 		wGetMeta.addListener(SWT.Selection, lsGet);
 		fdGetMeta = new FormData();
 		fdGetMeta.right = new FormAttachment(100, 0);
@@ -363,9 +363,9 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		
 		
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("SelectValuesDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("SelectValuesDialog.Cancel.Button")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wTabFolder);
 
@@ -417,8 +417,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 					item.setText(1, input.getSelectName()     [i]);
 				if (input.getSelectRename()[i]!=null && !input.getSelectRename()[i].equals(input.getSelectName()[i]))
 					item.setText(2, input.getSelectRename()   [i]);
-				item.setText(3, input.getSelectLength()   [i]==-2?"":""+input.getSelectLength()   [i]);
-				item.setText(4, input.getSelectPrecision()[i]==-2?"":""+input.getSelectPrecision()[i]);
+				item.setText(3, input.getSelectLength()   [i]==-2?"":""+input.getSelectLength()   [i]); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText(4, input.getSelectPrecision()[i]==-2?"":""+input.getSelectPrecision()[i]); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			wFields.setRowNums();
 			wFields.optWidth(true);
@@ -453,8 +453,8 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				if (input.getMetaRename()[i]!=null && !input.getMetaRename()[i].equals(input.getMetaName()[i]))
 					item.setText(2, input.getMetaRename()   [i]);
 				item.setText(3, Value.getTypeDesc(input.getMetaType()[i]) );
-				item.setText(4, input.getMetaLength()   [i]==-2?"":""+input.getMetaLength()   [i]);
-				item.setText(5, input.getMetaPrecision()[i]==-2?"":""+input.getMetaPrecision()[i]);
+				item.setText(4, input.getMetaLength()   [i]==-2?"":""+input.getMetaLength()   [i]); //$NON-NLS-1$ //$NON-NLS-2$
+				item.setText(5, input.getMetaPrecision()[i]==-2?"":""+input.getMetaPrecision()[i]); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			wMeta.setRowNums();
 			wMeta.optWidth(true);
@@ -550,14 +550,14 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 				{
 					Value v = r.getValue(i);
 					TableItem ti = new TableItem(table, SWT.NONE);
-					ti.setText(0, ""+(count+i+1));
+					ti.setText(0, ""+(count+i+1)); //$NON-NLS-1$
 					ti.setText(1, v.getName());
 					
 					if (tabIndex==2)
 					{
 						ti.setText(3, Value.getTypeDesc(Value.VALUE_TYPE_NONE));
-						if (v.getLength()>=0)    ti.setText(4, ""+v.getLength() );
-						if (v.getPrecision()>=0) ti.setText(5, ""+v.getPrecision() );
+						if (v.getLength()>=0)    ti.setText(4, ""+v.getLength() ); //$NON-NLS-1$
+						if (v.getPrecision()>=0) ti.setText(5, ""+v.getPrecision() ); //$NON-NLS-1$
 					}
 				}
 				tv.removeEmptyRows();
@@ -567,7 +567,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("SelectValuesDialog.FailedToGetFields.DialogTitle"), Messages.getString("SelectValuesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 }
