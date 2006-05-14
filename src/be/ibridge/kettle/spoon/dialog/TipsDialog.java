@@ -13,7 +13,7 @@
  **                                                                   **
  **********************************************************************/
 
- 
+
 /*
  * Created on 19-jun-2003
  *
@@ -29,6 +29,7 @@ import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -48,30 +49,26 @@ import be.ibridge.kettle.core.WindowProperty;
 public class TipsDialog extends Dialog
 {
 	private String title, message;
-		
+
 	private Label        wlDesc;
 	private Text         wDesc;
     private FormData     fdlDesc, fdDesc;
-		
-	private Button wOK, wNext;
-	private FormData fdOK, fdNext;
-	private Listener lsOK, lsNext;
 
 	private Label        wlShowTips;
 	private Button       wShowTips;
 	private FormData     fdlShowTips, fdShowTips;
 
 	private boolean showtips;
-		
+
 
 	private Shell  shell;
 	private Display display;
 	private Props props;
-	
+
 	private String description;
 	private Font  font;
 	private Shell parent;
-	
+
 	public TipsDialog(Shell parent, Props pr)
 	{
 		super(parent, SWT.NONE);
@@ -79,7 +76,7 @@ public class TipsDialog extends Dialog
 		title=Messages.getString("TipsDialog.Dialog.Tips.Title"); //Spoon tips...
 		message=Messages.getString("TipsDialog.Label.Tips"); //TIP\!
 		this.parent = parent;
-		
+
 		description=getTip();
 
 	}
@@ -99,7 +96,7 @@ public class TipsDialog extends Dialog
 
 		shell.setLayout(formLayout);
 		shell.setText(title);
-		
+
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
@@ -142,49 +139,30 @@ public class TipsDialog extends Dialog
 		fdShowTips.top  = new FormAttachment(wDesc, margin*2);
 		fdShowTips.right= new FormAttachment(100, 0);
 		wShowTips.setLayoutData(fdShowTips);
-		wShowTips.addSelectionListener(new SelectionAdapter() 
+		wShowTips.addSelectionListener(new SelectionAdapter()
 			{
-				public void widgetSelected(SelectionEvent e) 
+				public void widgetSelected(SelectionEvent e)
 				{
 					showtips=!showtips;
 				}
 			}
 		);
 
-		// Some buttons
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.Close"));
-		wNext=new Button(shell, SWT.PUSH);
-		wNext.setText(Messages.getString("TipsDialog.Button.Tips")); //&Next tip
-		fdOK=new FormData();
-		fdOK.left       = new FormAttachment(33, 0);
-		fdOK.bottom     = new FormAttachment(100, 0);
-		wOK.setLayoutData(fdOK);
-		fdNext=new FormData();
-		fdNext.left   = new FormAttachment(66, 0);
-		fdNext.bottom = new FormAttachment(100, 0);
-		wNext.setLayoutData(fdNext);
+		populateButtons(shell);
 
-		// Add listeners
-		lsNext   = new Listener() { public void handleEvent(Event e) { next(); } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		
-		wOK.addListener    (SWT.Selection, lsOK     );
-		wNext.addListener(SWT.Selection, lsNext );
-		
 		// Detect [X] or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { next(); } } );
-		
+
 		getData();
-		
+
 		WindowProperty winprop = props.getScreen(shell.getText());
 		if (winprop!=null) winprop.setShell(shell); else
 		{
 			Point p = getMax(wDesc.getText());
 			shell.setSize(p.x+100, p.y+150);
-		} 
+		}
 
-		
+
 		shell.open();
 		while (!shell.isDisposed())
 		{
@@ -198,43 +176,89 @@ public class TipsDialog extends Dialog
 		props.setShowTips(showtips);
 		shell.dispose();
 	}
-	
+
 	public void getData()
 	{
 		if (description!=null) wDesc.setText(description);
 	}
-	
+
 	private void next()
 	{
 		wDesc.setText(getTip());
 	}
-	
+
 	private String getTip()
 	{
-		int tipnr=props.getTipNr();		
+		int tipnr=props.getTipNr();
 		String retval=Const.tips[tipnr];
 
-		tipnr++;		
+		tipnr++;
 		if (tipnr>Const.tips.length-1) tipnr=0;
 		props.setTipNr(tipnr);
 
 		return retval;
 	}
-	
+
 	private Point getMax(String str)
 	{
 		Image img = new Image(display, 1, 1);
 		GC gc = new GC(img);
 		Point p = gc.textExtent(str, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
-		
+
 		gc.dispose();
 		img.dispose();
-		
+
 		return p;
 	}
-	
+
 	private void ok()
 	{
 		dispose();
+	}
+
+	/**
+	 * Create Close and Next button on the dialog.
+	 * 
+	 * @param parent shell on which to put the buttons.
+	 */
+	private void populateButtons(Shell parent)
+	{
+     	Button wOK, wNext;
+	    FormData fdOK, fdNext;
+        Listener lsOK, lsNext;
+        int width = 0;
+        int margin = 5;
+
+		// Some buttons
+		wOK=new Button(parent, SWT.PUSH);
+		wOK.setText(Messages.getString("System.Button.Close"));
+		wOK.pack(true);
+		Rectangle rOK = wOK.getBounds();
+		
+		wNext=new Button(parent, SWT.PUSH);
+		wNext.setText(Messages.getString("TipsDialog.Button.Tips")); //&Next tip
+		wNext.pack(true);
+		Rectangle rNext = wNext.getBounds();
+		
+		width = (rOK.width > rNext.width ? rOK.width : rNext.width);
+		width += margin;
+		
+		fdOK=new FormData();
+		fdOK.left       = new FormAttachment(50, -width);
+		fdOK.right      = new FormAttachment(50, -(margin/2));
+		fdOK.bottom     = new FormAttachment(100, 0);
+		wOK.setLayoutData(fdOK);
+		fdNext=new FormData();
+		fdNext.left   = new FormAttachment(50, margin/2);
+		fdNext.right  = new FormAttachment(50, width);
+		fdNext.bottom = new FormAttachment(100, 0);
+		wNext.setLayoutData(fdNext);
+
+		// Add listeners
+		lsNext   = new Listener() { public void handleEvent(Event e) { next(); } };
+		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+
+		wOK.addListener(SWT.Selection, lsOK);
+		wNext.addListener(SWT.Selection, lsNext);
 	}
 }
