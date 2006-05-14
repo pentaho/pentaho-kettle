@@ -58,7 +58,7 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 
 public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterface
 {
-    public static final String STRING_SORT_WARNING_PARAMETER = "UniqueSortWarning";
+    public static final String STRING_SORT_WARNING_PARAMETER = "UniqueSortWarning"; //$NON-NLS-1$
     
 	private UniqueRowsMeta input;
 
@@ -102,14 +102,14 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Unique rows");
+		shell.setText(Messages.getString("UniqueRowsDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("UniqueRowsDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -127,7 +127,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		wStepname.setLayoutData(fdStepname);
 
 		wlCount=new Label(shell, SWT.RIGHT);
-		wlCount.setText("Add counter to output? ");
+		wlCount.setText(Messages.getString("UniqueRowsDialog.Count.Label")); //$NON-NLS-1$
  		props.setLook(wlCount);
 		fdlCount=new FormData();
 		fdlCount.left = new FormAttachment(0, 0);
@@ -137,7 +137,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		wCount=new Button(shell, SWT.CHECK );
  		props.setLook(wCount);
-		wCount.setToolTipText("Check this to add a field (Number) containing"+Const.CR+"the number of occurences of the row.");
+		wCount.setToolTipText(Messages.getString("UniqueRowsDialog.Count.ToolTip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
 		fdCount=new FormData();
 		fdCount.left = new FormAttachment(middle, 0);
 		fdCount.top  = new FormAttachment(wStepname, margin);
@@ -153,7 +153,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		);
 
 		wlCountField=new Label(shell, SWT.LEFT);
-		wlCountField.setText("Counter field ");
+		wlCountField.setText(Messages.getString("UniqueRowsDialog.CounterField.Label")); //$NON-NLS-1$
  		props.setLook(wlCountField);
 		fdlCountField=new FormData();
 		fdlCountField.left = new FormAttachment(wCount, margin);
@@ -170,17 +170,17 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("UniqueRowsDialog.OK.Button")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
-		wGet.setText("  &Get  ");
+		wGet.setText(Messages.getString("UniqueRowsDialog.Get.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("UniqueRowsDialog.Cancel.Button")); //$NON-NLS-1$
 		fdOK=new FormData();
 		
 		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText("Fields to compare on (no entries means: compare complete row)");
+		wlFields.setText(Messages.getString("UniqueRowsDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -191,8 +191,8 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		ColumnInfo[] colinf=new ColumnInfo[]
         {
-		  new ColumnInfo("Fieldname",    ColumnInfo.COLUMN_TYPE_TEXT,   false ),
-          new ColumnInfo("Ignore case",  ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] {"Y", "N"}, true )
+		  new ColumnInfo(Messages.getString("UniqueRowsDialog.ColumnInfo.Fieldname"),    ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+          new ColumnInfo(Messages.getString("UniqueRowsDialog.ColumnInfo.IgnoreCase"),  ColumnInfo.COLUMN_TYPE_CCOMBO,  new String[] {"Y", "N"}, true ) //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         };
 		
 		wFields=new TableView(shell, 
@@ -260,7 +260,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		{
 			TableItem item = wFields.table.getItem(i);
 			if (input.getCompareFields()[i]!=null) item.setText(1, input.getCompareFields()[i]);
-            item.setText(2, input.getCaseInsensitive()[i]?"Y":"N");
+            item.setText(2, input.getCaseInsensitive()[i]?"Y":"N"); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		wFields.setRowNums();
 		wFields.optWidth(true);
@@ -284,7 +284,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		{
 			TableItem item = wFields.getNonEmpty(i);
 			input.getCompareFields()[i] = item.getText(1);
-            input.getCaseInsensitive()[i] = "Y".equalsIgnoreCase(item.getText(2));
+            input.getCaseInsensitive()[i] = "Y".equalsIgnoreCase(item.getText(2)); //$NON-NLS-1$
 		}
 		
 		input.setCountField(wCountField.getText());
@@ -292,20 +292,20 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		
 		stepname = wStepname.getText(); // return value
 		
-        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ))
+        if ( "Y".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )) //$NON-NLS-1$ //$NON-NLS-2$
         {
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                 "Warning!", 
+                 Messages.getString("UniqueRowsDialog.InputNeedSort.DialogTitle"),  //$NON-NLS-1$
                  null,
-                 "The 'unique' function needs the input to be sorted on the specified keys." + Const.CR + "If you don't sort the input, only consequetive identical rows will be considered!"+Const.CR,
+                 Messages.getString("UniqueRowsDialog.InputNeedSort.DialogMessage", Const.CR )+Const.CR, //$NON-NLS-1$ //$NON-NLS-2$
                  MessageDialog.WARNING,
-                 new String[] { "I understand" },
+                 new String[] { Messages.getString("UniqueRowsDialog.InputNeedSort.Option1") }, //$NON-NLS-1$
                  0,
-                 "Please, don't show this warning anymore.",
-                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") )
+                 Messages.getString("UniqueRowsDialog.InputNeedSort.Option2"), //$NON-NLS-1$
+                 "N".equalsIgnoreCase( props.getCustomParameter(STRING_SORT_WARNING_PARAMETER, "Y") ) //$NON-NLS-1$ //$NON-NLS-2$
             );
             md.open();
-            props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y");
+            props.setCustomParameter(STRING_SORT_WARNING_PARAMETER, md.getToggleState()?"N":"Y"); //$NON-NLS-1$ //$NON-NLS-2$
             props.saveProps();
         }
 
@@ -335,7 +335,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, "Get fields failed", "Unable to get fields from previous steps because of an error", ke);
+			new ErrorDialog(shell, props, Messages.getString("UniqueRowsDialog.FailedToGetFields.DialogTitle"), Messages.getString("UniqueRowsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 

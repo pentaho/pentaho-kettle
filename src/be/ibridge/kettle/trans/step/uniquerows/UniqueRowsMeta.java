@@ -143,33 +143,33 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			countRows = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "count_rows"));
-			countField = XMLHandler.getTagValue(stepnode, "count_field");
+			countRows = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "count_rows")); //$NON-NLS-1$ //$NON-NLS-2$
+			countField = XMLHandler.getTagValue(stepnode, "count_field"); //$NON-NLS-1$
 
-			Node fields = XMLHandler.getSubNode(stepnode, "fields");
-			int nrfields   = XMLHandler.countNodes(fields, "field");
+			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+			int nrfields   = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
 			
 			allocate(nrfields);
 			
 			for (int i=0;i<nrfields;i++)
 			{
-				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
+				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 				
-				compareFields[i] = XMLHandler.getTagValue(fnode, "name");
-                caseInsensitive[i] = !"N".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "name") );
+				compareFields[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+                caseInsensitive[i] = !"N".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "name") ); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to load step info from XML", e);
+			throw new KettleXMLException(Messages.getString("UniqueRowsMeta.Exception.UnableToLoadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 
 	public void setDefault()
 	{
 		countRows=false;
-		countField="";
+		countField=""; //$NON-NLS-1$
 		
 		int nrfields = 0;
 		
@@ -177,7 +177,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 		
 		for (int i=0;i<nrfields;i++)
 		{
-			compareFields[i] = "field"+i;
+			compareFields[i] = "field"+i; //$NON-NLS-1$
             caseInsensitive[i] = true;
 		}
 	}
@@ -203,18 +203,18 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		StringBuffer retval=new StringBuffer();
 
-		retval.append("      "+XMLHandler.addTagValue("count_rows",  countRows));
-		retval.append("      "+XMLHandler.addTagValue("count_field", countField));
+		retval.append("      "+XMLHandler.addTagValue("count_rows",  countRows)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      "+XMLHandler.addTagValue("count_field", countField)); //$NON-NLS-1$ //$NON-NLS-2$
 
-		retval.append("    <fields>");
+		retval.append("    <fields>"); //$NON-NLS-1$
 		for (int i=0;i<compareFields.length;i++)
 		{
-			retval.append("      <field>");
-			retval.append("        "+XMLHandler.addTagValue("name",  compareFields[i]));
-            retval.append("        "+XMLHandler.addTagValue("case_insensitive",  caseInsensitive[i]));
-			retval.append("        </field>");
+			retval.append("      <field>"); //$NON-NLS-1$
+			retval.append("        "+XMLHandler.addTagValue("name",  compareFields[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        "+XMLHandler.addTagValue("case_insensitive",  caseInsensitive[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        </field>"); //$NON-NLS-1$
 		}
-		retval.append("      </fields>");
+		retval.append("      </fields>"); //$NON-NLS-1$
 
 		return retval.toString();
 	}
@@ -224,22 +224,22 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			countRows  = rep.getStepAttributeBoolean(id_step, "count_rows");
-			countField = rep.getStepAttributeString (id_step, "count_fields");
+			countRows  = rep.getStepAttributeBoolean(id_step, "count_rows"); //$NON-NLS-1$
+			countField = rep.getStepAttributeString (id_step, "count_fields"); //$NON-NLS-1$
 			
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
+			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
 			
 			allocate(nrfields);
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				compareFields[i] = rep.getStepAttributeString (id_step, i, "field_name");
-                caseInsensitive[i] = rep.getStepAttributeBoolean(id_step, i, "case_insensitive", true);
+				compareFields[i] = rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
+                caseInsensitive[i] = rep.getStepAttributeBoolean(id_step, i, "case_insensitive", true); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unexpected error reading step information from the repository ", e);
+			throw new KettleException(Messages.getString("UniqueRowsMeta.Exception.UnexpectedErrorReadingStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -248,18 +248,18 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "count_rows",    countRows);
-			rep.saveStepAttribute(id_transformation, id_step, "count_fields",  countField);
+			rep.saveStepAttribute(id_transformation, id_step, "count_rows",    countRows); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "count_fields",  countField); //$NON-NLS-1$
 
 			for (int i=0;i<compareFields.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", compareFields[i]);
-                rep.saveStepAttribute(id_transformation, id_step, i, "case_insensitive", caseInsensitive[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name", compareFields[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "case_insensitive", caseInsensitive[i]); //$NON-NLS-1$
 			}
 		}
 		catch(KettleException e)
 		{
-			throw new KettleException("Unable to save step information to the repository", e);
+			throw new KettleException(Messages.getString("UniqueRowsMeta.Exception.UnableToSaveStepInfo"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -270,12 +270,12 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("UniqueRowsMeta.CheckResult.StepReceivingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("UniqueRowsMeta.CheckResult.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

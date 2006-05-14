@@ -52,7 +52,7 @@ public class UniqueRows extends BaseStep implements StepInterface
 		meta=(UniqueRowsMeta)smi;
 		data=(UniqueRowsData)sdi;
 
-		debug="start of processRow()";
+		debug=Messages.getString("UniqueRows.Debug.StartOfProcessRow"); //$NON-NLS-1$
 		
 		Row r=getRow();    // get row!
 		if (r==null)  // no more input to be expected...
@@ -69,7 +69,7 @@ public class UniqueRows extends BaseStep implements StepInterface
 
 		if (first)
 		{
-			debug="first: create new row";
+			debug=Messages.getString("UniqueRows.Debug.FirstCreateNewRow"); //$NON-NLS-1$
 			data.previous=new Row(r); // copy the row
 			first=false;
 			
@@ -85,7 +85,7 @@ public class UniqueRows extends BaseStep implements StepInterface
                 data.caseInsensitive[i] = meta.getCaseInsensitive()[i];
 				if (data.fieldnrs[i]<0)
 				{
-					logError("Couldn't find field ["+meta.getCompareFields()[i]+" in row!");
+					logError(Messages.getString("UniqueRows.Log.CouldNotFindFieldInRow",meta.getCompareFields()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -93,7 +93,7 @@ public class UniqueRows extends BaseStep implements StepInterface
 			}
 		}
 		
-		debug="check for doubles...";
+		debug=Messages.getString("UniqueRows.Debug.CheckforDoubles"); //$NON-NLS-1$
 		boolean isEqual = false;
 		
 		if (meta.getCompareFields()==null || meta.getCompareFields().length==0)
@@ -117,7 +117,7 @@ public class UniqueRows extends BaseStep implements StepInterface
 			data.counter++;
 		}
 
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesRead);
+		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("UniqueRows.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
 		return true;
 	}
@@ -153,12 +153,12 @@ public class UniqueRows extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("UniqueRows.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("UniqueRows.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}
