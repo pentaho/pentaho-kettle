@@ -57,7 +57,7 @@ public class NullIf extends BaseStep implements StepInterface
 			return false;
 		}
 		
-		if (log.isRowLevel()) logRowlevel("Convert field values to NULL for row: "+r);
+		if (log.isRowLevel()) logRowlevel(Messages.getString("NullIf.Log.ConvertFieldValuesToNullForRow")+r); //$NON-NLS-1$
 		
 		if (first)
 		{
@@ -70,7 +70,7 @@ public class NullIf extends BaseStep implements StepInterface
 		        data.keynr[i] = r.searchValueIndex(meta.getFieldName()[i]);
 				if (data.keynr[i]<0)
 				{
-					logError("Couldn't find field '"+meta.getFieldName()[i]+"' in row!");
+					logError(Messages.getString("NullIf.Log.CouldNotFindFieldInRow",meta.getFieldName()[i])); //$NON-NLS-1$ //$NON-NLS-2$
 					setErrors(1);
 					stopAll();
 					return false;
@@ -122,12 +122,12 @@ public class NullIf extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("NullIf.Log.StartingToRun")); //$NON-NLS-1$
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError(Messages.getString("NullIf.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}

@@ -119,22 +119,22 @@ public class NullIfMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			Node fields = XMLHandler.getSubNode(stepnode, "fields");
-			int count= XMLHandler.countNodes(fields, "field");
+			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+			int count= XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
 			
 			allocate(count);
 					
 			for (int i=0;i<count;i++)
 			{
-				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i);
+				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 				
-				fieldName[i]  = XMLHandler.getTagValue(fnode, "name");
-				fieldValue[i] = XMLHandler.getTagValue(fnode, "value");
+				fieldName[i]  = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
+				fieldValue[i] = XMLHandler.getTagValue(fnode, "value"); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to read step information from XML", e);
+			throw new KettleXMLException(Messages.getString("NullIfMeta.Exception.UnableToReadStepInfoFromXML"), e); //$NON-NLS-1$
 		}
 	}
 	
@@ -146,8 +146,8 @@ public class NullIfMeta extends BaseStepMeta implements StepMetaInterface
 
 		for (int i=0;i<count;i++)
 		{
-			fieldName[i] = "field"+i;
-			fieldValue[i] = "";
+			fieldName[i] = "field"+i; //$NON-NLS-1$
+			fieldValue[i] = ""; //$NON-NLS-1$
 		}
 	}
 
@@ -166,16 +166,16 @@ public class NullIfMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 
-		retval.append("    <fields>"+Const.CR);
+		retval.append("    <fields>"+Const.CR); //$NON-NLS-1$
 		
 		for (int i=0;i<fieldName.length;i++)
 		{
-			retval.append("      <field>"+Const.CR);
-			retval.append("        "+XMLHandler.addTagValue("name", fieldName[i]));
-			retval.append("        "+XMLHandler.addTagValue("value", fieldValue[i]));
-			retval.append("        </field>"+Const.CR);
+			retval.append("      <field>"+Const.CR); //$NON-NLS-1$
+			retval.append("        "+XMLHandler.addTagValue("name", fieldName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("value", fieldValue[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        </field>"+Const.CR); //$NON-NLS-1$
 		}
-		retval.append("      </fields>"+Const.CR);
+		retval.append("      </fields>"+Const.CR); //$NON-NLS-1$
 
 		return retval.toString();
 	}
@@ -185,19 +185,19 @@ public class NullIfMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
+			int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
 			
 			allocate(nrfields);
 	
 			for (int i=0;i<nrfields;i++)
 			{
-				fieldName[i] =          rep.getStepAttributeString(id_step, i, "field_name");
-				fieldValue[i] = 		rep.getStepAttributeString(id_step, i, "field_value");
+				fieldName[i] =          rep.getStepAttributeString(id_step, i, "field_name"); //$NON-NLS-1$
+				fieldValue[i] = 		rep.getStepAttributeString(id_step, i, "field_value"); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unexpected error reading step information from the repository", e);
+			throw new KettleException(Messages.getString("NullIfMeta.Exception.UnexpectedErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
 		}
 	}
 
@@ -208,13 +208,13 @@ public class NullIfMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			for (int i=0;i<fieldName.length;i++)
 			{
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldName[i]);
-				rep.saveStepAttribute(id_transformation, id_step, i, "field_value",     fieldValue[i]);
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldName[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "field_value",     fieldValue[i]); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
 		{
-			throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
+			throw new KettleException(Messages.getString("NullIfMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
 		}
 
 	}
@@ -224,24 +224,24 @@ public class NullIfMeta extends BaseStepMeta implements StepMetaInterface
 		CheckResult cr;
 		if (prev==null || prev.size()==0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, "Not receiving any fields from previous steps!", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("NullIfMeta.CheckResult.NoReceivingFieldsError"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is connected to previous one, receiving "+prev.size()+" fields", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("NullIfMeta.CheckResult.StepReceivingFieldsOK",prev.size()+""), stepinfo); //$NON-NLS-1$ //$NON-NLS-2$
 			remarks.add(cr);
 		}
 		
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "Step is receiving info from other steps.", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("NullIfMeta.CheckResult.StepRecevingInfoFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "No input received from other steps!", stepinfo);
+			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("NullIfMeta.CheckResult.NoInputReceivedError"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}

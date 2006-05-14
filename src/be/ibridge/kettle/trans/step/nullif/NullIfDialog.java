@@ -89,14 +89,14 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Null If");
+		shell.setText(Messages.getString("NullIfDialog.Shell.Label")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name : ");
+		wlStepname.setText(Messages.getString("NullIfDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -114,7 +114,7 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 		wStepname.setLayoutData(fdStepname);
 
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText("Fields: ");
+		wlFields.setText(Messages.getString("NullIfDialog.Fields.Label")); //$NON-NLS-1$
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -125,8 +125,8 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 		final int FieldsRows=input.getFieldName().length;
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo("Name",       				 ColumnInfo.COLUMN_TYPE_TEXT, false);
-		colinf[1]=new ColumnInfo("Value to turn to NULL",    ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinf[0]=new ColumnInfo(Messages.getString("NullIfDialog.ColumnInfo.Name"),       				 ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		colinf[1]=new ColumnInfo(Messages.getString("NullIfDialog.ColumnInfo.ValueToNull"),    ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 
 		wFields=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -146,9 +146,9 @@ public class NullIfDialog extends BaseStepDialog implements StepDialogInterface
 				
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
+		wOK.setText(Messages.getString("NullIfDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
+		wCancel.setText(Messages.getString("NullIfDialog.Cancel.Button")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
 
