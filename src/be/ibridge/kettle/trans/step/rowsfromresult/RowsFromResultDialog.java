@@ -86,14 +86,14 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Get rows from previous result");
+		shell.setText(Messages.getString("RowsFromResultDialog.Shell.Title")); //$NON-NLS-1$
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 		
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
-		wlStepname.setText("Step name ");
+		wlStepname.setText(Messages.getString("RowsFromResultDialog.Stepname.Label")); //$NON-NLS-1$
  		props.setLook(wlStepname);
 		fdlStepname=new FormData();
 		fdlStepname.left = new FormAttachment(0, 0);
@@ -112,7 +112,7 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 		
         
         wlFields=new Label(shell, SWT.NONE);
-        wlFields.setText("Fields :");
+        wlFields.setText(Messages.getString("RowsFromResultDialog.Fields.Label")); //$NON-NLS-1$
         props.setLook(wlFields);
         fdlFields=new FormData();
         fdlFields.left = new FormAttachment(0, 0);
@@ -123,10 +123,10 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
         
         ColumnInfo[] colinf=new ColumnInfo[] 
             {
-                new ColumnInfo("Fieldname", ColumnInfo.COLUMN_TYPE_TEXT,    false ),
-                new ColumnInfo("Type",      ColumnInfo.COLUMN_TYPE_CCOMBO,  Value.getAllTypes()),
-                new ColumnInfo("Length",    ColumnInfo.COLUMN_TYPE_TEXT,    false ),
-                new ColumnInfo("Precision", ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+                new ColumnInfo(Messages.getString("RowsFromResultDialog.ColumnInfo.Fieldname"), ColumnInfo.COLUMN_TYPE_TEXT,    false ), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("RowsFromResultDialog.ColumnInfo.Type"),      ColumnInfo.COLUMN_TYPE_CCOMBO,  Value.getAllTypes()), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("RowsFromResultDialog.ColumnInfo.Length"),    ColumnInfo.COLUMN_TYPE_TEXT,    false ), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("RowsFromResultDialog.ColumnInfo.Precision"), ColumnInfo.COLUMN_TYPE_TEXT,    false ), //$NON-NLS-1$
             };
         
         wFields=new TableView(shell, 
@@ -139,9 +139,9 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
 
         // Some buttons
         wOK=new Button(shell, SWT.PUSH);
-        wOK.setText("  &OK  ");
+        wOK.setText(Messages.getString("RowsFromResultDialog.OK.Button")); //$NON-NLS-1$
         wCancel=new Button(shell, SWT.PUSH);
-        wCancel.setText("  &Cancel  ");
+        wCancel.setText(Messages.getString("RowsFromResultDialog.Cancel.Button")); //$NON-NLS-1$
         
         setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
         
@@ -194,8 +194,8 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
             item.setText(2, Value.getTypeDesc(input.getType()[i]));
             int len = input.getLength()[i];
             int prc = input.getPrecision()[i];
-            item.setText(3, len>=0?""+len:"");
-            item.setText(4, prc>=0?""+prc:"");
+            item.setText(3, len>=0?""+len:""); //$NON-NLS-1$ //$NON-NLS-2$
+            item.setText(4, prc>=0?""+prc:""); //$NON-NLS-1$ //$NON-NLS-2$
         }
 	}
 	

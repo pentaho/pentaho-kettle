@@ -145,35 +145,35 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
     public String getXML()
     {
         StringBuffer retval=new StringBuffer();
-        retval.append("    <fields>");
+        retval.append("    <fields>"); //$NON-NLS-1$
         for (int i=0;i<name.length;i++)
         {
-            retval.append("      <field>");
-            retval.append("        "+XMLHandler.addTagValue("name",      name[i]));
-            retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(type[i])));
-            retval.append("        "+XMLHandler.addTagValue("length",    length[i]));
-            retval.append("        "+XMLHandler.addTagValue("precision", precision[i]));
-            retval.append("        </field>");
+            retval.append("      <field>"); //$NON-NLS-1$
+            retval.append("        "+XMLHandler.addTagValue("name",      name[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        "+XMLHandler.addTagValue("type",      Value.getTypeDesc(type[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        "+XMLHandler.addTagValue("length",    length[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        "+XMLHandler.addTagValue("precision", precision[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        </field>"); //$NON-NLS-1$
         }
-        retval.append("      </fields>");
+        retval.append("      </fields>"); //$NON-NLS-1$
 
         return retval.toString();
     }
     
 	private void readData(Node stepnode)
 	{
-        Node fields = XMLHandler.getSubNode(stepnode, "fields");
-        int nrfields   = XMLHandler.countNodes(fields, "field");
+        Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
+        int nrfields   = XMLHandler.countNodes(fields, "field"); //$NON-NLS-1$
 
         allocate(nrfields);
         
         for (int i=0;i<nrfields;i++)
         {
-            Node line = XMLHandler.getSubNodeByNr(fields, "field", i);
-            name     [i] = XMLHandler.getTagValue(line, "name");
-            type     [i] = Value.getType(XMLHandler.getTagValue(line, "type"));
-            length   [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2);
-            precision[i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2);
+            Node line = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+            name     [i] = XMLHandler.getTagValue(line, "name"); //$NON-NLS-1$
+            type     [i] = Value.getType(XMLHandler.getTagValue(line, "type")); //$NON-NLS-1$
+            length   [i] = Const.toInt(XMLHandler.getTagValue(line, "length"), -2); //$NON-NLS-1$
+            precision[i] = Const.toInt(XMLHandler.getTagValue(line, "precision"), -2); //$NON-NLS-1$
         }
 
 	}
@@ -188,20 +188,20 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
 	{
         try
         {
-           int nrfields = rep.countNrStepAttributes(id_step, "field_name");
+           int nrfields = rep.countNrStepAttributes(id_step, "field_name"); //$NON-NLS-1$
             allocate(nrfields);
     
             for (int i=0;i<nrfields;i++)
             {
-                name[i]      =      rep.getStepAttributeString (id_step, i, "field_name");
-                type[i]      = Value.getType( rep.getStepAttributeString (id_step, i, "field_type"));
-                length[i]    = (int)rep.getStepAttributeInteger(id_step, i, "field_length");
-                precision[i] = (int)rep.getStepAttributeInteger(id_step, i, "field_precision");
+                name[i]      =      rep.getStepAttributeString (id_step, i, "field_name"); //$NON-NLS-1$
+                type[i]      = Value.getType( rep.getStepAttributeString (id_step, i, "field_type")); //$NON-NLS-1$
+                length[i]    = (int)rep.getStepAttributeInteger(id_step, i, "field_length"); //$NON-NLS-1$
+                precision[i] = (int)rep.getStepAttributeInteger(id_step, i, "field_precision"); //$NON-NLS-1$
             }
         }
         catch(Exception e)
         {
-            throw new KettleException("Unexpected error reading step information from the repository", e);
+            throw new KettleException(Messages.getString("RowsFromResultMeta.Exception.ErrorReadingStepInfoFromRepository"), e); //$NON-NLS-1$
         }
 
 	}
@@ -213,15 +213,15 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
         {
             for (int i=0;i<name.length;i++)
             {
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      name[i]);
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      Value.getTypeDesc(type[i]));
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    length[i]);
-                rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", precision[i]);
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      name[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_type",      Value.getTypeDesc(type[i])); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    length[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", precision[i]); //$NON-NLS-1$
             }
         }
         catch(Exception e)
         {
-            throw new KettleException("Unable to save step information to the repository for id_step="+id_step, e);
+            throw new KettleException(Messages.getString("RowsFromResultMeta.Exception.UnableToSaveStepInfoToRepository")+id_step, e); //$NON-NLS-1$
         }
 	}
     
@@ -241,12 +241,12 @@ public class RowsFromResultMeta extends BaseStepMeta implements StepMetaInterfac
 		// See if we have input streams leading to this step!
 		if (input.length>0)
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, "This step is expecting nor reading info from other steps.", stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("RowsFromResultMeta.CheckResult.StepExpectingNoReadingInfoFromOtherSteps"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 		else
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, "No input received from other steps.", stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RowsFromResultMeta.CheckResult.NoInputReceivedError"), stepMeta); //$NON-NLS-1$
 			remarks.add(cr);
 		}
 	}
