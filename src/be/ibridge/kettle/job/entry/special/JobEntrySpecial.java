@@ -20,6 +20,7 @@ import java.util.Calendar;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
@@ -105,12 +106,12 @@ public class JobEntrySpecial extends JobEntryBase implements JobEntryInterface
 			start = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "start"));
 			dummy = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "dummy"));
 			repeat = "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "repeat"));
-			setSchedulerType	 ( Integer.parseInt(XMLHandler.getTagValue(entrynode, "schedulerType")) );
-			setInterval	 ( Integer.parseInt(XMLHandler.getTagValue(entrynode, "interval")) );
-			setHour      ( Integer.parseInt(XMLHandler.getTagValue(entrynode, "hour")) );
-			setMinutes   ( Integer.parseInt(XMLHandler.getTagValue(entrynode, "minutes")) );
-			setWeekDay   ( Integer.parseInt(XMLHandler.getTagValue(entrynode, "weekDay")) );
-			setDayOfMonth( Integer.parseInt(XMLHandler.getTagValue(entrynode, "dayOfMonth")) );
+			setSchedulerType( Const.toInt(XMLHandler.getTagValue(entrynode, "schedulerType"), NOSCHEDULING) );
+			setInterval	 ( Const.toInt(XMLHandler.getTagValue(entrynode, "interval"), 0) );
+			setHour      ( Const.toInt(XMLHandler.getTagValue(entrynode, "hour"), 0) );
+			setMinutes   ( Const.toInt(XMLHandler.getTagValue(entrynode, "minutes"), 0) );
+			setWeekDay   ( Const.toInt(XMLHandler.getTagValue(entrynode, "weekDay"), 0) );
+			setDayOfMonth( Const.toInt(XMLHandler.getTagValue(entrynode, "dayOfMonth"), 0) );
 		}
 		catch(KettleException e)
 		{
