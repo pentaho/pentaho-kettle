@@ -184,7 +184,14 @@ public class RepositoriesDialog
                         GC gc = new GC(image);
     					gc.setBackground(GUIResource.getInstance().getColorBackground());
     					gc.fillRectangle(0,0, canvasBounds.width, canvasBounds.height);
-    					gc.drawImage(logo, (canvasBounds.width-bounds.width)/2, (canvasBounds.height-bounds.height)/2);
+                        if (canvasBounds.width>bounds.width && canvasBounds.height>bounds.height)
+                        {
+                            gc.drawImage(logo, (canvasBounds.width-bounds.width)/2, (canvasBounds.height-bounds.height)/2);
+                        }
+                        else
+                        {
+                            gc.drawImage(logo, 0,0, bounds.width, bounds.height, 0, 0, canvasBounds.width, canvasBounds.height);
+                        }
                         pe.gc.drawImage(image, 0, 0); // no flicker anymore!
                         gc.dispose();
                         image.dispose();
