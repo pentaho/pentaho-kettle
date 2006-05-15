@@ -352,4 +352,17 @@ public class BaseStepDialog extends Dialog
     {
         this.repository = repository;
     }
+
+    public static void setMinimalShellHeight(Shell shell, Control[] controls, int margin, int extra)
+    {
+        int height = 0;
+        
+        for (int i=0;i<controls.length;i++)
+        {
+            Rectangle bounds = controls[i].getBounds();
+            height+=bounds.height+margin;
+        }
+        height+=extra;
+        shell.setSize(shell.getBounds().width, height);
+    }
 }
