@@ -227,7 +227,7 @@ public class TipsDialog extends Dialog
 	    FormData fdOK, fdNext;
         Listener lsOK, lsNext;
         int width = 0;
-        int margin = 5;
+        int margin = Const.MARGIN;
 
 		// Some buttons
 		wOK=new Button(parent, SWT.PUSH);

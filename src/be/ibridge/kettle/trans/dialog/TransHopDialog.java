@@ -28,6 +28,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -117,6 +118,7 @@ public class TransHopDialog extends Dialog
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
+        int width = 0;
         
 		// From step line
 		wlFrom=new Label(shell, SWT.RIGHT);
@@ -169,14 +171,7 @@ public class TransHopDialog extends Dialog
 		fdTo.top  = new FormAttachment(wFrom, margin);
 		fdTo.right= new FormAttachment(100, 0);
 		wTo.setLayoutData(fdTo);
-		
-		wFlip = new Button(shell, SWT.PUSH);
-		wFlip.setText(Messages.getString("TransHopDialog.FromTo.Button")); //$NON-NLS-1$
-		fdFlip = new FormData();
-		fdFlip.left = new FormAttachment(middle, margin);
-		fdFlip.top  = new FormAttachment(wTo, margin*2);
-		wFlip.setLayoutData(fdFlip);
-	
+
 		// Enabled?
 		wlEnabled=new Label(shell, SWT.RIGHT);
 		wlEnabled.setText(Messages.getString("TransHopDialog.EnableHop.Label")); //$NON-NLS-1$
@@ -184,14 +179,13 @@ public class TransHopDialog extends Dialog
 		fdlEnabled=new FormData();
 		fdlEnabled.left = new FormAttachment(0, 0);
 		fdlEnabled.right= new FormAttachment(middle, -margin);
-		fdlEnabled.top  = new FormAttachment(wFlip, margin*2);
+		fdlEnabled.top  = new FormAttachment(wlTo, margin*5);
 		wlEnabled.setLayoutData(fdlEnabled);
 		wEnabled=new Button(shell, SWT.CHECK);
  		props.setLook(wEnabled);
 		fdEnabled=new FormData();
 		fdEnabled.left = new FormAttachment(middle, 0);
-		fdEnabled.top  = new FormAttachment(wFlip, margin*2);
-		fdEnabled.right= new FormAttachment(100, 0);
+		fdEnabled.top  = new FormAttachment(wlTo, margin*5);	
 		wEnabled.setLayoutData(fdEnabled);
 		wEnabled.addSelectionListener(new SelectionAdapter() 
 			{
@@ -203,20 +197,41 @@ public class TransHopDialog extends Dialog
 			}
 		);
 		
+		wFlip = new Button(shell, SWT.PUSH);
+		wFlip.setText(Messages.getString("TransHopDialog.FromTo.Button")); //$NON-NLS-1$
+		fdFlip = new FormData();
+		fdFlip.left = new FormAttachment(wEnabled, margin*5);
+		fdFlip.top  = new FormAttachment(wlTo, margin*5);
+		wFlip.setLayoutData(fdFlip);
+		      
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("TransHopDialog.OK.Button")); //$NON-NLS-1$
+		wOK.pack(true);
+		Rectangle rOK = wOK.getBounds();
+		
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("TransHopDialog.Cancel.Button")); //$NON-NLS-1$
+		wCancel.pack(true);
+		Rectangle rCancel = wCancel.getBounds();
+		
+		width = (rOK.width > rCancel.width ? rOK.width : rCancel.width);
+		width += margin;
+		
 		fdOK=new FormData();
-		fdOK.left       = new FormAttachment(33, 0);
-		fdOK.top        = new FormAttachment(wEnabled, margin*2);
+		fdOK.top        = new FormAttachment(wFlip, margin*5);
+		fdOK.left       = new FormAttachment(50, -width);
+		fdOK.right      = new FormAttachment(50, -(margin/2));
+		//fdOK.bottom     = new FormAttachment(100, 0);
 		wOK.setLayoutData(fdOK);
+		
 		fdCancel=new FormData();
-		fdCancel.left   = new FormAttachment(66, 0);
-		fdCancel.top    = new FormAttachment(wEnabled, margin*2);
+		fdCancel.top    = new FormAttachment(wFlip, margin*5);
+		fdCancel.left   = new FormAttachment(50, margin/2);
+		fdCancel.right  = new FormAttachment(50, width);
+		//fdCancel.bottom = new FormAttachment(100, 0);
 		wCancel.setLayoutData(fdCancel);
-
+		
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
