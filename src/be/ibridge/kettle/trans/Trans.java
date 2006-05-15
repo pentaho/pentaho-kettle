@@ -737,8 +737,7 @@ public class Trans
 
 	//
 	// Handle logging at start
-	public void beginProcessing()
-		throws KettleTransException
+	public void beginProcessing() throws KettleTransException
 	{
 		try
 		{
@@ -1337,6 +1336,32 @@ public class Trans
 	{
 		return safeModeEnabled;
 	}
+
+    /**
+     * This adds a row producer to the transformation that just got set up.
+     * Preferable run this BEFORE execute() but after prepareExcution()
+     * 
+     * @param stepname The step to produce rows for
+     * @param copynr The copynr of the step to produce row for (normally 0 unless you have multiple copies running)
+     * @param producer The object implementing the RowProducer interface 
+     * @throws KettleException in case the thread/step to produce rows for could not be found.
+     */
+    public RowProducer addRowProducer(String stepname, int copynr) throws KettleException
+    {
+        StepInterface stepInterface = getStepInterface(stepname, copynr);
+        if (stepInterface==null)
+        {
+            throw new KettleException("Unable to find thread with name "+stepname+" and copy number "+copynr);
+        }
+        
+        // We are going to add an extra RowSet to this stepInterface.
+        RowSet rowSet = new RowSet(transMeta.getSizeRowset());
+        
+        // Add this rowset to the list of active rowsets for the selected step
+        stepInterface.getInputRowSets().add(rowSet);
+        
+        return new RowProducer(stepInterface, rowSet); 
+    }
 
 }
 

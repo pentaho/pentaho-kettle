@@ -442,8 +442,8 @@ public class BaseStep extends Thread
 	private int         in_handling, out_handling;
 	public  ArrayList   thr;
     
-	protected ArrayList inputRowSets;
-	protected ArrayList outputRowSets;
+	public ArrayList inputRowSets;
+	public ArrayList outputRowSets;
 	
 	public boolean stopped;
 	public boolean waiting;
@@ -1558,7 +1558,7 @@ public class BaseStep extends Thread
     /**
      * @return Returns the inputRowSets.
      */
-    public ArrayList getInputRowSets()
+    public List getInputRowSets()
     {
         return inputRowSets;
     }
@@ -1574,7 +1574,7 @@ public class BaseStep extends Thread
     /**
      * @return Returns the outputRowSets.
      */
-    public ArrayList getOutputRowSets()
+    public List getOutputRowSets()
     {
         return outputRowSets;
     }
@@ -1674,4 +1674,5 @@ public class BaseStep extends Thread
 	{
 		this.safeModeEnabled = safeModeEnabled;
 	}
+    
 }

@@ -178,4 +178,15 @@ public interface StepInterface
      * @return a list of the installed RowListeners
      */
     public List getRowListeners();
+    
+    /**
+     * @return The list of active input rowsets for the step
+     */
+    public List getInputRowSets();
+
+    /**
+     * @return The list of active output rowsets for the step
+     */
+    public List getOutputRowSets();
+
 }
