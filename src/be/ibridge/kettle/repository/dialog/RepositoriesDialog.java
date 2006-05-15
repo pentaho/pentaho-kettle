@@ -32,6 +32,7 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.events.TraverseEvent;
 import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
@@ -39,6 +40,7 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -167,7 +169,7 @@ public class RepositoriesDialog
 		fdCanvas.left   = new FormAttachment(0, 0); 
 		fdCanvas.right  = new FormAttachment(100, 0);
 		fdCanvas.top    = new FormAttachment(0, 0);
-		fdCanvas.bottom = new FormAttachment(0, bounds.height);
+		fdCanvas.bottom = new FormAttachment(60, 0);
 		wCanvas.setLayoutData(fdCanvas);
 		wCanvas.setSize(bounds.width, bounds.height);
 
@@ -175,9 +177,18 @@ public class RepositoriesDialog
 			{
 				public void paintControl(PaintEvent pe)
 				{
-					pe.gc.setBackground(GUIResource.getInstance().getColorBackground());
-					pe.gc.fillRectangle(0,0, bounds.width, bounds.height);
-					pe.gc.drawImage(logo, 0, 0);
+                    Rectangle canvasBounds = wCanvas.getBounds();
+                    if (canvasBounds.width>0 && canvasBounds.height>0)
+                    {
+                        Image image = new Image(display, canvasBounds.width, canvasBounds.height);
+                        GC gc = new GC(image);
+    					gc.setBackground(GUIResource.getInstance().getColorBackground());
+    					gc.fillRectangle(0,0, canvasBounds.width, canvasBounds.height);
+    					gc.drawImage(logo, (canvasBounds.width-bounds.width)/2, (canvasBounds.height-bounds.height)/2);
+                        pe.gc.drawImage(image, 0, 0); // no flicker anymore!
+                        gc.dispose();
+                        image.dispose();
+                    }
 				}
 			}
 		);
@@ -195,14 +206,61 @@ public class RepositoriesDialog
 		fdlKettle.top  = new FormAttachment(wCanvas, margin);
 		wlKettle.setLayoutData(fdlKettle);
 
+		// First add the buttons at the bottom
+        
+        wOK=new Button(shell, SWT.PUSH);
+        wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+        wNorep=new Button(shell, SWT.PUSH);
+        wNorep.setText(Messages.getString("RepositoriesDialog.Button.NoRepository")); //$NON-NLS-1$
+        wCancel=new Button(shell, SWT.PUSH);
+        wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+        
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wNorep, wCancel }, Const.MARGIN, null);
+
+                // Password
+        wlPassword = new Label(shell, SWT.RIGHT ); 
+        wlPassword.setText(Messages.getString("RepositoriesDialog.Label.Password"));  //$NON-NLS-1$
+        props.setLook(wlPassword);
+        fdlPassword = new FormData();
+        fdlPassword.left   = new FormAttachment(0,0);
+        fdlPassword.right  = new FormAttachment(middle, -margin);
+        fdlPassword.bottom = new FormAttachment(wOK, -margin*3);
+        wlPassword.setLayoutData(fdlPassword);
+        wPassword = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wPassword);
+        wPassword.setEchoChar('*');
+        fdPassword = new FormData();
+        fdPassword.left   = new FormAttachment(middle, 0); 
+        fdPassword.right  = new FormAttachment(100, -right);
+        fdPassword.bottom = new FormAttachment(wOK, -margin*3);
+        wPassword.setLayoutData(fdPassword);
+
+        // Username
+        wlUsername = new Label(shell, SWT.RIGHT ); 
+        wlUsername.setText(Messages.getString("RepositoriesDialog.Label.Login"));  //$NON-NLS-1$
+        props.setLook(wlUsername);
+        fdlUsername = new FormData();
+        fdlUsername.left   = new FormAttachment(0,0); 
+        fdlUsername.right  = new FormAttachment(middle, -margin);
+        fdlUsername.bottom = new FormAttachment(wPassword, -margin);
+        wlUsername.setLayoutData(fdlUsername);
+        wUsername = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wUsername);
+        fdUsername = new FormData();
+        fdUsername.left = new FormAttachment(middle, 0); 
+        fdUsername.right= new FormAttachment(100, -right);
+        fdUsername.bottom = new FormAttachment(wPassword, -margin);
+        wUsername.setLayoutData(fdUsername);
+
+
 		// Repository selector
 		wlRepository=new Label(shell, SWT.RIGHT);
 		wlRepository.setText(Messages.getString("RepositoriesDialog.Label.Repository")); //$NON-NLS-1$
  		props.setLook(wlRepository);
 		fdlRepository=new FormData();
-		fdlRepository.left = new FormAttachment(0, 0);
-		fdlRepository.right= new FormAttachment(middle, -margin);
-		fdlRepository.top  = new FormAttachment(wlKettle, 20);
+		fdlRepository.left   = new FormAttachment(0, 0);
+		fdlRepository.right  = new FormAttachment(middle, -margin);
+		fdlRepository.bottom = new FormAttachment(wUsername, -margin);
 		wlRepository.setLayoutData(fdlRepository);
 		wRepository=new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 
@@ -213,25 +271,25 @@ public class RepositoriesDialog
 
 		// Button positions...
 		fddRepository = new FormData();		
-		fddRepository.right= new FormAttachment(100, -right);
-		fddRepository.top  = new FormAttachment(wlKettle, 20);
+		fddRepository.right  = new FormAttachment(100, -right);
+		fddRepository.bottom = new FormAttachment(wUsername, -margin);
 		wdRepository.setLayoutData(fddRepository);
 
 		fdeRepository = new FormData();		
 		fdeRepository.right = new FormAttachment(wdRepository, -margin);
-		fdeRepository.top  = new FormAttachment(wlKettle, 20);
+        fdeRepository.bottom = new FormAttachment(wUsername, -margin);
 		weRepository.setLayoutData(fdeRepository);
 
 		fdnRepository = new FormData();		
 		fdnRepository.right= new FormAttachment(weRepository, -margin);
-		fdnRepository.top  = new FormAttachment(wlKettle, 20);
+        fdnRepository.bottom = new FormAttachment(wUsername, -margin);
 		wnRepository.setLayoutData(fdnRepository);
 
  		props.setLook(wRepository);
 		fdRepository=new FormData();
 		fdRepository.left = new FormAttachment(middle, 0);
 		fdRepository.right= new FormAttachment(wnRepository, -margin);
-		fdRepository.top  = new FormAttachment(wlKettle, 20);
+        fdRepository.bottom = new FormAttachment(wUsername, -margin);
 		wRepository.setLayoutData(fdRepository);
 
 		// Add the listeners
@@ -299,49 +357,6 @@ public class RepositoriesDialog
 			}
 		);
 
-		// Username
-		wlUsername = new Label(shell, SWT.RIGHT ); 
-		wlUsername.setText(Messages.getString("RepositoriesDialog.Label.Login"));  //$NON-NLS-1$
- 		props.setLook(wlUsername);
-		fdlUsername = new FormData();
-		fdlUsername.left = new FormAttachment(0,0); 
-		fdlUsername.right= new FormAttachment(middle, -margin);
-		fdlUsername.top  = new FormAttachment(wdRepository, margin);
-		wlUsername.setLayoutData(fdlUsername);
-		wUsername = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(wUsername);
-		fdUsername = new FormData();
-		fdUsername.left = new FormAttachment(middle, 0); 
-		fdUsername.right= new FormAttachment(100, -right);
-		fdUsername.top  = new FormAttachment(wdRepository, margin);
-		wUsername.setLayoutData(fdUsername);
-
-		// Password
-		wlPassword = new Label(shell, SWT.RIGHT ); 
-		wlPassword.setText(Messages.getString("RepositoriesDialog.Label.Password"));  //$NON-NLS-1$
- 		props.setLook(wlPassword);
-		fdlPassword = new FormData();
-		fdlPassword.left   = new FormAttachment(0,0);
-		fdlPassword.right  = new FormAttachment(middle, -margin);
-		fdlPassword.top    = new FormAttachment(wUsername, margin);
-		wlPassword.setLayoutData(fdlPassword);
-		wPassword = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(wPassword);
-		wPassword.setEchoChar('*');
-		fdPassword = new FormData();
-		fdPassword.left   = new FormAttachment(middle, 0); 
-		fdPassword.right  = new FormAttachment(100, -right);
-		fdPassword.top    = new FormAttachment(wUsername, margin);
-		wPassword.setLayoutData(fdPassword);
-
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
-		wNorep=new Button(shell, SWT.PUSH);
-		wNorep.setText(Messages.getString("RepositoriesDialog.Button.NoRepository")); //$NON-NLS-1$
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
-		
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wNorep, wCancel }, Const.MARGIN, null);
 				
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -383,8 +398,10 @@ public class RepositoriesDialog
 
 		getData();
 		
-		shell.pack();
-		shell.setSize(bounds.width, shell.getBounds().height+wOK.getBounds().height+30);
+		shell.layout();
+        
+        BaseStepDialog.setMinimalShellHeight(shell, new Control[] {wCanvas, wRepository, wUsername, wPassword, wOK }, margin, 2*margin);
+		// shell.setSize(bounds.width, shell.getBounds().height+wOK.getBounds().height+30);
 	
 		WindowProperty winprop = props.getScreen(shell.getText());
 		if (winprop!=null)
