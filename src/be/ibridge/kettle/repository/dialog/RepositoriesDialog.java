@@ -400,7 +400,7 @@ public class RepositoriesDialog
 		
 		shell.layout();
         
-        BaseStepDialog.setMinimalShellHeight(shell, new Control[] {wCanvas, wRepository, wUsername, wPassword, wOK }, margin, 2*margin);
+        BaseStepDialog.setMinimalShellHeight(shell, new Control[] {wCanvas, wlKettle, wRepository, wUsername, wPassword, wOK }, margin, 2*margin);
 		// shell.setSize(bounds.width, shell.getBounds().height+wOK.getBounds().height+30);
 	
 		WindowProperty winprop = props.getScreen(shell.getText());
