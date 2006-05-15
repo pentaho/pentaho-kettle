@@ -321,6 +321,9 @@ public abstract class BaseDatabaseMeta implements Cloneable
 		try
 		{
 			retval = (BaseDatabaseMeta)super.clone();
+            
+            // CLone the attributes as well...
+            retval.attributes = (Properties) attributes.clone(); 
 		}
 		catch(CloneNotSupportedException e)
 		{

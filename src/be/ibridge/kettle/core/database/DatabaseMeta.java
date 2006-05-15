@@ -265,8 +265,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	 * 
 	 * @throws KettleDatabaseException when the type could not be found or referenced.
 	 */
-	private static final DatabaseInterface getDatabaseInterface(String databaseType)
-		throws KettleDatabaseException
+	private static final DatabaseInterface getDatabaseInterface(String databaseType) throws KettleDatabaseException
 	{
 		return (DatabaseInterface)findDatabaseInterface(databaseType).clone();
 	}
@@ -279,8 +278,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	 * 
 	 * @throws KettleDatabaseException when the type could not be found or referenced.
 	 */
-	private static final DatabaseInterface findDatabaseInterface(String databaseTypeDesc)
-		throws KettleDatabaseException
+	private static final DatabaseInterface findDatabaseInterface(String databaseTypeDesc) throws KettleDatabaseException
 	{
 		DatabaseInterface di[] = getDatabaseInterfaces();
 		for (int i=0;i<di.length;i++)
@@ -296,8 +294,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	/**
 	 *  Load the Database Info 
 	 */
-	public DatabaseMeta(Repository rep, long id_database) 
-		throws KettleException
+	public DatabaseMeta(Repository rep, long id_database) throws KettleException
 	{
         this();
         
@@ -327,7 +324,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 
 				setHostname( r.getString("HOST_NAME", "") );
 				setDBName( r.getString("DATABASE_NAME", "") );
-				setDBPort( String.valueOf(r.getInteger("PORT", -1L)) );
+				setDBPort( r.getString("PORT", "") );
 				setUsername( r.getString("USERNAME", "") );
 				setPassword( r.getString("PASSWORD", "") );
 				setServername( r.getString("SERVERNAME", "") );
@@ -368,8 +365,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	 * 
 	 * @throws KettleException if an error occurs.
 	 */
-	public void saveRep(Repository rep)
-		throws KettleException
+	public void saveRep(Repository rep) throws KettleException
 	{
 		try
 		{
@@ -455,7 +451,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 
 	public Object clone()
 	{
-		DatabaseMeta di = new DatabaseMeta
+        DatabaseMeta di = new DatabaseMeta
 			(
 			getName(),
 			getDatabaseTypeDesc(),
@@ -471,6 +467,8 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		di.setDataTablespace( getDataTablespace() );
 		di.setIndexTablespace( getIndexTablespace() );
 
+        di.databaseInterface = (DatabaseInterface) di.getDatabaseInterface().clone();
+        
 		return di; 
 	}
 
@@ -791,8 +789,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	 * @param con The Node to read the data from
 	 * @throws KettleXMLException
 	 */
-	public DatabaseMeta(Node con)
-		throws KettleXMLException
+	public DatabaseMeta(Node con) throws KettleXMLException
 	{
         this();
         

@@ -688,19 +688,6 @@ public class DatabaseDialog extends Dialog
 		wData.addSelectionListener(selAdapter);
 		wIndex.addSelectionListener(selAdapter);
 		
-		SelectionAdapter lsTypeAcc = 
-			new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					enableFields();
-					setPortNumber();
-				}
-			};
-
-		wConnType.addSelectionListener(	lsTypeAcc );
-		wConnAcc.addSelectionListener( lsTypeAcc );
-
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 	
@@ -708,6 +695,19 @@ public class DatabaseDialog extends Dialog
 		
 		getData();
 		enableFields();
+
+        SelectionAdapter lsTypeAcc = 
+            new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    enableFields();
+                    setPortNumber();
+                }
+            };
+
+        wConnType.addSelectionListener( lsTypeAcc );
+        wConnAcc.addSelectionListener( lsTypeAcc );
 
 		WindowProperty winprop = props.getScreen(shell.getText());
 		if (winprop!=null) winprop.setShell(shell); else shell.pack();
@@ -749,7 +749,7 @@ public class DatabaseDialog extends Dialog
 		wHostName.setText( NVL(connection.getHostname(), "") );
 		wDBName.setText( NVL(connection.getDatabaseName(), "") );
 		wPort.setText( NVL(connection.getDatabasePortNumberString(), "") );
-		wServername.setText( NVL(connection.getServername(), "") );
+        wServername.setText( NVL(connection.getServername(), "") );
 		wUsername.setText( NVL(connection.getUsername(), "") );
 		wPassword.setText( NVL(connection.getPassword(), "") );
 		wData.setText( NVL(connection.getDataTablespace(), "") );
@@ -857,8 +857,7 @@ public class DatabaseDialog extends Dialog
 		dispose();
 	}
 	
-	public void getInfo(DatabaseMeta info)
-		throws KettleException
+	public void getInfo(DatabaseMeta info) throws KettleException
 	{
 		// Name:
 		info.setName(wConn.getText());
