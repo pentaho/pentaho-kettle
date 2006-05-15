@@ -4721,7 +4721,7 @@ public class Repository
                 try
                 {
                     TransMeta ti = new TransMeta(this, trans[i], repdir);
-                    System.out.println("Loading/Exporting transformation ["+repdir.getPath()+" : "+trans[i]+"]");
+                    System.out.println("Loading/Exporting transformation ["+repdir.getPath()+" : "+trans[i]+"]  ("+ti.getDirectory().getPath()+")");
                     if (monitor!=null) monitor.subTask("Exporting transformation ["+trans[i]+"]");
                     
                     xml.append(ti.getXML()+Const.CR);

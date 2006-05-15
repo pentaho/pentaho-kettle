@@ -108,7 +108,11 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Unable to read Job Entry copy info from XML node", e);
+            String message = "Unable to read Job Entry copy info from XML node : "+e.toString();
+            LogWriter log = LogWriter.getInstance();
+            log.logError(toString(), message);
+            log.logError(toString(), Const.getStackTracker(e));
+			throw new KettleXMLException(message, e);
 		}
 	}
 	

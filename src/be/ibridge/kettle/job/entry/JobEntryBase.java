@@ -225,8 +225,6 @@ public class JobEntryBase implements Cloneable
 			setDescription( XMLHandler.getTagValue(entrynode, "description") );
 			String stype = XMLHandler.getTagValue(entrynode, "type");
 			setType(JobEntryCopy.getType(stype));
-			
-			System.out.println("Loaded job entry ["+name+"] of type ["+stype+"]");
 		}
 		catch(Exception e)
 		{
