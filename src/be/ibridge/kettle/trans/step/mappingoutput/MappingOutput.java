@@ -68,15 +68,19 @@ public class MappingOutput extends BaseStep implements StepInterface
             first=false;
             // 
             // Wait until we know were to store the row...
-            // 
+            // However, don't wait forever, if we don't have a connection after 60 seconds: bail out! 
+            //
+            int totalsleep = 0;
             while (!isStopped() && data.mapping==null)
             {
-                try { Thread.sleep(10); } catch(InterruptedException e) { stopAll(); }
+                try { totalsleep+=10; Thread.sleep(10); } catch(InterruptedException e) { stopAll(); }
+                if (totalsleep>60000)
+                {
+                    throw new KettleException(Messages.getString("MappingOutput.Exception.UnableToConnectWithParentMapping", ""+(totalsleep/1000)));
+                }
             }
         }
         
-        System.out.println("r = "+r); //$NON-NLS-1$
-
         // Change the output fields that are specified...
         // TODO: use indexes to speed up the lookups, no time for this at the moment...
         for (int i=0;i<data.outputMapping.length;i++)
