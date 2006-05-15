@@ -49,6 +49,7 @@ import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryMeta;
 import be.ibridge.kettle.repository.UserInfo;
 import be.ibridge.kettle.trans.StepLoader;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
 /**
@@ -78,8 +79,7 @@ public class RepositoryDialog
 	private FormData     fdlDescription, fdDescription;
 
 	private Button wOK, wCreate, wDrop, wCancel;
-	private FormData fdOK, fdCreate, fdDrop, fdCancel;
-	private Listener lsOK, lsCreate, lsDrop, lsCancel;
+    private Listener lsOK, lsCreate, lsDrop, lsCancel;
 
 	private Display       display;
 	private Shell         shell, parent;
@@ -258,40 +258,25 @@ public class RepositoryDialog
 
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
-		fdOK=new FormData();
-		fdOK.left   = new FormAttachment(30, 0);
-		fdOK.top    = new FormAttachment(wDescription, margin*3);
-		wOK.setLayoutData(fdOK);
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		wOK.addListener    (SWT.Selection, lsOK    );
 
 		wCreate=new Button(shell, SWT.PUSH);
 		wCreate.setText(Messages.getString("RepositoryDialog.Button.CreateOrUpgrade")); //$NON-NLS-1$
-		fdCreate=new FormData();
-		fdCreate.left   = new FormAttachment(wOK, 30);
-		fdCreate.top    = new FormAttachment(wDescription, margin*3);
-		wCreate.setLayoutData(fdCreate);
 		lsCreate   = new Listener() { public void handleEvent(Event e) { create(steploader); } };
 		wCreate.addListener(SWT.Selection, lsCreate);
 
 		wDrop=new Button(shell, SWT.PUSH);
 		wDrop.setText(Messages.getString("RepositoryDialog.Button.Remove")); //$NON-NLS-1$
-		fdDrop=new FormData();
-		fdDrop.left   = new FormAttachment(wCreate, 30);
-		fdDrop.top    = new FormAttachment(wDescription, margin*3);
-		wDrop.setLayoutData(fdDrop);
 		lsDrop     = new Listener() { public void handleEvent(Event e) { drop();   } };
 		wDrop.addListener  (SWT.Selection, lsDrop  );
 
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
-		fdCancel=new FormData();
-		fdCancel.left   = new FormAttachment(wDrop, 30);
-		fdCancel.top    = new FormAttachment(wDescription, margin*3);
-		wCancel.setLayoutData(fdCancel);
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		wCancel.addListener(SWT.Selection, lsCancel);
-		
+
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCreate, wDrop, wCancel}, margin, wDescription);
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
@@ -339,6 +324,7 @@ public class RepositoryDialog
 		if (idx>=0)
 		{
 			DatabaseMeta dbinfo = repositories.getDatabase(idx);
+            System.out.println("Port for ["+dbinfo.getName()+"] : "+dbinfo.getDatabasePortNumberString());
 			info.setConnection(dbinfo);
 		}
 		else

@@ -299,8 +299,16 @@ public class RepositoryImportProgressDialog extends Dialog
 						{
 							ti.setDirectory( targetDirectory ) ;
 							
-							ti.saveRep(rep);
-							addLog("Saved transformation #"+i+" in the repository: ["+ti.getName()+"]");
+                            try
+                            {
+    							ti.saveRep(rep);
+    							addLog("Saved transformation #"+i+" in the repository: ["+ti.getName()+"]");
+                            }
+                            catch(Exception e)
+                            {
+                                addLog("Unable to save transformation #"+i+" : ["+ti.getName()+") in the repository because of an error :"+e.toString());
+                                addLog(Const.getStackTracker(e));
+                            }
 						}
 						else
 						{

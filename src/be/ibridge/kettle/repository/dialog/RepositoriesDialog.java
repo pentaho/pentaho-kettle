@@ -590,38 +590,7 @@ public class RepositoriesDialog
             if (name!=null) wRepository.add( name );
         }
 	}
-	
-	/*
-	public void fillUsernames()
-	{
-		String repname = wRepository.getText();
-		RepositoryMeta ri = input.findRepository(repname);
-		if (ri!=null)
-		{
-			Repository rep = new Repository(log, ri, userinfo);
-			if (rep.connect(getClass().getName()))
-			{
-				wUsername.removeAll();
-				try
-				{
-					String logins[] = rep.getUserLogins();
-					if (logins!=null)
-					{
-						for (int i=0;i<logins.length;i++) wUsername.add(logins[i]);
-					}
-				}
-				catch(KettleDatabaseException dbe)
-				{
-					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.UnableToGetUserList.Message")); //$NON-NLS-1$
-					mb.setText(Messages.getString("RepositoriesDialog.Dialog.UnableToGetUserList.Title")); //$NON-NLS-1$
-					mb.open(); 
-				}
-				rep.disconnect();
-			}
-		}
-	}
-	*/
+
 	
 	public RepositoryMeta getRepository()
 	{
