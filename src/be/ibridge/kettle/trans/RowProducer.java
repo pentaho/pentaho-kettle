@@ -29,7 +29,6 @@ public class RowProducer
     public void finished()
     {
         rowSet.setDone();
-        stepInterface.getInputRowSets().remove(rowSet);
     }
 
     /**
