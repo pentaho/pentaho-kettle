@@ -1,17 +1,5 @@
-This code snippets should help:
-- to give an overview of translations (e.g. compare two languages)
-- to find not translated externalizations (TODO)
-- translations that violate any proposals (TODO)
+This directory contains translation rules and proposals for the messages
+for each language.
 
-Before running, all properties files must be merged in one directory with
-'TranslationMergeProps.vbs'
-
-It was a quick shot, next time there is more flexibility ;-)
-
-1) create a directory... 
-   C:\Develop\Kettle\translations\analyze
-
-2) run 'TranslationMergeProps.vbs' in Windows
-   (Merge the properties files to one subdir)
-
-3) look at transformation 'TranslationAnalyzer.ktr'
+These are some basic conventions that could be useful for translators 
+or for a tool (to be done ;-) which could check them automatically.
