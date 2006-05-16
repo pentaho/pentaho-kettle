@@ -146,7 +146,7 @@ public class XMLInput extends BaseStep implements StepInterface
                     }
                     else // Multiple possible values: get number pos.getElementNr()!
                     {
-                        Node subNode = XMLHandler.getSubNodeByNr(node, pos.getName(), pos.getElementNr()-1);
+                        Node subNode = XMLHandler.getSubNodeByNr(node, pos.getName(), pos.getElementNr()-1, false);
                         if (subNode!=null)
                         {
                             if (p==xmlInputField.getFieldPosition().length-1) // last level
