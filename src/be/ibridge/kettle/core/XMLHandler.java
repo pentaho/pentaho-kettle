@@ -412,8 +412,14 @@ public class XMLHandler
 		// Find the child-nodes of this Node n:
 		children=n.getChildNodes();
         
-        XMLHandlerCacheEntry entry = new XMLHandlerCacheEntry(n, tag);
-        int lastChildNr = cache.getLastChildNr(entry);
+        int lastChildNr=-1;
+        XMLHandlerCacheEntry entry = null;
+        
+        if (useCache)
+        {
+            entry = new XMLHandlerCacheEntry(n, tag);
+            lastChildNr = cache.getLastChildNr(entry);
+        }
         if (lastChildNr<0)
         {
             lastChildNr=0;
@@ -431,7 +437,7 @@ public class XMLHandler
 			{
 				if (count==nr)
 				{
-                    cache.storeCache(entry, i);
+                    if (useCache) cache.storeCache(entry, i);
 					return childnode;
 				}
 				count++;

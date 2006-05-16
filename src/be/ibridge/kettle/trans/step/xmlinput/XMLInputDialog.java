@@ -1042,7 +1042,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
                 int nrItems = XMLHandler.countNodes(rootNode, itemElement);
                 for (int i=0;i<nrItems && !finished;i++)
                 {
-                    Node itemNode = XMLHandler.getSubNodeByNr(rootNode, itemElement, i);
+                    Node itemNode = XMLHandler.getSubNodeByNr(rootNode, itemElement, i, false);
                     if (i>=meta.getNrRowsToSkip())
                     {
                         getValues(itemNode, row, path);
@@ -1135,7 +1135,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
                 int occurences = XMLHandler.countNodes(node, elements[e]);
                 for (int o=0;o<occurences;o++)
                 {
-                    Node itemNode = XMLHandler.getSubNodeByNr(node, elements[e], o);
+                    Node itemNode = XMLHandler.getSubNodeByNr(node, elements[e], o, false);
                     XMLInputFieldPosition xmlPos = new XMLInputFieldPosition(elements[e], XMLInputFieldPosition.XML_ELEMENT, o+1);
                     
                     path.add(xmlPos);
