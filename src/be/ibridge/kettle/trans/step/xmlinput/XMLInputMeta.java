@@ -74,7 +74,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 	private  long  rowLimit;
 
     /** The number or lines to skip before starting to read*/
-    private  long  nrRowsToSkip;
+    private  int  nrRowsToSkip;
 
 	/** The fields to import... */
 	private XMLInputField inputFields[];
@@ -203,7 +203,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @return Returns the nrRowsToSkip.
      */
-    public long getNrRowsToSkip()
+    public int getNrRowsToSkip()
     {
         return nrRowsToSkip;
     }
@@ -212,7 +212,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @param nrRowsToSkip The nrRowsToSkip to set.
      */
-    public void setNrRowsToSkip(long nrRowsToSkip)
+    public void setNrRowsToSkip(int nrRowsToSkip)
     {
         this.nrRowsToSkip = nrRowsToSkip;
     }
@@ -312,9 +312,9 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			includeFilename         = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include"));
-			filenameField   = XMLHandler.getTagValue(stepnode, "include_field");
-			includeRowNumber          = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
+			includeFilename   = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include"));
+			filenameField     = XMLHandler.getTagValue(stepnode, "include_field");
+			includeRowNumber  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
 	
 			Node filenode  = XMLHandler.getSubNode(stepnode,   "file");
@@ -350,7 +350,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 			// Is there a limit on the number of rows we process?
 			rowLimit = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0L);
             // Do we skip rows before starting to read
-            nrRowsToSkip = Const.toLong(XMLHandler.getTagValue(stepnode, "skip"), 0L);
+            nrRowsToSkip = Const.toInt(XMLHandler.getTagValue(stepnode, "skip"), 0);
 		}
 		catch(Exception e)
 		{
@@ -447,7 +447,7 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 			includeRowNumber  =      rep.getStepAttributeBoolean(id_step, "rownum");
 			rowNumberField    =      rep.getStepAttributeString (id_step, "rownum_field");
 			rowLimit          =      rep.getStepAttributeInteger(id_step, "limit");
-            nrRowsToSkip      =      rep.getStepAttributeInteger(id_step, "skip");
+            nrRowsToSkip      = (int)rep.getStepAttributeInteger(id_step, "skip");
 	
 			int nrFiles     = rep.countNrStepAttributes(id_step, "file_name");
 			int nrFields    = rep.countNrStepAttributes(id_step, "field_name");

@@ -346,7 +346,7 @@ public class XMLInput extends BaseStep implements StepInterface
             data.itemElement = meta.getInputPosition()[meta.getInputPosition().length-1];
             
             data.itemCount = XMLHandler.countNodes(data.section, data.itemElement);
-            data.itemPosition = 0;
+            data.itemPosition = (int)meta.getNrRowsToSkip();
 		}
 		catch(Exception e)
 		{

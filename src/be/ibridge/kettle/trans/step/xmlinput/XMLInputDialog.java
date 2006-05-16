@@ -124,6 +124,10 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 	private Text         wLimit;
 	private FormData     fdlLimit, fdLimit;
 
+    private Label        wlSkip;
+    private Text         wSkip;
+    private FormData     fdlSkip, fdSkip;
+
     private Label        wlPosition;
     private TableView    wPosition;
     private FormData     fdlPosition, fdPosition;
@@ -447,12 +451,29 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 
+        wlSkip=new Label(wContentComp, SWT.RIGHT);
+        wlSkip.setText(Messages.getString("XMLInputDialog.Skip.Label"));
+        props.setLook(wlSkip);
+        fdlSkip=new FormData();
+        fdlSkip.left = new FormAttachment(0, 0);
+        fdlSkip.top  = new FormAttachment(wLimit, margin);
+        fdlSkip.right= new FormAttachment(middle, -margin);
+        wlSkip.setLayoutData(fdlSkip);
+        wSkip=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wSkip);
+        wSkip.addModifyListener(lsMod);
+        fdSkip=new FormData();
+        fdSkip.left = new FormAttachment(middle, 0);
+        fdSkip.top  = new FormAttachment(wLimit, margin);
+        fdSkip.right= new FormAttachment(100, 0);
+        wSkip.setLayoutData(fdSkip);
+
         wlPosition=new Label(wContentComp, SWT.RIGHT);
         wlPosition.setText(Messages.getString("XMLInputDialog.Location.Label"));
         props.setLook(wlPosition);
         fdlPosition=new FormData();
         fdlPosition.left = new FormAttachment(0, 0);
-        fdlPosition.top  = new FormAttachment(wLimit, margin);
+        fdlPosition.top  = new FormAttachment(wSkip, margin);
         fdlPosition.right= new FormAttachment(middle, -margin);
         wlPosition.setLayoutData(fdlPosition);
         
@@ -852,6 +873,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
 		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
 		wLimit.setText(""+in.getRowLimit());
+        wSkip.setText(""+in.getNrRowsToSkip());
 		
 		log.logDebug(toString(), Messages.getString("XMLInputDialog.Log.GettingFieldsInfo"));
 		for (int i=0;i<in.getInputFields().length;i++)
@@ -934,6 +956,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 		// copy info to TextFileInputMeta class (input)
 		in.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
+        in.setNrRowsToSkip( Const.toInt(wSkip.getText(), 0) );
 		in.setFilenameField( wInclFilenameField.getText() );
 		in.setRowNumberField( wInclRownumField.getText() );
 				
@@ -1020,12 +1043,15 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
                 for (int i=0;i<nrItems && !finished;i++)
                 {
                     Node itemNode = XMLHandler.getSubNodeByNr(rootNode, itemElement, i);
-                    getValues(itemNode, row, path);
-                    
-                    elementsFound++;
-                    if (elementsFound>=maxElements && maxElements>0)
+                    if (i>=meta.getNrRowsToSkip())
                     {
-                        finished=true;
+                        getValues(itemNode, row, path);
+                        
+                        elementsFound++;
+                        if (elementsFound>=maxElements && maxElements>0)
+                        {
+                            finished=true;
+                        }
                     }
                 }
             }
