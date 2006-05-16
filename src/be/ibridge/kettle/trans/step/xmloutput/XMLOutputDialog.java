@@ -268,7 +268,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 
 		// Create multi-part file?
 		wlAddStepnr=new Label(wFileComp, SWT.RIGHT);
-		wlAddStepnr.setText("Include stepnr in filename? ");
+		wlAddStepnr.setText(Messages.getString("XMLOutputDialog.AddStepNr.Label"));
  		props.setLook(wlAddStepnr);
 		fdlAddStepnr=new FormData();
 		fdlAddStepnr.left = new FormAttachment(0, 0);
@@ -542,12 +542,12 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
  		props.setLook(wFieldsComp);
 
 		wGet=new Button(wFieldsComp, SWT.PUSH);
-		wGet.setText(Messages.getString("XMLOutputDialog.SplitEvery.Label"));
+		wGet.setText(Messages.getString("XMLOutputDialog.Get.Button"));
 		wGet.setToolTipText(Messages.getString("XMLOutputDialog.Get.Tooltip"));
 
 		wMinWidth =new Button(wFieldsComp, SWT.PUSH);
-		wMinWidth.setText(Messages.getString("XMLOutputDialog.Get.Button"));
-		wMinWidth.setToolTipText(Messages.getString("XMLOutputDialog.Get.Tooltip"));
+		wMinWidth.setText(Messages.getString("XMLOutputDialog.MinWidth.Label"));
+		wMinWidth.setToolTipText(Messages.getString("XMLOutputDialog.MinWidth.Tooltip"));
 
 		setButtonPositions(new Button[] { wGet, wMinWidth}, margin, null);
 
