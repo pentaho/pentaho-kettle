@@ -210,8 +210,10 @@ public class SpoonLog extends Composite
 		wLog.setText(Messages.getString("SpoonLog.Button.LogSettings")); //$NON-NLS-1$
 		wOnlyActive = new Button(this, SWT.CHECK);
 		wOnlyActive.setText(Messages.getString("SpoonLog.Button.ShowOnlyActiveSteps")); //$NON-NLS-1$
+        spoon.props.setLook(wOnlyActive);
 		wSafeMode = new Button(this, SWT.CHECK);
 		wSafeMode.setText(Messages.getString("SpoonLog.Button.SafeMode")); //$NON-NLS-1$
+        spoon.props.setLook(wSafeMode);
 
 		fdStart = new FormData();
 		fdPreview = new FormData();
@@ -624,7 +626,7 @@ public class SpoonLog extends Composite
 		{
 			lastUpdateView = time;
 			int nrSteps = trans.nrSteps();
-			if (wSafeMode.getSelection()) nrSteps = trans.nrActiveSteps();
+			if (wOnlyActive.getSelection()) nrSteps = trans.nrActiveSteps();
 
 			if (table.getItemCount() != nrSteps)
 				table.removeAll();
@@ -640,7 +642,7 @@ public class SpoonLog extends Composite
 			for (int i = 0; i < trans.nrSteps(); i++)
 			{
 				BaseStep rt = trans.getRunThread(i);
-				if (rt.isAlive() || !wSafeMode.getSelection())
+				if (rt.isAlive() || !wOnlyActive.getSelection())
 				{
 					if (insert)
 						ti = new TableItem(table, SWT.NONE);
