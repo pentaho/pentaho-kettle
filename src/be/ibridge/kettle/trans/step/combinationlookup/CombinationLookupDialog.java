@@ -252,8 +252,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		int nrKeyRows=(input.getKeyField()!=null?input.getKeyField().length:1);
 
 		ColumnInfo[] ciKey=new ColumnInfo[nrKeyCols];
-		ciKey[0]=new ColumnInfo(Messages.getString("CombinationLookupDialog.ColumnInfo.FieldInStream"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		ciKey[1]=new ColumnInfo(Messages.getString("CombinationLookupDialog.ColumnInfo.DimensionField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciKey[0]=new ColumnInfo(Messages.getString("CombinationLookupDialog.ColumnInfo.DimensionField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciKey[1]=new ColumnInfo(Messages.getString("CombinationLookupDialog.ColumnInfo.FieldInStream"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 
 		wKey=new TableView(shell,
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
@@ -479,7 +479,6 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		{
 				if (!display.readAndDispatch()) display.sleep();
 		}
-//		input.setChanged();
 		
 		return stepname;
 	}
@@ -538,8 +537,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		for (i=0;i<input.getKeyField().length;i++)
 		{
 			TableItem item = wKey.table.getItem(i);
-			if (input.getKeyField()[i]!=null)  item.setText(1, input.getKeyField()[i]);
-			if (input.getKeyLookup()[i]!=null) item.setText(2, input.getKeyLookup()[i]);
+			if (input.getKeyLookup()[i]!=null) item.setText(1, input.getKeyLookup()[i]);
+			if (input.getKeyField()[i]!=null)  item.setText(2, input.getKeyField()[i]);			
 		}
 
 		wReplace.setSelection( input.replaceFields() );
@@ -657,8 +656,8 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		for (int i=0;i<nrkeys;i++)
 		{
 			TableItem item = wKey.getNonEmpty(i);
-			in.getKeyField()[i]  = item.getText(1);
-			in.getKeyLookup()[i] = item.getText(2);
+			in.getKeyLookup()[i] = item.getText(1);
+			in.getKeyField()[i]  = item.getText(2);			
 		}
 
 		in.setUseAutoinc( wAutoinc.getSelection() && wAutoinc.isEnabled() );

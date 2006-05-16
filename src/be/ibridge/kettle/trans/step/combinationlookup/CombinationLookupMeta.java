@@ -165,7 +165,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	}
 
 	/**
-	 * @return Returns the keyField.
+	 * @return Returns the keyField (names in the stream).
 	 */
 	public String[] getKeyField()
 	{
@@ -181,7 +181,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	}
 
 	/**
-	 * @return Returns the keyLookup.
+	 * @return Returns the keyLookup (names in the dimension table)
 	 */
 	public String[] getKeyLookup()
 	{
@@ -742,30 +742,38 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 						if ( ! db.checkTableExists(tablename) )
 						{
 							// Add technical key field.
-							fields.addValue(vkeyfield);
-
-							String keyLookup[] = getKeyLookup();
-							if ( keyLookup != null )
+							fields.addValue(vkeyfield);				
+							
+							// Add the keys only to the table
+							if ( keyField != null && keyLookup != null )
 							{
-								int cnt = prev.size();
-								for (i=0;i<cnt;i++)
+								int cnt = keyField.length;
+								for ( i=0;i<cnt;i++ )
 								{
 									String error_field=""; //$NON-NLS-1$
 
-									Value v = prev.getValue(i);
-									Value newValue = (Value)v.clone();
-									String name = keyLookup[i];
-									newValue.setName(name);
-									if ( name.equals(vkeyfield.getName()) ||
-											(doHash == true && name.equals(vhashfield.getName())) )
+									// Find the value in the stream
+									Value v = prev.searchValue(keyField[i]);
+									if ( v != null )
 									{
-										error_field+=name;
+										String name = keyLookup[i];
+									    Value newValue = (Value)v.clone();
+									    newValue.setName(name);
+
+        								if ( name.equals(vkeyfield.getName()) ||
+		 		  							 (doHash == true && name.equals(vhashfield.getName())) )
+  									    {
+										    error_field+=name;
+									    }
+									    if (error_field.length()>0)
+									    {
+										    retval.setError(Messages.getString("CombinationLookupMeta.ReturnValue.NameCollision", error_field)); //$NON-NLS-1$
+									    }
+									    else
+									    {
+									        fields.addValue(newValue);
+									    }
 									}
-									if (error_field.length()>0)
-									{
-										retval.setError(Messages.getString("CombinationLookupMeta.ReturnValue.NameCollision", error_field)); //$NON-NLS-1$
-									}
-									fields.addValue(newValue);
 								}
 							}
 
@@ -801,19 +809,24 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
 							// Find the missing fields in the real table
 							String keyLookup[] = getKeyLookup();
-							if ( keyLookup != null )
+							String keyField[] = getKeyField();							
+							if ( keyField != null && keyLookup != null )
 							{
-								cnt = prev.size();
+								cnt = keyField.length;
 								for ( i=0;i<cnt;i++ )
 								{
-									Value v = prev.getValue(i);
-									Value newValue = (Value)v.clone();
-									String name = keyLookup[i];
-									newValue.setName(name);
-
-									if ( tabFields.searchValue( newValue.getName() )==null )
+									// Find the value in the stream
+									Value v = prev.searchValue(keyField[i]);
+									if ( v != null )
 									{
-										fields.addValue(newValue); // nope --> add
+									    Value newValue = (Value)v.clone();
+									    newValue.setName(keyLookup[i]);
+
+									    // Does the corresponding name exist in the table
+									    if ( tabFields.searchValue( newValue.getName() )==null )
+									    {
+										    fields.addValue(newValue); // nope --> add
+									    }
 									}
 								}
 							}
