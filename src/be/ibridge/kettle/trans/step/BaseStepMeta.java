@@ -174,7 +174,7 @@ public class BaseStepMeta implements Cloneable
 	 * @param stepMeta StepMeta object containing the complete step
 	 * @param prev Row containing meta-data for the input fields (no data)
 	 */
-	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, Row prev)
+	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, Row prev)  throws KettleStepException
 	{
 		// default: this doesn't require any SQL statements to be executed!
 		return new SQLStatement(stepMeta.getName(), null, null);
