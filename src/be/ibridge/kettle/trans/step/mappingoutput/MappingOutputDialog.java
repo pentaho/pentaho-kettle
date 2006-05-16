@@ -149,7 +149,7 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         wGet = new Button(shell, SWT.PUSH);
         wGet.setText(Messages.getString("MappingOutputDialog.GetFields.Button")); //$NON-NLS-1$
         wCancel = new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("MappingOutputDialog.Cancel.Button")); //$NON-NLS-1$
+        wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
         setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, wFields);
 

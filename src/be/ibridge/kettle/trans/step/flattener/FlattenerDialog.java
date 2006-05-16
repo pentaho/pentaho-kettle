@@ -168,7 +168,7 @@ public class FlattenerDialog extends BaseStepDialog implements StepDialogInterfa
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("FlattenerDialog.Ok.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("FlattenerDialog.Cancel.Butto")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 

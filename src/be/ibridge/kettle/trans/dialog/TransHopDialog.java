@@ -211,7 +211,7 @@ public class TransHopDialog extends Dialog
 		Rectangle rOK = wOK.getBounds();
 		
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("TransHopDialog.Cancel.Button")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		wCancel.pack(true);
 		Rectangle rCancel = wCancel.getBounds();
 		

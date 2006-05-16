@@ -142,7 +142,7 @@ public class CubeOutputDialog extends BaseStepDialog implements StepDialogInterf
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("CubeOutputDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("CubeOutputDialog.Cancel.Button")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFilename);
 

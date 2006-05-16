@@ -219,15 +219,16 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 		fdlFields.top  = new FormAttachment(wSeparator, 0);
 		wlFields.setLayoutData(fdlFields);
 		
-		final int FieldsCols=5;
 		final int FieldsRows=input.getName().length;
 		
-		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("ScriptValuesDialog.ColumnInfo.Filename"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		colinf[1]=new ColumnInfo(Messages.getString("ScriptValuesDialog.ColumnInfo.RenameTo"),  ColumnInfo.COLUMN_TYPE_TEXT,   false ); //$NON-NLS-1$
-		colinf[2]=new ColumnInfo(Messages.getString("ScriptValuesDialog.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() ); //$NON-NLS-1$
-		colinf[3]=new ColumnInfo(Messages.getString("ScriptValuesDialog.ColumnInfo.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		colinf[4]=new ColumnInfo(Messages.getString("ScriptValuesDialog.ColumnInfo.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+		ColumnInfo[] colinf=new ColumnInfo[]
+           {
+    		 new ColumnInfo(Messages.getString("ScriptValuesDialog.ColumnInfo.Filename"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+    		 new ColumnInfo(Messages.getString("ScriptValuesDialog.ColumnInfo.RenameTo"),  ColumnInfo.COLUMN_TYPE_TEXT,   false ), //$NON-NLS-1$
+    		 new ColumnInfo(Messages.getString("ScriptValuesDialog.ColumnInfo.Type"),       ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() ), //$NON-NLS-1$
+    		 new ColumnInfo(Messages.getString("ScriptValuesDialog.ColumnInfo.Length"),     ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+    		 new ColumnInfo(Messages.getString("ScriptValuesDialog.ColumnInfo.Precision"),  ColumnInfo.COLUMN_TYPE_TEXT,   false), //$NON-NLS-1$
+           };
 		
 		wFields=new TableView(wBottom, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -269,7 +270,7 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 		wTest=new Button(shell, SWT.PUSH);
 		wTest.setText(Messages.getString("ScriptValuesDialog.TestScript.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("ScriptValuesDialog.Cancel.Button")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wGet, wVars, wTest, wCancel }, margin, null);
 

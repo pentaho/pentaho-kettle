@@ -304,7 +304,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("MergeRowsDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("MergeRowsDialog.Cancel.Button")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wbKeys);
 

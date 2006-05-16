@@ -324,7 +324,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("GroupByDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("GroupByDialog.Cancel.Button")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 

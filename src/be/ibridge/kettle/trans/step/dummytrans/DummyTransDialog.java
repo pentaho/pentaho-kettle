@@ -105,7 +105,7 @@ public class DummyTransDialog extends BaseStepDialog implements StepDialogInterf
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("DummyTransDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("DummyTransDialog.Cancel.Button")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wStepname);
 

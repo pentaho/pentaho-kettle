@@ -2602,5 +2602,21 @@ public class TableView extends Composite
 	    TableItem item = table.getItem(rownr);
 	    item.setText(colnr, text);
 	}
+
+    /**
+     * @return Returns the readonly.
+     */
+    public boolean isReadonly()
+    {
+        return readonly;
+    }
+
+    /**
+     * @param readonly The readonly to set.
+     */
+    public void setReadonly(boolean readonly)
+    {
+        this.readonly = readonly;
+    }
 	
 };

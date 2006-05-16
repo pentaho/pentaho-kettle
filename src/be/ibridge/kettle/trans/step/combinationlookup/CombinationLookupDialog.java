@@ -271,7 +271,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		wCreate=new Button(shell, SWT.PUSH);
 		wCreate.setText(Messages.getString("CombinationLookupDialog.SQL.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("CombinationLookupDialog.Cancel.Button")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wGet, wCreate, wCancel }, margin, null);
 

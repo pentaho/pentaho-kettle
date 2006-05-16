@@ -289,25 +289,32 @@ public class TransDialog extends Dialog
 		{
 			public void widgetSelected(SelectionEvent arg0)
 			{
-				RepositoryDirectory directoryFrom = transMeta.getDirectory();
-				long idDirectoryFrom  = directoryFrom.getID();
-				
-				SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
-				RepositoryDirectory rd = sdd.open();
-				if (rd!=null)
-				{
-					if (idDirectoryFrom!=rd.getID())
-					{
-						// We need to change this in the repository as well!!
-					    // We do this when the user pressed OK
-					    newDirectory = rd;
-						wDirectory.setText(rd.getPath());
-					}
-					else
-					{
-						// Same directory!
-					}
-				}
+                if (rep!=null)
+                {
+    				RepositoryDirectory directoryFrom = transMeta.getDirectory();
+    				long idDirectoryFrom  = directoryFrom.getID();
+    				
+    				SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
+    				RepositoryDirectory rd = sdd.open();
+    				if (rd!=null)
+    				{
+    					if (idDirectoryFrom!=rd.getID())
+    					{
+    						// We need to change this in the repository as well!!
+    					    // We do this when the user pressed OK
+    					    newDirectory = rd;
+    						wDirectory.setText(rd.getPath());
+    					}
+    					else
+    					{
+    						// Same directory!
+    					}
+    				}
+                }
+                else
+                {
+                    
+                }
 			}
 		});
 

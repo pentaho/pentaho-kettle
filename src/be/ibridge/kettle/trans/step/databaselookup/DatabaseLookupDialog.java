@@ -274,7 +274,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		wGetLU=new Button(shell, SWT.PUSH);
 		wGetLU.setText(Messages.getString("DatabaseLookupDialog.GetLookupFields.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("DatabaseLookupDialog.Cancel.Button")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wGet, wGetLU, wCancel }, margin, null);
 

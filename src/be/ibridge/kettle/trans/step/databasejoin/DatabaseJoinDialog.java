@@ -211,7 +211,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		wGet=new Button(shell, SWT.PUSH);
 		wGet.setText(Messages.getString("DatabaseJoinDialog.GetFields.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("DatabaseJoinDialog.Cancel.Button")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, null);
 

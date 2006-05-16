@@ -252,7 +252,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 		wSQL = new Button(shell, SWT.PUSH);
 		wSQL.setText(Messages.getString("InsertUpdateDialog.SQL.Button")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("InsertUpdateDialog.Cancel.Button")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wSQL, wCancel }, margin, null);
 

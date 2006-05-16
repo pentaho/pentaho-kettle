@@ -141,7 +141,7 @@ public class RowsFromResultDialog extends BaseStepDialog implements StepDialogIn
         wOK=new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("RowsFromResultDialog.OK.Button")); //$NON-NLS-1$
         wCancel=new Button(shell, SWT.PUSH);
-        wCancel.setText(Messages.getString("RowsFromResultDialog.Cancel.Button")); //$NON-NLS-1$
+        wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
         
         setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
         

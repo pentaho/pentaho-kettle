@@ -148,7 +148,7 @@ public class MappingInputDialog extends BaseStepDialog implements StepDialogInte
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("MappingInputDialog.OK.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("MappingInputDialog.Cancel.Button")); //$NON-NLS-1$
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
 		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
 
