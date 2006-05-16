@@ -183,8 +183,7 @@ public interface StepMetaInterface
 	 * @param stepMeta StepMeta object containing the complete step
 	 * @param prev Row containing meta-data for the input fields (no data)
 	 */
-	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, Row prev)
-		throws KettleStepException;
+	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, Row prev) throws KettleStepException;
     
 	/**
      *  Call this to cancel trailing database queries (too long running, etc)
