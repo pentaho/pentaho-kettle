@@ -136,8 +136,9 @@ public class ScriptValues extends BaseStep implements StepInterface
 		}
 		
 		debug=Messages.getString("ScriptValues.DebugMessage.ToObjectValueClass"); //$NON-NLS-1$
-		Scriptable jsval = Context.toObject(Value.class, data.scope);
-		data.scope.put("Value", data.scope, jsval); //$NON-NLS-1$
+		
+        // Scriptable jsval = Context.toObject(Value.class, data.scope);
+		// data.scope.put("Value", data.scope, jsval); //$NON-NLS-1$
 
 		try
 		{

@@ -463,10 +463,6 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 		jscx = Context.enter();
 		jsscope = jscx.initStandardObjects(null);
 			
-		Scriptable jsvalue = Context.toObject(new Value("empty", Value.VALUE_TYPE_NONE), jsscope); //$NON-NLS-1$
-		jsscope.put("empty", jsscope, jsvalue); //$NON-NLS-1$
-		//StringReader in = new StringReader(scr);
-		
 		try
 		{
 			Row row = transMeta.getPrevStepFields(stepname);
@@ -484,9 +480,6 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 					Scriptable jsarg = Context.toObject(val, jsscope);
 					jsscope.put(val.getName(), jsscope, jsarg);
 				}
-				// Add support for Value class (new Value())
-				Scriptable jsval = Context.toObject(Value.class, jsscope);
-				jsscope.put("Value", jsscope, jsval); //$NON-NLS-1$
 				
 				try
 				{
@@ -504,9 +497,7 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 							{
 								String varname = (String)id[i];
 								if (!varname.equalsIgnoreCase("row") && //$NON-NLS-1$
-								    !varname.equalsIgnoreCase("Value") && //$NON-NLS-1$
-								    !varname.equalsIgnoreCase("empty") && //$NON-NLS-1$
-									row.searchValueIndex(varname)<0
+								    row.searchValueIndex(varname)<0
 								    )
 								{
 									int type=Value.VALUE_TYPE_STRING;
