@@ -13,7 +13,7 @@
  **                                                                   **
  **********************************************************************/
 
- 
+
 /*
  * Created on 19-jun-2003
  *
@@ -51,11 +51,11 @@ import be.ibridge.kettle.trans.step.StepMeta;
 
 
 public class TransHopDialog extends Dialog
-{	
+{
 	private Label        wlFrom;
 	private CCombo       wFrom;
     private FormData     fdlFrom, fdFrom;
-	
+
 	private Label        wlTo;
 	private Button       wFlip;
 	private CCombo       wTo;
@@ -64,7 +64,7 @@ public class TransHopDialog extends Dialog
 	private Label        wlEnabled;
 	private Button       wEnabled;
 	private FormData     fdlEnabled, fdEnabled;
-	
+
 	private Button wOK, wCancel;
 	private FormData fdOK, fdCancel;
 	private Listener lsOK, lsCancel, lsFlip;
@@ -73,17 +73,17 @@ public class TransHopDialog extends Dialog
 	private Shell  shell;
 	private TransMeta transMeta;
 	private Props props;
-	
+
 	private ModifyListener lsMod;
-	
+
 	private boolean changed;
-	
+
     /** @deprecated */
     public TransHopDialog(Shell parent, int style, LogWriter l, Props props, Object in, TransMeta tr)
     {
         this(parent, style, in, tr);
     }
-    
+
 	public TransHopDialog(Shell parent, int style, Object in, TransMeta tr)
 	{
 		super(parent, style);
@@ -99,10 +99,10 @@ public class TransHopDialog extends Dialog
 
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.RESIZE);
  		props.setLook(shell);
-		
-		lsMod = new ModifyListener() 
+
+		lsMod = new ModifyListener()
 		{
-			public void modifyText(ModifyEvent e) 
+			public void modifyText(ModifyEvent e)
 			{
 				input.setChanged();
 			}
@@ -115,11 +115,11 @@ public class TransHopDialog extends Dialog
 
 		shell.setLayout(formLayout);
 		shell.setText(Messages.getString("TransHopDialog.Shell.Label")); //$NON-NLS-1$
-		
+
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
         int width = 0;
-        
+
 		// From step line
 		wlFrom=new Label(shell, SWT.RIGHT);
 		wlFrom.setText(Messages.getString("TransHopDialog.FromStep.Label")); //$NON-NLS-1$
@@ -163,9 +163,9 @@ public class TransHopDialog extends Dialog
 		{
 			StepMeta stepMeta = transMeta.getStep(i);
 			wTo.add(stepMeta.getName());
-		} 
+		}
 		wTo.addModifyListener(lsMod);
-		
+
 		fdTo=new FormData();
 		fdTo.left = new FormAttachment(middle, 0);
 		fdTo.top  = new FormAttachment(wFrom, margin);
@@ -185,62 +185,62 @@ public class TransHopDialog extends Dialog
  		props.setLook(wEnabled);
 		fdEnabled=new FormData();
 		fdEnabled.left = new FormAttachment(middle, 0);
-		fdEnabled.top  = new FormAttachment(wlTo, margin*5);	
+		fdEnabled.top  = new FormAttachment(wlTo, margin*5);
 		wEnabled.setLayoutData(fdEnabled);
-		wEnabled.addSelectionListener(new SelectionAdapter() 
+		wEnabled.addSelectionListener(new SelectionAdapter()
 			{
-				public void widgetSelected(SelectionEvent e) 
+				public void widgetSelected(SelectionEvent e)
 				{
 					input.setEnabled( !input.isEnabled());
 					input.setChanged();
 				}
 			}
 		);
-		
+
 		wFlip = new Button(shell, SWT.PUSH);
 		wFlip.setText(Messages.getString("TransHopDialog.FromTo.Button")); //$NON-NLS-1$
 		fdFlip = new FormData();
 		fdFlip.left = new FormAttachment(wEnabled, margin*5);
 		fdFlip.top  = new FormAttachment(wlTo, margin*5);
 		wFlip.setLayoutData(fdFlip);
-		      
+
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("TransHopDialog.OK.Button")); //$NON-NLS-1$
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wOK.pack(true);
 		Rectangle rOK = wOK.getBounds();
-		
+
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		wCancel.pack(true);
 		Rectangle rCancel = wCancel.getBounds();
-		
+
 		width = (rOK.width > rCancel.width ? rOK.width : rCancel.width);
 		width += margin;
-		
+
 		fdOK=new FormData();
 		fdOK.top        = new FormAttachment(wFlip, margin*5);
 		fdOK.left       = new FormAttachment(50, -width);
 		fdOK.right      = new FormAttachment(50, -(margin/2));
 		//fdOK.bottom     = new FormAttachment(100, 0);
 		wOK.setLayoutData(fdOK);
-		
+
 		fdCancel=new FormData();
 		fdCancel.top    = new FormAttachment(wFlip, margin*5);
 		fdCancel.left   = new FormAttachment(50, margin/2);
 		fdCancel.right  = new FormAttachment(50, width);
 		//fdCancel.bottom = new FormAttachment(100, 0);
 		wCancel.setLayoutData(fdCancel);
-		
+
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		lsFlip     = new Listener() { public void handleEvent(Event e) { flip();   } };
-		
+
 		wOK.addListener    (SWT.Selection, lsOK     );
 		wCancel.addListener(SWT.Selection, lsCancel );
 		wFlip.addListener  (SWT.Selection, lsFlip );
-		
+
 		// Detect [X] or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
@@ -250,7 +250,7 @@ public class TransHopDialog extends Dialog
 		if (winprop!=null) winprop.setShell(shell); else shell.pack();
 
 		input.setChanged(changed);
-	
+
 		shell.open();
 		while (!shell.isDisposed())
 		{
@@ -264,31 +264,31 @@ public class TransHopDialog extends Dialog
 		props.setScreen(new WindowProperty(shell));
 		shell.dispose();
 	}
-	
+
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
-	 */ 
+	 */
 	public void getData()
 	{
 		if (input.getFromStep() != null) wFrom.setText(input.getFromStep().getName());
 		if (input.getToStep()   != null) wTo.setText(input.getToStep().getName());
-		wEnabled.setSelection(input.isEnabled());  
+		wEnabled.setSelection(input.isEnabled());
 	}
-	
+
 	private void cancel()
 	{
 		input.setChanged(changed);
 		input=null;
 		dispose();
 	}
-	
+
 	private void ok()
 	{
 		StepMeta fromBackup = input.getFromStep();
-		StepMeta toBackup = input.getToStep(); 
+		StepMeta toBackup = input.getToStep();
 		input.setFromStep( transMeta.findStep( wFrom.getText() ));
 		input.setToStep  ( transMeta.findStep( wTo.getText()   ));
-		
+
 		if (transMeta.hasLoop(input.getFromStep()))
 		{
 			input.setFromStep(fromBackup);
@@ -333,7 +333,7 @@ public class TransHopDialog extends Dialog
 			}
 		}
 	}
-	
+
 	private void flip()
 	{
 		String dummy;
