@@ -665,7 +665,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 	
-	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, Row prev)
+	public SQLStatement getSQLStatements(TransMeta transMeta, StepMeta stepMeta, Row prev) throws KettleStepException
 	{
 		SQLStatement retval = new SQLStatement(stepMeta.getName(), database, null); // default: nothing to do!
 	
@@ -673,6 +673,25 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (prev!=null && prev.size()>0)
 			{
+                // Copy the row
+                Row tableFields = new Row();
+                
+                // Now change the field names
+                for (int i=0;i<updateLookup.length;i++)
+                {
+                    Value v = prev.searchValue(updateStream[i]);
+                    if (v!=null)
+                    {
+                        Value tableField = new Value(v);
+                        tableField.setName(updateLookup[i]);
+                        tableFields.addValue(tableField);                        
+                    }
+                    else
+                    {
+                        throw new KettleStepException("Unable to find field ["+updateStream[i]+"] in the input rows");
+                    }
+                }
+                
 				if (tableName!=null && tableName.length()>0)
 				{
 					Database db = new Database(database);
@@ -681,7 +700,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 						db.connect();
 						
 						String cr_table = db.getDDL(tableName, 
-													prev, 
+													tableFields, 
 													null, 
 													false, 
 													null,
