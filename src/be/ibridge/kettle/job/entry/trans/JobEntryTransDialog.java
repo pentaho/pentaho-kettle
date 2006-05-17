@@ -467,7 +467,6 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
         wlEveryRow.setLayoutData(fdlEveryRow);
         wEveryRow=new Button(shell, SWT.CHECK );
         props.setLook(wEveryRow);
-        wEveryRow.setSelection(jobentry.execPerRow);
         wEveryRow.setToolTipText("Check this to execute this transformation mulitple times : once for every input row.");
         fdEveryRow=new FormData();
         fdEveryRow.left = new FormAttachment(middle, 0);
@@ -669,6 +668,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 			wFields.optWidth(true);
 		}
 		wPrevious.setSelection(jobentry.argFromPrevious);
+        wEveryRow.setSelection(jobentry.execPerRow);
 		wSetLogfile.setSelection(jobentry.setLogfile);
 		if (jobentry.logfile!=null) wLogfile.setText(jobentry.logfile);
 		if (jobentry.logext!=null) wLogext.setText(jobentry.logext);

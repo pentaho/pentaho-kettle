@@ -65,7 +65,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	public  boolean addDate, addTime;
 	public  int     loglevel;
 	
-	public  boolean parallel;
     private String directoryPath;
 	
 	public JobEntryTrans(String name)
