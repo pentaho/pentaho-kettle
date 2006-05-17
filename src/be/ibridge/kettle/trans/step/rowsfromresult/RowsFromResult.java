@@ -49,15 +49,18 @@ public class RowsFromResult extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		if (getTransMeta().getSourceRows()==null || data.pointer>=getTransMeta().getSourceRows().size())
+        debug = "Check if there are result rows and if we're done processing";
+		if (getTransMeta().getSourceRows()==null || linesRead>=getTransMeta().getSourceRows().size())
 		{
 			setOutputDone();
 			return false;
 		}
 		
+        debug = "Get a row from the result rows ("+(linesRead+1)+"/"+getTransMeta().getSourceRows().size()+")";
 		Row r=(Row)getTransMeta().getSourceRows().get((int)linesRead);
 		linesRead++;
 		
+        debug = "Put the row";
 		putRow(r);     // copy row to possible alternate rowset(s).
 
 		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("RowsFromResult.Log.LineNumber")+linesRead); //$NON-NLS-1$

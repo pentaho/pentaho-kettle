@@ -25,8 +25,6 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
  */
 public class RowsFromResultData extends BaseStepData implements StepDataInterface
 {
-	public int pointer;
-
 	/**
 	 * 
 	 */
