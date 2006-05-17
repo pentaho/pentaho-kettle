@@ -286,7 +286,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("DBProcDialog.OK.Button")); //$NON-NLS-1$
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
 		wGet.setText(Messages.getString("DBProcDialog.GetFields.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);

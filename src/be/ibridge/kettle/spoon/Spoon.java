@@ -96,6 +96,7 @@ import be.ibridge.kettle.core.dialog.DatabaseDialog;
 import be.ibridge.kettle.core.dialog.DatabaseExplorerDialog;
 import be.ibridge.kettle.core.dialog.EnterMappingDialog;
 import be.ibridge.kettle.core.dialog.EnterOptionsDialog;
+import be.ibridge.kettle.core.dialog.EnterSearchDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
@@ -104,6 +105,7 @@ import be.ibridge.kettle.core.dialog.ShowBrowserDialog;
 import be.ibridge.kettle.core.dialog.Splash;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.reflection.StringSearchResult;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
@@ -341,10 +343,16 @@ public class Spoon
                     
                     // CTRL-E --> Explore the repository
                     if ((int)e.character ==  5) { exploreRepository(); spoongraph.clearSettings();  };
-                    
+
+                    // CTRL-F --> Java examination
+                    if ((int)e.character ==  6 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { searchMetaData(); spoongraph.clearSettings(); };
+
                     // CTRL-I --> Import from XML file         && (e.keyCode&SWT.CONTROL)!=0
                     if ((int)e.character ==  9 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { openFile(true); spoongraph.clearSettings(); };
-                                        
+
+                    // CTRL-F --> Java examination
+                    if ((int)e.character == 10 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { getVariables(); spoongraph.clearSettings(); };
+
                     // CTRL-N --> new
                     if ((int)e.character == 14) { newFile();     spoongraph.clearSettings(); }
                         
@@ -440,6 +448,55 @@ public class Spoon
         {
             shell.pack();
             shell.setMaximized(true); // Default = maximized!
+        }
+    }
+    
+    /**
+     * Search the transformation meta-data.
+     *
+     */
+    public void searchMetaData()
+    {
+        EnterSearchDialog esd = new EnterSearchDialog(shell);
+        if (esd.open())
+        {
+            String filter = esd.getFilterString();
+            
+            List stringList = transMeta.getStringList(esd.isSearchingSteps(), esd.isSearchingDatabases(), esd.isSearchingNotes());
+            ArrayList rows = new ArrayList();
+            for (int i=0;i<stringList.size();i++)
+            {
+                StringSearchResult result = (StringSearchResult) stringList.get(i);
+                
+                boolean add = Const.isEmpty(filter);
+                if (filter!=null && result.getString().indexOf(filter)>=0) add=true;
+                if (filter!=null && result.getFieldName().indexOf(filter)>=0) add=true;
+                if (filter!=null && result.getParentObject().toString().indexOf(filter)>=0) add=true;
+                
+                if (add) rows.add(result.toRow());
+            }
+            
+            if (rows.size()!=0)
+            {
+                PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, "String searcher", rows);
+                prd.open();
+            }
+            else
+            {
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+                mb.setMessage(Messages.getString("Spoon.Dialog.NothingFound.Message")); // Nothing found that matches your criteria
+                mb.setText(Messages.getString("Spoon.Dialog.NothingFound.Title")); // Sorry!
+                mb.open();
+            }
+        }
+    }
+    
+    public void getVariables()
+    {
+        List list = transMeta.getUsedVariables();
+        for (int i=0;i<list.size();i++)
+        {
+            System.out.println("variable found: "+list.get(i));
         }
     }
     
@@ -607,6 +664,8 @@ public class Spoon
           miEditRedo                  = new MenuItem(msEdit, SWT.CASCADE);
           setUndoMenu();
           new MenuItem(msEdit, SWT.SEPARATOR);
+          MenuItem miEditSearch  = new MenuItem(msEdit, SWT.CASCADE); miEditSearch.setText(Messages.getString("Spoon.Menu.Edit.Search"));  //Search Metadata \tCTRL-F
+          new MenuItem(msEdit, SWT.SEPARATOR);
           MenuItem miEditUnselectAll  = new MenuItem(msEdit, SWT.CASCADE); miEditUnselectAll.setText(Messages.getString("Spoon.Menu.Edit.ClearSelection"));  //&Clear selection \tESC
           MenuItem miEditSelectAll    = new MenuItem(msEdit, SWT.CASCADE); miEditSelectAll.setText(Messages.getString("Spoon.Menu.Edit.SelectAllSteps")); //"&Select all steps \tCTRL-A"
           new MenuItem(msEdit, SWT.SEPARATOR);
@@ -619,12 +678,14 @@ public class Spoon
         
         Listener lsEditUndo        = new Listener() { public void handleEvent(Event e) { undoAction(); } };
         Listener lsEditRedo        = new Listener() { public void handleEvent(Event e) { redoAction(); } };
+        Listener lsEditSearch      = new Listener() { public void handleEvent(Event e) { searchMetaData(); } };
         Listener lsEditUnselectAll = new Listener() { public void handleEvent(Event e) { editUnselectAll(); } };
         Listener lsEditSelectAll   = new Listener() { public void handleEvent(Event e) { editSelectAll();   } };
         Listener lsEditOptions     = new Listener() { public void handleEvent(Event e) { editOptions();     } };
 
         miEditUndo       .addListener(SWT.Selection, lsEditUndo);
         miEditRedo       .addListener(SWT.Selection, lsEditRedo);
+        miEditSearch     .addListener(SWT.Selection, lsEditSearch);
         miEditUnselectAll.addListener(SWT.Selection, lsEditUnselectAll);
         miEditSelectAll  .addListener(SWT.Selection, lsEditSelectAll);
         miEditOptions    .addListener(SWT.Selection, lsEditOptions);

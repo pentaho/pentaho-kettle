@@ -1353,7 +1353,7 @@ public class Const
 	 * @param array The ArrayList of strings to look in
 	 * @return The index of a search string in an array of strings. -1 if not found.
 	 */
-	public static final int indexOfString(String lookup, ArrayList array)
+	public static final int indexOfString(String lookup, List array)
 	{
 		if (array == null)
 			return -1;

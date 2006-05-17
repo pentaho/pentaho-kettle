@@ -248,7 +248,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 
 		// THE BUTTONS
 		wOK = new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("InsertUpdateDialog.OK.Button")); //$NON-NLS-1$
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wSQL = new Button(shell, SWT.PUSH);
 		wSQL.setText(Messages.getString("InsertUpdateDialog.SQL.Button")); //$NON-NLS-1$
 		wCancel = new Button(shell, SWT.PUSH);

@@ -247,7 +247,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		);
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("StreamLookupDialog.OK.Button")); //$NON-NLS-1$
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
 		wGet.setText(Messages.getString("StreamLookupDialog.GetFields.Button")); //$NON-NLS-1$
 		wGetLU=new Button(shell, SWT.PUSH);

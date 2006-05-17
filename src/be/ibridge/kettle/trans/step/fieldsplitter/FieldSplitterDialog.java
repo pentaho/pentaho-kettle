@@ -165,7 +165,7 @@ public class FieldSplitterDialog extends BaseStepDialog implements StepDialogInt
 		wlFields.setLayoutData(fdlFields);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("FieldSplitterDialog.OK.Button")); //$NON-NLS-1$
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 

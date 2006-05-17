@@ -357,7 +357,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wbeFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbeFilename);
 		wbeFilename.setText(Messages.getString("ExcelInputDialog.FilenameEdit.Button"));
-		wbeFilename.setToolTipText(Messages.getString("ExcelInputDialog.FilenameEdit.Button"));
+		wbeFilename.setToolTipText(Messages.getString("ExcelInputDialog.FilenameEdit.Tooltip"));
 		fdbeFilename=new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
 		fdbeFilename.top  = new FormAttachment (wbdFilename, margin);

@@ -262,7 +262,7 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 		wSash.setWeights(new int[] {60,40});
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("ScriptValuesDialog.OK.Button")); //$NON-NLS-1$
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
 		wGet.setText(Messages.getString("ScriptValuesDialog.InsertFiels.Button")); //$NON-NLS-1$
 		wVars=new Button(shell, SWT.PUSH);

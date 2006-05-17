@@ -146,7 +146,7 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
 		wlFields.setLayoutData(fdlFields);
 
 		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("NormaliserDialog.OK.Button")); //$NON-NLS-1$
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wGet=new Button(shell, SWT.PUSH);
 		wGet.setText(Messages.getString("NormaliserDialog.GetFields.Button")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);

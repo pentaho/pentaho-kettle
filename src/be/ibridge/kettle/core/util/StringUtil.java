@@ -1,7 +1,10 @@
 package be.ibridge.kettle.core.util;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import be.ibridge.kettle.core.Const;
 
 /**
  * A collection of utilities to manipulate strings.
@@ -42,6 +45,7 @@ public class StringUtil
 		StringBuffer buffer = new StringBuffer();
 
 		String rest = aString;
+        
 		// search for opening string
 		int i = rest.indexOf(open);
 		while (i > -1)
@@ -146,4 +150,41 @@ public class StringUtil
 	{
 		return substitute(aString, variables, WINDOWS_OPEN, WINDOWS_CLOSE);
 	}
+    
+    
+    /**
+     * Search the string and report back on the variables used
+     * @param aString The string to search
+     * @param list the list of variables to add to
+     */
+    private static void getUsedVariables(String aString, String open, String close, List list)
+    {
+        if (aString==null) return;
+        
+        int p=0;
+        while (p<aString.length())
+        {
+            // OK, we found something... : start of Unix variable
+            if (aString.substring(p).startsWith(open))
+            {
+                // See if it's closed...
+                int from = p+open.length();
+                int to = aString.indexOf(close, from+1);
+                String variable = aString.substring(from, to);
+                
+                if (Const.indexOfString(variable, list)<0) list.add(variable);
+                
+                // OK, continue
+                p=to;
+            }
+            p++;
+        }
+    }
+    
+    public static void getUsedVariables(String aString, List list)
+    {
+        getUsedVariables(aString, UNIX_OPEN, UNIX_CLOSE, list);
+        getUsedVariables(aString, WINDOWS_OPEN, WINDOWS_CLOSE, list);
+    }
 }
+
