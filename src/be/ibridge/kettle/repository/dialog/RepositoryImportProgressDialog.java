@@ -392,7 +392,7 @@ public class RepositoryImportProgressDialog extends Dialog
 																					 );
 							int answer = md.open();
 							overwrite = answer==0;
-							askOverwrite = md.getToggleState();
+							askOverwrite = !md.getToggleState();
 						}
 						
 						if (id<=0 || overwrite)
