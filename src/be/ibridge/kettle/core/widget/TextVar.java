@@ -1,42 +1,67 @@
 package be.ibridge.kettle.core.widget;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
+/**
+ * A Widget that combines a Text widget with a Variable button that will insert an Environment variable.
+ * The tooltip of the text widget shows the content of the Text widdget with expanded variables.
+ * 
+ * @author Matt
+ * @since 17-may-2006
+ */
 public class TextVar extends Composite
 {
+    private static final Props props = Props.getInstance();
+
     private Text wText;
     private Button wVariable;
     
-    public TextVar(Composite arg0, int arg1, int margin)
+    public TextVar(Composite arg0, int arg1)
     {
         super(arg0, SWT.NONE);
+        props.setLook(this);
+        
+        int margin = Const.MARGIN;
         
         FormLayout formLayout = new FormLayout();
-        formLayout.marginWidth  = Const.FORM_MARGIN;
-        formLayout.marginHeight = Const.FORM_MARGIN;
+        formLayout.marginWidth  = 0;
+        formLayout.marginHeight = 0;
 
         this.setLayout(formLayout);
 
         // add a text field on it...
         wText = new Text(this, arg1);
+        props.setLook(wText);
         wText.addModifyListener(getModifyListenerTooltipText(wText));
+        SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(this, wText);
+        wText.addKeyListener(getControlSpaceKeyListener(wText, lsVar));
         
         // add a button...
         wVariable = new Button(this, SWT.PUSH);
+        props.setLook(wVariable);
+
         wVariable.setText(Messages.getString("System.Button.Variable"));
-        wVariable.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(this, wText));
+        wVariable.addSelectionListener(lsVar);
         
         FormData fdVariable = new FormData();
         fdVariable.top   = new FormAttachment(0,0);
@@ -48,10 +73,9 @@ public class TextVar extends Composite
         fdText.left  = new FormAttachment(0,0);
         fdText.right = new FormAttachment(wVariable, -margin);
         wText.setLayoutData(fdText);
-        
     }
     
-    private ModifyListener getModifyListenerTooltipText(final Text textField)
+    public static final ModifyListener getModifyListenerTooltipText(final Text textField)
     {
         return new ModifyListener()
         {
@@ -61,12 +85,37 @@ public class TextVar extends Composite
             }
         };
     }
+    
+    public static final KeyListener getControlSpaceKeyListener(final Text textField, final SelectionListener lsVar)
+    {
+        return new KeyAdapter()
+        {
+            public void keyPressed(KeyEvent e)
+            {
+                // CTRL-<SPACE> --> Insert a variable
+                if ((int)e.character == ' ' && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) 
+                { 
+                    Event event = new Event();
+                    event.widget = textField;
+                    SelectionEvent selectionEvent = new SelectionEvent(event);
+                    lsVar.widgetSelected(selectionEvent);
+                };
+            }
+        };
+    }
 
+    /**
+     * Get the text in the Text widget
+     * @return
+     */
     public String getText()
     {
         return wText.getText();
     }
     
+    /**
+     * @param text the text in the Text widget to set.
+     */
     public void setText(String text)
     {
         wText.setText(text);
@@ -80,6 +129,15 @@ public class TextVar extends Composite
     public Button getVariableWidget()
     {
         return wVariable;
+    }
+    
+    /**
+     * Add a modify listener to the text widget
+     * @param modifyListener
+     */
+    public void addModifyListener(ModifyListener modifyListener)
+    {
+        wText.addModifyListener(modifyListener);
     }
  
 }

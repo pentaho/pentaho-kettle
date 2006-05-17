@@ -74,7 +74,7 @@ public class TextVarTest
         fdlTWV.right= new FormAttachment(middle, -margin);
         fdlTWV.top  = new FormAttachment(0, 0);
         wlTWV.setLayoutData(fdlTWV);
-        wTWV=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER, margin);
+        wTWV=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTWV);
         fdTWV=new FormData();
         fdTWV.left = new FormAttachment(middle, 0);
