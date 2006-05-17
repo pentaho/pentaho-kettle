@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
@@ -56,7 +57,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	public  boolean addDate, addTime;
 	public  int     loglevel;
 	
-	public  boolean parallel;
+	public  boolean execPerRow;
 	
 	public JobEntryShell(String name)
 	{
@@ -85,6 +86,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		
 		retval.append("      "+XMLHandler.addTagValue("filename",          filename));
 		retval.append("      "+XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
+        retval.append("      "+XMLHandler.addTagValue("exec_per_row",      execPerRow));
 		retval.append("      "+XMLHandler.addTagValue("set_logfile",       setLogfile));
 		retval.append("      "+XMLHandler.addTagValue("logfile",           logfile));
 		retval.append("      "+XMLHandler.addTagValue("logext",            logext));
@@ -108,7 +110,8 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			super.loadXML(entrynode, databases);
 			setFileName( XMLHandler.getTagValue(entrynode, "filename") );
 			argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
-			setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
+            execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "exec_per_row") );
+            setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
 			addDate = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_date") );
 			addTime = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_time") );
 			logfile = XMLHandler.getTagValue(entrynode, "logfile");
@@ -139,6 +142,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			
 			setFileName( rep.getJobEntryAttributeString(id_jobentry, "file_name")  );
 			argFromPrevious = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
+            execPerRow       = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
 	
 			setLogfile = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
 			addDate = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
@@ -174,6 +178,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
+            rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_date", addDate);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
@@ -208,6 +213,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		logfile=null;
 		logext=null;
 		setLogfile=false;
+        execPerRow=false;
 	}
 
 	public void setFileName(String n)
@@ -252,94 +258,156 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		Result result = prev_result;
 		result.setEntryNr( nr );
 		
-		try
-		{
-			// What's the exact command?
-			String cmd[] = null;
-			String base[] = null;
-			
-			if (System.getProperty("os.name").startsWith("Windows"))
-			{
-				 base = new String[] { getFileName() };
-			}
-			else
-			{ 
-				base = new String[] { getFileName() };
-			}
-
-            // Construct the arguments...
-			if (argFromPrevious && prev_result.rows!=null)
-			{
-                ArrayList cmds = new ArrayList();
-                
-                // Add the base command...
-				for (int i=0;i<base.length;i++) cmds.add(base[i]);
-
-                // Add the arguments from previous results...
-				for (int i=0;i<prev_result.rows.size();i++) 
-				{
-					Row r = (Row)prev_result.rows.get(i);
-                    for (int j=0;j<r.size();j++)
-                    {
-                        cmds.add(r.getValue(j).toString());
-                    }
-				} 
-                cmd = (String[]) cmds.toArray(new String[cmds.size()]);
-			}
-			else
-			if (arguments!=null)
-			{
-                ArrayList cmds = new ArrayList();
-
-                // Add the base command...
-                for (int i=0;i<base.length;i++) cmds.add(base[i]);
-
-				for (int i=0;i<arguments.length;i++) 
-				{
-                    cmds.add(arguments[i]);
-				} 
-                cmd = (String[]) cmds.toArray(new String[cmds.size()]);
-			}
+        int iteration = 0;
+        String args[] = arguments;
+        Row resultRow = null;
+        boolean first = true;
+        List rows = prev_result.getRows();
+        
+        System.out.println("Found "+rows.size()+" previous result rows");
+        
+        while( ( first && !execPerRow ) || ( execPerRow && rows!=null && iteration<rows.size() && result.getNrErrors()==0 ) )
+        {
+            first=false;
+            if (rows!=null) resultRow = (Row) rows.get(iteration);
             
-			// Launch the script!
-			log.logDetailed(toString(), "Passing "+(cmd.length-1)+" arguments to command : ["+cmd[0]+"]");
-			Process proc = java.lang.Runtime.getRuntime().exec(cmd);
-			
-			proc.waitFor();
-			log.logDetailed(toString(), "command ["+cmd[0]+"] has finished");
-			
-			// What's the exit status?
-			result.exitStatus = proc.exitValue();
-			if (result.exitStatus!=0) 
-			{
-				log.logDetailed(toString(), "Exit status of shell ["+getFileName()+"] was "+result.exitStatus);
-				result.setNrErrors(1);
-			} 
-		}
-		catch(IOException ioe)
-		{
-			log.logError(toString(), "Error running shell ["+getFileName()+"] : "+ioe.toString());
-			result.setNrErrors(1);
-		}
-		catch(InterruptedException ie)
-		{
-			log.logError(toString(), "Shell ["+getFileName()+"] was interupted : "+ie.toString());
-			result.setNrErrors(1);
-		}
-		catch(Exception e)
-		{
-			log.logError(toString(), "Unexpected error running shell ["+getFileName()+"] : "+e.toString());
-			result.setNrErrors(1);
-		}
+            ArrayList cmdRows = null;
+            
+    		try
+    		{
+                if (execPerRow) // Execute for each input row
+                {
+                    if (argFromPrevious) // Copy the input row to the (command line) arguments
+                    {
+                        if (resultRow!=null)
+                        {
+                            args = new String[resultRow.size()];
+                            for (int i=0;i<resultRow.size();i++)
+                            {
+                                args[i] = resultRow.getValue(i).toString();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Just pass a single row
+                        ArrayList newList = new ArrayList();
+                        newList.add(resultRow);
+                        cmdRows = newList;
+                    }
+                }
+                else
+                {
+                    if (argFromPrevious)
+                    {
+                        // Only put the first Row on the arguments
+                        args = null;
+                        if (resultRow!=null)
+                        {
+                            args = new String[resultRow.size()];
+                            for (int i=0;i<resultRow.size();i++)
+                            {
+                                args[i] = resultRow.getValue(i).toString();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        // Keep it as it was...
+                        cmdRows = prev_result.rows;
+                    }
+                }
+
+    			// What's the exact command?
+    			String cmd[] = null;
+    			String base[] = null;
+    			
+    			base = new String[] { getFileName() };
+    
+                // Construct the arguments...
+    			if (argFromPrevious && cmdRows!=null)
+    			{
+                    ArrayList cmds = new ArrayList();
+                    
+                    // Add the base command...
+    				for (int i=0;i<base.length;i++) cmds.add(base[i]);
+    
+                    // Add the arguments from previous results...
+    				for (int i=0;i<prev_result.rows.size();i++) 
+    				{
+    					Row r = (Row)prev_result.rows.get(i);
+                        for (int j=0;j<r.size();j++)
+                        {
+                            cmds.add(r.getValue(j).toString());
+                        }
+    				} 
+                    cmd = (String[]) cmds.toArray(new String[cmds.size()]);
+    			}
+    			else
+    			if (args!=null)
+    			{
+                    ArrayList cmds = new ArrayList();
+    
+                    // Add the base command...
+                    for (int i=0;i<base.length;i++) cmds.add(base[i]);
+    
+    				for (int i=0;i<args.length;i++) 
+    				{
+                        cmds.add(args[i]);
+    				} 
+                    cmd = (String[]) cmds.toArray(new String[cmds.size()]);
+    			}
+                
+    			// System.out.print("Command executed: ");
+                // for (int i=0;i<cmd.length;i++)
+                // {
+                //    System.out.print("["+cmd[i]+"] ");
+                // }
+                // System.out.println();
+                
+    			// Launch the script!
+                log.logDetailed(toString(), "Passing "+(cmd.length-1)+" arguments to command : ["+cmd[0]+"]");
+                
+                Process proc = java.lang.Runtime.getRuntime().exec(cmd);
+    			
+    			proc.waitFor();
+    			log.logDetailed(toString(), "command ["+cmd[0]+"] has finished");
+    			
+    			// What's the exit status?
+    			result.exitStatus = proc.exitValue();
+    			if (result.exitStatus!=0) 
+    			{
+    				log.logDetailed(toString(), "Exit status of shell ["+getFileName()+"] was "+result.exitStatus);
+    				result.setNrErrors(1);
+    			} 
+    		}
+    		catch(IOException ioe)
+    		{
+    			log.logError(toString(), "Error running shell ["+getFileName()+"] : "+ioe.toString());
+    			result.setNrErrors(1);
+    		}
+    		catch(InterruptedException ie)
+    		{
+    			log.logError(toString(), "Shell ["+getFileName()+"] was interupted : "+ie.toString());
+    			result.setNrErrors(1);
+    		}
+    		catch(Exception e)
+    		{
+    			log.logError(toString(), "Unexpected error running shell ["+getFileName()+"] : "+e.toString());
+    			result.setNrErrors(1);
+    		}
 		
-		if (result.getNrErrors() > 0)
-		{
-			result.setResult( false );
-		}
-		else
-		{
-			result.setResult( true );
-		}
+    		if (result.getNrErrors() > 0)
+    		{
+    			result.setResult( false );
+    		}
+    		else
+    		{
+    			result.setResult( true );
+    		}
+            
+            iteration++;
+        }
 		
 		return result;		
 	}

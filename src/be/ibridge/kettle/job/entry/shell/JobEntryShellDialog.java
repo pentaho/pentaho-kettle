@@ -100,6 +100,10 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 	private Button       wPrevious;
 	private FormData     fdlPrevious, fdPrevious;
 
+    private Label        wlEveryRow;
+    private Button       wEveryRow;
+    private FormData     fdlEveryRow, fdEveryRow;
+
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -386,13 +390,39 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 			}
 		);
 
+        wlEveryRow=new Label(shell, SWT.RIGHT);
+        wlEveryRow.setText("Execute once for every input row");
+        props.setLook(wlEveryRow);
+        fdlEveryRow=new FormData();
+        fdlEveryRow.left = new FormAttachment(0, 0);
+        fdlEveryRow.top  = new FormAttachment(wPrevious, margin*3);
+        fdlEveryRow.right= new FormAttachment(middle, -margin);
+        wlEveryRow.setLayoutData(fdlEveryRow);
+        wEveryRow=new Button(shell, SWT.CHECK );
+        props.setLook(wEveryRow);
+        wEveryRow.setSelection(jobentry.execPerRow);
+        wEveryRow.setToolTipText("Check this to execute this transformation mulitple times : once for every input row.");
+        fdEveryRow=new FormData();
+        fdEveryRow.left = new FormAttachment(middle, 0);
+        fdEveryRow.top  = new FormAttachment(wPrevious, margin*3);
+        fdEveryRow.right= new FormAttachment(100, 0);
+        wEveryRow.setLayoutData(fdEveryRow);
+        wEveryRow.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    jobentry.execPerRow=!jobentry.execPerRow;
+                    jobentry.setChanged();
+                }
+            }
+        );
 
 		wlFields=new Label(shell, SWT.NONE);
 		wlFields.setText("Fields : ");
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wPrevious, margin);
+		fdlFields.top  = new FormAttachment(wEveryRow, margin);
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsCols=1;
@@ -529,6 +559,7 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 			wFields.optWidth(true);
 		}
 		wPrevious.setSelection(jobentry.argFromPrevious);
+        wEveryRow.setSelection(jobentry.execPerRow);
 		wSetLogfile.setSelection(jobentry.setLogfile);
 		if (jobentry.logfile!=null) wLogfile.setText(jobentry.logfile);
 		if (jobentry.logext!=null) wLogext.setText(jobentry.logext);
