@@ -6,7 +6,7 @@ import java.util.Properties;
 
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Props;
@@ -16,7 +16,7 @@ import be.ibridge.kettle.core.util.StringUtil;
 public class VariableButtonListenerFactory
 {
     // Listen to the Variable... button
-    public static final SelectionAdapter getSelectionAdapter(final Shell shell, final Text destination)
+    public static final SelectionAdapter getSelectionAdapter(final Composite composite, final Text destination)
     {
         return new SelectionAdapter()
         {
@@ -39,7 +39,7 @@ public class VariableButtonListenerFactory
                 }
                 
                 Props props = Props.getInstance();
-                EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Message"));
+                EnterSelectionDialog esd = new EnterSelectionDialog(composite.getShell(), props, str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Message"));
                 if (esd.open()!=null)
                 {
                     int nr = esd.getSelectionNr();
