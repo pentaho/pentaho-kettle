@@ -1541,12 +1541,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			
 		case VALUE_TYPE_NUMBER :
             {
-			    int cmp = Double.compare(getNumber(), v.getNumber());
-			    if (cmp!=0)
-			    {
-			    	System.out.println("Different!");
-			    }
-			    return cmp;
+			    return Double.compare(getNumber(), v.getNumber());
             }
 
 		case VALUE_TYPE_STRING:
