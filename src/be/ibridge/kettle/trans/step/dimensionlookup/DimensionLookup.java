@@ -494,7 +494,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("DimensionLookup.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("DimensionLookup.Log.UnexpectedError", debug, e.toString())); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 		}
