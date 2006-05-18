@@ -1005,15 +1005,26 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 	{
         boolean finished = false;
         
-        EnterNumberDialog dialog = new EnterNumberDialog(shell, props, 1000, "Number of elements to scan", "Enter the number of elements to scan (0=all)");
-        int maxElements = dialog.open();
         int elementsFound=0;
         
         try
         {
     		XMLInputMeta meta = new XMLInputMeta();
     		getInfo(meta);
-            
+
+            if (meta.getInputPosition()==null || meta.getInputPosition().length<2)
+            {
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                mb.setMessage(Messages.getString("XMLInputDialog.SpecifyRepeatingElement.DialogMessage"));
+                mb.setText(Messages.getString("System.Dialog.Error.Title"));
+                mb.open(); 
+
+                return;
+            }
+
+            EnterNumberDialog dialog = new EnterNumberDialog(shell, props, 1000, "Number of elements to scan", "Enter the number of elements to scan (0=all)");
+            int maxElements = dialog.open();
+
             // OK, let's try to walk through the complete tree
             Row row = new Row(); // no fields found...
             
