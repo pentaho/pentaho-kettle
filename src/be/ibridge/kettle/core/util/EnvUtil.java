@@ -3,6 +3,7 @@ package be.ibridge.kettle.core.util;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -59,4 +60,25 @@ public class EnvUtil
 		Map kettleProperties = EnvUtil.readProperties(Const.KETTLE_PROPERTIES);
 		System.getProperties().putAll(kettleProperties);
 	}
+    
+    /**
+     * @return an array of strings, made up of all the environment variables available in the VM, format var=value.
+     * To be used for Runtime.exec(cmd, envp)
+     */
+    public static final String[] getEnvironmentVariablesForRuntimeExec()
+    {
+        Properties sysprops = System.getProperties();
+        String[] envp = new String[sysprops.size()];
+        ArrayList list = new ArrayList(sysprops.keySet());
+        for (int i=0;i<list.size();i++)
+        {
+            String var = (String)list.get(i);
+            String val = sysprops.getProperty(var);
+            
+            envp[i] = var+"="+val;
+        }
+
+        return envp;
+
+    }
 }

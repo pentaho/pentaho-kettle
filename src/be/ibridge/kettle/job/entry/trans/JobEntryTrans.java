@@ -23,6 +23,7 @@ import java.util.List;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
@@ -31,6 +32,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleJobException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.logging.Log4jFileAppender;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -313,17 +315,32 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	 * @param prev_result The result of the previous execution
 	 * @return The Result of the execution.
 	 */
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException
+	public Result execute(Result result, int nr, Repository rep, Job parentJob) throws KettleException
 	{
 		LogWriter log       = LogWriter.getInstance();
-		Result result = prev_result;
 		result.setEntryNr( nr );
 
 		LogWriter logwriter = log;
-		String logFilename = getLogFilename();
-		if (setLogfile) {
-			logwriter = LogWriter.getInstance(logFilename, true, loglevel);
-		}
+
+        Log4jFileAppender appender = null;
+        int backupLogLevel = log.getLogLevel();
+        if (setLogfile)
+        {
+            try
+            {
+                appender = LogWriter.createFileAppender(getLogFilename(), true);
+            }
+            catch(KettleException e)
+            {
+                log.logError(toString(), "Unable to open file appender for file ["+getLogFilename()+"] : "+e.toString());
+                log.logError(toString(), Const.getStackTracker(e));
+                result.setNrErrors(1);
+                result.setResult(false);
+                return result;
+            }
+            log.addAppender(appender);
+            log.setLogLevel(loglevel);
+        }
 		
 		// Open the transformation...
 		// Default directory for now...
@@ -334,7 +351,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         String args[] = arguments;
         Row resultRow = null;
         boolean first = true;
-        List rows = prev_result.getRows();
+        List rows = result.getRows();
         
         while( ( first && !execPerRow ) || ( execPerRow && rows!=null && iteration<rows.size() && result.getNrErrors()==0 ) )
         {
@@ -356,7 +373,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 Trans trans = new Trans(logwriter, transMeta);
                 
                 // Set the result rows for the next one...
-                trans.getTransMeta().setSourceRows(prev_result.rows);
+                trans.getTransMeta().setSourceRows(result.rows);
                 
                 if (execPerRow) // Execute for each input row
                 {
@@ -398,13 +415,14 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     else
                     {
                         // Keep it as it was...
-                        trans.setSourceRows(prev_result.rows);
+                        trans.setSourceRows(result.rows);
                     }
                 }
                     				
     			// Execute!
     			if (!trans.execute(args))
     			{
+                    log.logError(toString(), "Unable to prepare for execution of the transformation");
     				result.setNrErrors(1);
     			}
     			else
@@ -420,15 +438,24 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     					trans.stopAll();
     					trans.waitUntilFinished();
     					trans.endProcessing("stop");
+                        result.setNrErrors(1);
     				}
     				else
     				{
     					trans.endProcessing("end");
     				}
-    				result = trans.getResult();
-    				result.setEntryNr( nr );
-    				if (setLogfile) {
-    					result.interestingFiles.add(new File(logFilename));
+    				Result newResult = trans.getResult();
+                    
+                    result.clear();
+                    result.add(newResult);
+                    
+                    // Set the result rows too...
+                    result.setRows(newResult.getRows());
+                    result.interestingFiles=newResult.interestingFiles;
+                    
+                    if (setLogfile) 
+                    {
+    					result.interestingFiles.add(new File(getLogFilename()));
     				}
     			}
     		}
@@ -440,7 +467,15 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             iteration++;
         }
 		
-		if (setLogfile) logwriter.close();
+        if (setLogfile)
+        {
+            if (appender!=null) 
+            {
+                log.removeAppender(appender);
+                appender.close();
+            }
+            log.setLogLevel(backupLogLevel);
+        }
 		
 		if (result.getNrErrors()==0)
 		{

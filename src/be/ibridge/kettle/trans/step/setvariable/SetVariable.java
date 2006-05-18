@@ -53,6 +53,7 @@ public class SetVariable extends BaseStep implements StepInterface
 		Row r = getRow();
 		if (r==null)  // means: no more input to be expected...
 		{
+            logBasic("Finished after "+linesWritten+" rows.");
 			setOutputDone();
 			return false;
 		}
@@ -61,10 +62,14 @@ public class SetVariable extends BaseStep implements StepInterface
 		{
 		    first=false;
 
+            logBasic("Setting environment variables...");
+
             for (int i=0;i<meta.getFieldName().length;i++)
             {
                 // Set the appropriate environment variable
-                System.setProperty(meta.getVariableName()[i], r.getString(meta.getFieldName()[i], ""));
+                String value = r.getString(meta.getFieldName()[i], "");
+                System.setProperty(meta.getVariableName()[i], value);
+                logBasic("Set variable "+meta.getVariableName()[i]+" to value ["+value+"]");
             }
             
             putRow(r);

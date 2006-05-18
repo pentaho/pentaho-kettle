@@ -232,7 +232,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	
 			setLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
 			addDate          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
-			addTime          = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_time");
+			addTime          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
 			logfile           = rep.getJobEntryAttributeString(id_jobentry, "logfile");
 			logext            = rep.getJobEntryAttributeString(id_jobentry, "logext");
 			loglevel          = LogWriter.getLogLevel( rep.getJobEntryAttributeString(id_jobentry, "loglevel") );
@@ -291,13 +291,12 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		}
 	}	
 	
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob) throws KettleException
+	public Result execute(Result result, int nr, Repository rep, Job parentJob) throws KettleException
 	{
         LogWriter log = LogWriter.getInstance();
         
         try
         {
-    		Result result = prev_result;
     		result.setEntryNr( nr );
     		
     		LogWriter logwriter = log;
@@ -307,7 +306,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             String args[] = arguments;
             Row resultRow = null;
             boolean first = true;
-            List rows = prev_result.getRows();
+            List rows = result.getRows();
             
             while( ( first && !execPerRow ) || ( execPerRow && rows!=null && iteration<rows.size() && result.getNrErrors()==0 ) )
             {
@@ -382,13 +381,13 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                     else
                     {
                         // Keep it as it was...
-                        job.setSourceRows(prev_result.rows);
+                        job.setSourceRows(result.rows);
                     }
                 }
     
                 job.getJobMeta().setArguments( args );
                 
-                JobEntryJobRunner runner = new JobEntryJobRunner( job, prev_result, nr);
+                JobEntryJobRunner runner = new JobEntryJobRunner( job, result, nr);
     			new Thread(runner).start();
         		
                 try
@@ -420,12 +419,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 Result oneResult = runner.getResult();
                 if (iteration==0)
                 {
-                    result = oneResult;
+                    result.clear();
                 }
-                else
-                {
-                    result.add(oneResult);
-                }
+                result.add(oneResult);
     
                 iteration++;
             }
@@ -448,7 +444,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             log.logError(toString(), "Error running job entry 'job' : "+ke.toString());
             log.logError(toString(), Const.getStackTracker(ke));
             
-            Result result = new Result();
             result.setResult(false);
             result.setNrErrors(1L);
             

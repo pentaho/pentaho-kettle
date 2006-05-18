@@ -117,6 +117,8 @@ public class ChefGraph extends Canvas
 	
 	private int shadowsize;
 
+    private Menu mPop;
+
     /** @deprecated */
     public ChefGraph(Composite par, int style, LogWriter l, Chef je) 
     {
@@ -693,7 +695,7 @@ public class ChefGraph extends Canvas
                     {
                         if (lastMove != null)
                         {
-                            chef.pasteSteps(clipcontent, lastMove);
+                            chef.pasteXML(clipcontent, lastMove);
                         }
                     }
 
@@ -840,10 +842,23 @@ public class ChefGraph extends Canvas
 
 	private void setMenu(int x, int y) 
 	{
+        final int mousex = x;
+        final int mousey = y;        
+
+        // Re-use the popup menu if it was allocated beforehand...
+        if (mPop==null)
+        {
+            mPop = new Menu((Control) this);
+        }
+        else
+        {
+            MenuItem children[] = mPop.getItems();
+            for (int i=0;i<children.length;i++) children[i].dispose();
+        }
+        
 		final JobEntryCopy je = chef.jobMeta.getChefGraphEntry(x, y, iconsize);
 		if (je != null) // We clicked on a Job Entry!
 		{
-			Menu mPop = new Menu((Control) this);
 			MenuItem miNewHop = null;
 
 			int sels = chef.jobMeta.nrSelected();
@@ -1086,8 +1101,6 @@ public class ChefGraph extends Canvas
 			final JobHopMeta hi = findJobHop(x, y);
 			if (hi != null) // We clicked on a HOP!
 			{
-				Menu mPop = new Menu((Control) this);				
-				
 				// Evaluation...
 				MenuItem miPopEval = new MenuItem(mPop, SWT.CASCADE);
 				miPopEval.setText(Messages.getString("ChefGraph.PopupMenu.Hop.Evaluation")); //$NON-NLS-1$
@@ -1214,8 +1227,6 @@ public class ChefGraph extends Canvas
 				{
 					// Delete note
 					// Edit note
-					Menu mPop = new Menu((Control)this);
-
 					MenuItem miNoteEdit = new MenuItem(mPop, SWT.CASCADE); miNoteEdit.setText(Messages.getString("ChefGraph.PopupMenu.Note.Edit")); //$NON-NLS-1$
 					MenuItem miNoteDel  = new MenuItem(mPop, SWT.CASCADE); miNoteDel .setText(Messages.getString("ChefGraph.PopupMenu.Note.Delete")); //$NON-NLS-1$
 
@@ -1274,6 +1285,21 @@ public class ChefGraph extends Canvas
 							} 
 						} 
 					);
+
+                    MenuItem miPasteStep = new MenuItem(mPop, SWT.CASCADE);
+                    miPasteStep.setText(Messages.getString("ChefGraph.PopupMenu.PasteStepFromClipboard")); //$NON-NLS-1$
+
+                    final String clipcontent = chef.fromClipboard();
+                    if (clipcontent == null) miPasteStep.setEnabled(false);
+                    // Past steps on the clipboard to the transformation...
+                    miPasteStep.addSelectionListener(new SelectionAdapter()
+                    {
+                        public void widgetSelected(SelectionEvent e)
+                        {
+                            Point loc = new Point(mousex, mousey);
+                            chef.pasteXML(clipcontent, loc);
+                        }
+                    });
 
 					setMenu(mPop);
 				}

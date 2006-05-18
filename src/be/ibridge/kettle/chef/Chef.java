@@ -2088,7 +2088,7 @@ public class Chef
 		toClipboard(xml);
 	}
 
-	public void pasteSteps(String clipcontent, Point loc)
+	public void pasteXML(String clipcontent, Point loc)
 	{
 		try
 		{

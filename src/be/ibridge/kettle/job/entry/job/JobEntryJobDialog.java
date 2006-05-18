@@ -468,7 +468,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wPrevious, margin);
+		fdlFields.top  = new FormAttachment(wEveryRow, margin);
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsCols=1;
@@ -530,7 +530,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
     						wJobname.setText(jobname);
     						wDirectory.setText(sod.getDirectory().getPath());
     						// Copy it to the job entry name too...
-    						wName.setText(wName.getText());
+    						wName.setText(wJobname.getText());
     					}
                     }
 				}
@@ -684,6 +684,9 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
 			} 
 		}
 
+        jobentry.setLogfile=wSetLogfile.getSelection();
+        jobentry.addDate=wAddDate.getSelection();
+        jobentry.addTime=wAddTime.getSelection();
 		jobentry.logfile=wLogfile.getText();
 		jobentry.logext =wLogext.getText();
 		jobentry.loglevel = wLoglevel.getSelectionIndex()-1;

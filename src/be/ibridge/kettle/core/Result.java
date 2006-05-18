@@ -297,6 +297,22 @@ public class Result implements Cloneable
 	{
 		this.stopped = stopped;
 	}
+    
+    /**
+     * Clear the numbers in this result, set them all to 0 
+     *
+     */
+    public void clear()
+    {
+        nrLinesInput=0;
+        nrLinesOutput=0;
+        nrLinesRead=0;
+        nrLinesWritten=0;
+        nrLinesUpdated=0;
+        nrLinesDeleted=0;
+        nrErrors=0;
+        nrFilesRetrieved=0;
+    }
 
     /**
      * Add the NrOfLines from a different result to this result 

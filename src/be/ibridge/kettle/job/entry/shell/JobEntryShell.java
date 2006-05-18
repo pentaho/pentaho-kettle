@@ -23,6 +23,7 @@ import java.util.List;
 import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
@@ -30,6 +31,8 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.logging.Log4jFileAppender;
+import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -251,166 +254,237 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		return retval;
 	}
 	
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
+	public Result execute(Result result, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
+        
+        Log4jFileAppender appender = null;
+        int backupLogLevel = log.getLogLevel();
+        if (setLogfile)
+        {
+            try
+            {
+                appender = LogWriter.createFileAppender(getLogFilename(), true);
+            }
+            catch(KettleException e)
+            {
+                log.logError(toString(), "Unable to open file appender for file ["+getLogFilename()+"] : "+e.toString());
+                log.logError(toString(), Const.getStackTracker(e));
+                result.setNrErrors(1);
+                result.setResult(false);
+                return result;
+            }
+            log.addAppender(appender);
+            log.setLogLevel(loglevel);
+        }
 
-		Result result = prev_result;
 		result.setEntryNr( nr );
 		
         int iteration = 0;
         String args[] = arguments;
         Row resultRow = null;
         boolean first = true;
-        List rows = prev_result.getRows();
+        List rows = result.getRows();
         
-        System.out.println("Found "+rows.size()+" previous result rows");
+        log.logDetailed(toString(), "Found "+(rows!=null?rows.size():0)+" previous result rows");
         
         while( ( first && !execPerRow ) || ( execPerRow && rows!=null && iteration<rows.size() && result.getNrErrors()==0 ) )
         {
             first=false;
             if (rows!=null) resultRow = (Row) rows.get(iteration);
             
-            ArrayList cmdRows = null;
+            List cmdRows = null;
             
-    		try
-    		{
-                if (execPerRow) // Execute for each input row
+            if (execPerRow) // Execute for each input row
+            {
+                if (argFromPrevious) // Copy the input row to the (command line) arguments
                 {
-                    if (argFromPrevious) // Copy the input row to the (command line) arguments
+                    if (resultRow!=null)
                     {
-                        if (resultRow!=null)
+                        args = new String[resultRow.size()];
+                        for (int i=0;i<resultRow.size();i++)
                         {
-                            args = new String[resultRow.size()];
-                            for (int i=0;i<resultRow.size();i++)
-                            {
-                                args[i] = resultRow.getValue(i).toString();
-                            }
+                            args[i] = resultRow.getValue(i).toString();
                         }
-                    }
-                    else
-                    {
-                        // Just pass a single row
-                        ArrayList newList = new ArrayList();
-                        newList.add(resultRow);
-                        cmdRows = newList;
                     }
                 }
                 else
                 {
-                    if (argFromPrevious)
+                    // Just pass a single row
+                    ArrayList newList = new ArrayList();
+                    newList.add(resultRow);
+                    cmdRows = newList;
+                }
+            }
+            else
+            {
+                if (argFromPrevious)
+                {
+                    // Only put the first Row on the arguments
+                    args = null;
+                    if (resultRow!=null)
                     {
-                        // Only put the first Row on the arguments
-                        args = null;
-                        if (resultRow!=null)
+                        args = new String[resultRow.size()];
+                        for (int i=0;i<resultRow.size();i++)
                         {
-                            args = new String[resultRow.size()];
-                            for (int i=0;i<resultRow.size();i++)
-                            {
-                                args[i] = resultRow.getValue(i).toString();
-                            }
+                            args[i] = resultRow.getValue(i).toString();
                         }
-                    }
-                    else
-                    {
-                        // Keep it as it was...
-                        cmdRows = prev_result.rows;
                     }
                 }
+                else
+                {
+                    // Keep it as it was...
+                    cmdRows = rows;
+                }
+            }
 
-    			// What's the exact command?
-    			String cmd[] = null;
-    			String base[] = null;
-    			
-    			base = new String[] { getFileName() };
-    
-                // Construct the arguments...
-    			if (argFromPrevious && cmdRows!=null)
-    			{
-                    ArrayList cmds = new ArrayList();
-                    
-                    // Add the base command...
-    				for (int i=0;i<base.length;i++) cmds.add(base[i]);
-    
-                    // Add the arguments from previous results...
-    				for (int i=0;i<prev_result.rows.size();i++) 
-    				{
-    					Row r = (Row)prev_result.rows.get(i);
-                        for (int j=0;j<r.size();j++)
-                        {
-                            cmds.add(r.getValue(j).toString());
-                        }
-    				} 
-                    cmd = (String[]) cmds.toArray(new String[cmds.size()]);
-    			}
-    			else
-    			if (args!=null)
-    			{
-                    ArrayList cmds = new ArrayList();
-    
-                    // Add the base command...
-                    for (int i=0;i<base.length;i++) cmds.add(base[i]);
-    
-    				for (int i=0;i<args.length;i++) 
-    				{
-                        cmds.add(args[i]);
-    				} 
-                    cmd = (String[]) cmds.toArray(new String[cmds.size()]);
-    			}
-                
-    			// System.out.print("Command executed: ");
-                // for (int i=0;i<cmd.length;i++)
-                // {
-                //    System.out.print("["+cmd[i]+"] ");
-                // }
-                // System.out.println();
-                
-    			// Launch the script!
-                log.logDetailed(toString(), "Passing "+(cmd.length-1)+" arguments to command : ["+cmd[0]+"]");
-                
-                Process proc = java.lang.Runtime.getRuntime().exec(cmd);
-    			
-    			proc.waitFor();
-    			log.logDetailed(toString(), "command ["+cmd[0]+"] has finished");
-    			
-    			// What's the exit status?
-    			result.exitStatus = proc.exitValue();
-    			if (result.exitStatus!=0) 
-    			{
-    				log.logDetailed(toString(), "Exit status of shell ["+getFileName()+"] was "+result.exitStatus);
-    				result.setNrErrors(1);
-    			} 
-    		}
-    		catch(IOException ioe)
-    		{
-    			log.logError(toString(), "Error running shell ["+getFileName()+"] : "+ioe.toString());
-    			result.setNrErrors(1);
-    		}
-    		catch(InterruptedException ie)
-    		{
-    			log.logError(toString(), "Shell ["+getFileName()+"] was interupted : "+ie.toString());
-    			result.setNrErrors(1);
-    		}
-    		catch(Exception e)
-    		{
-    			log.logError(toString(), "Unexpected error running shell ["+getFileName()+"] : "+e.toString());
-    			result.setNrErrors(1);
-    		}
-		
-    		if (result.getNrErrors() > 0)
-    		{
-    			result.setResult( false );
-    		}
-    		else
-    		{
-    			result.setResult( true );
-    		}
+            executeShell(result, cmdRows, args);
             
             iteration++;
+        }
+        
+        if (setLogfile)
+        {
+            if (appender!=null) 
+            {
+                log.removeAppender(appender);
+                appender.close();
+            }
+            log.setLogLevel(backupLogLevel);
+            
         }
 		
 		return result;		
 	}
+        
+    private void executeShell(Result result, List cmdRows, String[] args)
+    {
+        LogWriter log = LogWriter.getInstance();
+        
+        try
+        {
+            // What's the exact command?
+            String cmd[] = null;
+            String base[] = null;
+            
+            
+            
+            if( Const.getOS().equals( "Windows NT" ) )
+            {
+                base = new String[] { "cmd.exe", "/C" };
+            }
+            else 
+            if( Const.getOS().equals( "Windows 95" ) )
+            {
+                base = new String[] { "command.com", "/C" };
+            }
+            else
+            {
+                base = new String[] { getFileName() };
+            }
+    
+            // Construct the arguments...
+            if (argFromPrevious && cmdRows!=null)
+            {
+                ArrayList cmds = new ArrayList();
+                
+                // Add the base command...
+                for (int i=0;i<base.length;i++) cmds.add(base[i]);
+    
+                // Add the arguments from previous results...
+                for (int i=0;i<cmdRows.size();i++) // Normally just one row, but once in a while to remain compatible we have multiple. 
+                {
+                    Row r = (Row)cmdRows.get(i);
+                    for (int j=0;j<r.size();j++)
+                    {
+                        cmds.add(r.getValue(j).toString());
+                    }
+                } 
+                cmd = (String[]) cmds.toArray(new String[cmds.size()]);
+            }
+            else
+            if (args!=null)
+            {
+                ArrayList cmds = new ArrayList();
+    
+                // Add the base command...
+                for (int i=0;i<base.length;i++) cmds.add(base[i]);
+    
+                for (int i=0;i<args.length;i++) 
+                {
+                    cmds.add(args[i]);
+                } 
+                cmd = (String[]) cmds.toArray(new String[cmds.size()]);
+            }
+            
+            if (log.isDetailed())
+            {
+                StringBuffer command = new StringBuffer();
+                for (int i=0;i<cmd.length;i++)
+                {
+                    if (i>0) command.append(" ");
+                    command.append(cmd[i]);
+                }
+                log.logDetailed(toString(), "Executing command : "+command.toString());
+            }
+             
+            // Launch the script!
+            log.logDetailed(toString(), "Passing "+(cmd.length-1)+" arguments to command : ["+cmd[0]+"]");
+
+            // Build the environment variable list...
+            Runtime runtime = java.lang.Runtime.getRuntime();
+            Process proc = runtime.exec(cmd,  
+                    EnvUtil.getEnvironmentVariablesForRuntimeExec());
+            
+            // any error message?
+            StreamLogger errorLogger = new
+                StreamLogger(proc.getErrorStream(), toString()+" (stderr)");            
+            
+            // any output?
+            StreamLogger outputLogger = new
+                StreamLogger(proc.getInputStream(), toString()+" (stdout)");
+                
+            // kick them off
+            new Thread(errorLogger).start();
+            new Thread(outputLogger).start();
+                                    
+            proc.waitFor();
+            log.logDetailed(toString(), "command ["+cmd[0]+"] has finished");
+            
+            // What's the exit status?
+            result.exitStatus = proc.exitValue();
+            if (result.exitStatus!=0) 
+            {
+                log.logDetailed(toString(), "Exit status of shell ["+getFileName()+"] was "+result.exitStatus);
+                result.setNrErrors(1);
+            } 
+        }
+        catch(IOException ioe)
+        {
+            log.logError(toString(), "Error running shell ["+getFileName()+"] : "+ioe.toString());
+            result.setNrErrors(1);
+        }
+        catch(InterruptedException ie)
+        {
+            log.logError(toString(), "Shell ["+getFileName()+"] was interupted : "+ie.toString());
+            result.setNrErrors(1);
+        }
+        catch(Exception e)
+        {
+            log.logError(toString(), "Unexpected error running shell ["+getFileName()+"] : "+e.toString());
+            result.setNrErrors(1);
+        }
+    
+        if (result.getNrErrors() > 0)
+        {
+            result.setResult( false );
+        }
+        else
+        {
+            result.setResult( true );
+        }
+
+    }
 
 	public boolean evaluates()
 	{

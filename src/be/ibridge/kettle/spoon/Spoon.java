@@ -97,6 +97,7 @@ import be.ibridge.kettle.core.dialog.DatabaseExplorerDialog;
 import be.ibridge.kettle.core.dialog.EnterMappingDialog;
 import be.ibridge.kettle.core.dialog.EnterOptionsDialog;
 import be.ibridge.kettle.core.dialog.EnterSearchDialog;
+import be.ibridge.kettle.core.dialog.EnterStringsDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
@@ -169,6 +170,8 @@ public class Spoon
     private SpoonLog   spoonlog;
     private SashForm sashform;
     public  CTabFolder tabfolder;
+    
+    public  Row variables;
     
     /**
      * These are the arguments that were given at Spoon launch time...
@@ -292,6 +295,11 @@ public class Spoon
         impact  = new ArrayList();
         impactHasRun = false;
         
+        // Clean out every time we start, auto-loading etc, is not a good idea
+        // If they are neede that often, set them in the kettle.properties file
+        //
+        variables = new Row(); 
+        
         // props.setLook(shell);
         
         shell.setImage(GUIResource.getInstance().getImageSpoon());
@@ -350,7 +358,7 @@ public class Spoon
                     // CTRL-I --> Import from XML file         && (e.keyCode&SWT.CONTROL)!=0
                     if ((int)e.character ==  9 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { openFile(true); spoongraph.clearSettings(); };
 
-                    // CTRL-F --> Java examination
+                    // CTRL-J --> Get variables
                     if ((int)e.character == 10 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { getVariables(); spoongraph.clearSettings(); };
 
                     // CTRL-N --> new
@@ -498,8 +506,27 @@ public class Spoon
         List list = transMeta.getUsedVariables();
         for (int i=0;i<list.size();i++)
         {
-            System.out.println("variable found: "+list.get(i));
+            String varName = (String)list.get(i);
+            String varValue = System.getProperty(varName, "");
+            if (variables.searchValueIndex(varName)<0)
+            {
+                variables.addValue(new Value(varName, varValue));
+            }
         }
+        
+        // Now ask the use for more info on these!
+        EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, variables);
+        esd.setReadOnly(false); 
+        if (esd.open()!=null)
+        {
+            for (int i=0;i<variables.size();i++)
+            {
+                Value varval = variables.getValue(i);
+                System.setProperty(varval.getName(), varval.getString());
+                System.out.println("Variable ${"+varval.getName()+"} set to ["+varval.getString()+"]");
+            }
+        }
+
     }
     
     public void clear()
@@ -666,7 +693,8 @@ public class Spoon
           miEditRedo                  = new MenuItem(msEdit, SWT.CASCADE);
           setUndoMenu();
           new MenuItem(msEdit, SWT.SEPARATOR);
-          MenuItem miEditSearch  = new MenuItem(msEdit, SWT.CASCADE); miEditSearch.setText(Messages.getString("Spoon.Menu.Edit.Search"));  //Search Metadata \tCTRL-F
+          MenuItem miEditSearch       = new MenuItem(msEdit, SWT.CASCADE); miEditSearch.setText(Messages.getString("Spoon.Menu.Edit.Search"));  //Search Metadata \tCTRL-F
+          MenuItem miEditVars         = new MenuItem(msEdit, SWT.CASCADE); miEditVars.setText(Messages.getString("Spoon.Menu.Edit.Variables"));  //Edit/Enter variables \tCTRL-F
           new MenuItem(msEdit, SWT.SEPARATOR);
           MenuItem miEditUnselectAll  = new MenuItem(msEdit, SWT.CASCADE); miEditUnselectAll.setText(Messages.getString("Spoon.Menu.Edit.ClearSelection"));  //&Clear selection \tESC
           MenuItem miEditSelectAll    = new MenuItem(msEdit, SWT.CASCADE); miEditSelectAll.setText(Messages.getString("Spoon.Menu.Edit.SelectAllSteps")); //"&Select all steps \tCTRL-A"
@@ -681,6 +709,7 @@ public class Spoon
         Listener lsEditUndo        = new Listener() { public void handleEvent(Event e) { undoAction(); } };
         Listener lsEditRedo        = new Listener() { public void handleEvent(Event e) { redoAction(); } };
         Listener lsEditSearch      = new Listener() { public void handleEvent(Event e) { searchMetaData(); } };
+        Listener lsEditVars        = new Listener() { public void handleEvent(Event e) { getVariables(); } };
         Listener lsEditUnselectAll = new Listener() { public void handleEvent(Event e) { editUnselectAll(); } };
         Listener lsEditSelectAll   = new Listener() { public void handleEvent(Event e) { editSelectAll();   } };
         Listener lsEditOptions     = new Listener() { public void handleEvent(Event e) { editOptions();     } };
@@ -688,6 +717,7 @@ public class Spoon
         miEditUndo       .addListener(SWT.Selection, lsEditUndo);
         miEditRedo       .addListener(SWT.Selection, lsEditRedo);
         miEditSearch     .addListener(SWT.Selection, lsEditSearch);
+        miEditVars       .addListener(SWT.Selection, lsEditVars);
         miEditUnselectAll.addListener(SWT.Selection, lsEditUnselectAll);
         miEditSelectAll  .addListener(SWT.Selection, lsEditSelectAll);
         miEditOptions    .addListener(SWT.Selection, lsEditOptions);

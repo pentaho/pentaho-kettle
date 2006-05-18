@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -458,18 +459,21 @@ public class SpoonLog extends Composite
 					readLog();
 					if (trans != null)
 					{
+                        String args[] = null;
 						Row arguments = getArguments(trans.getTransMeta());
 						if (arguments != null)
 						{
-							String args[] = convertArguments(arguments);
-							log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
-							trans.setSafeModeEnabled(wSafeMode.getSelection());
-							trans.execute(args);
-							log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
-							running = !running;
-							wStart.setText(STOP_TEXT);
-							readLog();
-						}
+							args = convertArguments(arguments);
+                        }
+                        getVariables(trans.getTransMeta());
+                        
+						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
+						trans.setSafeModeEnabled(wSafeMode.getSelection());
+						trans.execute(args);
+						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
+						running = !running;
+						wStart.setText(STOP_TEXT);
+						readLog();
 					}
 				}
 				else
@@ -527,7 +531,33 @@ public class SpoonLog extends Composite
 		}
 	}
 
-	public Row getArguments(TransMeta transMeta)
+	private void getVariables(TransMeta transMeta)
+    {
+        List vars = transMeta.getUsedVariables();
+        if (vars!=null && vars.size()>0)
+        {
+            Row variables = new Row();
+            for (int i=0;i<vars.size();i++) 
+            {
+                String varname = (String)vars.get(i);
+                Value varval = new Value(varname, System.getProperty(varname, ""));
+                variables.addValue( varval );
+            }
+            
+            EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, variables);
+            if (esd.open()!=null)
+            {
+                for (int i=0;i<variables.size();i++)
+                {
+                    Value varval = variables.getValue(i);
+                    System.setProperty(varval.getName(), varval.getString());
+                    System.out.println("Variable ${"+varval.getName()+"} set to ["+varval.getString()+"]");
+                }
+            }
+        }
+    }
+
+    public Row getArguments(TransMeta transMeta)
 	{
 		// OK, see if we need to ask for some arguments first...
 		//
@@ -744,19 +774,21 @@ public class SpoonLog extends Composite
 			psd.open();
 			if (psd.previewSteps != null)
 			{
+                String[] args=null;
 				Row arguments = getArguments(spoon.getTransMeta());
 				if (arguments != null)
 				{
-					String args[] = convertArguments(arguments);
+					args = convertArguments(arguments);
+                }
+                getVariables(spoon.getTransMeta());
 
-					spoon.tabfolder.setSelection(1);
-					trans = new Trans(log, spoon.getTransMeta(), psd.previewSteps, psd.previewSizes);
-					trans.execute(args);
-					preview = true;
-					readLog();
-					running = !running;
-					wStart.setText(STOP_TEXT);
-				}
+				spoon.tabfolder.setSelection(1);
+				trans = new Trans(log, spoon.getTransMeta(), psd.previewSteps, psd.previewSizes);
+				trans.execute(args);
+				preview = true;
+				readLog();
+				running = !running;
+				wStart.setText(STOP_TEXT);
 			}
 		}
 		catch (Exception e)

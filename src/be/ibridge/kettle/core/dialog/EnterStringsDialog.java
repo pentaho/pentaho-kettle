@@ -63,6 +63,8 @@ public class EnterStringsDialog extends Dialog
 	private Shell         shell;
 	private Row           strings;
 	private Props 		  props;
+    
+    private boolean       readOnly;
 
     /**
      * Constructs a new dialog
@@ -75,6 +77,7 @@ public class EnterStringsDialog extends Dialog
 			super(parent, style);
 			this.strings=strings;
 			props=Props.getInstance();
+            readOnly=true;
 	}
 
 	public Row open()
@@ -107,7 +110,7 @@ public class EnterStringsDialog extends Dialog
         
         ColumnInfo[] colinf=new ColumnInfo[]
             {
-                new ColumnInfo("String name",  ColumnInfo.COLUMN_TYPE_TEXT, false, true),
+                new ColumnInfo("String name",  ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly),
                 new ColumnInfo("String value", ColumnInfo.COLUMN_TYPE_TEXT, false, false)                
             };
         
@@ -192,21 +195,51 @@ public class EnterStringsDialog extends Dialog
 	
 	private void ok()
 	{
-        // Loop over the input rows and find the new values...
-        for (int i=0;i<wFields.nrNonEmpty();i++)
+        if (readOnly)
         {
-            TableItem item = wFields.getNonEmpty(i);
-            String name = item.getText(1);
-            for (int j=0;j<strings.size();j++)
+            // Loop over the input rows and find the new values...
+            for (int i=0;i<wFields.nrNonEmpty();i++)
             {
-                Value value = strings.getValue(j);
-                if (value.getName().equalsIgnoreCase(name))
+                TableItem item = wFields.getNonEmpty(i);
+                String name = item.getText(1);
+                for (int j=0;j<strings.size();j++)
                 {
-                    String stringValue = item.getText(2);
-                    value.setValue(stringValue);
+                    Value value = strings.getValue(j);
+                    if (value.getName().equalsIgnoreCase(name))
+                    {
+                        String stringValue = item.getText(2);
+                        value.setValue(stringValue);
+                    }
                 }
+            }
+        }
+        else // Variable: re-construct the list of strings again...
+        {
+            strings.clear();
+            for (int i=0;i<wFields.nrNonEmpty();i++)
+            {
+                TableItem item = wFields.getNonEmpty(i);
+                String name = item.getText(1);
+                String value = item.getText(2);
+                strings.addValue( new Value(name, value) );
             }
         }
         dispose();
 	}
+
+    /**
+     * @return Returns the readOnly.
+     */
+    public boolean isReadOnly()
+    {
+        return readOnly;
+    }
+
+    /**
+     * @param readOnly The readOnly to set.
+     */
+    public void setReadOnly(boolean readOnly)
+    {
+        this.readOnly = readOnly;
+    }
 }

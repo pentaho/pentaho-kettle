@@ -19,7 +19,9 @@ package be.ibridge.kettle.core;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Enumeration;
 
+import org.apache.log4j.Appender;
 import org.apache.log4j.Logger;
 
 import be.ibridge.kettle.core.exception.KettleException;
@@ -71,24 +73,19 @@ public class LogWriter
 			"Debugging",
 			"Rowlevel (very detailed)"
 		};
-
-	// File
-	private String filename;
-	private File file;  // Write to a certain file...
 	
 	// String...
 	private int type;
 	private int level;
 	private String filter;
-    private boolean exact;
     
     // Log4j
     private Logger               rootLogger;
-    private Log4jFileAppender    fileAppender;
     private Log4jConsoleAppender consoleAppender;
     private Log4jStringAppender  stringAppender;
+    private Log4jFileAppender    fileAppender;
     
-    private Log4jKettleLayout    layout;
+    public static final Log4jKettleLayout KETTLE_LAYOUT = new Log4jKettleLayout(true);
 
     private File realFilename;
 
@@ -116,16 +113,14 @@ public class LogWriter
     {
         rootLogger = Logger.getRootLogger();
         
-        layout = new Log4jKettleLayout(true);
-
         // Create the console appender, don't add it yet!
         consoleAppender = new Log4jConsoleAppender();
-        consoleAppender.setLayout(layout);
+        consoleAppender.setLayout(KETTLE_LAYOUT);
         consoleAppender.setName("AppendToConsole");
 
         // Create the string appender, don't add it yet!
         stringAppender  = new Log4jStringAppender();
-        stringAppender.setLayout(layout);
+        stringAppender.setLayout(KETTLE_LAYOUT);
         stringAppender.setName("AppendToString");
     }
 
@@ -154,7 +149,8 @@ public class LogWriter
 			// OK, see if we have a file appender already for this 
 			if (logWriter.rootLogger.getAppender(LogWriter.createFileAppenderName(filename, exact))==null)
 			{
-				logWriter.addFileAppender(filename, exact);
+				logWriter.fileAppender = createFileAppender(filename, exact);
+                logWriter.addAppender(logWriter.fileAppender);
 			}
 			return logWriter;
 	    }
@@ -167,13 +163,12 @@ public class LogWriter
 	{
         this();
         
-		this.filename = filename;
 		this.level = level;
-        this.exact = exact;
                 
 		try
 		{
-			addFileAppender(filename, exact);
+            fileAppender = createFileAppender(filename, exact); 
+			addAppender(fileAppender);
 		}
 		catch(Exception e)
 		{
@@ -181,10 +176,11 @@ public class LogWriter
 		}
 	}
 	
-	private void addFileAppender(String filename, boolean exact) throws KettleException
+	public static final Log4jFileAppender createFileAppender(String filename, boolean exact) throws KettleException
 	{
 		try
 		{
+            File file;
 	        if (!exact)
 	        {
 	            file = File.createTempFile(filename+".", ".log");
@@ -194,13 +190,13 @@ public class LogWriter
 	        {
 	            file = new File(filename);
 	        }
-	        realFilename = file.getAbsoluteFile();
+	        File realFile = file.getAbsoluteFile();
 	
-	        fileAppender = new Log4jFileAppender(realFilename);
-	        fileAppender.setLayout(layout);
-	        fileAppender.setName(LogWriter.createFileAppenderName(filename, exact));
-	                    
-	        rootLogger.addAppender(fileAppender);
+	        Log4jFileAppender appender = new Log4jFileAppender(realFile);
+	        appender.setLayout(KETTLE_LAYOUT);
+	        appender.setName(LogWriter.createFileAppenderName(filename, exact));
+            
+            return appender;
 		}
 		catch(IOException e)
 		{
@@ -230,23 +226,20 @@ public class LogWriter
 		this.type = type;
 	}
 
-    public boolean isExact()
-    {
-        return exact;
-    }
-	
 	public boolean close()
 	{
 		boolean retval=true;
 		try
 		{
-			// Close the file appender if there is one...
-			if(fileAppender != null)
-			{
-				fileAppender.close();
-				rootLogger.removeAppender(fileAppender);
-				fileAppender = null;
-			}
+			// Close all appenders...
+            Logger logger = Logger.getRootLogger();
+            Enumeration loggers = logger.getAllAppenders();
+            while (loggers.hasMoreElements())
+            {
+                Appender appender = (Appender) loggers.nextElement();
+                appender.close();
+            }
+            rootLogger.removeAllAppenders();
             logWriter=null;
 		}
 		catch(Exception e) 
@@ -279,33 +272,24 @@ public class LogWriter
 	
 	public void enableTime()
 	{
-        layout.setTimeAdded(true);
+        KETTLE_LAYOUT.setTimeAdded(true);
 	}
 
 	public void disableTime()
 	{
-		layout.setTimeAdded(false);
+		KETTLE_LAYOUT.setTimeAdded(false);
 	}
 	
 	public boolean getTime()
 	{
-        return layout.isTimeAdded();
+        return KETTLE_LAYOUT.isTimeAdded();
 	}
 
 	public void setTime(boolean tim)
 	{
-        layout.setTimeAdded(tim);
+        KETTLE_LAYOUT.setTimeAdded(tim);
 	}
 
-	public String getFilename()
-	{
-		if (filename!=null)
-		{
-			return filename;
-		}
-		return "[NO LOGFILE SET]";
-	}
-	
 	public void println(int lvl, String msg)
 	{
 		println(lvl, "General", msg);
@@ -349,11 +333,13 @@ public class LogWriter
 	public void logRowlevel(String subject, String message) { println(LOG_LEVEL_ROWLEVEL, subject, message); }
 	public void logError(String subject, String message)    { println(LOG_LEVEL_ERROR, subject, message); }
 	
-    /** @deprecated */
-	public Object getStream() {
-		if (fileAppender != null)
-			return fileAppender.getFileOutputStream();
-		return null;
+    /**
+     *  @deprecated  Please get the file appender yourself and work from there.
+     *   
+     */
+	public Object getStream() 
+    {
+		return null; // Will fail so that people fix this.
 	}
 	
 	public void setFilter(String filter)
@@ -387,10 +373,32 @@ public class LogWriter
 		return logLevelDescription[l];
 	}
 	
+    /**
+     * Please try to get the file appender yourself using the static constructor and work from there
+     */
 	public FileInputStream getFileInputStream() throws IOException
 	{
 		return new FileInputStream(fileAppender.getFile());
 	}
+    
+    /**
+     * Get the file input stream for a certain appender.
+     * The appender is looked up using the filename
+     * @param filename The exact filename (with path: c:\temp\logfile.txt) or just a filename (spoon.log)
+     * @param exact true if this is the exact filename or just the last part of the complete path.
+     * @return The file input stream of the appender
+     * @throws IOException in case the appender ocan't be found
+     */
+    public FileInputStream getFileInputStream(String filename, boolean exact) throws IOException
+    {
+        Logger logger = Logger.getRootLogger();
+        Appender appender = logger.getAppender(createFileAppenderName(filename, exact));
+        if (appender==null)
+        {
+            throw new IOException("Unable to find appender for file: "+filename+" (exact="+exact+")");
+        }
+        return new FileInputStream(((Log4jFileAppender)appender).getFile());
+    }
     
     public boolean isBasic()
     {
@@ -454,4 +462,17 @@ public class LogWriter
     {
         stringAppender.setBuffer(new StringBuffer(string));
     }
+
+    public void addAppender(Log4jFileAppender appender)
+    {
+        Logger logger = Logger.getRootLogger();
+        logger.addAppender(appender);
+    }
+    
+    public void removeAppender(Log4jFileAppender appender)
+    {
+        Logger logger = Logger.getRootLogger();
+        logger.removeAppender(appender);
+    }
+
 }
