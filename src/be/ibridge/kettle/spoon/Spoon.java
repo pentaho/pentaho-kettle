@@ -460,18 +460,20 @@ public class Spoon
         EnterSearchDialog esd = new EnterSearchDialog(shell);
         if (esd.open())
         {
-            String filter = esd.getFilterString();
+            String filterString = esd.getFilterString();
+            String filter = filterString;
+            if (filter!=null) filter = filter.toUpperCase();
             
             List stringList = transMeta.getStringList(esd.isSearchingSteps(), esd.isSearchingDatabases(), esd.isSearchingNotes());
             ArrayList rows = new ArrayList();
             for (int i=0;i<stringList.size();i++)
             {
                 StringSearchResult result = (StringSearchResult) stringList.get(i);
-                
+
                 boolean add = Const.isEmpty(filter);
-                if (filter!=null && result.getString().indexOf(filter)>=0) add=true;
-                if (filter!=null && result.getFieldName().indexOf(filter)>=0) add=true;
-                if (filter!=null && result.getParentObject().toString().indexOf(filter)>=0) add=true;
+                if (filter!=null && result.getString().toUpperCase().indexOf(filter)>=0) add=true;
+                if (filter!=null && result.getFieldName().toUpperCase().indexOf(filter)>=0) add=true;
+                if (filter!=null && result.getParentObject().toString().toUpperCase().indexOf(filter)>=0) add=true;
                 
                 if (add) rows.add(result.toRow());
             }
