@@ -379,7 +379,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             {
             	// OK, load the meta-data from file...
                 mappingTransMeta = new TransMeta(fileName);
-            }
+                LogWriter.getInstance().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file ["+fileName+"]");
+           }
             catch(Exception e)
             {
                 LogWriter.getInstance().logError("Loading Mapping from XML", "Unable to load transformation ["+transName+"] : "+e.toString());
@@ -397,6 +398,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
                     try
                     {
                         mappingTransMeta = new TransMeta(rep, transName, repdir);
+                        LogWriter.getInstance().logDetailed("Loading Mapping from repository", "Mapping transformation ["+transName+"] was loaded from the repository");
                     }
                     catch(Exception e)
                     {
