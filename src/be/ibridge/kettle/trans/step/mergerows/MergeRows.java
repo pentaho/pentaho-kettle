@@ -62,32 +62,39 @@ public class MergeRows extends BaseStep implements StepInterface
     		data.one=getRowFrom(meta.getReferenceStepName());
             data.two=getRowFrom(meta.getCompareStepName());
             
-            // Find the key indexes:
-            data.keyNrs = new int[meta.getKeyFields().length];
-            data.keyAsc = new boolean[meta.getKeyFields().length];
-            for (int i=0;i<data.keyNrs.length;i++)
+            if (data.one!=null)
             {
-                data.keyNrs[i] = data.one.searchValueIndex(meta.getKeyFields()[i]);
-                if (data.keyNrs[i]<0)
+                // Find the key indexes:
+                data.keyNrs = new int[meta.getKeyFields().length];
+                data.keyAsc = new boolean[meta.getKeyFields().length];
+                for (int i=0;i<data.keyNrs.length;i++)
                 {
-                    String message = Messages.getString("MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
-                    logError(message);
-                    throw new KettleStepException(message);
+                    data.keyNrs[i] = data.one.searchValueIndex(meta.getKeyFields()[i]);
+                    if (data.keyNrs[i]<0)
+                    {
+                        String message = Messages.getString("MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getKeyFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
+                        logError(message);
+                        throw new KettleStepException(message);
+                    }
+                    data.keyAsc[i] = true;
                 }
-                data.keyAsc[i] = true;
             }
-            data.valueNrs = new int[meta.getValueFields().length];
-            data.valueAsc = new boolean[meta.getValueFields().length];
-            for (int i=0;i<data.valueNrs.length;i++)
+            
+            if (data.two!=null)
             {
-                data.valueNrs[i] = data.one.searchValueIndex(meta.getValueFields()[i]);
-                if (data.valueNrs[i]<0)
+                data.valueNrs = new int[meta.getValueFields().length];
+                data.valueAsc = new boolean[meta.getValueFields().length];
+                for (int i=0;i<data.valueNrs.length;i++)
                 {
-                    String message = Messages.getString("MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getValueFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
-                    logError(message);
-                    throw new KettleStepException(message);
+                    data.valueNrs[i] = data.one.searchValueIndex(meta.getValueFields()[i]);
+                    if (data.valueNrs[i]<0)
+                    {
+                        String message = Messages.getString("MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getValueFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
+                        logError(message);
+                        throw new KettleStepException(message);
+                    }
+                    data.valueAsc[i] = true;
                 }
-                data.valueAsc[i] = true;
             }
         }
 
