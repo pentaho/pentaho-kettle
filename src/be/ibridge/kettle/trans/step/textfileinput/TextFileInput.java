@@ -1316,7 +1316,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                 // process the file from chef
                 data.files = new FileInputList();
                 for (int i=0;i<transmeta.getInputFiles().size();i++) {
-                    data.files.addFile(transmeta.getInputFiles().get(i));
+                    data.files.addFile((File)transmeta.getInputFiles().get(i));
                 }
             }
 			while (processRow(meta, data) && !isStopped())

@@ -318,6 +318,12 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
         this.targetFilename = targetFilename;
     }
 
+    
+    /**
+     *  We made this one synchronized in the JVM because otherwise, this is not thread safe.
+     *  In that case if (on an application server for example) several HTTP's are running at the same time, 
+     *  you get into problems because the System.setProperty() calls are system wide!
+     */
     public synchronized Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();

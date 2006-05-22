@@ -23,6 +23,8 @@ import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
+import java.net.URL;
+import java.net.URLClassLoader;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
@@ -39,6 +41,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.TreeItem;
 
 import be.ibridge.kettle.core.database.DatabaseMeta;
+import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 
@@ -80,7 +83,7 @@ public class Const
 	/**
 	 * Fetch size in rows when querying a database
 	 */
-	public static final int FETCH_SIZE = 100;
+	public static final int FETCH_SIZE = 1000;
 
 	/**
 	 * Sort size: how many rows do we sort in memory at once?
@@ -1700,5 +1703,25 @@ public class Const
     public static final boolean isEmpty(StringBuffer string)
     {
     	return string==null || string.toString().length()==0;
+    }
+    
+
+    /**
+     * @return a new ClassLoader
+     */
+    public static final ClassLoader createNewClassLoader() throws KettleException
+    {
+        try
+        {
+            // Nothing really in URL, everything is in scope.
+            URL urls[] = new URL[] { };
+            URLClassLoader ucl = new URLClassLoader(urls);
+
+            return ucl;
+        }
+        catch (Exception e)
+        {
+            throw new KettleException("Unexpected error during classloader creation", e);
+        }
     }
 }

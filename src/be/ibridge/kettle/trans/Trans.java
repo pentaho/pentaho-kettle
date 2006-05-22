@@ -21,6 +21,8 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.KettleVariables;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
@@ -30,6 +32,7 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleTransException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -51,11 +54,14 @@ import be.ibridge.kettle.trans.step.mappingoutput.MappingOutput;
  */
 public class Trans
 {	
-	public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"; //$NON-NLS-1$
+    public static final String REPLAY_DATE_FORMAT = "yyyy/MM/dd HH:mm:ss"; //$NON-NLS-1$
 	
 	private LogWriter log;
 	private TransMeta transMeta;
 
+    /** The job that's launching this transformation. This gives us access to the whole chain, including the parent variables, etc. */
+    private Job parentJob;
+    
 	/**
 	 * Indicates that we are running in preview mode...
 	 */
@@ -359,7 +365,11 @@ public class Trans
 					
 					// Possibly, enable safe mode in the steps...
 					((BaseStep)step).setSafeModeEnabled(safeModeEnabled);
-
+                    
+                    // Set the kettle variables...
+                    LocalVariables local = LocalVariables.getInstance();
+                    local.createKettleVariables((BaseStep)step, parentJob);
+                    
 					// Save the step too
 					combi.step = step;
 					
@@ -1363,6 +1373,27 @@ public class Trans
         return new RowProducer(stepInterface, rowSet); 
     }
 
+    /**
+     * @return Returns the parentJob.
+     */
+    public Job getParentJob()
+    {
+        return parentJob;
+    }
+
+    /**
+     * @param parentJob The parentJob to set.
+     */
+    public void setParentJob(Job parentJob)
+    {
+        this.parentJob = parentJob;
+    }
+
+    public KettleVariables getKettleVariables()
+    {
+        KettleVariables vars = KettleVariables.getInstance();
+        return vars;
+    }
 }
 
 

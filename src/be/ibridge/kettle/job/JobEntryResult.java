@@ -57,7 +57,14 @@ public class JobEntryResult implements Cloneable
 	public JobEntryResult(Result result, String comment, String reason, JobEntryCopy jobEntry)
 	{
         this();
-		this.result = result;
+		if (result!=null) 
+        { 
+            this.result = (Result) result.clone(); 
+        }
+        else 
+        { 
+            this.result = null;
+        }
         this.comment = comment;
         this.reason = reason;
         this.jobEntry = jobEntry;

@@ -193,12 +193,12 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 					dialog.setFilterExtensions(new String[] {"*.txt", "*.csv", "*"});
 					if (wFilename.getText()!=null)
 					{
-						dialog.setFileName(StringUtil.environmentSubstitute(wFilename.getText()));
+						dialog.setFileName(StringUtil.environmentSubstitute(wFilename.getText()) );
 					}
 					dialog.setFilterNames(new String[] {"Text files", "Comma Seperated Values", "All files"});
 					if (dialog.open()!=null)
 					{
-						wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
+						wFilename.setText(dialog.getFilterPath()+Const.FILE_SEPARATOR+dialog.getFileName());
 					}
 				}
 			}

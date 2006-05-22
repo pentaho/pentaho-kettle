@@ -5,6 +5,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.KettleVariables;
 
 /**
  * A collection of utilities to manipulate strings.
@@ -78,22 +79,38 @@ public class StringUtil
 	}
 
 	/**
-	 * Substitutes variables in <code>aString</code> with Kettle system
-	 * environment values.
+	 * Substitutes variables in <code>aString</code> with Kettle system and local environment values.
 	 * 
-	 * @param aString
-	 *            the string on which to apply the substitution.
+	 * @param aString the string on which to apply the substitution.
 	 * @return the string with the substitution applied.
 	 */
 	public static final String environmentSubstitute(String aString)
 	{
-		Properties systemProperties = System.getProperties();
-		aString = substituteWindows(aString, systemProperties);
-		aString = substituteUnix(aString, systemProperties);
-		return aString;
+        KettleVariables vars = KettleVariables.getInstance();
+        
+        Properties systemProperties = new Properties();
+        systemProperties.putAll( System.getProperties() );
+        systemProperties.putAll( vars.getProperties() ); // overwrite with local vars
+
+        return environmentSubstitute(aString, systemProperties);
 	}
-	
-	/**
+
+    /**
+     * Substitutes variables in <code>aString</code> with the environment values in the system properties
+     * 
+     * @param aString the string on which to apply the substitution.
+     * @param systemProperties the system properties to use
+     * @return the string with the substitution applied.
+
+     */
+	private static final String environmentSubstitute(String aString, Properties systemProperties)
+    {
+        aString = substituteWindows(aString, systemProperties);
+        aString = substituteUnix(aString, systemProperties);
+        return aString;
+    }
+
+    /**
 	 * Replaces environment variables in an array of strings.<p>
 	 * See also: environmentSubstitute(String string)
 	 * @param string The array of strings that wants its variables to be replaced.
@@ -101,10 +118,16 @@ public class StringUtil
 	 */
 	public static final String[] environmentSubstitute(String string[])
 	{
-		String retval[] = new String[string.length];
+        KettleVariables vars = KettleVariables.getInstance();
+        
+        Properties systemProperties = new Properties();
+        systemProperties.putAll( System.getProperties() );
+        systemProperties.putAll( vars.getProperties() ); // overwrite with local vars
+        
+        String retval[] = new String[string.length];
 		for (int i = 0; i < string.length; i++)
 		{
-			retval[i] = environmentSubstitute(string[i]);
+			retval[i] = environmentSubstitute(string[i], systemProperties);
 		}
 		return retval;
 	}

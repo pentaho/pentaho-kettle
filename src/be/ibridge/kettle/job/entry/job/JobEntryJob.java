@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
@@ -52,6 +53,8 @@ import be.ibridge.kettle.trans.StepLoader;
 
 public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInterface
 {	
+    private static final LogWriter log = LogWriter.getInstance();
+    
 	private String              jobname;
 	private String              filename;
 	private RepositoryDirectory directory;
@@ -293,8 +296,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	
 	public Result execute(Result result, int nr, Repository rep, Job parentJob) throws KettleException
 	{
-        LogWriter log = LogWriter.getInstance();
-        
         try
         {
     		result.setEntryNr( nr );
@@ -331,10 +332,25 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                     throw new KettleException("Unable to load the job: please specify the name and repository directory OR a filename");
                 }
                 
-                Job job = new Job(logwriter, StepLoader.getInstance(), rep, jobMeta);
+                // Create a new job in a different ClassLoader
+                Job job = Job.createJobWithNewClassLoader();
                 
-                parentJob.getJobTracker().addJobTracker(job.getJobTracker()); // Link the job with the sub-job
-                job.getJobTracker().setParentJobTracker(parentJob.getJobTracker()); // Link both ways!
+                job.open(logwriter, StepLoader.getInstance(), rep, jobMeta);
+                
+                // Link the job with the sub-job
+                parentJob.getJobTracker().addJobTracker(job.getJobTracker()); 
+                
+                // Link both ways!
+                job.getJobTracker().setParentJobTracker(parentJob.getJobTracker()); 
+                
+                // Tell this sub-job about its parent...
+                job.setParentJob(parentJob);
+                
+                // Variables are passed down...
+                LocalVariables localVariables = LocalVariables.getInstance();
+                
+                // Create a new KettleVariables instance here...
+                localVariables.createKettleVariables(job, parentJob);
                 
                 if (parentJob.getJobMeta().isBatchIdPassed())
                 {
@@ -451,8 +467,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         }
 	}
 	
-	
-	public void clear()
+
+
+    public void clear()
 	{
 		super.clear();
 		
@@ -513,9 +530,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         this.execPerRow = runEveryResultRow;
     }
 
-    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
+    public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) 
+    {
         return new JobEntryJobDialog(shell,this,rep);
     }
-    
 }
 

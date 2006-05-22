@@ -363,7 +363,7 @@ public class ScriptValuesMeta extends BaseStepMeta implements StepMetaInterface
 		jscx = Context.enter();
 		jsscope = jscx.initStandardObjects(null);
 			
-		// Scriptable jsvalue = Context.toObject(ScriptValues.class, jsscope);
+		// Scriptable jsvalue = Context.toObject(new ScriptValues(), jsscope);
 		// jsscope.put("_step_", jsscope, jsvalue);
 		//StringReader in = new StringReader(script);
 		

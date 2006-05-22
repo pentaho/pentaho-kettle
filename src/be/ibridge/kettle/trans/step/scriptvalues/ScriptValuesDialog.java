@@ -57,6 +57,7 @@ import org.mozilla.javascript.Scriptable;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
@@ -471,6 +472,10 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 			{
 				Scriptable jsrow = Context.toObject(row, jsscope);
 				jsscope.put("row", jsscope, jsrow); //$NON-NLS-1$
+                
+                Scriptable jsvars = Context.toObject(KettleVariables.getInstance(), jsscope);
+                jsscope.put("KETTLE_VARS", jsscope, jsvars); //$NON-NLS-1$
+
 				for (int i=0;i<row.size();i++)
 				{
 					Value val = row.getValue(i); 

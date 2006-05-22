@@ -33,7 +33,10 @@
 	  <property name="webstart"				location="webstart"/>
 	  <property name="keystore"				location="keystore"/>
 	  <property name="keystorePassword"		location="abcd1234"/>
-	
+
+	  <property name="variables"        	location="variables"/> 
+	  <property name="libvars"     			location="libvars"/>
+
 	  <property name="sourcezipfile"        location="Kettle-src-${version}.zip"/>
 		  
 	  <target name="init" description="create timestamp and directories">
@@ -48,6 +51,7 @@
 		<mkdir dir="${docs}"/>
 		<mkdir dir="${api}"/>
 		<mkdir dir="${webstart}"/>
+		<mkdir dir="${libvars}"/>
 	  </target>
 
 	  <!--
@@ -72,6 +76,16 @@
 				<fileset dir="${libswt}/win32/" includes="*.jar"/>
 		  		</classpath>
 	    </javac>
+	  	
+	    <javac srcdir="${variables}/" 
+	    	   destdir="${variables}/"
+	    	   target="1.4"
+	    	   source="1.4"
+	           deprecation="true"
+	    	   debug="true"
+	    	>
+	    </javac>
+
 	  </target>
 	
 		<!--
@@ -180,6 +194,12 @@
 	    	 includes="**/*"
 	  	     excludes="**/Thumbs.db"
 	  		/>
+
+	  	<jar jarfile="${libvars}/kettle-variables.jar" 
+	    	 basedir="${variables}" 
+	    	 includes="**/*"
+	  		/>
+
 	  </target>
 	  	
 	  <!-- Make the kettle.jar file available on javaForge -->

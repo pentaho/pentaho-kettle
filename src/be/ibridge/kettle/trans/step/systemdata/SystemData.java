@@ -41,10 +41,11 @@ public class SystemData extends BaseStep implements StepInterface
 {
 	private SystemDataMeta meta;
 	private SystemDataData data;
-	
+    
 	public SystemData(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
+        setName(stepMeta.getName());
 	}
 	
 	private Row getSystemData()

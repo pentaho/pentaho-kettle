@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
@@ -49,6 +50,8 @@ import be.ibridge.kettle.trans.TransMeta;
 
 public class BaseStepDialog extends Dialog
 {
+    protected static LocalVariables localVariables = LocalVariables.getInstance();
+    
 	protected LogWriter    log;
 	protected String       stepname;
 		

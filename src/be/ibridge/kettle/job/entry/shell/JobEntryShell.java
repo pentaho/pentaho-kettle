@@ -368,17 +368,18 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             String base[] = null;
             
             
+            log.logBasic(toString(), "Running on platform : "+Const.getOS());
             
-            if( Const.getOS().equals( "Windows NT" ) )
-            {
-                base = new String[] { "cmd.exe", "/C" };
-            }
-            else 
             if( Const.getOS().equals( "Windows 95" ) )
             {
-                base = new String[] { "command.com", "/C" };
+                base = new String[] { "command.com", "/C", getFileName() };
             }
             else
+            if( Const.getOS().startsWith( "Windows" ) )
+            {
+                base = new String[] { "cmd.exe", "/C", getFileName() };
+            }
+            else 
             {
                 base = new String[] { getFileName() };
             }

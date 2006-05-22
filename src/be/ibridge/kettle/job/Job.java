@@ -20,6 +20,8 @@ import java.util.Date;
 
 import be.ibridge.kettle.chef.JobTracker;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.KettleVariables;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
@@ -49,6 +51,9 @@ public class Job extends Thread
 	private JobMeta jobMeta;
 	private Repository rep;
 	
+    /** The job that's launching this (sub-) job. This gives us access to the whole chain, including the parent variables, etc. */
+    private Job parentJob;
+    
 	/**
 	 * Keep a list of the job entries that were executed.
 	 */
@@ -63,11 +68,18 @@ public class Job extends Thread
      * These rows are passed onto the first job entry in this job (on the result object)
      */
     private ArrayList sourceRows;
-	
-	public Job(LogWriter lw, String name, String file, String args[])
+    
+    public Job(LogWriter lw, String name, String file, String args[])
+    {
+        init(lw, name, file, args);
+    }
+    
+	public void init(LogWriter lw, String name, String file, String args[])
 	{
 		this.log=lw;
 		
+        if (name!=null) setName(name);
+        
 		jobMeta = new JobMeta(log);
 		jobMeta.setName(name);
 		jobMeta.setFilename(file);
@@ -79,17 +91,30 @@ public class Job extends Thread
 
 	public Job(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
 	{
-		this.log        = lw;
-		this.rep        = rep;
-		this.jobMeta    = ti;
-		
-		active=false;
-		stopped=false;
-        jobTracker = new JobTracker(jobMeta);
+        open(lw, steploader, rep, ti);
+        if (ti.getName()!=null) setName(ti.getName());
 	}
+    
+    // Empty constructor, for Class.newInstance()
+    public Job()
+    {
+        
+    }
+    
+    public void open(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
+    {
+        this.log        = lw;
+        this.rep        = rep;
+        this.jobMeta    = ti;
+        
+        if (ti.getName()!=null) setName(ti.getName());
+        
+        active=false;
+        stopped=false;
+        jobTracker = new JobTracker(jobMeta);
+    }
 	
-	public void open(Repository rep, String fname, String jobname, String dirname)
-		throws KettleException
+	public void open(Repository rep, String fname, String jobname, String dirname) throws KettleException
 	{
 		this.rep = rep;
 		if (rep!=null)
@@ -100,7 +125,34 @@ public class Job extends Thread
 		{
 			jobMeta = new JobMeta(log, fname, rep);
 		}
+        
+        if (jobMeta.getName()!=null) setName(jobMeta.getName());
 	}
+    
+    
+    public static final Job createJobWithNewClassLoader() throws KettleException
+    {
+        try
+        {
+            // Load the class.
+            Class jobClass = Const.createNewClassLoader().loadClass(Job.class.getName()); 
+
+            // create the class
+            // Try to instantiate this one...
+            Job job = (Job)jobClass.newInstance();
+            
+            // Done!
+            return job;
+        }   
+        catch(Exception e)
+        {
+            String message = "Error allocating new Job : "+e.toString();
+            LogWriter.getInstance().logError("Create Job in new ClassLoader", message);
+            LogWriter.getInstance().logError("Create Job in new ClassLoader", Const.getStackTracker(e));
+            throw new KettleException(message, e);
+        }
+    }
+    
 
 	public String getJobname()
 	{
@@ -260,7 +312,12 @@ public class Job extends Thread
 			{				
 				// Start this next step!
 				log.logBasic(jobMeta.toString(), "Starting entry ["+nextEntry.getName()+"]");
-				// Pass along the previous result, perhaps the next job can use it...
+                
+                // Pass along the previous result, perhaps the next job can use it...
+                // However, set the number of errors back to 0
+                result.setNrErrors(0);
+                
+                // Now execute!
 				res = execute(nr+1, result, nextEntry, startpoint, nextComment);
 				
 				log.logBasic(jobMeta.toString(), "Finished jobentry ["+nextEntry.getName()+"] (result="+res.getResult()+")");
@@ -501,6 +558,30 @@ public class Job extends Thread
     public ArrayList getSourceRows()
     {
         return sourceRows;
+    }
+
+    /**
+     * @return Returns the parentJob.
+     */
+    public Job getParentJob()
+    {
+        return parentJob;
+    }
+
+    /**
+     * @param parentJob The parentJob to set.
+     */
+    public void setParentJob(Job parentJob)
+    {
+        this.parentJob = parentJob;
+    }
+    
+    /**
+     * @return the Kettle Variables that apply for the job running in THIS classloader. (local to this Job)
+     */
+    public KettleVariables getKettleVariables()
+    {
+        return LocalVariables.getKettleVariables(this);
     }
 }
 

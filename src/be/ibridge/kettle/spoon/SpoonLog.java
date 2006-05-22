@@ -53,6 +53,7 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.GUIResource;
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
@@ -533,6 +534,8 @@ public class SpoonLog extends Composite
 
 	private void getVariables(TransMeta transMeta)
     {
+        KettleVariables kettleVariables = KettleVariables.getInstance();
+        
         List vars = transMeta.getUsedVariables();
         if (vars!=null && vars.size()>0)
         {
@@ -540,7 +543,7 @@ public class SpoonLog extends Composite
             for (int i=0;i<vars.size();i++) 
             {
                 String varname = (String)vars.get(i);
-                Value varval = new Value(varname, System.getProperty(varname, ""));
+                Value varval = new Value(varname, kettleVariables.getVariable(varname, ""));
                 variables.addValue( varval );
             }
             
@@ -550,7 +553,7 @@ public class SpoonLog extends Composite
                 for (int i=0;i<variables.size();i++)
                 {
                     Value varval = variables.getValue(i);
-                    System.setProperty(varval.getName(), varval.getString());
+                    kettleVariables.setVariable(varval.getName(), varval.getString());
                     System.out.println("Variable ${"+varval.getName()+"} set to ["+varval.getString()+"]");
                 }
             }

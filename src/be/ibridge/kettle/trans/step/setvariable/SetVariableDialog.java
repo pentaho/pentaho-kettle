@@ -37,11 +37,16 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
+import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -121,12 +126,14 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		fdlFields.top  = new FormAttachment(wStepname, margin);
 		wlFields.setLayoutData(fdlFields);
 		
-		final int FieldsCols=2;
 		final int FieldsRows=input.getFieldName().length;
 		
-		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
-		colinf[1]=new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableName"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ColumnInfo[] colinf=
+            {
+		        new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+		        new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableName"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableType"), ColumnInfo.COLUMN_TYPE_CCOMBO, SetVariableMeta.getVariableTypeDescriptions(), true), //$NON-NLS-1$
+            };
 
 		wFields=new TableView(shell, 
 							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -147,16 +154,20 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
+        wGet=new Button(shell, SWT.PUSH);
+        wGet.setText(Messages.getString("System.Button.GetFields")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wFields);
+		setButtonPositions(new Button[] { wOK, wGet, wCancel }, margin, wFields);
 
 		// Add listeners
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+		lsCancel = new Listener() { public void handleEvent(Event e) { cancel(); } };
+        lsGet    = new Listener() { public void handleEvent(Event e) { get(); }    };
+		lsOK     = new Listener() { public void handleEvent(Event e) { ok();       } };
 		
 		wCancel.addListener(SWT.Selection, lsCancel);
+        wGet.addListener   (SWT.Selection, lsGet   );
 		wOK.addListener    (SWT.Selection, lsOK    );
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
@@ -165,7 +176,6 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
-
 
 		// Set the shell size, based upon previous time...
 		setSize();
@@ -193,9 +203,11 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 			TableItem item = wFields.table.getItem(i);
 			String src = input.getFieldName()[i];
 			String tgt = input.getVariableName()[i];
+			String typ = SetVariableMeta.getVariableTypeDescription(input.getVariableType()[i]);
 			
 			if (src!=null) item.setText(1, src);
 			if (tgt!=null) item.setText(2, tgt);
+            if (typ!=null) item.setText(3, typ);
 		}
 
 		wFields.setRowNums();
@@ -214,7 +226,6 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 	private void ok()
 	{
 		stepname = wStepname.getText(); // return value
-		//Table table = wFields.table;
 
 		int count = wFields.nrNonEmpty();
 		input.allocate(count);
@@ -222,9 +233,41 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
 		for (int i=0;i<count;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
-			input.getFieldName()[i]   = item.getText(1);
-			input.getVariableName()[i]  = item.getText(2);
+			input.getFieldName()[i]    = item.getText(1);
+			input.getVariableName()[i] = item.getText(2);
+            input.getVariableType()[i] = SetVariableMeta.getVariableType(item.getText(3));
 		}
 		dispose();
 	}
+    
+    private void get()
+    {
+        try
+        {
+            Row r = transMeta.getPrevStepFields(stepname);
+            if (r!=null)
+            {
+                Table table = wFields.table;
+                String[] used = wFields.getItems(1); 
+                for (int i=0;i<r.size();i++)
+                {
+                    Value v = r.getValue(i);
+                    if ( Const.indexOfString(v.getName(), used)<0)
+                    {
+                        TableItem ti = new TableItem(table, SWT.NONE);
+                        ti.setText(1, v.getName());
+                        ti.setText(2, v.getName().toUpperCase());
+                        ti.setText(3, SetVariableMeta.getVariableTypeDescription(SetVariableMeta.VARIABLE_TYPE_JVM));
+                    }
+                }
+                wFields.removeEmptyRows();
+                wFields.setRowNums();
+                wFields.optWidth(true);
+            }
+        }
+        catch(KettleException ke)
+        {
+            new ErrorDialog(shell, props, Messages.getString("SelectValuesDialog.FailedToGetFields.DialogTitle"), Messages.getString("SelectValuesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
 }

@@ -2,8 +2,6 @@ package be.ibridge.kettle.i18n;
 
 import java.util.MissingResourceException;
 
-import be.ibridge.kettle.i18n.GlobalMessages;
-
 public class BaseMessages
 {
 	public static String getString(String packageName, String key)

@@ -24,6 +24,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
@@ -382,6 +383,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 // Set the result rows for the next one...
                 trans.getTransMeta().setSourceRows(result.rows);
                 
+                // set the parent job on the transformation, variables are taken from here...
+                trans.setParentJob(parentJob);
+                
+                // Pass along the kettle variables...
+                LocalVariables localVariables = LocalVariables.getInstance();
+                localVariables.createKettleVariables(Thread.currentThread(), parentJob);
+
                 if (execPerRow) // Execute for each input row
                 {
                     if (argFromPrevious) // Copy the input row to the (command line) arguments

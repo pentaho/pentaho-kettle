@@ -27,6 +27,8 @@ import java.util.Date;
 import java.util.List;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.KettleVariables;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.RowSet;
@@ -89,6 +91,8 @@ import be.ibridge.kettle.trans.step.xmloutput.XMLOutputMeta;
 
 public class BaseStep extends Thread 
 {
+    protected static LocalVariables localVariables = LocalVariables.getInstance();
+    
 	public static final Class type_classname[] = 
 		{
 		 	null,
@@ -494,9 +498,9 @@ public class BaseStep extends Thread
 	 */
 	public BaseStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
-		super();
+		setName(stepMeta.getName());
 		
-		log = LogWriter.getInstance();
+        log = LogWriter.getInstance();
 		this.stepMeta=stepMeta;
 		this.stepDataInterface = stepDataInterface;
 		this.stepcopy+=copyNr;
@@ -551,6 +555,7 @@ public class BaseStep extends Thread
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		sdi.setStatus(StepDataInterface.STATUS_INIT);
+        
 		return true;
 	}
 		
@@ -1675,4 +1680,8 @@ public class BaseStep extends Thread
 		this.safeModeEnabled = safeModeEnabled;
 	}
     
+    public KettleVariables getKettleVariables()
+    {
+        return LocalVariables.getKettleVariables(this);
+    }
 }

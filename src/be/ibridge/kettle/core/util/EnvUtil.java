@@ -8,6 +8,8 @@ import java.util.Map;
 import java.util.Properties;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.KettleVariables;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 
 public class EnvUtil
@@ -25,8 +27,7 @@ public class EnvUtil
 	public static Map readProperties(String fileName)
 	{
 		Properties props = new Properties();
-		String kettlePropsFilename = Const.getKettleDirectory()
-				+ Const.FILE_SEPARATOR + fileName;
+		String kettlePropsFilename = Const.getKettleDirectory() + Const.FILE_SEPARATOR + fileName;
 		InputStream is = null;
 		try
 		{
@@ -58,7 +59,11 @@ public class EnvUtil
 	public static void environmentInit()
 	{
 		Map kettleProperties = EnvUtil.readProperties(Const.KETTLE_PROPERTIES);
-		System.getProperties().putAll(kettleProperties);
+        System.getProperties().putAll(kettleProperties);
+        
+        // OK, initialize the KettleVariables as well...
+        LocalVariables local = LocalVariables.getInstance();
+        local.createKettleVariables(Thread.currentThread(), null);
 	}
     
     /**
@@ -67,7 +72,13 @@ public class EnvUtil
      */
     public static final String[] getEnvironmentVariablesForRuntimeExec()
     {
-        Properties sysprops = System.getProperties();
+        KettleVariables vars = KettleVariables.getInstance();
+        
+        Properties sysprops = new Properties();
+        sysprops.putAll( System.getProperties() );
+        sysprops.putAll( vars.getProperties() );
+        
+        
         String[] envp = new String[sysprops.size()];
         ArrayList list = new ArrayList(sysprops.keySet());
         for (int i=0;i<list.size();i++)

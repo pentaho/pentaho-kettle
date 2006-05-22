@@ -15,9 +15,11 @@
  
 package be.ibridge.kettle.trans.step.setvariable;
 
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
+import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -61,14 +63,80 @@ public class SetVariable extends BaseStep implements StepInterface
 		if (first)
 		{
 		    first=false;
-
+            
             logBasic("Setting environment variables...");
 
             for (int i=0;i<meta.getFieldName().length;i++)
             {
                 // Set the appropriate environment variable
                 String value = r.getString(meta.getFieldName()[i], "");
-                System.setProperty(meta.getVariableName()[i], value);
+                
+                String varname = meta.getVariableName()[i];
+                
+                // OK, where do we set this value...
+                switch(meta.getVariableType()[i])
+                {
+                case SetVariableMeta.VARIABLE_TYPE_JVM: 
+                    System.setProperty(varname, value); 
+                    break;
+                case SetVariableMeta.VARIABLE_TYPE_PARENT_JOB:
+                    {
+                        Job parentJob = getTrans().getParentJob();
+                        if (parentJob!=null)
+                        {
+                            KettleVariables kettleVariables = parentJob.getKettleVariables();
+                            kettleVariables.setVariable(varname, value);
+                        }
+                        else
+                        {
+                            throw new KettleStepException("Can't set variable ["+varname+"] on parent job: the parent job is not available");
+                        }
+                    }
+                    break;
+                case SetVariableMeta.VARIABLE_TYPE_GRAND_PARENT_JOB:
+                    {
+                        Job parentJob = getTrans().getParentJob();
+                        if (parentJob!=null)
+                        {
+                            Job gpJob = parentJob.getParentJob();
+                            if (gpJob!=null)
+                            {
+                                gpJob.getKettleVariables().setVariable(varname, value);
+                            }
+                            else
+                            {
+                                throw new KettleStepException("Can't set variable ["+varname+"] on grand parent job: the grand parent job is not available");
+                            }
+                        }
+                        else
+                        {
+                            throw new KettleStepException("Can't set variable ["+varname+"] on grand parent job: the parent job is not available");
+                        }
+                    }
+                    break;
+                case SetVariableMeta.VARIABLE_TYPE_ROOT_JOB:
+                    {
+                        Job parentJob = getTrans().getParentJob();
+                        Job rootJob = parentJob;
+                        while (parentJob!=null)
+                        {
+                            rootJob = parentJob;
+                            parentJob = parentJob.getParentJob();
+                        }
+                        
+                        // OK, we have the rootjob, set the variable on it...
+                        if (rootJob!=null)
+                        {
+                            rootJob.getKettleVariables().setVariable(varname, value);
+                        }
+                        else
+                        {
+                            throw new KettleStepException("Can't set variable ["+varname+"] on root job: the root job is not available (meaning: not even the parent job)");
+                        }
+                    }
+                    break;
+                }
+                
                 logBasic("Set variable "+meta.getVariableName()[i]+" to value ["+value+"]");
             }
             

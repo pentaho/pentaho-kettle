@@ -30,7 +30,7 @@ public class StreamLogger implements Runnable
             String line = null;
             while ((line = br.readLine()) != null)
             {
-                log.logDetailed(type, line);
+                log.logBasic(type, line);
             }
         }
         catch (IOException ioe)

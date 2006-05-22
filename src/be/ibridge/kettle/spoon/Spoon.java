@@ -77,6 +77,7 @@ import org.w3c.dom.Node;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
 import be.ibridge.kettle.core.GUIResource;
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
@@ -503,11 +504,13 @@ public class Spoon
     
     public void getVariables()
     {
+        KettleVariables kettleVariables = KettleVariables.getInstance();
+        
         List list = transMeta.getUsedVariables();
         for (int i=0;i<list.size();i++)
         {
             String varName = (String)list.get(i);
-            String varValue = System.getProperty(varName, "");
+            String varValue = kettleVariables.getVariable(varName, "");
             if (variables.searchValueIndex(varName)<0)
             {
                 variables.addValue(new Value(varName, varValue));
@@ -522,7 +525,7 @@ public class Spoon
             for (int i=0;i<variables.size();i++)
             {
                 Value varval = variables.getValue(i);
-                System.setProperty(varval.getName(), varval.getString());
+                kettleVariables.setVariable(varval.getName(), varval.getString());
                 System.out.println("Variable ${"+varval.getName()+"} set to ["+varval.getString()+"]");
             }
         }

@@ -46,8 +46,23 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 {
+    public static final int VARIABLE_TYPE_JVM              = 0;
+    public static final int VARIABLE_TYPE_PARENT_JOB       = 1;
+    public static final int VARIABLE_TYPE_GRAND_PARENT_JOB = 2;
+    public static final int VARIABLE_TYPE_ROOT_JOB         = 3;
+    
+    private static final String variableTypeCode[] = { "JVM", "PARENT_JOB", "GP_JOB", "ROOT_JOB" };
+    private static final String variableTypeDesc[] = 
+        { 
+            "Valid in the Java Virtual Machine", 
+            "Valid in the parent job", 
+            "Valid in the grand-parent job", 
+            "Valid in the root job" 
+        };
+    
 	private String fieldName[];
 	private String variableName[];
+    private int variableType[];
 	
 	public SetVariableMeta()
 	{
@@ -71,6 +86,14 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
     }
  
     /**
+     * @param fieldValue The fieldValue to set.
+     */
+    public void setVariableName(String[] fieldValue)
+    {
+        this.variableName = fieldValue;
+    }
+    
+    /**
      * @return Returns the fieldValue.
      */
     public String[] getVariableName()
@@ -79,13 +102,62 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     /**
-     * @param fieldValue The fieldValue to set.
+     * @return Returns the local variable flag: true if this variable is only valid in the parents job.
      */
-    public void setVariableName(String[] fieldValue)
+    public int[] getVariableType()
     {
-        this.variableName = fieldValue;
+        return variableType;
     }
- 	
+
+    /**
+     * @param variableType The variable type, see also VARIABLE_TYPE_...
+     * @return the variable type code for this variable type
+     */
+    public static final String getVariableTypeCode(int variableType)
+    {
+        return variableTypeCode[variableType];
+    }
+    
+    /**
+     * @param variableType The variable type, see also VARIABLE_TYPE_...
+     * @return the variable type description for this variable type
+     */
+    public static final String getVariableTypeDescription(int variableType)
+    {
+        return variableTypeDesc[variableType];
+    }
+
+    /**
+     * @param variableType The code or description of the variable type 
+     * @return The variable type
+     */
+    public static final int getVariableType(String variableType)
+    {
+        for (int i=0;i<variableTypeCode.length;i++)
+        {
+            if (variableTypeCode[i].equalsIgnoreCase(variableType)) return i;
+        }
+        for (int i=0;i<variableTypeDesc.length;i++)
+        {
+            if (variableTypeDesc[i].equalsIgnoreCase(variableType)) return i;
+        }
+        return VARIABLE_TYPE_JVM;
+    }
+
+    /**
+     * @param localVariable The localVariable to set.
+     */
+    public void setVariableType(int[] localVariable)
+    {
+        this.variableType = localVariable;
+    }
+    
+    public static final String[] getVariableTypeDescriptions()
+    {
+        return variableTypeDesc;
+    }
+    
+
 	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
 		throws KettleXMLException
 	{
@@ -96,6 +168,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		fieldName  = new String[count];
 		variableName = new String[count];
+        variableType = new int[count];
 	}
 
 	public Object clone()
@@ -110,6 +183,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			retval.fieldName[i]  = fieldName[i];
 			retval.variableName[i] = variableName[i];
+            retval.variableType[i] = variableType[i];
 		}
 		
 		return retval;
@@ -131,6 +205,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 				
 				fieldName[i]  = XMLHandler.getTagValue(fnode, "field_name"); //$NON-NLS-1$
 				variableName[i] = XMLHandler.getTagValue(fnode, "variable_name"); //$NON-NLS-1$
+                variableType[i] = getVariableType(XMLHandler.getTagValue(fnode, "variable_type")); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -149,6 +224,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			fieldName[i] = "field"+i; //$NON-NLS-1$
 			variableName[i] = ""; //$NON-NLS-1$
+            variableType[i] = VARIABLE_TYPE_JVM;
 		}
 	}
 
@@ -172,6 +248,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("      <field>"+Const.CR); //$NON-NLS-1$
 			retval.append("        "+XMLHandler.addTagValue("field_name", fieldName[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        "+XMLHandler.addTagValue("variable_name", variableName[i])); //$NON-NLS-1$ //$NON-NLS-2$
+            retval.append("        "+XMLHandler.addTagValue("variable_type", getVariableTypeCode(variableType[i]))); //$NON-NLS-1$
 			retval.append("        </field>"+Const.CR); //$NON-NLS-1$
 		}
 		retval.append("      </fields>"+Const.CR); //$NON-NLS-1$
@@ -192,6 +269,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				fieldName[i] =          rep.getStepAttributeString(id_step, i, "field_name"); //$NON-NLS-1$
 				variableName[i] = 		rep.getStepAttributeString(id_step, i, "variable_name"); //$NON-NLS-1$
+                variableType[i] = getVariableType(rep.getStepAttributeString(id_step, i, "variable_type")); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -200,7 +278,8 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-	public void saveRep(Repository rep, long id_transformation, long id_step)
+
+    public void saveRep(Repository rep, long id_transformation, long id_step)
 		throws KettleException
 	{
 		try
@@ -209,6 +288,7 @@ public class SetVariableMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_name",      fieldName[i]); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, "variable_name",     variableName[i]); //$NON-NLS-1$
+                rep.saveStepAttribute(id_transformation, id_step, i, "variable_type",   getVariableTypeCode(variableType[i])); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)

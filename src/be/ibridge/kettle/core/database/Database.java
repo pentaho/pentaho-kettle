@@ -473,15 +473,13 @@ public class Database
 		setValues(r, prepStatementLookup);
 	}
 	
-	public void setProcValues(Row r, int argnrs[], String argdir[], boolean result)
-		throws KettleDatabaseException
+	public void setProcValues(Row r, int argnrs[], String argdir[], boolean result) throws KettleDatabaseException
 	{
-		int i;
 		int pos;
 		
 		if (result) pos=2; else pos=1;
 		
-		for (i=0;i<argnrs.length;i++)
+		for (int i=0;i<argnrs.length;i++)
 		{
 			if (argdir[i].equalsIgnoreCase("IN"))
 			{

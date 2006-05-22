@@ -21,6 +21,7 @@ import org.mozilla.javascript.JavaScriptException;
 import org.mozilla.javascript.Scriptable;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
@@ -103,7 +104,10 @@ public class ScriptValues extends BaseStep implements StepInterface
 			first = false;
 			Scriptable jsvalue = Context.toObject(this, data.scope);
 			data.scope.put("_step_", data.scope, jsvalue); //$NON-NLS-1$
-			
+
+            Scriptable jsvars = Context.toObject(KettleVariables.getInstance(), data.scope);
+            data.scope.put("KETTLE_VARS", data.scope, jsvars); //$NON-NLS-1$
+
 			//StringReader in = new StringReader(info.script);
 			
 			try

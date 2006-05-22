@@ -9,12 +9,15 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.util.StringUtil;
 
 public class VariableButtonListenerFactory
 {
+    private static KettleVariables kettleVariables = KettleVariables.getInstance();
+
     // Listen to the Variable... button
     public static final SelectionAdapter getSelectionAdapter(final Composite composite, final Text destination)
     {
@@ -22,7 +25,7 @@ public class VariableButtonListenerFactory
         {
             public void widgetSelected(SelectionEvent e) 
             {
-                Properties sp = System.getProperties();
+                Properties sp = kettleVariables.getProperties();
                 ArrayList keys = new ArrayList( sp.keySet() );
                 Collections.sort(keys);
                 

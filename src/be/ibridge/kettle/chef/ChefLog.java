@@ -48,6 +48,7 @@ import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
@@ -371,9 +372,15 @@ public class ChefLog extends Composite
 					try
 					{
 						wStart.setText(STOP_TEXT);
-						job = new Job(log, chef.jobMeta.getName(), chef.jobMeta.getFilename(), null);
+                        // Load the job in a new ClassLoader...
+                        job = new Job();
+                        
+                        LocalVariables localVariables = LocalVariables.getInstance();
+                        localVariables.createKettleVariables(job, Thread.currentThread());
+                        
+						job.init(log, chef.jobMeta.getName(), chef.jobMeta.getFilename(), null);
 						job.open(chef.rep, chef.jobMeta.getFilename(), chef.jobMeta.getName(), chef.jobMeta.getDirectory().getPath());
-
+						
                         log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.StartingJob")); //$NON-NLS-1$
 						job.start();
 						readLog();
