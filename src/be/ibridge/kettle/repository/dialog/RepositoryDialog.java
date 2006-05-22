@@ -367,6 +367,21 @@ public class RepositoryDialog
 		
 		if (repinfo.getConnection()!=null)
 		{
+            if (repinfo.getConnection().getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
+            {
+                // Show a warning: using ODBC is not always the best choice ;-)
+                System.out.println("Show ODBC warning..."); //$NON-NLS-1$
+                
+                MessageBox qmb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
+                qmb.setMessage(Messages.getString("RepositoryDialog.Dialog.ODBCIsNotSafe.Message", Const.CR, Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+                qmb.setText(Messages.getString("RepositoryDialog.Dialog.ODBCIsNotSafe.Title")); //$NON-NLS-1$
+                int answer = qmb.open();    
+                if (answer!=SWT.YES)
+                {
+                    return; // Don't continue
+                }
+
+            }
 			System.out.println("Allocating repository..."); //$NON-NLS-1$
 			Repository rep = new Repository(log, repinfo, null);
 	
