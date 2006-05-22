@@ -46,6 +46,7 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.dimensionlookup.Messages;
 
 /**
  * @author Matt
@@ -129,6 +130,12 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     /** The year to use as plus infinity in the dimensions date range */
     private int                 maxYear;
     
+	/** Which method to use for the creation of the tech key */
+	private String techKeyCreation = null;
+	
+	public static String CREATION_METHOD_AUTOINC  = "autoinc";
+	public static String CREATION_METHOD_SEQUENCE = "sequence";
+	public static String CREATION_METHOD_TABLEMAX = "tablemax";    
     
 	public DimensionLookupMeta()
 	{
@@ -201,7 +208,30 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
     {
         this.autoIncrement = autoIncrement;
     }
+
     
+    
+	/**
+	 * Set the way how the technical key field should be created.
+	 *
+	 * @param techKeyCreation which method to use for the creation
+	 *                        of the technical key.
+	 */
+    public void setTechKeyCreation(String techKeyCreation)
+    {
+   		this.techKeyCreation = techKeyCreation;
+    }
+
+	/**
+	 * Get the way how the technical key field should be created.
+	 *
+	 * @return creation way for the technical key.
+	 */
+    public String getTechKeyCreation()
+    {
+        return this.techKeyCreation;
+    }
+        
     /**
      * @return Returns the commitSize.
      */
@@ -597,6 +627,8 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			keyRename = XMLHandler.getTagValue(fields, "return", "rename"); //$NON-NLS-1$ //$NON-NLS-2$
 			autoIncrement = !"N".equalsIgnoreCase(XMLHandler.getTagValue(fields, "return", "use_autoinc")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			versionField = XMLHandler.getTagValue(fields, "return", "version"); //$NON-NLS-1$ //$NON-NLS-2$
+			
+			setTechKeyCreation(XMLHandler.getTagValue(fields, "return", "creation_method")); //$NON-NLS-1$
 		}
 		catch (Exception e)
 		{
@@ -643,7 +675,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 		keyField = ""; //$NON-NLS-1$
 		keyRename = ""; //$NON-NLS-1$
-		autoIncrement = true;
+		autoIncrement = false;
 		versionField = "version"; //$NON-NLS-1$
 	}
 
@@ -752,6 +784,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		retval.append("        <return>" + Const.CR); //$NON-NLS-1$
 		retval.append("          " + XMLHandler.addTagValue("name", keyField)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("          " + XMLHandler.addTagValue("rename", keyRename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          " + XMLHandler.addTagValue("creation_method", techKeyCreation)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("          " + XMLHandler.addTagValue("use_autoinc", autoIncrement)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("          " + XMLHandler.addTagValue("version", versionField)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("        </return>" + Const.CR); //$NON-NLS-1$
@@ -803,6 +836,7 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 			keyRename = rep.getStepAttributeString(id_step, "return_rename"); //$NON-NLS-1$
 			autoIncrement = rep.getStepAttributeBoolean(id_step, "use_autoinc"); //$NON-NLS-1$
 			versionField = rep.getStepAttributeString(id_step, "version_field"); //$NON-NLS-1$
+			techKeyCreation = rep.getStepAttributeString(id_step, "creation_method"); //$NON-NLS-1$
 
 			sequenceName = rep.getStepAttributeString(id_step, "sequence"); //$NON-NLS-1$
 			minYear = (int) rep.getStepAttributeInteger(id_step, "min_year"); //$NON-NLS-1$
@@ -849,6 +883,8 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 			rep.saveStepAttribute(id_transformation, id_step, "return_name", keyField); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "return_rename", keyRename); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "creation_method", techKeyCreation); //$NON-NLS-1$
+			// For the moment still save 'use_autoinc' for backwards compatibility (Sven Boden).
 			rep.saveStepAttribute(id_transformation, id_step, "use_autoinc", autoIncrement); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "version_field", versionField); //$NON-NLS-1$
 
@@ -901,6 +937,19 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 		else
 			checkLookup(remarks, stepinfo, prev);
 
+		if ( techKeyCreation != null )
+		{
+		    // post 2.2 version
+			if ( !(CREATION_METHOD_AUTOINC.equals(techKeyCreation) ||
+			       CREATION_METHOD_SEQUENCE.equals(techKeyCreation) ||
+			       CREATION_METHOD_TABLEMAX.equals(techKeyCreation)) )
+			{
+				String error_message = Messages.getString("DimensionLookupMeta.CheckResult.ErrorTechKeyCreation")+ ": " + techKeyCreation +"!"; //$NON-NLS-1$ //$NON-NLS-2$
+				CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
+				remarks.add(cr);
+			}
+		}		
+		
 		// See if we have input streams leading to this step!
 		if (input.length > 0)
 		{
@@ -1103,7 +1152,8 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 				}
 
 				// Check sequence
-				if (databaseMeta.supportsSequences() && sequenceName != null && sequenceName.length() != 0)
+				if (databaseMeta.supportsSequences() && CREATION_METHOD_SEQUENCE.equals(getTechKeyCreation()) &&
+						 sequenceName != null && sequenceName.length() != 0)
 				{
 					if (db.checkSequenceExists(sequenceName))
 					{
@@ -1510,14 +1560,17 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 							}
 							else
 							{
-								retval
-										.setError(Messages.getString("DimensionLookupMeta.ReturnValue.TechnicalKeyFieldRequired")); //$NON-NLS-1$
+								retval.setError(Messages.getString("DimensionLookupMeta.ReturnValue.TechnicalKeyFieldRequired")); //$NON-NLS-1$
 							}
 
 							// The optional Oracle sequence
-							if (!db.checkSequenceExists(sequenceName))
+							if ( CREATION_METHOD_SEQUENCE.equals(getTechKeyCreation()) &&
+									 sequenceName != null)
 							{
-								sql += db.getCreateSequenceStatement(sequenceName, 1L, 1L, -1L, true);
+							    if (!db.checkSequenceExists(sequenceName))
+							    {
+								    sql += db.getCreateSequenceStatement(sequenceName, 1L, 1L, -1L, true);
+							    }
 							}
 
 							if (sql.length() == 0)
@@ -1669,7 +1722,4 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
             return super.getUsedDatabaseConnections();
         }
     }
-
-
 }
-

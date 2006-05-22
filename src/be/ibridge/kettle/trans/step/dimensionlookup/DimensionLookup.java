@@ -31,6 +31,7 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.dimensionlookup.Messages;
 
 
 /**
@@ -43,6 +44,12 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class DimensionLookup extends BaseStep implements StepInterface
 {
+	private final static int CREATION_METHOD_AUTOINC  = 1;
+    private final static int CREATION_METHOD_SEQUENCE = 2;
+	private final static int CREATION_METHOD_TABLEMAX = 3;
+	
+	private int techKeyCreation;	
+	
 	private DimensionLookupMeta meta;	
 	private DimensionLookupData data;
 	
@@ -50,6 +57,35 @@ public class DimensionLookup extends BaseStep implements StepInterface
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
+	
+	private void setTechKeyCreation(int method)
+	{
+		techKeyCreation = method;
+	}
+
+	private int getTechKeyCreation()
+	{
+		return techKeyCreation;
+	}
+	
+	private void determineTechKeyCreation()
+	{
+		String keyCreation = meta.getTechKeyCreation();
+		if (meta.getDatabaseMeta().supportsAutoinc() && 
+			DimensionLookupMeta.CREATION_METHOD_AUTOINC.equals(keyCreation) )
+		{
+		    setTechKeyCreation(CREATION_METHOD_AUTOINC);
+		}
+		else if (meta.getDatabaseMeta().supportsSequences() && 
+		  	     DimensionLookupMeta.CREATION_METHOD_SEQUENCE.equals(keyCreation) )
+		{
+		    setTechKeyCreation(CREATION_METHOD_SEQUENCE);
+		}
+		else
+		{
+			setTechKeyCreation(CREATION_METHOD_TABLEMAX);
+		}		
+	}	
 	
 	private synchronized void lookupValues(Row row)
 		throws KettleException
@@ -67,7 +103,9 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		if (first)
 		{
 			debug = "init of lookupValues()"; //$NON-NLS-1$
+						
 			first=false;
+			determineTechKeyCreation();
 			if (getCopy()==0) data.db.checkDimZero(meta.getTableName(), meta.getKeyField(), meta.getVersionField(), meta.isAutoIncrement());
 			
 			debug = "first: setDimLookup()"; //$NON-NLS-1$
@@ -207,27 +245,23 @@ public class DimensionLookup extends BaseStep implements StepInterface
 				
 				// get a new value from the sequence choosen.
 				boolean autoinc=false;
-                
-                // First try to use an AUTOINCREMENT field
-				if (meta.getDatabaseMeta().supportsAutoinc() && meta.isAutoIncrement())
+				technicalKey = null;
+				switch ( getTechKeyCreation() )
 				{
-					autoinc=true;
-					technicalKey=new Value(meta.getKeyField(), 0L); // value to accept new key...
-				}
-				else
-				// Try to get the value by looking at a SEQUENCE (oracle mostly)
-				if (meta.getDatabaseMeta().supportsSequences() && meta.getSequenceName()!=null && meta.getSequenceName().length()>0)
-				{
-					technicalKey=data.db.getNextSequenceValue(meta.getSequenceName(), meta.getKeyField());
-					if (technicalKey!=null && log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.FoundNextSequence")+technicalKey.toString()); //$NON-NLS-1$
-				}
-				else
-				// Use our own sequence here...
-				{
-					// What's the next value for the technical key?
-					technicalKey=new Value(meta.getKeyField(), 0L); // value to accept new key...
-					data.db.getNextValue(getTransMeta().getCounters(), meta.getTableName(), technicalKey);
-				}
+				    case CREATION_METHOD_TABLEMAX:
+						// What's the next value for the technical key?
+						technicalKey=new Value(meta.getKeyField(), 0L); // value to accept new key...
+						data.db.getNextValue(getTransMeta().getCounters(), meta.getTableName(), technicalKey);
+                        break;
+				    case CREATION_METHOD_AUTOINC:
+						autoinc=true;
+						technicalKey=new Value(meta.getKeyField(), 0L); // value to accept new key...
+						break;
+				    case CREATION_METHOD_SEQUENCE:						
+						technicalKey=data.db.getNextSequenceValue(meta.getSequenceName(), meta.getKeyField());
+						if (technicalKey!=null && log.isRowLevel()) logRowlevel(Messages.getString("DimensionLookup.Log.FoundNextSequence")+technicalKey.toString()); //$NON-NLS-1$
+						break;					
+				}	               
 
 				/*
 				 *   INSERT INTO table(version, datefrom, dateto, fieldlookup)

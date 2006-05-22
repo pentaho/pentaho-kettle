@@ -13,18 +13,18 @@
  **                                                                   **
  **********************************************************************/
 
-
 /*
  * Created on 2-jul-2003
  *
  */
-
 package be.ibridge.kettle.trans.step.dimensionlookup;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -34,10 +34,13 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -64,6 +67,7 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
+import be.ibridge.kettle.trans.step.dimensionlookup.Messages;
 
 
 public class DimensionLookupDialog extends BaseStepDialog implements StepDialogInterface
@@ -94,6 +98,22 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	private Text         wTkRename;
 	private FormData     fdlTkRename, fdTkRename;
 
+	private Group        gTechGroup;
+	private FormData     fdTechGroup;
+	
+	private Label        wlAutoinc;
+	private Button       wAutoinc;
+	private GridData     gdlAutoinc, gdAutoinc;
+
+	private Label        wlTableMax;
+	private Button       wTableMax;
+	private GridData     gdlTableMax, gdTableMax;	
+
+	private Label        wlSeqButton;
+	private Button       wSeqButton;
+	private GridData     gdlSeqButton, gdSeqButton, gdSeq;			
+	private Text         wSeq;    	
+/*
 	private Label        wlAutoinc;
 	private Button       wAutoinc;
 	private FormData     fdlAutoinc, fdAutoinc;
@@ -101,6 +121,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	private Label        wlSeq;
 	private Text         wSeq;
 	private FormData     fdlSeq, fdSeq;
+*/	
 
 	private Label        wlVersion;
 	private Text         wVersion;
@@ -313,6 +334,82 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdTkRename.right= new FormAttachment(100, 0);
 		wTkRename.setLayoutData(fdTkRename);
 
+		////////////////////////////////////////////////////
+		// The key creation box
+		////////////////////////////////////////////////////
+		gTechGroup = new Group(wTableComp, SWT.SHADOW_ETCHED_IN);
+		gTechGroup.setText(Messages.getString("DimensionLookupDialog.TechGroup.Label")); //$NON-NLS-1$;
+		GridLayout gridLayout = new GridLayout(3, false);
+		gTechGroup.setLayout(gridLayout);
+		fdTechGroup=new FormData();
+		fdTechGroup.left   = new FormAttachment(middle, 0);
+		fdTechGroup.top    = new FormAttachment(wTk, margin);	
+		fdTechGroup.right  = new FormAttachment(100, 0);
+		gTechGroup.setBackground(shell.getBackground()); // the default looks ugly
+		gTechGroup.setLayoutData(fdTechGroup);
+
+		// Use maximum of table + 1
+		wTableMax=new Button(gTechGroup, SWT.RADIO);
+ 		props.setLook(wTableMax);
+ 		wTableMax.setSelection(false);
+		gdTableMax=new GridData();
+		wTableMax.setLayoutData(gdTableMax);
+		wTableMax.setToolTipText(Messages.getString("DimensionLookupDialog.TableMaximum.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		wlTableMax=new Label(gTechGroup, SWT.LEFT);
+		wlTableMax.setText(Messages.getString("DimensionLookupDialog.TableMaximum.Label")); //$NON-NLS-1$
+ 		props.setLook(wlTableMax);
+		gdlTableMax = new GridData(GridData.FILL_BOTH);
+		gdlTableMax.horizontalSpan = 2; gdlTableMax.verticalSpan = 1;
+		wlTableMax.setLayoutData(gdlTableMax);
+		
+		// Sequence Check Button
+		wSeqButton=new Button(gTechGroup, SWT.RADIO);
+ 		props.setLook(wSeqButton);
+ 		wSeqButton.setSelection(false);
+		gdSeqButton=new GridData();
+		wSeqButton.setLayoutData(gdSeqButton);
+		wSeqButton.setToolTipText(Messages.getString("DimensionLookupDialog.Sequence.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$		
+		wlSeqButton=new Label(gTechGroup, SWT.LEFT);
+		wlSeqButton.setText(Messages.getString("DimensionLookupDialog.Sequence.Label")); //$NON-NLS-1$
+ 		props.setLook(wlSeqButton); 	
+		gdlSeqButton=new GridData();
+		wlSeqButton.setLayoutData(gdlSeqButton);
+
+		wSeq=new Text(gTechGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wSeq);
+		wSeq.addModifyListener(lsMod);
+		gdSeq=new GridData(GridData.FILL_HORIZONTAL);
+		wSeq.setLayoutData(gdSeq);
+		wSeq.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent arg0) {
+				input.setTechKeyCreation(DimensionLookupMeta.CREATION_METHOD_SEQUENCE);
+				wSeqButton.setSelection(true);
+				wAutoinc.setSelection(false);
+				wTableMax.setSelection(false);				
+			}
+
+			public void focusLost(FocusEvent arg0) {
+			} 
+		});		
+		
+		// Use an autoincrement field?
+		wAutoinc=new Button(gTechGroup, SWT.RADIO);
+ 		props.setLook(wAutoinc);
+ 		wAutoinc.setSelection(false);
+		gdAutoinc=new GridData();
+		wAutoinc.setLayoutData(gdAutoinc);
+		wAutoinc.setToolTipText(Messages.getString("DimensionLookupDialog.AutoincButton.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		wlAutoinc=new Label(gTechGroup, SWT.LEFT);
+		wlAutoinc.setText(Messages.getString("DimensionLookupDialog.Autoincrement.Label")); //$NON-NLS-1$
+ 		props.setLook(wlAutoinc);
+		gdlAutoinc=new GridData();
+		wlAutoinc.setLayoutData(gdlAutoinc);
+
+		setTableMax(); 
+		setSequence();
+		setAutoincUse();
+		
+/*		
 		// Use an autoincrement field?
 		wlAutoinc=new Label(wTableComp, SWT.RIGHT);
 		wlAutoinc.setText(Messages.getString("DimensionLookupDialog.AutoInc.Label")); //$NON-NLS-1$
@@ -362,6 +459,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdSeq.top  = new FormAttachment(wlAutoinc, margin);
 		fdSeq.right= new FormAttachment(100, 0);
 		wSeq.setLayoutData(fdSeq);
+*/
 
 		// Version key field:
 		wlVersion=new Label(wTableComp, SWT.RIGHT);
@@ -370,14 +468,14 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdlVersion=new FormData();
 		fdlVersion.left = new FormAttachment(0, 0);
 		fdlVersion.right= new FormAttachment(middle, -margin);
-		fdlVersion.top  = new FormAttachment(wSeq, margin);
+		fdlVersion.top  = new FormAttachment(gTechGroup, margin);
 		wlVersion.setLayoutData(fdlVersion);
 		wVersion=new Text(wTableComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wVersion);
 		wVersion.addModifyListener(lsMod);
 		fdVersion=new FormData();
 		fdVersion.left = new FormAttachment(middle, 0);
-		fdVersion.top  = new FormAttachment(wSeq, margin);
+		fdVersion.top  = new FormAttachment(gTechGroup, margin);
 		fdVersion.right= new FormAttachment(100, 0);
 		wVersion.setLayoutData(fdVersion);
 
@@ -721,14 +819,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
 	public void setFlags()
 	{
-		boolean enable= ci==null || ci.supportsAutoinc();
-		wlAutoinc.setEnabled(enable);
-		wAutoinc.setEnabled(enable);
-
-		boolean seq = ci==null || ci.supportsSequences();
-		wlSeq.setEnabled(seq);
-		wSeq.setEnabled(seq);
-
 		ColumnInfo colinf =new ColumnInfo(Messages.getString("DimensionLookupDialog.ColumnInfo.Type"),      ColumnInfo.COLUMN_TYPE_CCOMBO,  //$NON-NLS-1$
 			  input.isUpdate()?
 				 DimensionLookupMeta.typeDesc:
@@ -755,7 +845,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         wCommit.setEnabled( wUpdate.getSelection() );
         wlAutoinc.setEnabled( wUpdate.getSelection() );
         wAutoinc.setEnabled( wUpdate.getSelection() );
-        wlSeq.setEnabled( wUpdate.getSelection() );
+        // DEBUG ORIGINAL wlSeq.setEnabled( wUpdate.getSelection() );
         wSeq.setEnabled( wUpdate.getSelection() );
         wlMinyear.setEnabled( wUpdate.getSelection() );
         wMinyear.setEnabled( wUpdate.getSelection() );
@@ -763,8 +853,47 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         wMaxyear.setEnabled( wUpdate.getSelection() );
         wlMinyear.setEnabled( wUpdate.getSelection() );
         wMinyear.setEnabled( wUpdate.getSelection() );
+        
+		setAutoincUse();
+		setSequence();
+		setTableMax();
+	}
+    
+	public void setAutoincUse()
+	{
+		boolean enable = (ci == null) || ci.supportsAutoinc();
+		wlAutoinc.setEnabled(enable);
+		wAutoinc.setEnabled(enable);
+		if ( enable == false && 
+			 wAutoinc.getSelection() == true )
+		{
+			wAutoinc.setSelection(false);
+			wSeqButton.setSelection(false);
+			wTableMax.setSelection(true);
+		}		
 	}
 
+	public void setTableMax()
+	{
+		wlTableMax.setEnabled(true);
+		wTableMax.setEnabled(true);
+	}
+	
+	public void setSequence()
+	{
+		boolean seq = (ci == null) || ci.supportsSequences();
+		wSeq.setEnabled(seq);
+		wlSeqButton.setEnabled(seq);
+		wSeqButton.setEnabled(seq);
+		if ( seq == false && 
+			 wSeqButton.getSelection() == true ) 
+		{
+		    wAutoinc.setSelection(false);
+			wSeqButton.setSelection(false);
+			wTableMax.setSelection(true);
+		}		
+	}    	
+	
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */
@@ -809,6 +938,58 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		if (input.getDateFrom()!=null)     wFromdate.setText(input.getDateFrom());
 		if (input.getDateTo()!=null)       wTodate.setText(input.getDateTo());
 
+		String techKeyCreation = input.getTechKeyCreation(); 
+		if ( techKeyCreation == null )  {		    
+		    // Determine the creation of the technical key for
+			// backwards compatibility. Can probably be removed at
+			// version 3.x or so (Sven Boden).
+		    DatabaseMeta database = input.getDatabaseMeta(); 
+		    if ( database == null || ! database.supportsAutoinc() )  
+		    {
+ 			    input.setAutoIncrement(false);			
+		    }		
+		    wAutoinc.setSelection(input.isAutoIncrement());
+		    
+		    wSeqButton.setSelection(input.getSequenceName() != null && input.getSequenceName().length() > 0);
+		    if ( input.isAutoIncrement() == false && 
+			     (input.getSequenceName() == null || input.getSequenceName().length() <= 0) ) 
+		    {
+ 			    wTableMax.setSelection(true); 			    
+		    }
+		    
+			if ( database != null && database.supportsSequences() && 
+				 input.getSequenceName() != null) 
+			{
+				wSeq.setText(input.getSequenceName());
+				input.setAutoIncrement(false);
+				wTableMax.setSelection(false);
+			}
+		}
+		else
+		{
+		    // KETTLE post 2.2 version:
+			// The "creation" field now determines the behaviour of the
+			// key creation.
+			if ( DimensionLookupMeta.CREATION_METHOD_AUTOINC.equals(techKeyCreation))  
+			{
+			    wAutoinc.setSelection(true);
+			}
+			else if ( ( DimensionLookupMeta.CREATION_METHOD_SEQUENCE.equals(techKeyCreation)) )
+			{
+				wSeqButton.setSelection(true);
+			}
+			else // the rest
+			{
+				wTableMax.setSelection(true);
+				input.setTechKeyCreation(DimensionLookupMeta.CREATION_METHOD_TABLEMAX);
+			}
+			if ( input.getSequenceName() != null )
+			{
+    	        wSeq.setText(input.getSequenceName());
+			}
+		}
+		
+		
 		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
 
 		wMinyear.setText(""+input.getMinYear()); //$NON-NLS-1$
@@ -882,13 +1063,31 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		in.setTableName( wTable.getText() );
 		in.setKeyField( wTk.getText() );
 		in.setKeyRename( wTkRename.getText() );
+		if ( wAutoinc.getSelection() == true )  
+		{
+			in.setTechKeyCreation(DimensionLookupMeta.CREATION_METHOD_AUTOINC);
+			in.setAutoIncrement( true );   // for downwards compatibility
+			in.setSequenceName( null );
+		}
+		else if ( wSeqButton.getSelection() == true )
+		{
+			in.setTechKeyCreation(DimensionLookupMeta.CREATION_METHOD_SEQUENCE);
+			in.setAutoIncrement(false);
+			in.setSequenceName( wSeq.getText() );
+		}
+		else  // all the rest
+		{
+			in.setTechKeyCreation(DimensionLookupMeta.CREATION_METHOD_TABLEMAX);
+			in.setAutoIncrement( false );
+			in.setSequenceName( null );
+		}
+
 		in.setAutoIncrement( wAutoinc.getSelection() );
 
 		if (in.getKeyRename()!=null && in.getKeyRename().equalsIgnoreCase(in.getKeyField()))
 			in.setKeyRename( null ); // Don't waste space&time if it's the same
 
 		in.setVersionField( wVersion.getText() );
-		in.setSequenceName( wSeq.getText() );
 		in.setDatabaseMeta( transMeta.findDatabase(wConnection.getText()) );
 		in.setDateField( wDatefield.getText() );
 		in.setDateFrom( wFromdate.getText() );
