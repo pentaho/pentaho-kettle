@@ -65,7 +65,7 @@ public class TransMeta implements XMLInterface
 {
     private static LogWriter    log                = LogWriter.getInstance();
     
-    private File                inputFile;
+    private List<File>          inputFiles;
     
     private ArrayList           databases;
 
@@ -4127,12 +4127,12 @@ public class TransMeta implements XMLInterface
         this.jobBatchId = jobBatchId;
     }
 
-    public File getInputFile() {
-        return inputFile;
+    public List<File> getInputFiles() {
+        return inputFiles;
     }
 
-    public void setInputFile(File inputFile) {
-        this.inputFile = inputFile;
+    public void setInputFiles(List<File> inputFiles) {
+        this.inputFiles = inputFiles;
     }
     
     /**

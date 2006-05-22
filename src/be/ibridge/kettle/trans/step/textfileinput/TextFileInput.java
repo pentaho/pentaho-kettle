@@ -1265,7 +1265,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			}
 				
 			data.files = meta.getTextFileList();
-			if (transmeta.getInputFile()==null && data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
+			if ((transmeta.getInputFiles()==null || transmeta.getInputFiles().size()==0) && data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
 			{
 				logError("No file(s) specified! Stop processing.");
 				return false;
@@ -1315,7 +1315,9 @@ public class TextFileInput extends BaseStep implements StepInterface
             if (meta.getGetFileFromChef()) {
                 // process the file from chef
                 data.files = new FileInputList();
-                data.files.addFile(transmeta.getInputFile());
+                for (int i=0;i<transmeta.getInputFiles().size();i++) {
+                    data.files.addFile(transmeta.getInputFiles().get(i));
+                }
             }
 			while (processRow(meta, data) && !isStopped())
 				;
