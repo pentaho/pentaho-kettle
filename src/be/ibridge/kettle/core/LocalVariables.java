@@ -24,7 +24,7 @@ public class LocalVariables
      */
     public KettleVariables createKettleVariables(Thread localThread, Thread parentThread)
     {
-        System.out.println("---> Create new KettleVariables for thread ["+localThread+"]");
+        // System.out.println("---> Create new KettleVariables for thread ["+localThread+"]");
         
         // See if the thread already has an entry in the map
         //
@@ -40,7 +40,7 @@ public class LocalVariables
             }
             else
             {
-                System.out.println("---> No parent Kettle Variables found for thread ["+parentThread+"]");
+                // System.out.println("---> No parent Kettle Variables found for thread ["+parentThread+"]");
             }
         }
 
@@ -49,7 +49,7 @@ public class LocalVariables
         KettleVariables checkVars = (KettleVariables) map.get(localThread); 
         if (checkVars!=null)
         {
-            System.out.println("---> There are already variables in the local variables map for ["+localThread+"]");
+            // System.out.println("---> There are already variables in the local variables map for ["+localThread+"]");
         }
         
         
