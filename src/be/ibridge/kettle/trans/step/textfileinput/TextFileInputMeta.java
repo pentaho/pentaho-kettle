@@ -64,7 +64,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     public final static String trimTypeCode[]  = { "none", "left", "right", "both" };
     
     public final static String trimTypeDesc[]  = { Messages.getString("TextFileInputMeta.TrimType.None"), Messages.getString("TextFileInputMeta.TrimType.Left"), Messages.getString("TextFileInputMeta.TrimType.Right"), Messages.getString("TextFileInputMeta.TrimType.Both") };
-
+    
+    private boolean getFileFromChef;
     
     private static final String STRING_BASE64_PREFIX = "Base64: ";
 
@@ -676,6 +677,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer();
 
+        retval.append("    " + XMLHandler.addTagValue("get_from_chef", getFileFromChef));
         retval.append("    " + XMLHandler.addTagValue("separator", separator));
         retval.append("    " + XMLHandler.addTagValue("enclosure", enclosure));
         retval.append("    " + XMLHandler.addTagValue("enclosure_breaks", breakInEnclosureAllowed));
@@ -779,6 +781,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
+            getFileFromChef = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "get_from_chef"));
             separator = XMLHandler.getTagValue(stepnode, "separator");
             enclosure = XMLHandler.getTagValue(stepnode, "enclosure");
             breakInEnclosureAllowed = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "enclosure_breaks"));
@@ -921,6 +924,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
+            getFileFromChef = rep.getStepAttributeBoolean(id_step,"get_from_chef");
             separator = rep.getStepAttributeString(id_step, "separator");
             enclosure = rep.getStepAttributeString(id_step, "enclosure");
             breakInEnclosureAllowed = rep.getStepAttributeBoolean(id_step, "enclosure_breaks");
@@ -1026,6 +1030,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         try
         {
+            rep.saveStepAttribute(id_transformation, id_step, "get_from_chef", getFileFromChef);
             rep.saveStepAttribute(id_transformation, id_step, "separator", separator);
             rep.saveStepAttribute(id_transformation, id_step, "enclosure", enclosure);
             rep.saveStepAttribute(id_transformation, id_step, "enclosure_breaks", breakInEnclosureAllowed);
@@ -1445,6 +1450,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.dateFormatLocale = dateFormatLocale;
 	}
+
+    public boolean getGetFileFromChef() {
+        return getFileFromChef;
+    }
+
+    public void setGetFileFromChef(boolean getFileFromChef) {
+        this.getFileFromChef = getFileFromChef;
+    }
 
 	
 

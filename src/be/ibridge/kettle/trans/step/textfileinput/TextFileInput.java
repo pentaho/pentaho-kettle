@@ -68,10 +68,13 @@ public class TextFileInput extends BaseStep implements StepInterface
 	private TextFileInputData data;
 
 	private long lineNumberInFile;
+    
+    private TransMeta transmeta;
 
 	public TextFileInput(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
+        this.transmeta = transMeta;
 	}
 
 	public static final String getLine(LogWriter log, InputStreamReader reader, String format) throws KettleFileException
@@ -1212,7 +1215,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 							bufferSize++; // grab another line, this one got filtered
 						}
 					}
-					else //there is a header, so don´t checkFilterRow
+					else //there is a header, so donï¿½t checkFilterRow
 					{
 						data.lineBuffer.add(new TextFileLine(line, lineNumberInFile, data.file)); // Store it in the
 						// line buffer...
@@ -1262,7 +1265,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			}
 				
 			data.files = meta.getTextFileList();
-			if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
+			if (transmeta.getInputFile()==null && data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
 			{
 				logError("No file(s) specified! Stop processing.");
 				return false;
@@ -1309,6 +1312,11 @@ public class TextFileInput extends BaseStep implements StepInterface
 		try
 		{
 			logBasic("Starting to run...");
+            if (meta.getGetFileFromChef()) {
+                // process the file from chef
+                data.files = new FileInputList();
+                data.files.addFile(transmeta.getInputFile());
+            }
 			while (processRow(meta, data) && !isStopped())
 				;
 		}

@@ -140,6 +140,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private Label        wlFiletype;
 	private CCombo       wFiletype;
 	private FormData     fdlFiletype, fdFiletype;
+    
+    private Label        wlChefInput;
+    private Button       wChefInput;
+    private FormData     fdlChefInput, fdChefInput;
 
 	private Label        wlSeparator;
 	private Button       wbSeparator;
@@ -382,6 +386,23 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		fileLayout.marginWidth  = 3;
 		fileLayout.marginHeight = 3;
 		wFileComp.setLayout(fileLayout);
+        
+		// Get from chef checkbox
+        wlChefInput=new Label(wFileComp, SWT.RIGHT);
+        wlChefInput.setText("Get file from Chef");
+        props.setLook(wlEnclBreaks);
+        fdlChefInput=new FormData();
+        fdlChefInput.left = new FormAttachment(0, 0);
+        fdlChefInput.top  = new FormAttachment(0,0);
+        fdlChefInput.right= new FormAttachment(middle, -margin);
+        wlChefInput.setLayoutData(fdlChefInput);
+        wChefInput=new Button(wFileComp, SWT.CHECK);
+        props.setLook(wEnclBreaks);
+        fdChefInput=new FormData();
+        fdChefInput.left = new FormAttachment(middle, 0);
+        fdChefInput.right= new FormAttachment(100, 0);
+        fdChefInput.top  = new FormAttachment(0, 0);
+        wChefInput.setLayoutData(fdChefInput);
 
 		// Filename line
 		wlFilename=new Label(wFileComp, SWT.RIGHT);
@@ -399,7 +420,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
-		fdbFilename.top  = new FormAttachment(0, 0);
+		fdbFilename.top  = new FormAttachment(wChefInput,margin);
 		wbbFilename.setLayoutData(fdbFilename);
 
 		wbvFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -408,7 +429,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wbvFilename.setToolTipText(Messages.getString("System.Tooltip.VariableToFileOrDir"));
 		fdbvFilename=new FormData();
 		fdbvFilename.right= new FormAttachment(wbbFilename, -margin);
-		fdbvFilename.top  = new FormAttachment(0, 0);
+		fdbvFilename.top  = new FormAttachment(wChefInput,margin);
 		wbvFilename.setLayoutData(fdbvFilename);
 
 		wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -417,7 +438,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wbaFilename.setToolTipText(Messages.getString("TextFileInputDialog.FilenameAdd.Tooltip"));
 		fdbaFilename=new FormData();
 		fdbaFilename.right= new FormAttachment(wbvFilename, -margin);
-		fdbaFilename.top  = new FormAttachment(0, 0);
+		fdbaFilename.top  = new FormAttachment(wChefInput,margin);
 		wbaFilename.setLayoutData(fdbaFilename);
 
 		wFilename=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -426,7 +447,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		fdFilename=new FormData();
 		fdFilename.left = new FormAttachment(middle, 0);
 		fdFilename.right= new FormAttachment(wbaFilename, -margin);
-		fdFilename.top  = new FormAttachment(0, 0);
+		fdFilename.top  = new FormAttachment(wChefInput,margin);
 		wFilename.setLayoutData(fdFilename);
 
 		wlFilemask=new Label(wFileComp, SWT.RIGHT);
@@ -582,6 +603,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
+        wChefInput.addSelectionListener( lsDef );
 		wStepname.addSelectionListener( lsDef );
 		// wFilename.addSelectionListener( lsDef );
 		wSeparator.addSelectionListener( lsDef );
@@ -1822,6 +1844,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		if (in.getSeparator()!=null) wSeparator.setText(in.getSeparator());
 		if (in.getEnclosure()!=null) wEnclosure.setText(in.getEnclosure());
         if (in.getEscapeCharacter()!=null) wEscape.setText(in.getEscapeCharacter());
+        wChefInput.setSelection(in.getGetFileFromChef());
 		wHeader.setSelection(in.hasHeader());
         wNrHeader.setText( ""+in.getNrHeaderLines() );
 		wFooter.setSelection(in.hasFooter());
@@ -1960,6 +1983,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		stepname = wStepname.getText(); // return value
 
 		// copy info to TextFileInputMeta class (input)
+        in.setGetFileFromChef(wChefInput.getEnabled());
 		in.setFileType( wFiletype.getText() );
 		in.setFileFormat( wFormat.getText() );
 		in.setSeparator( wSeparator.getText() );
