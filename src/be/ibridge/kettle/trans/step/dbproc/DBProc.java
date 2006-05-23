@@ -47,8 +47,7 @@ public class DBProc extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private synchronized void runProc(Row row)
-		throws KettleException
+	private void runProc(Row row) throws KettleException
 	{
 		int i;
 		Row add;
@@ -78,7 +77,7 @@ public class DBProc extends BaseStep implements StepInterface
 			                      meta.getResultName(), meta.getResultType());
 		}
 
-		data.db.setProcValues(row, data.argnrs, meta.getArgumentDirection(), meta.getResultName()!=null); 
+		data.db.setProcValues(row, data.argnrs, meta.getArgumentDirection(), !Const.isEmpty(meta.getResultName())); 
 
 		add=data.db.callProcedure(meta.getArgument(), meta.getArgumentDirection(), meta.getArgumentType(), meta.getResultName(), meta.getResultType());
 		for (i=0;i<add.size();i++)

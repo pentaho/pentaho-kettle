@@ -294,7 +294,7 @@ public class DBProcMeta extends BaseStepMeta implements StepMetaInterface
 				row.addValue(v);
 			}
 		}
-		if (resultName!=null)
+		if (!Const.isEmpty(resultName))
 		{
 			Value v=new Value(resultName, resultType);
 			v.setOrigin(name);
