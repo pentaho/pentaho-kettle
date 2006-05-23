@@ -376,7 +376,7 @@ public class ChefLog extends Composite
                         job = new Job();
                         
                         LocalVariables localVariables = LocalVariables.getInstance();
-                        localVariables.createKettleVariables(job, Thread.currentThread());
+                        localVariables.createKettleVariables(job, Thread.currentThread(), false);
                         
 						job.init(log, chef.jobMeta.getName(), chef.jobMeta.getFilename(), null);
 						job.open(chef.rep, chef.jobMeta.getFilename(), chef.jobMeta.getName(), chef.jobMeta.getDirectory().getPath());

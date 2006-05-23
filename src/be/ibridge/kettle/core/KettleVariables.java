@@ -76,7 +76,8 @@ public class KettleVariables
      */
     public String getVariable(String variableName, String defaultValue)
     {
-        return properties.getProperty(variableName, defaultValue);
+        String var = properties.getProperty(variableName, defaultValue);
+        return var;
     }
     
     /**
@@ -95,6 +96,16 @@ public class KettleVariables
     public Properties getProperties()
     {
         return properties;
+    }
+    
+    /**
+     * Set the properties of this KettleVariables object.
+     * 
+     * @param properties
+     */
+    public void setProperties(Properties properties)
+    {
+        this.properties = properties;
     }
 
     /**

@@ -368,7 +368,7 @@ public class Trans
                     
                     // Set the kettle variables...
                     LocalVariables local = LocalVariables.getInstance();
-                    local.createKettleVariables((BaseStep)step, parentJob);
+                    local.createKettleVariables((BaseStep)step, parentJob, true);
                     
 					// Save the step too
 					combi.step = step;

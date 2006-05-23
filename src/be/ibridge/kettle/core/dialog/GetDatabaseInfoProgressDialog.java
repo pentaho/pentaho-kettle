@@ -12,6 +12,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.database.DatabaseMeta;
@@ -51,6 +52,9 @@ public class GetDatabaseInfoProgressDialog
 			{
 				try
 				{
+                    // This is running in a new process: copy some KettleVariables info
+                    LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), shell.getDisplay().getSyncThread(), true);
+
 					dmi.getData(monitor);
 				}
 				catch(Exception e)
@@ -63,6 +67,7 @@ public class GetDatabaseInfoProgressDialog
 		try
 		{
 			ProgressMonitorDialog pmd = new ProgressMonitorDialog(shell);
+
 			pmd.run(true, true, op);
 		}
 		catch (InvocationTargetException e)

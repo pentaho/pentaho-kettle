@@ -54,6 +54,7 @@ import org.eclipse.swt.widgets.Shell;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
 import be.ibridge.kettle.core.GUIResource;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
@@ -1683,6 +1684,9 @@ public class SpoonGraph extends Canvas
             {
                 public void run()
                 {
+                    // This is running in a new process: copy some KettleVariables info
+                    LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), shell.getDisplay().getSyncThread(), true);
+
                     IProgressMonitor monitor = pmd.getProgressMonitor();
                     while (pmd.getShell()==null || ( !pmd.getShell().isDisposed() && !monitor.isCanceled() ))
                     {

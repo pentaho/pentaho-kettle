@@ -55,7 +55,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	public  String  arguments[];
 	public  boolean argFromPrevious;
 
-	public  boolean setLogfile;
+    public  boolean setLogfile;
 	public  String  logfile, logext;
 	public  boolean addDate, addTime;
 	public  int     loglevel;

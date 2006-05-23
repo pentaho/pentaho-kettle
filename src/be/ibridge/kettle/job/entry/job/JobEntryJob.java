@@ -350,7 +350,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 LocalVariables localVariables = LocalVariables.getInstance();
                 
                 // Create a new KettleVariables instance here...
-                localVariables.createKettleVariables(job, parentJob);
+                localVariables.createKettleVariables(job, parentJob, false);
                 
                 if (parentJob.getJobMeta().isBatchIdPassed())
                 {

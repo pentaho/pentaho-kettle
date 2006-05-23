@@ -207,6 +207,9 @@ public class Job extends Thread
 		JobEntryResult jerEnd = new JobEntryResult(res, "Job execution ended", "end", null);
 		jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
         
+        // This is the end, remove all variables below and including this Thread:
+        LocalVariables.getInstance().removeKettleVariables(this);
+        
 		active=false;
 		return res;	
 	}

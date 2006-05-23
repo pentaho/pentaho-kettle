@@ -1,6 +1,8 @@
 package be.ibridge.kettle.core;
 
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -21,8 +23,9 @@ public class LocalVariables
      * Create a new KettleVariables variable map in the local variables map for the specified thread.
      * @param localThread The local thread to attach to
      * @param parentThread The parent thread, null if there is no parent thread.  The initial value of the variables will be taken from the variables that are attached to this thread.
+     * @param sameNamespace true if you want to use the same namespace as the parent (if any) or false if you want to use a new namespace, create a new KettleVariables object.
      */
-    public KettleVariables createKettleVariables(Thread localThread, Thread parentThread)
+    public KettleVariables createKettleVariables(Thread localThread, Thread parentThread, boolean sameNamespace)
     {
         // System.out.println("---> Create new KettleVariables for thread ["+localThread+"]");
         
@@ -36,7 +39,14 @@ public class LocalVariables
             KettleVariables initialValue = getKettleVariables(parentThread);
             if (initialValue!=null)
             {
-                vars.putAll(initialValue.getProperties());
+                if (sameNamespace)
+                {
+                    vars.setProperties(initialValue.getProperties());
+                }
+                else
+                {
+                    vars.putAll(initialValue.getProperties());
+                }
             }
             else
             {
@@ -95,5 +105,36 @@ public class LocalVariables
     {
         KettleVariables kettleVariables = (KettleVariables) map.get(localThread); 
         return kettleVariables;
+    }
+
+    /**
+     * Remove all KettleVariables objects in the map, including the one for this thread, but also the ones with this thread as parent, etc. 
+     * @param thread the grand-parent thread to look for to remove
+     */
+    public void removeKettleVariables(Thread thread)
+    {
+        List children = getKettleVariablesWithParent(thread);
+        for (int i=0;i<children.size();i++)
+        {
+            Thread child = (Thread)children.get(i);
+            // System.out.println("--> removing child #"+i+"/"+children.size()+" ["+child+"] for thread ["+thread+"]");
+            removeKettleVariables(child);
+        }
+        map.remove(thread);
+    }
+    
+    private List getKettleVariablesWithParent(Thread parentThread)
+    {
+        List children = new ArrayList();
+        List values = new ArrayList(map.values());
+        for (int i=0;i<values.size();i++)
+        {
+            KettleVariables kv = (KettleVariables)values.get(i);
+            if (kv.getParentThread()!=null && kv.getParentThread().equals(parentThread))
+            {
+                children.add(kv.getLocalThread());
+            }
+        }
+        return children;
     }
 }

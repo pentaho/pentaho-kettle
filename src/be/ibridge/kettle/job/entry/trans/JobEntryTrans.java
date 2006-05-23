@@ -388,7 +388,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 
                 // Pass along the kettle variables...
                 LocalVariables localVariables = LocalVariables.getInstance();
-                localVariables.createKettleVariables(Thread.currentThread(), parentJob);
+                localVariables.createKettleVariables(Thread.currentThread(), parentJob, false);
 
                 if (execPerRow) // Execute for each input row
                 {

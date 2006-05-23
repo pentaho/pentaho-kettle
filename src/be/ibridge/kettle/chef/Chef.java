@@ -78,6 +78,7 @@ import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage2;
 import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage3;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.GUIResource;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
@@ -2279,6 +2280,9 @@ public class Chef
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
+                // This is running in a new process: copy some KettleVariables info
+                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), shell.getDisplay().getSyncThread(), true);
+
 				monitor.beginTask(Messages.getString("Chef.RipDB.Monitor.BuildingNewJob"), tables.length); //$NON-NLS-1$
 				monitor.worked(0);
 				JobEntryCopy previous = start;
