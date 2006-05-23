@@ -481,7 +481,7 @@ public class Database
 		
 		for (int i=0;i<argnrs.length;i++)
 		{
-			if (argdir[i].equalsIgnoreCase("IN"))
+			if (argdir[i].equalsIgnoreCase("IN") || argdir[i].equalsIgnoreCase("INOUT"))
 			{
 				Value v=r.getValue(argnrs[i]);
 				setValue(cstmt, v, pos);
@@ -2714,7 +2714,7 @@ public class Database
 			log.logDetailed(toString(), "DBA setting callableStatement to ["+sql+"]");
 			cstmt=connection.prepareCall(sql);
 			pos=1;
-			if (returnvalue!=null)
+			if (!Const.isEmpty(returnvalue))
 			{
 				switch(returntype)
 				{
@@ -3764,38 +3764,58 @@ public class Database
 	 */
 	public ArrayList getRows(String sql, int limit, IProgressMonitor monitor) throws KettleDatabaseException
 	{
-		int i=0;
-		boolean stop=false;
-		
-		ArrayList result = new ArrayList();
-		
 		if (monitor!=null) monitor.setTaskName("Opening query...");
 		ResultSet rset = openQuery(sql);
-		if (rset!=null)
-		{
-			if (monitor!=null && limit>0) monitor.beginTask("Reading rows...", limit);
-			while ((limit<=0 || i<limit) && !stop)
-			{
-				Row row = getRow(rset);
-				if (row!=null)
-				{
-					result.add(row);
-					i++;
-				}
-				else
-				{
-					stop=true;
-				}
-				if (monitor!=null && limit>0) monitor.worked(1);
-			}
-			closeQuery(rset);
-			if (monitor!=null) monitor.done();
-		}
 		
-		return result;
+        return getRows(rset, limit, monitor);
 	}
 
-	public ArrayList getFirstRows(String table_name, int limit) throws KettleDatabaseException
+    /** Reads the result of a ResultSet into an ArrayList
+     * 
+     * @param rset the ResultSet to read out
+     * @param limit <=0 means unlimited, otherwise this specifies the maximum number of rows read.
+     * @param monitor The progress monitor to update while getting the rows.
+     * @return An ArrayList of rows.
+     * @throws KettleDatabaseException if something goes wrong.
+     */
+	public ArrayList getRows(ResultSet rset, int limit, IProgressMonitor monitor) throws KettleDatabaseException
+    {
+        try
+        {
+            ArrayList result = new ArrayList();
+            boolean stop=false;
+            int i=0;
+            
+            if (rset!=null)
+            {
+                if (monitor!=null && limit>0) monitor.beginTask("Reading rows...", limit);
+                while ((limit<=0 || i<limit) && !stop)
+                {
+                    Row row = getRow(rset);
+                    if (row!=null)
+                    {
+                        result.add(row);
+                        i++;
+                    }
+                    else
+                    {
+                        stop=true;
+                    }
+                    if (monitor!=null && limit>0) monitor.worked(1);
+                }
+                closeQuery(rset);
+                if (monitor!=null) monitor.done();
+            }
+            
+            return result;
+        }
+        catch(Exception e)
+        {
+            throw new KettleDatabaseException("Unable to get list of rows from ResultSet : ", e);
+        }
+    }
+
+    public ArrayList getFirstRows(String table_name, int limit) throws KettleDatabaseException
 	{
 	    return getFirstRows(table_name, limit, null);
 	}
@@ -3920,8 +3940,7 @@ public class Database
 		return (String[])names.toArray(new String[names.size()]);
 	}
 
-	public String[] getSynonyms()
-		throws KettleDatabaseException
+	public String[] getSynonyms() throws KettleDatabaseException
 	{
 		if (!databaseMeta.supportsSynonyms()) return new String[] {};
 		
@@ -3976,7 +3995,41 @@ public class Database
 			}
 			return str;
 		}
-		return null;
+        else
+        {
+            ResultSet rs = null;
+            try
+            {
+                DatabaseMetaData dbmd = getDatabaseMetaData();
+                rs = dbmd.getProcedures(null, null, null);
+                ArrayList rows = getRows(rs, 0, null);
+                String result[] = new String[rows.size()];
+                for (int i=0;i<rows.size();i++)
+                {
+                    Row row = (Row)rows.get(i);
+                    String procCatalog = row.getString("PROCEDURE_CAT", null);
+                    String procSchema  = row.getString("PROCEDURE_SCHEMA", null);
+                    String procName    = row.getString("PROCEDURE_NAME", "");
+ 
+                    String name = "";
+                    if (procCatalog!=null) name+=procCatalog+".";
+                    else if (procSchema!=null) name+=procSchema+".";
+                    
+                    name+=procName;
+                    
+                    result[i] = name;
+                }
+                return result;
+            }
+            catch(Exception e)
+            {
+                throw new KettleDatabaseException("Unable to get list of procedures from database meta-data: ", e);
+            }
+            finally
+            {
+                if (rs!=null) try { rs.close(); } catch(Exception e) {}
+            }
+        }
 	}
 
     public boolean isAutoCommit()
