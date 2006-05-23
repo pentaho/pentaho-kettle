@@ -181,38 +181,36 @@ public class Job extends Thread
 	}
 
 	public Result execute() throws KettleException
-	{
+    {
         // Start the tracking...
         JobEntryResult jerStart = new JobEntryResult(null, "Start of job execution", "start", null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
 
-		active=true;
-        
-		// Where do we start?
-		JobEntryCopy startpoint;
-		beginProcessing();
-		startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
-		if (startpoint == null) 
-		{
-			throw new KettleJobException("Couldn't find starting point in this job.");
-		}
-		JobEntrySpecial jes = (JobEntrySpecial)startpoint.getEntry();
-		Result res = null;
-		boolean isFirst = true;
-		while(jes.isRepeat()||isFirst&&!isStopped()) {
-			isFirst = false;
-			res = execute(0, null, startpoint, null, "start");
-		}
-		// Save this result...
-		JobEntryResult jerEnd = new JobEntryResult(res, "Job execution ended", "end", null);
-		jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
-        
+        active = true;
+
+        // Where do we start?
+        JobEntryCopy startpoint;
+        beginProcessing();
+        startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
+        if (startpoint == null) { throw new KettleJobException("Couldn't find starting point in this job."); }
+        JobEntrySpecial jes = (JobEntrySpecial) startpoint.getEntry();
+        Result res = null;
+        boolean isFirst = true;
+        while (jes.isRepeat() || isFirst && !isStopped())
+        {
+            isFirst = false;
+            res = execute(0, null, startpoint, null, "start");
+        }
+        // Save this result...
+        JobEntryResult jerEnd = new JobEntryResult(res, "Job execution ended", "end", null);
+        jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
+
         // This is the end, remove all variables below and including this Thread:
         LocalVariables.getInstance().removeKettleVariables(this);
-        
-		active=false;
-		return res;	
-	}
+
+        active = false;
+        return res;
+    }
 
 	/**
 	 * Execute called by JobEntryJob: don't clear the jobEntryResults...
@@ -237,8 +235,7 @@ public class Job extends Thread
 		return res;
 	}
 	
-	private Result execute(int nr, Result prev_result, JobEntryCopy startpoint, JobEntryCopy previous, String reason)
-		throws KettleException
+	private Result execute(int nr, Result prev_result, JobEntryCopy startpoint, JobEntryCopy previous, String reason) throws KettleException
 	{
 		Result res = null;
        
@@ -300,9 +297,13 @@ public class Job extends Thread
 			else
 			{
 				if (result.getResult())
+                {
 					nextComment = "Followed link after succes!";
+                }
 				else
+                {
 					nextComment = "Followed link after failure!";
+                }
 			}
 
 			// 
@@ -321,7 +322,14 @@ public class Job extends Thread
                 result.setNrErrors(0);
                 
                 // Now execute!
-				res = execute(nr+1, result, nextEntry, startpoint, nextComment);
+                try
+                {
+                    res = execute(nr+1, result, nextEntry, startpoint, nextComment);
+                }
+                catch(Throwable e)
+                {
+                    throw new KettleException("Unexpected error occurred while launching entry ["+nextEntry.toString()+"]", e);
+                }
 				
 				log.logBasic(jobMeta.toString(), "Finished jobentry ["+nextEntry.getName()+"] (result="+res.getResult()+")");
 			}
