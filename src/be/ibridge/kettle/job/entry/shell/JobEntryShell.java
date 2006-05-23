@@ -398,7 +398,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                     Row r = (Row)cmdRows.get(i);
                     for (int j=0;j<r.size();j++)
                     {
-                        cmds.add(r.getValue(j).toString());
+                        cmds.add(r.getValue(j).getString());
                     }
                 } 
                 cmd = (String[]) cmds.toArray(new String[cmds.size()]);

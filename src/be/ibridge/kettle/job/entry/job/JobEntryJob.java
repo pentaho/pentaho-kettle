@@ -367,7 +367,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                             args = new String[resultRow.size()];
                             for (int i=0;i<resultRow.size();i++)
                             {
-                                args[i] = resultRow.getValue(i).toString();
+                                args[i] = resultRow.getValue(i).getString();
                             }
                         }
                     }
