@@ -1983,7 +1983,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		stepname = wStepname.getText(); // return value
 
 		// copy info to TextFileInputMeta class (input)
-        in.setGetFileFromChef(wChefInput.getEnabled());
+        in.setGetFileFromChef(wChefInput.getSelection());
 		in.setFileType( wFiletype.getText() );
 		in.setFileFormat( wFormat.getText() );
 		in.setSeparator( wSeparator.getText() );
