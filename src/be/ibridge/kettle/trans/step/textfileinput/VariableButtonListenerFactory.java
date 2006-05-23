@@ -25,7 +25,10 @@ public class VariableButtonListenerFactory
         {
             public void widgetSelected(SelectionEvent e) 
             {
-                Properties sp = kettleVariables.getProperties();
+                Properties sp = new Properties();
+                sp.putAll( kettleVariables.getProperties() );
+                sp.putAll( System.getProperties() );
+                
                 ArrayList keys = new ArrayList( sp.keySet() );
                 Collections.sort(keys);
                 

@@ -390,14 +390,14 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		// Get from chef checkbox
         wlChefInput=new Label(wFileComp, SWT.RIGHT);
         wlChefInput.setText("Get file from Chef");
-        props.setLook(wlEnclBreaks);
+        props.setLook(wlChefInput);
         fdlChefInput=new FormData();
         fdlChefInput.left = new FormAttachment(0, 0);
         fdlChefInput.top  = new FormAttachment(0,0);
         fdlChefInput.right= new FormAttachment(middle, -margin);
         wlChefInput.setLayoutData(fdlChefInput);
         wChefInput=new Button(wFileComp, SWT.CHECK);
-        props.setLook(wEnclBreaks);
+        props.setLook(wChefInput);
         fdChefInput=new FormData();
         fdChefInput.left = new FormAttachment(middle, 0);
         fdChefInput.right= new FormAttachment(100, 0);

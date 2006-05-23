@@ -57,8 +57,6 @@ import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Rectangle;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
-import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.job.JobHopMeta;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
@@ -1392,7 +1390,7 @@ public class ChefGraph extends Canvas
 				sp.getTransMeta().clearChanged();
 				sp.open();
 			}
-			catch(KettleException ke)
+			catch(Throwable ke)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 				mb.setMessage(Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformation.Message")+Const.CR+ke.getMessage()); //$NON-NLS-1$
@@ -1411,7 +1409,7 @@ public class ChefGraph extends Canvas
 				sp.setFilename(entry.getFileName());
 				sp.open();
 			}
-			catch(KettleXMLException xe)
+			catch(Throwable xe)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 				mb.setMessage(Messages.getString("ChefGraph.Dialog.ErrorLaunchingSpoonCanNotLoadTransformationFromXML.Message")+Const.CR+xe.getMessage()); //$NON-NLS-1$
@@ -1437,7 +1435,7 @@ public class ChefGraph extends Canvas
 				ch.jobMeta.clearChanged();
 				ch.open();
 			}
-			catch(KettleException e)
+			catch(Throwable e)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 				mb.setMessage(Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJob.Message")+Const.CR+e.getMessage()); //$NON-NLS-1$
@@ -1457,7 +1455,7 @@ public class ChefGraph extends Canvas
 				ch.refreshGraph();
 				ch.open();
 			}
-			catch(KettleException e)
+			catch(Throwable e)
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
 				mb.setMessage(Messages.getString("ChefGraph.Dialog.ErrorLaunchingChefCanNotLoadJobFromXML.Message")+Const.CR+e.getMessage()); //$NON-NLS-1$

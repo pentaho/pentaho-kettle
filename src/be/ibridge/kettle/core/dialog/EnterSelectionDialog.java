@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Shell;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
  * Allows the user to make a selection from a list of values.
@@ -52,7 +53,6 @@ public class EnterSelectionDialog extends Dialog
     private FormData     fdlSelection, fdSelection;
 		
 	private Button wOK, wCancel;
-	private FormData fdOK, fdCancel;
 	private Listener lsOK, lsCancel;
 
 	private Shell  shell;
@@ -138,44 +138,42 @@ public class EnterSelectionDialog extends Dialog
 			wSelection.showSelection();
 		}
  		props.setLook(wSelection);
-		fdSelection=new FormData();
-		fdSelection.left = new FormAttachment(0, 0);
-		fdSelection.right= new FormAttachment(100, 0);
-		fdSelection.top  = new FormAttachment(wlSelection, margin);
-		fdSelection.bottom= new FormAttachment(100, -30);
-		wSelection.setLayoutData(fdSelection);
+
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		fdOK=new FormData();
 		if (viewOnly) 
 		{
 			wOK.setText(" Cl&ose ");
-			fdOK.left       = new FormAttachment(50, 0);
-			fdOK.bottom     = new FormAttachment(100, 0);
 		} 
 		else
 		{
 			wOK.setText("  &OK  ");
-			fdOK.left       = new FormAttachment(33, 0);
-			fdOK.bottom     = new FormAttachment(100, 0);
 		}
-		wOK.setLayoutData(fdOK);
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		wOK.addListener    (SWT.Selection, lsOK     );
+        
+        Button[] buttons = new Button[] { wOK };
 		
 		if (!viewOnly)
 		{
 			wCancel=new Button(shell, SWT.PUSH);
 			wCancel.setText("  &Cancel  ");
-			fdCancel=new FormData();
-			fdCancel.left   = new FormAttachment(66, 0);
-			fdCancel.bottom = new FormAttachment(100, 0);
-			wCancel.setLayoutData(fdCancel);
 			lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 			wCancel.addListener(SWT.Selection, lsCancel );
+            
+            buttons = new Button[] { wOK, wCancel };
 		}
+        
+        BaseStepDialog.positionBottomButtons(shell, buttons, margin, null);
 
+        fdSelection=new FormData();
+        fdSelection.left = new FormAttachment(0, 0);
+        fdSelection.right= new FormAttachment(100, 0);
+        fdSelection.top  = new FormAttachment(wlSelection, margin);
+        fdSelection.bottom= new FormAttachment(wOK, -margin*3);
+        wSelection.setLayoutData(fdSelection);
+        
 		// Add listeners
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };

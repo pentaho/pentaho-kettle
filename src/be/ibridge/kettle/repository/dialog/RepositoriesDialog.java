@@ -436,7 +436,7 @@ public class RepositoriesDialog
 				if (username!=null)
 				{
 					wUsername.setText(username);
-					wPassword.setFocus();
+					wPassword.getTextWidget().setFocus();
 				}
 			}
 		}

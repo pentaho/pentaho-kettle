@@ -22,6 +22,7 @@ import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
@@ -504,13 +505,17 @@ public class Spoon
     
     public void getVariables()
     {
+        Properties sp = new Properties();
         KettleVariables kettleVariables = KettleVariables.getInstance();
+        sp.putAll(kettleVariables.getProperties());
+        sp.putAll(System.getProperties());
         
         List list = transMeta.getUsedVariables();
         for (int i=0;i<list.size();i++)
         {
             String varName = (String)list.get(i);
-            String varValue = kettleVariables.getVariable(varName, "");
+            String varValue = sp.getProperty(varName, "");
+            System.out.println("variable ["+varName+"] is defined as : "+varValue);
             if (variables.searchValueIndex(varName)<0)
             {
                 variables.addValue(new Value(varName, varValue));
@@ -525,8 +530,11 @@ public class Spoon
             for (int i=0;i<variables.size();i++)
             {
                 Value varval = variables.getValue(i);
-                kettleVariables.setVariable(varval.getName(), varval.getString());
-                System.out.println("Variable ${"+varval.getName()+"} set to ["+varval.getString()+"]");
+                if (!Const.isEmpty(varval.getString()))
+                {
+                    kettleVariables.setVariable(varval.getName(), varval.getString());
+                    System.out.println("Variable ${"+varval.getName()+"} set to ["+varval.getString()+"]");
+                }
             }
         }
 
@@ -1824,6 +1832,7 @@ public class Spoon
             }
             catch(Throwable e)
             {
+                if (shell.isDisposed()) return null;
                 new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnableOpenDialog.Title"), Messages.getString("Spoon.Dialog.UnableOpenDialog.Message"), new Exception(e));//"Unable to open dialog for this step"
             }
 
@@ -2920,6 +2929,8 @@ public class Spoon
 
     public void refreshTree(boolean complete)
     {
+        if (shell.isDisposed()) return;
+        
         if (!transMeta.hasChanged() && !complete) return;  // Nothing changed: nothing to do!
         
         int idx;
@@ -3104,6 +3115,8 @@ public class Spoon
     
     public void refreshGraph()
     {
+        if (shell.isDisposed()) return;
+        
         spoongraph.redraw();
         setShellText();
     }
@@ -3873,6 +3886,8 @@ public class Spoon
     
     public void setUndoMenu()
     {
+        if (shell.isDisposed()) return;
+        
         TransAction prev = transMeta.viewThisUndo();
         TransAction next = transMeta.viewNextUndo();
         

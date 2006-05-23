@@ -23,6 +23,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -534,8 +535,11 @@ public class SpoonLog extends Composite
 
 	private void getVariables(TransMeta transMeta)
     {
+        Properties sp = new Properties();
         KettleVariables kettleVariables = KettleVariables.getInstance();
-        
+        sp.putAll(kettleVariables.getProperties());
+        sp.putAll(System.getProperties());
+ 
         List vars = transMeta.getUsedVariables();
         if (vars!=null && vars.size()>0)
         {
@@ -543,7 +547,7 @@ public class SpoonLog extends Composite
             for (int i=0;i<vars.size();i++) 
             {
                 String varname = (String)vars.get(i);
-                Value varval = new Value(varname, kettleVariables.getVariable(varname, ""));
+                Value varval = new Value(varname, sp.getProperty(varname, ""));
                 variables.addValue( varval );
             }
             
