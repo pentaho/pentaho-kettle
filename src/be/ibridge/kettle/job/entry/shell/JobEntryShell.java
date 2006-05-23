@@ -418,7 +418,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                 cmd = (String[]) cmds.toArray(new String[cmds.size()]);
             }
             
-            if (log.isDetailed())
+            if (log.isBasic())
             {
                 StringBuffer command = new StringBuffer();
                 for (int i=0;i<cmd.length;i++)
@@ -426,7 +426,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                     if (i>0) command.append(" ");
                     command.append(cmd[i]);
                 }
-                log.logDetailed(toString(), "Executing command : "+command.toString());
+                log.logBasic(toString(), "Executing command : "+command.toString());
             }
              
             // Launch the script!
