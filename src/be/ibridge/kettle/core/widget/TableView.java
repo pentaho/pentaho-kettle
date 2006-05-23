@@ -1905,7 +1905,8 @@ public class TableView extends Composite
 			}
 			try
 			{
-				tc.setWidth(max+12);
+                int extra = 20;
+                tc.setWidth(max+extra);
 			}
 			catch(Exception e) {}
 		}

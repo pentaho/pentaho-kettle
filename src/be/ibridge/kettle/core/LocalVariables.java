@@ -132,7 +132,14 @@ public class LocalVariables
             KettleVariables kv = (KettleVariables)values.get(i);
             if (kv.getParentThread()!=null && kv.getParentThread().equals(parentThread))
             {
-                children.add(kv.getLocalThread());
+                if (kv.getLocalThread().equals(parentThread))
+                {
+                    System.out.println("---> !!!! This should not happen! Thread ["+parentThread+"] is linked to itself!");
+                }
+                else
+                {
+                    children.add(kv.getLocalThread());
+                }
             }
         }
         return children;

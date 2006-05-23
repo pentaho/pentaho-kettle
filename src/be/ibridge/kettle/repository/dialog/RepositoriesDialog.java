@@ -47,7 +47,6 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.GUIResource;
@@ -57,6 +56,7 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.widget.LabelText;
 import be.ibridge.kettle.repository.PermissionMeta;
 import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
@@ -83,13 +83,11 @@ public class RepositoriesDialog
 	private CCombo       wRepository;
 	private FormData     fdlRepository, fdRepository, fdnRepository, fdeRepository, fddRepository;
 
-	private Label        wlUsername;
-	private Text         wUsername;
-	private FormData     fdlUsername, fdUsername;
+    private LabelText    wUsername;
+    private FormData     fdUsername;
 
-	private Label        wlPassword;
-	private Text         wPassword;
-	private FormData     fdlPassword, fdPassword;
+	private LabelText    wPassword;
+	private FormData     fdPassword;
 	
 	private Canvas       wCanvas;
 	private FormData     fdCanvas;
@@ -224,51 +222,26 @@ public class RepositoriesDialog
         
         BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wNorep, wCancel }, Const.MARGIN, null);
 
-                // Password
-        wlPassword = new Label(shell, SWT.RIGHT ); 
-        wlPassword.setText(Messages.getString("RepositoriesDialog.Label.Password"));  //$NON-NLS-1$
-        props.setLook(wlPassword);
-        fdlPassword = new FormData();
-        fdlPassword.left   = new FormAttachment(0,0);
-        fdlPassword.right  = new FormAttachment(middle, -margin);
-        fdlPassword.bottom = new FormAttachment(wOK, -margin*3);
-        wlPassword.setLayoutData(fdlPassword);
-        wPassword = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        // Password
+        wPassword = new LabelText(shell, Messages.getString("RepositoriesDialog.Label.Password"), Messages.getString("RepositoriesDialog.Label.Password"), middle, margin);
         props.setLook(wPassword);
-        wPassword.setEchoChar('*');
+        wPassword.getTextWidget().setEchoChar('*');
         fdPassword = new FormData();
-        fdPassword.left   = new FormAttachment(middle, 0); 
+        fdPassword.left   = new FormAttachment(0, 0); 
         fdPassword.right  = new FormAttachment(100, -right);
         fdPassword.bottom = new FormAttachment(wOK, -margin*3);
         wPassword.setLayoutData(fdPassword);
 
         // Username
-        wlUsername = new Label(shell, SWT.RIGHT ); 
-        wlUsername.setText(Messages.getString("RepositoriesDialog.Label.Login"));  //$NON-NLS-1$
-        props.setLook(wlUsername);
-        fdlUsername = new FormData();
-        fdlUsername.left   = new FormAttachment(0,0); 
-        fdlUsername.right  = new FormAttachment(middle, -margin);
-        fdlUsername.bottom = new FormAttachment(wPassword, -margin);
-        wlUsername.setLayoutData(fdlUsername);
-        wUsername = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wUsername = new LabelText(shell, Messages.getString("RepositoriesDialog.Label.Login"), Messages.getString("RepositoriesDialog.Label.Login"), middle, margin); 
         props.setLook(wUsername);
         fdUsername = new FormData();
-        fdUsername.left = new FormAttachment(middle, 0); 
+        fdUsername.left = new FormAttachment(0, 0); 
         fdUsername.right= new FormAttachment(100, -right);
         fdUsername.bottom = new FormAttachment(wPassword, -margin);
         wUsername.setLayoutData(fdUsername);
 
 
-		// Repository selector
-		wlRepository=new Label(shell, SWT.RIGHT);
-		wlRepository.setText(Messages.getString("RepositoriesDialog.Label.Repository")); //$NON-NLS-1$
- 		props.setLook(wlRepository);
-		fdlRepository=new FormData();
-		fdlRepository.left   = new FormAttachment(0, 0);
-		fdlRepository.right  = new FormAttachment(middle, -margin);
-		fdlRepository.bottom = new FormAttachment(wUsername, -margin);
-		wlRepository.setLayoutData(fdlRepository);
 		wRepository=new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
 
 		// Add the Repository buttons :
@@ -294,14 +267,25 @@ public class RepositoriesDialog
 
  		props.setLook(wRepository);
 		fdRepository=new FormData();
-		fdRepository.left = new FormAttachment(middle, 0);
+		fdRepository.left = new FormAttachment(middle, -margin);
 		fdRepository.right= new FormAttachment(wnRepository, -margin);
         fdRepository.bottom = new FormAttachment(wUsername, -margin);
 		wRepository.setLayoutData(fdRepository);
 
+        // Repository selector
+        wlRepository=new Label(shell, SWT.RIGHT);
+        wlRepository.setText(Messages.getString("RepositoriesDialog.Label.Repository")); //$NON-NLS-1$
+        props.setLook(wlRepository);
+        fdlRepository=new FormData();
+        fdlRepository.left   = new FormAttachment(0, 0);
+        fdlRepository.right  = new FormAttachment(middle, -margin*2);
+        fdlRepository.top    = new FormAttachment(wRepository, 0, SWT.CENTER);
+        wlRepository.setLayoutData(fdlRepository);
+
 		// Add the listeners
 		// New repository
-		wnRepository.addSelectionListener(new SelectionAdapter() 
+		wnRepository.addSelectionListener(
+            new SelectionAdapter() 
 			{
 				public void widgetSelected(SelectionEvent arg0) 
 				{
@@ -392,16 +376,16 @@ public class RepositoriesDialog
 						if (wPassword.getText().length()!=0) ok();
 						else 
 						{
-							wPassword.setFocus();
-							wPassword.selectAll();
+							wPassword.getTextWidget().setFocus();
+							wPassword.getTextWidget().selectAll();
 						}
 					}
 				} 
 			};
 
 		wRepository.addKeyListener(lsRepo);
-		wUsername.addKeyListener( lsJmp );
-		wPassword.addSelectionListener( lsDef );
+		wUsername.getTextWidget().addKeyListener( lsJmp );
+		wPassword.getTextWidget().addSelectionListener( lsDef );
 
 		getData();
 		
