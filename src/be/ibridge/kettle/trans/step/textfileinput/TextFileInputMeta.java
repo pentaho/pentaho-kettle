@@ -794,7 +794,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		try
 		{
 			acceptingFilenames = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "accept_filenames"));
-			acceptingField = XMLHandler.getTagValue(stepnode, "accept_fieldname");
+			acceptingField = XMLHandler.getTagValue(stepnode, "accept_field");
 			acceptingStepName = XMLHandler.getTagValue(stepnode, "accept_stepname");
 			
 			separator = XMLHandler.getTagValue(stepnode, "separator");
@@ -963,8 +963,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			acceptingFilenames = rep.getStepAttributeBoolean(id_step, "accept_filename");
-			acceptingField     = rep.getStepAttributeString (id_step, "accept_fieldname");
+			acceptingFilenames = rep.getStepAttributeBoolean(id_step, "accept_filenames");
+			acceptingField     = rep.getStepAttributeString (id_step, "accept_field");
 			acceptingStepName  = rep.getStepAttributeString (id_step, "accept_stepname");
 
 			System.out.println("Stepname: "+acceptingStepName);
