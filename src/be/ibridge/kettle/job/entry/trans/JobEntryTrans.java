@@ -444,13 +444,13 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     			}
     			else
     			{
-    				while (!trans.isFinished() && !parentJob.isStopped())
+    				while (!trans.isFinished() && !parentJob.isStopped() && trans.getErrors() == 0)
     				{
     					try { Thread.sleep(100);}
     					catch(InterruptedException e) { }
     				}
     				
-    				if (parentJob.isStopped())
+    				if (parentJob.isStopped() || trans.getErrors() != 0)
     				{
     					trans.stopAll();
     					trans.waitUntilFinished();
