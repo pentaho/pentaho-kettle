@@ -175,9 +175,9 @@ public class JobEntryEval extends JobEntryBase implements JobEntryInterface
             scope.put("is_windows", scope, new Boolean(Const.isWindows()));
             
 			Object array[] = null;
-			if (result.rows!=null)
+			if (result.getRows()!=null)
 			{
-				array=result.rows.toArray(); 
+				array=result.getRows().toArray(); 
 			}
 			
 			scope.put("rows", scope, array);

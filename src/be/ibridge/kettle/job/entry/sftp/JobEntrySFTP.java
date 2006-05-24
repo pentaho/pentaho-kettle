@@ -14,6 +14,7 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.sftp;
+import java.io.File;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -25,6 +26,7 @@ import org.w3c.dom.Node;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
+import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -331,10 +333,16 @@ public class JobEntrySFTP extends JobEntryBase implements JobEntryInterface
 				if (getIt)
 				{
 					log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+targetDirectory+"]");
-					sftpclient.get(targetDirectory+Const.FILE_SEPARATOR+filelist[i], filelist[i]);
+
+					String targetFilename = targetDirectory+Const.FILE_SEPARATOR+filelist[i]; 
+					sftpclient.get(targetFilename, filelist[i]);
 					filesRetrieved++; 
-					log.logDetailed(toString(), "Got file ["+filelist[i]+"]");
 					
+					// Add to the result files...
+					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(targetFilename), parentJob.getJobname(), toString());
+					result.getResultFiles().add(resultFile);
+
+					log.logDetailed(toString(), "Got file ["+filelist[i]+"]");
 					
 					// Delete the file if this is needed!
 					if (remove) 

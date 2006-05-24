@@ -167,17 +167,11 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			String limit;
-            String perRow;
-		
-			String con            = XMLHandler.getTagValue(stepnode, "connection");
-			databaseMeta          = Const.findDatabase(databases, con);
+			databaseMeta          = Const.findDatabase(databases, XMLHandler.getTagValue(stepnode, "connection"));
 			sql                   = XMLHandler.getTagValue(stepnode, "sql");
-			limit                 = XMLHandler.getTagValue(stepnode, "limit");
-			rowLimit              = Const.toInt(limit, 0);
+			rowLimit              = Const.toInt(XMLHandler.getTagValue(stepnode, "limit"), 0);
 			lookupFromStepname    = XMLHandler.getTagValue(stepnode, "lookup");
-            perRow                = XMLHandler.getTagValue(stepnode, "execute_each_row");
-            executeEachInputRow   = "Y".equals(perRow);
+            executeEachInputRow   = "Y".equals(XMLHandler.getTagValue(stepnode, "execute_each_row"));
 		}
 		catch(Exception e)
 		{

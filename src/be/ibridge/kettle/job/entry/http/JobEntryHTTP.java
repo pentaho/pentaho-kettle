@@ -40,6 +40,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Encr;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
+import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
@@ -459,6 +460,11 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
                 }
                 
                 log.logBasic(toString(), "Finished writing "+bytesRead+" bytes to result file ["+targetFile+"]");
+                
+				// Add to the result files...
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(targetFile), parentJob.getJobname(), toString());
+				result.getResultFiles().add(resultFile);
+
                 result.setResult( true );
             }
             catch(MalformedURLException e)

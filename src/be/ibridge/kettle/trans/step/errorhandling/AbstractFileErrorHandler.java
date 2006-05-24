@@ -13,6 +13,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -87,7 +88,8 @@ public abstract class AbstractFileErrorHandler implements FileErrorHandler {
 		if (outputStreamWriter != null)
 			return outputStreamWriter;
 		File file = getReplayFilename(destinationDirectory, processingFilename, dateString, fileExtension, source);
-		baseStep.addInterestingFile(file);
+		ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, baseStep.getTransMeta().getName(), baseStep.getStepname());
+		baseStep.addResultFile(resultFile);
 		try {
 			if (encoding == null)
 				outputStreamWriter = new OutputStreamWriter(

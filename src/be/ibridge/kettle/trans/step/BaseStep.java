@@ -20,7 +20,6 @@
 
 package be.ibridge.kettle.trans.step;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -30,6 +29,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.RowSet;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -56,6 +56,7 @@ import be.ibridge.kettle.trans.step.dimensionlookup.DimensionLookupMeta;
 import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
 import be.ibridge.kettle.trans.step.excelinput.ExcelInputMeta;
 import be.ibridge.kettle.trans.step.fieldsplitter.FieldSplitterMeta;
+import be.ibridge.kettle.trans.step.filesfromresult.FilesFromResultMeta;
 import be.ibridge.kettle.trans.step.filterrows.FilterRowsMeta;
 import be.ibridge.kettle.trans.step.flattener.FlattenerMeta;
 import be.ibridge.kettle.trans.step.getfilenames.GetFileNamesMeta;
@@ -145,6 +146,7 @@ public class BaseStep extends Thread
             ValueMapperMeta.class,
             SetVariableMeta.class,
             GetFileNamesMeta.class,
+            FilesFromResultMeta.class,
 		};
 	
 	public static final String typeCode[] = 
@@ -198,6 +200,7 @@ public class BaseStep extends Thread
             "ValueMapper", //$NON-NLS-1$
             "SetVariable", //$NON-NLS-1$
             "GetFileNames", //$NON-NLS-1$
+            "FilesFromResult", //$NON-NLS-1$
 		};
 
 	public static final String type_long_desc[] = 
@@ -251,6 +254,7 @@ public class BaseStep extends Thread
             Messages.getString("BaseStep.TypeLongDesc.ValueMapper"), //$NON-NLS-1$
             Messages.getString("BaseStep.TypeLongDesc.SetVariables"), //$NON-NLS-1$
             Messages.getString("BaseStep.TypeLongDesc.GetFileNames"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.FilesFromResult"), //$NON-NLS-1$
 		};
 
 	public static final String type_tooltip_desc[] = 
@@ -304,6 +308,7 @@ public class BaseStep extends Thread
             Messages.getString("BaseStep.TypeTooltipDesc.MapValues"), //$NON-NLS-1$
             Messages.getString("BaseStep.TypeTooltipDesc.SetVariables"), //$NON-NLS-1$
             Messages.getString("BaseStep.TypeTooltipDesc.GetFileNames"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.FilesFromResult"), //$NON-NLS-1$
 		};
 
 	public static final String image_filename[] =
@@ -357,6 +362,7 @@ public class BaseStep extends Thread
             "VMP.png", //$NON-NLS-1$
             "VAR.png", //$NON-NLS-1$
             "GFN.png", //$NON-NLS-1$
+            "FFR.png", //$NON-NLS-1$
 		};
 	
 	public static final String category[] = 
@@ -410,6 +416,7 @@ public class BaseStep extends Thread
             "Transform",        // "ValueMapper" //$NON-NLS-1$
             "Extra",            // "SetVariables" // $NON-NLS-1$
             "Extra",            // "GetFileNames" // $NON-NLS-1$
+            "Extra",            // "FilesFromResult" // $NON-NLS-1$
 		};
 
     public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Mapping", "Experimental" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
@@ -470,10 +477,10 @@ public class BaseStep extends Thread
     private List rowListeners; // List of RowListener interfaces
     
     /**
-     * List of files that are interesting for this step.
+     * List of files that are generated or used by this step.
      * After execution, these can be added to result.
      */
-    private List interestingFiles;
+    private List resultFiles;
     
     /**
      * Set this to true if you want to have extra checking enabled on the rows that are entering this step.
@@ -548,7 +555,7 @@ public class BaseStep extends Thread
 		else 			 if (log.isDetailed()) logDetailed(Messages.getString("BaseStep.Log.DistributionDeactivated")); //$NON-NLS-1$
 		
         rowListeners = new ArrayList();
-        interestingFiles = new ArrayList();
+        resultFiles = new ArrayList();
         
 		dispatch();
 	}
@@ -1638,13 +1645,13 @@ public class BaseStep extends Thread
         return rowListeners;
     }
 
-    public void addInterestingFile(File file)
+    public void addResultFile(ResultFile resultFile)
     {
-    	interestingFiles.add(file);
+    	resultFiles.add(resultFile);
     }
     
-	public List getInterestingFiles() {
-		return interestingFiles;
+	public List getResultFiles() {
+		return resultFiles;
 	}
 
 	/**

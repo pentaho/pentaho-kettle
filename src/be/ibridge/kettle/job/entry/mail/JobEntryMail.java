@@ -18,6 +18,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Properties;
 
 import javax.activation.DataHandler;
@@ -41,6 +42,7 @@ import be.ibridge.kettle.chef.JobTracker;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
+import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -336,22 +338,29 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 														// 1st part
 			part1.setText(messageText.toString());
 			parts.addBodyPart(part1);
-			if (includeFiles && prev_result != null && prev_result.interestingFiles.size() > 0) {
-				for (Iterator iter = prev_result.interestingFiles.iterator(); iter
-						.hasNext();) {
-					File file = (File) iter.next();
-					if (file != null && file.exists()) {
-						// greate a data source
-						MimeBodyPart files = new MimeBodyPart();
-						FileDataSource fds = new FileDataSource(file);
-						// get a data Handler to manipulate this file type;
-						files.setDataHandler(new DataHandler(fds));
-						// include the file in th e data source
-						files.setFileName(fds.getName());
-						// add the part with the file in the BodyPart();
-						parts.addBodyPart(files);
+			if (includeFiles && prev_result != null)
+		    {
+				List resultFiles = prev_result.getResultFiles();
+				if (resultFiles!=null && resultFiles.size() > 0) 
+				{
+					for (Iterator iter = resultFiles.iterator(); iter.hasNext();) 
+					{
+						ResultFile resultFile = (ResultFile) iter.next();
+						File file = resultFile.getFile();
+						if (file != null && file.exists()) 
+						{
+							// greate a data source
+							MimeBodyPart files = new MimeBodyPart();
+							FileDataSource fds = new FileDataSource(file);
+							// get a data Handler to manipulate this file type;
+							files.setDataHandler(new DataHandler(fds));
+							// include the file in th e data source
+							files.setFileName(fds.getName());
+							// add the part with the file in the BodyPart();
+							parts.addBodyPart(files);
+						}
 					}
-				}
+			    }
 			}
 		    msg.setContent(parts);
 

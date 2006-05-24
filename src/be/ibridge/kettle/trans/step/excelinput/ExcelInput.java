@@ -31,6 +31,7 @@ import jxl.NumberCell;
 import jxl.Sheet;
 import jxl.Workbook;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
@@ -427,11 +428,11 @@ public class ExcelInput extends BaseStep implements StepInterface
 			// First, see if a file has been opened?
 			if (data.workbook == null)
 			{
-
 				// Open a new workbook..
 				data.file = data.files.getFile(data.filenr);
 				data.filename = data.file.getPath();
-				addInterestingFile(data.file);
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString());
+				addResultFile(resultFile);
 				debug = "open workbook #" + data.filenr + " : " + data.filename;
 				if (log.isDetailed()) logDetailed("Opening workbook #" + data.filenr + " : " + data.filename);
 				data.workbook = Workbook.getWorkbook(data.file);

@@ -40,9 +40,9 @@ public class Result implements Cloneable
 	private boolean result;
 	private long entryNr;
 
-	public int exitStatus;
-	public ArrayList rows;
-	public List interestingFiles;
+	private int exitStatus;
+	private ArrayList rows;
+	private List resultFiles;
 	
 	public boolean stopped;
 	
@@ -57,8 +57,8 @@ public class Result implements Cloneable
 		result=false;
 		
 		exitStatus=0;
-		rows=null;
-		interestingFiles = new ArrayList();
+		rows=new ArrayList();
+		resultFiles = new ArrayList();
 		
 		stopped=false;
 		entryNr=0;
@@ -75,6 +75,28 @@ public class Result implements Cloneable
 		try
 		{
 			Result result = (Result)super.clone();
+			
+			// Clone result rows and files as well...
+			if (rows!=null)
+			{
+				ArrayList clonedRows = new ArrayList();
+				for (int i=0;i<rows.size();i++)
+				{
+					clonedRows.add(new Row((Row)rows.get(i)));
+				}
+				result.setRows(clonedRows);
+			}
+
+			if (resultFiles!=null)
+			{
+				ArrayList clonedFiles = new ArrayList();
+				for (int i=0;i<resultFiles.size();i++)
+				{
+					clonedFiles.add( ((ResultFile)resultFiles.get(i)).clone() );
+				}
+				result.setResultFiles(clonedFiles);
+			}
+
 			return result;
 		}
 		catch(CloneNotSupportedException e)
@@ -328,6 +350,22 @@ public class Result implements Cloneable
         nrLinesDeleted+=res.getNrLinesDeleted();
         nrErrors+=res.getNrErrors();
         nrFilesRetrieved+=res.getNrFilesRetrieved();
+        resultFiles.addAll(res.getResultFiles());
     }
 
+	/**
+	 * @return Returns the result files.  This is a list of type ResultFile
+	 */
+	public List getResultFiles()
+	{
+		return resultFiles;
+	}
+
+	/**
+	 * @param usedFiles The list of result files to set. This is a list of type ResultFile
+	 */
+	public void setResultFiles(List usedFiles)
+	{
+		this.resultFiles = usedFiles;
+	}
 }

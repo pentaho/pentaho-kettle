@@ -994,7 +994,7 @@ public class Trans
 			BaseStep rt = (BaseStep)sid.step;
 			
 			result.setNrErrors(result.getNrErrors()+sid.step.getErrors());
-			result.interestingFiles.addAll(rt.getInterestingFiles());
+			result.getResultFiles().addAll(rt.getResultFiles());
 			// System.out.println("Getresult: sid.Stepname = "+sid.stepname+", outputstep=["+transMeta.outputstep+"], lines_output="+rt.lines_output);
 			
 			if (transMeta.getReadStep()  !=null && rt.getStepname().equals(transMeta.getReadStep().getName()))   result.setNrLinesRead(result.getNrLinesRead()+ rt.linesRead); 
@@ -1004,7 +1004,7 @@ public class Trans
 			if (transMeta.getUpdateStep()!=null && rt.getStepname().equals(transMeta.getUpdateStep().getName())) result.setNrLinesUpdated(result.getNrLinesUpdated()+rt.linesUpdated);
 		}
 		
-		result.rows = transMeta.getResultRows();
+		result.setRows( transMeta.getResultRows() );
 
 		return result;
 	}

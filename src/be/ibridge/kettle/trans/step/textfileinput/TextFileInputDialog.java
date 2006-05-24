@@ -82,12 +82,14 @@ import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 
 public class TextFileInputDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private static final String[] YES_NO_COMBO = new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") };
+	
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
@@ -109,6 +111,18 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private FormData     fdFilterComp;
     private FormData     fdFieldsComp;
 
+    private Label        wlAccFilenames;
+    private Button       wAccFilenames;
+    private FormData     fdlAccFilenames, fdAccFilenames;
+    
+    private Label        wlAccField;
+    private Text         wAccField;
+    private FormData     fdlAccField, fdAccField;
+
+    private Label        wlAccStep;
+    private CCombo       wAccStep;
+    private FormData     fdlAccStep, fdAccStep;
+    
 	private Label        wlFilename;
 	private Button       wbbFilename; // Browse: add file or directory
 	private Button       wbvFilename; // Variable
@@ -140,10 +154,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private Label        wlFiletype;
 	private CCombo       wFiletype;
 	private FormData     fdlFiletype, fdFiletype;
-    
-    private Label        wlChefInput;
-    private Button       wChefInput;
-    private FormData     fdlChefInput, fdChefInput;
 
 	private Label        wlSeparator;
 	private Button       wbSeparator;
@@ -388,21 +398,73 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wFileComp.setLayout(fileLayout);
         
 		// Get from chef checkbox
-        wlChefInput=new Label(wFileComp, SWT.RIGHT);
-        wlChefInput.setText("Get file from Chef");
-        props.setLook(wlChefInput);
-        fdlChefInput=new FormData();
-        fdlChefInput.left = new FormAttachment(0, 0);
-        fdlChefInput.top  = new FormAttachment(0,0);
-        fdlChefInput.right= new FormAttachment(middle, -margin);
-        wlChefInput.setLayoutData(fdlChefInput);
-        wChefInput=new Button(wFileComp, SWT.CHECK);
-        props.setLook(wChefInput);
-        fdChefInput=new FormData();
-        fdChefInput.left = new FormAttachment(middle, 0);
-        fdChefInput.right= new FormAttachment(100, 0);
-        fdChefInput.top  = new FormAttachment(0, 0);
-        wChefInput.setLayoutData(fdChefInput);
+        wlAccFilenames=new Label(wFileComp, SWT.RIGHT);
+        wlAccFilenames.setText(Messages.getString("TextFileInputDialog.AcceptFilenames.Label"));
+        props.setLook(wlAccFilenames);
+        fdlAccFilenames=new FormData();
+        fdlAccFilenames.left = new FormAttachment(0, 0);
+        fdlAccFilenames.top  = new FormAttachment(0,0);
+        fdlAccFilenames.right= new FormAttachment(middle, -margin);
+        wlAccFilenames.setLayoutData(fdlAccFilenames);
+        wAccFilenames=new Button(wFileComp, SWT.CHECK);
+        wAccFilenames.setToolTipText(Messages.getString("TextFileInputDialog.AcceptFilenames.Tooltip"));
+        props.setLook(wAccFilenames);
+        fdAccFilenames=new FormData();
+        fdAccFilenames.left = new FormAttachment(middle, 0);
+        fdAccFilenames.right= new FormAttachment(100, 0);
+        fdAccFilenames.top  = new FormAttachment(0, 0);
+        wAccFilenames.setLayoutData(fdAccFilenames);
+        wAccFilenames.addSelectionListener(new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent arg0)
+				{
+					setFlags();
+				}
+			}
+        );
+        
+        // Which field?
+        wlAccField=new Label(wFileComp, SWT.RIGHT);
+        wlAccField.setText(Messages.getString("TextFileInputDialog.AcceptField.Label"));
+        props.setLook(wlAccField);
+        fdlAccField=new FormData();
+        fdlAccField.left = new FormAttachment(0, 0);
+        fdlAccField.top  = new FormAttachment(wAccFilenames, margin);
+        fdlAccField.right= new FormAttachment(middle, -margin);
+        wlAccField.setLayoutData(fdlAccField);
+        wAccField=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wAccField.setToolTipText(Messages.getString("TextFileInputDialog.AcceptField.Tooltip"));
+        props.setLook(wAccField);
+        fdAccField=new FormData();
+        fdAccField.left = new FormAttachment(middle, 0);
+        fdAccField.right= new FormAttachment(100, 0);
+        fdAccField.top  = new FormAttachment(wAccFilenames, margin);
+        wAccField.setLayoutData(fdAccField);
+        
+        // Which step to read from?
+        wlAccStep=new Label(wFileComp, SWT.RIGHT);
+        wlAccStep.setText(Messages.getString("TextFileInputDialog.AcceptStep.Label"));
+        props.setLook(wlAccStep);
+        fdlAccStep=new FormData();
+        fdlAccStep.left = new FormAttachment(0, 0);
+        fdlAccStep.top  = new FormAttachment(wAccField, margin);
+        fdlAccStep.right= new FormAttachment(middle, -margin);
+        wlAccStep.setLayoutData(fdlAccStep);
+        wAccStep=new CCombo(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wAccStep.setToolTipText(Messages.getString("TextFileInputDialog.AcceptStep.Tooltip"));
+        props.setLook(wAccStep);
+        fdAccStep=new FormData();
+        fdAccStep.left = new FormAttachment(middle, 0);
+        fdAccStep.right= new FormAttachment(100, 0);
+        fdAccStep.top  = new FormAttachment(wAccField, margin);
+        wAccStep.setLayoutData(fdAccStep);
+        
+        // Fill in the source steps...
+    	StepMeta[] prevSteps = transMeta.getPrevSteps(transMeta.findStep(stepname));
+    	for (int i=0;i<prevSteps.length;i++)
+    	{
+    		wAccStep.add(prevSteps[i].getName());
+    	}
 
 		// Filename line
 		wlFilename=new Label(wFileComp, SWT.RIGHT);
@@ -410,7 +472,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
-		fdlFilename.top  = new FormAttachment(0, 0);
+		fdlFilename.top  = new FormAttachment(wAccStep, margin*3);
 		fdlFilename.right= new FormAttachment(middle, -margin);
 		wlFilename.setLayoutData(fdlFilename);
 
@@ -420,7 +482,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
 		fdbFilename=new FormData();
 		fdbFilename.right= new FormAttachment(100, 0);
-		fdbFilename.top  = new FormAttachment(wChefInput,margin);
+		fdbFilename.top  = new FormAttachment(wAccStep,margin*3);
 		wbbFilename.setLayoutData(fdbFilename);
 
 		wbvFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -429,7 +491,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wbvFilename.setToolTipText(Messages.getString("System.Tooltip.VariableToFileOrDir"));
 		fdbvFilename=new FormData();
 		fdbvFilename.right= new FormAttachment(wbbFilename, -margin);
-		fdbvFilename.top  = new FormAttachment(wChefInput,margin);
+		fdbvFilename.top  = new FormAttachment(wAccStep,margin*3);
 		wbvFilename.setLayoutData(fdbvFilename);
 
 		wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -438,7 +500,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wbaFilename.setToolTipText(Messages.getString("TextFileInputDialog.FilenameAdd.Tooltip"));
 		fdbaFilename=new FormData();
 		fdbaFilename.right= new FormAttachment(wbvFilename, -margin);
-		fdbaFilename.top  = new FormAttachment(wChefInput,margin);
+		fdbaFilename.top  = new FormAttachment(wAccStep,margin*3);
 		wbaFilename.setLayoutData(fdbaFilename);
 
 		wFilename=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -447,7 +509,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		fdFilename=new FormData();
 		fdFilename.left = new FormAttachment(middle, 0);
 		fdFilename.right= new FormAttachment(wbaFilename, -margin);
-		fdFilename.top  = new FormAttachment(wChefInput,margin);
+		fdFilename.top  = new FormAttachment(wAccStep,margin*3);
 		wFilename.setLayoutData(fdFilename);
 
 		wlFilemask=new Label(wFileComp, SWT.RIGHT);
@@ -603,7 +665,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
-        wChefInput.addSelectionListener( lsDef );
+        wAccFilenames.addSelectionListener( lsDef );
 		wStepname.addSelectionListener( lsDef );
 		// wFilename.addSelectionListener( lsDef );
 		wSeparator.addSelectionListener( lsDef );
@@ -1769,6 +1831,28 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     public void setFlags()
 	{
+    	boolean accept = wAccFilenames.getSelection();
+    	wlAccField.setEnabled(accept);
+    	wAccField.setEnabled(accept);
+    	wlAccStep.setEnabled(accept);
+    	wAccStep.setEnabled(accept);
+
+    	wlFilename.setEnabled(!accept);
+    	wbbFilename.setEnabled(!accept); // Browse: add file or directory
+    	wbvFilename.setEnabled(!accept); // Variable
+    	wbdFilename.setEnabled(!accept); // Delete
+    	wbeFilename.setEnabled(!accept); // Edit
+    	wbaFilename.setEnabled(!accept); // Add or change
+    	wFilename.setEnabled(!accept);
+    	wlFilenameList.setEnabled(!accept);
+    	wFilenameList.setEnabled(!accept);
+    	wlFilemask.setEnabled(!accept);
+    	wFilemask.setEnabled(!accept);
+    	wbShowFiles.setEnabled(!accept);
+        wFirst.setEnabled(!accept);        
+        wFirstHeader.setEnabled(!accept);
+        wPreview.setEnabled(!accept);
+        
         wlInclFilenameField.setEnabled(wInclFilename.getSelection());
         wInclFilenameField.setEnabled(wInclFilename.getSelection());
 
@@ -1829,6 +1913,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	{
         final TextFileInputMeta in = meta;
         
+        wAccFilenames.setSelection(meta.isAcceptingFilenames());
+        if (meta.getAcceptingField()!=null) wAccField.setText(meta.getAcceptingField());
+        if (meta.getAcceptingStep()!=null) wAccStep.setText(meta.getAcceptingStep().getName());
+        
 		if (in.getFileName() !=null) 
 		{
 			wFilenameList.removeAll();
@@ -1844,7 +1932,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		if (in.getSeparator()!=null) wSeparator.setText(in.getSeparator());
 		if (in.getEnclosure()!=null) wEnclosure.setText(in.getEnclosure());
         if (in.getEscapeCharacter()!=null) wEscape.setText(in.getEscapeCharacter());
-        wChefInput.setSelection(in.getGetFileFromChef());
+        wAccFilenames.setSelection(in.isAcceptingFilenames());
 		wHeader.setSelection(in.hasHeader());
         wNrHeader.setText( ""+in.getNrHeaderLines() );
 		wFooter.setSelection(in.hasFooter());
@@ -1983,7 +2071,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		stepname = wStepname.getText(); // return value
 
 		// copy info to TextFileInputMeta class (input)
-        in.setGetFileFromChef(wChefInput.getSelection());
+        in.setAcceptingFilenames( wAccFilenames.getSelection() );
+        in.setAcceptingField( wAccField.getText() );
+        in.setAcceptingStep( transMeta.findStep( wAccStep.getText() ) );
+        
 		in.setFileType( wFiletype.getText() );
 		in.setFileFormat( wFormat.getText() );
 		in.setSeparator( wSeparator.getText() );

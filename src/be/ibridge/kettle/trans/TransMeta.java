@@ -33,6 +33,7 @@ import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Rectangle;
+import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.SQLStatement;
 import be.ibridge.kettle.core.TransAction;
@@ -149,6 +150,8 @@ public class TransMeta implements XMLInterface
     private int                 sleepTimeEmpty;
 
     private int                 sleepTimeFull;
+
+	private Result              previousResult;
 
     // //////////////////////////////////////////////////////////////////////////
 
@@ -4199,4 +4202,20 @@ public class TransMeta implements XMLInterface
         
         return varList;
     }
+
+	/**
+	 * @return Returns the previousResult.
+	 */
+	public Result getPreviousResult()
+	{
+		return previousResult;
+	}
+
+	/**
+	 * @param previousResult The previousResult to set.
+	 */
+	public void setPreviousResult(Result previousResult)
+	{
+		this.previousResult = previousResult;
+	}
 }

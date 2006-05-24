@@ -120,11 +120,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
     private Label        wlEveryRow;
     private Button       wEveryRow;
     private FormData     fdlEveryRow, fdEveryRow;
-    
-    private Label        wlSendFiles;
-    private Button       wSendFiles;
-    private FormData     fdlSendFiles, fdSendFiles;
-
+   
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -487,40 +483,13 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
             }
         );
         
-        
-        wlSendFiles=new Label(shell, SWT.RIGHT);
-        wlSendFiles.setText("Send files from previous step");
-        props.setLook(wlSendFiles);
-        fdlSendFiles=new FormData();
-        fdlSendFiles.left = new FormAttachment(0, 0);
-        fdlSendFiles.top  = new FormAttachment(wEveryRow, margin*3);
-        fdlSendFiles.right= new FormAttachment(middle, -margin);
-        wlSendFiles.setLayoutData(fdlSendFiles);
-        wSendFiles=new Button(shell, SWT.CHECK );
-        props.setLook(wSendFiles);
-        wSendFiles.setToolTipText("Check this to supply the transformation with any files from the previous step.");
-        fdSendFiles=new FormData();
-        fdSendFiles.left = new FormAttachment(middle, 0);
-        fdSendFiles.top  = new FormAttachment(wEveryRow, margin*3);
-        fdSendFiles.right= new FormAttachment(100, 0);
-        wSendFiles.setLayoutData(fdSendFiles);
-        wSendFiles.addSelectionListener(new SelectionAdapter() 
-            {
-                public void widgetSelected(SelectionEvent e) 
-                {
-                    jobentry.sendFiles=!jobentry.sendFiles;
-                    jobentry.setChanged();
-                }
-            }
-        );
-
 
 		wlFields=new Label(shell, SWT.NONE);
 		wlFields.setText("Fields : ");
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wSendFiles, margin);
+		fdlFields.top  = new FormAttachment(wEveryRow, margin);
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsCols=1;
@@ -700,7 +669,6 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		}
 		wPrevious.setSelection(jobentry.argFromPrevious);
         wEveryRow.setSelection(jobentry.execPerRow);
-        wSendFiles.setSelection(jobentry.sendFiles);
 		wSetLogfile.setSelection(jobentry.setLogfile);
 		if (jobentry.logfile!=null) wLogfile.setText(jobentry.logfile);
 		if (jobentry.logext!=null) wLogext.setText(jobentry.logext);
@@ -746,7 +714,6 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 				nr++;
 			} 
 		}
-		jobentry.sendFiles = wSendFiles.isEnabled();
 		jobentry.logfile=wLogfile.getText();
 		jobentry.logext =wLogext.getText();
 		jobentry.loglevel = wLoglevel.getSelectionIndex()-1;

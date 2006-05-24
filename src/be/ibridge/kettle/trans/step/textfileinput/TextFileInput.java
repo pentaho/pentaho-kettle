@@ -33,6 +33,7 @@ import java.util.zip.ZipInputStream;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleFileException;
@@ -1119,7 +1120,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 			data.isLastFile = (data.filenr == data.files.nrOfFiles() - 1);
 			data.file = data.files.getFile(data.filenr);
 			data.filename = data.file.getPath();
-			addInterestingFile(data.file);
+			
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString());
+			addResultFile(resultFile);
 
 			debug = "openNextFile : open file";
 			logBasic("Opening file: " + data.filename);
@@ -1312,7 +1315,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		try
 		{
 			logBasic("Starting to run...");
-            if (meta.getGetFileFromChef()) {
+            if (meta.isAcceptingFilenames()) {
                 // process the file from chef
                 data.files = new FileInputList();
                 for (int i=0;i<transmeta.getInputFiles().size();i++) {
