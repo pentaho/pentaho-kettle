@@ -19,6 +19,8 @@ public class ResultFile implements Cloneable
 	public static final int FILE_TYPE_ERROR     = 3;
 	public static final int FILE_TYPE_WARNING   = 4;
 	
+	public static final String[] fileTypeCode = { "GENERAL", "LOG", "ERRORLINE", "ERROR", "WARNING" };
+	
 	public static final String[] fileTypeDesc = { "General", "Log", "Error line", "Error", "Warning" };
 	
 	private int type;
@@ -136,7 +138,49 @@ public class ResultFile implements Cloneable
 	{
 		return fileTypeDesc[type];
 	}
+	
+	public String getTypeCode()
+	{
+		return fileTypeCode[type];
+	}
 
+	/**
+	 * Search for the result file type, looking in both the descriptions (i18n depending) and the codes
+	 * @param typeString the type string to search for
+	 * @return the result file type
+	 */
+	public static final int getType(String typeString)
+	{
+		int idx = Const.indexOfString(typeString, fileTypeDesc);
+		if (idx>=0) return idx;
+		idx = Const.indexOfString(typeString, fileTypeCode);
+		if (idx>=0) return idx;
+		
+		return FILE_TYPE_GENERAL;
+	}
+	
+	/**
+	 * @param fileType the result file type
+	 * @return the result file type code
+	 */
+	public static final String getTypeCode(int fileType)
+	{
+		return fileTypeCode[fileType];
+	}
+
+	/**
+	 * @param fileType the result file type
+	 * @return the result file type description
+	 */
+	public static final String getTypeDesc(int fileType)
+	{
+		return fileTypeDesc[fileType];
+	}
+	
+	public static final String[] getAllTypeDesc()
+	{
+		return fileTypeDesc;
+	}
 
 	/**
 	 * @return Returns the timestamp.

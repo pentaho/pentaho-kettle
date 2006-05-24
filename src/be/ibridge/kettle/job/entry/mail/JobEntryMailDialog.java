@@ -35,12 +35,14 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
+import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
@@ -82,6 +84,10 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 	private Label        wlIncludeFiles;
 	private Button       wIncludeFiles;
 	private FormData     fdlIncludeFiles, fdIncludeFiles;
+
+	private Label        wlTypes;
+	private List         wTypes;
+	private FormData     fdlTypes, fdTypes;
 
 	private Label        wlPerson;
 	private Text         wPerson;
@@ -286,9 +292,33 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 				{
 					jobmail.setIncludeFiles(jobmail.isIncludeFiles());
 					jobmail.setChanged();
+					setFlags();
 				}
 			}
 		);
+
+		// Include Files?
+		wlTypes=new Label(shell, SWT.RIGHT);
+		wlTypes.setText("Select the result file types to attach");
+ 		props.setLook(wlTypes);
+		fdlTypes=new FormData();
+		fdlTypes.left = new FormAttachment(0, 0);
+		fdlTypes.top  = new FormAttachment(wIncludeFiles, margin);
+		fdlTypes.right= new FormAttachment(middle, -margin);
+		wlTypes.setLayoutData(fdlTypes);
+		wTypes=new List(shell, SWT.MULTI | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+ 		props.setLook(wTypes);
+		fdTypes=new FormData();
+		fdTypes.left   = new FormAttachment(middle, 0);
+		fdTypes.top    = new FormAttachment(wIncludeFiles, margin);
+		fdTypes.bottom = new FormAttachment(wIncludeFiles, margin+100);
+		fdTypes.right  = new FormAttachment(100, 0);
+		wTypes.setLayoutData(fdTypes);
+		for (int i=0;i<ResultFile.getAllTypeDesc().length;i++)
+		{
+			wTypes.add(ResultFile.getAllTypeDesc()[i]);
+		}
+
 
 		// Person line
 		wlPerson=new Label(shell, SWT.RIGHT);
@@ -296,7 +326,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
  		props.setLook(wlPerson);
 		fdlPerson=new FormData();
 		fdlPerson.left = new FormAttachment(0, 0);
-		fdlPerson.top  = new FormAttachment(wIncludeFiles, margin);
+		fdlPerson.top  = new FormAttachment(wTypes, margin);
 		fdlPerson.right= new FormAttachment(middle, 0);
 		wlPerson.setLayoutData(fdlPerson);
 
@@ -305,7 +335,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		wPerson.addModifyListener(lsMod);
 		fdPerson=new FormData();
 		fdPerson.left = new FormAttachment(middle, 0);
-		fdPerson.top  = new FormAttachment(wIncludeFiles, margin);
+		fdPerson.top  = new FormAttachment(wTypes, margin);
 		fdPerson.right= new FormAttachment(100, 0);
 		wPerson.setLayoutData(fdPerson);
 
@@ -389,6 +419,12 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		return jobmail;
 	}
 
+	protected void setFlags()
+	{
+		wlTypes.setEnabled(wIncludeFiles.getSelection());
+		wTypes.setEnabled(wIncludeFiles.getSelection());
+	}
+
 	public void dispose()
 	{
 		WindowProperty winprop = new WindowProperty(shell);
@@ -408,6 +444,14 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		if (jobmail.getComment()!=null) wComment.setText(jobmail.getComment());
 		wAddDate.setSelection(jobmail.getIncludeDate());
 		wIncludeFiles.setSelection(jobmail.isIncludeFiles());
+		
+		if (jobmail.getFileType()!=null)
+		{
+			int types[] = jobmail.getFileType();
+			wTypes.setSelection(types);
+		}
+		
+		setFlags();
 	}
 	
 	private void cancel()
@@ -432,7 +476,8 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 
 		jobmail.setIncludeDate( wAddDate.getSelection() );
 		jobmail.setIncludeFiles( wIncludeFiles.getSelection() );
-
+		jobmail.setFileType(wTypes.getSelectionIndices());
+		
 		dispose();
 	}
 }

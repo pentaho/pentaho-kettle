@@ -74,22 +74,27 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 	private String contact_person;
 	private String contact_phone;
 	private String comment;
+	
 	private boolean includeFiles;
+	private int fileType[];
 
 	public JobEntryMail(String n)
 	{
 		super(n, "");
 		setType(JobEntryInterface.TYPE_JOBENTRY_MAIL);
+		allocate(0);
 	}
 
 	public JobEntryMail()
 	{
 		this("");
+		allocate(0);
 	}
 	
 	public JobEntryMail(JobEntryBase jeb)
 	{
 		super(jeb);
+		allocate(0);
 	}
 
 	public String getXML()
@@ -107,8 +112,21 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
         retval.append("      ").append(XMLHandler.addTagValue("contact_phone", contact_phone));
         retval.append("      ").append(XMLHandler.addTagValue("comment", comment));
         retval.append("      ").append(XMLHandler.addTagValue("include_files", includeFiles));
+        
+        retval.append("      <filetypes>");
+        if (fileType!=null)
+        for (int i=0;i<fileType.length;i++)
+        {
+        	retval.append("        ").append(XMLHandler.addTagValue("filetype", ResultFile.getTypeCode(fileType[i])));
+        }
+        retval.append("      </filetypes>");
 
 		return retval.toString();
+	}
+	
+	public void allocate(int nrFileTypes)
+	{
+		fileType = new int[nrFileTypes];
 	}
 	
 	public void loadXML(Node entrynode, ArrayList databases, Repository rep) throws KettleXMLException
@@ -125,6 +143,15 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			setContactPhone ( XMLHandler.getTagValue(entrynode, "concact_phone") );
 			setComment      ( XMLHandler.getTagValue(entrynode, "comment") );
 			setIncludeFiles ( "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_files")) );
+			
+			Node ftsnode = XMLHandler.getSubNode(entrynode, "filetypes");
+			int nrTypes = XMLHandler.countNodes(ftsnode, "filetype");
+			allocate(nrTypes);
+			for (int i=0;i<nrTypes;i++)
+			{
+				Node ftnode = XMLHandler.getSubNodeByNr(ftsnode, "filetype", i); 
+				fileType[i]=ResultFile.getType(XMLHandler.getNodeValue(ftnode));
+			}
 		}
 		catch(KettleException xe)
 		{
@@ -150,6 +177,16 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			contact_phone   = rep.getJobEntryAttributeString (id_jobentry, "contact_phone");
 			comment         = rep.getJobEntryAttributeString (id_jobentry, "comment");
 			includeFiles    = rep.getJobEntryAttributeBoolean(id_jobentry, "include_files");
+			
+			int nrTypes = rep.countNrJobEntryAttributes(id_jobentry, "file_type");
+			allocate(nrTypes);
+			
+            for (int i=0;i<nrTypes;i++)
+            {
+            	String typeCode = rep.getJobEntryAttributeString(id_jobentry, i, "file_type");
+            	fileType[i] = ResultFile.getType(typeCode);
+	        }
+
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -174,6 +211,14 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			rep.saveJobEntryAttribute(id_job, getID(), "contact_phone", contact_phone);
 			rep.saveJobEntryAttribute(id_job, getID(), "comment", comment);
 			rep.saveJobEntryAttribute(id_job, getID(), "include_files", includeFiles);
+			
+			if (fileType!=null)
+			{
+				for (int i=0;i<fileType.length;i++)
+				{
+					rep.saveJobEntryAttribute(id_job, getID(), i, "file_type", ResultFile.getTypeCode(fileType[i]));
+				}
+			}
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -455,5 +500,23 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
         return new JobEntryMailDialog(shell,this);
     }
+
+    /**
+     * @return the result file types to select for attachement </b>
+     * @see ResultFile
+     */
+	public int[] getFileType()
+	{
+		return fileType;
+	}
+
+	/**
+	 * @param fileType the result file types to select for attachement
+	 * @see ResultFile
+	 */
+	public void setFileType(int[] fileType)
+	{
+		this.fileType = fileType;
+	}
 
 }
