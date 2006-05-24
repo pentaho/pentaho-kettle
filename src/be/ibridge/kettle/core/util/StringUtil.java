@@ -195,7 +195,13 @@ public class StringUtil
                 int to = aString.indexOf(close, from+1);
                 String variable = aString.substring(from, to);
                 
-                if (Const.indexOfString(variable, list)<0) list.add(variable);
+                if (Const.indexOfString(variable, list)<0) 
+                {
+                	if (System.getProperty(variable)==null) // Filter out set environment variables
+                	{
+                		list.add(variable);
+                	}
+                }
                 
                 // OK, continue
                 p=to;
