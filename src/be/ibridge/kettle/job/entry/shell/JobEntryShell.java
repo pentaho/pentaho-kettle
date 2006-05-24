@@ -291,7 +291,14 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         while( ( first && !execPerRow ) || ( execPerRow && rows!=null && iteration<rows.size() && result.getNrErrors()==0 ) )
         {
             first=false;
-            if (rows!=null) resultRow = (Row) rows.get(iteration);
+            if (rows!=null && execPerRow)
+            {
+            	resultRow = (Row) rows.get(iteration);
+            }
+            else
+            {
+            	resultRow = null;
+            }
             
             List cmdRows = null;
             
@@ -453,10 +460,10 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             log.logDetailed(toString(), "command ["+cmd[0]+"] has finished");
             
             // What's the exit status?
-            result.exitStatus = proc.exitValue();
-            if (result.exitStatus!=0) 
+            result.setExitStatus( proc.exitValue() );
+            if (result.getExitStatus()!=0) 
             {
-                log.logDetailed(toString(), "Exit status of shell ["+getFileName()+"] was "+result.exitStatus);
+                log.logDetailed(toString(), "Exit status of shell ["+getFileName()+"] was "+result.getExitStatus());
                 result.setNrErrors(1);
             } 
         }

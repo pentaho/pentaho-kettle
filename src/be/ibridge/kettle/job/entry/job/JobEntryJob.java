@@ -312,8 +312,15 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             while( ( first && !execPerRow ) || ( execPerRow && rows!=null && iteration<rows.size() && result.getNrErrors()==0 ) )
             {
                 first=false;
-                if (rows!=null) resultRow = (Row) rows.get(iteration);
-    
+                if (rows!=null && execPerRow)
+                {
+                	resultRow = (Row) rows.get(iteration);
+                }
+                else
+                {
+                	resultRow = null;
+                }
+                
                 JobMeta jobMeta = null;
                 if (rep!=null && jobname!=null && jobname.length()>0 && directory!=null) // load from the repository...
                 {
@@ -397,7 +404,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                     else
                     {
                         // Keep it as it was...
-                        job.setSourceRows(result.rows);
+                        job.setSourceRows(result.getRows());
                     }
                 }
     
