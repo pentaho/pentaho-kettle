@@ -49,6 +49,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.Job;
+import be.ibridge.kettle.job.JobEntryResult;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
@@ -311,7 +312,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 	{
 		LogWriter log = LogWriter.getInstance();
 
-		Result result = new Result(nr);
+		Result result = prev_result;
 		
 		// Send an e-mail...
 		// create some properties and get the default Session
@@ -374,8 +375,8 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		    {
 		        messageText.append("Path to this job entry:").append(Const.CR);
 		        messageText.append("------------------------").append(Const.CR);
-                messageText.append("TODO: backtracking of the job entry...").append(Const.CR);
-                // TODO: backtracking of the job entry...
+                
+                addBacktracking(jobTracker, messageText);
 		    }
 		    		    
 		    Multipart parts = new MimeMultipart();
@@ -479,7 +480,52 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		return result;
 	}
 
-	public boolean evaluates()
+    private void addBacktracking(JobTracker jobTracker, StringBuffer messageText)
+    {
+        addBacktracking(jobTracker, messageText, 0);
+    }
+
+	private void addBacktracking(JobTracker jobTracker, StringBuffer messageText, int level)    
+    {
+       int nr = jobTracker.nrJobTrackers();
+ 
+       messageText.append(Const.rightPad(" ", level*2));
+       messageText.append(Const.NVL( jobTracker.getJobMeta().getName(), "-") );
+       JobEntryResult jer = jobTracker.getJobEntryResult(); 
+       if (jer!=null)
+       {
+           messageText.append(" : ");
+           if (jer.getJobEntry()!=null && jer.getJobEntry().getName()!=null)
+           {
+               messageText.append(" : ");
+               messageText.append(jer.getJobEntry().getName());
+           }
+           if (jer.getResult()!=null)
+           {
+               messageText.append(" : ");
+               messageText.append("["+jer.getResult().toString()+"]");
+           }
+           if (jer.getReason()!=null)
+           {
+               messageText.append(" : ");
+               messageText.append(jer.getReason());
+           }
+           if (jer.getComment()!=null)
+           {
+               messageText.append(" : ");
+               messageText.append(jer.getComment());
+           }
+       }
+       messageText.append(Const.CR);
+       
+       for (int i=0;i<nr;i++)
+       {
+           JobTracker jt = jobTracker.getJobTracker(i);
+           addBacktracking(jt, messageText, level+1);
+       }
+    }
+
+    public boolean evaluates()
 	{
 		return true;
 	}
