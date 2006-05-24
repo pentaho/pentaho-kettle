@@ -496,7 +496,8 @@ public class ChefLog extends Composite
             // Re-populate this...
             TreeItem treeItem = new TreeItem(wTree, SWT.NONE);
             String jobName = jobTracker.getJobMeta().getName();
-            if(jobName==null) {
+            if(jobName==null) 
+            {
             	jobName = Messages.getString("ChefLog.Tree.StringToDisplayWhenJobHasNoName"); //$NON-NLS-1$
             }
             treeItem.setText( 0,jobName);
