@@ -4186,7 +4186,7 @@ public class TransMeta implements XMLInterface
     public List getUsedVariables()
     {
         // Get the list of Strings.
-        List stringList = getStringList(true, true, true);
+        List stringList = getStringList(true, true, false);
         
         List varList = new ArrayList();
         
