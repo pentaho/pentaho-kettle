@@ -15,8 +15,6 @@
 
  
 package be.ibridge.kettle.chef;
-import java.util.StringTokenizer;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -51,12 +49,14 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.DragAndDropContainer;
 import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Rectangle;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.job.JobHopMeta;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
@@ -589,83 +589,98 @@ public class ChefGraph extends Canvas
 
 				Point p = getRealPosition(canvas, event.x, event.y);
 				
-				StringTokenizer strtok = new StringTokenizer((String) event.data, Const.CR);
-				if (strtok.countTokens() == 1) 
-				{
-					String entry = strtok.nextToken();
-					//System.out.println("new entry: "+entry);
-					
-					JobEntryCopy jge = chef.jobMeta.findJobEntry(entry, 0, true);
+                // 
+                // We expect a piece of XML...
+                String xml = (String) event.data;
+                
+                try
+                {
+                    DragAndDropContainer container = new DragAndDropContainer(xml);
+                    String entry = container.getData();
+                    
+                    switch(container.getType())
+                    {
+                    case DragAndDropContainer.TYPE_BASE_JOB_ENTRY: // Create a new Job Entry on the canvas
+                        {
+                            JobEntryCopy jge = chef.newChefGraphEntry(entry, false);
+                            if (jge != null) 
+                            {
+                                jge.setLocation(p.x, p.y);
+                                jge.setDrawn();
+                                redraw();
+                            } 
+                        }
+                        break;
+                    case DragAndDropContainer.TYPE_JOB_ENTRY: // Drag existing one onto the canvas
+                        {
+                            JobEntryCopy jge = chef.jobMeta.findJobEntry(entry, 0, true);
+                            if (jge != null)  // Create duplicate of existing entry 
+                            {
+                                // There can be only 1 start!
+                                if (jge.isStart() && jge.isDrawn()) 
+                                {
+                                    MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_ERROR);
+                                    mb.setMessage(Messages.getString("ChefGraph.Dialog.OnlyUseStartOnce.Message")); //$NON-NLS-1$
+                                    mb.setText(Messages.getString("ChefGraph.Dialog.OnlyUseStartOnce.Title")); //$NON-NLS-1$
+                                    mb.open();
 
-					if (jge != null)  // Create duplicate of existing entry 
-					{
-						log.logDebug(toString(), "DROP "+jge.toString()+", type="+ JobEntryCopy.getTypeDesc(jge.getType())+", start="+jge.isStart()+", drawn="+jge.isDrawn()); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-						
-						// There can be only 1 start!
-						if (jge.isStart() && jge.isDrawn()) 
-						{
-							MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_ERROR);
-							mb.setMessage(Messages.getString("ChefGraph.Dialog.OnlyUseStartOnce.Message")); //$NON-NLS-1$
-							mb.setText(Messages.getString("ChefGraph.Dialog.OnlyUseStartOnce.Title")); //$NON-NLS-1$
-							mb.open();
+                                    return;
+                                }
 
-							return;
-						}
-
-						boolean jge_changed=false;
-						
-						// For undo :
-						JobEntryCopy before = (JobEntryCopy)jge.clone_deep();
-						
-						JobEntryCopy newjge = jge;
-						if (jge.isDrawn()) 
-						{
-							newjge = (JobEntryCopy)jge.clone();
-							if (newjge!=null)
-							{
-								// newjge.setEntry(jge.getEntry());
-								log.logDebug(toString(), "entry aft = "+((Object)jge.getEntry()).toString()); //$NON-NLS-1$
-								
-								newjge.setNr(chef.jobMeta.findUnusedNr(newjge.getName()));
-								
-								chef.jobMeta.addJobEntry(newjge);
-								chef.addUndoNew(new JobEntryCopy[] {newjge}, new int[] { chef.jobMeta.indexOfJobEntry(newjge)} );
-							}
-							else
-							{
-								log.logDebug(toString(), "jge is not cloned!"); //$NON-NLS-1$
-							}
-						}
-						else
-						{
-							log.logDebug(toString(), jge.toString()+" is not drawn"); //$NON-NLS-1$
-							jge_changed=true;
-						}
-						newjge.setLocation(p.x, p.y);
-						newjge.setDrawn();
-						if (jge_changed)
-						{
-							chef.addUndoChange(new JobEntryCopy[] { before }, new JobEntryCopy[] {newjge}, new int[] { chef.jobMeta.indexOfJobEntry(newjge)});
-						}
-						redraw();
-						chef.refreshTree();
-						log.logBasic("DropTargetEvent", "DROP "+newjge.toString()+"!, type="+ JobEntryCopy.getTypeDesc(newjge.getType())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-					} 
-					else // Entry doesn't exist: create new one.
-					{
-						log.logDebug(toString(), "New entry of type ["+entry+"]");  //$NON-NLS-1$ //$NON-NLS-2$
-						
-						jge = chef.newChefGraphEntry(entry, false);
-						if (jge != null) 
-						{
-							jge.setLocation(p.x, p.y);
-							jge.setDrawn();
-							redraw();
-						} 
+                                boolean jge_changed=false;
+                                
+                                // For undo :
+                                JobEntryCopy before = (JobEntryCopy)jge.clone_deep();
+                                
+                                JobEntryCopy newjge = jge;
+                                if (jge.isDrawn()) 
+                                {
+                                    newjge = (JobEntryCopy)jge.clone();
+                                    if (newjge!=null)
+                                    {
+                                        // newjge.setEntry(jge.getEntry());
+                                        log.logDebug(toString(), "entry aft = "+((Object)jge.getEntry()).toString()); //$NON-NLS-1$
+                                        
+                                        newjge.setNr(chef.jobMeta.findUnusedNr(newjge.getName()));
+                                        
+                                        chef.jobMeta.addJobEntry(newjge);
+                                        chef.addUndoNew(new JobEntryCopy[] {newjge}, new int[] { chef.jobMeta.indexOfJobEntry(newjge)} );
+                                    }
+                                    else
+                                    {
+                                        log.logDebug(toString(), "jge is not cloned!"); //$NON-NLS-1$
+                                    }
+                                }
+                                else
+                                {
+                                    log.logDebug(toString(), jge.toString()+" is not drawn"); //$NON-NLS-1$
+                                    jge_changed=true;
+                                }
+                                newjge.setLocation(p.x, p.y);
+                                newjge.setDrawn();
+                                if (jge_changed)
+                                {
+                                    chef.addUndoChange(new JobEntryCopy[] { before }, new JobEntryCopy[] {newjge}, new int[] { chef.jobMeta.indexOfJobEntry(newjge)});
+                                }
+                                redraw();
+                                chef.refreshTree();
+                                log.logBasic("DropTargetEvent", "DROP "+newjge.toString()+"!, type="+ JobEntryCopy.getTypeDesc(newjge.getType())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                            } 
+                            else
+                            {
+                                log.logError(toString(), "Unknown job entry dropped onto the canvas.");
+                            }
+                        }
+                        break;
+                    default: break;
 					}
 				}
-			}
-
+                catch(Exception e)
+                {
+                    new ErrorDialog(shell, chef.props, Messages.getString("ChefGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("Chefraph.Dialog.ErrorDroppingObject.Title"), e);
+                }
+            }
+            
 			public void dropAccept(DropTargetEvent event) 
 			{
 				drop_candidate = null;

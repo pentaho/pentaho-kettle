@@ -77,6 +77,7 @@ import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage1;
 import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage2;
 import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage3;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.DragAndDropContainer;
 import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
@@ -824,30 +825,71 @@ public class Chef
 		tMain.addSelectionListener(lsNewDef); // double click somewhere in the tree...
 		tMain.addSelectionListener(lsEditSel);
 		
-		// Drag & Drop for steps
-		Transfer[] ttypes = new Transfer[] {TextTransfer.getInstance() };
-		
-		DragSource ddSource = new DragSource(tMain, DND.DROP_MOVE | DND.DROP_COPY);
-		ddSource.setTransfer(ttypes);
-		ddSource.addDragListener(new DragSourceListener() 
-			{
-				public void dragStart(DragSourceEvent event){ }
-	
-				public void dragSetData(DragSourceEvent event) 
-				{
-					TreeItem ti[] = tMain.getSelection();
-					String data = new String();
-					for (int i=0;i<ti.length;i++) data+=ti[i].getText()+Const.CR;
-					event.data = data;
-				}
-	
-				public void dragFinished(DragSourceEvent event) {}
-			}
-		);
-		
+        addDragSourceToTree(tMain);
+        
 		// Keyboard shortcuts!
 		tMain.addKeyListener( defKeys );
 	}
+    
+    private void addDragSourceToTree(Tree tree)
+    {
+        final Tree fTree = tree;
+        
+        // Drag & Drop for steps
+        Transfer[] ttypes = new Transfer[] { TextTransfer.getInstance() };
+        
+        DragSource ddSource = new DragSource(fTree, DND.DROP_MOVE | DND.DROP_COPY);
+        ddSource.setTransfer(ttypes);
+        ddSource.addDragListener(new DragSourceListener() 
+            {
+                public void dragStart(DragSourceEvent event){ }
+    
+                public void dragSetData(DragSourceEvent event) 
+                {
+                    TreeItem ti[] = fTree.getSelection();
+                    
+                    String data = null;
+                    int type = 0;
+
+                    String ts[] = Const.getTreeStrings(ti[0]);
+                        
+                    if (ts!=null && ts.length > 0)
+                    {
+                        // Drop of existing hidden step onto canvas?
+                        if (ts[0].equalsIgnoreCase(STRING_JOBENTRIES))
+                        {
+                            type = DragAndDropContainer.TYPE_JOB_ENTRY;
+                            data=ti[0].getText(); // name of the step.
+                        }
+                        else
+                        if ( ts[0].equalsIgnoreCase(STRING_BASE_JOBENTRIES) ||
+                             ts[0].equalsIgnoreCase(STRING_PLUGIN_JOBENTRIES)
+                        )
+                        {
+                            type = DragAndDropContainer.TYPE_BASE_JOB_ENTRY;
+                            data=ti[0].getText(); // Step type
+                        }
+                        else
+                        if (ts[0].equalsIgnoreCase(STRING_CONNECTIONS))
+                        {
+                            type = DragAndDropContainer.TYPE_DATABASE_CONNECTION;
+                            data=ti[0].getText(); // Database connection name to use
+                        }
+                        else
+                        {
+                            return; // ignore anything else you drag.
+                        }
+
+                        event.data = new DragAndDropContainer(type, data).getXML();
+                    }
+                }
+    
+                public void dragFinished(DragSourceEvent event) {}
+            }
+        );
+
+    }
+ 
 	
 	private void setMenu(SelectionEvent e)
 	{
