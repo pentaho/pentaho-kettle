@@ -1268,11 +1268,13 @@ public class TextFileInput extends BaseStep implements StepInterface
 			}
 				
 			data.files = meta.getTextFileList();
-			if ((transmeta.getPreviousResult().getResultFiles()==null || transmeta.getPreviousResult().getResultFiles().size()==0) && data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
+			if ((transmeta.getPreviousResult()==null || transmeta.getPreviousResult().getResultFiles()==null || transmeta.getPreviousResult().getResultFiles().size()==0) && 
+                    data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
 			{
 				logError("No file(s) specified! Stop processing.");
 				return false;
 			}
+
 			return true;
 		}
 		return false;
