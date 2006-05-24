@@ -32,6 +32,7 @@ import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.RowSet;
+import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleStepLoaderException;
 import be.ibridge.kettle.core.value.Value;
@@ -951,9 +952,23 @@ public class BaseStep extends Thread
 	}
 
     
-	private synchronized RowSet currentInputStream()
+	private synchronized RowSet currentInputStream() throws KettleException
 	{
-		return (RowSet)inputRowSets.get(in_handling);
+		try
+		{
+			return (RowSet)inputRowSets.get(in_handling);
+		}
+		catch(Exception e)
+		{
+			if (inputRowSets.size()==0) 
+			{
+				throw new KettleException(Messages.getString("BaseStep.Exception.InputStreamExpected", toString()), e);
+			}
+			else
+			{
+				throw new KettleException(Messages.getString("BaseStep.Exception.UnexpectedErrorGettingInputStream", toString()), e);
+			}
+		}
 	}
 	
 	/**
@@ -977,13 +992,13 @@ public class BaseStep extends Thread
 		In case of getRow, we receive data from previous steps through the input rowset.
 	 	In case we split the stream, we have to copy the data to the alternate splits: rowsets 1 through n.
 	**/
-	public synchronized Row getRow()
+	public synchronized Row getRow() throws KettleException
 	{
 		int sleeptime;
 		int switches;
 		
 		// If everything is finished, we can stop immediately!
-		//if (input.size()==0) return null;
+		if (inputRowSets.size()==0) return null;
 
 		// What's the current input stream?
 		RowSet in=currentInputStream();

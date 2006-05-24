@@ -23,6 +23,7 @@ import java.util.zip.GZIPOutputStream;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -49,7 +50,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi)
+	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta=(CubeOutputMeta)smi;
 		data=(CubeOutputData)sdi;

@@ -98,7 +98,7 @@ public class AddSequence extends BaseStep implements StepInterface
 	}
 	
 	
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi)
+	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta=(AddSequenceMeta)smi;
 		data=(AddSequenceData)sdi;

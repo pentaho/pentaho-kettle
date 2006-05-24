@@ -155,7 +155,7 @@ public interface StepInterface
     /**
      * @return a row from the source step(s).
      */
-    public Row getRow();
+    public Row getRow() throws KettleException;
     
     /**
      * Signal output done to destination steps
