@@ -1268,7 +1268,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			}
 				
 			data.files = meta.getTextFileList();
-			if ((transmeta.getInputFiles()==null || transmeta.getInputFiles().size()==0) && data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
+			if ((transmeta.getPreviousResult().getResultFiles()==null || transmeta.getPreviousResult().getResultFiles().size()==0) && data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
 			{
 				logError("No file(s) specified! Stop processing.");
 				return false;
@@ -1318,8 +1318,9 @@ public class TextFileInput extends BaseStep implements StepInterface
             if (meta.isAcceptingFilenames()) {
                 // process the file from chef
                 data.files = new FileInputList();
-                for (int i=0;i<transmeta.getInputFiles().size();i++) {
-                    data.files.addFile((File)transmeta.getInputFiles().get(i));
+                for (int i=0;i<transmeta.getPreviousResult().getResultFiles().size();i++) {
+                    ResultFile file = (ResultFile)transmeta.getPreviousResult().getResultFiles().get(i);
+                    data.files.addFile(file.getFile());
                 }
             }
 			while (processRow(meta, data) && !isStopped())
