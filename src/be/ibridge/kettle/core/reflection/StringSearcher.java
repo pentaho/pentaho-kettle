@@ -5,6 +5,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.List;
 
+import be.ibridge.kettle.core.Condition;
 import be.ibridge.kettle.core.Const;
 
 public class StringSearcher
@@ -58,6 +59,11 @@ public class StringSearcher
                             stringList.add(new StringSearchResult(((Boolean)obj).toString(), parentObject, field.getName()+" (Boolean)"));                       
                         }
                         else
+                        if (obj instanceof Condition)
+                        {
+                        	stringList.add(new StringSearchResult(((Condition)obj).toString(), parentObject, field.getName()+" (Condition)"));
+                        }
+                        else
                         if (obj instanceof Object)
                         {
                             findMetaData(obj, level+1, stringList, parentObject);
@@ -109,6 +115,11 @@ public class StringSearcher
                                 {
                                     // OK, let's add the String
                                     stringList.add(new StringSearchResult(((Boolean)string).toString(), parentObject, field.getName()+" (Boolean)"));                       
+                                }
+                                else
+                                if (string instanceof Condition)
+                                {
+                                	stringList.add(new StringSearchResult(((Condition)string).toString(), parentObject, field.getName()+" (Condition)"));
                                 }
                                 else
                                 if (string instanceof Object[])
