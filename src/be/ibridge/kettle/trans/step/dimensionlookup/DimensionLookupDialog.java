@@ -135,7 +135,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 	private Label        wlUpIns;
 	private TableView    wUpIns;
 
-	private Button wGet, wCreate;
+	private Button   wGet, wCreate;
 	private Listener lsGet, lsCreate;
 
 	private DimensionLookupMeta input;
@@ -258,6 +258,36 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdCommit.top  = new FormAttachment(wTable, margin);
 		fdCommit.right= new FormAttachment(100, 0);
 		wCommit.setLayoutData(fdCommit);
+
+		// Update the dimension?
+		wlUpdate=new Label(shell, SWT.RIGHT);
+		wlUpdate.setText(Messages.getString("DimensionLookupDialog.Update.Label")); //$NON-NLS-1$
+ 		props.setLook(wlUpdate);
+		FormData fdlUpdate=new FormData();
+		fdlUpdate.left   = new FormAttachment(0, 0);
+		fdlUpdate.right  = new FormAttachment(middle, -margin);
+		fdlUpdate.top    = new FormAttachment(wCommit, margin);
+		wlUpdate.setLayoutData(fdlUpdate);
+		wUpdate=new Button(shell, SWT.CHECK);
+ 		props.setLook(wUpdate);
+		FormData fdUpdate=new FormData();
+		fdUpdate.left = new FormAttachment(middle, 0);
+		fdUpdate.top  = new FormAttachment(wCommit, margin);
+		fdUpdate.right= new FormAttachment(100, 0);
+		wUpdate.setLayoutData(fdUpdate); 
+
+		// Clicking on update changes the options in the update combo boxes!
+		wUpdate.addSelectionListener(new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e)
+				{
+					input.setUpdate(!input.isUpdate());
+					input.setChanged();
+
+					setFlags();
+				}
+			}
+		); 		
 		
 		wlTkRename=new Label(shell, SWT.RIGHT);
 	
@@ -383,7 +413,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
-		fdTabFolder.top   = new FormAttachment(wCommit, margin);
+		fdTabFolder.top   = new FormAttachment(wUpdate, margin);
 		fdTabFolder.right = new FormAttachment(100, 0);
 		fdTabFolder.bottom= new FormAttachment(wlTkRename, -2 * margin);		
 		wTabFolder.setLayoutData(fdTabFolder);
@@ -416,35 +446,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		wCreate.addListener(SWT.Selection, lsCreate);
 		wCancel.addListener(SWT.Selection, lsCancel);
 
-		// Update the dimension?
-		wlUpdate=new Label(shell, SWT.RIGHT);
-		wlUpdate.setText(Messages.getString("DimensionLookupDialog.Update.Label")); //$NON-NLS-1$
- 		props.setLook(wlUpdate);
-		FormData fdlUpdate=new FormData();
-		fdlUpdate.left   = new FormAttachment(0, 0);
-		fdlUpdate.right  = new FormAttachment(middle, -margin);
-		fdlUpdate.bottom = new FormAttachment(wOK, -2 * margin);
-		wlUpdate.setLayoutData(fdlUpdate);
-		wUpdate=new Button(shell, SWT.CHECK);
- 		props.setLook(wUpdate);
-		FormData fdUpdate=new FormData();
-		fdUpdate.left = new FormAttachment(middle, 0);
-		fdUpdate.bottom = new FormAttachment(wOK, -2 * margin);
-		wUpdate.setLayoutData(fdUpdate);
-
-		// Clicking on update changes the options in the update combo boxes!
-		wUpdate.addSelectionListener(new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e)
-				{
-					input.setUpdate(!input.isUpdate());
-					input.setChanged();
-
-					setFlags();
-				}
-			}
-		);
-
 		// Todate line
 		wlTodate=new Label(shell, SWT.RIGHT);
 		wlTodate.setText(Messages.getString("DimensionLookupDialog.Todate.Label")); //$NON-NLS-1$
@@ -452,7 +453,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		FormData fdlTodate=new FormData();
 		fdlTodate.left  = new FormAttachment(0, 0);
 		fdlTodate.right = new FormAttachment(middle, -margin);
-		fdlTodate.bottom= new FormAttachment(wUpdate, -margin);
+		fdlTodate.bottom= new FormAttachment(wOK, -2 * margin);		
 		wlTodate.setLayoutData(fdlTodate); 
 		wTodate=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTodate);
@@ -460,7 +461,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		FormData fdTodate=new FormData();
 		fdTodate.left   = new FormAttachment(middle, 0);
 		fdTodate.right  = new FormAttachment(middle+(100-middle)/3, -margin);
-		fdTodate.bottom = new FormAttachment(wUpdate, -margin); 
+		fdTodate.bottom = new FormAttachment(wOK, -2 * margin); 
 		wTodate.setLayoutData(fdTodate); 
 		
 		// Maxyear line
@@ -470,7 +471,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		FormData fdlMaxyear=new FormData();
 		fdlMaxyear.left  = new FormAttachment(wTodate, margin);
 		fdlMaxyear.right = new FormAttachment(middle+2*(100-middle)/3, -margin);
-		fdlMaxyear.bottom = new FormAttachment(wUpdate, -margin);
+		fdlMaxyear.bottom = new FormAttachment(wOK, -2 * margin);
 		wlMaxyear.setLayoutData(fdlMaxyear); 
 		wMaxyear=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wMaxyear);
@@ -478,7 +479,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		FormData fdMaxyear=new FormData();
 		fdMaxyear.left = new FormAttachment(wlMaxyear, margin);
 		fdMaxyear.right= new FormAttachment(100, 0);
-		fdMaxyear.bottom  = new FormAttachment(wUpdate, -margin);
+		fdMaxyear.bottom  = new FormAttachment(wOK, -2 * margin);
 		wMaxyear.setLayoutData(fdMaxyear);
 		wMaxyear.setToolTipText(Messages.getString("DimensionLookupDialog.Maxyear.ToolTip")); //$NON-NLS-1$
 		
@@ -737,21 +738,41 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		wUpIns.optWidth(true);
 
         // In case of lookup: disable commitsize, etc.
-        wlCommit.setEnabled( wUpdate.getSelection() );
-        wCommit.setEnabled( wUpdate.getSelection() );
-        wlAutoinc.setEnabled( wUpdate.getSelection() );
-        wAutoinc.setEnabled( wUpdate.getSelection() );
-        wSeq.setEnabled( wUpdate.getSelection() );
-        wlMinyear.setEnabled( wUpdate.getSelection() );
-        wMinyear.setEnabled( wUpdate.getSelection() );
-        wlMaxyear.setEnabled( wUpdate.getSelection() );
-        wMaxyear.setEnabled( wUpdate.getSelection() );
-        wlMinyear.setEnabled( wUpdate.getSelection() );
-        wMinyear.setEnabled( wUpdate.getSelection() );
-        
+		boolean update = wUpdate.getSelection();
+        wlCommit.setEnabled( update );
+        wCommit.setEnabled( update );
+        wlMinyear.setEnabled( update );
+        wMinyear.setEnabled( update );
+        wlMaxyear.setEnabled( update );
+        wMaxyear.setEnabled( update );
+        wlMinyear.setEnabled( update );
+        wMinyear.setEnabled( update );
+        wlVersion.setEnabled( update );
+        wVersion.setEnabled( update );
+
+        // Set the technical creation key fields correct... then disable 
+        // depending on update or not. Then reset if we're updating. It makes
+        // sure that the disabled options because of database restrictions
+        // will always be properly grayed out.
 		setAutoincUse();
 		setSequence();
 		setTableMax();
+                
+        gTechGroup.setEnabled( update );
+        wlAutoinc.setEnabled( update );
+        wAutoinc.setEnabled( update );        
+        wlTableMax.setEnabled( update );
+        wTableMax.setEnabled( update );
+        wlSeqButton.setEnabled( update );
+        wSeqButton.setEnabled( update );
+        wSeq.setEnabled( update );      
+        
+        if ( update )
+        {
+        	setAutoincUse();
+        	setSequence();
+        	setTableMax();
+        }
 	}
     
 	public void setAutoincUse()
