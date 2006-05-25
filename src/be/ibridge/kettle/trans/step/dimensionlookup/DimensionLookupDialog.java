@@ -15,7 +15,7 @@
 
 /*
  * Created on 2-jul-2003
- *
+ * 24May2006: Make DimensionLookup and CombinationLookup look more alike.
  */
 package be.ibridge.kettle.trans.step.dimensionlookup;
 
@@ -69,95 +69,71 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.dimensionlookup.Messages;
 
-
+/**
+ *  Dialog for the Dimension Lookup/Update step. 
+ */
 public class DimensionLookupDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 
-	private CTabItem     wTableTab, wKeyTab, wFieldsTab;
+	private CTabItem     wKeyTab, wFieldsTab;
 
-	private FormData     fdTableComp, fdKeyComp, fdFieldsComp;
+	private FormData     fdKeyComp, fdFieldsComp;
 
 	private CCombo       wConnection;
 
 	private Label        wlTable;
 	private Button       wbTable;
 	private Text         wTable;
-	private FormData     fdlTable, fdbTable, fdTable;
 
 	private Label        wlCommit;
 	private Text         wCommit;
-	private FormData     fdlCommit, fdCommit;
 
 	private Label        wlTk;
 	private Text         wTk;
-	private FormData     fdlTk, fdTk;
 
 	private Label        wlTkRename;
 	private Text         wTkRename;
-	private FormData     fdlTkRename, fdTkRename;
 
 	private Group        gTechGroup;
-	private FormData     fdTechGroup;
 	
 	private Label        wlAutoinc;
 	private Button       wAutoinc;
-	private GridData     gdlAutoinc, gdAutoinc;
 
 	private Label        wlTableMax;
-	private Button       wTableMax;
-	private GridData     gdlTableMax, gdTableMax;	
+	private Button       wTableMax;	
 
 	private Label        wlSeqButton;
-	private Button       wSeqButton;
-	private GridData     gdlSeqButton, gdSeqButton, gdSeq;			
+	private Button       wSeqButton;			
 	private Text         wSeq;    	
-/*
-	private Label        wlAutoinc;
-	private Button       wAutoinc;
-	private FormData     fdlAutoinc, fdAutoinc;
-
-	private Label        wlSeq;
-	private Text         wSeq;
-	private FormData     fdlSeq, fdSeq;
-*/	
 
 	private Label        wlVersion;
 	private Text         wVersion;
-	private FormData     fdlVersion, fdVersion;
 
 	private Label        wlDatefield;
 	private Text         wDatefield;
-	private FormData     fdlDatefield, fdDatefield;
 
 	private Label        wlFromdate;
 	private Text         wFromdate;
-	private FormData     fdlFromdate, fdFromdate;
 
 	private Label        wlMinyear;
-	private Text         wMinyear;
-	private FormData     fdlMinyear, fdMinyear;
+	private Text         wMinyear;	
 
 	private Label        wlTodate;
 	private Text         wTodate;
-	private FormData     fdlTodate, fdTodate;
 
 	private Label        wlMaxyear;
 	private Text         wMaxyear;
-	private FormData     fdlMaxyear, fdMaxyear;
 
 	private Label        wlUpdate;
 	private Button       wUpdate;
-	private FormData     fdlUpdate, fdUpdate;
 
 	private Label        wlKey;
 	private TableView    wKey;
-	private FormData     fdlKey, fdKey;
 
 	private Label        wlUpIns;
 	private TableView    wUpIns;
-	private FormData     fdlUpIns, fdUpIns;
 
 	private Button wGet, wCreate;
 	private Listener lsGet, lsCreate;
@@ -202,7 +178,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
-		int width  = Const.RIGHT;
 
 		// Stepname line
 		wlStepname=new Label(shell, SWT.RIGHT);
@@ -223,25 +198,9 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
 
-		wTabFolder = new CTabFolder(shell, SWT.BORDER);
- 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
-
-		//////////////////////////
-		// START OF TABLE TAB///
-		///
-		wTableTab=new CTabItem(wTabFolder, SWT.NONE);
-		wTableTab.setText(Messages.getString("DimensionLookupDialog.TableTab.Title")); //$NON-NLS-1$
-
-		Composite wTableComp = new Composite(wTabFolder, SWT.NONE);
- 		props.setLook(wTableComp);
-
-		FormLayout tableLayout = new FormLayout();
-		tableLayout.marginWidth  = 3;
-		tableLayout.marginHeight = 3;
-		wTableComp.setLayout(tableLayout);
 
 		// Connection line
-		wConnection = addConnectionLine(wTableComp, null, middle, margin);
+		wConnection = addConnectionLine(shell, wStepname, middle, margin);
 		if (input.getDatabaseMeta()==null && transMeta.nrDatabases()==1) wConnection.select(0);
 		wConnection.addModifyListener(lsMod);
 
@@ -256,356 +215,55 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		});
 
 		// Table line...
-		wlTable=new Label(wTableComp, SWT.RIGHT);
+		wlTable=new Label(shell, SWT.RIGHT);
 		wlTable.setText(Messages.getString("DimensionLookupDialog.TargeTable.Label")); //$NON-NLS-1$
  		props.setLook(wlTable);
-		fdlTable=new FormData();
+		FormData fdlTable=new FormData();
 		fdlTable.left = new FormAttachment(0, 0);
 		fdlTable.right= new FormAttachment(middle, -margin);
 		fdlTable.top  = new FormAttachment(wConnection, margin);
 		wlTable.setLayoutData(fdlTable);
 
-		wbTable=new Button(wTableComp, SWT.PUSH| SWT.CENTER);
+		wbTable=new Button(shell, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbTable);
 		wbTable.setText(Messages.getString("DimensionLookupDialog.Browse.Button")); //$NON-NLS-1$
-		fdbTable=new FormData();
+		FormData fdbTable=new FormData();
 		fdbTable.right= new FormAttachment(100, 0);
 		fdbTable.top  = new FormAttachment(wConnection, margin);
 		wbTable.setLayoutData(fdbTable);
 
-		wTable=new Text(wTableComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTable=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
-		fdTable=new FormData();
+		FormData fdTable=new FormData();
 		fdTable.left = new FormAttachment(middle, 0);
 		fdTable.top  = new FormAttachment(wConnection, margin);
 		fdTable.right= new FormAttachment(wbTable, 0);
 		wTable.setLayoutData(fdTable);
 
 		// Commit size ...
-		wlCommit=new Label(wTableComp, SWT.RIGHT);
+		wlCommit=new Label(shell, SWT.RIGHT);
 		wlCommit.setText(Messages.getString("DimensionLookupDialog.Commit.Label")); //$NON-NLS-1$
  		props.setLook(wlCommit);
-		fdlCommit=new FormData();
+		FormData fdlCommit=new FormData();
 		fdlCommit.left = new FormAttachment(0, 0);
 		fdlCommit.right= new FormAttachment(middle, -margin);
 		fdlCommit.top  = new FormAttachment(wTable, margin);
 		wlCommit.setLayoutData(fdlCommit);
-		wCommit=new Text(wTableComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wCommit=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wCommit);
 		wCommit.addModifyListener(lsMod);
-		fdCommit=new FormData();
+		FormData fdCommit=new FormData();
 		fdCommit.left = new FormAttachment(middle, 0);
 		fdCommit.top  = new FormAttachment(wTable, margin);
 		fdCommit.right= new FormAttachment(100, 0);
 		wCommit.setLayoutData(fdCommit);
-
-		// Technical key field:
-		wlTk=new Label(wTableComp, SWT.RIGHT);
-		wlTk.setText(Messages.getString("DimensionLookupDialog.TechnicalKeyField.Label")); //$NON-NLS-1$
- 		props.setLook(wlTk);
-		fdlTk=new FormData();
-		fdlTk.left = new FormAttachment(0, 0);
-		fdlTk.right= new FormAttachment(middle, -margin);
-		fdlTk.top  = new FormAttachment(wCommit, margin);
-		wlTk.setLayoutData(fdlTk);
-		wTk=new Text(wTableComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wTk);
-		wTk.addModifyListener(lsMod);
-		fdTk=new FormData();
-		fdTk.left = new FormAttachment(middle, 0);
-		fdTk.top  = new FormAttachment(wCommit, margin);
-		fdTk.right= new FormAttachment(50+middle/2, 0);
-		wTk.setLayoutData(fdTk);
-
-		wlTkRename=new Label(wTableComp, SWT.RIGHT);
-		wlTkRename.setText(Messages.getString("DimensionLookupDialog.NewName.Label")); //$NON-NLS-1$
- 		props.setLook(wlTkRename);
-		fdlTkRename=new FormData();
-		fdlTkRename.left = new FormAttachment(50+middle/2, margin);
-		fdlTkRename.top  = new FormAttachment(wCommit, margin);
-		wlTkRename.setLayoutData(fdlTkRename);
-		wTkRename=new Text(wTableComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wTkRename);
-		wTkRename.addModifyListener(lsMod);
-		fdTkRename=new FormData();
-		fdTkRename.left = new FormAttachment(wlTkRename, margin);
-		fdTkRename.top  = new FormAttachment(wCommit, margin);
-		fdTkRename.right= new FormAttachment(100, 0);
-		wTkRename.setLayoutData(fdTkRename);
-
-		////////////////////////////////////////////////////
-		// The key creation box
-		////////////////////////////////////////////////////
-		gTechGroup = new Group(wTableComp, SWT.SHADOW_ETCHED_IN);
-		gTechGroup.setText(Messages.getString("DimensionLookupDialog.TechGroup.Label")); //$NON-NLS-1$;
-		GridLayout gridLayout = new GridLayout(3, false);
-		gTechGroup.setLayout(gridLayout);
-		fdTechGroup=new FormData();
-		fdTechGroup.left   = new FormAttachment(middle, 0);
-		fdTechGroup.top    = new FormAttachment(wTk, margin);	
-		fdTechGroup.right  = new FormAttachment(100, 0);
-		gTechGroup.setBackground(shell.getBackground()); // the default looks ugly
-		gTechGroup.setLayoutData(fdTechGroup);
-
-		// Use maximum of table + 1
-		wTableMax=new Button(gTechGroup, SWT.RADIO);
- 		props.setLook(wTableMax);
- 		wTableMax.setSelection(false);
-		gdTableMax=new GridData();
-		wTableMax.setLayoutData(gdTableMax);
-		wTableMax.setToolTipText(Messages.getString("DimensionLookupDialog.TableMaximum.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
-		wlTableMax=new Label(gTechGroup, SWT.LEFT);
-		wlTableMax.setText(Messages.getString("DimensionLookupDialog.TableMaximum.Label")); //$NON-NLS-1$
- 		props.setLook(wlTableMax);
-		gdlTableMax = new GridData(GridData.FILL_BOTH);
-		gdlTableMax.horizontalSpan = 2; gdlTableMax.verticalSpan = 1;
-		wlTableMax.setLayoutData(gdlTableMax);
 		
-		// Sequence Check Button
-		wSeqButton=new Button(gTechGroup, SWT.RADIO);
- 		props.setLook(wSeqButton);
- 		wSeqButton.setSelection(false);
-		gdSeqButton=new GridData();
-		wSeqButton.setLayoutData(gdSeqButton);
-		wSeqButton.setToolTipText(Messages.getString("DimensionLookupDialog.Sequence.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$		
-		wlSeqButton=new Label(gTechGroup, SWT.LEFT);
-		wlSeqButton.setText(Messages.getString("DimensionLookupDialog.Sequence.Label")); //$NON-NLS-1$
- 		props.setLook(wlSeqButton); 	
-		gdlSeqButton=new GridData();
-		wlSeqButton.setLayoutData(gdlSeqButton);
-
-		wSeq=new Text(gTechGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wSeq);
-		wSeq.addModifyListener(lsMod);
-		gdSeq=new GridData(GridData.FILL_HORIZONTAL);
-		wSeq.setLayoutData(gdSeq);
-		wSeq.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent arg0) {
-				input.setTechKeyCreation(DimensionLookupMeta.CREATION_METHOD_SEQUENCE);
-				wSeqButton.setSelection(true);
-				wAutoinc.setSelection(false);
-				wTableMax.setSelection(false);				
-			}
-
-			public void focusLost(FocusEvent arg0) {
-			} 
-		});		
-		
-		// Use an autoincrement field?
-		wAutoinc=new Button(gTechGroup, SWT.RADIO);
- 		props.setLook(wAutoinc);
- 		wAutoinc.setSelection(false);
-		gdAutoinc=new GridData();
-		wAutoinc.setLayoutData(gdAutoinc);
-		wAutoinc.setToolTipText(Messages.getString("DimensionLookupDialog.AutoincButton.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
-		wlAutoinc=new Label(gTechGroup, SWT.LEFT);
-		wlAutoinc.setText(Messages.getString("DimensionLookupDialog.Autoincrement.Label")); //$NON-NLS-1$
- 		props.setLook(wlAutoinc);
-		gdlAutoinc=new GridData();
-		wlAutoinc.setLayoutData(gdlAutoinc);
-
-		setTableMax(); 
-		setSequence();
-		setAutoincUse();
-		
-/*		
-		// Use an autoincrement field?
-		wlAutoinc=new Label(wTableComp, SWT.RIGHT);
-		wlAutoinc.setText(Messages.getString("DimensionLookupDialog.AutoInc.Label")); //$NON-NLS-1$
- 		props.setLook(wlAutoinc);
-		fdlAutoinc=new FormData();
-		fdlAutoinc.left = new FormAttachment(0, 0);
-		fdlAutoinc.right= new FormAttachment(middle, -margin);
-		fdlAutoinc.top  = new FormAttachment(wTk, margin);
-		wlAutoinc.setLayoutData(fdlAutoinc);
-		wAutoinc=new Button(wTableComp, SWT.CHECK);
- 		props.setLook(wAutoinc);
-		fdAutoinc=new FormData();
-		fdAutoinc.left = new FormAttachment(middle, 0);
-		fdAutoinc.top  = new FormAttachment(wTk, margin);
-		fdAutoinc.right= new FormAttachment(100, 0);
-		wAutoinc.setLayoutData(fdAutoinc);
-		wAutoinc.setToolTipText(Messages.getString("DimensionLookupDialog.AutoInc.ToolTip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
-
-		// Clicking on update changes the options in the update combo boxes!
-		wAutoinc.addSelectionListener(new SelectionAdapter()
-			{
-				public void widgetSelected(SelectionEvent e)
-				{
-					input.setAutoIncrement( !input.isAutoIncrement() );
-					input.setChanged();
-
-					setFlags();
-				}
-			}
-		);
-
-
-		// Sequence key field:
-		wlSeq=new Label(wTableComp, SWT.RIGHT);
-		wlSeq.setText(Messages.getString("DimensionLookupDialog.Sequence.Label")); //$NON-NLS-1$
- 		props.setLook(wlSeq);
-		fdlSeq=new FormData();
-		fdlSeq.left = new FormAttachment(0, 0);
-		fdlSeq.right= new FormAttachment(middle, -margin);
-		fdlSeq.top  = new FormAttachment(wlAutoinc, margin);
-		wlSeq.setLayoutData(fdlSeq);
-		wSeq=new Text(wTableComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wSeq);
-		wSeq.addModifyListener(lsMod);
-		fdSeq=new FormData();
-		fdSeq.left = new FormAttachment(middle, 0);
-		fdSeq.top  = new FormAttachment(wlAutoinc, margin);
-		fdSeq.right= new FormAttachment(100, 0);
-		wSeq.setLayoutData(fdSeq);
-*/
-
-		// Version key field:
-		wlVersion=new Label(wTableComp, SWT.RIGHT);
-		wlVersion.setText(Messages.getString("DimensionLookupDialog.Version.Label")); //$NON-NLS-1$
- 		props.setLook(wlVersion);
-		fdlVersion=new FormData();
-		fdlVersion.left = new FormAttachment(0, 0);
-		fdlVersion.right= new FormAttachment(middle, -margin);
-		fdlVersion.top  = new FormAttachment(gTechGroup, margin);
-		wlVersion.setLayoutData(fdlVersion);
-		wVersion=new Text(wTableComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wVersion);
-		wVersion.addModifyListener(lsMod);
-		fdVersion=new FormData();
-		fdVersion.left = new FormAttachment(middle, 0);
-		fdVersion.top  = new FormAttachment(gTechGroup, margin);
-		fdVersion.right= new FormAttachment(100, 0);
-		wVersion.setLayoutData(fdVersion);
-
-		// Datefield line
-		wlDatefield=new Label(wTableComp, SWT.RIGHT);
-		wlDatefield.setText(Messages.getString("DimensionLookupDialog.Datefield.Label")); //$NON-NLS-1$
- 		props.setLook(wlDatefield);
-		fdlDatefield=new FormData();
-		fdlDatefield.left = new FormAttachment(0, 0);
-		fdlDatefield.right= new FormAttachment(middle, -margin);
-		fdlDatefield.top  = new FormAttachment(wVersion, margin);
-		wlDatefield.setLayoutData(fdlDatefield);
-		wDatefield=new Text(wTableComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wDatefield);
-		wDatefield.addModifyListener(lsMod);
-		fdDatefield=new FormData();
-		fdDatefield.left = new FormAttachment(middle, 0);
-		fdDatefield.top  = new FormAttachment(wVersion, margin);
-		fdDatefield.right= new FormAttachment(100, 0);
-		wDatefield.setLayoutData(fdDatefield);
-
-		// Fromdate line
-		//
-		//  0 [wlFromdate] middle [wFromdate] (100-middle)/3 [wlMinyear] 2*(100-middle)/3 [wMinyear] 100%
-		//
-		wlFromdate=new Label(wTableComp, SWT.RIGHT);
-		wlFromdate.setText(Messages.getString("DimensionLookupDialog.Fromdate.Label")); //$NON-NLS-1$
- 		props.setLook(wlFromdate);
-		fdlFromdate=new FormData();
-		fdlFromdate.left = new FormAttachment(0, 0);
-		fdlFromdate.right= new FormAttachment(middle, -margin);
-		fdlFromdate.top  = new FormAttachment(wDatefield, margin);
-		wlFromdate.setLayoutData(fdlFromdate);
-		wFromdate=new Text(wTableComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wFromdate);
-		wFromdate.addModifyListener(lsMod);
-		fdFromdate=new FormData();
-		fdFromdate.left = new FormAttachment(middle, 0);
-		fdFromdate.right= new FormAttachment(middle+(100-middle)/3, -margin);
-		fdFromdate.top  = new FormAttachment(wDatefield, margin);
-		wFromdate.setLayoutData(fdFromdate);
-
-		// Minyear line
-		wlMinyear=new Label(wTableComp, SWT.RIGHT);
-		wlMinyear.setText(Messages.getString("DimensionLookupDialog.Minyear.Label")); //$NON-NLS-1$
- 		props.setLook(wlMinyear);
-		fdlMinyear=new FormData();
-		fdlMinyear.left  = new FormAttachment(wFromdate, margin);
-		fdlMinyear.right = new FormAttachment(middle+2*(100-middle)/3, -margin);
-		fdlMinyear.top   = new FormAttachment(wDatefield, margin);
-		wlMinyear.setLayoutData(fdlMinyear);
-		wMinyear=new Text(wTableComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wMinyear);
-		wMinyear.addModifyListener(lsMod);
-		fdMinyear=new FormData();
-		fdMinyear.left = new FormAttachment(wlMinyear, margin);
-		fdMinyear.right= new FormAttachment(100, 0);
-		fdMinyear.top  = new FormAttachment(wDatefield, margin);
-		wMinyear.setLayoutData(fdMinyear);
-		wMinyear.setToolTipText(Messages.getString("DimensionLookupDialog.Minyear.ToolTip")); //$NON-NLS-1$
-
-		// Todate line
-		wlTodate=new Label(wTableComp, SWT.RIGHT);
-		wlTodate.setText(Messages.getString("DimensionLookupDialog.Todate.Label")); //$NON-NLS-1$
- 		props.setLook(wlTodate);
-		fdlTodate=new FormData();
-		fdlTodate.left = new FormAttachment(0, 0);
-		fdlTodate.right= new FormAttachment(middle, -margin);
-		fdlTodate.top  = new FormAttachment(wFromdate, margin);
-		wlTodate.setLayoutData(fdlTodate);
-		wTodate=new Text(wTableComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wTodate);
-		wTodate.addModifyListener(lsMod);
-		fdTodate=new FormData();
-		fdTodate.left = new FormAttachment(middle, 0);
-		fdTodate.right= new FormAttachment(middle+(100-middle)/3, -margin);
-		fdTodate.top  = new FormAttachment(wFromdate, margin);
-		wTodate.setLayoutData(fdTodate);
-
-		// Maxyear line
-		wlMaxyear=new Label(wTableComp, SWT.RIGHT);
-		wlMaxyear.setText(Messages.getString("DimensionLookupDialog.Maxyear.Label")); //$NON-NLS-1$
- 		props.setLook(wlMaxyear);
-		fdlMaxyear=new FormData();
-		fdlMaxyear.left  = new FormAttachment(wTodate, margin);
-		fdlMaxyear.right = new FormAttachment(middle+2*(100-middle)/3, -margin);
-		fdlMaxyear.top   = new FormAttachment(wFromdate, margin);
-		wlMaxyear.setLayoutData(fdlMaxyear);
-		wMaxyear=new Text(wTableComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wMaxyear);
-		wMaxyear.addModifyListener(lsMod);
-		fdMaxyear=new FormData();
-		fdMaxyear.left = new FormAttachment(wlMaxyear, margin);
-		fdMaxyear.right= new FormAttachment(100, 0);
-		fdMaxyear.top  = new FormAttachment(wFromdate, margin);
-		wMaxyear.setLayoutData(fdMaxyear);
-		wMaxyear.setToolTipText(Messages.getString("DimensionLookupDialog.Maxyear.ToolTip")); //$NON-NLS-1$
-
-		// Update the dimension?
-		wlUpdate=new Label(wTableComp, SWT.RIGHT);
-		wlUpdate.setText(Messages.getString("DimensionLookupDialog.Update.Label")); //$NON-NLS-1$
- 		props.setLook(wlUpdate);
-		fdlUpdate=new FormData();
-		fdlUpdate.left = new FormAttachment(0, 0);
-		fdlUpdate.right= new FormAttachment(middle, -margin);
-		fdlUpdate.top  = new FormAttachment(wMaxyear, margin);
-		wlUpdate.setLayoutData(fdlUpdate);
-		wUpdate=new Button(wTableComp, SWT.CHECK);
- 		props.setLook(wUpdate);
-		fdUpdate=new FormData();
-		fdUpdate.left = new FormAttachment(middle, 0);
-		fdUpdate.right= new FormAttachment(0, middle+width);
-		fdUpdate.top  = new FormAttachment(wMaxyear, margin);
-		wUpdate.setLayoutData(fdUpdate);
-
-		fdTableComp=new FormData();
-		fdTableComp.left  = new FormAttachment(0, 0);
-		fdTableComp.top   = new FormAttachment(0, 0);
-		fdTableComp.right = new FormAttachment(100, 0);
-		fdTableComp.bottom= new FormAttachment(100, 0);
-		wTableComp.setLayoutData(fdTableComp);
-
-		wTableComp.layout();
-		wTableTab.setControl(wTableComp);
-
-		/////////////////////////////////////////////////////////////
-		/// END OF TABLE TAB
-		/////////////////////////////////////////////////////////////
-
-
+		wlTkRename=new Label(shell, SWT.RIGHT);
+	
+		wTabFolder = new CTabFolder(shell, SWT.BORDER);
+ 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
+ 		
 		//////////////////////////
 		// START OF KEY TAB    ///
 		///
@@ -620,13 +278,13 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
  		props.setLook(wKeyComp);
 		wKeyComp.setLayout(keyLayout);
 
-
-		// The Lookup fields: usualy the key
+		//
+		// The Lookup fields: usually the key
 		//
 		wlKey=new Label(wKeyComp, SWT.NONE);
 		wlKey.setText(Messages.getString("DimensionLookupDialog.KeyFields.Label")); //$NON-NLS-1$
  		props.setLook(wlKey);
-		fdlKey=new FormData();
+		FormData fdlKey=new FormData();
 		fdlKey.left  = new FormAttachment(0, 0);
 		fdlKey.top   = new FormAttachment(0, margin);
 		fdlKey.right = new FormAttachment(100, 0);
@@ -647,7 +305,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 							  props
 						      );
 
-		fdKey=new FormData();
+		FormData fdKey=new FormData();
 		fdKey.left  = new FormAttachment(0, 0);
 		fdKey.top   = new FormAttachment(wlKey, margin);
 		fdKey.right = new FormAttachment(100, 0);
@@ -668,7 +326,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		/// END OF KEY TAB
 		/////////////////////////////////////////////////////////////
 
-
 		// Fields tab...
 		//
 		wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
@@ -682,16 +339,11 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		wFieldsComp.setLayout(fieldsLayout);
  		props.setLook(wFieldsComp);
 
-		wGet=new Button(wFieldsComp, SWT.PUSH);
-		wGet.setText(Messages.getString("DimensionLookupDialog.GetFields.Button")); //$NON-NLS-1$
-
-		setButtonPositions(new Button[] { wGet }, margin, null);
-
 		// THE UPDATE/INSERT TABLE
 		wlUpIns=new Label(wFieldsComp, SWT.NONE);
 		wlUpIns.setText(Messages.getString("DimensionLookupDialog.UpdateOrInsertFields.Label")); //$NON-NLS-1$
  		props.setLook(wlUpIns);
-		fdlUpIns=new FormData();
+		FormData fdlUpIns=new FormData();
 		fdlUpIns.left  = new FormAttachment(0, 0);
 		fdlUpIns.top   = new FormAttachment(0, margin);
 		wlUpIns.setLayoutData(fdlUpIns);
@@ -712,12 +364,73 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 							  props
 							  );
 
-		fdUpIns=new FormData();
+		FormData fdUpIns=new FormData();
 		fdUpIns.left  = new FormAttachment(0, 0);
 		fdUpIns.top   = new FormAttachment(wlUpIns, margin);
 		fdUpIns.right = new FormAttachment(100, 0);
-		fdUpIns.bottom= new FormAttachment(wGet, -margin);
+		fdUpIns.bottom= new FormAttachment(100, 100);
 		wUpIns.setLayoutData(fdUpIns);
+
+		fdFieldsComp=new FormData();
+		fdFieldsComp.left  = new FormAttachment(0, 0);
+		fdFieldsComp.top   = new FormAttachment(0, 0);
+		fdFieldsComp.right = new FormAttachment(100, 0);
+		fdFieldsComp.bottom= new FormAttachment(100, 0);
+		wFieldsComp.setLayoutData(fdFieldsComp);
+
+		wFieldsComp.layout();
+		wFieldsTab.setControl(wFieldsComp);
+
+		fdTabFolder = new FormData();
+		fdTabFolder.left  = new FormAttachment(0, 0);
+		fdTabFolder.top   = new FormAttachment(wCommit, margin);
+		fdTabFolder.right = new FormAttachment(100, 0);
+		fdTabFolder.bottom= new FormAttachment(wlTkRename, -2 * margin);		
+		wTabFolder.setLayoutData(fdTabFolder);
+
+		
+        ////////////////////////////////////////////////////////////////////
+		// The next parts are from the bottom upwards so that the table
+		// gets a chance to expand when the dialog is enlarged.
+
+		// THE BOTTOM BUTTONS 
+		wOK=new Button(shell, SWT.PUSH);
+		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$		
+		wGet=new Button(shell, SWT.PUSH);
+		wGet.setText(Messages.getString("DimensionLookupDialog.GetFields.Button")); //$NON-NLS-1$
+		wCreate=new Button(shell, SWT.PUSH);
+		wCreate.setText(Messages.getString("DimensionLookupDialog.SQL.Button")); //$NON-NLS-1$
+		wCancel=new Button(shell, SWT.PUSH);
+		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+
+		setButtonPositions(new Button[] { wOK, wGet, wCreate, wCancel }, margin, null);
+
+		// Add listeners
+		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+		lsGet      = new Listener() { public void handleEvent(Event e) { get();    } };
+		lsCreate   = new Listener() { public void handleEvent(Event e) { create(); } };
+		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
+
+		wOK.addListener    (SWT.Selection, lsOK    );
+		wGet.addListener   (SWT.Selection, lsGet   );
+		wCreate.addListener(SWT.Selection, lsCreate);
+		wCancel.addListener(SWT.Selection, lsCancel);
+
+		// Update the dimension?
+		wlUpdate=new Label(shell, SWT.RIGHT);
+		wlUpdate.setText(Messages.getString("DimensionLookupDialog.Update.Label")); //$NON-NLS-1$
+ 		props.setLook(wlUpdate);
+		FormData fdlUpdate=new FormData();
+		fdlUpdate.left   = new FormAttachment(0, 0);
+		fdlUpdate.right  = new FormAttachment(middle, -margin);
+		fdlUpdate.bottom = new FormAttachment(wOK, -2 * margin);
+		wlUpdate.setLayoutData(fdlUpdate);
+		wUpdate=new Button(shell, SWT.CHECK);
+ 		props.setLook(wUpdate);
+		FormData fdUpdate=new FormData();
+		fdUpdate.left = new FormAttachment(middle, 0);
+		fdUpdate.bottom = new FormAttachment(wOK, -2 * margin);
+		wUpdate.setLayoutData(fdUpdate);
 
 		// Clicking on update changes the options in the update combo boxes!
 		wUpdate.addSelectionListener(new SelectionAdapter()
@@ -732,45 +445,228 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			}
 		);
 
-		fdFieldsComp=new FormData();
-		fdFieldsComp.left  = new FormAttachment(0, 0);
-		fdFieldsComp.top   = new FormAttachment(0, 0);
-		fdFieldsComp.right = new FormAttachment(100, 0);
-		fdFieldsComp.bottom= new FormAttachment(100, 0);
-		wFieldsComp.setLayoutData(fdFieldsComp);
+		// Todate line
+		wlTodate=new Label(shell, SWT.RIGHT);
+		wlTodate.setText(Messages.getString("DimensionLookupDialog.Todate.Label")); //$NON-NLS-1$
+ 		props.setLook(wlTodate);
+		FormData fdlTodate=new FormData();
+		fdlTodate.left  = new FormAttachment(0, 0);
+		fdlTodate.right = new FormAttachment(middle, -margin);
+		fdlTodate.bottom= new FormAttachment(wUpdate, -margin);
+		wlTodate.setLayoutData(fdlTodate); 
+		wTodate=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wTodate);
+		wTodate.addModifyListener(lsMod);
+		FormData fdTodate=new FormData();
+		fdTodate.left   = new FormAttachment(middle, 0);
+		fdTodate.right  = new FormAttachment(middle+(100-middle)/3, -margin);
+		fdTodate.bottom = new FormAttachment(wUpdate, -margin); 
+		wTodate.setLayoutData(fdTodate); 
+		
+		// Maxyear line
+		wlMaxyear=new Label(shell, SWT.RIGHT);
+		wlMaxyear.setText(Messages.getString("DimensionLookupDialog.Maxyear.Label")); //$NON-NLS-1$
+ 		props.setLook(wlMaxyear);
+		FormData fdlMaxyear=new FormData();
+		fdlMaxyear.left  = new FormAttachment(wTodate, margin);
+		fdlMaxyear.right = new FormAttachment(middle+2*(100-middle)/3, -margin);
+		fdlMaxyear.bottom = new FormAttachment(wUpdate, -margin);
+		wlMaxyear.setLayoutData(fdlMaxyear); 
+		wMaxyear=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wMaxyear);
+		wMaxyear.addModifyListener(lsMod);
+		FormData fdMaxyear=new FormData();
+		fdMaxyear.left = new FormAttachment(wlMaxyear, margin);
+		fdMaxyear.right= new FormAttachment(100, 0);
+		fdMaxyear.bottom  = new FormAttachment(wUpdate, -margin);
+		wMaxyear.setLayoutData(fdMaxyear);
+		wMaxyear.setToolTipText(Messages.getString("DimensionLookupDialog.Maxyear.ToolTip")); //$NON-NLS-1$
+		
+		// Fromdate line
+		//
+		//  0 [wlFromdate] middle [wFromdate] (100-middle)/3 [wlMinyear] 2*(100-middle)/3 [wMinyear] 100%
+		//
+		wlFromdate=new Label(shell, SWT.RIGHT);
+		wlFromdate.setText(Messages.getString("DimensionLookupDialog.Fromdate.Label")); //$NON-NLS-1$
+ 		props.setLook(wlFromdate);
+		FormData fdlFromdate=new FormData();
+		fdlFromdate.left = new FormAttachment(0, 0);
+		fdlFromdate.right= new FormAttachment(middle, -margin);
+		fdlFromdate.bottom  = new FormAttachment(wTodate, -margin);
+		wlFromdate.setLayoutData(fdlFromdate);
+		wFromdate=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wFromdate);
+		wFromdate.addModifyListener(lsMod);
+		FormData fdFromdate=new FormData();
+		fdFromdate.left = new FormAttachment(middle, 0);
+		fdFromdate.right= new FormAttachment(middle+(100-middle)/3, -margin);
+		fdFromdate.bottom  = new FormAttachment(wTodate, -margin);
+		wFromdate.setLayoutData(fdFromdate);
 
-		wFieldsComp.layout();
-		wFieldsTab.setControl(wFieldsComp);
+		// Minyear line
+		wlMinyear=new Label(shell, SWT.RIGHT);
+		wlMinyear.setText(Messages.getString("DimensionLookupDialog.Minyear.Label")); //$NON-NLS-1$
+ 		props.setLook(wlMinyear); 		
+		FormData fdlMinyear=new FormData();
+		fdlMinyear.left  = new FormAttachment(wFromdate, margin);
+		fdlMinyear.right = new FormAttachment(middle+2*(100-middle)/3, -margin);
+		fdlMinyear.bottom = new FormAttachment(wTodate, -margin);
+		wlMinyear.setLayoutData(fdlMinyear);
+		wMinyear=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wMinyear);
+		wMinyear.addModifyListener(lsMod);
+		FormData fdMinyear=new FormData();
+		fdMinyear.left = new FormAttachment(wlMinyear, margin);
+		fdMinyear.right= new FormAttachment(100, 0);
+		fdMinyear.bottom = new FormAttachment(wTodate, -margin);
+		wMinyear.setLayoutData(fdMinyear);
+		wMinyear.setToolTipText(Messages.getString("DimensionLookupDialog.Minyear.ToolTip")); //$NON-NLS-1$
 
-		fdTabFolder = new FormData();
-		fdTabFolder.left  = new FormAttachment(0, 0);
-		fdTabFolder.top   = new FormAttachment(wStepname, margin);
-		fdTabFolder.right = new FormAttachment(100, 0);
-		fdTabFolder.bottom= new FormAttachment(100, -50);
-		wTabFolder.setLayoutData(fdTabFolder);
+		// Datefield line
+		wlDatefield=new Label(shell, SWT.RIGHT);
+		wlDatefield.setText(Messages.getString("DimensionLookupDialog.Datefield.Label")); //$NON-NLS-1$
+ 		props.setLook(wlDatefield);
+		FormData fdlDatefield=new FormData();
+		fdlDatefield.left = new FormAttachment(0, 0);
+		fdlDatefield.right= new FormAttachment(middle, -margin);
+		fdlDatefield.bottom = new FormAttachment(wMinyear, -margin);
+		wlDatefield.setLayoutData(fdlDatefield);
+		wDatefield=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wDatefield);
+		wDatefield.addModifyListener(lsMod);
+		FormData fdDatefield=new FormData();
+		fdDatefield.left   = new FormAttachment(middle, 0);
+		fdDatefield.bottom = new FormAttachment(wMinyear, -margin);
+		fdDatefield.right  = new FormAttachment(100, 0);
+		wDatefield.setLayoutData(fdDatefield);
 
+		// Version key field:
+		wlVersion=new Label(shell, SWT.RIGHT);
+		wlVersion.setText(Messages.getString("DimensionLookupDialog.Version.Label")); //$NON-NLS-1$
+ 		props.setLook(wlVersion);
+		FormData fdlVersion=new FormData();
+		fdlVersion.left    = new FormAttachment(0, 0);
+		fdlVersion.right   = new FormAttachment(middle, -margin);
+		fdlVersion.bottom  = new FormAttachment(wDatefield, -margin);
+		wlVersion.setLayoutData(fdlVersion);
+		wVersion=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wVersion);
+		wVersion.addModifyListener(lsMod);
+		FormData fdVersion=new FormData();
+		fdVersion.left   = new FormAttachment(middle, 0);
+		fdVersion.bottom = new FormAttachment(wDatefield, -margin);
+		fdVersion.right  = new FormAttachment(100, 0);
+		wVersion.setLayoutData(fdVersion);
 
+		////////////////////////////////////////////////////
+		// The key creation box
+		////////////////////////////////////////////////////
+		gTechGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
+		gTechGroup.setText(Messages.getString("DimensionLookupDialog.TechGroup.Label")); //$NON-NLS-1$;
+		GridLayout gridLayout = new GridLayout(3, false);
+		gTechGroup.setLayout(gridLayout);
+		FormData fdTechGroup=new FormData();
+		fdTechGroup.left   = new FormAttachment(middle, 0);
+		fdTechGroup.bottom = new FormAttachment(wVersion, -margin);	
+		fdTechGroup.right  = new FormAttachment(100, 0);
+		gTechGroup.setBackground(shell.getBackground()); // the default looks ugly
+		gTechGroup.setLayoutData(fdTechGroup);
 
-		// THE BUTTONS
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
-		wCreate=new Button(shell, SWT.PUSH);
-		wCreate.setText(Messages.getString("DimensionLookupDialog.SQL.Button")); //$NON-NLS-1$
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
+		// Use maximum of table + 1
+		wTableMax=new Button(gTechGroup, SWT.RADIO);
+ 		props.setLook(wTableMax);
+ 		wTableMax.setSelection(false);
+		GridData gdTableMax=new GridData();
+		wTableMax.setLayoutData(gdTableMax);
+		wTableMax.setToolTipText(Messages.getString("DimensionLookupDialog.TableMaximum.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		wlTableMax=new Label(gTechGroup, SWT.LEFT);
+		wlTableMax.setText(Messages.getString("DimensionLookupDialog.TableMaximum.Label")); //$NON-NLS-1$
+ 		props.setLook(wlTableMax);
+		GridData gdlTableMax = new GridData(GridData.FILL_BOTH);
+		gdlTableMax.horizontalSpan = 2; gdlTableMax.verticalSpan = 1;
+		wlTableMax.setLayoutData(gdlTableMax);
+		
+		// Sequence Check Button
+		wSeqButton=new Button(gTechGroup, SWT.RADIO);
+ 		props.setLook(wSeqButton);
+ 		wSeqButton.setSelection(false);
+ 		GridData gdSeqButton=new GridData();
+		wSeqButton.setLayoutData(gdSeqButton);
+		wSeqButton.setToolTipText(Messages.getString("DimensionLookupDialog.Sequence.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$		
+		wlSeqButton=new Label(gTechGroup, SWT.LEFT);
+		wlSeqButton.setText(Messages.getString("DimensionLookupDialog.Sequence.Label")); //$NON-NLS-1$
+ 		props.setLook(wlSeqButton); 	
+ 		GridData gdlSeqButton=new GridData();
+		wlSeqButton.setLayoutData(gdlSeqButton);
 
-		setButtonPositions(new Button[] { wOK, wCreate, wCancel }, margin, wTabFolder);
+		wSeq=new Text(gTechGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wSeq);
+		wSeq.addModifyListener(lsMod);
+		GridData gdSeq=new GridData(GridData.FILL_HORIZONTAL);
+		wSeq.setLayoutData(gdSeq);
+		wSeq.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent arg0) {
+				input.setTechKeyCreation(DimensionLookupMeta.CREATION_METHOD_SEQUENCE);
+				wSeqButton.setSelection(true);
+				wAutoinc.setSelection(false);
+				wTableMax.setSelection(false);				
+			}
 
-		// Add listeners
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		lsGet      = new Listener() { public void handleEvent(Event e) { get();    } };
-		lsCreate   = new Listener() { public void handleEvent(Event e) { create(); } };
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
+			public void focusLost(FocusEvent arg0) {
+			} 
+		});		
+		
+		// Use an autoincrement field?
+		wAutoinc=new Button(gTechGroup, SWT.RADIO);
+ 		props.setLook(wAutoinc);
+ 		wAutoinc.setSelection(false);
+ 		GridData gdAutoinc=new GridData();
+		wAutoinc.setLayoutData(gdAutoinc);
+		wAutoinc.setToolTipText(Messages.getString("DimensionLookupDialog.AutoincButton.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+		wlAutoinc=new Label(gTechGroup, SWT.LEFT);
+		wlAutoinc.setText(Messages.getString("DimensionLookupDialog.Autoincrement.Label")); //$NON-NLS-1$
+ 		props.setLook(wlAutoinc);
+ 		GridData gdlAutoinc=new GridData();
+		wlAutoinc.setLayoutData(gdlAutoinc);
 
-		wOK.addListener    (SWT.Selection, lsOK    );
-		wGet.addListener   (SWT.Selection, lsGet   );
-		wCreate.addListener(SWT.Selection, lsCreate);
-		wCancel.addListener(SWT.Selection, lsCancel);
+		setTableMax(); 
+		setSequence();
+		setAutoincUse();		
+		
+		// Technical key field:
+		wlTk=new Label(shell, SWT.RIGHT);
+		wlTk.setText(Messages.getString("DimensionLookupDialog.TechnicalKeyField.Label")); //$NON-NLS-1$
+ 		props.setLook(wlTk);
+		FormData fdlTk=new FormData();
+		fdlTk.left = new FormAttachment(0, 0);
+		fdlTk.right= new FormAttachment(middle, -margin);
+		fdlTk.bottom  = new FormAttachment(gTechGroup, -margin);
+		
+		wlTk.setLayoutData(fdlTk);
+		wTk=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wTk);
+		wTk.addModifyListener(lsMod);
+		FormData fdTk=new FormData();
+		fdTk.left = new FormAttachment(middle, 0);
+		//fdTk.top  = new FormAttachment(wTabFolder, margin);
+		fdTk.bottom  = new FormAttachment(gTechGroup, -margin);		
+		fdTk.right= new FormAttachment(50+middle/2, 0);
+		wTk.setLayoutData(fdTk);
+
+		wlTkRename.setText(Messages.getString("DimensionLookupDialog.NewName.Label")); //$NON-NLS-1$
+ 		props.setLook(wlTkRename);
+		FormData fdlTkRename=new FormData();
+		fdlTkRename.left = new FormAttachment(50+middle/2, margin);
+		fdlTkRename.bottom = new FormAttachment(gTechGroup, -margin);
+		wlTkRename.setLayoutData(fdlTkRename);
+		wTkRename=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wTkRename);
+		wTkRename.addModifyListener(lsMod);
+		FormData fdTkRename=new FormData();
+		fdTkRename.left = new FormAttachment(wlTkRename, margin);
+		fdTkRename.bottom  = new FormAttachment(gTechGroup, -margin);
+		fdTkRename.right= new FormAttachment(100, 0);
+		wTkRename.setLayoutData(fdTkRename);
 
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 
@@ -845,7 +741,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
         wCommit.setEnabled( wUpdate.getSelection() );
         wlAutoinc.setEnabled( wUpdate.getSelection() );
         wAutoinc.setEnabled( wUpdate.getSelection() );
-        // DEBUG ORIGINAL wlSeq.setEnabled( wUpdate.getSelection() );
         wSeq.setEnabled( wUpdate.getSelection() );
         wlMinyear.setEnabled( wUpdate.getSelection() );
         wMinyear.setEnabled( wUpdate.getSelection() );
@@ -1102,7 +997,6 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
 	private void getTableName()
 	{
-		// New class: SelectTableDialog
 		int connr = wConnection.getSelectionIndex();
 		DatabaseMeta inf = transMeta.getDatabase(connr);
 
@@ -1119,10 +1013,22 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 
 	private void get()
 	{
-		if (input.isUpdate()) getUpdate();
-		else getLookup();
+		if ( wTabFolder.getSelection() == wFieldsTab )
+		{
+		    if (input.isUpdate()) getUpdate();
+		    else getLookup();
+		}
+		else
+		{
+			getKeys();
+		}
 	}
 
+	/**
+	 * Get the fields from the previous step and use them as "update fields". 
+	 * Only get the the fields which are not yet in use as key, or in 
+	 * the field table. Also ignore technical key, version, fromdate, todate.
+	 */
 	private void getUpdate()
 	{
 		try
@@ -1135,7 +1041,8 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 				{
 					Value v = r.getValue(i);
 					int idx = wKey.indexOfString(v.getName(), 2);
-					if (idx<0)
+					int idy = wUpIns.indexOfString(v.getName(), 2);
+					if (idx<0 && idy<0)
 					{
 						TableItem ti = new TableItem(table, SWT.NONE);
 						ti.setText(1, v.getName());
@@ -1154,6 +1061,11 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		}
 	}
 
+	/**
+	 * Get the fields from the table in the database and use them as lookup 
+	 * keys. Only get the the fields which are not yet in use as key, or in 
+	 * the field table. Also ignore technical key, version, fromdate, todate.
+	 */
 	private void getLookup()
 	{
 		DatabaseMeta ci = transMeta.findDatabase(wConnection.getText());
@@ -1171,7 +1083,9 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 					{
 						Value v = r.getValue(i);
 						int idx = wKey.indexOfString(v.getName(), 2);
+						int idy = wUpIns.indexOfString(v.getName(), 2);
 						if (idx<0 &&
+							idy<0 &&
 							!v.getName().equalsIgnoreCase(wTk.getText()) &&
 							!v.getName().equalsIgnoreCase(wVersion.getText()) &&
 							!v.getName().equalsIgnoreCase(wFromdate.getText()) &&
@@ -1203,6 +1117,49 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		}
 	}
 
+	/**
+	 * Get the fields from the previous step and use them as "keys". Only 
+	 * get the the fields which are not yet in use as key, or in the field 
+	 * table. Also ignore technical key, version, fromdate, todate.
+	 */
+	private void getKeys()
+	{
+		try
+		{
+			Row r = transMeta.getPrevStepFields(stepname);
+			if (r!=null)
+			{
+				Table table=wKey.table;
+				for (int i=0;i<r.size();i++)
+				{
+					Value v = r.getValue(i);
+					int idx = wKey.indexOfString(v.getName(), 2);
+					int idy = wUpIns.indexOfString(v.getName(), 2);
+					if (idx<0 &&
+						idy<0 &&
+						!v.getName().equalsIgnoreCase(wTk.getText()) &&
+						!v.getName().equalsIgnoreCase(wVersion.getText()) &&
+						!v.getName().equalsIgnoreCase(wFromdate.getText()) &&
+						!v.getName().equalsIgnoreCase(wTodate.getText())
+						)
+					{
+						TableItem ti = new TableItem(table, SWT.NONE);
+						ti.setText(1, v.getName());
+						ti.setText(2, v.getName());
+						ti.setText(3, v.getTypeDesc());
+					}
+				}
+				wKey.removeEmptyRows();
+				wKey.setRowNums();
+				wKey.optWidth(true);				
+			}
+		}
+		catch(KettleException ke)
+		{
+			new ErrorDialog(shell, props, Messages.getString("DimensionLookupDialog.FailedToGetFields.DialogTitle"), Messages.getString("DimensionLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+		}		
+	}	
+	
 	// Generate code for create table...
 	// Conversions done by Database
 	// For Sybase ASE: don't keep everything in lowercase!
