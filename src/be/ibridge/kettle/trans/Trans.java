@@ -1089,15 +1089,7 @@ public class Trans
 		}
 		return true;
 	}
-	
-	/**
-	 * @deprecated use getResult().getRows()
-	 */
-	public void setSourceRows(ArrayList rows)
-	{
-		transMeta.setSourceRows( rows );
-	}
-	
+		
 	public BaseStep findRunThread(String name)
 	{
 		if (steps==null) return null;
