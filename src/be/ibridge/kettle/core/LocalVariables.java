@@ -27,6 +27,10 @@ public class LocalVariables
      */
     public KettleVariables createKettleVariables(Thread localThread, Thread parentThread, boolean sameNamespace)
     {
+        if (parentThread!=null && parentThread.equals(localThread)) 
+        {
+            throw new RuntimeException("local thread can't be the same as the parent thread!");
+        }
         // System.out.println("---> Create new KettleVariables for thread ["+localThread+"]");
         
         // See if the thread already has an entry in the map
@@ -41,7 +45,7 @@ public class LocalVariables
             {
                 if (sameNamespace)
                 {
-                    vars.setProperties(initialValue.getProperties());
+                    vars = initialValue;
                 }
                 else
                 {
@@ -50,7 +54,7 @@ public class LocalVariables
             }
             else
             {
-                // System.out.println("---> No parent Kettle Variables found for thread ["+parentThread+"]");
+                throw new RuntimeException("No parent Kettle Variables found for thread ["+parentThread+"]");
             }
         }
 
@@ -59,7 +63,7 @@ public class LocalVariables
         KettleVariables checkVars = (KettleVariables) map.get(localThread); 
         if (checkVars!=null)
         {
-            // System.out.println("---> There are already variables in the local variables map for ["+localThread+"]");
+            throw new RuntimeException("There are already variables in the local variables map for ["+localThread+"]");
         }
         
         

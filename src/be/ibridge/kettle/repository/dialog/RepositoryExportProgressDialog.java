@@ -13,6 +13,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
@@ -32,6 +33,7 @@ public class RepositoryExportProgressDialog
 	private Shell shell;
 	private Repository rep;
 	private String filename;
+    private KettleVariables kettleVariables;
 	
 	public RepositoryExportProgressDialog(Shell shell, Repository rep, String filename)
 	{
@@ -39,6 +41,8 @@ public class RepositoryExportProgressDialog
 		this.shell = shell;
 		this.rep = rep;
 		this.filename = filename;
+        
+        this.kettleVariables = KettleVariables.getInstance();
 	}
 	
 	public boolean open()
@@ -50,7 +54,7 @@ public class RepositoryExportProgressDialog
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
                 // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), shell.getDisplay().getSyncThread(), true);
+                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), kettleVariables.getLocalThread(), true);
 
 				try
 				{

@@ -55,7 +55,8 @@ public class TransLoadProgressDialog
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
                 // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), shell.getDisplay().getSyncThread(), true);
+                // LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), parentThread, true);
+                // --> don't set variables if not running in different thread --> pmd.run(true,true, op);
 
 				try
 				{

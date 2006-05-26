@@ -339,7 +339,7 @@ public class XMLInput extends BaseStep implements StepInterface
 			// Add this to the result file names...
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(data.filename), getTransMeta().getName(), getStepname());
 			resultFile.setComment("File was read by an XML input step");
-			getTransMeta().getResultFiles().add(resultFile);
+			addResultFile(resultFile);
 
             if (log.isDetailed()) logDetailed(Messages.getString("XMLInput.Log.FileOpened", data.filename));
             

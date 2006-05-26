@@ -31,7 +31,8 @@ public class GetDatabaseInfoProgressDialog
 	private Props props;
 	private Shell shell;
 	private DatabaseMeta dbInfo;
-
+    private Thread parentThread;
+    
 	/**
 	 * Creates a new dialog that will handle the wait while we're 
 	 * finding out what tables, views etc we can reach in the database.
@@ -41,6 +42,8 @@ public class GetDatabaseInfoProgressDialog
 		this.props = props;
 		this.shell = shell;
 		this.dbInfo = dbInfo;
+        
+        this.parentThread = Thread.currentThread();
 	}
 	
 	public DatabaseMetaInformation open()
@@ -53,7 +56,7 @@ public class GetDatabaseInfoProgressDialog
 				try
 				{
                     // This is running in a new process: copy some KettleVariables info
-                    LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), shell.getDisplay().getSyncThread(), true);
+                    LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), parentThread, true);
 
 					dmi.getData(monitor);
 				}

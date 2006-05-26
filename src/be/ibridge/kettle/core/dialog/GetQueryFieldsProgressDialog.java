@@ -32,6 +32,7 @@ public class GetQueryFieldsProgressDialog
 	private Row result;
 	
 	private Database db;
+    private Thread parentThread;
 
 	/**
 	 * Creates a new dialog that will handle the wait while we're 
@@ -43,6 +44,8 @@ public class GetQueryFieldsProgressDialog
 		this.shell = shell;
 		this.dbMeta = dbInfo;
 		this.sql = sql;
+        
+        this.parentThread = Thread.currentThread();
 	}
 	
 	public Row open()
@@ -52,7 +55,7 @@ public class GetQueryFieldsProgressDialog
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
                 // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), shell.getDisplay().getSyncThread(), true);
+                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), parentThread, true);
 
 			    db = new Database(dbMeta);
 			    try

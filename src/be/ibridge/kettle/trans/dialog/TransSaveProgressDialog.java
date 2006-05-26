@@ -33,6 +33,7 @@ public class TransSaveProgressDialog
 	private Shell shell;
 	private Repository rep;
 	private TransMeta transInfo;
+    private Thread parentThread;
 	
 	/**
 	 * Creates a new dialog that will handle the wait while saving a transformation...
@@ -43,6 +44,8 @@ public class TransSaveProgressDialog
 		this.shell = shell;
 		this.rep = rep;
 		this.transInfo = transInfo;
+        
+        this.parentThread = Thread.currentThread();
 	}
 	
 	public boolean open()
@@ -54,7 +57,7 @@ public class TransSaveProgressDialog
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
                 // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), shell.getDisplay().getSyncThread(), true);
+                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), parentThread, true);
 
 				try
 				{

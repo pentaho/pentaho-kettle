@@ -113,8 +113,8 @@ public class XBaseInput extends BaseStep implements StepInterface
 				// Add this to the result file names...
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(meta.getDbfFileName()), getTransMeta().getName(), getStepname());
 				resultFile.setComment("File was read by an XBase input step");
-				getTransMeta().getResultFiles().add(resultFile);
-				
+                addResultFile(resultFile);
+
 				return true;
             }
             catch(KettleException e)

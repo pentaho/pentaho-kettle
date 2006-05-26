@@ -1677,6 +1677,7 @@ public class SpoonGraph extends Canvas
         SearchFieldsProgressDialog op = new SearchFieldsProgressDialog(spoon.getTransMeta(), stepMeta, before);
         try
         {
+            final Thread parentThread = Thread.currentThread();
             final ProgressMonitorDialog pmd = new ProgressMonitorDialog(shell);
             
             // Run something in the background to cancel active database queries, forecably if needed!
@@ -1685,7 +1686,7 @@ public class SpoonGraph extends Canvas
                 public void run()
                 {
                     // This is running in a new process: copy some KettleVariables info
-                    LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), shell.getDisplay().getSyncThread(), true);
+                    LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), parentThread, true);
 
                     IProgressMonitor monitor = pmd.getProgressMonitor();
                     while (pmd.getShell()==null || ( !pmd.getShell().isDisposed() && !monitor.isCanceled() ))

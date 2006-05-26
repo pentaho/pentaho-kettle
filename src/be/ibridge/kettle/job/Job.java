@@ -328,6 +328,7 @@ public class Job extends Thread
                 }
                 catch(Throwable e)
                 {
+                    log.logError(toString(), Const.getStackTracker(e));
                     throw new KettleException("Unexpected error occurred while launching entry ["+nextEntry.toString()+"]", e);
                 }
 				

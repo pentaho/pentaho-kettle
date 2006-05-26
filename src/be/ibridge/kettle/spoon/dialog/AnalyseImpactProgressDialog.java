@@ -13,6 +13,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
@@ -34,6 +35,7 @@ public class AnalyseImpactProgressDialog
 	private TransMeta transMeta;
 	private ArrayList impact;
 	private boolean impactHasRun;
+    private KettleVariables kettleVariables;
 
 	/**
 	 * Creates a new dialog that will handle the wait while determining the impact of the transformation on the databases used...
@@ -44,6 +46,8 @@ public class AnalyseImpactProgressDialog
 		this.shell = shell;
 		this.transMeta = transMeta;
 		this.impact = impact;
+        
+        this.kettleVariables = KettleVariables.getInstance();
 	}
 	
 	public boolean open()
@@ -53,7 +57,7 @@ public class AnalyseImpactProgressDialog
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
                 // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), shell.getDisplay().getSyncThread(), true);
+                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), kettleVariables.getLocalThread(), true);
 
 				try
 				{

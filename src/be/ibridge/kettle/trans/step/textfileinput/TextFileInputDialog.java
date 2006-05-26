@@ -2398,6 +2398,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     // Preview the data
     private void preview()
     {
+        System.out.println("Preview! Thread ["+Thread.currentThread()+"]");
         // Create the XML input step
         TextFileInputMeta oneMeta = new TextFileInputMeta();
         getInfo(oneMeta);

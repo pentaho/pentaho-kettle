@@ -13,7 +13,6 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
-import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -34,6 +33,7 @@ public class GetJobSQLProgressDialog
 	private JobMeta jobMeta;
 	private ArrayList stats;
     private Repository repository;
+
 	
 	/**
 	 * Creates a new dialog that will handle the wait while getting the SQL for a job...
@@ -44,6 +44,7 @@ public class GetJobSQLProgressDialog
 		this.shell = shell;
 		this.jobMeta = jobMeta;
         this.repository = repository;
+
 	}
 	
 	public ArrayList open()
@@ -53,7 +54,8 @@ public class GetJobSQLProgressDialog
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
                 // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), shell.getDisplay().getSyncThread(), true);
+                // LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), kettleVariables.getLocalThread(), true);
+                // --> don't set variables if not running in different thread --> pmd.run(true,true, op);
 
 				try
 				{

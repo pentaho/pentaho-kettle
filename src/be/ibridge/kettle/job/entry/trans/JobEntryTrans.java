@@ -24,7 +24,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.ResultFile;
@@ -409,8 +408,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 trans.setParentJob(parentJob);
                 
                 // Pass along the kettle variables...
-                LocalVariables localVariables = LocalVariables.getInstance();
-                localVariables.createKettleVariables(Thread.currentThread(), parentJob, false);
+                // LocalVariables localVariables = LocalVariables.getInstance();
+                // localVariables.createKettleVariables(Thread.currentThread(), parentJob, false);
 
                 
                 /*

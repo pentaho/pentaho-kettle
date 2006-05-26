@@ -351,7 +351,12 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			// create a message
 		    Message msg = new MimeMessage(session);
 		    msg.setFrom(new InternetAddress(replyto));
-		    InternetAddress[] address = {new InternetAddress(destination)};
+            
+            // Split the mail-address: space separated
+            String destinations[] = destination.split(" ");
+		    InternetAddress[] address = new InternetAddress[destinations.length];
+            for (int i=0;i<destinations.length;i++) address[i] = new InternetAddress(destinations[i]);
+            
 		    msg.setRecipients(Message.RecipientType.TO, address);
 		    msg.setSubject(subject);
 		    msg.setSentDate(new Date());

@@ -533,7 +533,7 @@ public class Spoon
                 if (!Const.isEmpty(varval.getString()))
                 {
                     kettleVariables.setVariable(varval.getName(), varval.getString());
-                    System.out.println("Variable ${"+varval.getName()+"} set to ["+varval.getString()+"]");
+                    System.out.println("Variable ${"+varval.getName()+"} set to ["+varval.getString()+"] for thread ["+Thread.currentThread()+"]");
                 }
             }
         }

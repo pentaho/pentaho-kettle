@@ -263,6 +263,8 @@ public class SystemData extends BaseStep implements StepInterface
 		putRow(row);     // Just one row!
 		setOutputDone();
 					
+        if (!data.readsRows) return false;
+        
 		return true;
 	}
 	

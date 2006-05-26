@@ -38,6 +38,7 @@ public class TransPreviewProgressDialog
     
     private boolean cancelled;
     private String loggingText;
+    private Thread parentThread;
 	
 	/**
 	 * Creates a new dialog that will handle the wait while previewing a transformation...
@@ -50,16 +51,18 @@ public class TransPreviewProgressDialog
         this.previewSize = previewSize;
         
         cancelled = false;
+        
+        // Get the parent of the new thread that will start on "Open", *before* this thread starts.
+        this.parentThread = Thread.currentThread();
 	}
 	
 	public TransMeta open()
-	{
+    {
 		IRunnableWithProgress op = new IRunnableWithProgress()
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-                // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), shell.getDisplay().getSyncThread(), true);
+                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), parentThread, true);
 
 				try
 				{

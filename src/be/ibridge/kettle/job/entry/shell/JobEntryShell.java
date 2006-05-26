@@ -311,7 +311,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                         args = new String[resultRow.size()];
                         for (int i=0;i<resultRow.size();i++)
                         {
-                            args[i] = resultRow.getValue(i).toString();
+                            args[i] = resultRow.getValue(i).getString();
                         }
                     }
                 }
@@ -334,7 +334,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
                         args = new String[resultRow.size()];
                         for (int i=0;i<resultRow.size();i++)
                         {
-                            args[i] = resultRow.getValue(i).toString();
+                            args[i] = resultRow.getValue(i).getString();
                         }
                     }
                 }
