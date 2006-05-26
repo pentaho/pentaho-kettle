@@ -394,11 +394,7 @@ public class RepositoriesDialog
         BaseStepDialog.setMinimalShellHeight(shell, new Control[] {wCanvas, wlKettle, wRepository, wUsername, wPassword, wOK }, margin, 2*margin);
 		// shell.setSize(bounds.width, shell.getBounds().height+wOK.getBounds().height+30);
 	
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null)
-		{
-			winprop.setShell(shell, true); // Only keep the position!
-		}
+		BaseStepDialog.setSize(shell);
 
 		shell.open();
 		while (!shell.isDisposed())
@@ -469,38 +465,50 @@ public class RepositoriesDialog
 		{
 			int idx=wRepository.getSelectionIndex();
 			
-			repinfo = input.getRepository(idx);
-			
-			// OK, now try the username and password
-			Repository rep = new Repository(log, repinfo, userinfo);
-			if (rep.connect(getClass().getName()))
+			if (idx>=0)
 			{
-				try
+				repinfo = input.getRepository(idx);
+				
+				// OK, now try the username and password
+				Repository rep = new Repository(log, repinfo, userinfo);
+				if (rep.connect(getClass().getName()))
 				{
-					userinfo = new UserInfo(rep, wUsername.getText(), wPassword.getText());
-					props.setLastRepository(repinfo.getName());
-					props.setLastRepositoryLogin(wUsername.getText());
+					try
+					{
+						userinfo = new UserInfo(rep, wUsername.getText(), wPassword.getText());
+						props.setLastRepository(repinfo.getName());
+						props.setLastRepositoryLogin(wUsername.getText());
+					}
+					catch(KettleException e)
+					{
+						userinfo=null;
+						repinfo=null;
+	                    
+	                    if (!(e instanceof KettleDatabaseException))
+	                    {
+	                        new ErrorDialog(shell, props, Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Title"), Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+	                    }
+					}
+					finally
+					{
+						rep.disconnect();
+					}
 				}
-				catch(KettleException e)
+				else
 				{
-					userinfo=null;
-					repinfo=null;
-                    
-                    if (!(e instanceof KettleDatabaseException))
-                    {
-                        new ErrorDialog(shell, props, Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Title"), Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-                    }
-				}
-				finally
-				{
-					rep.disconnect();
+					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+					mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message1")+Const.CR+Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
+					mb.setText(Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Title")); //$NON-NLS-1$
+					mb.open(); 
+					
+					return;
 				}
 			}
 			else
 			{
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message1")+Const.CR+Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
-				mb.setText(Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Title")); //$NON-NLS-1$
+				mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.PleaseSelectARepsitory.Message")); // $NON-NLS-1$
+				mb.setText(Messages.getString("RepositoriesDialog.Dialog.PleaseSelectARepsitory.Title")); //$NON-NLS-1$
 				mb.open(); 
 				
 				return;

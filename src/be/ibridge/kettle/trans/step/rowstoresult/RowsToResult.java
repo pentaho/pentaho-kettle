@@ -51,7 +51,7 @@ public class RowsToResult extends BaseStep implements StepInterface
 		Row r=getRow();    // get row, set busy!
 		if (r==null)  // no more input to be expected...
 		{
-		    getTransMeta().setResultRows( data.rows );
+		    getTransMeta().getResultRows().addAll( data.rows );
 			
 			setOutputDone();
 			return false;

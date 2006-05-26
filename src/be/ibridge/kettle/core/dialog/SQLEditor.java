@@ -161,9 +161,8 @@ public class SQLEditor extends Dialog
 		})
 		;
 		
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
-		
+		BaseStepDialog.setSize(shell);
+
 		getData();
 		
 		shell.open();

@@ -46,6 +46,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
  * Dialog to enter a Kettle Value
@@ -261,8 +262,7 @@ public class EnterValueDialog extends Dialog
 
 		getData();
 
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
+		BaseStepDialog.setSize(shell);
 
 		shell.open();
 		while (!shell.isDisposed())

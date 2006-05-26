@@ -373,8 +373,7 @@ public class JobDialog extends Dialog
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
+		BaseStepDialog.setSize(shell);
 
 		getData();
 		

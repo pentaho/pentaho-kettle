@@ -57,6 +57,7 @@ import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
 import be.ibridge.kettle.trans.step.excelinput.ExcelInputMeta;
 import be.ibridge.kettle.trans.step.fieldsplitter.FieldSplitterMeta;
 import be.ibridge.kettle.trans.step.filesfromresult.FilesFromResultMeta;
+import be.ibridge.kettle.trans.step.filestoresult.FilesToResultMeta;
 import be.ibridge.kettle.trans.step.filterrows.FilterRowsMeta;
 import be.ibridge.kettle.trans.step.flattener.FlattenerMeta;
 import be.ibridge.kettle.trans.step.getfilenames.GetFileNamesMeta;
@@ -147,6 +148,7 @@ public class BaseStep extends Thread
             SetVariableMeta.class,
             GetFileNamesMeta.class,
             FilesFromResultMeta.class,
+            FilesToResultMeta.class,
 		};
 	
 	public static final String typeCode[] = 
@@ -201,6 +203,7 @@ public class BaseStep extends Thread
             "SetVariable", //$NON-NLS-1$
             "GetFileNames", //$NON-NLS-1$
             "FilesFromResult", //$NON-NLS-1$
+            "FilesToResult", //$NON-NLS-1$
 		};
 
 	public static final String type_long_desc[] = 
@@ -255,6 +258,7 @@ public class BaseStep extends Thread
             Messages.getString("BaseStep.TypeLongDesc.SetVariables"), //$NON-NLS-1$
             Messages.getString("BaseStep.TypeLongDesc.GetFileNames"), //$NON-NLS-1$
             Messages.getString("BaseStep.TypeLongDesc.FilesFromResult"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeLongDesc.FilesToResult"), //$NON-NLS-1$
 		};
 
 	public static final String type_tooltip_desc[] = 
@@ -309,6 +313,7 @@ public class BaseStep extends Thread
             Messages.getString("BaseStep.TypeTooltipDesc.SetVariables"), //$NON-NLS-1$
             Messages.getString("BaseStep.TypeTooltipDesc.GetFileNames"), //$NON-NLS-1$
             Messages.getString("BaseStep.TypeTooltipDesc.FilesFromResult"), //$NON-NLS-1$
+            Messages.getString("BaseStep.TypeTooltipDesc.FilesToResult"), //$NON-NLS-1$
 		};
 
 	public static final String image_filename[] =
@@ -363,6 +368,7 @@ public class BaseStep extends Thread
             "VAR.png", //$NON-NLS-1$
             "GFN.png", //$NON-NLS-1$
             "FFR.png", //$NON-NLS-1$
+            "FTR.png", //$NON-NLS-1$
 		};
 	
 	public static final String category[] = 
@@ -417,6 +423,7 @@ public class BaseStep extends Thread
             "Extra",            // "SetVariables" // $NON-NLS-1$
             "Extra",            // "GetFileNames" // $NON-NLS-1$
             "Extra",            // "FilesFromResult" // $NON-NLS-1$
+            "Extra",            // "FilesToResult" // $NON-NLS-1$
 		};
 
     public static final String category_order[] = { "Input", "Output", "Lookup", "Transform", "Data Warehouse", "Extra", "Mapping", "Experimental" }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$

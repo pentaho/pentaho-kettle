@@ -43,6 +43,7 @@ import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
 /**
@@ -180,9 +181,8 @@ public class SQLStatementsDialog extends Dialog
 
 		getData();
 		
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
-		
+		BaseStepDialog.setSize(shell);
+
 		shell.open();
 		while (!shell.isDisposed())
 		{

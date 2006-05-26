@@ -101,25 +101,9 @@ public class BaseStepDialog extends Dialog
 	 */
 	public void setSize()
 	{
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
+		setSize(shell);
 	}
 
-	public static final void setSize(Shell sh, boolean max, Rectangle r)
-	{
-		// Set the shell size, based upon previous time...
-		sh.setMaximized(max);
-		if (r!=null && r.x>=0 && r.y>=0 && r.width>=0 && r.height>=0)
-		{
-			if (r.x>0 && r.y>0) sh.setSize(r.width, r.height);
-			if (r.width>0 && r.height>0) sh.setLocation(r.x, r.y);
-		}
-		else
-		{
-			sh.pack();
-		}	
-	}
-	
 	protected void setButtonPositions(Button buttons[], int margin, Control lastControl)
 	{
 		BaseStepDialog.positionBottomButtons(shell, buttons, margin, lastControl);
@@ -367,4 +351,40 @@ public class BaseStepDialog extends Dialog
         height+=extra;
         shell.setSize(shell.getBounds().width, height);
     }
+
+	public static void setSize(Shell shell)
+	{
+		setSize(shell, -1, -1);
+	}
+
+	public static void setSize(Shell shell, int minWidth, int minHeight)
+	{
+		Props props = Props.getInstance();
+		
+		WindowProperty winprop = props.getScreen(shell.getText());
+		if (winprop!=null) 
+		{
+			winprop.setShell(shell, minWidth, minHeight);
+		}
+		else
+		{
+			 shell.layout();
+			 
+			 // OK, sometimes this produces dialogs that are waay too big.
+			 // Try to limit this a bit, m'kay?
+			 // Use the same algorithm by cheating :-)
+			 //
+			 winprop = new WindowProperty(shell);
+			 winprop.setShell(shell, minWidth, minHeight);
+			 
+			 // Now, as this is the first time it gets opened, try to put it in the middle of the screen...
+			 Rectangle shellBounds = shell.getBounds();
+			 Rectangle dispBounds = shell.getDisplay().getBounds();
+			 
+			 int middleX = (dispBounds.width - shellBounds.width)/2;
+			 int middleY = (dispBounds.height - shellBounds.height)/2;
+			 
+			 shell.setLocation(middleX, middleY);
+		}
+	}
 }

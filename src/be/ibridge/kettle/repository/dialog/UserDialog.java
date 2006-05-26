@@ -47,6 +47,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.repository.ProfileMeta;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.UserInfo;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
 public class UserDialog extends Dialog 
@@ -248,9 +249,8 @@ public class UserDialog extends Dialog
 		
 		getData();
 
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
-		
+		BaseStepDialog.setSize(shell);
+
 		shell.open();
 		Display display = parent.getDisplay();
 		while (!shell.isDisposed()) {

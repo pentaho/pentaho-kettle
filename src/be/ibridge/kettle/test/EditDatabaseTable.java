@@ -43,6 +43,7 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
 /**
@@ -218,9 +219,8 @@ public class EditDatabaseTable extends Dialog
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { close(); } } );
 
 
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
-		
+		BaseStepDialog.setSize(shell);
+
 		getData();
 		wFields.optWidth(true);
 		shell.open();

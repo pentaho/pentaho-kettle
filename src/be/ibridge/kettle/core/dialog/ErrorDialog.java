@@ -44,6 +44,7 @@ import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
 /**
@@ -191,8 +192,7 @@ public class ErrorDialog extends Dialog
 			}
 		);
 		
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
+		BaseStepDialog.setSize(shell);
 
 		shell.open();
 		while (!shell.isDisposed())

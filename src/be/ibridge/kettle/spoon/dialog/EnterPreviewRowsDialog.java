@@ -45,6 +45,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
 /**
@@ -57,12 +58,11 @@ public class EnterPreviewRowsDialog extends Dialog
 {
 	private String       stepname;
 		
-	private Label        wlStepname;
-	private List         wStepname;
-    private FormData     fdlStepname, fdStepname;
+	private Label        wlStepList;
+	private List         wStepList;
+    private FormData     fdlStepList, fdStepList;
 	
 	private Button wShow, wClose;
-	private FormData fdShow, fdClose;
 	private Listener lsShow, lsClose;
 
 	private Shell         shell;
@@ -102,26 +102,27 @@ public class EnterPreviewRowsDialog extends Dialog
 		int margin = Const.MARGIN;
 
 		// Filename line
-		wlStepname=new Label(shell, SWT.NONE);
-		wlStepname.setText(Messages.getString("EnterPreviewRowsDialog.Dialog.PreviewStep.Message")); //Step name : 
- 		props.setLook(wlStepname);
-		fdlStepname=new FormData();
-		fdlStepname.left = new FormAttachment(0, 0);
-		fdlStepname.top  = new FormAttachment(0, margin);
-		wlStepname.setLayoutData(fdlStepname);
-		wStepname=new List(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY);
+		wlStepList=new Label(shell, SWT.NONE);
+		wlStepList.setText(Messages.getString("EnterPreviewRowsDialog.Dialog.PreviewStep.Message")); //Step name : 
+ 		props.setLook(wlStepList);
+		fdlStepList=new FormData();
+		fdlStepList.left = new FormAttachment(0, 0);
+		fdlStepList.top  = new FormAttachment(0, margin);
+		wlStepList.setLayoutData(fdlStepList);
+		wStepList=new List(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.READ_ONLY);
 		for (int i=0;i<names.size();i++)
 		{
-			wStepname.add((String)names.get(i)); 
+			wStepList.add((String)names.get(i)); 
 		}
-		wStepname.select(0);
- 		props.setLook(wStepname);
-		fdStepname=new FormData();
-		fdStepname.left = new FormAttachment(middle, 0);
-		fdStepname.top  = new FormAttachment(0, margin);
-		fdStepname.right= new FormAttachment(100, 0);
-		wStepname.setLayoutData(fdStepname);
-		wStepname.addSelectionListener(new SelectionAdapter()
+		wStepList.select(0);
+ 		props.setLook(wStepList);
+		fdStepList=new FormData();
+		fdStepList.left   = new FormAttachment(middle, 0);
+		fdStepList.top    = new FormAttachment(0, margin);
+		fdStepList.bottom = new FormAttachment(100, -60);
+		fdStepList.right  = new FormAttachment(100, 0);
+		wStepList.setLayoutData(fdStepList);
+		wStepList.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetDefaultSelected(SelectionEvent arg0)
 			{
@@ -131,19 +132,11 @@ public class EnterPreviewRowsDialog extends Dialog
 
 		wShow=new Button(shell, SWT.PUSH);
 		wShow.setText(Messages.getString("System.Button.Show"));
-		fdShow=new FormData();
-		fdShow.left=new FormAttachment(33, 0);
-		fdShow.top =new FormAttachment(wStepname, 30);
-		wShow.setLayoutData(fdShow);
 
 		wClose=new Button(shell, SWT.PUSH);
 		wClose.setText(Messages.getString("System.Button.Close"));
-		fdClose=new FormData();
-		fdClose.left=new FormAttachment(wShow, 10);
-		fdClose.top =new FormAttachment(wStepname, 30);
-		wClose.setLayoutData(fdClose);
 
-
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wShow, wClose }, margin, null);
 		// Add listeners
 		lsShow       = new Listener() { public void handleEvent(Event e) { show();     } };
 		lsClose   = new Listener() { public void handleEvent(Event e) { close(); } };
@@ -156,13 +149,12 @@ public class EnterPreviewRowsDialog extends Dialog
 
 		getData();
 
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
-		
+		BaseStepDialog.setSize(shell);
+
 		// Immediately show the only preview entry
 		if (names.size()==1)
 		{
-			wStepname.select(0);
+			wStepList.select(0);
 			show();
 		}
 		
@@ -196,7 +188,7 @@ public class EnterPreviewRowsDialog extends Dialog
 	{
 		if (buffers.size()==0) return;
 		
-		int nr = wStepname.getSelectionIndex();
+		int nr = wStepList.getSelectionIndex();
 
 		ArrayList buffer = (ArrayList)buffers.get(nr);
 		String    name   = (String)names.get(nr);

@@ -42,6 +42,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.TransMeta;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.StepMeta;
 
 
@@ -53,7 +54,6 @@ public class PreviewSelectDialog extends Dialog
 	private FormData     fdlFields, fdFields;
 
 	private Button wPreview, wCancel;
-	private FormData fdPreview, fdCancel;
 	private Listener lsPreview, lsCancel;
 
 	private Shell         shell;
@@ -98,16 +98,12 @@ public class PreviewSelectDialog extends Dialog
 		fdlFields.top  = new FormAttachment(0, margin);
 		wlFields.setLayoutData(fdlFields);
 		
-		final int FieldsCols=2;
 		final int FieldsRows=trans.nrUsedSteps();
 		
-		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(
-      Messages.getString("PreviewSelectDialog.Column.Stepname"),
-      ColumnInfo.COLUMN_TYPE_TEXT, false, true ); //Stepname
-		colinf[1]=new ColumnInfo(
-      Messages.getString("PreviewSelectDialog.Column.PreviewSize"),
-      ColumnInfo.COLUMN_TYPE_TEXT, false, false); //Preview size
+		ColumnInfo[] colinf = {
+		  new ColumnInfo( Messages.getString("PreviewSelectDialog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
+		  new ColumnInfo( Messages.getString("PreviewSelectDialog.Column.PreviewSize"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
+		};
 		
 		wFields=new TableView(shell, 
 						      SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -129,15 +125,9 @@ public class PreviewSelectDialog extends Dialog
 		wPreview.setText(Messages.getString("System.Button.Show"));
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Close"));
-		fdPreview=new FormData();
-		fdPreview.left=new FormAttachment(33, 0);
-		fdPreview.bottom =new FormAttachment(100, 0);
-		wPreview.setLayoutData(fdPreview);
-		fdCancel=new FormData();
-		fdCancel.left=new FormAttachment(66, 0);
-		fdCancel.bottom =new FormAttachment(100, 0);
-		wCancel.setLayoutData(fdCancel);
 
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wPreview, wCancel }, margin, null);
+		
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();  } };
 		lsPreview  = new Listener() { public void handleEvent(Event e) { preview(); } };
@@ -148,8 +138,7 @@ public class PreviewSelectDialog extends Dialog
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
+		BaseStepDialog.setSize(shell);
 
 		getData();
 		

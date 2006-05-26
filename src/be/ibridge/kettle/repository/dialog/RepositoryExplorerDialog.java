@@ -474,15 +474,7 @@ public class RepositoryExplorerDialog extends Dialog
             
             debug="set screen size and position"; //$NON-NLS-1$
     
-    		WindowProperty winprop = props.getScreen(shell.getText());
-    		if (winprop!=null) winprop.setShell(shell); 
-    		else 
-    		{
-                debug="pack screen"; //$NON-NLS-1$
-    		    shell.pack();
-                debug="set default screen size "; //$NON-NLS-1$
-    		    shell.setSize(400, 480);
-    		}
+    		BaseStepDialog.setSize(shell, 400, 480);
     
     		refreshTree();
     

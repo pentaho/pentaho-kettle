@@ -56,6 +56,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
  * This dialogs allows you to select a number of items from a list of strings.
@@ -434,8 +435,8 @@ public class EnterListDialog extends Dialog
         opened=true;
 		getData();
 
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
+		BaseStepDialog.setSize(shell);
+
 		
 		shell.open();
 		Display display = parent.getDisplay();

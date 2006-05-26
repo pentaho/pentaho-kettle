@@ -311,7 +311,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		fdTypes=new FormData();
 		fdTypes.left   = new FormAttachment(middle, 0);
 		fdTypes.top    = new FormAttachment(wIncludeFiles, margin);
-		fdTypes.bottom = new FormAttachment(wIncludeFiles, margin+100);
+		fdTypes.bottom = new FormAttachment(wIncludeFiles, margin+150);
 		fdTypes.right  = new FormAttachment(100, 0);
 		wTypes.setLayoutData(fdTypes);
 		for (int i=0;i<ResultFile.getAllTypeDesc().length;i++)
@@ -384,7 +384,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText("  &Cancel  ");
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wComment);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -408,9 +408,8 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 
 		getData();
 		
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
-		
+		BaseStepDialog.setSize(shell);
+
 		shell.open();
 		while (!shell.isDisposed())
 		{

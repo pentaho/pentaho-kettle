@@ -47,6 +47,7 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 /**
  * A dialog that sets the printer settings for a Kettle printout.
@@ -394,9 +395,8 @@ public class EnterPrintDialog extends Dialog
 
 		getData();
 
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
-		
+		BaseStepDialog.setSize(shell);
+
 		shell.open();
 		while (!shell.isDisposed())
 		{

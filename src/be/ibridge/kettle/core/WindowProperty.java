@@ -95,6 +95,8 @@ public class WindowProperty
 				shell.layout();
 			}
 		}
+		
+		// System.out.println("Shell ["+shell.getText()+"] size : "+shell.getBounds());
         
         // Sometimes the size of the shell is WAY too great!
         // What's the maximum size for this window?

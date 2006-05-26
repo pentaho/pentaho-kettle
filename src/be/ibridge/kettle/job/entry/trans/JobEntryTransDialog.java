@@ -600,9 +600,8 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		getData();
 		setActive();
 
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
-		
+		BaseStepDialog.setSize(shell);
+
 		shell.open();
 		while (!shell.isDisposed())
 		{

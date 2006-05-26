@@ -709,8 +709,7 @@ public class DatabaseDialog extends Dialog
         wConnType.addSelectionListener( lsTypeAcc );
         wConnAcc.addSelectionListener( lsTypeAcc );
 
-		WindowProperty winprop = props.getScreen(shell.getText());
-		if (winprop!=null) winprop.setShell(shell); else shell.pack();
+		BaseStepDialog.setSize(shell);
 		
 		connection.setChanged(changed);
 		shell.open();

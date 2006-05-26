@@ -120,8 +120,6 @@ public class TransMeta implements XMLInterface
 
     private ArrayList           sourceRows;
 
-    private ArrayList           resultRows;
-
     private boolean             changed, changed_steps, changed_databases, changed_hops, changed_notes;
 
     // public Props props;
@@ -152,6 +150,9 @@ public class TransMeta implements XMLInterface
     private int                 sleepTimeFull;
 
 	private Result              previousResult;
+    private ArrayList           resultRows;
+    private ArrayList           resultFiles;
+
 
     // //////////////////////////////////////////////////////////////////////////
 
@@ -265,6 +266,9 @@ public class TransMeta implements XMLInterface
 
         // Default directory: root
         directory = directoryTree;
+        
+        resultRows = new ArrayList();
+        resultFiles = new ArrayList();
     }
 
     public void clearUndo()
@@ -4217,5 +4221,21 @@ public class TransMeta implements XMLInterface
 	public void setPreviousResult(Result previousResult)
 	{
 		this.previousResult = previousResult;
+	}
+
+	/**
+	 * @return Returns the resultFiles.
+	 */
+	public synchronized ArrayList getResultFiles()
+	{
+		return resultFiles;
+	}
+
+	/**
+	 * @param resultFiles The resultFiles to set.
+	 */
+	public void setResultFiles(ArrayList resultFiles)
+	{
+		this.resultFiles = resultFiles;
 	}
 }
