@@ -56,17 +56,17 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 /**
  * This class defines a transformation and offers methods to save and load it from XML or a Kettle database repository.
- * 
+ *
  * @since 20-jun-2003
  * @author Matt
- * 
+ *
  */
 public class TransMeta implements XMLInterface
 {
     private static LogWriter    log                = LogWriter.getInstance();
-    
+
     private List                inputFiles;
-    
+
     private ArrayList           databases;
 
     private ArrayList           steps;
@@ -175,7 +175,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Constructs a new transformation specifying the filename, name and arguments.
-     * 
+     *
      * @param filename The filename of the transformation
      * @param name The name of the transformation
      * @param arguments The arguments as Strings
@@ -190,7 +190,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get the database ID in the repository for this object.
-     * 
+     *
      * @return the database ID in the repository for this object.
      */
     public long getID()
@@ -200,7 +200,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Set the database ID for this object in the repository.
-     * 
+     *
      * @param id the database ID for this object in the repository.
      */
     public void setID(long id)
@@ -229,7 +229,7 @@ public class TransMeta implements XMLInterface
         updateStep = null;
         logTable = null;
         logConnection = null;
-        
+
         sizeRowset     = Const.ROWS_IN_ROWSET;
         sleepTimeEmpty = Const.SLEEP_EMPTY_NANOS;
         sleepTimeFull  = Const.SLEEP_FULL_NANOS;
@@ -275,7 +275,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get an ArrayList of defined DatabaseInfo objects.
-     * 
+     *
      * @return an ArrayList of defined DatabaseInfo objects.
      */
     public ArrayList getDatabases()
@@ -293,7 +293,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Add a database connection to the transformation.
-     * 
+     *
      * @param ci The database connection information.
      */
     public void addDatabase(DatabaseMeta ci)
@@ -304,7 +304,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Add a new step to the transformation
-     * 
+     *
      * @param stepMeta The step to be added.
      */
     public void addStep(StepMeta stepMeta)
@@ -315,7 +315,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Add a new hop to the transformation.
-     * 
+     *
      * @param hi The hop to be added.
      */
     public void addTransHop(TransHopMeta hi)
@@ -326,7 +326,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Add a new note to the transformation.
-     * 
+     *
      * @param ni The note to be added.
      */
     public void addNote(NotePadMeta ni)
@@ -337,7 +337,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Add a new dependency to the transformation.
-     * 
+     *
      * @param td The transformation dependency to be added.
      */
     public void addDependency(TransDependency td)
@@ -347,7 +347,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Add a database connection to the transformation on a certain location.
-     * 
+     *
      * @param p The location
      * @param ci The database connection information.
      */
@@ -359,7 +359,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Add a new step to the transformation
-     * 
+     *
      * @param p The location
      * @param stepMeta The step to be added.
      */
@@ -371,7 +371,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Add a new hop to the transformation on a certain location.
-     * 
+     *
      * @param p the location
      * @param hi The hop to be added.
      */
@@ -383,7 +383,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Add a new note to the transformation on a certain location.
-     * 
+     *
      * @param p The location
      * @param ni The note to be added.
      */
@@ -395,7 +395,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Add a new dependency to the transformation on a certain location
-     * 
+     *
      * @param p The location.
      * @param td The transformation dependency to be added.
      */
@@ -406,7 +406,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Retrieves a database connection information a a certain location.
-     * 
+     *
      * @param i The database number.
      * @return The database connection information.
      */
@@ -417,7 +417,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get an ArrayList of defined steps.
-     * 
+     *
      * @return an ArrayList of defined steps.
      */
     public ArrayList getSteps()
@@ -427,7 +427,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Retrieves a step on a certain location.
-     * 
+     *
      * @param i The location.
      * @return The step information.
      */
@@ -438,7 +438,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Retrieves a hop on a certain location.
-     * 
+     *
      * @param i The location.
      * @return The hop information.
      */
@@ -449,7 +449,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Retrieves notepad information on a certain location.
-     * 
+     *
      * @param i The location
      * @return The notepad information.
      */
@@ -460,7 +460,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Retrieves a dependency on a certain location.
-     * 
+     *
      * @param i The location.
      * @return The dependency.
      */
@@ -471,7 +471,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Removes a database from the transformation on a certain location.
-     * 
+     *
      * @param i The location
      */
     public void removeDatabase(int i)
@@ -483,7 +483,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Removes a step from the transformation on a certain location.
-     * 
+     *
      * @param i The location
      */
     public void removeStep(int i)
@@ -496,7 +496,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Removes a hop from the transformation on a certain location.
-     * 
+     *
      * @param i The location
      */
     public void removeTransHop(int i)
@@ -509,7 +509,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Removes a note from the transformation on a certain location.
-     * 
+     *
      * @param i The location
      */
     public void removeNote(int i)
@@ -521,7 +521,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Removes a dependency from the transformation on a certain location.
-     * 
+     *
      * @param i The location
      */
     public void removeDependency(int i)
@@ -540,7 +540,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Count the nr of databases in the transformation.
-     * 
+     *
      * @return The nr of databases
      */
     public int nrDatabases()
@@ -550,7 +550,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Count the nr of steps in the transformation.
-     * 
+     *
      * @return The nr of steps
      */
     public int nrSteps()
@@ -560,7 +560,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Count the nr of hops in the transformation.
-     * 
+     *
      * @return The nr of hops
      */
     public int nrTransHops()
@@ -570,7 +570,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Count the nr of notes in the transformation.
-     * 
+     *
      * @return The nr of notes
      */
     public int nrNotes()
@@ -580,7 +580,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Count the nr of dependencies in the transformation.
-     * 
+     *
      * @return The nr of dependencies
      */
     public int nrDependencies()
@@ -591,7 +591,7 @@ public class TransMeta implements XMLInterface
     /**
      * Sets the variable with a certain name & content. This variable can be used in all the steps of the transformation
      * by using %%VARIABLE%% in file-names etc.
-     * 
+     *
      * @param name The name of the variable
      * @param content The value
      */
@@ -602,7 +602,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get the value of a transformation variable
-     * 
+     *
      * @param name The name of the variable
      * @return The value or null if the variable wasn't set.
      */
@@ -613,7 +613,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Changes the content of a step on a certain position
-     * 
+     *
      * @param i The position
      * @param stepMeta The Step
      */
@@ -624,7 +624,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Changes the content of a hop on a certain position
-     * 
+     *
      * @param i The position
      * @param hi The hop
      */
@@ -635,7 +635,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Counts the number of steps that are actually used in the transformation.
-     * 
+     *
      * @return the number of used steps.
      */
     public int nrUsedSteps()
@@ -651,7 +651,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Gets a used step on a certain location
-     * 
+     *
      * @param lu The location
      * @return The used step.
      */
@@ -672,7 +672,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Searches the list of databases for a database with a certain name
-     * 
+     *
      * @param name The name of the database connection
      * @return The database connection information or null if nothing was found.
      */
@@ -689,7 +689,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Searches the list of steps for a step with a certain name
-     * 
+     *
      * @param name The name of the step to look for
      * @return The step information or null if no nothing was found.
      */
@@ -700,7 +700,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Searches the list of steps for a step with a certain name while excluding one step.
-     * 
+     *
      * @param name The name of the step to look for
      * @param exclude The step information to exclude.
      * @return The step information or null if nothing was found.
@@ -708,7 +708,7 @@ public class TransMeta implements XMLInterface
     public StepMeta findStep(String name, StepMeta exclude)
     {
         if (name==null) return null;
-        
+
         int excl = -1;
         if (exclude != null) excl = indexOfStep(exclude);
 
@@ -722,7 +722,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Searches the list of hops for a hop with a certain name
-     * 
+     *
      * @param name The name of the hop to look for
      * @return The hop information or null if nothing was found.
      */
@@ -740,7 +740,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Search all hops for a hop where a certain step is at the start.
-     * 
+     *
      * @param fromstep The step at the start of the hop.
      * @return The hop or null if no hop was found.
      */
@@ -758,7 +758,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find a certain hop in the transformation..
-     * 
+     *
      * @param hi The hop information to look for.
      * @return The hop or null if no hop was found.
      */
@@ -769,7 +769,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Search all hops for a hop where a certain step is at the start and another is at the end.
-     * 
+     *
      * @param from The step at the start of the hop.
      * @param to The step at the end of the hop.
      * @return The hop or null if no hop was found.
@@ -791,7 +791,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Search all hops for a hop where a certain step is at the end.
-     * 
+     *
      * @param tostep The step at the end of the hop.
      * @return The hop or null if no hop was found.
      */
@@ -811,7 +811,7 @@ public class TransMeta implements XMLInterface
      * Determines whether or not a certain step is informative. This means that the previous step is sending information
      * to this step, but only informative. This means that this step is using the information to process the actual
      * stream of data. We use this in StreamLookup, TableInput and other types of steps.
-     * 
+     *
      * @param this_step The step that is receiving information.
      * @param prev_step The step that is sending information
      * @return true if prev_step if informative for this_step.
@@ -830,7 +830,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Counts the number of previous steps for a step name.
-     * 
+     *
      * @param stepname The name of the step to start from
      * @return The number of preceding steps.
      */
@@ -841,7 +841,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Counts the number of previous steps for a step name taking into account whether or not they are informational.
-     * 
+     *
      * @param stepname The name of the step to start from
      * @return The number of preceding steps.
      */
@@ -852,9 +852,9 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the number of steps that precede the indicated step.
-     * 
+     *
      * @param stepMeta The source step
-     * 
+     *
      * @return The number of preceding steps found.
      */
     public int findNrPrevSteps(StepMeta stepMeta)
@@ -864,10 +864,10 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the previous step on a certain location.
-     * 
+     *
      * @param stepname The source step name
      * @param nr the location
-     * 
+     *
      * @return The preceding step found.
      */
     public StepMeta findPrevStep(String stepname, int nr)
@@ -877,7 +877,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the previous step on a certain location taking into account the steps being informational or not.
-     * 
+     *
      * @param stepname The name of the step
      * @param nr The location
      * @param info true if we only want the informational steps.
@@ -890,10 +890,10 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the previous step on a certain location.
-     * 
+     *
      * @param stepMeta The source step information
      * @param nr the location
-     * 
+     *
      * @return The preceding step found.
      */
     public StepMeta findPrevStep(StepMeta stepMeta, int nr)
@@ -904,7 +904,7 @@ public class TransMeta implements XMLInterface
     /**
      * Count the number of previous steps on a certain location taking into account the steps being informational or
      * not.
-     * 
+     *
      * @param stepMeta The name of the step
      * @param info true if we only want the informational steps.
      * @return The number of preceding steps
@@ -932,7 +932,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the previous step on a certain location taking into account the steps being informational or not.
-     * 
+     *
      * @param stepMeta The step
      * @param nr The location
      * @param info true if we only want the informational steps.
@@ -961,7 +961,7 @@ public class TransMeta implements XMLInterface
     /**
      * Get the informational steps for a certain step. An informational step is a step that provides information for
      * lookups etc.
-     * 
+     *
      * @param stepMeta The name of the step
      * @return The informational steps found
      */
@@ -981,7 +981,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the the number of informational steps for a certains step.
-     * 
+     *
      * @param stepMeta The step
      * @return The number of informational steps found.
      */
@@ -1013,7 +1013,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the informational fields coming from an informational step into the step specified.
-     * 
+     *
      * @param stepname The name of the step
      * @return A row containing fields with origin.
      */
@@ -1024,7 +1024,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the informational fields coming from an informational step into the step specified.
-     * 
+     *
      * @param stepMeta The receiving step
      * @return A row containing fields with origin.
      */
@@ -1049,7 +1049,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the number of succeeding steps for a certain originating step.
-     * 
+     *
      * @param stepMeta The originating step
      * @return The number of succeeding steps.
      */
@@ -1067,7 +1067,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the succeeding step at a location for an originating step.
-     * 
+     *
      * @param stepMeta The originating step
      * @param nr The location
      * @return The step found.
@@ -1091,7 +1091,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Retrieve an array of preceding steps for a certain destination step.
-     * 
+     *
      * @param stepMeta The destination step
      * @return An array containing the preceding steps.
      */
@@ -1109,7 +1109,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Retrieve an array of succeeding step names for a certain originating step name.
-     * 
+     *
      * @param stepname The originating step name
      * @return An array of succeeding step names
      */
@@ -1120,7 +1120,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Retrieve an array of preceding steps for a certain destination step.
-     * 
+     *
      * @param stepMeta The destination step
      * @return an array of preceding step names.
      */
@@ -1136,7 +1136,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Retrieve an array of succeeding steps for a certain originating step.
-     * 
+     *
      * @param stepMeta The originating step
      * @return an array of succeeding steps.
      */
@@ -1154,7 +1154,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Retrieve an array of succeeding step names for a certain originating step.
-     * 
+     *
      * @param stepMeta The originating step
      * @return an array of succeeding step names.
      */
@@ -1170,7 +1170,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the step that is located on a certain point on the canvas, taking into account the icon size.
-     * 
+     *
      * @param x the x-coordinate of the point queried
      * @param y the y-coordinate of the point queried
      * @return The step information if a step is located at the point. Otherwise, if no step was found: null.
@@ -1196,7 +1196,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the note that is located on a certain point on the canvas.
-     * 
+     *
      * @param x the x-coordinate of the point queried
      * @param y the y-coordinate of the point queried
      * @return The note information if a note is located at the point. Otherwise, if nothing was found: null.
@@ -1217,7 +1217,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Determines whether or not a certain step is part of a hop.
-     * 
+     *
      * @param stepMeta The step queried
      * @return true if the step is part of a hop.
      */
@@ -1235,7 +1235,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Returns the fields that are emitted by a certain step name
-     * 
+     *
      * @param stepname The stepname of the step to be queried.
      * @return A row containing the fields emitted.
      */
@@ -1250,7 +1250,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Returns the fields that are emitted by a certain step
-     * 
+     *
      * @param stepMeta The step to be queried.
      * @return A row containing the fields emitted.
      */
@@ -1273,7 +1273,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Returns the fields that are emitted by a certain step
-     * 
+     *
      * @param stepMeta The step to be queried.
      * @param monitor The progress monitor for progress dialog. (null if not used!)
      * @return A row containing the fields emitted.
@@ -1321,7 +1321,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the fields that are entering a step with a certain name.
-     * 
+     *
      * @param stepname The name of the step queried
      * @return A row containing the fields (w/ origin) entering the step
      */
@@ -1332,7 +1332,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the fields that are entering a certain step.
-     * 
+     *
      * @param stepMeta The step queried
      * @return A row containing the fields (w/ origin) entering the step
      */
@@ -1343,7 +1343,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the fields that are entering a certain step.
-     * 
+     *
      * @param stepMeta The step queried
      * @param monitor The progress monitor for progress dialog. (null if not used!)
      * @return A row containing the fields (w/ origin) entering the step
@@ -1389,7 +1389,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Return the fields that are emitted by a step with a certain name
-     * 
+     *
      * @param stepname The name of the step that's being queried.
      * @param row A row containing the input fields or an empty row if no input is required.
      * @return A Row containing the output fields.
@@ -1401,10 +1401,10 @@ public class TransMeta implements XMLInterface
 
     /**
      * Returns the fields that are emitted by a step
-     * 
+     *
      * @param stepMeta : The StepMeta object that's being queried
      * @param row : A row containing the input fields or an empty row if no input is required.
-     * 
+     *
      * @return A Row containing the output fields.
      */
     public Row getThisStepFields(StepMeta stepMeta, Row row) throws KettleStepException
@@ -1414,10 +1414,10 @@ public class TransMeta implements XMLInterface
 
     /**
      * Returns the fields that are emitted by a step
-     * 
+     *
      * @param stepMeta : The StepMeta object that's being queried
      * @param row : A row containing the input fields or an empty row if no input is required.
-     * 
+     *
      * @return A Row containing the output fields.
      */
     public Row getThisStepFields(StepMeta stepMeta, Row row, IProgressMonitor monitor) throws KettleStepException
@@ -1450,12 +1450,12 @@ public class TransMeta implements XMLInterface
 
     /**
      * Returns a string containing an XML representation of the transformation object.
-     * 
+     *
      * @return String containing an XML representation of the complete transformation.
      */
     /**
      * Saves the transformation information to a repository.
-     * 
+     *
      * @param rep The repository to save to.
      * @return True if everything went OK, false if an error occured.
      */
@@ -1471,7 +1471,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Determine if we should put a replace warning or not for the transformation in a certain repository.
-     * 
+     *
      * @param rep The repository.
      * @return True if we should show a replace warning, false if not.
      */
@@ -1494,7 +1494,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Saves the transformation to a repository.
-     * 
+     *
      * @param rep The repository.
      * @throws KettleException if an error occurrs.
      */
@@ -1505,7 +1505,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Saves the transformation to a repository.
-     * 
+     *
      * @param rep The repository.
      * @throws KettleException if an error occurrs.
      */
@@ -1514,7 +1514,7 @@ public class TransMeta implements XMLInterface
         try
         {
         	if (monitor!=null) monitor.subTask(Messages.getString("TransMeta.Monitor.LockingRepository")); //$NON-NLS-1$
-        	
+
             rep.lockRepository(); // make sure we're they only one using the repository at the moment
 
             // Clear attribute id cache
@@ -1528,7 +1528,7 @@ public class TransMeta implements XMLInterface
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingOfTransformationStarted")); //$NON-NLS-1$
 
             if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException();
-            
+
             // Before we start, make sure we have a valid transformation ID!
             // Two possibilities:
             // 1) We have a ID: keep it
@@ -1586,7 +1586,7 @@ public class TransMeta implements XMLInterface
             for (int i = 0; i < nrSteps(); i++)
             {
                 if (monitor!=null && monitor.isCanceled()) throw new KettleDatabaseException(Messages.getString("TransMeta.Log.UserCancelledTransSave"));
-                
+
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.SavingStepTask.Title") + (i + 1) + "/" + nrSteps()); //$NON-NLS-1$ //$NON-NLS-2$
                 StepMeta stepMeta = getStep(i);
                 stepMeta.saveRep(rep, getID());
@@ -1650,7 +1650,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Read the database connections in the repository and add them to this transformation if they are not yet present.
-     * 
+     *
      * @param rep The repository to load the database connections from.
      */
     public void readDatabases(Repository rep)
@@ -1681,7 +1681,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Load the transformation name & other details from a repository.
-     * 
+     *
      * @param rep The repository to load the details from.
      */
     public void loadRepTrans(Repository rep) throws KettleException
@@ -1738,7 +1738,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Read a transformation with a certain name from a repository
-     * 
+     *
      * @param rep The repository to read from.
      * @param transname The name of the transformation.
      * @param repdir the path to the repository directory
@@ -1750,7 +1750,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Read a transformation with a certain name from a repository
-     * 
+     *
      * @param rep The repository to read from.
      * @param transname The name of the transformation.
      * @param repdir the path to the repository directory
@@ -1874,7 +1874,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the location of hop
-     * 
+     *
      * @param hi The hop queried
      * @return The location of the hop, -1 if nothing was found.
      */
@@ -1885,7 +1885,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the location of step
-     * 
+     *
      * @param stepMeta The step queried
      * @return The location of the step, -1 if nothing was found.
      */
@@ -1896,7 +1896,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the location of database
-     * 
+     *
      * @param ci The database queried
      * @return The location of the database, -1 if nothing was found.
      */
@@ -1907,7 +1907,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find the location of a note
-     * 
+     *
      * @param ni The note queried
      * @return The location of the note, -1 if nothing was found.
      */
@@ -1920,7 +1920,7 @@ public class TransMeta implements XMLInterface
     {
         Props props = null;
         if (Props.isInitialized()) Props.getInstance();
-        
+
         StringBuffer retval = new StringBuffer();
 
         retval.append("<transformation>" + Const.CR); //$NON-NLS-1$
@@ -1981,8 +1981,8 @@ public class TransMeta implements XMLInterface
             {
                 retval.append(dbMeta.getXML());
             }
-            
-            
+
+
         }
 
         retval.append("  <order>" + Const.CR); //$NON-NLS-1$
@@ -2006,7 +2006,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Parse a file containing the XML that describes the transformation.
-     * 
+     *
      * @param fname The filename
      */
     public TransMeta(String fname) throws KettleXMLException
@@ -2028,13 +2028,13 @@ public class TransMeta implements XMLInterface
         }
         else
         {
-            throw new KettleXMLException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile")); //$NON-NLS-1$
+            throw new KettleXMLException(Messages.getString("TransMeta.Exception.ErrorOpeningOrValidatingTheXMLFile", fname)); //$NON-NLS-1$
         }
     }
 
     /**
      * Load the transformation from an XML node
-     * 
+     *
      * @param transnode The XML node to parse
      * @throws KettleXMLException
      */
@@ -2045,7 +2045,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Parse a file containing the XML that describes the transformation.
-     * 
+     *
      * @param transnode The XML node to load from
      * @throws KettleXMLException
      */
@@ -2162,7 +2162,7 @@ public class TransMeta implements XMLInterface
             // Check the dependencies as far as dates are concerned...
             // We calculate BEFORE we run the MAX of these dates
             // If the date is larger then enddate, startdate is set to MIN_DATE
-            // 
+            //
             Node depsnode = XMLHandler.getSubNode(infonode, "dependencies"); //$NON-NLS-1$
             int deps = XMLHandler.countNodes(depsnode, "dependency"); //$NON-NLS-1$
 
@@ -2197,7 +2197,7 @@ public class TransMeta implements XMLInterface
     /**
      * Gives you an ArrayList of all the steps that are at least used in one active hop. These steps will be used to
      * execute the transformation. The others will not be executed.
-     * 
+     *
      * @param all Set to true if you want to get ALL the steps from the transformation.
      * @return A ArrayList of steps
      */
@@ -2234,7 +2234,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get the name of the transformation
-     * 
+     *
      * @return The name of the transformation
      */
     public String getName()
@@ -2244,7 +2244,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Set the name of the transformation.
-     * 
+     *
      * @param n The new name of the transformation
      */
     public void setName(String n)
@@ -2254,7 +2254,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get the filename (if any) of the transformation
-     * 
+     *
      * @return The filename of the transformation.
      */
     public String getFilename()
@@ -2264,7 +2264,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Set the filename of the transformation
-     * 
+     *
      * @param fname The new filename of the transformation.
      */
     public void setFilename(String fname)
@@ -2274,7 +2274,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Determines if a step has been used in a hop or not.
-     * 
+     *
      * @param stepMeta The step queried.
      * @return True if a step is used in a hop (active or not), false if this is not the case.
      */
@@ -2288,7 +2288,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Mark the transformation as being changed.
-     * 
+     *
      */
     public void setChanged()
     {
@@ -2297,7 +2297,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Sets the changed parameter of the transformation.
-     * 
+     *
      * @param ch True if you want to mark the transformation as changed, false if not.
      */
     public void setChanged(boolean ch)
@@ -2307,7 +2307,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Clears the different changed flags of the transformation.
-     * 
+     *
      */
     public void clearChanged()
     {
@@ -2337,7 +2337,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Checks whether or not the connections have changed.
-     * 
+     *
      * @return True if the connections have been changed.
      */
     public boolean haveConnectionsChanged()
@@ -2354,7 +2354,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Checks whether or not the steps have changed.
-     * 
+     *
      * @return True if the connections have been changed.
      */
     public boolean haveStepsChanged()
@@ -2371,7 +2371,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Checks whether or not any of the hops have been changed.
-     * 
+     *
      * @return True if a hop has been changed.
      */
     public boolean haveHopsChanged()
@@ -2388,7 +2388,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Checks whether or not any of the notes have been changed.
-     * 
+     *
      * @return True if the notes have been changed.
      */
     public boolean haveNotesChanged()
@@ -2406,7 +2406,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Checks whether or not the transformation has changed.
-     * 
+     *
      * @return True if the transformation has changed.
      */
     public boolean hasChanged()
@@ -2425,9 +2425,9 @@ public class TransMeta implements XMLInterface
      * See if there are any loops in the transformation, starting at the indicated step. This works by looking at all
      * the previous steps. If you keep going backward and find the step, there is a loop. Both the informational and the
      * normal steps need to be checked for loops!
-     * 
+     *
      * @param stepMeta The step position to start looking
-     * 
+     *
      * @return True if a loop has been found, false if no loop is found.
      */
     public boolean hasLoop(StepMeta stepMeta)
@@ -2438,11 +2438,11 @@ public class TransMeta implements XMLInterface
     /**
      * See if there are any loops in the transformation, starting at the indicated step. This works by looking at all
      * the previous steps. If you keep going backward and find the orginal step again, there is a loop.
-     * 
+     *
      * @param stepMeta The step position to start looking
      * @param lookup The original step when wandering around the transformation.
      * @param info Check the informational steps or not.
-     * 
+     *
      * @return True if a loop has been found, false if no loop is found.
      */
     public boolean hasLoop(StepMeta stepMeta, StepMeta lookup, boolean info)
@@ -2463,7 +2463,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Mark all steps in the transformation as selected.
-     * 
+     *
      */
     public void selectAll()
     {
@@ -2482,7 +2482,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Clear the selection of all steps.
-     * 
+     *
      */
     public void unselectAll()
     {
@@ -2501,7 +2501,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Count the number of selected steps in this transformation
-     * 
+     *
      * @return The number of selected steps.
      */
     public int nrSelectedSteps()
@@ -2518,7 +2518,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get the selected step at a certain location
-     * 
+     *
      * @param nr The location
      * @return The selected step
      */
@@ -2540,7 +2540,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Count the number of selected notes in this transformation
-     * 
+     *
      * @return The number of selected notes.
      */
     public int nrSelectedNotes()
@@ -2557,7 +2557,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get the selected note at a certain index
-     * 
+     *
      * @param nr The index
      * @return The selected note
      */
@@ -2579,7 +2579,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Select all the steps in a certain (screen) rectangle
-     * 
+     *
      * @param rect The selection area as a rectangle
      */
     public void selectInRect(Rectangle rect)
@@ -2602,7 +2602,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get an array of all the selected step and note locations
-     * 
+     *
      * @return The selected step and notes locations.
      */
     public Point[] getSelectedStepLocations()
@@ -2621,7 +2621,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get an array of all the selected step and note locations
-     * 
+     *
      * @return The selected step and notes locations.
      */
     public Point[] getSelectedNoteLocations()
@@ -2640,7 +2640,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get an array of all the selected steps
-     * 
+     *
      * @return An array of all the selected steps.
      */
     public StepMeta[] getSelectedSteps()
@@ -2660,7 +2660,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get an array of all the selected notes
-     * 
+     *
      * @return An array of all the selected notes.
      */
     public NotePadMeta[] getSelectedNotes()
@@ -2680,7 +2680,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get an array of all the selected step names
-     * 
+     *
      * @return An array of all the selected step names.
      */
     public String[] getSelectedStepNames()
@@ -2699,7 +2699,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get an array of the locations of an array of steps
-     * 
+     *
      * @param steps An array of steps
      * @return an array of the locations of an array of steps
      */
@@ -2715,7 +2715,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get an array of the locations of an array of notes
-     * 
+     *
      * @param notes An array of notes
      * @return an array of the locations of an array of notes
      */
@@ -2731,7 +2731,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get the maximum number of undo operations possible
-     * 
+     *
      * @return The maximum number of undo operations that are allowed.
      */
     public int getMaxUndo()
@@ -2741,7 +2741,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Sets the maximum number of undo operations that are allowed.
-     * 
+     *
      * @param mu The maximum number of undo operations that are allowed.
      */
     public void setMaxUndo(int mu)
@@ -2753,7 +2753,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Add an undo operation to the undo list
-     * 
+     *
      * @param from array of objects representing the old state
      * @param to array of objectes representing the new state
      * @param pos An array of object locations
@@ -2807,7 +2807,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get the previous undo operation and change the undo pointer
-     * 
+     *
      * @return The undo transaction to be performed.
      */
     public TransAction previousUndo()
@@ -2823,7 +2823,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * View current undo, don't change undo position
-     * 
+     *
      * @return The current undo transaction
      */
     public TransAction viewThisUndo()
@@ -2837,7 +2837,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * View previous undo, don't change undo position
-     * 
+     *
      * @return The previous undo transaction
      */
     public TransAction viewPreviousUndo()
@@ -2851,7 +2851,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get the next undo transaction on the list. Change the undo pointer.
-     * 
+     *
      * @return The next undo transaction (for redo)
      */
     public TransAction nextUndo()
@@ -2868,7 +2868,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get the next undo transaction on the list.
-     * 
+     *
      * @return The next undo transaction (for redo)
      */
     public TransAction viewNextUndo()
@@ -2883,7 +2883,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get the maximum size of the canvas by calculating the maximum location of a step
-     * 
+     *
      * @return Maximum coordinate of a step in the transformation + (100,100) for safety.
      */
     public Point getMaximum()
@@ -2909,7 +2909,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get the names of all the steps.
-     * 
+     *
      * @return An array of step names.
      */
     public String[] getStepNames()
@@ -2924,7 +2924,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get all the steps in an array.
-     * 
+     *
      * @return An array of all the steps in the transformation.
      */
     public StepMeta[] getStepsArray()
@@ -2939,7 +2939,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find a step with the ID in a given ArrayList of steps
-     * 
+     *
      * @param steps The ArrayList of steps
      * @param id The ID of the step
      * @return The step if it was found, null if nothing was found
@@ -2958,7 +2958,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Find a step with its name in a given ArrayList of steps
-     * 
+     *
      * @param steps The ArrayList of steps
      * @param stepname The name of the step
      * @return The step if it was found, null if nothing was found
@@ -2977,7 +2977,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Look in the transformation and see if we can find a step in a previous location starting somewhere.
-     * 
+     *
      * @param startStep The starting step
      * @param stepToFind The step to look for backward in the transformation
      * @return true if we can find the step in an earlier location in the transformation.
@@ -3033,7 +3033,7 @@ public class TransMeta implements XMLInterface
     /**
      * Put the steps in a more natural order: from start to finish. For the moment, we ignore splits and joins. Splits
      * and joins can't be listed sequentially in any case!
-     * 
+     *
      */
     public void sortStepsNatural()
     {
@@ -3083,9 +3083,9 @@ public class TransMeta implements XMLInterface
 
     /**
      * This procedure determines the impact of the different steps in a transformation on databases, tables and field.
-     * 
+     *
      * @param impact An ArrayList of DatabaseImpact objects.
-     * 
+     *
      */
     public void analyseImpact(ArrayList impact, IProgressMonitor monitor) throws KettleStepException
     {
@@ -3126,7 +3126,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Proposes an alternative stepname when the original already exists...
-     * 
+     *
      * @param stepname The stepname to find an alternative for..
      * @return The alternative stepname.
      */
@@ -3147,7 +3147,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Builds a list of all the SQL statements that this transformation needs in order to work properly.
-     * 
+     *
      * @return An ArrayList of SQLStatement objects.
      */
     public ArrayList getSQLStatements() throws KettleStepException
@@ -3157,7 +3157,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Builds a list of all the SQL statements that this transformation needs in order to work properly.
-     * 
+     *
      * @return An ArrayList of SQLStatement objects.
      */
     public ArrayList getSQLStatements(IProgressMonitor monitor) throws KettleStepException
@@ -3213,7 +3213,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get the SQL statements, needed to run this transformation, as one String.
-     * 
+     *
      * @return the SQL statements needed to run this transformation.
      */
     public String getSQLStatementsString() throws KettleStepException
@@ -3234,7 +3234,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Checks all the steps and fills a List of (CheckResult) remarks.
-     * 
+     *
      * @param remarks The remarks list to add to.
      * @param only_selected Check only the selected steps.
      * @param monitor The progress monitor to use, null if not used
@@ -3299,7 +3299,7 @@ public class TransMeta implements XMLInterface
                 }
                 catch (KettleStepException kse)
                 {
-                    CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingInputFields.Description", ""+stepMeta 
+                    CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("TransMeta.CheckResult.TypeResultError.ErrorOccurredGettingInputFields.Description", ""+stepMeta
                             , Const.CR + kse.getMessage()), stepMeta); //$NON-NLS-1$
                     remarks.add(cr);
                     // This is a severe error: stop checking...
@@ -3989,7 +3989,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * Get the arguments used by this transformation.
-     * 
+     *
      * @param arguments
      * @return A row with the used arguments in it.
      */
@@ -4065,7 +4065,7 @@ public class TransMeta implements XMLInterface
     {
         return Const.SLEEP_EMPTY_NANOS;
     }
-    
+
     /**
      * @return Sleep time waiting when buffer is full, in nano-seconds
      */
@@ -4089,7 +4089,7 @@ public class TransMeta implements XMLInterface
     {
         this.sleepTimeFull = sleepTimeFull;
     }
-    
+
     /**
      * This method asks all steps in the transformation whether or not the specified database connection is used.
      * The connection is used in the transformation if any of the steps uses it or if it is being used to log to.
@@ -4107,9 +4107,9 @@ public class TransMeta implements XMLInterface
                 if (dbs[d].equals(databaseMeta)) return true;
             }
         }
-        
+
         if (logConnection!=null && logConnection.equals(databaseMeta)) return true;
-        
+
         return false;
     }
 
@@ -4136,16 +4136,16 @@ public class TransMeta implements XMLInterface
     public void setInputFiles(List inputFiles) {
         this.inputFiles = inputFiles;
     }
-    
+
     /**
      * Get a list of all the strings used in this transformation.
-     * 
+     *
      * @return
      */
     public List getStringList(boolean searchSteps, boolean searchDatabases, boolean searchNotes)
     {
         ArrayList stringList = new ArrayList();
-        
+
         if (searchSteps)
         {
             // Loop over all steps in the transformation and see what the used vars are...
@@ -4158,7 +4158,7 @@ public class TransMeta implements XMLInterface
                 StringSearcher.findMetaData(metaInterface, 1, stringList, stepMeta);
             }
         }
-        
+
         // Loop over all steps in the transformation and see what the used vars are...
         if (searchDatabases)
         {
@@ -4185,21 +4185,21 @@ public class TransMeta implements XMLInterface
 
         return stringList;
     }
-    
+
     public List getUsedVariables()
     {
         // Get the list of Strings.
         List stringList = getStringList(true, true, false);
-        
+
         List varList = new ArrayList();
-        
+
         // Look around in the strings, see what we find...
         for (int i=0;i<stringList.size();i++)
         {
             StringSearchResult result = (StringSearchResult) stringList.get(i);
             StringUtil.getUsedVariables(result.getString(), varList);
         }
-        
+
         return varList;
     }
 
