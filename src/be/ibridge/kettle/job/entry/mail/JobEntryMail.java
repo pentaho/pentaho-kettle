@@ -567,6 +567,13 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 				}
 		    } while (ex != null);
 		}
+		finally
+		{
+			if (masterZipfile!=null && masterZipfile.exists())
+			{
+				masterZipfile.delete();
+			}
+		}
 
 		if (result.getNrErrors() > 0)
 		{
