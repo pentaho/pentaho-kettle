@@ -14,12 +14,18 @@
  **********************************************************************/
  
 package be.ibridge.kettle.job.entry.mail;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipOutputStream;
 
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
@@ -78,6 +84,9 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 	
 	private boolean includeFiles;
 	private int fileType[];
+	
+	private boolean zipFiles;
+	private String zipFilename;
 
 	public JobEntryMail(String n)
 	{
@@ -113,6 +122,8 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
         retval.append("      ").append(XMLHandler.addTagValue("contact_phone", contact_phone));
         retval.append("      ").append(XMLHandler.addTagValue("comment", comment));
         retval.append("      ").append(XMLHandler.addTagValue("include_files", includeFiles));
+        retval.append("      ").append(XMLHandler.addTagValue("zip_files", zipFiles));
+        retval.append("      ").append(XMLHandler.addTagValue("zip_name", zipFilename));
         
         retval.append("      <filetypes>");
         if (fileType!=null)
@@ -153,6 +164,10 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 				Node ftnode = XMLHandler.getSubNodeByNr(ftsnode, "filetype", i); 
 				fileType[i]=ResultFile.getType(XMLHandler.getNodeValue(ftnode));
 			}
+			
+			setZipFiles( "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "zip_files")) );
+			setZipFilename( XMLHandler.getTagValue(entrynode, "zip_name") );
+
 		}
 		catch(KettleException xe)
 		{
@@ -188,6 +203,8 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
             	fileType[i] = ResultFile.getType(typeCode);
 	        }
 
+			zipFiles       = rep.getJobEntryAttributeBoolean(id_jobentry, "zip_files");
+			zipFilename    = rep.getJobEntryAttributeString(id_jobentry, "zip_name");
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -220,6 +237,10 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 					rep.saveJobEntryAttribute(id_job, getID(), i, "file_type", ResultFile.getTypeCode(fileType[i]));
 				}
 			}
+			
+			rep.saveJobEntryAttribute(id_job, getID(), "zip_files", zipFiles);
+			rep.saveJobEntryAttribute(id_job, getID(), "zip_name", zipFilename);
+
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -308,11 +329,11 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		return comment;
 	}	
 	
-	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
+	public Result execute(Result result, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
 
-		Result result = prev_result;
+		File masterZipfile=null;
 		
 		// Send an e-mail...
 		// create some properties and get the default Session
@@ -353,19 +374,28 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		        Value date = new Value("date", new Date());
 		        messageText.append("Message date: ").append(date.toString()).append(Const.CR).append(Const.CR);
 		    }
-		    if (prev_result!=null)
+		    if (result!=null)
 		    {
 		        messageText.append("Previous result:").append(Const.CR);
 		        messageText.append("-----------------").append(Const.CR);
-		        messageText.append("Job entry nr         : ").append(prev_result.getEntryNr()).append(Const.CR);
-			    messageText.append("Errors               : ").append(prev_result.getNrErrors()).append(Const.CR);
-			    messageText.append("Lines read           : ").append(prev_result.getNrLinesRead()).append(Const.CR);
-			    messageText.append("Lines written        : ").append(prev_result.getNrLinesWritten()).append(Const.CR);
-			    messageText.append("Lines input          : ").append(prev_result.getNrLinesInput()).append(Const.CR);
-			    messageText.append("Lines output         : ").append(prev_result.getNrLinesOutput()).append(Const.CR);
-			    messageText.append("Lines updated        : ").append(prev_result.getNrLinesUpdated()).append(Const.CR);
-			    messageText.append("Script exit status   : ").append(prev_result.getExitStatus()).append(Const.CR);
-			    messageText.append("Result               : ").append(prev_result.getResult()).append(Const.CR);
+		        messageText.append("Job entry nr         : ").append(result.getEntryNr()).append(Const.CR);
+			    messageText.append("Errors               : ").append(result.getNrErrors()).append(Const.CR);
+			    messageText.append("Lines read           : ").append(result.getNrLinesRead()).append(Const.CR);
+			    messageText.append("Lines written        : ").append(result.getNrLinesWritten()).append(Const.CR);
+			    messageText.append("Lines input          : ").append(result.getNrLinesInput()).append(Const.CR);
+			    messageText.append("Lines output         : ").append(result.getNrLinesOutput()).append(Const.CR);
+			    messageText.append("Lines updated        : ").append(result.getNrLinesUpdated()).append(Const.CR);
+			    messageText.append("Script exit status   : ").append(result.getExitStatus()).append(Const.CR);
+			    messageText.append("Result               : ").append(result.getResult()).append(Const.CR);
+			    messageText.append(Const.CR);
+		    }
+
+		    if (!Const.isEmpty(contact_person) || !Const.isEmpty(contact_phone) )
+		    {
+		        messageText.append("Contact information :").append(Const.CR);
+		        messageText.append("---------------------").append(Const.CR);
+		        messageText.append("Person to contact : ").append(contact_person).append(Const.CR);
+		        messageText.append("Telephone number  : ").append(contact_phone).append(Const.CR);
 			    messageText.append(Const.CR);
 		    }
 		    
@@ -384,20 +414,90 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 														// 1st part
 			part1.setText(messageText.toString());
 			parts.addBodyPart(part1);
-			if (includeFiles && prev_result != null)
+			if (includeFiles && result != null)
 		    {
-				List resultFiles = prev_result.getResultFiles();
+				List resultFiles = result.getResultFiles();
 				if (resultFiles!=null && resultFiles.size() > 0) 
 				{
-					for (Iterator iter = resultFiles.iterator(); iter.hasNext();) 
+					if (!zipFiles)
 					{
-						ResultFile resultFile = (ResultFile) iter.next();
-						File file = resultFile.getFile();
-						if (file != null && file.exists()) 
+						// Add all files to the message...
+						//
+						for (Iterator iter = resultFiles.iterator(); iter.hasNext();) 
 						{
-							// greate a data source
+							ResultFile resultFile = (ResultFile) iter.next();
+							File file = resultFile.getFile();
+							if (file != null && file.exists()) 
+							{
+								// create a data source
+								MimeBodyPart files = new MimeBodyPart();
+								FileDataSource fds = new FileDataSource(file);
+								// get a data Handler to manipulate this file type;
+								files.setDataHandler(new DataHandler(fds));
+								// include the file in th e data source
+								files.setFileName(fds.getName());
+								// add the part with the file in the BodyPart();
+								parts.addBodyPart(files);
+							}
+						}
+					}
+					else
+					{
+						// create a single ZIP archive of all files
+						masterZipfile = new File(System.getProperty("java.io.tmpdir")+Const.FILE_SEPARATOR+zipFilename);
+						ZipOutputStream zipOutputStream = null;
+						try
+						{
+							zipOutputStream = new ZipOutputStream(new FileOutputStream(masterZipfile));
+							
+							for (Iterator iter = resultFiles.iterator(); iter.hasNext();) 
+							{
+								ResultFile resultFile = (ResultFile) iter.next();
+								File file = resultFile.getFile();
+								ZipEntry zipEntry = new ZipEntry(file.getPath());
+								zipOutputStream.putNextEntry(zipEntry);
+								
+								// Now put the content of this file into this archive...
+								BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+								int c;
+								while ( (c=inputStream.read())>=0)
+								{
+									zipOutputStream.write(c);
+								}
+								inputStream.close();
+								zipOutputStream.closeEntry();
+							}
+						}
+						catch(Exception e)
+						{
+							log.logError(toString(), "Error zipping attachement files into file ["+masterZipfile.getPath()+"] : "+e.toString());
+							log.logError(toString(), Const.getStackTracker(e));
+							result.setNrErrors(1);
+						}
+						finally
+						{
+							if (zipOutputStream!=null)
+							{
+								try
+								{
+									zipOutputStream.finish();
+									zipOutputStream.close();
+								}
+								catch(IOException e)
+								{
+									log.logError(toString(), "Unable to close attachement zip file archive : "+e.toString());
+									log.logError(toString(), Const.getStackTracker(e));
+									result.setNrErrors(1);
+								}
+							}
+						}
+						
+						// Now attach the master zip file to the message.
+						if (result.getNrErrors()==0)
+						{
+							// create a data source
 							MimeBodyPart files = new MimeBodyPart();
-							FileDataSource fds = new FileDataSource(file);
+							FileDataSource fds = new FileDataSource(masterZipfile);
 							// get a data Handler to manipulate this file type;
 							files.setDataHandler(new DataHandler(fds));
 							// include the file in th e data source
@@ -563,6 +663,38 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 	public void setFileType(int[] fileType)
 	{
 		this.fileType = fileType;
+	}
+
+	/**
+	 * @return Returns the zipFilename.
+	 */
+	public String getZipFilename()
+	{
+		return zipFilename;
+	}
+
+	/**
+	 * @param zipFilename The zipFilename to set.
+	 */
+	public void setZipFilename(String zipFilename)
+	{
+		this.zipFilename = zipFilename;
+	}
+
+	/**
+	 * @return Returns the zipFiles.
+	 */
+	public boolean isZipFiles()
+	{
+		return zipFiles;
+	}
+
+	/**
+	 * @param zipFiles The zipFiles to set.
+	 */
+	public void setZipFiles(boolean zipFiles)
+	{
+		this.zipFiles = zipFiles;
 	}
 
 }

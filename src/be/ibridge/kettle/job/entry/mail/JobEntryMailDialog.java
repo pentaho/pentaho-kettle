@@ -89,6 +89,15 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 	private List         wTypes;
 	private FormData     fdlTypes, fdTypes;
 
+	private Label        wlZipFiles;
+	private Button       wZipFiles;
+	private FormData     fdlZipFiles, fdZipFiles;
+
+	private Label        wlZipFilename;
+	private Text         wZipFilename;
+	private FormData     fdlZipFilename, fdZipFilename;
+
+	
 	private Label        wlPerson;
 	private Text         wPerson;
 	private FormData     fdlPerson, fdPerson;
@@ -264,7 +273,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobmail.setIncludeDate(jobmail.getIncludeDate());
+					jobmail.setIncludeDate(!jobmail.getIncludeDate());
 					jobmail.setChanged();
 				}
 			}
@@ -290,7 +299,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobmail.setIncludeFiles(jobmail.isIncludeFiles());
+					jobmail.setIncludeFiles(!jobmail.isIncludeFiles());
 					jobmail.setChanged();
 					setFlags();
 				}
@@ -319,14 +328,60 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 			wTypes.add(ResultFile.getAllTypeDesc()[i]);
 		}
 
+		// Zip Files?
+		wlZipFiles=new Label(shell, SWT.RIGHT);
+		wlZipFiles.setText("Zip files into a single archive?");
+ 		props.setLook(wlZipFiles);
+		fdlZipFiles=new FormData();
+		fdlZipFiles.left = new FormAttachment(0, 0);
+		fdlZipFiles.top  = new FormAttachment(wTypes, margin);
+		fdlZipFiles.right= new FormAttachment(middle, -margin);
+		wlZipFiles.setLayoutData(fdlZipFiles);
+		wZipFiles=new Button(shell, SWT.CHECK);
+ 		props.setLook(wZipFiles);
+		fdZipFiles=new FormData();
+		fdZipFiles.left = new FormAttachment(middle, 0);
+		fdZipFiles.top  = new FormAttachment(wTypes, margin);
+		fdZipFiles.right= new FormAttachment(100, 0);
+		wZipFiles.setLayoutData(fdZipFiles);
+		wZipFiles.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					jobmail.setZipFiles(!jobmail.isZipFiles());
+					jobmail.setChanged();
+					setFlags();
+				}
+			}
+		);
+		
+		// ZipFilename line
+		wlZipFilename=new Label(shell, SWT.RIGHT);
+		wlZipFilename.setText("The zip filename ");
+ 		props.setLook(wlZipFilename);
+		fdlZipFilename=new FormData();
+		fdlZipFilename.left = new FormAttachment(0, 0);
+		fdlZipFilename.top  = new FormAttachment(wZipFiles, margin);
+		fdlZipFilename.right= new FormAttachment(middle, 0);
+		wlZipFilename.setLayoutData(fdlZipFilename);
+		wZipFilename=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wZipFilename);
+		wZipFilename.addModifyListener(lsMod);
+		fdZipFilename=new FormData();
+		fdZipFilename.left = new FormAttachment(middle, 0);
+		fdZipFilename.top  = new FormAttachment(wZipFiles, margin);
+		fdZipFilename.right= new FormAttachment(100, 0);
+		wZipFilename.setLayoutData(fdZipFilename);
 
-		// Person line
+
+
+		// ZipFilename line
 		wlPerson=new Label(shell, SWT.RIGHT);
 		wlPerson.setText("Contact person: ");
  		props.setLook(wlPerson);
 		fdlPerson=new FormData();
 		fdlPerson.left = new FormAttachment(0, 0);
-		fdlPerson.top  = new FormAttachment(wTypes, margin);
+		fdlPerson.top  = new FormAttachment(wZipFilename, margin);
 		fdlPerson.right= new FormAttachment(middle, 0);
 		wlPerson.setLayoutData(fdlPerson);
 
@@ -335,7 +390,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		wPerson.addModifyListener(lsMod);
 		fdPerson=new FormData();
 		fdPerson.left = new FormAttachment(middle, 0);
-		fdPerson.top  = new FormAttachment(wTypes, margin);
+		fdPerson.top  = new FormAttachment(wZipFilename, margin);
 		fdPerson.right= new FormAttachment(100, 0);
 		wPerson.setLayoutData(fdPerson);
 
@@ -402,6 +457,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		wPerson.addSelectionListener(lsDef);
 		wPhone.addSelectionListener(lsDef);
 		wComment.addSelectionListener(lsDef);
+		wZipFilename.addSelectionListener(lsDef);
 
 		// Detect [X] or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -422,6 +478,10 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 	{
 		wlTypes.setEnabled(wIncludeFiles.getSelection());
 		wTypes.setEnabled(wIncludeFiles.getSelection());
+		wlZipFiles.setEnabled(wIncludeFiles.getSelection());
+		wZipFiles.setEnabled(wIncludeFiles.getSelection());
+		wlZipFilename.setEnabled(wIncludeFiles.getSelection() && wZipFiles.getSelection());
+		wZipFilename.setEnabled(wIncludeFiles.getSelection() && wZipFiles.getSelection());
 	}
 
 	public void dispose()
@@ -450,6 +510,9 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 			wTypes.setSelection(types);
 		}
 		
+		wZipFiles.setSelection(jobmail.isZipFiles());
+		if (jobmail.getZipFilename()!=null) wZipFilename.setText(jobmail.getZipFilename());
+		
 		setFlags();
 	}
 	
@@ -476,7 +539,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		jobmail.setIncludeDate( wAddDate.getSelection() );
 		jobmail.setIncludeFiles( wIncludeFiles.getSelection() );
 		jobmail.setFileType(wTypes.getSelectionIndices());
-		
+		jobmail.setZipFilename( wZipFilename.getText());
 		dispose();
 	}
 }
