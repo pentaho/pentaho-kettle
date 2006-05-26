@@ -2568,10 +2568,10 @@ public class Repository
 		Row r = null;
 		if (stepAttributesBuffer!=null) r = searchStepAttributeInBuffer(id_step, code, (long)nr);
 		else                            r = getStepAttributeRow(id_step, nr, code);
-		if (r == null)
-			return def;
+		
+		if (r == null) return def;
         Value v = r.searchValue("VALUE_STR");
-        if (v==null) return def;
+        if (v==null || Const.isEmpty(v.getString())) return def;
 		return v.getBoolean();
 	}
 
@@ -2723,10 +2723,16 @@ public class Repository
 
 	public boolean getJobEntryAttributeBoolean(long id_jobentry, int nr, String code) throws KettleDatabaseException
 	{
+		return getJobEntryAttributeBoolean(id_jobentry, nr, code, false);
+	}
+
+	public boolean getJobEntryAttributeBoolean(long id_jobentry, int nr, String code, boolean def) throws KettleDatabaseException
+	{
 		Row r = getJobEntryAttributeRow(id_jobentry, nr, code);
-		if (r == null)
-			return false;
-		return r.searchValue("VALUE_STR").getBoolean();
+		if (r == null) return def;
+        Value v = r.searchValue("VALUE_STR");
+        if (v==null || Const.isEmpty(v.getString())) return def;
+        return v.getBoolean();
 	}
 
 	public double getJobEntryAttributeNumber(long id_jobentry, String code) throws KettleDatabaseException
@@ -2746,7 +2752,12 @@ public class Repository
 
 	public boolean getJobEntryAttributeBoolean(long id_jobentry, String code) throws KettleDatabaseException
 	{
-		return getJobEntryAttributeBoolean(id_jobentry, 0, code);
+		return getJobEntryAttributeBoolean(id_jobentry, 0, code, false);
+	}
+
+	public boolean getJobEntryAttributeBoolean(long id_jobentry, String code, boolean def) throws KettleDatabaseException
+	{
+		return getJobEntryAttributeBoolean(id_jobentry, 0, code, def);
 	}
 
 	public int countNrJobEntryAttributes(long id_jobentry, String code) throws KettleDatabaseException
