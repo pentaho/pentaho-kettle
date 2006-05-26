@@ -63,7 +63,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	public  String  arguments[];
 	public  boolean argFromPrevious;
     public  boolean execPerRow;
-
+    
+    public  boolean clearResultRows;
+    public  boolean clearResultFiles;
+    
 	public  boolean setLogfile;
 	public  String  logfile, logext;
 	public  boolean addDate, addTime;
@@ -162,6 +165,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         }
 		retval.append("      "+XMLHandler.addTagValue("arg_from_previous", argFromPrevious));
         retval.append("      "+XMLHandler.addTagValue("exec_per_row",      execPerRow));
+        retval.append("      "+XMLHandler.addTagValue("clear_rows",        clearResultRows));
+        retval.append("      "+XMLHandler.addTagValue("clear_files",       clearResultFiles));
 		retval.append("      "+XMLHandler.addTagValue("set_logfile",       setLogfile));
 		retval.append("      "+XMLHandler.addTagValue("logfile",           logfile));
 		retval.append("      "+XMLHandler.addTagValue("logext",            logext));
@@ -195,6 +200,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             
             argFromPrevious = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "arg_from_previous") );
             execPerRow = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "exec_per_row") );
+            clearResultRows = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "clear_rows") );
+            clearResultFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "clear_files") );
 			setLogfile = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "set_logfile") );
 			addDate = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_date") );
 			addTime = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "add_time") );
@@ -231,6 +238,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			filename         = rep.getJobEntryAttributeString(id_jobentry, "filename");
 			argFromPrevious  = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
             execPerRow       = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
+            clearResultRows  = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_rows", true);
+            clearResultFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_files", true);
 			setLogfile       = rep.getJobEntryAttributeBoolean(id_jobentry, "set_logfile");
 			addDate          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_date");
 			addTime          = rep.getJobEntryAttributeBoolean(id_jobentry, "add_time");
@@ -270,6 +279,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 			rep.saveJobEntryAttribute(id_job, getID(), "file_name", filename);
 			rep.saveJobEntryAttribute(id_job, getID(), "arg_from_previous", argFromPrevious);
             rep.saveJobEntryAttribute(id_job, getID(), "exec_per_row", execPerRow);
+            rep.saveJobEntryAttribute(id_job, getID(), "clear_rows", clearResultRows);
+            rep.saveJobEntryAttribute(id_job, getID(), "clear_files", clearResultFiles);
 			rep.saveJobEntryAttribute(id_job, getID(), "set_logfile", setLogfile);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_date", addDate);
 			rep.saveJobEntryAttribute(id_job, getID(), "add_time", addTime);
@@ -307,6 +318,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		logfile=null;
 		logext=null;
 		setLogfile=false;
+		clearResultRows=true;
+		clearResultFiles=true;
 	}
 
 	
@@ -380,10 +393,17 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 Trans trans = new Trans(logwriter, transMeta);
                 
                 // Set the result rows for the next one...
-                trans.getTransMeta().setSourceRows(result.getRows());
-
-                // Set the result rows for the next one...
                 trans.getTransMeta().setPreviousResult((Result)result.clone());
+
+                if (clearResultRows)
+                {
+                	trans.getTransMeta().getPreviousResult().getRows().clear();
+                }
+
+                if (clearResultFiles)
+                {
+                	trans.getTransMeta().getPreviousResult().getResultFiles().clear();
+                }
 
                 // set the parent job on the transformation, variables are taken from here...
                 trans.setParentJob(parentJob);
@@ -392,6 +412,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 LocalVariables localVariables = LocalVariables.getInstance();
                 localVariables.createKettleVariables(Thread.currentThread(), parentJob, false);
 
+                
+                /*
+                 * Set one or more "result" rows on the transformation...
+                 */
                 if (execPerRow) // Execute for each input row
                 {
                     if (argFromPrevious) // Copy the input row to the (command line) arguments
@@ -411,7 +435,14 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                         // Just pass a single row
                         ArrayList newList = new ArrayList();
                         newList.add(resultRow);
-                        trans.setSourceRows(newList);
+                        
+                        // This previous result rows list can be either empty or not.
+                        // Depending on the checkbox "clear result rows"
+                        // In this case, it would execute the transformation with one extra row each time
+                        // Can't figure out a real use-case for it, but hey, who am I to decide that, right?
+                        // :-)
+                        //
+                        trans.getTransMeta().getPreviousResult().getRows().addAll(newList);
                     }
                 }
                 else
@@ -431,11 +462,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                     }
                     else
                     {
-                        // Keep it as it was...
-                        trans.setSourceRows(result.getRows());
+                        // Keep it as it was: set all rows on the previous result
+                    	// However, in this case, it doesn't make sense to do so if you selected 
+                    	// to clear the result rows before running...
+                    	if (!clearResultRows) 
+                    	{
+                    		trans.getTransMeta().getPreviousResult().getRows().addAll(result.getRows());
+                    	}
                     }
                 }
-                    				
+                
     			// Execute!
     			if (!trans.execute(args))
     			{

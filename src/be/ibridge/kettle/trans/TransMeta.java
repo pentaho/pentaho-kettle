@@ -3495,6 +3495,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * @return Returns the sourceRows.
+     * @deprecated : use getPreviousResult().getRows()
      */
     public ArrayList getSourceRows()
     {
@@ -3503,6 +3504,7 @@ public class TransMeta implements XMLInterface
 
     /**
      * @param sourceRows The sourceRows to set.
+     * @deprecated : use getPreviousResult().getRows().addAll(sourceRows)
      */
     public void setSourceRows(ArrayList sourceRows)
     {

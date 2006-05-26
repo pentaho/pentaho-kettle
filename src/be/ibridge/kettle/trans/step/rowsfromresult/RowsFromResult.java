@@ -16,6 +16,7 @@
 package be.ibridge.kettle.trans.step.rowsfromresult;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.trans.Trans;
@@ -50,14 +51,15 @@ public class RowsFromResult extends BaseStep implements StepInterface
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
         debug = "Check if there are result rows and if we're done processing";
-		if (getTransMeta().getSourceRows()==null || linesRead>=getTransMeta().getSourceRows().size())
+        Result previousResult = getTransMeta().getPreviousResult(); 
+		if (previousResult==null || linesRead>=previousResult.getRows().size())
 		{
 			setOutputDone();
 			return false;
 		}
 		
-        debug = "Get a row from the result rows ("+(linesRead+1)+"/"+getTransMeta().getSourceRows().size()+")";
-		Row r=(Row)getTransMeta().getSourceRows().get((int)linesRead);
+        debug = "Get a row from the result rows ("+(linesRead+1)+"/"+previousResult.getRows().size()+")";
+		Row r=(Row)previousResult.getRows().get((int)linesRead);
 		linesRead++;
 		
         debug = "Put the row";

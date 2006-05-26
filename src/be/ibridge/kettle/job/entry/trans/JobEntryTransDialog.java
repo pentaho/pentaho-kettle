@@ -121,6 +121,14 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
     private Button       wEveryRow;
     private FormData     fdlEveryRow, fdEveryRow;
    
+	private Label        wlClearRows;
+	private Button       wClearRows;
+	private FormData     fdlClearRows, fdClearRows;
+
+	private Label        wlClearFiles;
+	private Button       wClearFiles;
+	private FormData     fdlClearFiles, fdClearFiles;
+	
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -462,7 +470,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
         props.setLook(wlEveryRow);
         fdlEveryRow=new FormData();
         fdlEveryRow.left = new FormAttachment(0, 0);
-        fdlEveryRow.top  = new FormAttachment(wPrevious, margin*3);
+        fdlEveryRow.top  = new FormAttachment(wPrevious, margin);
         fdlEveryRow.right= new FormAttachment(middle, -margin);
         wlEveryRow.setLayoutData(fdlEveryRow);
         wEveryRow=new Button(shell, SWT.CHECK );
@@ -470,7 +478,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
         wEveryRow.setToolTipText("Check this to execute this transformation mulitple times : once for every input row.");
         fdEveryRow=new FormData();
         fdEveryRow.left = new FormAttachment(middle, 0);
-        fdEveryRow.top  = new FormAttachment(wPrevious, margin*3);
+        fdEveryRow.top  = new FormAttachment(wPrevious, margin);
         fdEveryRow.right= new FormAttachment(100, 0);
         wEveryRow.setLayoutData(fdEveryRow);
         wEveryRow.addSelectionListener(new SelectionAdapter() 
@@ -483,13 +491,66 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
             }
         );
         
+		// Clear the result rows before executing the transformation?
+        //
+		wlClearRows=new Label(shell, SWT.RIGHT);
+		wlClearRows.setText("Clear the list of result rows before execution? ");
+ 		props.setLook(wlClearRows);
+		fdlClearRows=new FormData();
+		fdlClearRows.left = new FormAttachment(0, 0);
+		fdlClearRows.top  = new FormAttachment(wEveryRow, margin);
+		fdlClearRows.right= new FormAttachment(middle, -margin);
+		wlClearRows.setLayoutData(fdlClearRows);
+		wClearRows=new Button(shell, SWT.CHECK);
+ 		props.setLook(wClearRows);
+		fdClearRows=new FormData();
+		fdClearRows.left = new FormAttachment(middle, 0);
+		fdClearRows.top  = new FormAttachment(wEveryRow, margin);
+		fdClearRows.right= new FormAttachment(100, 0);
+		wClearRows.setLayoutData(fdClearRows);
+		wClearRows.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					jobentry.clearResultRows=!jobentry.clearResultRows;
+					jobentry.setChanged();
+				}
+			}
+		);
+
+		// Clear the result rows before executing the transformation?
+        //
+		wlClearFiles=new Label(shell, SWT.RIGHT);
+		wlClearFiles.setText("Clear the list of result files before execution? ");
+ 		props.setLook(wlClearFiles);
+		fdlClearFiles=new FormData();
+		fdlClearFiles.left = new FormAttachment(0, 0);
+		fdlClearFiles.top  = new FormAttachment(wClearRows, margin);
+		fdlClearFiles.right= new FormAttachment(middle, -margin);
+		wlClearFiles.setLayoutData(fdlClearFiles);
+		wClearFiles=new Button(shell, SWT.CHECK);
+ 		props.setLook(wClearFiles);
+		fdClearFiles=new FormData();
+		fdClearFiles.left = new FormAttachment(middle, 0);
+		fdClearFiles.top  = new FormAttachment(wClearRows, margin);
+		fdClearFiles.right= new FormAttachment(100, 0);
+		wClearFiles.setLayoutData(fdClearFiles);
+		wClearFiles.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					jobentry.clearResultRows=!jobentry.clearResultRows;
+					jobentry.setChanged();
+				}
+			}
+		);
 
 		wlFields=new Label(shell, SWT.NONE);
 		wlFields.setText("Fields : ");
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wEveryRow, margin);
+		fdlFields.top  = new FormAttachment(wClearFiles, margin);
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsCols=1;
@@ -673,7 +734,9 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		if (jobentry.logext!=null) wLogext.setText(jobentry.logext);
 		wAddDate.setSelection(jobentry.addDate);
 		wAddTime.setSelection(jobentry.addTime);
-
+		wClearRows.setSelection(jobentry.clearResultRows);
+		wClearFiles.setSelection(jobentry.clearResultFiles);
+		
 		wLoglevel.select(jobentry.loglevel+1);
 	}
 	

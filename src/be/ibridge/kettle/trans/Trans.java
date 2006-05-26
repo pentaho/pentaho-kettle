@@ -1011,7 +1011,6 @@ public class Trans
 	
 	//
 	// Handle logging at end
-	// TODO: perform an update in the logging table when the batch ID is known and an entry exists in the table...
 	//
 	public boolean endProcessing(String status) throws KettleException
 	{
@@ -1039,16 +1038,23 @@ public class Trans
 			{
 				ldb.connect();
 				
-				ldb.writeLogRecord(transMeta.getLogTable(), transMeta.isBatchIdUsed(), transMeta.getBatchId(), false, transMeta.getName(), status, 
-					result.getNrLinesRead(), 
-					result.getNrLinesWritten(),
-					result.getNrLinesUpdated(),
-					result.getNrLinesInput()+result.getNrFilesRetrieved(),
-					result.getNrLinesOutput(),
-					result.getNrErrors(), 
-				    startDate, endDate, logDate, depDate,currentDate,
-					log_string
-				);
+				ldb.writeLogRecord
+					(
+						transMeta.getLogTable(), 
+						transMeta.isBatchIdUsed(), 
+						transMeta.getBatchId(), 
+						false, 
+						transMeta.getName(), 
+						status, 
+						result.getNrLinesRead(), 
+						result.getNrLinesWritten(),
+						result.getNrLinesUpdated(),
+						result.getNrLinesInput()+result.getNrFilesRetrieved(),
+						result.getNrLinesOutput(),
+						result.getNrErrors(), 
+					    startDate, endDate, logDate, depDate,currentDate,
+						log_string
+					);
 			}
 			catch(Exception e)
 			{
@@ -1083,6 +1089,9 @@ public class Trans
 		return true;
 	}
 	
+	/**
+	 * @deprecated use getResult().getRows()
+	 */
 	public void setSourceRows(ArrayList rows)
 	{
 		transMeta.setSourceRows( rows );
