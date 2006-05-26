@@ -26,6 +26,8 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
  */
 public class SystemDataData extends BaseStepData implements StepDataInterface
 {
+	public boolean readsRows;
+
 	/**
 	 * 
 	 */

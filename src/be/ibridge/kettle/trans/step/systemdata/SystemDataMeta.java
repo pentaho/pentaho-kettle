@@ -412,14 +412,18 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 	public void check(ArrayList remarks, StepMeta stepMeta, Row prev, String input[], String output[], Row info)
 	{
 		// See if we have input streams leading to this step!
-		if (input.length>0)
+		int nrRemarks = remarks.size();
+		for (int i=0;i<fieldName.length;i++)
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SystemDataMeta.CheckResult.NoInputError"), stepMeta);
-			remarks.add(cr);
+			if (fieldType[i]<=TYPE_SYSTEM_INFO_NONE)
+			{
+				CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("SystemDataMeta.CheckResult.FieldHasNoType", fieldName[i]), stepMeta);
+				remarks.add(cr);
+			}
 		}
-		else
+		if (remarks.size()==nrRemarks)
 		{
-			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SystemDataMeta.CheckResult.NoInputOk"), stepMeta);
+			CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("SystemDataMeta.CheckResult.AllTypesSpecified"), stepMeta);
 			remarks.add(cr);
 		}
 	}

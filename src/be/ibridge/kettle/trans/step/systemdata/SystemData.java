@@ -240,13 +240,30 @@ public class SystemData extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		Row r=getSystemData();
-		if (log.isRowLevel()) logRowlevel("System info returned: "+r);
-		putRow(r);     // Just one row!
-		linesRead++;
+		Row row;
+		if (data.readsRows)
+		{
+			row=getRow();
+			if (row==null)
+			{
+				setOutputDone();
+				return false;
+			}
+		}
+		else
+		{
+			row=new Row();
+			linesRead++;
+		}
+		
+		row.addRow(getSystemData());
+		
+		if (log.isRowLevel()) logRowlevel("System info returned: "+row);
+		
+		putRow(row);     // Just one row!
 		setOutputDone();
 					
-		return false;
+		return true;
 	}
 	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
@@ -257,6 +274,13 @@ public class SystemData extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 		    // Add init code here.
+			data.readsRows = false;
+			StepMeta previous[] = getTransMeta().getPrevSteps(getStepMeta()); 
+			if (previous!=null && previous.length>0)
+			{
+				data.readsRows = true;
+			}
+			
 		    return true;
 		}
 		return false;
