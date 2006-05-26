@@ -16,7 +16,7 @@
 
 package be.ibridge.kettle.trans.step.combinationlookup;
 
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.trans.step.BaseStepData;
@@ -32,7 +32,7 @@ public class CombinationLookupData extends BaseStepData implements StepDataInter
 	public Database db;
 	public int keynrs[];      // nrs in row of the keys
 	
-	public Hashtable cache;  
+	public HashMap cache;  
 
 	/**
 	 *  Default Constructor

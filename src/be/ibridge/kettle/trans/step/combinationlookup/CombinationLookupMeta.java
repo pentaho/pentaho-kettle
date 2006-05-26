@@ -50,6 +50,9 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
  */
 public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInterface
 {
+	/** Default cache size: 0 will cache everything */
+	public final static int DEFAULT_CACHE_SIZE  = 9999;
+	
 	/** what's the lookup table? */
 	private String  tablename;
 
@@ -80,6 +83,9 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	/** Commit size for insert / update */
 	private int     commitSize;
 
+	/** Limit the cache size to this! */
+	private int                 cacheSize;      
+	
 	/** Use the auto-increment feature of the database to generate keys. */
 	private boolean useAutoinc;
 
@@ -148,6 +154,22 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		this.commitSize = commitSize;
 	}
 
+	/**
+	 * @return Returns the cacheSize.
+	 */
+	public int getCacheSize()
+	{
+		return cacheSize;
+	}
+	
+	/**
+	 * @param cacheSize The cacheSize to set.
+	 */
+	public void setCacheSize(int cacheSize)
+	{
+		this.cacheSize = cacheSize;
+	}    
+		
 	/**
 	 * @return Returns the hashField.
 	 */
@@ -327,13 +349,15 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 	{
 		try
 		{
-			String commit;
+			String commit, csize;
 
 			tablename  = XMLHandler.getTagValue(stepnode, "table"); //$NON-NLS-1$
 			String con = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
 			database = Const.findDatabase(databases, con);
 			commit     = XMLHandler.getTagValue(stepnode, "commit"); //$NON-NLS-1$
 			commitSize = Const.toInt(commit, 0);
+			csize      = XMLHandler.getTagValue(stepnode, "cache_size"); //$NON-NLS-1$
+			cacheSize  = Const.toInt(csize, 0);
 
 			replaceFields ="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "replace")); //$NON-NLS-1$ //$NON-NLS-2$
 			useHash    ="Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "crc")); //$NON-NLS-1$ //$NON-NLS-2$
@@ -374,6 +398,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		tablename     = Messages.getString("CombinationLookupMeta.DimensionTableName.Label"); //$NON-NLS-1$
 		database      = null;
 		commitSize    = 0;
+		cacheSize     = DEFAULT_CACHE_SIZE;
 		replaceFields = false;
 		useHash       = false;
 		hashField     = "hashcode"; //$NON-NLS-1$
@@ -425,6 +450,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 		retval.append("      "+XMLHandler.addTagValue("table", tablename)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      "+XMLHandler.addTagValue("connection", database==null?"":database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		retval.append("      "+XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      "+XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      "+XMLHandler.addTagValue("replace", replaceFields)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      "+XMLHandler.addTagValue("crc", useHash)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      "+XMLHandler.addTagValue("crcfield", hashField)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -462,6 +488,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
 			tablename        =      rep.getStepAttributeString (id_step, "table"); //$NON-NLS-1$
 			commitSize       = (int)rep.getStepAttributeInteger(id_step, "commit"); //$NON-NLS-1$
+			cacheSize        = (int)rep.getStepAttributeInteger(id_step, "cache_size"); //$NON-NLS-1$
 			replaceFields    =      rep.getStepAttributeBoolean(id_step, "replace"); //$NON-NLS-1$
 			useHash          =      rep.getStepAttributeBoolean(id_step, "crc"); //$NON-NLS-1$
 			hashField        =      rep.getStepAttributeString (id_step, "crcfield"); //$NON-NLS-1$
@@ -496,6 +523,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 			long id      = rep.saveStepAttribute(id_transformation, id_step, "table",          tablename); //$NON-NLS-1$
 			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "id_connection",  database==null?-1:database.getID()); //$NON-NLS-1$
 			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "commit",         commitSize); //$NON-NLS-1$
+			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "cache_size",     cacheSize); //$NON-NLS-1$
 			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "replace",        replaceFields); //$NON-NLS-1$
 
 			if (id>0) id = rep.saveStepAttribute(id_transformation, id_step, "crc",            useHash); //$NON-NLS-1$
@@ -1021,6 +1049,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
         CombinationLookupMeta o = (CombinationLookupMeta)other;
 
         if ( getCommitSize() != o.getCommitSize() ) return false;
+        if ( getCacheSize() != o.getCacheSize() ) return false;
         if ( ! getTechKeyCreation().equals(o.getTechKeyCreation()) ) return false;
         if ( replaceFields() != o.replaceFields() ) return false;
         if ( useHash() != o.useHash() )	return false;
@@ -1050,8 +1079,8 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
         // comparison missing for the following, but can be added later
         // if required.
-    	//     getKeyField()
-    	//     getKeyLookup()
+     	  //   getKeyField()
+    	  //   getKeyLookup()
 
         return true;
     }

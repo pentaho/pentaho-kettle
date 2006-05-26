@@ -62,6 +62,7 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
+import be.ibridge.kettle.trans.step.combinationlookup.Messages;
 
 
 public class CombinationLookupDialog extends BaseStepDialog implements StepDialogInterface
@@ -77,6 +78,9 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 	private Text         wCommit;
 	private FormData     fdlCommit, fdCommit;
 
+	private Label        wlCachesize;
+	private Text         wCachesize;
+	
 	private Label        wlTk;
 	private Text         wTk;
 	private FormData     fdlTk, fdTk;
@@ -231,11 +235,30 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
  		props.setLook(wCommit);
 		wCommit.addModifyListener(lsMod);
 		fdCommit=new FormData();
-		fdCommit.left = new FormAttachment(middle, 0);
 		fdCommit.top  = new FormAttachment(wTable, margin);
-		fdCommit.right= new FormAttachment(100, 0);
+		fdCommit.left = new FormAttachment(middle, 0);
+		fdCommit.right= new FormAttachment(middle+(100-middle)/3, -margin);
 		wCommit.setLayoutData(fdCommit);
 
+		// Cache size
+		wlCachesize=new Label(shell, SWT.RIGHT);
+		wlCachesize.setText(Messages.getString("CombinationLookupDialog.Cachesize.Label")); //$NON-NLS-1$
+ 		props.setLook(wlCachesize); 		
+		FormData fdlCachesize=new FormData();
+		fdlCachesize.top   = new FormAttachment(wTable, margin);
+		fdlCachesize.left  = new FormAttachment(wCommit, margin);
+		fdlCachesize.right = new FormAttachment(middle+2*(100-middle)/3, -margin);		
+		wlCachesize.setLayoutData(fdlCachesize);
+		wCachesize=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wCachesize);
+		wCachesize.addModifyListener(lsMod);
+		FormData fdCachesize=new FormData();
+		fdCachesize.top   = new FormAttachment(wTable, margin);
+		fdCachesize.left  = new FormAttachment(wlCachesize, margin);
+		fdCachesize.right = new FormAttachment(100, 0);
+		wCachesize.setLayoutData(fdCachesize);
+		wCachesize.setToolTipText(Messages.getString("CombinationLookupDialog.Cachesize.ToolTip")); //$NON-NLS-1$		
+			
 		//
 		// The Lookup fields: usually the (business) key
 		//
@@ -611,6 +634,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		if (input.getHashField()!=null)    wHashfield.setText(input.getHashField());
 
 		wCommit.setText(""+input.getCommitSize()); //$NON-NLS-1$
+		wCachesize.setText(""+input.getCacheSize()); //$NON-NLS-1$
 
 		wKey.setRowNums();
 		wKey.optWidth(true);
@@ -688,6 +712,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		in.setDatabase( transMeta.findDatabase(wConnection.getText()) );
 
 		in.setCommitSize( Const.toInt(wCommit.getText(), 0) );
+		in.setCacheSize( Const.toInt(wCachesize.getText(), 0) );
 	}
 
 	private void getTableName()
