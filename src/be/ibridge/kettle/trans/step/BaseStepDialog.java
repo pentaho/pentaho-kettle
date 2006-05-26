@@ -354,10 +354,10 @@ public class BaseStepDialog extends Dialog
 
 	public static void setSize(Shell shell)
 	{
-		setSize(shell, -1, -1);
+		setSize(shell, -1, -1, true);
 	}
 
-	public static void setSize(Shell shell, int minWidth, int minHeight)
+	public static void setSize(Shell shell, int minWidth, int minHeight, boolean packIt)
 	{
 		Props props = Props.getInstance();
 		
@@ -368,23 +368,23 @@ public class BaseStepDialog extends Dialog
 		}
 		else
 		{
-			 shell.layout();
-			 
-			 // OK, sometimes this produces dialogs that are waay too big.
-			 // Try to limit this a bit, m'kay?
-			 // Use the same algorithm by cheating :-)
-			 //
-			 winprop = new WindowProperty(shell);
-			 winprop.setShell(shell, minWidth, minHeight);
-			 
-			 // Now, as this is the first time it gets opened, try to put it in the middle of the screen...
-			 Rectangle shellBounds = shell.getBounds();
-			 Rectangle dispBounds = shell.getDisplay().getBounds();
-			 
-			 int middleX = (dispBounds.width - shellBounds.width)/2;
-			 int middleY = (dispBounds.height - shellBounds.height)/2;
-			 
-			 shell.setLocation(middleX, middleY);
+			if (packIt) shell.pack(); else shell.layout();
+			
+			// OK, sometimes this produces dialogs that are waay too big.
+			// Try to limit this a bit, m'kay?
+			// Use the same algorithm by cheating :-)
+			//
+			winprop = new WindowProperty(shell);
+			winprop.setShell(shell, minWidth, minHeight);
+			
+			// Now, as this is the first time it gets opened, try to put it in the middle of the screen...
+			Rectangle shellBounds = shell.getBounds();
+			Rectangle dispBounds = shell.getDisplay().getBounds();
+			
+			int middleX = (dispBounds.width - shellBounds.width)/2;
+			int middleY = (dispBounds.height - shellBounds.height)/2;
+			
+			shell.setLocation(middleX, middleY);
 		}
 	}
 }

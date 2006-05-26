@@ -1005,6 +1005,7 @@ public class Trans
 		}
 		
 		result.setRows( transMeta.getResultRows() );
+		result.setResultFiles( transMeta.getResultFiles() );
 
 		return result;
 	}

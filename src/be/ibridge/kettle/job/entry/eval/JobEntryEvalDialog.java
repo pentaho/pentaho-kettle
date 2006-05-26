@@ -192,7 +192,7 @@ public class JobEntryEvalDialog extends Dialog implements JobEntryDialogInterfac
 				
 		getData();
 		
-		BaseStepDialog.setSize(shell);
+		BaseStepDialog.setSize(shell, 250, 250, false);
 
 		shell.open();
 		while (!shell.isDisposed())

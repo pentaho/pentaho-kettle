@@ -56,7 +56,7 @@ public class FilesToResult extends BaseStep implements StepInterface
 		if (r==null)  // no more input to be expected...
 		{
 		    getTransMeta().getResultFiles().addAll( data.filenames );
-			
+			logBasic(Messages.getString("FilesToResult.Log.AddedNrOfFiles", String.valueOf(data.filenames.size())));
 			setOutputDone();
 			return false;
 		}

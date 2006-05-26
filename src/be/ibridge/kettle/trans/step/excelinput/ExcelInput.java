@@ -431,8 +431,11 @@ public class ExcelInput extends BaseStep implements StepInterface
 				// Open a new workbook..
 				data.file = data.files.getFile(data.filenr);
 				data.filename = data.file.getPath();
+				
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString());
+				resultFile.setComment("File was read by an Excel input step");
 				addResultFile(resultFile);
+				
 				debug = "open workbook #" + data.filenr + " : " + data.filename;
 				if (log.isDetailed()) logDetailed("Opening workbook #" + data.filenr + " : " + data.filename);
 				data.workbook = Workbook.getWorkbook(data.file);

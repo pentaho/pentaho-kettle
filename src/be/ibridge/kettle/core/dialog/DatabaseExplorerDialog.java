@@ -224,7 +224,7 @@ public class DatabaseExplorerDialog extends Dialog
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { dispose(); } } );
 
-		BaseStepDialog.setSize(shell, 320, 480);
+		BaseStepDialog.setSize(shell, 320, 480, true);
 
 		shell.open();
 		Display display = parent.getDisplay();

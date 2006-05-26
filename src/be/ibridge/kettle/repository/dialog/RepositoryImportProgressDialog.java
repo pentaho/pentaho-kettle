@@ -161,7 +161,7 @@ public class RepositoryImportProgressDialog extends Dialog
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { dispose(); } } );
 		
-		BaseStepDialog.setSize(shell, 640, 480);
+		BaseStepDialog.setSize(shell, 640, 480, true);
 		
 		shell.open();
 		

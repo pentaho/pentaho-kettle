@@ -474,7 +474,7 @@ public class RepositoryExplorerDialog extends Dialog
             
             debug="set screen size and position"; //$NON-NLS-1$
     
-    		BaseStepDialog.setSize(shell, 400, 480);
+    		BaseStepDialog.setSize(shell, 400, 480, true);
     
     		refreshTree();
     

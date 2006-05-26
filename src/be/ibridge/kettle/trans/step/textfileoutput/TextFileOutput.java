@@ -24,6 +24,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
@@ -449,6 +450,11 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		{
 			File file = new File(buildFilename(true));
 
+			// Add this to the result file names...
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
+			resultFile.setComment("This file was created with a text file output step");
+			getTransMeta().getResultFiles().add(resultFile);
+			
             OutputStream outputStream;
 			if (meta.isZipped())
 			{

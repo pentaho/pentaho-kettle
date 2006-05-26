@@ -15,7 +15,10 @@
  
 package be.ibridge.kettle.trans.step.xbaseinput;
 
+import java.io.File;
+
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XBase;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -106,6 +109,12 @@ public class XBaseInput extends BaseStep implements StepInterface
 	
 				logBasic(Messages.getString("XBaseInput.Log.OpenedXBaseFile")); //$NON-NLS-1$
 				data.fields = data.xbi.getFields();
+				
+				// Add this to the result file names...
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(meta.getDbfFileName()), getTransMeta().getName(), getStepname());
+				resultFile.setComment("File was read by an XBase input step");
+				getTransMeta().getResultFiles().add(resultFile);
+				
 				return true;
             }
             catch(KettleException e)

@@ -967,8 +967,6 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			acceptingField     = rep.getStepAttributeString (id_step, "accept_field");
 			acceptingStepName  = rep.getStepAttributeString (id_step, "accept_stepname");
 
-			System.out.println("Stepname: "+acceptingStepName);
-			
 			separator = rep.getStepAttributeString(id_step, "separator");
 			enclosure = rep.getStepAttributeString(id_step, "enclosure");
 			breakInEnclosureAllowed = rep.getStepAttributeBoolean(id_step, "enclosure_breaks");

@@ -16,9 +16,12 @@
 
 package be.ibridge.kettle.trans.step.xmlinput;
 
+import java.io.File;
+
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -333,6 +336,11 @@ public class XMLInput extends BaseStep implements StepInterface
             // Open the XML document
             data.document = XMLHandler.loadXMLFile(data.filename);
             
+			// Add this to the result file names...
+			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(data.filename), getTransMeta().getName(), getStepname());
+			resultFile.setComment("File was read by an XML input step");
+			getTransMeta().getResultFiles().add(resultFile);
+
             if (log.isDetailed()) logDetailed(Messages.getString("XMLInput.Log.FileOpened", data.filename));
             
             // Position in the file...

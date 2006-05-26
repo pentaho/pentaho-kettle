@@ -182,7 +182,7 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
 		getData();
 		enableDisableControls();
 		
-		BaseStepDialog.setSize(shell);
+		BaseStepDialog.setSize(shell, 350, 200, true);
 
 		shell.open();
 		while (!shell.isDisposed())

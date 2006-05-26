@@ -393,11 +393,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 Trans trans = new Trans(logwriter, transMeta);
                 
                 // Set the result rows for the next one...
-                trans.getTransMeta().setPreviousResult((Result)result.clone());
+                trans.getTransMeta().setPreviousResult(result);
 
                 if (clearResultRows)
                 {
-                	trans.getTransMeta().getPreviousResult().getRows().clear();
+                	trans.getTransMeta().getPreviousResult().setRows(new ArrayList());
                 }
 
                 if (clearResultFiles)
@@ -499,7 +499,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     				}
     				Result newResult = trans.getResult();
                     
-                    result.clear();
+                    result.clear(); // clear only the numbers, NOT the files or rows.
                     result.add(newResult);
                     
                     // Set the result rows too...

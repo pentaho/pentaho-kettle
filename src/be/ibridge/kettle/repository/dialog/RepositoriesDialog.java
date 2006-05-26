@@ -392,9 +392,9 @@ public class RepositoriesDialog
 		shell.layout();
         
         BaseStepDialog.setMinimalShellHeight(shell, new Control[] {wCanvas, wlKettle, wRepository, wUsername, wPassword, wOK }, margin, 2*margin);
-		// shell.setSize(bounds.width, shell.getBounds().height+wOK.getBounds().height+30);
+        Rectangle dialogBounds = shell.getBounds();
 	
-		BaseStepDialog.setSize(shell);
+		BaseStepDialog.setSize(shell, dialogBounds.width, dialogBounds.height, false);
 
 		shell.open();
 		while (!shell.isDisposed())
