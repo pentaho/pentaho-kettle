@@ -1322,20 +1322,27 @@ public class SpoonGraph extends Canvas
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    if (spoon.getTransMeta().nrSelectedSteps() <= 1)
+                    try
                     {
-                        spoon.dupeStep(stepMeta.getName());
-                    }
-                    else
-                    {
-                        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
+                        if (spoon.getTransMeta().nrSelectedSteps() <= 1)
                         {
-                            StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-                            if (stepMeta.isSelected())
+                            spoon.dupeStep(stepMeta.getName());
+                        }
+                        else
+                        {
+                            for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
                             {
-                                spoon.dupeStep(stepMeta.getName());
+                                StepMeta stepMeta = spoon.getTransMeta().getStep(i);
+                                if (stepMeta.isSelected())
+                                {
+                                    spoon.dupeStep(stepMeta.getName());
+                                }
                             }
                         }
+                    }
+                    catch(Exception ex)
+                    {
+                        new ErrorDialog(shell, spoon.props, Messages.getString("SpoonGraph.Dialog.ErrorDuplicatingStep.Title"), Messages.getString("SpoonGraph.Dialog.ErrorDuplicatingStep.Message"), ex); //$NON-NLS-1$ //$NON-NLS-2$
                     }
                 }
             });

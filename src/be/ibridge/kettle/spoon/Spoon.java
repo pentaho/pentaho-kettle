@@ -864,9 +864,9 @@ public class Spoon
           char chr  = (char)('1'+i );
           int accel =  SWT.CTRL | chr;
           String repository = ( lr[i]!=null && lr[i].length()>0 ) ? ( "["+lr[i]+"] " ) : ""; 
-          String filename = Const.FILE_SEPARATOR + lf[i];
+          String filename = RepositoryDirectory.DIRECTORY_SEPARATOR + lf[i];
           if (!lt[i]) filename = lf[i];
-          if (!ld[i].equals(Const.FILE_SEPARATOR))
+          if (!ld[i].equals(RepositoryDirectory.DIRECTORY_SEPARATOR))
           {
             filename=ld[i]+filename;
           }
@@ -1815,72 +1815,73 @@ public class Spoon
     
     public String editStepInfo(StepMeta stepMeta)
     {
-        String stepname=null;
-        
-        if (stepMeta!=null)
+        String stepname = null;
+
+        if (stepMeta != null)
         {
-            String name = stepMeta.getName();
-            
-            // Before we do anything, let's store the situation the way it was...
-            StepMeta before = (StepMeta)stepMeta.clone();
-            StepMetaInterface stepint = stepMeta.getStepMetaInterface();
             try
             {
+                String name = stepMeta.getName();
+
+                // Before we do anything, let's store the situation the way it was...
+                StepMeta before = (StepMeta) stepMeta.clone();
+                StepMetaInterface stepint = stepMeta.getStepMetaInterface();
                 StepDialogInterface dialog = stepint.getDialog(shell, stepMeta.getStepMetaInterface(), transMeta, name);
                 dialog.setRepository(rep);
                 stepname = dialog.open();
+
+                if (stepname != null)
+                {
+                    // OK, so the step has changed...
+                    //
+                    // First, backup the situation for undo/redo
+                    StepMeta after = (StepMeta) stepMeta.clone();
+                    addUndoChange(new StepMeta[] { before }, new StepMeta[] { after }, new int[] { transMeta.indexOfStep(stepMeta) });
+
+                    // Then, store the size of the
+                    // See if the new name the user enter, doesn't collide with another step.
+                    // If so, change the stepname and warn the user!
+                    //
+                    String newname = stepname;
+                    StepMeta smeta = transMeta.findStep(newname, stepMeta);
+                    int nr = 2;
+                    while (smeta != null)
+                    {
+                        newname = stepname + " " + nr;
+                        smeta = transMeta.findStep(newname);
+                        nr++;
+                    }
+                    if (nr > 2)
+                    {
+                        stepname = newname;
+                        MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+                        mb.setMessage(Messages.getString("Spoon.Dialog.StepnameExists.Message", stepname)); // $NON-NLS-1$
+                        mb.setText(Messages.getString("Spoon.Dialog.Tip.Message")); // $NON-NLS-1$
+                        mb.open();
+                    }
+                    stepMeta.setName(stepname);
+                    refreshTree(true); // Perhaps new connections were created in the step dialog.
+                }
+                else
+                {
+                    // Scenario: change connections and click cancel...
+                    // Perhaps new connections were created in the step dialog?
+                    if (transMeta.haveConnectionsChanged())
+                    {
+                        refreshTree(true);
+                    }
+                }
+                refreshGraph(); // name is displayed on the graph too.
+                setShellText();
             }
-            catch(Throwable e)
+            catch (Throwable e)
             {
                 if (shell.isDisposed()) return null;
-                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnableOpenDialog.Title"), Messages.getString("Spoon.Dialog.UnableOpenDialog.Message"), new Exception(e));//"Unable to open dialog for this step"
+                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnableOpenDialog.Title"), Messages
+                        .getString("Spoon.Dialog.UnableOpenDialog.Message"), new Exception(e));//"Unable to open dialog for this step"
             }
-
-            if (stepname!=null)
-            {
-                // OK, so the step has changed...
-                //
-                // First, backup the situation for undo/redo
-                StepMeta after = (StepMeta)stepMeta.clone();
-                addUndoChange(new StepMeta[] { before }, new StepMeta[] { after }, new int[] { transMeta.indexOfStep(stepMeta) }  );
-    
-                // Then, store the size of the 
-                // See if the new name the user enter, doesn't collide with another step. 
-                // If so, change the stepname and warn the user!
-                //
-                String newname=stepname;
-                StepMeta smeta = transMeta.findStep(newname, stepMeta);
-                int nr=2;
-                while (smeta!=null)
-                {
-                    newname = stepname+" "+nr;
-                    smeta = transMeta.findStep(newname);
-                    nr++;
-                }
-                if (nr>2)
-                {
-                    stepname=newname;
-                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-                    mb.setMessage(Messages.getString("Spoon.Dialog.StepnameExists.Message",stepname));//"This stepname already exists.  Spoon changed the stepname to ["+stepname+"]"
-                    mb.setText(Messages.getString("Spoon.Dialog.Tip.Message"));
-                    mb.open();
-                }
-                stepMeta.setName(stepname);
-                refreshTree(true);  // Perhaps new connections were created in the step dialog.             
-            }
-            else
-            {
-                // Scenario: change connections and click cancel...
-                // Perhaps new connections were created in the step dialog?
-                if (transMeta.haveConnectionsChanged())
-                {
-                    refreshTree(true);                  
-                }
-            }
-            refreshGraph();  // name is displayed on the graph too.
-            setShellText();
         }
-        
+
         return stepname;
     }
 
