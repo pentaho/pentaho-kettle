@@ -129,45 +129,58 @@ public class XMLInput extends BaseStep implements StepInterface
                 XMLInputFieldPosition pos = xmlInputField.getFieldPosition()[p];
                 debug="getRowFromXML: read from the selected node: field #"+i+" : position #"+p+": "+pos.toString();
 
-                if (pos.getType()==XMLInputFieldPosition.XML_ELEMENT)
+                switch(pos.getType())
                 {
-                    if (pos.getElementNr()<=1)
+                case XMLInputFieldPosition.XML_ELEMENT :
                     {
-                        Node subNode = XMLHandler.getSubNode(node, pos.getName());
-                        if (subNode!=null)
+                        if (pos.getElementNr()<=1)
                         {
-                            if (p==xmlInputField.getFieldPosition().length-1) // last level
+                            Node subNode = XMLHandler.getSubNode(node, pos.getName());
+                            if (subNode!=null)
                             {
-                                value = XMLHandler.getNodeValue(subNode);
+                                if (p==xmlInputField.getFieldPosition().length-1) // last level
+                                {
+                                    value = XMLHandler.getNodeValue(subNode);
+                                }
                             }
+                            else
+                            {
+                            	if (log.isDebug()) logDebug(Messages.getString("XMLInput.Log.UnableToFindPosition", pos.toString(), node.toString()));
+                            }
+                            node=subNode;
                         }
-                        else
+                        else // Multiple possible values: get number pos.getElementNr()!
                         {
-                        	if (log.isDebug()) logDebug(Messages.getString("XMLInput.Log.UnableToFindPosition", pos.toString(), node.toString()));
+                            Node subNode = XMLHandler.getSubNodeByNr(node, pos.getName(), pos.getElementNr()-1, false);
+                            if (subNode!=null)
+                            {
+                                if (p==xmlInputField.getFieldPosition().length-1) // last level
+                                {
+                                    value = XMLHandler.getNodeValue(subNode);
+                                }
+                            }
+                            else
+                            {
+                            	if (log.isDebug()) logDebug(Messages.getString("XMLInput.Log.UnableToFindPosition", pos.toString(), node.toString()));
+                            }
+                            node=subNode;
                         }
-                        node=subNode;
                     }
-                    else // Multiple possible values: get number pos.getElementNr()!
+                    break;
+                    
+                case XMLInputFieldPosition.XML_ATTRIBUTE:
                     {
-                        Node subNode = XMLHandler.getSubNodeByNr(node, pos.getName(), pos.getElementNr()-1, false);
-                        if (subNode!=null)
-                        {
-                            if (p==xmlInputField.getFieldPosition().length-1) // last level
-                            {
-                                value = XMLHandler.getNodeValue(subNode);
-                            }
-                        }
-                        else
-                        {
-                        	if (log.isDebug()) logDebug(Messages.getString("XMLInput.Log.UnableToFindPosition", pos.toString(), node.toString()));
-                        }
-                        node=subNode;
+                        value = XMLHandler.getTagAttribute(node, pos.getName());
                     }
+                    break;
+                case XMLInputFieldPosition.XML_ROOT:
+                    {
+                        value = XMLHandler.getNodeValue(node);
+                    }
+                    break;
+                default: break;
                 }
-                else
-                {
-                    value = XMLHandler.getTagAttribute(node, pos.getName());
-                }
+                
             }
             
             // OK, we have the string...

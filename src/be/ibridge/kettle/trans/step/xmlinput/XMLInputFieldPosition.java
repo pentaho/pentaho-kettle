@@ -9,6 +9,7 @@ public class XMLInputFieldPosition
 {
     public static final int XML_ELEMENT   = 1;
     public static final int XML_ATTRIBUTE = 2;
+    public static final int XML_ROOT      = 3;
     
     public static final String NR_MARKER = "/";
     
@@ -47,14 +48,14 @@ public class XMLInputFieldPosition
     {
         String enc="";
         
-        if (type==XML_ELEMENT)
+        switch(type)
         {
-            enc+="E=";
+        case XML_ELEMENT:   enc+="E"; break;
+        case XML_ATTRIBUTE: enc+="A"; break;
+        case XML_ROOT:      enc+="R"; break;
+        default:            enc+="?"; break;
         }
-        else
-        {
-            enc+="A=";
-        }
+        enc+="=";
         enc+=name;
         enc+=NR_MARKER+( elementNr<=0 ? 1 : elementNr );
         
@@ -99,6 +100,12 @@ public class XMLInputFieldPosition
         if (positionType.equalsIgnoreCase("A"))   // Attribute
         {
             this.type = XML_ATTRIBUTE;
+            this.name = positionName;
+        }
+        else
+        if (positionType.equalsIgnoreCase("R"))   // Root of the repeating element.  There is only one
+        {
+            this.type = XML_ROOT;
             this.name = positionName;
         }
         else

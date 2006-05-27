@@ -1056,7 +1056,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
                     Node itemNode = XMLHandler.getSubNodeByNr(rootNode, itemElement, i, false);
                     if (i>=meta.getNrRowsToSkip())
                     {
-                        getValues(itemNode, row, path);
+                        getValues(itemNode, row, path, 0);
                         
                         elementsFound++;
                         if (elementsFound>=maxElements && maxElements>0)
@@ -1094,7 +1094,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
      * @param node The node to examine
      * @param row The 
      */
-    private void getValues(Node node, Row row, ArrayList path) throws KettleException
+    private void getValues(Node node, Row row, ArrayList path, int level) throws KettleException
     {
         String baseName = "";
         for (int p=0;p<path.size();p++) 
@@ -1104,6 +1104,34 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
             if (!elementName.startsWith("#"))
             {
                 baseName+= new Value("p", elementName).initcap().getString();
+            }
+        }
+        
+        // Add the root element
+        if (level==0)
+        {
+            if (XMLHandler.getNodeValue(node)!=null)
+            {
+                XMLInputFieldPosition attrPos = new XMLInputFieldPosition(node.getNodeName(), XMLInputFieldPosition.XML_ROOT);
+                path.add(attrPos);
+                
+                String root      = new Value("a", node.getNodeName()).initcap().getString();
+                String fieldName = baseName+root;
+                
+                if (row.searchValueIndex(fieldName)<0) // Not there yet: add it!
+                {
+                    // Add the fieldname...
+                    Value field = new Value(fieldName, Value.VALUE_TYPE_STRING);
+                    
+                    // Add the path to this attribute to the origin of the field...
+                    String encoded = XMLInputFieldPosition.encodePath(path);
+                    field.setOrigin(encoded);
+                    
+                    row.addValue(field);
+                }
+                
+                // Now remove the root from the path again, it's not needed realy...
+                path.remove(path.size()-1);
             }
         }
         
@@ -1150,7 +1178,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
                     XMLInputFieldPosition xmlPos = new XMLInputFieldPosition(elements[e], XMLInputFieldPosition.XML_ELEMENT, o+1);
                     
                     path.add(xmlPos);
-                    getValues(itemNode, row, path);
+                    getValues(itemNode, row, path, level+1);
                     path.remove(path.size()-1); // remove the last one again
                 }
             }
