@@ -13,7 +13,6 @@
  **                                                                   **
  **********************************************************************/
 
- 
 package be.ibridge.kettle.core;
 
 import java.io.DataInputStream;
@@ -34,25 +33,28 @@ import be.ibridge.kettle.core.value.Value;
 /**
  * This class describes a single row in a stream of data.
  * A row is a array/list of Value objects.
- * Note that most methods in this class assume that a value with a certain name only occurs once in the Row.
- * 
+ *
+ * Note that most methods in this class assume that a value with a certain name
+ * only occurs once in the Row.
+ *
  * @author Matt
  * @since Beginning 2003.
  * @see be.ibridge.kettle.core.value.Value
- * 
+ *
  */
 public class Row implements XMLInterface, Comparable, Serializable
 {
     private final List list = new ArrayList();
-    
+
     public static final long serialVersionUID = 0x8D8EA0264F7A1C30L;
 
+    /** Ignore this row? */
 	private boolean ignore;
+	/** Logging date */
 	private Date    logdate;
-	
+
 	/**
 	 * Create a new empty row (with 0 values)
-	 *
 	 */
 	public Row()
 	{
@@ -63,12 +65,12 @@ public class Row implements XMLInterface, Comparable, Serializable
 	/**
 	 * Creates a new row as a duplicate of the given row.
 	 * The values are copied one by one into new values.
-	 * 
+	 *
 	 * @param r The row to be copied.
 	 */
 	public Row(Row r)  // Copy values in row!
 	{
-		this();		
+		this();
 		int i;
 
 		for (i=0;i<r.size();i++)
@@ -77,9 +79,10 @@ public class Row implements XMLInterface, Comparable, Serializable
 		}
 		setIgnore( r.isIgnored() );
 	}
-	
+
 	/**
-	 * Get the value on a given position in the row
+	 * Get the value on a given position in the row.
+	 *
 	 * @param index The position to look for
 	 * @return The Value on in the given index
 	 */
@@ -87,10 +90,10 @@ public class Row implements XMLInterface, Comparable, Serializable
 	{
 		return (Value)list.get(index);
 	}
-	
+
 	/**
 	 * Add a value after the last value of the row
-	 *  
+	 *
 	 * @param v The value to add to the row
 	 */
 	public void addValue(Value v)
@@ -99,7 +102,8 @@ public class Row implements XMLInterface, Comparable, Serializable
 	}
 
     /**
-     * Set the value on index idx
+     * Set the value on index idx.
+     *
      * @param idx The index
      * @param v The value to set
      */
@@ -107,10 +111,10 @@ public class Row implements XMLInterface, Comparable, Serializable
     {
         list.set(idx, v);
     }
-	
+
     /**
      * Add a value on a certain location in the row.
-     *  
+     *
      * @param idx The index where the value needs to be put in the row
      * @param v The value to add to the row
      */
@@ -118,42 +122,49 @@ public class Row implements XMLInterface, Comparable, Serializable
     {
         list.add(idx, v);
     }
-    
+
     /**
      * Add an object to the row.
+     *
      * @param obj the object to add
+     *
      * @deprecated
      */
     public void add(Object obj)
     {
         list.add(obj);
     }
-    
+
     /**
-     * Get an object from the row
+     * Get an object from the row.
+     *
      * @param idx the index to get the object from
      * @return the object
+     *
      * @deprecated
      */
     public Object get(int idx)
     {
         return list.get(idx);
     }
-    
+
     /**
-     * Remove an object in the row on index idx
+     * Remove an object in the row on index idx.
+     *
      * @param idx The object to remove
+     *
      * @deprecated
      */
     public void remove(int idx)
     {
         list.remove(idx);
     }
-    
+
 	/**
 	 * Remove a value with a given name from the row.
-	 * 
+	 *
 	 * @param valname The value name to remove from this row
+	 *
 	 * @return true if the value was found and removed, false if the value wasn't found.
 	 */
 	public boolean removeValue(String valname)
@@ -163,17 +174,17 @@ public class Row implements XMLInterface, Comparable, Serializable
 		list.remove(idx);
 		return true;
 	}
-    
+
     /**
-     * Remove a value on a certain index
-     * 
+     * Remove a value on a certain index.
+     *
      * @param idx the index to remove in the row
      */
     public void removeValue(int idx)
     {
         list.remove(idx);
     }
-    
+
     /**
      * Removes all values from the row.
      */
@@ -181,15 +192,16 @@ public class Row implements XMLInterface, Comparable, Serializable
     {
         list.clear();
     }
-	
+
 	/**
-	 * Add all the values of row r to the Row
+	 * Add all the values of row r to the Row.
+	 *
 	 * @param r The row to be added to this row.
 	 */
 	public void addRow(Row r)
 	{
 		if (r==null) return;
-		
+
 		int i;
 		for (i=0;i<r.size();i++)
 		{
@@ -197,10 +209,12 @@ public class Row implements XMLInterface, Comparable, Serializable
 			addValue(v1);
 		}
 	}
-	
+
 	/**
 	 * Merge the values of row r to this Row.
-	 * Merge means: only the values that are not yet in the row are added. (comparing on the value name)
+	 * Merge means: only the values that are not yet in the row are added
+	 * (comparing on the value name).
+	 *
 	 * @param r The row to be merged with this row
 	 */
 	public void mergeRow(Row r)
@@ -208,7 +222,7 @@ public class Row implements XMLInterface, Comparable, Serializable
         for (int x=0;x<r.size();x++)
         {
             Value field = r.getValue(x);
-            if (searchValue(field.getName())==null) 
+            if (searchValue(field.getName())==null)
             {
                 addValue(field); // Not in list yet: add
             }
@@ -216,87 +230,98 @@ public class Row implements XMLInterface, Comparable, Serializable
 	}
 
 	/**
-     * Search the Value by name in the row, return the Values index
+     * Search the Value by name in the row, return the Values index.
+     *
      * @param name the value name to search for.
      * @return the index of the value with the given name, -1 is nothing was found.
 	 */
 	public int searchValueIndex(String name)
 	{
 		if (name==null) return -1;
-		
+
 		for (int i = 0; i < size(); i++)
         {
             Value v = getValue(i);
-            if (v.getName().compareToIgnoreCase(name) == 0) { return i; }
+            if ( v.getName().equalsIgnoreCase(name) ) 
+            { 
+            	return i; 
+            }
         }
-		
+
 		return -1;
 	}
 
 	/**
-	 * Search the Value by name in the row
+	 * Search the Value by name in the row.
+	 *
 	 * @param name the value name to search for
 	 * @return the Value with the given name, null if nothing was found.
 	 */
 	public Value searchValue(String name)
 	{
 		if (name==null) return null;
-		
+
 		for (int i=0 ; i<size() ; i++ )
 		{
 			Value v = getValue(i);
-			
+
 			if ( v.getName().equalsIgnoreCase(name) )
 			{
 				return v;
 			}
 		}
-		
+
 		return null;
 	}
-    
+
+	/**
+	 * Return number of Values in Row.
+	 *
+	 * @return number of Values.
+	 */
     public int size()
     {
         return list.size();
     }
 
 	/**
-	 * Print the names and the String representations of the values of the Values in row to stdout.
+	 * Print the names and the String representations of the
+	 * values of the Values in row to stdout.
 	 */
 	public void print()
-	{	
+	{
 		int i;
 		for (i=0;i<size();i++)
 		{
 			System.out.println("Element["+i+"] = ["+getValue(i).getName()+"] = "+getValue(i).toString());
 		}
 	}
-	
+
 	/**
 	 * Convert the row to a String representation.
 	 * @return the row as a String.
 	 */
 	public String toString()
 	{
-		String retval="[";
-		
+		StringBuffer retval= new StringBuffer("[");
+
 		for (int i=0;i<size();i++)
 		{
 			Value value = getValue(i);
-			
-			if (i!=0) retval+=", ";
+
+			if (i!=0) retval.append(", ");
 			if (value!=null)
 			{
-				retval+=value.getName()+"="+value.toString(false);
+				retval.append(value.getName()).append("=").append(value.toString(false));
 			}
 			else
 			{
-				retval+="NULL";
+				retval.append("NULL");
 			}
 		}
-		retval+="]";
-		
-		return retval;
+		retval.append("]");
+
+		return retval.toString();
 	}
 
 	/**
@@ -306,35 +331,35 @@ public class Row implements XMLInterface, Comparable, Serializable
 	public String toStringMeta()
 	{
 		int i;
-		String retval="[";
-		
+		StringBuffer retval= new StringBuffer("[");
+
 		for (i=0;i<size();i++)
 		{
-			if (i!=0) retval+=", ";
+			if (i!=0) retval.append(", ");
 			if (getValue(i)!=null)
 			{
 				Value v=getValue(i);
-				retval+=v.getName()+"(";
-				retval+=v.getTypeDesc();
-				if (v.getLength()>0) 
+				retval.append(v.getName()).append("(");
+				retval.append(v.getTypeDesc());
+				if (v.getLength()>0)
 				{
-					retval+="(";
-					retval+=v.getLength();
-					if (v.getPrecision()>0)	retval+=","+v.getPrecision();
-					retval+=")";
+					retval.append("(");
+					retval.append(v.getLength());
+					if (v.getPrecision()>0)	retval.append(",").append(v.getPrecision());
+					retval.append(")");
 				}
-				retval+=")";
+				retval.append(")");
 			}
 			else
 			{
-				retval+="NULL";
+				retval.append("NULL");
 			}
 		}
-		retval+="]";
-		
-		return retval;
+		retval.append("]");
+
+		return retval.toString();
 	}
-	
+
 	/**
 	 * Marks this row as to be ignored by the next steps.
 	 */
@@ -342,27 +367,30 @@ public class Row implements XMLInterface, Comparable, Serializable
 	{
 		ignore=true;
 	}
-	
+
 	/**
 	 * Marks this row as to be ignored or not by the next steps.
+	 *
 	 * @param i true: ignore this row, false: don't ignore.
 	 */
 	public void setIgnore(boolean i)
 	{
 		ignore=i;
 	}
-	
+
 	/**
 	 * Check wether or not this row should be ignored...
+	 *
 	 * @return true if the row should be ignored.
 	 */
 	public boolean isIgnored()
 	{
 		return ignore;
 	}
-    
+
     /**
-     * Write the object to an ObjectOutputStream
+     * Write the object to an ObjectOutputStream.
+     *
      * @param out
      * @throws IOException
      */
@@ -370,24 +398,25 @@ public class Row implements XMLInterface, Comparable, Serializable
     {
         writeObj(new DataOutputStream(out));
     }
-    
+
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
     {
         readObj(new DataInputStream(in));
     }
-    
-	
+
+
     private void writeObj(DataOutputStream dos) throws IOException
     {
         // First handle the number of fields in a row
         dos.writeInt(size());
-    
+
         // Write all values in the row
         for (int i=0;i<size();i++) getValue(i).writeObj(dos);
     }
-    
+
 	/**
-	 * Write the content of the row to a DataOutputStream
+	 * Write the content of the row to a DataOutputStream.
+	 *
 	 * @param dos The DataOutputStream to write to
 	 * @throws KettleFileException if an error occurs.
 	 */
@@ -402,23 +431,24 @@ public class Row implements XMLInterface, Comparable, Serializable
 			throw new KettleFileException("Error writing row to output stream", e);
 		}
 	}
-    
+
     private void readObj(DataInputStream dis) throws IOException
     {
         // First handle the number of fields in a row
         int size=dis.readInt();
-        
+
         // get all values in the row
-        for (int i=0;i<size;i++) 
+        for (int i=0;i<size;i++)
         {
             Value v = new Value();
             v.readObj(dis);
             addValue(v);
         }
     }
-	
+
 	/**
-	 * Read a row of Values from an input-stream
+	 * Read a row of Values from an input-stream.
+	 *
 	 * @param dis The DataInputStream to read from
 	 */
 	public Row(DataInputStream dis) throws KettleFileException
@@ -438,7 +468,8 @@ public class Row implements XMLInterface, Comparable, Serializable
 	}
 
 	/**
-	 * Read a number of Values without meta-data into a row
+	 * Read a number of Values without meta-data into a row.
+	 *
 	 * @param dis The DataInputStream to read from
 	 * @param size the number or values to read
 	 * @param meta The description (name, type, length, precision) of the values to be read
@@ -456,28 +487,31 @@ public class Row implements XMLInterface, Comparable, Serializable
 			throw new KettleFileException("ROW Error reading row info",e);
 		}
 	}
-	
+
 	/**
-	 *  Write a row of Values to a DataOutputStream, without saving the meta-data.
+	 * Write a row of Values to a DataOutputStream, without saving the meta-data.
+	 *
 	 * @param dos The DataOutputStream to write to
 	 * @return true if the row was written successfuly, false if something went wrong.
 	 */
 	public boolean writeData(DataOutputStream dos) throws KettleFileException
 	{
 		Value v;
-		
+
 		// get all values in the row
 		for (int i=0;i<size();i++)
 		{
 			v=getValue(i);
 			v.writeData(dos);
 		}
-			
+
 		return true;
 	}
-	
+
     /**
-     * Compare 2 rows with each other using certain values in the rows and also considering an ascending clause.
+     * Compare 2 rows with each other using certain values in the rows and
+     * also considering an ascending clause.
+     *
      * @param r The row to compare with
      * @param fieldnrs The indexes of the values to compare
      * @param ascending an entry for each value to compare where true means and normal compare, false the reverse.
@@ -487,9 +521,11 @@ public class Row implements XMLInterface, Comparable, Serializable
     {
         return compare(r, fieldnrs, ascending, null);
     }
-    
+
 	/**
-	 * Compare 2 rows with each other using certain values in the rows and also considering an ascending clause.
+	 * Compare 2 rows with each other using certain values in the rows and
+	 * also considering an ascending clause.
+	 *
 	 * @param r The row to compare with
 	 * @param fieldnrs The indexes of the values to compare
 	 * @param ascending an entry for each value to compare where true means and normal compare, false the reverse.
@@ -501,30 +537,32 @@ public class Row implements XMLInterface, Comparable, Serializable
 		int i;
 		int len=fieldnrs.length;
 		Value v1, v2;
-		
+
 		for (i=0;i<len;i++)
 		{
 			v1=  getValue(fieldnrs[i]);
 			v2=r.getValue(fieldnrs[i]);
-			
-            if (caseInsensitive!=null) 
+
+            if (caseInsensitive!=null)
                 retval=v1.compare(v2, caseInsensitive[i]);
-            else 
+            else
                 retval=v1.compare(v2);
-			
-			if (!ascending[i]) 
+
+			if (!ascending[i])
 			{
-				retval=retval*(-1);
-			} 
-			
+				retval=-retval;
+			}
+
 			if (retval!=0) return retval;
 		}
-		
+
 		return retval;
 	}
 
 	/**
-	 * Compare 2 rows with each other using one value in the rows and also considering an ascending clause.
+	 * Compare 2 rows with each other using one value in the rows and
+	 * also considering an ascending clause.
+	 *
 	 * @param r The row to compare with
 	 * @param fieldnr The indexe of the values to compare
 	 * @param sort_desc true means and normal compare, false the reverse.
@@ -534,23 +572,23 @@ public class Row implements XMLInterface, Comparable, Serializable
 	{
 		int retval=0;
 		Value v1, v2;
-		
+
 		v1=  getValue(fieldnr);
 		v2=r.getValue(fieldnr);
-			
+
 		retval=v1.compare(v2);
-			
-		if (sort_desc) 
+
+		if (sort_desc)
 		{
-			retval=retval*(-1);
+			retval=-retval;
 		}
-		
+
 		return retval;
 	}
 
     /**
      *  Compare 2 complete rows of values with each other.
-     *  Strings are compare case insensitive
+     *  Strings are compared in a case insensitive way
      *  @param r the row to compare with
      *  @return -1 if the row is smaller, 0 if both rows are equal, 1 if the row is larger.
      */
@@ -570,20 +608,20 @@ public class Row implements XMLInterface, Comparable, Serializable
 		int i;
 		int len=r.size();
 		Value v1, v2;
-		
+
 		for (i=0;i<len;i++)
 		{
 			v1=  getValue(i);
 			v2=r.getValue(i);
-			
+
 			retval=v1.compare(v2, caseInsensitive);
-			
+
 			if (retval!=0) return retval;
 		}
-		
+
 		return 0;
 	}
-    
+
     public int compareTo(Object obj)
     {
         return compare((Row)obj);
@@ -597,22 +635,25 @@ public class Row implements XMLInterface, Comparable, Serializable
 		else
 			return false;
 	}
-	
+
 	public int hashCode()
 	{
 		int hash=0;
 		int i;
-		
+
 		for (i=0;i<size();i++)
 		{
 			hash^=getValue(i).hashCode();
 		}
-		
+
 		return hash;
 	}
-	
+
 	/**
-	 * Returns an exact copy of this row
+	 * Returns an exact copy of this row. On purpose not the real
+	 * clone() method (notice the uppercase 'C') because of (rhino) javascript
+	 * problems with it.
+	 *
 	 * @return an exact copy of this row
 	 */
 	public Row Clone()  // Clone the row!
@@ -627,16 +668,16 @@ public class Row implements XMLInterface, Comparable, Serializable
 	{
 		logdate=new Date();
 	}
-	
+
 	/**
 	 * Get the logging date of this row.
 	 * @return the logging date of this row.
 	 */
-	public Date getLogdate() 
-	{ 
-		return logdate; 
+	public Date getLogdate()
+	{
+		return logdate;
 	}
-	
+
 	/**
 	 * Get the logging time for this row.
 	 * @return the logging time for this row.
@@ -649,8 +690,9 @@ public class Row implements XMLInterface, Comparable, Serializable
 
 	/**
 	 * Checks whether or not the row is empty
-	 * A row is empty if all the values in the row are Null
+	 * A row is empty if all the values in the row are null
 	 * A row is empty if there are no values in the row.
+	 *
 	 * @return true if the row is considered empty, false if the row is not empty.
 	 */
 	public boolean isEmpty()
@@ -659,11 +701,14 @@ public class Row implements XMLInterface, Comparable, Serializable
 		for (int i=0;i<size();i++)
 		{
 			Value v = getValue(i);
-			if (v!=null && !v.isNull()) empty=false;
+			if (v!=null && !v.isNull())  {
+				empty=false;
+				break;
+			}
 		}
 		return empty;
 	}
-	
+
 	/**
 	 * Get an array of the names of all the Values in the Row.
 	 * @return an array of Strings: the names of all the Values in the Row.
@@ -671,36 +716,38 @@ public class Row implements XMLInterface, Comparable, Serializable
 	public String[] getFieldNames()
 	{
 		String retval[] = new String[size()];
-		
-		for (int i=0;i<size();i++) 
+
+		for (int i=0;i<size();i++)
 		{
 			retval[i]=getValue(i).getName();
 		}
-		
+
 		return retval;
 	}
-	
+
 	/**
-	 * Get an array of strings showing the name of the values in the row padded to a maximum length, followed by the types of the values.
-	 * 
+	 * Get an array of strings showing the name of the values in the row
+	 * padded to a maximum length, followed by the types of the values.
+	 *
 	 * @param maxlen The length to which the name will be padded.
 	 * @return an array of strings: the names and the types of the fieldnames in the row.
 	 */
 	public String[] getFieldNamesAndTypes(int maxlen)
 	{
 		String retval[] = new String[size()];
-		
-		for (int i=0;i<size();i++) 
+
+		for (int i=0;i<size();i++)
 		{
 			Value v = getValue(i);
 			retval[i]= Const.rightPad(v.getName(), maxlen)+"   ("+v.getTypeDesc()+")";
 		}
-		
+
 		return retval;
 	}
 
 	/**
-	 * Search for a value, if it doesn't occur in the row, return the default value
+	 * Search for a value, if it doesn't occur in the row, return the default value.
+	 *
 	 * @param valuename The valuename to look for
 	 * @param def The default value to return
 	 * @return The boolean representation of the value found or the default
@@ -713,7 +760,8 @@ public class Row implements XMLInterface, Comparable, Serializable
 	}
 
 	/**
-	 * Search for a value, if it doesn't occur in the row, return the default value
+	 * Search for a value, if it doesn't occur in the row, return the default value.
+	 *
 	 * @param valuename The valuename to look for
 	 * @param def The default value to return
 	 * @return The String representation of the value found or the default
@@ -726,7 +774,8 @@ public class Row implements XMLInterface, Comparable, Serializable
 	}
 
 	/**
-	 * Search for a value, if it doesn't occur in the row, return the default value
+	 * Search for a value, if it doesn't occur in the row, return the default value.
+	 *
 	 * @param valuename The valuename to look for
 	 * @param def The default value to return
 	 * @return The Date representation of the value found or the default
@@ -739,7 +788,8 @@ public class Row implements XMLInterface, Comparable, Serializable
 	}
 
 	/**
-	 * Search for a value, if it doesn't occur in the row, return the default value
+	 * Search for a value, if it doesn't occur in the row, return the default value.
+	 *
 	 * @param valuename The valuename to look for
 	 * @param def The default value to return
 	 * @return The double representation of the value found or the default
@@ -752,7 +802,8 @@ public class Row implements XMLInterface, Comparable, Serializable
 	}
 
 	/**
-	 * Search for a value, if it doesn't occur in the row, return the default value
+	 * Search for a value, if it doesn't occur in the row, return the default value.
+	 *
 	 * @param valuename The valuename to look for
 	 * @param def The default value to return
 	 * @return The long integer representation of the value found or the default
@@ -765,7 +816,8 @@ public class Row implements XMLInterface, Comparable, Serializable
 	}
 
 	/**
-	 * Search for a value, if it doesn't occur in the row, return the default value
+	 * Search for a value, if it doesn't occur in the row, return the default value.
+	 *
 	 * @param valuename The valuename to look for
 	 * @param def The default value to return
 	 * @return The short integer representation of the value found or the default
@@ -778,38 +830,39 @@ public class Row implements XMLInterface, Comparable, Serializable
 	}
 
 	/**
-	 * Return the XML representation of a row
+	 * Return the XML representation of a row.
+	 *
 	 * @return The XML representation of this row
 	 */
 	public String getXML()
 	{
-		String retval="<row>";
-		retval+=XMLHandler.addTagValue("logdate", logdate);
+		StringBuffer retval= new StringBuffer("<row>");
+		retval.append(XMLHandler.addTagValue("logdate", logdate));
 		for (int i=0;i<size();i++)
 		{
-			retval+=getValue(i).getXML();
+			retval.append(getValue(i).getXML());
 		}
-		retval+="</row>"+Const.CR;
-		
-		return retval;
+		retval.append("</row>").append(Const.CR);
+
+		return retval.toString();
 	}
-    
+
     public static final void sortRows(List rows, int fieldNrs[], boolean ascDesc[])
     {
         final int fieldNumbers[] = fieldNrs;
         final boolean ascending[] = ascDesc;
-        
+
         Comparator comparator = new Comparator()
         {
             public int compare(Object o1, Object o2)
             {
                 Row one = (Row)o1;
                 Row two = (Row)o2;
-                
+
                 return one.compare(two, fieldNumbers, ascending);
             }
         };
-        
+
         Collections.sort(rows, comparator);
     }
 }
