@@ -747,54 +747,54 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(512);
 		
-		retval.append("      " + XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      " + XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval.append("      " + XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      " + XMLHandler.addTagValue("update", update)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("table", tableName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("connection", databaseMeta == null ? "" : databaseMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("      ").append(XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("update", update)); //$NON-NLS-1$ //$NON-NLS-2$
 
-		retval.append("      <fields>" + Const.CR); //$NON-NLS-1$
+		retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
 		for (int i = 0; i < keyStream.length; i++)
 		{
-			retval.append("        <key>" + Const.CR); //$NON-NLS-1$
-			retval.append("          " + XMLHandler.addTagValue("name", keyStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("          " + XMLHandler.addTagValue("lookup", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("          </key>" + Const.CR); //$NON-NLS-1$
+			retval.append("        <key>").append(Const.CR); //$NON-NLS-1$
+			retval.append("          ").append(XMLHandler.addTagValue("name", keyStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("          ").append(XMLHandler.addTagValue("lookup", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        </key>" + Const.CR); //$NON-NLS-1$
 		}
 
-		retval.append("        <date>" + Const.CR); //$NON-NLS-1$
-		retval.append("          " + XMLHandler.addTagValue("name", dateField)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          " + XMLHandler.addTagValue("from", dateFrom)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          " + XMLHandler.addTagValue("to", dateTo)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          </date>" + Const.CR); //$NON-NLS-1$
+		retval.append("        <date>").append(Const.CR); //$NON-NLS-1$
+		retval.append("          ").append(XMLHandler.addTagValue("name", dateField)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          ").append(XMLHandler.addTagValue("from", dateFrom)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          ").append(XMLHandler.addTagValue("to", dateTo)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("        </date>").append(Const.CR); //$NON-NLS-1$
 
 		if (fieldStream != null)
 			for (int i = 0; i < fieldStream.length; i++)
 			{
 				if (fieldStream[i] != null)
 				{
-					retval.append("        <field>" + Const.CR); //$NON-NLS-1$
-					retval.append("          " + XMLHandler.addTagValue("name", fieldStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
-					retval.append("          " + XMLHandler.addTagValue("lookup", fieldLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-					retval.append("          " + XMLHandler.addTagValue("update", getUpdateType(update, fieldUpdate[i]))); //$NON-NLS-1$ //$NON-NLS-2$
-					retval.append("          </field>" + Const.CR); //$NON-NLS-1$
+					retval.append("        <field>").append(Const.CR); //$NON-NLS-1$
+					retval.append("          ").append(XMLHandler.addTagValue("name", fieldStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					retval.append("          ").append(XMLHandler.addTagValue("lookup", fieldLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
+					retval.append("          ").append(XMLHandler.addTagValue("update", getUpdateType(update, fieldUpdate[i]))); //$NON-NLS-1$ //$NON-NLS-2$
+					retval.append("        </field>").append(Const.CR); //$NON-NLS-1$
 				}
 			}
-		retval.append("        <return>" + Const.CR); //$NON-NLS-1$
-		retval.append("          " + XMLHandler.addTagValue("name", keyField)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          " + XMLHandler.addTagValue("rename", keyRename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          " + XMLHandler.addTagValue("creation_method", techKeyCreation)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          " + XMLHandler.addTagValue("use_autoinc", autoIncrement)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          " + XMLHandler.addTagValue("version", versionField)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("        </return>" + Const.CR); //$NON-NLS-1$
+		retval.append("        <return>").append(Const.CR); //$NON-NLS-1$
+		retval.append("          ").append(XMLHandler.addTagValue("name", keyField)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          ").append(XMLHandler.addTagValue("rename", keyRename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          ").append(XMLHandler.addTagValue("creation_method", techKeyCreation)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          ").append(XMLHandler.addTagValue("use_autoinc", autoIncrement)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          ").append(XMLHandler.addTagValue("version", versionField)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("        </return>").append(Const.CR); //$NON-NLS-1$
 
-		retval.append("      </fields>" + Const.CR); //$NON-NLS-1$
+		retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
 
 		// If sequence is empty: use auto-increment field!
-		retval.append("      " + XMLHandler.addTagValue("sequence", sequenceName)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      " + XMLHandler.addTagValue("min_year", minYear)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      " + XMLHandler.addTagValue("max_year", maxYear)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("sequence", sequenceName)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("min_year", minYear)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("max_year", maxYear)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		return retval.toString();
 	}
