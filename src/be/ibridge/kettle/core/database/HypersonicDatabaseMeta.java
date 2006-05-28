@@ -14,7 +14,6 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 {
 	/**
 	 * Construct a new database connection.
-	 * 
 	 */
 	public HypersonicDatabaseMeta(String name, String access, String host, String db, String port, String user, String pass)
 	{
@@ -74,10 +73,20 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 		}
 		else
 		{
-			return "jdbc:hsqldb:hsql://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
+			String port = getDatabasePortNumberString();
+			if ( "0".equals(port) ) 
+			{
+				// When no port is specified, or port is 0 support local/memory
+				// HSQLDB databases.
+			    return "jdbc:hsqldb:"+getDatabaseName();
+			}
+			else
+			{
+			    return "jdbc:hsqldb:hsql://"+getHostname()+ ":" + port +"/"+getDatabaseName();
+			}				
 		}
 	}
-
+	
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
@@ -120,19 +129,19 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 
 	public String getFieldDefinition(Value v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
-		String retval="";
+		StringBuffer retval=new StringBuffer();
 		
 		String fieldname = v.getName();
 		int    length    = v.getLength();
 		int    precision = v.getPrecision();
 		
-		if (add_fieldname) retval+=fieldname+" ";
+		if (add_fieldname) retval.append(fieldname).append(" ");
 		
 		int type         = v.getType();
 		switch(type)
 		{
-		case Value.VALUE_TYPE_DATE   : retval+="TIMESTAMP"; break;
-		case Value.VALUE_TYPE_BOOLEAN: retval+="CHAR(1)"; break;
+		case Value.VALUE_TYPE_DATE   : retval.append("TIMESTAMP"); break;
+		case Value.VALUE_TYPE_BOOLEAN: retval.append("CHAR(1)"); break;
 		case Value.VALUE_TYPE_NUMBER : 
 		case Value.VALUE_TYPE_INTEGER: 
         case Value.VALUE_TYPE_BIGNUMBER: 
@@ -140,7 +149,7 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 			    fieldname.equalsIgnoreCase(pk)    // Primary key
 			    ) 
 			{
-				retval+="BIGSERIAL";
+				retval.append("BIGSERIAL");
 			} 
 			else
 			{
@@ -148,23 +157,23 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 				{
 					if (precision>0 || length>18)
 					{
-						retval+="NUMERIC("+length+", "+precision+")";
+						retval.append("NUMERIC(").append(length).append(", ").append(precision).append(')');
 					}
 					else
 					{
 						if (length>9)
 						{
-							retval+="BIGINT";
+							retval.append("BIGINT");
 						}
 						else
 						{
 							if (length<5)
 							{
-								retval+="SMALLINT";
+								retval.append("SMALLINT");
 							}
 							else
 							{
-								retval+="INTEGER";
+								retval.append("INTEGER");
 							}
 						}
 					}
@@ -172,36 +181,36 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 				}
 				else
 				{
-					retval+="DOUBLE PRECISION";
+					retval.append("DOUBLE PRECISION");
 				}
 			}
 			break;
 		case Value.VALUE_TYPE_STRING:
 			if (length>=DatabaseMeta.CLOB_LENGTH)
 			{
-				retval+="TEXT";
+				retval.append("TEXT");
 			}
 			else
 			{
-				retval+="VARCHAR"; 
+				retval.append("VARCHAR"); 
 				if (length>0)
 				{
-					retval+="("+length;
+					retval.append('(').append(length);
 				}
 				else
 				{
-					retval+="("; // Maybe use some default DB String length?
+					retval.append('('); // Maybe use some default DB String length?
 				}
-				retval+=")";
+				retval.append(')');
 			}
 			break;
 		default:
-			retval+=" UNKNOWN";
+			retval.append(" UNKNOWN");
 			break;
 		}
 		
-		if (add_cr) retval+=Const.CR;
+		if (add_cr) retval.append(Const.CR);
 		
-		return retval;
+		return retval.toString();
 	}
 }
