@@ -1132,80 +1132,82 @@ public class Database
 				 * ;
 				 */
 				 
-				String sql="INSERT INTO "+databaseMeta.quoteField(table)+"( ";
+				StringBuffer sql = new StringBuffer(100);
+				sql.append("INSERT INTO ").append(databaseMeta.quoteField(table)).append("( ");
 				comma=false;
 	
 				if (!autoinc) // NO AUTOINCREMENT 
 				{
-					sql+=databaseMeta.quoteField(keyfield);
+					sql.append(databaseMeta.quoteField(keyfield));
 					comma=true;
 				}
 				else
 				if (databaseMeta.needsPlaceHolder()) 
 				{
-					sql+="0";   // placeholder on informix!  Will be replaced in table by real autoinc value.
+					sql.append('0');   // placeholder on informix!  Will be replaced in table by real autoinc value.
 					comma=true;
 				} 
 				
 				if (crc)
 				{
-					if (comma) sql+=", ";
-					sql+=databaseMeta.quoteField(crcfield);
+					if (comma) sql.append(", ");
+					sql.append(databaseMeta.quoteField(crcfield));
 					comma=true;
 				}
 				
 				for (int i=0;i<keylookup.length;i++)
 				{
-					if (comma) sql+=", "; 
-					sql+=databaseMeta.quoteField(keylookup[i]);
+					if (comma) sql.append(", "); 
+					sql.append(databaseMeta.quoteField(keylookup[i]));
 					comma=true;
 				}
 				
-				sql+=") VALUES (";
+				sql.append(") VALUES (");
 				
 				comma=false;
 				
 				if (keyfield!=null)
 				{
-					sql+="?";
+					sql.append('?');
 					comma=true;
 				}
 				if (crc)
 				{
-					if (comma) sql+=",";
-					sql+="?";
+					if (comma) sql.append(',');
+					sql.append('?');
 					comma=true;
 				}
 	
 				for (int i=0;i<keylookup.length;i++)
 				{
-					if (comma) sql+=","; else comma=true;
-					sql+="?";
+					if (comma) sql.append(','); else comma=true;
+					sql.append('?');
 				}
 				
-				sql+=" )";
+				sql.append(" )");
 	
+				String sqlStatement = sql.toString();
 				try
 				{
 					debug="First: prepare statement";
 					if (keyfield==null)
 					{
-						log.logDetailed(toString(), "SQL with return keys: "+sql);
-						prepStatementInsert=connection.prepareStatement(databaseMeta.stripCR(sql), Statement.RETURN_GENERATED_KEYS);
+						log.logDetailed(toString(), "SQL with return keys: "+sqlStatement);
+						prepStatementInsert=connection.prepareStatement(databaseMeta.stripCR(sqlStatement), Statement.RETURN_GENERATED_KEYS);
 					}
 					else
 					{
-						log.logDetailed(toString(), "SQL without return keys: "+sql);
-						prepStatementInsert=connection.prepareStatement(databaseMeta.stripCR(sql));
+						log.logDetailed(toString(), "SQL without return keys: "+sqlStatement);
+						prepStatementInsert=connection.prepareStatement(databaseMeta.stripCR(sqlStatement));
 					}
 				}
 				catch(SQLException ex) 
 				{
-					throw new KettleDatabaseException("Unable to prepare combi insert statement : "+Const.CR+sql, ex);
+					throw new KettleDatabaseException("Unable to prepare combi insert statement : "+Const.CR+sqlStatement, ex);
 				}
 				catch(Exception ex)
 				{
-					throw new KettleDatabaseException("Unable to prepare combi insert statement : "+Const.CR+sql, ex);
+					throw new KettleDatabaseException("Unable to prepare combi insert statement : "+Const.CR+sqlStatement, ex);
 				}
 			}
 			
@@ -2841,7 +2843,7 @@ public class Database
 							   )
 		throws KettleDatabaseException
 	{
-		String sql;
+		StringBuffer sql = new StringBuffer(100);
 		int i;
 		boolean comma;
 		
@@ -2864,36 +2866,37 @@ public class Database
 		 * ;
 		 * 
 		 */
-		sql = "SELECT "+retval+Const.CR+"FROM "+table+Const.CR+"WHERE ";
+		sql.append("SELECT ").append(retval).append(Const.CR).append("FROM ").append(table).append(Const.CR).append("WHERE ");
 		comma=false;
 		
 		if (crc)
 		{
-			sql+=crcfield+" = ? "+Const.CR;
+			sql.append(crcfield).append(" = ? ").append(Const.CR);
 			comma=true;
 		}
 		else
 		{
-			sql+="( ( ";
+			sql.append("( ( ");
 		}
 		
 		for (i=0;i<keys.length;i++)
 		{
 			if (comma)
 			{
-				sql += " AND ( ( ";
+				sql.append(" AND ( ( ");
 			}
 			else
 			{ 
 				comma=true; 
 			}
-			sql += keys[i]+" = ? ) OR ( "+keys[i]+" IS NULL AND ? IS NULL ) )"+Const.CR;
+			sql.append(keys[i]).append(" = ? ) OR ( ").append(keys[i]).append(" IS NULL AND ? IS NULL ) )").append(Const.CR);
 		}
 		
 		try
 		{
-			log.logDebug(toString(), "preparing combi-lookup statement:"+Const.CR+sql);
-			prepStatementLookup=connection.prepareStatement(databaseMeta.stripCR(sql));
+			String sqlStatement = sql.toString();
+			log.logDebug(toString(), "preparing combi-lookup statement:"+Const.CR+sqlStatement);
+			prepStatementLookup=connection.prepareStatement(databaseMeta.stripCR(sqlStatement));
 			prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
 		}
 		catch(SQLException ex) 
