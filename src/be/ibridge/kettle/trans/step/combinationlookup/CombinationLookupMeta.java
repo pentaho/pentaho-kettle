@@ -445,35 +445,35 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(512);
 
-		retval.append("      "+XMLHandler.addTagValue("table", tablename)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("connection", database==null?"":database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		retval.append("      "+XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("replace", replaceFields)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("crc", useHash)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("      "+XMLHandler.addTagValue("crcfield", hashField)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("table", tablename)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("connection", database==null?"":database.getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+		retval.append("      ").append(XMLHandler.addTagValue("commit", commitSize)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("cache_size", cacheSize)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("replace", replaceFields)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("crc", useHash)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("crcfield", hashField)); //$NON-NLS-1$ //$NON-NLS-2$
 
-		retval.append("      <fields>"+Const.CR); //$NON-NLS-1$
+		retval.append("      <fields>").append(Const.CR); //$NON-NLS-1$
 		for (int i=0;i<keyField.length;i++)
 		{
-			retval.append("        <key>"+Const.CR); //$NON-NLS-1$
-			retval.append("          "+XMLHandler.addTagValue("name",   keyField[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("          "+XMLHandler.addTagValue("lookup", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
-			retval.append("          </key>"+Const.CR); //$NON-NLS-1$
+			retval.append("        <key>").append(Const.CR); //$NON-NLS-1$
+			retval.append("          ").append(XMLHandler.addTagValue("name",   keyField[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("          ").append(XMLHandler.addTagValue("lookup", keyLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        </key>").append(Const.CR); //$NON-NLS-1$
 		}
 
-		retval.append("        <return>"+Const.CR); //$NON-NLS-1$
-		retval.append("          "+XMLHandler.addTagValue("name", technicalKeyField)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          "+XMLHandler.addTagValue("creation_method", techKeyCreation)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("          "+XMLHandler.addTagValue("use_autoinc", useAutoinc)); //$NON-NLS-1$ //$NON-NLS-2$
-		retval.append("        </return>"+Const.CR); //$NON-NLS-1$
+		retval.append("        <return>").append(Const.CR); //$NON-NLS-1$
+		retval.append("          ").append(XMLHandler.addTagValue("name", technicalKeyField)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          ").append(XMLHandler.addTagValue("creation_method", techKeyCreation)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("          ").append(XMLHandler.addTagValue("use_autoinc", useAutoinc)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("        </return>").append(Const.CR); //$NON-NLS-1$
 
-		retval.append("      </fields>"+Const.CR); //$NON-NLS-1$
+		retval.append("      </fields>").append(Const.CR); //$NON-NLS-1$
 
 		// If sequence is empty: use auto-increment field!
-		retval.append("      "+XMLHandler.addTagValue("sequence", sequenceFrom)); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      ").append(XMLHandler.addTagValue("sequence", sequenceFrom)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		return retval.toString();
 	}

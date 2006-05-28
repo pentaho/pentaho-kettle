@@ -12,11 +12,11 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 
 package be.ibridge.kettle.trans.step.combinationlookup;
 
-import java.util.HashMap;
+import java.util.Map;
 
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.trans.step.BaseStepData;
@@ -31,15 +31,15 @@ public class CombinationLookupData extends BaseStepData implements StepDataInter
 {
 	public Database db;
 	public int keynrs[];      // nrs in row of the keys
-	
-	public HashMap cache;  
+
+	public Map cache;
 
 	/**
 	 *  Default Constructor
 	 */
 	public CombinationLookupData()
 	{
-		super();	
+		super();
 		db=null;
 	}
 }
