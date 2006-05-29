@@ -93,7 +93,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	public static final int TYPE_DATABASE_POSTGRES    =  7;
 
 	/**
-	 * Connection to an Intersystems Cachï¿½ database
+	 * Connection to an Intersystems Caché database
 	 */
 	public static final int TYPE_DATABASE_CACHE       =  8;
 
@@ -1341,7 +1341,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         }
         else
         {
-            if (hasSpacesInField(field))
+            if (hasSpacesInField(field) || hasSpecialCharInField(field))
             {
                 return getStartQuote()+field+getEndQuote();
             }
@@ -1396,6 +1396,19 @@ public class DatabaseMeta implements Cloneable, XMLInterface
     public boolean hasSpacesInField(String fieldname)
     {
         if (fieldname.indexOf(" ")>=0) return true; 
+        return false;
+    }
+    
+    /**
+     * Detects if a field has spaces in the name.  We need to quote the field in that case. 
+     * @param fieldname The fieldname to check for spaces
+     * @return true if the fieldname contains spaces
+     */
+    public boolean hasSpecialCharInField(String fieldname)
+    {
+        if (fieldname.indexOf("/")>=0) return true; 
+        if (fieldname.indexOf("-")>=0) return true; 
+        if (fieldname.indexOf("+")>=0) return true; 
         return false;
     }
     
