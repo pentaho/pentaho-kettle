@@ -244,11 +244,14 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("  <hop> "); //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("from",    from_step.getName(), false)); //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("to",      to_step.getName(), false)); //$NON-NLS-1$
-		retval.append(XMLHandler.addTagValue("enabled", enabled, false)); //$NON-NLS-1$
-		retval.append(" </hop>"); //$NON-NLS-1$
+        if (from_step!=null && to_step!=null)
+        {
+    		retval.append("  <hop> "); //$NON-NLS-1$
+    		retval.append(XMLHandler.addTagValue("from",    from_step.getName(), false)); //$NON-NLS-1$
+    		retval.append(XMLHandler.addTagValue("to",      to_step.getName(), false)); //$NON-NLS-1$
+    		retval.append(XMLHandler.addTagValue("enabled", enabled, false)); //$NON-NLS-1$
+    		retval.append(" </hop>"); //$NON-NLS-1$
+        }
 		
 		return retval.toString();
 	}
