@@ -2601,7 +2601,7 @@ public class Spoon
         
             switch(answer)
             {
-            case SWT.YES: saveFile(); exit=true; showWarning=false; break;
+            case SWT.YES: exit=saveFile(); showWarning=false; break;
             case SWT.NO:  exit=true; showWarning=false; break;
             case SWT.CANCEL: 
                 exit=false;
@@ -2645,23 +2645,25 @@ public class Spoon
         return exit;
     }
     
-    public void saveFile()
+    public boolean saveFile()
     {
+        boolean saved=false;
+        
         log.logDetailed(toString(), Messages.getString("Spoon.Log.SaveToFileOrRepository"));//"Save to file or repository..."
         
         if (rep!=null)
         {
-            saveRepository();
+            saved=saveRepository();
         }
         else
         {
             if (transMeta.getFilename()!=null)
             {
-                save(transMeta.getFilename());
+                saved=save(transMeta.getFilename());
             }
             else
             {
-                saveFileAs();
+                saved=saveFileAs();
             }
         }
         
@@ -2673,14 +2675,16 @@ public class Spoon
         {
             new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorSavingDatabaseCache.Title"), Messages.getString("Spoon.Dialog.ErrorSavingDatabaseCache.Message"), e);//"An error occured saving the database cache to disk"
         }
+        
+        return saved;
     }
     
-    public void saveRepository()
+    public boolean saveRepository()
     {
-        saveRepository(false);
+        return saveRepository(false);
     }
 
-    public void saveRepository(boolean ask_name)
+    public boolean saveRepository(boolean ask_name)
     {
         log.logDetailed(toString(), Messages.getString("Spoon.Log.SaveToRepository"));//"Save to repository..."
         if (rep!=null)
@@ -2714,6 +2718,7 @@ public class Spoon
                         response = mb.open();
                     }
                     
+                    boolean saved=false;
                     if (response == SWT.YES)
                     {
                         shell.setCursor(cursor_hourglass);
@@ -2726,6 +2731,7 @@ public class Spoon
                         TransSaveProgressDialog tspd = new TransSaveProgressDialog(log, props, shell, rep, transMeta);
                         if (tspd.open())
                         {
+                            saved=true;
                             if (!props.getSaveConfirmation())
                             {
                                 MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
@@ -2751,6 +2757,7 @@ public class Spoon
                         }
                         shell.setCursor(null);
                     }
+                    return saved;
                 }
                 else
                 {
@@ -2768,25 +2775,32 @@ public class Spoon
             mb.setText(Messages.getString("Spoon.Dialog.NoRepositoryConnection.Title"));//"No repository available."
             mb.open();
         }
+        return false;
     }
 
-    public void saveFileAs()
+    public boolean saveFileAs()
     {
+        boolean saved=false;
+        
         log.logBasic(toString(), Messages.getString("Spoon.Log.SaveAs"));//"Save as..."
 
         if (rep!=null)
         {
             transMeta.setID(-1L);
-            saveRepository(true);
+            saved=saveRepository(true);
         }
         else
         {
-            saveXMLFile();
+            saved=saveXMLFile();
         }
+        
+        return saved;
     }
     
-    private void saveXMLFile()
+    private boolean saveXMLFile()
     {
+        boolean saved=false;
+        
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
         dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
         dialog.setFilterExtensions(Const.STRING_TRANS_FILTER_EXT);
@@ -2820,20 +2834,25 @@ public class Spoon
             }
             if (id==SWT.YES)
             {
-                save(fname);
+                saved=save(fname);
                 setFilename(fname);
             }
-        } 
+        }
+        
+        return saved;
     }
     
-    private void save(String fname)
+    private boolean save(String fname)
     {
+        boolean saved = false;
         String xml = XMLHandler.getXMLHeader() + transMeta.getXML();
         try
         {
             DataOutputStream dos = new DataOutputStream(new FileOutputStream(new File(fname)));
             dos.write(xml.getBytes(Const.XML_ENCODING));
             dos.close();
+
+            saved=true;
 
             // Handle last opened files...
             props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fname, Const.FILE_SEPARATOR, false, "");
@@ -2852,6 +2871,8 @@ public class Spoon
             mb.setText(Messages.getString("Spoon.Dialog.ErrorSavingFile.Title"));//"ERROR"
             mb.open();
         }
+        
+        return saved;
     }
     
     public void helpAbout()
