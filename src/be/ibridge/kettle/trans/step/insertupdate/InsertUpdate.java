@@ -61,7 +61,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 			debug=Messages.getString("InsertUpdate.Debug.FirstRunInitialize"); //$NON-NLS-1$
 			first=false;
 			
-			data.dblup.setLookup(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup(), null, null);
+			data.db.setLookup(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup(), null, null);
             
             Row ins = new Row();
             // Insert the update fields: just names.  Type doesn't matter!
@@ -72,11 +72,11 @@ public class InsertUpdate extends BaseStep implements StepInterface
                     ins.addValue( new Value(meta.getUpdateLookup()[i]) );
                 }
             }
-            data.dbins.prepareInsert(ins, meta.getTableName());
+            data.db.prepareInsert(ins, meta.getTableName());
             
             if (!meta.isUpdateBypassed())
             {
-            	data.dbupd.prepareUpdate(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup());
+            	data.db.prepareUpdate(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup());
             }
 			
 			debug=Messages.getString("InsertUpdate.Debug.FirstRunLookupValues"); //$NON-NLS-1$
@@ -133,11 +133,11 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		}
 		
 		debug="setValues()"; //$NON-NLS-1$
-		data.dblup.setValuesLookup(lu);
+		data.db.setValuesLookup(lu);
 		
 		if (log.isDebug()) logDebug(Messages.getString("InsertUpdate.Log.ValuesSetForLookup")+lu.toString()); //$NON-NLS-1$
 		debug="getLookup()"; //$NON-NLS-1$
-		add=data.dblup.getLookup();  // Got back the complete row!
+		add=data.db.getLookup();  // Got back the complete row!
 		linesInput++;
 		
 		if (add==null) 
@@ -161,11 +161,11 @@ public class InsertUpdate extends BaseStep implements StepInterface
             }
             
             // Set the values on the prepared statement...
-			data.dbins.setValuesInsert(ins);
+			data.db.setValuesInsert(ins);
             
 			// Insert the row
             debug="insertRow()"; //$NON-NLS-1$
-            data.dbins.insertRow();
+            data.db.insertRow();
             
 			linesOutput++;
 		}
@@ -196,9 +196,9 @@ public class InsertUpdate extends BaseStep implements StepInterface
 				{
 					if (log.isRowLevel()) logRowlevel(Messages.getString("InsertUpdate.Log.UpdateRow")+lu.toString()); //$NON-NLS-1$
 					debug="setValuesUpdate()"; //$NON-NLS-1$
-					data.dbupd.setValuesUpdate(lu);
+					data.db.setValuesUpdate(lu);
 					debug="updateRow()"; //$NON-NLS-1$
-					data.dbupd.updateRow();
+					data.db.updateRow();
 					linesUpdated++;
 				}
 				else
@@ -255,16 +255,9 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		    
 		    try
 		    {
-				data.dblup=new Database(meta.getDatabase());
-				data.dbins=new Database(meta.getDatabase());
-				data.dbupd=new Database(meta.getDatabase());
-				
-				data.dblup.connect();
-				data.dbins.connect();
-				data.dbupd.connect();
-				
-				data.dbins.setCommit(meta.getCommitSize());
-				data.dbupd.setCommit(meta.getCommitSize());
+				data.db=new Database(meta.getDatabase());
+                data.db.connect();
+				data.db.setCommit(meta.getCommitSize());
 
 				return true;
 			}
@@ -283,10 +276,10 @@ public class InsertUpdate extends BaseStep implements StepInterface
 	
         try
         {
-            if (!data.dbupd.isAutoCommit()) data.dbupd.commit();  
-            data.dbupd.closeUpdate();
-            if (!data.dbins.isAutoCommit()) data.dbins.commit();  
-            data.dbins.closeInsert();
+            if (!data.db.isAutoCommit()) data.db.commit();  
+            data.db.closeUpdate();
+            if (!data.db.isAutoCommit()) data.db.commit();  
+            data.db.closeInsert();
         }
         catch(KettleDatabaseException e)
         {
@@ -294,9 +287,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
             setErrors(1);
         }
 
-		data.dblup.disconnect();
-		data.dbins.disconnect();
-		data.dbupd.disconnect();
+		data.db.disconnect();
 
 	    super.dispose(smi, sdi);
 	}

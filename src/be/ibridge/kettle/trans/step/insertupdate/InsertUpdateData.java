@@ -28,7 +28,7 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
  */
 public class InsertUpdateData extends BaseStepData implements StepDataInterface
 {
-	public Database dblup, dbins, dbupd;
+	public Database db;
 
 	public int    keynrs[];         // nr of keylookup -value in row...
 	public int    keynrs2[];        // nr of keylookup2-value in row...
@@ -41,9 +41,7 @@ public class InsertUpdateData extends BaseStepData implements StepDataInterface
 	{
 		super();
 
-		dblup=null;
-		dbins=null;
-		dbupd=null;
+		db=null;
 	}
 
 }
