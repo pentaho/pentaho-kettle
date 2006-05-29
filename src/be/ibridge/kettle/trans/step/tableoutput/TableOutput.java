@@ -306,6 +306,8 @@ public class TableOutput extends BaseStep implements StepInterface
 		}
 		
 		data.db.disconnect();
+        
+        super.dispose(smi, sdi);
 	}
 	
 
