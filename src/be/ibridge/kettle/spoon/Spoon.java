@@ -2298,8 +2298,7 @@ public class Spoon
             int reply = mb.open();
             if (reply==SWT.YES)
             {
-                saveFile();
-                answer=true;
+                answer=saveFile();
             }
             else
             {

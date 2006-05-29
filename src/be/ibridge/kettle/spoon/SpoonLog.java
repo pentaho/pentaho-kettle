@@ -70,6 +70,7 @@ import be.ibridge.kettle.spoon.dialog.PreviewSelectDialog;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
+import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 
 /**
@@ -297,23 +298,36 @@ public class SpoonLog extends Composite
 		};
 
 		final Timer tim = new Timer();
-		TimerTask timtask = new TimerTask()
-		{
-			public void run()
-			{
-				if (display != null && !display.isDisposed()) display.asyncExec(new Runnable()
-				{
-					public void run()
-					{
-						checkErrors();
-						readLog();
-						refreshView();
-					}
-				});
-			}
-		};
+        final StringBuffer busy = new StringBuffer("N");
 
-		tim.schedule(timtask, 0L, REFRESH_TIME);// refresh every 2 seconds... 
+        TimerTask timtask = new TimerTask()
+        {
+            public void run()
+            {
+                if (display != null && !display.isDisposed())
+                {
+                    display.asyncExec(
+                        new Runnable()
+                        {
+                            public void run()
+                            {
+                                if (busy.toString().equals("N"))
+                                {
+                                    busy.setCharAt(0, 'Y');
+                                    checkErrors();
+                                    readLog();
+                                    refreshView();
+                                    busy.setCharAt(0, 'N');
+                                }
+                            }
+                        }
+                    );
+                }
+            }
+        };
+
+        tim.schedule(timtask, 0L, REFRESH_TIME); // schedule to repeat a couple of times per second to get fast feedback 
+
 
 		lsStart = new SelectionAdapter()
 		{
@@ -461,17 +475,39 @@ public class SpoonLog extends Composite
 					readLog();
 					if (trans != null)
 					{
-                        String args[] = null;
+                        final String args[];
 						Row arguments = getArguments(trans.getTransMeta());
 						if (arguments != null)
 						{
 							args = convertArguments(arguments);
                         }
+                        else
+                        {
+                            args = null;
+                        }
                         getVariables(trans.getTransMeta());
                         
 						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
 						trans.setSafeModeEnabled(wSafeMode.getSelection());
-						trans.execute(args);
+                        
+                        // Launch the step preparation in a different thread. 
+                        // That way Spoon doesn't block anymore and that way we can follow the progress of the initialisation
+                        //
+                        
+                        log.logMinimal(Spoon.APP_NAME, "----> Async exec of prepare and run threads...");
+                        display.asyncExec(
+                                new Runnable() 
+                                {
+                                    public void run() 
+                                    { 
+                                        trans.prepareExecution(args); 
+                                        trans.startThreads(); 
+                                    }
+                                }
+                            );
+                        log.logMinimal(Spoon.APP_NAME, "----> Async exec of prepare and run threads started!!!");
+                        
+						
 						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
 						running = !running;
 						wStart.setText(STOP_TEXT);
@@ -645,10 +681,9 @@ public class SpoonLog extends Composite
 	private void refreshView()
 	{
 		boolean insert = true;
-		TableItem ti;
 		float lapsed;
 
-		if (wFields.isDisposed()) return;
+  		if (wFields.isDisposed()) return;
 		if (refresh_busy) return;
 
 		refresh_busy = true;
@@ -661,36 +696,45 @@ public class SpoonLog extends Composite
 		long msSinceLastUpdate = time - lastUpdateView;
 		if ((trans != null && msSinceLastUpdate > UPDATE_TIME_VIEW) || doPreview)
 		{
-			lastUpdateView = time;
+            lastUpdateView = time;
 			int nrSteps = trans.nrSteps();
 			if (wOnlyActive.getSelection()) nrSteps = trans.nrActiveSteps();
 
 			if (table.getItemCount() != nrSteps)
+            {
 				table.removeAll();
+            }
 			else
+            {
 				insert = false;
+            }
 
 			if (nrSteps == 0)
 			{
-				if (table.getItemCount() == 0) ti = new TableItem(table, SWT.NONE);
+				if (table.getItemCount() == 0) new TableItem(table, SWT.NONE);
 			}
 
 			int nr = 0;
 			for (int i = 0; i < trans.nrSteps(); i++)
 			{
-				BaseStep rt = trans.getRunThread(i);
-				if (rt.isAlive() || !wOnlyActive.getSelection())
+				BaseStep baseStep = trans.getRunThread(i);
+				if ( (baseStep.isAlive() && wOnlyActive.getSelection()) || baseStep.getStatus()!=StepDataInterface.STATUS_EMPTY)
 				{
-					if (insert)
+                    TableItem ti;
+                    if (insert)
+                    {
 						ti = new TableItem(table, SWT.NONE);
+                    }
 					else
+                    {
 						ti = table.getItem(nr);
+                    }
 
 					// Proc: nr of lines processed: input + output!
-					long in_proc = rt.linesInput + rt.linesRead;
-					long out_proc = rt.linesOutput + rt.linesWritten + rt.linesUpdated;
+					long in_proc = baseStep.linesInput + baseStep.linesRead;
+					long out_proc = baseStep.linesOutput + baseStep.linesWritten + baseStep.linesUpdated;
 
-					lapsed = ((float) rt.getRuntime()) / 1000;
+					lapsed = ((float) baseStep.getRuntime()) / 1000;
 					double in_speed = 0;
 					double out_speed = 0;
 
@@ -701,19 +745,19 @@ public class SpoonLog extends Composite
 					}
 
 					String fields[] = new String[colinf.length + 1];
-					fields[1] = rt.getStepname();
-					fields[2] = "" + rt.getCopy(); //$NON-NLS-1$
-					fields[3] = "" + rt.linesRead; //$NON-NLS-1$
-					fields[4] = "" + rt.linesWritten; //$NON-NLS-1$
-					fields[5] = "" + rt.linesInput; //$NON-NLS-1$
-					fields[6] = "" + rt.linesOutput; //$NON-NLS-1$
-					fields[7] = "" + rt.linesUpdated; //$NON-NLS-1$
-					fields[8] = "" + rt.getErrors(); //$NON-NLS-1$
-					fields[9] = "" + rt.getStatus(); //$NON-NLS-1$
+					fields[1] = baseStep.getStepname();
+					fields[2] = "" + baseStep.getCopy(); //$NON-NLS-1$
+					fields[3] = "" + baseStep.linesRead; //$NON-NLS-1$
+					fields[4] = "" + baseStep.linesWritten; //$NON-NLS-1$
+					fields[5] = "" + baseStep.linesInput; //$NON-NLS-1$
+					fields[6] = "" + baseStep.linesOutput; //$NON-NLS-1$
+					fields[7] = "" + baseStep.linesUpdated; //$NON-NLS-1$
+					fields[8] = "" + baseStep.getErrors(); //$NON-NLS-1$
+					fields[9] = "" + baseStep.getStatusDescription(); //$NON-NLS-1$
 					fields[10] = "" + Math.floor((lapsed * 10) + 0.5) / 10; //$NON-NLS-1$
 					fields[11] = lapsed == 0 ? "-" : "" + (in_speed > out_speed ? in_speed : out_speed); //$NON-NLS-1$ //$NON-NLS-2$
-					fields[12] = rt.isAlive() ? "" + rt.getPriority() + "/" + rt.rowsetInputSize() + "/" + rt.rowsetOutputSize() : "-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-					fields[13] = "" + rt.getNrGetSleeps() + "/" + rt.getNrPutSleeps();
+					fields[12] = baseStep.isAlive() ? "" + baseStep.getPriority() + "/" + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+					fields[13] = "" + baseStep.getNrGetSleeps() + "/" + baseStep.getNrPutSleeps();
 					// Anti-flicker: if nothing has changed, don't change it on the screen!
 					for (int f = 1; f < fields.length; f++)
 					{
@@ -724,7 +768,7 @@ public class SpoonLog extends Composite
 					}
 
 					// Error lines should appear in red:
-					if (rt.getErrors() > 0)
+					if (baseStep.getErrors() > 0)
 					{
 						ti.setBackground(GUIResource.getInstance().getColorRed());
 					}
@@ -742,7 +786,7 @@ public class SpoonLog extends Composite
 		else
 		{
 			// We need at least one table-item in a table!
-			if (table.getItemCount() == 0) ti = new TableItem(table, SWT.NONE);
+			if (table.getItemCount() == 0) new TableItem(table, SWT.NONE);
 		}
 
 		if (doPreview)

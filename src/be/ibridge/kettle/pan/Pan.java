@@ -100,7 +100,7 @@ public class Pan
 		LogWriter log;
         if (Const.isEmpty(optionLogfile))
         {
-            log=LogWriter.getInstance( LogWriter.LOG_LEVEL_DEBUG );
+            log=LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
         }
         else
         {
