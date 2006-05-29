@@ -1923,7 +1923,7 @@ public class TransMeta implements XMLInterface
     public String getXML()
     {
         Props props = null;
-        if (Props.isInitialized()) Props.getInstance();
+        if (Props.isInitialized()) props=Props.getInstance();
 
         StringBuffer retval = new StringBuffer();
 
