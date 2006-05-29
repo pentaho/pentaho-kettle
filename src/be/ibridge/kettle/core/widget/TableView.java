@@ -146,6 +146,7 @@ public class TableView extends Composite
 	private static final String CLIPBOARD_DELIMITER = "\t";
 
 	private Condition condition;
+    private Color defaultBackgroundColor;
 
 	public TableView(Composite par, int st, ColumnInfo[] c, int r, ModifyListener lsm, Props pr)
 	{
@@ -245,6 +246,9 @@ public class TableView extends Composite
 		{
             table.setItemCount(1);
 		}
+        
+        // Get the background color of item 0, before anything happened with it, that's the default color.
+        defaultBackgroundColor = table.getItem(0).getBackground();
 		
 		setRowNums();
 		
@@ -990,7 +994,16 @@ public class TableView extends Composite
             Row r = new Row();
             // First value is the color!
             Color bg = item.getBackground();
-            Value colorValue = new Value("bg", (long)((bg.getRed()<<16)+(bg.getGreen()<<8)+(bg.getBlue())) );
+            Value colorValue;
+            if (bg.equals(defaultBackgroundColor))
+            {
+                colorValue = new Value("bg");
+                colorValue.setNull();
+            }
+            else
+            {
+                colorValue = new Value("bg", (long)((bg.getRed()<<16)+(bg.getGreen()<<8)+(bg.getBlue())) );
+            }
             r.addValue( colorValue );
             
             for (int j=0;j<table.getColumnCount();j++)
@@ -1016,12 +1029,15 @@ public class TableView extends Composite
             TableItem item = new TableItem(table, SWT.NONE);
             
             Value colorValue = r.getValue(0);
-            int red   = (int)( (colorValue.getInteger() & 0xFF0000) >>16 );
-            int green = (int)( (colorValue.getInteger() & 0x00FF00) >> 8 );
-            int blue  = (int)( (colorValue.getInteger() & 0x0000FF)      );
-            Color bg = new Color(parent.getDisplay(), red, green, blue);
-            item.setBackground(bg);
-            bg.dispose();
+            if (!colorValue.isNull())
+            {
+                int red   = (int)( (colorValue.getInteger() & 0xFF0000) >>16 );
+                int green = (int)( (colorValue.getInteger() & 0x00FF00) >> 8 );
+                int blue  = (int)( (colorValue.getInteger() & 0x0000FF)      );
+                Color bg = new Color(parent.getDisplay(), red, green, blue);
+                item.setBackground(bg);
+                bg.dispose();
+            }
             
             for (int i=1;i<r.size();i++)
             {
