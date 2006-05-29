@@ -37,9 +37,10 @@ import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.trans.step.BaseStep;
 import be.ibridge.kettle.trans.step.StepDataInterface;
+import be.ibridge.kettle.trans.step.StepInitThread;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
-import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.StepMetaDataCombi;
 import be.ibridge.kettle.trans.step.mappinginput.MappingInput;
 import be.ibridge.kettle.trans.step.mappingoutput.MappingOutput;
 
@@ -102,16 +103,6 @@ public class Trans
 	private int    preview_sizes[];
 
 	private boolean safeModeEnabled;
-
-	public class StepMetaDataCombi
-	{
-		public String stepname;
-		public int    copy;
-
-		public StepInterface     step;
-		public StepMetaInterface meta;
-		public StepDataInterface data;
-	};
 
 	/*
 	 * Initialize new empty transformation...
@@ -205,7 +196,7 @@ public class Trans
     /**
      * Prepare the execution of the transformation.
      * @param arguments the arguments to use for this transformation
-     * @return true if the execution went well, false if an error occurred.
+     * @return true if the execution preparation went well, false if an error occurred.
      */
     public boolean prepareExecution(String[] arguments)
     {
@@ -329,6 +320,7 @@ public class Trans
 		}
 
 		log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatingStepsAndStepData")); //$NON-NLS-1$
+        
 		// Allocate the steps & the data...
 		for (int i=0;i<hopsteps.size();i++)
 		{
@@ -414,24 +406,65 @@ public class Trans
 			}
 		}
 
-		// Initialize all the threads...
-		boolean ok = true;
+        log.logBasic(toString(), Messages.getString("Trans.Log.InitialisingSteps", String.valueOf(steps.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+
+        StepInitThread initThreads[] = new StepInitThread[steps.size()];
+
+        // Initialize all the threads...
 		for (int i=0;i<steps.size();i++)
 		{
-			StepMetaDataCombi sid=(StepMetaDataCombi)steps.get(i);
-
-			if (sid.step.init(sid.meta, sid.data))
-			{
-				sid.data.setStatus(StepDataInterface.STATUS_IDLE);
-			}
-			else
-			{
-			    sid.step.setErrors(1);
-				log.logError(toString(), Messages.getString("Trans.Log.ErrorInitializingStep",sid.step.getStepname())); //$NON-NLS-1$ //$NON-NLS-2$
-				ok = false;
-			}
+			final StepMetaDataCombi sid=(StepMetaDataCombi)steps.get(i);
+            
+            // Do the init code in the background!
+            // Init all steps at once, but ALL steps need to finish before we can continue properly!
+			initThreads[i] = new StepInitThread(sid, log);
+            
+            // Put it in a separate thread!
+			new Thread(initThreads[i]).start();
 		}
+        
+        boolean finished = false;
+        
+        // If all step are not finished : wait a bit more...
+        while (!finished)
+        {
+            finished=true; // Assume we have finished...
+            for (int i=0;i<initThreads.length && finished;i++)
+            {
+                if (!initThreads[i].isFinished()) finished=false; // Nope, here is one that's till busy...
+            }
+            
+            // not finished: wait a bit more...
+            if (!finished)
+            {
+                try
+                {
+                    Thread.sleep(10);
+                }
+                catch(InterruptedException e)
+                {
+                    
+                }
+            }
+        }
 
+        boolean ok = true;
+        
+        // All step are initialized now: see if there was one that didn't do it correctly!
+        for (int i=0;i<initThreads.length && ok;i++)
+        {
+            StepMetaDataCombi combi = initThreads[i].getCombi();
+            if (!initThreads[i].isOk()) 
+            {
+                log.logError(toString(), Messages.getString("Trans.Log.StepFailedToInit", combi.stepname+"."+combi.copy));
+                ok=false;
+            }
+            else
+            {
+                log.logDetailed(toString(), Messages.getString("Trans.Log.StepInitialized", combi.stepname+"."+combi.copy));
+            }
+        }
+        
 		if (!ok)
 		{
 			log.logError(toString(), Messages.getString("Trans.Log.FailToInitializeAtLeastOneStep")); //$NON-NLS-1$
@@ -1394,6 +1427,22 @@ public class Trans
     {
         KettleVariables vars = KettleVariables.getInstance();
         return vars;
+    }
+
+    /**
+     * Finds the StepDataInterface (currently) associated with the specified step  
+     * @param stepname The name of the step to look for
+     * @param stepcopy The copy number (0 based) of the step
+     * @return The StepDataInterface or null if non found.
+     */
+    public StepDataInterface getStepDataInterface(String stepname, int stepcopy)
+    {
+        for (int i=0;i<steps.size();i++)
+        {
+            StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+            if (sid.stepname.equals(stepname) && sid.copy==stepcopy) return sid.data;
+        }
+        return null;
     }
 }
 
