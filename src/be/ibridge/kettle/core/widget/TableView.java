@@ -79,6 +79,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.TransAction;
 import be.ibridge.kettle.core.dialog.EnterConditionDialog;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.value.Value;
 
 
@@ -974,76 +975,83 @@ public class TableView extends Composite
 	
 	public void sortTable(int colnr)
     {
-        if (sortfield==colnr)
+        try
         {
-            sort_desc = (!sort_desc);
-        }
-        else
-        {
-            sortfield=colnr;
-            sort_desc = false;
-        }
-        
-        // First, get all info and put it in a Vector of Rows...
-        TableItem[] items = table.getItems();
-        Vector v = new Vector();
-        
-        for (int i = 0; i < items.length; i++)
-        {
-            TableItem item = items[i];
-            Row r = new Row();
-            // First value is the color!
-            Color bg = item.getBackground();
-            Value colorValue;
-            if (bg.equals(defaultBackgroundColor))
+            if (sortfield==colnr)
             {
-                colorValue = new Value("bg");
-                colorValue.setNull();
+                sort_desc = (!sort_desc);
             }
             else
             {
-                colorValue = new Value("bg", (long)((bg.getRed()<<16)+(bg.getGreen()<<8)+(bg.getBlue())) );
+                sortfield=colnr;
+                sort_desc = false;
             }
-            r.addValue( colorValue );
             
-            for (int j=0;j<table.getColumnCount();j++)
+            // First, get all info and put it in a Vector of Rows...
+            TableItem[] items = table.getItems();
+            Vector v = new Vector();
+            
+            for (int i = 0; i < items.length; i++)
             {
-                Value value = new Value("Col#"+j, item.getText(j));
-                r.addValue(value);
+                TableItem item = items[i];
+                Row r = new Row();
+                // First value is the color!
+                Color bg = item.getBackground();
+                Value colorValue;
+                if (bg.equals(defaultBackgroundColor))
+                {
+                    colorValue = new Value("bg");
+                    colorValue.setNull();
+                }
+                else
+                {
+                    colorValue = new Value("bg", (long)((bg.getRed()<<16)+(bg.getGreen()<<8)+(bg.getBlue())) );
+                }
+                r.addValue( colorValue );
+                
+                for (int j=0;j<table.getColumnCount();j++)
+                {
+                    Value value = new Value("Col#"+j, item.getText(j));
+                    r.addValue(value);
+                }
+                v.addElement(r);
             }
-            v.addElement(r);
+            // Sort the vector!
+            quickSort(v);
+            
+            // Clear the table
+            table.removeAll();
+            
+            // Get enumeration!
+            Enumeration en = v.elements();
+            
+            // Refill the table
+            while (en.hasMoreElements())
+            {
+                Row r = (Row)en.nextElement();
+                TableItem item = new TableItem(table, SWT.NONE);
+                
+                Value colorValue = r.getValue(0);
+                if (!colorValue.isNull())
+                {
+                    int red   = (int)( (colorValue.getInteger() & 0xFF0000) >>16 );
+                    int green = (int)( (colorValue.getInteger() & 0x00FF00) >> 8 );
+                    int blue  = (int)( (colorValue.getInteger() & 0x0000FF)      );
+                    Color bg = new Color(parent.getDisplay(), red, green, blue);
+                    item.setBackground(bg);
+                    bg.dispose();
+                }
+                
+                for (int i=1;i<r.size();i++)
+                {
+                    Value value = r.getValue(i);
+                    item.setText(i-1, value.getString());
+                }
+            }
         }
-        // Sort the vector!
-        quickSort(v);
-        
-        // Clear the table
-        table.removeAll();
-        
-        // Get enumeration!
-        Enumeration en = v.elements();
-        
-        // Refill the table
-        while (en.hasMoreElements())
+        catch(Exception e)
         {
-            Row r = (Row)en.nextElement();
-            TableItem item = new TableItem(table, SWT.NONE);
-            
-            Value colorValue = r.getValue(0);
-            if (!colorValue.isNull())
-            {
-                int red   = (int)( (colorValue.getInteger() & 0xFF0000) >>16 );
-                int green = (int)( (colorValue.getInteger() & 0x00FF00) >> 8 );
-                int blue  = (int)( (colorValue.getInteger() & 0x0000FF)      );
-                Color bg = new Color(parent.getDisplay(), red, green, blue);
-                item.setBackground(bg);
-                bg.dispose();
-            }
-            
-            for (int i=1;i<r.size();i++)
-            {
-                Value value = r.getValue(i);
-                item.setText(i-1, value.getString());
-            }
+            new ErrorDialog(this.getShell(), Props.getInstance(), "Unexpected error", "There was an unexpected error sorting the table view column", e);
         }
     }
 
