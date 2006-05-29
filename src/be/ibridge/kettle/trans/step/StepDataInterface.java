@@ -33,8 +33,9 @@ public interface StepDataInterface
 	public static final int STATUS_RUNNING       = 2;
 	public static final int STATUS_IDLE          = 3;
 	public static final int STATUS_FINISHED      = 4;
-	public static final int STATUS_DISPOSED      = 5;
-
+    public static final int STATUS_STOPPED       = 5;
+	public static final int STATUS_DISPOSED      = 6;
+    
 	public void setStatus(int status);
 	public int getStatus();
 	

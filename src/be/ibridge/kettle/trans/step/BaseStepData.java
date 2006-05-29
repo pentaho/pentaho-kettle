@@ -58,6 +58,7 @@ public class BaseStepData
 	public boolean isRunning()       { return status == StepDataInterface.STATUS_RUNNING;  }
 	public boolean isIdle()          { return status == StepDataInterface.STATUS_IDLE;     }
 	public boolean isFinished()      { return status == StepDataInterface.STATUS_FINISHED; }
+    public boolean isStopped()       { return status == StepDataInterface.STATUS_STOPPED;  }
 	public boolean isDisposed()      { return status == StepDataInterface.STATUS_DISPOSED; }
 
 }

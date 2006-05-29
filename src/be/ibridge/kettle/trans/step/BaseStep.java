@@ -433,8 +433,19 @@ public class BaseStep extends Thread
 	private static final int NORMAL_PRIORITY =  5;
 	private static final int HIGH_PRIORITY   =  7;
 	private static final int MAX_PRIORITY    = 10;
-	
-	private    TransMeta transMeta;
+
+    public static final String[] statusDesc =
+    { 
+        Messages.getString("BaseStep.status.Empty"), 
+        Messages.getString("BaseStep.status.Init"), 
+        Messages.getString("BaseStep.status.Running"), 
+        Messages.getString("BaseStep.status.Idle"), 
+        Messages.getString("BaseStep.status.Finished"),
+        Messages.getString("BaseStep.status.Stopped"),
+        Messages.getString("BaseStep.status.Disposed"),
+    };
+    
+    private    TransMeta transMeta;
 	private    StepMeta  stepMeta;
 	private    String    stepname;
 	protected  LogWriter log;
@@ -662,33 +673,9 @@ public class BaseStep extends Thread
 		return trans;
 	}
 	
-	public String getStatus()
+	public String getStatusDescription()
 	{
-		String retval;
-		
-		if (isAlive())
-		{
-			retval=Messages.getString("BaseStep.status.Running"); //$NON-NLS-1$
-		}
-		else
-		{
-			if (isInitialising())
-			{
-				retval=Messages.getString("BaseStep.status.Init"); //$NON-NLS-1$
-			}
-			else
-			{
-				if (isStopped())
-				{
-					retval=Messages.getString("BaseStep.status.Stopped"); //$NON-NLS-1$
-				}
-				else
-				{
-					retval=Messages.getString("BaseStep.status.Finished"); //$NON-NLS-1$
-				}
-			}
-		}
-		return retval;
+        return statusDesc[getStatus()];
 	}
 	
 	/**
@@ -1712,5 +1699,20 @@ public class BaseStep extends Thread
     public KettleVariables getKettleVariables()
     {
         return LocalVariables.getKettleVariables(this);
+    }
+    
+    public int getStatus()
+    {
+        if (isAlive()) return StepDataInterface.STATUS_RUNNING;
+        if (isStopped()) return StepDataInterface.STATUS_STOPPED;
+        
+        // Get the rest in StepDataInterface object:
+        StepDataInterface sdi = trans.getStepDataInterface(stepname, stepcopy);
+        if (sdi!=null)
+        {
+            if (sdi.getStatus()==StepDataInterface.STATUS_DISPOSED && !isAlive()) return StepDataInterface.STATUS_FINISHED;
+            return sdi.getStatus();
+        }
+        return StepDataInterface.STATUS_EMPTY;
     }
 }
