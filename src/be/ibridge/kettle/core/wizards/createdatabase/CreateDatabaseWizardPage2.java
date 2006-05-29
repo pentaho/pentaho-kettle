@@ -65,8 +65,8 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 		this.props = props;
 		this.info = info;
 
-		setTitle("Set the username and password");
-		setDescription("Specify the username and password to connect to the database.");
+		setTitle(Messages.getString("CreateDatabaseWizardPage2.DialogTitle")); //$NON-NLS-1$
+		setDescription(Messages.getString("CreateDatabaseWizardPage2.DialogMessage")); //$NON-NLS-1$
 
 		setPageComplete(false);
 	}
@@ -87,7 +87,7 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 
 		// USERNAME
 		wlUsername = new Label(composite, SWT.RIGHT);
-		wlUsername.setText("The username");
+		wlUsername.setText(Messages.getString("CreateDatabaseWizardPage2.Username.Label")); //$NON-NLS-1$
  		props.setLook(wlUsername);
 		fdlUsername = new FormData();
 		fdlUsername.top = new FormAttachment(0, 0);
@@ -111,7 +111,7 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 
 		// PASSWORD
 		wlPassword = new Label(composite, SWT.RIGHT);
-		wlPassword.setText("The password");
+		wlPassword.setText(Messages.getString("CreateDatabaseWizardPage2.Password.Label")); //$NON-NLS-1$
  		props.setLook(wlPassword);
 		fdlPassword = new FormData();
 		fdlPassword.top = new FormAttachment(wUsername, margin);
@@ -135,7 +135,7 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 		});
 		
 		wTest = new Button(composite, SWT.PUSH);
-		wTest.setText("Test database connection");
+		wTest.setText(Messages.getString("CreateDatabaseWizardPage2.TestConnection.Button")); //$NON-NLS-1$
 		fdTest = new FormData();
 		fdTest.top = new FormAttachment(wPassword, margin*4);
 		fdTest.left = new FormAttachment(50, 0);
@@ -188,12 +188,12 @@ public class CreateDatabaseWizardPage2 extends WizardPage
 		if (remarks.length == 0)
 		{
 			setErrorMessage(null);
-			setMessage("Select 'Finish' to create the database connection");
+			setMessage(Messages.getString("CreateDatabaseWizardPage2.Message.Finish")); //$NON-NLS-1$
 			return true;
 		}
 		else
 		{
-			setErrorMessage("Please make sure that at least the name of the connection, the database name and the database type are specified!");
+			setErrorMessage(Messages.getString("CreateDatabaseWizardPage2.ErrorMessage.InvalidInput")); //$NON-NLS-1$
 			// setMessage("Select 'Finish' to create the database connection");
 			return false;
 		}

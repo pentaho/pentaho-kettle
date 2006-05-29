@@ -62,8 +62,8 @@ public class CreateDatabaseWizardPageOracle extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle("Specify the Oracle specific settings");
-		setDescription("Specify the default data and index tablespaces.");
+		setTitle(Messages.getString("CreateDatabaseWizardPageOracle.DialogTitle")); //$NON-NLS-1$
+		setDescription(Messages.getString("CreateDatabaseWizardPageOracle.DialogMessage")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -83,7 +83,7 @@ public class CreateDatabaseWizardPageOracle extends WizardPage
 		composite.setLayout(compLayout);
 
 		wlDataTS = new Label(composite, SWT.RIGHT);
-		wlDataTS.setText("The data tablespace");
+		wlDataTS.setText(Messages.getString("CreateDatabaseWizardPageOracle.DataTablespace.Label")); //$NON-NLS-1$
  		props.setLook(wlDataTS);
 		fdlDataTS = new FormData();
 		fdlDataTS.top    = new FormAttachment(0, 0);
@@ -106,7 +106,7 @@ public class CreateDatabaseWizardPageOracle extends WizardPage
 		});
 		
 		wlIndexTS = new Label(composite, SWT.RIGHT);
-		wlIndexTS.setText("The index tablespace");
+		wlIndexTS.setText(Messages.getString("CreateDatabaseWizardPageOracle.IndexTableSpace.Label")); //$NON-NLS-1$
  		props.setLook(wlIndexTS);
 		fdlIndexTS = new FormData();
 		fdlIndexTS.top    = new FormAttachment(wDataTS, margin);
@@ -136,7 +136,7 @@ public class CreateDatabaseWizardPageOracle extends WizardPage
 	{
 		getDatabaseInfo();
 		setErrorMessage(null);
-		setMessage("Select 'next' to proceed");
+		setMessage(Messages.getString("CreateDatabaseWizardPageOracle.Message.Next")); //$NON-NLS-1$
 		return true;
 	}	
 	
@@ -161,6 +161,6 @@ public class CreateDatabaseWizardPageOracle extends WizardPage
 	public IWizardPage getNextPage()
 	{
 		IWizard wiz = getWizard();
-		return wiz.getPage("2");
+		return wiz.getPage("2"); //$NON-NLS-1$
 	}
 }

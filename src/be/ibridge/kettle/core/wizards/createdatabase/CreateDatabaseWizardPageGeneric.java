@@ -63,8 +63,8 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle("Specify the generic driver settings");
-		setDescription("Specify the URL and driver class.");
+		setTitle(Messages.getString("CreateDatabaseWizardPageGeneric.DialogTitle")); //$NON-NLS-1$
+		setDescription(Messages.getString("CreateDatabaseWizardPageGeneric.DialogMessage")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -85,7 +85,7 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage
 
 		// URL
 		wlURL = new Label(composite, SWT.RIGHT);
-		wlURL.setText("URL");
+		wlURL.setText(Messages.getString("CreateDatabaseWizardPageGeneric.URL.Label")); //$NON-NLS-1$
  		props.setLook(wlURL);
 		fdlURL = new FormData();
 		fdlURL.top    = new FormAttachment(0, 0);
@@ -109,7 +109,7 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage
 		
 		// DRIVER CLASS
 		wlDriverClass = new Label(composite, SWT.RIGHT);
-		wlDriverClass.setText("Driver class");
+		wlDriverClass.setText(Messages.getString("CreateDatabaseWizardPageGeneric.DriverClass.Label")); //$NON-NLS-1$
  		props.setLook(wlDriverClass);
 		fdlDriverClass = new FormData();
 		fdlDriverClass.top    = new FormAttachment(wURL, margin);
@@ -143,14 +143,14 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage
 		
 		if (url==null || driverClass==null)
 		{
-			setErrorMessage("Specify the URL and driver class.");
+			setErrorMessage(Messages.getString("CreateDatabaseWizardPageGeneric.ErrorMessage.URLAndDriverClassRequired")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage("Select 'next' to proceed");
+			setMessage(Messages.getString("CreateDatabaseWizardPageGeneric.Message.Next")); //$NON-NLS-1$
 			return true;
 		}
 
@@ -178,7 +178,7 @@ public class CreateDatabaseWizardPageGeneric extends WizardPage
 	public IWizardPage getNextPage()
 	{
 		IWizard wiz = getWizard();
-		return wiz.getPage("2");
+		return wiz.getPage("2"); //$NON-NLS-1$
 	}
 	
 }

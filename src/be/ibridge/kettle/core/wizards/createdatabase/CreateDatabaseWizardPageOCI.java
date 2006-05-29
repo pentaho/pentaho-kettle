@@ -56,8 +56,8 @@ public class CreateDatabaseWizardPageOCI extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle("Specify the Oracle TNS database");
-		setDescription("Specify the TNS database as defined in your Oracle client.");
+		setTitle(Messages.getString("CreateDatabaseWizardPageOCI.DialogTitle")); //$NON-NLS-1$
+		setDescription(Messages.getString("CreateDatabaseWizardPageOCI.DialogMessage")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -77,7 +77,7 @@ public class CreateDatabaseWizardPageOCI extends WizardPage
 		composite.setLayout(compLayout);
 
 		wlTNS = new Label(composite, SWT.RIGHT);
-		wlTNS.setText("Name of the Oracle TNS database");
+		wlTNS.setText(Messages.getString("CreateDatabaseWizardPageOCI.TNS.Label")); //$NON-NLS-1$
  		props.setLook(wlTNS);
 		fdlTNS = new FormData();
 		fdlTNS.left   = new FormAttachment(0,0);
@@ -106,14 +106,14 @@ public class CreateDatabaseWizardPageOCI extends WizardPage
 		String name = wTNS.getText()!=null?wTNS.getText().length()>0?wTNS.getText():null:null;
 		if (name==null)
 		{
-			setErrorMessage("Enter the name of the Oracle TNSNAMES database");
+			setErrorMessage(Messages.getString("CreateDatabaseWizardPageOCI.ErrorMessage.NoTNSName")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage("Select 'next' to proceed");
+			setMessage(Messages.getString("CreateDatabaseWizardPageOCI.Message.Next")); //$NON-NLS-1$
 			return true;
 		}
 	}	
@@ -125,7 +125,7 @@ public class CreateDatabaseWizardPageOCI extends WizardPage
 			info.setDBName(wTNS.getText());
 		}
 		
-		info.setDBPort("");
+		info.setDBPort(""); //$NON-NLS-1$
 		info.setServername(null);
 		
 		return info;
@@ -137,6 +137,6 @@ public class CreateDatabaseWizardPageOCI extends WizardPage
 	public IWizardPage getNextPage()
 	{
 		IWizard wiz = getWizard();
-		return wiz.getPage("2");
+		return wiz.getPage("2"); //$NON-NLS-1$
 	}
 }

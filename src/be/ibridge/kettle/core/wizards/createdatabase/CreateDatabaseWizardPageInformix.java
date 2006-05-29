@@ -56,8 +56,8 @@ public class CreateDatabaseWizardPageInformix extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle("Specify the Informix servername");
-		setDescription("Specify the Informix servername.");
+		setTitle(Messages.getString("CreateDatabaseWizardPageInformix.DialogTitle")); //$NON-NLS-1$
+		setDescription(Messages.getString("CreateDatabaseWizardPageInformix.DialogMessage")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -77,7 +77,7 @@ public class CreateDatabaseWizardPageInformix extends WizardPage
 		composite.setLayout(compLayout);
 
 		wlServername = new Label(composite, SWT.RIGHT);
-		wlServername.setText("Name of the Informix server");
+		wlServername.setText(Messages.getString("CreateDatabaseWizardPageInformix.Servername.Label")); //$NON-NLS-1$
  		props.setLook(wlServername);
 		fdlServername = new FormData();
 		fdlServername.top    = new FormAttachment(0, 0);
@@ -109,14 +109,14 @@ public class CreateDatabaseWizardPageInformix extends WizardPage
 		String name = wServername.getText()!=null?wServername.getText().length()>0?wServername.getText():null:null;
 		if (name==null)
 		{
-			setErrorMessage("Enter the name of the Informix server");
+			setErrorMessage(Messages.getString("CreateDatabaseWizardPageInformix.ErrorMessage.ServernameRequired")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage("Select 'next' to proceed");
+			setMessage(Messages.getString("CreateDatabaseWizardPageInformix.Message.Next")); //$NON-NLS-1$
 			return true;
 		}
 	}	
@@ -137,7 +137,7 @@ public class CreateDatabaseWizardPageInformix extends WizardPage
 	public IWizardPage getNextPage()
 	{
 		IWizard wiz = getWizard();
-		return wiz.getPage("2");
+		return wiz.getPage("2"); //$NON-NLS-1$
 	}
 	
 }

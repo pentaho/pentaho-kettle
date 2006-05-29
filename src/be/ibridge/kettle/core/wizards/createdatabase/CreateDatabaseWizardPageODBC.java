@@ -56,8 +56,8 @@ public class CreateDatabaseWizardPageODBC extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle("Specify the ODBC DSN data source");
-		setDescription("Specify the ODBC DSN name as defined in the user- or system-DSN data sources.");
+		setTitle(Messages.getString("CreateDatabaseWizardPageODBC.DialogTitle")); //$NON-NLS-1$
+		setDescription(Messages.getString("CreateDatabaseWizardPageODBC.DialogMessage")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -77,7 +77,7 @@ public class CreateDatabaseWizardPageODBC extends WizardPage
 		composite.setLayout(compLayout);
 
 		wlDSN = new Label(composite, SWT.RIGHT);
-		wlDSN.setText("Name of the ODBC DSN data source");
+		wlDSN.setText(Messages.getString("CreateDatabaseWizardPageODBC.DSN.Label")); //$NON-NLS-1$
  		props.setLook(wlDSN);
 		fdlDSN = new FormData();
 		fdlDSN.left   = new FormAttachment(0,0);
@@ -106,14 +106,14 @@ public class CreateDatabaseWizardPageODBC extends WizardPage
 		String name = wDSN.getText()!=null?wDSN.getText().length()>0?wDSN.getText():null:null;
 		if (name==null)
 		{
-			setErrorMessage("Enter the name of the ODBC DSN data source");
+			setErrorMessage(Messages.getString("CreateDatabaseWizardPageODBC.ErrorMessage.DSNRequired")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage("Select 'Finish' to create the database connection");
+			setMessage(Messages.getString("CreateDatabaseWizardPageODBC.Message.Finish")); //$NON-NLS-1$
 			return true;
 		}
 	}	
@@ -125,7 +125,7 @@ public class CreateDatabaseWizardPageODBC extends WizardPage
 			info.setDBName(wDSN.getText());
 		}
 		
-		info.setDBPort("");
+		info.setDBPort(""); //$NON-NLS-1$
 		info.setServername(null);
 		
 		return info;
@@ -137,7 +137,7 @@ public class CreateDatabaseWizardPageODBC extends WizardPage
 	public IWizardPage getNextPage()
 	{
 		IWizard wiz = getWizard();
-		return wiz.getPage("2");
+		return wiz.getPage("2"); //$NON-NLS-1$
 	}
 	
 }

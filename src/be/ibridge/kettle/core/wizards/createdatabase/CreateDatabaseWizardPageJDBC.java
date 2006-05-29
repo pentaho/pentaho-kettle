@@ -66,8 +66,8 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle("Set the JDBC Settings");
-		setDescription("Specify the server hostname, the port and the database name.");
+		setTitle(Messages.getString("CreateDatabaseWizardPageJDBC.DialogTitle")); //$NON-NLS-1$
+		setDescription(Messages.getString("CreateDatabaseWizardPageJDBC.DialogMessage")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -88,7 +88,7 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 
 		// HOSTNAME
 		wlHostname = new Label(composite, SWT.RIGHT);
-		wlHostname.setText("Host name of the database server");
+		wlHostname.setText(Messages.getString("CreateDatabaseWizardPageJDBC.Hostname.Label")); //$NON-NLS-1$
  		props.setLook(wlHostname);
 		fdlHostname = new FormData();
 		fdlHostname.top    = new FormAttachment(0, 0);
@@ -112,7 +112,7 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 		
 		// PORT
 		wlPort = new Label(composite, SWT.RIGHT);
-		wlPort.setText("The TCP/IP port");
+		wlPort.setText(Messages.getString("CreateDatabaseWizardPageJDBC.Port.Label")); //$NON-NLS-1$
  		props.setLook(wlPort);
 		fdlPort = new FormData();
 		fdlPort.top    = new FormAttachment(wHostname, margin);
@@ -137,7 +137,7 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 
 		// DATABASE NAME
 		wlDBName = new Label(composite, SWT.RIGHT);
-		wlDBName.setText("The name of the database");
+		wlDBName.setText(Messages.getString("CreateDatabaseWizardPageJDBC.DBName.Label")); //$NON-NLS-1$
  		props.setLook(wlDBName);
 		fdlDBName = new FormData();
 		fdlDBName.top    = new FormAttachment(wPort, margin);
@@ -165,11 +165,11 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 	
 	public void setData()
 	{
-		wHostname.setText(Const.NVL(info.getHostname(), ""));
+		wHostname.setText(Const.NVL(info.getHostname(), "")); //$NON-NLS-1$
 		
 		wPort.setText(info.getDatabasePortNumberString()); 
 		
-		wDBName.setText(Const.NVL(info.getDatabaseName(), ""));
+		wDBName.setText(Const.NVL(info.getDatabaseName(), "")); //$NON-NLS-1$
 	}
 	
 	public boolean canFlipToNextPage()
@@ -180,14 +180,14 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 		
 		if (server==null || port==null || dbname==null)
 		{
-			setErrorMessage("Enter the hostname of the database server, the port and the database name");
+			setErrorMessage(Messages.getString("CreateDatabaseWizardPageJDBC.ErrorMessage.InvalidInput")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage("Select 'next' to proceed");
+			setMessage(Messages.getString("CreateDatabaseWizardPageJDBC.Message.Input")); //$NON-NLS-1$
 			return true;
 		}
 	}	
@@ -225,13 +225,13 @@ public class CreateDatabaseWizardPageJDBC extends WizardPage
 		switch(info.getDatabaseType())
 		{
 		case DatabaseMeta.TYPE_DATABASE_ORACLE:
-			nextPage = wiz.getPage("oracle"); // Oracle
+			nextPage = wiz.getPage("oracle"); // Oracle //$NON-NLS-1$
 			break;
 		case DatabaseMeta.TYPE_DATABASE_INFORMIX:
-			nextPage = wiz.getPage("ifx"); // Informix
+			nextPage = wiz.getPage("ifx"); // Informix //$NON-NLS-1$
 			break;
 		default: 
-			nextPage = wiz.getPage("2"); // page 2
+			nextPage = wiz.getPage("2"); // page 2 //$NON-NLS-1$
 			break;
 		}
 		

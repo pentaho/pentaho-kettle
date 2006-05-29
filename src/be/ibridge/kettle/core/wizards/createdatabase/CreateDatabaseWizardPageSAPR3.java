@@ -65,8 +65,8 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		this.props=props;
 		this.info = info;
 		
-		setTitle("Specify the SAP/R3 specific settings");
-		setDescription("Specify the server hostname, language, system number and client.");
+		setTitle(Messages.getString("CreateDatabaseWizardPageSAPR3.DialogTitle")); //$NON-NLS-1$
+		setDescription(Messages.getString("CreateDatabaseWizardPageSAPR3.DialogMessage")); //$NON-NLS-1$
 		
 		setPageComplete(false);
 	}
@@ -87,7 +87,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 
 		// HOSTNAME
 		wlHostname = new Label(composite, SWT.RIGHT);
-		wlHostname.setText("Host name of the SAP/3 system");
+		wlHostname.setText(Messages.getString("CreateDatabaseWizardPageSAPR3.Hostname.Label")); //$NON-NLS-1$
  		props.setLook(wlHostname);
 		fdlHostname = new FormData();
 		fdlHostname.top    = new FormAttachment(0, 0);
@@ -110,7 +110,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		});
 		
 		wlSAPLanguage = new Label(composite, SWT.RIGHT);
-		wlSAPLanguage.setText("Language");
+		wlSAPLanguage.setText(Messages.getString("CreateDatabaseWizardPageSAPR3.Language.Label")); //$NON-NLS-1$
  		props.setLook(wlSAPLanguage);
 		fdlSAPLanguage = new FormData();
 		fdlSAPLanguage.top    = new FormAttachment(wHostname, margin);
@@ -133,7 +133,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		});
 		
 		wlSAPSystemNumber = new Label(composite, SWT.RIGHT);
-		wlSAPSystemNumber.setText("System Number");
+		wlSAPSystemNumber.setText(Messages.getString("CreateDatabaseWizardPageSAPR3.SystemNumber.Label")); //$NON-NLS-1$
  		props.setLook(wlSAPSystemNumber);
 		fdlSAPSystemNumber = new FormData();
 		fdlSAPSystemNumber.top    = new FormAttachment(wSAPLanguage, margin);
@@ -156,7 +156,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		});
 
 		wlSAPClient = new Label(composite, SWT.RIGHT);
-		wlSAPClient.setText("SAP Client");
+		wlSAPClient.setText(Messages.getString("CreateDatabaseWizardPageSAPR3.SAPClient.Label")); //$NON-NLS-1$
  		props.setLook(wlSAPClient);
 		fdlSAPClient = new FormData();
 		fdlSAPClient.top    = new FormAttachment(wSAPSystemNumber, margin);
@@ -185,11 +185,11 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 
 	public void setData()
 	{
-		wHostname.setText(Const.NVL(info.getHostname(), ""));
+		wHostname.setText(Const.NVL(info.getHostname(), "")); //$NON-NLS-1$
 
-		wSAPLanguage.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, ""), ""));
-		wSAPSystemNumber.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, ""), ""));
-		wSAPClient.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT, ""), ""));
+		wSAPLanguage.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE, ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
+		wSAPSystemNumber.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
+		wSAPClient.setText(Const.NVL(info.getAttributes().getProperty(SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT, ""), "")); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 	
 	public boolean canFlipToNextPage()
@@ -201,14 +201,14 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 		
 		if (server==null || language==null || systemNumber==null || client==null)
 		{
-			setErrorMessage("Specify the server hostname, language, system number and client.");
+			setErrorMessage(Messages.getString("CreateDatabaseWizardPageSAPR3.ErrorMessage.InvalidInput")); //$NON-NLS-1$
 			return false;
 		}
 		else
 		{
 			getDatabaseInfo();
 			setErrorMessage(null);
-			setMessage("Select 'next' to proceed");
+			setMessage(Messages.getString("CreateDatabaseWizardPageSAPR3.Message.Next")); //$NON-NLS-1$
 			return true;
 		}
 
@@ -245,7 +245,7 @@ public class CreateDatabaseWizardPageSAPR3 extends WizardPage
 	public IWizardPage getNextPage()
 	{
 		IWizard wiz = getWizard();
-		return wiz.getPage("2");
+		return wiz.getPage("2"); //$NON-NLS-1$
 	}
 	
 }
