@@ -181,12 +181,11 @@ public class XMLInputField implements Cloneable
             
             if (fieldPosition!=null)
             {
-                XMLInputFieldPosition[] positions = new XMLInputFieldPosition[fieldPosition.length];
+                retval.setFieldPosition( new XMLInputFieldPosition[fieldPosition.length] );
                 for (int i=0;i<fieldPosition.length;i++)
                 {
-                    positions[i] = (XMLInputFieldPosition)fieldPosition[i].clone();
+                    retval.getFieldPosition()[i] = (XMLInputFieldPosition)fieldPosition[i].clone();
                 }
-                retval.setFieldPosition(positions);
             }
             
 			return retval;

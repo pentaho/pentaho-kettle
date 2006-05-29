@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.exception.KettleValueException;
 
-public class XMLInputFieldPosition
+public class XMLInputFieldPosition implements Cloneable
 {
     public static final int XML_ELEMENT   = 1;
     public static final int XML_ATTRIBUTE = 2;
