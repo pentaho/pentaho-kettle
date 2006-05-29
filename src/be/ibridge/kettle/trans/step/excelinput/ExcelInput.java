@@ -108,13 +108,16 @@ public class ExcelInput extends BaseStep implements StepInterface
 				}
 			}
 
-			if (cell.getType().equals(CellType.BOOLEAN))
+			CellType cellType = cell.getType();
+			if (CellType.BOOLEAN.equals(cellType) ||
+				CellType.BOOLEAN_FORMULA.equals(cellType))
 			{
 				v.setValue(((BooleanCell) cell).getValue());
 			}
 			else
 			{
-				if (cell.getType().equals(CellType.DATE))
+				if (CellType.DATE.equals(cellType) ||
+					CellType.DATE_FORMULA.equals(cellType) )
 				{
 					Date date = ((DateCell) cell).getDate();
 					long time = date.getTime();
@@ -123,7 +126,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 				}
 				else
 				{
-					if (cell.getType().equals(CellType.LABEL))
+					if (CellType.LABEL.equals(cellType) ||
+					    CellType.STRING_FORMULA.equals(cellType))
 					{
 						v.setValue(((LabelCell) cell).getString());
 						switch (meta.getField()[rowcolumn].getTrimType())
@@ -143,7 +147,8 @@ public class ExcelInput extends BaseStep implements StepInterface
 					}
 					else
 					{
-						if (cell.getType().equals(CellType.NUMBER))
+						if (CellType.NUMBER.equals(cellType) ||
+						    CellType.NUMBER_FORMULA.equals(cellType))
 						{
 							v.setValue(((NumberCell) cell).getValue());
 						}
