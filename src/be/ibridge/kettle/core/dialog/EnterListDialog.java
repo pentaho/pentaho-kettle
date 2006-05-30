@@ -39,14 +39,18 @@ import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
@@ -57,6 +61,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
+import be.ibridge.kettle.trans.step.combinationlookup.Messages;
 
 /**
  * This dialogs allows you to select a number of items from a list of strings.
@@ -202,36 +207,37 @@ public class EnterListDialog extends Dialog
 		compmiddle.setLayoutData(fdCompMiddle);
  		props.setLook(compmiddle);
 
-		wAddOne    = new Button(compmiddle, SWT.PUSH); wAddOne   .setText(" > ");  wAddOne   .setToolTipText("Add the selected items on the left.");
-		wAddAll    = new Button(compmiddle, SWT.PUSH); wAddAll   .setText(" >> "); wAddAll   .setToolTipText("Add all items on the left.");
-		wRemoveOne = new Button(compmiddle, SWT.PUSH); wRemoveOne.setText(" < ");  wRemoveOne.setToolTipText("Remove the selected items on the right.");
-		wRemoveAll = new Button(compmiddle, SWT.PUSH); wRemoveAll.setText(" << "); wRemoveAll.setToolTipText("Add all items on the right.");
+		Composite gButtonGroup = new Composite(compmiddle, SWT.NONE);	
+		GridLayout gridLayout = new GridLayout(1, false);
+		gButtonGroup.setLayout(gridLayout);
+ 			
+		wAddOne    = new Button(gButtonGroup, SWT.PUSH); wAddOne   .setText(" > ");  wAddOne   .setToolTipText("Add the selected items on the left.");
+		wAddAll    = new Button(gButtonGroup, SWT.PUSH); wAddAll   .setText(" >> "); wAddAll   .setToolTipText("Add all items on the left.");
+		wRemoveOne = new Button(gButtonGroup, SWT.PUSH); wRemoveOne.setText(" < ");  wRemoveOne.setToolTipText("Remove the selected items on the right.");
+		wRemoveAll = new Button(gButtonGroup, SWT.PUSH); wRemoveAll.setText(" << "); wRemoveAll.setToolTipText("Add all items on the right.");
 
-		FormData fdAddOne = new FormData();
-		fdAddOne.left   = new FormAttachment(compmiddle, 0, SWT.CENTER); 
-		fdAddOne.top    = new FormAttachment(30, 0);
-		wAddOne.setLayoutData(fdAddOne);
+ 		GridData gdAddOne = new GridData(GridData.FILL_BOTH);
+		wAddOne.setLayoutData(gdAddOne);
 
-		FormData fdAddAll = new FormData();
-		fdAddAll.left   = new FormAttachment(compmiddle, 0, SWT.CENTER);
-		fdAddAll.top    = new FormAttachment(wAddOne, margin);
-		wAddAll.setLayoutData(fdAddAll);
+ 		GridData gdAddAll = new GridData(GridData.FILL_BOTH);
+		wAddAll.setLayoutData(gdAddAll);
 
-		FormData fdRemoveAll = new FormData();
-		fdRemoveAll.left   = new FormAttachment(compmiddle, 0, SWT.CENTER);
-		fdRemoveAll.top    = new FormAttachment(wAddAll, margin);
-		wRemoveAll.setLayoutData(fdRemoveAll);
+ 		GridData gdRemoveAll = new GridData(GridData.FILL_BOTH);
+		wRemoveAll.setLayoutData(gdRemoveAll);
 
-		FormData fdRemoveOne = new FormData();
-		fdRemoveOne.left   = new FormAttachment(compmiddle, 0, SWT.CENTER);
-		fdRemoveOne.top    = new FormAttachment(wRemoveAll, margin);
-		wRemoveOne.setLayoutData(fdRemoveOne);
+ 		GridData gdRemoveOne = new GridData(GridData.FILL_BOTH);
+		wRemoveOne.setLayoutData(gdRemoveOne);
 
-
+		FormData fdButtonGroup=new FormData();
+		wAddAll.pack(); // get a size		
+		fdButtonGroup.left = new FormAttachment(50, -(wAddAll.getSize().x/2)-5);
+		fdButtonGroup.top  = new FormAttachment(30, 0); 
+		gButtonGroup.setBackground(shell.getBackground()); // the default looks ugly
+		gButtonGroup.setLayoutData(fdButtonGroup);
+		
 		/////////////////////////////////
 		// RIGHT
-		/////////////////////////////////
-		
+		/////////////////////////////////		
 		Composite rightsplit = new Composite(sashform, SWT.NONE);
 		rightsplit.setLayout(new FormLayout());
 		FormData fdRightsplit = new FormData(); 
@@ -260,7 +266,7 @@ public class EnterListDialog extends Dialog
 		fdListDest .bottom = new FormAttachment(100, 0);
 		wListDest.setLayoutData(fdListDest );
 
-		sashform.setWeights(new int[] { 46, 8, 46 });
+		sashform.setWeights(new int[] { 40, 16, 40 });
 
  		////////////////////////////////////////////////////////////////
  		// THE BOTTOM BUTTONS...
@@ -304,10 +310,7 @@ public class EnterListDialog extends Dialog
 				}
 			}
 		);
-		
-
-		
-		
+				
 		// Drag & Drop for steps
 		Transfer[] ttypes = new Transfer[] {TextTransfer.getInstance() };
 		
@@ -513,5 +516,4 @@ public class EnterListDialog extends Dialog
 	{
 		return this.getClass().getName();
 	}
-
 }
