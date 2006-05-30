@@ -1801,7 +1801,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fieldsLayout.marginWidth  = Const.FORM_MARGIN;
         fieldsLayout.marginHeight = Const.FORM_MARGIN;
         
-        wFieldsComp = new ScrolledComposite(wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
+        wFieldsComp = new Composite(wTabFolder, SWT.NONE );
         wFieldsComp.setLayout(fieldsLayout);
         props.setLook(wFieldsComp);
         
