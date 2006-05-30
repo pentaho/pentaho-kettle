@@ -230,7 +230,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             String dirPath = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
             directory = rep.getDirectoryTree().findDirectory(dirPath);
 			
-			filename          = rep.getJobEntryAttributeString(id_jobentry, "filename");
+			filename          = rep.getJobEntryAttributeString(id_jobentry, "file_name");
 			argFromPrevious   = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
             execPerRow = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
 	
