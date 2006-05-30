@@ -128,7 +128,20 @@ public class CommandLineOption
 	 */
 	public String getUsageDescription()
 	{
-		return "  -"+Const.rightPad(option, 10)+" : "+description;
+        String optionStart;
+        String optionDelim;
+        if (Const.isWindows()) 
+        {
+            optionStart = "  /";
+            optionDelim = " : ";
+        }
+        else
+        {
+            optionStart = "  -";
+            optionDelim = " = ";
+        }
+
+		return optionStart+Const.rightPad(option, 10)+optionDelim+description;
 	}
 	
 	/**
