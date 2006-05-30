@@ -57,6 +57,7 @@ import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Rectangle;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.job.JobHopMeta;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
@@ -1384,23 +1385,21 @@ public class ChefGraph extends Canvas
 	public void launchSpoon(JobEntryTrans entry)
 	{
 		// Load from repository?
-		if ( (entry.getFileName()==null || entry.getFileName().length()==0) &&
-		     (entry.getTransname()!=null && entry.getTransname().length()>0)
-		   )
+		if ( Const.isEmpty(entry.getFileName()) && !Const.isEmpty(entry.getTransname()) )
 		{
 			try
 			{
 				Spoon sp = new Spoon(log, chef.disp, chef.rep);
 				// New transformation?
 				//
-				long id = sp.rep.getTransformationID(entry.getTransname(), entry.getDirectory().getID());
+				long id = sp.rep.getTransformationID(StringUtil.environmentSubstitute(entry.getTransname()), entry.getDirectory().getID());
 				if (id<0) // New
 				{
-					sp.setTransMeta( new TransMeta(null, entry.getTransname(), entry.arguments) );
+					sp.setTransMeta( new TransMeta(null, StringUtil.environmentSubstitute(entry.getTransname()), entry.arguments) );
 				}
 				else
 				{
-					sp.setTransMeta( new TransMeta(sp.rep, entry.getTransname(), entry.getDirectory()) );
+					sp.setTransMeta( new TransMeta(sp.rep, StringUtil.environmentSubstitute(entry.getTransname()), entry.getDirectory()) );
 				}
 				sp.getTransMeta().clearChanged();
 				sp.open();
@@ -1419,7 +1418,7 @@ public class ChefGraph extends Canvas
 			{
 				// Read from file...
 				Spoon sp = new Spoon(log, chef.disp, null);
-				sp.setTransMeta( new TransMeta(entry.getFileName()) );
+				sp.setTransMeta( new TransMeta( StringUtil.environmentSubstitute(entry.getFileName() )) );
 				sp.getTransMeta().clearChanged();
 				sp.setFilename(entry.getFileName());
 				sp.open();
@@ -1438,9 +1437,7 @@ public class ChefGraph extends Canvas
 	public void launchChef(JobEntryJob entry)
 	{
 		// Load from repository?
-		if ( (entry.getFileName()==null || entry.getFileName().length()==0) &&
-			 (entry.getName()!=null && entry.getName().length()>0)
-		   )
+		if ( Const.isEmpty(entry.getFileName()) && !Const.isEmpty(entry.getName()) )
 		{
 			try
 			{
@@ -1463,7 +1460,7 @@ public class ChefGraph extends Canvas
 			try
 			{
 				Chef ch = new Chef(log, chef.disp, null);
-				ch.jobMeta = new JobMeta(log, entry.getFileName(), chef.rep);
+				ch.jobMeta = new JobMeta(log, StringUtil.environmentSubstitute(entry.getFileName()), chef.rep);
 				ch.jobMeta.setFilename( entry.getFileName() );
 				ch.jobMeta.clearChanged();
 				ch.refreshTree();
