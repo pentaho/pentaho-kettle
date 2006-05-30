@@ -545,6 +545,12 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 		retval.allocate(nrfiles, nrfields, nrfilters);
 
+        for (int i = 0; i < nrfiles; i++)
+        {
+            retval.fileName[i] = fileName[i];
+            retval.fileMask[i] = fileMask[i];
+        }
+
 		for (int i = 0; i < nrfields; i++)
 		{
 			retval.inputFields[i] = (TextFileInputField) inputFields[i].clone();
