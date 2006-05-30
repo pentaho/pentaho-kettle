@@ -95,6 +95,11 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 		return false;
 	}
 
+    public String getTruncateTableStatement(String tableName)
+    {
+        return "DELETE FROM "+tableName;
+    }
+    
 	/**
 	 * Generates the SQL statement to add a column to the specified table
 	 * @param tablename The table to add
