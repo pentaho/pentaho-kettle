@@ -16,6 +16,7 @@
 
 package be.ibridge.kettle.core.database;
 
+import java.util.Map;
 import java.util.Properties;
 
 import be.ibridge.kettle.core.value.Value;
@@ -531,4 +532,32 @@ public interface DatabaseInterface extends Cloneable
      * True for most databases except for stuborn stuff like Postgres ;-)
      */
     public boolean isDefaultingToUppercase();
+
+    /**
+     * @return a map of all the extra URL options you want to set, retrieved from the attributes list (NOT synchronised!)
+     */
+    public Map getExtraOptions();
+
+    /**
+     * Add an extra option to the attributes list
+     * @param option The option to set
+     * @param value The value of the option
+     */
+    public void addExtraOption(String option, String value);
+    
+    /**
+     * @return The extra option separator in database URL for this platform (usually this is semicolon ; ) 
+     */
+    public String getExtraOptionSeparator();
+    
+    /**
+     * @return The extra option value separator in database URL for this platform (usually this is the equal sign = ) 
+     */
+    public String getExtraOptionValueSeparator();
+
+    /**
+     * @return This indicator separates the normal URL from the options
+     */
+    public String getExtraOptionIndicator();
+
 }

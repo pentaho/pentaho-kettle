@@ -832,13 +832,16 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wFirstHeader.setLayoutData(fdFirstHeader);
 
         
-        ColumnInfo[] colinfo=new ColumnInfo[3];
-        colinfo[ 0]=new ColumnInfo(Messages.getString("TextFileInputDialog.FileDirColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false);
-        colinfo[ 1]=new ColumnInfo(Messages.getString("TextFileInputDialog.WildcardColumn.Column"),        ColumnInfo.COLUMN_TYPE_TEXT,    false );
+        ColumnInfo[] colinfo=new ColumnInfo[]
+            {
+                new ColumnInfo(Messages.getString("TextFileInputDialog.FileDirColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
+                new ColumnInfo(Messages.getString("TextFileInputDialog.WildcardColumn.Column"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
+                new ColumnInfo(Messages.getString("TextFileInputDialog.RequiredColumn.Column"), ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO ),
+            };
+
         colinfo[ 1].setToolTip(Messages.getString("TextFileInputDialog.RegExpColumn.Column"));
-        colinfo[ 2]=new ColumnInfo(Messages.getString("TextFileInputDialog.RequiredColumn.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO,  YES_NO_COMBO );
         colinfo[ 2].setToolTip(Messages.getString("TextFileInputDialog.RequiredColumn.Tooltip"));
-        
+
         wFilenameList = new TableView(wFileComp, 
                               SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
                               colinfo, 

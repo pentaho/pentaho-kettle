@@ -16,6 +16,8 @@
  
 package be.ibridge.kettle.core.dialog;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -39,17 +41,21 @@ import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
 
+import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.core.database.BaseDatabaseMeta;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.database.GenericDatabaseMeta;
 import be.ibridge.kettle.core.database.SAPR3DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -70,10 +76,10 @@ public class DatabaseDialog extends Dialog
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wDbTab, wOracleTab, wIfxTab, wSAPTab, wGenericTab;
+	private CTabItem     wDbTab, wOracleTab, wIfxTab, wSAPTab, wGenericTab, wOptionsTab;
 
-	private Composite    wDbComp, wOracleComp, wIfxComp, wSAPComp, wGenericComp;
-	private FormData     fdDbComp, fdOracleComp, fdIfxComp, fdSAPComp, fdGenericComp;
+	private Composite    wDbComp, wOracleComp, wIfxComp, wSAPComp, wGenericComp, wOptionsComp;
+	private FormData     fdDbComp, fdOracleComp, fdIfxComp, fdSAPComp, fdGenericComp, fdOptionsComp;
 
 	private Shell     shell;
 
@@ -98,6 +104,9 @@ public class DatabaseDialog extends Dialog
 
     private FormData fdlURL, fdlDriverClass;
     private FormData fdURL, fdDriverClass;
+    
+    private TableView wOptions;
+    private FormData  fdOptions;
 
 	private Button    wOK, wTest, wExp, wList, wCancel;
 	
@@ -105,10 +114,15 @@ public class DatabaseDialog extends Dialog
 	
 	private ModifyListener lsMod;
 
-	private boolean changed;
-	private Props   props;
-	private String previousDatabaseType;
+	private boolean   changed;
+	private Props     props;
+	private String    previousDatabaseType;
     private ArrayList databases;
+    private Map       extraOptions;
+
+    private int middle;
+
+    private int margin;
 
 	public DatabaseDialog(Shell par, int style, LogWriter lg, DatabaseMeta conn, Props pr)
 	{
@@ -117,6 +131,7 @@ public class DatabaseDialog extends Dialog
 		connectionName=conn.getName();
 		props=pr;
         this.databases = null;
+        this.extraOptions = conn.getExtraOptions();
 	}
 	
 	public String open() 
@@ -134,8 +149,8 @@ public class DatabaseDialog extends Dialog
 		};
 		changed = connection.hasChanged();
 
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+		middle = props.getMiddlePct();
+		margin = Const.MARGIN;
 
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -170,307 +185,421 @@ public class DatabaseDialog extends Dialog
 		wTabFolder = new CTabFolder(shell, SWT.BORDER);
  		props.setLook(wTabFolder, Props.WIDGET_STYLE_TABLE);
 
-		//////////////////////////
-		// START OF DB TAB   ///
-		//////////////////////////
-		wDbTab=new CTabItem(wTabFolder, SWT.NONE);
-		wDbTab.setText("General");
-		
-		wDbComp = new Composite(wTabFolder, SWT.NONE);
- 		props.setLook(wDbComp);
-
-		FormLayout GenLayout = new FormLayout();
-		GenLayout.marginWidth  = 3;
-		GenLayout.marginHeight = 3;
-		wDbComp.setLayout(GenLayout);
-
-		// What's the connection name?
-		wlConn = new Label(wDbComp, SWT.RIGHT); 
- 		props.setLook(wlConn);
-		wlConn.setText("Connection name: ");
-		fdlConn = new FormData();
-		fdlConn.top   = new FormAttachment(0, 0);
-		fdlConn.left  = new FormAttachment(0, 0);  // First one in the left top corner
-		fdlConn.right = new FormAttachment(middle, -margin);
-		wlConn.setLayoutData(fdlConn);
-
-		wConn = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(wConn);
-		wConn.addModifyListener(lsMod);
-		fdConn = new FormData();
-		fdConn.top  = new FormAttachment(0, 0);
-		fdConn.left = new FormAttachment(middle, 0); // To the right of the label
-		fdConn.right= new FormAttachment(95, 0);
-		wConn.setLayoutData(fdConn);
-
-		// What types are there?
-		wlConnType = new Label(wDbComp, SWT.RIGHT); 
-		wlConnType.setText("Connection type: "); 
- 		props.setLook(wlConnType);
-		fdlConnType = new FormData();
-		fdlConnType.top    = new FormAttachment(wConn, margin);  // below the line above
-		fdlConnType.left   = new FormAttachment(0,0); 
-		fdlConnType.right  = new FormAttachment(middle, -margin);
-		wlConnType.setLayoutData(fdlConnType);
-
-		wConnType = new List(wDbComp, SWT.BORDER | SWT.READ_ONLY | SWT.SINGLE | SWT.V_SCROLL);
- 		props.setLook(wConnType);
-		String[] dbtypes=DatabaseMeta.getDBTypeDescLongList();
-		for (int i=0;i<dbtypes.length;i++)
-		{
-			wConnType.add( dbtypes[i] );
-		}
- 		props.setLook(wConnType);
-		fdConnType = new FormData();
-		fdConnType.top    = new FormAttachment(wConn, margin);
-		fdConnType.left   = new FormAttachment(middle, 0);  // right of the label
-		fdConnType.right  = new FormAttachment(95, 0);
-		fdConnType.bottom = new FormAttachment(wConn, 150);
-		wConnType.setLayoutData(fdConnType);
-
-		// What access types are there?
-		wlConnAcc = new Label(wDbComp, SWT.RIGHT); 
-		wlConnAcc.setText("Method of access: "); 
- 		props.setLook(wlConnAcc);
-		fdlConnAcc = new FormData();
-		fdlConnAcc.top  = new FormAttachment(wConnType, margin);  // below the line above
-		fdlConnAcc.left = new FormAttachment(0,0); 
-		fdlConnAcc.right= new FormAttachment(middle, -margin);
-		wlConnAcc.setLayoutData(fdlConnAcc);
-
-		wConnAcc = new List(wDbComp, SWT.BORDER | SWT.READ_ONLY | SWT.SINGLE | SWT.V_SCROLL);
- 		props.setLook(wConnAcc);
-		props.setLook(wConnAcc);
-		fdConnAcc = new FormData();
-		fdConnAcc.top    = new FormAttachment(wConnType, margin);
-		fdConnAcc.left   = new FormAttachment(middle, 0);  // right of the label
-		fdConnAcc.right  = new FormAttachment(95, 0);
-		//fdConnAcc.bottom = new FormAttachment(wConnType, 50);
-		wConnAcc.setLayoutData(fdConnAcc);
-
-		// Hostname
-		wlHostName = new Label(wDbComp, SWT.RIGHT); 
-		wlHostName.setText("Server host name: "); 
- 		props.setLook(wlHostName);
-
-		fdlHostName = new FormData();
-		fdlHostName.top  = new FormAttachment(wConnAcc, margin);
-		fdlHostName.left = new FormAttachment(0,0);
-		fdlHostName.right= new FormAttachment(middle, -margin);
-		wlHostName.setLayoutData(fdlHostName);
-
-		wHostName = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(wHostName);
-		wHostName.addModifyListener(lsMod);
-		fdHostName = new FormData();
-		fdHostName.top  = new FormAttachment(wConnAcc, margin);
-		fdHostName.left = new FormAttachment(middle, 0); 
-		fdHostName.right= new FormAttachment(95, 0);
-		wHostName.setLayoutData(fdHostName);
-		
-		// DBName
-		wlDBName = new Label(wDbComp, SWT.RIGHT ); 
-		wlDBName.setText("Database name: "); 
- 		props.setLook(wlDBName);
-		fdlDBName = new FormData();
-		fdlDBName.top  = new FormAttachment(wHostName, margin);
-		fdlDBName.left = new FormAttachment(0,0);	
-		fdlDBName.right= new FormAttachment(middle, -margin);
-		wlDBName.setLayoutData(fdlDBName);
-
-		wDBName = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(wDBName);
-		wDBName.addModifyListener(lsMod);
-		fdDBName = new FormData();
-		fdDBName.top  = new FormAttachment(wHostName, margin);
-		fdDBName.left = new FormAttachment(middle, 0);
-		fdDBName.right= new FormAttachment(95, 0);
-		wDBName.setLayoutData(fdDBName);
-				
-		// Port
-		wlPort = new Label(wDbComp, SWT.RIGHT ); 
-		wlPort.setText("Port number: "); 
- 		props.setLook(wlPort);
-		fdlPort = new FormData();
-		fdlPort.top  = new FormAttachment(wDBName, margin);
-		fdlPort.left = new FormAttachment(0,0);
-		fdlPort.right= new FormAttachment(middle, -margin);
-		wlPort.setLayoutData(fdlPort);
-
-		wPort = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(wPort);
-		wPort.addModifyListener(lsMod);
-		fdPort = new FormData();
-		fdPort.top  = new FormAttachment(wDBName, margin);
-		fdPort.left = new FormAttachment(middle, 0); 
-		fdPort.right= new FormAttachment(95, 0);
-		wPort.setLayoutData(fdPort);
-		
-		// Username
-		wlUsername = new Label(wDbComp, SWT.RIGHT ); 
-		wlUsername.setText("Username: "); 
- 		props.setLook(wlUsername);
-		fdlUsername = new FormData();
-		fdlUsername.top  = new FormAttachment(wPort, margin);
-		fdlUsername.left = new FormAttachment(0,0); 
-		fdlUsername.right= new FormAttachment(middle, -margin);
-		wlUsername.setLayoutData(fdlUsername);
-
-		wUsername = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(wUsername);
-		wUsername.addModifyListener(lsMod);
-		fdUsername = new FormData();
-		fdUsername.top  = new FormAttachment(wPort, margin);
-		fdUsername.left = new FormAttachment(middle, 0); 
-		fdUsername.right= new FormAttachment(95, 0);
-		wUsername.setLayoutData(fdUsername);
+        addGeneralTab();
+        addOracleTab();
+        addInformixTab();
+        addSAPTab();
+        addGenericTab();
+        addOptionsTab();
+        
+		fdTabFolder = new FormData();
+		fdTabFolder.left  = new FormAttachment(0, 0);
+		fdTabFolder.top   = new FormAttachment(0, margin);
+		fdTabFolder.right = new FormAttachment(100, 0);
+		fdTabFolder.bottom= new FormAttachment(wOK, -margin);
+		wTabFolder.setLayoutData(fdTabFolder);
 
 		
-		// Password
-		wlPassword = new Label(wDbComp, SWT.RIGHT ); 
-		wlPassword.setText("Password: "); 
- 		props.setLook(wlPassword);
-		fdlPassword = new FormData();
-		fdlPassword.top  = new FormAttachment(wUsername, margin);
-		fdlPassword.left = new FormAttachment(0,0);
-		fdlPassword.right= new FormAttachment(middle, -margin);
-		wlPassword.setLayoutData(fdlPassword);
-
-		wPassword = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(wPassword);
-		wPassword.setEchoChar('*');
-		wPassword.addModifyListener(lsMod);
-		fdPassword = new FormData();
-		fdPassword.top  = new FormAttachment(wUsername, margin);
-		fdPassword.left = new FormAttachment(middle, 0); 
-		fdPassword.right= new FormAttachment(95, 0);
-		wPassword.setLayoutData(fdPassword);
-
+		// Add listeners
+		wOK.addListener(SWT.Selection, new Listener ()
+			{
+				public void handleEvent (Event e) 
+				{
+					ok();
+				}
+			}
+		);
+						
+		wCancel.addListener(SWT.Selection, new Listener ()
+			{
+				public void handleEvent (Event e) 
+				{
+					cancel();
+				}
+			}
+		);
+		wTest.addListener(SWT.Selection, new Listener ()
+			{
+				public void handleEvent (Event e) 
+				{
+					test();
+				}
+			}
+		);
+        wExp.addListener(SWT.Selection, new Listener ()
+                {
+                    public void handleEvent (Event e) 
+                    {
+                        explore();
+                    }
+                }
+            );
+		wList.addListener(SWT.Selection, new Listener ()
+			{
+				public void handleEvent (Event e) 
+				{
+					showFeatureList();
+				}
+			}
+		);
+		SelectionAdapter selAdapter=new SelectionAdapter()
+			{
+				public void widgetDefaultSelected(SelectionEvent e)
+				{
+					ok();	
+				}
+			};
+		wHostName.addSelectionListener(selAdapter);
+		wDBName.addSelectionListener(selAdapter);
+		wPort.addSelectionListener(selAdapter);
+		wUsername.addSelectionListener(selAdapter);
+		wPassword.addSelectionListener(selAdapter);
+		wConn.addSelectionListener(selAdapter);
+		wData.addSelectionListener(selAdapter);
+		wIndex.addSelectionListener(selAdapter);
 		
-		fdDbComp=new FormData();
-		fdDbComp.left  = new FormAttachment(0, 0);
-		fdDbComp.top   = new FormAttachment(0, 0);
-		fdDbComp.right = new FormAttachment(100, 0);
-		fdDbComp.bottom= new FormAttachment(100, 0);
-		wDbComp.setLayoutData(fdDbComp);
+		// Detect X or ALT-F4 or something that kills this window...
+		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 	
-		wDbComp.layout();
-		wDbTab.setControl(wDbComp);
+		wTabFolder.setSelection(0);
 		
-		/////////////////////////////////////////////////////////////
-		/// END OF GEN TAB
-		/////////////////////////////////////////////////////////////
+		getData();
+		enableFields();
 
-		//////////////////////////
-		// START OF ORACLE TAB///
-		///
-		wOracleTab=new CTabItem(wTabFolder, SWT.NONE);
-		wOracleTab.setText("Oracle");
+        SelectionAdapter lsTypeAcc = 
+            new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    enableFields();
+                    setPortNumber();
+                }
+            };
 
-		FormLayout oracleLayout = new FormLayout ();
-		oracleLayout.marginWidth  = 3;
-		oracleLayout.marginHeight = 3;
+        wConnType.addSelectionListener( lsTypeAcc );
+        wConnAcc.addSelectionListener( lsTypeAcc );
+
+		BaseStepDialog.setSize(shell);
 		
-		wOracleComp = new Composite(wTabFolder, SWT.NONE);
- 		props.setLook(wOracleComp);
-		wOracleComp.setLayout(oracleLayout);
+		connection.setChanged(changed);
+		shell.open();
+		Display display = parent.getDisplay();
+		while (!shell.isDisposed()) {
+			if (!display.readAndDispatch()) display.sleep();
+		}
+		return connectionName;
+	}
+	
+    private void addGeneralTab()
+    {
+        //////////////////////////
+        // START OF DB TAB   ///
+        //////////////////////////
+        wDbTab=new CTabItem(wTabFolder, SWT.NONE);
+        wDbTab.setText("General");
+        
+        wDbComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wDbComp);
 
-		// What's the data tablespace name?
-		wlData = new Label(wOracleComp, SWT.RIGHT); 
- 		props.setLook(wlData);
-		wlData.setText("Tablespace for data: "); 
-		fdlData = new FormData();
-		fdlData.top   = new FormAttachment(0, 0);
-		fdlData.left  = new FormAttachment(0, 0);  // First one in the left top corner
-		fdlData.right = new FormAttachment(middle, -margin);
-		wlData.setLayoutData(fdlData);
+        FormLayout GenLayout = new FormLayout();
+        GenLayout.marginWidth  = 3;
+        GenLayout.marginHeight = 3;
+        wDbComp.setLayout(GenLayout);
 
-		wData = new Text(wOracleComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-		wData.setText( NVL(connection.getDataTablespace()==null?"":connection.getDataTablespace(), "") );
- 		props.setLook(wData);
-		wData.addModifyListener(lsMod);
-		fdData = new FormData();
-		fdData.top  = new FormAttachment(0, 0);
-		fdData.left = new FormAttachment(middle, 0); // To the right of the label
-		fdData.right= new FormAttachment(95, 0);
-		wData.setLayoutData(fdData);
+        // What's the connection name?
+        wlConn = new Label(wDbComp, SWT.RIGHT); 
+        props.setLook(wlConn);
+        wlConn.setText("Connection name: ");
+        fdlConn = new FormData();
+        fdlConn.top   = new FormAttachment(0, 0);
+        fdlConn.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlConn.right = new FormAttachment(middle, -margin);
+        wlConn.setLayoutData(fdlConn);
 
-		// What's the index tablespace name?
-		wlIndex = new Label(wOracleComp, SWT.RIGHT); 
- 		props.setLook(wlIndex);
-		wlIndex.setText("Tablespace for indexes: "); 
-		fdlIndex = new FormData();
-		fdlIndex.top   = new FormAttachment(wData, margin);
-		fdlIndex.left  = new FormAttachment(0, 0);  // First one in the left top corner
-		fdlIndex.right = new FormAttachment(middle, -margin);
-		wlIndex.setLayoutData(fdlIndex);
+        wConn = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wConn);
+        wConn.addModifyListener(lsMod);
+        fdConn = new FormData();
+        fdConn.top  = new FormAttachment(0, 0);
+        fdConn.left = new FormAttachment(middle, 0); // To the right of the label
+        fdConn.right= new FormAttachment(95, 0);
+        wConn.setLayoutData(fdConn);
 
-		wIndex = new Text(wOracleComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-		wIndex.setText( NVL(connection.getIndexTablespace()==null?"":connection.getIndexTablespace(), "") );
- 		props.setLook(wIndex);
-		wIndex.addModifyListener(lsMod);
-		fdIndex = new FormData();
-		fdIndex.top  = new FormAttachment(wData, margin);
-		fdIndex.left = new FormAttachment(middle, 0); // To the right of the label
-		fdIndex.right= new FormAttachment(95, 0);
-		wIndex.setLayoutData(fdIndex);
-		
-		
-		fdOracleComp = new FormData();
-		fdOracleComp.left  = new FormAttachment(0, 0);
-		fdOracleComp.top   = new FormAttachment(0, 0);
-		fdOracleComp.right = new FormAttachment(100, 0);
-		fdOracleComp.bottom= new FormAttachment(100, 0);
-		wOracleComp.setLayoutData(fdOracleComp);
+        // What types are there?
+        wlConnType = new Label(wDbComp, SWT.RIGHT); 
+        wlConnType.setText("Connection type: "); 
+        props.setLook(wlConnType);
+        fdlConnType = new FormData();
+        fdlConnType.top    = new FormAttachment(wConn, margin);  // below the line above
+        fdlConnType.left   = new FormAttachment(0,0); 
+        fdlConnType.right  = new FormAttachment(middle, -margin);
+        wlConnType.setLayoutData(fdlConnType);
 
-		wOracleComp.layout();
-		wOracleTab.setControl(wOracleComp);
+        wConnType = new List(wDbComp, SWT.BORDER | SWT.READ_ONLY | SWT.SINGLE | SWT.V_SCROLL);
+        props.setLook(wConnType);
+        String[] dbtypes=DatabaseMeta.getDBTypeDescLongList();
+        for (int i=0;i<dbtypes.length;i++)
+        {
+            wConnType.add( dbtypes[i] );
+        }
+        props.setLook(wConnType);
+        fdConnType = new FormData();
+        fdConnType.top    = new FormAttachment(wConn, margin);
+        fdConnType.left   = new FormAttachment(middle, 0);  // right of the label
+        fdConnType.right  = new FormAttachment(95, 0);
+        fdConnType.bottom = new FormAttachment(wConn, 150);
+        wConnType.setLayoutData(fdConnType);
 
-		
-		//////////////////////////
-		// START OF INFORMIX TAB///
-		///
-		wIfxTab=new CTabItem(wTabFolder, SWT.NONE);
-		wIfxTab.setText("Informix");
+        // What access types are there?
+        wlConnAcc = new Label(wDbComp, SWT.RIGHT); 
+        wlConnAcc.setText("Method of access: "); 
+        props.setLook(wlConnAcc);
+        fdlConnAcc = new FormData();
+        fdlConnAcc.top  = new FormAttachment(wConnType, margin);  // below the line above
+        fdlConnAcc.left = new FormAttachment(0,0); 
+        fdlConnAcc.right= new FormAttachment(middle, -margin);
+        wlConnAcc.setLayoutData(fdlConnAcc);
 
-		FormLayout ifxLayout = new FormLayout ();
-		ifxLayout.marginWidth  = 3;
-		ifxLayout.marginHeight = 3;
-		
-		wIfxComp = new Composite(wTabFolder, SWT.NONE);
- 		props.setLook(wIfxComp);
-		wIfxComp.setLayout(ifxLayout);
+        wConnAcc = new List(wDbComp, SWT.BORDER | SWT.READ_ONLY | SWT.SINGLE | SWT.V_SCROLL);
+        props.setLook(wConnAcc);
+        props.setLook(wConnAcc);
+        fdConnAcc = new FormData();
+        fdConnAcc.top    = new FormAttachment(wConnType, margin);
+        fdConnAcc.left   = new FormAttachment(middle, 0);  // right of the label
+        fdConnAcc.right  = new FormAttachment(95, 0);
+        //fdConnAcc.bottom = new FormAttachment(wConnType, 50);
+        wConnAcc.setLayoutData(fdConnAcc);
 
-		// Servername
-		wlServername = new Label(wIfxComp, SWT.RIGHT ); 
-		wlServername.setText("Informix Servername: "); 
- 		props.setLook(wlServername);
-		fdlServername = new FormData();
-		fdlServername.top  = new FormAttachment(0, margin);
-		fdlServername.left = new FormAttachment(0,0);
-		fdlServername.right= new FormAttachment(middle, -margin);
-		wlServername.setLayoutData(fdlServername);
+        // Hostname
+        wlHostName = new Label(wDbComp, SWT.RIGHT); 
+        wlHostName.setText("Server host name: "); 
+        props.setLook(wlHostName);
 
-		wServername = new Text(wIfxComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(wServername);
-		wServername.addModifyListener(lsMod);
-		fdServername = new FormData();
-		fdServername.top  = new FormAttachment(0, margin);
-		fdServername.left = new FormAttachment(middle, 0); 
-		fdServername.right= new FormAttachment(95, 0);
-		wServername.setLayoutData(fdServername);
-		
-		fdIfxComp = new FormData();
-		fdIfxComp.left  = new FormAttachment(0, 0);
-		fdIfxComp.top   = new FormAttachment(0, 0);
-		fdIfxComp.right = new FormAttachment(100, 0);
-		fdIfxComp.bottom= new FormAttachment(100, 0);
-		wIfxComp.setLayoutData(fdIfxComp);
+        fdlHostName = new FormData();
+        fdlHostName.top  = new FormAttachment(wConnAcc, margin);
+        fdlHostName.left = new FormAttachment(0,0);
+        fdlHostName.right= new FormAttachment(middle, -margin);
+        wlHostName.setLayoutData(fdlHostName);
 
-		wIfxComp.layout();
-		wIfxTab.setControl(wIfxComp);
+        wHostName = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wHostName);
+        wHostName.addModifyListener(lsMod);
+        fdHostName = new FormData();
+        fdHostName.top  = new FormAttachment(wConnAcc, margin);
+        fdHostName.left = new FormAttachment(middle, 0); 
+        fdHostName.right= new FormAttachment(95, 0);
+        wHostName.setLayoutData(fdHostName);
+        
+        // DBName
+        wlDBName = new Label(wDbComp, SWT.RIGHT ); 
+        wlDBName.setText("Database name: "); 
+        props.setLook(wlDBName);
+        fdlDBName = new FormData();
+        fdlDBName.top  = new FormAttachment(wHostName, margin);
+        fdlDBName.left = new FormAttachment(0,0);   
+        fdlDBName.right= new FormAttachment(middle, -margin);
+        wlDBName.setLayoutData(fdlDBName);
+
+        wDBName = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wDBName);
+        wDBName.addModifyListener(lsMod);
+        fdDBName = new FormData();
+        fdDBName.top  = new FormAttachment(wHostName, margin);
+        fdDBName.left = new FormAttachment(middle, 0);
+        fdDBName.right= new FormAttachment(95, 0);
+        wDBName.setLayoutData(fdDBName);
+                
+        // Port
+        wlPort = new Label(wDbComp, SWT.RIGHT ); 
+        wlPort.setText("Port number: "); 
+        props.setLook(wlPort);
+        fdlPort = new FormData();
+        fdlPort.top  = new FormAttachment(wDBName, margin);
+        fdlPort.left = new FormAttachment(0,0);
+        fdlPort.right= new FormAttachment(middle, -margin);
+        wlPort.setLayoutData(fdlPort);
+
+        wPort = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wPort);
+        wPort.addModifyListener(lsMod);
+        fdPort = new FormData();
+        fdPort.top  = new FormAttachment(wDBName, margin);
+        fdPort.left = new FormAttachment(middle, 0); 
+        fdPort.right= new FormAttachment(95, 0);
+        wPort.setLayoutData(fdPort);
+        
+        // Username
+        wlUsername = new Label(wDbComp, SWT.RIGHT ); 
+        wlUsername.setText("Username: "); 
+        props.setLook(wlUsername);
+        fdlUsername = new FormData();
+        fdlUsername.top  = new FormAttachment(wPort, margin);
+        fdlUsername.left = new FormAttachment(0,0); 
+        fdlUsername.right= new FormAttachment(middle, -margin);
+        wlUsername.setLayoutData(fdlUsername);
+
+        wUsername = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wUsername);
+        wUsername.addModifyListener(lsMod);
+        fdUsername = new FormData();
+        fdUsername.top  = new FormAttachment(wPort, margin);
+        fdUsername.left = new FormAttachment(middle, 0); 
+        fdUsername.right= new FormAttachment(95, 0);
+        wUsername.setLayoutData(fdUsername);
 
         
+        // Password
+        wlPassword = new Label(wDbComp, SWT.RIGHT ); 
+        wlPassword.setText("Password: "); 
+        props.setLook(wlPassword);
+        fdlPassword = new FormData();
+        fdlPassword.top  = new FormAttachment(wUsername, margin);
+        fdlPassword.left = new FormAttachment(0,0);
+        fdlPassword.right= new FormAttachment(middle, -margin);
+        wlPassword.setLayoutData(fdlPassword);
+
+        wPassword = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wPassword);
+        wPassword.setEchoChar('*');
+        wPassword.addModifyListener(lsMod);
+        fdPassword = new FormData();
+        fdPassword.top  = new FormAttachment(wUsername, margin);
+        fdPassword.left = new FormAttachment(middle, 0); 
+        fdPassword.right= new FormAttachment(95, 0);
+        wPassword.setLayoutData(fdPassword);
+
+        
+        fdDbComp=new FormData();
+        fdDbComp.left  = new FormAttachment(0, 0);
+        fdDbComp.top   = new FormAttachment(0, 0);
+        fdDbComp.right = new FormAttachment(100, 0);
+        fdDbComp.bottom= new FormAttachment(100, 0);
+        wDbComp.setLayoutData(fdDbComp);
+    
+        wDbComp.layout();
+        wDbTab.setControl(wDbComp);
+        
+        /////////////////////////////////////////////////////////////
+        /// END OF GEN TAB
+        /////////////////////////////////////////////////////////////
+    }
+
+    private void addOracleTab()
+    {
+        //////////////////////////
+        // START OF ORACLE TAB///
+        ///
+        wOracleTab=new CTabItem(wTabFolder, SWT.NONE);
+        wOracleTab.setText("Oracle");
+
+        FormLayout oracleLayout = new FormLayout ();
+        oracleLayout.marginWidth  = 3;
+        oracleLayout.marginHeight = 3;
+        
+        wOracleComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wOracleComp);
+        wOracleComp.setLayout(oracleLayout);
+
+        // What's the data tablespace name?
+        wlData = new Label(wOracleComp, SWT.RIGHT); 
+        props.setLook(wlData);
+        wlData.setText("Tablespace for data: "); 
+        fdlData = new FormData();
+        fdlData.top   = new FormAttachment(0, 0);
+        fdlData.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlData.right = new FormAttachment(middle, -margin);
+        wlData.setLayoutData(fdlData);
+
+        wData = new Text(wOracleComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wData.setText( NVL(connection.getDataTablespace()==null?"":connection.getDataTablespace(), "") );
+        props.setLook(wData);
+        wData.addModifyListener(lsMod);
+        fdData = new FormData();
+        fdData.top  = new FormAttachment(0, 0);
+        fdData.left = new FormAttachment(middle, 0); // To the right of the label
+        fdData.right= new FormAttachment(95, 0);
+        wData.setLayoutData(fdData);
+
+        // What's the index tablespace name?
+        wlIndex = new Label(wOracleComp, SWT.RIGHT); 
+        props.setLook(wlIndex);
+        wlIndex.setText("Tablespace for indexes: "); 
+        fdlIndex = new FormData();
+        fdlIndex.top   = new FormAttachment(wData, margin);
+        fdlIndex.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlIndex.right = new FormAttachment(middle, -margin);
+        wlIndex.setLayoutData(fdlIndex);
+
+        wIndex = new Text(wOracleComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wIndex.setText( NVL(connection.getIndexTablespace()==null?"":connection.getIndexTablespace(), "") );
+        props.setLook(wIndex);
+        wIndex.addModifyListener(lsMod);
+        fdIndex = new FormData();
+        fdIndex.top  = new FormAttachment(wData, margin);
+        fdIndex.left = new FormAttachment(middle, 0); // To the right of the label
+        fdIndex.right= new FormAttachment(95, 0);
+        wIndex.setLayoutData(fdIndex);
+        
+        
+        fdOracleComp = new FormData();
+        fdOracleComp.left  = new FormAttachment(0, 0);
+        fdOracleComp.top   = new FormAttachment(0, 0);
+        fdOracleComp.right = new FormAttachment(100, 0);
+        fdOracleComp.bottom= new FormAttachment(100, 0);
+        wOracleComp.setLayoutData(fdOracleComp);
+
+        wOracleComp.layout();
+        wOracleTab.setControl(wOracleComp);
+    }
+
+    private void addInformixTab()
+    {
+        //////////////////////////
+        // START OF INFORMIX TAB///
+        ///
+        wIfxTab=new CTabItem(wTabFolder, SWT.NONE);
+        wIfxTab.setText("Informix");
+
+        FormLayout ifxLayout = new FormLayout ();
+        ifxLayout.marginWidth  = 3;
+        ifxLayout.marginHeight = 3;
+        
+        wIfxComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wIfxComp);
+        wIfxComp.setLayout(ifxLayout);
+
+        // Servername
+        wlServername = new Label(wIfxComp, SWT.RIGHT ); 
+        wlServername.setText("Informix Servername: "); 
+        props.setLook(wlServername);
+        fdlServername = new FormData();
+        fdlServername.top  = new FormAttachment(0, margin);
+        fdlServername.left = new FormAttachment(0,0);
+        fdlServername.right= new FormAttachment(middle, -margin);
+        wlServername.setLayoutData(fdlServername);
+
+        wServername = new Text(wIfxComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wServername);
+        wServername.addModifyListener(lsMod);
+        fdServername = new FormData();
+        fdServername.top  = new FormAttachment(0, margin);
+        fdServername.left = new FormAttachment(middle, 0); 
+        fdServername.right= new FormAttachment(95, 0);
+        wServername.setLayoutData(fdServername);
+        
+        fdIfxComp = new FormData();
+        fdIfxComp.left  = new FormAttachment(0, 0);
+        fdIfxComp.top   = new FormAttachment(0, 0);
+        fdIfxComp.right = new FormAttachment(100, 0);
+        fdIfxComp.bottom= new FormAttachment(100, 0);
+        wIfxComp.setLayoutData(fdIfxComp);
+
+        wIfxComp.layout();
+        wIfxTab.setControl(wIfxComp);
+    }
+    
+    private void addSAPTab()
+    {
         //////////////////////////
         // START OF SAP TAB///
         ///
@@ -482,7 +611,7 @@ public class DatabaseDialog extends Dialog
         sapLayout.marginHeight = 3;
         
         wSAPComp = new Composite(wTabFolder, SWT.NONE);
- 		props.setLook(        wSAPComp);
+        props.setLook(        wSAPComp);
         wSAPComp.setLayout(sapLayout);
 
         // wSAPLanguage, wSSAPystemNumber, wSAPSystemID
@@ -490,7 +619,7 @@ public class DatabaseDialog extends Dialog
         // Language
         wlSAPLanguage = new Label(wSAPComp, SWT.RIGHT ); 
         wlSAPLanguage.setText("Language "); 
- 		props.setLook(        wlSAPLanguage);
+        props.setLook(        wlSAPLanguage);
         fdlSAPLanguage = new FormData();
         fdlSAPLanguage.top  = new FormAttachment(0, margin);
         fdlSAPLanguage.left = new FormAttachment(0,0);
@@ -498,7 +627,7 @@ public class DatabaseDialog extends Dialog
         wlSAPLanguage.setLayoutData(fdlSAPLanguage);
 
         wSAPLanguage = new Text(wSAPComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(        wSAPLanguage);
+        props.setLook(        wSAPLanguage);
         wSAPLanguage.addModifyListener(lsMod);
         fdSAPLanguage = new FormData();
         fdSAPLanguage.top  = new FormAttachment(0, margin);
@@ -510,7 +639,7 @@ public class DatabaseDialog extends Dialog
         // SystemNumber
         wlSAPSystemNumber = new Label(wSAPComp, SWT.RIGHT ); 
         wlSAPSystemNumber.setText("System Number "); 
- 		props.setLook(        wlSAPSystemNumber);
+        props.setLook(        wlSAPSystemNumber);
         fdlSAPSystemNumber = new FormData();
         fdlSAPSystemNumber.top  = new FormAttachment(wSAPLanguage, margin);
         fdlSAPSystemNumber.left = new FormAttachment(0,0);
@@ -518,7 +647,7 @@ public class DatabaseDialog extends Dialog
         wlSAPSystemNumber.setLayoutData(fdlSAPSystemNumber);
 
         wSAPSystemNumber = new Text(wSAPComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(        wSAPSystemNumber);
+        props.setLook(        wSAPSystemNumber);
         wSAPSystemNumber.addModifyListener(lsMod);
         fdSAPSystemNumber = new FormData();
         fdSAPSystemNumber.top  = new FormAttachment(wSAPLanguage, margin);
@@ -529,7 +658,7 @@ public class DatabaseDialog extends Dialog
         // SystemID
         wlSAPClient = new Label(wSAPComp, SWT.RIGHT ); 
         wlSAPClient.setText("SAP Client"); 
- 		props.setLook(        wlSAPClient);
+        props.setLook(        wlSAPClient);
         fdlSAPClient = new FormData();
         fdlSAPClient.top  = new FormAttachment(wSAPSystemNumber, margin);
         fdlSAPClient.left = new FormAttachment(0,0);
@@ -537,7 +666,7 @@ public class DatabaseDialog extends Dialog
         wlSAPClient.setLayoutData(fdlSAPClient);
 
         wSAPClient = new Text(wSAPComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
- 		props.setLook(        wSAPClient);
+        props.setLook(        wSAPClient);
         wSAPClient.addModifyListener(lsMod);
         fdSAPClient = new FormData();
         fdSAPClient.top  = new FormAttachment(wSAPSystemNumber, margin);
@@ -555,7 +684,10 @@ public class DatabaseDialog extends Dialog
 
         wSAPComp.layout();
         wSAPTab.setControl(wSAPComp);
-
+    }
+    
+    private void addGenericTab()
+    {
         //////////////////////////
         // START OF DB TAB///
         ///
@@ -620,107 +752,56 @@ public class DatabaseDialog extends Dialog
 
         wGenericComp.layout();
         wGenericTab.setControl(wGenericComp);
+    }
 
+    private void addOptionsTab()
+    {
+        //////////////////////////
+        // START OF OPTIONS TAB///
+        ///
+        wOptionsTab=new CTabItem(wTabFolder, SWT.NONE);
+        wOptionsTab.setText("Options");
+        wOptionsTab.setToolTipText("Extra options to set in the URL");
+
+        FormLayout optionsLayout = new FormLayout ();
+        optionsLayout.marginWidth  = margin;
+        optionsLayout.marginHeight = margin;
         
-		fdTabFolder = new FormData();
-		fdTabFolder.left  = new FormAttachment(0, 0);
-		fdTabFolder.top   = new FormAttachment(0, margin);
-		fdTabFolder.right = new FormAttachment(100, 0);
-		fdTabFolder.bottom= new FormAttachment(wOK, -margin);
-		wTabFolder.setLayoutData(fdTabFolder);
+        wOptionsComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook( wOptionsComp );
+        wOptionsComp.setLayout(optionsLayout);
 
-		
-		// Add listeners
-		wOK.addListener(SWT.Selection, new Listener ()
-			{
-				public void handleEvent (Event e) 
-				{
-					handleOK();
-				}
-			}
-		);
-						
-		wCancel.addListener(SWT.Selection, new Listener ()
-			{
-				public void handleEvent (Event e) 
-				{
-					cancel();
-				}
-			}
-		);
-		wTest.addListener(SWT.Selection, new Listener ()
-			{
-				public void handleEvent (Event e) 
-				{
-					test();
-				}
-			}
-		);
-        wExp.addListener(SWT.Selection, new Listener ()
-                {
-                    public void handleEvent (Event e) 
-                    {
-                        explore();
-                    }
-                }
-            );
-		wList.addListener(SWT.Selection, new Listener ()
-			{
-				public void handleEvent (Event e) 
-				{
-					showFeatureList();
-				}
-			}
-		);
-		SelectionAdapter selAdapter=new SelectionAdapter()
-			{
-				public void widgetDefaultSelected(SelectionEvent e)
-				{
-					handleOK();	
-				}
-			};
-		wHostName.addSelectionListener(selAdapter);
-		wDBName.addSelectionListener(selAdapter);
-		wPort.addSelectionListener(selAdapter);
-		wUsername.addSelectionListener(selAdapter);
-		wPassword.addSelectionListener(selAdapter);
-		wConn.addSelectionListener(selAdapter);
-		wData.addSelectionListener(selAdapter);
-		wIndex.addSelectionListener(selAdapter);
-		
-		// Detect X or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
-	
-		wTabFolder.setSelection(0);
-		
-		getData();
-		enableFields();
-
-        SelectionAdapter lsTypeAcc = 
-            new SelectionAdapter() 
+        // options list
+        ColumnInfo[] colinfo=new ColumnInfo[]
             {
-                public void widgetSelected(SelectionEvent e) 
-                {
-                    enableFields();
-                    setPortNumber();
-                }
+                new ColumnInfo("Parameter",  ColumnInfo.COLUMN_TYPE_TEXT, false),
+                new ColumnInfo("Value",      ColumnInfo.COLUMN_TYPE_TEXT, false ),
             };
 
-        wConnType.addSelectionListener( lsTypeAcc );
-        wConnAcc.addSelectionListener( lsTypeAcc );
+        colinfo[0].setToolTip("The extra parameters to set in the URL to connectect to the database");
+        colinfo[1].setToolTip("The values to set for the parameters");
 
-		BaseStepDialog.setSize(shell);
-		
-		connection.setChanged(changed);
-		shell.open();
-		Display display = parent.getDisplay();
-		while (!shell.isDisposed()) {
-			if (!display.readAndDispatch()) display.sleep();
-		}
-		return connectionName;
-	}
-	
-	public void dispose()
+        wOptions = new TableView(wOptionsComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, extraOptions.size(), lsMod, props);
+        props.setLook(wOptions);
+        fdOptions = new FormData();
+        fdOptions.left = new FormAttachment(0, 0);
+        fdOptions.right = new FormAttachment(100, 0);
+        fdOptions.top = new FormAttachment(0, 0);
+        fdOptions.bottom = new FormAttachment(100, 0);
+        wOptions.setLayoutData(fdOptions);
+        
+        fdOptionsComp = new FormData();
+        fdOptionsComp.left  = new FormAttachment(0, 0);
+        fdOptionsComp.top   = new FormAttachment(0, 0);
+        fdOptionsComp.right = new FormAttachment(100, 0);
+        fdOptionsComp.bottom= new FormAttachment(100, 0);
+        wOptionsComp.setLayoutData(fdOptionsComp);
+
+        wOptionsComp.layout();
+        wOptionsTab.setControl(wOptionsComp);
+    }
+
+    public void dispose()
 	{
 		props.setScreen(new WindowProperty(shell));
 		shell.dispose();
@@ -760,6 +841,22 @@ public class DatabaseDialog extends Dialog
 
         wURL.setText(         connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL, ""));
         wDriverClass.setText( connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, ""));
+        
+        // The extra options as well...
+        Iterator keys = extraOptions.keySet().iterator();
+        int nr=0;
+        while (keys.hasNext())
+        {
+            String parameter = (String) keys.next();
+            String value     = (String) extraOptions.get(parameter);
+            
+            TableItem item = wOptions.table.getItem(nr);
+            item.setText(1, parameter);
+            if (value!=null) item.setText(2, value);
+            nr++;
+        }
+        wOptions.setRowNums();
+        wOptions.optWidth(true);
         
 		wConn.setFocus();
 		wConn.selectAll();
@@ -856,68 +953,96 @@ public class DatabaseDialog extends Dialog
 		dispose();
 	}
 	
-	public void getInfo(DatabaseMeta info) throws KettleException
+	public void getInfo(DatabaseMeta databaseMeta) throws KettleException
 	{
+	    // Before we put all attributes back in, clear the old list to make sure...
+        // Warning: the port is an attribute too now.
+        // 
+        databaseMeta.getAttributes().clear();
+        
 		// Name:
-		info.setName(wConn.getText());
+		databaseMeta.setName(wConn.getText());
 		
 		// Connection type:
 		String contype[] = wConnType.getSelection();
 		if (contype.length>0)
 		{
-			info.setDatabaseType( contype[0] );
+			databaseMeta.setDatabaseType( contype[0] );
 		}
 		
 		// Access type:
 		String acctype[] = wConnAcc.getSelection();
 		if (acctype.length>0)
 		{
-			info.setAccessType( DatabaseMeta.getAccessType(acctype[0]) );
+			databaseMeta.setAccessType( DatabaseMeta.getAccessType(acctype[0]) );
 		}
 		
 		// Hostname
-		info.setHostname( wHostName.getText() );
+		databaseMeta.setHostname( wHostName.getText() );
 		
 		// Database name
-		info.setDBName( wDBName.getText() );
+		databaseMeta.setDBName( wDBName.getText() );
 		
 		// Port number
-		info.setDBPort( wPort.getText() );
-				
+		databaseMeta.setDBPort( wPort.getText() );
+        // System.out.println("[getInfo()] Database port : "+databaseMeta.getDatabasePortNumberString());
+        		
 		// Username
-		info.setUsername( wUsername.getText() );
+		databaseMeta.setUsername( wUsername.getText() );
 		
 		// Password
-		info.setPassword( wPassword.getText() );
+		databaseMeta.setPassword( wPassword.getText() );
 		
 		// Servername
-		info.setServername( wServername.getText() );
+		databaseMeta.setServername( wServername.getText() );
 		
 		// Data tablespace
-		info.setDataTablespace( wData.getText() );
+		databaseMeta.setDataTablespace( wData.getText() );
 		
 		// Index tablespace
-		info.setIndexTablespace( wIndex.getText() );
+		databaseMeta.setIndexTablespace( wIndex.getText() );
 		
         // SAP Attributes...
-        info.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE,     wSAPLanguage.getText());
-        info.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, wSAPSystemNumber.getText());
-        info.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT,       wSAPClient.getText());
+        databaseMeta.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_LANGUAGE,     wSAPLanguage.getText());
+        databaseMeta.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_SYSTEM_NUMBER, wSAPSystemNumber.getText());
+        databaseMeta.getAttributes().put(SAPR3DatabaseMeta.ATTRIBUTE_SAP_CLIENT,       wSAPClient.getText());
 
         // Generic settings...
-        info.getAttributes().put(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL,          wURL.getText());
-        info.getAttributes().put(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, wDriverClass.getText());
+        databaseMeta.getAttributes().put(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL,          wURL.getText());
+        databaseMeta.getAttributes().put(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, wDriverClass.getText());
 
-        String[] remarks = info.checkParameters(); 
+        String[] remarks = databaseMeta.checkParameters(); 
 		if (remarks.length!=0)
 		{
             String message = "";
             for (int i=0;i<remarks.length;i++) message+="    * "+remarks[i]+Const.CR;
 			throw new KettleException("Incorrect database parameter(s)!  Check these settings :"+Const.CR+message);
 		}
+        
+        // Now put in the extra options...
+        for (int i=0;i<wOptions.nrNonEmpty();i++)
+        {
+            TableItem item = wOptions.getNonEmpty(i);
+            String parameter = item.getText(1);
+            String value     = item.getText(2);
+            
+            // Only if both parameters are supplied, we will add to the map...
+            if (!Const.isEmpty(parameter))
+            {
+                databaseMeta.getAttributes().put(BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION+parameter, Const.NVL(value, ""));
+            }
+        }
 	}
 	
-	public void handleOK()
+    /**
+     * @deprecated use ok() in stead, like in most dialogs
+     */
+    public void handleOK()
+    {
+        ok();
+    }
+    
+	public void ok()
 	{
 		try
 		{

@@ -19,6 +19,10 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	
 	public MySQLDatabaseMeta()
 	{
+        super();
+        
+        addExtraOption("defaultFetchSize", "500");
+        addExtraOption("useCursorFetch", "true");
 	}
 
 	
@@ -99,9 +103,25 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		}
 		else
 		{
-			return "jdbc:mysql://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName()+"?defaultFetchSize=500&useCursorFetch=true";
+			return "jdbc:mysql://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
 		}
 	}
+    
+    /**
+     * @return The extra option separator in database URL for this platform (usually this is semicolon ; ) 
+     */
+    public String getExtraOptionSeparator()
+    {
+        return "&";
+    }
+    
+    /**
+     * @return This indicator separates the normal URL from the options
+     */
+    public String getExtraOptionIndicator()
+    {
+        return "?";
+    }
 
 	/**
 	 * @return true if the database supports transactions.

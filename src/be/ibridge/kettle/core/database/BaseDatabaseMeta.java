@@ -17,6 +17,9 @@
 
 package be.ibridge.kettle.core.database;
 
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Properties;
 
 import be.ibridge.kettle.core.Const;
@@ -38,7 +41,12 @@ public abstract class BaseDatabaseMeta implements Cloneable
      * The port number of the database as string: allows for parameterisation.
      */
     public static final String ATTRIBUTE_PORT_NUMBER            = "PORT_NUMBER"; 
-	
+
+    /**
+     * The prefix for all the extra options attributes
+     */
+    public static final String ATTRIBUTE_PREFIX_EXTRA_OPTION    = "EXTRA_OPTION_"; 
+
 	private String name;
 	private int    accessType;        // Database.TYPE_ODBC / NATIVE / OCI
 	private String hostname;
@@ -750,6 +758,57 @@ public abstract class BaseDatabaseMeta implements Cloneable
     public boolean isDefaultingToUppercase()
     {
         return true;
+    }
+    
+    /**
+     * @return all the extra options that are set to be used for the database URL
+     */
+    public Map getExtraOptions()
+    {
+        Map map = new Hashtable();
+        
+        for (Enumeration keys = attributes.keys();keys.hasMoreElements();)
+        {
+            String attribute = (String) keys.nextElement();
+            if (attribute.startsWith(ATTRIBUTE_PREFIX_EXTRA_OPTION))
+            {
+                String value = attributes.getProperty(attribute, "");
+                
+                // Add to the map...
+                map.put(attribute.substring(ATTRIBUTE_PREFIX_EXTRA_OPTION.length()), value);
+            }
+        }
+        
+        return map;
+    }
+    
+    public void addExtraOption(String option, String value)
+    {
+        attributes.put(ATTRIBUTE_PREFIX_EXTRA_OPTION+option, value);
+    }
+
+    /**
+     * @return The extra option separator in database URL for this platform (usually this is semicolon ; ) 
+     */
+    public String getExtraOptionSeparator()
+    {
+        return ";";
+    }
+    
+    /**
+     * @return The extra option value separator in database URL for this platform (usually this is the equal sign = ) 
+     */
+    public String getExtraOptionValueSeparator()
+    {
+        return "=";
+    }
+    
+    /**
+     * @return This indicator separates the normal URL from the options
+     */
+    public String getExtraOptionIndicator()
+    {
+        return ";";
     }
 
 }

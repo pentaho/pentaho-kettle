@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.w3c.dom.Node;
@@ -869,7 +870,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         {
             String code = (String) iter.next();
             String attribute = (String) getAttributes().getProperty(code);
-            if (attribute!=null && attribute.length()>0)
+            if (!Const.isEmpty(attribute))
             {
                 retval.append("      <attribute>"+
                                     XMLHandler.addTagValue("code", code, false)+
@@ -895,10 +896,67 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	
 	public String getURL()
 	{
-		return databaseInterface.getURL();
+		StringBuffer url=new StringBuffer( databaseInterface.getURL() );
+        
+        // OK, now add all the options...
+        String optionIndicator = getExtraOptionIndicator();
+        String optionSeparator = getExtraOptionSeparator();
+        String valueSeparator = getExtraOptionValueSeparator();
+        
+        Map map = getExtraOptions();
+        if (map.size()>0)
+        {
+            url.append(optionIndicator);
+            
+            Iterator iterator = map.keySet().iterator();
+            while (iterator.hasNext())
+            {
+                String parameter=(String)iterator.next();
+                String value = (String) map.get(parameter);
+                url.append(optionSeparator);
+                url.append(parameter);
+                if (!Const.isEmpty(value))
+                {
+                    url.append(valueSeparator).append(value);
+                }
+            }
+        }
+        
+        return url.toString();
 	}
 
-	/**
+    public String getExtraOptionIndicator()
+    {
+        return databaseInterface.getExtraOptionIndicator();
+    }
+    
+    /**
+     * @return The extra option separator in database URL for this platform (usually this is semicolon ; ) 
+     */
+	public String getExtraOptionSeparator()
+    {
+        return databaseInterface.getExtraOptionSeparator();
+    }
+    
+    /**
+     * @return The extra option value separator in database URL for this platform (usually this is the equal sign = ) 
+     */
+    public String getExtraOptionValueSeparator()
+    {
+        return databaseInterface.getExtraOptionValueSeparator();
+    }
+
+    /**
+     * Add an extra option to the attributes list
+     * @param option The option to set
+     * @param value The value of the option
+     */
+    public void addExtraOption(String option, String value)
+    {
+        databaseInterface.addExtraOption(option, value);
+    }
+    
+    /**
 	 * @deprecated because the same database can support transactions or not.  It all depends on the database setup.  Therefor, we look at the database metadata
 	 * DatabaseMetaData.supportsTransactions() in stead of this.
 	 * @return true if the database supports transactions
@@ -1706,5 +1764,13 @@ public class DatabaseMeta implements Cloneable, XMLInterface
             Value v = fields.getValue(i);
             v.setName( quoteField(v.getName()) );
         }
+    }
+
+    /**
+     * @return a map of all the extra URL options you want to set.
+     */
+    public Map getExtraOptions()
+    {
+        return databaseInterface.getExtraOptions();
     }
 }
