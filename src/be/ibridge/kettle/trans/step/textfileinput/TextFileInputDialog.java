@@ -864,7 +864,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     
         wFileComp.pack();
         Rectangle bounds = wFileComp.getBounds();
-        System.out.println("bounds file: "+bounds);
         
         wFileSComp.setContent(wFileComp);
         wFileSComp.setExpandHorizontal(true);
@@ -1379,7 +1378,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wContentComp.pack();
         // What's the size: 
         Rectangle bounds = wContentComp.getBounds();
-        System.out.println("bounds content: "+bounds);
         
         wContentSComp.setContent(wContentComp);
         wContentSComp.setExpandHorizontal(true);
@@ -1723,7 +1721,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wErrorComp.pack();
         // What's the size: 
         Rectangle bounds = wErrorComp.getBounds();
-        System.out.println("bounds error: "+bounds);
         
         wErrorSComp.setContent(wErrorComp);
         wErrorSComp.setExpandHorizontal(true);
@@ -1731,7 +1728,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wErrorSComp.setMinWidth(bounds.width);
         wErrorSComp.setMinHeight(bounds.height);
 
-        wErrorTab.setControl(wErrorSComp);
+        
+        wErrorTab.setControl(wErrorComp);
 
 
         /////////////////////////////////////////////////////////////
@@ -2445,7 +2443,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     // Preview the data
     private void preview()
     {
-        System.out.println("Preview! Thread ["+Thread.currentThread()+"]");
         // Create the XML input step
         TextFileInputMeta oneMeta = new TextFileInputMeta();
         getInfo(oneMeta);
@@ -2757,8 +2754,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		if (info.getInputFields().length==0)
 		{
-			// System.out.println("No fields found: adding one!");
-			
 			TextFileInputField field = new TextFileInputField("Field1", 0, maxsize);
 			fields.add(field);
 		}
@@ -2781,8 +2776,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		
 		quickSort(fields);
 		
-		// for (int i=0;i<fields.size();i++) System.out.println("field #"+i+" : "+(TextFileInputField)fields.get(i));
-	
 		return fields;
 	}
 
