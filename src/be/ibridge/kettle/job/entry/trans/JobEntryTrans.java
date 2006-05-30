@@ -34,6 +34,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleJobException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.logging.Log4jFileAppender;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -544,16 +545,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	private TransMeta getTransMeta(Repository rep) throws KettleException
     {
         TransMeta transMeta = null;
-        if (getTransname() != null && getTransname().length() > 0 && // Load from the repository
+        if (!Const.isEmpty(getTransname()) && // Load from the repository
                 getDirectory() != null)
         {
-            transMeta = new TransMeta(rep, getTransname(), getDirectory());
+            transMeta = new TransMeta(rep, StringUtil.environmentSubstitute(getTransname()), getDirectory());
         }
         else
             if (getFileName() != null && getFileName().length() > 0) // Load from an XML file
             {
 
-                transMeta = new TransMeta(getFileName());
+                transMeta = new TransMeta(StringUtil.environmentSubstitute(getFileName()));
             }
             else
             {

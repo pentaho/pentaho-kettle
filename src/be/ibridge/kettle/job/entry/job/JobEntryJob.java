@@ -31,6 +31,7 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -322,16 +323,16 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 }
                 
                 JobMeta jobMeta = null;
-                if (rep!=null && jobname!=null && jobname.length()>0 && directory!=null) // load from the repository...
+                if (rep!=null && !Const.isEmpty(jobname) && directory!=null) // load from the repository...
                 {
-                    log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+jobname+"]");
-                    jobMeta = new JobMeta(logwriter, rep, jobname, directory);
+                    log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+StringUtil.environmentSubstitute(jobname)+"]");
+                    jobMeta = new JobMeta(logwriter, rep, StringUtil.environmentSubstitute(jobname), directory);
                 }
                 else // Get it from the XML file
-                if (filename!=null)
+                if (!Const.isEmpty(filename))
                 {
-                    log.logDetailed(toString(), "Loading job from XML file : ["+filename+"]");
-                    jobMeta = new JobMeta(logwriter, filename, rep);
+                    log.logDetailed(toString(), "Loading job from XML file : ["+StringUtil.environmentSubstitute(filename)+"]");
+                    jobMeta = new JobMeta(logwriter, StringUtil.environmentSubstitute(filename), rep);
                 }
                 
                 if (jobMeta==null)
