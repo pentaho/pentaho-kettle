@@ -385,8 +385,9 @@ public class RepositoryDialog
 			Repository rep = new Repository(log, repinfo, null);
 	
 			System.out.println("Connecting to database for repository creation..."); //$NON-NLS-1$
-			if (rep.connect(true, false, getClass().getName()))
+			try
 			{
+                rep.connect(true, false, getClass().getName(), true);
 				boolean upgrade=false;
 				String  cu = Messages.getString("RepositoryDialog.Dialog.CreateUpgrade.Create"); //$NON-NLS-1$
 				
@@ -457,12 +458,9 @@ public class RepositoryDialog
 
 				rep.disconnect();
 			}
-			else
+			catch(KettleException ke)
 			{
-				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage(Messages.getString("RepositoryDialog.Dialog.UnableToConnectToUpgrade.Message")+Const.CR); //$NON-NLS-1$
-				mb.setText(Messages.getString("RepositoryDialog.Dialog.UnableToConnectToUpgrade.Title")); //$NON-NLS-1$
-				mb.open();
+                new ErrorDialog(shell, props, Messages.getString("RepositoryDialog.Dialog.UnableToConnectToUpgrade.Title"), Messages.getString("RepositoryDialog.Dialog.UnableToConnectToUpgrade.Message")+Const.CR, ke); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 		else
@@ -480,8 +478,10 @@ public class RepositoryDialog
 		getInfo(repinfo);
 		
 		Repository rep = new Repository(log, repinfo, null);
-		if (rep.connect(getClass().getName()))
+		try
 		{
+            rep.connect(getClass().getName());
+            
 			MessageBox qmb = new MessageBox(shell, SWT.ICON_WARNING | SWT.YES | SWT.NO);
 			qmb.setMessage(Messages.getString("RepositoryDialog.Dialog.ConfirmRemovalOfRepository.Message")); //$NON-NLS-1$
 			qmb.setText(Messages.getString("RepositoryDialog.Dialog.ConfirmRemovalOfRepository.Title")); //$NON-NLS-1$
@@ -533,12 +533,9 @@ public class RepositoryDialog
 			}
 			rep.disconnect();
 		}
-		else
+		catch(KettleException ke)
 		{
-			MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-			mb.setMessage(Messages.getString("RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Message")); //$NON-NLS-1$
-			mb.setText(Messages.getString("RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Title")); //$NON-NLS-1$
-			mb.open();
+            new ErrorDialog(shell, props, Messages.getString("RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Title"), Messages.getString("RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 }

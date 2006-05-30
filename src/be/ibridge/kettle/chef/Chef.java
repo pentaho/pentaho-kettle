@@ -576,14 +576,15 @@ public class Chef
 				      			//	Close the previous connection...
 				      			if (rep!=null) rep.disconnect();
 				      			rep = new Repository(log, rd.getRepository(), rd.getUser());
-				      			if (!rep.connect(APP_NAME))
-				      			{
-				      				rep=null;
-				      				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-									mb.setMessage(Messages.getString("Chef.Dialog.UnableToConnectToRepository.Message")); //$NON-NLS-1$
-									mb.setText(Messages.getString("Chef.Dialog.UnableToConnectToRepository.Title")); //$NON-NLS-1$
-									mb.open();
-				      			}
+                                try
+                                {
+    				      			rep.connect(APP_NAME);
+                                }
+                                catch(KettleException ke)
+                                {
+                                    rep=null;
+                                    new ErrorDialog(shell, props, Messages.getString("Chef.Dialog.UnableToConnectToRepository.Title"), Messages.getString("Chef.Dialog.UnableToConnectToRepository.Message"), ke);
+                                }
 				      		}
 				      		else
 				      		{
@@ -1250,13 +1251,14 @@ public class Chef
 			if (rep!=null) rep.disconnect();
 			
 			rep = new Repository(log, rd.getRepository(), rd.getUser());
-			if (!rep.connect(Messages.getString("Chef.AppName.RepositoryConnect"))) //$NON-NLS-1$
-			{
+            try
+            {
+                rep.connect(Messages.getString("Chef.AppName.RepositoryConnect")); //$NON-NLS-1$
+            }
+            catch(KettleException ke)
+            {
 				rep=null;
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-				mb.setMessage(Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Message1")+Const.CR+Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
-				mb.setText(Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Title")); //$NON-NLS-1$
-				mb.open();
+                new ErrorDialog(shell, props, Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Title"), Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Message1")+Const.CR+Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Message2"), ke); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$  
 			}
 			
             // Set for the existing databases, the ID's at -1!

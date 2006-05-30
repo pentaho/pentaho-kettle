@@ -25,14 +25,14 @@ import be.ibridge.kettle.core.Const;
  * @since 9-12-2004
  *
  */
-public class KettleException extends Exception
+public class KettleVersionException extends Exception
 {
-    private static final long serialVersionUID = -2260895195255402040L;
+    public static final long serialVersionUID = 0x8D8EA0264F7A1C12L;
 
-    /**
+	/**
 	 * Constructs a new throwable with null as its detail message.
 	 */
-	public KettleException()
+	public KettleVersionException()
 	{
 		super();
 	}
@@ -41,7 +41,7 @@ public class KettleException extends Exception
 	 * Constructs a new throwable with the specified detail message.
 	 * @param message - the detail message. The detail message is saved for later retrieval by the getMessage() method.
 	 */
-	public KettleException(String message)
+	public KettleVersionException(String message)
 	{
 		super(message);
 	}
@@ -50,7 +50,7 @@ public class KettleException extends Exception
 	 * Constructs a new throwable with the specified cause and a detail message of (cause==null ? null : cause.toString()) (which typically contains the class and detail message of cause).
 	 * @param cause the cause (which is saved for later retrieval by the getCause() method). (A null value is permitted, and indicates that the cause is nonexistent or unknown.)
 	 */
-	public KettleException(Throwable cause)
+	public KettleVersionException(Throwable cause)
 	{
 		super(cause);
 	}
@@ -60,7 +60,7 @@ public class KettleException extends Exception
 	 * @param message the detail message (which is saved for later retrieval by the getMessage() method).
 	 * @param cause the cause (which is saved for later retrieval by the getCause() method). (A null value is permitted, and indicates that the cause is nonexistent or unknown.)
 	 */
-	public KettleException(String message, Throwable cause)
+	public KettleVersionException(String message, Throwable cause)
 	{
 		super(message, cause);
 	}

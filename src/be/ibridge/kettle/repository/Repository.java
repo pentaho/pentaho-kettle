@@ -22,6 +22,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Hashtable;
 import java.util.Map;
 
@@ -58,6 +59,9 @@ import be.ibridge.kettle.trans.TransMeta;
  */
 public class Repository
 {
+    public static final int REQUIRED_MAJOR_VERSION = 2;
+    public static final int REQUIRED_MINOR_VERSION = 3;
+    
 	private RepositoryMeta		repinfo;
 	public  UserInfo			userinfo;
 	private RepositoryDirectory	directoryTree;
@@ -78,7 +82,7 @@ public class Repository
 
 	private int					majorVersion;
 	private int					minorVersion;
-    private DatabaseMeta databaseMeta;
+    private DatabaseMeta        databaseMeta;
 
     /** The maximum length of a text field in a Kettle repository : 2.000.000 is enough for everyone ;-) */ 
     private static final int REP_STRING_LENGTH      = 2000000;
@@ -99,8 +103,8 @@ public class Repository
 		psStepAttributesInsert = null;
 		pstmt_entry_attributes = null;
 
-		this.majorVersion = 2;
-		this.minorVersion = 1;
+		this.majorVersion = REQUIRED_MAJOR_VERSION;
+		this.minorVersion = REQUIRED_MINOR_VERSION;
 
 		directoryTree = null;
 	}
@@ -148,6 +152,15 @@ public class Repository
 	{
 		return majorVersion + "." + minorVersion;
 	}
+    
+    /**
+     * Get the required repository version for this version of Kettle.
+     * @return the required repository version for this version of Kettle.
+     */
+    public static final String getRequiredVersion()
+    {
+        return REQUIRED_MAJOR_VERSION + "." + REQUIRED_MINOR_VERSION;
+    }
 
     /**
      * @return The source specified at connect() time.
@@ -162,12 +175,17 @@ public class Repository
 	 * @param locksource
 	 * @return true if the connection went well, false if we couldn't connect.
 	 */
-	public boolean connect(String locksource)
+	public boolean connect(String locksource) throws KettleException
 	{
-		return connect(false, true, locksource);
+		return connect(false, true, locksource, false);
 	}
 
-	public boolean connect(boolean no_lookup, boolean readDirectory, String locksource)
+    public boolean connect(boolean no_lookup, boolean readDirectory, String locksource) throws KettleException
+    {
+        return connect(no_lookup, readDirectory, locksource, false);
+    }
+
+	public boolean connect(boolean no_lookup, boolean readDirectory, String locksource, boolean ignoreVersion) throws KettleException
 	{
 		if (repinfo.isLocked())
 		{
@@ -178,6 +196,7 @@ public class Repository
 		try
 		{
 			database.connect();
+            if (!ignoreVersion) verifyVersion();
 			setAutoCommit(false);
 			repinfo.setLock(true);
 			this.locksource = locksource;
@@ -215,11 +234,49 @@ public class Repository
 		{
 			retval = false;
 			log.logError(toString(), "Error connecting to the repository!" + e.getMessage());
+            throw new KettleException(e);
 		}
 
 		return retval;
 	}
     
+    private void verifyVersion() throws KettleException
+    {
+        Row lastUpgrade = null;
+        try
+        {
+            lastUpgrade = database.getOneRow("SELECT * FROM R_VERSION ORDER BY UPGRADE_DATE DESC");
+        }
+        catch(Exception e)
+        {
+            // If we can't retrieve the last available upgrade date:
+            // this means the R_VERSION table doesn't exist.
+            // This table was introduced in version 2.3.0
+            //
+            log.logBasic(toString(), "There was an error getting information from the version table R_VERSION.");
+            log.logBasic(toString(), "This table was introduced in version 2.3.0. so we assume the version is 2.2.2");
+
+            majorVersion = 2;
+            minorVersion = 2;
+
+            lastUpgrade = null;
+        }
+
+        if (lastUpgrade != null)
+        {
+            majorVersion = (int)lastUpgrade.getInteger("MAJOR_VERSION", -1);
+            minorVersion = (int)lastUpgrade.getInteger("MINOR_VERSION", -1);
+        }
+            
+        if (majorVersion < REQUIRED_MAJOR_VERSION || ( majorVersion==REQUIRED_MAJOR_VERSION && minorVersion<REQUIRED_MINOR_VERSION))
+        {
+            throw new KettleException(Const.CR+
+                    "The version of the repository is "+getVersion()+Const.CR+
+                    "This Kettle edition requires it to be at least version "+getRequiredVersion()+Const.CR+
+                    "Please upgrade the repository using the repository dialog (edit)");
+        }
+    }
+
     public void refreshRepositoryDirectoryTree() throws KettleException
     {
         try
@@ -3079,7 +3136,56 @@ public class Repository
 		if (monitor!=null) monitor.beginTask((upgrade?"Upgrading ":"Creating")+" the Kettle repository...", 31);
         
         setAutoCommit(true);
-		
+
+        //////////////////////////////////////////////////////////////////////////////////
+        // R_VERSION
+        //
+        // Let's start with the version table
+        //
+        table = new Row();
+        tablename = "R_VERSION";
+        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        table.addValue(new Value("ID_VERSION",       Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("MAJOR_VERSION",    Value.VALUE_TYPE_INTEGER, 3, 0));
+        table.addValue(new Value("MINOR_VERSION",    Value.VALUE_TYPE_INTEGER, 3, 0));
+        table.addValue(new Value("UPGRADE_DATE",     Value.VALUE_TYPE_DATE, 0, 0));
+        table.addValue(new Value("IS_UPGRADE",       Value.VALUE_TYPE_BOOLEAN, 1, 0));
+        sql = database.getDDL(tablename, table, null, false, "ID_VERSION", false);
+
+        if (sql != null && sql.length() > 0)
+        {
+            try
+            {
+                log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+                database.execStatements(sql);
+                log.logDetailed(toString(), "Created/altered table " + tablename);
+            }
+            catch (KettleDatabaseException dbe)
+            {
+                throw new KettleDatabaseException("Unable to create or modify table " + tablename, dbe);
+            }
+        }
+        else
+        {
+            log.logDetailed(toString(), "Table " + tablename + " is OK.");
+        }
+
+        // Insert an extra record in R_VERSION every time we pass here...
+        //
+        try
+        {
+            table.getValue(0).setValue(getNextID(tablename, "ID_VERSION"));
+            table.getValue(1).setValue(REQUIRED_MAJOR_VERSION);
+            table.getValue(2).setValue(REQUIRED_MINOR_VERSION);
+            table.getValue(3).setValue(new Date());
+            table.getValue(4).setValue(upgrade);
+            database.execStatement("INSERT INTO R_VERSION VALUES(?, ?, ?, ?, ?)", table);
+        }
+        catch(KettleDatabaseException e)
+        {
+            throw new KettleDatabaseException("Unable to insert new version log record into "+tablename, e);
+        }
+        
 		//////////////////////////////////////////////////////////////////////////////////
 		// R_DATABASE_TYPE
 		//

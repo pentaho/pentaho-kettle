@@ -906,13 +906,14 @@ public class Spoon
                                 //  Close the previous connection...
                                 if (rep!=null) rep.disconnect();
                                 rep = new Repository(log, rd.getRepository(), rd.getUser());
-                                if (!rep.connect(APP_NAME))
+                                try
+                                {
+                                    rep.connect(APP_NAME);
+                                }
+                                catch(KettleException ke)
                                 {
                                     rep=null;
-                                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                                    mb.setMessage(Messages.getString("Spoon.Dialog.UnableConnectRepository.Message"));//I was unable to connect to this repository!
-                                    mb.setText(Messages.getString("Spoon.Dialog.UnableConnectRepository.Title"));//Error!
-                                    mb.open();
+                                    new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnableConnectRepository.Title"), Messages.getString("Spoon.Dialog.UnableConnectRepository.Message"), ke);  //$NON-NLS-1$ //$NON-NLS-2$
                                 }
                             }
                             else
@@ -2330,13 +2331,14 @@ public class Spoon
             }
             
             rep = new Repository(log, rd.getRepository(), rd.getUser());
-            if (!rep.connect(APP_NAME))
+            try
+            {
+                rep.connect(APP_NAME);
+            }
+            catch(KettleException ke)
             {
                 rep=null;
-                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                mb.setMessage(Messages.getString("Spoon.Dialog.ErrorConnectingRepository.Message",Const.CR));//"An error occured connecting to the repository!"+Const.CR+"See the log for more information."
-                mb.setText(Messages.getString("Spoon.Dialog.ErrorConnectingRepository.Title"));
-                mb.open();
+                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorConnectingRepository.Title"), Messages.getString("Spoon.Dialog.ErrorConnectingRepository.Message",Const.CR), ke); //$NON-NLS-1$ //$NON-NLS-2$
             }
             
             // Set for the existing databases, the ID's at -1!

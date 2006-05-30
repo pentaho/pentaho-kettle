@@ -471,37 +471,40 @@ public class RepositoriesDialog
 				
 				// OK, now try the username and password
 				Repository rep = new Repository(log, repinfo, userinfo);
-				if (rep.connect(getClass().getName()))
+                
+                try
+                {
+                    rep.connect(getClass().getName());
+                }
+                catch(KettleException ke)
+                {
+                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                    mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message1")+Const.CR+ke.getSuperMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+                    mb.setText(Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Title")); //$NON-NLS-1$
+                    mb.open(); 
+                    
+                    return;
+                }
+                
+				try
 				{
-					try
-					{
-						userinfo = new UserInfo(rep, wUsername.getText(), wPassword.getText());
-						props.setLastRepository(repinfo.getName());
-						props.setLastRepositoryLogin(wUsername.getText());
-					}
-					catch(KettleException e)
-					{
-						userinfo=null;
-						repinfo=null;
-	                    
-	                    if (!(e instanceof KettleDatabaseException))
-	                    {
-	                        new ErrorDialog(shell, props, Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Title"), Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-	                    }
-					}
-					finally
-					{
-						rep.disconnect();
-					}
+                    userinfo = new UserInfo(rep, wUsername.getText(), wPassword.getText());
+					props.setLastRepository(repinfo.getName());
+					props.setLastRepositoryLogin(wUsername.getText());
 				}
-				else
+				catch(KettleException e)
 				{
-					MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-					mb.setMessage(Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message1")+Const.CR+Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
-					mb.setText(Messages.getString("RepositoriesDialog.Dialog.RepositoryUnableToConnect.Title")); //$NON-NLS-1$
-					mb.open(); 
-					
-					return;
+					userinfo=null;
+					repinfo=null;
+                    
+                    if (!(e instanceof KettleDatabaseException))
+                    {
+                        new ErrorDialog(shell, props, Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Title"), Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                    }
+				}
+				finally
+				{
+					rep.disconnect();
 				}
 			}
 			else
