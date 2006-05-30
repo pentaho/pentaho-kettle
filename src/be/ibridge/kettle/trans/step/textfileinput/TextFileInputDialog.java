@@ -1728,8 +1728,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wErrorSComp.setMinWidth(bounds.width);
         wErrorSComp.setMinHeight(bounds.height);
 
-        
-        wErrorTab.setControl(wErrorComp);
+        wErrorTab.setControl(wErrorSComp);
 
 
         /////////////////////////////////////////////////////////////
