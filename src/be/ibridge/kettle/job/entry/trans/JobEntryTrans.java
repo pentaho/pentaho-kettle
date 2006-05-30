@@ -235,7 +235,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             String dirPath = rep.getJobEntryAttributeString(id_jobentry, "dir_path");
             directory = rep.getDirectoryTree().findDirectory(dirPath);
      	
-			filename         = rep.getJobEntryAttributeString(id_jobentry, "filename");
+			filename         = rep.getJobEntryAttributeString(id_jobentry, "file_name");
 			argFromPrevious  = rep.getJobEntryAttributeBoolean(id_jobentry, "arg_from_previous");
             execPerRow       = rep.getJobEntryAttributeBoolean(id_jobentry, "exec_per_row");
             clearResultRows  = rep.getJobEntryAttributeBoolean(id_jobentry, "clear_rows", true);
@@ -359,7 +359,16 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		// Open the transformation...
 		// Default directory for now...
 		
-		log.logBasic(toString(), "Opening transformation: ["+getTransname()+"] in directory ["+directory.getPath()+"]");
+        log.logBasic(toString(), "Opening filename : ["+StringUtil.environmentSubstitute(getFileName())+"]");
+        
+        if (!Const.isEmpty(getFileName()))
+        {
+            log.logBasic(toString(), "Opening transformation: ["+StringUtil.environmentSubstitute(getFileName())+"]");
+        }
+        else
+        {
+            log.logBasic(toString(), "Opening transformation: ["+StringUtil.environmentSubstitute(getTransname())+"] in directory ["+directory.getPath()+"]");
+        }
 		
         int iteration = 0;
         String args[] = arguments;
@@ -544,22 +553,24 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 
 	private TransMeta getTransMeta(Repository rep) throws KettleException
     {
+        LogWriter log = LogWriter.getInstance();
+        
         TransMeta transMeta = null;
-        if (!Const.isEmpty(getTransname()) && // Load from the repository
-                getDirectory() != null)
+        if (!Const.isEmpty(getFileName())) // Load from an XML file
         {
+            log.logBasic(toString(), "Loading transformation from XML file ["+StringUtil.environmentSubstitute(getFileName())+"]");
+            transMeta = new TransMeta(StringUtil.environmentSubstitute(getFileName()));
+        }
+        else
+        if (!Const.isEmpty(getTransname()) && getDirectory() != null)  // Load from the repository
+        {
+            log.logBasic(toString(), "Loading transformation from repository ["+StringUtil.environmentSubstitute(getTransname())+"] in directory ["+getDirectory()+"]");
             transMeta = new TransMeta(rep, StringUtil.environmentSubstitute(getTransname()), getDirectory());
         }
         else
-            if (getFileName() != null && getFileName().length() > 0) // Load from an XML file
-            {
-
-                transMeta = new TransMeta(StringUtil.environmentSubstitute(getFileName()));
-            }
-            else
-            {
-                throw new KettleJobException("The transformation to execute is not specified!");
-            }
+        {
+            throw new KettleJobException("The transformation to execute is not specified!");
+        }
 
         // Set the arguments...
         transMeta.setArguments(arguments);
