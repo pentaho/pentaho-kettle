@@ -1420,7 +1420,7 @@ public class ChefGraph extends Canvas
 				Spoon sp = new Spoon(log, chef.disp, null);
 				sp.setTransMeta( new TransMeta( StringUtil.environmentSubstitute(entry.getFileName() )) );
 				sp.getTransMeta().clearChanged();
-				sp.setFilename(entry.getFileName());
+				sp.setFilename(StringUtil.environmentSubstitute(entry.getFileName()));
 				sp.open();
 			}
 			catch(Throwable xe)
@@ -1442,7 +1442,7 @@ public class ChefGraph extends Canvas
 			try
 			{
 				Chef ch = new Chef(log, chef.disp, chef.rep);
-				ch.jobMeta = new JobMeta(log, ch.rep, entry.getJobName(), entry.getDirectory());
+				ch.jobMeta = new JobMeta(log, ch.rep, StringUtil.environmentSubstitute(entry.getJobName()), entry.getDirectory());
 	
 				ch.jobMeta.clearChanged();
 				ch.open();
@@ -1461,7 +1461,7 @@ public class ChefGraph extends Canvas
 			{
 				Chef ch = new Chef(log, chef.disp, null);
 				ch.jobMeta = new JobMeta(log, StringUtil.environmentSubstitute(entry.getFileName()), chef.rep);
-				ch.jobMeta.setFilename( entry.getFileName() );
+				ch.jobMeta.setFilename( StringUtil.environmentSubstitute(entry.getFileName()) );
 				ch.jobMeta.clearChanged();
 				ch.refreshTree();
 				ch.refreshGraph();
