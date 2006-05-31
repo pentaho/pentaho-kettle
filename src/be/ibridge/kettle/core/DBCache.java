@@ -101,7 +101,7 @@ public class DBCache
 	
 	/**
 	 * Clear out all entries of database with a certain name
-	 * @param dbname The name of the database for which we want to clear the cache.
+	 * @param dbname The name of the database for which we want to clear the cache or null if we want to clear it all.
 	 */
 	public void clear(String dbname)
 	{
