@@ -85,16 +85,17 @@ public class StepLoader
 
     public boolean readNatives()
     {
-        for (int i = 1; i < BaseStep.typeCode.length; i++)
+        for (int i = 0; i < BaseStep.steps.length; i++)
         {
-            String id = BaseStep.typeCode[i];
-            String long_desc = BaseStep.type_long_desc[i];
-            String tooltip = BaseStep.type_tooltip_desc[i];
-            String iconfile = Const.IMAGE_DIRECTORY + BaseStep.image_filename[i];
-            String classname = BaseStep.type_classname[i].getName(); // TOEVOEGEN!
+            StepPluginMeta pluginMeta = BaseStep.steps[i];
+            String id = pluginMeta.getId();
+            String long_desc = pluginMeta.getLongDesc();
+            String tooltip = pluginMeta.getTooltipDesc();
+            String iconfile = Const.IMAGE_DIRECTORY + pluginMeta.getImageFileName();;
+            String classname = pluginMeta.getClassName().getName(); // TOEVOEGEN!
             String directory = null; // Not used
             String jarfiles[] = null; // Not used
-            String category = BaseStep.category[i];
+            String category = pluginMeta.getCategory();
 
             StepPlugin sp = new StepPlugin(StepPlugin.TYPE_NATIVE, id, long_desc, tooltip, directory, jarfiles, iconfile, classname, category, null);
             if (id.equalsIgnoreCase("ScriptValues")) sp.setSeparateClassloaderNeeded(true);  //$NON-NLS-1$
