@@ -108,7 +108,7 @@ public class DatabaseDialog extends Dialog
     private TableView wOptions;
     private FormData  fdOptions;
 
-	private Button    wOK, wTest, wExp, wList, wCancel;
+	private Button    wOK, wTest, wExp, wList, wCancel, wOptionsHelp;
 	
 	private String connectionName;
 	
@@ -771,23 +771,30 @@ public class DatabaseDialog extends Dialog
         props.setLook( wOptionsComp );
         wOptionsComp.setLayout(optionsLayout);
 
+        wOptionsHelp = new Button(wOptionsComp, SWT.PUSH);
+        wOptionsHelp.setText("Show help text on option usage");
+        wOptionsHelp.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { showOptionsHelpText(); } });
+        
+        BaseStepDialog.positionBottomButtons(wOptionsComp, new Button[] {wOptionsHelp }, margin, null );
+        
         // options list
         ColumnInfo[] colinfo=new ColumnInfo[]
             {
-                new ColumnInfo("Parameter",  ColumnInfo.COLUMN_TYPE_TEXT, false),
-                new ColumnInfo("Value",      ColumnInfo.COLUMN_TYPE_TEXT, false ),
+                new ColumnInfo("Database Type", ColumnInfo.COLUMN_TYPE_CCOMBO, DatabaseMeta.getDBTypeDescLongList(), true),
+                new ColumnInfo("Parameter",     ColumnInfo.COLUMN_TYPE_TEXT,   false ),
+                new ColumnInfo("Value",         ColumnInfo.COLUMN_TYPE_TEXT,   false ),
             };
 
         colinfo[0].setToolTip("The extra parameters to set in the URL to connectect to the database");
         colinfo[1].setToolTip("The values to set for the parameters");
 
-        wOptions = new TableView(wOptionsComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, extraOptions.size(), lsMod, props);
+        wOptions = new TableView(wOptionsComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props);
         props.setLook(wOptions);
         fdOptions = new FormData();
         fdOptions.left = new FormAttachment(0, 0);
         fdOptions.right = new FormAttachment(100, 0);
         fdOptions.top = new FormAttachment(0, 0);
-        fdOptions.bottom = new FormAttachment(100, 0);
+        fdOptions.bottom = new FormAttachment(wOptionsHelp, -margin);
         wOptions.setLayoutData(fdOptions);
         
         fdOptionsComp = new FormData();
@@ -799,6 +806,26 @@ public class DatabaseDialog extends Dialog
 
         wOptionsComp.layout();
         wOptionsTab.setControl(wOptionsComp);
+    }
+
+    private void showOptionsHelpText()
+    {
+        DatabaseMeta meta = new DatabaseMeta();
+        try
+        {
+            getInfo(meta);
+            String helpText = meta.getExtraOptionsHelpText();
+            if (helpText!=null)
+            {
+                EnterTextDialog dialog = new EnterTextDialog(shell, "Options help text", "This is the help text for ["+meta.getDatabaseTypeDesc()+"] :", helpText, true);
+                dialog.setReadOnly();
+                dialog.open();
+            }
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, props, "Error!", "Unable to get the help text.  Please make sure all required parameters are entered correctly!", e);
+        }
     }
 
     public void dispose()
@@ -817,7 +844,7 @@ public class DatabaseDialog extends Dialog
 		wConn.setText( NVL(connection==null?"":connection.getName(), "") );
 		wConnType.select( connection.getDatabaseType() - 1);
 		wConnType.showSelection();
-		previousDatabaseType = DatabaseMeta.getDBTypeDesc(wConnType.getSelectionIndex()+1);
+		previousDatabaseType = DatabaseMeta.getDatabaseTypeCode(wConnType.getSelectionIndex()+1);
 		
 		setAccessList();
 		
@@ -842,30 +869,48 @@ public class DatabaseDialog extends Dialog
         wURL.setText(         connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL, ""));
         wDriverClass.setText( connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, ""));
         
-        // The extra options as well...
-        Iterator keys = extraOptions.keySet().iterator();
-        int nr=0;
-        while (keys.hasNext())
-        {
-            String parameter = (String) keys.next();
-            String value     = (String) extraOptions.get(parameter);
-            
-            TableItem item = wOptions.table.getItem(nr);
-            item.setText(1, parameter);
-            if (value!=null) item.setText(2, value);
-            nr++;
-        }
-        wOptions.setRowNums();
-        wOptions.optWidth(true);
+        setOptionsList();
         
 		wConn.setFocus();
 		wConn.selectAll();
 	}
+    
+    private void setOptionsList()
+    {
+        // The extra options as well...
+        Iterator keys = extraOptions.keySet().iterator();
+        while (keys.hasNext())
+        {
+            String parameter = (String) keys.next();
+            String value     = (String) extraOptions.get(parameter);
+            if (!Const.isEmpty(value) && value.equals(DatabaseMeta.EMPTY_OPTIONS_STRING)) value="";
+            
+            // If the paremeter starts with a database type code we add it...
+            // 
+            // For example MySQL.defaultFetchSize
+            
+            int dotIndex = parameter.indexOf(".");
+            if (dotIndex>=0 && wConnType.getSelectionCount()==1)
+            {
+                String databaseTypeString = parameter.substring(0,dotIndex);
+                String parameterOption = parameter.substring(dotIndex+1);
+                int databaseType = DatabaseMeta.getDatabaseType(databaseTypeString);
+                
+                TableItem item = new TableItem(wOptions.table, SWT.NONE);
+                item.setText(1, DatabaseMeta.getDatabaseTypeDesc(databaseType));
+                item.setText(2, parameterOption);
+                if (value!=null) item.setText(3, value);
+            }
+        }
+        wOptions.removeEmptyRows();
+        wOptions.setRowNums();
+        wOptions.optWidth(true);
+    }
 	
 	public void enableFields()
 	{
 		// See if we need to refresh the access list...
-		String type = DatabaseMeta.getDBTypeDesc(wConnType.getSelectionIndex()+1);
+		String type = DatabaseMeta.getDatabaseTypeCode(wConnType.getSelectionIndex()+1);
 		if (!type.equalsIgnoreCase(previousDatabaseType)) setAccessList();
 		previousDatabaseType=type;
 		
@@ -914,13 +959,11 @@ public class DatabaseDialog extends Dialog
             wlDriverClass.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE);
             wDriverClass.setEnabled(  dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE);
   		}
-        
-        
 	}
 	
 	public void setPortNumber()
 	{
-		String type = DatabaseMeta.getDBTypeDesc(wConnType.getSelectionIndex()+1);
+		String type = DatabaseMeta.getDatabaseTypeCode(wConnType.getSelectionIndex()+1);
 		
 		// What port should we select?
 		String acce = wConnAcc.getItem(wConnAcc.getSelectionIndex());
@@ -1023,13 +1066,19 @@ public class DatabaseDialog extends Dialog
         for (int i=0;i<wOptions.nrNonEmpty();i++)
         {
             TableItem item = wOptions.getNonEmpty(i);
-            String parameter = item.getText(1);
-            String value     = item.getText(2);
+            String dbTypeStr = item.getText(1);
+            String parameter = item.getText(2);
+            String value     = item.getText(3);
+            
+            int dbType = DatabaseMeta.getDatabaseType(dbTypeStr);
             
             // Only if both parameters are supplied, we will add to the map...
-            if (!Const.isEmpty(parameter))
+            if (!Const.isEmpty(parameter) && dbType!=DatabaseMeta.TYPE_DATABASE_NONE)
             {
-                databaseMeta.getAttributes().put(BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION+parameter, Const.NVL(value, ""));
+                if (Const.isEmpty(value)) value = DatabaseMeta.EMPTY_OPTIONS_STRING;
+                
+                String typedParameter = BaseDatabaseMeta.ATTRIBUTE_PREFIX_EXTRA_OPTION+DatabaseMeta.getDatabaseTypeCode(dbType)+"."+parameter;
+                databaseMeta.getAttributes().put(typedParameter, value);
             }
         }
 	}

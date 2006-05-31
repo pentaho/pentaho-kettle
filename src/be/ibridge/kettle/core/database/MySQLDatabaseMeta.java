@@ -20,11 +20,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	public MySQLDatabaseMeta()
 	{
         super();
-        
-        addExtraOption("defaultFetchSize", "500");
-        addExtraOption("useCursorFetch", "true");
 	}
-
 	
 	public String getDatabaseTypeDesc()
 	{
@@ -349,6 +345,15 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     public boolean supportsBooleanDataType()
     {
         return false;
+    }
+    
+    
+    /**
+     * @return extra help text on the supported options on the selected database platform.
+     */
+    public String getExtraOptionsHelpText()
+    {
+        return "Please see: http://dev.mysql.com/doc/refman/5.0/en/cj-configuration-properties.html"+Const.CR;
     }
 }
 

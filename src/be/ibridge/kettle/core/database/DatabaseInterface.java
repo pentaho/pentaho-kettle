@@ -540,10 +540,11 @@ public interface DatabaseInterface extends Cloneable
 
     /**
      * Add an extra option to the attributes list
+     * @param databaseTypeCode The database type code for which the option applies
      * @param option The option to set
      * @param value The value of the option
      */
-    public void addExtraOption(String option, String value);
+    public void addExtraOption(String databaseTypeCode, String option, String value);
     
     /**
      * @return The extra option separator in database URL for this platform (usually this is semicolon ; ) 
@@ -560,4 +561,13 @@ public interface DatabaseInterface extends Cloneable
      */
     public String getExtraOptionIndicator();
 
+    /**
+     * @return true if the database supports connection options in the URL, false if they are put in a Properties object.
+     */
+    public boolean supportsOptionsInURL();
+    
+    /**
+     * @return extra help text on the supported options on the selected database platform.
+     */
+    public String getExtraOptionsHelpText();
 }

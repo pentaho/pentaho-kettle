@@ -35,6 +35,7 @@ import be.ibridge.kettle.core.XMLInterface;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
 
@@ -206,6 +207,11 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	 */
 	public static final int CLOB_LENGTH = 9999999;
 	
+    /**
+     * The value to store in the attributes so that an empty value doesn't get lost...
+     */
+    public static final String EMPTY_OPTIONS_STRING = "><EMPTY><";
+    
 	/**
 	 * Construct a new database connections.  Note that not all these parameters are not allways mandatory.
 	 * 
@@ -221,6 +227,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	public DatabaseMeta(String name, String type, String access, String host, String db, String port, String user, String pass)
 	{
 		setValues(name, type, access, host, db, port, user, pass);
+        addOptions();
 	}
 	
 	/**
@@ -230,6 +237,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	public DatabaseMeta()
 	{
  		setDefault();
+        addOptions();
 	}
 	
 	/**
@@ -238,8 +246,20 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	 */
 	public void setDefault()
 	{
-		setValues("", "MYSQL", "Native", "", "", "3306", "", "");
+		setValues("", "Oracle", "Native", "", "", "1526", "", "");
 	}
+    
+    /**
+     * Add a list of common options for some databases.
+     *
+     */
+    public void addOptions()
+    {
+        String mySQL = new MySQLDatabaseMeta().getDatabaseTypeDesc();
+        
+        addExtraOption(mySQL, "defaultFetchSize", "500");
+        addExtraOption(mySQL, "useCursorFetch", "true");
+    }
 	
 	/**
      * @return the system dependend database interface for this database metadata definition
@@ -898,32 +918,87 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	{
 		StringBuffer url=new StringBuffer( databaseInterface.getURL() );
         
-        // OK, now add all the options...
-        String optionIndicator = getExtraOptionIndicator();
-        String optionSeparator = getExtraOptionSeparator();
-        String valueSeparator = getExtraOptionValueSeparator();
-        
-        Map map = getExtraOptions();
-        if (map.size()>0)
+        if (databaseInterface.supportsOptionsInURL())
         {
-            url.append(optionIndicator);
+            // OK, now add all the options...
+            String optionIndicator = getExtraOptionIndicator();
+            String optionSeparator = getExtraOptionSeparator();
+            String valueSeparator = getExtraOptionValueSeparator();
             
-            Iterator iterator = map.keySet().iterator();
-            while (iterator.hasNext())
+            Map map = getExtraOptions();
+            if (map.size()>0)
             {
-                String parameter=(String)iterator.next();
-                String value = (String) map.get(parameter);
-                url.append(optionSeparator);
-                url.append(parameter);
-                if (!Const.isEmpty(value))
+                url.append(optionIndicator);
+                
+                Iterator iterator = map.keySet().iterator();
+                boolean first=true;
+                while (iterator.hasNext())
                 {
-                    url.append(valueSeparator).append(value);
+                    String typedParameter=(String)iterator.next();
+                    int dotIndex = typedParameter.indexOf(".");
+                    if (dotIndex>=0)
+                    {
+                        String typeCode = typedParameter.substring(0,dotIndex);
+                        String parameter = typedParameter.substring(dotIndex+1);
+                        String value = (String) map.get(typedParameter);
+                        
+                        // Only add to the URL if it's the same database type code...
+                        //
+                        if (databaseInterface.getDatabaseTypeDesc().equals(typeCode))
+                        {
+                            if (!first) url.append(optionSeparator);
+                            url.append(parameter);
+                            if (!Const.isEmpty(value) && !value.equals(EMPTY_OPTIONS_STRING))
+                            {
+                                url.append(valueSeparator).append(value);
+                            }
+                        }
+                    }
+                    first=false;
                 }
             }
+        }
+        else
+        {
+            // We need to put all these options in a Properties file later (Oracle & Co.)
+            // This happens at connect time...
         }
         
         return url.toString();
 	}
+    
+    public Properties getConnectionProperties()
+    {
+        Properties properties =new Properties();
+        
+        Map map = getExtraOptions();
+        if (map.size()>0)
+        {
+            Iterator iterator = map.keySet().iterator();
+            while (iterator.hasNext())
+            {
+                String typedParameter=(String)iterator.next();
+                int dotIndex = typedParameter.indexOf(".");
+                if (dotIndex>=0)
+                {
+                    String typeCode = typedParameter.substring(0,dotIndex);
+                    String parameter = typedParameter.substring(dotIndex+1);
+                    String value = (String) map.get(typedParameter);
+                    
+                    // Only add to the URL if it's the same database type code...
+                    //
+                    if (databaseInterface.getDatabaseTypeDesc().equals(typeCode))
+                    {
+                        if (value!=null && value.equals(EMPTY_OPTIONS_STRING)) value="";
+                        properties.put(parameter, StringUtil.environmentSubstitute(Const.NVL(value, "")));
+                    }
+                }
+            }
+        }
+        
+        return properties;
+    }
+    
 
     public String getExtraOptionIndicator()
     {
@@ -948,12 +1023,13 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 
     /**
      * Add an extra option to the attributes list
+     * @param databaseTypeCode The database type code for which the option applies
      * @param option The option to set
      * @param value The value of the option
      */
-    public void addExtraOption(String option, String value)
+    public void addExtraOption(String databaseTypeCode, String option, String value)
     {
-        databaseInterface.addExtraOption(option, value);
+        databaseInterface.addExtraOption(databaseTypeCode, option, value);
     }
     
     /**
@@ -1045,7 +1121,23 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		}
 	}
 
-	public final static String getDBTypeDesc(int dbtype)
+    /**
+     * Get a string representing the unqiue database type code
+     * @param dbtype the database type to get the code of
+     * @return The database type code
+     * @deprecated please use getDatabaseTypeCode()
+     */
+    public final static String getDBTypeDesc(int dbtype)
+    {
+        return getDatabaseTypeCode(dbtype);
+    }
+    
+    /**
+     * Get a string representing the unqiue database type code
+     * @param dbtype the database type to get the code of
+     * @return The database type code
+     */
+ 	public final static String getDatabaseTypeCode(int dbtype)
 	{
 		// Find the DatabaseInterface for this type...
 		DatabaseInterface[] di = getDatabaseInterfaces();
@@ -1057,6 +1149,24 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		
 		return null;
 	}
+
+    /**
+     * Get a description of the database type
+     * @param dbtype the database type to get the description for
+     * @return The database type description
+     */
+     public final static String getDatabaseTypeDesc(int dbtype)
+    {
+        // Find the DatabaseInterface for this type...
+        DatabaseInterface[] di = getDatabaseInterfaces();
+        
+        for (int i=0;i<di.length;i++)
+        {
+            if (di[i].getDatabaseType() == dbtype) return di[i].getDatabaseTypeDescLong();
+        }
+        
+        return null;
+    }
 
 	public final static int getAccessType(String dbaccess)
 	{ 
@@ -1772,5 +1882,21 @@ public class DatabaseMeta implements Cloneable, XMLInterface
     public Map getExtraOptions()
     {
         return databaseInterface.getExtraOptions();
+    }
+    
+    /**
+     * @return true if the database supports connection options in the URL, false if they are put in a Properties object.
+     */
+    public boolean supportsOptionsInURL()
+    {
+        return databaseInterface.supportsOptionsInURL();
+    }
+    
+    /**
+     * @return extra help text on the supported options on the selected database platform.
+     */
+    public String getExtraOptionsHelpText()
+    {
+        return databaseInterface.getExtraOptionsHelpText();
     }
 }

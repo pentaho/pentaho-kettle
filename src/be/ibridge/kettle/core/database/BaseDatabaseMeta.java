@@ -782,9 +782,15 @@ public abstract class BaseDatabaseMeta implements Cloneable
         return map;
     }
     
-    public void addExtraOption(String option, String value)
+    /**
+     * Add an extra option to the attributes list
+     * @param databaseTypeCode The database type code for which the option applies
+     * @param option The option to set
+     * @param value The value of the option
+     */
+    public void addExtraOption(String databaseTypeCode, String option, String value)
     {
-        attributes.put(ATTRIBUTE_PREFIX_EXTRA_OPTION+option, value);
+        attributes.put(ATTRIBUTE_PREFIX_EXTRA_OPTION+databaseTypeCode+"."+option, value);
     }
 
     /**
@@ -811,4 +817,19 @@ public abstract class BaseDatabaseMeta implements Cloneable
         return ";";
     }
 
+    /**
+     * @return true if the database supports connection options in the URL, false if they are put in a Properties object.
+     */
+    public boolean supportsOptionsInURL()
+    {
+        return true;
+    }
+    
+    /**
+     * @return extra help text on the supported options on the selected database platform.
+     */
+    public String getExtraOptionsHelpText()
+    {
+        return null;
+    }
 }

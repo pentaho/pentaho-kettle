@@ -32,6 +32,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Hashtable;
+import java.util.Properties;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
@@ -209,7 +210,27 @@ public class Database
 			String url = StringUtil.environmentSubstitute(databaseMeta.getURL());
 			String userName = StringUtil.environmentSubstitute(databaseMeta.getUsername());
 			String password = StringUtil.environmentSubstitute(databaseMeta.getPassword());
-			connection = DriverManager.getConnection(url, userName, password);
+
+            if (databaseMeta.supportsOptionsInURL())
+            {
+                if (!Const.isEmpty(userName))
+                {
+                    connection = DriverManager.getConnection(url, userName, password);
+                }
+                else
+                {
+                    // Perhaps the username is in the URL or no username is required...
+                    connection = DriverManager.getConnection(url);
+                }
+            }
+            else
+            {
+                Properties properties = databaseMeta.getConnectionProperties();
+                if (!Const.isEmpty(userName)) properties.put("user", userName);
+                if (!Const.isEmpty(password)) properties.put("password", userName);
+                
+                connection = DriverManager.getConnection(url, properties);
+            }
 		} 
 		catch(SQLException e) 
 		{
