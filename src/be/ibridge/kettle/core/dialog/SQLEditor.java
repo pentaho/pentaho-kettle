@@ -66,8 +66,8 @@ public class SQLEditor extends Dialog
 	private Label        wlPosition;
 	private FormData     fdlPosition;
 
-	private Button wExec, wCancel;
-	private Listener lsExec, lsCancel;
+	private Button wExec, wClear, wCancel;
+	private Listener lsExec, lsClear, lsCancel;
 
 	private String           input;
 	private DatabaseMeta     connection;
@@ -136,16 +136,22 @@ public class SQLEditor extends Dialog
 
 		wExec=new Button(shell, SWT.PUSH);
 		wExec.setText(" &Execute ");
+        wClear=new Button(shell, SWT.PUSH);
+        wClear.setText(" &Clear cache ");
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(" &Close ");
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wExec, wCancel }, margin, null);
+        wClear.setToolTipText("Use this button if you find that the results above do not correspond with the actual situation in the database.\nThe database cache becomes invalid if you use other tools besides Kettle to create or alter tables in the database.");
+        
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wExec, wClear, wCancel }, margin, null);
 		
 		// Add listeners
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
-		lsExec       = new Listener() { public void handleEvent(Event e) { try { exec(); } catch(Exception ge) {} } };
+		lsCancel = new Listener() { public void handleEvent(Event e) { cancel(); } };
+        lsClear  = new Listener() { public void handleEvent(Event e) { clearCache(); } };
+		lsExec   = new Listener() { public void handleEvent(Event e) { try { exec(); } catch(Exception ge) {} } };
 		
 		wCancel.addListener  (SWT.Selection, lsCancel);
+        wClear.addListener   (SWT.Selection, lsClear);
 		wExec.addListener    (SWT.Selection, lsExec    );
 		
 		// Detect X or ALT-F4 or something that kills this window...
@@ -172,7 +178,38 @@ public class SQLEditor extends Dialog
 		}
 	}
 
-	public void dispose()
+	private void clearCache()
+    {
+        MessageBox mb = new MessageBox(shell, SWT.ICON_QUESTION | SWT.NO | SWT.YES | SWT.CANCEL);
+        mb.setMessage("Do you want to clear the complete cache?"+Const.CR+"'NO' means we only clear the cache for database connection ["+connection.getName()+"]");
+        mb.setText("Clear the whole cache?");
+        int answer = mb.open();
+
+        switch(answer)
+        {
+        case SWT.NO: 
+            DBCache.getInstance().clear(connection.getName());
+            
+            mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+            mb.setMessage("The database cache for connection ["+connection.getName()+"] was cleared.");
+            mb.setText("Cache cleared");
+            mb.open();
+            
+            break;
+        case SWT.YES: 
+            DBCache.getInstance().clear(null);
+            
+            mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+            mb.setMessage("The complete database cache was cleared.");
+            mb.setText("Cache cleared");
+            mb.open();
+        
+            break;
+        case SWT.CANCEL: break;
+        }
+    }
+
+    public void dispose()
 	{
 		props.setScreen(new WindowProperty(shell));
 		shell.dispose();
