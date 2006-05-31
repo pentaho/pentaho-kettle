@@ -56,7 +56,7 @@ public class GetDatabaseInfoProgressDialog
 				try
 				{
                     // This is running in a new process: copy some KettleVariables info
-                    LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), parentThread, true);
+                    LocalVariables.getInstance().createKettleVariables(Thread.currentThread().toString(), parentThread.toString(), true);
 
 					dmi.getData(monitor);
 				}

@@ -21,7 +21,7 @@ public class TLTest extends Thread
         // Create a new variables object and store it in the list.
         // We start with an empty list as this thread has no parents.
         // 
-        KettleVariables vars = local.createKettleVariables(this, parent, false);
+        KettleVariables vars = local.createKettleVariables(this.toString(), parent.toString(), false);
 
         System.out.println("Start of test");
         System.out.println("TLTest started initial value: TODAY="+vars.getVariable(TODAY, "?"));
@@ -49,7 +49,7 @@ public class TLTest extends Thread
     public static void main(String[] args)
     {
         // This is top level: initialize the variables...
-        KettleVariables vars = local.createKettleVariables(Thread.currentThread(), null, false);
+        KettleVariables vars = local.createKettleVariables(Thread.currentThread().toString(), null, false);
 
         // Store some inital value in there..
         vars.setVariable(TODAY, "main thread initial value");

@@ -417,11 +417,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 // set the parent job on the transformation, variables are taken from here...
                 trans.setParentJob(parentJob);
                 
-                // Pass along the kettle variables...
-                // LocalVariables localVariables = LocalVariables.getInstance();
-                // localVariables.createKettleVariables(Thread.currentThread(), parentJob, false);
-
-                
                 /*
                  * Set one or more "result" rows on the transformation...
                  */

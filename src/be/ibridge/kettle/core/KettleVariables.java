@@ -14,10 +14,10 @@ public class KettleVariables
 {
     private Properties properties;
     
-    private Thread localThread;
-    private Thread parentThread;
+    private String localThread;
+    private String parentThread;
     
-    public KettleVariables(Thread localThread, Thread parentThread)
+    public KettleVariables(String localThread, String parentThread)
     {
         properties = new Properties();
         this.localThread = localThread;
@@ -29,10 +29,10 @@ public class KettleVariables
      */
     public static final KettleVariables getInstance()
     {
-        KettleVariables kettleVariables = LocalVariables.getKettleVariables(Thread.currentThread());
+        KettleVariables kettleVariables = LocalVariables.getKettleVariables(Thread.currentThread().toString());
         if (kettleVariables==null)
         {
-            System.out.println("---> Unable to find Kettle Variables for thread ["+Thread.currentThread()+"]");
+            throw new RuntimeException("Unable to find Kettle Variables for thread ["+Thread.currentThread()+"]");
         }
         return kettleVariables;
     }
@@ -111,7 +111,7 @@ public class KettleVariables
     /**
      * @return Returns the localThread.
      */
-    public Thread getLocalThread()
+    public String getLocalThread()
     {
         return localThread;
     }
@@ -119,7 +119,7 @@ public class KettleVariables
     /**
      * @param localThread The localThread to set.
      */
-    public void setLocalThread(Thread localThread)
+    public void setLocalThread(String localThread)
     {
         this.localThread = localThread;
     }
@@ -127,7 +127,7 @@ public class KettleVariables
     /**
      * @return Returns the parentThread.
      */
-    public Thread getParentThread()
+    public String getParentThread()
     {
         return parentThread;
     }
@@ -135,7 +135,7 @@ public class KettleVariables
     /**
      * @param parentThread The parentThread to set.
      */
-    public void setParentThread(Thread parentThread)
+    public void setParentThread(String parentThread)
     {
         this.parentThread = parentThread;
     }

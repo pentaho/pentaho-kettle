@@ -25,7 +25,7 @@ public class LocalVariables
      * @param parentThread The parent thread, null if there is no parent thread.  The initial value of the variables will be taken from the variables that are attached to this thread.
      * @param sameNamespace true if you want to use the same namespace as the parent (if any) or false if you want to use a new namespace, create a new KettleVariables object.
      */
-    public KettleVariables createKettleVariables(Thread localThread, Thread parentThread, boolean sameNamespace)
+    public KettleVariables createKettleVariables(String localThread, String parentThread, boolean sameNamespace)
     {
         if (parentThread!=null && parentThread.equals(localThread)) 
         {
@@ -45,7 +45,8 @@ public class LocalVariables
             {
                 if (sameNamespace)
                 {
-                    vars = initialValue;
+                    vars = new KettleVariables(localThread, parentThread);
+                    vars.setProperties(initialValue.getProperties());
                 }
                 else
                 {
@@ -54,7 +55,7 @@ public class LocalVariables
             }
             else
             {
-                throw new RuntimeException("No parent Kettle Variables found for thread ["+parentThread+"]");
+                throw new RuntimeException("No parent Kettle Variables found for thread ["+parentThread+"], local thread is ["+localThread+"]");
             }
         }
 
@@ -66,6 +67,7 @@ public class LocalVariables
             throw new RuntimeException("There are already variables in the local variables map for ["+localThread+"]");
         }
         
+        // LogWriter.getInstance().logBasic("LocalVariables!", "---> Store new KettleVariables in key ["+localThread+"], vars.local ["+vars.getLocalThread()+"], vars.parent ["+vars.getParentThread()+"]");
         
         // Put this one in the map, attached to the local thread
         map.put(localThread, vars);
@@ -88,12 +90,17 @@ public class LocalVariables
         return localVariables;
     }
     
-    public static final KettleVariables getKettleVariables()
+    public Map getMap()
     {
-        return getInstance().getVariables(Thread.currentThread());
+        return map;
     }
     
-    public static final KettleVariables getKettleVariables(Thread thread)
+    public static final KettleVariables getKettleVariables()
+    {
+        return getInstance().getVariables(Thread.currentThread().toString());
+    }
+    
+    public static final KettleVariables getKettleVariables(String thread)
     {
         return getInstance().getVariables(thread);
     }
@@ -105,29 +112,48 @@ public class LocalVariables
      * @param localThread The thread to look for
      * @return The KettleVariables attached to the specified thread.
      */
-    private KettleVariables getVariables(Thread localThread)
+    private KettleVariables getVariables(String localThread)
     {
         KettleVariables kettleVariables = (KettleVariables) map.get(localThread); 
         return kettleVariables;
     }
 
+    
+    public void removeKettleVariables(String thread)
+    {
+        removeKettleVariables(thread, 1);
+    }
+    
     /**
      * Remove all KettleVariables objects in the map, including the one for this thread, but also the ones with this thread as parent, etc. 
      * @param thread the grand-parent thread to look for to remove
      */
-    public void removeKettleVariables(Thread thread)
+    private void removeKettleVariables(String thread, int level)
     {
+        LogWriter log = LogWriter.getInstance();
+        
         List children = getKettleVariablesWithParent(thread);
+        
         for (int i=0;i<children.size();i++)
         {
-            Thread child = (Thread)children.get(i);
-            // System.out.println("--> removing child #"+i+"/"+children.size()+" ["+child+"] for thread ["+thread+"]");
-            removeKettleVariables(child);
+            String child = (String)children.get(i);
+            removeKettleVariables(child, level+1);
         }
-        map.remove(thread);
+        
+        // See if it was in there in the first place...
+        if (map.get(thread)==null)
+        {
+            // We should not ever arrive here...
+            log.logError("LocalVariables!!!!!!!", "The variables you are trying to remove, do not exist for thread ["+thread+"]");
+            log.logError("LocalVariables!!!!!!!", "Please report this error to the Kettle developers.");
+        }
+        else
+        {
+            map.remove(thread);
+        }
     }
     
-    private List getKettleVariablesWithParent(Thread parentThread)
+    private List getKettleVariablesWithParent(String parentThread)
     {
         List children = new ArrayList();
         List values = new ArrayList(map.values());

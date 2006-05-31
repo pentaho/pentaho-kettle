@@ -69,6 +69,15 @@ public class Job extends Thread
      */
     private ArrayList sourceRows;
     
+    
+    private Thread parentThread;
+    
+    /**
+     * The result of the job, after execution.
+     */
+    private Result result;
+    private String threadName;
+    
     public Job(LogWriter lw, String name, String file, String args[])
     {
         init(lw, name, file, args);
@@ -87,6 +96,7 @@ public class Job extends Thread
 		active=false;
 		stopped=false;
         jobTracker = new JobTracker(jobMeta);
+        parentThread = Thread.currentThread();  // It _is_ before you start to run the job.
 	}
 
 	public Job(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
@@ -98,7 +108,7 @@ public class Job extends Thread
     // Empty constructor, for Class.newInstance()
     public Job()
     {
-        
+        parentThread = Thread.currentThread();  // It _is_ before you start to run the job.
     }
     
     public void open(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
@@ -112,6 +122,7 @@ public class Job extends Thread
         active=false;
         stopped=false;
         jobTracker = new JobTracker(jobMeta);
+        parentThread = Thread.currentThread();  // It _is_ before you start to run the job.
     }
 	
 	public void open(Repository rep, String fname, String jobname, String dirname) throws KettleException
@@ -171,8 +182,17 @@ public class Job extends Thread
 	{
 		try
 		{
-			execute(); // Run the job
+            // Now that we're running, add the Kettle variables automatically...
+            // Create a new variable name space as we want jobs to have their own set of variables.
+            //
+            threadName = Thread.currentThread().toString();
+            LocalVariables.getInstance().createKettleVariables(threadName, parentThread.toString(), false);
+            
+            execute(); // Run the job
 			endProcessing("end");
+            
+            // When we're done, we must throw the variables away.  Otherwise we will leak memory.
+            // LocalVariables.getInstance().removeKettleVariables(Thread.currentThread().toString());
 		}
 		catch(KettleException je)
 		{
@@ -204,9 +224,6 @@ public class Job extends Thread
         // Save this result...
         JobEntryResult jerEnd = new JobEntryResult(res, "Job execution ended", "end", null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerEnd));
-
-        // This is the end, remove all variables below and including this Thread:
-        LocalVariables.getInstance().removeKettleVariables(this);
 
         active = false;
         return res;
@@ -417,8 +434,7 @@ public class Job extends Thread
 	
 	//
 	// Handle logging at end
-	public boolean endProcessing(String status)
-		throws KettleJobException
+	public boolean endProcessing(String status) throws KettleJobException
 	{
 		long read=0L, written=0L, updated=0L, errors=0L, input=0L, output=0L;
 		
@@ -450,6 +466,7 @@ public class Job extends Thread
 				ldb.disconnect();
 			}
 		}
+        
 		return true;
 	}
 	
@@ -543,8 +560,29 @@ public class Job extends Thread
 		
 	public String toString()
 	{
+        return super.toString();
+        /*
+        if (jobMeta!=null)
+        {
+            return Const.NVL(jobMeta.getName(), Const.NVL(jobMeta.getFilename(), super.getName()) );
+        }
 		return this.getClass().getName();
+        */
 	}
+    
+    public Thread getThread()
+    {
+        return (Thread)this;
+    }
+    
+    /**
+     * @return The thread name when the thread is (or still was) running.
+     *         null if the job was not started yet.  
+     */
+    public String getThreadName()
+    {
+        return threadName;
+    }
 
     /**
      * @return Returns the jobTracker.
@@ -587,13 +625,20 @@ public class Job extends Thread
     {
         this.parentJob = parentJob;
     }
+
+    public Result getResult()
+    {
+        return result;
+    }
     
-    /**
-     * @return the Kettle Variables that apply for the job running in THIS classloader. (local to this Job)
-     */
+    public void setResult(Result result)
+    {
+        this.result = result;
+    }
+
     public KettleVariables getKettleVariables()
     {
-        return LocalVariables.getKettleVariables(this);
+       return LocalVariables.getKettleVariables(this.getThreadName());
     }
 }
 

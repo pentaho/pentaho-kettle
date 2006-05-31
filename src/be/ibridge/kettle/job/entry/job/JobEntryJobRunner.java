@@ -5,6 +5,7 @@
 
 package be.ibridge.kettle.job.entry.job;
 
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -23,6 +24,8 @@ public class JobEntryJobRunner implements Runnable
 	private LogWriter log;
 	private int       entryNr;
 	private boolean   finished;
+    
+    private Thread    parentThread;
 	
 	/**
 	 * @deprecated
@@ -34,6 +37,8 @@ public class JobEntryJobRunner implements Runnable
 		this.log = log;
 		this.entryNr = entryNr;
 		finished=false;
+        
+        this.parentThread = Thread.currentThread();
 	}
     
     /**
@@ -46,12 +51,20 @@ public class JobEntryJobRunner implements Runnable
         this.log = LogWriter.getInstance();
         this.entryNr = entryNr;
         finished=false;
+        
+        this.parentThread = Thread.currentThread();
     }
 	
 	public void run()
 	{
 		try
 		{
+            // This JobEntryRunner is a replacement for the Job thread.
+            // The job thread is never started because we simpy want to wait for the result.
+            // That is the reason why it's not in the same namespace as the parent (job, chef, etc.)
+            //
+            LocalVariables.getInstance().createKettleVariables(Thread.currentThread().toString(), parentThread.toString(), false);
+            
 			result = job.execute(entryNr+1, result);
 		}
 		catch(KettleException e)

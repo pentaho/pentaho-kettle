@@ -1336,11 +1336,8 @@ public class Chef
 	
 	public void closeRepository()
 	{
-		if (showChangedWarning() && rep!=null)
-		{
-			rep.disconnect();
-			rep = null;
-		}
+		rep.disconnect();
+		rep = null;
 		setShellText();
 	}
 	
@@ -2328,7 +2325,7 @@ public class Chef
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
                 // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), kettleVariables.getLocalThread(), true);
+                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().toString(), kettleVariables.getLocalThread().toString(), true);
 
 				monitor.beginTask(Messages.getString("Chef.RipDB.Monitor.BuildingNewJob"), tables.length); //$NON-NLS-1$
 				monitor.worked(0);

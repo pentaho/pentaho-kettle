@@ -26,7 +26,6 @@ import java.util.Date;
 import java.util.List;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.ResultFile;
@@ -351,7 +350,8 @@ public class BaseStep extends Thread
      * We used it to perform extra checking: see if we don't get rows with "mixed" contents.
      */
     private Row     referenceRow;
-	
+
+    
 	/**
 	 * This is the base step that forms that basis for all steps.  You can derive from this class to implement your own steps.
 	 * 
@@ -426,7 +426,7 @@ public class BaseStep extends Thread
 		
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		sdi.setStatus(StepDataInterface.STATUS_DISPOSED);
+        sdi.setStatus(StepDataInterface.STATUS_DISPOSED);
 	}
 		
 	public long getProcessed()
@@ -1334,6 +1334,11 @@ public class BaseStep extends Thread
 	{
 		return stepname+"."+getCopy(); //$NON-NLS-1$
 	}
+    
+    public Thread getThread()
+    {
+        return this;
+    }
 	
 	private int calcPutPriority(RowSet rs)
 	{
@@ -1535,11 +1540,6 @@ public class BaseStep extends Thread
 		this.safeModeEnabled = safeModeEnabled;
 	}
     
-    public KettleVariables getKettleVariables()
-    {
-        return LocalVariables.getKettleVariables(this);
-    }
-    
     public int getStatus()
     {
         if (isAlive()) return StepDataInterface.STATUS_RUNNING;
@@ -1553,5 +1553,10 @@ public class BaseStep extends Thread
             return sdi.getStatus();
         }
         return StepDataInterface.STATUS_EMPTY;
+    }
+
+    public String getThreadName()
+    {
+        return super.toString();
     }
 }

@@ -62,7 +62,7 @@ public class TransPreviewProgressDialog
 		{
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), parentThread, true);
+                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().toString(), parentThread.toString(), true);
 
 				try
 				{

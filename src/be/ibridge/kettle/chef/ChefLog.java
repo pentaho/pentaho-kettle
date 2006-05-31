@@ -372,13 +372,7 @@ public class ChefLog extends Composite
 					try
 					{
 						wStart.setText(STOP_TEXT);
-                        // Load the job in a new ClassLoader...
-                        job = new Job();
-                        
-                        LocalVariables localVariables = LocalVariables.getInstance();
-                        localVariables.createKettleVariables(job, Thread.currentThread(), false);
-                        
-						job.init(log, chef.jobMeta.getName(), chef.jobMeta.getFilename(), null);
+                        job = new Job(log, chef.jobMeta.getName(), chef.jobMeta.getFilename(), null);
 						job.open(chef.rep, chef.jobMeta.getFilename(), chef.jobMeta.getName(), chef.jobMeta.getDirectory().getPath());
 						
                         log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.StartingJob")); //$NON-NLS-1$
@@ -496,9 +490,10 @@ public class ChefLog extends Composite
             // Re-populate this...
             TreeItem treeItem = new TreeItem(wTree, SWT.NONE);
             String jobName = jobTracker.getJobMeta().getName();
-            if(jobName==null) 
+            if(Const.isEmpty(jobName)) 
             {
-            	jobName = Messages.getString("ChefLog.Tree.StringToDisplayWhenJobHasNoName"); //$NON-NLS-1$
+                if (!Const.isEmpty(jobTracker.getJobMeta().getFilename())) jobName = jobTracker.getJobMeta().getFilename();
+                else jobName = Messages.getString("ChefLog.Tree.StringToDisplayWhenJobHasNoName"); //$NON-NLS-1$
             }
             treeItem.setText( 0,jobName);
             for (int i=0;i<jobTracker.nrJobTrackers();i++)
@@ -577,6 +572,37 @@ public class ChefLog extends Composite
 	{
 		if (job!=null && !job.isActive())
         {
+            /*
+            System.out.println("What's in LOCAL variables?");
+            System.out.println("-----------------------------");
+            
+            Map map = LocalVariables.getInstance().getMap();
+            ArrayList keys = new ArrayList(map.keySet());
+            for (int i=0;i<keys.size();i++)
+            {
+                String key = (String)keys.get(i);
+                KettleVariables v = (KettleVariables) map.get(key);
+                System.out.println("Kettle variables #"+i+", key ["+key+"] --+> local thread ["+v.getLocalThread()+"], parent ["+v.getParentThread()+"]");
+            }
+            */
+            
+            // OK, the job has finished, remove the variables...
+            //
+            LocalVariables.getInstance().removeKettleVariables(job.getThreadName());
+
+            /*
+            System.out.println("Finished, what's left on the variables?");
+            System.out.println("-----------------------------");
+
+            keys = new ArrayList(map.keySet());
+            for (int i=0;i<keys.size();i++)
+            {
+                String key = (String)keys.get(i);
+                KettleVariables v = (KettleVariables) map.get(key);
+                System.out.println("Kettle variables #"+i+", key ["+key+"] --+> local thread ["+v.getLocalThread()+"], parent ["+v.getParentThread()+"]");
+            }
+            */
+            
             job=null;
             log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.JobHasEnded")); //$NON-NLS-1$
         }
@@ -663,5 +689,4 @@ public class ChefLog extends Composite
 			}
 		}
 	}
-
 }

@@ -63,7 +63,7 @@ public class EnvUtil
         
         // OK, initialize the KettleVariables as well...
         LocalVariables local = LocalVariables.getInstance();
-        local.createKettleVariables(Thread.currentThread(), null, false);
+        local.createKettleVariables(Thread.currentThread().toString(), null, false);
 	}
     
     /**

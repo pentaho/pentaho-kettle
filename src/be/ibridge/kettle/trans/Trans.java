@@ -358,9 +358,8 @@ public class Trans
 					// Possibly, enable safe mode in the steps...
 					((BaseStep)step).setSafeModeEnabled(safeModeEnabled);
 
-                    // Set the kettle variables...
-                    LocalVariables local = LocalVariables.getInstance();
-                    local.createKettleVariables((BaseStep)step, parentJob, true);
+                    // Create the kettle variables...
+                    LocalVariables.getInstance().createKettleVariables(((BaseStep)step).getThreadName(), Thread.currentThread().toString(), true);
 
 					// Save the step too
 					combi.step = step;

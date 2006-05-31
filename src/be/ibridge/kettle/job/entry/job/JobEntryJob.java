@@ -23,7 +23,6 @@ import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
@@ -340,10 +339,8 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                     throw new KettleException("Unable to load the job: please specify the name and repository directory OR a filename");
                 }
                 
-                // Create a new job in a different ClassLoader
-                Job job = Job.createJobWithNewClassLoader();
-                
-                job.open(logwriter, StepLoader.getInstance(), rep, jobMeta);
+                // Create a new job 
+                Job job = new Job(logwriter, StepLoader.getInstance(), rep, jobMeta);
                 
                 // Link the job with the sub-job
                 parentJob.getJobTracker().addJobTracker(job.getJobTracker()); 
@@ -354,11 +351,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 // Tell this sub-job about its parent...
                 job.setParentJob(parentJob);
                 
-                // Variables are passed down...
-                LocalVariables localVariables = LocalVariables.getInstance();
+                // Variables are passed down automagically now...
+                // LocalVariables localVariables = LocalVariables.getInstance();
                 
                 // Create a new KettleVariables instance here...
-                localVariables.createKettleVariables(job, parentJob, false);
+                // localVariables.createKettleVariables(job, parentJob, false);
                 
                 if (parentJob.getJobMeta().isBatchIdPassed())
                 {
@@ -412,7 +409,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 job.getJobMeta().setArguments( args );
                 
                 JobEntryJobRunner runner = new JobEntryJobRunner( job, result, nr);
-    			new Thread(runner).start();
+    			Thread jobRunnerThread = new Thread(runner);
+                jobRunnerThread.setName( Const.NVL(job.getJobMeta().getName(), job.getJobMeta().getFilename()) );
+                jobRunnerThread.start();
         		
                 try
                 {

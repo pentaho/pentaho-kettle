@@ -8,7 +8,6 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
-import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
@@ -34,7 +33,7 @@ public class GetTableSizeProgressDialog
 	private Row row;
 	
 	private Database db;
-    private KettleVariables kettleVariables;
+    private Thread parentThread;
 
 	/**
 	 * Creates a new dialog that will handle the wait while we're doing the hard work.
@@ -46,7 +45,7 @@ public class GetTableSizeProgressDialog
 		this.dbMeta = dbInfo;
 		this.tableName = tableName;
         
-        this.kettleVariables = KettleVariables.getInstance();
+        this.parentThread = Thread.currentThread();
 	}
 	
 	public Row open()
@@ -56,7 +55,7 @@ public class GetTableSizeProgressDialog
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
                 // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread(), kettleVariables.getLocalThread(), true);
+                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().toString(), parentThread.toString(), true);
 
 				db = new Database(dbMeta);
 				try 
