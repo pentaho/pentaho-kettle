@@ -32,6 +32,7 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -116,7 +117,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 			targetDirectory = XMLHandler.getTagValue(entrynode, "targetdirectory");
 			wildcard        = XMLHandler.getTagValue(entrynode, "wildcard");
 			binaryMode      = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "binary") );
-			timeout         = Const.toInt(XMLHandler.getTagValue(entrynode, "wildcard"), 10000);
+			timeout         = Const.toInt(XMLHandler.getTagValue(entrynode, "timeout"), 10000);
 			remove          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "remove") );
 		}
 		catch(KettleXMLException xe)
@@ -370,12 +371,14 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 				log.logDetailed(toString(), "set ASCII transfer mode");
 			}
 
+            
 			// Some FTP servers return a message saying no files found as a string in the filenlist
 			// e.g. Solaris 8
 			// CHECK THIS !!!
 			if (filelist.length == 1)
 			{
-				if (filelist[0].startsWith(wildcard))
+                String translatedWildcard = StringUtil.environmentSubstitute(wildcard);
+                if (filelist[0].startsWith(translatedWildcard))
 				{
 					throw new FTPException(filelist[0]);
 				}
@@ -384,7 +387,8 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 			Pattern pattern = null;
 			if (wildcard!=null && wildcard.length()>0) 
 			{
-				pattern = Pattern.compile(wildcard);
+                String translatedWildcard = StringUtil.environmentSubstitute(wildcard);
+                pattern = Pattern.compile(translatedWildcard);
 				
 			}
 			
@@ -402,8 +406,9 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 				
 				if (getIt)
 				{
-					log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+targetDirectory+"]");
-					String targetFilename = targetDirectory+Const.FILE_SEPARATOR+filelist[i]; 
+                    String translatedTargetDirectory = StringUtil.environmentSubstitute(targetDirectory);
+					log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+translatedTargetDirectory+"]");
+					String targetFilename = translatedTargetDirectory+Const.FILE_SEPARATOR+filelist[i]; 
 					ftpclient.get(targetFilename, filelist[i]);
 					filesRetrieved++; 
 					
