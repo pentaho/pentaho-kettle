@@ -1577,7 +1577,11 @@ public class TransMeta implements XMLInterface
 
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.SavingDatabaseTask.Title") + (i + 1) + "/" + nrDatabases()); //$NON-NLS-1$ //$NON-NLS-2$
                 DatabaseMeta ci = getDatabase(i);
-                ci.saveRep(rep);
+                // ONLY save the database connection if it has changed and nothing was saved in the repository
+                if(ci.hasChanged() || ci.getID()<=0)
+                {
+                    ci.saveRep(rep);
+                }
                 if (monitor != null) monitor.worked(1);
             }
 
