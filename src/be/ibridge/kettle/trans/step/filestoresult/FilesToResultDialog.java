@@ -45,7 +45,6 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
-import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
@@ -149,12 +148,15 @@ public class FilesToResultDialog extends BaseStepDialog implements StepDialogInt
 				try
 				{
 					Row inputfields = transMeta.getPrevStepFields(stepname);
-					for (int i=0;i<inputfields.size();i++)
-					{
-						wFilenameField.add( inputfields.getValue(i).getName() );
-					}
+                    if (inputfields!=null)
+                    {
+    					for (int i=0;i<inputfields.size();i++)
+    					{
+    						wFilenameField.add( inputfields.getValue(i).getName() );
+    					}
+                    }
 				}
-				catch(KettleException ke)
+				catch(Exception ke)
 				{
 					new ErrorDialog(shell, props, Messages.getString("FilesToResultDialog.FailedToGetFields.DialogTitle"), Messages.getString("FilesToResultDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 				}
