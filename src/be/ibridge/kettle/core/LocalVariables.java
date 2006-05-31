@@ -64,7 +64,7 @@ public class LocalVariables
         KettleVariables checkVars = (KettleVariables) map.get(localThread); 
         if (checkVars!=null)
         {
-            throw new RuntimeException("There are already variables in the local variables map for ["+localThread+"]");
+            // throw new RuntimeException("There are already variables in the local variables map for ["+localThread+"]");
         }
         
         // LogWriter.getInstance().logBasic("LocalVariables!", "---> Store new KettleVariables in key ["+localThread+"], vars.local ["+vars.getLocalThread()+"], vars.parent ["+vars.getParentThread()+"]");
