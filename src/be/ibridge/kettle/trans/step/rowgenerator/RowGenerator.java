@@ -148,7 +148,6 @@ public class RowGenerator extends BaseStep implements StepInterface
                     default:
                         String message = Messages.getString("RowGenerator.CheckResult.SpecifyTypeError");
                         remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
-    
                     }
                 }
                 // Now add value to the row!
