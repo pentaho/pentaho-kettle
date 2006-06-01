@@ -408,6 +408,7 @@ public class Trans
         log.logBasic(toString(), Messages.getString("Trans.Log.InitialisingSteps", String.valueOf(steps.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
         StepInitThread initThreads[] = new StepInitThread[steps.size()];
+        Thread[] threads = new Thread[steps.size()];
 
         // Initialize all the threads...
 		for (int i=0;i<steps.size();i++)
@@ -419,34 +420,20 @@ public class Trans
 			initThreads[i] = new StepInitThread(sid, log);
             
             // Put it in a separate thread!
-			new Thread(initThreads[i]).start();
+			threads[i] = new Thread(initThreads[i]);
+            threads[i].start();
 		}
         
-        boolean finished = false;
-        
-        // If all step are not finished : wait a bit more...
-        while (!finished)
+        for (int i=0; i < threads.length;i++)
         {
-            finished=true; // Assume we have finished...
-            for (int i=0;i<initThreads.length && finished;i++)
-            {
-                if (!initThreads[i].isFinished()) finished=false; // Nope, here is one that's till busy...
-            }
-            
-            // not finished: wait a bit more...
-            if (!finished)
-            {
-                try
-                {
-                    Thread.sleep(10);
-                }
-                catch(InterruptedException e)
-                {
-                    
-                }
+            try {
+                threads[i].join();
+            } catch(Exception ex) {
+                ex.printStackTrace();
+                log.logError("Error with init thread: " + ex.getMessage(), ex.getMessage());
             }
         }
-
+        
         boolean ok = true;
         
         // All step are initialized now: see if there was one that didn't do it correctly!
