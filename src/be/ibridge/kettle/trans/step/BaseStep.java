@@ -363,8 +363,6 @@ public class BaseStep extends Thread
 	 */
 	public BaseStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
-		setName(stepMeta.getName());
-		
         log = LogWriter.getInstance();
 		this.stepMeta=stepMeta;
 		this.stepDataInterface = stepDataInterface;
@@ -1553,10 +1551,5 @@ public class BaseStep extends Thread
             return sdi.getStatus();
         }
         return StepDataInterface.STATUS_EMPTY;
-    }
-
-    public String getThreadName()
-    {
-        return super.toString();
     }
 }

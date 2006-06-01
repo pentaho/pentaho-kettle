@@ -30,7 +30,7 @@ public class StepInitThread implements Runnable
     public void run()
     {
         // Add a new KettleVariable for this new Thread so that init() code also has access to these variables...
-        localVariables.createKettleVariables(Thread.currentThread().toString(), parentThread.toString(), true);
+        localVariables.createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
         
         try
         {
@@ -52,7 +52,7 @@ public class StepInitThread implements Runnable
         }
         
         // Chuck away the KettleVariables, otherwise it leaks big time.
-        localVariables.removeKettleVariables(Thread.currentThread().toString());
+        localVariables.removeKettleVariables(Thread.currentThread().getName());
         
         finished=true;
     }

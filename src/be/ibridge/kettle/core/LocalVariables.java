@@ -27,6 +27,10 @@ public class LocalVariables
      */
     public KettleVariables createKettleVariables(String localThread, String parentThread, boolean sameNamespace)
     {
+        if (localThread.equals("Thread[Thread-1,5,main]"))
+        {
+            new Exception().printStackTrace();
+        }
         if (parentThread!=null && parentThread.equals(localThread)) 
         {
             throw new RuntimeException("local thread can't be the same as the parent thread!");
@@ -97,7 +101,7 @@ public class LocalVariables
     
     public static final KettleVariables getKettleVariables()
     {
-        return getInstance().getVariables(Thread.currentThread().toString());
+        return getInstance().getVariables(Thread.currentThread().getName());
     }
     
     public static final KettleVariables getKettleVariables(String thread)

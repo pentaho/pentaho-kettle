@@ -21,7 +21,7 @@ public class ITLTest extends Thread
         // Create a new variables object and store it in the list.
         // We take the variables we found in the parent to use as the basis.
         // 
-        KettleVariables vars = local.createKettleVariables(this.toString(), parent.toString(), false);
+        KettleVariables vars = local.createKettleVariables(this.getName(), parent.getName(), false);
         
         System.out.println("** ITLTest started, initial value of TODAY="+vars.getVariable(TLTest.TODAY, "?"));
         

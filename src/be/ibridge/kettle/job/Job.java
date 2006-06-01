@@ -185,14 +185,11 @@ public class Job extends Thread
             // Now that we're running, add the Kettle variables automatically...
             // Create a new variable name space as we want jobs to have their own set of variables.
             //
-            threadName = Thread.currentThread().toString();
-            LocalVariables.getInstance().createKettleVariables(threadName, parentThread.toString(), false);
+            threadName = Thread.currentThread().getName();
+            LocalVariables.getInstance().createKettleVariables(threadName, parentThread.getName(), false);
             
             execute(); // Run the job
 			endProcessing("end");
-            
-            // When we're done, we must throw the variables away.  Otherwise we will leak memory.
-            // LocalVariables.getInstance().removeKettleVariables(Thread.currentThread().toString());
 		}
 		catch(KettleException je)
 		{

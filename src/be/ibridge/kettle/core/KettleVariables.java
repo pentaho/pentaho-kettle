@@ -1,5 +1,6 @@
 package be.ibridge.kettle.core;
 
+import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
 
@@ -29,10 +30,23 @@ public class KettleVariables
      */
     public static final KettleVariables getInstance()
     {
-        KettleVariables kettleVariables = LocalVariables.getKettleVariables(Thread.currentThread().toString());
+        Thread thread = Thread.currentThread();
+        KettleVariables kettleVariables = LocalVariables.getKettleVariables(thread.getName());
         if (kettleVariables==null)
         {
-            throw new RuntimeException("Unable to find Kettle Variables for thread ["+Thread.currentThread()+"]");
+            System.out.println("What's in LOCAL variables?");
+            System.out.println("-----------------------------");
+            
+            Map map = LocalVariables.getInstance().getMap();
+            ArrayList keys = new ArrayList(map.keySet());
+            for (int i=0;i<keys.size();i++)
+            {
+                String key = (String)keys.get(i);
+                KettleVariables v = (KettleVariables) map.get(key);
+                System.out.println("Kettle variables #"+i+", key ["+key+"] --+> local thread ["+v.getLocalThread()+"], parent ["+v.getParentThread()+"]");
+            }
+            
+            throw new RuntimeException("Unable to find Kettle Variables for thread ["+thread.getName()+"]");
         }
         return kettleVariables;
     }
