@@ -26,7 +26,9 @@ public class BlockingStep extends BaseStep implements StepInterface {
         Row r=getRow();       // Get row from input rowset & set row busy!
         if (r==null)  // no more input to be expected...
         {
-            putRow(lastRow);
+            if(lastRow != null) {
+                putRow(lastRow);
+            }
             setOutputDone();
             return false;
         }
