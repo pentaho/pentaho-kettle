@@ -16,6 +16,7 @@
  
 package be.ibridge.kettle.core.value;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -88,6 +89,10 @@ public class ValueDate implements ValueInterface, Cloneable
 		this.date = Const.toDate(string, null);
 	}
 	
+    public void setSerializable(Serializable ser) {
+        
+    }
+    
 	public void    setNumber(double number)
 	{
 		this.date = new Date((long)number);
@@ -153,5 +158,8 @@ public class ValueDate implements ValueInterface, Cloneable
     {
         setInteger(number.longValue());
     }
-
+    
+    public Serializable getSerializable() {
+        return date;
+    }
 }

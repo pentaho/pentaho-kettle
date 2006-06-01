@@ -17,6 +17,7 @@
 
 package be.ibridge.kettle.core.value;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -169,5 +170,11 @@ public class ValueString implements ValueInterface, Cloneable
     {
         string = number.toString();
     }
-
+    
+    public Serializable getSerializable() {
+        return string;
+    }
+    public void setSerializable(Serializable ser) {
+        
+    }
 }

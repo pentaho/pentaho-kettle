@@ -16,6 +16,7 @@
  
 package be.ibridge.kettle.core.value;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -63,6 +64,10 @@ public class ValueNumber implements ValueInterface, Cloneable
 		return ""+this.number;
 	}
 
+    public void setSerializable(Serializable ser) {
+        
+    }
+    
 	public double getNumber()
 	{
 		return this.number;
@@ -157,5 +162,9 @@ public class ValueNumber implements ValueInterface, Cloneable
     public void setBigNumber(BigDecimal number)
     {
         this.number = number.doubleValue();
+    }
+    
+    public Serializable getSerializable() {
+        return new Double(number);
     }
 }

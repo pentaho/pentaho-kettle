@@ -18,6 +18,7 @@
 package be.ibridge.kettle.core.value;
 
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -39,14 +40,16 @@ public interface ValueInterface
 	public boolean    getBoolean();
 	public long       getInteger();
     public BigDecimal getBigNumber();
-	
+	public Serializable     getSerializable();
+    
 	public void       setString(String string);
 	public void       setNumber(double number);
 	public void       setDate(Date date);
 	public void       setBoolean(boolean bool);
 	public void       setInteger(long number);
     public void       setBigNumber(BigDecimal number);
-	
+	public void       setSerializable(Serializable ser);
+    
 	public int        getLength();
 	public int        getPrecision();
 	public void       setLength(int length);

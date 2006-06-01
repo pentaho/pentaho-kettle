@@ -87,6 +87,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
      * Value type indicating that the value contains a floating point precision number with arbitrary precision.
      */
     public static final int VALUE_TYPE_BIGNUMBER   = 6;
+    /**
+     * Value type indicating that the value contains an Object.
+     */
+    public static final int VALUE_TYPE_SERIALIZABLE   = 7;
 
 	/**
 	 * The descriptions of the value types.
@@ -94,7 +98,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	private static final String valueTypeCode[]=
 		{
 			"-",                                                          // $NON-NLS-1$
-			"Number", "String", "Date", "Boolean", "Integer", "BigNumber" // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$ $NON-NLS-4$ $NON-NLS-5$ $NON-NLS-6$
+			"Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable" // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$ $NON-NLS-4$ $NON-NLS-5$ $NON-NLS-6$
 		};
 	
 	private ValueInterface value;
@@ -446,6 +450,11 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		setNull(str==null);
 	}
 
+    public void setSerializedValue(Serializable ser) {
+        if (value==null || value.getType()!=VALUE_TYPE_SERIALIZABLE)  value = new ValueSerializable(ser);
+        else value.setSerializable(ser);
+        setNull(ser==null);
+    }
 	/**
 	 * Sets the Value to a Date
 	 * @param dat The Date to set the Value to
@@ -571,6 +580,17 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		if (value==null || isNull()) return null;
 		return value.getDate();
 	}
+    
+    /**
+     * Get the Serializable of this Value.
+     * If the Value is not of type Serializable, it returns null.
+     * @return the Serializable of this Value.
+     */
+    public Serializable getSerializable()
+    {
+        if (value==null || isNull() || value.getType() != VALUE_TYPE_SERIALIZABLE) return null;
+        return value.getSerializable();
+    }
 	
 	/**
 	 * Get the boolean value of this Value.
@@ -687,6 +707,17 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		return value.getType()==VALUE_TYPE_BOOLEAN;
 	}
 
+    /**
+     * Checks whether or not this value is of type Serializable
+     * @retur true if this value has type Serializable
+     */
+    public boolean isSerializableType() {
+        if(value == null) {
+            return false;
+        }
+        return value.getType() == VALUE_TYPE_SERIALIZABLE;
+    }
+    
 	/**
 	 * Checks whether or not this value is an Integer
 	 * @return true if this value is an integer

@@ -16,6 +16,7 @@
  
 package be.ibridge.kettle.core.value;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -65,6 +66,7 @@ public class ValueBoolean implements ValueInterface, Cloneable
 		return null;
 	}
 
+    
 	public boolean getBoolean()
 	{
 		return bool;
@@ -92,6 +94,10 @@ public class ValueBoolean implements ValueInterface, Cloneable
 		this.bool = false;
 	}
 	
+    public void setSerializable(Serializable ser) {
+        
+    }
+    
 	public void    setBoolean(boolean bool)
 	{
 		this.bool = bool;
@@ -149,4 +155,7 @@ public class ValueBoolean implements ValueInterface, Cloneable
         bool = number.intValue()!=0;
     }
 
+    public Serializable getSerializable() {
+        return new Boolean(bool);
+    }
 }
