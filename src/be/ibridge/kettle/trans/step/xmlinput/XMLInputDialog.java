@@ -1001,6 +1001,23 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         }
 	}
 	
+	// check if the path is given
+	private boolean checkInputPositionsFilled(XMLInputMeta meta){
+        if (meta.getInputPosition()==null || meta.getInputPosition().length<2)
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+            mb.setMessage(Messages.getString("XMLInputDialog.SpecifyRepeatingElement.DialogMessage"));
+            mb.setText(Messages.getString("System.Dialog.Error.Title"));
+            mb.open(); 
+
+            return false;
+        }
+        else
+        {
+        	return true;
+        }
+	}
+	
 	private void get()
 	{
         boolean finished = false;
@@ -1012,15 +1029,8 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
     		XMLInputMeta meta = new XMLInputMeta();
     		getInfo(meta);
 
-            if (meta.getInputPosition()==null || meta.getInputPosition().length<2)
-            {
-                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                mb.setMessage(Messages.getString("XMLInputDialog.SpecifyRepeatingElement.DialogMessage"));
-                mb.setText(Messages.getString("System.Dialog.Error.Title"));
-                mb.open(); 
-
-                return;
-            }
+    		// check if the path is given
+    		if (!checkInputPositionsFilled(meta)) return;
 
             EnterNumberDialog dialog = new EnterNumberDialog(shell, props, 1000, "Number of elements to scan", "Enter the number of elements to scan (0=all)");
             int maxElements = dialog.open();
@@ -1216,6 +1226,9 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
             // Create the XML input step
             XMLInputMeta oneMeta = new XMLInputMeta();
             getInfo(oneMeta);
+            
+            // check if the path is given
+    		if (!checkInputPositionsFilled(oneMeta)) return;
 
             TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
             
