@@ -22,6 +22,7 @@ import be.ibridge.kettle.core.CheckResult;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -71,6 +72,8 @@ public class RowGenerator extends BaseStep implements StepInterface
                 }
                 else
                 {
+                    stringValue = StringUtil.environmentSubstitute(stringValue);
+                    
                     switch(value.getType())
                     {
                     case Value.VALUE_TYPE_NUMBER:
