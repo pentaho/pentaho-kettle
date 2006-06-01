@@ -34,7 +34,23 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 	{
 		return "PostgreSQL";
 	}
-	
+  
+  /**
+   * @return The extra option separator in database URL for this platform
+   */
+  public String getExtraOptionSeparator()
+  {
+      return "&";
+  }
+  
+  /**
+   * @return This indicator separates the normal URL from the options
+   */
+  public String getExtraOptionIndicator()
+  {
+      return "?";
+  }
+  
 	/**
 	 * @return Returns the databaseType.
 	 */
