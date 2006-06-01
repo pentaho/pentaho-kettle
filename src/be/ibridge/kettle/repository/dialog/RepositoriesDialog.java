@@ -161,7 +161,7 @@ public class RepositoriesDialog
 
 		final Image logo = GUIResource.getInstance().getImagePentaho();
 		final Rectangle bounds = logo.getBounds();
-		
+
 		wCanvas = new Canvas(shell, SWT.NO_BACKGROUND);
 		fdCanvas = new FormData();
 		fdCanvas.left   = new FormAttachment(0, 0); 
@@ -170,6 +170,7 @@ public class RepositoriesDialog
 		fdCanvas.bottom = new FormAttachment(60, 0);
 		wCanvas.setLayoutData(fdCanvas);
 		wCanvas.setSize(bounds.width, bounds.height);
+        
 
 		wCanvas.addPaintListener(new PaintListener()
 			{
@@ -200,7 +201,7 @@ public class RepositoriesDialog
 		
 		// Kettle welcome
 		wlKettle = new Label(shell, SWT.CENTER);
-		wlKettle.setText(Messages.getString("RepositoriesDialog.Label.Welcome")+toolName+"  v"+Const.VERSION); //$NON-NLS-1$ $NON-NLS-2$
+		wlKettle.setText(Messages.getString("RepositoriesDialog.Label.Welcome", toolName, Const.VERSION)); //$NON-NLS-1$ $NON-NLS-2$
 		props.setLook(wlKettle);
         final Font f = new Font(shell.getDisplay(), "Arial", 18, SWT.NORMAL); //$NON-NLS-1$
         wlKettle.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) {  f.dispose(); } });
@@ -394,7 +395,7 @@ public class RepositoriesDialog
         BaseStepDialog.setMinimalShellHeight(shell, new Control[] {wCanvas, wlKettle, wRepository, wUsername, wPassword, wOK }, margin, 2*margin);
         Rectangle dialogBounds = shell.getBounds();
 	
-		BaseStepDialog.setSize(shell, dialogBounds.width, dialogBounds.height, false);
+		shell.setSize(bounds.width+20, dialogBounds.height);
 
 		shell.open();
 		while (!shell.isDisposed())
