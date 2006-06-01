@@ -450,13 +450,11 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		setNull(str==null);
 	}
 
-    /*
     public void setSerializedValue(Serializable ser) {
         if (value==null || value.getType()!=VALUE_TYPE_SERIALIZABLE)  value = new ValueSerializable(ser);
         else value.setSerializable(ser);
         setNull(ser==null);
     }
-    */
     
 	/**
 	 * Sets the Value to a Date
