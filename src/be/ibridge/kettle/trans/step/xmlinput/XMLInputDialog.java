@@ -1003,7 +1003,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	// check if the path is given
 	private boolean checkInputPositionsFilled(XMLInputMeta meta){
-        if (meta.getInputPosition()==null || meta.getInputPosition().length<2)
+        if (meta.getInputPosition()==null || meta.getInputPosition().length<1)
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
             mb.setMessage(Messages.getString("XMLInputDialog.SpecifyRepeatingElement.DialogMessage"));
@@ -1058,21 +1058,36 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
                     return;
                 }
                 
-                // Count the number of rootnodes
-                String itemElement = meta.getInputPosition()[meta.getInputPosition().length-1];
-                int nrItems = XMLHandler.countNodes(rootNode, itemElement);
-                for (int i=0;i<nrItems && !finished;i++)
+                if (meta.getInputPosition().length>1)
                 {
-                    Node itemNode = XMLHandler.getSubNodeByNr(rootNode, itemElement, i, false);
-                    if (i>=meta.getNrRowsToSkip())
+                    // Count the number of rootnodes
+                    String itemElement = meta.getInputPosition()[meta.getInputPosition().length-1];
+                    int nrItems = XMLHandler.countNodes(rootNode, itemElement);
+                    for (int i=0;i<nrItems && !finished;i++)
                     {
-                        getValues(itemNode, row, path, 0);
-                        
-                        elementsFound++;
-                        if (elementsFound>=maxElements && maxElements>0)
+                        Node itemNode = XMLHandler.getSubNodeByNr(rootNode, itemElement, i, false);
+                        if (i>=meta.getNrRowsToSkip())
                         {
-                            finished=true;
+                            getValues(itemNode, row, path, 0);
+                            
+                            elementsFound++;
+                            if (elementsFound>=maxElements && maxElements>0)
+                            {
+                                finished=true;
+                            }
                         }
+                    }
+                }
+                else
+                {
+                    // Only search the root node
+                    //
+                    getValues(rootNode, row, path, 0);
+                    
+                    elementsFound++;
+                    if (elementsFound>=maxElements && maxElements>0)
+                    {
+                        finished=true;
                     }
                 }
             }

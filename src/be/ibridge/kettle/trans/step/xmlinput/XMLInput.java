@@ -108,7 +108,16 @@ public class XMLInput extends BaseStep implements StepInterface
 
         debug="getRowFromXML: getSubNodeByNr";
 
-        Node itemNode = XMLHandler.getSubNodeByNr(data.section, data.itemElement, data.itemPosition);
+        
+        Node itemNode;
+        if (meta.getInputPosition().length>1)
+        {
+            itemNode = XMLHandler.getSubNodeByNr(data.section, data.itemElement, data.itemPosition);
+        }
+        else
+        {
+            itemNode = data.section; // Only the root node, 1 element to read in the whole document.
+        }
         data.itemPosition++;
 
         debug="getRowFromXML: read from the selected node";
