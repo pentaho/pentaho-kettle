@@ -369,10 +369,20 @@ public class BaseStep extends Thread
 		this.stepcopy+=copyNr;
 		this.transMeta=transMeta;
 		this.trans=trans;
-		
+		this.stepname=stepMeta.getName();
+        
+        // Set the name of the thread
+        if (stepMeta.getName()!=null) 
+        {
+            setName(toString()+" ("+super.getName()+")");
+        }
+        else
+        {
+            throw new RuntimeException("A step in transformation ["+transMeta.toString()+"] doesn't have a name.  A step should always have a name to identify it by.");
+        }
+        
 		first=true;
 		
-		stepname=stepMeta.getName();
 		stopped = false;
 		init    = false;
 		
