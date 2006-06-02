@@ -1121,6 +1121,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 			data.file = data.files.getFile(data.filenr);
 			data.filename = data.file.getPath();
 			
+            // Add this files to the result of this transformation.
+            //
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString());
 			addResultFile(resultFile);
 
