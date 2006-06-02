@@ -89,10 +89,10 @@ public class DragAndDropContainer implements XMLInterface
 			
 			xml.append(XMLHandler.getXMLHeader()); // UFT-8 XML header
 			
-			xml.append("<DragAndDrop>"+Const.CR);
-			xml.append("  "+XMLHandler.addTagValue("DragType", getTypeCode()));
-			xml.append("  "+XMLHandler.addTagValue("Data", Base64.encodeBytes(data.getBytes(Const.XML_ENCODING))));
-			xml.append("</DragAndDrop>"+Const.CR);
+			xml.append("<DragAndDrop>").append(Const.CR);
+			xml.append("  ").append(XMLHandler.addTagValue("DragType", getTypeCode()));
+			xml.append("  ").append(XMLHandler.addTagValue("Data", Base64.encodeBytes(data.getBytes(Const.XML_ENCODING))));
+			xml.append("</DragAndDrop>").append(Const.CR);
 			
 			return xml.toString();
 		}

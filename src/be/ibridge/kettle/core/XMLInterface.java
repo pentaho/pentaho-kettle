@@ -24,5 +24,5 @@ package be.ibridge.kettle.core;
  */
 public interface XMLInterface
 {
-	public String getXML();
+	String getXML();
 }
