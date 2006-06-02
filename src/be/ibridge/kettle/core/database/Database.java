@@ -1257,19 +1257,30 @@ public class Database
 			debug="Retrieve key";
 			if (keyfield==null)
 			{
+				ResultSet keys = null;
 				try
 				{
-					ResultSet keys=prepStatementInsert.getGeneratedKeys(); // 1 key
+					keys=prepStatementInsert.getGeneratedKeys(); // 1 key
 					if (keys.next()) val_key.setValue(keys.getDouble(1));
 					else 
 	                {
 	                    throw new KettleDatabaseException("Unable to retrieve auto-increment of combi insert key : "+keyfield+", no fields in resultset");
-	                }
-					keys.close();
+	                }					
 				}
 				catch(SQLException ex) 
 				{
 					throw new KettleDatabaseException("Unable to retrieve auto-increment of combi insert key : "+keyfield, ex);
+				}
+				finally 
+				{
+					try 
+					{
+					    if ( keys != null ) keys.close();
+					}
+					catch(SQLException ex) 
+					{
+						throw new KettleDatabaseException("Unable to retrieve auto-increment of combi insert key : "+keyfield, ex);
+					}					    
 				}
 			}
 		}
@@ -1292,14 +1303,21 @@ public class Database
 			{
 				pstmt_seq=connection.prepareStatement(databaseMeta.getSeqNextvalSQL(databaseMeta.stripCR(seq)));
 			}
-			ResultSet rs=pstmt_seq.executeQuery();
-			if (rs.next())
+			ResultSet rs=null;
+			try 
 			{
-				long next = rs.getLong(1);
-				retval=new Value(keyfield, next);
-                retval.setLength(9,0);
+				rs = pstmt_seq.executeQuery();
+			    if (rs.next())
+			    {
+				    long next = rs.getLong(1);
+				    retval=new Value(keyfield, next);
+                    retval.setLength(9,0);
+			    }
 			}
-			rs.close();
+			finally 
+			{
+			    if ( rs != null ) rs.close();
+			}
 		}
 		catch(SQLException ex)
 		{
@@ -1320,28 +1338,28 @@ public class Database
 	
 	public String getInsertStatement(String tableName, Row fields)
 	{
-		String ins="";
+		StringBuffer ins=new StringBuffer(128);
 		
-		ins+="INSERT INTO "+databaseMeta.quoteField(tableName)+"(";
+		ins.append("INSERT INTO ").append(databaseMeta.quoteField(tableName)).append("(");
 		
 		// now add the names in the row:
 		for (int i=0;i<fields.size();i++)
 		{
-			if (i>0) ins+=", ";
+			if (i>0) ins.append(", ");
 			String name = fields.getValue(i).getName();
-			ins+=databaseMeta.quoteField(name);
+			ins.append(databaseMeta.quoteField(name));
 		}
-		ins+=") VALUES (";
+		ins.append(") VALUES (");
 		
 		// Add placeholders...
 		for (int i=0;i<fields.size();i++)
 		{
-			if (i>0) ins+=", ";
-			ins+=" ?";
+			if (i>0) ins.append(", ");
+			ins.append(" ?");
 		}
-		ins+=")";
+		ins.append(")");
 		
-		return ins;
+		return ins.toString();
 	}
 
 	public void insertRow()
@@ -1654,21 +1672,37 @@ public class Database
 						log.logDetailed(toString(), "launch SELECT statement: "+Const.CR+sql);
 						
 						nrstats++;
-						ResultSet rs = openQuery(sql);
-						if (rs!=null)
+						ResultSet rs = null;
+						try 
 						{
-							Row r = getRow(rs);
-							while (r!=null)
+							rs = openQuery(sql);
+							if (rs!=null)
 							{
-                                result.setNrLinesRead(result.getNrLinesRead()+1);
-								log.logDetailed(toString(), r.toString());
-								r=getRow(rs);
+								Row r = getRow(rs);
+								while (r!=null)
+								{
+									result.setNrLinesRead(result.getNrLinesRead()+1);
+									log.logDetailed(toString(), r.toString());
+									r=getRow(rs);
+								}
+								
+							}
+							else
+							{
+								log.logDebug(toString(), "Error executing query: "+Const.CR+sql);
 							}
 						}
-						else
+						finally 
 						{
-							log.logDebug(toString(), "Error executing query: "+Const.CR+sql);
-						}
+							try 
+							{
+							   if ( rs != null ) rs.close();
+							}
+							catch (SQLException ex )
+							{
+								log.logDebug(toString(), "Error closing query: "+Const.CR+sql);
+							}
+						}						
 					}
                     else // any kind of statement
                     {
@@ -1952,30 +1986,38 @@ public class Database
 					//
 					// Get the info from the data dictionary...
 					//
-					String sql = "select i.name table_name, c.name column_name ";
-					sql +=       "from     sysindexes i, sysindexkeys k, syscolumns c ";
-					sql +=       "where    i.name = '"+tablename+"' ";
-					sql +=       "AND      i.id = k.id ";
-					sql +=       "AND      i.id = c.id ";
-					sql +=       "AND      k.colid = c.colid ";
+					StringBuffer sql = new StringBuffer(128);
+					sql.append("select i.name table_name, c.name column_name ");
+					sql.append("from     sysindexes i, sysindexkeys k, syscolumns c ");
+					sql.append("where    i.name = '"+tablename+"' ");
+					sql.append("AND      i.id = k.id ");
+					sql.append("AND      i.id = c.id ");
+					sql.append("AND      k.colid = c.colid ");
 					
-					ResultSet res = openQuery(sql);
-					if (res!=null)
+					ResultSet res = null;
+					try 
 					{
-						Row row = getRow(res);
-						while (row!=null)
+						res = openQuery(sql.toString());
+						if (res!=null)
 						{
-							String column = row.getString("column_name", "");
-							int idx = Const.indexOfString(column, idx_fields);
-							if (idx>=0) exists[idx]=true;
-							
-							row = getRow(res);
+							Row row = getRow(res);
+							while (row!=null)
+							{
+								String column = row.getString("column_name", "");
+								int idx = Const.indexOfString(column, idx_fields);
+								if (idx>=0) exists[idx]=true;
+								
+								row = getRow(res);
+							}							
 						}
-						closeQuery(res);
+						else
+						{
+							return false;
+						}
 					}
-					else
+					finally
 					{
-						return false;
+						if ( res != null ) closeQuery(res);
 					}
 				}
 				break;
@@ -1987,26 +2029,33 @@ public class Database
 					// Get the info from the data dictionary...
 					//
 					String sql = "SELECT * FROM USER_IND_COLUMNS WHERE TABLE_NAME = '"+tablename.toUpperCase()+"'";
-					ResultSet res = openQuery(sql);
-					if (res!=null)
-					{
-						Row row = getRow(res);
-						while (row!=null)
+					ResultSet res = null
+					try {
+						res = openQuery(sql);
+						if (res!=null)
 						{
-							String column = row.getString("COLUMN_NAME", "");
-							int idx = Const.indexOfString(column, idx_fields);
-							if (idx>=0) 
+							Row row = getRow(res);
+							while (row!=null)
 							{
-								exists[idx]=true;
+								String column = row.getString("COLUMN_NAME", "");
+								int idx = Const.indexOfString(column, idx_fields);
+								if (idx>=0) 
+								{
+									exists[idx]=true;
+								}
+								
+								row = getRow(res);
 							}
 							
-							row = getRow(res);
 						}
-						closeQuery(res);
+						else
+						{
+							return false;
+						}
 					}
-					else
+					finally
 					{
-						return false;
+						if ( res != null ) closeQuery(res);
 					}
 				}
 				break;
@@ -2014,44 +2063,58 @@ public class Database
 			case DatabaseMeta.TYPE_DATABASE_ACCESS:
 				{
 					// Get a list of all the indexes for this table
-			        ResultSet indexList = getDatabaseMetaData().getIndexInfo(null,null,tablename,false,true);
-			        while (indexList.next())
+			        ResultSet indexList = null;
+			        try 
 			        {
-			        	// String tablen  = indexList.getString("TABLE_NAME");
-			        	// String indexn  = indexList.getString("INDEX_NAME");
-			        	String column  = indexList.getString("COLUMN_NAME");
-			        	// int    pos     = indexList.getShort("ORDINAL_POSITION");
-			        	// int    type    = indexList.getShort("TYPE");
-			        	
-			        	int idx = Const.indexOfString(column, idx_fields);
-			        	if (idx>=0)
+			        	indexList = getDatabaseMetaData().getIndexInfo(null,null,tablename,false,true);
+			        	while (indexList.next())
 			        	{
-			        		exists[idx]=true;
+			        		// String tablen  = indexList.getString("TABLE_NAME");
+			        		// String indexn  = indexList.getString("INDEX_NAME");
+			        		String column  = indexList.getString("COLUMN_NAME");
+			        		// int    pos     = indexList.getShort("ORDINAL_POSITION");
+			        		// int    type    = indexList.getShort("TYPE");
+			        		
+			        		int idx = Const.indexOfString(column, idx_fields);
+			        		if (idx>=0)
+			        		{
+			        			exists[idx]=true;
+			        		}
 			        	}
 			        }
-			        indexList.close();		   				}
+			        finally 
+			        {
+			        	if ( indexList != null ) indexList.close();		   				
+				    }
+				}
 				break;
-
 
 			default:
 				{
 					// Get a list of all the indexes for this table
-			        ResultSet indexList = getDatabaseMetaData().getIndexInfo(null,null,tablename,false,true);
-			        while (indexList.next())
+			        ResultSet indexList = null;
+			        try  
 			        {
-			        	// String tablen  = indexList.getString("TABLE_NAME");
-			        	// String indexn  = indexList.getString("INDEX_NAME");
-			        	String column  = indexList.getString("COLUMN_NAME");
-			        	// int    pos     = indexList.getShort("ORDINAL_POSITION");
-			        	// int    type    = indexList.getShort("TYPE");
-			        	
-			        	int idx = Const.indexOfString(column, idx_fields);
-			        	if (idx>=0)
+			        	indexList = getDatabaseMetaData().getIndexInfo(null,null,tablename,false,true);
+			        	while (indexList.next())
 			        	{
-			        		exists[idx]=true;
+			        		// String tablen  = indexList.getString("TABLE_NAME");
+			        		// String indexn  = indexList.getString("INDEX_NAME");
+			        		String column  = indexList.getString("COLUMN_NAME");
+			        		// int    pos     = indexList.getShort("ORDINAL_POSITION");
+			        		// int    type    = indexList.getShort("TYPE");
+			        		
+			        		int idx = Const.indexOfString(column, idx_fields);
+			        		if (idx>=0)
+			        		{
+			        			exists[idx]=true;
+			        		}
 			        	}
 			        }
-			        indexList.close();		        
+			        finally 
+			        {
+			            if ( indexList != null ) indexList.close();
+			        }
 				}
 				break;
 			}
@@ -2607,44 +2670,45 @@ public class Database
 	// Lookup certain fields in a table
 	public boolean prepareUpdate(String table, String codes[], String condition[], String sets[])
 	{
-		String sql;
+		StringBuffer sql = new StringBuffer(128);
 	
 		int i;
 		
-		sql = "UPDATE "+databaseMeta.quoteField(table)+Const.CR+"SET ";
+		sql.append("UPDATE ").append(databaseMeta.quoteField(table)).append(Const.CR).append("SET ");
 		
 		for (i=0;i<sets.length;i++)
 		{
-			if (i!=0) sql += ",   ";
-			sql += databaseMeta.quoteField(sets[i]);
-			sql+=" = ?"+Const.CR;
+			if (i!=0) sql.append(",   ");
+			sql.append(databaseMeta.quoteField(sets[i]));
+			sql.append(" = ?").append(Const.CR);
 		}
 		
-		sql += "WHERE ";
+		sql.append("WHERE ");
 		
 		for (i=0;i<codes.length;i++)
 		{
-			if (i!=0) sql += "AND   ";
-			sql += databaseMeta.quoteField(codes[i]);
+			if (i!=0) sql.append("AND   ");
+			sql.append(databaseMeta.quoteField(codes[i]));
 			if ("BETWEEN".equalsIgnoreCase(condition[i]))
 			{
-				sql+=" BETWEEN ? AND ? ";
+				sql.append(" BETWEEN ? AND ? ");
 			}
 			else
 			if ("IS NULL".equalsIgnoreCase(condition[i]) || "IS NOT NULL".equalsIgnoreCase(condition[i]))
 			{
-				sql+=" "+condition[i]+" ";
+				sql.append(" ").append(condition[i]).append(" ");
 			}
 			else
 			{
-				sql+=" "+condition[i]+" ? ";
+				sql.append(" ").append(condition[i]).append(" ? ");
 			}
 		}
 		
 		try
 		{
-			log.logDetailed(toString(), "Setting update preparedStatement to ["+sql+"]");
-			prepStatementUpdate=connection.prepareStatement(databaseMeta.stripCR(sql));
+			String s = sql.toString();
+			log.logDetailed(toString(), "Setting update preparedStatement to ["+s+"]");
+			prepStatementUpdate=connection.prepareStatement(databaseMeta.stripCR(s));
 		}
 		catch(SQLException ex) 
 		{
