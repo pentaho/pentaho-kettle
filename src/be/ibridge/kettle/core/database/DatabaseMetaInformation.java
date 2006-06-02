@@ -194,33 +194,44 @@ public class DatabaseMetaInformation
 			if (dbInfo.supportsSchemas() && dbmd.supportsSchemasInTableDefinitions())
 			{
 				ArrayList schemaList = new ArrayList();
-				ResultSet schemas = dbmd.getSchemas();
-				while (schemas.next())
+				ResultSet schemas = null;
+				try 
 				{
-					ArrayList schemaItems = new ArrayList();
-					String schemaName = schemas.getString(1);
-					try
+					schemas = dbmd.getSchemas();
+					while (schemas.next())
 					{
-						ResultSet tables = dbmd.getTables(null, schemaName,  null, null );
-						while (tables.next())
+						ArrayList schemaItems = new ArrayList();
+						String schemaName = schemas.getString(1);
+						ResultSet tables = null;
+						try
 						{
-							String table_name = tables.getString(3);
-							if (!db.isSystemTable(table_name)) 
+							tables = dbmd.getTables(null, schemaName,  null, null );
+							while (tables.next())
 							{
-								schemaItems.add(table_name);
-							}
+								String table_name = tables.getString(3);
+								if (!db.isSystemTable(table_name)) 
+								{
+									schemaItems.add(table_name);
+								}
+							}							
 						}
-						tables.close();
+						catch(Exception e)
+						{
+							// Obviously, we're not allowed to snoop around in this catalog.
+							// Just ignore it!
+						}
+						finally
+						{
+							if ( tables != null ) tables.close();
+						}
+						Schema schema = new Schema(schemaName, (String[])schemaItems.toArray(new String[schemaItems.size()]));
+						schemaList.add(schema);
 					}
-					catch(Exception e)
-					{
-						// Obviously, we're not allowed to snoop around in this catalog.
-						// Just ignore it!
-					}
-					Schema schema = new Schema(schemaName, (String[])schemaItems.toArray(new String[schemaItems.size()]));
-					schemaList.add(schema);
 				}
-				schemas.close();
+				finally 
+				{
+				    if ( schemas != null ) schemas.close();
+				}
 				
 				// Save for later...
 				setSchemas((Schema[])schemaList.toArray(new Schema[schemaList.size()]));

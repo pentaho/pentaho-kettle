@@ -236,65 +236,65 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
 	public String getFieldDefinition(Value v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
-		String retval="";
+		StringBuffer retval=new StringBuffer(128);
 		
 		String fieldname = v.getName();
 		int    length    = v.getLength();
 		int    precision = v.getPrecision();
 		
-		if (add_fieldname) retval+=fieldname+" ";
+		if (add_fieldname) retval.append(fieldname).append(' ');
 		
 		int type         = v.getType();
 		switch(type)
 		{
-		case Value.VALUE_TYPE_DATE   : retval+="DATE"; break;
-		case Value.VALUE_TYPE_BOOLEAN: retval+="CHAR(1)"; break;
+		case Value.VALUE_TYPE_DATE   : retval.append("DATE"); break;
+		case Value.VALUE_TYPE_BOOLEAN: retval.append("CHAR(1)"); break;
 		case Value.VALUE_TYPE_NUMBER : 
 		case Value.VALUE_TYPE_INTEGER: 
         case Value.VALUE_TYPE_BIGNUMBER: 
-			retval+="NUMBER"; 
+			retval.append("NUMBER"); 
 			if (length>0)
 			{
-				retval+="("+length;
+				retval.append('(').append(length);
 				if (precision>0)
 				{
-					retval+=", "+precision;
+					retval.append(", ").append(precision);
 				}
-				retval+=")";
+				retval.append(')');
 			}
 			break;
 		case Value.VALUE_TYPE_STRING:
 			if (length>=DatabaseMeta.CLOB_LENGTH)
 			{
-				retval+="CLOB";
+				retval.append("CLOB");
 			}
 			else
 			{
 				if (length>0 && length<=2000)
 				{
-					retval+="VARCHAR2("+length+")";
+					retval.append("VARCHAR2(").append(length).append(')');
 				}
 				else
 				{
                     if (length<=0)
                     {
-                        retval+="VARCHAR2(2000)"; // We don't know, so we just use the maximum...
+                        retval.append("VARCHAR2(2000)"); // We don't know, so we just use the maximum...
                     }
                     else
                     {
-                        retval+="CLOB"; 
+                        retval.append("CLOB"); 
                     }
 				}
 			}
 			break;
 		default:
-			retval+=" UNKNOWN";
+			retval.append(" UNKNOWN");
 			break;
 		}
 		
-		if (add_cr) retval+=Const.CR;
+		if (add_cr) retval.append(Const.CR);
 		
-		return retval;
+		return retval.toString();
 	}
 	
 	/* (non-Javadoc)
@@ -328,12 +328,12 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
     public String getSQLLockTables(String tableNames[])
     {
-        String sql="";
+        StringBuffer sql=new StringBuffer(128);
         for (int i=0;i<tableNames.length;i++)
         {
-            sql+="LOCK TABLE "+tableNames[i]+" IN EXCLUSIVE MODE;"+Const.CR;
+            sql.append("LOCK TABLE ").append(tableNames[i]).append(" IN EXCLUSIVE MODE;").append(Const.CR);
         }
-        return sql;
+        return sql.toString();
     }
     
     public String getSQLUnlockTables(String tableNames[])

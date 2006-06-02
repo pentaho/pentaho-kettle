@@ -134,13 +134,13 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 
 	public String getFieldDefinition(Value v, String tk, String pk, boolean use_autoinc, boolean add_fieldname, boolean add_cr)
 	{
-		StringBuffer retval=new StringBuffer();
+		StringBuffer retval=new StringBuffer(128);
 		
 		String fieldname = v.getName();
 		int    length    = v.getLength();
 		int    precision = v.getPrecision();
 		
-		if (add_fieldname) retval.append(fieldname).append(" ");
+		if (add_fieldname) retval.append(fieldname).append(' ');
 		
 		int type         = v.getType();
 		switch(type)

@@ -935,7 +935,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
                 while (iterator.hasNext())
                 {
                     String typedParameter=(String)iterator.next();
-                    int dotIndex = typedParameter.indexOf(".");
+                    int dotIndex = typedParameter.indexOf('.');
                     if (dotIndex>=0)
                     {
                         String typeCode = typedParameter.substring(0,dotIndex);
@@ -978,7 +978,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
             while (iterator.hasNext())
             {
                 String typedParameter=(String)iterator.next();
-                int dotIndex = typedParameter.indexOf(".");
+                int dotIndex = typedParameter.indexOf('.');
                 if (dotIndex>=0)
                 {
                     String typeCode = typedParameter.substring(0,dotIndex);
@@ -1574,9 +1574,9 @@ public class DatabaseMeta implements Cloneable, XMLInterface
      */
     public boolean hasSpecialCharInField(String fieldname)
     {
-        if (fieldname.indexOf("/")>=0) return true; 
-        if (fieldname.indexOf("-")>=0) return true; 
-        if (fieldname.indexOf("+")>=0) return true; 
+        if (fieldname.indexOf('/')>=0) return true; 
+        if (fieldname.indexOf('-')>=0) return true; 
+        if (fieldname.indexOf('+')>=0) return true; 
         return false;
     }
     
@@ -1808,7 +1808,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
             if (slist!=null) for (int i=0;i<slist.length;i++) types+=(i>0?", ":"")+slist[i];
             r = new Row(); r.addValue(new Value(par, "List of JDBC view types")); r.addValue(new Value(val, types)); list.add(r);
             
-            // List of synonyl types
+            // List of synonym types
             types = "";
             slist = getSynonymTypes(); 
             if (slist!=null) for (int i=0;i<slist.length;i++) types+=(i>0?", ":"")+slist[i];
