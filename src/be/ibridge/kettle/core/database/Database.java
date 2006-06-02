@@ -227,7 +227,7 @@ public class Database
             {
                 Properties properties = databaseMeta.getConnectionProperties();
                 if (!Const.isEmpty(userName)) properties.put("user", userName);
-                if (!Const.isEmpty(password)) properties.put("password", userName);
+                if (!Const.isEmpty(password)) properties.put("password", password);
                 
                 connection = DriverManager.getConnection(url, properties);
             }
