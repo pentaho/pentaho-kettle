@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 import junit.framework.TestCase;
-import be.ibridge.kettle.core.util.StringUtil;
 
 /**
  * @author wdeclerc
