@@ -303,8 +303,9 @@ public class Row implements XMLInterface, Comparable, Serializable
 	 */
 	public String toString()
 	{
-		StringBuffer retval= new StringBuffer('[');
-
+		StringBuffer retval= new StringBuffer(128);
+		
+		retval.append('[');
 		for (int i=0;i<size();i++)
 		{
 			Value value = getValue(i);
@@ -331,31 +332,32 @@ public class Row implements XMLInterface, Comparable, Serializable
 	public String toStringMeta()
 	{
 		int i;
-		StringBuffer retval= new StringBuffer("[");
+		StringBuffer retval= new StringBuffer(128);
 
+		retval.append('[');
 		for (i=0;i<size();i++)
 		{
 			if (i!=0) retval.append(", ");
 			if (getValue(i)!=null)
 			{
 				Value v=getValue(i);
-				retval.append(v.getName()).append("(");
+				retval.append(v.getName()).append('(');
 				retval.append(v.getTypeDesc());
 				if (v.getLength()>0)
 				{
-					retval.append("(");
+					retval.append('(');
 					retval.append(v.getLength());
-					if (v.getPrecision()>0)	retval.append(",").append(v.getPrecision());
-					retval.append(")");
+					if (v.getPrecision()>0)	retval.append(',').append(v.getPrecision());
+					retval.append(')');
 				}
-				retval.append(")");
+				retval.append(')');
 			}
 			else
 			{
 				retval.append("NULL");
 			}
 		}
-		retval.append("]");
+		retval.append(']');
 
 		return retval.toString();
 	}
