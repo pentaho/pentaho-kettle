@@ -231,7 +231,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 		switch(type)
 		{
 		case Value.VALUE_TYPE_DATE   : retval+="TIMESTAMP"; break;
-		case Value.VALUE_TYPE_BOOLEAN: retval+="CHAR(1)"; break;
+		case Value.VALUE_TYPE_BOOLEAN: retval+="BOOLEAN"; break;
 		case Value.VALUE_TYPE_NUMBER : 
 		case Value.VALUE_TYPE_INTEGER: 
         case Value.VALUE_TYPE_BIGNUMBER: 
@@ -276,22 +276,13 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 			}
 			break;
 		case Value.VALUE_TYPE_STRING:
-			if (length>=DatabaseMeta.CLOB_LENGTH)
+			if (length<1 || length>=DatabaseMeta.CLOB_LENGTH)
 			{
 				retval+="TEXT";
 			}
 			else
 			{
-				retval+="VARCHAR"; 
-				if (length>0)
-				{
-					retval+="("+length;
-				}
-				else
-				{
-					retval+="("; // Maybe use some default DB String length?
-				}
-				retval+=")";
+				retval+="VARCHAR("+length+")"; 
 			}
 			break;
 		default:
