@@ -125,6 +125,7 @@ public class LocalVariables
     
     public void removeKettleVariables(String thread)
     {
+        if (thread==null) return;
         removeKettleVariables(thread, 1);
     }
     
