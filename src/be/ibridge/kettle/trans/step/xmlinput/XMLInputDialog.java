@@ -473,7 +473,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         props.setLook(wlPosition);
         fdlPosition=new FormData();
         fdlPosition.left = new FormAttachment(0, 0);
-        fdlPosition.top  = new FormAttachment(wSkip, margin);
+        fdlPosition.top  = new FormAttachment(wSkip, margin*3);
         fdlPosition.right= new FormAttachment(middle, -margin);
         wlPosition.setLayoutData(fdlPosition);
         
@@ -491,7 +491,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         wPosition.addModifyListener(lsMod);
         fdPosition=new FormData();
         fdPosition.left   = new FormAttachment(middle, 0);
-        fdPosition.top    = new FormAttachment(wLimit, margin);
+        fdPosition.top    = new FormAttachment(wSkip, margin*3);
         fdPosition.bottom = new FormAttachment(100, -50);
         fdPosition.right  = new FormAttachment(100, 0);
         wPosition.setLayoutData(fdPosition);
