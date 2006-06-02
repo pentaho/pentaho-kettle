@@ -421,6 +421,7 @@ public class Trans
             
             // Put it in a separate thread!
 			threads[i] = new Thread(initThreads[i]);
+            threads[i].setName("init of "+sid.stepname+"."+sid.copy+" ("+threads[i].getName()+")");
             threads[i].start();
 		}
         
