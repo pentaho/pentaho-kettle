@@ -564,7 +564,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		ColumnInfo[] colinf=new ColumnInfo[]
           {
     		new ColumnInfo(Messages.getString("XMLOutputDialog.Fieldname.Column"),   ColumnInfo.COLUMN_TYPE_TEXT,   false),
-            new ColumnInfo(Messages.getString("XMLOutputDialog.Fieldname.Column"), ColumnInfo.COLUMN_TYPE_TEXT,   false),
+            new ColumnInfo(Messages.getString("XMLOutputDialog.ElementName.Column"), ColumnInfo.COLUMN_TYPE_TEXT,   false),
     		new ColumnInfo(Messages.getString("XMLOutputDialog.Type.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() ),
     		new ColumnInfo(Messages.getString("XMLOutputDialog.Format.Column"),      ColumnInfo.COLUMN_TYPE_CCOMBO, formats),
     		new ColumnInfo(Messages.getString("XMLOutputDialog.Length.Column"),      ColumnInfo.COLUMN_TYPE_TEXT,   false),
@@ -875,7 +875,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("XSystem.Dialog.GetFieldsFailed.Message"), ke);
+			new ErrorDialog(shell, props, Messages.getString("System.Dialog.GetFieldsFailed.Title"), Messages.getString("System.Dialog.GetFieldsFailed.Message"), ke);
 		}
 
 	}
