@@ -165,7 +165,9 @@ public class LocalVariables
         for (int i=0;i<values.size();i++)
         {
             KettleVariables kv = (KettleVariables)values.get(i);
-            if (kv.getParentThread()!=null && kv.getParentThread().equals(parentThread))
+            if ( ( kv.getParentThread()==null && parentThread==null) || 
+                 ( kv.getParentThread()!=null && parentThread!=null && kv.getParentThread().equals(parentThread) ) 
+               ) 
             {
                 if (kv.getLocalThread().equals(parentThread))
                 {
