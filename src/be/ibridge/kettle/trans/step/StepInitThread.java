@@ -27,6 +27,11 @@ public class StepInitThread implements Runnable
         this.parentThread = Thread.currentThread();
     }
     
+    public String toString()
+    {
+        return combi.stepname;
+    }
+    
     public void run()
     {
         // Add a new KettleVariable for this new Thread so that init() code also has access to these variables...
