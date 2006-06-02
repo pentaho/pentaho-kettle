@@ -161,7 +161,11 @@ public class LocalVariables
     private List getKettleVariablesWithParent(String parentThread)
     {
         List children = new ArrayList();
-        List values = new ArrayList(map.values());
+        List values;
+        synchronized (map) {
+            values = new ArrayList(map.values());
+        }
+        
         for (int i=0;i<values.size();i++)
         {
             KettleVariables kv = (KettleVariables)values.get(i);
