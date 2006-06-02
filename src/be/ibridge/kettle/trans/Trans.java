@@ -260,7 +260,7 @@ public class Trans
 		//
 		// Sort the steps & hops for visual pleasure...
 		//
-		if (isMonitored())
+		if (isMonitored() && transMeta.nrSteps()<10)
 		{
 			transMeta.sortStepsNatural();
 			transMeta.sortHopsNatural();
