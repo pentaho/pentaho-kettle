@@ -76,7 +76,7 @@ public class Job extends Thread
      * The result of the job, after execution.
      */
     private Result result;
-    private String threadName;
+    private boolean initialized;
     
     public Job(LogWriter lw, String name, String file, String args[])
     {
@@ -87,7 +87,7 @@ public class Job extends Thread
 	{
 		this.log=lw;
 		
-        if (name!=null) setName(name);
+        if (name!=null) setName(name+" ("+super.getName()+")");
         
 		jobMeta = new JobMeta(log);
 		jobMeta.setName(name);
@@ -102,7 +102,7 @@ public class Job extends Thread
 	public Job(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
 	{
         open(lw, steploader, rep, ti);
-        if (ti.getName()!=null) setName(ti.getName());
+        if (ti.getName()!=null) setName(ti.getName()+" ("+super.getName()+")");
 	}
     
     // Empty constructor, for Class.newInstance()
@@ -117,7 +117,7 @@ public class Job extends Thread
         this.rep        = rep;
         this.jobMeta    = ti;
         
-        if (ti.getName()!=null) setName(ti.getName());
+        if (ti.getName()!=null) setName(ti.getName()+" ("+super.getName()+")");
         
         active=false;
         stopped=false;
@@ -137,7 +137,7 @@ public class Job extends Thread
 			jobMeta = new JobMeta(log, fname, rep);
 		}
         
-        if (jobMeta.getName()!=null) setName(jobMeta.getName());
+        if (jobMeta.getName()!=null) setName(jobMeta.getName()+" ("+super.getName()+")");
 	}
     
     
@@ -185,8 +185,8 @@ public class Job extends Thread
             // Now that we're running, add the Kettle variables automatically...
             // Create a new variable name space as we want jobs to have their own set of variables.
             //
-            threadName = Thread.currentThread().getName();
-            LocalVariables.getInstance().createKettleVariables(threadName, parentThread.getName(), false);
+            LocalVariables.getInstance().createKettleVariables(getName(), parentThread.getName(), false);
+            initialized = true;
             
             execute(); // Run the job
 			endProcessing("end");
@@ -573,15 +573,6 @@ public class Job extends Thread
     }
     
     /**
-     * @return The thread name when the thread is (or still was) running.
-     *         null if the job was not started yet.  
-     */
-    public String getThreadName()
-    {
-        return threadName;
-    }
-
-    /**
      * @return Returns the jobTracker.
      */
     public JobTracker getJobTracker()
@@ -635,7 +626,15 @@ public class Job extends Thread
 
     public KettleVariables getKettleVariables()
     {
-       return LocalVariables.getKettleVariables(this.getThreadName());
+       return LocalVariables.getKettleVariables(getName());
+    }
+
+    /**
+     * @return Returns the initialized.
+     */
+    public boolean isInitialized()
+    {
+        return initialized;
     }
 }
 

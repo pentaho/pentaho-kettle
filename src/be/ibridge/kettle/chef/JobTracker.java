@@ -153,4 +153,15 @@ public class JobTracker
         this.parentJobTracker = parentJobTracker;
     }
     
+    public int getTotalNumberOfItems()
+    {
+        int total = 1; // 1 = this one
+        
+        for (int i=0;i<nrJobTrackers();i++)
+        {
+            total+=getJobTracker(i).getTotalNumberOfItems();
+        }
+        
+        return total;
+    }
 }

@@ -3294,7 +3294,7 @@ public class Spoon
         }
         catch(Throwable e)
         {
-            new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorCreatingStep.Title"), Messages.getString("Spoon.Dialog.UnableCreateNewStep.Message"), new Exception(e));//"Error creating step"
+            if (!shell.isDisposed()) new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorCreatingStep.Title"), Messages.getString("Spoon.Dialog.UnableCreateNewStep.Message"), new Exception(e));//"Error creating step"
             return null;
         }
                 

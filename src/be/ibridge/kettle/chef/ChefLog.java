@@ -94,6 +94,8 @@ public class ChefLog extends Composite
 
 	private FileInputStream in;
 	private Job job;
+    private int previousNrItems;
+    private boolean isRunning;
 
     /** @deprecated */
     public ChefLog(Composite parent, int style, LogWriter log, Chef chef)
@@ -266,9 +268,9 @@ public class ChefLog extends Composite
 								//
 								if (!wAuto.isDisposed() && !wText.isDisposed() && !wStart.isDisposed() && !wTree.isDisposed())
 								{
-	                                if (wAuto.getSelection())
+                                    if (wAuto.getSelection())
 	                                {
-	    								readLog(); 
+                                        readLog(); 
 	    								refreshView();
 	                                }
 								}
@@ -277,7 +279,7 @@ public class ChefLog extends Composite
 					);
 				}
 			};
-		tim.schedule( timtask, 2000L, 2000L);// refresh every 2 seconds... 
+		tim.schedule( timtask, 100L, 100L);// refresh every 2 seconds... 
 		
 		lsStart = new SelectionAdapter() 
 		{
@@ -328,7 +330,7 @@ public class ChefLog extends Composite
 		);
 	}
 	
-	public void startstop()
+	public synchronized void startstop()
 	{
 		if (job==null) // Not running, start the transformation...
 		{
@@ -377,6 +379,7 @@ public class ChefLog extends Composite
 						
                         log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.StartingJob")); //$NON-NLS-1$
 						job.start();
+                        isRunning=true;
 						readLog();
 					}
 					catch(KettleException e)
@@ -421,32 +424,39 @@ public class ChefLog extends Composite
 		} 
 		else
 		{
-			try
-			{
-				if (job!=null) 
-				{
-					job.stopAll();
-					job.endProcessing("stop"); //$NON-NLS-1$
-					job=null;
-                    log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.JobWasStopped")); //$NON-NLS-1$
-				}
-			}
-			catch(KettleJobException je)
-			{
-				MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
-				m.setText(Messages.getString("ChefLog.Dialog.UnableToSaveStopLineInLoggingTable.Title")); //$NON-NLS-1$
-				m.setMessage(Messages.getString("ChefLog.Dialog.UnableToSaveStopLineInLoggingTable.Message")+Const.CR+je.toString());	 //$NON-NLS-1$
-				m.open();
-			}
-			finally
-			{
-				job=null;
-				wStart.setText(START_TEXT);
-			}
+            stopJob();
 		}
 	}
 	
-	public void readLog()
+	private synchronized void stopJob()
+    {
+        try
+        {
+            if (job!=null) 
+            {
+                job.stopAll();
+                job.endProcessing("stop"); //$NON-NLS-1$
+                LocalVariables.getInstance().removeKettleVariables(job.getName());
+                job=null;
+                isRunning=false;
+                log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.JobWasStopped")); //$NON-NLS-1$
+            }
+        }
+        catch(KettleJobException je)
+        {
+            MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+            m.setText(Messages.getString("ChefLog.Dialog.UnableToSaveStopLineInLoggingTable.Title")); //$NON-NLS-1$
+            m.setMessage(Messages.getString("ChefLog.Dialog.UnableToSaveStopLineInLoggingTable.Message")+Const.CR+je.toString());    //$NON-NLS-1$
+            m.open();
+        }
+        finally
+        {
+            job=null;
+            wStart.setText(START_TEXT);
+        }
+    }
+
+    public void readLog()
 	{
 		if (message==null)  message = new StringBuffer(); else message.setLength(0);				
 		try		
@@ -484,23 +494,29 @@ public class ChefLog extends Composite
         {
             JobTracker jobTracker = job.getJobTracker();
             
-            // Allow some flickering for now ;-)
-            wTree.removeAll();
+            int nrItems = jobTracker.getTotalNumberOfItems();
             
-            // Re-populate this...
-            TreeItem treeItem = new TreeItem(wTree, SWT.NONE);
-            String jobName = jobTracker.getJobMeta().getName();
-            if(Const.isEmpty(jobName)) 
+            if (nrItems!=previousNrItems)
             {
-                if (!Const.isEmpty(jobTracker.getJobMeta().getFilename())) jobName = jobTracker.getJobMeta().getFilename();
-                else jobName = Messages.getString("ChefLog.Tree.StringToDisplayWhenJobHasNoName"); //$NON-NLS-1$
+                // Allow some flickering for now ;-)
+                wTree.removeAll();
+                
+                // Re-populate this...
+                TreeItem treeItem = new TreeItem(wTree, SWT.NONE);
+                String jobName = jobTracker.getJobMeta().getName();
+                if(Const.isEmpty(jobName)) 
+                {
+                    if (!Const.isEmpty(jobTracker.getJobMeta().getFilename())) jobName = jobTracker.getJobMeta().getFilename();
+                    else jobName = Messages.getString("ChefLog.Tree.StringToDisplayWhenJobHasNoName"); //$NON-NLS-1$
+                }
+                treeItem.setText( 0,jobName);
+                for (int i=0;i<jobTracker.nrJobTrackers();i++)
+                {
+                    addTrackerToTree(jobTracker.getJobTracker(i), treeItem);
+                }
+                treeItem.setExpanded(true);
+                previousNrItems = nrItems;
             }
-            treeItem.setText( 0,jobName);
-            for (int i=0;i<jobTracker.nrJobTrackers();i++)
-            {
-                addTrackerToTree(jobTracker.getJobTracker(i), treeItem);
-            }
-            treeItem.setExpanded(true);
         }
     }
 
@@ -568,9 +584,9 @@ public class ChefLog extends Composite
         }
     }
 
-    private void refreshView()
+    private synchronized void refreshView()
 	{
-		if (job!=null && !job.isActive())
+		if (isRunning && job!=null && job.isInitialized() && !job.isActive())
         {
             /*
             System.out.println("What's in LOCAL variables?");
@@ -588,7 +604,9 @@ public class ChefLog extends Composite
             
             // OK, the job has finished, remove the variables...
             //
-            LocalVariables.getInstance().removeKettleVariables(job.getThreadName());
+            //System.out.println("Remove variables for thread ["+job.getName()+"]");
+            
+            LocalVariables.getInstance().removeKettleVariables(job.getName());
 
             /*
             System.out.println("Finished, what's left on the variables?");
@@ -604,6 +622,7 @@ public class ChefLog extends Composite
             */
             
             job=null;
+            isRunning=false;
             log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.JobHasEnded")); //$NON-NLS-1$
         }
 		
