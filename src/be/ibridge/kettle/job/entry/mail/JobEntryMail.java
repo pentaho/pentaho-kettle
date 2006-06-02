@@ -30,9 +30,11 @@ import java.util.zip.ZipOutputStream;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.mail.Address;
+import javax.mail.Authenticator;
 import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
 import javax.mail.SendFailedException;
 import javax.mail.Session;
 import javax.mail.Transport;
@@ -75,19 +77,23 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 {
 	private String server;
 	private String destination;
-	private String replyto;
+	private String replyAddress;
 	private String subject;
-	private boolean include_date;
-	private String contact_person;
-	private String contact_phone;
+	private boolean includeDate;
+	private String contactPerson;
+	private String contactPhone;
 	private String comment;
 	
-	private boolean includeFiles;
+	private boolean includingFiles;
 	private int fileType[];
 	
 	private boolean zipFiles;
 	private String zipFilename;
 
+    private boolean usingAuthentication;
+    private String authenticationUser;
+    private String authenticationPassword;
+    
 	public JobEntryMail(String n)
 	{
 		super(n, "");
@@ -115,16 +121,20 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 
         retval.append("      ").append(XMLHandler.addTagValue("server", server));
         retval.append("      ").append(XMLHandler.addTagValue("destination", destination));
-        retval.append("      ").append(XMLHandler.addTagValue("replyto", replyto));
+        retval.append("      ").append(XMLHandler.addTagValue("replyto", replyAddress));
         retval.append("      ").append(XMLHandler.addTagValue("subject", subject));
-        retval.append("      ").append(XMLHandler.addTagValue("include_date", include_date));
-        retval.append("      ").append(XMLHandler.addTagValue("contact_person", contact_person));
-        retval.append("      ").append(XMLHandler.addTagValue("contact_phone", contact_phone));
+        retval.append("      ").append(XMLHandler.addTagValue("include_date", includeDate));
+        retval.append("      ").append(XMLHandler.addTagValue("contact_person", contactPerson));
+        retval.append("      ").append(XMLHandler.addTagValue("contact_phone", contactPhone));
         retval.append("      ").append(XMLHandler.addTagValue("comment", comment));
-        retval.append("      ").append(XMLHandler.addTagValue("include_files", includeFiles));
+        retval.append("      ").append(XMLHandler.addTagValue("include_files", includingFiles));
         retval.append("      ").append(XMLHandler.addTagValue("zip_files", zipFiles));
         retval.append("      ").append(XMLHandler.addTagValue("zip_name", zipFilename));
-        
+
+        retval.append("      ").append(XMLHandler.addTagValue("use_auth", usingAuthentication));
+        retval.append("      ").append(XMLHandler.addTagValue("auth_user", authenticationUser));
+        retval.append("      ").append(XMLHandler.addTagValue("auth_password", authenticationPassword));
+
         retval.append("      <filetypes>");
         if (fileType!=null)
         for (int i=0;i<fileType.length;i++)
@@ -154,8 +164,12 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			setContactPerson( XMLHandler.getTagValue(entrynode, "concact_person") );
 			setContactPhone ( XMLHandler.getTagValue(entrynode, "concact_phone") );
 			setComment      ( XMLHandler.getTagValue(entrynode, "comment") );
-			setIncludeFiles ( "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_files")) );
-			
+			setIncludingFiles ( "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "include_files")) );
+
+            setUsingAuthentication( "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "use_auth")) );
+            setAuthenticationUser( XMLHandler.getTagValue(entrynode, "auth_user") );
+            setAuthenticationPassword( XMLHandler.getTagValue(entrynode, "auth_password") );
+            
 			Node ftsnode = XMLHandler.getSubNode(entrynode, "filetypes");
 			int nrTypes = XMLHandler.countNodes(ftsnode, "filetype");
 			allocate(nrTypes);
@@ -186,14 +200,18 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			//
 			server          = rep.getJobEntryAttributeString (id_jobentry, "server");
 			destination     = rep.getJobEntryAttributeString (id_jobentry, "destination");
-			replyto         = rep.getJobEntryAttributeString (id_jobentry, "replyto");
+			replyAddress         = rep.getJobEntryAttributeString (id_jobentry, "replyto");
 			subject         = rep.getJobEntryAttributeString (id_jobentry, "subject");
-			include_date    = rep.getJobEntryAttributeBoolean(id_jobentry, "include_date");
-			contact_person  = rep.getJobEntryAttributeString (id_jobentry, "contact_person");
-			contact_phone   = rep.getJobEntryAttributeString (id_jobentry, "contact_phone");
+			includeDate    = rep.getJobEntryAttributeBoolean(id_jobentry, "include_date");
+			contactPerson  = rep.getJobEntryAttributeString (id_jobentry, "contact_person");
+			contactPhone   = rep.getJobEntryAttributeString (id_jobentry, "contact_phone");
 			comment         = rep.getJobEntryAttributeString (id_jobentry, "comment");
-			includeFiles    = rep.getJobEntryAttributeBoolean(id_jobentry, "include_files");
+			includingFiles    = rep.getJobEntryAttributeBoolean(id_jobentry, "include_files");
 			
+            usingAuthentication = rep.getJobEntryAttributeBoolean(id_jobentry, "use_auth");
+            authenticationUser = rep.getJobEntryAttributeString(id_jobentry, "auth_user");
+            authenticationPassword = rep.getJobEntryAttributeString(id_jobentry, "auth_password");
+            
 			int nrTypes = rep.countNrJobEntryAttributes(id_jobentry, "file_type");
 			allocate(nrTypes);
 			
@@ -222,13 +240,16 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			
 			rep.saveJobEntryAttribute(id_job, getID(), "server", server);
 			rep.saveJobEntryAttribute(id_job, getID(), "destination", destination);
-			rep.saveJobEntryAttribute(id_job, getID(), "replyto", replyto);
+			rep.saveJobEntryAttribute(id_job, getID(), "replyto", replyAddress);
 			rep.saveJobEntryAttribute(id_job, getID(), "subject", subject);
-			rep.saveJobEntryAttribute(id_job, getID(), "include_date", include_date);
-			rep.saveJobEntryAttribute(id_job, getID(), "contact_person", contact_person);
-			rep.saveJobEntryAttribute(id_job, getID(), "contact_phone", contact_phone);
+			rep.saveJobEntryAttribute(id_job, getID(), "include_date", includeDate);
+			rep.saveJobEntryAttribute(id_job, getID(), "contact_person", contactPerson);
+			rep.saveJobEntryAttribute(id_job, getID(), "contact_phone", contactPhone);
 			rep.saveJobEntryAttribute(id_job, getID(), "comment", comment);
-			rep.saveJobEntryAttribute(id_job, getID(), "include_files", includeFiles);
+			rep.saveJobEntryAttribute(id_job, getID(), "include_files", includingFiles);
+            rep.saveJobEntryAttribute(id_job, getID(), "use_auth", usingAuthentication);
+            rep.saveJobEntryAttribute(id_job, getID(), "auth_user", authenticationUser);
+            rep.saveJobEntryAttribute(id_job, getID(), "auth_password", authenticationPassword);
 			
 			if (fileType!=null)
 			{
@@ -271,12 +292,12 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 
 	public void setReplyAddress(String reply)
 	{
-		replyto=reply;
+		replyAddress=reply;
 	}
 	
 	public String getReplyAddress()
 	{
-		return replyto;
+		return replyAddress;
 	}
 
 	public void setSubject(String subj)
@@ -291,32 +312,32 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 
 	public void setIncludeDate(boolean incl)
 	{
-		include_date=incl;
+		includeDate=incl;
 	}
 	
 	public boolean getIncludeDate()
 	{
-		return include_date;
+		return includeDate;
 	}
 
 	public void setContactPerson(String person)
 	{
-		contact_person=person;
+		contactPerson=person;
 	}
 	
 	public String getContactPerson()
 	{
-		return contact_person;
+		return contactPerson;
 	}
 
 	public void setContactPhone(String phone)
 	{
-		contact_phone=phone;
+		contactPhone=phone;
 	}
 	
 	public String getContactPhone()
 	{
-		return contact_phone;
+		return contactPhone;
 	}
 
 	public void setComment(String comm)
@@ -328,6 +349,112 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 	{
 		return comment;
 	}	
+    
+    /**
+     * @return the result file types to select for attachement </b>
+     * @see ResultFile
+     */
+    public int[] getFileType()
+    {
+        return fileType;
+    }
+
+    /**
+     * @param fileType the result file types to select for attachement
+     * @see ResultFile
+     */
+    public void setFileType(int[] fileType)
+    {
+        this.fileType = fileType;
+    }
+
+    public boolean isIncludingFiles() {
+        return includingFiles;
+    }
+
+    public void setIncludingFiles(boolean includeFiles) {
+        this.includingFiles = includeFiles;
+    }
+    
+    /**
+     * @return Returns the zipFilename.
+     */
+    public String getZipFilename()
+    {
+        return zipFilename;
+    }
+
+    /**
+     * @param zipFilename The zipFilename to set.
+     */
+    public void setZipFilename(String zipFilename)
+    {
+        this.zipFilename = zipFilename;
+    }
+
+    /**
+     * @return Returns the zipFiles.
+     */
+    public boolean isZipFiles()
+    {
+        return zipFiles;
+    }
+
+    /**
+     * @param zipFiles The zipFiles to set.
+     */
+    public void setZipFiles(boolean zipFiles)
+    {
+        this.zipFiles = zipFiles;
+    }
+
+    /**
+     * @return Returns the authenticationPassword.
+     */
+    public String getAuthenticationPassword()
+    {
+        return authenticationPassword;
+    }
+
+    /**
+     * @param authenticationPassword The authenticationPassword to set.
+     */
+    public void setAuthenticationPassword(String authenticationPassword)
+    {
+        this.authenticationPassword = authenticationPassword;
+    }
+
+    /**
+     * @return Returns the authenticationUser.
+     */
+    public String getAuthenticationUser()
+    {
+        return authenticationUser;
+    }
+
+    /**
+     * @param authenticationUser The authenticationUser to set.
+     */
+    public void setAuthenticationUser(String authenticationUser)
+    {
+        this.authenticationUser = authenticationUser;
+    }
+
+    /**
+     * @return Returns the usingAuthentication.
+     */
+    public boolean isUsingAuthentication()
+    {
+        return usingAuthentication;
+    }
+
+    /**
+     * @param usingAuthentication The usingAuthentication to set.
+     */
+    public void setUsingAuthentication(boolean usingAuthentication)
+    {
+        this.usingAuthentication = usingAuthentication;
+    }
 	
 	public Result execute(Result result, int nr, Repository rep, Job parentJob)
 	{
@@ -342,15 +469,28 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		boolean debug = log.getLogLevel()>=LogWriter.LOG_LEVEL_DEBUG;
 		
 		if (debug) props.put("mail.debug", "true");
+        
+        Authenticator authenticator = null;
+        
+        if (usingAuthentication)
+        {
+            authenticator = new Authenticator()
+            {
+                protected PasswordAuthentication getPasswordAuthentication()
+                {
+                    return new PasswordAuthentication(Const.NVL(authenticationUser, ""), Const.NVL(authenticationPassword, ""));
+                }
+            };
+        }
 
-		Session session = Session.getInstance(props, null);
+		Session session = Session.getInstance(props, authenticator);
 		session.setDebug(debug);
 		
 		try 
 		{
 			// create a message
 		    Message msg = new MimeMessage(session);
-		    msg.setFrom(new InternetAddress(replyto));
+		    msg.setFrom(new InternetAddress(replyAddress));
             
             // Split the mail-address: space separated
             String destinations[] = destination.split(" ");
@@ -374,7 +514,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 	        messageText.append("JobEntry   : ").append(getName()).append(Const.CR);
 	        messageText.append(Const.CR);
 
-		    if (include_date) 
+		    if (includeDate) 
 		    {
 		        Value date = new Value("date", new Date());
 		        messageText.append("Message date: ").append(date.toString()).append(Const.CR).append(Const.CR);
@@ -395,12 +535,12 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			    messageText.append(Const.CR);
 		    }
 
-		    if (!Const.isEmpty(contact_person) || !Const.isEmpty(contact_phone) )
+		    if (!Const.isEmpty(contactPerson) || !Const.isEmpty(contactPhone) )
 		    {
 		        messageText.append("Contact information :").append(Const.CR);
 		        messageText.append("---------------------").append(Const.CR);
-		        messageText.append("Person to contact : ").append(contact_person).append(Const.CR);
-		        messageText.append("Telephone number  : ").append(contact_phone).append(Const.CR);
+		        messageText.append("Person to contact : ").append(contactPerson).append(Const.CR);
+		        messageText.append("Telephone number  : ").append(contactPhone).append(Const.CR);
 			    messageText.append(Const.CR);
 		    }
 		    
@@ -419,7 +559,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 														// 1st part
 			part1.setText(messageText.toString());
 			parts.addBodyPart(part1);
-			if (includeFiles && result != null)
+			if (includingFiles && result != null)
 		    {
 				List resultFiles = result.getResultFiles();
 				if (resultFiles!=null && resultFiles.size() > 0) 
@@ -646,67 +786,11 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 	{
 		return true;
 	}
-
-	public boolean isIncludeFiles() {
-		return includeFiles;
-	}
-
-	public void setIncludeFiles(boolean includeFiles) {
-		this.includeFiles = includeFiles;
-	}
     
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
         return new JobEntryMailDialog(shell,this);
     }
 
-    /**
-     * @return the result file types to select for attachement </b>
-     * @see ResultFile
-     */
-	public int[] getFileType()
-	{
-		return fileType;
-	}
 
-	/**
-	 * @param fileType the result file types to select for attachement
-	 * @see ResultFile
-	 */
-	public void setFileType(int[] fileType)
-	{
-		this.fileType = fileType;
-	}
-
-	/**
-	 * @return Returns the zipFilename.
-	 */
-	public String getZipFilename()
-	{
-		return zipFilename;
-	}
-
-	/**
-	 * @param zipFilename The zipFilename to set.
-	 */
-	public void setZipFilename(String zipFilename)
-	{
-		this.zipFilename = zipFilename;
-	}
-
-	/**
-	 * @return Returns the zipFiles.
-	 */
-	public boolean isZipFiles()
-	{
-		return zipFiles;
-	}
-
-	/**
-	 * @param zipFiles The zipFiles to set.
-	 */
-	public void setZipFiles(boolean zipFiles)
-	{
-		this.zipFiles = zipFiles;
-	}
 
 }
