@@ -849,22 +849,22 @@ public class Database
 			 * ;
 			 */
 			 
-			String sql="INSERT INTO "+table+"( ";
+			String sql="INSERT INTO "+databaseMeta.quoteField(table)+"( ";
 			
-			if (!autoinc) sql+=keyfield+", "; // NO AUTOINCREMENT
+			if (!autoinc) sql+=databaseMeta.quoteField(keyfield)+", "; // NO AUTOINCREMENT
 			else
 			if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_INFORMIX) sql+="0, "; // placeholder on informix!
 			
-			sql+=versionfield+", "+datefrom+", "+dateto;
+			sql+=databaseMeta.quoteField(versionfield)+", "+databaseMeta.quoteField(datefrom)+", "+databaseMeta.quoteField(dateto);
 
 			for (i=0;i<keylookup.length;i++)
 			{
-				sql+=", "+keylookup[i];
+				sql+=", "+databaseMeta.quoteField(keylookup[i]);
 			}
 			
 			for (i=0;i<fieldlookup.length;i++)
 			{
-				sql+=", "+fieldlookup[i];
+				sql+=", "+databaseMeta.quoteField(fieldlookup[i]);
 			}
 			sql+=") VALUES(";
 			
@@ -873,13 +873,11 @@ public class Database
 
 			for (i=0;i<keynrs.length;i++)
 			{
-				
 				sql+=", ?";
 			}
 			
 			for (i=0;i<fieldnrs.length;i++)
 			{
-				
 				sql+=", ?";
 			}
 			sql+=" )";
@@ -911,14 +909,14 @@ public class Database
 			* ;
 			*/
 
-			String sql_upd="UPDATE "+table+Const.CR+"SET "+dateto+" = ?"+Const.CR;
+			String sql_upd="UPDATE "+databaseMeta.quoteField(table)+Const.CR+"SET "+databaseMeta.quoteField(dateto)+" = ?"+Const.CR;
 			sql_upd+="WHERE ";
 			for (i=0;i<keylookup.length;i++)
 			{
 				if (i>0) sql_upd+="AND   ";
-				sql_upd+=keylookup[i]+" = ?"+Const.CR;
+				sql_upd+=databaseMeta.quoteField(keylookup[i])+" = ?"+Const.CR;
 			}
-			sql_upd+="AND   "+versionfield+" = ? ";
+			sql_upd+="AND   "+databaseMeta.quoteField(versionfield)+" = ? ";
 
 			try
 			{
@@ -2150,14 +2148,14 @@ public class Database
 		for (int i=0;i<idx_fields.length;i++)
 		{
 			if (i>0) cr_index+=", "; else cr_index+="  ";
-			cr_index += idx_fields[i]+Const.CR;
+			cr_index += databaseMeta.quoteField(idx_fields[i])+Const.CR;
 		}
 		cr_index+=")"+Const.CR;
 		
 		if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE &&
 			databaseMeta.getIndexTablespace()!=null && databaseMeta.getIndexTablespace().length()>0)
 		{
-			cr_index+="TABLESPACE "+databaseMeta.getIndexTablespace();
+			cr_index+="TABLESPACE "+databaseMeta.quoteField(databaseMeta.getIndexTablespace());
 		}
 		
 		if (semi_colon)
@@ -2870,7 +2868,7 @@ public class Database
 		 * ;
 		 * 
 		 */
-		sql = "SELECT "+tk+", "+version;
+		sql = "SELECT "+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version);
 		
 		if (extra!=null)
 		{
@@ -2878,12 +2876,12 @@ public class Database
 			{
 				if (extra[i]!=null && extra[i].length()!=0)
                 {
-					sql+=", "+extra[i];
+					sql+=", "+databaseMeta.quoteField(extra[i]);
                     if (extraRename[i]!=null && 
                         extraRename[i].length()>0 && 
                         !extra[i].equals(extraRename[i]))
                     {
-                        sql+=" AS "+extraRename[i];
+                        sql+=" AS "+databaseMeta.quoteField(extraRename[i]);
                     }
                 }
                 
@@ -2891,15 +2889,15 @@ public class Database
             
 		}
 		
-		sql+= " FROM "+table+" WHERE ";
+		sql+= " FROM "+databaseMeta.quoteField(table)+" WHERE ";
 		
 		for (i=0;i<keys.length;i++)
 		{
 			if (i!=0) sql += " AND ";
-			sql += keys[i]+" = ? ";
+			sql += databaseMeta.quoteField(keys[i])+" = ? ";
 		}
 		
-		sql += " AND ? >= "+datefrom+" AND ? < "+dateto;
+		sql += " AND ? >= "+databaseMeta.quoteField(datefrom)+" AND ? < "+databaseMeta.quoteField(dateto);
 	
 		try
 		{
@@ -2952,12 +2950,14 @@ public class Database
 		 * ;
 		 * 
 		 */
-		sql.append("SELECT ").append(retval).append(Const.CR).append("FROM ").append(table).append(Const.CR).append("WHERE ");
+		sql.append("SELECT ").append(databaseMeta.quoteField(retval)).append(Const.CR);
+        sql.append("FROM ").append(databaseMeta.quoteField(table)).append(Const.CR);
+        sql.append("WHERE ");
 		comma=false;
 		
 		if (crc)
 		{
-			sql.append(crcfield).append(" = ? ").append(Const.CR);
+			sql.append(databaseMeta.quoteField(crcfield)).append(" = ? ").append(Const.CR);
 			comma=true;
 		}
 		else
@@ -2975,7 +2975,7 @@ public class Database
 			{ 
 				comma=true; 
 			}
-			sql.append(keys[i]).append(" = ? ) OR ( ").append(keys[i]).append(" IS NULL AND ? IS NULL ) )").append(Const.CR);
+			sql.append(databaseMeta.quoteField(keys[i])).append(" = ? ) OR ( ").append(databaseMeta.quoteField(keys[i])).append(" IS NULL AND ? IS NULL ) )").append(Const.CR);
 		}
 		
 		try
@@ -3283,7 +3283,7 @@ public class Database
 	{
 		int start_tk = databaseMeta.getNotFoundTK(use_autoinc);
 				
-		String sql = "SELECT count(*) FROM "+tablename+" WHERE "+tk+" = "+start_tk;
+		String sql = "SELECT count(*) FROM "+databaseMeta.quoteField(tablename)+" WHERE "+databaseMeta.quoteField(tk)+" = "+start_tk;
 		ResultSet rs = openQuery(sql, null);
 		Row r = getRow(rs); // One value: a number;
 		Value count = r.getValue(0);
@@ -3295,7 +3295,7 @@ public class Database
 				String isql;
 				if (!databaseMeta.supportsAutoinc() || !use_autoinc)
 				{
-					isql = isql = "insert into "+tablename+"("+tk+", "+version+") values (0, 1)";
+					isql = isql = "insert into "+databaseMeta.quoteField(tablename)+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (0, 1)";
 				}
 				else
 				{
@@ -3303,16 +3303,16 @@ public class Database
 					{
 					case DatabaseMeta.TYPE_DATABASE_CACHE       :
 					case DatabaseMeta.TYPE_DATABASE_GUPTA     :
-					case DatabaseMeta.TYPE_DATABASE_ORACLE      :  isql = "insert into "+tablename+"("+tk+", "+version+") values (0, 1)"; break; 
+					case DatabaseMeta.TYPE_DATABASE_ORACLE      :  isql = "insert into "+databaseMeta.quoteField(tablename)+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (0, 1)"; break; 
 					case DatabaseMeta.TYPE_DATABASE_INFORMIX    : 
-					case DatabaseMeta.TYPE_DATABASE_MYSQL       :  isql = "insert into "+tablename+"("+tk+", "+version+") values (1, 1)"; break;
+					case DatabaseMeta.TYPE_DATABASE_MYSQL       :  isql = "insert into "+databaseMeta.quoteField(tablename)+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (1, 1)"; break;
 					case DatabaseMeta.TYPE_DATABASE_MSSQL       :  
 					case DatabaseMeta.TYPE_DATABASE_DB2         : 
 					case DatabaseMeta.TYPE_DATABASE_DBASE       :  
 					case DatabaseMeta.TYPE_DATABASE_GENERIC     :  
 					case DatabaseMeta.TYPE_DATABASE_SYBASE      :
-					case DatabaseMeta.TYPE_DATABASE_ACCESS      :  isql = "insert into "+tablename+"("+version+") values (1)"; break;
-					default: isql = "insert into "+tablename+"("+tk+", "+version+") values (0, 1)"; break;
+					case DatabaseMeta.TYPE_DATABASE_ACCESS      :  isql = "insert into "+databaseMeta.quoteField(tablename)+"("+databaseMeta.quoteField(version)+") values (1)"; break;
+					default: isql = "insert into "+databaseMeta.quoteField(tablename)+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (0, 1)"; break;
 					}					
 				}
 				
@@ -3785,7 +3785,7 @@ public class Database
 	public synchronized void getNextValue(Hashtable counters, String table, Value val_key)
 		throws KettleDatabaseException
 	{
-		String lookup = table+"."+val_key.getName();
+		String lookup = databaseMeta.quoteField(table)+"."+databaseMeta.quoteField(val_key.getName());
 		
 		// Try to find the previous sequence value...
 		Counter counter = null;
@@ -3793,7 +3793,7 @@ public class Database
         
 		if (counter==null)
 		{
-			Row r = getOneRow("SELECT MAX("+val_key.getName()+") FROM "+table);
+			Row r = getOneRow("SELECT MAX("+databaseMeta.quoteField(val_key.getName())+") FROM "+databaseMeta.quoteField(table));
 			if (r!=null)
 			{
 				counter = new Counter(r.getValue(0).getInteger()+1, 1);
