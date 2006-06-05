@@ -174,7 +174,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		);
         
         wlSortDir=new Label(shell, SWT.RIGHT);
-        wlSortDir.setText(Messages.getString("GroupByDialog.SortDir.Label")); //$NON-NLS-1$
+        wlSortDir.setText(Messages.getString("GroupByDialog.TempDir.Label")); //$NON-NLS-1$
         props.setLook(wlSortDir);
         fdlSortDir=new FormData();
         fdlSortDir.left = new FormAttachment(0, 0);
