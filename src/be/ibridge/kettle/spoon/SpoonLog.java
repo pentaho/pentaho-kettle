@@ -55,6 +55,7 @@ import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.KettleVariables;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
@@ -137,6 +138,8 @@ public class SpoonLog extends Composite
 	private Trans trans;
 
 	private Spoon spoon;
+
+    protected boolean initialized;
 
 	public SpoonLog(Composite parent, int style, Spoon sp, LogWriter l, String fname)
 	{
@@ -314,6 +317,8 @@ public class SpoonLog extends Composite
                                 if (busy.toString().equals("N"))
                                 {
                                     busy.setCharAt(0, 'Y');
+                                    checkStartThreads();
+                                    checkTransEnded();
                                     checkErrors();
                                     readLog();
                                     refreshView();
@@ -375,6 +380,37 @@ public class SpoonLog extends Composite
 			}
 		});
 	}
+    
+    private void checkStartThreads()
+    {
+        if (initialized && !running && trans!=null)
+        {
+            startThreads();
+        }
+    }
+
+    private void checkTransEnded()
+    {
+        if (trans != null && trans.isFinished() && running)
+        {
+            log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.TransformationHasFinished")); //$NON-NLS-1$
+
+            running = false;
+            initialized=false;
+            
+            try
+            {
+                trans.endProcessing("end"); //$NON-NLS-1$
+                spoonHistoryRefresher.markRefreshNeeded();
+            }
+            catch (KettleException e)
+            {
+                new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+            
+            wStart.setText(START_TEXT);
+        }
+    }
 
 	public void startstop()
 	{
@@ -423,7 +459,7 @@ public class SpoonLog extends Composite
 		startstop(dateValidator.date);
 	}
 
-	public void startstop(Date replayDate)
+	public synchronized void startstop(Date replayDate)
 	{
 		if (!running) // Not running, start the transformation...
 		{
@@ -494,14 +530,15 @@ public class SpoonLog extends Composite
                         // That way Spoon doesn't block anymore and that way we can follow the progress of the initialisation
                         //
                         
+                        final Thread parentThread = Thread.currentThread();
+                        
                         log.logMinimal(Spoon.APP_NAME, "----> Async exec of prepare and run threads...");
                         display.asyncExec(
                                 new Runnable() 
                                 {
                                     public void run() 
-                                    { 
-                                        trans.prepareExecution(args); 
-                                        trans.startThreads(); 
+                                    {
+                                        prepareAndStartTrans(parentThread, args);
                                     }
                                 }
                             );
@@ -509,7 +546,6 @@ public class SpoonLog extends Composite
                         
 						
 						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
-						running = !running;
 						wStart.setText(STOP_TEXT);
 						readLog();
 					}
@@ -560,7 +596,8 @@ public class SpoonLog extends Composite
 				new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			wStart.setText(START_TEXT);
-			running = !running;
+            running = false;
+            initialized = false;
 			if (preview)
 			{
 				preview = false;
@@ -569,7 +606,27 @@ public class SpoonLog extends Composite
 		}
 	}
 
-	private void getVariables(TransMeta transMeta)
+	private synchronized void prepareAndStartTrans(final Thread parentThread, final String[] args)
+    {
+        Runnable runnable = new Runnable()
+        {
+            public void run()
+            {
+                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
+                initialized = trans.prepareExecution(args);
+            }
+        };
+        Thread thread = new Thread(runnable);
+        thread.start();
+    }
+    
+    private synchronized void startThreads()
+    {
+        running=true;
+        trans.startThreads();
+    }
+
+    private void getVariables(TransMeta transMeta)
     {
         Properties sp = new Properties();
         KettleVariables kettleVariables = KettleVariables.getInstance();
@@ -794,23 +851,6 @@ public class SpoonLog extends Composite
 			// System.out.println("preview is complete, show preview dialog!");
 			trans.stopAll();
 			showPreview();
-		}
-
-		if (trans != null && trans.isFinished() && running)
-		{
-			log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.TransformationHasFinished")); //$NON-NLS-1$
-
-			wStart.setText(START_TEXT);
-			running = false;
-			try
-			{
-				trans.endProcessing("end"); //$NON-NLS-1$
-				spoonHistoryRefresher.markRefreshNeeded();
-			}
-			catch (KettleException e)
-			{
-				new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-			}
 		}
 
 		refresh_busy = false;
