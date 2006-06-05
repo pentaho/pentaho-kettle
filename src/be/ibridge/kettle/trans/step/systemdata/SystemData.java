@@ -260,10 +260,13 @@ public class SystemData extends BaseStep implements StepInterface
 		
 		if (log.isRowLevel()) logRowlevel("System info returned: "+row);
 		
-		putRow(row);     // Just one row!
-		setOutputDone();
+		putRow(row);     
 					
-        if (!data.readsRows) return false;
+        if (!data.readsRows) // Just one row and then stop!
+        {
+            setOutputDone();
+            return false;
+        }
         
 		return true;
 	}
