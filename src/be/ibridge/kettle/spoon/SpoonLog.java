@@ -538,7 +538,7 @@ public class SpoonLog extends Composite
                                 {
                                     public void run() 
                                     {
-                                        prepareAndStartTrans(parentThread, args);
+                                        prepareTrans(parentThread, args);
                                     }
                                 }
                             );
@@ -606,7 +606,7 @@ public class SpoonLog extends Composite
 		}
 	}
 
-	private synchronized void prepareAndStartTrans(final Thread parentThread, final String[] args)
+	private synchronized void prepareTrans(final Thread parentThread, final String[] args)
     {
         Runnable runnable = new Runnable()
         {
@@ -618,6 +618,8 @@ public class SpoonLog extends Composite
         };
         Thread thread = new Thread(runnable);
         thread.start();
+        
+        refreshView();
     }
     
     private synchronized void startThreads()
