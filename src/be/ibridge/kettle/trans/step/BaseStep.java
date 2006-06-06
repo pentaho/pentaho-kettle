@@ -62,6 +62,7 @@ import be.ibridge.kettle.trans.step.filestoresult.FilesToResultMeta;
 import be.ibridge.kettle.trans.step.filterrows.FilterRowsMeta;
 import be.ibridge.kettle.trans.step.flattener.FlattenerMeta;
 import be.ibridge.kettle.trans.step.getfilenames.GetFileNamesMeta;
+import be.ibridge.kettle.trans.step.getvariable.GetVariableMeta;
 import be.ibridge.kettle.trans.step.groupby.GroupByMeta;
 import be.ibridge.kettle.trans.step.insertupdate.InsertUpdateMeta;
 import be.ibridge.kettle.trans.step.joinrows.JoinRowsMeta;
@@ -245,8 +246,11 @@ public class BaseStep extends Thread
                             Messages.getString("BaseStep.TypeLongDesc.ValueMapper"), Messages.getString("BaseStep.TypeTooltipDesc.MapValues"), 
                             "VMP.png", CATEGORY_TRANSFORM),
         new StepPluginMeta(SetVariableMeta.class, "SetVariable", 
-                            Messages.getString("BaseStep.TypeLongDesc.SetVariables"), Messages.getString("BaseStep.TypeTooltipDesc.SetVariables"), 
-                            "VAR.png", CATEGORY_EXTRA),
+                            Messages.getString("BaseStep.TypeLongDesc.SetVariable"), Messages.getString("BaseStep.TypeTooltipDesc.SetVariable"), 
+                            "SVA.png", CATEGORY_EXTRA),
+        new StepPluginMeta(GetVariableMeta.class, "GetVariable", 
+                            Messages.getString("BaseStep.TypeLongDesc.GetVariable"), Messages.getString("BaseStep.TypeTooltipDesc.GetVariable"), 
+                            "GVA.png", CATEGORY_EXTRA),
         new StepPluginMeta(GetFileNamesMeta.class, "GetFileNames", 
                             Messages.getString("BaseStep.TypeLongDesc.GetFileNames"), Messages.getString("BaseStep.TypeTooltipDesc.GetFileNames"), 
                             "GFN.png", CATEGORY_EXTRA),
@@ -256,7 +260,7 @@ public class BaseStep extends Thread
         new StepPluginMeta(FilesToResultMeta.class, "FilesToResult", 
                             Messages.getString("BaseStep.TypeLongDesc.FilesToResult"), Messages.getString("BaseStep.TypeTooltipDesc.FilesToResult"), 
                             "FTR.png", CATEGORY_EXTRA),
-                            
+
         //Blocking Step
         new StepPluginMeta(BlockingStepMeta.class, "BlockingStep", 
                 Messages.getString("BaseStep.TypeLongDesc.BlockingStep"), Messages.getString("BaseStep.TypeTooltipDesc.BlockingStep"), 
