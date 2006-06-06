@@ -900,7 +900,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 					int i;
 					DecimalFormat form;
 					
-					if (value.getNumber()>=0) fmt.append(" "); // to compensate for minus sign.
+					if (value.getNumber()>=0) fmt.append(' '); // to compensate for minus sign.
 	
 					if (value.getPrecision()<0)  // Default: two decimals
 					{
@@ -910,18 +910,18 @@ public class Value implements Cloneable, XMLInterface, Serializable
 						}
 						else                    //  format 0000001234,00 --> (10,-1)
 						{
-							for (i=0;i<value.getLength();i++) fmt.append("0");
+							for (i=0;i<value.getLength();i++) fmt.append('0');
 							fmt.append(".00"); // for the .00
 						}
 					}
 					else
 					if (value.getLength()==0) // No decimals 0000001234 --> (10,0)
 					{
-						for (i=0;i<value.getLength();i++) fmt.append("0"); // all zeroes.
+						for (i=0;i<value.getLength();i++) fmt.append('0'); // all zeroes.
 					}
 					else  // Floating point format   00001234,56  --> (12,2)
 					{
-							for (i=0;i<=value.getLength();i++) fmt.append("0"); // all zeroes.
+							for (i=0;i<=value.getLength();i++) fmt.append('0'); // all zeroes.
 							int pos = value.getLength()-value.getPrecision()+1-(value.getNumber()<0?1:0);
 							if (pos>=0 && pos <fmt.length())
 							{
