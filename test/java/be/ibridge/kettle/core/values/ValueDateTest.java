@@ -23,7 +23,6 @@ import java.util.Locale;
 
 import junit.framework.TestCase;
 import be.ibridge.kettle.core.value.Value;
-import be.ibridge.kettle.core.value.ValueBigNumber;
 import be.ibridge.kettle.core.value.ValueDate;
 
 /**

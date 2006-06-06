@@ -174,6 +174,22 @@ public class ValueTest extends TestCase
 	    assertEquals(Value.VALUE_TYPE_STRING, vs.getType());
 	    assertEquals("buffer", vs.getString());
 	}
+
+	/**
+	 * Constructors using Values
+	 */
+	public void testConstructor5()
+	{
+	    Value vs = new Value("Name", 10.0D);
+	    assertEquals(Value.VALUE_TYPE_NUMBER, vs.getType());
+	    assertEquals("Name", vs.getName());
+	    
+	    Value copy = new Value("newName", vs);
+	    assertEquals("newName", copy.getName());
+	    assertFalse(!vs.equals(copy));
+	    copy.setName("Name");
+	    assertTrue(vs.equals(copy));
+	}
 	
 	/**
 	 * Test of string representaion of Value.
@@ -581,7 +597,30 @@ public class ValueTest extends TestCase
 	    result = vs6.getXML();
 	    assertEquals("<name>Name</name><type>Date</type><text>2006/03/01 17:01:02.005</text><length>-1</length><precision>-1</precision><isnull>N</isnull>", result);	   	    		
 	}
-	
+
+	/**
+	 * Test of setValue()
+	 */
+	public void testSetValue()
+	{
+	    Value vs = new Value("Name",  Value.VALUE_TYPE_INTEGER);
+	    vs.setValue(100L);
+	    vs.setOrigin("origin");
+
+	    Value vs1 = new Value((Value)null);
+	    assertTrue(vs1.isNull());          
+	    assertTrue(vs1.isEmpty());             
+	    assertEquals(null, vs1.getName()); 
+	    assertNull(vs1.getOrigin());
+	    assertEquals(Value.VALUE_TYPE_NONE, vs1.getType());
+	    
+	    Value vs2 = new Value("newName", Value.VALUE_TYPE_INTEGER);
+	    vs2.setOrigin("origin1");
+	    vs2.setValue(vs);	    
+	    assertEquals("origin", vs2.getOrigin());
+	    assertEquals(vs.getInteger(), vs2.getInteger());	    
+	}
+		
 	/**
 	 * Stuff which we didn't get in other checks.
 	 */
