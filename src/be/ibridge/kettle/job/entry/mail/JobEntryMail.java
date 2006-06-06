@@ -55,6 +55,7 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobEntryResult;
@@ -465,7 +466,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		// Send an e-mail...
 		// create some properties and get the default Session
 		Properties props = new Properties();
-		props.put("mail.smtp.host", server);
+		props.put("mail.smtp.host", StringUtil.environmentSubstitute(server));
 		boolean debug = log.getLogLevel()>=LogWriter.LOG_LEVEL_DEBUG;
 		
 		if (debug) props.put("mail.debug", "true");
@@ -478,7 +479,10 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
             {
                 protected PasswordAuthentication getPasswordAuthentication()
                 {
-                    return new PasswordAuthentication(Const.NVL(authenticationUser, ""), Const.NVL(authenticationPassword, ""));
+                    return new PasswordAuthentication(
+                                StringUtil.environmentSubstitute(Const.NVL(authenticationUser, "")), 
+                                StringUtil.environmentSubstitute(Const.NVL(authenticationPassword, ""))
+                            );
                 }
             };
         }
@@ -490,21 +494,21 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		{
 			// create a message
 		    Message msg = new MimeMessage(session);
-		    msg.setFrom(new InternetAddress(replyAddress));
+		    msg.setFrom(new InternetAddress(StringUtil.environmentSubstitute(replyAddress)));
             
             // Split the mail-address: space separated
-            String destinations[] = destination.split(" ");
+            String destinations[] = StringUtil.environmentSubstitute(destination).split(" ");
 		    InternetAddress[] address = new InternetAddress[destinations.length];
             for (int i=0;i<destinations.length;i++) address[i] = new InternetAddress(destinations[i]);
             
 		    msg.setRecipients(Message.RecipientType.TO, address);
-		    msg.setSubject(subject);
+		    msg.setSubject(StringUtil.environmentSubstitute(subject));
 		    msg.setSentDate(new Date());
 		    StringBuffer messageText = new StringBuffer();
 
 		    if (comment!=null)
 		    {
-		        messageText.append(comment).append(Const.CR).append(Const.CR);
+		        messageText.append(StringUtil.environmentSubstitute(comment)).append(Const.CR).append(Const.CR);
 		    }
 
 	        messageText.append("Job:").append(Const.CR);
@@ -535,12 +539,12 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			    messageText.append(Const.CR);
 		    }
 
-		    if (!Const.isEmpty(contactPerson) || !Const.isEmpty(contactPhone) )
+		    if (!Const.isEmpty(StringUtil.environmentSubstitute(contactPerson)) || !Const.isEmpty(StringUtil.environmentSubstitute(contactPhone)) )
 		    {
 		        messageText.append("Contact information :").append(Const.CR);
 		        messageText.append("---------------------").append(Const.CR);
-		        messageText.append("Person to contact : ").append(contactPerson).append(Const.CR);
-		        messageText.append("Telephone number  : ").append(contactPhone).append(Const.CR);
+		        messageText.append("Person to contact : ").append(StringUtil.environmentSubstitute(contactPerson)).append(Const.CR);
+		        messageText.append("Telephone number  : ").append(StringUtil.environmentSubstitute(contactPhone)).append(Const.CR);
 			    messageText.append(Const.CR);
 		    }
 		    
@@ -589,7 +593,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 					else
 					{
 						// create a single ZIP archive of all files
-						masterZipfile = new File(System.getProperty("java.io.tmpdir")+Const.FILE_SEPARATOR+zipFilename);
+						masterZipfile = new File(System.getProperty("java.io.tmpdir")+Const.FILE_SEPARATOR+StringUtil.environmentSubstitute(zipFilename));
 						ZipOutputStream zipOutputStream = null;
 						try
 						{
