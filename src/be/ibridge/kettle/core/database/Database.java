@@ -1660,7 +1660,10 @@ public class Database
 			{
 				if (to>=length-1) to++; // grab last char also!
 				
-				String stat = all.substring(from, to);
+				String stat;
+                if (to<=length) stat = all.substring(from, to);
+                else stat = all.substring(from);
+                
 				if (!Const.onlySpaces(stat))
 				{
 					String sql=Const.trim(stat);
