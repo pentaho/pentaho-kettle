@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import be.ibridge.kettle.core.Const;
 
@@ -36,7 +37,7 @@ public class ValueString implements ValueInterface, Cloneable
 {
 	private String string;
 	private int length;
-	private static SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+	private static SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS", Locale.US);
 
 	public ValueString()
 	{

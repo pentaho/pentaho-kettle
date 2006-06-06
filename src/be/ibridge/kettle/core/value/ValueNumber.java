@@ -61,7 +61,7 @@ public class ValueNumber implements ValueInterface, Cloneable
 
 	public String getString()
 	{
-		return ""+this.number;
+		return Double.toString(this.number);
 	}
 
     public void setSerializable(Serializable ser) {
@@ -113,8 +113,6 @@ public class ValueNumber implements ValueInterface, Cloneable
 		this.number = (double)number;
 	}
 
-	
-	
 	public int getLength()
 	{
 		return length;

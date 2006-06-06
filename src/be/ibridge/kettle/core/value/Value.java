@@ -31,6 +31,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import org.w3c.dom.Node;
 
@@ -308,10 +309,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		{
 			setType( v.getType() );
 			value = v.getValueCopy();
-			if (v.getName()!=null) setName(new String(v.getName())); else name=null;
+			setName(v.getName());
 			setLength(v.getLength(), v.getPrecision());
 			setNull(v.isNull());
-			if (v.origin!=null) setOrigin(new String(v.origin)); else origin=null;
+			setOrigin(v.origin);
 		}
 		else
 		{
@@ -332,8 +333,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			retval=null;
 		}
 		return retval;
-	}
-			
+	}			
 
 	/**
 	 * Build a copy of this Value
@@ -518,7 +518,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		{
 			value = v.getValueCopy();
 			setNull(v.isNull());
-			if (v.origin!=null) setOrigin(new String(v.origin)); else origin=null;
+			setOrigin(v.origin);
 		}
 		else
 		{
@@ -780,43 +780,50 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		
 		return retval;
 	}
-
+	
 	/**
-	 * Returns a String describing the meta-data (type & length description) of this Value. 
-	 * @return a String describing the meta-data (type & length description) of this Value.
+	 * a String text representation of this Value, optionally padded to the specified length
+	 * @param pad true if you want to pad the resulting String
+	 * @return a String text representation of this Value, optionally padded to the specified length
 	 */
 	public String toStringMeta()
 	{
-		String retval=getTypeDesc();
+		// We (Sven Boden) did explicit performance testing for this
+		// part. The original version used Strings instead of StringBuffers,
+		// performance between the 2 does not differ that much. A few milliseconds
+		// on 100000 iterations in the advantage of StringBuffers. The
+		// lessened creation of objects may be worth it in the long run.
+		StringBuffer retval=new StringBuffer(getTypeDesc());
 		
 		switch(getType())
 		{
 		case VALUE_TYPE_STRING :  
-			if (getLength()>0) retval+="("+getLength()+")";  
+			if (getLength()>0) retval.append('(').append(getLength()).append(')');  
 			break;
 		case VALUE_TYPE_NUMBER :
         case VALUE_TYPE_BIGNUMBER :
 			if (getLength()>0)
 			{
-				retval+="("+getLength();
+				retval.append('(').append(getLength());
 				if (getPrecision()>0)
 				{
-					retval+=", "+getPrecision();
+					retval.append(", ").append(getPrecision());
 				}
-				retval+=")";
+				retval.append(')');
 			}
 			break;
 		case VALUE_TYPE_INTEGER:  
 			if (getLength()>0)
 			{
-				retval+="("+getLength()+")";
+				retval.append('(').append(getLength()).append(')');
 			}
 			break;
 		default: break; 
 		}
 		
-		return retval;
+		return retval.toString();
 	}
+	
 	
 	/**
 	 * Converts a String Value to String optionally padded to the specified length.
@@ -944,16 +951,17 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		String retval;
 		if (value==null) return null;
 
-		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS", Locale.US);
 		
-		if (getLength()<=0)
+		if (isNull() || value.getDate()==null) retval=Const.NULL_DATE;
+		else          
 		{
-			if (isNull() || value.getDate()==null) retval=Const.NULL_DATE;
-			else          
-			{
-				retval=df.format(value.getDate()).toString();
-			} 
-		}
+			retval=df.format(value.getDate()).toString();
+		} 
+
+		/*
+		   This code was removed as TYPE_VALUE_DATE does not know "length", so this
+		   could never be called anyway		  
 		else
 		{
 			StringBuffer ret;
@@ -963,16 +971,21 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			Const.rightPad(ret, getLength()<=10?10:getLength());
 			retval=ret.toString();
 		}
+		*/
 		return retval;
 	} 
 	
 	/**
 	 * Returns a String representing the boolean value.
-	 * If the length is 1: it will be "Y" & "N", otherwise "true" & "false" 
+	 * It will be either "true" or "false".
+	 *  
 	 * @return a String representing the boolean value.
 	 */
 	private String toStringBoolean()
 	{
+		// Code was removed from this method as ValueBoolean
+		// did not store length, so some parts could never be
+		// called.
 		String retval;
 		if (value==null) return null;
 
@@ -982,21 +995,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		} 
 		else
 		{
-			if (getLength()==1)
-			{
-				retval=value.getBoolean()?"Y":"N";
-			}
-			else
-			{
-				retval=value.getBoolean()?"true":"false";
-			}
-		}
-		
-		if (getLength()>=0)
-		{
-			StringBuffer ret=new StringBuffer(retval);
-			Const.rightPad(ret, getLength());
-			retval=ret.toString();
+			retval=value.getBoolean()?"true":"false";
 		}
 		
 		return retval;
@@ -1163,7 +1162,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	/**
 	 * Convert the String description of a type to an integer type.
 	 * @param desc The description of the type to convert
-	 * @return The integer type of the given String.  (Value.TYPE_VALUE_...)
+	 * @return The integer type of the given String.  (Value.VALUE_TYPE_...)
 	 */
 	public static final int getType(String desc)
 	{
@@ -1201,10 +1200,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	public static final String[] getAllTypes()
 	{
 		String retval[] = new String[valueTypeCode.length];
-		for (int i=0;i<valueTypeCode.length;i++)
-		{
-			retval[i]=valueTypeCode[i];
-		}
+		System.arraycopy(valueTypeCode, 0, retval, 0, valueTypeCode.length);
 		return retval;
 	}
 
@@ -2398,7 +2394,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	}
 
 	/**
-	 * Rounds of to the nearest integer.<p>  
+	 * Rounds off to the nearest integer.<p>  
 	 * See also: java.lang.Math.round()
 	 * 
 	 * @return The rounded Number value.
@@ -2517,8 +2513,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			{
 				s = new StringBuffer(toString());
 			}
-			
-			// Rigth trim
+
+			// Right trim
 			while (s.length()>0 && s.charAt(s.length()-1)==' ') s.deleteCharAt(s.length()-1);
 			
 			setValue(s);
@@ -3080,20 +3076,6 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 		return this;
 	}
-
-		
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	// implement the ADD_MONTHS function, one argument
 	public Value add_months(int months) throws KettleValueException
@@ -3128,7 +3110,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		return this;
 	}
     
-    /** Add a number of days to a Date value
+    /** 
+     * Add a number of days to a Date value.
      * 
      * @param days The number of days to add to the current date value
      * @return The resulting value
@@ -3306,7 +3289,6 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		setName(name); 
 		setValue(value);
 	}
-	
 
 	/**
 	 * Produce the XML representation of this value.
@@ -3314,16 +3296,16 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public String getXML()
 	{
-		String retval="";
+		StringBuffer retval = new StringBuffer(128);
 		
-		retval+=XMLHandler.addTagValue("name", getName(), false);
-		retval+=XMLHandler.addTagValue("type", getTypeDesc(), false);
-		retval+=XMLHandler.addTagValue("text", toString(false), false);
-		retval+=XMLHandler.addTagValue("length", getLength(), false);
-		retval+=XMLHandler.addTagValue("precision", getPrecision(), false);
-		retval+=XMLHandler.addTagValue("isnull", isNull(), false);
+		retval.append(XMLHandler.addTagValue("name", getName(), false));
+		retval.append(XMLHandler.addTagValue("type", getTypeDesc(), false));
+		retval.append(XMLHandler.addTagValue("text", toString(false), false));
+		retval.append(XMLHandler.addTagValue("length", getLength(), false));
+		retval.append(XMLHandler.addTagValue("precision", getPrecision(), false));
+		retval.append(XMLHandler.addTagValue("isnull", isNull(), false));
 
-		return retval;
+		return retval.toString();
 	}
 	
 	/**
@@ -3413,6 +3395,4 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			throw new KettleException("Unable to load Value from repository with id_value="+id_value, dbe);
 		}
 	}
-
-
 }

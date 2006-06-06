@@ -58,7 +58,7 @@ public class ValueInteger implements ValueInterface, Cloneable
 
 	public String getString()
 	{
-		return ""+this.number;
+		return Long.toString(number);
 	}
 
 	public double getNumber()
