@@ -33,6 +33,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.logging.Log4jFileAppender;
 import be.ibridge.kettle.core.util.EnvUtil;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -379,16 +380,16 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             
             if( Const.getOS().equals( "Windows 95" ) )
             {
-                base = new String[] { "command.com", "/C", getFileName() };
+                base = new String[] { "command.com", "/C", StringUtil.environmentSubstitute(getFileName()) };
             }
             else
             if( Const.getOS().startsWith( "Windows" ) )
             {
-                base = new String[] { "cmd.exe", "/C", getFileName() };
+                base = new String[] { "cmd.exe", "/C", StringUtil.environmentSubstitute(getFileName()) };
             }
             else 
             {
-                base = new String[] { getFileName() };
+                base = new String[] { StringUtil.environmentSubstitute(getFileName()) };
             }
     
             // Construct the arguments...
@@ -463,23 +464,23 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             result.setExitStatus( proc.exitValue() );
             if (result.getExitStatus()!=0) 
             {
-                log.logDetailed(toString(), "Exit status of shell ["+getFileName()+"] was "+result.getExitStatus());
+                log.logDetailed(toString(), "Exit status of shell ["+StringUtil.environmentSubstitute(getFileName())+"] was "+result.getExitStatus());
                 result.setNrErrors(1);
             } 
         }
         catch(IOException ioe)
         {
-            log.logError(toString(), "Error running shell ["+getFileName()+"] : "+ioe.toString());
+            log.logError(toString(), "Error running shell ["+StringUtil.environmentSubstitute(getFileName())+"] : "+ioe.toString());
             result.setNrErrors(1);
         }
         catch(InterruptedException ie)
         {
-            log.logError(toString(), "Shell ["+getFileName()+"] was interupted : "+ie.toString());
+            log.logError(toString(), "Shell ["+StringUtil.environmentSubstitute(getFileName())+"] was interupted : "+ie.toString());
             result.setNrErrors(1);
         }
         catch(Exception e)
         {
-            log.logError(toString(), "Unexpected error running shell ["+getFileName()+"] : "+e.toString());
+            log.logError(toString(), "Unexpected error running shell ["+StringUtil.environmentSubstitute(getFileName())+"] : "+e.toString());
             result.setNrErrors(1);
         }
     
