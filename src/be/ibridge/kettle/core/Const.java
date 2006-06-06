@@ -31,6 +31,7 @@ import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -478,8 +479,7 @@ public class Const
 		} catch (Exception e)
 		{
 			retval = def;
-		}
-		;
+		}		
 		return retval;
 	}
 
@@ -499,7 +499,6 @@ public class Const
 		{
 			retval = def;
 		}
-		;
 		return retval;
 	}
 
@@ -519,7 +518,6 @@ public class Const
 		{
 			retval = def;
 		}
-		;
 		return retval;
 	}
 
@@ -533,7 +531,7 @@ public class Const
 	 */
 	public static final Date toDate(String str, Date def)
 	{
-		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS", Locale.US);
 		try
 		{
 			return df.parse(str);
@@ -1377,21 +1375,10 @@ public class Const
 	 */
 	public static final String[] sortStrings(String input[])
 	{
-		for (int i = 0; i < input.length; i++)
-		{
-			for (int j = 0; j < input.length - 1; j++)
-			{
-				if (input[j].compareTo(input[j + 1]) > 0)
-				{
-					String dummy = input[j];
-					input[j] = input[j + 1];
-					input[j + 1] = dummy;
-				}
-			}
-		}
+		Arrays.sort(input);
 		return input;
 	}
-
+	
 	/**
 	 * Convert strings separated by a string into an array of strings.<p>
 	 * <code>
@@ -1702,7 +1689,7 @@ public class Const
      */
     public static final boolean isEmpty(StringBuffer string)
     {
-    	return string==null || string.toString().length()==0;
+    	return string==null || string.length()==0;
     }
     
 
