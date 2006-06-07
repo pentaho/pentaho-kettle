@@ -209,9 +209,9 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("DatabaseJoin.Log.UnexpectedError")+debug+"]"); //$NON-NLS-1$ //$NON-NLS-2$
-			logError(e.toString());
-			setErrors(1);
+			logError(Messages.getString("DatabaseJoin.Log.UnexpectedError")+debug+"] : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(e));
+            setErrors(1);
 			stopAll();
 		}
 		finally

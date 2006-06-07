@@ -15,6 +15,7 @@
  
 package be.ibridge.kettle.trans.step.mappinginput;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -98,7 +99,8 @@ public class MappingInput extends BaseStep implements StepInterface
 		catch(Exception e)
 		{
 			logError(Messages.getString("MappingInput.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-			setErrors(1);
+            logError(Const.getStackTracker(e));
+            setErrors(1);
 			stopAll();
 		}
 		finally

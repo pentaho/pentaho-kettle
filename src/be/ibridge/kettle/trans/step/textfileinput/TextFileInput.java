@@ -1271,7 +1271,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				
 			data.files = meta.getTextFileList();
 			if ((transmeta.getPreviousResult()==null || transmeta.getPreviousResult().getResultFiles()==null || transmeta.getPreviousResult().getResultFiles().size()==0) && 
-                    data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
+                    data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0 && !meta.isAcceptingFilenames())
 			{
 				logError("No file(s) specified! Stop processing.");
 				return false;
@@ -1333,7 +1333,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 		catch (Exception e)
 		{
 			logError("Unexpected error in '" + debug + "' : " + e.toString());
-			setErrors(1);
+            logError(Const.getStackTracker(e));
+            setErrors(1);
 			stopAll();
 		}
 		finally

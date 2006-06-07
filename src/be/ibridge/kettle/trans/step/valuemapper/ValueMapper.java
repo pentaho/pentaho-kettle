@@ -162,7 +162,8 @@ public class ValueMapper extends BaseStep implements StepInterface
 		catch(Exception e)
 		{
 			logError(Messages.getString("ValueMapper.RuntimeError.UnexpectedError.VALUEMAPPER0003", debug, e.toString())); //$NON-NLS-1$
-			setErrors(1);
+            logError(Const.getStackTracker(e));
+            setErrors(1);
 			stopAll();
 		}
 		finally

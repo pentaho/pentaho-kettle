@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.RowSet;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -437,7 +438,8 @@ public class JoinRows extends BaseStep implements StepInterface
 		catch(Exception e)
 		{
 			logError(Messages.getString("JoinRows.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-			setErrors(1);
+            logError(Const.getStackTracker(e));
+            setErrors(1);
 			stopAll();
 		}
 		finally

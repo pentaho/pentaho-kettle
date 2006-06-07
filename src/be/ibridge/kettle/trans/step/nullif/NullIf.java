@@ -15,6 +15,7 @@
  
 package be.ibridge.kettle.trans.step.nullif;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
@@ -128,7 +129,8 @@ public class NullIf extends BaseStep implements StepInterface
 		catch(Exception e)
 		{
 			logError(Messages.getString("NullIf.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-			setErrors(1);
+            logError(Const.getStackTracker(e));
+            setErrors(1);
 			stopAll();
 		}
 		finally

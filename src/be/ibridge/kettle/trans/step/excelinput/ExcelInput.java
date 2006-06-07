@@ -670,6 +670,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		catch (Exception e)
 		{
 			logError("Unexpected error in '" + debug + "' : " + e.toString());
+            logError(Const.getStackTracker(e));
 			setErrors(1);
 			stopAll();
 		}

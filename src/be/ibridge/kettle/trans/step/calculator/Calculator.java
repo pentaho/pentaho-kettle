@@ -389,7 +389,8 @@ public class Calculator extends BaseStep implements StepInterface
 		catch(Exception e)
 		{
 			logError("Unexpected error in '"+debug+"' : "+e.toString());
-			setErrors(1);
+            logError(Const.getStackTracker(e));
+            setErrors(1);
 			stopAll();
 		}
 		finally

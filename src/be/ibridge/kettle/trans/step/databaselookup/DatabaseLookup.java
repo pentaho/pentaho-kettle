@@ -339,6 +339,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		{
 			logError(Messages.getString("DatabaseLookup.ERROR003.UnexpectedErrorDuringProcessing2")+e.getMessage()); //$NON-NLS-1$
 			logError(e.toString());
+            logError(Const.getStackTracker(e));
 			setErrors(1);
 			stopAll();
 		}

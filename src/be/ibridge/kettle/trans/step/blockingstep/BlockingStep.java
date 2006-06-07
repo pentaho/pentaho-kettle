@@ -1,5 +1,6 @@
 package be.ibridge.kettle.trans.step.blockingstep;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.trans.Trans;
@@ -47,6 +48,8 @@ public class BlockingStep extends BaseStep implements StepInterface {
         }
         catch(Exception e)
         {
+            logError("Unexpected error in '"+debug+"' : "+e.toString());
+            logError(Const.getStackTracker(e));
             setErrors(1);
             stopAll();
         }
