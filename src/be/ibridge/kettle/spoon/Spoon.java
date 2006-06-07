@@ -2670,7 +2670,7 @@ public class Spoon
         
         try
         {
-            transMeta.getDbCache().saveCache(log);
+            if (props.useDBCache()) transMeta.getDbCache().saveCache(log);
         }
         catch(KettleException e)
         {
