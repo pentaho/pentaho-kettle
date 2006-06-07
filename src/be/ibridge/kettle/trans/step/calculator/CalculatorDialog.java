@@ -42,6 +42,7 @@ import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -174,10 +175,15 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         // 
         // Search the fields in the background
         //
+        final Thread parentThread = Thread.currentThread();
+        
         final Runnable runnable = new Runnable()
         {
             public void run()
             {
+                //  This is running in a new process: copy some KettleVariables info
+                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
+
                 StepMeta stepMeta = transMeta.findStep(stepname);
                 if (stepMeta!=null)
                 {
