@@ -76,7 +76,10 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
     /** Stream name to update value with */
 	private String updateStream[];
 	
-    /** Commit size for inserts/updates */
+    /** boolean indicating if field needs to be updated */
+	private Boolean update[];
+
+	/** Commit size for inserts/updates */
 	private int    commitSize;
 
     /** Bypass any updates */
@@ -233,7 +236,14 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
         this.updateStream = updateStream;
     }
     
-    
+	public Boolean[] getUpdate() {
+		return update;
+	}
+
+	public void setUpdate(Boolean[] update) {
+		this.update = update;
+	}
+
 	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
 		throws KettleXMLException
 	{
@@ -248,6 +258,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 		keyStream2         = new String[nrkeys];
 		updateLookup        = new String[nrvalues];
 		updateStream    = new String[nrvalues];
+		update    = new Boolean[nrvalues];
 	}
 
 	public Object clone()
@@ -270,6 +281,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			retval.updateLookup[i]        = updateLookup[i];
 			retval.updateStream[i]    = updateStream[i];
+			retval.update[i]    = update[i];
 		}
 		return retval;
 	}
@@ -313,6 +325,13 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 				updateLookup[i]        = XMLHandler.getTagValue(vnode, "name"); //$NON-NLS-1$
 				updateStream[i]    = XMLHandler.getTagValue(vnode, "rename"); //$NON-NLS-1$
 				if (updateStream[i]==null) updateStream[i]=updateLookup[i]; // default: the same name!
+				String updateValue = XMLHandler.getTagValue(vnode, "update"); //$NON-NLS-1$
+				if(updateValue==null) {
+					//default TRUE
+					update[i] = Boolean.TRUE;
+				} else {
+					update[i] = Boolean.valueOf(updateValue);
+				}
 			}
 		}
 		catch(Exception e)
@@ -346,6 +365,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			updateLookup[i]=Messages.getString("InsertUpdateMeta.ColumnName.ReturnField")+i; //$NON-NLS-1$
 			updateStream[i]=Messages.getString("InsertUpdateMeta.ColumnName.NewName")+i; //$NON-NLS-1$
+			update[i]=Boolean.TRUE; //$NON-NLS-1$
 		}
 	}
 
@@ -374,6 +394,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("      <value>"+Const.CR); //$NON-NLS-1$
 			retval.append("        "+XMLHandler.addTagValue("name", updateLookup[i])); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        "+XMLHandler.addTagValue("rename", updateStream[i])); //$NON-NLS-1$ //$NON-NLS-2$
+			retval.append("        "+XMLHandler.addTagValue("update", update[i].booleanValue())); //$NON-NLS-1$ //$NON-NLS-2$
 			retval.append("        </value>"+Const.CR); //$NON-NLS-1$
 		}
 
@@ -411,6 +432,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				updateLookup[i]        = rep.getStepAttributeString(id_step, i, "value_name"); //$NON-NLS-1$
 				updateStream[i]    = rep.getStepAttributeString(id_step, i, "value_rename"); //$NON-NLS-1$
+				update[i]    = Boolean.valueOf(rep.getStepAttributeBoolean(id_step, i, "value_update",true)); //$NON-NLS-1$
 			}
 		}
 		catch(Exception e)
@@ -441,6 +463,7 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "value_name",    updateLookup[i]); //$NON-NLS-1$
 				rep.saveStepAttribute(id_transformation, id_step, i, "value_rename",  updateStream[i]); //$NON-NLS-1$
+				rep.saveStepAttribute(id_transformation, id_step, i, "value_update",  update[i].booleanValue()); //$NON-NLS-1$
 			}
 			
 			// Also, save the step-database relationship!

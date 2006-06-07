@@ -266,12 +266,13 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 		fdlReturn.top = new FormAttachment(wKey, margin);
 		wlReturn.setLayoutData(fdlReturn);
 
-		int UpInsCols = 2;
+		int UpInsCols = 3;
 		int UpInsRows = (input.getUpdateLookup() != null ? input.getUpdateLookup().length : 1);
 
 		ColumnInfo[] ciReturn = new ColumnInfo[UpInsCols];
 		ciReturn[0] = new ColumnInfo(Messages.getString("InsertUpdateDialog.ColumnInfo.TableField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
 		ciReturn[1] = new ColumnInfo(Messages.getString("InsertUpdateDialog.ColumnInfo.StreamField"), ColumnInfo.COLUMN_TYPE_TEXT, false); //$NON-NLS-1$
+		ciReturn[2] = new ColumnInfo(Messages.getString("InsertUpdateDialog.ColumnInfo.Update"), ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] {"Y","N"}); //$NON-NLS-1$
 
 		wReturn = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL,
 				ciReturn, UpInsRows, lsMod, props);
@@ -409,6 +410,11 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 					item.setText(1, input.getUpdateLookup()[i]);
 				if (input.getUpdateStream()[i] != null)
 					item.setText(2, input.getUpdateStream()[i]);
+				if (input.getUpdate()[i]==null||input.getUpdate()[i].booleanValue()) {
+					item.setText(3,"Y");
+				} else {
+					item.setText(3,"N");
+				}
 			}
 
 		if (input.getTableName() != null)
@@ -465,6 +471,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 			TableItem item = wReturn.getNonEmpty(i);
 			inf.getUpdateLookup()[i] = item.getText(1);
 			inf.getUpdateStream()[i] = item.getText(2);
+			inf.getUpdate()[i] = Boolean.valueOf("Y".equals(item.getText(3)));
 		}
 
 		inf.setTableName( wTable.getText() );
@@ -567,6 +574,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 					ti.setText(0, "" + (count + i + 1)); //$NON-NLS-1$
 					ti.setText(1, v.getName());
 					ti.setText(2, v.getName());
+					ti.setText(3, "Y");
 
 				}
 				wReturn.removeEmptyRows();

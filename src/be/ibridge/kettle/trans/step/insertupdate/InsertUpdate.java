@@ -15,6 +15,9 @@
  
 package be.ibridge.kettle.trans.step.insertupdate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.database.Database;
@@ -76,7 +79,13 @@ public class InsertUpdate extends BaseStep implements StepInterface
             
             if (!meta.isUpdateBypassed())
             {
-            	data.db.prepareUpdate(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup());
+            	List updateColumns = new ArrayList();
+            	for(int i=0;i<meta.getUpdate().length;i++) {
+            		if(meta.getUpdate()[i].booleanValue()) {
+            			updateColumns.add(meta.getUpdateLookup()[i]);
+            		}
+            	}
+            	data.db.prepareUpdate(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), (String[])updateColumns.toArray(new String[]{}));
             }
 			
 			debug=Messages.getString("InsertUpdate.Debug.FirstRunLookupValues"); //$NON-NLS-1$
@@ -182,14 +191,17 @@ public class InsertUpdate extends BaseStep implements StepInterface
 				 */
 				debug=Messages.getString("InsertUpdate.Debug.CompareForUpdate"); //$NON-NLS-1$
 				boolean update = false;
+				int j = 0;
 				for (int i=0;i<data.valuenrs.length;i++)
 				{
-					Value rowvalue = row.getValue(data.valuenrs[i]);
-					lu.addValue(i, rowvalue);
-					Value retvalue = add.getValue(i);
-					if (!retvalue.equals(rowvalue)) // Take table value as the driver.
-					{
-						update=true;
+					if(meta.getUpdate()[i].booleanValue()) {
+						Value rowvalue = row.getValue(data.valuenrs[i]);
+						lu.addValue(j++, rowvalue);
+						Value retvalue = add.getValue(i);
+						if (!retvalue.equals(rowvalue)) // Take table value as the driver.
+						{
+							update=true;
+						}
 					}
 				}
 				if (update)
