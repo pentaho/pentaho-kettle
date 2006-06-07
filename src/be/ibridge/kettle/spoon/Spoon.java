@@ -1236,46 +1236,53 @@ public class Spoon
                 {
                     TreeItem ti[] = fTree.getSelection();
                     
-                    String data = null;
-                    int type = 0;
-
-                    String ts[] = Const.getTreeStrings(ti[0]);
-                        
-                    if (ts!=null && ts.length > 0)
+                    if (ti.length>0)
                     {
-                    	// Drop of existing hidden step onto canvas?
-	                    if (ts[0].equalsIgnoreCase(STRING_STEPS))
-	                    {
-	                    	type = DragAndDropContainer.TYPE_STEP;
-	                        data=ti[0].getText(); // name of the step.
-	                    }
-	                    else
-                    	if ( ts[0].equalsIgnoreCase(STRING_BASE) ||
-                             ts[0].equalsIgnoreCase(STRING_PLUGIN) ||
-                             ts[0].equalsIgnoreCase(STRING_HISTORY)
-                        )
-	                    {
-	                    	type = DragAndDropContainer.TYPE_BASE_STEP_TYPE;
-	                        data=ti[0].getText(); // Step type
-	                    }
-	                    else
-	                    if (ts[0].equalsIgnoreCase(STRING_CONNECTIONS))
-	                    {
-	                    	type = DragAndDropContainer.TYPE_DATABASE_CONNECTION;
-	                        data=ti[0].getText(); // Database connection name to use
-	                    }
-	                    else
-	                    if (ts[0].equalsIgnoreCase(STRING_HOPS))
-	                    {
-	                    	type = DragAndDropContainer.TYPE_TRANS_HOP;
-	                        data=ti[0].getText(); // nothing for really ;-)
-	                    }
-	                    else
-	                    {
-	                    	return; // ignore anything else you drag.
-	                    }
-
-                    	event.data = new DragAndDropContainer(type, data).getXML();
+                        String data = null;
+                        int type = 0;
+    
+                        String ts[] = Const.getTreeStrings(ti[0]);
+                            
+                        if (ts!=null && ts.length > 0)
+                        {
+                        	// Drop of existing hidden step onto canvas?
+    	                    if (ts[0].equalsIgnoreCase(STRING_STEPS))
+    	                    {
+    	                    	type = DragAndDropContainer.TYPE_STEP;
+    	                        data=ti[0].getText(); // name of the step.
+    	                    }
+    	                    else
+                        	if ( ts[0].equalsIgnoreCase(STRING_BASE) ||
+                                 ts[0].equalsIgnoreCase(STRING_PLUGIN) ||
+                                 ts[0].equalsIgnoreCase(STRING_HISTORY)
+                            )
+    	                    {
+    	                    	type = DragAndDropContainer.TYPE_BASE_STEP_TYPE;
+    	                        data=ti[0].getText(); // Step type
+    	                    }
+    	                    else
+    	                    if (ts[0].equalsIgnoreCase(STRING_CONNECTIONS))
+    	                    {
+    	                    	type = DragAndDropContainer.TYPE_DATABASE_CONNECTION;
+    	                        data=ti[0].getText(); // Database connection name to use
+    	                    }
+    	                    else
+    	                    if (ts[0].equalsIgnoreCase(STRING_HOPS))
+    	                    {
+    	                    	type = DragAndDropContainer.TYPE_TRANS_HOP;
+    	                        data=ti[0].getText(); // nothing for really ;-)
+    	                    }
+    	                    else
+    	                    {
+    	                    	return; // ignore anything else you drag.
+    	                    }
+    
+                        	event.data = new DragAndDropContainer(type, data).getXML();
+                        }
+                    }
+                    else // Nothing got dragged, only can happen on OSX :-)
+                    {
+                        event.doit=false;
                     }
                 }
     
