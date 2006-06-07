@@ -883,6 +883,16 @@ public class TableView extends Composite
                                     editSelected();
                                     return;
                                 }
+                                else
+                                {
+                                    if (i==table.getColumnCount()-1 && // last column 
+                                            pt.x>rect.x+rect.width && // to the right 
+                                            pt.y>=rect.y && pt.y<=rect.y+rect.height // same height as this visible item
+                                            )
+                                    {
+                                        return; // don't do anything when clicking to the right of the grid.
+                                    }
+                                }
                                 if (!visible && rect.intersects(clientArea))
                                 {
                                     visible = true;
