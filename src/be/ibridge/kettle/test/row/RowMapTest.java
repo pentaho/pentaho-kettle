@@ -3,7 +3,6 @@ package be.ibridge.kettle.test.row;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 import be.ibridge.kettle.core.Row;
