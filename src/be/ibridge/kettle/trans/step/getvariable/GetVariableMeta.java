@@ -192,7 +192,7 @@ public class GetVariableMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			retval.append("      <field>"+Const.CR);
 			retval.append("        "+XMLHandler.addTagValue("name", fieldName[i]));
-			retval.append("        "+XMLHandler.addTagValue("type", variableString[i]));
+			retval.append("        "+XMLHandler.addTagValue("variable", variableString[i]));
 			retval.append("        </field>"+Const.CR);
 		}
 		retval.append("      </fields>"+Const.CR);

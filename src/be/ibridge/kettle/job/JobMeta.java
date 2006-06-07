@@ -17,6 +17,7 @@
 package be.ibridge.kettle.job;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.w3c.dom.Document;
@@ -38,6 +39,9 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.reflection.StringSearchResult;
+import be.ibridge.kettle.core.reflection.StringSearcher;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
@@ -588,6 +592,8 @@ public class JobMeta implements Cloneable, XMLInterface
 			// Do we have the special entries?
 			if (findJobEntry(STRING_SPECIAL_START, 0, true)==null) addStart();
 			if (findJobEntry(STRING_SPECIAL_DUMMY, 0, true)==null) addDummy();
+            
+            clearChanged();
 		}
 		catch(Exception e)
 		{
@@ -1708,6 +1714,72 @@ public class JobMeta implements Cloneable, XMLInterface
     {
         this.arguments = arguments;
     }
+    
+    /**
+     * Get a list of all the strings used in this job.
+     *
+     * @return
+     */
+    public List getStringList(boolean searchSteps, boolean searchDatabases, boolean searchNotes)
+    {
+        ArrayList stringList = new ArrayList();
 
+        if (searchSteps)
+        {
+            // Loop over all steps in the transformation and see what the used vars are...
+            for (int i=0;i<nrJobEntries();i++)
+            {
+                JobEntryCopy entryMeta = getJobEntry(i);
+                stringList.add(new StringSearchResult(entryMeta.getName(), entryMeta, "Job entry name"));
+                if (entryMeta.getDescription()!=null) stringList.add(new StringSearchResult(entryMeta.getDescription(), entryMeta, "Job entry description"));
+                JobEntryInterface metaInterface = entryMeta.getEntry();
+                StringSearcher.findMetaData(metaInterface, 1, stringList, entryMeta);
+            }
+        }
+
+        // Loop over all steps in the transformation and see what the used vars are...
+        if (searchDatabases)
+        {
+            for (int i=0;i<nrDatabases();i++)
+            {
+                DatabaseMeta meta = getDatabase(i);
+                stringList.add(new StringSearchResult(meta.getName(), meta, "Database connection name"));
+                if (meta.getDatabaseName()!=null) stringList.add(new StringSearchResult(meta.getDatabaseName(), meta, "Database name"));
+                if (meta.getUsername()!=null) stringList.add(new StringSearchResult(meta.getUsername(), meta, "Database Username"));
+                if (meta.getDatabaseTypeDesc()!=null) stringList.add(new StringSearchResult(meta.getDatabaseTypeDesc(), meta, "Database type description"));
+                if (meta.getDatabasePortNumberString()!=null) stringList.add(new StringSearchResult(meta.getDatabasePortNumberString(), meta, "Database port"));
+            }
+        }
+
+        // Loop over all steps in the transformation and see what the used vars are...
+        if (searchNotes)
+        {
+            for (int i=0;i<nrNotes();i++)
+            {
+                NotePadMeta meta = getNote(i);
+                if (meta.getNote()!=null) stringList.add(new StringSearchResult(meta.getNote(), meta, "Notepad text"));
+            }
+        }
+
+        return stringList;
+    }
+
+
+    public List getUsedVariables()
+    {
+        // Get the list of Strings.
+        List stringList = getStringList(true, true, false);
+
+        List varList = new ArrayList();
+
+        // Look around in the strings, see what we find...
+        for (int i=0;i<stringList.size();i++)
+        {
+            StringSearchResult result = (StringSearchResult) stringList.get(i);
+            StringUtil.getUsedVariables(result.getString(), varList);
+        }
+
+        return varList;
+    }
 
 }

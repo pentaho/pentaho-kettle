@@ -298,7 +298,7 @@ public class Spoon
         impactHasRun = false;
         
         // Clean out every time we start, auto-loading etc, is not a good idea
-        // If they are neede that often, set them in the kettle.properties file
+        // If they are needed that often, set them in the kettle.properties file
         //
         variables = new Row(); 
         
