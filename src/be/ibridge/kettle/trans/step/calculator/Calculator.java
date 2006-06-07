@@ -74,6 +74,8 @@ public class Calculator extends BaseStep implements StepInterface
 
     private void calcFields(Row r) throws KettleValueException
     {
+        int rowSize = r.size();
+        
         if (meta.getCalculation()!=null)
         for (int i=0;i<meta.getCalculation().length;i++)
         {
@@ -89,7 +91,7 @@ public class Calculator extends BaseStep implements StepInterface
 
                 if (fn.getCalcType()!=CalculatorMetaFunction.CALC_CONSTANT)
                 {
-                    if (fn.getFieldA()!=null && fn.getFieldA().length()>0)
+                    if (!Const.isEmpty(fn.getFieldA()))
                     {
                         Integer idxA = (Integer)data.indexCache.get(fn.getFieldA());
                         if (idxA==null) idxA = new Integer( r.searchValueIndex(fn.getFieldA()) );
@@ -98,7 +100,7 @@ public class Calculator extends BaseStep implements StepInterface
                         fieldA = r.getValue(idxA.intValue());
                     }
     
-                    if (fn.getFieldB()!=null && fn.getFieldB().length()>0)
+                    if (!Const.isEmpty(fn.getFieldB()))
                     {
                         Integer idxB = (Integer)data.indexCache.get(fn.getFieldB());
                         if (idxB==null) idxB = new Integer( r.searchValueIndex(fn.getFieldB()) );
@@ -107,7 +109,7 @@ public class Calculator extends BaseStep implements StepInterface
                         fieldB = r.getValue(idxB.intValue());
                     }
                     
-                    if (fn.getFieldC()!=null && fn.getFieldC().length()>0)
+                    if (!Const.isEmpty(fn.getFieldC()))
                     {
                         Integer idxC = (Integer)data.indexCache.get(fn.getFieldC());
                         if (idxC==null) idxC = new Integer( r.searchValueIndex(fn.getFieldC()) );
@@ -338,9 +340,22 @@ public class Calculator extends BaseStep implements StepInterface
                         value.setLength(fn.getValueLength(), fn.getValuePrecision());
                     }
                     r.addValue(value); // add to the row!
-                }
+                                }
             }
         }
+        
+        // Add the fields to the cache so that they can be removed easily.
+        /*
+        if (first)
+        {
+            first=false;
+            
+            for (int i=rowSize;i<r.size();i++)
+            {
+                data.indexCache.put(r.getValue(i).getName(), new Integer(i));
+            }
+        }
+        */
         
         debug="remove specified fields from result";
         
@@ -354,11 +369,12 @@ public class Calculator extends BaseStep implements StepInterface
                 Integer idx = (Integer) data.indexCache.get(fn.getFieldName());
                 if (idx!=null)
                 {
-                    r.removeValue(idx.intValue());
+                    r.removeValue(idx.intValue()); // value from the original row.
                 }
                 else
                 {
-                    throw new KettleValueException("Couldn't find field ["+fn.getFieldName()+"] to remove from result.");
+                    r.removeValue(rowSize+i); // calculated value
+                    // throw new KettleValueException("Couldn't find field ["+fn.getFieldName()+"] to remove from result.");
                 }
             }
         }
