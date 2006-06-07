@@ -705,6 +705,32 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 		if (first) // we just got started
 		{
+            if (meta.isAcceptingFilenames())
+            {
+                // Read the files from the specified input stream...
+                int idx = -1;
+                Row fileRow = getRowFrom(meta.getAcceptingStepName());
+                while (fileRow!=null)
+                {
+                    if (idx<0)
+                    {
+                        idx = fileRow.searchValueIndex(meta.getAcceptingField());
+                        if (idx<0)
+                        {
+                            logError("The filename field ["+meta.getAcceptingField()+"] could not be found in the input rows.");
+                            setErrors(1);
+                            stopAll();
+                            return false;
+                        }
+                    }
+                    Value fileValue = fileRow.getValue(idx);
+                    data.files.addFile(new File(fileValue.getString()));
+                    
+                    // Grab another row
+                    fileRow = getRowFrom(meta.getAcceptingStepName());
+                }
+                
+            }
 			handleMissingFiles();
 			debug = "first";
 
@@ -1319,14 +1345,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 		try
 		{
 			logBasic("Starting to run...");
-            if (meta.isAcceptingFilenames()) {
-                // process the file from chef
-                data.files = new FileInputList();
-                for (int i=0;i<transmeta.getPreviousResult().getResultFiles().size();i++) {
-                    ResultFile file = (ResultFile)transmeta.getPreviousResult().getResultFiles().get(i);
-                    data.files.addFile(file.getFile());
-                }
-            }
 			while (processRow(meta, data) && !isStopped())
 				;
 		}
