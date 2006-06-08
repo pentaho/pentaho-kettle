@@ -66,6 +66,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	private boolean binaryMode;
 	private int     timeout;
 	private boolean remove;
+    private boolean onlyGettingNewFiles;
 	
 	public JobEntryFTP(String n)
 	{
@@ -100,6 +101,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 		retval.append("      "+XMLHandler.addTagValue("binary",       binaryMode));
 		retval.append("      "+XMLHandler.addTagValue("timeout",      timeout));
 		retval.append("      "+XMLHandler.addTagValue("remove",       remove));
+        retval.append("      "+XMLHandler.addTagValue("only_new",     onlyGettingNewFiles));
 		
 		return retval.toString();
 	}
@@ -110,15 +112,16 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 		try
 		{
 			super.loadXML(entrynode, databases);
-			serverName      = XMLHandler.getTagValue(entrynode, "servername");
-			userName        = XMLHandler.getTagValue(entrynode, "username");
-			password        = XMLHandler.getTagValue(entrynode, "password");
-			ftpDirectory    = XMLHandler.getTagValue(entrynode, "ftpdirectory");
-			targetDirectory = XMLHandler.getTagValue(entrynode, "targetdirectory");
-			wildcard        = XMLHandler.getTagValue(entrynode, "wildcard");
-			binaryMode      = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "binary") );
-			timeout         = Const.toInt(XMLHandler.getTagValue(entrynode, "timeout"), 10000);
-			remove          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "remove") );
+			serverName          = XMLHandler.getTagValue(entrynode, "servername");
+			userName            = XMLHandler.getTagValue(entrynode, "username");
+			password            = XMLHandler.getTagValue(entrynode, "password");
+			ftpDirectory        = XMLHandler.getTagValue(entrynode, "ftpdirectory");
+			targetDirectory     = XMLHandler.getTagValue(entrynode, "targetdirectory");
+			wildcard            = XMLHandler.getTagValue(entrynode, "wildcard");
+			binaryMode          = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "binary") );
+			timeout             = Const.toInt(XMLHandler.getTagValue(entrynode, "timeout"), 10000);
+			remove              = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "remove") );
+            onlyGettingNewFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "only_new") );
 		}
 		catch(KettleXMLException xe)
 		{
@@ -132,15 +135,16 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 		try
 		{
 			super.loadRep(rep, id_jobentry, databases);
-			serverName      = rep.getJobEntryAttributeString(id_jobentry, "servername");
-			userName        = rep.getJobEntryAttributeString(id_jobentry, "username");
-			password        = rep.getJobEntryAttributeString(id_jobentry, "password");
-			ftpDirectory    = rep.getJobEntryAttributeString(id_jobentry, "ftpdirectory");
-			targetDirectory = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory");
-			wildcard        = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
-			binaryMode      = rep.getJobEntryAttributeBoolean(id_jobentry, "binary");
-			timeout         = (int)rep.getJobEntryAttributeInteger(id_jobentry, "timeout");
-			remove          = rep.getJobEntryAttributeBoolean(id_jobentry, "remove");
+			serverName          = rep.getJobEntryAttributeString(id_jobentry, "servername");
+			userName            = rep.getJobEntryAttributeString(id_jobentry, "username");
+			password            = rep.getJobEntryAttributeString(id_jobentry, "password");
+			ftpDirectory        = rep.getJobEntryAttributeString(id_jobentry, "ftpdirectory");
+			targetDirectory     = rep.getJobEntryAttributeString(id_jobentry, "targetdirectory");
+			wildcard            = rep.getJobEntryAttributeString(id_jobentry, "wildcard");
+			binaryMode          = rep.getJobEntryAttributeBoolean(id_jobentry, "binary");
+			timeout             = (int)rep.getJobEntryAttributeInteger(id_jobentry, "timeout");
+            remove              = rep.getJobEntryAttributeBoolean(id_jobentry, "remove");
+			onlyGettingNewFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "only_new");
 		}
 		catch(KettleException dbe)
 		{
@@ -163,7 +167,8 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 			rep.saveJobEntryAttribute(id_job, getID(), "wildcard",        wildcard);
 			rep.saveJobEntryAttribute(id_job, getID(), "binary",          binaryMode);
 			rep.saveJobEntryAttribute(id_job, getID(), "timeout",         timeout);
-			rep.saveJobEntryAttribute(id_job, getID(), "remove",          remove);
+            rep.saveJobEntryAttribute(id_job, getID(), "remove",          remove);
+			rep.saveJobEntryAttribute(id_job, getID(), "only_new",        onlyGettingNewFiles);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -317,6 +322,22 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 		return remove;
 	}
 	
+
+    /**
+     * @return Returns the onlyGettingNewFiles.
+     */
+    public boolean isOnlyGettingNewFiles()
+    {
+        return onlyGettingNewFiles;
+    }
+
+    /**
+     * @param onlyGettingNewFiles The onlyGettingNewFiles to set.
+     */
+    public void setOnlyGettingNewFiles(boolean onlyGettingNewFiles)
+    {
+        this.onlyGettingNewFiles = onlyGettingNewFiles;
+    }
 	
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
 	{
@@ -406,19 +427,23 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 				
 				if (getIt)
 				{
-                    String translatedTargetDirectory = StringUtil.environmentSubstitute(targetDirectory);
-					log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+translatedTargetDirectory+"]");
-					String targetFilename = translatedTargetDirectory+Const.FILE_SEPARATOR+filelist[i]; 
-					ftpclient.get(targetFilename, filelist[i]);
-					filesRetrieved++; 
-					
-					// Add to the result files...
-					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(targetFilename), parentJob.getJobname(), toString());
-					result.getResultFiles().add(resultFile);
-					
-					log.logDetailed(toString(), "Got file ["+filelist[i]+"]");
-					
-					
+                    log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+StringUtil.environmentSubstitute(targetDirectory)+"]");
+					String targetFilename = getTargetFilename(filelist[i]);
+                    File targetFile = new File(targetFilename);
+                    
+                    if (onlyGettingNewFiles && needsDownload(filelist[i]))
+                    {
+    					ftpclient.get(targetFilename, filelist[i]);
+    					filesRetrieved++; 
+    					
+    					// Add to the result files...
+    					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString());
+                        resultFile.setComment("Downloaded from ftp server "+serverName);
+    					result.getResultFiles().add(resultFile);
+    					
+    					log.logDetailed(toString(), "Got file ["+filelist[i]+"]");
+                    }
+    					
 					// Delete the file if this is needed!
 					if (remove) 
 					{
@@ -441,12 +466,32 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 		return result;
 	}
 
-	public boolean evaluates()
+	protected String getTargetFilename(String string)
+    {
+        return StringUtil.environmentSubstitute(targetDirectory)+Const.FILE_SEPARATOR+string;
+    }
+
+    public boolean evaluates()
 	{
 		return true;
 	}
     
+    /**
+     * See if the filename on the FTP server needs downloading.
+     * The default is to check the presence of the file in the target directory.
+     * If you need other functionality, extend this class and build it into a plugin.
+     * 
+     * @param filename The filename to check
+     * @return true if the file needs downloading
+     */
+    protected boolean needsDownload(String filename)
+    {
+        File file = new File(getTargetFilename(filename));
+        return file.exists();
+    }
+    
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
         return new JobEntryFTPDialog(shell,this,jobMeta);
     }
+
 }

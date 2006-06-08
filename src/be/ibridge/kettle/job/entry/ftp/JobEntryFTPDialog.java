@@ -96,7 +96,11 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 	private Label        wlRemove;
 	private Button       wRemove;
 	private FormData     fdlRemove, fdRemove;
-	
+
+    private Label        wlOnlyNew;
+    private Button       wOnlyNew;
+    private FormData     fdlOnlyNew, fdOnlyNew;
+
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
@@ -323,12 +327,29 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		fdRemove.right= new FormAttachment(100, 0);
 		wRemove.setLayoutData(fdRemove);
 
+        // OnlyNew files after retreival...
+        wlOnlyNew=new Label(shell, SWT.RIGHT);
+        wlOnlyNew.setText("Only download new files?");
+        props.setLook(wlOnlyNew);
+        fdlOnlyNew=new FormData();
+        fdlOnlyNew.left = new FormAttachment(0, 0);
+        fdlOnlyNew.top  = new FormAttachment(wRemove, margin);
+        fdlOnlyNew.right= new FormAttachment(middle, -margin);
+        wlOnlyNew.setLayoutData(fdlOnlyNew);
+        wOnlyNew=new Button(shell, SWT.CHECK);
+        props.setLook(wOnlyNew);
+        fdOnlyNew=new FormData();
+        fdOnlyNew.left = new FormAttachment(middle, 0);
+        fdOnlyNew.top  = new FormAttachment(wRemove, margin);
+        fdOnlyNew.right= new FormAttachment(100, 0);
+        wOnlyNew.setLayoutData(fdOnlyNew);
+
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(" &OK ");
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(" &Cancel ");
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wRemove);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wOnlyNew);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -388,6 +409,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		wBinaryMode.setSelection(jobentry.isBinaryMode());
 		wTimeout.setText(""+jobentry.getTimeout());
 		wRemove.setSelection(jobentry.getRemove());
+        wOnlyNew.setSelection(jobentry.isOnlyGettingNewFiles());
 	}
 	
 	private void cancel()
@@ -409,6 +431,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		jobentry.setBinaryMode(wBinaryMode.getSelection());
 		jobentry.setTimeout(Const.toInt(wTimeout.getText(), 10000));
 		jobentry.setRemove(wRemove.getSelection());
+        jobentry.setOnlyGettingNewFiles(wOnlyNew.getSelection());
 
 		dispose();
 	}
