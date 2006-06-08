@@ -466,6 +466,11 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 		return result;
 	}
 
+    /**
+     * @param string the filename from the FTP server
+     * 
+     * @return the calculated target filename
+     */
 	protected String getTargetFilename(String string)
     {
         return StringUtil.environmentSubstitute(targetDirectory)+Const.FILE_SEPARATOR+string;
