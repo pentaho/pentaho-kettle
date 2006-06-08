@@ -118,7 +118,7 @@ public class GetFileNames extends BaseStep implements StepInterface
         short_filename.setLength(500,-1);
         r.addValue(short_filename);
 
-        Value path = new Value("path", file.getPath());
+        Value path = new Value("path", file.getParent());
         path.setLength(500,-1);
         r.addValue(path);
 
