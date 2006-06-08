@@ -330,6 +330,34 @@ public class ExcelInput extends BaseStep implements StepInterface
 		if (first)
 		{
 			first = false;
+            
+            if (meta.isAcceptingFilenames())
+            {
+                // Read the files from the specified input stream...
+                int idx = -1;
+                Row fileRow = getRowFrom(meta.getAcceptingStepName());
+                while (fileRow!=null)
+                {
+                    if (idx<0)
+                    {
+                        idx = fileRow.searchValueIndex(meta.getAcceptingField());
+                        if (idx<0)
+                        {
+                            logError("The filename field ["+meta.getAcceptingField()+"] could not be found in the input rows.");
+                            setErrors(1);
+                            stopAll();
+                            return false;
+                        }
+                    }
+                    Value fileValue = fileRow.getValue(idx);
+                    data.files.addFile(new File(fileValue.getString()));
+                    
+                    // Grab another row
+                    fileRow = getRowFrom(meta.getAcceptingStepName());
+                }
+                
+            }
+
 			handleMissingFiles();
 		}
 
@@ -602,7 +630,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 			initErrorHandling();
 			initReplayFactory();
 			data.files = meta.getFileList();
-			if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0)
+			if (data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0 && !meta.isAcceptingFilenames())
 			{
 				logError("No file(s) specified! Stop processing.");
 				return false;

@@ -167,6 +167,18 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     /** The extension of line number files */
     private String lineNumberFilesExtension;
 	
+    /** Are we accepting filenames in input rows?  */
+    private boolean acceptingFilenames;
+    
+    /** The field in which the filename is placed */
+    private String  acceptingField;
+
+    /** The stepname to accept filenames from */
+    private String  acceptingStepName;
+
+    /** The step to accept filenames from */
+    private StepMeta acceptingStep;
+    
 	
 	public ExcelInputMeta()
 	{
@@ -436,7 +448,11 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			rowLimit           = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0);
 			sheetField      = XMLHandler.getTagValue(stepnode, "sheetfield");
 			fileField       = XMLHandler.getTagValue(stepnode, "filefield");
-					
+
+            acceptingFilenames = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "accept_filenames"));
+            acceptingField = XMLHandler.getTagValue(stepnode, "accept_field");
+            acceptingStepName = XMLHandler.getTagValue(stepnode, "accept_stepname");
+
 			Node filenode   = XMLHandler.getSubNode(stepnode, "file");
 			Node sheetsnode = XMLHandler.getSubNode(stepnode, "sheets");
 			Node fields     = XMLHandler.getSubNode(stepnode, "fields");
@@ -613,6 +629,10 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    "+XMLHandler.addTagValue("filefield",       fileField));
 		retval.append("    "+XMLHandler.addTagValue("limit",           rowLimit));
 
+        retval.append("    " + XMLHandler.addTagValue("accept_filenames", acceptingFilenames));
+        retval.append("    " + XMLHandler.addTagValue("accept_field", acceptingField));
+        retval.append("    " + XMLHandler.addTagValue("accept_stepname", (acceptingStep!=null?acceptingStep.getName():"") ));
+
 		/*
 		 * Describe the files to read
 		 */
@@ -690,6 +710,10 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			rowNumberField    =      rep.getStepAttributeString (id_step, "rownumfield");
 			rowLimit          = (int)rep.getStepAttributeInteger(id_step, "limit");
 	
+            acceptingFilenames = rep.getStepAttributeBoolean(id_step, "accept_filenames");
+            acceptingField     = rep.getStepAttributeString (id_step, "accept_field");
+            acceptingStepName  = rep.getStepAttributeString (id_step, "accept_stepname");
+
 			int nrfiles     = rep.countNrStepAttributes(id_step, "file_name");
 			int nrsheets    = rep.countNrStepAttributes(id_step, "sheet_name");
 			int nrfields    = rep.countNrStepAttributes(id_step, "field_name");
@@ -760,6 +784,10 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "rownumfield",     rowNumberField);
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
 			
+            rep.saveStepAttribute(id_transformation, id_step, "accept_filenames", acceptingFilenames);
+            rep.saveStepAttribute(id_transformation, id_step, "accept_field", acceptingField);
+            rep.saveStepAttribute(id_transformation, id_step, "accept_stepname", (acceptingStep!=null?acceptingStep.getName():"") );
+
 			for (int i=0;i<fileName.length;i++)
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_name",     fileName[i]);
@@ -998,6 +1026,94 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	public void setFileRequired(String[] fileRequired) {
 		this.fileRequired = fileRequired;
 	}
+
+
+
+
+    /**
+     * @return Returns the acceptingField.
+     */
+    public String getAcceptingField()
+    {
+        return acceptingField;
+    }
+
+
+
+
+    /**
+     * @param acceptingField The acceptingField to set.
+     */
+    public void setAcceptingField(String acceptingField)
+    {
+        this.acceptingField = acceptingField;
+    }
+
+
+
+
+    /**
+     * @return Returns the acceptingFilenames.
+     */
+    public boolean isAcceptingFilenames()
+    {
+        return acceptingFilenames;
+    }
+
+
+
+
+    /**
+     * @param acceptingFilenames The acceptingFilenames to set.
+     */
+    public void setAcceptingFilenames(boolean acceptingFilenames)
+    {
+        this.acceptingFilenames = acceptingFilenames;
+    }
+
+
+
+
+    /**
+     * @return Returns the acceptingStep.
+     */
+    public StepMeta getAcceptingStep()
+    {
+        return acceptingStep;
+    }
+
+
+
+
+    /**
+     * @param acceptingStep The acceptingStep to set.
+     */
+    public void setAcceptingStep(StepMeta acceptingStep)
+    {
+        this.acceptingStep = acceptingStep;
+    }
+
+
+
+
+    /**
+     * @return Returns the acceptingStepName.
+     */
+    public String getAcceptingStepName()
+    {
+        return acceptingStepName;
+    }
+
+
+
+
+    /**
+     * @param acceptingStepName The acceptingStepName to set.
+     */
+    public void setAcceptingStepName(String acceptingStepName)
+    {
+        this.acceptingStepName = acceptingStepName;
+    }
 
 
 }

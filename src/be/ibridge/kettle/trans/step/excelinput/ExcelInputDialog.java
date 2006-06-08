@@ -30,6 +30,7 @@ import jxl.Sheet;
 import jxl.Workbook;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
 import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.events.ModifyEvent;
@@ -48,6 +49,7 @@ import org.eclipse.swt.widgets.DirectoryDialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -74,6 +76,7 @@ import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 import be.ibridge.kettle.trans.step.textfileinput.DirectoryDialogButtonListenerFactory;
 import be.ibridge.kettle.trans.step.textfileinput.TextFileInputMeta;
@@ -109,9 +112,24 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	private Text         wFilemask;
 	private FormData     fdlFilemask, fdFilemask;
 
+    private Group        gAccepting;
+    private FormData     fdAccepting;
+
+    private Label        wlAccFilenames;
+    private Button       wAccFilenames;
+    private FormData     fdlAccFilenames, fdAccFilenames;
+    
+    private Label        wlAccField;
+    private Text         wAccField;
+    private FormData     fdlAccField, fdAccField;
+
+    private Label        wlAccStep;
+    private CCombo       wAccStep;
+    private FormData     fdlAccStep, fdAccStep;
+
 	private Button       wbShowFiles;
 	private FormData     fdbShowFiles;
-
+    
 	private Label        wlSheetnameList;
 	private TableView    wSheetnameList;
 	private FormData     fdlSheetnameList;
@@ -165,7 +183,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
     private Button       wSkipErrorLines;
     private FormData     fdlSkipErrorLines, fdSkipErrorLines;
     
-//  New entries for intelligent error handling AKA replay functionality
+    //  New entries for intelligent error handling AKA replay functionality
     // Bad files destination directory
     private Label        wlWarningDestDir;
     private Button       wbbWarningDestDir; // Browse: add file or directory
@@ -370,6 +388,103 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdbShowFiles.left   = new FormAttachment(middle, 0);
 		fdbShowFiles.bottom = new FormAttachment(100, -margin);
 		wbShowFiles.setLayoutData(fdbShowFiles);
+        
+        
+        
+        
+        // Accepting filenames group
+        // 
+        
+        gAccepting = new Group(wFileComp, SWT.SHADOW_ETCHED_IN);
+        gAccepting.setText(Messages.getString("ExcelInputDialog.AcceptingGroup.Label")); //$NON-NLS-1$;
+        FormLayout acceptingLayout = new FormLayout();
+        acceptingLayout.marginWidth  = 3;
+        acceptingLayout.marginHeight = 3;
+        gAccepting.setLayout(acceptingLayout);
+        props.setLook(gAccepting);
+        
+        // Accept filenames from previous steps?
+        //
+        wlAccFilenames=new Label(gAccepting, SWT.RIGHT);
+        wlAccFilenames.setText(Messages.getString("ExcelInputDialog.AcceptFilenames.Label"));
+        props.setLook(wlAccFilenames);
+        fdlAccFilenames=new FormData();
+        fdlAccFilenames.top  = new FormAttachment(0, margin);
+        fdlAccFilenames.left = new FormAttachment(0, 0);
+        fdlAccFilenames.right= new FormAttachment(middle, -margin);
+        wlAccFilenames.setLayoutData(fdlAccFilenames);
+        wAccFilenames=new Button(gAccepting, SWT.CHECK);
+        wAccFilenames.setToolTipText(Messages.getString("ExcelInputDialog.AcceptFilenames.Tooltip"));
+        props.setLook(wAccFilenames);
+        fdAccFilenames=new FormData();
+        fdAccFilenames.top  = new FormAttachment(0, margin);
+        fdAccFilenames.left = new FormAttachment(middle, 0);
+        fdAccFilenames.right= new FormAttachment(100, 0);
+        wAccFilenames.setLayoutData(fdAccFilenames);
+        wAccFilenames.addSelectionListener(new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent arg0)
+                {
+                    setFlags();
+                }
+            }
+        );
+        
+        // Which step to read from?
+        wlAccStep=new Label(gAccepting, SWT.RIGHT);
+        wlAccStep.setText(Messages.getString("ExcelInputDialog.AcceptStep.Label"));
+        props.setLook(wlAccStep);
+        fdlAccStep=new FormData();
+        fdlAccStep.top  = new FormAttachment(wAccFilenames, margin);
+        fdlAccStep.left = new FormAttachment(0, 0);
+        fdlAccStep.right= new FormAttachment(middle, -margin);
+        wlAccStep.setLayoutData(fdlAccStep);
+        wAccStep=new CCombo(gAccepting, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wAccStep.setToolTipText(Messages.getString("ExcelInputDialog.AcceptStep.Tooltip"));
+        props.setLook(wAccStep);
+        fdAccStep=new FormData();
+        fdAccStep.top  = new FormAttachment(wAccFilenames, margin);
+        fdAccStep.left = new FormAttachment(middle, 0);
+        fdAccStep.right= new FormAttachment(100, 0);
+        wAccStep.setLayoutData(fdAccStep);
+
+        
+        // Which field?
+        //
+        wlAccField=new Label(gAccepting, SWT.RIGHT);
+        wlAccField.setText(Messages.getString("ExcelInputDialog.AcceptField.Label"));
+        props.setLook(wlAccField);
+        fdlAccField=new FormData();
+        fdlAccField.top  = new FormAttachment(wAccStep, margin);
+        fdlAccField.left = new FormAttachment(0, 0);
+        fdlAccField.right= new FormAttachment(middle, -margin);
+        wlAccField.setLayoutData(fdlAccField);
+        wAccField=new Text(gAccepting, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wAccField.setToolTipText(Messages.getString("ExcelInputDialog.AcceptField.Tooltip"));
+        props.setLook(wAccField);
+        fdAccField=new FormData();
+        fdAccField.top  = new FormAttachment(wAccStep, margin);
+        fdAccField.left = new FormAttachment(middle, 0);
+        fdAccField.right= new FormAttachment(100, 0);
+        wAccField.setLayoutData(fdAccField);
+                
+        // Fill in the source steps...
+        StepMeta[] prevSteps = transMeta.getPrevSteps(transMeta.findStep(stepname));
+        for (int i=0;i<prevSteps.length;i++)
+        {
+            wAccStep.add(prevSteps[i].getName());
+        }
+        
+        fdAccepting=new FormData();
+        fdAccepting.left   = new FormAttachment(middle, 0);
+        fdAccepting.right  = new FormAttachment(100, 0);
+        fdAccepting.bottom = new FormAttachment(wbShowFiles, -margin*2);
+        // fdAccepting.bottom = new FormAttachment(wAccStep, margin);
+        gAccepting.setLayoutData(fdAccepting);
+
+        
+        
+        
 
 		ColumnInfo[] colinfo=new ColumnInfo[3];
 		colinfo[ 0]=new ColumnInfo(Messages.getString("ExcelInputDialog.FileDir.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false);
@@ -390,7 +505,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdFilenameList.left   = new FormAttachment(middle, 0);
 		fdFilenameList.right  = new FormAttachment(wbdFilename, -margin);
 		fdFilenameList.top    = new FormAttachment(wFilemask, margin);
-		fdFilenameList.bottom = new FormAttachment(wbShowFiles, -margin);
+		fdFilenameList.bottom = new FormAttachment(gAccepting, -margin);
 		wFilenameList.setLayoutData(fdFilenameList);
 
 	
@@ -507,7 +622,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	        {
 				public void widgetSelected(SelectionEvent arg0)
 				{
-					enableFields();
+					setFlags();
 				}
 			});
 
@@ -651,8 +766,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wbGetFields.setText(Messages.getString("ExcelInputDialog.GetFields.Button"));
 		
 		setButtonPositions(new Button[] { wbGetFields }, margin, null);
-
-		enableFields();
 
 		final int FieldsRows=input.getField().length;
 		int FieldsWidth =600;
@@ -908,11 +1021,56 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		return stepname;
 	}
 	
-	public void enableFields()
+	public void setFlags()
 	{
 		wbGetFields.setEnabled( wHeader.getSelection());
-	}
-	
+
+        boolean accept = wAccFilenames.getSelection();
+        wlAccField.setEnabled(accept);
+        wAccField.setEnabled(accept);
+        wlAccStep.setEnabled(accept);
+        wAccStep.setEnabled(accept);
+
+        wlFilename.setEnabled(!accept);
+        wbbFilename.setEnabled(!accept); // Browse: add file or directory
+        wbvFilename.setEnabled(!accept); // Variable
+        wbdFilename.setEnabled(!accept); // Delete
+        wbeFilename.setEnabled(!accept); // Edit
+        wbaFilename.setEnabled(!accept); // Add or change
+        wFilename.setEnabled(!accept);
+        wlFilenameList.setEnabled(!accept);
+        wFilenameList.setEnabled(!accept);
+        wlFilemask.setEnabled(!accept);
+        wFilemask.setEnabled(!accept);
+        wbShowFiles.setEnabled(!accept);
+        wPreview.setEnabled(!accept);
+        
+        // Error handling tab...
+        wlSkipErrorLines.setEnabled( wErrorIgnored.getSelection() );
+        wSkipErrorLines.setEnabled( wErrorIgnored.getSelection() );
+
+        wlErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
+        wErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
+        wlErrorExt.setEnabled( wErrorIgnored.getSelection() );
+        wErrorExt.setEnabled( wErrorIgnored.getSelection() );
+        wbbErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
+        wbvErrorDestDir.setEnabled( wErrorIgnored.getSelection() );
+         
+        wlWarningDestDir.setEnabled( wErrorIgnored.getSelection() );
+        wWarningDestDir.setEnabled( wErrorIgnored.getSelection() );
+        wlWarningExt.setEnabled( wErrorIgnored.getSelection() );
+        wWarningExt.setEnabled( wErrorIgnored.getSelection() );
+        wbbWarningDestDir.setEnabled( wErrorIgnored.getSelection() );
+        wbvWarningDestDir.setEnabled( wErrorIgnored.getSelection() );
+
+        wlLineNrDestDir.setEnabled( wErrorIgnored.getSelection() );
+        wLineNrDestDir.setEnabled( wErrorIgnored.getSelection() );
+        wlLineNrExt.setEnabled( wErrorIgnored.getSelection() );
+        wLineNrExt.setEnabled( wErrorIgnored.getSelection() );
+        wbbLineNrDestDir.setEnabled( wErrorIgnored.getSelection() );
+        wbvLineNrDestDir.setEnabled( wErrorIgnored.getSelection() );
+    }
+
 	/**
 	 * Read the data from the ExcelInputMeta object and show it in this dialog.
 	 * 
@@ -931,6 +1089,11 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			wFilenameList.setRowNums();
 			wFilenameList.optWidth(true);
 		}
+        
+        wAccFilenames.setSelection(in.isAcceptingFilenames());
+        if (in.getAcceptingField()!=null) wAccField.setText(in.getAcceptingField());
+        if (in.getAcceptingStep()!=null) wAccStep.setText(in.getAcceptingStep().getName());
+
 		wHeader.setSelection(in.startsWithHeader());
 		wNoempty.setSelection(in.ignoreEmptyRows());
 		wStoponempty.setSelection(in.stopOnEmpty());
@@ -1000,7 +1163,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         if (in.getLineNumberFilesDestinationDirectory()!=null) wLineNrDestDir.setText(in.getLineNumberFilesDestinationDirectory());
         if (in.getLineNumberFilesExtension()!=null) wLineNrExt.setText(in.getLineNumberFilesExtension());
 
-		enableFields();
+		setFlags();
 		
 		wStepname.selectAll();
 	}
@@ -1031,6 +1194,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		in.setStartsWithHeader( wHeader.getSelection() );
 		in.setIgnoreEmptyRows( wNoempty.getSelection() );
 		in.setStopOnEmpty( wStoponempty.getSelection() );
+
+        wAccFilenames.setSelection(in.isAcceptingFilenames());
+        if (in.getAcceptingField()!=null) wAccField.setText(in.getAcceptingField());
+        if (in.getAcceptingStep()!=null) wAccStep.setText(in.getAcceptingStep().getName());
 
 		int nrfiles    = wFilenameList.nrNonEmpty();
 		int nrsheets   = wSheetnameList.nrNonEmpty();
@@ -1153,6 +1320,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         fdErrorIgnored.top = new FormAttachment(previous, margin);
         wErrorIgnored.setLayoutData(fdErrorIgnored);
         previous = wErrorIgnored;
+        wErrorIgnored.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setFlags(); }});
 
         // Skip error lines?
         wlSkipErrorLines = new Label(wErrorComp, SWT.RIGHT);

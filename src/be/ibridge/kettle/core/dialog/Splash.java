@@ -31,12 +31,16 @@ public class Splash
 	{
 		Rectangle displayBounds = display.getBounds();
 		
-		splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
 		final Image kettle_image = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_splash.png"));
+        final Image kettle_icon  = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoon32.png"));
+        
+        splash = new Shell(display, SWT.NONE /*SWT.ON_TOP*/);
+        splash.setImage(kettle_icon);
+        splash.setText("Pentaho Data Integration");
         
 		FormLayout splashLayout = new FormLayout();
 		splash.setLayout(splashLayout);
-		
+        
 		Canvas canvas = new Canvas(splash, SWT.NO_BACKGROUND);
 		
 		FormData fdCanvas = new FormData();
