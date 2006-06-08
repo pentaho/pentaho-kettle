@@ -104,8 +104,6 @@ public class XMLHandler
 		
 		if (n==null) return null;
 		
-		// Haal alle <step> delen één voor één uit het document.
-		//
 		children=n.getChildNodes();
 		for (int i=0;i<children.getLength();i++)
 		{
@@ -141,8 +139,6 @@ public class XMLHandler
 		
 		int count=0;
 		
-		// Haal alle <hop>'s één voor één uit <order>
-		//
 		if (n==null) return 0;
 		
 		children=n.getChildNodes();
@@ -173,8 +169,6 @@ public class XMLHandler
 		
 		int count=0;
 		
-		// Haal alle <hop>'s één voor één uit <order>
-		//
 		children=n.getChildNodes();
 		for (int i=0;i<children.getLength();i++)
 		{
@@ -214,8 +208,6 @@ public class XMLHandler
 		
 		int count=0;
 		
-		// Haal alle <hop>'s één voor één uit <order>
-		//
 		children=n.getChildNodes();
 		for (int i=0;i<children.getLength();i++)
 		{
@@ -263,8 +255,6 @@ public class XMLHandler
 		
 		int count=0;
 		
-		// Haal alle <hop>'s één voor één uit <order>
-		//
 		children=n.getChildNodes();
 		for (int i=0;i<children.getLength();i++)
 		{
@@ -303,8 +293,6 @@ public class XMLHandler
 		
 		int count=0;
 		
-		// Haal alle <hop>'s één voor één uit <order>
-		//
 		children=n.getChildNodes();
 		for (int i=0;i<children.getLength();i++)
 		{
