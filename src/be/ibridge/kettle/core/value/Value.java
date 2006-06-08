@@ -13,7 +13,7 @@
  **                                                                   **
  **********************************************************************/
 
- 
+
 package be.ibridge.kettle.core.value;
 
 import java.io.DataInputStream;
@@ -51,7 +51,7 @@ import be.ibridge.kettle.repository.Repository;
  * This class is one of the core classes of the Kettle framework.
  * It contains everything you need to manipulate atomic data (Values/Fields/...)
  * and to describe it in the form of meta-data. (name, length, precision, etc.)
- * 
+ *
  * @author Matt
  * @since Beginning 2003
  */
@@ -59,7 +59,7 @@ import be.ibridge.kettle.repository.Repository;
 public class Value implements Cloneable, XMLInterface, Serializable
 {
     private static final long serialVersionUID = -6310073485210258622L;
-    
+
     /**
 	 * Value type indicating that the value has no type set.
 	 */
@@ -101,13 +101,13 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			"-",                                                          // $NON-NLS-1$
 			"Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable" // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$ $NON-NLS-4$ $NON-NLS-5$ $NON-NLS-6$
 		};
-	
+
 	private ValueInterface value;
-	
+
 	private String      name;
 	private String      origin;
 	private boolean     NULL;
-	
+
 	/**
 	 * Constructs a new Value of type EMPTY
 	 *
@@ -116,7 +116,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	{
 		clearValue();
 	}
-		
+
 	/**
 	 * Constructs a new Value with a name.
 	 * 
@@ -158,18 +158,18 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		default: value = null;
 		}
 	}
-	
+
 	/**
 	 * Convert the value to another type.  This only works if a value has been set previously.
 	 * That is the reason this method is private. Rather, use the public method setType(int type).
-	 *  
-	 * @param val_type The type to convert to.
+	 *
+	 * @param valType The type to convert to.
 	 */
-	private void convertTo(int val_type)
+	private void convertTo(int valType)
 	{
 		if (value!=null)
 		{
-			switch(val_type)
+			switch(valType)
 			{
 			case VALUE_TYPE_NUMBER    : value = new ValueNumber(value.getNumber()); break;
 			case VALUE_TYPE_STRING    : value = new ValueString(value.getString()); break;
@@ -184,21 +184,21 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
 	/**
 	 * Constructs a new Value with a name, a type, length and precision.
-	 * 
+	 *
 	 * @param name Sets the name of the Value
-	 * @param val_type Sets the type of the Value (Value.VALUE_TYPE_*)
+	 * @param valType Sets the type of the Value (Value.VALUE_TYPE_*)
 	 * @param length The length of the value
 	 * @param precision The precision of the value
 	 */
-	public Value(String name, int val_type, int length, int precision)
+	public Value(String name, int valType, int length, int precision)
 	{
-		this(name, val_type);
+		this(name, valType);
 		setLength(length, precision);
 	}
 
     /**
      * Constructs a new Value of Type VALUE_TYPE_BIGNUMBER, with a name, containing a BigDecimal number
-     * 
+     *
      * @param name Sets the name of the Value
      * @param bignum The number to store in this Value
      */
@@ -212,7 +212,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
     /**
 	 * Constructs a new Value of Type VALUE_TYPE_NUMBER, with a name, containing a number
-	 * 
+	 *
 	 * @param name Sets the name of the Value
 	 * @param num The number to store in this Value
 	 */
@@ -236,7 +236,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
 	/**
 	 * Constructs a new Value of Type VALUE_TYPE_STRING, with a name, containing a String
-	 * 
+	 *
 	 * @param name Sets the name of the Value
 	 * @param str The text to store in this Value
 	 */
@@ -249,7 +249,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
 	/**
 	 * Constructs a new Value of Type VALUE_TYPE_DATE, with a name, containing a Date
-	 * 
+	 *
 	 * @param name Sets the name of the Value
 	 * @param dat The date to store in this Value
 	 */
@@ -262,7 +262,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
 	/**
 	 * Constructs a new Value of Type VALUE_TYPE_BOOLEAN, with a name, containing a boolean value
-	 * 
+	 *
 	 * @param name Sets the name of the Value
 	 * @param bool The boolean to store in this Value
 	 */
@@ -275,7 +275,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
 	/**
 	 * Constructs a new Value of Type VALUE_TYPE_INTEGER, with a name, containing an integer number
-	 * 
+	 *
 	 * @param name Sets the name of the Value
 	 * @param l The integer to store in this Value
 	 */
@@ -285,10 +285,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		setValue(l);
 		setName(name);
 	}
-	
+
 	/**
 	 * Constructs a new Value as a copy of another value and renames it...
-	 * 
+	 *
 	 * @param name The new name of the copied Value
 	 * @param v The value to be copied
 	 */
@@ -297,17 +297,17 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		this(v);
 		setName(name);
 	}
-	
+
 	/**
 	 * Constructs a new Value as a copy of another value
-	 * 
+	 *
 	 * @param v The Value to be copied
 	 */
 	public Value(Value v)
 	{
 		if (v!=null)
 		{
-			setType( v.getType() );
+			setType(v.getType());
 			value = v.getValueCopy();
 			setName(v.getName());
 			setLength(v.getLength(), v.getPrecision());
@@ -333,12 +333,12 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			retval=null;
 		}
 		return retval;
-	}			
+	}		
 
 	/**
 	 * Build a copy of this Value
 	 * @return a copy of another value
-	 * 
+	 *
 	 */
 	public Value Clone()
 	{
@@ -367,7 +367,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
 	/**
 	 * Sets the name of a Value
-	 * 
+	 *
 	 * @param name The new name of the value
 	 */
 	public void setName(String name)
@@ -377,34 +377,34 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
 	/**
 	 * Obtain the name of a Value
-	 * 
+	 *
 	 * @return The name of the Value
 	 */
 	public String getName()
 	{
 		return name;
 	}
-	
+
 	/**
 	 * This method allows you to set the origin of the Value by means of the name of the originating step.
-	 * 
+	 *
 	 * @param step_of_origin The step of origin.
 	 */
 	public void setOrigin(String step_of_origin)
 	{
 		origin = step_of_origin;
 	}
-	
+
 	/**
 	 * Obtain the origin of the step.
-	 * 
+	 *
 	 * @return The name of the originating step
 	 */
 	public String getOrigin()
 	{
 		return origin;
 	}
-	
+
     /**
      * Sets the value to a BigDecimal number value.
      * @param num The number value to set the value to
@@ -413,10 +413,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
     {
         if (value==null || value.getType()!=VALUE_TYPE_BIGNUMBER)  value = new ValueBigNumber(num);
         else value.setBigNumber(num);
-        
+
         setNull(false);
     }
-    
+
 	/**
 	 * Sets the value to a double Number value.
 	 * @param num The number value to set the value to
@@ -427,7 +427,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		else value.setNumber(num);
 		setNull(false);
 	}
-	
+
 	/**
 	 * Sets the Value to a String text
 	 * @param str The StringBuffer to get the text from
@@ -438,7 +438,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		else value.setString(str.toString());
 		setNull(str==null);
 	}
-	
+
 	/**
 	 * Sets the Value to a String text
 	 * @param str The String to get the text from
@@ -455,7 +455,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
         else value.setSerializable(ser);
         setNull(ser==null);
     }
-    
+   
 	/**
 	 * Sets the Value to a Date
 	 * @param dat The Date to set the Value to
@@ -466,7 +466,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		else value.setDate(dat);
 		setNull(dat==null);
 	}
-	
+
 	/**
 	 * Sets the Value to a boolean
 	 * @param bool The boolean to set the Value to
@@ -525,19 +525,18 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			clearValue();
 		}
 	}
-    
+
     /**
      * Get the BigDecimal number of this Value.
-     * If the value is not of type BIG_NUMBER, a conversion is done first. 
+     * If the value is not of type BIG_NUMBER, a conversion is done first.
      * @return the double precision floating point number of this Value.
      */
-   public BigDecimal getBigNumber()
+    public BigDecimal getBigNumber()
     {
         if (value==null || isNull()) return null;
         return value.getBigNumber();
     }
-    
-	
+
 	/**
 	 * Get the double precision floating point number of this Value.
 	 * If the value is not of type NUMBER, a conversion is done first. 
@@ -559,7 +558,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		if (value==null || isNull()) return null;
 		return value.getString();
 	}
-	
+
 	/**
 	 * Get the length of the String representing this value.
 	 * @return the length of the String representing this value.
@@ -570,7 +569,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		if (s==null) return 0;
 		return s.length();
 	}
-		
+
 	/**
 	 * Get the Date of this Value.
 	 * If the Value is not of type DATE, a conversion is done first.
@@ -581,7 +580,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		if (value==null || isNull()) return null;
 		return value.getDate();
 	}
-    
+  
     /**
      * Get the Serializable of this Value.
      * If the Value is not of type Serializable, it returns null.
@@ -592,7 +591,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
         if (value==null || isNull() || value.getType() != VALUE_TYPE_SERIALIZABLE) return null;
         return value.getSerializable();
     }
-	
+
 	/**
 	 * Get the boolean value of this Value.
 	 * If the Value is not of type BOOLEAN, it will be converted.
@@ -608,6 +607,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		return value.getBoolean();
 	}
 
+	
 	/**
 	 * Get the long integer representation of this value.
 	 * If the Value is not of type INTEGER, it will be converted:
@@ -615,7 +615,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 * <p>Number: round the double value and return the resulting long integer.
 	 * <p>Date: return the number of miliseconds after <code>1970:01:01 00:00:00</code>
 	 * <p>Date: always false.
-	 * 
+	 *
 	 * @return the long integer representation of this value.
 	 */
 	public long getInteger()
@@ -623,7 +623,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		if (value==null || isNull()) return 0L;
 		return value.getInteger();
 	}
-	
+
 	/**
 	 * Set the type of this Value
 	 * @param val_type The type to which the Value will be set.
@@ -636,7 +636,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			convertTo(val_type);
 		}
 	}
-	
+
 	/**
 	 * Returns the type of this Value
 	 * @return the type of this Value
@@ -646,7 +646,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		if (value==null) return VALUE_TYPE_NONE;
 		return value.getType();
 	}
-	
+
 	/**
 	 * Checks whether or not this Value is empty.
 	 * A value is empty if it has the type VALUE_TYPE_EMPTY
@@ -657,7 +657,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		if (value==null) return true;
 		return false;
 	}
-	
+
 	/**
 	 * Checks wheter or not the value is a String.
 	 * @return true if the value is a String.
@@ -766,7 +766,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	public String toString(boolean pad)
 	{
 		String retval;
-		
+
 		switch(getType())
 		{
 		case VALUE_TYPE_STRING :  retval=toStringString(pad);  break;
@@ -777,10 +777,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
         case VALUE_TYPE_BIGNUMBER: retval=toStringBigNumber(pad); break;
 		default: retval=""; break; 
 		}
-		
+
 		return retval;
 	}
-	
+
 	/**
 	 * a String text representation of this Value, optionally padded to the specified length
 	 * @param pad true if you want to pad the resulting String
@@ -794,10 +794,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		// on 100000 iterations in the advantage of StringBuffers. The
 		// lessened creation of objects may be worth it in the long run.
 		StringBuffer retval=new StringBuffer(getTypeDesc());
-		
+
 		switch(getType())
 		{
-		case VALUE_TYPE_STRING :  
+		case VALUE_TYPE_STRING :
 			if (getLength()>0) retval.append('(').append(getLength()).append(')');  
 			break;
 		case VALUE_TYPE_NUMBER :
@@ -812,19 +812,19 @@ public class Value implements Cloneable, XMLInterface, Serializable
 				retval.append(')');
 			}
 			break;
-		case VALUE_TYPE_INTEGER:  
+		case VALUE_TYPE_INTEGER:
 			if (getLength()>0)
 			{
 				retval.append('(').append(getLength()).append(')');
 			}
 			break;
-		default: break; 
+		default: break;
 		}
-		
+
 		return retval.toString();
 	}
-	
-	
+
+
 	/**
 	 * Converts a String Value to String optionally padded to the specified length.
 	 * @param pad true if you want to pad the resulting string to length.
@@ -833,24 +833,24 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	private String toStringString(boolean pad)
 	{
 		String retval=null;
-		
+
 		if (value==null) return null;
-		
+
 		if (value.getLength()<=0)  // No length specified!
 		{
-			if (isNull() || value.getString()==null) 
+			if (isNull() || value.getString()==null)
 				retval = Const.NULL_STRING;
-			else            
+			else
 				retval = value.getString();
 		}
 		else
 		{
 			StringBuffer ret;
-			
+
 			if (isNull() || value.getString()==null) ret=new StringBuffer(Const.NULL_STRING);
 			else          ret=new StringBuffer(value.getString());
-			
-			if (pad) 
+
+			if (pad)
 			{
 				int length = value.getLength();
 				if (length>16384) length=16384; // otherwise we get OUT OF MEMORY errors for CLOBS.
@@ -870,21 +870,21 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	private String toStringNumber(boolean pad)
 	{
 		String retval;
-		
+
 		if (value==null) return null;
 
 		if (pad)
 		{
 			if (value.getLength()<1)
 			{
-				if (isNull()) retval=Const.NULL_NUMBER; 
+				if (isNull()) retval=Const.NULL_NUMBER;
 				else
 				{
 					DecimalFormat form= new DecimalFormat();
-                    form.applyPattern( " ##########0.0########;-#########0.0########" );
+                    form.applyPattern(" ##########0.0########;-#########0.0########");
                     // System.out.println("local.pattern = ["+form.toLocalizedPattern()+"]");
-                    retval=form. format(value.getNumber());
-				} 
+                    retval=form.format(value.getNumber());
+				}
 			}
 			else
 			{
@@ -899,12 +899,12 @@ public class Value implements Cloneable, XMLInterface, Serializable
 					StringBuffer fmt=new StringBuffer();
 					int i;
 					DecimalFormat form;
-					
+
 					if (value.getNumber()>=0) fmt.append(' '); // to compensate for minus sign.
-	
+
 					if (value.getPrecision()<0)  // Default: two decimals
 					{
-						if (value.getLength()<0)           //  format: 1234,56 (-1,-1) 
+						if (value.getLength()<0)           //  format: 1234,56 (-1,-1)
 						{
 							fmt.append("0.00");
 						}
@@ -935,12 +935,12 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 		else
 		{
-			if (isNull()) retval=Const.NULL_NUMBER; 
+			if (isNull()) retval=Const.NULL_NUMBER;
 			else retval=""+value.getNumber();
 		}
 		return retval;
 	}
-	
+
 	/**
 	 * Converts a Date value to a String.
 	 * The date has format: <code>yyyy/MM/dd HH:mm:ss.SSS</code>
@@ -952,16 +952,16 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		if (value==null) return null;
 
 		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS", Locale.US);
-		
+
 		if (isNull() || value.getDate()==null) retval=Const.NULL_DATE;
-		else          
+		else
 		{
 			retval=df.format(value.getDate()).toString();
-		} 
+		}
 
 		/*
 		   This code was removed as TYPE_VALUE_DATE does not know "length", so this
-		   could never be called anyway		  
+		   could never be called anyway
 		else
 		{
 			StringBuffer ret;
@@ -973,12 +973,12 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 		*/
 		return retval;
-	} 
-	
+	}
+
 	/**
 	 * Returns a String representing the boolean value.
 	 * It will be either "true" or "false".
-	 *  
+	 * 
 	 * @return a String representing the boolean value.
 	 */
 	private String toStringBoolean()
@@ -989,15 +989,15 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		String retval;
 		if (value==null) return null;
 
-		if (isNull()) 
+		if (isNull())
 		{
 			retval=Const.NULL_BOOLEAN;
-		} 
+		}
 		else
 		{
 			retval=value.getBoolean()?"true":"false";
 		}
-		
+
 		return retval;
 	}
 
@@ -1010,15 +1010,15 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	{
 		String retval;
 		if (value==null) return null;
-		
+
 		if (getLength()<1)
 		{
-			if (isNull()) retval=Const.NULL_INTEGER; 
+			if (isNull()) retval=Const.NULL_INTEGER;
 			else
 			{
 				DecimalFormat form= new DecimalFormat(" ###############0;-###############0");
 				retval=form.format(value.getInteger());
-			} 
+			}
 		}
 		else
 		{
@@ -1033,29 +1033,29 @@ public class Value implements Cloneable, XMLInterface, Serializable
 				StringBuffer fmt=new StringBuffer();
 				int i;
 				DecimalFormat form;
-				
-				if (value.getInteger()>=0) fmt.append(" "); // to compensate for minus sign.
+	
+				if (value.getInteger()>=0) fmt.append(' '); // to compensate for minus sign.
 
 				if (getPrecision()<0)  // Default: two decimals
 				{
-					if (getLength()<0)           //  format: 1234,56 (-1,-1) 
+					if (getLength()<0)           //  format: 1234,56 (-1,-1)
 					{
 						fmt.append("0.00");
 					}
 					else                    //  format 0000001234,00 --> (10,-1)
 					{
-						for (i=0;i<getLength();i++) fmt.append("0");
+						for (i=0;i<getLength();i++) fmt.append('0');
 						fmt.append(".00"); // for the .00
 					}
 				}
 				else
 				if (getPrecision()==0) // No decimals 0000001234 --> (10,0)
 				{
-					for (i=0;i<getLength();i++) fmt.append("0"); // all zeroes.
+					for (i=0;i<getLength();i++) fmt.append('0'); // all zeroes.
 				}
 				else  // Floating point format   00001234,56  --> (12,2)
 				{
-						for (i=0;i<=getLength();i++) fmt.append("0"); // all zeroes.
+						for (i=0;i<=getLength();i++) fmt.append('0'); // all zeroes.
 						fmt.setCharAt(getLength()-getPrecision()+1-(value.getInteger()<0?1:0), '.');     // one 'comma'
 				}
 				form= new DecimalFormat(fmt.toString());
@@ -1064,7 +1064,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 		return retval;
 	}
-    
+
     /**
      * Converts a BigNumber value to a String, optionally padding the result to the specified length. // TODO: BigNumber padding
      * @param pad true if you want to pad the resulting string to length.
@@ -1080,11 +1080,11 @@ public class Value implements Cloneable, XMLInterface, Serializable
         {
             retval = retval.replace('.', Const.DEFAULT_DECIMAL_SEPARATOR);
         }
-        
+
         return retval;
     }
+   
 
-			
 	/**
 	 * Sets the length of the Number, Integer or String to the specified length
 	 * Note: no truncation of the value takes place, this is meta-data only!
@@ -1095,7 +1095,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		if (value==null) return;
 		value.setLength(l);
 	}
-	
+
 	/**
 	 * Sets the length and the precision of the Number, Integer or String to the specified length & precision
 	 * Note: no truncation of the value takes place, this is meta-data only!
@@ -1107,7 +1107,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		if (value==null) return;
 		value.setLength(l,p);
 	}
-	
+
 	/**
 	 * Get the length of this Value.
 	 * @return the length of this Value.
@@ -1117,7 +1117,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		if (value==null) return -1;
 		return value.getLength();
 	}
-	
+
 	/**
 	 * get the precision of this Value
 	 * @return the precision of this Value.
@@ -1138,7 +1138,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		if (value==null) return;
 		value.setPrecision(p);
 	}
-	
+
 	/**
 	 * Return the type of a value in a textual form: "String", "Number", "Integer", "Boolean", "Date", ...
 	 * @return A String describing the type of value.
@@ -1151,14 +1151,14 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
 	/**
 	 * Return the type of a value in a textual form: "String", "Number", "Integer", "Boolean", "Date", ... given a certain integer type
-	 * @param t the type to convert to text. 
+	 * @param t the type to convert to text.
 	 * @return A String describing the type of a certain value.
 	 */
 	public static final String getTypeDesc(int t)
 	{
 		return valueTypeCode[t];
 	}
-	
+
 	/**
 	 * Convert the String description of a type to an integer type.
 	 * @param desc The description of the type to convert
@@ -1167,7 +1167,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	public static final int getType(String desc)
 	{
 		int i;
-		
+
 		for (i=1;i<valueTypeCode.length;i++)
 		{
 			if (valueTypeCode[i].equalsIgnoreCase(desc))
@@ -1175,10 +1175,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
 				return i; 
 			}
 		}
-		
+
 		return VALUE_TYPE_NONE;
 	}
-	
+
 	/**
 	 * get an array of String describing the possible types a Value can have.
 	 * @return an array of String describing the possible types a Value can have.
@@ -1212,7 +1212,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	{
 		setNull(true);
 	}
-	
+
 	/**
 	 * Sets or unsets a value to null, no type is being changed.
 	 * @param n true if you want the value to be null, false if you don't want this to be the case.
@@ -1221,7 +1221,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	{
 		NULL=n;
 	}
-	
+
 	/**
 	 * Checks wheter or not a value is null.
 	 * @return true if the Value is null.
@@ -1230,7 +1230,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	{
 		return NULL;
 	}
-    
+
     /**
      * Write the object to an ObjectOutputStream
      * @param out
@@ -1240,7 +1240,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
     {
         writeObj(new DataOutputStream(out));
     }
-    
+
     private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException
     {
         readObj(new DataInputStream(in));
@@ -1251,29 +1251,29 @@ public class Value implements Cloneable, XMLInterface, Serializable
         int type=getType();
 
         // Handle type
-        dos.writeInt( getType() );
+        dos.writeInt(getType());
         
         // Handle name-length
-        dos.writeInt( name.length() );  
+        dos.writeInt(name.length());  
         
         // Write name
-        dos.writeChars( name );
+        dos.writeChars(name);
 
         // length & precision
-        dos.writeInt( getLength() );
-        dos.writeInt( getPrecision() );
+        dos.writeInt(getLength());
+        dos.writeInt(getPrecision());
 
         // NULL?
         dos.writeBoolean(isNull());
-        
+
         // Handle Content -- only when not NULL
         if (!isNull())
         {
             switch(type)
             {
-            case VALUE_TYPE_STRING : 
+            case VALUE_TYPE_STRING :
             case VALUE_TYPE_BIGNUMBER:
-                if (getString()!=null && getString().getBytes().length>0) 
+                if (getString()!=null && getString().getBytes().length>0)
                 {
                     dos.writeInt(getString().getBytes("UTF-8").length);
                     dos.writeUTF(getString());
@@ -1283,27 +1283,27 @@ public class Value implements Cloneable, XMLInterface, Serializable
                     dos.writeInt(0);
                 }
                 break;
-            case VALUE_TYPE_DATE   : 
+            case VALUE_TYPE_DATE   :
                 dos.writeBoolean(getDate()!=null);
-                if (getDate()!=null)   
+                if (getDate()!=null)
                 {
                     dos.writeLong(getDate().getTime());
                 }
                 break;
-            case VALUE_TYPE_NUMBER : 
-                dos.writeDouble(getNumber()); 
+            case VALUE_TYPE_NUMBER :
+                dos.writeDouble(getNumber());
                 break;
-            case VALUE_TYPE_BOOLEAN: 
-                dos.writeBoolean(getBoolean()); 
+            case VALUE_TYPE_BOOLEAN:
+                dos.writeBoolean(getBoolean());
                 break;
-            case VALUE_TYPE_INTEGER: 
-                dos.writeLong(getInteger()); 
+            case VALUE_TYPE_INTEGER:
+                dos.writeLong(getInteger());
                 break;
             default: break; // nothing
             }
         }
     }
-	
+
 	/**
 	 * Write the value, including the meta-data to a DataOutputStream
 	 * @param outputStream the OutputStream to write to .
@@ -1320,27 +1320,27 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			throw new KettleFileException("Unable to write value to output stream", e);
 		}
 	}
-    
+
     public void readObj(DataInputStream dis) throws IOException
     {
         // type
         int theType = dis.readInt(); 
         newValue(theType);
-        
+
         // name-length
         int nameLength=dis.readInt();  
-        
+
         // name
         StringBuffer nameBuffer=new StringBuffer();
-        for (int i=0;i<nameLength;i++) nameBuffer.append( dis.readChar() );
+        for (int i=0;i<nameLength;i++) nameBuffer.append(dis.readChar());
         setName(new String(nameBuffer));
-        
+
         // length & precision
-        setLength( dis.readInt(), dis.readInt() ); 
-        
+        setLength(dis.readInt(), dis.readInt()); 
+
         // Null?
-        setNull( dis.readBoolean() );
-        
+        setNull(dis.readBoolean());
+
         // Read the values
         if (!isNull())
         {
@@ -1353,9 +1353,9 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 if (dataLength>0)
                 {
                     String string = dis.readUTF();
-                    setValue( string );
+                    setValue(string);
                 }
-                if (theType==VALUE_TYPE_BIGNUMBER) 
+                if (theType==VALUE_TYPE_BIGNUMBER)
                 {
                     try
                     {
@@ -1374,13 +1374,13 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 }
                 break;
             case VALUE_TYPE_NUMBER:
-                setValue( dis.readDouble() ); 
+                setValue(dis.readDouble());
                 break;
             case VALUE_TYPE_INTEGER:
-                setValue( dis.readLong() );
+                setValue(dis.readLong());
                 break;
             case VALUE_TYPE_BOOLEAN:
-                setValue( dis.readBoolean() );
+                setValue(dis.readBoolean());
                 break;
             default: break;
             }
@@ -1419,15 +1419,15 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		{
 			// Is the value NULL?
 			dos.writeBoolean(isNull());
-			
+
 			// Handle Content -- only when not NULL
 			if (!isNull())
 			{
 				switch(getType())
 				{
-				case VALUE_TYPE_STRING : 
+				case VALUE_TYPE_STRING :
                 case VALUE_TYPE_BIGNUMBER:
-					if (getString()!=null && getString().getBytes().length>0) 
+					if (getString()!=null && getString().getBytes().length>0)
 					{
 						dos.writeInt(getString().getBytes().length);
 						dos.writeUTF(getString());
@@ -1437,21 +1437,21 @@ public class Value implements Cloneable, XMLInterface, Serializable
 						dos.writeInt(0);
 					}
 					break;
-				case VALUE_TYPE_DATE   : 
+				case VALUE_TYPE_DATE   :
 					dos.writeBoolean(getDate()!=null);
-					if (getDate()!=null)   
+					if (getDate()!=null)
 					{
 						dos.writeLong(getDate().getTime());
 					}
 					break;
-				case VALUE_TYPE_NUMBER : 
-					dos.writeDouble(getNumber()); 
+				case VALUE_TYPE_NUMBER :
+					dos.writeDouble(getNumber());
 					break;
-				case VALUE_TYPE_BOOLEAN: 
-					dos.writeBoolean(getBoolean()); 
+				case VALUE_TYPE_BOOLEAN:
+					dos.writeBoolean(getBoolean());
 					break;
-				case VALUE_TYPE_INTEGER: 
-					dos.writeLong(getInteger()); 
+				case VALUE_TYPE_INTEGER:
+					dos.writeLong(getInteger());
 					break;
 				default: break; // nothing
 				}
@@ -1461,7 +1461,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		{
 			throw new KettleFileException("Unable to write value data to output stream", e);
 		}
-		
+
 		return true;
 	}
 
@@ -1474,12 +1474,12 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	{
 		setValue(metaData);
 		setName(metaData.getName());
-		
+
 		try
 		{
 			// Is the value NULL?
 			setNull(dis.readBoolean());
-						
+
 			// Read the values
 			if (!isNull())
 			{
@@ -1492,7 +1492,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 					if (dataLength>0)
 					{
                         String string = dis.readUTF();
-						setValue( string );
+						setValue(string);
                         if (metaData.isBigNumber()) convertString(metaData.getType());
 					}
 					break;
@@ -1503,17 +1503,17 @@ public class Value implements Cloneable, XMLInterface, Serializable
 					}
 					break;
 				case VALUE_TYPE_NUMBER:
-					setValue( dis.readDouble() ); 
+					setValue(dis.readDouble());
 					break;
 				case VALUE_TYPE_INTEGER:
-					setValue( dis.readLong() );
+					setValue(dis.readLong());
 					break;
 				case VALUE_TYPE_BOOLEAN:
-					setValue( dis.readBoolean() );
+					setValue(dis.readBoolean());
 					break;
                 default: break;
 				}
-			}			
+			}
 		}
 		catch(EOFException e)
 		{
@@ -1544,21 +1544,21 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public int compare(Value v, boolean caseInsensitive)
 	{
-		boolean n1 =   isNull() || (  isString() && (   getString()==null ||   getString().length()==0 )) || (  isDate() &&   getDate()==null) || (  isBigNumber() &&   getBigNumber()==null);
-		boolean n2 = v.isNull() || (v.isString() && ( v.getString()==null || v.getString().length()==0 )) || (v.isDate() && v.getDate()==null) || (v.isBigNumber() && v.getBigNumber()==null);
-		
-		// null is always smaller! 
-		if ( n1 && !n2) return -1; 
-		if (!n1 &&  n2) return  1; 
-		if ( n1 &&  n2) return  0; 
-		
+		boolean n1 = isNull() || (isString() && (getString()==null || getString().length()==0)) || (isDate() && getDate()==null) || (isBigNumber() && getBigNumber()==null);
+		boolean n2 = v.isNull() || (v.isString() && (v.getString()==null || v.getString().length()==0)) || (v.isDate() && v.getDate()==null) || (v.isBigNumber() && v.getBigNumber()==null);
+
+		// null is always smaller!
+		if ( n1 && !n2) return -1;
+		if (!n1 &&  n2) return  1;
+		if ( n1 &&  n2) return  0;
+
 		switch(getType())
 		{
 		case VALUE_TYPE_BOOLEAN:
 		    {
-    			if ( getBoolean() &&  v.getBoolean() || 
+    			if (getBoolean() &&  v.getBoolean() || 
     			    !getBoolean() && !v.getBoolean()) return  0;  // true == true, false == false
-    			if ( getBoolean() && !v.getBoolean()) return  1;  // true  > false
+    			if (getBoolean() && !v.getBoolean()) return  1;  // true  > false
     			return -1;  // false < true
             }
 
@@ -1566,7 +1566,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
             {
 			    return Double.compare(getNumber(), v.getNumber());
             }
-			
+
 		case VALUE_TYPE_NUMBER :
             {
 			    return Double.compare(getNumber(), v.getNumber());
@@ -1576,9 +1576,9 @@ public class Value implements Cloneable, XMLInterface, Serializable
             {
     			String one = Const.rtrim(getString());
     			String two = Const.rtrim(v.getString());
-                
+
     			int cmp=0;
-                if (caseInsensitive) 
+                if (caseInsensitive)
                 {
                     cmp = one.compareToIgnoreCase(two);
                 }
@@ -1586,10 +1586,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 {
                     cmp = one.compareTo(two);
                 }
-                
+
                 return cmp;
             }
-            
+
 		case VALUE_TYPE_INTEGER:
             {
 			    return Double.compare(getNumber(), v.getNumber());
@@ -1600,20 +1600,20 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 return getBigNumber().compareTo(v.getBigNumber());
             }
 		}
-		
+
 		// Still here?  Not possible!  But hey, give back 0, mkay?
-		
+
 		return 0;
 	}
-	
+
 	public boolean equals(Object v)
 	{
-		if (compare((Value)v)==0) 
-			return true; 
-		else 
+		if (compare((Value)v)==0)
+			return true;
+		else
 			return false;
 	}
-	
+
 	/**
 	 * Check whether this value is equal to the String supplied.
 	 * @param string The string to check for equality
@@ -1627,17 +1627,17 @@ public class Value implements Cloneable, XMLInterface, Serializable
     /**
      * Check whether this value is equal to the BigDecimal supplied.
      * @param number The BigDecimal to check for equality
-     * @return true if the BigDecimal representation of the value is equal to number. 
+     * @return true if the BigDecimal representation of the value is equal to number.
      */
     public boolean isEqualTo(BigDecimal number)
     {
         return getBigNumber().equals(number);
     }
-    
+
 	/**
 	 * Check whether this value is equal to the Number supplied.
 	 * @param number The Number to check for equality
-	 * @return true if the Number representation of the value is equal to number. 
+	 * @return true if the Number representation of the value is equal to number.
 	 */
 	public boolean isEqualTo(double number)
 	{
@@ -1647,7 +1647,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	/**
 	 * Check whether this value is equal to the Integer supplied.
 	 * @param number The Integer to check for equality
-	 * @return true if the Integer representation of the value is equal to number. 
+	 * @return true if the Integer representation of the value is equal to number.
 	 */
 	public boolean isEqualTo(long number)
 	{
@@ -1657,7 +1657,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	/**
 	 * Check whether this value is equal to the Integer supplied.
 	 * @param number The Integer to check for equality
-	 * @return true if the Integer representation of the value is equal to number. 
+	 * @return true if the Integer representation of the value is equal to number.
 	 */
 	public boolean isEqualTo(int number)
 	{
@@ -1667,7 +1667,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	/**
 	 * Check whether this value is equal to the Integer supplied.
 	 * @param number The Integer to check for equality
-	 * @return true if the Integer representation of the value is equal to number. 
+	 * @return true if the Integer representation of the value is equal to number.
 	 */
 	public boolean isEqualTo(byte number)
 	{
@@ -1677,7 +1677,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	/**
 	 * Check whether this value is equal to the Date supplied.
 	 * @param date The Date to check for equality
-	 * @return true if the Date representation of the value is equal to date. 
+	 * @return true if the Date representation of the value is equal to date.
 	 */
 	public boolean isEqualTo(Date date)
 	{
@@ -1716,23 +1716,23 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			default: break;
 			}
 		}
-		
+
 		return hash;
 	}
-	
+
 
 
 	// OPERATORS & COMPARATORS
-	
+
 	public Value and(Value v)
 	{
 		long n1 = getInteger();
 		long n2 = v.getInteger();
-		
+
 		long res = n1 & n2;
-		
+
 		setValue(res);
-		
+
 		return this;
 	}
 
@@ -1740,23 +1740,23 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	{
 		long n1 = getInteger();
 		long n2 = v.getInteger();
-		
+
 		long res = n1 ^ n2;
-		
+
 		setValue(res);
-		
+
 		return this;
 	}
-	
+
 	public Value or(Value v)
 	{
 		long n1 = getInteger();
 		long n2 = v.getInteger();
-		
+
 		long res = n1 | n2;
-		
+
 		setValue(res);
-		
+
 		return this;
 	}
 
@@ -1764,23 +1764,23 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	{
 		boolean b1 = getBoolean();
 		boolean b2 = v.getBoolean();
-		
+
 		boolean res = b1 && b2;
-		
+
 		setValue(res);
-		
+
 		return this;
 	}
-	
+
 	public Value bool_or(Value v)
 	{
 		boolean b1 = getBoolean();
 		boolean b2 = v.getBoolean();
-		
+
 		boolean res = b1 || b2;
-		
+
 		setValue(res);
-		
+
 		return this;
 	}
 
@@ -1788,69 +1788,69 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	{
 		boolean b1 = getBoolean();
 		boolean b2 = v.getBoolean();
-		
+
 		boolean res = b1&&b2 ? false : !b1&&!b2 ? false : true;
-		
+
 		setValue(res);
-		
+
 		return this;
 	}
 
 	public Value bool_not()
 	{
-		if (getBoolean()) value.setBoolean(!getBoolean());		
+		value.setBoolean(!getBoolean());		
 		return this;
 	}
-	
-	
+
+
 	public Value greater_equal(Value v)
 	{
 		if (compare(v)>=0) setValue(true); else setValue(false);
 		return this;
 	}
-	
+
 	public Value smaller_equal(Value v)
 	{
 		if (compare(v)<=0) setValue(true); else setValue(false);
 		return this;
 	}
-	
+
 	public Value different(Value v)
 	{
 		if (compare(v)!=0) setValue(true); else setValue(false);
 		return this;
 	}
-	
+
 	public Value equal(Value v)
 	{
 		if (compare(v)==0) setValue(true); else setValue(false);
 		return this;
 	}
-	
+
 	public Value like(Value v)
 	{
 		String cmp=v.getString();
-				
+
 		// Is cmp part of look?
 		int idx=getString().indexOf(cmp);
-			
+
 		if (idx<0) setValue(false); else setValue(true);
 
 		return this;
 	}
-	
+
 	public Value greater(Value v)
 	{
 		if (compare(v)>0) setValue(true); else setValue(false);
 		return this;
 	}
-	
+
 	public Value smaller(Value v)
 	{
 		if (compare(v)<0) setValue(true); else setValue(false);
 		return this;
 	}
-	
+
 	public Value minus(BigDecimal v) throws KettleValueException { return minus(new Value("tmp", v)); }
     public Value minus(double     v) throws KettleValueException { return minus(new Value("tmp", v)); }
 	public Value minus(long       v) throws KettleValueException { return minus(new Value("tmp", v)); }
@@ -1863,8 +1863,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
             case VALUE_TYPE_BIGNUMBER : value.setBigNumber(getBigNumber().subtract(v.getBigNumber())); break;
 			case VALUE_TYPE_NUMBER    : value.setNumber(getNumber()-v.getNumber()); break;
 			case VALUE_TYPE_INTEGER   : value.setInteger(getInteger()-v.getInteger()); break;
-			case VALUE_TYPE_BOOLEAN   : 
-			case VALUE_TYPE_STRING    : 
+			case VALUE_TYPE_BOOLEAN   :
+			case VALUE_TYPE_STRING    :
 			default:
 				throw new KettleValueException("Subtraction can only be done with numbers!");
 		}
@@ -1889,7 +1889,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 		return this;
 	}
-	
+
     public Value divide(BigDecimal v) throws KettleValueException { return divide(new Value("tmp", v)); }
 	public Value divide(double     v) throws KettleValueException { return divide(new Value("tmp", v)); }
 	public Value divide(long       v) throws KettleValueException { return divide(new Value("tmp", v)); }
@@ -1908,16 +1908,16 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	            case VALUE_TYPE_BIGNUMBER : setValue(getBigNumber().divide(v.getBigNumber(), BigDecimal.ROUND_UP)); break;
 				case VALUE_TYPE_NUMBER    : setValue(getNumber()/v.getNumber()); break;
 				case VALUE_TYPE_INTEGER   : setValue(getInteger()/v.getInteger()); break;
-				case VALUE_TYPE_BOOLEAN   : 
-				case VALUE_TYPE_STRING    : 
+				case VALUE_TYPE_BOOLEAN   :
+				case VALUE_TYPE_STRING    :
 				default:
 					throw new KettleValueException("Division can only be done with numeric data!");
 			}
 		}
 		return this;
 	}
-	
-    public Value multiply(BigDecimal v) throws KettleValueException { return multiply(new Value("tmp", v)); }
+
+	public Value multiply(BigDecimal v) throws KettleValueException { return multiply(new Value("tmp", v)); }
     public Value multiply(double     v) throws KettleValueException { return multiply(new Value("tmp", v)); }
 	public Value multiply(long       v) throws KettleValueException { return multiply(new Value("tmp", v)); }
 	public Value multiply(int        v) throws KettleValueException { return multiply(new Value("tmp", (long)v)); }
@@ -1937,7 +1937,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			String append="";
 			int n;
 			if (v.isString())
-			{ 
+			{
 				s=new StringBuffer(v.getString());
 				append=v.getString();
 				n=(int)getInteger();
@@ -1948,30 +1948,30 @@ public class Value implements Cloneable, XMLInterface, Serializable
 				append=getString();
 				n=(int)v.getInteger();
 			}
-			
+
 			if (n==0) s.setLength(0);
 			else
 			for (int i=1;i<n;i++) s.append(append);
-			
+
 			setValue(s);
 		}
 		else
         // big numbers
         if (isBigNumber() || v.isBigNumber())
         {
-            setValue( getBigNumber().multiply(v.getBigNumber()) );
+            setValue(getBigNumber().multiply(v.getBigNumber()));
         }
         else
 		// numbers
 		if (isNumber() || v.isNumber())
 		{
-			setValue( getNumber()*v.getNumber() );
+			setValue(getNumber()*v.getNumber());
 		}
 		else
 		// integers
 		if (isInteger() || v.isInteger())
 		{
-			setValue( getInteger()*v.getInteger() );
+			setValue(getInteger()*v.getInteger());
 		}
 		else
 		{
@@ -1979,11 +1979,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 		return this;
 	}
-	
-	
-	
+
+
+
 	// FUNCTIONS!!
-	
 
 	// implement the ABS function, arguments in args[]
 	public Value abs() throws KettleValueException
@@ -2063,15 +2062,19 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	public Value atan2(Value  arg0) throws KettleValueException { return atan2(arg0.getNumber()); }
 	public Value atan2(double arg0) throws KettleValueException
 	{
-		if (isNull()) return this;
-		
+		if (isNull()) 
+		{
+			return this;
+		}
+
 		if (isNumeric())
 		{
 			setValue(Math.atan2(getNumber(), arg0));
 		}
 		else
 		{
-			 throw new KettleValueException("Function ATAN2 only works with numbers");
+			 throw new 
+			    KettleValueException("Function ATAN2 only works with numbers");
 		}
 		return this;
 	}
