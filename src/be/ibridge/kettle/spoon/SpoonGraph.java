@@ -27,7 +27,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -60,6 +59,7 @@ import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Rectangle;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.XMLTransferType;
 import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
@@ -640,7 +640,7 @@ public class SpoonGraph extends Canvas
         });
 
         // Drag & Drop for steps
-        Transfer[] ttypes = new Transfer[] { TextTransfer.getInstance() };
+        Transfer[] ttypes = new Transfer[] { XMLTransferType.getInstance() };
         DropTarget ddTarget = new DropTarget(this, DND.DROP_MOVE | DND.DROP_COPY);
         ddTarget.setTransfer(ttypes);
         ddTarget.addDropListener(new DropTargetListener()

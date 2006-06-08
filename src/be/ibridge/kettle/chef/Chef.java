@@ -38,7 +38,6 @@ import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DragSource;
 import org.eclipse.swt.dnd.DragSourceEvent;
 import org.eclipse.swt.dnd.DragSourceListener;
-import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -88,6 +87,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.TransAction;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.XMLTransferType;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseDialog;
 import be.ibridge.kettle.core.dialog.DatabaseExplorerDialog;
@@ -837,7 +837,8 @@ public class Chef
         final Tree fTree = tree;
         
         // Drag & Drop for steps
-        Transfer[] ttypes = new Transfer[] { TextTransfer.getInstance() };
+        
+        Transfer[] ttypes = new Transfer[] { XMLTransferType.getInstance() };
         
         DragSource ddSource = new DragSource(fTree, DND.DROP_MOVE | DND.DROP_COPY);
         ddSource.setTransfer(ttypes);
