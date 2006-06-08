@@ -157,12 +157,24 @@ public class GetFileNamesMeta extends BaseStepMeta implements StepMetaInterface
         else
             row = r; // add to the existing row of values...
         
-        // One (1) field is added: the filename
-        Value v = new Value("filename", Value.VALUE_TYPE_STRING);
-        v.setLength(500,-1);
-        v.setOrigin(name);
-        row.addValue(v);
-        
+        // the filename
+        Value filename = new Value("filename", Value.VALUE_TYPE_STRING);
+        filename.setLength(500,-1);
+        filename.setOrigin(name);
+        row.addValue(filename);
+
+        // the short filename
+        Value short_filename = new Value("short_filename", Value.VALUE_TYPE_STRING);
+        short_filename.setLength(500,-1);
+        short_filename.setOrigin(name);
+        row.addValue(short_filename);
+
+        // the path
+        Value path = new Value("path", Value.VALUE_TYPE_STRING);
+        path.setLength(500,-1);
+        path.setOrigin(name);
+        row.addValue(path);
+
         return row;
     }
 

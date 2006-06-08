@@ -109,9 +109,19 @@ public class GetFileNames extends BaseStep implements StepInterface
 		Row r = new Row();
 		
 		File file = data.files.getFile(data.filenr);
-		Value v = new Value("filename", file.getAbsolutePath());
-		v.setLength(500,-1);
-		r.addValue(v);
+        
+		Value filename = new Value("filename", file.getAbsolutePath());
+		filename.setLength(500,-1);
+		r.addValue(filename);
+        
+        Value short_filename = new Value("short_filename", file.getName());
+        short_filename.setLength(500,-1);
+        r.addValue(short_filename);
+
+        Value path = new Value("path", file.getPath());
+        path.setLength(500,-1);
+        r.addValue(path);
+
 		
 		data.filenr++;
 		
