@@ -492,7 +492,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
     protected boolean needsDownload(String filename)
     {
         File file = new File(getTargetFilename(filename));
-        return file.exists();
+        return !file.exists();
     }
     
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
