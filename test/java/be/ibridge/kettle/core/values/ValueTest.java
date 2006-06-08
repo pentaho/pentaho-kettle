@@ -192,7 +192,7 @@ public class ValueTest extends TestCase
 	}
 	
 	/**
-	 * Test of string representaion of Value.
+	 * Test of string representation of String Value.
 	 */
 	public void testToStringString()
 	{
@@ -238,8 +238,89 @@ public class ValueTest extends TestCase
 	    
 	    Value vs1 = new Value("Name", Value.VALUE_TYPE_STRING);
 	    assertEquals("", vs1.toString());
+	    
+	    // Just to get 100% coverage
+	    Value vs2 = new Value("Name", Value.VALUE_TYPE_NONE);
+	    assertEquals("", vs2.toString());
 	}
 
+	/**
+	 * Test of string representation of Number Value.
+	 */
+	public void testToStringNumber()
+	{	
+	    Value vs1 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    assertEquals(" 0.0", vs1.toString(true));
+	    
+	    Value vs2 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    vs2.setNull();
+	    assertEquals("", vs2.toString(true));
+	    
+	    Value vs3 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    vs3.setValue(100.0D);
+	    vs3.setLength(6);
+	    vs3.setNull();
+	    assertEquals("      ", vs3.toString(true));
+	    
+	    Value vs4 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    vs4.setValue(100.0D);
+	    vs4.setLength(6);	    
+	    assertEquals(" 000100.00", vs4.toString(true));
+	    
+	    Value vs5 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    vs5.setValue(100.5D);
+	    vs5.setLength(-1);	    
+	    vs5.setPrecision(-1);
+	    assertEquals(" 100.5", vs5.toString(true));	    
+
+	    Value vs6 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    vs6.setValue(100.5D);
+	    vs6.setLength(8);	    
+	    vs6.setPrecision(-1);
+	    assertEquals(" 00000100.50", vs6.toString(true));	  
+
+	    Value vs7 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    vs7.setValue(100.5D);
+	    vs7.setLength(0);	    
+	    vs7.setPrecision(3);
+	    assertEquals(" 100.5", vs7.toString(true));	  
+
+	    Value vs8 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    vs8.setValue(100.5D);
+	    vs8.setLength(5);	    
+	    vs8.setPrecision(3);
+	    assertEquals("100.5", vs8.toString(false));	
+	    
+	    Value vs9 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    vs9.setValue(100.0D);
+	    vs9.setLength(6);	    
+	    assertEquals("100.0", vs9.toString(false));
+	    
+	    Value vs10 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    vs10.setValue(100.5D);
+	    vs10.setLength(-1);	    
+	    vs10.setPrecision(-1);
+	    assertEquals("100.5", vs10.toString(false));	    
+
+	    Value vs11 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    vs11.setValue(100.5D);
+	    vs11.setLength(8);	    
+	    vs11.setPrecision(-1);
+	    assertEquals("100.5", vs11.toString(false));	  
+
+	    Value vs12 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    vs12.setValue(100.5D);
+	    vs12.setLength(0);	    
+	    vs12.setPrecision(3);
+	    assertEquals("100.5", vs12.toString(false));	  
+
+	    Value vs13 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    vs13.setValue(100.5D);
+	    vs13.setLength(5);	    
+	    vs13.setPrecision(3);
+	    assertEquals("100.5", vs13.toString(false));		    
+	}
+	
 	/**
 	 * Test of boolean representation of Value.
 	 */
@@ -506,7 +587,6 @@ public class ValueTest extends TestCase
 	    copy.setValue(11.0D);
 	    assertEquals(10.0D, vs.getNumber(), 0.1D);
 	    assertEquals(11.0D, copy.getNumber(), 0.1D);
-
 	
 	    Value vs1 = new Value("Name",  Value.VALUE_TYPE_NUMBER);
 	    vs1.setName(null);
@@ -610,7 +690,7 @@ public class ValueTest extends TestCase
 	    Value vs1 = new Value((Value)null);
 	    assertTrue(vs1.isNull());          
 	    assertTrue(vs1.isEmpty());             
-	    assertEquals(null, vs1.getName()); 
+	    assertNull(vs1.getName()); 
 	    assertNull(vs1.getOrigin());
 	    assertEquals(Value.VALUE_TYPE_NONE, vs1.getType());
 	    
@@ -618,9 +698,163 @@ public class ValueTest extends TestCase
 	    vs2.setOrigin("origin1");
 	    vs2.setValue(vs);	    
 	    assertEquals("origin", vs2.getOrigin());
-	    assertEquals(vs.getInteger(), vs2.getInteger());	    
+	    assertEquals(vs.getInteger(), vs2.getInteger());
+
+	    Value vs3 = new Value("newName", Value.VALUE_TYPE_INTEGER);
+	    vs3.setValue(new StringBuffer("Sven"));	    
+	    assertEquals(Value.VALUE_TYPE_STRING, vs3.getType());
+	    assertEquals("Sven", vs3.getString());
+	    
+	    Value vs4 = new Value("newName", Value.VALUE_TYPE_STRING);
+	    vs4.setValue(new StringBuffer("Test"));
+	    vs4.setValue(new StringBuffer("Sven"));	    
+	    assertEquals(Value.VALUE_TYPE_STRING, vs4.getType());
+	    assertEquals("Sven", vs4.getString());
+	    
+	    Value vs5 = new Value("Name",  Value.VALUE_TYPE_INTEGER);
+	    vs5.setValue((byte)4);
+	    assertEquals(4L, vs5.getInteger());
+
+	    Value vs6 = new Value("Name",  Value.VALUE_TYPE_INTEGER);
+	    vs6.setValue((Value)null);
+	    assertFalse(vs6.isNull());          	                
+	    assertNull(vs6.getName()); 
+	    assertNull(vs6.getOrigin());
+	    assertEquals(Value.VALUE_TYPE_NONE, vs6.getType());	    
 	}
-		
+
+	/**
+	 * Test for isNumeric().
+	 */
+	public void testIsNumeric()
+	{	   
+		assertEquals(false, Value.isNumeric(Value.VALUE_TYPE_NONE));
+		assertEquals(true,  Value.isNumeric(Value.VALUE_TYPE_NUMBER));
+		assertEquals(false, Value.isNumeric(Value.VALUE_TYPE_STRING));
+		assertEquals(false, Value.isNumeric(Value.VALUE_TYPE_DATE));
+		assertEquals(false, Value.isNumeric(Value.VALUE_TYPE_BOOLEAN));
+		assertEquals(true,  Value.isNumeric(Value.VALUE_TYPE_INTEGER));
+		assertEquals(true,  Value.isNumeric(Value.VALUE_TYPE_BIGNUMBER));
+		assertEquals(false, Value.isNumeric(Value.VALUE_TYPE_SERIALIZABLE));
+	}
+	
+	public void testIsEqualTo()
+	{
+	    Value vs1 = new Value("Name", Value.VALUE_TYPE_STRING);
+	    vs1.setValue("test");
+	    assertTrue(vs1.isEqualTo("test"));
+	    assertFalse(vs1.isEqualTo("test1"));
+
+	    Value vs2 = new Value("Name", Value.VALUE_TYPE_STRING);
+	    vs2.setValue(new BigDecimal(1.0D));
+	    assertTrue(vs2.isEqualTo(new BigDecimal(1.0D)));
+	    assertFalse(vs2.isEqualTo(new BigDecimal(2.0D)));
+
+	    Value vs3 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    vs3.setValue(10.0D);
+	    assertTrue(vs3.isEqualTo(10.0D));
+	    assertFalse(vs3.isEqualTo(11.0D));
+	    
+	    Value vs4 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs4.setValue(10L);
+	    assertTrue(vs4.isEqualTo(10L));
+	    assertFalse(vs4.isEqualTo(11L));
+	    
+	    Value vs5 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs5.setValue(10);
+	    assertTrue(vs5.isEqualTo(10));
+	    assertFalse(vs5.isEqualTo(11));
+	    
+	    Value vs6 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs6.setValue((byte)10);
+	    assertTrue(vs6.isEqualTo(10));
+	    assertFalse(vs6.isEqualTo(11));	    
+	    
+	    SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
+	    Date dt = df.parse("2006/03/01 17:01:02.005", new ParsePosition(0));
+	    Value vs7 = new Value("Name", Value.VALUE_TYPE_DATE);
+	    vs7.setValue(dt);
+	    assertTrue(vs7.isEqualTo(dt));
+	    assertFalse(vs7.isEqualTo(new Date()));	     // assume it's not 2006/03/01
+	}
+	
+	/**
+	 * Test boolean operators.
+	 */
+	public void testBooleanOperators()
+	{
+	    Value vs1 = new Value("Name", Value.VALUE_TYPE_BOOLEAN);
+	    Value vs2 = new Value("Name", Value.VALUE_TYPE_BOOLEAN);
+	    
+	    vs1.setValue(false);	   
+	    vs2.setValue(false);
+	    vs1.bool_and(vs2);
+	    assertEquals(false, vs1.getBoolean());
+
+	    vs1.setValue(false);	   
+	    vs2.setValue(true);
+	    vs1.bool_and(vs2);
+	    assertEquals(false, vs1.getBoolean());
+
+	    vs1.setValue(true);	   
+	    vs2.setValue(false);
+	    vs1.bool_and(vs2);
+	    assertEquals(false, vs1.getBoolean());
+
+	    vs1.setValue(true);	   
+	    vs2.setValue(true);
+	    vs1.bool_and(vs2);
+	    assertEquals(true, vs1.getBoolean());
+
+	    vs1.setValue(false);	   
+	    vs2.setValue(false);
+	    vs1.bool_or(vs2);
+	    assertEquals(false, vs1.getBoolean());
+
+	    vs1.setValue(false);	   
+	    vs2.setValue(true);
+	    vs1.bool_or(vs2);
+	    assertEquals(true, vs1.getBoolean());
+
+	    vs1.setValue(true);	   
+	    vs2.setValue(false);
+	    vs1.bool_or(vs2);
+	    assertEquals(true, vs1.getBoolean());
+
+	    vs1.setValue(true);	   
+	    vs2.setValue(true);
+	    vs1.bool_or(vs2);
+	    assertEquals(true, vs1.getBoolean());
+	    
+	    vs1.setValue(false);	   
+	    vs2.setValue(false);
+	    vs1.bool_xor(vs2);
+	    assertEquals(false, vs1.getBoolean());
+
+	    vs1.setValue(false);	   
+	    vs2.setValue(true);
+	    vs1.bool_xor(vs2);
+	    assertEquals(true, vs1.getBoolean());
+
+	    vs1.setValue(true);	   
+	    vs2.setValue(false);
+	    vs1.bool_xor(vs2);
+	    assertEquals(true, vs1.getBoolean());
+
+	    vs1.setValue(true);	   
+	    vs2.setValue(true);
+	    vs1.bool_xor(vs2);
+	    assertEquals(false, vs1.getBoolean());
+
+	    vs1.setValue(true);	   
+	    vs1.bool_not();
+	    assertEquals(false, vs1.getBoolean());
+
+	    vs1.setValue(false);	   	    
+	    vs1.bool_not();
+	    assertEquals(true, vs1.getBoolean());
+	}
+	
 	/**
 	 * Stuff which we didn't get in other checks.
 	 */
