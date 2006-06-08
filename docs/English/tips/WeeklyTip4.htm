@@ -1,0 +1,59 @@
+<html>
+<title>The Weekly Kettle Tip #4: Mappings</title>
+<body>
+<H2>The Weekly Kettle tip : Mappings</H2>
+
+The fourth Kettle Weekly Tip took a while longer to create because 
+my development system (laptop) has been traveling back and forth to 
+Acer support for <b>the last 3 weeks</b>.  I have a 3 year support contract 
+with total accident coverage on this very nice machine, but I guess sometimes you just run out of luck.<p>
+In case any of you wonder, all screenshots were taken on SuSE Linux 10.1RC3, running Gnome version 2.12.2. running XGL.<p>
+<b>IMPORTANT: </b><i>make sure you use <a href="http://www.javaforge.com/proj/doc.do?doc_id=3701">the latest development release 2.3.0 or later</a> because a lot of bugs in Mappings have been fixed the last couple of weeks.  Thank you for your understanding!</i>
+
+<H3>What is a mapping?</H3>
+
+A mapping is the Kettle solution for transformation re-use.<br>  
+For example if you have a complex calculation that you want 
+to re-use everywhere, you can use a mapping.<br>
+<br>
+A mapping is also called a sub-transformation because it is 
+a transformation just like any other with a couple of key differences:<p>
+
+<li> Every mapping needs a Mapping Input step to define the fields that are <b>required</b> for the mapping to work correctly.
+<li> Every mapping needs a Mapping Output step to define the fields that are <b>generated</b> by the mapping.
+<li> Because of the static nature of a mapping, Previewing mapping makes no sense.
+
+<H3>An example mapping</H3>
+This is an example mapping that calculates turnover and profit based on 4 input fields:<p>
+<img src="./images/mapping/mapping-sample-overview.png" alt="Mapping Sample Overview" border=1>
+
+<H3>The Mapping Input</H3>
+Because we define only a small piece of a larger transaction, we need to know which fields are used as input for the mapping.<br>
+To handle this, we use a step called a Mapping Input Specification:<p>
+<img src="./images/mapping/mapping-sample-input.png" alt="Mapping Input Specification Image">
+<p>
+Once we specified the input, the next steps in the transformation know what to expect.  It's also logical that we can have <b>ONLY ONE</b> mapping input step in a mapping.
+
+<H3>The Mapping Body</H3>
+When we know the input we can all steps in a transformation to build logic with it.  In this example we'll be calculating turnover and profit:<p>
+<img src="./images/mapping/mapping-sample-body.png" alt="Mapping  Body Image">
+
+<H3>The Mapping Output</H3>
+At the end of the transformation, we need to have one exit point for the transformation: this is the point were the rows of data are giving back to the parent transformation that calls this mapping.<br>
+We do this by using <b>ONLY ONE</b> mapping output specification step:<p>
+<img src="./images/mapping/mapping-sample-output.png" alt="Mapping Output Specification Image">
+<p>
+So what we're saying is: specify the fields that are added to the stream by the mapping you just defined.  In our case that would be turnover and profit.<br>
+In case fields are removed, you need to specify these as well.<br>
+Doing this helps the parent transformation in determining the meta-data changes in the row.<br>
+
+<H3>The Mapping Example</H3>
+OK, so now that the mapping was created, how do we use it?<br>
+Well, simply by using the mapping step as shown in the image below. (click to enlarge)<p>
+<a href="./images/mapping/mapping-sample-result.png"><img src="./images/mapping/mapping-sample-result.png" alt="Mapping Sample use Image" width=640 height=400></a>
+<p>
+In our case it's driven by a single row of data, but I'm sure each of you can find more exciting examples.<p>
+I hope you found this Weekly Kettle Tip interesting.  Join us next week for more Kettle fun.<p>
+Matt
+</body>
+</html>

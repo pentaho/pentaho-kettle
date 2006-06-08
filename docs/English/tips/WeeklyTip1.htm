@@ -1,0 +1,103 @@
+<HTML>
+<TITLE>The Weekly Kettle Tip #1: JavaScript</TITLE>
+<BODY>
+Just wanted to share a Kettle tip with you, this week on the subject of the Script Values step.
+Let's do <H1>JavaScript</H1><br>
+<H3>Regular Expressions</H3>
+<br>
+Today I got a question from a user that likes the regular expressions support in JavaScript, but had troubles using it in the Script Values step.<br>
+The problem is that if you grab the String representation of a field using for example NAME.getString(), you can't use do a replace like in this script:<br>
+
+<br>
+<pre>
+String str = NAME.getString();
+String result = str.replace( /aaa/g, "a3" );
+</pre>
+<br>
+This fails because str is of type java.lang.String and is in fact NOT a JavaScript String.<br>
+<br>
+A simple workaround to convert to a JavaScript String is by doing the following:<br>
+<br>
+<pre>
+String str = "" + NAME.getString();
+String result = str.replace( /aaa/g, "a3" );
+</pre>
+<br>
+This will work fine and it will make certain text replace scenarios a lot easier to write.<br>
+
+<br>
+<H3>Access Java Objects</H3>
+You too can have access to all the java objects that are in Kettle's classpath.  There are a lot of utility libs and you can add your own if you like.<br>
+To activate this, you can simply place the following line of code on top of your javascript:<br>
+<pre>
+java
+</pre>
+<br>
+Then you can use all kind of code by specifying the complete name of a class, for example:<br>
+<pre>
+var systemDate = new java.util.Date();
+dateField.setValue(systemDate);
+</pre>
+<H3>Row object</H3>
+
+<br>
+If you want to access the complete row that is passing through and not just the individual fields, you can use the <pre>row</pre> object.<br>
+With this you can for example compare the current row with the previous for all kinds of scripting fun...<br>
+<br>
+<pre>
+var prevRow;
+var prevName;
+
+if (prevRow != null )
+{
+  prevName = prevRow.getString("NAME", "");
+}
+else
+{
+  prevName = ""; 
+}
+
+prevRow = row.Clone();
+</pre>
+<br>
+I hope you found this useful.  Please feel free to add your own samples below or suggest another topic for next week.<br>
+<br>
+Kind regards,<br>
+
+<br>
+Matt<br>
+
+<H3>Telephone Numbers</H3>
+Someone asked recently: how canI format telephone numbers?<br>
+This is a complex question in itself, but more often then not, it <b>can</b> be solved by using a piece of javascript.<br>
+
+Here is what we could use in Belgium to format telephone numbers, but I guess it can be adapted for other countries as well:<br>
+<br>
+Assuming you have a field called "tel" as input :<br>
+
+<hr>
+<pre>
+tel.lpad(9, '0');
+
+var newTel;
+
+if (tel.getString().startsWith("02") || tel.getString().startsWith("03"))
+{
+  newTel=tel.getString().substr(0,2) + "/" + tel.getString().substr(2);
+}
+else
+{
+  newTel=tel.getString().substr(0,3) + "/" + tel.getString().substr(3);
+}
+</pre>
+<hr>
+<br>
+For example when the input is 54250137, the output would be 054/250137.<br>
+<br>
+HTH,<br>
+
+Matt<br>
+
+
+</BODY>
+</HTML>

@@ -1,0 +1,70 @@
+<html>
+<Title>The Weekly Kettle Tip #3: Looking up information</Title>
+<body>
+<h2>Looking up information</h2>
+<p>
+Often, when combining multiple data sources in a transformation, you will find yourself in need of a lookup function.
+Kettle offers 3 main different types of lookup steps: Database Lookup, Database Join and Stream Lookup.
+The question then becomes: which step do I use?
+</p><p>
+<span style="border-style: inset; padding: 4px; background: rgb(240, 240, 240) none repeat scroll 0%; float: right; width: 20%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; font-size: 80%; margin-left: 4px;">This step generates SQL like 
+<br>
+<br>  SELECT returnValue1, ..., returnValue
+
+<br>  FROM     tableName
+<br>  WHERE key1 = field1
+<br>  AND        key2 = field2
+<br>  ...
+<br>
+</span>
+</p><p>
+</p><h3>Database Lookup</h3>
+<p>
+If you want to do a simple lookup using a primary key, foreign key or an ID you will find that using Database Lookup is the easiest to use and offers a good chance of getting the best possible performance.
+Database Lookup allows you to specify the fields to match and the fields you want in return.
+Additionally, if you have do do a lot of lookups against a small table, you can turn on caching which will dramatically speed up your transformation.
+<br>
+<br>
+
+<br>
+<br>
+<span style="border-style: inset; padding: 4px; background: rgb(240, 240, 240) none repeat scroll 0%; float: right; width: 20%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; font-size: 80%; margin-left: 4px;">You can use SQL like the following to have the same functionality as the Database Lookup step:
+<br>
+<br>  SELECT returnValue1, ..., returnValue
+<br>  FROM     tableName
+<br>  WHERE key1 = ?
+<br>  AND        key2 = ?
+<br>  ;
+<br>
+<br> With 2 parameters specified: field1and field2
+
+</span>
+</p><p>
+</p><h3>Database Join</h3>
+On certain occasions, a simple database lookup is simply not enough.
+In those cases, you want to be able to specify all kinds of funky database functions, sub-selects, order-by clauses etc.
+Also, if you want to filter out all the rows where we didn't find a match, then you need the Database Join step.
+This step packs a lot of punch but offers very little help in the creation of the SQL to perform.  That is because we could not come up with a GUI that allows you to generate all possible kinds of SQL statements.
+<br>
+<br>
+<br>
+<p>
+</p><h3>Stream Lookup</h3>
+Finally, the Stream lookup allows you to lookup information that is NOT stored in a relational database.  
+It offers you the possibility to load rows of data into memory to do lookups with.
+That means that you can get data from ANY data source and perform any type of calculation before you look up values with Stream Lookup.
+For example, you can read information from a text-file, apply several calculations to the data and then load it into a Stream Lookup step.
+This step then can be used to look up information.
+<span style="border-style: inset; padding: 4px; background: rgb(240, 240, 240) none repeat scroll 0%; float: right; width: 20%; -moz-background-clip: -moz-initial; -moz-background-origin: -moz-initial; -moz-background-inline-policy: -moz-initial; font-size: 80%; margin-left: 4px;">Sometimes Stream Lookup is also used to speed up database lookups by loading the data to lookup in memory.  However, it often makes more sense to specify a large number of rows to cache in Database Lookup.  Thay way you get a more predictable memory usage.</span>
+<br>
+<br>
+Join us next week for a new Weekly Kettle Tip and in the mean time, don't hesitate to mail in questions and proposals for tips.
+
+<p>
+All the best,
+<br>Matt
+<p>
+<p>
+<p>
+</body>
+</html>
