@@ -532,7 +532,6 @@ public class SpoonLog extends Composite
                         
                         final Thread parentThread = Thread.currentThread();
                         
-                        log.logMinimal(Spoon.APP_NAME, "----> Async exec of prepare and run threads...");
                         display.asyncExec(
                                 new Runnable() 
                                 {
@@ -542,9 +541,7 @@ public class SpoonLog extends Composite
                                     }
                                 }
                             );
-                        log.logMinimal(Spoon.APP_NAME, "----> Async exec of prepare and run threads started!!!");
                         
-						
 						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
 						wStart.setText(STOP_TEXT);
 						readLog();
