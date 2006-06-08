@@ -238,14 +238,9 @@
 	        <!-- documentation -->
 	  		<mkdir dir="${distrib}/docs"/>
 	  		<copy todir="${distrib}/docs">
-	  			<fileset dir="${docs}" includes="**/*.pdf"
-	  			excludes="**/Spoon-2.0.pdf **/*.dot **/*.sxw  **/*.vpn" />
-	  			</copy>
-
-	        <!-- tips -->
-	  		<mkdir dir="${distrib}/docs/tips"/>
-	  		<copy todir="${distrib}/docs/tips">
-	  			<fileset dir="${tips}" includes="**/*"/> 
+	  			<fileset dir="${docs}" 
+	  				     includes="**/*.pdf **/*.htm **/*.html **/*.png **/*.PNG **/*.swf **/cn_ZN.zip"
+	  			         excludes="**/*.dot **/*.doc **/*.sxw **/*.odt **/*.vpn **/*feature list*" />
 	  			</copy>
 
 	        <!-- extra stuff -->
