@@ -50,6 +50,7 @@ import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -236,6 +237,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         fdVariables.right = new FormAttachment(100, 0);
         fdVariables.bottom = new FormAttachment(wDatefrom, -margin);
         wVariables.setLayoutData(fdVariables);
+        wVariables.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { setSQLToolTip(); } });
 
 		// Table line...
 		wlSQL=new Label(shell, SWT.NONE);
@@ -263,7 +265,14 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdSQL.right = new FormAttachment(100, 0);
 		fdSQL.bottom= new FormAttachment(wVariables, -margin );
 		wSQL.setLayoutData(fdSQL);
-
+		wSQL.addModifyListener(new ModifyListener()
+            {
+                public void modifyText(ModifyEvent arg0)
+                {
+                    setSQLToolTip();
+                }
+            }
+        );
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel();  } };
@@ -303,7 +312,17 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		return stepname;
 	}
 	
-	/**
+	protected void setSQLToolTip()
+    {
+       String sql = wSQL.getText();
+       
+       if (wVariables.getSelection()) sql=StringUtil.environmentSubstitute(sql);
+       
+       wSQL.setToolTipText(sql);
+        
+    }
+
+    /**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
 	public void getData()
@@ -326,6 +345,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         wVariables.setSelection(input.isVariableReplacementActive());
                
 		wStepname.selectAll();
+        setSQLToolTip();
 	}
 	
 	private void cancel()
