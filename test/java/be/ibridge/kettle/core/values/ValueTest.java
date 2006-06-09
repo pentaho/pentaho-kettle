@@ -785,7 +785,7 @@ public class ValueTest extends TestCase
 	{
 	    Value vs1 = new Value("Name", Value.VALUE_TYPE_BOOLEAN);
 	    Value vs2 = new Value("Name", Value.VALUE_TYPE_BOOLEAN);
-	    
+
 	    vs1.setValue(false);	   
 	    vs2.setValue(false);
 	    vs1.bool_and(vs2);
@@ -854,7 +854,76 @@ public class ValueTest extends TestCase
 	    vs1.bool_not();
 	    assertEquals(true, vs1.getBoolean());
 	}
-	
+
+	/**
+	 * Test boolean operators.
+	 */
+	public void testBooleanOperators1()
+	{
+	    Value vs1 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    Value vs2 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+
+	    vs1.setValue(255L);	   
+	    vs2.setValue(255L);
+	    vs1.and(vs2);
+	    assertEquals(255L, vs1.getInteger());
+
+	    vs1.setValue(255L);	   
+	    vs2.setValue(0L);
+	    vs1.and(vs2);
+	    assertEquals(0L, vs1.getInteger());
+
+	    vs1.setValue(0L);	   
+	    vs2.setValue(255L);
+	    vs1.and(vs2);
+	    assertEquals(0L, vs1.getInteger());
+
+	    vs1.setValue(0L);	   
+	    vs2.setValue(0L);
+	    vs1.and(vs2);
+	    assertEquals(0L, vs1.getInteger());
+
+	    vs1.setValue(255L);	   
+	    vs2.setValue(255L);
+	    vs1.or(vs2);
+	    assertEquals(255L, vs1.getInteger());
+
+	    vs1.setValue(255L);	   
+	    vs2.setValue(0L);
+	    vs1.or(vs2);
+	    assertEquals(255L, vs1.getInteger());
+
+	    vs1.setValue(0L);	   
+	    vs2.setValue(255L);
+	    vs1.or(vs2);
+	    assertEquals(255L, vs1.getInteger());
+
+	    vs1.setValue(0L);	   
+	    vs2.setValue(0L);
+	    vs1.or(vs2);
+	    assertEquals(0L, vs1.getInteger());
+
+	    vs1.setValue(255L);	   
+	    vs2.setValue(255L);
+	    vs1.xor(vs2);
+	    assertEquals(0L, vs1.getInteger());
+
+	    vs1.setValue(255L);	   
+	    vs2.setValue(0L);
+	    vs1.xor(vs2);
+	    assertEquals(255L, vs1.getInteger());
+
+	    vs1.setValue(0L);	   
+	    vs2.setValue(255L);
+	    vs1.xor(vs2);
+	    assertEquals(255L, vs1.getInteger());
+
+	    vs1.setValue(0L);	   
+	    vs2.setValue(0L);
+	    vs1.xor(vs2);
+	    assertEquals(0L, vs1.getInteger());
+	}
+
 	/**
 	 * Stuff which we didn't get in other checks.
 	 */

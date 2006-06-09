@@ -40,6 +40,9 @@ public class RowTest extends TestCase
 	    assertTrue(!r.isIgnored());
 	    assertNull(r.getLogdate());
 	    assertEquals(0L, r.getLogtime());
+
+	    r.setLogdate();
+		assertTrue(r.getLogtime() != 0L);    
 	}
 
 	/**
@@ -290,7 +293,6 @@ public class RowTest extends TestCase
 		catch ( IndexOutOfBoundsException e ) {	
 			v = null;  // not important
 		}
-
 	}
 
 	/**
@@ -511,6 +513,48 @@ public class RowTest extends TestCase
 	}
 
 	/**
+	 * Test the getXXX() methods.
+	 */
+	public void testGetValues()
+	{
+		Value values[] = {
+			    new Value("field1", "KETTLE"),                // String
+				new Value("field2", 123L),                    // integer
+				new Value("field3", 10.5D),                   // double
+				new Value("field4", true),                    // Boolean
+				new Value("field5", new BigDecimal(123.0)),   // BigDecimal
+				new Value("field6", (String)null)             // NULL value
+		};
+
+		Row r1 = new Row();
+		for (int i=0; i < values.length; i++ )
+		{
+			r1.addValue(values[i]);
+		}
+
+		assertEquals(true,  r1.getBoolean("field4", false));
+		assertEquals(true,  r1.getBoolean("field3", false));
+		assertEquals(false, r1.getBoolean("unknown", false));
+		assertEquals(true,  r1.getBoolean("unknown", true));
+
+		assertEquals("KETTLE",  r1.getString("field1", "default"));
+		assertEquals("Y",       r1.getString("field4", "default"));
+		assertEquals("default", r1.getString("unknown", "default"));
+
+		assertEquals(123.0D, r1.getNumber("field2", 100.0D), 0.1D);
+		assertEquals(1.0D,   r1.getNumber("field4", 100.0D), 0.1D);
+		assertEquals(100.0D, r1.getNumber("unknown", 100.0D), 0.1D);
+
+		assertEquals(123L, r1.getInteger("field2", 100L));
+		assertEquals(1L,   r1.getInteger("field4", 100L));
+		assertEquals(100L, r1.getInteger("unknown", 100L));
+
+		assertEquals(123, r1.getShort("field2", 100));
+		assertEquals(1,   r1.getShort("field4", 100));
+		assertEquals(100, r1.getShort("unknown", 100));		
+	}
+
+	/**
 	 * Test toStringMeta().
 	 */
 	public void testToStringMeta()
@@ -535,5 +579,50 @@ public class RowTest extends TestCase
 
 		assertEquals("[]", r0.toStringMeta());
 		assertEquals("[field1(String), field2(Integer), field3(Number), field4(Boolean), field5(BigNumber), field6(String), NULL]", r1.toStringMeta());
+	}
+	
+	/**
+	 * Test toGetXML().
+	 */
+	public void testGetXML()
+	{
+		Value values[] = {
+			    new Value("field1", "KETTLE"),                // String
+				new Value("field2", 123L),                    // integer
+				new Value("field3", 10.5D),                   // double
+				new Value("field4", true),                    // Boolean
+				new Value("field5", new BigDecimal(123.0)),   // BigDecimal
+				new Value("field6", (String)null)             // NULL value
+		};
+
+		Row r1 = new Row();
+		for (int i=0; i < values.length; i++ )
+		{
+			r1.addValue(values[i]);
+		}
+		
+		assertEquals("<row><logdate/>" + Const.CR + "<name>field1</name><type>String</type><text>KETTLE</text><length>-1</length><precision>-1</precision><isnull>N</isnull><name>field2</name><type>Integer</type><text> 123</text><length>-1</length><precision>0</precision><isnull>N</isnull><name>field3</name><type>Number</type><text>10.5</text><length>-1</length><precision>-1</precision><isnull>N</isnull><name>field4</name><type>Boolean</type><text>true</text><length>-1</length><precision>-1</precision><isnull>N</isnull><name>field5</name><type>BigNumber</type><text>123</text><length>-1</length><precision>-1</precision><isnull>N</isnull><name>field6</name><type>String</type><text/><length>-1</length><precision>-1</precision><isnull>Y</isnull></row>" + Const.CR, r1.getXML());		
+	}
+
+	/**
+	 * Test of setting and getting via indexes.
+	 */
+	public void testIndexes()
+	{
+	    Row r0 = new Row();
+	    
+	    assertTrue(r0.isEmpty());
+	    
+	    r0.addValue(new Value("dummy1", true)); 
+	    r0.addValue(new Value("dummy2", true));
+	    
+	    r0.setValue(0, new Value("field1", true));
+	    r0.setValue(1, new Value("field2", true));
+
+	    assertEquals("field1", r0.getValue(0).getName());
+	    assertEquals("field2", r0.getValue(1).getName());
+
+	    r0.setValue(1, new Value("field3", true));
+	    assertEquals("field3", r0.getValue(1).getName());
 	}
 }

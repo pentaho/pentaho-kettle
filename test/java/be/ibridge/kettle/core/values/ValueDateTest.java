@@ -12,7 +12,7 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 package be.ibridge.kettle.core.values;
 
 import java.math.BigDecimal;
@@ -32,9 +32,8 @@ import be.ibridge.kettle.core.value.ValueDate;
  */
 public class ValueDateTest extends TestCase
 {
-	
 	private static Date dt = null;
-	
+
 	static 
 	{
 		SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS", Locale.US);				
@@ -47,13 +46,12 @@ public class ValueDateTest extends TestCase
 			dt = null;	
 		}
 	}
-	
+
 	/**
 	 * Constructor test 1.
 	 */
 	public void testConstructor1()
 	{
-
 		ValueDate vs = new ValueDate();
 		assertEquals(Value.VALUE_TYPE_DATE, vs.getType());
 		assertEquals("Date", vs.getTypeDesc());
@@ -77,7 +75,7 @@ public class ValueDateTest extends TestCase
 	}
 
 	/**
-	 * Test the getters of ValueDate
+	 * Test the getters of ValueDate.
 	 */
 	public void testGetters()
 	{
@@ -89,14 +87,13 @@ public class ValueDateTest extends TestCase
 
 		assertNull(vs1.getString());
 		assertEquals("2006/06/07 01:02:03.004", vs2.getString());
-		
+
 		assertEquals(0.0D, vs1.getNumber(), 0.001D);
 		assertEquals(1.149634923004E12, vs2.getNumber(), 0.001D);
 
 		assertEquals(0L, vs1.getInteger());
 		assertEquals(1149634923004L,  vs2.getInteger());
-
-		try 
+  	    try 
 		{
 		   // historical behaviour
 		   vs1.getBigNumber();
@@ -105,21 +102,21 @@ public class ValueDateTest extends TestCase
 		catch ( NullPointerException ex )
 		{ }
 		assertEquals(new BigDecimal(1149634923004L),  vs2.getBigNumber());
-		
+
 		assertNull(vs1.getDate());
 		assertEquals(1149634923004L, vs2.getDate().getTime());
-		
+
 		assertNull(vs1.getSerializable());
 		assertEquals(dt, vs2.getSerializable());		
 	}
 
 	/**
-	 * Test the setters of ValueDate
+	 * Test the setters of ValueDate.
 	 */
 	public void testSetters()
 	{
 		ValueDate vs = new ValueDate();
-		
+
 		try 
 		{
 		    vs.setString(null);
@@ -127,12 +124,12 @@ public class ValueDateTest extends TestCase
 		}
 		catch ( NullPointerException ex )
 		{  }
-		
+
 		vs.setString("unknown");
 		assertNull(vs.getDate());
 		vs.setString("2006/06/07 01:02:03.004");
 		assertEquals(dt, vs.getDate());
-		
+
 		vs.setDate(dt);
 		assertEquals(dt, vs.getDate());
 
@@ -141,8 +138,15 @@ public class ValueDateTest extends TestCase
 		vs.setBoolean(false);
 		assertNull(vs.getDate());
 
-		// the 3 last ones we did in the other ValueTests were not done here.
-		// To be elaborated.
+        vs.setNumber(dt.getTime());
+        assertEquals(dt, vs.getDate()); 
+
+        vs.setInteger(dt.getTime());
+        assertEquals(dt, vs.getDate()); 
+
+        vs.setBigNumber(new BigDecimal(dt.getTime()));
+        assertEquals(dt, vs.getDate()); 
+        
 		// setSerializable is ignored ???
 	}	
 }

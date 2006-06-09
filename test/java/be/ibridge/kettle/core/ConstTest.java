@@ -12,7 +12,7 @@
  ** info@kettle.be                                                    **
  **                                                                   **
  **********************************************************************/
- 
+
 package be.ibridge.kettle.core;
 
 import junit.framework.TestCase;
@@ -27,16 +27,16 @@ public class ConstTest extends TestCase
 	private boolean isArraySorted(String [] arr)
 	{
 		if ( arr.length < 2) return true;
-		
+
 	    for (int idx = 0; idx < arr.length - 1; idx++)
 	    {
 	        if (arr[idx].compareTo(arr[idx + 1]) > 0)
 	        	return false;
 	    }
-	    
+
 	    return true;
 	}
-	
+
 	/**
 	 * Test sortString().
 	 */
@@ -45,7 +45,7 @@ public class ConstTest extends TestCase
 		String arr1[] = { "Red", "Blue", "Black", "Black", "Green" };
 		String arr2[] = { "aaa", "zzz", "yyy", "sss", "ttt", "t" };
 		String arr3[] = { "A", "B", "C", "D" };
-		
+
 		String results[] = Const.sortStrings(arr1);
 		assertTrue(isArraySorted(arr1));
 		assertTrue(isArraySorted(results));
@@ -53,26 +53,26 @@ public class ConstTest extends TestCase
 		results = Const.sortStrings(arr2);
 		assertTrue(isArraySorted(arr2));
 		assertTrue(isArraySorted(results));
-	
+
 		results = Const.sortStrings(arr3);
 		assertTrue(isArraySorted(arr3));
 		assertTrue(isArraySorted(results));		
 	}
-	
+
 	public void testIsEmpty()
 	{
 	    assertEquals(true, Const.isEmpty((String)null));
 	    assertEquals(true, Const.isEmpty(""));
 	    assertEquals(false, Const.isEmpty("test"));
 	}
-	
+
 	public void testIsEmptyStringBuffer()
 	{
 	    assertEquals(true, Const.isEmpty((StringBuffer)null));
 	    assertEquals(true, Const.isEmpty(new StringBuffer("")));
 	    assertEquals(false, Const.isEmpty(new StringBuffer("test")));
 	}
-	
+
 	public void testNVL()
 	{
 		assertNull(Const.NVL(null, null));
@@ -80,7 +80,7 @@ public class ConstTest extends TestCase
 	    assertEquals("test", Const.NVL("test", null));
 	    assertEquals("test1", Const.NVL(null, "test1"));	    
 	}	
-	
+
 	public void testNrSpacesBefore()
 	{
 		try  
@@ -90,7 +90,7 @@ public class ConstTest extends TestCase
 		}
 		catch (NullPointerException ex)
 		{}
-		
+
 		assertEquals(0, Const.nrSpacesBefore(""));
 		assertEquals(1, Const.nrSpacesBefore(" "));
 		assertEquals(3, Const.nrSpacesBefore("   "));
@@ -99,7 +99,7 @@ public class ConstTest extends TestCase
 		assertEquals(3, Const.nrSpacesBefore("   test"));
 		assertEquals(4, Const.nrSpacesBefore("    test  "));
 	}
-	
+
 	public void testNrSpacesAfter()
 	{
 		try  
@@ -109,7 +109,7 @@ public class ConstTest extends TestCase
 		}
 		catch (NullPointerException ex)
 		{}
-		
+
 		assertEquals(0, Const.nrSpacesAfter(""));
 		assertEquals(1, Const.nrSpacesAfter(" "));
 		assertEquals(3, Const.nrSpacesAfter("   "));
@@ -118,7 +118,7 @@ public class ConstTest extends TestCase
 		assertEquals(0, Const.nrSpacesAfter("   test"));
 		assertEquals(2, Const.nrSpacesAfter("    test  "));
 	}
-	
+
 	public void testLtrim()
 	{
 		try  
@@ -133,7 +133,7 @@ public class ConstTest extends TestCase
 		assertEquals("test ", Const.ltrim("test "));
 		assertEquals("test ", Const.ltrim("  test "));
 	}	
-	
+
 	public void testRtrim()
 	{
 		try  
@@ -148,7 +148,7 @@ public class ConstTest extends TestCase
 		assertEquals("test", Const.rtrim("test "));
 		assertEquals("test ", Const.ltrim("  test "));
 	}		
-	
+
 	public void testTrim()
 	{
 		try  
@@ -162,5 +162,19 @@ public class ConstTest extends TestCase
 		assertEquals("", Const.trim("  "));
 		assertEquals("test", Const.trim("test "));
 		assertEquals("test", Const.trim("  test "));
-	}			
+	}		
+
+	public void testOnlySpaces()
+	{
+		try  
+		{
+			Const.onlySpaces(null);
+			fail("Expected NullPointerException");
+		}
+		catch (NullPointerException ex)
+		{}
+		assertEquals(true, Const.onlySpaces(""));
+		assertEquals(true, Const.onlySpaces("  "));
+		assertEquals(false, Const.onlySpaces("   test "));		
+	}
 }
