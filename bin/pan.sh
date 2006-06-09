@@ -39,9 +39,26 @@ case `uname -s` in
 		JAVA_BIN=libswt/osx/java_swt
 		;;
 
-	Linux)  
-		LIBPATH=libswt/linux/
-		;;
+        Linux)
+                case `uname -i` in
+			x86_64)
+				LIBPATH=libswt/linux/x86_64/
+				;;
+
+			i386)
+				LIBPATH=libswt/linux/x86/
+				;;
+
+			ppc)
+				LIBPATH=libswt/linux/ppc/
+				;;
+
+			*)
+				echo "I'm sorry, this Linux platform [`uname -i`] is not yet supported!"
+				exit
+				;;
+                esac
+                ;;
 
 	HP-UX) 
 		LIBPATH=libswt/hpux/

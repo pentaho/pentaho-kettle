@@ -49,7 +49,24 @@ case `uname -s` in
 		;;
 
 	Linux)  
-		LIBPATH=libswt/linux/
+		case `uname -i` in
+			x86_64)
+				LIBPATH=libswt/linux/x86_64/
+				;;
+
+			i386)
+				LIBPATH=libswt/linux/x86/
+				;;
+
+			ppc)
+				LIBPATH=libswt/linux/ppc/
+				;;
+
+			*)	
+				echo "I'm sorry, this Linux platform [`uname -i`] is not yet supported!"
+				exit
+				;;
+		esac
 		;;
 
 	HP-UX) 
