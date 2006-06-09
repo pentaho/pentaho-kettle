@@ -21,6 +21,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -164,10 +165,14 @@ public class TableInput extends BaseStep implements StepInterface
         boolean success = true;
 
         // Open the query with the optional parameters received from the source steps.
-        data.rs = data.db.openQuery(meta.getSQL(), parameters);
+        String sql = null;
+        if (meta.isVariableReplacementActive()) sql = StringUtil.environmentSubstitute(meta.getSQL());
+        else sql = meta.getSQL();
+        
+        data.rs = data.db.openQuery(sql, parameters);
         if (data.rs == null)
         {
-            logError("Couldn't open Query [" + meta.getSQL() + "]");
+            logError("Couldn't open Query [" + sql + "]");
             setErrors(1);
             stopAll();
             success = false;

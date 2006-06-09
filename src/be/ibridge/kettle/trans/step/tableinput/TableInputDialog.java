@@ -81,7 +81,11 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
     private Label        wlEachRow;
     private Button       wEachRow;
     private FormData     fdlEachRow, fdEachRow; 
-	
+
+    private Label        wlVariables;
+    private Button       wVariables;
+    private FormData     fdlVariables, fdVariables; 
+
 	private Button wbTable;
 	private FormData fdbTable;
 	private Listener lsbTable;
@@ -216,6 +220,23 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdDatefrom.bottom = new FormAttachment(wEachRow, -margin);
 		wDatefrom.setLayoutData(fdDatefrom);
 
+        // Execute for each row?
+        wlVariables = new Label(shell, SWT.RIGHT);
+        wlVariables.setText(Messages.getString("TableInputDialog.ReplaceVariables")); //$NON-NLS-1$
+        props.setLook(wlVariables);
+        fdlVariables = new FormData();
+        fdlVariables.left = new FormAttachment(0, 0);
+        fdlVariables.right = new FormAttachment(middle, -margin);
+        fdlVariables.bottom = new FormAttachment(wDatefrom, -margin);
+        wlVariables.setLayoutData(fdlVariables);
+        wVariables = new Button(shell, SWT.CHECK);
+        props.setLook(wVariables);
+        fdVariables = new FormData();
+        fdVariables.left = new FormAttachment(middle, 0);
+        fdVariables.right = new FormAttachment(100, 0);
+        fdVariables.bottom = new FormAttachment(wDatefrom, -margin);
+        wVariables.setLayoutData(fdVariables);
+
 		// Table line...
 		wlSQL=new Label(shell, SWT.NONE);
 		wlSQL.setText(Messages.getString("TableInputDialog.SQL")); //$NON-NLS-1$
@@ -240,7 +261,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdSQL.left  = new FormAttachment(0, 0);
 		fdSQL.top   = new FormAttachment(wlSQL, margin  );
 		fdSQL.right = new FormAttachment(100, 0);
-		fdSQL.bottom= new FormAttachment(wDatefrom, -margin );
+		fdSQL.bottom= new FormAttachment(wVariables, -margin );
 		wSQL.setLayoutData(fdSQL);
 
 
@@ -301,6 +322,8 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
             wEachRow.setEnabled(false);
             wlEachRow.setEnabled(false);
         }
+        
+        wVariables.setSelection(input.isVariableReplacementActive());
                
 		wStepname.selectAll();
 	}
@@ -319,6 +342,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
         meta.setRowLimit( Const.toInt(wLimit.getText(), 0) );
         meta.setLookupFromStep( transMeta.findStep( wDatefrom.getText() ) );
         meta.setExecuteEachInputRow(wEachRow.getSelection());
+        meta.setVariableReplacementActive(wVariables.getSelection());
     }
     
 	private void ok()

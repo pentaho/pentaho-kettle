@@ -65,6 +65,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
     /** Should I execute once per row? */
     private boolean executeEachInputRow;
     
+    private boolean variableReplacementActive;
+    
 	public TableInputMeta()
 	{
 		super();
@@ -167,11 +169,12 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			databaseMeta          = Const.findDatabase(databases, XMLHandler.getTagValue(stepnode, "connection"));
-			sql                   = XMLHandler.getTagValue(stepnode, "sql");
-			rowLimit              = Const.toInt(XMLHandler.getTagValue(stepnode, "limit"), 0);
-			lookupFromStepname    = XMLHandler.getTagValue(stepnode, "lookup");
-            executeEachInputRow   = "Y".equals(XMLHandler.getTagValue(stepnode, "execute_each_row"));
+			databaseMeta              = Const.findDatabase(databases, XMLHandler.getTagValue(stepnode, "connection"));
+			sql                       = XMLHandler.getTagValue(stepnode, "sql");
+			rowLimit                  = Const.toInt(XMLHandler.getTagValue(stepnode, "limit"), 0);
+			lookupFromStepname        = XMLHandler.getTagValue(stepnode, "lookup");
+            executeEachInputRow       = "Y".equals(XMLHandler.getTagValue(stepnode, "execute_each_row"));
+            variableReplacementActive = "Y".equals(XMLHandler.getTagValue(stepnode, "variables_active"));
 		}
 		catch(Exception e)
 		{
@@ -269,7 +272,8 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    "+XMLHandler.addTagValue("limit",      rowLimit));
 		retval.append("    "+XMLHandler.addTagValue("lookup",     getLookupStepname()));
         retval.append("    "+XMLHandler.addTagValue("execute_each_row",   executeEachInputRow));
-
+        retval.append("    "+XMLHandler.addTagValue("variables_active",   variableReplacementActive));
+        
 		return retval.toString();
 	}
 
@@ -281,10 +285,11 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			long id_connection = rep.getStepAttributeInteger(id_step, "id_connection"); 
 			databaseMeta = Const.findDatabase( databases, id_connection);
 			
-			sql                   =      rep.getStepAttributeString (id_step, "sql");
-			rowLimit              = (int)rep.getStepAttributeInteger(id_step, "limit");
-			lookupFromStepname    =      rep.getStepAttributeString (id_step, "lookup"); 
-            executeEachInputRow   =      rep.getStepAttributeBoolean(id_step, "execute_each_row");
+			sql                       =      rep.getStepAttributeString (id_step, "sql");
+			rowLimit                  = (int)rep.getStepAttributeInteger(id_step, "limit");
+			lookupFromStepname        =      rep.getStepAttributeString (id_step, "lookup"); 
+            executeEachInputRow       =      rep.getStepAttributeBoolean(id_step, "execute_each_row");
+            variableReplacementActive =      rep.getStepAttributeBoolean(id_step, "variables_active");
 		}
 		catch(Exception e)
 		{
@@ -302,6 +307,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "limit",            rowLimit);
 			rep.saveStepAttribute(id_transformation, id_step, "lookup",           getLookupStepname());
             rep.saveStepAttribute(id_transformation, id_step, "execute_each_row", executeEachInputRow);
+            rep.saveStepAttribute(id_transformation, id_step, "variables_active", variableReplacementActive);
 			
 			// Also, save the step-database relationship!
 			if (databaseMeta!=null) rep.insertStepDatabase(id_transformation, id_step, databaseMeta.getID());
@@ -495,6 +501,22 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
         {
             return super.getUsedDatabaseConnections();
         }
+    }
+
+    /**
+     * @return Returns the variableReplacementActive.
+     */
+    public boolean isVariableReplacementActive()
+    {
+        return variableReplacementActive;
+    }
+
+    /**
+     * @param variableReplacementActive The variableReplacementActive to set.
+     */
+    public void setVariableReplacementActive(boolean variableReplacementActive)
+    {
+        this.variableReplacementActive = variableReplacementActive;
     }
 
 }
