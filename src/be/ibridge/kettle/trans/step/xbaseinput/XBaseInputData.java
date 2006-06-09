@@ -15,10 +15,13 @@
  
 package be.ibridge.kettle.trans.step.xbaseinput;
 
+import java.io.File;
+
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XBase;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
+import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 
 
 /**
@@ -31,6 +34,9 @@ public class XBaseInputData extends BaseStepData implements StepDataInterface
 {
 	public XBase xbi;
 	public Row fields;
+    public int fileNr;
+    public File file_dbf;
+    public FileInputList files;
 
 	public XBaseInputData()
 	{

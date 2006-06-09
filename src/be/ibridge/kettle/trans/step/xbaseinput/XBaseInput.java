@@ -22,7 +22,6 @@ import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XBase;
 import be.ibridge.kettle.core.exception.KettleException;
-import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -53,34 +52,87 @@ public class XBaseInput extends BaseStep implements StepInterface
 	{
 		meta=(XBaseInputMeta)smi;
 		data=(XBaseInputData)sdi;
+        
+        Row row = null;
 
-		debug="Get row from DBF file"; //$NON-NLS-1$
-		Row row=data.xbi.getRow(data.fields);
-		if (row==null) 
-		{
-			debug="No more rows."; //$NON-NLS-1$
-			if (data.xbi.hasError())
-			{
-				logError(Messages.getString("XBaseInput.Log.Error.UnexpectedErrorCanNotContinue")); //$NON-NLS-1$
-				setErrors(1);
-				stopAll();
-			}
-			setOutputDone();  // signal end to receiver(s)
-			return false; // end of data or error.
-		}
-		
+        // See if we need to get a list of files from input...
+        if (first) // we just got started
+        {
+            first = false;
+            
+            if (meta.isAcceptingFilenames())
+            {
+                // Read the files from the specified input stream...
+                data.files.getFiles().clear();
+                
+                int idx = -1;
+                Row fileRow = getRowFrom(meta.getAcceptingStepName());
+                while (fileRow!=null)
+                {
+                    if (idx<0)
+                    {
+                        idx = fileRow.searchValueIndex(meta.getAcceptingField());
+                        if (idx<0)
+                        {
+                            logError(Messages.getString("XBaseInput.Log.Error.UnableToFindFilenameField", meta.getAcceptingField()));
+                            setErrors(1);
+                            stopAll();
+                            return false;
+                        }
+                    }
+                    Value fileValue = fileRow.getValue(idx);
+                    data.files.addFile(new File(fileValue.getString()));
+                    
+                    // Grab another row
+                    fileRow = getRowFrom(meta.getAcceptingStepName());
+                }
+                
+                if (data.files.nrOfFiles()==0)
+                {
+                    logBasic(Messages.getString("XBaseInput.Log.Error.NoFilesSpecified"));
+                    return false;
+                }
+            }
+
+            // Open the first file & read the required rows in the buffer, stop
+            // if it fails, exception whil stop processLoop
+            //
+            openNextFile();
+        }
+        
+        row = data.xbi.getRow(data.fields);
+        while (row==null && data.fileNr < data.files.nrOfFiles()) // No more rows left in this file
+        {
+            openNextFile();
+            row = data.xbi.getRow(data.fields);
+        }
+        
+        if (row==null) 
+        {           
+            setOutputDone();  // signal end to receiver(s)
+            return false; // end of data or error.
+        }
+        
+        // OK, so we have read a line: increment the input counter
 		linesInput++;
-		
-		debug="Do we need to add a rownr?"; //$NON-NLS-1$
-		// Add a rownr???
-		if (meta.isRowNrAdded() && meta.getRowNrField()!=null && meta.getRowNrField().length()>0)
-		{
-			Value rownr = new Value(meta.getRowNrField(), Value.VALUE_TYPE_INTEGER);
-			rownr.setLength(9,0);
-			rownr.setValue(linesInput);
-			row.addValue(rownr);
-		}
-				
+
+        // Possibly add a filename...
+        if (meta.includeFilename())
+        {
+            Value inc = new Value(meta.getFilenameField(), data.file_dbf.getPath());
+            inc.setLength(100);
+            row.addValue(inc);
+        }
+
+        // Possibly add a row number...
+        if (meta.isRowNrAdded())
+        {
+            Value inc = new Value(meta.getRowNrField(), Value.VALUE_TYPE_INTEGER);
+            inc.setValue(linesInput);
+            inc.setLength(9);
+            row.addValue(inc);
+        }
+
 		debug="Send the row to the next step."; //$NON-NLS-1$
 		putRow(row);        // fill the rowset(s). (wait for empty)
 
@@ -97,43 +149,66 @@ public class XBaseInput extends BaseStep implements StepInterface
 
 	    if (super.init(smi, sdi))
 	    {
-			// Replace possible environment variables...
-			String file_dbf = StringUtil.environmentSubstitute( meta.getDbfFileName() ); 
-					
-			data.xbi=new XBase(file_dbf);
-            try
+            data.files  = meta.getTextFileList();
+            data.fileNr = 0;
+            
+            if (data.files.nrOfFiles()==0 && !meta.isAcceptingFilenames())
             {
-                data.xbi.open();
-				// Add memo-file to structure!
-				// xbi.setMemo("D:\\Projects\\Kettle\\testsuite\\CTS\\i-brid\\CTSLAY.DBT");
-	
-				logBasic(Messages.getString("XBaseInput.Log.OpenedXBaseFile")); //$NON-NLS-1$
-				data.fields = data.xbi.getFields();
-				
-				// Add this to the result file names...
-				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(meta.getDbfFileName()), getTransMeta().getName(), getStepname());
-				resultFile.setComment("File was read by an XBase input step");
-                addResultFile(resultFile);
-
-				return true;
+                logError(Messages.getString("XBaseInput.Log.Error.NoFilesSpecified"));
+                return false;
             }
-            catch(KettleException e)
-			{
-				logError(Messages.getString("XBaseInput.Log.Error.CouldNotOpenXBaseFile1")+file_dbf+Messages.getString("XBaseInput.Log.Error.CouldNotOpenXBaseFile2")+e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
-			}
+            return true;
 	    }
 		return false;
 	}
 	
-	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
+	private void openNextFile() throws KettleException
+    {
+        // Close the last file before opening the next...
+        if (data.xbi!=null)
+        {
+            logBasic(Messages.getString("XBaseInput.Log.FinishedReadingRecords")); //$NON-NLS-1$
+            data.xbi.close();
+        }
+        
+        // Replace possible environment variables...
+        data.file_dbf = data.files.getFile(data.fileNr);
+        data.fileNr++;
+                
+        data.xbi=new XBase(data.file_dbf.getPath());
+        try
+        {
+            data.xbi.open();
+            
+            logBasic(Messages.getString("XBaseInput.Log.OpenedXBaseFile")+" : ["+data.file_dbf.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            data.fields = data.xbi.getFields();
+            
+            // Add this to the result file names...
+            ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(meta.getDbfFileName()), getTransMeta().getName(), getStepname());
+            resultFile.setComment(Messages.getString("XBaseInput.ResultFile.Comment"));
+            addResultFile(resultFile);
+        }
+        catch(KettleException e)
+        {
+            logError(Messages.getString("XBaseInput.Log.Error.CouldNotOpenXBaseFile1")+data.file_dbf+Messages.getString("XBaseInput.Log.Error.CouldNotOpenXBaseFile2")+e.getMessage()); //$NON-NLS-1$ //$NON-NLS-2$
+            throw e;
+        }
+    }
+
+    public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
-		logBasic(Messages.getString("XBaseInput.Log.FinishedReadingRecords")); //$NON-NLS-1$
-		data.xbi.close();
-		
+        closeLastFile();
+        
 		super.dispose(smi, sdi);
 	}
 
-	//
+	private void closeLastFile()
+    {
+        logBasic(Messages.getString("XBaseInput.Log.FinishedReadingRecords")); //$NON-NLS-1$
+        data.xbi.close();    
+    }
+
+    //
 	// Run is were the action happens!
 	//
 	public void run()

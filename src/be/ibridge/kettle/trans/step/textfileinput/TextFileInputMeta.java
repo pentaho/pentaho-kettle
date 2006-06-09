@@ -987,11 +987,12 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			nrLinesPerPage = (int) rep.getStepAttributeInteger(id_step, "nr_lines_per_page");
 			nrLinesDocHeader = (int) rep.getStepAttributeInteger(id_step, "nr_lines_doc_header");
 			noEmptyLines = rep.getStepAttributeBoolean(id_step, "noempty");
-			includeFilename = rep.getStepAttributeBoolean(id_step, "include");
+			
+            includeFilename = rep.getStepAttributeBoolean(id_step, "include");
 			filenameField = rep.getStepAttributeString(id_step, "include_field");
-
 			includeRowNumber = rep.getStepAttributeBoolean(id_step, "rownum");
 			rowNumberField = rep.getStepAttributeString(id_step, "rownum_field");
+            
 			fileFormat = rep.getStepAttributeString(id_step, "format");
 			encoding = rep.getStepAttributeString(id_step, "encoding");
 
@@ -1096,10 +1097,12 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "nr_lines_doc_header", nrLinesDocHeader);
 
 			rep.saveStepAttribute(id_transformation, id_step, "noempty", noEmptyLines);
+            
 			rep.saveStepAttribute(id_transformation, id_step, "include", includeFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "include_field", filenameField);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum", includeRowNumber);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field", rowNumberField);
+            
 			rep.saveStepAttribute(id_transformation, id_step, "format", fileFormat);
 			rep.saveStepAttribute(id_transformation, id_step, "encoding", encoding);
 

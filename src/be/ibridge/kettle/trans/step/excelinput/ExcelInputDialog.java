@@ -829,7 +829,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdTabFolder.bottom= new FormAttachment(100, -50);
 		wTabFolder.setLayoutData(fdTabFolder);
 		
-
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK"));
 		wPreview=new Button(shell, SWT.PUSH);
@@ -851,11 +850,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
 		wStepname.addSelectionListener( lsDef );
-		// wFilename.addSelectionListener( lsDef );
+		wFilename.addSelectionListener( lsDef );
 		wLimit.addSelectionListener( lsDef );
 		wInclRownumField.addSelectionListener( lsDef );
 		wInclFilenameField.addSelectionListener( lsDef );
 		wInclSheetnameField.addSelectionListener( lsDef );
+        wAccField.addSelectionListener( lsDef );
 
 		// Add the file to the list of files...
 		SelectionAdapter selA = new SelectionAdapter()
@@ -1043,7 +1043,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wlFilemask.setEnabled(!accept);
         wFilemask.setEnabled(!accept);
         wbShowFiles.setEnabled(!accept);
-        wPreview.setEnabled(!accept);
+        
+        // wPreview.setEnabled(!accept);  // Keep this one: you can do preview on defined files in the files section. 
         
         // Error handling tab...
         wlSkipErrorLines.setEnabled( wErrorIgnored.getSelection() );
@@ -1074,48 +1075,48 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	/**
 	 * Read the data from the ExcelInputMeta object and show it in this dialog.
 	 * 
-	 * @param in The ExcelInputMeta object to obtain the data from.
+	 * @param meta The ExcelInputMeta object to obtain the data from.
 	 */
-	public void getData(ExcelInputMeta in)
+	public void getData(ExcelInputMeta meta)
 	{
-		if (in.getFileName() !=null) 
+		if (meta.getFileName() !=null) 
 		{
 			wFilenameList.removeAll();
-			for (int i=0;i<in.getFileName().length;i++) 
+			for (int i=0;i<meta.getFileName().length;i++) 
 			{
-				wFilenameList.add(new String[] { in.getFileName()[i], in.getFileMask()[i] , in.getFileRequired()[i]} );
+				wFilenameList.add(new String[] { meta.getFileName()[i], meta.getFileMask()[i] , meta.getFileRequired()[i]} );
 			}
 			wFilenameList.removeEmptyRows();
 			wFilenameList.setRowNums();
 			wFilenameList.optWidth(true);
 		}
         
-        wAccFilenames.setSelection(in.isAcceptingFilenames());
-        if (in.getAcceptingField()!=null) wAccField.setText(in.getAcceptingField());
-        if (in.getAcceptingStep()!=null) wAccStep.setText(in.getAcceptingStep().getName());
+        wAccFilenames.setSelection(meta.isAcceptingFilenames());
+        if (meta.getAcceptingField()!=null) wAccField.setText(meta.getAcceptingField());
+        if (meta.getAcceptingStep()!=null) wAccStep.setText(meta.getAcceptingStep().getName());
 
-		wHeader.setSelection(in.startsWithHeader());
-		wNoempty.setSelection(in.ignoreEmptyRows());
-		wStoponempty.setSelection(in.stopOnEmpty());
-		if (in.getFileField()!=null) wInclFilenameField.setText(in.getFileField());
-		if (in.getSheetField()!=null) wInclSheetnameField.setText(in.getSheetField());
-		if (in.getRowNumberField()!=null) wInclRownumField.setText(in.getRowNumberField());
-		wLimit.setText(""+in.getRowLimit());
+		wHeader.setSelection(meta.startsWithHeader());
+		wNoempty.setSelection(meta.ignoreEmptyRows());
+		wStoponempty.setSelection(meta.stopOnEmpty());
+		if (meta.getFileField()!=null) wInclFilenameField.setText(meta.getFileField());
+		if (meta.getSheetField()!=null) wInclSheetnameField.setText(meta.getSheetField());
+		if (meta.getRowNumberField()!=null) wInclRownumField.setText(meta.getRowNumberField());
+		wLimit.setText(""+meta.getRowLimit());
 		
 		log.logDebug(toString(), "getting fields info...");
-		for (int i=0;i<in.getField().length;i++)
+		for (int i=0;i<meta.getField().length;i++)
 		{
 			TableItem item = wFields.table.getItem(i);
-			String field    = in.getField()[i].getName();
-			String type     = in.getField()[i].getTypeDesc();
-			String length   = ""+in.getField()[i].getLength();
-			String prec     = ""+in.getField()[i].getPrecision();
-			String trim     = in.getField()[i].getTrimTypeDesc();
-			String rep      = in.getField()[i].isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No");
-			String format   = in.getField()[i].getFormat();
-			String currency = in.getField()[i].getCurrencySymbol();
-			String decimal  = in.getField()[i].getDecimalSymbol();
-			String grouping = in.getField()[i].getGroupSymbol();
+			String field    = meta.getField()[i].getName();
+			String type     = meta.getField()[i].getTypeDesc();
+			String length   = ""+meta.getField()[i].getLength();
+			String prec     = ""+meta.getField()[i].getPrecision();
+			String trim     = meta.getField()[i].getTrimTypeDesc();
+			String rep      = meta.getField()[i].isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No");
+			String format   = meta.getField()[i].getFormat();
+			String currency = meta.getField()[i].getCurrencySymbol();
+			String decimal  = meta.getField()[i].getDecimalSymbol();
+			String grouping = meta.getField()[i].getGroupSymbol();
 			
 			if (field   !=null) item.setText( 1, field);
 			if (type    !=null) item.setText( 2, type    );
@@ -1134,12 +1135,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wFields.optWidth(true);
 
 		log.logDebug(toString(), "getting sheets info...");
-		for (int i=0;i<in.getSheetName().length;i++)
+		for (int i=0;i<meta.getSheetName().length;i++)
 		{
 			TableItem item = wSheetnameList.table.getItem(i);
-			String sheetname    =    in.getSheetName()[i];
-			String startrow     = ""+in.getStartRow()[i];
-			String startcol     = ""+in.getStartColumn()[i];
+			String sheetname    =    meta.getSheetName()[i];
+			String startrow     = ""+meta.getStartRow()[i];
+			String startcol     = ""+meta.getStartColumn()[i];
 			
 			if (sheetname!=null) item.setText( 1, sheetname);
 			if (startrow!=null)  item.setText( 2, startrow);
@@ -1150,18 +1151,18 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wSheetnameList.optWidth(true);
 		
 		//		 Error handling fields...
-        wErrorIgnored.setSelection( in.isErrorIgnored() );
-        wStrictTypes.setSelection( in.isStrictTypes() );
-        wSkipErrorLines.setSelection( in.isErrorLineSkipped() );
+        wErrorIgnored.setSelection( meta.isErrorIgnored() );
+        wStrictTypes.setSelection( meta.isStrictTypes() );
+        wSkipErrorLines.setSelection( meta.isErrorLineSkipped() );
 
-        if (in.getWarningFilesDestinationDirectory()!=null) wWarningDestDir.setText(in.getWarningFilesDestinationDirectory());
-        if (in.getBadLineFilesExtension()!=null) wWarningExt.setText(in.getBadLineFilesExtension());
+        if (meta.getWarningFilesDestinationDirectory()!=null) wWarningDestDir.setText(meta.getWarningFilesDestinationDirectory());
+        if (meta.getBadLineFilesExtension()!=null) wWarningExt.setText(meta.getBadLineFilesExtension());
 
-        if (in.getErrorFilesDestinationDirectory()!=null) wErrorDestDir.setText(in.getErrorFilesDestinationDirectory());
-        if (in.getErrorFilesExtension()!=null) wErrorExt.setText(in.getErrorFilesExtension());
+        if (meta.getErrorFilesDestinationDirectory()!=null) wErrorDestDir.setText(meta.getErrorFilesDestinationDirectory());
+        if (meta.getErrorFilesExtension()!=null) wErrorExt.setText(meta.getErrorFilesExtension());
 
-        if (in.getLineNumberFilesDestinationDirectory()!=null) wLineNrDestDir.setText(in.getLineNumberFilesDestinationDirectory());
-        if (in.getLineNumberFilesExtension()!=null) wLineNrExt.setText(in.getLineNumberFilesExtension());
+        if (meta.getLineNumberFilesDestinationDirectory()!=null) wLineNrDestDir.setText(meta.getLineNumberFilesDestinationDirectory());
+        if (meta.getLineNumberFilesExtension()!=null) wLineNrExt.setText(meta.getLineNumberFilesExtension());
 
 		setFlags();
 		
@@ -1181,78 +1182,78 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		dispose();
 	}
 	
-	private void getInfo(ExcelInputMeta in)
+	private void getInfo(ExcelInputMeta meta)
 	{
 		stepname = wStepname.getText(); // return value
 
 		// copy info to Meta class (input)
-		in.setRowLimit( Const.toLong(wLimit.getText(), 0) );
-		in.setFileField( wInclFilenameField.getText() );
-		in.setSheetField( wInclSheetnameField.getText() );
-		in.setRowNumberField( wInclRownumField.getText() );
+		meta.setRowLimit( Const.toLong(wLimit.getText(), 0) );
+		meta.setFileField( wInclFilenameField.getText() );
+		meta.setSheetField( wInclSheetnameField.getText() );
+		meta.setRowNumberField( wInclRownumField.getText() );
 		
-		in.setStartsWithHeader( wHeader.getSelection() );
-		in.setIgnoreEmptyRows( wNoempty.getSelection() );
-		in.setStopOnEmpty( wStoponempty.getSelection() );
+		meta.setStartsWithHeader( wHeader.getSelection() );
+		meta.setIgnoreEmptyRows( wNoempty.getSelection() );
+		meta.setStopOnEmpty( wStoponempty.getSelection() );
 
-        wAccFilenames.setSelection(in.isAcceptingFilenames());
-        if (in.getAcceptingField()!=null) wAccField.setText(in.getAcceptingField());
-        if (in.getAcceptingStep()!=null) wAccStep.setText(in.getAcceptingStep().getName());
+        meta.setAcceptingFilenames( wAccFilenames.getSelection() );
+        meta.setAcceptingField( wAccField.getText() );
+        meta.setAcceptingStep( transMeta.findStep( wAccStep.getText() ) );
 
 		int nrfiles    = wFilenameList.nrNonEmpty();
 		int nrsheets   = wSheetnameList.nrNonEmpty();
 		int nrfields   = wFields.nrNonEmpty();
 		
-		in.allocate(nrfiles, nrsheets, nrfields);
+		meta.allocate(nrfiles, nrsheets, nrfields);
 
 		for (int i=0;i<nrfiles;i++)
 		{
 			TableItem item = wFilenameList.getNonEmpty(i);
-			in.getFileName()[i] = item.getText(1);
-			in.getFileMask()[i] = item.getText(2);
-			in.getFileRequired()[i] = item.getText(3);
+			meta.getFileName()[i] = item.getText(1);
+			meta.getFileMask()[i] = item.getText(2);
+			meta.getFileRequired()[i] = item.getText(3);
 		}
 
 		for (int i=0;i<nrsheets;i++)
 		{
 			TableItem item = wSheetnameList.getNonEmpty(i);
-			in.getSheetName()[i] = item.getText(1);
-			in.getStartRow()[i]  = Const.toInt(item.getText(2),0);
-			in.getStartColumn()[i]  = Const.toInt(item.getText(3),0);
+			meta.getSheetName()[i] = item.getText(1);
+			meta.getStartRow()[i]  = Const.toInt(item.getText(2),0);
+			meta.getStartColumn()[i]  = Const.toInt(item.getText(3),0);
 		}
 
 		for (int i=0;i<nrfields;i++)
 		{
 			TableItem item  = wFields.getNonEmpty(i);
-			in.getField()[i] = new ExcelInputField();
+			meta.getField()[i] = new ExcelInputField();
 			
-			in.getField()[i].setName( item.getText(1) );
-			in.getField()[i].setType( Value.getType(item.getText(2)) );
+			meta.getField()[i].setName( item.getText(1) );
+			meta.getField()[i].setType( Value.getType(item.getText(2)) );
 			String slength  = item.getText(3);
 			String sprec    = item.getText(4);
-			in.getField()[i].setTrimType( ExcelInputMeta.getTrimTypeByDesc(item.getText(5)) );
-			in.getField()[i].setRepeated( Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(6)) );		
+			meta.getField()[i].setTrimType( ExcelInputMeta.getTrimTypeByDesc(item.getText(5)) );
+			meta.getField()[i].setRepeated( Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(6)) );		
 
-			in.getField()[i].setLength( Const.toInt(slength, -1) );
-			in.getField()[i].setPrecision( Const.toInt(sprec, -1) );
+			meta.getField()[i].setLength( Const.toInt(slength, -1) );
+			meta.getField()[i].setPrecision( Const.toInt(sprec, -1) );
 			
-			in.getField()[i].setFormat( item.getText(7) );
-			in.getField()[i].setCurrencySymbol( item.getText(8) );
-			in.getField()[i].setDecimalSymbol( item.getText(9) );
-			in.getField()[i].setGroupSymbol( item.getText(10) );
+			meta.getField()[i].setFormat( item.getText(7) );
+			meta.getField()[i].setCurrencySymbol( item.getText(8) );
+			meta.getField()[i].setDecimalSymbol( item.getText(9) );
+			meta.getField()[i].setGroupSymbol( item.getText(10) );
 		}	
 		
 		// Error handling fields...
-		in.setStrictTypes( wStrictTypes.getSelection() );
-        in.setErrorIgnored( wErrorIgnored.getSelection() );
-        in.setErrorLineSkipped( wSkipErrorLines.getSelection() );
+		meta.setStrictTypes( wStrictTypes.getSelection() );
+        meta.setErrorIgnored( wErrorIgnored.getSelection() );
+        meta.setErrorLineSkipped( wSkipErrorLines.getSelection() );
         
-        in.setWarningFilesDestinationDirectory( wWarningDestDir.getText() );
-        in.setBadLineFilesExtension( wWarningExt.getText() );
-        in.setErrorFilesDestinationDirectory( wErrorDestDir.getText() );
-        in.setErrorFilesExtension( wErrorExt.getText() );
-        in.setLineNumberFilesDestinationDirectory( wLineNrDestDir.getText() );
-        in.setLineNumberFilesExtension( wLineNrExt.getText() );
+        meta.setWarningFilesDestinationDirectory( wWarningDestDir.getText() );
+        meta.setBadLineFilesExtension( wWarningExt.getText() );
+        meta.setErrorFilesDestinationDirectory( wErrorDestDir.getText() );
+        meta.setErrorFilesExtension( wErrorExt.getText() );
+        meta.setLineNumberFilesDestinationDirectory( wLineNrDestDir.getText() );
+        meta.setLineNumberFilesExtension( wLineNrExt.getText() );
 		
 	}
 	
@@ -1563,10 +1564,19 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	private void preview()
 	{
 		// Create the excel reader step...
-		ExcelInputMeta eii = new ExcelInputMeta();
-		getInfo(eii);
+		ExcelInputMeta oneMeta = new ExcelInputMeta();
+		getInfo(oneMeta);
         
-        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(eii, wStepname.getText());
+        if (oneMeta.isAcceptingFilenames())
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+            mb.setMessage(Messages.getString("ExcelInputDialog.Dialog.SpecifyASampleFile.Message")); // Nothing found that matches your criteria
+            mb.setText(Messages.getString("ExcelInputDialog.Dialog.SpecifyASampleFile.Title")); // Sorry!
+            mb.open();
+            return;
+        }
+        
+        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
         
         EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("ExcelInputDialog.PreviewSize.DialogTitle"), Messages.getString("ExcelInputDialog.PreviewSize.DialogMessage"));
         int previewSize = numberDialog.open();

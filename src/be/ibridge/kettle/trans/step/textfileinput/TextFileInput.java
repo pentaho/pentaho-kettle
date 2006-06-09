@@ -708,6 +708,8 @@ public class TextFileInput extends BaseStep implements StepInterface
             if (meta.isAcceptingFilenames())
             {
                 // Read the files from the specified input stream...
+                data.files.getFiles().clear();
+                
                 int idx = -1;
                 Row fileRow = getRowFrom(meta.getAcceptingStepName());
                 while (fileRow!=null)
@@ -717,7 +719,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                         idx = fileRow.searchValueIndex(meta.getAcceptingField());
                         if (idx<0)
                         {
-                            logError("The filename field ["+meta.getAcceptingField()+"] could not be found in the input rows.");
+                            logError(Messages.getString("TextFileInput.Log.Error.UnableToFindFilenameField", meta.getAcceptingField()));
                             setErrors(1);
                             stopAll();
                             return false;
@@ -730,6 +732,11 @@ public class TextFileInput extends BaseStep implements StepInterface
                     fileRow = getRowFrom(meta.getAcceptingStepName());
                 }
                 
+                if (data.files.nrOfFiles()==0)
+                {
+                    logBasic(Messages.getString("TextFileInput.Log.Error.NoFilesSpecified"));
+                    return false;
+                }
             }
 			handleMissingFiles();
 			debug = "first";
@@ -1299,7 +1306,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			if ((transmeta.getPreviousResult()==null || transmeta.getPreviousResult().getResultFiles()==null || transmeta.getPreviousResult().getResultFiles().size()==0) && 
                     data.files.nrOfFiles() == 0 && data.files.nrOfMissingFiles() == 0 && !meta.isAcceptingFilenames())
 			{
-				logError("No file(s) specified! Stop processing.");
+				logError(Messages.getString("TextFileInput.Log.Error.NoFilesSpecified"));
 				return false;
 			}
 

@@ -826,7 +826,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "bad_line_files_ext", warningFilesExtension);
             rep.saveStepAttribute(id_transformation, id_step, "error_line_files_dest_dir", errorFilesDestinationDirectory);
             rep.saveStepAttribute(id_transformation, id_step, "error_line_files_ext", errorFilesExtension);
-             rep.saveStepAttribute(id_transformation, id_step, "line_number_files_dest_dir", lineNumberFilesDestinationDirectory);
+            rep.saveStepAttribute(id_transformation, id_step, "line_number_files_dest_dir", lineNumberFilesDestinationDirectory);
             rep.saveStepAttribute(id_transformation, id_step, "line_number_files_ext", lineNumberFilesExtension);
 		}
 		catch(Exception e)
@@ -880,7 +880,29 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     	return FileInputList.createFileList(fileName, fileMask, fileRequired);
     }
 	
+    public String getLookupStepname()
+    {
+        if (acceptingFilenames &&
+            acceptingStep!=null && 
+            !Const.isEmpty( acceptingStep.getName() )
+           ) 
+            return acceptingStep.getName();
+        return null;
+    }
 
+    public void searchInfoAndTargetSteps(ArrayList steps)
+    {
+        acceptingStep = TransMeta.findStep(steps, acceptingStepName);
+    }
+
+    public String[] getInfoSteps()
+    {
+        if (acceptingFilenames && acceptingStep!=null)
+        {
+            return new String[] { acceptingStep.getName() };
+        }
+        return super.getInfoSteps();
+    }
 
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
 	{

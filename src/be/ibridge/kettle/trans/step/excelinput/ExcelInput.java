@@ -334,6 +334,8 @@ public class ExcelInput extends BaseStep implements StepInterface
             if (meta.isAcceptingFilenames())
             {
                 // Read the files from the specified input stream...
+                data.files.getFiles().clear();
+                
                 int idx = -1;
                 Row fileRow = getRowFrom(meta.getAcceptingStepName());
                 while (fileRow!=null)

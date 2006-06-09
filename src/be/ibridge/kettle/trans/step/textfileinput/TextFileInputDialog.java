@@ -451,6 +451,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wErrorExt.addSelectionListener( lsDef );
         wLineNrDestDir.addSelectionListener( lsDef );
         wLineNrExt.addSelectionListener( lsDef );
+        wAccField.addSelectionListener( lsDef );
 
 		// Add the file to the list of files...
 		SelectionAdapter selA = new SelectionAdapter()
@@ -503,22 +504,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					TextFileInputMeta tfii = new TextFileInputMeta();
-					getInfo(tfii);
-					String files[] = tfii.getFilePaths();
-					if (files!=null && files.length>0)
-					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, "Files read", "Files read:");
-						esd.setViewOnly();
-						esd.open();
-					}
-					else
-					{
-						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage(Messages.getString("TextFileInputDialog.NoFilesFound.DialogMessage"));
-						mb.setText(Messages.getString("System.Dialog.Error.Title"));
-						mb.open(); 
-					}
+                    showFiles();
 				}
 			}
 		);
@@ -548,7 +534,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wFooter.addSelectionListener(lsFlags);
         wWraps.addSelectionListener(lsFlags);
         wLayoutPaged.addSelectionListener(lsFlags);
-
+        wAccFilenames.addSelectionListener(lsFlags);
+        
 		// Listen to the Browse... button
 		wbbFilename.addSelectionListener
 		(
@@ -625,7 +612,27 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		return stepname;
 	}
 
-	private void addFilesTab()
+	private void showFiles()
+    {
+        TextFileInputMeta tfii = new TextFileInputMeta();
+        getInfo(tfii);
+        String files[] = tfii.getFilePaths();
+        if (files!=null && files.length>0)
+        {
+            EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, "Files read", "Files read:");
+            esd.setViewOnly();
+            esd.open();
+        }
+        else
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+            mb.setMessage(Messages.getString("TextFileInputDialog.NoFilesFound.DialogMessage"));
+            mb.setText(Messages.getString("System.Dialog.Error.Title"));
+            mb.open(); 
+        }
+    }
+
+    private void addFilesTab()
     {
         //////////////////////////
         // START OF FILE TAB   ///
@@ -661,7 +668,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
         fdbFilename=new FormData();
         fdbFilename.right= new FormAttachment(100, 0);
-        fdbFilename.top  = new FormAttachment(gAccepting, margin*3);
+        fdbFilename.top  = new FormAttachment(0, 0);
         wbbFilename.setLayoutData(fdbFilename);
 
         wbvFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -670,7 +677,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wbvFilename.setToolTipText(Messages.getString("System.Tooltip.VariableToFileOrDir"));
         fdbvFilename=new FormData();
         fdbvFilename.right= new FormAttachment(wbbFilename, -margin);
-        fdbvFilename.top  = new FormAttachment(gAccepting, margin*3);
+        fdbvFilename.top  = new FormAttachment(0, 0);
         wbvFilename.setLayoutData(fdbvFilename);
 
         wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -679,7 +686,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wbaFilename.setToolTipText(Messages.getString("TextFileInputDialog.FilenameAdd.Tooltip"));
         fdbaFilename=new FormData();
         fdbaFilename.right= new FormAttachment(wbvFilename, -margin);
-        fdbaFilename.top  = new FormAttachment(gAccepting, margin*3);
+        fdbaFilename.top  = new FormAttachment(0, 0);
         wbaFilename.setLayoutData(fdbaFilename);
 
         wFilename=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -688,7 +695,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdFilename=new FormData();
         fdFilename.left = new FormAttachment(middle, 0);
         fdFilename.right= new FormAttachment(wbaFilename, -margin);
-        fdFilename.top  = new FormAttachment(gAccepting, margin*3);
+        fdFilename.top  = new FormAttachment(0, 0);
         wFilename.setLayoutData(fdFilename);
 
         wlFilemask=new Label(wFileComp, SWT.RIGHT);
@@ -795,14 +802,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdAccFilenames.left = new FormAttachment(middle, 0);
         fdAccFilenames.right= new FormAttachment(100, 0);
         wAccFilenames.setLayoutData(fdAccFilenames);
-        wAccFilenames.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent arg0)
-                {
-                    setFlags();
-                }
-            }
-        );
         
         // Which step to read from?
         wlAccStep=new Label(gAccepting, SWT.RIGHT);
@@ -1926,9 +1925,12 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     	wlFilemask.setEnabled(!accept);
     	wFilemask.setEnabled(!accept);
     	wbShowFiles.setEnabled(!accept);
-        wFirst.setEnabled(!accept);        
+
+        // Keep this one active: use the sample in the file list
+        // wPreview.setEnabled(!accept); 
+        
+    	wFirst.setEnabled(!accept);        
         wFirstHeader.setEnabled(!accept);
-        wPreview.setEnabled(!accept);
         
         wlInclFilenameField.setEnabled(wInclFilename.getSelection());
         wInclFilenameField.setEnabled(wInclFilename.getSelection());
@@ -2143,53 +2145,53 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		dispose();
 	}
 	
-	private void getInfo(TextFileInputMeta in)
+	private void getInfo(TextFileInputMeta meta)
 	{
 		stepname = wStepname.getText(); // return value
 
 		// copy info to TextFileInputMeta class (input)
-        in.setAcceptingFilenames( wAccFilenames.getSelection() );
-        in.setAcceptingField( wAccField.getText() );
-        in.setAcceptingStep( transMeta.findStep( wAccStep.getText() ) );
+        meta.setAcceptingFilenames( wAccFilenames.getSelection() );
+        meta.setAcceptingField( wAccField.getText() );
+        meta.setAcceptingStep( transMeta.findStep( wAccStep.getText() ) );
         
-		in.setFileType( wFiletype.getText() );
-		in.setFileFormat( wFormat.getText() );
-		in.setSeparator( wSeparator.getText() );
-		in.setEnclosure( wEnclosure.getText() );
-        in.setEscapeCharacter( wEscape.getText() );
-		in.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
-		in.setFilenameField( wInclFilenameField.getText() );
-		in.setRowNumberField( wInclRownumField.getText() );
+		meta.setFileType( wFiletype.getText() );
+		meta.setFileFormat( wFormat.getText() );
+		meta.setSeparator( wSeparator.getText() );
+		meta.setEnclosure( wEnclosure.getText() );
+        meta.setEscapeCharacter( wEscape.getText() );
+		meta.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
+		meta.setFilenameField( wInclFilenameField.getText() );
+		meta.setRowNumberField( wInclRownumField.getText() );
 				
-		in.setIncludeFilename( wInclFilename.getSelection() );
-		in.setIncludeRowNumber( wInclRownum.getSelection() );
-		in.setHeader( wHeader.getSelection() );
-        in.setNrHeaderLines( Const.toInt( wNrHeader.getText(), 1) );
-		in.setFooter( wFooter.getSelection() );
-        in.setNrFooterLines( Const.toInt( wNrFooter.getText(), 1) );
-        in.setLineWrapped( wWraps.getSelection() );
-        in.setNrWraps( Const.toInt( wNrWraps.getText(), 1) );
-        in.setLayoutPaged( wLayoutPaged.getSelection() );
-        in.setNrLinesPerPage( Const.toInt( wNrLinesPerPage.getText(), 80) );
-        in.setNrLinesDocHeader( Const.toInt( wNrLinesDocHeader.getText(), 0) );
-		in.setZipped( wZipped.getSelection() );
-		in.setDateFormatLenient( wDateLenient.getSelection() );
-		in.setNoEmptyLines( wNoempty.getSelection() );
+		meta.setIncludeFilename( wInclFilename.getSelection() );
+		meta.setIncludeRowNumber( wInclRownum.getSelection() );
+		meta.setHeader( wHeader.getSelection() );
+        meta.setNrHeaderLines( Const.toInt( wNrHeader.getText(), 1) );
+		meta.setFooter( wFooter.getSelection() );
+        meta.setNrFooterLines( Const.toInt( wNrFooter.getText(), 1) );
+        meta.setLineWrapped( wWraps.getSelection() );
+        meta.setNrWraps( Const.toInt( wNrWraps.getText(), 1) );
+        meta.setLayoutPaged( wLayoutPaged.getSelection() );
+        meta.setNrLinesPerPage( Const.toInt( wNrLinesPerPage.getText(), 80) );
+        meta.setNrLinesDocHeader( Const.toInt( wNrLinesDocHeader.getText(), 0) );
+		meta.setZipped( wZipped.getSelection() );
+		meta.setDateFormatLenient( wDateLenient.getSelection() );
+		meta.setNoEmptyLines( wNoempty.getSelection() );
 
         String encoding = wEncoding.getText();
         if (encoding.length()>0) 
         {
-            in.setEncoding(encoding);
+            meta.setEncoding(encoding);
         }
         
 		int nrfiles    = wFilenameList.getItemCount();
 		int nrfields   = wFields.nrNonEmpty();
         int nrfilters  = wFilter.nrNonEmpty();
-		in.allocate(nrfiles, nrfields, nrfilters);
+		meta.allocate(nrfiles, nrfields, nrfilters);
 
-		in.setFileName( wFilenameList.getItems(0) );
-		in.setFileMask( wFilenameList.getItems(1) );
-		in.setFileRequired( wFilenameList.getItems(2) );
+		meta.setFileName( wFilenameList.getItems(0) );
+		meta.setFileMask( wFilenameList.getItems(1) );
+		meta.setFileRequired( wFilenameList.getItems(2) );
 
 		for (int i=0;i<nrfields;i++)
 		{
@@ -2210,42 +2212,42 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			field.setTrimType( TextFileInputMeta.getTrimTypeByDesc(item.getText(12)) );
 			field.setRepeated( Messages.getString("System.Button.Yes").equalsIgnoreCase(item.getText(13)) );		
 			
-			in.getInputFields()[i] = field;
+			meta.getInputFields()[i] = field;
 		}
         
         for (int i=0;i<nrfilters;i++)
         {
             TableItem item = wFilter.getNonEmpty(i);
             TextFileFilter filter = new TextFileFilter();
-            in.getFilter()[i] = filter;
+            meta.getFilter()[i] = filter;
             
             filter.setFilterString( item.getText(1) );
             filter.setFilterPosition( Const.toInt(item.getText(2), -1) );
             filter.setFilterLastLine( Messages.getString("System.Button.Yes").equalsIgnoreCase( item.getText(3) ) );
         }
         // Error handling fields...
-        in.setErrorIgnored( wErrorIgnored.getSelection() );
-        in.setErrorLineSkipped( wSkipErrorLines.getSelection() );
-        in.setErrorCountField( wErrorCount.getText() );
-        in.setErrorFieldsField( wErrorFields.getText() );
-        in.setErrorTextField( wErrorText.getText() );
+        meta.setErrorIgnored( wErrorIgnored.getSelection() );
+        meta.setErrorLineSkipped( wSkipErrorLines.getSelection() );
+        meta.setErrorCountField( wErrorCount.getText() );
+        meta.setErrorFieldsField( wErrorFields.getText() );
+        meta.setErrorTextField( wErrorText.getText() );
         
-        in.setWarningFilesDestinationDirectory( wWarnDestDir.getText() );
-        in.setWarningFilesExtension( wWarnExt.getText() );
-        in.setErrorFilesDestinationDirectory( wErrorDestDir.getText() );
-        in.setErrorLineFilesExtension( wErrorExt.getText() ); 
-        in.setLineNumberFilesDestinationDirectory( wLineNrDestDir.getText() );
-        in.setLineNumberFilesExtension( wLineNrExt.getText() );
+        meta.setWarningFilesDestinationDirectory( wWarnDestDir.getText() );
+        meta.setWarningFilesExtension( wWarnExt.getText() );
+        meta.setErrorFilesDestinationDirectory( wErrorDestDir.getText() );
+        meta.setErrorLineFilesExtension( wErrorExt.getText() ); 
+        meta.setLineNumberFilesDestinationDirectory( wLineNrDestDir.getText() );
+        meta.setLineNumberFilesExtension( wLineNrExt.getText() );
         
         // Date format Locale
         Locale locale = new Locale(wDateLocale.getText());
         if (!locale.equals(Locale.getDefault()))
         {
-        	in.setDateFormatLocale(locale);
+        	meta.setDateFormatLocale(locale);
         }
         else
         {
-        	in.setDateFormatLocale(Locale.getDefault());
+        	meta.setDateFormatLocale(Locale.getDefault());
         }
 	}
 	
@@ -2479,6 +2481,15 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         TextFileInputMeta oneMeta = new TextFileInputMeta();
         getInfo(oneMeta);
 
+        if (oneMeta.isAcceptingFilenames())
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+            mb.setMessage(Messages.getString("TextFileInputDialog.Dialog.SpecifyASampleFile.Message")); // Nothing found that matches your criteria
+            mb.setText(Messages.getString("TextFileInputDialog.Dialog.SpecifyASampleFile.Title")); // Sorry!
+            mb.open();
+            return;
+        }
+        
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
         
         EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("TextFileInputDialog.PreviewSize.DialogTitle"), Messages.getString("TextFileInputDialog.PreviewSize.DialogMessage"));

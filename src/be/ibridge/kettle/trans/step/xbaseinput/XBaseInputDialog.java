@@ -22,6 +22,7 @@
 package be.ibridge.kettle.trans.step.xbaseinput;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -35,6 +36,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -55,6 +57,7 @@ import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
+import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -65,6 +68,21 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 	private Text         wFilename;
 	private FormData     fdlFilename, fdbFilename, fdbcFilename, fdFilename;
 
+    private Group        gAccepting;
+    private FormData     fdAccepting;
+
+    private Label        wlAccFilenames;
+    private Button       wAccFilenames;
+    private FormData     fdlAccFilenames, fdAccFilenames;
+    
+    private Label        wlAccField;
+    private Text         wAccField;
+    private FormData     fdlAccField, fdAccField;
+
+    private Label        wlAccStep;
+    private CCombo       wAccStep;
+    private FormData     fdlAccStep, fdAccStep;
+    
 	private Label        wlLimit;
 	private Text         wLimit;
 	private FormData     fdlLimit, fdLimit;
@@ -77,6 +95,15 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 	private Text         wFieldRownr;
 	private FormData     fdlFieldRownr, fdFieldRownr;
 
+    private Label        wlInclFilename;
+    private Button       wInclFilename;
+    private FormData     fdlInclFilename, fdInclFilename;
+
+    private Label        wlInclFilenameField;
+    private Text         wInclFilenameField;
+    private FormData     fdlInclFilenameField, fdInclFilenameField;
+
+    
 	private XBaseInputMeta input;
 	private boolean backupChanged, backupAddRownr;
 
@@ -136,7 +163,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 	
 		// Filename line
 		wlFilename=new Label(shell, SWT.RIGHT);
-		wlFilename.setText(Messages.getString("System.Label.FileName")); //$NON-NLS-1$
+		wlFilename.setText(Messages.getString("System.Label.Filename")); //$NON-NLS-1$
  		props.setLook(wlFilename);
 		fdlFilename=new FormData();
 		fdlFilename.left = new FormAttachment(0, 0);
@@ -169,6 +196,97 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdFilename.top  = new FormAttachment(wStepname, margin);
 		wFilename.setLayoutData(fdFilename);
 		
+        // Accepting filenames group
+        // 
+        
+        gAccepting = new Group(shell, SWT.SHADOW_ETCHED_IN);
+        gAccepting.setText(Messages.getString("XBaseInputDialog.AcceptingGroup.Label")); //$NON-NLS-1$;
+        FormLayout acceptingLayout = new FormLayout();
+        acceptingLayout.marginWidth  = 3;
+        acceptingLayout.marginHeight = 3;
+        gAccepting.setLayout(acceptingLayout);
+        props.setLook(gAccepting);
+        
+        // Accept filenames from previous steps?
+        //
+        wlAccFilenames=new Label(gAccepting, SWT.RIGHT);
+        wlAccFilenames.setText(Messages.getString("XBaseInputDialog.AcceptFilenames.Label"));
+        props.setLook(wlAccFilenames);
+        fdlAccFilenames=new FormData();
+        fdlAccFilenames.top  = new FormAttachment(0, margin);
+        fdlAccFilenames.left = new FormAttachment(0, 0);
+        fdlAccFilenames.right= new FormAttachment(middle, -margin);
+        wlAccFilenames.setLayoutData(fdlAccFilenames);
+        wAccFilenames=new Button(gAccepting, SWT.CHECK);
+        wAccFilenames.setToolTipText(Messages.getString("XBaseInputDialog.AcceptFilenames.Tooltip"));
+        props.setLook(wAccFilenames);
+        fdAccFilenames=new FormData();
+        fdAccFilenames.top  = new FormAttachment(0, margin);
+        fdAccFilenames.left = new FormAttachment(middle, 0);
+        fdAccFilenames.right= new FormAttachment(100, 0);
+        wAccFilenames.setLayoutData(fdAccFilenames);
+        wAccFilenames.addSelectionListener(new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent arg0)
+                {
+                    setFlags();
+                }
+            }
+        );
+        
+        // Which step to read from?
+        wlAccStep=new Label(gAccepting, SWT.RIGHT);
+        wlAccStep.setText(Messages.getString("XBaseInputDialog.AcceptStep.Label"));
+        props.setLook(wlAccStep);
+        fdlAccStep=new FormData();
+        fdlAccStep.top  = new FormAttachment(wAccFilenames, margin);
+        fdlAccStep.left = new FormAttachment(0, 0);
+        fdlAccStep.right= new FormAttachment(middle, -margin);
+        wlAccStep.setLayoutData(fdlAccStep);
+        wAccStep=new CCombo(gAccepting, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wAccStep.setToolTipText(Messages.getString("XBaseInputDialog.AcceptStep.Tooltip"));
+        props.setLook(wAccStep);
+        fdAccStep=new FormData();
+        fdAccStep.top  = new FormAttachment(wAccFilenames, margin);
+        fdAccStep.left = new FormAttachment(middle, 0);
+        fdAccStep.right= new FormAttachment(100, 0);
+        wAccStep.setLayoutData(fdAccStep);
+
+        
+        // Which field?
+        //
+        wlAccField=new Label(gAccepting, SWT.RIGHT);
+        wlAccField.setText(Messages.getString("XBaseInputDialog.AcceptField.Label"));
+        props.setLook(wlAccField);
+        fdlAccField=new FormData();
+        fdlAccField.top  = new FormAttachment(wAccStep, margin);
+        fdlAccField.left = new FormAttachment(0, 0);
+        fdlAccField.right= new FormAttachment(middle, -margin);
+        wlAccField.setLayoutData(fdlAccField);
+        wAccField=new Text(gAccepting, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wAccField.setToolTipText(Messages.getString("XBaseInputDialog.AcceptField.Tooltip"));
+        props.setLook(wAccField);
+        fdAccField=new FormData();
+        fdAccField.top  = new FormAttachment(wAccStep, margin);
+        fdAccField.left = new FormAttachment(middle, 0);
+        fdAccField.right= new FormAttachment(100, 0);
+        wAccField.setLayoutData(fdAccField);
+                
+        // Fill in the source steps...
+        StepMeta[] prevSteps = transMeta.getPrevSteps(transMeta.findStep(stepname));
+        for (int i=0;i<prevSteps.length;i++)
+        {
+            wAccStep.add(prevSteps[i].getName());
+        }
+        
+        fdAccepting=new FormData();
+        fdAccepting.left   = new FormAttachment(middle, 0);
+        fdAccepting.right  = new FormAttachment(100, 0);
+        fdAccepting.top    = new FormAttachment(wFilename, margin*2);
+        // fdAccepting.bottom = new FormAttachment(wAccStep, margin);
+        gAccepting.setLayoutData(fdAccepting);
+        
+        
 		// Limit input ...
 		wlLimit=new Label(shell, SWT.RIGHT);
 		wlLimit.setText(Messages.getString("XBaseInputDialog.LimitSize.Label")); //$NON-NLS-1$
@@ -176,14 +294,14 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdlLimit=new FormData();
 		fdlLimit.left = new FormAttachment(0, 0);
 		fdlLimit.right= new FormAttachment(middle, -margin);
-		fdlLimit.top  = new FormAttachment(wFilename, margin);
+		fdlLimit.top  = new FormAttachment(gAccepting, margin*2);
 		wlLimit.setLayoutData(fdlLimit);
 		wLimit=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wLimit);
 		wLimit.addModifyListener(lsMod);
 		fdLimit=new FormData();
 		fdLimit.left = new FormAttachment(middle, 0);
-		fdLimit.top  = new FormAttachment(wFilename, margin);
+		fdLimit.top  = new FormAttachment(gAccepting, margin*2);
 		fdLimit.right= new FormAttachment(100, 0);
 		wLimit.setLayoutData(fdLimit);
 
@@ -202,36 +320,58 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdAddRownr=new FormData();
 		fdAddRownr.left = new FormAttachment(middle, 0);
 		fdAddRownr.top  = new FormAttachment(wLimit, margin);
-		fdAddRownr.right= new FormAttachment(100, 0);
 		wAddRownr.setLayoutData(fdAddRownr);
-		wAddRownr.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					input.setRowNrAdded( !input.isRowNrAdded() );
-					input.setChanged();
-					setEnabled();
-				}
-			}
-		);
+		wAddRownr.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { input.setChanged(); setFlags(); } } );
 
 		// FieldRownr input ...
-		wlFieldRownr=new Label(shell, SWT.RIGHT);
+		wlFieldRownr=new Label(shell, SWT.LEFT);
 		wlFieldRownr.setText(Messages.getString("XBaseInputDialog.FieldnameOfRowNr.Label")); //$NON-NLS-1$
  		props.setLook(wlFieldRownr);
 		fdlFieldRownr=new FormData();
-		fdlFieldRownr.left = new FormAttachment(0, 0);
-		fdlFieldRownr.right= new FormAttachment(middle, -margin);
-		fdlFieldRownr.top  = new FormAttachment(wAddRownr, margin);
+		fdlFieldRownr.left = new FormAttachment(wAddRownr, margin);
+		fdlFieldRownr.top  = new FormAttachment(wLimit, margin);
 		wlFieldRownr.setLayoutData(fdlFieldRownr);
 		wFieldRownr=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFieldRownr);
 		wFieldRownr.addModifyListener(lsMod);
 		fdFieldRownr=new FormData();
-		fdFieldRownr.left = new FormAttachment(middle, 0);
-		fdFieldRownr.top  = new FormAttachment(wAddRownr, margin);
+		fdFieldRownr.left = new FormAttachment(wlFieldRownr, margin);
+		fdFieldRownr.top  = new FormAttachment(wLimit, margin);
 		fdFieldRownr.right= new FormAttachment(100, 0);
 		wFieldRownr.setLayoutData(fdFieldRownr);
+
+        wlInclFilename=new Label(shell, SWT.RIGHT);
+        wlInclFilename.setText(Messages.getString("XBaseInputDialog.InclFilename.Label"));
+        props.setLook(wlInclFilename);
+        fdlInclFilename=new FormData();
+        fdlInclFilename.left = new FormAttachment(0, 0);
+        fdlInclFilename.top  = new FormAttachment(wFieldRownr, margin);
+        fdlInclFilename.right= new FormAttachment(middle, -margin);
+        wlInclFilename.setLayoutData(fdlInclFilename);
+        wInclFilename=new Button(shell, SWT.CHECK );
+        props.setLook(wInclFilename);
+        wInclFilename.setToolTipText(Messages.getString("XBaseInputDialog.InclFilename.Tooltip"));
+        fdInclFilename=new FormData();
+        fdInclFilename.left = new FormAttachment(middle, 0);
+        fdInclFilename.top  = new FormAttachment(wFieldRownr, margin);
+        wInclFilename.setLayoutData(fdInclFilename);
+        wInclFilename.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { input.setChanged(); setFlags(); } });
+
+        wlInclFilenameField=new Label(shell, SWT.LEFT);
+        wlInclFilenameField.setText(Messages.getString("XBaseInputDialog.InclFilenameField.Label"));
+        props.setLook(wlInclFilenameField);
+        fdlInclFilenameField=new FormData();
+        fdlInclFilenameField.left = new FormAttachment(wInclFilename, margin);
+        fdlInclFilenameField.top  = new FormAttachment(wFieldRownr, margin);
+        wlInclFilenameField.setLayoutData(fdlInclFilenameField);
+        wInclFilenameField=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wInclFilenameField);
+        wInclFilenameField.addModifyListener(lsMod);
+        fdInclFilenameField=new FormData();
+        fdInclFilenameField.left = new FormAttachment(wlInclFilenameField, margin);
+        fdInclFilenameField.top  = new FormAttachment(wFieldRownr, margin);
+        fdInclFilenameField.right= new FormAttachment(100, 0);
+        wInclFilenameField.setLayoutData(fdInclFilenameField);
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -241,7 +381,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 		
-		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wFieldRownr);
+		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, null);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -257,7 +397,8 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		wStepname.addSelectionListener( lsDef );
 		wLimit.addSelectionListener( lsDef );
 		wFieldRownr.addSelectionListener( lsDef );
-		
+        wAccField.addSelectionListener( lsDef );
+
 		wFilename.addModifyListener(new ModifyListener()
 		{
 			public void modifyText(ModifyEvent arg0)
@@ -310,11 +451,19 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		return stepname;
 	}
 	
-	public void setEnabled()
-	{
-		wlFieldRownr.setEnabled(input.isRowNrAdded());
-		wFieldRownr.setEnabled(input.isRowNrAdded());
-	}
+	protected void setFlags()
+    {
+        wlFieldRownr.setEnabled( wAddRownr.getSelection() );
+        wFieldRownr.setEnabled( wAddRownr.getSelection() );
+
+        wlInclFilenameField.setEnabled( wInclFilename.getSelection() );
+        wInclFilenameField.setEnabled( wInclFilename.getSelection() );
+
+        wlFilename.setEnabled( !wAccFilenames.getSelection() );
+        wFilename.setEnabled( !wAccFilenames.getSelection() );
+        wbFilename.setEnabled( !wAccFilenames.getSelection() );
+        wbcFilename.setEnabled( !wAccFilenames.getSelection() );
+    }
 	
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
@@ -329,9 +478,15 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		wLimit.setText(""+(int)input.getRowLimit()); //$NON-NLS-1$
 		wAddRownr.setSelection(input.isRowNrAdded());
 		if (input.getRowNrField()!=null) wFieldRownr.setText(input.getRowNrField());
+
+        wInclFilename.setSelection(input.includeFilename());
+        if (input.getFilenameField()!=null) wInclFilenameField.setText(input.getFilenameField());
+
+        wAccFilenames.setSelection(input.isAcceptingFilenames());
+        if (input.getAcceptingField()!=null) wAccField.setText(input.getAcceptingField());
+        if (input.getAcceptingStep()!=null) wAccStep.setText(input.getAcceptingStep().getName());
 		
-		
-		setEnabled();
+        setFlags();
 		
 		wStepname.selectAll();
 	}
@@ -349,9 +504,17 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		// copy info to Meta class (input)
 		meta.setDbfFileName( wFilename.getText() );
 		meta.setRowLimit( Const.toInt(wLimit.getText(), 0 ) );
+        meta.setRowNrAdded( wAddRownr.getSelection() );
 		meta.setRowNrField( wFieldRownr.getText() );
-		
-		if (Const.isEmpty(meta.getDbfFileName()))
+
+        meta.setIncludeFilename( wInclFilename.getSelection() );
+        meta.setFilenameField( wInclFilenameField.getText() );
+
+        meta.setAcceptingFilenames( wAccFilenames.getSelection() );
+        meta.setAcceptingField( wAccField.getText() );
+        meta.setAcceptingStep( transMeta.findStep( wAccStep.getText() ) );
+
+		if (Const.isEmpty(meta.getDbfFileName()) && !meta.isAcceptingFilenames())
 		{
 			throw new KettleStepException(Messages.getString("XBaseInputDialog.Exception.SpecifyAFileToUse")); //$NON-NLS-1$
 		}
@@ -386,9 +549,18 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 	        XBaseInputMeta oneMeta = new XBaseInputMeta();
 	        getInfo(oneMeta);
 	
+            if (oneMeta.isAcceptingFilenames())
+            {
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+                mb.setMessage(Messages.getString("XBaseInputDialog.Dialog.SpecifyASampleFile.Message")); // Nothing found that matches your criteria
+                mb.setText(Messages.getString("XBaseInputDialog.Dialog.SpecifyASampleFile.Title")); // Sorry!
+                mb.open();
+                return;
+            }
+            
 	        TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
 	        
-	        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("TextFileInputDialog.PreviewSize.DialogTitle"), Messages.getString("TextFileInputDialog.PreviewSize.DialogMessage")); //$NON-NLS-1$ //$NON-NLS-2$
+	        EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("XBaseInputDialog.PreviewSize.DialogTitle"), Messages.getString("XBaseInputDialog.PreviewSize.DialogMessage")); //$NON-NLS-1$ //$NON-NLS-2$
 	        int previewSize = numberDialog.open();
 	        if (previewSize>0)
 	        {

@@ -52,7 +52,7 @@ public class XBase
         error         = false;
         reader        = null;
         inputstream   = null;
-     }
+    }
     
     public void open() throws KettleException
     {
@@ -71,8 +71,7 @@ public class XBase
         }
     }
         
-    public Row getFields()
-    	throws KettleException
+    public Row getFields() throws KettleException
     {
         String debug="get fields from XBase file";
         Row row = new Row();
@@ -136,7 +135,7 @@ public class XBase
         return row;
     }
     
-    public Row getRow(Row fields)
+    public Row getRow(Row fields) throws KettleException
     {
     	String debug = "-";
         Row r = null;
@@ -216,13 +215,13 @@ public class XBase
         {
             log.logError(toString(), "Unable to read row in part ["+debug+"] : "+e.toString());
             error = true;
-            return null;
+            throw new KettleException("Unable to read row from XBase file", e);
         }
         catch(Exception e)
 		{
             log.logError(toString(), "Unexpected error in part ["+debug+"] : "+e.toString());
             error = true;
-            return null;
+            throw new KettleException("Unable to read row from XBase file", e);
 		}
         
         return r;
