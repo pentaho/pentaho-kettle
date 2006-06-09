@@ -328,6 +328,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	// Wizard info...
 	private Vector fields;
     
+    private String[] dateLocale;
+    
     private int middle, margin;
     private ModifyListener lsMod;
 		
@@ -857,10 +859,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         
 
-
-        
-        
-        
         ColumnInfo[] colinfo=new ColumnInfo[]
             {
                 new ColumnInfo(Messages.getString("TextFileInputDialog.FileDirColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
@@ -1398,11 +1396,26 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		{
 			public void run()
 			{
-		        Locale locale[] =  Locale.getAvailableLocales();
-		        for (int i=0;i<locale.length;i++)
-		        {
-		        	if (!wDateLocale.isDisposed()) wDateLocale.add( locale[i].toString());
-		        }
+                Thread thread = new Thread(new Runnable()
+                    {
+                        public void run()
+                        {
+                            Locale locale[] =  Locale.getAvailableLocales();
+                            dateLocale = new String[locale.length];
+                            for (int i=0;i<locale.length;i++)
+                            {
+                                dateLocale[i] =  locale[i].toString();
+                            }
+                        }
+                    }
+                );
+                thread.start();
+                try { thread.join(); } catch(InterruptedException e) {}
+                if (dateLocale!=null)
+                {
+                    wDateLocale.setItems(dateLocale);
+                }
+                
 			}
 		};
         shell.getDisplay().asyncExec(runnable);
