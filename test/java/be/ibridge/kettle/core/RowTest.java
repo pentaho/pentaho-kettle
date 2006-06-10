@@ -523,7 +523,8 @@ public class RowTest extends TestCase
 				new Value("field3", 10.5D),                   // double
 				new Value("field4", true),                    // Boolean
 				new Value("field5", new BigDecimal(123.0)),   // BigDecimal
-				new Value("field6", (String)null)             // NULL value
+				new Value("field6", (String)null),            // NULL value
+				new Value("field7", new Date(10000000L)),     // Date
 		};
 
 		Row r1 = new Row();
@@ -551,7 +552,10 @@ public class RowTest extends TestCase
 
 		assertEquals(123, r1.getShort("field2", 100));
 		assertEquals(1,   r1.getShort("field4", 100));
-		assertEquals(100, r1.getShort("unknown", 100));		
+		assertEquals(100, r1.getShort("unknown", 100));
+		
+		assertEquals(new Date(10000000L), r1.getDate("field7", new Date(10000001L)));
+		assertEquals(new Date(10000001L), r1.getDate("unknown", new Date(10000001L)));		
 	}
 
 	/**
@@ -590,9 +594,9 @@ public class RowTest extends TestCase
 			    new Value("field1", "KETTLE"),                // String
 				new Value("field2", 123L),                    // integer
 				new Value("field3", 10.5D),                   // double
-				new Value("field4", true),                    // Boolean
+				new Value("field4", true),                    // Boolean				
 				new Value("field5", new BigDecimal(123.0)),   // BigDecimal
-				new Value("field6", (String)null)             // NULL value
+				new Value("field6", (String)null)             // NULL value				
 		};
 
 		Row r1 = new Row();
@@ -625,4 +629,50 @@ public class RowTest extends TestCase
 	    r0.setValue(1, new Value("field3", true));
 	    assertEquals("field3", r0.getValue(1).getName());
 	}
+
+	/**
+	 * Test toGetXML().
+	 */
+	public void testCompare()
+	{
+		Value values1[] = {
+			    new Value("field1", "AAA"),
+			    new Value("field2", "BBB"),
+			    new Value("field3", "CCC"),			    
+		};
+
+		Value values2[] = {
+			    new Value("field1", "aaa"),
+			    new Value("field2", "bbb"),
+			    new Value("field3", "DDD"),			    
+		};		
+		
+		Row r1 = new Row();
+		for (int i=0; i < values1.length; i++ )
+		{
+			r1.addValue(values1[i]);
+		}
+
+		Row r2 = new Row();
+		for (int i=0; i < values2.length; i++ )
+		{
+			r2.addValue(values2[i]);
+		}
+		
+		Row r3 = r1.Clone();
+
+		int [] fields1 = { 0 };
+		boolean [] ascending1 =  { true }; 
+		assertEquals(0, r1.compare(r3, fields1, ascending1));
+
+		int [] fields2 = { 0, 1 };
+		boolean [] ascending2 =  { true, false };
+		boolean [] case2 =  { false, false };
+		assertEquals(0, r1.compare(r1, fields2, ascending2, case2));
+
+		int [] fields3 = { 0, 1, 2 };
+		boolean [] ascending3 =  { true, false, false };
+		boolean [] case3 =  { false, false, false };
+		assertTrue(r1.compare(r2, fields3, ascending3, case3) < 0);
+	}	 
 }
