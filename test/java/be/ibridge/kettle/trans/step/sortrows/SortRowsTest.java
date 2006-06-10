@@ -72,7 +72,7 @@ public class SortRowsTest extends TestCase
     private static String target_table = "sort_target";
     private static String source_table = "sort_source";
     
-    public static int MAX_COUNT = 15000;
+    public static int MAX_COUNT = 500;
     
 	/**
 	 * Create source and target table.
