@@ -1323,6 +1323,8 @@ public class ChefGraph extends Canvas
 
 	private void setToolTip(int x, int y) 
 	{
+        String newTip=null;
+        
 		final JobEntryCopy je = chef.jobMeta.getChefGraphEntry(x, y, iconsize);
 		if (je != null && je.isDrawn()) // We hover above a Step!
 		{
@@ -1331,15 +1333,11 @@ public class ChefGraph extends Canvas
 			if (desc != null) 
 			{
 				int le = desc.length() >= 200 ? 200 : desc.length();
-				String tip = desc.substring(0, le);
-				if (!tip.equalsIgnoreCase(getToolTipText())) 
-				{
-					setToolTipText(tip);
-				}
+				newTip = desc.substring(0, le);
 			} 
 			else 
 			{
-				setToolTipText(je.toString());
+				newTip = je.toString();
 			}
 		} 
 		else 
@@ -1348,13 +1346,18 @@ public class ChefGraph extends Canvas
 			JobHopMeta hi = findJobHop(x + offset.x, y + offset.x);
 			if (hi != null) 
 			{
-				setToolTipText(hi.toString());
+				newTip=hi.toString();
 			} 
 			else 
 			{
-				setToolTipText(null);
+				newTip=null;
 			}
 		}
+        
+        if (newTip==null || !newTip.equalsIgnoreCase(getToolTipText())) 
+        {
+            setToolTipText(newTip);
+        }
 	}
 	
 	public void launchStuff(JobEntryCopy jobentry)

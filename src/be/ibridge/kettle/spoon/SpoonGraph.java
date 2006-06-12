@@ -1588,24 +1588,23 @@ public class SpoonGraph extends Canvas
 
     private void setToolTip(int x, int y)
     {
+        String newTip=null;
+        
         final StepMeta stepMeta = spoon.getTransMeta().getStep(x, y, iconsize);
         if (stepMeta != null) // We clicked on a Step!
         {
+            
             // Also: set the tooltip!
             if (stepMeta.getDescription() != null)
             {
                 String desc = stepMeta.getDescription();
                 int le = desc.length() >= 200 ? 200 : desc.length();
-                String tip = desc.substring(0, le);
-                if (!tip.equalsIgnoreCase(getToolTipText()))
-                {
-                    setToolTipText(tip);
-                }
+                newTip = desc.substring(0, le);
             }
             else
             {
-                setToolTipText(stepMeta.getName());
-            }
+                newTip=stepMeta.getName();
+            }            
         }
         else
         {
@@ -1613,12 +1612,17 @@ public class SpoonGraph extends Canvas
             if (hi != null) // We clicked on a HOP!
             {
                 // Set the tooltip for the hop:
-                setToolTipText(hi.toString());
+                newTip = hi.toString();
             }
             else
             {
-                setToolTipText(null);
+                newTip = null;
             }
+        }
+        
+        if (newTip==null || !newTip.equalsIgnoreCase(getToolTipText()))
+        {
+            setToolTipText(newTip);
         }
     }
 
