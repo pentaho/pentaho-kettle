@@ -124,6 +124,8 @@ public class LocalVariables
     {
         if (thread==null) return;
         LogWriter.getInstance().logDebug("LocalVariables", "---> Removing KettleVariables for top level thread ["+thread+"]");
+        LogWriter.getInstance().logDebug("LocalVariables", Const.getStackTracker(new Exception("Removed here!")));
+        
         removeKettleVariables(thread, 1);
     }
     
