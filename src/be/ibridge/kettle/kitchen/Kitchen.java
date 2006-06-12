@@ -25,6 +25,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -49,6 +50,8 @@ public class Kitchen
 	public static void main(String[] a) throws KettleException
 	{
 		EnvUtil.environmentInit();
+        Thread parentThread = Thread.currentThread();
+        LocalVariables.getInstance().createKettleVariables(parentThread.getName(), null, false);
 		
 	    ArrayList args = new ArrayList();
 	    for (int i=0;i<a.length;i++) 
@@ -293,6 +296,9 @@ public class Kitchen
         
 		try
 		{
+            // Add Kettle variables for the job thread...
+            LocalVariables.getInstance().createKettleVariables(job.getName(), parentThread.getName(), true);
+            
 			result = job.execute(); // Execute the selected job.
 			job.endProcessing("end");  // The bookkeeping...
 		}
