@@ -376,7 +376,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         boolean first = true;
         List rows = result.getRows();
         
-        while( ( first && !execPerRow ) || ( execPerRow && rows!=null && iteration<rows.size() && result.getNrErrors()==0 ) )
+        while( ( first && !execPerRow ) || ( execPerRow && rows!=null && iteration<rows.size() && result.getNrErrors()==0 ) && !parentJob.isStopped() )
         {
             first=false;
             if (rows!=null && execPerRow)

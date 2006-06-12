@@ -97,6 +97,7 @@ public class Job extends Thread
 		stopped=false;
         jobTracker = new JobTracker(jobMeta);
         parentThread = Thread.currentThread();  // It _is_ before you start to run the job.
+        initialized=false;
 	}
 
 	public Job(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
@@ -360,11 +361,16 @@ public class Job extends Thread
 		return res;
 	}
 	
-	//
-	// Wait until all RunThreads have finished.
-	// 
-	public void waitUntilFinished()
+	/**
+	 Wait until this job has finished.
+	*/
+	public void waitUntilFinished(long maxMiliseconds)
 	{
+        long time = 0L;
+        while (isAlive() && time<maxMiliseconds)
+        {
+            try { Thread.sleep(10); time+=10; } catch(InterruptedException e) {}
+        }
 	}
 
 	public int getErrors()
@@ -375,8 +381,7 @@ public class Job extends Thread
 
 	//
 	// Handle logging at start
-	public boolean beginProcessing()
-		throws KettleJobException
+	public boolean beginProcessing() throws KettleJobException
 	{
 		currentDate = new Date();
 		logDate     = new Date();

@@ -97,6 +97,7 @@ public class ChefLog extends Composite
 	private Job job;
     private int previousNrItems;
     private boolean isRunning;
+    private JobTracker jobTracker;
 
     /** @deprecated */
     public ChefLog(Composite parent, int style, LogWriter log, Chef chef)
@@ -364,6 +365,8 @@ public class ChefLog extends Composite
 						
                         log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.StartingJob")); //$NON-NLS-1$
 						job.start();
+                        // Link to the new jobTracker!
+                        jobTracker = job.getJobTracker();
                         isRunning=true;
 					}
 					catch(KettleException e)
@@ -413,10 +416,11 @@ public class ChefLog extends Composite
     {
         try
         {
-            if (job!=null) 
+            if (job!=null && isRunning && job.isInitialized()) 
             {
                 job.stopAll();
                 job.endProcessing("stop"); //$NON-NLS-1$
+                job.waitUntilFinished(5000); // wait until everything is stopped, maximum 5 seconds...
                 LocalVariables.getInstance().removeKettleVariables(job.getName());
                 job=null;
                 isRunning=false;
@@ -477,10 +481,8 @@ public class ChefLog extends Composite
      */
 	private void refreshTreeTable()
     {
-        if (job!=null)
+        if (jobTracker!=null)
         {
-            JobTracker jobTracker = job.getJobTracker();
-            
             int nrItems = jobTracker.getTotalNumberOfItems();
             
             if (nrItems!=previousNrItems)
