@@ -603,6 +603,7 @@ public class Chef
 			      					if (fdRepdir!=null)
 			      					{
 			      						jobMeta = new JobMeta(log, rep, fn, fdRepdir);
+                                        props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fn, fdRepdir.getPath(), true, rep.getName());
 			      					}
 			      					else
 			      					{
@@ -630,6 +631,7 @@ public class Chef
 				      		try
 							{
 				      			jobMeta = new JobMeta(log, fn, rep);
+                                props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fn, null, false, null);
 							}
 				      		catch(KettleException ke)
 							{
@@ -637,7 +639,10 @@ public class Chef
 								new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.UnableToLoadJobFromXML.Title"), Messages.getString("Chef.ErrorDialog.UnableToLoadJobFromXML.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 							}
 				      	}
-				      	
+
+                        saveSettings();
+                        addMenuLast();
+
 				      	refreshTree(true);
 						refreshGraph();
 
@@ -1462,7 +1467,6 @@ public class Chef
                     {
                         jobMeta = new JobMeta(log, fname, rep);
                         props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, null, false, null);
-                        addMenuLast();
                     }
                     catch(KettleXMLException xe)
                     {
@@ -1472,6 +1476,9 @@ public class Chef
                         mb.setText(Messages.getString("Chef.Dialog.ErrorOpeningJob.Title")); //$NON-NLS-1$
                         mb.open();
                     }
+
+                    saveSettings();
+                    addMenuLast();
 
                     refreshGraph();
                     refreshTree(true);
@@ -1492,6 +1499,7 @@ public class Chef
                     {
                         jobMeta = jobInfo;
                         props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, repdir.getPath(), true, rep.getName());
+                        saveSettings();
                         addMenuLast();
                     }
                     refreshGraph();
