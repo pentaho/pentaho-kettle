@@ -374,6 +374,7 @@ public class ChefLog extends Composite
 					try
 					{
 						wStart.setText(STOP_TEXT);
+                        chef.tiFileRun.setEnabled(false);
                         job = new Job(log, chef.jobMeta.getName(), chef.jobMeta.getFilename(), null);
 						job.open(chef.rep, chef.jobMeta.getFilename(), chef.jobMeta.getName(), chef.jobMeta.getDirectory().getPath());
 						
@@ -453,6 +454,7 @@ public class ChefLog extends Composite
         {
             job=null;
             wStart.setText(START_TEXT);
+            chef.tiFileRun.setEnabled(true);
         }
     }
 
@@ -628,7 +630,17 @@ public class ChefLog extends Composite
 		
 		if (!wStart.isDisposed())
 		{
-			if (job!=null) wStart.setText(STOP_TEXT); else wStart.setText(START_TEXT);
+			if (job!=null)
+            {
+                wStart.setText(STOP_TEXT); 
+                chef.tiFileRun.setEnabled(false);
+            }
+            else 
+            { 
+                wStart.setText(START_TEXT); 
+                chef.tiFileRun.setEnabled(true);
+            }
+            
 		}
 	}
 	

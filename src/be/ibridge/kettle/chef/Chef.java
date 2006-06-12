@@ -193,6 +193,8 @@ public class Chef
 	private TreeItem tiSection[];
 		
 	public  KeyAdapter defKeys;
+
+    public ToolItem tiFileRun;
 	
 	public Chef(LogWriter log, Display d, Repository rep)
 	{
@@ -474,9 +476,11 @@ public class Chef
 		new MenuItem(msJob, SWT.SEPARATOR);
 		MenuItem miJobInfo          = new MenuItem(msJob, SWT.CASCADE);   miJobInfo.setText(Messages.getString("Chef.Menu.Job.Settings")); //$NON-NLS-1$
 		
-		Listener lsJobInfo        = new Listener() { public void handleEvent(Event e) { setJob();  } };
+        Listener lsJobRun = new Listener() { public void handleEvent(Event e) { tabfolder.setSelection(1); cheflog.startstop();  } };
+        miJobRun.addListener (SWT.Selection, lsJobRun );
+        Listener lsJobInfo = new Listener() { public void handleEvent(Event e) { setJob();  } };
 		miJobInfo.addListener (SWT.Selection, lsJobInfo );
-		Listener lsJobCopy        = new Listener() { public void handleEvent(Event e) { toClipboard(XMLHandler.getXMLHeader() + jobMeta.getXML()); } };
+		Listener lsJobCopy = new Listener() { public void handleEvent(Event e) { toClipboard(XMLHandler.getXMLHeader() + jobMeta.getXML()); } };
 		miJobCopy.addListener(SWT.Selection, lsJobCopy );
 		
 		
@@ -690,7 +694,7 @@ public class Chef
 		tiFilePrint.setToolTipText(Messages.getString("Chef.ToolBarButton.Print.ToolTip")); //$NON-NLS-1$
 
 		new ToolItem(tBar, SWT.SEPARATOR);
-		final ToolItem tiFileRun = new ToolItem(tBar, SWT.PUSH);
+		tiFileRun = new ToolItem(tBar, SWT.PUSH);
 		final Image imFileRun = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"run.png"));  //$NON-NLS-1$
 		tiFileRun.setImage(imFileRun);
 		tiFileRun.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { tabfolder.setSelection(1); cheflog.startstop(); }});
