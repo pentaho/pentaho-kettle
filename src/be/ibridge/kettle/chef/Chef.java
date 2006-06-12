@@ -248,7 +248,7 @@ public class Chef
 					// F5 --> refresh
 					if (e.keyCode == SWT.F5)    { refreshGraph(); refreshTree(true); }
 					// F9 --> run
-					if (e.keyCode == SWT.F9)    { tabfolder.setSelection(1); cheflog.startstop(); }
+					if (e.keyCode == SWT.F9)    { tabfolder.setSelection(1); cheflog.startJob(); }
 					// F10 --> ripDB wizard
 					if (e.keyCode == SWT.F10)    { ripDBWizard(); }
 					// CTRL-A --> Select All steps
@@ -476,7 +476,7 @@ public class Chef
 		new MenuItem(msJob, SWT.SEPARATOR);
 		MenuItem miJobInfo          = new MenuItem(msJob, SWT.CASCADE);   miJobInfo.setText(Messages.getString("Chef.Menu.Job.Settings")); //$NON-NLS-1$
 		
-        Listener lsJobRun = new Listener() { public void handleEvent(Event e) { tabfolder.setSelection(1); cheflog.startstop();  } };
+        Listener lsJobRun = new Listener() { public void handleEvent(Event e) { tabfolder.setSelection(1); cheflog.startJob();  } };
         miJobRun.addListener (SWT.Selection, lsJobRun );
         Listener lsJobInfo = new Listener() { public void handleEvent(Event e) { setJob();  } };
 		miJobInfo.addListener (SWT.Selection, lsJobInfo );
@@ -697,7 +697,7 @@ public class Chef
 		tiFileRun = new ToolItem(tBar, SWT.PUSH);
 		final Image imFileRun = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"run.png"));  //$NON-NLS-1$
 		tiFileRun.setImage(imFileRun);
-		tiFileRun.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { tabfolder.setSelection(1); cheflog.startstop(); }});
+		tiFileRun.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { tabfolder.setSelection(1); cheflog.startJob(); }});
 		tiFileRun.setToolTipText(Messages.getString("Chef.ToolBarButton.RunThisJob.ToolTip")); //$NON-NLS-1$
 
         new ToolItem(tBar, SWT.SEPARATOR);

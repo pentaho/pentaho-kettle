@@ -69,8 +69,8 @@ import be.ibridge.kettle.spoon.dialog.LogSettingsDialog;
  */
 public class ChefLog extends Composite
 {
-	public final static String START_TEXT = Messages.getString("ChefLog.Button.Start");  //$NON-NLS-1$
-	public final static String STOP_TEXT  = Messages.getString("ChefLog.Button.Stop");  //$NON-NLS-1$
+	// public final static String START_TEXT = 
+	// public final static String STOP_TEXT  = 
 
 	private Color white;
 	private Shell shell;
@@ -82,14 +82,15 @@ public class ChefLog extends Composite
 	
 	private Text   wText;
 	private Button wStart;	
+    private Button wStop;  
 	private Button wRefresh;
 	private Button wError;
 	private Button wClear;
     private Button wLog;
 	private Button wAuto;
 
-	private FormData fdText, fdSash, fdStart, fdRefresh, fdError, fdClear, fdLog, fdAuto; 
-	private SelectionListener lsStart, lsRefresh, lsError, lsClear, lsLog;
+	private FormData fdText, fdSash, fdStart, fdStop, fdRefresh, fdError, fdClear, fdLog, fdAuto; 
+	private SelectionListener lsStart, lsStop, lsRefresh, lsError, lsClear, lsLog;
 	private StringBuffer message;
 
 	private FileInputStream in;
@@ -165,7 +166,10 @@ public class ChefLog extends Composite
 		wText.setVisible(true);
 
 		wStart = new Button(this, SWT.PUSH);
-		wStart.setText(START_TEXT);
+		wStart.setText(Messages.getString("ChefLog.Button.Start"));  //$NON-NLS-1$
+
+        wStop = new Button(this, SWT.PUSH);
+        wStop.setText(Messages.getString("ChefLog.Button.Stop"));  //$NON-NLS-1$
 
 		wRefresh = new Button(this, SWT.PUSH);
 		wRefresh.setText(Messages.getString("ChefLog.Button.RefreshLog")); //$NON-NLS-1$
@@ -183,7 +187,10 @@ public class ChefLog extends Composite
         wAuto.setText(Messages.getString("ChefLog.Button.AutoRefresh")); //$NON-NLS-1$
         wAuto.setSelection(true);
 
+        enableFields();
+        
 		fdStart    = new FormData(); 
+        fdStop     = new FormData(); 
 		fdRefresh  = new FormData(); 
 		fdError    = new FormData(); 
 		fdClear    = new FormData(); 
@@ -194,7 +201,11 @@ public class ChefLog extends Composite
 		fdStart.bottom = new FormAttachment(100, 0);
 		wStart.setLayoutData(fdStart);
 
-		fdRefresh.left   = new FormAttachment(wStart, 10);  
+        fdStop.left   = new FormAttachment(wStart, 10);  
+        fdStop.bottom = new FormAttachment(100, 0);
+        wStop.setLayoutData(fdStop);
+
+		fdRefresh.left   = new FormAttachment(wStop, 10);  
 		fdRefresh.bottom = new FormAttachment(100, 0);
 		wRefresh.setLayoutData(fdRefresh);
 
@@ -246,7 +257,7 @@ public class ChefLog extends Composite
 			public void widgetSelected(SelectionEvent e) 
 			{
 				readLog();
-				refreshView();
+				checkEnded();
 			}
 		};
 		
@@ -271,7 +282,7 @@ public class ChefLog extends Composite
                                     if (wAuto.getSelection())
 	                                {
                                         readLog(); 
-	    								refreshView();
+	    								checkEnded();
 	                                }
 								}
 							}
@@ -281,40 +292,15 @@ public class ChefLog extends Composite
 			};
 		tim.schedule( timtask, 100L, 100L);// refresh every 2 seconds... 
 		
-		lsStart = new SelectionAdapter() 
-		{
-			public void widgetSelected(SelectionEvent e) 
-			{
-				startstop();
-			}
-		};
-
-		lsError = new SelectionAdapter() 
-		{
-			public void widgetSelected(SelectionEvent e) 
-			{
-				showErrors();
-			}
-		};
-
-		lsClear = new SelectionAdapter() 
-		{
-			public void widgetSelected(SelectionEvent e) 
-			{
-				clearLog();
-			}
-		};
-		
-		lsLog = new SelectionAdapter() 
-		{
-			public void widgetSelected(SelectionEvent e) 
-			{
-				setLog();
-			}
-		};
+		lsStart = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { startJob(); } };
+        lsStop = new SelectionAdapter()  { public void widgetSelected(SelectionEvent e) { stopJob(); } };
+		lsError = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showErrors(); } };
+		lsClear = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { clearLog(); } };
+		lsLog = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setLog(); } };
 		
 		wRefresh.addSelectionListener(lsRefresh);
 		wStart.addSelectionListener(lsStart);
+        wStop.addSelectionListener(lsStop);
 		wError.addSelectionListener(lsError);
 		wClear.addSelectionListener(lsClear);
 		wLog.addSelectionListener(lsLog);
@@ -330,7 +316,7 @@ public class ChefLog extends Composite
 		);
 	}
 	
-	public synchronized void startstop()
+	public synchronized void startJob()
 	{
 		if (job==null) // Not running, start the transformation...
 		{
@@ -373,15 +359,12 @@ public class ChefLog extends Composite
 				{
 					try
 					{
-						wStart.setText(STOP_TEXT);
-                        chef.tiFileRun.setEnabled(false);
                         job = new Job(log, chef.jobMeta.getName(), chef.jobMeta.getFilename(), null);
 						job.open(chef.rep, chef.jobMeta.getFilename(), chef.jobMeta.getName(), chef.jobMeta.getDirectory().getPath());
 						
                         log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.StartingJob")); //$NON-NLS-1$
 						job.start();
                         isRunning=true;
-						readLog();
 					}
 					catch(KettleException e)
 					{
@@ -422,11 +405,8 @@ public class ChefLog extends Composite
 					m.open();
 				}
 			}
+            enableFields();
 		} 
-		else
-		{
-            stopJob();
-		}
 	}
 	
 	private synchronized void stopJob()
@@ -452,10 +432,15 @@ public class ChefLog extends Composite
         }
         finally
         {
-            job=null;
-            wStart.setText(START_TEXT);
-            chef.tiFileRun.setEnabled(true);
+            enableFields();
         }
+    }
+
+    public void enableFields()
+    {
+        wStart.setEnabled(!isRunning);
+        wStop.setEnabled(isRunning);
+        chef.tiFileRun.setEnabled(!isRunning);
     }
 
     public void readLog()
@@ -586,43 +571,12 @@ public class ChefLog extends Composite
         }
     }
 
-    private synchronized void refreshView()
+    private synchronized void checkEnded()
 	{
-		if (isRunning && job!=null && job.isInitialized() && !job.isActive())
+		if (isRunning && job!=null && job.isInitialized() && !job.isAlive())
         {
-            /*
-            System.out.println("What's in LOCAL variables?");
-            System.out.println("-----------------------------");
-            
-            Map map = LocalVariables.getInstance().getMap();
-            ArrayList keys = new ArrayList(map.keySet());
-            for (int i=0;i<keys.size();i++)
-            {
-                String key = (String)keys.get(i);
-                KettleVariables v = (KettleVariables) map.get(key);
-                System.out.println("Kettle variables #"+i+", key ["+key+"] --+> local thread ["+v.getLocalThread()+"], parent ["+v.getParentThread()+"]");
-            }
-            */
-            
-            // OK, the job has finished, remove the variables...
-            //
-            //System.out.println("Remove variables for thread ["+job.getName()+"]");
-            
             LocalVariables.getInstance().removeKettleVariables(job.getName());
 
-            /*
-            System.out.println("Finished, what's left on the variables?");
-            System.out.println("-----------------------------");
-
-            keys = new ArrayList(map.keySet());
-            for (int i=0;i<keys.size();i++)
-            {
-                String key = (String)keys.get(i);
-                KettleVariables v = (KettleVariables) map.get(key);
-                System.out.println("Kettle variables #"+i+", key ["+key+"] --+> local thread ["+v.getLocalThread()+"], parent ["+v.getParentThread()+"]");
-            }
-            */
-            
             job=null;
             isRunning=false;
             log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.JobHasEnded")); //$NON-NLS-1$
@@ -630,17 +584,7 @@ public class ChefLog extends Composite
 		
 		if (!wStart.isDisposed())
 		{
-			if (job!=null)
-            {
-                wStart.setText(STOP_TEXT); 
-                chef.tiFileRun.setEnabled(false);
-            }
-            else 
-            { 
-                wStart.setText(START_TEXT); 
-                chef.tiFileRun.setEnabled(true);
-            }
-            
+            enableFields();
 		}
 	}
 	
