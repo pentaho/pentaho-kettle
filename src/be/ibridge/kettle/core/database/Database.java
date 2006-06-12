@@ -2391,6 +2391,13 @@ public class Database
                         {
                             precision=-1; // precision is obviously incorrect if the type if Double/Float/Real
                         }
+                        
+                        // If were dealing with Postgres and double precision types 
+                        if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_POSTGRES && type==java.sql.Types.DOUBLE && precision==16 && length==16)
+                        {
+                            precision=-1;
+                            length=-1;
+                        }
                     }
                     else
                     {
