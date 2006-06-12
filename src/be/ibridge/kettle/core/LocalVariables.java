@@ -25,17 +25,14 @@ public class LocalVariables
      * @param parentThread The parent thread, null if there is no parent thread.  The initial value of the variables will be taken from the variables that are attached to this thread.
      * @param sameNamespace true if you want to use the same namespace as the parent (if any) or false if you want to use a new namespace, create a new KettleVariables object.
      */
-    public KettleVariables createKettleVariables(String localThread, String parentThread, boolean sameNamespace)
+    public synchronized KettleVariables createKettleVariables(String localThread, String parentThread, boolean sameNamespace)
     {
-        if (localThread.equals("Thread[Thread-1,5,main]"))
-        {
-            new Exception().printStackTrace();
-        }
         if (parentThread!=null && parentThread.equals(localThread)) 
         {
             throw new RuntimeException("local thread can't be the same as the parent thread!");
         }
-        // System.out.println("---> Create new KettleVariables for thread ["+localThread+"]");
+        
+        LogWriter.getInstance().logDetailed("LocalVariables", "---> Create new KettleVariables for thread ["+localThread+"] for parent thread ["+parentThread+"], same namespace? ["+sameNamespace+"]");
         
         // See if the thread already has an entry in the map
         //
