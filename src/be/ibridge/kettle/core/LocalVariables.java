@@ -32,7 +32,7 @@ public class LocalVariables
             throw new RuntimeException("local thread can't be the same as the parent thread!");
         }
         
-        LogWriter.getInstance().logDetailed("LocalVariables", "---> Create new KettleVariables for thread ["+localThread+"] for parent thread ["+parentThread+"], same namespace? ["+sameNamespace+"]");
+        LogWriter.getInstance().logDebug("LocalVariables", "---> Create new KettleVariables for thread ["+localThread+"] for parent thread ["+parentThread+"], same namespace? ["+sameNamespace+"]");
         
         // See if the thread already has an entry in the map
         //
