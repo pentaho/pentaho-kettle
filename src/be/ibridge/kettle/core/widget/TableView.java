@@ -20,6 +20,8 @@ package be.ibridge.kettle.core.widget;
 
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.Vector;
 
 import org.eclipse.swt.SWT;
@@ -148,6 +150,7 @@ public class TableView extends Composite
 
 	private Condition condition;
     private Color defaultBackgroundColor;
+    private Map usedColors;
 
 	public TableView(Composite par, int st, ColumnInfo[] c, int r, ModifyListener lsm, Props pr)
 	{
@@ -171,7 +174,7 @@ public class TableView extends Composite
 		selectionStart = -1;
 		previous_shift = false;
 		
-		// last_carret_position = -1;
+        usedColors = new Hashtable();
 		
 		condition = null;
 		
@@ -1015,7 +1018,9 @@ public class TableView extends Composite
                 }
                 else
                 {
-                    colorValue = new Value("bg", (long)((bg.getRed()<<16)+(bg.getGreen()<<8)+(bg.getBlue())) );
+                    colorValue = new Value("bg "+bg.toString(), (long)((bg.getRed()<<16)+(bg.getGreen()<<8)+(bg.getBlue())) );
+                    // Save it in the used colors map!
+                    usedColors.put(colorValue.getName(), bg);
                 }
                 r.addValue( colorValue );
                 
@@ -1044,12 +1049,13 @@ public class TableView extends Composite
                 Value colorValue = r.getValue(0);
                 if (!colorValue.isNull())
                 {
-                    int red   = (int)( (colorValue.getInteger() & 0xFF0000) >>16 );
-                    int green = (int)( (colorValue.getInteger() & 0x00FF00) >> 8 );
-                    int blue  = (int)( (colorValue.getInteger() & 0x0000FF)      );
-                    Color bg = new Color(parent.getDisplay(), red, green, blue);
-                    item.setBackground(bg);
-                    bg.dispose();
+                    // Get it from the map 
+                    //
+                    Color bg = (Color) usedColors.get(colorValue.getName());
+                    if (bg!=null)
+                    {
+                        item.setBackground(bg);
+                    }
                 }
                 
                 for (int i=1;i<r.size();i++)
