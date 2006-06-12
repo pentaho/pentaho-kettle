@@ -290,7 +290,7 @@ public class ChefLog extends Composite
 					);
 				}
 			};
-		tim.schedule( timtask, 100L, 100L);// refresh every 2 seconds... 
+		tim.schedule( timtask, 10L, 10L);// refresh every 2 seconds... 
 		
 		lsStart = new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { startJob(); } };
         lsStop = new SelectionAdapter()  { public void widgetSelected(SelectionEvent e) { stopJob(); } };
