@@ -79,7 +79,7 @@ public class Const
 	/**
 	 * Size of rowset: bigger = faster for large amounts of data
 	 */
-	public static final int ROWS_IN_ROWSET = 350;
+	public static final int ROWS_IN_ROWSET = 1000;
 
 	/**
 	 * Fetch size in rows when querying a database
