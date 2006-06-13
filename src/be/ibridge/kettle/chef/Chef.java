@@ -1282,7 +1282,7 @@ public class Chef
             {
                 jobMeta.getDatabase(i).setID(-1L);
             }
-            // Set for the existing transformation the ID at -1!
+            // Set for the existing job the ID at -1!
             jobMeta.setID(-1L);
             
             ArrayList oldDatabases = jobMeta.getDatabases(); // Save the list.
