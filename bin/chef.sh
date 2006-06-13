@@ -39,13 +39,14 @@ case `uname -s` in
 		JAVA_BIN=libswt/osx/java_swt
 		;;
 
-        Linux)
-                case `uname -i` in
+	Linux)
+    ARCH=`uname -m`
+		case $ARCH in
 			x86_64)
 				LIBPATH=libswt/linux/x86_64/
 				;;
 
-			i386)
+			i[3-6]86)
 				LIBPATH=libswt/linux/x86/
 				;;
 
@@ -53,12 +54,12 @@ case `uname -s` in
 				LIBPATH=libswt/linux/ppc/
 				;;
 
-			*)
-				echo "I'm sorry, this Linux platform [`uname -i`] is not yet supported!"
+			*)	
+				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
 				exit
 				;;
-                esac
-                ;;
+		esac
+		;;
 
 	HP-UX) 
 		LIBPATH=libswt/hpux/
