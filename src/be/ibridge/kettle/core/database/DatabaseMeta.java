@@ -402,7 +402,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 			{
 				// Insert new Note in repository
 				setID(rep.insertDatabase(	getName(), 
-											getDBTypeDesc(getDatabaseType()), 
+											getDatabaseTypeCode(getDatabaseType()), 
 											getAccessTypeDesc(getAccessType()), 
 											getHostname(), 
 											getDatabaseName(), 
@@ -420,7 +420,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 				// Update the note...
 				rep.updateDatabase(	getID(),
 											getName(), 
-											getDBTypeDesc(getDatabaseType()), 
+											getDatabaseTypeCode(getDatabaseType()), 
 											getAccessTypeDesc(getAccessType()), 
 											getHostname(), 
 											getDatabaseName(), 
