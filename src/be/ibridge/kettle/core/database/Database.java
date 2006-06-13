@@ -1655,10 +1655,17 @@ public class Database
 			if (c==';' || to>=length-1) // end of statement
 			{
 				if (to>=length-1) to++; // grab last char also!
-				
-				String stat;
+                
+                String stat;
                 if (to<=length) stat = all.substring(from, to);
                 else stat = all.substring(from);
+                
+                // If it ends with a ; remove that ;
+                // Oracle for example can't stand it when this happens...
+                if (stat.length()>0 && stat.charAt(stat.length()-1)==';')
+                {
+                    stat = stat.substring(0,stat.length()-1);
+                }
                 
 				if (!Const.onlySpaces(stat))
 				{
