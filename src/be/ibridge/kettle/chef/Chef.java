@@ -78,7 +78,6 @@ import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage3;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
 import be.ibridge.kettle.core.GUIResource;
-import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
@@ -2308,8 +2307,8 @@ public class Chef
 	
 	public boolean ripDB(	String jobName, 
 							RepositoryDirectory repositoryDirectory, 
-							DatabaseMeta srcDbInfo, 
-							DatabaseMeta tgtDbInfo, 
+							final DatabaseMeta srcDbInfo, 
+							final DatabaseMeta tgtDbInfo, 
 							String[] tablesToRip
 					 	)
 	{
@@ -2336,7 +2335,7 @@ public class Chef
 		start.setLocation(new Point(location.x, location.y));
 		start.setDrawn();
         
-        final Thread parentThread = Thread.currentThread();
+        // final Thread parentThread = Thread.currentThread();
 
 		// Create a dialog with a progress indicator!
 		IRunnableWithProgress op = new IRunnableWithProgress()
@@ -2344,7 +2343,7 @@ public class Chef
 			public void run(IProgressMonitor monitor) throws InvocationTargetException, InterruptedException
 			{
                 // This is running in a new process: copy some KettleVariables info
-                LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
+                // LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
 
 				monitor.beginTask(Messages.getString("Chef.RipDB.Monitor.BuildingNewJob"), tables.length); //$NON-NLS-1$
 				monitor.worked(0);
@@ -2377,7 +2376,7 @@ public class Chef
 					String fromstepname = Messages.getString("Chef.RipDB.Monitor.FromStep.Name")+tables[i]+"]"; //$NON-NLS-1$ //$NON-NLS-2$
 					TableInputMeta tii = new TableInputMeta();
 					tii.setDatabaseMeta( sourceDbInfo );
-					tii.setSQL( "SELECT * FROM "+tables[i] ); //$NON-NLS-1$
+					tii.setSQL( "SELECT * FROM "+srcDbInfo.quoteField(tables[i]) ); //$NON-NLS-1$
 					
 					String fromstepid = StepLoader.getInstance().getStepPluginID(tii);
 					StepMeta fromstep = new StepMeta(log, fromstepid, fromstepname, (StepMetaInterface)tii );
