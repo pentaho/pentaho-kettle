@@ -2071,7 +2071,7 @@ public class Chef
         }
         catch(Exception e)
         {
-            new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.ErrorEditingJobEntry.Title"), Messages.getString("Chef.ErrorDialog.ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            if (!shell.isDisposed()) new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.ErrorEditingJobEntry.Title"), Messages.getString("Chef.ErrorDialog.ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
 	}
 
