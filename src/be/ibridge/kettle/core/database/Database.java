@@ -77,7 +77,7 @@ public class Database
 	private PreparedStatement pstmt_seq;
 	private CallableStatement cstmt;
 		
-	private ResultSetMetaData rsmd;
+	// private ResultSetMetaData rsmd;
 	private DatabaseMetaData  dbmd;
 	
 	private Row rowinfo; 
@@ -101,7 +101,7 @@ public class Database
 		databaseMeta = inf;
 		
 		pstmt = null;
-		rsmd = null;
+		// rsmd = null;
 		rowinfo = null;
 		dbmd = null;
 		
@@ -395,8 +395,7 @@ public class Database
      * @return The PreparedStatement object.
      * @throws KettleDatabaseException
      */
-	public PreparedStatement prepareSQL(String sql, boolean returnKeys)
-	 throws KettleDatabaseException
+	public PreparedStatement prepareSQL(String sql, boolean returnKeys) throws KettleDatabaseException
 	{
 		try
 		{
@@ -1120,7 +1119,6 @@ public class Database
 
 	/**
 	 * This inserts new record into a junk dimension
-	 * TODO: fix the bug found by alex here!
 	 */
 	public void combiInsert(   Row     row, 
 							   String  table,
@@ -1741,14 +1739,12 @@ public class Database
      * @return A JDBC ResultSet
      * @throws KettleDatabaseException when something goes wrong with the query.
      */
-	public ResultSet openQuery(String sql, Row params)
-		throws KettleDatabaseException
+	public ResultSet openQuery(String sql, Row params) throws KettleDatabaseException
 	{
 		return openQuery(sql, params, ResultSet.FETCH_FORWARD);
 	}
 
-	public ResultSet openQuery(String sql, Row params, int fetch_mode)
-		throws KettleDatabaseException
+	public ResultSet openQuery(String sql, Row params, int fetch_mode) throws KettleDatabaseException
 	{
 		ResultSet res;
 		String debug = "Start";
@@ -1762,10 +1758,11 @@ public class Database
 				pstmt = connection.prepareStatement(databaseMeta.stripCR(sql), ResultSet.TYPE_FORWARD_ONLY, ResultSet.CONCUR_READ_ONLY);
 				debug = "P Set values";
 				setValues(params); // set the dates etc!
-				if (databaseMeta.isFetchSizeSupported() && ( pstmt.getMaxRows()>0 || databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_POSTGRES || databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_MYSQL) )  
+				if (canWeSetFetchSize(pstmt) )  
 				{
 					debug = "P Set fetchsize";
                     int fs = Const.FETCH_SIZE<=pstmt.getMaxRows()?pstmt.getMaxRows():Const.FETCH_SIZE;
+                    
                     // System.out.println("Setting pstmt fetchsize to : "+fs);
                     if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
                     {
@@ -1787,7 +1784,7 @@ public class Database
 			{
 				debug = "create statement";
 				sel_stmt = connection.createStatement();
-				if (databaseMeta.isFetchSizeSupported() && sel_stmt.getMaxRows()>0) 
+                if (canWeSetFetchSize(sel_stmt)) 
 				{
 					debug = "Set fetchsize";
                     int fs = Const.FETCH_SIZE<=sel_stmt.getMaxRows()?sel_stmt.getMaxRows():Const.FETCH_SIZE;
@@ -1800,7 +1797,7 @@ public class Database
                         sel_stmt.setFetchSize(fs);
                     }
 					debug = "Set fetch direction";
-					sel_stmt.setFetchDirection(ResultSet.FETCH_FORWARD);
+					sel_stmt.setFetchDirection(fetch_mode);
 				} 
 				debug = "Set max rows";
 				if (rowlimit>0) sel_stmt.setMaxRows(rowlimit);
@@ -1808,10 +1805,12 @@ public class Database
 				debug = "exec query";
 				res=sel_stmt.executeQuery(databaseMeta.stripCR(sql));
 			}
-			debug = "openQuery : get metadata";
-			rsmd = res.getMetaData();
-            debug = "openQuery : get rowinfo";
-			rowinfo = getRowInfo();
+			debug = "openQuery : get rowinfo";
+            
+            // MySQL Hack only. It seems too much for the cursor type of operation on MySQL, to have another cursor opened
+            // to get the length of a String field.  So, on MySQL, we ingore the length of Strings in result rows.
+            // 
+			rowinfo = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL);
 		}
 		catch(SQLException ex)
 		{
@@ -1830,7 +1829,13 @@ public class Database
 		return res;
 	}
 
-	public ResultSet openQuery(PreparedStatement ps, Row params)
+	private boolean canWeSetFetchSize(Statement statement) throws SQLException
+    {
+        return databaseMeta.isFetchSizeSupported() && ( statement.getMaxRows()>0 || databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_POSTGRES || databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_MYSQL);     
+    }
+    
+
+    public ResultSet openQuery(PreparedStatement ps, Row params)
 		throws KettleDatabaseException
 	{
 		ResultSet res;
@@ -1842,7 +1847,7 @@ public class Database
 			debug = "OQ Set values";
 			setValues(params, ps); // set the parameters!
 			
-			if (databaseMeta.isFetchSizeSupported() && ps.getMaxRows()>0) 
+			if (canWeSetFetchSize(ps)) 
 			{
 				debug = "OQ Set fetchsize";
                 int fs = Const.FETCH_SIZE<=ps.getMaxRows()?ps.getMaxRows():Const.FETCH_SIZE;
@@ -1865,11 +1870,8 @@ public class Database
 			debug = "OQ exec query";
 			res = ps.executeQuery();
 
-			debug = "OQ get metadata";
-			rsmd = res.getMetaData();
-			
 			debug = "OQ getRowInfo()";
-			rowinfo = getRowInfo();
+			rowinfo = getRowInfo(res.getMetaData());
 		}
 		catch(SQLException ex)
 		{
@@ -2254,10 +2256,8 @@ public class Database
 				
 				debug = "exec query";
 				ResultSet r=sel_stmt.executeQuery(databaseMeta.stripCR(sql));
-				debug = "getQueryFields get metadata";
-				rsmd = r.getMetaData();
                 debug = "getQueryFields get row info";
-				fields = getRowInfo();
+				fields = getRowInfo(r.getMetaData());
 				debug="close resultset";
 				r.close();
 				debug="close statement";
@@ -2281,10 +2281,8 @@ public class Database
 				}
 				debug="executeQuery()";
 				ResultSet r = ps.executeQuery();
-				debug="getMetaData";
-				rsmd = ps.getMetaData();
 				debug="getRowInfo";
-				fields=getRowInfo(rsmd);
+				fields=getRowInfo(ps.getMetaData());
 				debug="close resultset";
 				r.close();
 				debug="close preparedStatement";
@@ -2328,12 +2326,16 @@ public class Database
 			throw new KettleDatabaseException("Couldn't close query: resultset or prepared statements", ex);
 		}
 	}
-	
+
+    private Row getRowInfo(ResultSetMetaData rm) throws KettleDatabaseException
+    {
+        return getRowInfo(rm, false);
+    }
+
 	//
 	// Build the row using ResultSetMetaData rsmd
 	//
-	private Row getRowInfo(ResultSetMetaData rm)
-		throws KettleDatabaseException
+	private Row getRowInfo(ResultSetMetaData rm, boolean ignoreLength) throws KettleDatabaseException
 	{
 		int nrcols;
 		int i;
@@ -2365,7 +2367,7 @@ public class Database
 				case java.sql.Types.VARCHAR: 
 				case java.sql.Types.LONGVARCHAR:  // Character Large Object
 					valtype=Value.VALUE_TYPE_STRING;
-					length=rm.getColumnDisplaySize(i);
+					if (!ignoreLength) length=rm.getColumnDisplaySize(i);
 					// System.out.println("Display of "+name+" = "+precision);
 					// System.out.println("Precision of "+name+" = "+rm.getPrecision(i));
 					// System.out.println("Scale of "+name+" = "+rm.getScale(i));
@@ -2479,15 +2481,14 @@ public class Database
 
 	//
 	// Build the row using ResultSetMetaData rsmd
-	//
-	private Row getRowInfo()
-		throws KettleDatabaseException
+	/*
+	private Row getRowInfo() throws KettleDatabaseException
 	{
 		return getRowInfo(rsmd);
 	}
+    */
 	
-	public boolean absolute(ResultSet rs, int position)
-		throws KettleDatabaseException
+	public boolean absolute(ResultSet rs, int position) throws KettleDatabaseException
 	{
 		try
 		{
@@ -2499,8 +2500,7 @@ public class Database
 		}
 	}
 	
-	public boolean relative(ResultSet rs, int rows)
-		throws KettleDatabaseException
+	public boolean relative(ResultSet rs, int rows)  throws KettleDatabaseException
 	{
 		try
 		{
@@ -2546,22 +2546,21 @@ public class Database
 	 */
 	public Row getRow(ResultSet rs) throws KettleDatabaseException
 	{
-		if (rsmd==null)
+        ResultSetMetaData rsmd = null;
+		try
 		{
-			try
-			{
-				rsmd = rs.getMetaData();
-			}
-			catch(SQLException e)
-			{
-				throw new KettleDatabaseException("Unable to retrieve metadata from resultset", e);
-			}
+			rsmd = rs.getMetaData();
 		}
-		if (rowinfo==null)
+		catch(SQLException e)
+		{
+			throw new KettleDatabaseException("Unable to retrieve metadata from resultset", e);
+		}
+
+        if (rowinfo==null)
         {
 			rowinfo = getRowInfo(rsmd);
         }
-		
+
 		return getRow(rs, rsmd, rowinfo);
 	}
 
@@ -3103,11 +3102,8 @@ public class Database
 			debug = "pstmt.executeQuery()";
 			ResultSet res = ps.executeQuery();
 			
-			debug = "res.getMetaData";
-			rsmd = res.getMetaData();
-			
 			debug = "getRowInfo()";
-			rowinfo = getRowInfo();
+			rowinfo = getRowInfo(res.getMetaData());
 			
 			debug = "getRow(res)";
 			ret=getRow(res);
@@ -3444,6 +3440,8 @@ public class Database
 				try { sel_stmt.close(); } catch(Exception e) { throw new KettleDatabaseException("Unable to close prepared statement sel_stmt", e); }
 				sel_stmt=null;
 			}
+            rowinfo=null;
+            
 			return r;
 		}
 		else
@@ -3803,8 +3801,7 @@ public class Database
 			ResultSet res = pstmt.executeQuery();
 			if (res!=null)
 			{
-				rsmd = res.getMetaData();
-				rowinfo = getRowInfo();
+				rowinfo = getRowInfo(res.getMetaData());
 				row = getRow(res);
 				res.close();
 			}
