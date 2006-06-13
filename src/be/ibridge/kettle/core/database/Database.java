@@ -2453,7 +2453,7 @@ public class Database
 					break;
 
 				case java.sql.Types.BOOLEAN:
-        case java.sql.Types.BIT:
+				case java.sql.Types.BIT:
 					valtype=Value.VALUE_TYPE_BOOLEAN;
 					break;
 
@@ -3489,7 +3489,7 @@ public class Database
 					val=new Value(name, Value.VALUE_TYPE_DATE); 
 					break;
 				case java.sql.Types.BOOLEAN:
-        case java.sql.Types.BIT:
+				case java.sql.Types.BIT:
 					val=new Value(name, Value.VALUE_TYPE_BOOLEAN);
 					break;
 				default:
