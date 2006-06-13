@@ -1544,14 +1544,12 @@ public class Database
      * @return a Result object indicating the number of lines read, deleted, inserted, updated, ...
      * @throws KettleDatabaseException in case anything goes wrong.
      */
-	public Result execStatement(String sql)
-		throws KettleDatabaseException
+	public Result execStatement(String sql) throws KettleDatabaseException
 	{
 		return execStatement(sql, null);
 	}
 	
-	public Result execStatement(String sql, Row params)
-		throws KettleDatabaseException
+	public Result execStatement(String sql, Row params) throws KettleDatabaseException
 	{
         Result result = new Result();
 		try
@@ -1769,7 +1767,14 @@ public class Database
 					debug = "P Set fetchsize";
                     int fs = Const.FETCH_SIZE<=pstmt.getMaxRows()?pstmt.getMaxRows():Const.FETCH_SIZE;
                     // System.out.println("Setting pstmt fetchsize to : "+fs);
-					pstmt.setFetchSize(fs);
+                    if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
+                    {
+                        pstmt.setFetchSize(Integer.MIN_VALUE);
+                    }
+                    else
+                    {
+                        pstmt.setFetchSize(fs);
+                    }
 					debug = "P Set fetch direction";
 					pstmt.setFetchDirection(fetch_mode);
 				} 
@@ -1786,7 +1791,14 @@ public class Database
 				{
 					debug = "Set fetchsize";
                     int fs = Const.FETCH_SIZE<=sel_stmt.getMaxRows()?sel_stmt.getMaxRows():Const.FETCH_SIZE;
-                    sel_stmt.setFetchSize(fs);
+                    if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
+                    {
+                        sel_stmt.setFetchSize(Integer.MIN_VALUE);
+                    }
+                    else
+                    {
+                        sel_stmt.setFetchSize(fs);
+                    }
 					debug = "Set fetch direction";
 					sel_stmt.setFetchDirection(ResultSet.FETCH_FORWARD);
 				} 
@@ -1834,7 +1846,14 @@ public class Database
 			{
 				debug = "OQ Set fetchsize";
                 int fs = Const.FETCH_SIZE<=ps.getMaxRows()?ps.getMaxRows():Const.FETCH_SIZE;
-                ps.setFetchSize(fs);
+                if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
+                {
+                    ps.setFetchSize(Integer.MIN_VALUE);
+                }
+                else
+                {
+                    ps.setFetchSize(fs);
+                }
 				
 				debug = "OQ Set fetch direction";
 				ps.setFetchDirection(ResultSet.FETCH_FORWARD);
@@ -2221,7 +2240,14 @@ public class Database
 				if (databaseMeta.isFetchSizeSupported() && sel_stmt.getMaxRows()>=1)
 				{
 					debug = "Set fetchsize";
-					sel_stmt.setFetchSize(1); // Only one row needed!
+                    if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
+                    {
+                        sel_stmt.setFetchSize(Integer.MIN_VALUE);
+                    }
+                    else
+                    {
+                        sel_stmt.setFetchSize(1);
+                    }
 				}
 				debug = "Set max rows to 1";
 				sel_stmt.setMaxRows(1);
