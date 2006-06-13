@@ -255,6 +255,7 @@ public class Repository
             //
             log.logBasic(toString(), "There was an error getting information from the version table R_VERSION.");
             log.logBasic(toString(), "This table was introduced in version 2.3.0. so we assume the version is 2.2.2");
+            log.logBasic(toString(), "Stack trace: "+Const.getStackTracker(e));
 
             majorVersion = 2;
             minorVersion = 2;
@@ -583,8 +584,7 @@ public class Repository
 		return retval;
 	}
 
-	private long getIDWithValue(String tablename, String idfield, String lookupfield, String value)
-			throws KettleDatabaseException
+	private long getIDWithValue(String tablename, String idfield, String lookupfield, String value) throws KettleDatabaseException
 	{
 		Row par = new Row();
 		par.addValue(new Value("value", value));
