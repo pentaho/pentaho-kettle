@@ -103,15 +103,6 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 		return true;
 	}
 
-  /**
-   * @return true if the database supports a boolean, bit, logical, ... datatype
-   * The default is false: map to a string.
-   */
-  public boolean supportsBooleanDataType()
-  {
-      return true;
-  }
-
 	/**
 	 * @return true if the database supports bitmap indexes
 	 */
@@ -240,7 +231,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 		switch(type)
 		{
 		case Value.VALUE_TYPE_DATE   : retval+="TIMESTAMP"; break;
-		case Value.VALUE_TYPE_BOOLEAN: retval+="BOOLEAN"; break;
+		case Value.VALUE_TYPE_BOOLEAN: retval+="CHAR(1)"; break;
 		case Value.VALUE_TYPE_NUMBER : 
 		case Value.VALUE_TYPE_INTEGER: 
         case Value.VALUE_TYPE_BIGNUMBER: 
