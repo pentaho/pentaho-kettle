@@ -59,7 +59,7 @@ import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Rectangle;
 import be.ibridge.kettle.core.Row;
-import be.ibridge.kettle.core.XMLTransferType;
+import be.ibridge.kettle.core.XMLTransfer;
 import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
@@ -640,181 +640,182 @@ public class SpoonGraph extends Canvas
         });
 
         // Drag & Drop for steps
-        Transfer[] ttypes = new Transfer[] { XMLTransferType.getInstance() };
-        DropTarget ddTarget = new DropTarget(this, DND.DROP_MOVE | DND.DROP_COPY);
+        Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
+        DropTarget ddTarget = new DropTarget(this, DND.DROP_MOVE);
         ddTarget.setTransfer(ttypes);
         ddTarget.addDropListener(new DropTargetListener()
-        {
-            public void dragEnter(DropTargetEvent event)
             {
-                clearSettings();
-
-                drop_candidate = getRealPosition(canvas, event.x, event.y);
-
-                redraw();
-            }
-
-            public void dragLeave(DropTargetEvent event)
-            {
-                drop_candidate = null;
-                redraw();
-            }
-
-            public void dragOperationChanged(DropTargetEvent event)
-            {
-            }
-
-            public void dragOver(DropTargetEvent event)
-            {
-                drop_candidate = getRealPosition(canvas, event.x, event.y);
-
-                redraw();
-            }
-
-            public void drop(DropTargetEvent event)
-            {
-                // no data to copy, indicate failure in event.detail
-                if (event.data == null)
+                public void dragEnter(DropTargetEvent event)
                 {
-                    event.detail = DND.DROP_NONE;
-                    return;
-                }
-
-                // System.out.println("Dropping a step!!");
-
-                // What's the real drop position?
-                Point p = getRealPosition(canvas, event.x, event.y);
-
-                // 
-                // We expect a piece of XML...
-                String xml = (String) event.data;
-                
-                try
-                {
-	                DragAndDropContainer container = new DragAndDropContainer(xml);
-	                
-	                StepMeta stepMeta = null;
-	                boolean newstep = false;
-	                
-	                switch(container.getType())
-	                {
-	                // Put an existing one on the canvas.
-	                case DragAndDropContainer.TYPE_STEP:
-		                {
-	                		// Drop hidden step onto canvas....		                
-		                	stepMeta = spoon.getTransMeta().findStep(container.getData());
-		                	if (stepMeta!=null)
-		                	{
-	    	                    if (stepMeta.isDrawn() || spoon.getTransMeta().isStepUsedInTransHops(stepMeta))
-	    	                    {
-	    	                        MessageBox mb = new MessageBox(shell, SWT.OK);
-	    	                        mb.setMessage(Messages.getString("SpoonGraph.Dialog.StepIsAlreadyOnCanvas.Message")); //$NON-NLS-1$
-	    	                        mb.setText(Messages.getString("SpoonGraph.Dialog.StepIsAlreadyOnCanvas.Title")); //$NON-NLS-1$
-	    	                        mb.open();
-	    	                        return;
-	    	                    }
-	    	                    // This step gets the drawn attribute and position set below.
-		                	}
-		                	else
-		                	{
-		                		// Unknown step dropped: ignore this to be safe!
-		                		return;
-		                	}
-		                }
-		                break;
-						
-	                // Create a new step 
-	                case DragAndDropContainer.TYPE_BASE_STEP_TYPE:
-						{
-                			// Not an existing step: data refers to the type of step to create
-                			String steptype = container.getData();
-                			stepMeta = spoon.newStep(steptype, steptype, false, true);
-                			if (stepMeta!=null)
-                			{
-                				newstep=true;
-                			}
-                			else
-                			{
-                				return; // Cancelled pressed in dialog or unable to create step.
-                			}
-						}
-						break;
-						
-					// Create a new TableInput step using the selected connection...
-	                case DragAndDropContainer.TYPE_DATABASE_CONNECTION: 
-	                    {
-	                        newstep = true;
-	                        String connectionName = container.getData();
-	                        TableInputMeta tii = new TableInputMeta();
-	                        tii.setDatabaseMeta(spoon.getTransMeta().findDatabase(connectionName));
-	
-	                        StepLoader steploader = StepLoader.getInstance();
-	                        String stepID = steploader.getStepPluginID(tii);
-	                        StepPlugin stepPlugin = steploader.findStepPluginWithID(stepID);
-	                        String stepName = spoon.getTransMeta().getAlternativeStepname(stepPlugin.getDescription());
-	                        stepMeta = new StepMeta(log, stepID, stepName, tii);
-	                        if (spoon.editStepInfo(stepMeta) != null)
-	                        {
-	                            spoon.getTransMeta().addStep(stepMeta);
-	                            spoon.refreshTree(true);
-	                            spoon.refreshGraph();
-	                        }            
-	                        else
-	                        {
-	                        	return;
-	                        }
-	                    }
-	                    break;
-	                
-	                // Drag hop on the canvas: create a new Hop...
-	                case DragAndDropContainer.TYPE_TRANS_HOP:
-		                {
-	                		newHop();
-	                		return;
-		                }
-		            
-		            default:
-	                    {
-	                        // Nothing we can use: give an error!
-                            MessageBox mb = new MessageBox(shell, SWT.OK);
-                            mb.setMessage(Messages.getString("SpoonGraph.Dialog.ItemCanNotBePlacedOnCanvas.Message")); //$NON-NLS-1$
-                            mb.setText(Messages.getString("SpoonGraph.Dialog.ItemCanNotBePlacedOnCanvas.Title")); //$NON-NLS-1$
-                            mb.open();
-                            return;
-	                    }
-	                }
-
-                    spoon.getTransMeta().unselectAll();
-
-                    StepMeta before = (StepMeta) stepMeta.clone();
-
-                    stepMeta.drawStep();
-                    stepMeta.setSelected(true);
-                    stepMeta.setLocation(p.x, p.y);
-
-                    if (newstep)
-                    {
-                        spoon.addUndoNew(new StepMeta[] { stepMeta }, new int[] { spoon.getTransMeta().indexOfStep(stepMeta) });
-                    }
-                    else
-                    {
-                        spoon.addUndoChange(new StepMeta[] { before }, new StepMeta[] { (StepMeta) stepMeta.clone() }, new int[] { spoon.getTransMeta()
-                                .indexOfStep(stepMeta) });
-                    }
-
-                    canvas.forceFocus();
+                    clearSettings();
+    
+                    drop_candidate = getRealPosition(canvas, event.x, event.y);
+    
                     redraw();
                 }
-                catch(Exception e)
+    
+                public void dragLeave(DropTargetEvent event)
                 {
-                	new ErrorDialog(shell, spoon.props, Messages.getString("SpoonGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("SpoonGraph.Dialog.ErrorDroppingObject.Title"), e);
+                    drop_candidate = null;
+                    redraw();
+                }
+    
+                public void dragOperationChanged(DropTargetEvent event)
+                {
+                }
+    
+                public void dragOver(DropTargetEvent event)
+                {
+                    drop_candidate = getRealPosition(canvas, event.x, event.y);
+    
+                    redraw();
+                }
+    
+                public void drop(DropTargetEvent event)
+                {
+                    // no data to copy, indicate failure in event.detail
+                    if (event.data == null)
+                    {
+                        event.detail = DND.DROP_NONE;
+                        return;
+                    }
+    
+                    // System.out.println("Dropping a step!!");
+    
+                    // What's the real drop position?
+                    Point p = getRealPosition(canvas, event.x, event.y);
+    
+                    // 
+                    // We expect a piece of XML...
+                    String xml = (String) event.data;
+                    
+                    try
+                    {
+    	                DragAndDropContainer container = new DragAndDropContainer(xml);
+    	                
+    	                StepMeta stepMeta = null;
+    	                boolean newstep = false;
+    	                
+    	                switch(container.getType())
+    	                {
+    	                // Put an existing one on the canvas.
+    	                case DragAndDropContainer.TYPE_STEP:
+    		                {
+    	                		// Drop hidden step onto canvas....		                
+    		                	stepMeta = spoon.getTransMeta().findStep(container.getData());
+    		                	if (stepMeta!=null)
+    		                	{
+    	    	                    if (stepMeta.isDrawn() || spoon.getTransMeta().isStepUsedInTransHops(stepMeta))
+    	    	                    {
+    	    	                        MessageBox mb = new MessageBox(shell, SWT.OK);
+    	    	                        mb.setMessage(Messages.getString("SpoonGraph.Dialog.StepIsAlreadyOnCanvas.Message")); //$NON-NLS-1$
+    	    	                        mb.setText(Messages.getString("SpoonGraph.Dialog.StepIsAlreadyOnCanvas.Title")); //$NON-NLS-1$
+    	    	                        mb.open();
+    	    	                        return;
+    	    	                    }
+    	    	                    // This step gets the drawn attribute and position set below.
+    		                	}
+    		                	else
+    		                	{
+    		                		// Unknown step dropped: ignore this to be safe!
+    		                		return;
+    		                	}
+    		                }
+    		                break;
+    						
+    	                // Create a new step 
+    	                case DragAndDropContainer.TYPE_BASE_STEP_TYPE:
+    						{
+                    			// Not an existing step: data refers to the type of step to create
+                    			String steptype = container.getData();
+                    			stepMeta = spoon.newStep(steptype, steptype, false, true);
+                    			if (stepMeta!=null)
+                    			{
+                    				newstep=true;
+                    			}
+                    			else
+                    			{
+                    				return; // Cancelled pressed in dialog or unable to create step.
+                    			}
+    						}
+    						break;
+    						
+    					// Create a new TableInput step using the selected connection...
+    	                case DragAndDropContainer.TYPE_DATABASE_CONNECTION: 
+    	                    {
+    	                        newstep = true;
+    	                        String connectionName = container.getData();
+    	                        TableInputMeta tii = new TableInputMeta();
+    	                        tii.setDatabaseMeta(spoon.getTransMeta().findDatabase(connectionName));
+    	
+    	                        StepLoader steploader = StepLoader.getInstance();
+    	                        String stepID = steploader.getStepPluginID(tii);
+    	                        StepPlugin stepPlugin = steploader.findStepPluginWithID(stepID);
+    	                        String stepName = spoon.getTransMeta().getAlternativeStepname(stepPlugin.getDescription());
+    	                        stepMeta = new StepMeta(log, stepID, stepName, tii);
+    	                        if (spoon.editStepInfo(stepMeta) != null)
+    	                        {
+    	                            spoon.getTransMeta().addStep(stepMeta);
+    	                            spoon.refreshTree(true);
+    	                            spoon.refreshGraph();
+    	                        }            
+    	                        else
+    	                        {
+    	                        	return;
+    	                        }
+    	                    }
+    	                    break;
+    	                
+    	                // Drag hop on the canvas: create a new Hop...
+    	                case DragAndDropContainer.TYPE_TRANS_HOP:
+    		                {
+    	                		newHop();
+    	                		return;
+    		                }
+    		            
+    		            default:
+    	                    {
+    	                        // Nothing we can use: give an error!
+                                MessageBox mb = new MessageBox(shell, SWT.OK);
+                                mb.setMessage(Messages.getString("SpoonGraph.Dialog.ItemCanNotBePlacedOnCanvas.Message")); //$NON-NLS-1$
+                                mb.setText(Messages.getString("SpoonGraph.Dialog.ItemCanNotBePlacedOnCanvas.Title")); //$NON-NLS-1$
+                                mb.open();
+                                return;
+    	                    }
+    	                }
+    
+                        spoon.getTransMeta().unselectAll();
+    
+                        StepMeta before = (StepMeta) stepMeta.clone();
+    
+                        stepMeta.drawStep();
+                        stepMeta.setSelected(true);
+                        stepMeta.setLocation(p.x, p.y);
+    
+                        if (newstep)
+                        {
+                            spoon.addUndoNew(new StepMeta[] { stepMeta }, new int[] { spoon.getTransMeta().indexOfStep(stepMeta) });
+                        }
+                        else
+                        {
+                            spoon.addUndoChange(new StepMeta[] { before }, new StepMeta[] { (StepMeta) stepMeta.clone() }, new int[] { spoon.getTransMeta()
+                                    .indexOfStep(stepMeta) });
+                        }
+    
+                        canvas.forceFocus();
+                        redraw();
+                    }
+                    catch(Exception e)
+                    {
+                    	new ErrorDialog(shell, spoon.props, Messages.getString("SpoonGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("SpoonGraph.Dialog.ErrorDroppingObject.Title"), e);
+                    }
+                }
+    
+                public void dropAccept(DropTargetEvent event)
+                {
                 }
             }
-
-            public void dropAccept(DropTargetEvent event)
-            {
-            }
-        });
+        );
 
         // Keyboard shortcuts...
         addKeyListener(new KeyAdapter()

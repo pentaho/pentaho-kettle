@@ -54,7 +54,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Rectangle;
-import be.ibridge.kettle.core.XMLTransferType;
+import be.ibridge.kettle.core.XMLTransfer;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.util.StringUtil;
@@ -552,8 +552,8 @@ public class ChefGraph extends Canvas
 		});
 
 		// Drag & Drop for steps
-		Transfer[] ttypes = new Transfer[] { XMLTransferType.getInstance() };
-		DropTarget ddTarget = new DropTarget(this, DND.DROP_MOVE | DND.DROP_COPY);
+		Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
+		DropTarget ddTarget = new DropTarget(this, DND.DROP_MOVE);
 		ddTarget.setTransfer(ttypes);
 		ddTarget.addDropListener(new DropTargetListener() 
 		{

@@ -5,15 +5,15 @@ import java.io.UnsupportedEncodingException;
 import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.TransferData;
 
-public class XMLTransferType extends ByteArrayTransfer
+public class XMLTransfer extends ByteArrayTransfer
 {
     private static final String    MYTYPENAME = "KETTLE_XML_TRANSFER";
 
     private static final int       MYTYPEID   = registerType(MYTYPENAME);
 
-    private static XMLTransferType _instance  = new XMLTransferType();
+    private static XMLTransfer _instance  = new XMLTransfer();
 
-    public static XMLTransferType getInstance()
+    public static XMLTransfer getInstance()
     {
         return _instance;
     }

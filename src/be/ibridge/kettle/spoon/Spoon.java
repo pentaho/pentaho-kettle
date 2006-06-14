@@ -89,7 +89,7 @@ import be.ibridge.kettle.core.TransAction;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLHandlerCache;
-import be.ibridge.kettle.core.XMLTransferType;
+import be.ibridge.kettle.core.XMLTransfer;
 import be.ibridge.kettle.core.clipboard.ImageDataTransfer;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
@@ -1224,9 +1224,9 @@ public class Spoon
         final Tree fTree = tree;
         
         // Drag & Drop for steps
-        Transfer[] ttypes = new Transfer[] { XMLTransferType.getInstance() };
+        Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
         
-        DragSource ddSource = new DragSource(fTree, DND.DROP_MOVE | DND.DROP_COPY);
+        DragSource ddSource = new DragSource(fTree, DND.DROP_MOVE);
         ddSource.setTransfer(ttypes);
         ddSource.addDragListener(new DragSourceListener() 
             {
@@ -1274,6 +1274,7 @@ public class Spoon
     	                    }
     	                    else
     	                    {
+                                event.doit=false;
     	                    	return; // ignore anything else you drag.
     	                    }
     
