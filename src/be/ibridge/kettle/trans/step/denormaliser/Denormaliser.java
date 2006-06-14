@@ -55,7 +55,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		debug=Messages.getString("Denormaliser.Debug.ProcessRow"); //$NON-NLS-1$
+		debug="processRow"; //$NON-NLS-1$
 		
 		Row r=getRow();    // get row!
 		if (r==null)  // no more input to be expected...
@@ -144,7 +144,7 @@ public class Denormaliser extends BaseStep implements StepInterface
         
 		if (!sameGroup(data.previous, r))
 		{
-            debug=Messages.getString("Denormaliser.Debg.DifferentGroup"); //$NON-NLS-1$
+            debug="Different group"; //$NON-NLS-1$
             // System.out.println("Different group!");
             
     		buildResult(data.previous);
@@ -155,7 +155,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 		}
         else
         {
-            debug=Messages.getString("Denormaliser.Debug.UnPivot"); //$NON-NLS-1$
+            debug="unPivot()"; //$NON-NLS-1$
             deNormalise(r);
         }
 
@@ -198,7 +198,7 @@ public class Denormaliser extends BaseStep implements StepInterface
     // Is the row r of the same group as previous?
 	private boolean sameGroup(Row previous, Row r)
 	{
-		debug=Messages.getString("Denormaliser.Debug.SameGroup"); //$NON-NLS-1$
+		debug="sameGroup"; //$NON-NLS-1$
 		
 		for (int i=0;i<data.groupnrs.length;i++)
 		{
@@ -214,7 +214,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 	/** Initialize a new group... */
 	private void newGroup()
 	{
-		debug=Messages.getString("Denormaliser.Debug.NewAggregate"); //$NON-NLS-1$
+		debug="newAggregate"; //$NON-NLS-1$
         
         data.targetResult = new Row();
         
