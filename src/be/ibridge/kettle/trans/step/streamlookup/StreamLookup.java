@@ -158,11 +158,11 @@ public class StreamLookup extends BaseStep implements StepInterface
 		Row lu=new Row();
 		Row add=null;		
 
-		debug = Messages.getString("StreamLookup.Debug.StartLookupValues"); //$NON-NLS-1$
+		debug = "Start of lookupValues()"; //$NON-NLS-1$
 
 		if (first)
 		{
-			debug = Messages.getString("StreamLookup.Debug.FirstPart"); //$NON-NLS-1$
+			debug = "First part"; //$NON-NLS-1$
 			first=false;
 			
 			// read the lookup values!

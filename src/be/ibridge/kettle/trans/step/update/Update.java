@@ -147,7 +147,7 @@ public class Update extends BaseStep implements StepInterface
 			 * UPDATE row or do nothing?
 			 *
 			 */
-			debug=Messages.getString("Update.Debug.CompareForUpdate"); //$NON-NLS-1$
+			debug="Compare for update"; //$NON-NLS-1$
 			boolean update = false;
 			for (int i=0;i<data.valuenrs.length;i++)
 			{

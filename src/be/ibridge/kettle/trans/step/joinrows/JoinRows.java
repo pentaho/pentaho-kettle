@@ -157,9 +157,7 @@ public class JoinRows extends BaseStep implements StepInterface
 				{
 					try
 					{
-		    			debug="Open file input stream #"+filenr; //$NON-NLS-1$
 						data.fileInputStream[filenr] = new FileInputStream(data.file[filenr]);
-		    			debug=Messages.getString("JoinRows.Debug.OpenFileInputStream")+filenr; //$NON-NLS-1$
 						data.dataInputStream[filenr] = new DataInputStream(data.fileInputStream[filenr]);
 					}
 					catch(FileNotFoundException fnfe)
@@ -277,11 +275,9 @@ public class JoinRows extends BaseStep implements StepInterface
 				try
 				{
 					// Open the temp file
-					debug=Messages.getString("JoinRows.Debug.OpeningFileOutputStream")+data.filenr+" file==null?"+(data.file[data.filenr]==null); //$NON-NLS-1$ //$NON-NLS-2$
 					data.fileOutputStream[data.filenr] = new FileOutputStream(data.file[data.filenr]);
 
 					// Open the data output stream...
-					debug=Messages.getString("JoinRows.Debug.OpeningFileOutputStream")+data.filenr; //$NON-NLS-1$
 					data.dataOutputStream[data.filenr] = new DataOutputStream(data.fileOutputStream[data.filenr]);
 				}
 				catch(FileNotFoundException fnfe)

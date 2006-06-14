@@ -91,13 +91,13 @@ public class ExecSQL extends BaseStep implements StepInterface
         meta=(ExecSQLMeta)smi;
         data=(ExecSQLData)sdi;
 
-        debug = Messages.getString("ExecSQL.Debug.ExecuteSQLStart");         //$NON-NLS-1$
+        debug = "execute SQL start";         //$NON-NLS-1$
 
         Row row = null;
         
         if (!meta.isExecutedEachInputRow())
         {
-            debug = Messages.getString("ExecSQL.Debug.ExecuteOnce");         //$NON-NLS-1$
+            debug = "exec once: return result";         //$NON-NLS-1$
 
             row = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField()); 
             putRow(row);
@@ -119,7 +119,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 		{
             first=false;
             
-            debug = Messages.getString("ExecSQL.Debug.FindIndexsOfArguments");         //$NON-NLS-1$
+            debug = "Find the indexes of the arguments";         //$NON-NLS-1$
             // Find the indexes of the arguments
             data.argumentIndexes = new int[meta.getArguments().length];
             for (int i=0;i<meta.getArguments().length;i++)
@@ -132,7 +132,7 @@ public class ExecSQL extends BaseStep implements StepInterface
                 }
             }
             
-            debug = Messages.getString("ExecSQL.Debug.FindLocationsOfQuestionMarks");         //$NON-NLS-1$
+            debug = "Find the locations of the question marks in the String...";         //$NON-NLS-1$
             // Find the locations of the question marks in the String...
             // We replace the question marks with the values...
             // We ignore quotes etc. to make inserts easier...
@@ -146,7 +146,7 @@ public class ExecSQL extends BaseStep implements StepInterface
             }
 		}
 
-        debug = Messages.getString("ExecSQL.Debug.ReplaceValuesInSQLString");         //$NON-NLS-1$
+        debug = "Replace the values in the SQL string...";         //$NON-NLS-1$
         // Replace the values in the SQL string...
 		for (int i=0;i<data.markerPositions.size();i++)
         {
@@ -155,11 +155,11 @@ public class ExecSQL extends BaseStep implements StepInterface
             sql.replace(pos, pos+1, value.getString()); // replace the '?' with the String in the row.
         }
 
-        debug = Messages.getString("ExecSQL.Debug.ExecuteSQL")+sql;         //$NON-NLS-1$
+        if (log.isDebug()) debug = "Execute sql: "+sql;         //$NON-NLS-1$
         if (log.isRowLevel()) logRowlevel(Messages.getString("ExecSQL.Log.ExecutingSQLScript")+Const.CR+sql); //$NON-NLS-1$
         data.result = data.db.execStatements(sql.toString());
 
-        debug = Messages.getString("ExecSQL.Debug.GetResult");         //$NON-NLS-1$
+        debug = "Get result";         //$NON-NLS-1$
         Row add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());
         row.addRow(add);
         
