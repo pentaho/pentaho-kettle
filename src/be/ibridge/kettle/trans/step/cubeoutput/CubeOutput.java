@@ -121,8 +121,6 @@ public class CubeOutput extends BaseStep implements StepInterface
 				data.fos=new GZIPOutputStream(new FileOutputStream(fil));
 				data.dos=new DataOutputStream(data.fos);
 			
-				debug=Messages.getString("CubeOutput.Debug.Status"); //$NON-NLS-1$
-
 				return true;
 			}
 			catch(IOException ioe)
