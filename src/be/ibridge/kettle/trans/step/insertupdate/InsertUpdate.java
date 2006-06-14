@@ -51,17 +51,16 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private synchronized void lookupValues(Row row)
-		throws KettleException
+	private synchronized void lookupValues(Row row) throws KettleException
 	{
 		Row lu;
 		Row add;
 	
-		debug=Messages.getString("InsertUpdate.Debug.StartOfLookupValues"); //$NON-NLS-1$
+		debug="Start of lookupValues"; //$NON-NLS-1$
 			
 		if (first)
 		{
-			debug=Messages.getString("InsertUpdate.Debug.FirstRunInitialize"); //$NON-NLS-1$
+			debug="first run, initialize"; //$NON-NLS-1$
 			first=false;
 			
 			data.db.setLookup(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup(), null, null);
@@ -88,7 +87,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
             	data.db.prepareUpdate(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), (String[])updateColumns.toArray(new String[]{}));
             }
 			
-			debug=Messages.getString("InsertUpdate.Debug.FirstRunLookupValues"); //$NON-NLS-1$
+			debug="first run, lookup values, field positions, etc."; //$NON-NLS-1$
 			// lookup the values!
 			if (log.isDetailed()) logDetailed(Messages.getString("InsertUpdate.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
 			data.keynrs  = new int[meta.getKeyStream().length];
@@ -115,7 +114,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 			}
 			// Cache the position of the compare fields in Row row
 			//
-			debug=Messages.getString("InsertUpdate.Debug.FirstRunLookupCompareFields"); //$NON-NLS-1$
+			debug="first run, lookup compare fields, positions, etc."; //$NON-NLS-1$
 			data.valuenrs = new int[meta.getUpdateLookup().length];
 			for (int i=0;i<meta.getUpdateLookup().length;i++)
 			{
@@ -189,7 +188,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 				 * UPDATE row or do nothing?
 				 *
 				 */
-				debug=Messages.getString("InsertUpdate.Debug.CompareForUpdate"); //$NON-NLS-1$
+				debug="compare for update"; //$NON-NLS-1$
 				boolean update = false;
 				int j = 0;
 				for (int i=0;i<data.valuenrs.length;i++)
