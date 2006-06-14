@@ -97,7 +97,7 @@ public class ScriptValues extends BaseStep implements StepInterface
 			// Determine the indexes of the fields used!
 			determineUsedFields(row);
 			
-			debug=Messages.getString("ScriptValues.DebugMessage.FirstRow"); //$NON-NLS-1$
+			debug="first row"; //$NON-NLS-1$
 			data.cx = Context.enter();
 			data.scope = data.cx.initStandardObjects(null);
 			
@@ -112,7 +112,7 @@ public class ScriptValues extends BaseStep implements StepInterface
 			
 			try
 			{
-				debug=Messages.getString("ScriptValues.DebugMessage.CompileReader"); //$NON-NLS-1$
+				debug="compile reader"; //$NON-NLS-1$
 				data.script=data.cx.compileString(meta.getScript(), "script", 1, null); //$NON-NLS-1$
 				// script=cx.compileReader(scope, in, "script", 1, null);
 			}
@@ -125,30 +125,21 @@ public class ScriptValues extends BaseStep implements StepInterface
 			}
 		}
 
-		debug=Messages.getString("ScriptValues.DebugMessage.ToObjectRow"); //$NON-NLS-1$
+
 		Scriptable jsrow = Context.toObject(row, data.scope);
 		data.scope.put("row", data.scope, jsrow); //$NON-NLS-1$
 
-		debug=Messages.getString("ScriptValues.DebugMessage.ToObjectRowValues"); //$NON-NLS-1$
 		for (int i=0;i<data.fields_used.length;i++)
 		{
 			Value val = row.getValue(data.fields_used[i]); 
-			debug=Messages.getString("ScriptValues.DebugMessage.ToObjectRowValue")+i; //$NON-NLS-1$
 			Scriptable jsarg = Context.toObject(val, data.scope);
-			debug=Messages.getString("ScriptValues.DebugMessage.ToObjectRowValue2")+i+" name==null?"+(val.getName()==null)+" row="+row; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			data.scope.put(val.getName(), data.scope, jsarg);
 		}
 		
-		debug=Messages.getString("ScriptValues.DebugMessage.ToObjectValueClass"); //$NON-NLS-1$
-		
-        // Scriptable jsval = Context.toObject(Value.class, data.scope);
-		// data.scope.put("Value", data.scope, jsval); //$NON-NLS-1$
-
 		try
 		{
-			//ScriptableObject.defineClass(scope, Value.class);
 
-			debug=Messages.getString("ScriptValues.DebugMessage.Exec"); //$NON-NLS-1$
+			debug="exec"; //$NON-NLS-1$
 			//result = cx.evaluateString(scope, info.script, "<cmd>", 1, null);
 			data.script.exec(data.cx, data.scope);
 			
@@ -198,7 +189,7 @@ public class ScriptValues extends BaseStep implements StepInterface
 
 		if (r==null)  // no more input to be expected...
 		{
-			debug=Messages.getString("ScriptValues.DebugMessage.End"); //$NON-NLS-1$
+			debug="end"; //$NON-NLS-1$
 			if (data.cx!=null) Context.exit();
 			setOutputDone();
 			return false;
@@ -207,7 +198,7 @@ public class ScriptValues extends BaseStep implements StepInterface
 		// add new values to the row.
 		if (!addValues(r))
 		{
-			debug=Messages.getString("ScriptValues.DebugMessage.NoMoreNewValues"); //$NON-NLS-1$
+			debug="no more new values"; //$NON-NLS-1$
 			if (data.cx!=null) Context.exit();
 			setOutputDone();  // signal end to receiver(s)
 			return false;
