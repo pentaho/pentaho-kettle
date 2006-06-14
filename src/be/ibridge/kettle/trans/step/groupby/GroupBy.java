@@ -211,17 +211,17 @@ public class GroupBy extends BaseStep implements StepInterface
 	// Calculate the aggregates in the row...
 	private void calcAggregate(Row r)
 	{
-		debug=Messages.getString("GroupBy.Debug.CalcAggregateStart"); //$NON-NLS-1$
+		debug="calcAggregate start"; //$NON-NLS-1$
 		
 		for (int i=0;i<data.subjectnrs.length;i++)
 		{
-			debug=Messages.getString("GroupBy.Debug.CalcAggregateStartLoop"); //$NON-NLS-1$
+			debug="calcAggregate start loop"; //$NON-NLS-1$
 			Value subj = r.getValue(data.subjectnrs[i]);
 			Value value = data.agg.getValue(i);
 			
 			//System.out.println("  calcAggregate value, i="+i+", agg.size()="+agg.size()+", subj="+subj+", value="+value);
 			
-			debug=Messages.getString("GroupBy.Debug.CalcAggregateSwitch"); //$NON-NLS-1$
+			debug="calcAggregate switch"; //$NON-NLS-1$
 			switch(meta.getAggregateType()[i])
 			{
 				case GroupByMeta.TYPE_GROUP_SUM            :
@@ -250,13 +250,13 @@ public class GroupBy extends BaseStep implements StepInterface
 				default: break;
 			}
 		}
-		debug=Messages.getString("GroupBy.Debug.CalcAggregateEnd"); //$NON-NLS-1$
+		debug="calcAggregate end"; //$NON-NLS-1$
 	}
 
 	// Initialize a group..
 	private void newAggregate(Row r)
 	{
-		debug=Messages.getString("GroupBy.Debug.NewAggregate"); //$NON-NLS-1$
+		debug="newAggregate"; //$NON-NLS-1$
 		
 		// Put all the counters at 0
 		for (int i=0;i<data.counts.length;i++) data.counts[i]=0;
