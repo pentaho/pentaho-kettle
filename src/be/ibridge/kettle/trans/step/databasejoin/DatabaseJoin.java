@@ -51,16 +51,16 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 	private synchronized void lookupValues(Row row)
 		throws KettleException
 	{
-		debug = Messages.getString("DatabaseJoin.Log.StartOfLookupValues"); //$NON-NLS-1$
+		debug = "Start of lookupValues()"; //$NON-NLS-1$
 		if (first)
 		{
 			first=false;
-			debug = Messages.getString("DatabaseJoin.Log.SetLookupStatement"); //$NON-NLS-1$
+			debug = "first row: set lookup statement"; //$NON-NLS-1$
 
 			if (log.isDetailed()) logDetailed(Messages.getString("DatabaseJoin.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
 			data.keynrs = new int[meta.getParameterField().length];
 			
-			debug = Messages.getString("DatabaseJoin.Log.GetKeyfiedNumbers"); //$NON-NLS-1$
+			debug = "first row: get key fieldnrs"; //$NON-NLS-1$
 			for (int i=0;i<meta.getParameterField().length;i++)
 			{
 				data.keynrs[i]=row.searchValueIndex(meta.getParameterField()[i]);
@@ -72,7 +72,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 		}
 		
 		// Construct the parameters row...
-		debug = Messages.getString("DatabaseJoin.Log.GetParameters"); //$NON-NLS-1$
+		debug = "get parameters"; //$NON-NLS-1$
 		Row param = new Row();
 		for (int i=0;i<data.keynrs.length;i++)
 		{
@@ -80,11 +80,11 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 		}
 		
 		// Set the values on the prepared statement (for faster exec.)
-		debug = Messages.getString("DatabaseJoin.Log.OpenQuery"); //$NON-NLS-1$
+		debug = "open query & resultset"; //$NON-NLS-1$
 		ResultSet rs = data.db.openQuery(data.pstmt, param);
 		
 		// Get a row from the database...
-		debug = Messages.getString("DatabaseJoin.Log.GetRow"); //$NON-NLS-1$
+		debug = "get row"; //$NON-NLS-1$
 		Row add = data.db.getRow(rs);
 		linesInput++;
 		
@@ -121,10 +121,10 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			putRow(newrow);
 		}
 		
-		debug = Messages.getString("DatabaseJoin.Log.CloseQuery"); //$NON-NLS-1$
+		debug = "close query"; //$NON-NLS-1$
 		data.db.closeQuery(rs);
 		
-		debug = Messages.getString("DatabaseJoin.Log.EndOfLookupValues"); //$NON-NLS-1$
+		debug = "end of lookupValues()"; //$NON-NLS-1$
 	}
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
