@@ -49,7 +49,7 @@ public class Flattener extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		debug=Messages.getString("Flattener.Debug.ProcessRow"); //$NON-NLS-1$
+		debug="processRow"; //$NON-NLS-1$
 		
 		Row r=getRow();    // get row!
 		if (r==null)  // no more input to be expected...
