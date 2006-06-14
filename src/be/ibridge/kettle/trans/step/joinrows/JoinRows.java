@@ -140,7 +140,7 @@ public class JoinRows extends BaseStep implements StepInterface
 		// Do we read from the first rowset or a file?
 		if (filenr==0)
 		{
-			debug=Messages.getString("JoinRows.Debug.GetRowFromRowset")+filenr; //$NON-NLS-1$
+			if (log.isDebug()) debug="Get row from rowset #"+filenr; //$NON-NLS-1$
 			
 			// Rowset 0:
 			r = getRowFrom(0);
@@ -151,13 +151,13 @@ public class JoinRows extends BaseStep implements StepInterface
 		{
 			if (data.cache[filenr]==null)
 			{
-				debug=Messages.getString("JoinRows.Debug.GetRowFromFile")+filenr; //$NON-NLS-1$
+				if (log.isDebug()) debug="Get row from file #"+filenr; //$NON-NLS-1$
 				// See if we need to open the file?
 				if (data.dataInputStream[filenr]==null)
 				{
 					try
 					{
-		    			debug=Messages.getString("JoinRows.Debug.OpenFileInputStream")+filenr; //$NON-NLS-1$
+		    			debug="Open file input stream #"+filenr; //$NON-NLS-1$
 						data.fileInputStream[filenr] = new FileInputStream(data.file[filenr]);
 		    			debug=Messages.getString("JoinRows.Debug.OpenFileInputStream")+filenr; //$NON-NLS-1$
 						data.dataInputStream[filenr] = new DataInputStream(data.fileInputStream[filenr]);
@@ -171,7 +171,7 @@ public class JoinRows extends BaseStep implements StepInterface
 					}
 				}
 				
-				debug=Messages.getString("JoinRows.Debug.ReadRowFromDataInputStream")+filenr; //$NON-NLS-1$
+				if (log.isDebug()) debug="Read row from the data input stream #"+filenr; //$NON-NLS-1$
 				// Read a row from the temporary file
 				
 				if (data.size[filenr]==0)
@@ -199,7 +199,7 @@ public class JoinRows extends BaseStep implements StepInterface
 				// The file will then be re-opened if needed later on.
 				if (data.position[filenr]>=data.size[filenr])
 				{
-	    			debug=Messages.getString("JoinRows.Debug.CloseStream")+filenr; //$NON-NLS-1$
+	    			debug="Close stream #"+filenr; //$NON-NLS-1$
 					try
 					{
 						data.dataInputStream[filenr].close();
@@ -222,7 +222,7 @@ public class JoinRows extends BaseStep implements StepInterface
 			}
 			else
 			{
-				debug=Messages.getString("JoinRows.Debug.GetRowFromCache",filenr+"")+data.cache[filenr].size(); //$NON-NLS-1$ //$NON-NLS-2$
+				if (log.isDebug()) debug="Get row from cache #"+filenr+" size="+data.cache[filenr].size(); //$NON-NLS-1$ //$NON-NLS-2$
 
 				if (data.size[filenr]==0)
 				{
@@ -273,7 +273,7 @@ public class JoinRows extends BaseStep implements StepInterface
 			// We need to open a new outputstream
 			if (data.dataOutputStream[data.filenr]==null)
 			{
-				debug=Messages.getString("JoinRows.Debug.OpeningFileOutputStream")+data.filenr; //$NON-NLS-1$
+				if (log.isDebug()) debug="Opening file outputstream #"+data.filenr; //$NON-NLS-1$
 				try
 				{
 					// Open the temp file
@@ -295,7 +295,7 @@ public class JoinRows extends BaseStep implements StepInterface
 
 	    	// Read a line from the appropriate rowset...
 			String fromStep = data.rs[data.filenr].getOriginStepName();
-			debug=Messages.getString("JoinRows.Debug.GetRowFromStep")+fromStep+"]"; //$NON-NLS-1$ //$NON-NLS-2$
+			if (log.isDebug()) debug="Get row from step ["+fromStep+"]"; //$NON-NLS-1$ //$NON-NLS-2$
 	    	Row r = getRowFrom(fromStep);
 	    	
 	    	if (r!=null) // We read a row from one of the input streams...
@@ -306,7 +306,7 @@ public class JoinRows extends BaseStep implements StepInterface
 					data.row[data.filenr] = new Row(r); // "Clone" the row, so it becomes independend.
 	    		}
 
-				debug=Messages.getString("JoinRows.Debug.WriteDataToTempFile")+data.filenr; //$NON-NLS-1$
+				if (log.isDebug()) debug="Write the data to temp file #"+data.filenr; //$NON-NLS-1$
 	    		r.writeData(data.dataOutputStream[data.filenr]);
 	    		data.size[data.filenr]++;
 
@@ -332,7 +332,7 @@ public class JoinRows extends BaseStep implements StepInterface
 	    	}
 	    	else // No more rows found on rowset!!
 	    	{
-				debug=Messages.getString("JoinRows.Debug.CloseOutputStream")+data.filenr; //$NON-NLS-1$
+				if (log.isDebug()) debug="Close outputstream #"+data.filenr; //$NON-NLS-1$
 	    		// Close outputstream.
 	    		try
 				{
