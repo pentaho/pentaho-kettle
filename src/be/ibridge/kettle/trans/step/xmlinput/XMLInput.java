@@ -130,14 +130,14 @@ public class XMLInput extends BaseStep implements StepInterface
             
             XMLInputField xmlInputField = meta.getInputFields()[i];
 
-            debug="getRowFromXML: read from the selected node: field #"+i+" : "+xmlInputField.getName()+" - "+xmlInputField.getFieldPositionsCode();
+            if (log.isDebug()) debug="getRowFromXML: read from the selected node: field #"+i+" : "+xmlInputField.getName()+" - "+xmlInputField.getFieldPositionsCode();
 
             String value = null;
             
             for (int p=0; (value==null) && node!=null && p<xmlInputField.getFieldPosition().length;p++)
             {
                 XMLInputFieldPosition pos = xmlInputField.getFieldPosition()[p];
-                debug="getRowFromXML: read from the selected node: field #"+i+" : position #"+p+": "+pos.toString();
+                if (log.isDebug()) debug="getRowFromXML: read from the selected node: field #"+i+" : position #"+p+": "+pos.toString();
 
                 switch(pos.getType())
                 {

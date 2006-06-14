@@ -85,7 +85,7 @@ public class XBase
         		
             for( int i=0; i<reader.getFieldCount(); i++) 
             {
-              debug="get field #"+i;
+              if (log.isDebug()) debug="get field #"+i;
 
               DBFField field = reader.getField(i);
               Value value = null;

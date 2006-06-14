@@ -60,7 +60,7 @@ public class FilesFromResult extends BaseStep implements StepInterface
 		}
 		
 		
-        debug = "Get a row from the result files ("+(linesRead+1)+"/"+data.result.getResultFiles().size()+")";
+        if (log.isDebug()) debug = "Get a row from the result files ("+(linesRead+1)+"/"+data.result.getResultFiles().size()+")";
         ResultFile resultFile = (ResultFile) data.result.getResultFiles().get((int)linesRead);
         Row r = resultFile.getRow();
         

@@ -168,7 +168,7 @@ public class TableOutput extends BaseStep implements StepInterface
         insertStatement = (PreparedStatement) data.preparedStatements.get(tableName);
         if (insertStatement==null)
         {
-            debug="prepareInsert for table ["+tableName+"]";
+            if (log.isDebug()) debug="prepareInsert for table ["+tableName+"]";
             String sql = data.db.getInsertStatement(tableName, r);
             if (log.isDetailed()) logDetailed("Prepared statement : "+sql);
             insertStatement = data.db.prepareSQL(sql, meta.isReturningGeneratedKeys());

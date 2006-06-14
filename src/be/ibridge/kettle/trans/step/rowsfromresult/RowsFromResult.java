@@ -58,7 +58,7 @@ public class RowsFromResult extends BaseStep implements StepInterface
 			return false;
 		}
 		
-        debug = "Get a row from the result rows ("+(linesRead+1)+"/"+previousResult.getRows().size()+")";
+        if (log.isDebug()) debug = "Get a row from the result rows ("+(linesRead+1)+"/"+previousResult.getRows().size()+")";
 		Row r=(Row)previousResult.getRows().get((int)linesRead);
 		linesRead++;
 		

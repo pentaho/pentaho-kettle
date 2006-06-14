@@ -169,7 +169,7 @@ public class TextFileCSVImportProgressDialog
         {
             TextFileInputField field = meta.getInputFields()[i];
 
-            debug = "init field #" + i;
+            if (log.isDebug()) debug = "init field #" + i;
           
             if (clearFields == SWT.YES) // Clear previous info...
             {
@@ -247,7 +247,7 @@ public class TextFileCSVImportProgressDialog
             monitor.subTask(Messages.getString("TextFileCSVImportProgressDialog.ScanningLine", ""+linenr));
             if (samples>0) monitor.worked(1);
             
-            debug = "convert line #" + linenr + " to row";
+            if (log.isDebug()) debug = "convert line #" + linenr + " to row";
             Row r = TextFileInput.convertLineToRow(log, new TextFileLine(line, fileLineNumber, null), strinfo, df, dfs, daf, dafs, meta.getFilePaths()[0], rownumber);
 
             rownumber++;
@@ -255,9 +255,9 @@ public class TextFileCSVImportProgressDialog
             {
                 TextFileInputField field = meta.getInputFields()[i];
 
-                debug = "Start of for loop, get new value " + i;
+                if (log.isDebug()) debug = "Start of for loop, get new value " + i;
                 Value v = r.getValue(i);
-                debug = "Start of for loop over " + r.size() + " elements in Row r, now at #" + i + " containing value : [" + v.toString() + "]";
+                if (log.isDebug()) debug = "Start of for loop over " + r.size() + " elements in Row r, now at #" + i + " containing value : [" + v.toString() + "]";
                 if (!v.isNull() && v.getString() != null)
                 {
                     String fieldValue = v.getString();
@@ -272,15 +272,15 @@ public class TextFileCSVImportProgressDialog
                     if (spacesBefore) trimthis |= TextFileInputMeta.TYPE_TRIM_LEFT;
                     if (spacesAfter) trimthis |= TextFileInputMeta.TYPE_TRIM_RIGHT;
 
-                    debug = "change trim type[" + i + "]";
+                    if (log.isDebug()) debug = "change trim type[" + i + "]";
                     field.setTrimType(field.getTrimType() | trimthis);
 
-                    debug = "Field #" + i + " has type : " + Value.getTypeDesc(field.getType());
+                    if (log.isDebug()) debug = "Field #" + i + " has type : " + Value.getTypeDesc(field.getType());
 
                     // See if the field has only numeric fields
                     if (isNumber[i])
                     {
-                        debug = "Number checking of [" + fieldValue.toString() + "] on line #" + linenr;
+                        if (log.isDebug()) debug = "Number checking of [" + fieldValue.toString() + "] on line #" + linenr;
 
                         boolean containsDot = false;
                         boolean containsComma = false;
@@ -377,7 +377,7 @@ public class TextFileCSVImportProgressDialog
                         }
                     }
 
-                    debug = "Check max length on field #" + i + " called " + field.getName() + " : [" + fieldValue + "]";
+                    if (log.isDebug()) debug = "Check max length on field #" + i + " called " + field.getName() + " : [" + fieldValue + "]";
                     // Capture the maximum length of the field (trimmed)
                     if (fieldValue.length() > field.getLength()) field.setLength(fieldValue.length());
 

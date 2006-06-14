@@ -368,6 +368,7 @@ public class Condition implements Cloneable, XMLInterface
 	{
 	    String debug="Start of evaluate";
 		boolean retval = false;
+        LogWriter log = LogWriter.getInstance();
 
 		// If we have 0 items in the list, evaluate the current condition
 		// Otherwise, evaluate all sub-conditions
@@ -414,7 +415,7 @@ public class Condition implements Cloneable, XMLInterface
                     throw new KettleException("Unable to find value for field ["+right_valuename+"] in the input row!");
                 }
 
-                debug="Atomic : evaluate (function="+Condition.functions[function]+")";
+                if (log.isDebug()) debug="Atomic : evaluate (function="+Condition.functions[function]+")";
 				switch(function)
 				{
 					case FUNC_EQUAL         : retval = (field.compare(field2)==0); break;

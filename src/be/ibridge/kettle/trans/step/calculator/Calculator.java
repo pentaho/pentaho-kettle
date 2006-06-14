@@ -82,7 +82,7 @@ public class Calculator extends BaseStep implements StepInterface
             CalculatorMetaFunction fn = meta.getCalculation()[i];
             if (fn.getFieldName()!=null && fn.getFieldName().length()>0)
             {
-                debug="Processing function ["+fn.getCalcTypeLongDesc()+"] for field ["+fn.getFieldName()+"]";
+                if (log.isDebug()) debug="Processing function ["+fn.getCalcTypeLongDesc()+"] for field ["+fn.getFieldName()+"]";
                 Value value  = null;
                 
                 Value fieldA = null;

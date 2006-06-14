@@ -151,7 +151,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 					debug="Write field to output stream: ["+v.toString()+"] of type ["+v.toStringMeta()+"]";
 					writeField(v, -1, v.getName());
                     
-                    debug="Finished writing field #"+i+" ["+v+"/"+v.toStringMeta()+"] of row nr "+linesInput;
+                    if (log.isDebug()) debug="Finished writing field #"+i+" ["+v+"/"+v.toStringMeta()+"] of row nr "+linesInput;
 				}
 			}
 			else
@@ -188,14 +188,14 @@ public class XMLOutput extends BaseStep implements StepInterface
                     }
 					writeField(v, i, element);
                     
-                    debug="Finished writing field #"+i+" ["+v+"/"+v.toStringMeta()+"] of row nr "+linesInput;
+                    if (log.isDebug()) debug="Finished writing field #"+i+" ["+v+"/"+v.toStringMeta()+"] of row nr "+linesInput;
 				}
 			}
 
             data.writer.write((" </"+meta.getRepeatElement()+">").toCharArray());
             data.writer.write(Const.CR.toCharArray());
 
-            debug="Finished writing row #"+linesInput;
+            if (log.isDebug()) debug="Finished writing row #"+linesInput;
 		}
 		catch(Exception e)
 		{
@@ -274,7 +274,7 @@ public class XMLOutput extends BaseStep implements StepInterface
                 debug="Date is not formatted";
 				if (v.isNull() || v.getDate()==null) 
 				{
-                    debug="nulliff date (field==null? "+(field==null)+", idx="+idx+")";
+                    if (log.isDebug()) debug="nulliff date (field==null? "+(field==null)+", idx="+idx+")";
 					if (idx>=0 && field!=null && field.getNullString()!=null)
                     {
                         retval=field.getNullString();
