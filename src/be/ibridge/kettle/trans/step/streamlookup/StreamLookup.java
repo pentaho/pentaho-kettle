@@ -188,7 +188,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 			// Handle the NULL values (not found...)
 			handleNullIf();
             
-			debug = Messages.getString("StreamLookup.Debug.FirstDoLookupValues"); //$NON-NLS-1$
+			debug = "first: do lookup"; //$NON-NLS-1$
 			try
 			{
 				if (meta.getKeystream().length>0)
@@ -212,16 +212,18 @@ public class StreamLookup extends BaseStep implements StepInterface
 		if (stopped) return false;
 		
 		// Copy value references to lookup table.
-		debug = Messages.getString("StreamLookup.Debug.CopyValueReference"); //$NON-NLS-1$
+		debug = "Copy value references to lookup table"; //$NON-NLS-1$
 		for (int i=0;i<meta.getKeystream().length;i++) 
         {
             int valueNr = data.keynrs[i];
             Value value = row.getValue(valueNr); 
             lu.addValue( value );
         }
-        debug=Messages.getString("StreamLookup.Debug.HandleConflictingTypes"); //$NON-NLS-1$
+
+        debug="start lookupValues"; //$NON-NLS-1$
+        
         // Handle conflicting types (Number-Integer-String conversion to lookup type in hashtable)
-        debug = Messages.getString("StreamLookup.Debug.LookupSize")+lu.size(); //$NON-NLS-1$
+        if (log.isDebug()) debug = "lookup size = "+lu.size(); //$NON-NLS-1$
         if (data.keyTypes!=null)
         {
             for (int i=0;i<lu.size();i++)
@@ -259,7 +261,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 		
 		if (add==null) // nothing was found, unknown code: add null-values
 		{
-			debug = Messages.getString("StreamLookup.Debug.AddNullValues"); //$NON-NLS-1$
+			debug = "add null values"; //$NON-NLS-1$
 			add=new Row();
 			for (int i=0;i<meta.getValue().length;i++)
 			{
@@ -267,32 +269,32 @@ public class StreamLookup extends BaseStep implements StepInterface
 			}
 		} 
 		
-		debug = Messages.getString("StreamLookup.Debug.AddReturnedValues"); //$NON-NLS-1$
+		debug = "add returned values"; //$NON-NLS-1$
 		try
 		{
-		for (int i=0;i<add.size();i++)
-		{
-			Value v = add.getValue(i);
-		    debug = Messages.getString("StreamLookup.Debug.AddReturnedValues2")+i+" : "+v.toString()+" ("+v.toStringMeta()+")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			//v.setName(info.valuename[i]);
-		    
-			if (v.getType() != meta.getValueDefaultType()[i])
-			{
-				v.setType(meta.getValueDefaultType()[i]);
-			}
-            if (meta.getValueName()[i]!=null && meta.getValueName()[i].length()>0)
-            {
-                v.setName(meta.getValueName()[i]);
-            }
-			row.addValue( v );
-		}
+    		for (int i=0;i<add.size();i++)
+    		{
+    			Value v = add.getValue(i);
+    		    if (log.isDebug()) debug = "add returned value #"+i+" : "+v.toString()+" ("+v.toStringMeta()+")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+    			//v.setName(info.valuename[i]);
+    		    
+    			if (v.getType() != meta.getValueDefaultType()[i])
+    			{
+    				v.setType(meta.getValueDefaultType()[i]);
+    			}
+                if (meta.getValueName()[i]!=null && meta.getValueName()[i].length()>0)
+                {
+                    v.setName(meta.getValueName()[i]);
+                }
+    			row.addValue( v );
+    		}
 		}
 		catch(Exception e)
 		{
 		    throw new RuntimeException(e);
 		}
 	
-		debug = Messages.getString("StreamLookup.Debug.FinishedLookupValues"); //$NON-NLS-1$
+		debug = "Finished lookupValues"; //$NON-NLS-1$
 
 		return true;
 	}
