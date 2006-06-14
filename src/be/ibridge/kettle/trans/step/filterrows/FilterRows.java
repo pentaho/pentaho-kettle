@@ -48,9 +48,9 @@ public class FilterRows extends BaseStep implements StepInterface
 	{
 		try
 		{
-			debug=Messages.getString("FilterRows.0"); //$NON-NLS-1$
+			debug="before evaluate condition"; //$NON-NLS-1$
 			boolean ret=meta.getCondition().evaluate(row);
-	        debug=Messages.getString("FilterRows.Debug.AfterEvaluateCondition"); //$NON-NLS-1$
+	        debug="after evaluate condition"; //$NON-NLS-1$
 			return ret;
 		}
 		catch(Exception e)
