@@ -51,17 +51,17 @@ public class Update extends BaseStep implements StepInterface
 		Row lu;
 		Row add;
 	
-		debug=Messages.getString("Update.Debug.StartOfLookupValues"); //$NON-NLS-1$
+		debug="Start of lookupValues"; //$NON-NLS-1$
 			
 		if (first)
 		{
-			debug=Messages.getString("Update.Debug.FirstRunInitialize"); //$NON-NLS-1$
+			debug="first run, initialize"; //$NON-NLS-1$
 			first=false;
 			
 			data.dblup.setLookup(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup(), null, null);
 			data.dbupd.prepareUpdate(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup());
 			
-			debug=Messages.getString("Update.Debug.FirstRunLookupValues"); //$NON-NLS-1$
+			debug="first run, lookup values, field positions, etc."; //$NON-NLS-1$
 			// lookup the values!
 			if (log.isDetailed()) logDetailed(Messages.getString("Update.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
 			data.keynrs  = new int[meta.getKeyStream().length];
@@ -88,7 +88,7 @@ public class Update extends BaseStep implements StepInterface
 			}
 			// Cache the position of the compare fields in Row row
 			//
-			debug=Messages.getString("Update.Debug.FirstRunLookupCompareFields"); //$NON-NLS-1$
+			debug="compare for update"; //$NON-NLS-1$
 			data.valuenrs = new int[meta.getUpdateLookup().length];
 			for (int i=0;i<meta.getUpdateLookup().length;i++)
 			{
