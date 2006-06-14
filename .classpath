@@ -37,6 +37,6 @@
 	<classpathentry kind="src" path="test/useCases/normal"/>
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="lib" path="libext/xdbjdbc.jar"/>
-	<classpathentry kind="lib" path="libext/mysql-connector-java-3.1.12-bin.jar"/>
+	<classpathentry kind="lib" path="libext/mysql-connector-java-3.1.13-bin.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
