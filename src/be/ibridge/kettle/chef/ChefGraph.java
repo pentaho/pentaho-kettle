@@ -590,13 +590,9 @@ public class ChefGraph extends Canvas
 
 				Point p = getRealPosition(canvas, event.x, event.y);
 				
-                // 
-                // We expect a piece of XML...
-                String xml = (String) event.data;
-                
                 try
                 {
-                    DragAndDropContainer container = new DragAndDropContainer(xml);
+                    DragAndDropContainer container = (DragAndDropContainer)event.data;
                     String entry = container.getData();
                     
                     switch(container.getType())

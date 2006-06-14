@@ -687,11 +687,9 @@ public class SpoonGraph extends Canvas
     
                     // 
                     // We expect a piece of XML...
-                    String xml = (String) event.data;
-                    
                     try
                     {
-    	                DragAndDropContainer container = new DragAndDropContainer(xml);
+                        DragAndDropContainer container = (DragAndDropContainer)event.data;
     	                
     	                StepMeta stepMeta = null;
     	                boolean newstep = false;

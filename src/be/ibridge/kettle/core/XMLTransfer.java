@@ -3,6 +3,7 @@ package be.ibridge.kettle.core;
 import java.io.UnsupportedEncodingException;
 
 import org.eclipse.swt.dnd.ByteArrayTransfer;
+import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.TransferData;
 
 public class XMLTransfer extends ByteArrayTransfer
@@ -20,28 +21,34 @@ public class XMLTransfer extends ByteArrayTransfer
 
     public void javaToNative(Object object, TransferData transferData)
     {
-        if (object == null || !(object instanceof String)) return;
-
-        if (isSupportedType(transferData))
+        if (!checkMyType(object) || !isSupportedType(transferData)) {
+            DND.error(DND.ERROR_INVALID_DATA);
+          }
+        
+        try
         {
-            try
-            {
-                byte[] buffer = ((String)object).getBytes(Const.XML_ENCODING);
+            byte[] buffer = ((DragAndDropContainer)object).getXML().getBytes(Const.XML_ENCODING);
 
-                super.javaToNative(buffer, transferData);
-            }
-            catch (UnsupportedEncodingException e)
-            {
-                LogWriter.getInstance().logError(toString(), "XML Encoding [" + Const.XML_ENCODING + "] is not supported on this system!");
-                return;
-            }
-            catch (Exception e)
-            {
-                LogWriter.getInstance().logError(toString(), "Unexpected error trying to put a string onto the XML Transfer type: " + e.toString());
-                LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
-                return;
-            }
+            super.javaToNative(buffer, transferData);
         }
+        catch (UnsupportedEncodingException e)
+        {
+            LogWriter.getInstance().logError(toString(), "XML Encoding [" + Const.XML_ENCODING + "] is not supported on this system!");
+            return;
+        }
+        catch (Exception e)
+        {
+            LogWriter.getInstance().logError(toString(), "Unexpected error trying to put a string onto the XML Transfer type: " + e.toString());
+            LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
+            return;
+        }
+    }
+    
+    boolean checkMyType(Object object)
+    {
+        if (object == null || !(object instanceof DragAndDropContainer) ) { return false; }
+        
+        return true;
     }
 
     public Object nativeToJava(TransferData transferData)
@@ -51,7 +58,7 @@ public class XMLTransfer extends ByteArrayTransfer
             try
             {
                 byte[] buffer = (byte[]) super.nativeToJava(transferData);
-                return (Object)(new String(buffer, Const.XML_ENCODING));
+                return new DragAndDropContainer(new String(buffer, Const.XML_ENCODING));
             }
             catch (UnsupportedEncodingException e)
             {
@@ -60,7 +67,7 @@ public class XMLTransfer extends ByteArrayTransfer
             }
             catch (Exception e)
             {
-                LogWriter.getInstance().logError(toString(), "Unexpected error trying to read a string from the XML Transfer type: " + e.toString());
+                LogWriter.getInstance().logError(toString(), "Unexpected error trying to read a drag and drop container from the XML Transfer type: " + e.toString());
                 LogWriter.getInstance().logError(toString(), Const.getStackTracker(e));
                 return null;
             }

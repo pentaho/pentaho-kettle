@@ -892,7 +892,7 @@ public class Chef
                                 return; // ignore anything else you drag.
                             }
     
-                            event.data = new DragAndDropContainer(type, data).getXML();
+                            event.data = new DragAndDropContainer(type, data);
                         }
                     }
                     else // Nothing got dragged, only can happen on OSX :-)
