@@ -771,6 +771,12 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
                messageText.append(" : ");
                messageText.append(jer.getComment());
            }
+           if (jer.getLogDate()!=null)
+           {
+               messageText.append(" (");
+               messageText.append(new Value("time", jer.getLogDate()).getString()); // $NON-NLS-1$
+               messageText.append(")");
+           }
        }
        messageText.append(Const.CR);
        
