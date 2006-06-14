@@ -51,17 +51,13 @@ public class Update extends BaseStep implements StepInterface
 		Row lu;
 		Row add;
 	
-		debug="Start of lookupValues"; //$NON-NLS-1$
-			
 		if (first)
 		{
-			debug="first run, initialize"; //$NON-NLS-1$
 			first=false;
 			
 			data.dblup.setLookup(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup(), null, null);
 			data.dbupd.prepareUpdate(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup());
 			
-			debug="first run, lookup values, field positions, etc."; //$NON-NLS-1$
 			// lookup the values!
 			if (log.isDetailed()) logDetailed(Messages.getString("Update.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
 			data.keynrs  = new int[meta.getKeyStream().length];
@@ -88,7 +84,6 @@ public class Update extends BaseStep implements StepInterface
 			}
 			// Cache the position of the compare fields in Row row
 			//
-			debug="compare for update"; //$NON-NLS-1$
 			data.valuenrs = new int[meta.getUpdateLookup().length];
 			for (int i=0;i<meta.getUpdateLookup().length;i++)
 			{
@@ -114,11 +109,9 @@ public class Update extends BaseStep implements StepInterface
 			}
 		}
 		
-		debug="setValues()"; //$NON-NLS-1$
 		data.dblup.setValuesLookup(lu);
 		
 		if (log.isDebug()) logDebug(Messages.getString("Update.Log.ValuesSetForLookup",lu.toString(),""+row)); //$NON-NLS-1$ //$NON-NLS-2$
-		debug="getLookup()"; //$NON-NLS-1$
 		add=data.dblup.getLookup();  // Got back the complete row!
 		linesInput++;
 		
@@ -147,7 +140,6 @@ public class Update extends BaseStep implements StepInterface
 			 * UPDATE row or do nothing?
 			 *
 			 */
-			debug="Compare for update"; //$NON-NLS-1$
 			boolean update = false;
 			for (int i=0;i<data.valuenrs.length;i++)
 			{
@@ -162,9 +154,7 @@ public class Update extends BaseStep implements StepInterface
 			if (update)
 			{
 				if (log.isRowLevel()) logRowlevel(Messages.getString("Update.Log.UpdateRow")+lu.toString()); //$NON-NLS-1$
-				debug="setValuesUpdate()"; //$NON-NLS-1$
 				data.dbupd.setValuesUpdate(lu);
-				debug="updateRow()"; //$NON-NLS-1$
 				data.dbupd.updateRow();
 				linesUpdated++;
 			}
@@ -274,7 +264,7 @@ public class Update extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("Update.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("Update.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

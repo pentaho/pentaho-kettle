@@ -52,8 +52,6 @@ public class UniqueRows extends BaseStep implements StepInterface
 		meta=(UniqueRowsMeta)smi;
 		data=(UniqueRowsData)sdi;
 
-		debug="start of processRow()"; //$NON-NLS-1$
-		
 		Row r=getRow();    // get row!
 		if (r==null)  // no more input to be expected...
 		{
@@ -69,7 +67,6 @@ public class UniqueRows extends BaseStep implements StepInterface
 
 		if (first)
 		{
-			debug="first: create new row"; //$NON-NLS-1$
 			data.previous=new Row(r); // copy the row
 			first=false;
 			
@@ -93,7 +90,6 @@ public class UniqueRows extends BaseStep implements StepInterface
 			}
 		}
 		
-		debug="check for doubles..."; //$NON-NLS-1$
 		boolean isEqual = false;
 		
 		if (meta.getCompareFields()==null || meta.getCompareFields().length==0)
@@ -158,7 +154,7 @@ public class UniqueRows extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("UniqueRows.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("UniqueRows.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

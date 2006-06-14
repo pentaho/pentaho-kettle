@@ -97,7 +97,6 @@ public class ScriptValues extends BaseStep implements StepInterface
 			// Determine the indexes of the fields used!
 			determineUsedFields(row);
 			
-			debug="first row"; //$NON-NLS-1$
 			data.cx = Context.enter();
 			data.scope = data.cx.initStandardObjects(null);
 			
@@ -112,7 +111,6 @@ public class ScriptValues extends BaseStep implements StepInterface
 			
 			try
 			{
-				debug="compile reader"; //$NON-NLS-1$
 				data.script=data.cx.compileString(meta.getScript(), "script", 1, null); //$NON-NLS-1$
 				// script=cx.compileReader(scope, in, "script", 1, null);
 			}
@@ -139,7 +137,6 @@ public class ScriptValues extends BaseStep implements StepInterface
 		try
 		{
 
-			debug="exec"; //$NON-NLS-1$
 			//result = cx.evaluateString(scope, info.script, "<cmd>", 1, null);
 			data.script.exec(data.cx, data.scope);
 			
@@ -189,7 +186,6 @@ public class ScriptValues extends BaseStep implements StepInterface
 
 		if (r==null)  // no more input to be expected...
 		{
-			debug="end"; //$NON-NLS-1$
 			if (data.cx!=null) Context.exit();
 			setOutputDone();
 			return false;
@@ -198,7 +194,6 @@ public class ScriptValues extends BaseStep implements StepInterface
 		// add new values to the row.
 		if (!addValues(r))
 		{
-			debug="no more new values"; //$NON-NLS-1$
 			if (data.cx!=null) Context.exit();
 			setOutputDone();  // signal end to receiver(s)
 			return false;
@@ -235,7 +230,7 @@ public class ScriptValues extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("ScriptValues.Log.UnexpectedeError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("ScriptValues.Log.UnexpectedeError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Messages.getString("ScriptValues.Log.ErrorStackTrace")+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$
 			setErrors(1);
 			stopAll();

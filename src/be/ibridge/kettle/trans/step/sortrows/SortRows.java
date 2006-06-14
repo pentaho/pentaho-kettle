@@ -123,12 +123,9 @@ public class SortRows extends BaseStep implements StepInterface
 		Row retval;
 		String filename;
 		
-		debug="start";
-		
 		// Open all files at once and read one row from each file...
 		if (data.files.size()>0 && ( data.dis.size()==0 || data.fis.size()==0 ))
 		{
-			debug="initialize";
 			logBasic("Opening "+data.files.size()+" tmp-files...");
 		
 			try
@@ -136,7 +133,6 @@ public class SortRows extends BaseStep implements StepInterface
 				for (f=0;f<data.files.size() && !isStopped();f++)
 				{
 					filename=((File)data.files.get(f)).toString();
-					debug="opening file "+filename;
 					if (log.isDetailed()) logDetailed("Opening tmp-file: ["+filename+"]");
 					FileInputStream fi=new FileInputStream( (File)data.files.get(f) );
 					DataInputStream di=new DataInputStream( fi );
@@ -145,7 +141,6 @@ public class SortRows extends BaseStep implements StepInterface
 					
 					// How long is the buffer?
 					int buffersize=di.readInt();
-					debug="buffersize = "+buffersize;
 					
 					if (log.isDetailed()) logDetailed("["+filename+"] expecting "+buffersize+" rows...");
 					
@@ -158,7 +153,7 @@ public class SortRows extends BaseStep implements StepInterface
 			}
 			catch(Exception e)
 			{
-				logError("Error reading back tmp-files in step ["+debug+"] : "+e.toString());
+				logError("Error reading back tmp-files : "+e.toString());
 			}
 		}
 		
@@ -320,7 +315,7 @@ public class SortRows extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError("Unexpected error : "+e.toString());
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

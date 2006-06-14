@@ -292,6 +292,13 @@ public class BaseStep extends Thread
 	private    String    stepname;
 	protected  LogWriter log;
 	private    Trans     trans;
+    
+    /**
+     * Deprecated: not needed anymore as we're showing stack traces when an unexpected error was encountered.
+     * This is enough for the developers to find the problem.
+     * This Variable has caused some performance problems in the passed and should be avoided!
+     * @deprecated
+     */
 	public     String    debug;
 	public     ArrayList previewBuffer;
 	public     int       previewSize;
@@ -412,7 +419,7 @@ public class BaseStep extends Thread
 			terminator_rows = null;
 		}
 		
-		debug="-"; //$NON-NLS-1$
+		// debug="-"; //$NON-NLS-1$
 		
 		output_rowset_nr=-1;
 		start_time = null;
@@ -919,8 +926,8 @@ public class BaseStep extends Thread
 
 	private void safeModeChecking(Row row)
 	{
-		String saveDebug=debug;
-		debug="Safe mode checking";
+		//String saveDebug=debug;
+		//debug="Safe mode checking";
 		if (referenceRow==null)
 		{
 			referenceRow=new Row(row); // copy it!
@@ -948,7 +955,7 @@ public class BaseStep extends Thread
 				}
 			}
 		}
-		debug=saveDebug;
+		//debug=saveDebug;
 	}
 
 	/**

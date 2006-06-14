@@ -146,7 +146,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 		ArrayList strings = new ArrayList();
 		int fieldnr;
 		String pol; // piece of line
-		String debug = "convertLineToStrings start";
 
 		try
 		{
@@ -163,8 +162,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 				while (pos < length)
 				{
-					debug = "convertLineToStrings while start";
-
 					int from = pos;
 					int next;
 					int len_encl = (inf.getEnclosure() == null ? 0 : inf.getEnclosure().length());
@@ -178,8 +175,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 					// "aa;aa";123;"aaa-aaa";000;...
 					if (len_encl > 0 && line.substring(from, from + len_encl).equalsIgnoreCase(inf.getEnclosure()))
 					{
-						debug = "convertLineToStrings if start";
-
 						log.logRowlevel("convert line to row", "encl substring=[" + line.substring(from, from + len_encl) + "]");
 						encl_found = true;
 						int p = from + len_encl;
@@ -209,8 +204,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 						// Look for a closing enclosure!
 						while ((!is_enclosure || enclosure_after) && p < line.length())
 						{
-							debug = "convertLineToStrings start while enclosure (p=" + p + ")";
-
 							p++;
 							enclosure_after = false;
 							is_enclosure = len_encl > 0 && p + len_encl < length && line.substring(p, p + len_encl).equals(inf.getEnclosure());
@@ -236,7 +229,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 						else next = p + len_encl;
 
 						log.logRowlevel("convert line to row", "End of enclosure @ position " + p);
-						debug = "convertLineToStrings end of enclosure";
 					}
 					else
 					{
@@ -281,14 +273,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 					}
 					else
 					{
-						debug = "convertLineToStrings get substring";
 						pol = line.substring(from, next);
 						log.logRowlevel("convert line to row", "Normal field found: [" + pol + "]");
 					}
 
 					if (dencl)
 					{
-						debug = "convertLineToStrings dencl";
 						StringBuffer sbpol = new StringBuffer(pol);
 						int idx = sbpol.indexOf(inf.getEnclosure() + inf.getEnclosure());
 						while (idx >= 0)
@@ -318,7 +308,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 					}
 
 					// Now add pol to the strings found!
-					debug = "convertLineToStrings add pol";
 					strings.add(pol);
 
 					pos = next + 1;
@@ -327,13 +316,10 @@ public class TextFileInput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				debug = "convertLineToStrings : Fixed";
-
 				// Fixed file format: Simply get the strings at the required positions...
 				for (int i = 0; i < inf.getInputFields().length; i++)
 				{
 					TextFileInputField field = inf.getInputFields()[i];
-					debug = "convertLineToStrings : Fixed, field [" + field.getName() + "]";
 
 					int length = line.length();
 
@@ -357,10 +343,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			throw new KettleException("Error converting line : " + e.toString() + " in part: " + debug, e);
+			throw new KettleException("Error converting line : " + e.toString(), e);
 		}
-
-		debug = "end of convertLineToStrings";
 
 		return strings;
 	}
@@ -701,8 +685,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 		boolean retval = true;
 		boolean putrow = false;
 
-		debug = "start of readRowOfData";
-
 		if (first) // we just got started
 		{
             if (meta.isAcceptingFilenames())
@@ -739,7 +721,6 @@ public class TextFileInput extends BaseStep implements StepInterface
                 }
             }
 			handleMissingFiles();
-			debug = "first";
 
 			first = false;
 
@@ -752,7 +733,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 				return false;
 			}
 
-			debug = "first repeat fields";
 			// Count the number of repeat fields...
 			for (int i = 0; i < meta.getInputFields().length; i++)
 			{
@@ -769,7 +749,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 				// Read a number of lines...
 				for (int i = 0; i < repeats && !data.doneReading; i++)
 				{
-					debug = "get a new line of data";
 					String line = getLine(log, data.isr, meta.getFileFormat()); // Get one line of data;
 					if (line != null)
 					{
@@ -805,10 +784,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 		 */
 		while (data.lineBuffer.size() == 0)
 		{
-			debug = "empty buffer: open next file";
 			if (!openNextFile()) // Open fails: done processing!
 			{
-				debug = "empty buffer: close last file";
 				closeLastFile();
 				setOutputDone(); // signal end to receiver(s)
 				return false;
@@ -818,16 +795,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 		/* Take the first line available in the buffer & remove the line from
 		   the buffer
 		*/
-		debug = "take first line of buffer";
 		TextFileLine textLine = (TextFileLine) data.lineBuffer.get(0);
 
-		debug = "remove first line of buffer";
 		data.lineBuffer.remove(0);
 
 		if (meta.isLayoutPaged())
 		{
-			debug = "paged layout";
-
 			/* Different rules apply: on each page:
 			   a header
 			   a number of data lines
@@ -835,7 +808,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 			*/ 
 			if (!data.doneWithHeader && data.pageLinesRead == 0) // We are reading header lines
 			{
-				debug = "paged layout : header line " + data.headerLinesRead;
 				if (log.isRowLevel()) logRowlevel("P-HEADER (" + data.headerLinesRead + ") : " + textLine.line);
 				data.headerLinesRead++;
 				if (data.headerLinesRead >= meta.getNrHeaderLines())
@@ -846,7 +818,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 			else
 			// data lines or footer on a page
 			{
-				debug = "paged layout : data or footer";
 				if (data.pageLinesRead < meta.getNrLinesPerPage())
 				{
 					// See if we are dealing with wrapped lines:
@@ -864,7 +835,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 						}
 					}
 
-					debug = "paged layout : data line";
 					if (log.isRowLevel()) logRowlevel("P-DATA: " + textLine.line);
 					// Read a normal line on a page of data.
 					data.pageLinesRead++;
@@ -875,7 +845,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 				else
 				// done reading the data lines, skip the footer lines
 				{
-					debug = "paged layout : footer line";
 					if (meta.hasFooter() && data.footerLinesRead < meta.getNrFooterLines())
 					{
 						if (log.isRowLevel()) logRowlevel("P-FOOTER: " + textLine.line);
@@ -884,8 +853,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 					if (!meta.hasFooter() || data.footerLinesRead >= meta.getNrFooterLines())
 					{
-						debug = "paged layout : end of page: restart";
-
 						/* OK, we are done reading the footer lines, start again
 						   on 'next page' with the header
 						 */
@@ -901,11 +868,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 		else
 		// A normal data line, can also be a header or a footer line
 		{
-			debug = "normal";
-
 			if (!data.doneWithHeader) // We are reading header lines
 			{
-				debug = "normal : header line";
 				data.headerLinesRead++;
 				if (data.headerLinesRead >= meta.getNrHeaderLines())
 				{
@@ -914,14 +878,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				debug = "normal : data and footer";
 				/* IF we are done reading and we have a footer
 				   AND the number of lines in the buffer is smaller then the number of footer lines
 				   THEN we can remove the remaining rows from the buffer: they are all footer rows.
 				 */
 				if (data.doneReading && meta.hasFooter() && data.lineBuffer.size() < meta.getNrFooterLines())
 				{
-					debug = "normal : footer";
 					data.lineBuffer.clear();
 				}
 				else
@@ -941,7 +903,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 							textLine.line += extra;
 						}
 					}
-					debug = "normal : data";
 					if (data.filePlayList.isProcessingNeeded(textLine.file, textLine.lineNumber, AbstractFileErrorHandler.NO_PARTS))
 					{
 						r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten + 1,
@@ -962,12 +923,8 @@ public class TextFileInput extends BaseStep implements StepInterface
 			// See if the previous values need to be repeated!
 			if (data.nr_repeats > 0)
 			{
-				debug = "repeats";
-
 				if (data.previous_row == null) // First invocation...
 				{
-					debug = "init repeats";
-
 					data.previous_row = new Row();
 					for (int i = 0; i < meta.getInputFields().length; i++)
 					{
@@ -983,8 +940,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 				}
 				else
 				{
-					debug = "check repeats";
-
 					int repnr = 0;
 					for (int i = 0; i < meta.getInputFields().length; i++)
 					{
@@ -1017,8 +972,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 		if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic("linenr " + linesInput);
 
-		debug = "end of readRowOfData";
-
 		return retval;
 	}
 
@@ -1047,7 +1000,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 				if (from >= 0)
 				{
 					int to = from + filter.getFilterString().length();
-					debug = "verify filter : get substring(" + from + ", " + to + ") line length=" + line.length();
 					if (line.length() >= from && line.length() >= to)
 					{
 						String sub = line.substring(filter.getFilterPosition(), to);
@@ -1078,13 +1030,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 
 	private void handleMissingFiles() throws KettleException
 	{
-		debug = "Required files";
 		List nonExistantFiles = data.files.getNonExistantFiles();
 
 		if (nonExistantFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
-			log.logBasic(debug, "WARNING: Missing " + message);
+			log.logBasic("Required files", "WARNING: Missing " + message);
 			if (meta.isErrorIgnored()) for (Iterator iter = nonExistantFiles.iterator(); iter.hasNext();)
 			{
 				data.dataErrorLineHandler.handleNonExistantFile((File) iter.next());
@@ -1096,21 +1047,19 @@ public class TextFileInput extends BaseStep implements StepInterface
 		if (nonAccessibleFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
-			log.logBasic(debug, "WARNING: Not accessible " + message);
+			log.logBasic("Required files", "WARNING: Not accessible " + message);
 			if (meta.isErrorIgnored()) for (Iterator iter = nonAccessibleFiles.iterator(); iter.hasNext();)
 			{
 				data.dataErrorLineHandler.handleNonAccessibleFile((File) iter.next());
 			}
 			else throw new KettleException("Following required files are not accessible: " + message);
 		}
-		debug = "End of Required files";
 	}
 
 	private boolean closeLastFile()
 	{
 		try
 		{
-			debug = "closeLastFile: close";
 			// Close previous file!
 			if (data.filename != null)
 			{
@@ -1134,8 +1083,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 			return false;
 		}
 
-		debug = "closeLastFile: end.";
-
 		return !data.isLastFile;
 	}
 
@@ -1144,7 +1091,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 		try
 		{
 			lineNumberInFile = 0;
-			debug = "openNextFile : close last file";
 			if (!closeLastFile()) return false;
 
 			if (data.files.nrOfFiles() == 0) return false;
@@ -1159,7 +1105,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, data.file, getTransMeta().getName(), toString());
 			addResultFile(resultFile);
 
-			debug = "openNextFile : open file";
 			logBasic("Opening file: " + data.filename);
 
 			data.fr = new FileInputStream(data.file);
@@ -1190,8 +1135,6 @@ public class TextFileInput extends BaseStep implements StepInterface
 					data.isr = new InputStreamReader(new BufferedInputStream(data.fr));
 				}
 			}
-
-			debug = "openNextFile : set all kinds of parameters";
 
 			// Move file pointer ahead!
 			data.filenr++;
@@ -1275,7 +1218,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			logError("Couldn't open file #" + data.filenr + " : " + data.filename + " (" + debug + ") --> " + e.toString());
+			logError("Couldn't open file #" + data.filenr + " : " + data.filename + " --> " + e.toString());
 			stopAll();
 			setErrors(1);
 			return false;
@@ -1357,7 +1300,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			logError("Unexpected error in '" + debug + "' : " + e.toString());
+			logError("Unexpected error : " + e.toString());
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

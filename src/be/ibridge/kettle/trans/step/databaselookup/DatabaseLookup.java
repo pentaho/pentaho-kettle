@@ -61,15 +61,12 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		Row add;
 		boolean cache_now=false;		
 		
-		debug = "Start of lookupValues()"; //$NON-NLS-1$
 		if (first)
 		{
             first=false;
             
-			debug = "first row: start"; //$NON-NLS-1$
 			if (meta.isCached())
 			{
-				debug = "first row: cache allocate"; //$NON-NLS-1$
 				if (meta.getCacheSize()>0)
 				{
 					data.look=new Hashtable((int)(meta.getCacheSize()*1.5));
@@ -80,7 +77,6 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 				}
 			}
 
-			debug = "first row: set lookup statement"; //$NON-NLS-1$
 			data.db.setLookup(meta.getTablename(), meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(), meta.getOrderByClause(), meta.isFailingOnMultipleResults());
 			
 			// lookup the values!
@@ -88,7 +84,6 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			data.keynrs = new int[meta.getStreamKeyField1().length];
 			data.keynrs2= new int[meta.getStreamKeyField1().length];
 			
-			debug = "first row: get key fieldnrs"; //$NON-NLS-1$
 			for (int i=0;i<meta.getStreamKeyField1().length;i++)
 			{
 				data.keynrs[i]=row.searchValueIndex(meta.getStreamKeyField1()[i]);
@@ -111,7 +106,6 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			
 			data.nullif = new Value[meta.getReturnValueField().length];
 
-			debug = "first row: get value fieldnrs"; //$NON-NLS-1$
 			for (int i=0;i<meta.getReturnValueField().length;i++)
 			{
 				data.nullif[i] = new Value(meta.getReturnValueNewName()[i], meta.getReturnValueDefaultType()[i]);
@@ -152,7 +146,6 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		}
 		
 		lu = new Row();
-		debug = "Adding values to lookup row"; //$NON-NLS-1$
 		for (int i=0;i<meta.getStreamKeyField1().length;i++)
 		{
 			if (data.keynrs[i]>=0)
@@ -179,14 +172,11 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		{
 			if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow1")+meta.getStreamKeyField1().length+Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow2")+lu); //$NON-NLS-1$ //$NON-NLS-2$
             
-			debug = "setValuesLookup()"; //$NON-NLS-1$
 			data.db.setValuesLookup(lu);
-			debug = "getLookup()"; //$NON-NLS-1$
 			add=data.db.getLookup(meta.isFailingOnMultipleResults());
 			cache_now=true;
 		}
 				
-		debug = "add null values to result"; //$NON-NLS-1$
 		if (add==null) // nothing was found, unknown code: add default values
 		{
 			if (meta.isEatingRowOnLookupFailure())
@@ -214,7 +204,6 @@ public class DatabaseLookup extends BaseStep implements StepInterface
         	if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.FoundResultsAfterLookup")+add); //$NON-NLS-1$
         }
 
-		debug = "Store result in cache"; //$NON-NLS-1$
 		// Store in cache if we need to!
 		if (meta.isCached() && cache_now)
 		{
@@ -241,14 +230,11 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			}
 		} 
 	
-		debug = "Add values to resulting row..."; //$NON-NLS-1$
 		for (int i=0;i<add.size();i++)
 		{
 			row.addValue( add.getValue(i) );
 		}
 
-		debug = "end of lookupValues()"; //$NON-NLS-1$
-		
 		return true;
 	}
 	

@@ -142,7 +142,6 @@ public class CombinationLookup extends BaseStep implements StepInterface
 		{
 			determineTechKeyCreation();
 
-			debug="First: lookup keys etc";
 			first=false;
 
 			// Lookup values
@@ -186,14 +185,10 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				}
 			}
 
-			debug="First: setCombiLookup";
-
 			data.db.setCombiLookup(meta.getTablename(), meta.getKeyLookup(),
 								   meta.getTechnicalKeyField(), meta.useHash(),
 								   meta.getHashField() );
 		}
-
-		debug="Create lookup row lu";
 
 		Row lu = new Row();
 		for (int i=0;i<meta.getKeyField().length;i++)
@@ -201,7 +196,6 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			lu.addValue( row.getValue(data.keynrs[i]) ); // KEYi = ?
 		}
 
-		debug="Use hashcode?";
 		if (meta.useHash())
 		{
 			val_hash = new Value(meta.getHashField(), (long)lu.hashCode());
@@ -213,8 +207,6 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			lu.clear();
 		}
 
-		debug="Add values to lookup row lu";
-
 		for (int i=0;i<meta.getKeyField().length;i++)
 		{
 			Value parval = row.getValue(data.keynrs[i]);
@@ -222,22 +214,16 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			lu.addValue( parval ); // KEYi IS NULL or ? IS NULL
 		}
 
-		debug="Check the cache";
-
 		// Before doing the actual lookup in the database, see if it's not in the cache...
 		val_key = lookupInCache(lu);
 		if (val_key==null)
 		{
-			debug="Set lookup values";
 			data.db.setValuesLookup(lu);
-			debug="Get the row back";
 			Row add=data.db.getLookup();
 			linesInput++;
 
 			if (add==null) // The dimension entry was not found, we need to add it!
 			{
-				debug="New entry: calc autoinc/sequence/...";
-
 				// First try to use an AUTOINCREMENT field
 				boolean autoinc=false;
 				switch ( getTechKeyCreation() )
@@ -257,12 +243,8 @@ public class CombinationLookup extends BaseStep implements StepInterface
 						break;
 				}
 
-				debug="New entry: calc tkFieldName";
-
 				String tkFieldName = meta.getTechnicalKeyField();
 				if (autoinc) tkFieldName=null;
-
-				debug="New entry: combiInsert";
 
 				data.db.combiInsert( row, meta.getTablename(), tkFieldName,
 			                    autoinc,
@@ -278,21 +260,15 @@ public class CombinationLookup extends BaseStep implements StepInterface
 
 				log.logRowlevel(toString(), Messages.getString("CombinationLookup.Log.AddedDimensionEntry")+val_key); //$NON-NLS-1$
 
-				debug="New entry: Store in cache ";
-
 				// Also store it in our Hashtable...
 				storeInCache(lu, val_key);
 			}
 			else
 			{
-				debug="Found: stored in cache";
-
 				val_key = add.getValue(0); // Only one value possible here...
 				storeInCache(lu, val_key);
 			}
 		}
-
-		debug="Replace fields?";
 
 		// See if we need to replace the fields with the technical key
 		if (meta.replaceFields())
@@ -302,8 +278,6 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				row.removeValue(data.keynrs[i]); // safe because reverse sorted on index nr.
 			}
 		}
-
-		debug="add Technical Key";
 
 		// Add the technical key...
 		row.addValue( val_key );
@@ -390,7 +364,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("CombinationLookup.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("CombinationLookup.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

@@ -55,8 +55,6 @@ public class XMLInput extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		debug="start of processRow()";
-		
 		Row row = getRowFromXML();
 		if (row==null) 
 		{
@@ -76,15 +74,11 @@ public class XMLInput extends BaseStep implements StepInterface
             return false;
         }
 
-        debug="end of processRow()";
-        
 		return true;
 	}
 		
 	private Row getRowFromXML() throws KettleValueException
     {
-        debug="start of getRowFromXML()";
-
         if (data.itemPosition>=data.itemCount) // finished reading the file, read the next file!
         {
             data.filename=null;
@@ -99,16 +93,11 @@ public class XMLInput extends BaseStep implements StepInterface
             }
         }
         
-        debug="getRowFromXML: buildEmptyRow()";
-
         Row row = buildEmptyRow();
         
         // Get the item in the XML file...
         
         // First get the appropriate node
-
-        debug="getRowFromXML: getSubNodeByNr";
-
         
         Node itemNode;
         if (meta.getInputPosition().length>1)
@@ -121,8 +110,6 @@ public class XMLInput extends BaseStep implements StepInterface
         }
         data.itemPosition++;
 
-        debug="getRowFromXML: read from the selected node";
-
         // Read from the Node...
         for (int i=0;i<meta.getInputFields().length;i++)
         {
@@ -130,14 +117,11 @@ public class XMLInput extends BaseStep implements StepInterface
             
             XMLInputField xmlInputField = meta.getInputFields()[i];
 
-            if (log.isDebug()) debug="getRowFromXML: read from the selected node: field #"+i+" : "+xmlInputField.getName()+" - "+xmlInputField.getFieldPositionsCode();
-
             String value = null;
             
             for (int p=0; (value==null) && node!=null && p<xmlInputField.getFieldPosition().length;p++)
             {
                 XMLInputFieldPosition pos = xmlInputField.getFieldPosition()[p];
-                if (log.isDebug()) debug="getRowFromXML: read from the selected node: field #"+i+" : position #"+p+": "+pos.toString();
 
                 switch(pos.getType())
                 {
@@ -309,8 +293,6 @@ public class XMLInput extends BaseStep implements StepInterface
         NodeList nodeList = itemNode.getChildNodes();
         for (int i=0;i<nodeList.getLength();i++) itemNode.removeChild(nodeList.item(i));
         
-        
-        debug="end of getRowFromXML()";
         return row;
     }
 
@@ -431,7 +413,7 @@ public class XMLInput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError("Unexpected error : "+e.toString());
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

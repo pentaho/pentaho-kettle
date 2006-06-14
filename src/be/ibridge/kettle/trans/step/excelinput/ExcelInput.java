@@ -69,7 +69,6 @@ public class ExcelInput extends BaseStep implements StepInterface
 
 	private Row fillRow(Row baserow, int startcolumn, ExcelInputRow excelInputRow) throws KettleException
 	{
-		debug = "fillRow start";
 		Row r = new Row(baserow);
 
 		// Keep track whether or not we handled an error for this line yet.
@@ -78,14 +77,11 @@ public class ExcelInput extends BaseStep implements StepInterface
 		// Set values in the row...
 		for (int i = startcolumn; i < excelInputRow.cells.length && i - startcolumn < r.size(); i++)
 		{
-			debug = "get cell #" + i;
 			Cell cell = excelInputRow.cells[i];
 
 			int rowcolumn = i - startcolumn;
-			debug = "Rowcolumn = " + rowcolumn;
 
 			Value v = r.getValue(rowcolumn);
-			debug = "Value v = " + v;
 
 			try
 			{
@@ -94,7 +90,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 			catch (KettleException ex)
 			{
 				if (!meta.isErrorIgnored()) throw ex;
-				logBasic("Warning processing [" + debug + "] from Excel file [" + data.filename + "] : " + ex.getMessage());
+				logBasic("Warning processing [" + v + "] from Excel file [" + data.filename + "] : " + ex.getMessage());
 				if (!errorHandled)
 				{
 					data.errorHandler.handleLineError(excelInputRow.rownr, excelInputRow.sheetName);
@@ -174,7 +170,6 @@ public class ExcelInput extends BaseStep implements StepInterface
 					// Use case: we find a String: convert it using the supplied format to the desired type...
 					//
 					case Value.VALUE_TYPE_STRING:
-						debug = "Convert string to date/number";
 						switch (field.getType())
 						{
 						case Value.VALUE_TYPE_DATE:
@@ -193,7 +188,6 @@ public class ExcelInput extends BaseStep implements StepInterface
 					//
 					case Value.VALUE_TYPE_NUMBER:
 					case Value.VALUE_TYPE_INTEGER:
-						debug = "Convert number to string";
 						switch (field.getType())
 						{
 						case Value.VALUE_TYPE_STRING:
@@ -210,7 +204,6 @@ public class ExcelInput extends BaseStep implements StepInterface
 					// Use case: we find a date: convert it using the supplied format to String...
 					//
 					case Value.VALUE_TYPE_DATE:
-						debug = "Convert date to string";
 						switch (field.getType())
 						{
 						case Value.VALUE_TYPE_STRING:
@@ -229,7 +222,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 			catch (KettleException ex)
 			{
 				if (!meta.isErrorIgnored()) throw ex;
-				logBasic("Warning processing [" + debug + "] from Excel file [" + data.filename + "] : " + ex.toString());
+				logBasic("Warning processing [" + v + "] from Excel file [" + data.filename + "] : " + ex.toString());
 				if (!errorHandled) // check if we didn't log an error already for this one.
 				{
 					data.errorHandler.handleLineError(excelInputRow.rownr, excelInputRow.sheetName);
@@ -252,8 +245,6 @@ public class ExcelInput extends BaseStep implements StepInterface
 			v.setLength(meta.getField()[rowcolumn].getLength(), meta.getField()[rowcolumn].getPrecision());
 		}
 
-		debug = "filename";
-
 		// Do we need to include the filename?
 		if (meta.getFileField() != null && meta.getFileField().length() > 0)
 		{
@@ -261,8 +252,6 @@ public class ExcelInput extends BaseStep implements StepInterface
 			value.setLength(data.maxfilelength);
 			r.addValue(value);
 		}
-
-		debug = "sheetname";
 
 		// Do we need to include the sheetname?
 		if (meta.getSheetField() != null && meta.getSheetField().length() > 0)
@@ -272,8 +261,6 @@ public class ExcelInput extends BaseStep implements StepInterface
 			r.addValue(value);
 		}
 
-		debug = "rownumber";
-
 		// Do we need to include the rownumber?
 		if (meta.getRowNumberField() != null && meta.getRowNumberField().length() > 0)
 		{
@@ -281,15 +268,11 @@ public class ExcelInput extends BaseStep implements StepInterface
 			r.addValue(value);
 		}
 
-		debug = "end of fillRow";
-
 		return r;
 	}
 
 	private void checkType(Cell cell, Value v) throws KettleException
 	{
-		debug="Check type of cell";
-		
 		if (!meta.isStrictTypes()) return;
 		CellType cellType = cell.getType();
 		if (cellType.equals(CellType.BOOLEAN))
@@ -417,13 +400,12 @@ public class ExcelInput extends BaseStep implements StepInterface
 
 	private void handleMissingFiles() throws KettleException
 	{
-		debug = "Required files";
 		List nonExistantFiles = data.files.getNonExistantFiles();
 
 		if (nonExistantFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonExistantFiles);
-			log.logBasic(debug, "WARNING: Missing " + message);
+			log.logBasic("Required files", "WARNING: Missing " + message);
 			if (meta.isErrorIgnored())
 				for (Iterator iter = nonExistantFiles.iterator(); iter.hasNext();)
 				{
@@ -437,7 +419,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		if (nonAccessibleFiles.size() != 0)
 		{
 			String message = FileInputList.getRequiredFilesDescription(nonAccessibleFiles);
-			log.logBasic(debug, "WARNING: Not accessible " + message);
+			log.logBasic("Required files", "WARNING: Not accessible " + message);
 			if (meta.isErrorIgnored())
 				for (Iterator iter = nonAccessibleFiles.iterator(); iter.hasNext();)
 				{
@@ -446,12 +428,10 @@ public class ExcelInput extends BaseStep implements StepInterface
 			else
 				throw new KettleException("Following required files are not accessible: " + message);
 		}
-		debug = "End of Required files";
 	}
 
 	public Row getRowFromWorkbooks()
 	{
-		debug = "processRow()";
 		// This procedure outputs a single Excel data row on the destination
 		// rowsets...
 
@@ -471,7 +451,6 @@ public class ExcelInput extends BaseStep implements StepInterface
 				resultFile.setComment("File was read by an Excel input step");
 				addResultFile(resultFile);
 				
-				debug = "open workbook #" + data.filenr + " : " + data.filename;
 				if (log.isDetailed()) logDetailed("Opening workbook #" + data.filenr + " : " + data.filename);
 				data.workbook = Workbook.getWorkbook(data.file);
 				data.errorHandler.handleFile(data.file);
@@ -483,8 +462,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 			boolean nextsheet = false;
 
 			// What sheet were we handling?
-			debug = "Get sheet #" + data.filenr + "." + data.sheetnr;
-			if (log.isDetailed()) logDetailed(debug);
+			if (log.isDetailed()) logDetailed("Get sheet #" + data.filenr + "." + data.sheetnr);
 			String sheetName = meta.getSheetName()[data.sheetnr];
 			Sheet sheet = data.workbook.getSheet(sheetName);
 			if (sheet != null)
@@ -499,12 +477,9 @@ public class ExcelInput extends BaseStep implements StepInterface
 					{
 						data.rownr++;
 					}
-
-					debug = "startrow = " + data.rownr;
 				}
 				// Start at the specified column
 				data.colnr = meta.getStartColumn()[data.sheetnr];
-				debug = "startcol = " + data.colnr;
 
 				// Build a new row and fill in the data from the sheet...
 				try
@@ -519,8 +494,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 					}
 					else
 					{
-						debug = "Get line #" + lineNr + " from sheet #" + data.filenr + "." + data.sheetnr;
-						if (log.isRowLevel()) logRowlevel(debug);
+						if (log.isRowLevel()) logRowlevel("Get line #" + lineNr + " from sheet #" + data.filenr + "." + data.sheetnr);
 
 						if (log.isRowLevel()) logRowlevel("Read line with " + line.length + " cells");
 						ExcelInputRow excelInputRow = new ExcelInputRow(sheet.getName(), lineNr, line);
@@ -541,7 +515,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 				}
 				catch (ArrayIndexOutOfBoundsException e)
 				{
-					if (log.isRowLevel()) logRowlevel("Out of index error: move to next sheet! (" + debug + ")");
+					if (log.isRowLevel()) logRowlevel("Out of index error: move to next sheet!");
 					// We tried to read below the last line in the sheet.
 					// Go to the next sheet...
 					nextsheet = true;
@@ -573,7 +547,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			logError("Error processing row in [" + debug + "] from Excel file [" + data.filename + "] : " + e.toString());
+			logError("Error processing row from Excel file [" + data.filename + "] : " + e.toString());
 			setErrors(1);
 			stopAll();
 			return null;
@@ -699,7 +673,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			logError("Unexpected error in '" + debug + "' : " + e.toString());
+			logError("Unexpected error : " + e.toString());
             logError(Const.getStackTracker(e));
 			setErrors(1);
 			stopAll();

@@ -56,11 +56,8 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		Row lu;
 		Row add;
 	
-		debug="Start of lookupValues"; //$NON-NLS-1$
-			
 		if (first)
 		{
-			debug="first run, initialize"; //$NON-NLS-1$
 			first=false;
 			
 			data.db.setLookup(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), meta.getUpdateLookup(), null, null);
@@ -87,7 +84,6 @@ public class InsertUpdate extends BaseStep implements StepInterface
             	data.db.prepareUpdate(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition(), (String[])updateColumns.toArray(new String[]{}));
             }
 			
-			debug="first run, lookup values, field positions, etc."; //$NON-NLS-1$
 			// lookup the values!
 			if (log.isDetailed()) logDetailed(Messages.getString("InsertUpdate.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
 			data.keynrs  = new int[meta.getKeyStream().length];
@@ -114,7 +110,6 @@ public class InsertUpdate extends BaseStep implements StepInterface
 			}
 			// Cache the position of the compare fields in Row row
 			//
-			debug="first run, lookup compare fields, positions, etc."; //$NON-NLS-1$
 			data.valuenrs = new int[meta.getUpdateLookup().length];
 			for (int i=0;i<meta.getUpdateLookup().length;i++)
 			{
@@ -140,11 +135,9 @@ public class InsertUpdate extends BaseStep implements StepInterface
 			}
 		}
 		
-		debug="setValues()"; //$NON-NLS-1$
 		data.db.setValuesLookup(lu);
 		
 		if (log.isDebug()) logDebug(Messages.getString("InsertUpdate.Log.ValuesSetForLookup")+lu.toString()); //$NON-NLS-1$
-		debug="getLookup()"; //$NON-NLS-1$
 		add=data.db.getLookup();  // Got back the complete row!
 		linesInput++;
 		
@@ -157,9 +150,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 			 */
 			if (log.isRowLevel()) logRowlevel(Messages.getString("InsertUpdate.InsertRow")+row.toString()); //$NON-NLS-1$
 
-			debug="setValuesInsert()"; //$NON-NLS-1$
-            
-            // The values to insert are those in the update section (all fields should be specified)
+			// The values to insert are those in the update section (all fields should be specified)
             // For the others, we have no definite mapping!
             //
             Row ins = new Row();
@@ -172,7 +163,6 @@ public class InsertUpdate extends BaseStep implements StepInterface
 			data.db.setValuesInsert(ins);
             
 			// Insert the row
-            debug="insertRow()"; //$NON-NLS-1$
             data.db.insertRow();
             
 			linesOutput++;
@@ -188,7 +178,6 @@ public class InsertUpdate extends BaseStep implements StepInterface
 				 * UPDATE row or do nothing?
 				 *
 				 */
-				debug="compare for update"; //$NON-NLS-1$
 				boolean update = false;
 				int j = 0;
 				for (int i=0;i<data.valuenrs.length;i++)
@@ -206,9 +195,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 				if (update)
 				{
 					if (log.isRowLevel()) logRowlevel(Messages.getString("InsertUpdate.Log.UpdateRow")+lu.toString()); //$NON-NLS-1$
-					debug="setValuesUpdate()"; //$NON-NLS-1$
 					data.db.setValuesUpdate(lu);
-					debug="updateRow()"; //$NON-NLS-1$
 					data.db.updateRow();
 					linesUpdated++;
 				}
@@ -315,7 +302,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("InsertUpdate.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("InsertUpdate.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

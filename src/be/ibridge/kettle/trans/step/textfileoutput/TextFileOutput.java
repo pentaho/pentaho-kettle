@@ -110,12 +110,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
 	private boolean writeRowToFile(Row r)
 	{
-		debug="row to file";
 		Value v;
 		
 		try
 		{	
-			debug="Start";
 			if (first)
 			{
 				first=false;
@@ -129,7 +127,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				}
 				
 				data.fieldnrs=new int[meta.getOutputFields().length];
-				debug="Get fieldnrs... field_name.length="+meta.getOutputFields().length;
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
 					data.fieldnrs[i]=r.searchValueIndex(meta.getOutputFields()[i].getName());
@@ -148,17 +145,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				/*
 				 * Write all values in stream to text file.
 				 */
-				debug="Loop fields 0.."+r.size();
-	
 				for (int i=0;i<r.size();i++)
 				{
-					debug="start for loop";
 					if (i>0) data.writer.write(meta.getSeparator().toCharArray());
-	
-					debug="Get value "+i+" of "+r.size();
 					v=r.getValue(i);
-	
-					debug="Write field to output stream: ["+v.toString()+"] of type ["+v.toStringMeta()+"]";
 					writeField(v, -1);
 				}
                 data.writer.write(meta.getNewline().toCharArray());
@@ -168,14 +158,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				/*
 				 * Only write the fields specified!
 				 */
-				debug="Loop fields 0.."+meta.getOutputFields().length;
-	
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
-					debug="start for loop";
 					if (i>0) data.writer.write(meta.getSeparator().toCharArray());
 	
-					debug="Get value "+data.fieldnrs[i]+" of row ";
 					v=r.getValue(data.fieldnrs[i]);
 					v.setLength(meta.getOutputFields()[i].getLength(), meta.getOutputFields()[i].getPrecision());
 					
@@ -186,7 +172,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Error writing line in ["+debug+"] :"+e.toString());
+			logError("Error writing line :"+e.toString());
 			return false;
 		}
 
@@ -209,7 +195,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
         else
 		if (v.isNumeric())
 		{
-			debug="Number is formatted?";
 			if (idx>=0 && field!=null && field.getFormat()!=null)
 			{
 				if (v.isNull())
@@ -218,8 +203,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				}
 				else
 				{
-					debug="Formatted number pattern, field="+v.getName()+", idx="+idx;
-	
 					data.df.applyPattern(field.getFormat());
 					if (field.getDecimalSymbol()!=null && field.getDecimalSymbol().length()>0)  data.dfs.setDecimalSeparator( field.getDecimalSymbol().charAt(0) );
 					if (field.getGroupingSymbol()!=null && field.getGroupingSymbol().length()>0)    data.dfs.setGroupingSeparator( field.getGroupingSymbol().charAt(0) );
@@ -231,7 +214,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				debug="Not formatted number";
 				if (v.isNull()) 
 				{
 					if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
@@ -245,11 +227,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		else
 		if (v.isDate())
 		{
-			debug="Date is formatted?";
 			if (idx>=0 && field!=null && field.getFormat()!=null && v.getDate()!=null)
 			{
-				debug="Formatted date pattern, field="+v.getName()+", idx="+idx;
-							
 				data.daf.applyPattern( field.getFormat() );
 				data.daf.setDateFormatSymbols(data.dafs);
 				retval= data.daf.format(v.getDate());
@@ -269,7 +248,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		else
 		if (v.isString())
 		{
-			debug="String length="+v.getLength()+", value="+v.toString();
 			if (v.isNull() || v.getString()==null) 
 			{
 				if (idx>=0 && field!=null && field.getNullString()!=null) 
@@ -304,7 +282,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		}
 		else // Boolean
 		{
-			debug="Boolean: "+v.getBoolean();
 			if (v.isNull()) 
 			{
 				if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
@@ -342,8 +319,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			retval=Const.rightPad(new StringBuffer(retval), length+precision);
 		}
 		
-        debug="end of formatField";
-		return retval;
+        return retval;
 	}
 	
 	private boolean writeField(Value v, int idx)
@@ -352,12 +328,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		{
 			String str = formatField(v, idx);
             if (str!=null) data.writer.write(str.toCharArray());
-
-            debug="end of writeField";
 		}
 		catch(Exception e)
 		{
-			logError("Error writing line in ["+debug+"] :"+e.toString());
+			logError("Error writing line :"+e.toString());
 			return false;
 		}
 		return true;
@@ -365,7 +339,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	
 	private boolean writeHeader()
 	{
-		debug="header";
 		boolean retval=false;
 		Row r=data.headerrow;
 		
@@ -536,12 +509,11 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			
 			if (openNewFile())
 			{
-				debug="start";
 				return true;
 			}
 			else
 			{
-				logError("Couldn't open file "+meta.getFileName()+" ["+debug+"]");
+				logError("Couldn't open file "+meta.getFileName());
 				setErrors(1L);
 				stopAll();
 			}
@@ -570,7 +542,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError("Unexpected error : "+e.toString());
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

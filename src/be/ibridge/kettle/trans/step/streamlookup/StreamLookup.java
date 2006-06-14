@@ -158,11 +158,8 @@ public class StreamLookup extends BaseStep implements StepInterface
 		Row lu=new Row();
 		Row add=null;		
 
-		debug = "Start of lookupValues()"; //$NON-NLS-1$
-
 		if (first)
 		{
-			debug = "First part"; //$NON-NLS-1$
 			first=false;
 			
 			// read the lookup values!
@@ -188,7 +185,6 @@ public class StreamLookup extends BaseStep implements StepInterface
 			// Handle the NULL values (not found...)
 			handleNullIf();
             
-			debug = "first: do lookup"; //$NON-NLS-1$
 			try
 			{
 				if (meta.getKeystream().length>0)
@@ -212,7 +208,6 @@ public class StreamLookup extends BaseStep implements StepInterface
 		if (stopped) return false;
 		
 		// Copy value references to lookup table.
-		debug = "Copy value references to lookup table"; //$NON-NLS-1$
 		for (int i=0;i<meta.getKeystream().length;i++) 
         {
             int valueNr = data.keynrs[i];
@@ -220,10 +215,7 @@ public class StreamLookup extends BaseStep implements StepInterface
             lu.addValue( value );
         }
 
-        debug="start lookupValues"; //$NON-NLS-1$
-        
         // Handle conflicting types (Number-Integer-String conversion to lookup type in hashtable)
-        if (log.isDebug()) debug = "lookup size = "+lu.size(); //$NON-NLS-1$
         if (data.keyTypes!=null)
         {
             for (int i=0;i<lu.size();i++)
@@ -242,7 +234,6 @@ public class StreamLookup extends BaseStep implements StepInterface
         
 		try
 		{
-			debug = "do lookup"; //$NON-NLS-1$
 			if (meta.getKeystream().length>0)
 			{
 				add=(Row)data.look.get(lu);
@@ -261,7 +252,6 @@ public class StreamLookup extends BaseStep implements StepInterface
 		
 		if (add==null) // nothing was found, unknown code: add null-values
 		{
-			debug = "add null values"; //$NON-NLS-1$
 			add=new Row();
 			for (int i=0;i<meta.getValue().length;i++)
 			{
@@ -269,13 +259,11 @@ public class StreamLookup extends BaseStep implements StepInterface
 			}
 		} 
 		
-		debug = "add returned values"; //$NON-NLS-1$
 		try
 		{
     		for (int i=0;i<add.size();i++)
     		{
     			Value v = add.getValue(i);
-    		    if (log.isDebug()) debug = "add returned value #"+i+" : "+v.toString()+" ("+v.toStringMeta()+")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
     			//v.setName(info.valuename[i]);
     		    
     			if (v.getType() != meta.getValueDefaultType()[i])
@@ -294,8 +282,6 @@ public class StreamLookup extends BaseStep implements StepInterface
 		    throw new RuntimeException(e);
 		}
 	
-		debug = "Finished lookupValues"; //$NON-NLS-1$
-
 		return true;
 	}
 	
@@ -374,7 +360,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("StreamLookup.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("StreamLookup.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

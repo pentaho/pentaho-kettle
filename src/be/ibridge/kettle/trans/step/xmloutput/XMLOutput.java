@@ -104,18 +104,15 @@ public class XMLOutput extends BaseStep implements StepInterface
 
 	private boolean writeRowToFile(Row r)
 	{
-		debug="row to file";
 		Value v;
 		
 		try
 		{	
-			debug="Start";
 			if (first)
 			{
 				first=false;
 				
 				data.fieldnrs=new int[meta.getOutputFields().length];
-				debug="Get fieldnrs... field_name.length="+meta.getOutputFields().length;
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
 					data.fieldnrs[i]=r.searchValueIndex(meta.getOutputFields()[i].getFieldName());
@@ -138,20 +135,13 @@ public class XMLOutput extends BaseStep implements StepInterface
                 // OK, write a new row to the XML file:
                 data.writer.write((" <"+meta.getRepeatElement()+">").toCharArray());
                 
-				debug="Loop fields 0.."+r.size();
-	
 				for (int i=0;i<r.size();i++)
 				{
-					debug="start for loop";
 					if (i>0) data.writer.write(' '); // put a space between the XML elements of the row.
 	
-					debug="Get value "+i+" of "+r.size();
 					v=r.getValue(i);
 	
-					debug="Write field to output stream: ["+v.toString()+"] of type ["+v.toStringMeta()+"]";
 					writeField(v, -1, v.getName());
-                    
-                    if (log.isDebug()) debug="Finished writing field #"+i+" ["+v+"/"+v.toStringMeta()+"] of row nr "+linesInput;
 				}
 			}
 			else
@@ -163,16 +153,12 @@ public class XMLOutput extends BaseStep implements StepInterface
                 // Write a new row to the XML file:
                 data.writer.write((" <"+meta.getRepeatElement()+">").toCharArray());
 
-				debug="Loop fields 0.."+meta.getOutputFields().length;
-	
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
                     XMLField outputField = meta.getOutputFields()[i];
                     
-					debug="start for loop";
 					if (i>0) data.writer.write(' '); // a space between elements
 	
-					debug="Get value "+data.fieldnrs[i]+" of row ";
 					v=r.getValue(data.fieldnrs[i]);
                     
 					v.setLength(outputField.getLength(), outputField.getPrecision());
@@ -187,19 +173,15 @@ public class XMLOutput extends BaseStep implements StepInterface
                         element=v.getName();
                     }
 					writeField(v, i, element);
-                    
-                    if (log.isDebug()) debug="Finished writing field #"+i+" ["+v+"/"+v.toStringMeta()+"] of row nr "+linesInput;
 				}
 			}
 
             data.writer.write((" </"+meta.getRepeatElement()+">").toCharArray());
             data.writer.write(Const.CR.toCharArray());
-
-            if (log.isDebug()) debug="Finished writing row #"+linesInput;
 		}
 		catch(Exception e)
 		{
-			logError("Error writing XML row in ["+debug+"] :"+e.toString()+Const.CR+"Row: "+r);
+			logError("Error writing XML row :"+e.toString()+Const.CR+"Row: "+r);
 			return false;
 		}
 
@@ -222,19 +204,14 @@ public class XMLOutput extends BaseStep implements StepInterface
         else
 		if (v.isNumeric())
 		{
-			debug="Number is formatted?";
 			if (idx>=0 && field!=null && field.getFormat()!=null)
 			{
-                debug="Number formatted!";
 				if (v.isNull())
 				{
-                    debug="Number null";
 					if (field.getNullString()!=null) retval=field.getNullString();
 				}
 				else
 				{
-					debug="Formatted number pattern, field="+v.getName()+", idx="+idx;
-	
 					data.df.applyPattern(field.getFormat());
 					if (field.getDecimalSymbol()!=null && field.getDecimalSymbol().length()>0)  data.dfs.setDecimalSeparator( field.getDecimalSymbol().charAt(0) );
 					if (field.getGroupingSymbol()!=null && field.getGroupingSymbol().length()>0)    data.dfs.setGroupingSeparator( field.getGroupingSymbol().charAt(0) );
@@ -246,7 +223,6 @@ public class XMLOutput extends BaseStep implements StepInterface
 			}
 			else
 			{
-				debug="Not formatted number";
 				if (v.isNull()) 
 				{
 					if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
@@ -260,26 +236,20 @@ public class XMLOutput extends BaseStep implements StepInterface
 		else
 		if (v.isDate())
 		{
-			debug="Date is formatted?";
 			if (idx>=0 && field!=null && field.getFormat()!=null && v.getDate()!=null)
 			{
-				debug="Formatted date pattern, field="+v.getName()+", idx="+idx;
-							
 				data.daf.applyPattern( field.getFormat() );
 				data.daf.setDateFormatSymbols(data.dafs);
 				retval= data.daf.format(v.getDate());
 			}
 			else
 			{
-                debug="Date is not formatted";
 				if (v.isNull() || v.getDate()==null) 
 				{
-                    if (log.isDebug()) debug="nulliff date (field==null? "+(field==null)+", idx="+idx+")";
 					if (idx>=0 && field!=null && field.getNullString()!=null)
                     {
                         retval=field.getNullString();
                     }
-                    debug="nulliff date finished";
 				}
 				else
 				{
@@ -290,7 +260,6 @@ public class XMLOutput extends BaseStep implements StepInterface
 		else
 		if (v.isString())
 		{
-			debug="String length="+v.getLength()+", value="+v.toString();
 			if (v.isNull() || v.getString()==null) 
 			{
 				if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
@@ -302,7 +271,6 @@ public class XMLOutput extends BaseStep implements StepInterface
 		}
 		else // Boolean
 		{
-			debug="Boolean: "+v.getBoolean();
 			if (v.isNull()) 
 			{
 				if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
@@ -313,8 +281,6 @@ public class XMLOutput extends BaseStep implements StepInterface
 			}
 		}
         
-        debug="End of formatField";
-		
 		return retval;
 	}
 	
@@ -324,12 +290,10 @@ public class XMLOutput extends BaseStep implements StepInterface
 		{
             String str = XMLHandler.addTagValue( element, formatField(v, idx), false);
             if (str!=null) data.writer.write(str.toCharArray());
-            
-            debug="End of writeField";
 		}
 		catch(Exception e)
 		{
-			throw new KettleStepException("Error writing line in ["+debug+"] :", e);
+			throw new KettleStepException("Error writing line :", e);
 		}
 	}
 	
@@ -436,12 +400,11 @@ public class XMLOutput extends BaseStep implements StepInterface
 			
 			if (openNewFile())
 			{
-				debug="start";
 				return true;
 			}
 			else
 			{
-				logError("Couldn't open file "+meta.getFileName()+" ["+debug+"]");
+				logError("Couldn't open file "+meta.getFileName());
 				setErrors(1L);
 				stopAll();
 			}
@@ -470,7 +433,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError("Unexpected error : "+e.toString());
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

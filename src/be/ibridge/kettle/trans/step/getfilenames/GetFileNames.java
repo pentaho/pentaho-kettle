@@ -134,7 +134,6 @@ public class GetFileNames extends BaseStep implements StepInterface
 
 	private void handleMissingFiles() throws KettleException
 	{
-		debug = "Required files";
 		List nonExistantFiles = data.files.getNonExistantFiles();
 
 		if (nonExistantFiles.size() != 0)
@@ -151,7 +150,6 @@ public class GetFileNames extends BaseStep implements StepInterface
 			logBasic("WARNING: Not accessible " + message);
 			throw new KettleException("Following required files are not accessible: " + message);
 		}
-		debug = "End of Required files";
 	}
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
@@ -200,7 +198,7 @@ public class GetFileNames extends BaseStep implements StepInterface
 		}
 		catch (Exception e)
 		{
-			logError("Unexpected error in '" + debug + "' : " + e.toString());
+			logError("Unexpected error : " + e.toString());
             logError(Const.getStackTracker(e));
 			setErrors(1);
 			stopAll();

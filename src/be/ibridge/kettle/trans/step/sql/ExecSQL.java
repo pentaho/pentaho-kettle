@@ -91,14 +91,10 @@ public class ExecSQL extends BaseStep implements StepInterface
         meta=(ExecSQLMeta)smi;
         data=(ExecSQLData)sdi;
 
-        debug = "execute SQL start";         //$NON-NLS-1$
-
         Row row = null;
         
         if (!meta.isExecutedEachInputRow())
         {
-            debug = "exec once: return result";         //$NON-NLS-1$
-
             row = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField()); 
             putRow(row);
             setOutputDone(); // Stop processing, this is all we do!
@@ -119,7 +115,6 @@ public class ExecSQL extends BaseStep implements StepInterface
 		{
             first=false;
             
-            debug = "Find the indexes of the arguments";         //$NON-NLS-1$
             // Find the indexes of the arguments
             data.argumentIndexes = new int[meta.getArguments().length];
             for (int i=0;i<meta.getArguments().length;i++)
@@ -132,7 +127,6 @@ public class ExecSQL extends BaseStep implements StepInterface
                 }
             }
             
-            debug = "Find the locations of the question marks in the String...";         //$NON-NLS-1$
             // Find the locations of the question marks in the String...
             // We replace the question marks with the values...
             // We ignore quotes etc. to make inserts easier...
@@ -146,7 +140,6 @@ public class ExecSQL extends BaseStep implements StepInterface
             }
 		}
 
-        debug = "Replace the values in the SQL string...";         //$NON-NLS-1$
         // Replace the values in the SQL string...
 		for (int i=0;i<data.markerPositions.size();i++)
         {
@@ -155,11 +148,9 @@ public class ExecSQL extends BaseStep implements StepInterface
             sql.replace(pos, pos+1, value.getString()); // replace the '?' with the String in the row.
         }
 
-        if (log.isDebug()) debug = "Execute sql: "+sql;         //$NON-NLS-1$
         if (log.isRowLevel()) logRowlevel(Messages.getString("ExecSQL.Log.ExecutingSQLScript")+Const.CR+sql); //$NON-NLS-1$
         data.result = data.db.execStatements(sql.toString());
 
-        debug = "Get result";         //$NON-NLS-1$
         Row add = getResultRow(data.result, meta.getUpdateField(), meta.getInsertField(), meta.getDeleteField(), meta.getReadField());
         row.addRow(add);
         
@@ -243,7 +234,7 @@ public class ExecSQL extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("ExecSQL.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("ExecSQL.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

@@ -61,8 +61,6 @@ public class GroupBy extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		debug="processRow"; //$NON-NLS-1$
-		
 		Row r=getRow();    // get row!
 		if (r==null)  // no more input to be expected...
 		{
@@ -195,8 +193,6 @@ public class GroupBy extends BaseStep implements StepInterface
 	// Is the row r of the same group as previous?
 	private boolean sameGroup(Row previous, Row r)
 	{
-		debug="sameGroup"; //$NON-NLS-1$
-		
 		for (int i=0;i<data.groupnrs.length;i++)
 		{
 			Value prev = previous.getValue(data.groupnrs[i]);
@@ -211,17 +207,13 @@ public class GroupBy extends BaseStep implements StepInterface
 	// Calculate the aggregates in the row...
 	private void calcAggregate(Row r)
 	{
-		debug="calcAggregate start"; //$NON-NLS-1$
-		
 		for (int i=0;i<data.subjectnrs.length;i++)
 		{
-			debug="calcAggregate start loop"; //$NON-NLS-1$
 			Value subj = r.getValue(data.subjectnrs[i]);
 			Value value = data.agg.getValue(i);
 			
 			//System.out.println("  calcAggregate value, i="+i+", agg.size()="+agg.size()+", subj="+subj+", value="+value);
 			
-			debug="calcAggregate switch"; //$NON-NLS-1$
 			switch(meta.getAggregateType()[i])
 			{
 				case GroupByMeta.TYPE_GROUP_SUM            :
@@ -250,14 +242,11 @@ public class GroupBy extends BaseStep implements StepInterface
 				default: break;
 			}
 		}
-		debug="calcAggregate end"; //$NON-NLS-1$
 	}
 
 	// Initialize a group..
 	private void newAggregate(Row r)
 	{
-		debug="newAggregate"; //$NON-NLS-1$
-		
 		// Put all the counters at 0
 		for (int i=0;i<data.counts.length;i++) data.counts[i]=0;
 		
@@ -302,20 +291,15 @@ public class GroupBy extends BaseStep implements StepInterface
 	
 	private Row buildResult(Row r) throws KettleValueException
 	{
-		debug="buildResult"; //$NON-NLS-1$
-		
 		Row result = new Row();
-		debug="buildResult 1"; //$NON-NLS-1$
 		for (int i=0;i<data.groupnrs.length;i++)
 		{
 			Value gr = r.getValue(data.groupnrs[i]);
 			result.addValue(gr);
 		}
-		debug="buildResult 2"; //$NON-NLS-1$
-        
+		
         result.addRow(getAggregateResult());
         
-		debug="buildResult end"; //$NON-NLS-1$
 		return result;
 	}
     
@@ -495,7 +479,7 @@ public class GroupBy extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("GroupBy.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("GroupBy.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

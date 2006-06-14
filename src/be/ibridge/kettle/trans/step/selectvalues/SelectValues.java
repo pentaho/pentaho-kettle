@@ -56,11 +56,8 @@ public class SelectValues extends BaseStep implements StepInterface
 	*/
 	private synchronized boolean selectValues(Row row)
 	{
-		debug="Start of selectValues"; //$NON-NLS-1$
-		
 		if (data.firstselect)
 		{
-			debug="Init (first)"; //$NON-NLS-1$
 			data.firstselect=false;
 
 			data.fieldnrs=new int[meta.getSelectName().length];
@@ -100,12 +97,9 @@ public class SelectValues extends BaseStep implements StepInterface
 			}
 		}
 
-		debug="get fields values"; //$NON-NLS-1$
 		// Get the field values
 		for (int i=0;i<meta.getSelectName().length;i++)
 		{
-			if (log.isDebug()) debug="get start loop (fieldnrs["+i+"]="+data.fieldnrs[i]+")"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-            
 			// Normally this can't happen, except when streams are mixed with different
 			// number of fields.
 			// 
@@ -134,7 +128,6 @@ public class SelectValues extends BaseStep implements StepInterface
 			
 		}
 
-		debug="add values to row in correct order..."; //$NON-NLS-1$
 		for (int i=0;i<meta.getSelectName().length;i++) // Add in the same order as before!
 		{
 			if (i>=row.size()) 
@@ -143,17 +136,13 @@ public class SelectValues extends BaseStep implements StepInterface
             }
 			else
             {
-                if (log.isDebug()) debug="add values to row in correct order... data.values["+i+"] : "+data.values[i].toStringMeta(); //$NON-NLS-1$ //$NON-NLS-2$
                 row.setValue(i, data.values[i]);
             }
 		}
-		debug="remove unwanted/unselected fields."; //$NON-NLS-1$
 		for (int i=row.size()-1;i>=meta.getSelectName().length;i--)
 		{
 			row.removeValue(i);
 		}
-
-		debug="End of selectValues"; //$NON-NLS-1$
 
 		return true;
 	}
@@ -169,13 +158,8 @@ public class SelectValues extends BaseStep implements StepInterface
 	*/
 	private synchronized boolean removeValues(Row row)
 	{		
-
-
-		debug="Start of removeValues"; //$NON-NLS-1$
-		
 		if (data.firstdeselect)
 		{
-			debug="Init (first)"; //$NON-NLS-1$
 			data.firstdeselect=false;
 
 			// System.out.println("Fields to remove: "+info.dname.length);
@@ -239,13 +223,10 @@ public class SelectValues extends BaseStep implements StepInterface
 		 *  Take into account that field indexes change once you remove them!!!
 		 *  Therefor removenrs is sorted in reverse on index...
 		 */
-		debug="remove field values"; //$NON-NLS-1$
 		for (int i=0;i<data.removenrs.length;i++)
 		{
 			row.removeValue(data.removenrs[i]);
 		}
-
-		debug="End of removeValues"; //$NON-NLS-1$
 
 		return true;
 	}
@@ -261,11 +242,8 @@ public class SelectValues extends BaseStep implements StepInterface
 	*/
 	private synchronized boolean metadataValues(Row row)
 	{
-		debug="Start of metadataValues"; //$NON-NLS-1$
-		
 		if (data.firstmetadata)
 		{
-			debug="Init (first)"; //$NON-NLS-1$
 			data.firstmetadata=false;
 
 			data.metanrs=new int[meta.getMetaName().length];
@@ -305,7 +283,6 @@ public class SelectValues extends BaseStep implements StepInterface
 		/*
 		 * Change the meta-data! 
 		 */
-		debug="change metadata of fields"; //$NON-NLS-1$
 		for (int i=0;i<data.metanrs.length;i++)
 		{
 			Value v = row.getValue(data.metanrs[i]);
@@ -315,8 +292,6 @@ public class SelectValues extends BaseStep implements StepInterface
 			if (meta.getMetaLength()[i]!=-2)                                 v.setLength(meta.getMetaLength()[i]);
 			if (meta.getMetaPrecision()[i]!=-2)                              v.setPrecision(meta.getMetaPrecision()[i]);
 		}
-
-		debug="End of metadataValues"; //$NON-NLS-1$
 
 		return true;
 	}
@@ -404,7 +379,7 @@ public class SelectValues extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("SelectValues.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("SelectValues.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

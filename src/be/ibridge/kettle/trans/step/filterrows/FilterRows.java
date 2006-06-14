@@ -48,10 +48,7 @@ public class FilterRows extends BaseStep implements StepInterface
 	{
 		try
 		{
-			debug="before evaluate condition"; //$NON-NLS-1$
-			boolean ret=meta.getCondition().evaluate(row);
-	        debug="after evaluate condition"; //$NON-NLS-1$
-			return ret;
+	        return meta.getCondition().evaluate(row);
 		}
 		catch(Exception e)
 		{
@@ -138,7 +135,7 @@ public class FilterRows extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("FilterRows.Log.UnexpectedErrorIn")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("FilterRows.Log.UnexpectedErrorIn")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

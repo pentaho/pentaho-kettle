@@ -89,8 +89,6 @@ public class TableOutput extends BaseStep implements StepInterface
 	private boolean writeToTable(Row r)
 		throws KettleException
 	{
-	    debug="start";
-
 		if (r==null) // Stop: last line or error encountered 
 		{
 			if (log.isDetailed()) logDetailed("Last line inserted: stop");
@@ -168,7 +166,6 @@ public class TableOutput extends BaseStep implements StepInterface
         insertStatement = (PreparedStatement) data.preparedStatements.get(tableName);
         if (insertStatement==null)
         {
-            if (log.isDebug()) debug="prepareInsert for table ["+tableName+"]";
             String sql = data.db.getInsertStatement(tableName, r);
             if (log.isDetailed()) logDetailed("Prepared statement : "+sql);
             insertStatement = data.db.prepareSQL(sql, meta.isReturningGeneratedKeys());
@@ -177,25 +174,19 @@ public class TableOutput extends BaseStep implements StepInterface
         
 		try
 		{
-            debug="setValuesInsert";
 			data.db.setValues(r, insertStatement);
-		    debug="insertRow";
 			data.db.insertRow(insertStatement, data.batchMode);
 			linesOutput++;
 			
 			// See if we need to get back the keys as well...
 			if (meta.isReturningGeneratedKeys())
 			{
-				debug="getGeneratedKeys";
 				Row extra = data.db.getGeneratedKeys(insertStatement);
 
 				// Send out the good word!
 				// Only 1 key at the moment. (should be enough for now :-)
-				debug="get first value";
 				Value keyVal = extra.getValue(0);
-				debug="set key field to name ["+meta.getGeneratedKeyField()+"]";
 				keyVal.setName(meta.getGeneratedKeyField());
-				debug="add value to row";
 				r.addValue(keyVal);
 			}
 		}
@@ -207,7 +198,6 @@ public class TableOutput extends BaseStep implements StepInterface
 		}
 		catch(KettleDatabaseException dbe)
 		{
-		    debug="Normal exception";
 		    if (meta.ignoreErrors())
 		    {
 		        if (data.warnings<20)
@@ -231,11 +221,8 @@ public class TableOutput extends BaseStep implements StepInterface
 		
         if (meta.isTableNameInField() && !meta.isTableNameInTable())
         {
-            debug="add value of table name field";
             r.addValue(data.indexOfTableNameField, removedValue);
         }
-
-	    debug="end";
 		return true;
 	}
 	
@@ -323,7 +310,7 @@ public class TableOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error encountered ["+debug+"] : "+e.toString());
+			logError("Unexpected error : "+e.toString());
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

@@ -50,15 +50,12 @@ public class Delete extends BaseStep implements StepInterface
 	{
 		Row lu;
 
-		debug="Start of deleteValues"; //$NON-NLS-1$
 		if (first)
 		{
-			debug="first run, initialize"; //$NON-NLS-1$
 			first=false;
 			
 			data.dbupd.prepareDelete(meta.getTableName(), meta.getKeyLookup(), meta.getKeyCondition());
 			
-			debug="first run, lookup values, field positions, etc."; //$NON-NLS-1$
 			// lookup the values!
 			if (log.isDetailed()) logDetailed(Messages.getString("Delete.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
 			data.keynrs  = new int[meta.getKeyStream().length];
@@ -98,11 +95,9 @@ public class Delete extends BaseStep implements StepInterface
 			}
 		}
 		
-		debug="setValues()"; //$NON-NLS-1$
 		data.dbupd.setValuesUpdate(lu);
 		
 		if (log.isDebug()) logDebug(Messages.getString("Delete.Log.SetValuesForDelete",lu.toString(),""+row)); //$NON-NLS-1$ //$NON-NLS-2$
-		debug="getLookup()"; //$NON-NLS-1$
 
 		data.dbupd.updateRow();
 		linesUpdated++;
@@ -199,7 +194,7 @@ public class Delete extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("Delete.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("Delete.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

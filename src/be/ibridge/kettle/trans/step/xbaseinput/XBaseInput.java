@@ -133,12 +133,10 @@ public class XBaseInput extends BaseStep implements StepInterface
             row.addValue(inc);
         }
 
-		debug="Send the row to the next step."; //$NON-NLS-1$
 		putRow(row);        // fill the rowset(s). (wait for empty)
 
 		if ((linesInput>0) && (linesInput%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("XBaseInput.Log.LineNr")+linesInput); //$NON-NLS-1$
 
-		debug="End of readRowOfData."; //$NON-NLS-1$
 		return true;
 	}
 	
@@ -220,7 +218,7 @@ public class XBaseInput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("XBaseInput.Log.Error.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("XBaseInput.Log.Error.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

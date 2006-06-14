@@ -82,7 +82,6 @@ public class Calculator extends BaseStep implements StepInterface
             CalculatorMetaFunction fn = meta.getCalculation()[i];
             if (fn.getFieldName()!=null && fn.getFieldName().length()>0)
             {
-                if (log.isDebug()) debug="Processing function ["+fn.getCalcTypeLongDesc()+"] for field ["+fn.getFieldName()+"]";
                 Value value  = null;
                 
                 Value fieldA = null;
@@ -357,8 +356,6 @@ public class Calculator extends BaseStep implements StepInterface
         }
         */
         
-        debug="remove specified fields from result";
-        
         // OK, see which fields we need to remove from the result?
         for (int i=meta.getCalculation().length-1;i>=0;i--)
         {
@@ -404,7 +401,7 @@ public class Calculator extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError("Unexpected error in '"+debug+"' : "+e.toString());
+			logError("Unexpected error in "+" : "+e.toString());
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

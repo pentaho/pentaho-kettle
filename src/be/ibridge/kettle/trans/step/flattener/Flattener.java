@@ -49,8 +49,6 @@ public class Flattener extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-		debug="processRow"; //$NON-NLS-1$
-		
 		Row r=getRow();    // get row!
 		if (r==null)  // no more input to be expected...
 		{
@@ -152,7 +150,7 @@ public class Flattener extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("Flattener.Log.UnexpectedErrorIn")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("Flattener.Log.UnexpectedErrorIn")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();

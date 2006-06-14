@@ -50,7 +50,6 @@ public class RowsFromResult extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-        debug = "Check if there are result rows and if we're done processing";
         Result previousResult = getTransMeta().getPreviousResult(); 
 		if (previousResult==null || linesRead>=previousResult.getRows().size())
 		{
@@ -58,11 +57,9 @@ public class RowsFromResult extends BaseStep implements StepInterface
 			return false;
 		}
 		
-        if (log.isDebug()) debug = "Get a row from the result rows ("+(linesRead+1)+"/"+previousResult.getRows().size()+")";
 		Row r=(Row)previousResult.getRows().get((int)linesRead);
 		linesRead++;
 		
-        debug = "Put the row";
 		putRow(r);     // copy row to possible alternate rowset(s).
 
 		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("RowsFromResult.Log.LineNumber")+linesRead); //$NON-NLS-1$
@@ -94,7 +91,7 @@ public class RowsFromResult extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
-			logError(Messages.getString("RowsFromResult.Log.UnexpectedError")+debug+"' : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+			logError(Messages.getString("RowsFromResult.Log.UnexpectedError")+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();
