@@ -1707,12 +1707,12 @@ public class Spoon
         if (db!=null)
         {
             DatabaseMeta before = (DatabaseMeta)db.clone();
-            
+
             DatabaseDialog con = new DatabaseDialog(shell, SWT.NONE, log, db, props);
             con.setDatabases(transMeta.getDatabases());
             String newname = con.open(); 
             if (newname != null && newname.length()>0)  // null: CANCEL
-            {
+            {                
                 // Store undo/redo information
                 DatabaseMeta after = (DatabaseMeta)db.clone();
                 addUndoChange(new DatabaseMeta[] { before }, new DatabaseMeta[] { after }, new int[] { transMeta.indexOfDatabase(db) } );
@@ -1722,7 +1722,7 @@ public class Spoon
                 // The connection is saved, clear the changed flag.
                 db.setChanged(false);
                 
-                if (!name.equalsIgnoreCase(newname)) refreshTree();
+                if (!name.equalsIgnoreCase(newname)) refreshTree(true);
             }
         }
         setShellText();
@@ -2280,7 +2280,8 @@ public class Spoon
                     rep.commit();
                 }
                 catch(KettleException ke)
-                {//
+                {
+                    rep.rollback(); // In case of failure: undo changes!
                     new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorSavingConnection.Title"),Messages.getString("Spoon.Dialog.ErrorSavingConnection.Message",db.getDatabaseName()), ke);//"Can't save...","Error saving connection ["+db+"] to repository!"
                 }
             }
@@ -2957,6 +2958,10 @@ public class Spoon
         refreshPluginHistory();
     }
 
+    /**
+     * Refresh the object selection tree (on the left of the screen)
+     * @param complete true refreshes the complete tree, false tries to do a differential update to avoid flickering.
+     */
     public void refreshTree(boolean complete)
     {
         if (shell.isDisposed()) return;

@@ -123,6 +123,8 @@ public class DatabaseDialog extends Dialog
     private int middle;
 
     private int margin;
+    
+    private long database_id;
 
 	public DatabaseDialog(Shell par, int style, LogWriter lg, DatabaseMeta conn, Props pr)
 	{
@@ -132,6 +134,7 @@ public class DatabaseDialog extends Dialog
 		props=pr;
         this.databases = null;
         this.extraOptions = conn.getExtraOptions();
+        this.database_id = conn.getID();
 	}
 	
 	public String open() 
@@ -1097,6 +1100,7 @@ public class DatabaseDialog extends Dialog
 		{
 			getInfo(connection);
 			connectionName = connection.getName(); 
+            connection.setID(database_id);
             dispose();
 		}
 		catch(KettleException e)
