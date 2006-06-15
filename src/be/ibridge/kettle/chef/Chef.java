@@ -1821,6 +1821,12 @@ public class Chef
 			props.saveProps();
 			loadSettings();
 			changeLooks();
+            
+            MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION);
+            mb.setMessage(Messages.getString("Chef.Dialog.PleaseRestartApplication.Message"));
+            mb.setText(Messages.getString("Chef.Dialog.PleaseRestartApplication.Title"));
+            mb.open();
+
 		} 
 	}
 

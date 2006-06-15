@@ -181,7 +181,7 @@ public class RepositoriesDialog
                     {
                         Image image = new Image(display, canvasBounds.width, canvasBounds.height);
                         GC gc = new GC(image);
-    					gc.setBackground(GUIResource.getInstance().getColorBackground());
+    					if (!props.isOSLookShown()) gc.setBackground(GUIResource.getInstance().getColorBackground());
     					gc.fillRectangle(0,0, canvasBounds.width, canvasBounds.height);
                         if (canvasBounds.width>bounds.width && canvasBounds.height>bounds.height)
                         {

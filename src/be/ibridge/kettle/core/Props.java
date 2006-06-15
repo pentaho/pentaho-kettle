@@ -810,9 +810,7 @@ public class Props implements Cloneable
 	
 	public RGB getBackgroundRGB()
 	{
-        if (isOSLookShown()) return null;
-        
-		int r = Const.toInt(properties.getProperty(STRING_BACKGROUND_COLOR_R), Const.COLOR_BACKGROUND_RED); // Defaut: 
+        int r = Const.toInt(properties.getProperty(STRING_BACKGROUND_COLOR_R), Const.COLOR_BACKGROUND_RED); // Defaut: 
 		int g = Const.toInt(properties.getProperty(STRING_BACKGROUND_COLOR_G), Const.COLOR_BACKGROUND_GREEN);
 		int b = Const.toInt(properties.getProperty(STRING_BACKGROUND_COLOR_B), Const.COLOR_BACKGROUND_BLUE);
 		RGB rgb = new RGB(r,g,b);
@@ -1203,7 +1201,9 @@ public class Props implements Cloneable
     public void setLook(Control control, int style)
     {
         if (!Const.getOS().startsWith("Windows")) return;
+        if (props.isOSLookShown()) return;
         
+        GUIResource gui = GUIResource.getInstance();
         Font font        = null;
         Color background = null;
         // Color tabColor   = null;
@@ -1211,36 +1211,35 @@ public class Props implements Cloneable
         switch(style) 
         {
         case WIDGET_STYLE_DEFAULT :
-            background = GUIResource.getInstance().getColorBackground(); 
+            background = gui.getColorBackground(); 
             font       = null; // GUIResource.getInstance().getFontDefault();
             break;
         case WIDGET_STYLE_FIXED   : 
-            background = GUIResource.getInstance().getColorBackground(); 
-            font       = GUIResource.getInstance().getFontFixed();
+            background = gui.getColorBackground(); 
+            font       = gui.getFontFixed();
             break;
         case WIDGET_STYLE_TABLE   : 
-            background = GUIResource.getInstance().getColorBackground(); 
-            font       = null; // GUIResource.getInstance().getFontGrid();
+            background = gui.getColorBackground(); 
+            font       = null; // gui.getFontGrid();
             break;
         case WIDGET_STYLE_NOTEPAD : 
-            background = GUIResource.getInstance().getColorBackground(); 
-            font       = GUIResource.getInstance().getFontNote();
+            background = gui.getColorBackground(); 
+            font       = gui.getFontNote();
             break;
         case WIDGET_STYLE_GRAPH   : 
-            background = GUIResource.getInstance().getColorBackground(); 
-            font       = GUIResource.getInstance().getFontGraph();
+            background = gui.getColorBackground(); 
+            font       = gui.getFontGraph();
             break;
         case WIDGET_STYLE_TAB     : 
-            background = GUIResource.getInstance().getColorBackground(); 
-            // font       = GUIResource.getInstance().getFontDefault();
+            background = gui.getColorBackground(); 
+            // font       = gui.getFontDefault();
             ((CTabFolder)control).setSimple(false);
             ((CTabFolder)control).setBorderVisible(false);
             ((CTabFolder)control).setSelectionBackground(display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT));
-            // TODO: find out why my own selection background color gets disposed!!!
             break;
         default                   : 
-            background = GUIResource.getInstance().getColorBackground(); 
-            font       = null; // GUIResource.getInstance().getFontDefault();
+            background = gui.getColorBackground(); 
+            font       = null; // gui.getFontDefault();
             break;
         }
 

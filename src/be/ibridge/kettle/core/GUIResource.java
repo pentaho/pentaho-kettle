@@ -31,28 +31,28 @@ public class GUIResource
     // 33 resources
     
     /* * * Colors * * */
-    private Color colorBackground;
-    private Color colorGraph;
-    private Color colorTab;
+    private ManagedColor colorBackground;
+    private ManagedColor colorGraph;
+    private ManagedColor colorTab;
 
-    private Color colorRed;
-    private Color colorGreen;
-    private Color colorBlue;
-    private Color colorOrange;
-    private Color colorYellow;
-    private Color colorMagenta;
-    private Color colorBlack;
-    private Color colorGray;
-    private Color colorDarkGray;
-    private Color colorLightGray;
-    private Color colorDemoGray;
-    private Color colorWhite;
-    private Color colorDirectory;
+    private ManagedColor colorRed;
+    private ManagedColor colorGreen;
+    private ManagedColor colorBlue;
+    private ManagedColor colorOrange;
+    private ManagedColor colorYellow;
+    private ManagedColor colorMagenta;
+    private ManagedColor colorBlack;
+    private ManagedColor colorGray;
+    private ManagedColor colorDarkGray;
+    private ManagedColor colorLightGray;
+    private ManagedColor colorDemoGray;
+    private ManagedColor colorWhite;
+    private ManagedColor colorDirectory;
 
     /* * * Fonts * * */
-    private Font fontGraph;
-    private Font fontNote;
-    private Font fontFixed;
+    private ManagedFont fontGraph;
+    private ManagedFont fontNote;
+    private ManagedFont fontFixed;
 
     /* * * Images * * */
     private Hashtable imagesSteps;
@@ -102,29 +102,29 @@ public class GUIResource
     {
         Props props = Props.getInstance();
         
-        if (props.getBackgroundRGB()!=null) colorBackground = new Color(display, props.getBackgroundRGB() );
-        if (props.getGraphColorRGB()!=null) colorGraph      = new Color(display, props.getGraphColorRGB() );
-        if (props.getTabColorRGB()  !=null) colorTab        = new Color(display, props.getTabColorRGB()   );
+        colorBackground = new ManagedColor(display, props.getBackgroundRGB() );
+        colorGraph      = new ManagedColor(display, props.getGraphColorRGB() );
+        colorTab        = new ManagedColor(display, props.getTabColorRGB()   );
         
-        colorRed        = new Color(display, 255,   0,   0 );
-        colorGreen      = new Color(display,   0, 255,   0 );
-        colorBlue       = new Color(display,   0,   0, 255 );
-        colorGray       = new Color(display, 100, 100, 100 );
-        colorYellow     = new Color(display, 255, 255,   0 );
-        colorMagenta    = new Color(display, 255,   0, 255);
-        colorOrange     = new Color(display, 255, 165,   0 );
+        colorRed        = new ManagedColor(display, 255,   0,   0 );
+        colorGreen      = new ManagedColor(display,   0, 255,   0 );
+        colorBlue       = new ManagedColor(display,   0,   0, 255 );
+        colorGray       = new ManagedColor(display, 100, 100, 100 );
+        colorYellow     = new ManagedColor(display, 255, 255,   0 );
+        colorMagenta    = new ManagedColor(display, 255,   0, 255);
+        colorOrange     = new ManagedColor(display, 255, 165,   0 );
 
-        colorWhite      = new Color(display, 255, 255, 255 );
-        colorDemoGray   = new Color(display, 248, 248, 248 );
-        colorLightGray  = new Color(display, 225, 225, 225 );
-        colorDarkGray   = new Color(display, 100, 100, 100 );
-        colorBlack      = new Color(display,   0,   0,   0 );
+        colorWhite      = new ManagedColor(display, 255, 255, 255 );
+        colorDemoGray   = new ManagedColor(display, 248, 248, 248 );
+        colorLightGray  = new ManagedColor(display, 225, 225, 225 );
+        colorDarkGray   = new ManagedColor(display, 100, 100, 100 );
+        colorBlack      = new ManagedColor(display,   0,   0,   0 );
 
-        colorDirectory  = new Color(display,   0,   0, 255 );
+        colorDirectory  = new ManagedColor(display,   0,   0, 255 );
         
-        if (props.getGraphFont()   != null) fontGraph   = new Font(display, props.getGraphFont());
-        if (props.getNoteFont()    != null) fontNote    = new Font(display, props.getNoteFont());
-        if (props.getFixedFont()   != null) fontFixed   = new Font(display, props.getFixedFont());
+        fontGraph   = new ManagedFont(display, props.getGraphFont());
+        fontNote    = new ManagedFont(display, props.getNoteFont());
+        fontFixed   = new ManagedFont(display, props.getFixedFont());
         
         // Load all images from files...
         if (!reload) loadStepImages();
@@ -133,10 +133,9 @@ public class GUIResource
     private void dispose()
     {
         // Colors 
-        
-        if (colorBackground!=null) colorBackground.dispose();
-        if (colorGraph     !=null) colorGraph     .dispose();
-        if (colorTab       !=null) colorTab       .dispose();
+        colorBackground.dispose();
+        colorGraph     .dispose();
+        colorTab       .dispose();
         
         colorRed      .dispose();
         colorGreen    .dispose();
@@ -151,13 +150,13 @@ public class GUIResource
         colorLightGray.dispose();
         colorDarkGray .dispose();
         colorBlack    .dispose();
+        
         colorDirectory.dispose();
         
         // Fonts
-        
-        if (fontGraph  !=null) fontGraph  .dispose();
-        if (fontNote   !=null) fontNote   .dispose();
-        if (fontFixed  !=null) fontFixed  .dispose();
+        fontGraph  .dispose();
+        fontNote   .dispose();
+        fontFixed  .dispose();
     }
     
     /**
@@ -251,10 +250,7 @@ public class GUIResource
      */
     public Color getColorBackground()
     {
-        Color retval = colorBackground;
-        if (retval==null) retval = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorBackground.getColor();
     }
 
     /**
@@ -262,9 +258,7 @@ public class GUIResource
      */
     public Color getColorBlack()
     {
-        Color retval = colorBlack;
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorBlack.getColor();
     }
 
     /**
@@ -272,9 +266,7 @@ public class GUIResource
      */
     public Color getColorBlue()
     {
-        Color retval = colorBlue;
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorBlue.getColor();
     }
 
     /**
@@ -282,9 +274,7 @@ public class GUIResource
      */
     public Color getColorDarkGray()
     {
-        Color retval = colorDarkGray;
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorDarkGray.getColor();
     }
 
     /**
@@ -292,9 +282,7 @@ public class GUIResource
      */
     public Color getColorDemoGray()
     {
-        Color retval = colorDemoGray;
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorDemoGray.getColor();
     }
 
     /**
@@ -302,9 +290,7 @@ public class GUIResource
      */
     public Color getColorDirectory()
     {
-        Color retval = colorDirectory;
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorDirectory.getColor();
     }
 
     /**
@@ -312,10 +298,7 @@ public class GUIResource
      */
     public Color getColorGraph()
     {
-        Color retval = colorGraph;
-        if (retval==null) retval = display.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorGraph.getColor();
     }
 
     /**
@@ -323,9 +306,7 @@ public class GUIResource
      */
     public Color getColorGray()
     {
-        Color retval = colorGray;
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorGray.getColor();
     }
 
     /**
@@ -333,9 +314,7 @@ public class GUIResource
      */
     public Color getColorGreen()
     {
-        Color retval = colorGreen;
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorGreen.getColor();
     }
 
     /**
@@ -343,9 +322,7 @@ public class GUIResource
      */
     public Color getColorLightGray()
     {
-        Color retval = colorLightGray;
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorLightGray.getColor();
     }
 
     /**
@@ -353,9 +330,7 @@ public class GUIResource
      */
     public Color getColorMagenta()
     {
-        Color retval = colorMagenta;
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorMagenta.getColor();
     }
 
     /**
@@ -363,9 +338,7 @@ public class GUIResource
      */
     public Color getColorOrange()
     {
-        Color retval = colorOrange;
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorOrange.getColor();
     }
 
     /**
@@ -373,9 +346,7 @@ public class GUIResource
      */
     public Color getColorRed()
     {
-        Color retval = colorRed;
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorRed.getColor();
     }
 
     /**
@@ -383,10 +354,7 @@ public class GUIResource
      */
     public Color getColorTab()
     {
-        Color retval = colorTab;
-        if (retval==null) retval = display.getSystemColor(SWT.COLOR_WIDGET_FOREGROUND);
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorTab.getColor();
     }
 
     /**
@@ -394,9 +362,7 @@ public class GUIResource
      */
     public Color getColorWhite()
     {
-        Color retval = colorWhite;
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorWhite.getColor();
     }
 
     /**
@@ -404,9 +370,7 @@ public class GUIResource
      */
     public Color getColorYellow()
     {
-        Color retval = colorYellow;
-        if (retval.isDisposed()) throw new RuntimeException("Color can not be disposed!!");
-        return retval;
+        return colorYellow.getColor();
     }
 
     /**
@@ -417,24 +381,12 @@ public class GUIResource
         return display;
     }
 
-    
-    /*
-     * @return Returns the fontDefault.
-     *
-    public Font getFontDefault()
-    {
-        if (fontDefault==null) return display.getSystemFont();
-        return fontDefault;
-    }
-    */
-    
     /**
      * @return Returns the fontFixed.
      */
     public Font getFontFixed()
     {
-        if (fontFixed==null) return display.getSystemFont();
-        return fontFixed;
+        return fontFixed.getFont();
     }
 
     /**
@@ -442,27 +394,16 @@ public class GUIResource
      */
     public Font getFontGraph()
     {
-        if (fontGraph==null) return display.getSystemFont();
-        return fontGraph;
+        return fontGraph.getFont();
     }
 
-    /*
-     * @return Returns the fontGrid.
-     *
-    public Font getFontGrid()
-    {
-        if (fontGrid==null) return display.getSystemFont();
-        return fontGrid;
-    }
-    */
 
     /**
      * @return Returns the fontNote.
      */
     public Font getFontNote()
     {
-        if (fontNote==null) return display.getSystemFont();
-        return fontNote;
+        return fontNote.getFont();
     }
 
     /**

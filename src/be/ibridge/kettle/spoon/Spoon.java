@@ -112,7 +112,6 @@ import be.ibridge.kettle.core.reflection.StringSearchResult;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
-import be.ibridge.kettle.i18n.LanguageChoice;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.pan.CommandLineOption;
 import be.ibridge.kettle.repository.PermissionMeta;
@@ -1087,7 +1086,7 @@ public class Spoon
         
         // Now set up the main CSH tree
         selectionTree = new Tree(leftSash, SWT.SINGLE | SWT.BORDER);
-        // props.setLook(selectionTree);
+        props.setLook(selectionTree);
         selectionTree.setLayout(new FillLayout());
         
         tiConn   = new TreeItem(selectionTree, SWT.NONE); tiConn.setText(STRING_CONNECTIONS);
@@ -2910,9 +2909,6 @@ public class Spoon
     
     public void editOptions()
     {
-        LanguageChoice langChoice = LanguageChoice.getInstance();
-        Locale defLoc = langChoice.getDefaultLocale();
-        
         EnterOptionsDialog eod = new EnterOptionsDialog(shell, props);
         if (eod.open()!=null)
         {
@@ -2920,20 +2916,10 @@ public class Spoon
             loadSettings();
             changeLooks();
 
-            if (!langChoice.getDefaultLocale().equals(defLoc))
-            {
-                addMenu();
-                addMenuLast();
-                setUndoMenu();
-                addTabs();
-                // refreshTree(true);
-                
-                // TODO: localize message
-                MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION);
-                mb.setMessage("Please restart the application for all language changes to take effect!");
-                mb.setText("Info");
-                mb.open();
-            }
+            MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION);
+            mb.setMessage(Messages.getString("Spoon.Dialog.PleaseRestartApplication.Message"));
+            mb.setText(Messages.getString("Spoon.Dialog.PleaseRestartApplication.Title"));
+            mb.open();
         } 
     }
     

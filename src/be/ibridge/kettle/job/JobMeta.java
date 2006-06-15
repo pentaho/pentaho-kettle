@@ -497,8 +497,7 @@ public class JobMeta implements Cloneable, XMLInterface
 		loadXML(jobnode, rep);
 	}
 
-	public void loadXML(Node jobnode, Repository rep)
-		throws KettleXMLException
+	public void loadXML(Node jobnode, Repository rep) throws KettleXMLException
 	{
 		try
 		{		
