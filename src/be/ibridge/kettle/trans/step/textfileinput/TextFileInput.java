@@ -717,6 +717,7 @@ public class TextFileInput extends BaseStep implements StepInterface
                 if (data.files.nrOfFiles()==0)
                 {
                     logBasic(Messages.getString("TextFileInput.Log.Error.NoFilesSpecified"));
+                    setOutputDone();
                     return false;
                 }
             }
