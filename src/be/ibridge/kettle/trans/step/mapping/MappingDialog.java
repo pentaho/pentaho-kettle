@@ -168,7 +168,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wbTransformation.setLayoutData(fdbTransformation);
         
         wTransformation=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wTransformation.setEditable(false);
+        wTransformation.setEditable(true);
         props.setLook(wTransformation);
         wTransformation.addModifyListener(lsMod);
         fdTransformation=new FormData();
