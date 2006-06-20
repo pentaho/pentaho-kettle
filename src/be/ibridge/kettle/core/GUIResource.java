@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Listener;
 
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobPlugin;
+import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
 
@@ -200,7 +201,7 @@ public class GUIResource
                 }
                 catch(Exception e)
                 {
-                    log.logError("Kettle", "Unable to find required image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
+                    log.logError("Kettle", "Unable to find required step image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
                     image = new Image(display, Const.ICON_SIZE, Const.ICON_SIZE);
                     GC gc = new GC(image);
                     gc.drawRectangle(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
@@ -218,7 +219,7 @@ public class GUIResource
                 }
                 catch(Exception e)
                 {
-                    log.logError("Kettle", "Unable to find required image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
+                    log.logError("Kettle", "Unable to find required step image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
                     image = new Image(display, Const.ICON_SIZE, Const.ICON_SIZE);
                     GC gc = new GC(image);
                     gc.drawRectangle(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
@@ -278,6 +279,8 @@ public class GUIResource
         JobPlugin plugins[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_ALL);
         for (int i = 0; i < plugins.length; i++)
         {
+            if (plugins[i].getType()==JobEntryInterface.TYPE_JOBENTRY_SPECIAL) continue;
+            
             Image image = null;
             Image small_image = null;
 
@@ -290,7 +293,7 @@ public class GUIResource
                 }
                 catch(Exception e)
                 {
-                    log.logError("Kettle", "Unable to find required image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
+                    log.logError("Kettle", "Unable to find required job entry image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
                     image = new Image(display, Const.ICON_SIZE, Const.ICON_SIZE);
                     GC gc = new GC(image);
                     gc.drawRectangle(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
@@ -308,7 +311,7 @@ public class GUIResource
                 }
                 catch(Exception e)
                 {
-                    log.logError("Kettle", "Unable to find required image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
+                    log.logError("Kettle", "Unable to find required job entry image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
                     image = new Image(display, Const.ICON_SIZE, Const.ICON_SIZE);
                     GC gc = new GC(image);
                     gc.drawRectangle(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
