@@ -249,7 +249,7 @@ public class RepositoriesDialog
 		weRepository = new Button(shell, SWT.PUSH);  weRepository.setText(Messages.getString("System.Button.Edit")); //$NON-NLS-1$
 		wdRepository = new Button(shell, SWT.PUSH);  wdRepository.setText(Messages.getString("System.Button.Delete")); //$NON-NLS-1$
 
-        int repMargin = 0; // -margin*3
+        int repMargin = -margin; // -margin*3
         
 		// Button positions...
 		fddRepository = new FormData();		
@@ -271,6 +271,7 @@ public class RepositoriesDialog
 		fdRepository=new FormData();
 		fdRepository.left = new FormAttachment(middle, -margin);
 		fdRepository.right= new FormAttachment(wnRepository, -margin);
+        fdRepository.top = new FormAttachment(wnRepository, 0, SWT.CENTER);
         fdRepository.bottom = new FormAttachment(wUsername, repMargin);
 		wRepository.setLayoutData(fdRepository);
 
@@ -281,7 +282,7 @@ public class RepositoriesDialog
         fdlRepository=new FormData();
         fdlRepository.left   = new FormAttachment(0, 0);
         fdlRepository.right  = new FormAttachment(middle, -margin*2);
-        fdlRepository.bottom = new FormAttachment(wUsername, repMargin);
+        fdlRepository.bottom = new FormAttachment(wnRepository, 0, SWT.CENTER);
         wlRepository.setLayoutData(fdlRepository);
 
 		// Add the listeners
