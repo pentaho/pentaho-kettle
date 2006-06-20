@@ -758,7 +758,7 @@ public class Chef
 		leftsplit.setWeights(new int[] {100});
 		
 		// Now set up the main CSH tree
-		tMain = new Tree(cCSH, SWT.MULTI | SWT.BORDER);
+		tMain = new Tree(cCSH, SWT.SINGLE | SWT.BORDER);
 		
         // Add the connections subtree
         //
@@ -802,17 +802,6 @@ public class Chef
            TreeItem tiPlugin = new TreeItem(tiPluginEntries, SWT.NONE);
            tiPlugin.setText(pluginJobEntries[i].getDescription());
         }
-        
-        /*
-		tiSection = new TreeItem[JobEntryInterface.type_desc.length];
-        tiSection[0] = new TreeItem(tMain, SWT.NONE);
-		tiSection[0].setText(STRING_CONNECTIONS);
-		for (int i=1;i<JobEntryInterface.type_desc.length;i++)
-		{
-			tiSection[i] = new TreeItem(tMain, SWT.NONE);
-			tiSection[i].setText(JobEntryInterface.type_desc_long[i]);
-		}
-        */
 		
 		props.setLook( tMain );
 
