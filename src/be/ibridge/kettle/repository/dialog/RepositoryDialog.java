@@ -144,7 +144,7 @@ public class RepositoryDialog
  		props.setLook(wConnection);
 		fdConnection=new FormData();
 		fdConnection.left = new FormAttachment(middle, 0);
-		fdConnection.top  = new FormAttachment(wnConnection, 0, SWT.TOP);
+		fdConnection.top  = new FormAttachment(wnConnection, 0, SWT.CENTER);
 		fdConnection.right= new FormAttachment(wnConnection, -margin);
 		wConnection.setLayoutData(fdConnection);
 
