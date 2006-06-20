@@ -272,7 +272,7 @@ public class RepositoriesDialog
 		fdRepository.left = new FormAttachment(middle, -margin);
 		fdRepository.right= new FormAttachment(wnRepository, -margin);
         fdRepository.top = new FormAttachment(wnRepository, 0, SWT.TOP);
-        // fdRepository.bottom = new FormAttachment(wUsername, repMargin);
+        fdRepository.bottom = new FormAttachment(wnRepository, 0, SWT.BOTTOM);
 		wRepository.setLayoutData(fdRepository);
 
         // Repository selector

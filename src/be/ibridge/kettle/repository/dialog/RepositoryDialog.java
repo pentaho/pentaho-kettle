@@ -119,16 +119,6 @@ public class RepositoryDialog
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
-		// Connection line
-		wlConnection=new Label(shell, SWT.RIGHT);
-		wlConnection.setText(Messages.getString("RepositoryDialog.Label.SelectConnection")); //$NON-NLS-1$
- 		props.setLook(wlConnection);
-		fdlConnection=new FormData();
-		fdlConnection.left = new FormAttachment(0, 0);
-		fdlConnection.right= new FormAttachment(middle, -margin);
-		fdlConnection.top  = new FormAttachment(0, margin);
-		wlConnection.setLayoutData(fdlConnection);
-
 		// Add the connection buttons :
 		wnConnection = new Button(shell, SWT.PUSH);  wnConnection.setText(Messages.getString("System.Button.New")); //$NON-NLS-1$
 		weConnection = new Button(shell, SWT.PUSH);  weConnection.setText(Messages.getString("System.Button.Edit")); //$NON-NLS-1$
@@ -154,12 +144,23 @@ public class RepositoryDialog
  		props.setLook(wConnection);
 		fdConnection=new FormData();
 		fdConnection.left = new FormAttachment(middle, 0);
-		fdConnection.top  = new FormAttachment(0, margin);
+		fdConnection.top  = new FormAttachment(wnConnection, 0, SWT.TOP);
 		fdConnection.right= new FormAttachment(wnConnection, -margin);
 		wConnection.setLayoutData(fdConnection);
 
 		fillConnections();		
-		
+
+        // Connection line
+        wlConnection=new Label(shell, SWT.RIGHT);
+        wlConnection.setText(Messages.getString("RepositoryDialog.Label.SelectConnection")); //$NON-NLS-1$
+        props.setLook(wlConnection);
+        fdlConnection=new FormData();
+        fdlConnection.left = new FormAttachment(0, 0);
+        fdlConnection.right= new FormAttachment(middle, -margin);
+        fdlConnection.top  = new FormAttachment(wnConnection, 0, SWT.CENTER);
+        wlConnection.setLayoutData(fdlConnection);
+
+
 
 		
 		// Add the listeners
