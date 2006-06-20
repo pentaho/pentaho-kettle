@@ -891,13 +891,13 @@ public class Chef
                             }
     
                             event.data = new DragAndDropContainer(type, data);
-                            System.out.println("data = "+event.data.getClass());
+                            // System.out.println("data = "+event.data.getClass());
                         }
                     }
                     else // Nothing got dragged, only can happen on OSX :-)
                     {
                         event.doit=false;
-                        System.out.println("NOTHING DRAGGED! WTF!");
+                        // System.out.println("NOTHING DRAGGED! WTF!");
                     }
                 }
     
