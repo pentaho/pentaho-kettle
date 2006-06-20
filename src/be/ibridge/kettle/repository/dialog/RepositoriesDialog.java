@@ -249,27 +249,29 @@ public class RepositoriesDialog
 		weRepository = new Button(shell, SWT.PUSH);  weRepository.setText(Messages.getString("System.Button.Edit")); //$NON-NLS-1$
 		wdRepository = new Button(shell, SWT.PUSH);  wdRepository.setText(Messages.getString("System.Button.Delete")); //$NON-NLS-1$
 
+        int repMargin = 0; // -margin*3
+        
 		// Button positions...
 		fddRepository = new FormData();		
 		fddRepository.right  = new FormAttachment(100, -right);
-		fddRepository.bottom = new FormAttachment(wUsername, -margin*3);
+		fddRepository.bottom = new FormAttachment(wUsername, repMargin);
 		wdRepository.setLayoutData(fddRepository);
 
 		fdeRepository = new FormData();		
 		fdeRepository.right = new FormAttachment(wdRepository, -margin);
-        fdeRepository.bottom = new FormAttachment(wUsername, -margin*3);
+        fdeRepository.bottom = new FormAttachment(wUsername, repMargin);
 		weRepository.setLayoutData(fdeRepository);
 
 		fdnRepository = new FormData();		
 		fdnRepository.right= new FormAttachment(weRepository, -margin);
-        fdnRepository.bottom = new FormAttachment(wUsername, -margin*3);
+        fdnRepository.bottom = new FormAttachment(wUsername, repMargin);
 		wnRepository.setLayoutData(fdnRepository);
 
  		props.setLook(wRepository);
 		fdRepository=new FormData();
 		fdRepository.left = new FormAttachment(middle, -margin);
 		fdRepository.right= new FormAttachment(wnRepository, -margin);
-        fdRepository.bottom = new FormAttachment(wUsername, -margin*3);
+        fdRepository.bottom = new FormAttachment(wUsername, repMargin);
 		wRepository.setLayoutData(fdRepository);
 
         // Repository selector
