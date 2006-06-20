@@ -23,8 +23,6 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.DisposeEvent;
-import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MouseAdapter;
@@ -109,8 +107,6 @@ public class ChefGraph extends Canvas
 	private JobHopMeta last_hop_split;
 	private Rectangle selrect;
 
-	public Image images[]; // TODO: move to GUIResource once we load from JobEntryLoader
-
 	private static final double theta = Math.toRadians(10); // arrowhead sharpness
 	private static final int    size  = 30; // arrowhead length
 	
@@ -162,8 +158,6 @@ public class ChefGraph extends Canvas
 
 		setVisible(true);
 		
-		loadImages();
-
 		addPaintListener(new PaintListener() {
 			public void paintControl(PaintEvent e) {
 				ChefGraph.this.paintControl(e);
@@ -2312,42 +2306,6 @@ public class ChefGraph extends Canvas
 		redraw();
 	}
 
-	private void loadImages() 
-	{
-		String png[] = JobEntryInterface.icon_filename;
-		images = new Image[png.length];
-		
-		for (int i=1;i<png.length;i++)
-		{
-            if (png[i]!=null && png[i].length()>0)
-            {
-                // System.out.println("Loading image: "+png[i]);
-                try
-                {
-                    final Image image = new Image(getDisplay(), getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + png[i])); 
-                    images[i] = image;
-                    shell.addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { image.dispose(); } });
-                    
-                }
-                catch(Exception e)
-                {
-                    log.logError(toString(), Messages.getString("ChefGraph.Log.Error.UnableToFindImageFile")+(Const.IMAGE_DIRECTORY + png[i])+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
-                    images[i] = new Image(shell.getDisplay(), Const.ICON_SIZE, Const.ICON_SIZE);
-                    GC gc = new GC(images[i]);
-                    gc.drawRectangle(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
-                    gc.drawLine(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
-                    gc.drawLine(Const.ICON_SIZE, 0, 0, Const.ICON_SIZE);
-                    gc.dispose();
-                }
-            }
-		}
-	}
-
-	// Anti-aliased lines implementation
-	public static int    trunc(double d)   { return (int)Math.floor(d); }
-	public static double frac(double d)    { return d - Math.floor(d); }
-	public static double invfrac(double d) { return 1 - (d - Math.floor(d)); }
-	
 	public void newProps()
 	{
 		iconsize = chef.props.getIconSize();

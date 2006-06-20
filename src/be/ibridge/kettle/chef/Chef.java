@@ -300,7 +300,7 @@ public class Chef
 		
 		refreshTree();
 
-		shell.setImage(chefgraph.images[JobEntryInterface.TYPE_JOBENTRY_JOB]);
+		shell.setImage(GUIResource.getInstance().getImageChef());
 		
 		// In case someone dares to press the [X] in the corner ;-)
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { e.doit=quitFile(); } } );

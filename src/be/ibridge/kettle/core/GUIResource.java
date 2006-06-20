@@ -74,6 +74,7 @@ public class GUIResource
     private Image     imageStart;
     private Image     imageDummy;
     private Image     imageSpoon;
+    private Image     imageChef;
     private Image     imagePentaho;
     
     private Image     imageSplash;
@@ -257,6 +258,7 @@ public class GUIResource
         imageStart       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "STR.png"));
         imageDummy       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "DUM.png"));
         imageSpoon       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoon32.png"));
+        imageChef        = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "chef.png"));
         imageSplash      = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_splash.png"));
         imagePentaho     = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "PentahoLogo.png"));
     }
@@ -626,5 +628,21 @@ public class GUIResource
     public void setImagesJobentriesSmall(Hashtable imagesJobentriesSmall)
     {
         this.imagesJobentriesSmall = imagesJobentriesSmall;
+    }
+
+    /**
+     * @return Returns the imageChef.
+     */
+    public Image getImageChef()
+    {
+        return imageChef;
+    }
+
+    /**
+     * @param imageChef The imageChef to set.
+     */
+    public void setImageChef(Image imageChef)
+    {
+        this.imageChef = imageChef;
     }
 }
