@@ -40,12 +40,13 @@ public class XMLTransfer extends ByteArrayTransfer
 
     boolean checkMyType(Object object)
     {
-        System.out.println("Object class: "+object.getClass().toString());
         if (object == null /* || !(object instanceof DragAndDropContainer)*/) 
         {
             return false; 
         }
 
+        System.out.println("Object class: "+object.getClass().toString());
+        
         return true;
     }
 
