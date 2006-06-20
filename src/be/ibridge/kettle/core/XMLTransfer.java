@@ -19,7 +19,7 @@ public class XMLTransfer extends ByteArrayTransfer
 
     public void javaToNative(Object object, TransferData transferData)
     {
-        if (!checkMyType(object) || !isSupportedType(transferData))
+        if (!checkMyType(object) /*|| !isSupportedType(transferData)*/ )
         {
             DND.error(DND.ERROR_INVALID_DATA);
         }
