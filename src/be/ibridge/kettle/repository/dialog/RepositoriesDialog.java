@@ -271,8 +271,8 @@ public class RepositoriesDialog
 		fdRepository=new FormData();
 		fdRepository.left = new FormAttachment(middle, -margin);
 		fdRepository.right= new FormAttachment(wnRepository, -margin);
-        fdRepository.top = new FormAttachment(wnRepository, 0, SWT.CENTER);
-        fdRepository.bottom = new FormAttachment(wUsername, repMargin);
+        fdRepository.top = new FormAttachment(wnRepository, 0, SWT.TOP);
+        // fdRepository.bottom = new FormAttachment(wUsername, repMargin);
 		wRepository.setLayoutData(fdRepository);
 
         // Repository selector
@@ -394,7 +394,7 @@ public class RepositoriesDialog
 		
 		shell.layout();
         
-        BaseStepDialog.setMinimalShellHeight(shell, new Control[] {wCanvas, wlKettle, wRepository, wUsername, wPassword, wOK }, margin, 2*margin);
+        BaseStepDialog.setMinimalShellHeight(shell, new Control[] {wCanvas, wlKettle, wRepository, wUsername, wPassword, wOK }, margin, 30+2*margin);
         Rectangle dialogBounds = shell.getBounds();
 	
 		shell.setSize(bounds.width+20, dialogBounds.height);
