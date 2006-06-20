@@ -242,7 +242,6 @@ public class RepositoriesDialog
         fdUsername.bottom = new FormAttachment(wPassword, -margin);
         wUsername.setLayoutData(fdUsername);
 
-
 		wRepository=new CCombo(shell, SWT.READ_ONLY | SWT.BORDER);
 
 		// Add the Repository buttons :
@@ -253,17 +252,17 @@ public class RepositoriesDialog
 		// Button positions...
 		fddRepository = new FormData();		
 		fddRepository.right  = new FormAttachment(100, -right);
-		fddRepository.bottom = new FormAttachment(wUsername, -margin);
+		fddRepository.bottom = new FormAttachment(wUsername, -margin*3);
 		wdRepository.setLayoutData(fddRepository);
 
 		fdeRepository = new FormData();		
 		fdeRepository.right = new FormAttachment(wdRepository, -margin);
-        fdeRepository.bottom = new FormAttachment(wUsername, -margin);
+        fdeRepository.bottom = new FormAttachment(wUsername, -margin*3);
 		weRepository.setLayoutData(fdeRepository);
 
 		fdnRepository = new FormData();		
 		fdnRepository.right= new FormAttachment(weRepository, -margin);
-        fdnRepository.bottom = new FormAttachment(wUsername, -margin);
+        fdnRepository.bottom = new FormAttachment(wUsername, -margin*3);
 		wnRepository.setLayoutData(fdnRepository);
 
  		props.setLook(wRepository);
