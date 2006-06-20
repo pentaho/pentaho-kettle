@@ -243,7 +243,7 @@ public class RepositoriesDialog
         wUsername.setLayoutData(fdUsername);
 
 
-		wRepository=new CCombo(shell, SWT.SINGLE | SWT.READ_ONLY | SWT.BORDER);
+		wRepository=new CCombo(shell, SWT.READ_ONLY | SWT.BORDER);
 
 		// Add the Repository buttons :
 		wnRepository = new Button(shell, SWT.PUSH);  wnRepository.setText(Messages.getString("System.Button.New")); //$NON-NLS-1$
