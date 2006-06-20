@@ -239,7 +239,6 @@ public class Chef
 						refreshTree();
 					}
 					
-					
 					// ESC --> Unselect All steps
 					if (e.keyCode == SWT.ESC)   { jobMeta.unselectAll(); refreshGraph(); };
 					// F3 --> create database connection wizard
@@ -786,6 +785,8 @@ public class Chef
             {
                TreeItem tiBase = new TreeItem(tiBaseEntries, SWT.NONE);
                tiBase.setText(baseJobEntries[i].getDescription());
+               Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(plugin.getID());
+               tiBase.setImage(image);
             }
         }
 
@@ -838,6 +839,13 @@ public class Chef
         
 		// Keyboard shortcuts!
 		tMain.addKeyListener( defKeys );
+
+        // Set some images on the tree
+        //
+        tiConnections.setImage(GUIResource.getInstance().getImageConnection());
+        tiEntries.setImage(GUIResource.getInstance().getImageBol());
+        tiBaseEntries.setImage(GUIResource.getInstance().getImageBol());
+        tiPluginEntries.setImage(GUIResource.getInstance().getImageBol());
 	}
     
     private void addDragSourceToTree(Tree tree)
@@ -889,15 +897,18 @@ public class Chef
                             }
                             else
                             {
+                                event.doit=false;
                                 return; // ignore anything else you drag.
                             }
     
                             event.data = new DragAndDropContainer(type, data);
+                            System.out.println("data = "+event.data.getClass());
                         }
                     }
                     else // Nothing got dragged, only can happen on OSX :-)
                     {
                         event.doit=false;
+                        System.out.println("NOTHING DRAGGED! WTF!");
                     }
                 }
     
@@ -1911,12 +1922,27 @@ public class Chef
 			DatabaseMeta dbinfo = jobMeta.getDatabase(i);
 			TreeItem item = new TreeItem(tiConnections, SWT.NONE);
 			item.setText(dbinfo.getName());
+            item.setImage(GUIResource.getInstance().getImageConnection());
 		}
 		
 		for (int i=0;i<jobMeta.nrJobEntries();i++)
 		{
 			JobEntryCopy je = jobMeta.getJobEntry(i);
 			TreeItem item = new TreeItem(tiJobEntries, SWT.NONE);
+            if (je.isStart())
+            {
+                item.setImage(GUIResource.getInstance().getImageStart());
+            }
+            else
+            if (je.isDummy())
+            {
+                item.setImage(GUIResource.getInstance().getImageDummy());
+            }
+            else
+            {
+                Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(je.getTypeDesc());
+                item.setImage(image);
+            }
 			if (je.getName()!=null) item.setText(je.getName());
 		}
 

@@ -11,6 +11,8 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import be.ibridge.kettle.job.JobEntryLoader;
+import be.ibridge.kettle.job.JobPlugin;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
 
@@ -24,6 +26,8 @@ import be.ibridge.kettle.trans.StepPlugin;
  */
 public class GUIResource
 {
+    private static LogWriter log = LogWriter.getInstance();
+
     private static GUIResource guiResource;
     
     private Display display;
@@ -57,6 +61,10 @@ public class GUIResource
     /* * * Images * * */
     private Hashtable imagesSteps;
     private Hashtable imagesStepsSmall;
+    
+    private Hashtable imagesJobentries;
+    private Hashtable imagesJobentriesSmall;
+    
     private Image     imageHop;
     private Image     imageConnection; 
     private Image     imageBol;
@@ -127,7 +135,12 @@ public class GUIResource
         fontFixed   = new ManagedFont(display, props.getFixedFont());
         
         // Load all images from files...
-        if (!reload) loadStepImages();
+        if (!reload)
+        {
+            loadCommonImages();
+            loadStepImages();
+            loadJobEntryImages();
+        }
     }
     
     private void dispose()
@@ -160,14 +173,13 @@ public class GUIResource
     }
     
     /**
-     * Load all step/jobentry images from files. 
+     * Load all step images from files. 
      *
      */
     private void loadStepImages()
     {
         imagesSteps      = new Hashtable();
         imagesStepsSmall = new Hashtable();
-        LogWriter log = LogWriter.getInstance();
 
         ////
         //// STEP IMAGES TO LOAD
@@ -232,7 +244,10 @@ public class GUIResource
             imagesSteps.put(steps[i].getID(), image);
             imagesStepsSmall.put(steps[i].getID(), small_image);
         }
-        
+    }
+    
+    private void loadCommonImages()
+    {
         imageHop         = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "HOP.png"));
         imageConnection  = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "CNC.png"));
         imageBol         = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "BOL.png"));
@@ -243,6 +258,82 @@ public class GUIResource
         imageSpoon       = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoon32.png"));
         imageSplash      = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_splash.png"));
         imagePentaho     = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "PentahoLogo.png"));
+    }
+
+    /**
+     * Load all step images from files. 
+     *
+     */
+    private void loadJobEntryImages()
+    {
+        imagesJobentries = new Hashtable();
+        imagesJobentriesSmall = new Hashtable();
+        
+        ////
+        //// JOB ENTRY IMAGES TO LOAD
+        ////
+        JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
+        if (!jobEntryLoader.isInitialized()) return; // Running in Spoon I guess...
+        
+        JobPlugin plugins[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_ALL);
+        for (int i = 0; i < plugins.length; i++)
+        {
+            Image image = null;
+            Image small_image = null;
+
+            if (plugins[i].isNative())
+            {
+                String filename = plugins[i].getIconFilename();
+                try
+                {
+                    image = new Image(display, getClass().getResourceAsStream(filename));
+                }
+                catch(Exception e)
+                {
+                    log.logError("Kettle", "Unable to find required image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
+                    image = new Image(display, Const.ICON_SIZE, Const.ICON_SIZE);
+                    GC gc = new GC(image);
+                    gc.drawRectangle(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
+                    gc.drawLine(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
+                    gc.drawLine(Const.ICON_SIZE, 0, 0, Const.ICON_SIZE);
+                    gc.dispose();
+                }
+            } 
+            else
+            {
+                String filename = plugins[i].getIconFilename();
+                try
+                {
+                    image = new Image(display, filename);
+                }
+                catch(Exception e)
+                {
+                    log.logError("Kettle", "Unable to find required image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
+                    image = new Image(display, Const.ICON_SIZE, Const.ICON_SIZE);
+                    GC gc = new GC(image);
+                    gc.drawRectangle(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
+                    gc.drawLine(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
+                    gc.drawLine(Const.ICON_SIZE, 0, 0, Const.ICON_SIZE);
+                    gc.dispose();
+                }
+            }
+
+            // Calculate the smaller version of the image @ 16x16...
+            // Perhaps we should make this configurable?
+            //
+            if (image != null)
+            {
+                int xsize = image.getBounds().width;
+                int ysize = image.getBounds().height;
+                small_image = new Image(display, 16, 16);
+                GC gc = new GC(small_image);
+                gc.drawImage(image, 0, 0, xsize, ysize, 0, 0, 16, 16);
+                gc.dispose();
+            }
+
+            imagesJobentries.put(plugins[i].getID(), image);
+            imagesJobentriesSmall.put(plugins[i].getID(), small_image);
+        }
     }
 
     /**
@@ -500,5 +591,37 @@ public class GUIResource
     public Image getImageSplash()
     {
         return imageSplash;
+    }
+
+    /**
+     * @return Returns the imagesJobentries.
+     */
+    public Hashtable getImagesJobentries()
+    {
+        return imagesJobentries;
+    }
+
+    /**
+     * @param imagesJobentries The imagesJobentries to set.
+     */
+    public void setImagesJobentries(Hashtable imagesJobentries)
+    {
+        this.imagesJobentries = imagesJobentries;
+    }
+
+    /**
+     * @return Returns the imagesJobentriesSmall.
+     */
+    public Hashtable getImagesJobentriesSmall()
+    {
+        return imagesJobentriesSmall;
+    }
+
+    /**
+     * @param imagesJobentriesSmall The imagesJobentriesSmall to set.
+     */
+    public void setImagesJobentriesSmall(Hashtable imagesJobentriesSmall)
+    {
+        this.imagesJobentriesSmall = imagesJobentriesSmall;
     }
 }

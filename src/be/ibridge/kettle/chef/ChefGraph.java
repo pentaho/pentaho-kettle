@@ -1577,7 +1577,8 @@ public class ChefGraph extends Canvas
 			if (je.isStart()) im = GUIResource.getInstance().getImageStart();
 			if (je.isDummy()) im = GUIResource.getInstance().getImageDummy();
 			break;
-		default: im = images[je.getType()];
+		default:
+            im = (Image)GUIResource.getInstance().getImagesJobentries().get(je.getTypeDesc());
 		}
 		return im;
 	}

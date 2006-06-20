@@ -51,12 +51,14 @@ public class JobEntryLoader
 
     private Hashtable             classLoaders;
 
+    private boolean               initialized;
 
 	private JobEntryLoader(String plugin_directory[])
 	{
 		this.pluginDirectory = plugin_directory;
 		pluginList   = new ArrayList();
         classLoaders = new Hashtable();
+        initialized  = false;
 	}
 	
 	public static final JobEntryLoader getInstance(String pluginDirectory[])
@@ -81,7 +83,11 @@ public class JobEntryLoader
 	{
 		if (readNatives())
 		{
-			return readPlugins();
+			if (readPlugins())
+            {
+			    initialized=true;
+                return true;
+            }
 		}
 		return false;
 	}
@@ -387,4 +393,20 @@ public class JobEntryLoader
 		}
 		return null;
 	}
+
+    /**
+     * @return Returns the initialized.
+     */
+    public boolean isInitialized()
+    {
+        return initialized;
+    }
+
+    /**
+     * @param initialized The initialized to set.
+     */
+    public void setInitialized(boolean initialized)
+    {
+        this.initialized = initialized;
+    }
 }
