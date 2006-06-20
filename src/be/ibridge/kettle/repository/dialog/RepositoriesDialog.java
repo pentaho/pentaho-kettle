@@ -281,7 +281,7 @@ public class RepositoriesDialog
         fdlRepository=new FormData();
         fdlRepository.left   = new FormAttachment(0, 0);
         fdlRepository.right  = new FormAttachment(middle, -margin*2);
-        fdlRepository.top    = new FormAttachment(wRepository, 0, SWT.CENTER);
+        fdlRepository.bottom = new FormAttachment(wUsername, repMargin);
         wlRepository.setLayoutData(fdlRepository);
 
 		// Add the listeners
