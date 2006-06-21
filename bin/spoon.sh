@@ -49,7 +49,7 @@ case `uname -s` in
 		;;
 
 	Linux)
-    ARCH=`uname -m`
+	    ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
 				LIBPATH=libswt/linux/x86_64/
@@ -61,6 +61,32 @@ case `uname -s` in
 
 			ppc)
 				LIBPATH=libswt/linux/ppc/
+				;;
+
+			*)	
+				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
+				exit
+				;;
+		esac
+		;;
+
+	FreeBSD)
+	    ARCH=`uname -m`
+		case $ARCH in
+			x86_64)
+				LIBPATH=libswt/freebsd/x86_64/
+				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
+				exit
+				;;
+
+			i[3-6]86)
+				LIBPATH=libswt/freebsd/x86/
+				;;
+
+			ppc)
+				LIBPATH=libswt/freebsd/ppc/
+				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
+				exit
 				;;
 
 			*)	
