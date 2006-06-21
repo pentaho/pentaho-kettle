@@ -37,6 +37,7 @@ case `uname -s` in
 	Darwin)
 		LIBPATH=libswt/osx/
 		JAVA_BIN=libswt/osx/java_swt
+		chmod +x $JAVA_BIN
 		;;
 
 	Linux)
