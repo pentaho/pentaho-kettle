@@ -10,6 +10,7 @@ import java.util.Date;
 import junit.framework.TestCase;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -31,6 +32,7 @@ public abstract class KettleStepUseCase extends TestCase {
 		log = LogWriter.getInstance(Const.SPOON_LOG_FILE, false,
 				LogWriter.LOG_LEVEL_ROWLEVEL);
 		StepLoader.getInstance().read();
+        EnvUtil.environmentInit();
 	}
 
 	public abstract String getFileExtension();
