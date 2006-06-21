@@ -361,13 +361,22 @@ public class Job extends Thread
 		return res;
 	}
 	
+    /**
+     Wait until this job has finished.
+    */
+    public void waitUntilFinished()
+    {
+        waitUntilFinished(-1L);
+    }
+    
 	/**
 	 Wait until this job has finished.
+     @param maxMiliseconds the maximum number of ms to wait
 	*/
 	public void waitUntilFinished(long maxMiliseconds)
 	{
         long time = 0L;
-        while (isAlive() && time<maxMiliseconds)
+        while (isAlive() && (time<maxMiliseconds || maxMiliseconds<0))
         {
             try { Thread.sleep(10); time+=10; } catch(InterruptedException e) {}
         }
