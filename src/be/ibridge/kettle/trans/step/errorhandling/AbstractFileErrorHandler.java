@@ -19,7 +19,7 @@ import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.step.BaseStep;
 
 public abstract class AbstractFileErrorHandler implements FileErrorHandler {
-	private static final String DD_MMYYYY_HHMMSS = "ddMMyyyy-hhmmss"; //$NON-NLS-1$
+	private static final String DD_MMYYYY_HHMMSS = "ddMMyyyy-HHhmmss"; //$NON-NLS-1$
 
 	public static final String NO_PARTS = "NO_PARTS"; //$NON-NLS-1$
 
