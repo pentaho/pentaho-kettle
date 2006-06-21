@@ -271,8 +271,8 @@ public class RepositoriesDialog
 		fdRepository=new FormData();
 		fdRepository.left = new FormAttachment(middle, -margin);
 		fdRepository.right= new FormAttachment(wnRepository, -margin);
-        fdRepository.top = new FormAttachment(wnRepository, 0, SWT.CENTER);
-        // fdRepository.bottom = new FormAttachment(wnRepository, 0, SWT.BOTTOM);
+        fdRepository.top = new FormAttachment(wnRepository, 0, SWT.TOP);
+        fdRepository.bottom = new FormAttachment(wnRepository, 0, SWT.BOTTOM);
 		wRepository.setLayoutData(fdRepository);
 
         // Repository selector
@@ -281,7 +281,7 @@ public class RepositoriesDialog
         props.setLook(wlRepository);
         fdlRepository=new FormData();
         fdlRepository.left   = new FormAttachment(0, 0);
-        fdlRepository.right  = new FormAttachment(middle, -margin*3);
+        fdlRepository.right  = new FormAttachment(middle, -margin);
         fdlRepository.bottom = new FormAttachment(wnRepository, 0, SWT.CENTER);
         wlRepository.setLayoutData(fdlRepository);
 
