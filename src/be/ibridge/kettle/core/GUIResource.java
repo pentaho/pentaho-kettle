@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
+import be.ibridge.kettle.core.exception.KettleStepLoaderException;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobPlugin;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
@@ -281,7 +282,15 @@ public class GUIResource
         JobPlugin plugins[] = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_ALL);
         for (int i = 0; i < plugins.length; i++)
         {
-            if (plugins[i].getType()==JobEntryInterface.TYPE_JOBENTRY_SPECIAL) continue;
+            try
+            {
+                if (jobEntryLoader.getJobEntryClass(plugins[i]).getType()==JobEntryInterface.TYPE_JOBENTRY_SPECIAL) continue;
+            }
+            catch(KettleStepLoaderException e)
+            {
+                log.logError("Kettle", "Unable to create job entry from plugin ["+plugins[i]+"] : "+e.toString());
+                continue;
+            }
             
             Image image = null;
             Image small_image = null;
@@ -295,7 +304,7 @@ public class GUIResource
                 }
                 catch(Exception e)
                 {
-                    log.logError("Kettle", "Unable to find required job entry image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
+                    log.logError("Kettle", "Unable to find required job entry image file ["+(Const.IMAGE_DIRECTORY + filename)+"] : "+e.toString());
                     image = new Image(display, Const.ICON_SIZE, Const.ICON_SIZE);
                     GC gc = new GC(image);
                     gc.drawRectangle(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
@@ -313,7 +322,7 @@ public class GUIResource
                 }
                 catch(Exception e)
                 {
-                    log.logError("Kettle", "Unable to find required job entry image file ["+(Const.IMAGE_DIRECTORY + filename)+" : "+e.toString());
+                    log.logError("Kettle", "Unable to find required job entry image file ["+filename+"] : "+e.toString());
                     image = new Image(display, Const.ICON_SIZE, Const.ICON_SIZE);
                     GC gc = new GC(image);
                     gc.drawRectangle(0,0,Const.ICON_SIZE, Const.ICON_SIZE);
