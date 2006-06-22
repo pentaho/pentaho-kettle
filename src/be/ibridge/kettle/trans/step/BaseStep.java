@@ -64,6 +64,7 @@ import be.ibridge.kettle.trans.step.flattener.FlattenerMeta;
 import be.ibridge.kettle.trans.step.getfilenames.GetFileNamesMeta;
 import be.ibridge.kettle.trans.step.getvariable.GetVariableMeta;
 import be.ibridge.kettle.trans.step.groupby.GroupByMeta;
+import be.ibridge.kettle.trans.step.injector.InjectorMeta;
 import be.ibridge.kettle.trans.step.insertupdate.InsertUpdateMeta;
 import be.ibridge.kettle.trans.step.joinrows.JoinRowsMeta;
 import be.ibridge.kettle.trans.step.mapping.MappingMeta;
@@ -260,11 +261,12 @@ public class BaseStep extends Thread
         new StepPluginMeta(FilesToResultMeta.class, "FilesToResult", 
                             Messages.getString("BaseStep.TypeLongDesc.FilesToResult"), Messages.getString("BaseStep.TypeTooltipDesc.FilesToResult"), 
                             "FTR.png", CATEGORY_EXTRA),
-
-        //Blocking Step
         new StepPluginMeta(BlockingStepMeta.class, "BlockingStep", 
-                Messages.getString("BaseStep.TypeLongDesc.BlockingStep"), Messages.getString("BaseStep.TypeTooltipDesc.BlockingStep"), 
-                "BLK.png", CATEGORY_EXTRA)
+                            Messages.getString("BaseStep.TypeLongDesc.BlockingStep"), Messages.getString("BaseStep.TypeTooltipDesc.BlockingStep"), 
+                            "BLK.png", CATEGORY_EXTRA),
+        new StepPluginMeta(InjectorMeta.class, "Injector", 
+                            Messages.getString("BaseStep.TypeLongDesc.Injector"), Messages.getString("BaseStep.TypeTooltipDesc.Injector"), 
+                            "INJ.png", CATEGORY_EXTRA)
 
     };
     
