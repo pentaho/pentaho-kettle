@@ -398,7 +398,7 @@ public class Job extends Thread
 		endDate     = currentDate;
 		
 		DatabaseMeta logcon = jobMeta.getLogConnection();
-		if (logcon!=null)
+		if (logcon!=null && !Const.isEmpty(jobMeta.getLogTable()))
 		{
 			Database ldb = new Database(logcon);
 			try
