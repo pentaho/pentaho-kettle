@@ -18,6 +18,7 @@ package be.ibridge.kettle.trans.step.dbproc;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.database.Database;
+import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.trans.Trans;
@@ -128,7 +129,11 @@ public class DBProc extends BaseStep implements StepInterface
 			try
 			{
 				data.db.connect();
-				
+				if (!meta.isAutoCommit())
+                {
+                    logBasic(Messages.getString("DBProc.Log.AutoCommit")); //$NON-NLS-1$
+                    data.db.setCommit(9999);
+                }
 				logBasic(Messages.getString("DBProc.Log.ConnectedToDB")); //$NON-NLS-1$
 				
 				return true;
@@ -147,6 +152,14 @@ public class DBProc extends BaseStep implements StepInterface
 	    meta = (DBProcMeta)smi;
 	    data = (DBProcData)sdi;
 	    
+        try
+        {
+            data.db.commit();
+        }
+        catch(KettleDatabaseException e)
+        {
+            logError(Messages.getString("DBProc.Log.CommitError", e.getMessage()));
+        }
 	    data.db.disconnect();
 	    
 	    super.dispose(smi, sdi);

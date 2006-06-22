@@ -70,6 +70,10 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 	private Text         wProcName;
 	private FormData     fdlProcName, fdbProcName, fdProcName;
 
+    private Label        wlAutoCommit;
+    private Button       wAutoCommit;
+    private FormData     fdlAutoCommit, fdAutoCommit;
+
 	private Label        wlResult;
 	private Text         wResult;
 	private FormData     fdlResult, fdResult;
@@ -108,6 +112,15 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 				input.setChanged();
 			}
 		};
+        
+        SelectionAdapter lsSelMod = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                input.setChanged();
+            }
+        };
+        
 		changed = input.hasChanged();
 
 		FormLayout formLayout = new FormLayout ();
@@ -210,7 +223,27 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		fdProcName.top  = new FormAttachment(wConnection, margin*2);
 		fdProcName.right= new FormAttachment(wbProcName, -margin);
 		wProcName.setLayoutData(fdProcName);
-		
+
+        // AutoCommit line
+        wlAutoCommit=new Label(shell, SWT.RIGHT);
+        wlAutoCommit.setText(Messages.getString("DBProcDialog.AutoCommit.Label"));
+        wlAutoCommit.setToolTipText(Messages.getString("DBProcDialog.AutoCommit.Tooltip"));
+        props.setLook(wlAutoCommit);
+        fdlAutoCommit=new FormData();
+        fdlAutoCommit.left  = new FormAttachment(0, 0);
+        fdlAutoCommit.top   = new FormAttachment(wProcName, margin);
+        fdlAutoCommit.right = new FormAttachment(middle, -margin);
+        wlAutoCommit.setLayoutData(fdlAutoCommit);
+        wAutoCommit=new Button(shell, SWT.CHECK);
+        wAutoCommit.setToolTipText(Messages.getString("DBProcDialog.AutoCommit.Tooltip"));
+        props.setLook(wAutoCommit);
+        fdAutoCommit=new FormData();
+        fdAutoCommit.left  = new FormAttachment(middle, 0);
+        fdAutoCommit.top   = new FormAttachment(wProcName, margin);
+        fdAutoCommit.right = new FormAttachment(100, 0);
+        wAutoCommit.setLayoutData(fdAutoCommit);
+        wAutoCommit.addSelectionListener(lsSelMod);
+
 		
 		// Result line...
 		wlResult=new Label(shell, SWT.RIGHT);
@@ -219,14 +252,14 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		fdlResult=new FormData();
 		fdlResult.left = new FormAttachment(0, 0);
 		fdlResult.right= new FormAttachment(middle, -margin);
-		fdlResult.top  = new FormAttachment(wProcName, margin*2);
+		fdlResult.top  = new FormAttachment(wAutoCommit, margin*2);
 		wlResult.setLayoutData(fdlResult);
 		wResult=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wResult);
 		wResult.addModifyListener(lsMod);
 		fdResult=new FormData();
 		fdResult.left = new FormAttachment(middle, 0);
-		fdResult.top  = new FormAttachment(wProcName, margin*2);
+		fdResult.top  = new FormAttachment(wAutoCommit, margin*2);
 		fdResult.right= new FormAttachment(100, 0);
 		wResult.setLayoutData(fdResult);
 
@@ -362,6 +395,8 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		if (input.getResultName()!=null)   wResult.setText(input.getResultName());
 		wResultType.setText(Value.getTypeDesc(input.getResultType()));
 
+        wAutoCommit.setSelection(input.isAutoCommit());
+        
 		wFields.setRowNums();
 		wFields.optWidth(true);
 		wStepname.selectAll();
@@ -395,6 +430,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		input.setProcedure( wProcName.getText() );
 		input.setResultName( wResult.getText() );
 		input.setResultType( Value.getType(wResultType.getText()) ); 
+        input.setAutoCommit( wAutoCommit.getSelection() );
 
 		stepname = wStepname.getText(); // return value
 
