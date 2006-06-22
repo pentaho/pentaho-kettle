@@ -347,11 +347,12 @@ public class TableView extends Composite
 			{
 				public void focusLost(FocusEvent e)
 				{
+                    if (table.isDisposed()) return;
 					TableItem row = activeTableItem;
 					if (row==null) return;
 					int colnr = activeTableColumn;
 					int rownr = table.indexOf(row);
-					row.setText(colnr, text.getText());
+					if (!row.isDisposed()) row.setText(colnr, text.getText());
 					text.dispose();
 															
 					String after_edit[] = getItemText(row);
