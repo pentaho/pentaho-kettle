@@ -32,6 +32,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.DatabaseImpact;
@@ -213,10 +214,13 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
         databases = new Database[] { db }; // keep track of it for cancelling purposes...
 
 		// First try without connecting to the database... (can be  S L O W)
+        String sNewSQL = sql; 
+        if (isVariableReplacementActive()) sNewSQL = StringUtil.environmentSubstitute(sql); 
+
 		Row add=null;
 		try
 		{
-			add = db.getQueryFields(sql, param, info);
+			add = db.getQueryFields(sNewSQL, param, info);
 		}
 		catch(KettleDatabaseException dbe)
 		{
