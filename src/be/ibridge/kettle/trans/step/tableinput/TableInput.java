@@ -19,6 +19,7 @@ package be.ibridge.kettle.trans.step.tableinput;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.database.Database;
+import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
@@ -237,7 +238,10 @@ public class TableInput extends BaseStep implements StepInterface
 			try
 			{
 				data.db.connect();
-                data.db.setCommit(100); // needed for PGSQL it seems...
+                if (meta.getDatabaseMeta().getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_SYBASE)
+                {
+                    data.db.setCommit(100); // needed for PGSQL it seems...
+                }
                 if (log.isDetailed()) logDetailed("Connected to database...");
 
 				return true;
