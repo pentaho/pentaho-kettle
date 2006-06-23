@@ -5,7 +5,7 @@ import be.ibridge.kettle.core.RowSet;
 import be.ibridge.kettle.trans.step.StepInterface;
 
 /**
- * Allows you to "Feed" rows to a step.
+ * Allows you to "Inject" rows into a step.
  * 
  * @author Matt
  *
