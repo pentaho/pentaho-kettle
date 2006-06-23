@@ -2730,8 +2730,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     						item.setText( 8,""+field.getDecimalSymbol());
     						item.setText( 9,""+field.getGroupSymbol());
     						item.setText(10,""+field.getNullString());
-    						item.setText(11,""+field.getTrimTypeDesc());
-    						item.setText(12,   field.isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
+                            item.setText(11,""+field.getIfNullValue());
+    						item.setText(12,""+field.getTrimTypeDesc());
+    						item.setText(13,   field.isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
     					}
     					
     				}

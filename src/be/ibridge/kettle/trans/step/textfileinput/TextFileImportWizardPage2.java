@@ -46,7 +46,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.value.Value;
 
-public class TextFileImportWizardPage2 extends WizardPage // implements Listener 
+public class TextFileImportWizardPage2 extends WizardPage
 {
 	private List wFields;
 	private FormData fdFields;
@@ -651,6 +651,21 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 				}
 			}
 		); 
+        
+        wTrimtype.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    int idx = wFields.getSelectionIndex();
+                    if (idx>=0)
+                    {
+                        int trimType = TextFileInputMeta.getTrimTypeByDesc(wTrimtype.getText());
+                        TextFileInputField field = (TextFileInputField)fields.get(idx);
+                        field.setTrimType(trimType);
+                    }
+                }
+            }
+        );
 
 		// set the composite as the control for this page
 		setControl(composite);
@@ -686,9 +701,16 @@ public class TextFileImportWizardPage2 extends WizardPage // implements Listener
 		for (int i=0;i<rows.size();i++)
 		{
 			String line = (String)rows.get(i);
-				
-			if (position+length>=line.length()) retval[i] = line.substring(position);
-			else                                retval[i] = line.substring(position, position+length);
+	
+            if (position<length)
+            {
+    			if (position+length>=line.length()) retval[i] = line.substring(position);
+    			else                                retval[i] = line.substring(position, position+length);
+            }
+            else
+            {
+                retval[i]="";
+            }
 		}
 		
 		return retval;

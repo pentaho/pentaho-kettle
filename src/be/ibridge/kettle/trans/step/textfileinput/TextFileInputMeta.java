@@ -1184,7 +1184,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (trimTypeDesc[i].equalsIgnoreCase(tt)) return i;
 		}
-		return 0;
+
+        // If this fails, try to match using the code.
+        return getTrimTypeByCode(tt);
 	}
 
 	public final static String getTrimTypeCode(int i)
