@@ -22,6 +22,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 
 import org.apache.log4j.Appender;
+import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
 
 import be.ibridge.kettle.core.exception.KettleException;
@@ -128,8 +129,22 @@ public class LogWriter
 	private LogWriter(int lvl)
 	{
         this();
+
+        // Check if there already is a console appender (ConsoleAppender) (in the app server for example)
+        // 
+        boolean found = false;
+        Enumeration appenders = rootLogger.getAllAppenders();
         
-        rootLogger.addAppender(consoleAppender);
+        while(appenders.hasMoreElements())
+        {
+            
+            if (appenders.nextElement() instanceof ConsoleAppender) found=true;
+        }
+
+        if (!found)
+        {
+            rootLogger.addAppender(consoleAppender);
+        }
         
 		level  = lvl;
 		filter = null;
