@@ -57,8 +57,6 @@ public class Injector extends BaseStep implements StepInterface
 			return false;
 		}
 		
-		linesRead++;
-		
 		putRow(row);     // copy row to possible alternate rowset(s).
 
 		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("Injector.Log.LineNumber")+linesRead); //$NON-NLS-1$
