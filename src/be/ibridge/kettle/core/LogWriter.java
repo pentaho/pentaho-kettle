@@ -137,8 +137,8 @@ public class LogWriter
         
         while(appenders.hasMoreElements())
         {
-            
-            if (appenders.nextElement() instanceof ConsoleAppender) found=true;
+            Object appender = appenders.nextElement();
+            if (appender instanceof ConsoleAppender || appender instanceof Log4jConsoleAppender) found=true;
         }
 
         if (!found)
