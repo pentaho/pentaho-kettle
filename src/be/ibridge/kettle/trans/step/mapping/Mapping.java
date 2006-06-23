@@ -82,6 +82,41 @@ public class Mapping extends BaseStep implements StepInterface
 		if (first)
 		{
 			first=false;
+            
+            // First start the mapping/transformation threads
+            //
+            // Start the transformation in the background!
+            // Pass the arguments to THIS transformation...
+            data.trans.execute(getTrans().getTransMeta().getArguments());
+            
+            // Now, the transformation runs in the background.
+            // We pick it up and close shop when this step has finished processing.
+            
+            // Let's find out what the MappingInput step is...
+            data.mappingInput = data.trans.findMappingInput();
+            if (data.mappingInput==null)
+            {
+                logError(Messages.getString("Mapping.Log.CouldNotFindMappingInputStep")); //$NON-NLS-1$
+                return false;
+            }
+            
+            // And the mapping output step?
+            data.mappingOutput = data.trans.findMappingOutput();
+            if (data.mappingOutput==null)
+            {
+                logError(Messages.getString("Mapping.Log.CouldNotFindMappingInputStep2")); //$NON-NLS-1$
+                return false;
+            }
+            
+            // OK, now tell the MappingOutput step to send records over here!!
+            data.mappingOutput.setConnectorStep(this);
+            data.mappingOutput.setOutputField(meta.getOutputField());
+            data.mappingOutput.setOutputMapping(meta.getOutputMapping());
+            
+            // Now we continue with out regular program... 
+            
+            
+            
 			data.renameFieldIndexes = new ArrayList();
 			data.renameFieldNames   = new ArrayList();
 			
@@ -161,39 +196,43 @@ public class Mapping extends BaseStep implements StepInterface
                 LogWriter log = LogWriter.getInstance();
                 data.trans = new Trans(log, meta.getMappingTransMeta());
                 
-                // Start the transformation in the background!
-                // Pass the arguments to THIS transformation...
-                data.trans.execute(getTrans().getTransMeta().getArguments());
-                
-                // Now, the transformation runs in the background.
-                // We pick it up and close shop when this step has finished processing.
-                
-                // Let's find out what the MappingInput step is...
-                data.mappingInput = data.trans.findMappingInput();
-                if (data.mappingInput==null)
-                {
-                    logError(Messages.getString("Mapping.Log.CouldNotFindMappingInputStep")); //$NON-NLS-1$
-                    return false;
-                }
-                
-                // And the mapping output step?
-                data.mappingOutput = data.trans.findMappingOutput();
-                if (data.mappingOutput==null)
-                {
-                    logError(Messages.getString("Mapping.Log.CouldNotFindMappingInputStep2")); //$NON-NLS-1$
-                    return false;
-                }
-                
-                // OK, now tell the MappingOutput step to send records over here!!
-                data.mappingOutput.setConnectorStep(this);
-                data.mappingOutput.setOutputField(meta.getOutputField());
-                data.mappingOutput.setOutputMapping(meta.getOutputMapping());
+                // We launch the transformation in the processRow when the first row is received.
+                // This will allow the correct variables to be passed.
+                // Otherwise the parent is the init() thread which will be gone once the init is done.
             }
             
 		    return true;
 		}
 		return false;
 	}
+    
+    public void dispose(StepMetaInterface smi, StepDataInterface sdi)
+    {
+        // Close the running transformation
+        if (data.trans!=null)
+        {
+            // Wait until the child transformation has finished.
+            data.trans.waitUntilFinished();
+            
+            // store some logging, close shop.
+            try
+            {
+                data.trans.endProcessing("end"); //$NON-NLS-1$
+            }
+            catch(KettleException e)
+            {
+                log.logError(toString(), Messages.getString("Mapping.Log.UnableToLogEndOfTransformation")+e.toString()); //$NON-NLS-1$
+            }
+            
+            // See if there was an error in the sub-transformation, in that case, flag error etc.
+            if (data.trans.getErrors()>0)
+            {
+                logError(Messages.getString("Mapping.Log.ErrorOccurredInSubTransformation")); //$NON-NLS-1$
+                setErrors(1);
+            }
+        }
+        super.dispose(smi, sdi);
+    }
 	
 	//
 	// Run is were the action happens!
@@ -214,30 +253,6 @@ public class Mapping extends BaseStep implements StepInterface
 		}
 		finally
 		{
-            // Close the running transformation
-            if (data.trans!=null)
-            {
-                // Wait until the child transformation has finished.
-                data.trans.waitUntilFinished();
-                
-                // store some logging, close shop.
-                try
-                {
-	                data.trans.endProcessing("end"); //$NON-NLS-1$
-                }
-                catch(KettleException e)
-                {
-                	log.logError(toString(), Messages.getString("Mapping.Log.UnableToLogEndOfTransformation")+e.toString()); //$NON-NLS-1$
-                }
-                
-        		// See if there was an error in the sub-transformation, in that case, flag error etc.
-        		if (data.trans.getErrors()>0)
-        		{
-        			logError(Messages.getString("Mapping.Log.ErrorOccurredInSubTransformation")); //$NON-NLS-1$
-        			setErrors(1);
-        		}
-            }
-            
 			dispose(meta, data);
 			logSummary();
 			markStop();
