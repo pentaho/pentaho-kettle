@@ -124,10 +124,10 @@ fi
 
 # ******************************************************************
 # ** Set java runtime options                                     **
-# ** Change 128m to higher values in case you run out of memory.  **
+# ** Change 256m to higher values in case you run out of memory.  **
 # ******************************************************************
 
-OPT="-Xmx256m -cp $CLASSPATH -Djava.library.path=$LIBPATH"
+OPT="-Xmx256m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_REPOSITORY=\"$KETTLE_REPOSITORY\" -DKETTLE_USER=\"$KETTLE_USER\" -DKETTLE_PASSWORD=\"$KETTLE_PASSWORD\""
 
 # ***************
 # ** Run...    **
