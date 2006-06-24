@@ -473,10 +473,7 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 				Scriptable jsrow = Context.toObject(row, jsscope);
 				jsscope.put("row", jsscope, jsrow); //$NON-NLS-1$
                 
-                Scriptable jsvars = Context.toObject(KettleVariables.getInstance(), jsscope);
-                jsscope.put("KETTLE_VARS", jsscope, jsvars); //$NON-NLS-1$
-
-				for (int i=0;i<row.size();i++)
+               for (int i=0;i<row.size();i++)
 				{
 					Value val = row.getValue(i); 
 					// Set date and string values to something to simulate real thing

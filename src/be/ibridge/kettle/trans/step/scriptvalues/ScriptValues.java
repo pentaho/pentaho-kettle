@@ -104,9 +104,6 @@ public class ScriptValues extends BaseStep implements StepInterface
 			Scriptable jsvalue = Context.toObject(this, data.scope);
 			data.scope.put("_step_", data.scope, jsvalue); //$NON-NLS-1$
 
-            Scriptable jsvars = Context.toObject(KettleVariables.getInstance(), data.scope);
-            data.scope.put("KETTLE_VARS", data.scope, jsvars); //$NON-NLS-1$
-
 			//StringReader in = new StringReader(info.script);
 			
 			try
