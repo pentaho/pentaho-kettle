@@ -400,7 +400,7 @@ public class RepositoryDialog
 				catch(KettleDatabaseException dbe)
 				{
 				    rep.rollback();
-				    // Don't show the error anymore, just go ahead and create the damw thing!
+				    // Don't show the error anymore, just go ahead and create the damn thing!
 					// ErrorDialog ed = new ErrorDialog(shell, props, "ERROR", "An unexpected error occured trying to check the existence of table R_USER in the repository."+Const.CR+"We consider the table to be non-existent and we will try to create the repository. ", dbe);
 				}
 				

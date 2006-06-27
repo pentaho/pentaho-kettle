@@ -274,7 +274,9 @@ public class Repository
             throw new KettleException(Const.CR+
                     "The version of the repository is "+getVersion()+Const.CR+
                     "This Kettle edition requires it to be at least version "+getRequiredVersion()+Const.CR+
-                    "Please upgrade the repository using the repository dialog (edit)");
+                    "Please upgrade the repository using the repository dialog (edit)"+Const.CR+
+                    "Also see the Repository Upgrade Guide (in docs/English) for more information."
+            );
         }
     }
 
