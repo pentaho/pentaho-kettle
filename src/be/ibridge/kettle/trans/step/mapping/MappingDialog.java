@@ -554,7 +554,14 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	{
 		stepname = wStepname.getText(); // return value
 		
-        input.setMappingTransMeta(mappingTransMeta);
+        if (Const.isEmpty(wTransformation.getText()))
+        {
+            input.setMappingTransMeta(null);
+        }
+        else
+        {
+            input.setMappingTransMeta(mappingTransMeta);
+        }
         
         int nrInput  = wInputFields.nrNonEmpty();
         int nrOutput = wOutputFields.nrNonEmpty();

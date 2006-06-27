@@ -200,6 +200,11 @@ public class Mapping extends BaseStep implements StepInterface
                 // This will allow the correct variables to be passed.
                 // Otherwise the parent is the init() thread which will be gone once the init is done.
             }
+            else
+            {
+                logError("No valid mapping was specified!");
+                return false;
+            }
             
 		    return true;
 		}
@@ -249,7 +254,7 @@ public class Mapping extends BaseStep implements StepInterface
             logError(Const.getStackTracker(e));
             setErrors(1);
 			stopAll();
-			data.trans.stopAll();
+			if (data.trans!=null) data.trans.stopAll();
 		}
 		finally
 		{
