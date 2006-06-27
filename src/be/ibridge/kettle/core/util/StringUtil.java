@@ -215,5 +215,23 @@ public class StringUtil
         getUsedVariables(aString, UNIX_OPEN, UNIX_CLOSE, list);
         getUsedVariables(aString, WINDOWS_OPEN, WINDOWS_CLOSE, list);
     }
+    
+    /**
+     * Return the value of a Kettle or system variable. (in that order or occurence)
+     * 
+     * @param aString the variable to look for, without the $ or % variable specification, just the name.
+     * @param defaultValue the default value in case nothing was found.
+     * @return the value for that (kettle) variable
+     */
+    public static final String getVariable(String variable, String defaultValue)
+    {
+        KettleVariables vars = KettleVariables.getInstance();
+        
+        Properties systemProperties = new Properties();
+        systemProperties.putAll( System.getProperties() );
+        systemProperties.putAll( vars.getProperties() ); // overwrite with local vars
+
+        return systemProperties.getProperty(variable, defaultValue);
+    }
 }
 
