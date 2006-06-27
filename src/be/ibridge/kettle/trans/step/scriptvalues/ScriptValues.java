@@ -102,13 +102,10 @@ public class ScriptValues extends BaseStep implements StepInterface
 			first = false;
 			Scriptable jsvalue = Context.toObject(this, data.scope);
 			data.scope.put("_step_", data.scope, jsvalue); //$NON-NLS-1$
-
-			//StringReader in = new StringReader(info.script);
-			
+            
 			try
 			{
 				data.script=data.cx.compileString(meta.getScript(), "script", 1, null); //$NON-NLS-1$
-				// script=cx.compileReader(scope, in, "script", 1, null);
 			}
 			catch(Exception e)
 			{
@@ -133,11 +130,8 @@ public class ScriptValues extends BaseStep implements StepInterface
 		try
 		{
 
-			//result = cx.evaluateString(scope, info.script, "<cmd>", 1, null);
 			data.script.exec(data.cx, data.scope);
 			
-			//Object id[] = scope.getIds();
-
 			StringBuffer message = new StringBuffer();
 			for (int i=0;i<meta.getName().length;i++)
 			{
