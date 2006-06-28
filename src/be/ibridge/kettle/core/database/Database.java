@@ -3017,7 +3017,19 @@ public class Database
 			{ 
 				comma=true; 
 			}
-			sql.append(databaseMeta.quoteField(keys[i])).append(" = ? ) OR ( ").append(databaseMeta.quoteField(keys[i])).append(" IS NULL AND ? IS NULL ) )").append(Const.CR);
+			sql.append(databaseMeta.quoteField(keys[i])).append(" = ? ) OR ( ").append(databaseMeta.quoteField(keys[i]));
+            sql.append(" IS NULL AND ");
+            if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_DB2)
+            {
+                sql.append("CAST(? AS VARCHAR(256)) IS NULL");
+            }
+            else
+            {
+                sql.append("? IS NULL");
+            }
+            
+            sql.append(" ) )");
+            sql.append(Const.CR);
 		}
 		
 		try
