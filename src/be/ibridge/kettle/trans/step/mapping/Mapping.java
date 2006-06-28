@@ -61,10 +61,16 @@ public class Mapping extends BaseStep implements StepInterface
 		if (r==null)       // no more input to be expected...
 		{
             // Signal output done to the mapping input step in the mapping...
-			data.mappingInput.setOutputDone();
-            
-			// The wait for mapping input is over...
-            data.mappingInput.setFinished(); 
+            // But only if the mapping was started in the first place.
+            // This only happens when 0 lines of data are processed.
+            //
+            if (data.mappingInput!=null)
+            {
+    			data.mappingInput.setOutputDone();
+                
+    			// The wait for mapping input is over...
+                data.mappingInput.setFinished();
+            }
             
 			return false;
 		}
