@@ -3348,9 +3348,8 @@ public class Database
 	{
 		int start_tk = databaseMeta.getNotFoundTK(use_autoinc);
 				
-		String sql = "SELECT count(*) FROM "+databaseMeta.quoteField(tablename)+" WHERE "+databaseMeta.quoteField(tk)+" = "+start_tk;
-		ResultSet rs = openQuery(sql, null);
-		Row r = getRow(rs); // One value: a number;
+        String sql = "SELECT count(*) FROM "+databaseMeta.quoteField(tablename)+" WHERE "+databaseMeta.quoteField(tk)+" = "+start_tk;
+		Row r = getOneRow(sql); 
 		Value count = r.getValue(0);
 		if (count.getNumber() == 0)
 		{
