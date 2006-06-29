@@ -64,14 +64,19 @@ public class Mapping extends BaseStep implements StepInterface
             // But only if the mapping was started in the first place.
             // This only happens when 0 lines of data are processed.
             //
-            if (data.mappingInput!=null)
+            if (data.wasStarted)
             {
     			data.mappingInput.setOutputDone();
                 
     			// The wait for mapping input is over...
                 data.mappingInput.setFinished();
             }
-            
+            else
+            {
+                // Zero rows were received, the mapping was never started: so just signal "END"...
+                setOutputDone();
+            }
+
 			return false;
 		}
         
@@ -118,6 +123,8 @@ public class Mapping extends BaseStep implements StepInterface
             data.mappingOutput.setConnectorStep(this);
             data.mappingOutput.setOutputField(meta.getOutputField());
             data.mappingOutput.setOutputMapping(meta.getOutputMapping());
+            
+            data.wasStarted = true;
             
             // Now we continue with out regular program... 
             
@@ -220,7 +227,7 @@ public class Mapping extends BaseStep implements StepInterface
     public void dispose(StepMetaInterface smi, StepDataInterface sdi)
     {
         // Close the running transformation
-        if (data.trans!=null)
+        if (data.wasStarted)
         {
             // Wait until the child transformation has finished.
             data.trans.waitUntilFinished();

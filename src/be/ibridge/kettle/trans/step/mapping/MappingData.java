@@ -36,6 +36,7 @@ public class MappingData extends BaseStepData implements StepDataInterface
     public MappingOutput mappingOutput;
 	public ArrayList renameFieldIndexes;
 	public ArrayList renameFieldNames;
+    public boolean wasStarted;
     
 	/**
 	 * 
@@ -44,6 +45,7 @@ public class MappingData extends BaseStepData implements StepDataInterface
 	{
 		super();
         trans = null;
+        wasStarted = false;
 	}
 
 }
