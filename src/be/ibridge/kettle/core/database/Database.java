@@ -1771,12 +1771,12 @@ public class Database
                     int fs = Const.FETCH_SIZE<=pstmt.getMaxRows()?pstmt.getMaxRows():Const.FETCH_SIZE;
                     
                     // System.out.println("Setting pstmt fetchsize to : "+fs);
-                    if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
                     {
-                        pstmt.setFetchSize(Integer.MIN_VALUE);
-                    }
-                    else
-                    {
+                        if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
+                        {
+                            pstmt.setFetchSize(Integer.MIN_VALUE);
+                        }
+                        else
                         pstmt.setFetchSize(fs);
                     }
 					debug = "P Set fetch direction";
@@ -2946,7 +2946,11 @@ public class Database
 			log.logDetailed(toString(), "Dimension Lookup setting preparedStatement to ["+sql+"]");
 			prepStatementLookup=connection.prepareStatement(databaseMeta.stripCR(sql));
 			prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
-			log.logDetailed(toString(), "Finished preparing dimension lookup statement.");
+            if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
+            {
+                pstmt.setFetchSize(5); // Make sure to DISABLE Streaming Result sets
+            }
+            log.logDetailed(toString(), "Finished preparing dimension lookup statement.");
 		}
 		catch(SQLException ex) 
 		{
@@ -3116,10 +3120,11 @@ public class Database
 	{
 		String debug = "start";
 		Row ret;
+        ResultSet res = null;
 		try
 		{
 			debug = "pstmt.executeQuery()";
-			ResultSet res = ps.executeQuery();
+			res = ps.executeQuery();
 			
 			debug = "getRowInfo()";
 			rowinfo = getRowInfo(res.getMetaData());
@@ -3135,14 +3140,23 @@ public class Database
                 }
             }
 			debug = "res.close()";
-			res.close(); // close resultset!
-			
 			return ret;
 		}
 		catch(SQLException ex) 
 		{
 			throw new KettleDatabaseException("Error looking up row in database ("+debug+")", ex);
 		}
+        finally
+        {
+            try
+            {
+                if (res!=null) res.close(); // close resultset!
+            }
+            catch(SQLException e)
+            {
+                throw new KettleDatabaseException("Unable to close resultset after looking up data", e);
+            }
+        }
 	}
 	
 	public DatabaseMetaData getDatabaseMetaData()
