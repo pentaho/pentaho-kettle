@@ -443,6 +443,7 @@ public class DimensionLookup extends BaseStep implements StepInterface
 		catch(KettleException e)
 		{
 			logError(Messages.getString("DimensionLookup.Log.StepCanNotContinueForErrors", e.getMessage())); //$NON-NLS-1$ //$NON-NLS-2$
+            logError(Const.getStackTracker(e)); //$NON-NLS-1$ //$NON-NLS-2$
 			setErrors(1);
 			stopAll();
 			setOutputDone();  // signal end to receiver(s)
