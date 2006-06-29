@@ -2948,7 +2948,7 @@ public class Database
 			prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
             if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
             {
-                pstmt.setFetchSize(5); // Make sure to DISABLE Streaming Result sets
+                prepStatementLookup.setFetchSize(5); // Make sure to DISABLE Streaming Result sets
             }
             log.logDetailed(toString(), "Finished preparing dimension lookup statement.");
 		}
