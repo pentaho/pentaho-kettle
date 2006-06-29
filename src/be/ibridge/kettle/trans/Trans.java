@@ -513,6 +513,7 @@ public class Trans
 		catch(Exception e)
 		{
 			log.logError(toString(), Messages.getString("Trans.Log.TransformationError")+e.toString()); //$NON-NLS-1$
+            log.logError(toString(), Const.getStackTracker(e)); //$NON-NLS-1$
 		}
 	}
 
