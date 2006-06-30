@@ -1388,6 +1388,8 @@ public class Const
 	 * @param string The string to split
 	 * @param separator The separator used.
 	 * @return the string split into an array of strings
+	 * 
+	 * @deprecated
 	 */
 	public static final String[] splitString(String string, String separator)
 	{
@@ -1405,8 +1407,9 @@ public class Const
 
 		int sepLen = separator.length();
 		int from = 0;
+	    int end = string.length() - sepLen + 1;
 
-		for (int i = from; i < string.length(); i += sepLen)
+		for (int i = from; i < end; i += sepLen)
 		{
 			if (string.substring(i, i + sepLen).equalsIgnoreCase(separator))
 			{
@@ -1427,6 +1430,54 @@ public class Const
 		return (String[]) list.toArray(new String[list.size()]);
 	}
 
+	/**
+	 * Convert strings separated by a character into an array of strings.<p>
+	 * <code>
+	 Example: a;b;c;d    ==  new String[] { a, b, c, d }
+	 * </code>
+	 *  
+	 * @param string The string to split
+	 * @param separator The separator used.
+	 * @return the string split into an array of strings
+	 */
+	public static final String[] splitString(String string, char separator)
+	{
+		/*
+		 *           0123456
+		 *   Example a;b;c;d    -->    new String[] { a, b, c, d }
+		 */
+		// System.out.println("splitString ["+path+"] using ["+separator+"]");
+		ArrayList list = new ArrayList();
+
+		if (string == null || string.length() == 0)
+		{
+			return new String[] {};
+		}
+
+		int from = 0;
+	    int end = string.length();
+
+		for (int i = from; i < end; i += 1)
+		{
+			if (string.charAt(i) == separator)
+			{
+				// OK, we found a separator, the string to add to the list
+				// is [from, i[
+				list.add(NVL(string.substring(from, i), ""));
+				from = i + 1;
+			}
+		}
+
+		// Wait, if the string didn't end with a separator, we still have information at the end of the string...
+		// In our example that would be "d"...
+		if (from + 1 <= string.length())
+		{
+			list.add(NVL(string.substring(from, string.length()), ""));
+		}
+
+		return (String[]) list.toArray(new String[list.size()]);
+	}
+	
 	/**
 	 * Convert strings separated by a string into an array of strings.<p>
 	 * <code>

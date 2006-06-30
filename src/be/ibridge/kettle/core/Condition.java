@@ -428,7 +428,7 @@ public class Condition implements Cloneable, XMLInterface
 					case FUNC_NULL          : retval = (field.isNull());           break;
 					case FUNC_NOT_NULL      : retval = (!field.isNull());          break;
 					case FUNC_IN_LIST		: 
-					    	String list[] = Const.splitString(field2.getString(), ";");
+					    	String list[] = Const.splitString(field2.getString(), ';');
 					    	retval = Const.indexOfString(field.getString(), list)>=0;
 					    	break;
 					case FUNC_CONTAINS      : retval = field.getString()!=null?field.getString().indexOf(field2.getString())>=0:false; break;
