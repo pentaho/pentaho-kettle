@@ -177,4 +177,100 @@ public class ConstTest extends TestCase
 		assertEquals(true, Const.onlySpaces("  "));
 		assertEquals(false, Const.onlySpaces("   test "));		
 	}
+	
+	/**
+	 *  Test splitString with String separator.
+	 */
+	public void testSplitString()
+	{
+		assertEquals(0, Const.splitString("", ";").length);
+		assertEquals(0, Const.splitString(null, ";").length);
+
+		String a[] = Const.splitString(";;", ";");
+		assertEquals(2, a.length);
+		assertEquals("", a[0]);
+		assertEquals("", a[1]);
+		
+		a = Const.splitString("a;b;c;d", ";");
+		assertEquals(4, a.length);
+		assertEquals("a", a[0]);
+		assertEquals("b", a[1]);
+		assertEquals("c", a[2]);
+		assertEquals("d", a[3]);
+
+		a = Const.splitString("a;b;c;d;", ";");
+		assertEquals(4, a.length);
+		assertEquals("a", a[0]);
+		assertEquals("b", a[1]);
+		assertEquals("c", a[2]);
+		assertEquals("d", a[3]);
+
+		a = Const.splitString("a;b;c;d;;", ";");
+		assertEquals(5, a.length);
+		assertEquals("a", a[0]);
+		assertEquals("b", a[1]);
+		assertEquals("c", a[2]);
+		assertEquals("d", a[3]);
+		assertEquals("",  a[4]);
+		
+		a = Const.splitString("AACCAADAaAADD", "AA");
+		assertEquals(4, a.length);
+		assertEquals("", a[0]);
+		assertEquals("CC", a[1]);
+		assertEquals("DA", a[2]);
+		assertEquals("ADD", a[3]);
+
+		a = Const.splitString("CCAABBAA", "AA");
+		assertEquals(2, a.length);		
+		assertEquals("CC", a[0]);
+		assertEquals("BB", a[1]);
+	}
+
+	/**
+	 *  Test splitString with char separator.
+	 */	
+	public void testSplitStringChar()
+	{
+		assertEquals(0, Const.splitString("", ';').length);
+		assertEquals(0, Const.splitString(null, ';').length);
+
+		String a[] = Const.splitString(";;", ';');
+		assertEquals(2, a.length);
+		assertEquals("", a[0]);
+		assertEquals("", a[1]);
+		
+		a = Const.splitString("a;b;c;d", ';');
+		assertEquals(4, a.length);
+		assertEquals("a", a[0]);
+		assertEquals("b", a[1]);
+		assertEquals("c", a[2]);
+		assertEquals("d", a[3]);
+
+		a = Const.splitString("a;b;c;d;", ';');
+		assertEquals(4, a.length);
+		assertEquals("a", a[0]);
+		assertEquals("b", a[1]);
+		assertEquals("c", a[2]);
+		assertEquals("d", a[3]);
+
+		a = Const.splitString("a;b;c;d;;", ';');
+		assertEquals(5, a.length);
+		assertEquals("a", a[0]);
+		assertEquals("b", a[1]);
+		assertEquals("c", a[2]);
+		assertEquals("d", a[3]);
+		assertEquals("",  a[4]);
+		
+		a = Const.splitString(";CC;DA;ADD", ';');
+		assertEquals(4, a.length);
+		assertEquals("", a[0]);
+		assertEquals("CC", a[1]);
+		assertEquals("DA", a[2]);
+		assertEquals("ADD", a[3]);
+
+		a = Const.splitString("CC;BB;", ';');
+		assertEquals(2, a.length);		
+		assertEquals("CC", a[0]);
+		assertEquals("BB", a[1]);
+	}
 }

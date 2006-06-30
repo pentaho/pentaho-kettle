@@ -114,5 +114,24 @@ public class ConditionTest extends TestCase
 		cb2.setOperator(Condition.OPERATOR_XOR);
 		assertEquals("XOR           A < [bbb]" + Const.CR, cb2.toString());
 		assertEquals("(" + Const.CR + "                D = [ 77]" + Const.CR + "  XOR           A < [bbb]" + Const.CR + ")" + Const.CR, two.toString());
+		
+		assertEquals("<condition>" + Const.CR + " <negated>N</negated>" + Const.CR + " <operator>XOR</operator>" + Const.CR + " <leftvalue>A</leftvalue>" + Const.CR + " <function>&lt;</function>" + Const.CR + " <rightvalue/>" + Const.CR + "<value>   <name>other</name><type>String</type><text>bbb</text><length>-1</length><precision>-1</precision><isnull>N</isnull>  </value> </condition>" + Const.CR, cb2.getXML());
+		assertEquals("<condition>" + Const.CR + " <negated>N</negated>" + Const.CR + " <conditions>" + Const.CR + "  <condition>" + Const.CR + "   <negated>N</negated>" + Const.CR + "   <leftvalue>D</leftvalue>" + Const.CR + "   <function>=</function>" + Const.CR + "   <rightvalue/>" + Const.CR + "<value>     <name>other</name><type>Integer</type><text> 77</text><length>-1</length><precision>0</precision><isnull>N</isnull>  </value>   </condition>" + Const.CR + "  <condition>" + Const.CR + "   <negated>N</negated>" + Const.CR + "   <operator>XOR</operator>" + Const.CR + "   <leftvalue>A</leftvalue>" + Const.CR + "   <function>&lt;</function>" + Const.CR + "   <rightvalue/>" + Const.CR + "<value>     <name>other</name><type>String</type><text>bbb</text><length>-1</length><precision>-1</precision><isnull>N</isnull>  </value>   </condition>" + Const.CR + "  </conditions>" + Const.CR + " </condition>" + Const.CR, two.getXML());
+
 	}
+	
+	public void testClone()
+	{
+		Row r = new Row();
+		r.addValue(new Value("A", "aaaa"));
+		r.addValue(new Value("B", false));
+		r.addValue(new Value("C", 12.34));
+		r.addValue(new Value("D", 77L));
+		
+		Condition cb1 = new Condition(Condition.OPERATOR_NONE, "D", Condition.FUNC_EQUAL, null, new Value("other", 77L));
+		assertEquals(true, cb1.evaluate(r));
+
+		Condition cb2 = new Condition("A", Condition.FUNC_SMALLER, null, new Value("other", "bbb"));
+		assertEquals(true, cb2.evaluate(r));
+	}	
 }

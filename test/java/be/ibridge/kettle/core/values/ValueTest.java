@@ -284,7 +284,7 @@ public class ValueTest extends TestCase
 	    vs7.setLength(0);	    
 	    vs7.setPrecision(3);
 	    assertEquals(" 100.5", vs7.toString(true));	  
-
+	    
 	    Value vs8 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs8.setValue(100.5D);
 	    vs8.setLength(5);	    
@@ -318,9 +318,98 @@ public class ValueTest extends TestCase
 	    vs13.setValue(100.5D);
 	    vs13.setLength(5);	    
 	    vs13.setPrecision(3);
-	    assertEquals("100.5", vs13.toString(false));		    
+	    assertEquals("100.5", vs13.toString(false));
+	    
+	    Value vs14 = new Value("Name", Value.VALUE_TYPE_NUMBER);
+	    vs14.setValue(100.5D);
+	    vs14.setLength(5);	    
+	    vs14.setPrecision(3);
+	    assertEquals(" 100.500", vs14.toString(true));	
 	}
-	
+
+	/**
+	 * Test of string representation of Integer Value.
+	 */
+	public void testToIntegerNumber()
+	{	
+	    Value vs1 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    assertEquals(" 0", vs1.toString(true));
+	    
+	    Value vs2 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs2.setNull();
+	    assertEquals("", vs2.toString(true));
+	    
+	    Value vs3 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs3.setValue(100);
+	    vs3.setLength(6);
+	    vs3.setNull();
+	    assertEquals("      ", vs3.toString(true));
+	    
+	    Value vs4 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs4.setValue(100);
+	    vs4.setLength(6);	    
+	    assertEquals(" 000100", vs4.toString(true));
+	    
+	    Value vs5 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs5.setValue(100);
+	    vs5.setLength(-1);	    
+	    vs5.setPrecision(-1);
+	    assertEquals(" 100", vs5.toString(true));	    
+
+	    Value vs6 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs6.setValue(105);
+	    vs6.setLength(8);	    
+	    vs6.setPrecision(-1);
+	    assertEquals(" 00000105", vs6.toString(true));	  
+
+	    Value vs7 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs7.setValue(100);
+	    vs7.setLength(0);	    
+	    vs7.setPrecision(3);
+	    assertEquals(" 100", vs7.toString(true));	  
+	    
+	    Value vs8 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs8.setValue(100);
+	    vs8.setLength(5);	    
+	    vs8.setPrecision(3);
+	    assertEquals(" 00100", vs8.toString(false));	
+	    
+	    Value vs9 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs9.setValue(100);
+	    vs9.setLength(6);	    
+	    assertEquals(" 000100", vs9.toString(false));
+	    
+	    Value vs10 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs10.setValue(100);
+	    vs10.setLength(-1);	    
+	    vs10.setPrecision(-1);
+	    assertEquals(" 100", vs10.toString(false));	    
+
+	    Value vs11 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs11.setValue(100);
+	    vs11.setLength(8);	    
+	    vs11.setPrecision(-1);
+	    assertEquals(" 00000100", vs11.toString(false));	  
+
+	    Value vs12 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs12.setValue(100);
+	    vs12.setLength(0);	    
+	    vs12.setPrecision(3);
+	    assertEquals(" 100", vs12.toString(false));	  
+
+	    Value vs13 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs13.setValue(100);
+	    vs13.setLength(5);	    
+	    vs13.setPrecision(3);
+	    assertEquals(" 00100", vs13.toString(false));
+	    
+	    Value vs14 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    vs14.setValue(100);
+	    vs14.setLength(5);	    
+	    vs14.setPrecision(3);
+	    assertEquals(" 00100", vs14.toString(true));	
+	}
+
 	/**
 	 * Test of boolean representation of Value.
 	 */
@@ -925,6 +1014,99 @@ public class ValueTest extends TestCase
 	}
 
 	/**
+	 * Test comparators.
+	 */
+	public void testComparators()
+	{
+	    Value vs1 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    Value vs2 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+	    Value vs3 = new Value("Name", Value.VALUE_TYPE_INTEGER);
+
+	    vs1.setValue(128L);	   
+	    vs2.setValue(100L);
+	    vs3.setValue(128L);
+	    
+	    assertEquals(true,  (vs1.Clone().greater_equal(vs2)).getBoolean());
+	    assertEquals(true,  (vs1.Clone().greater_equal(vs3)).getBoolean());
+	    assertEquals(false, (vs2.Clone().greater_equal(vs1)).getBoolean());
+
+	    assertEquals(false, (vs1.Clone().smaller_equal(vs2)).getBoolean());
+	    assertEquals(true,  (vs1.Clone().smaller_equal(vs3)).getBoolean());
+	    assertEquals(true,  (vs2.Clone().smaller_equal(vs1)).getBoolean());
+
+	    assertEquals(true,  (vs1.Clone().different(vs2)).getBoolean());
+	    assertEquals(false, (vs1.Clone().different(vs3)).getBoolean());
+    
+	    assertEquals(false, (vs1.Clone().equal(vs2)).getBoolean());
+	    assertEquals(true,  (vs1.Clone().equal(vs3)).getBoolean());
+
+	    assertEquals(true,  (vs1.Clone().greater(vs2)).getBoolean());
+	    assertEquals(false, (vs1.Clone().greater(vs3)).getBoolean());
+	    assertEquals(false, (vs2.Clone().greater(vs1)).getBoolean());
+
+	    assertEquals(false, (vs1.Clone().smaller(vs2)).getBoolean());
+	    assertEquals(false, (vs1.Clone().smaller(vs3)).getBoolean());
+	    assertEquals(true,  (vs2.Clone().smaller(vs1)).getBoolean());
+	}	
+
+	/**
+	 * Test trim, ltrim, rtrim.
+	 */
+	public void testTrim()
+	{
+	    Value vs1 = new Value("Name1", Value.VALUE_TYPE_INTEGER);
+	    Value vs2 = new Value("Name2", Value.VALUE_TYPE_STRING);
+
+	    vs1.setValue(128L);
+	    vs1.setNull();
+	    assertNull(vs1.Clone().ltrim().getString());
+	    assertNull(vs1.Clone().rtrim().getString());
+	    assertNull(vs1.Clone().trim().getString());
+	    
+	    vs1.setValue(128L);
+	    assertEquals("128",  vs1.Clone().ltrim().getString());
+	    assertEquals(" 128", vs1.Clone().rtrim().getString());
+	    assertEquals("128",  vs1.Clone().trim().getString());
+	    
+	    vs2.setValue("    Sven Boden trim test    ");
+	    assertEquals("Sven Boden trim test    ", 
+	    		     vs2.Clone().ltrim().getString());
+	    assertEquals("    Sven Boden trim test", 
+     	    	     vs2.Clone().rtrim().getString());
+	    assertEquals("Sven Boden trim test", 
+	   		         vs2.Clone().trim().getString());
+	    	  
+	    vs2.setValue("");
+	    assertEquals("", vs2.Clone().ltrim().getString());
+	    assertEquals("", vs2.Clone().rtrim().getString());
+	    assertEquals("", vs2.Clone().trim().getString());	    
+
+	    vs2.setValue("   ");
+	    assertEquals("", vs2.Clone().ltrim().getString());
+	    assertEquals("", vs2.Clone().rtrim().getString());
+	    assertEquals("", vs2.Clone().trim().getString());
+	}
+	
+	/**
+	 * Test like.
+	 */
+	public void testLike()
+	{
+	    Value vs1 = new Value("Name1", Value.VALUE_TYPE_STRING);
+	    Value vs2 = new Value("Name2", Value.VALUE_TYPE_STRING);
+	    Value vs3 = new Value("Name3", Value.VALUE_TYPE_STRING);
+
+	    vs1.setValue("This is a test");	   
+	    vs2.setValue("is a");
+	    vs3.setValue("not");
+	    
+	    assertEquals(true,  (vs1.Clone().like(vs2)).getBoolean());
+	    assertEquals(true,  (vs1.Clone().like(vs1)).getBoolean());
+	    assertEquals(false, (vs1.Clone().like(vs3)).getBoolean());
+	    assertEquals(false, (vs3.Clone().like(vs1)).getBoolean());
+	}
+	
+	/**
 	 * Stuff which we didn't get in other checks.
 	 */
 	public void testLooseEnds()
@@ -932,7 +1114,6 @@ public class ValueTest extends TestCase
 		assertEquals(Value.VALUE_TYPE_NONE, Value.getType("INVALID_TYPE"));
 		assertEquals("String", Value.getTypeDesc(Value.VALUE_TYPE_STRING));
 	}
-
 	
 	/**
 	 * Constructors using Values DEBUG CLONE

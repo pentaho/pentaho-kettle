@@ -15,10 +15,13 @@
  
 package be.ibridge.kettle.core;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.math.BigDecimal;
 import java.util.Date;
 
 import junit.framework.TestCase;
+import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.value.Value;
 
 /**
@@ -159,9 +162,9 @@ public class RowTest extends TestCase
 	}
 
 	/**
-	 * Test addRow().
+	 * Test addValue().
 	 */
-	public void testAddRow()
+	public void testAddValue()
 	{
 		Value values[] = {
 		    new Value("field1", "KETTLE"),                // String
@@ -203,6 +206,21 @@ public class RowTest extends TestCase
 
 		Value v3 = r1.getValue(values.length+2);
 		assertEquals(values1[2], v3);
+		
+		// Add some values to a row
+		Row r3 = new Row();
+		for (int i=0; i < values1.length; i++ )
+		{
+			r3.addValue(values1[i]);
+		}
+		
+		// Add at a certain index
+		r3.addValue(3, new Value("new3", true));
+		r3.addValue(1, new Value("new2", true));
+		r3.addValue(0, new Value("new1", true));
+		assertEquals(0, r3.searchValueIndex("new1"));
+		assertEquals(2, r3.searchValueIndex("new2"));
+		assertEquals(5, r3.searchValueIndex("new3"));
 	}
 
 	/**
@@ -575,14 +593,33 @@ public class RowTest extends TestCase
 				null                                          // null
 		};
 
+		Value values1[] = {
+			    new Value("field1", "KETTLE"),                // String
+				new Value("field2", 123L),                    // integer
+				new Value("field3", 10.5D),                   // double
+				new Value("field5", new BigDecimal(123.0)),   // BigDecimal
+		};
+		
+		values1[0].setLength(10, 2);
+		values1[1].setLength(4,  0);
+		values1[2].setLength(5,  3);
+		values1[3].setLength(6,  1);
+		
 		Row r1 = new Row();
 		for (int i=0; i < values.length; i++ )
 		{
 			r1.addValue(values[i]);
 		}
 
+		Row r2 = new Row();
+		for (int i=0; i < values1.length; i++ )
+		{
+			r2.addValue(values1[i]);
+		}
+
 		assertEquals("[]", r0.toStringMeta());
 		assertEquals("[field1(String), field2(Integer), field3(Number), field4(Boolean), field5(BigNumber), field6(String), NULL]", r1.toStringMeta());
+		assertEquals("[field1(String(10)), field2(Integer(4)), field3(Number(5,3)), field5(BigNumber(6,1))]", r2.toStringMeta());
 	}
 	
 	/**
@@ -631,7 +668,7 @@ public class RowTest extends TestCase
 	}
 
 	/**
-	 * Test toGetXML().
+	 * Test toCompare().
 	 */
 	public void testCompare()
 	{
@@ -661,6 +698,7 @@ public class RowTest extends TestCase
 		
 		Row r3 = r1.Clone();
 
+		// kind of comparison for specified nr of fields
 		int [] fields1 = { 0 };
 		boolean [] ascending1 =  { true }; 
 		assertEquals(0, r1.compare(r3, fields1, ascending1));
@@ -674,5 +712,100 @@ public class RowTest extends TestCase
 		boolean [] ascending3 =  { true, false, false };
 		boolean [] case3 =  { false, false, false };
 		assertTrue(r1.compare(r2, fields3, ascending3, case3) < 0);
+		
+		// kind of comparison for specified nr of fields
+		assertEquals(0, r1.compare(r2, 1, true));
+		assertEquals(0, r1.compare(r2, 1, false));
+
+		assertEquals(1, r1.compare(r2, 2, true));
+		assertEquals(-1, r1.compare(r2, 2, false));
+		assertEquals(-1, r2.compare(r1, 2, true));
+		assertEquals(1, r2.compare(r1, 2, false));
+
+		assertEquals(0, r1.compare(r1, 0, false));
+		assertEquals(0, r1.compare(r1, 0, true));
+
+		// Third way of comparing
+		assertEquals(-1, r1.compare(r2));
+		assertEquals(0, r1.compare(r1));
+
+		// Do compareTo as well
+		assertEquals(0,  r1.compareTo((Object)r1));
+		assertEquals(0,  r1.compareTo((Object)r3));
+		assertEquals(-1, r1.compareTo((Object)r2));
+		assertEquals(1,  r2.compareTo((Object)r1));	
 	}	 
+
+	public void testGetFieldNamesAndTypes() 
+	{
+		Value values1[] = {
+			    new Value("field1", "KETTLE"),                // String
+				new Value("field2", 123L),                    // integer
+				new Value("field3", 10.5D),                   // double
+				new Value("field4", true),                    // Boolean
+				new Value("field5", new BigDecimal(123.0)),   // BigDecimal
+				new Value("field6", (String)null),            // NULL value
+				new Value("field7", new Date(10000000L)),     // Date
+		};
+
+		Row r1 = new Row();
+		for (int i=0; i < values1.length; i++ )
+		{
+			r1.addValue(values1[i]);
+		}
+		
+		String result = "";
+		String a1[] = r1.getFieldNamesAndTypes(20);
+		assertEquals(7, a1.length);
+		for ( int idx = 0; idx < a1.length; idx++ )
+		{
+			result += a1[idx];
+		}
+		assertEquals("field1                 (String)field2                 (Integer)field3                 (Number)field4                 (Boolean)field5                 (BigNumber)field6                 (String)field7                 (Date)", result);
+
+		result = "";
+		a1 = r1.getFieldNamesAndTypes(10);
+		assertEquals(7, a1.length);
+		for ( int idx = 0; idx < a1.length; idx++ )
+		{
+			result += a1[idx];
+		}
+		assertEquals("field1       (String)field2       (Integer)field3       (Number)field4       (Boolean)field5       (BigNumber)field6       (String)field7       (Date)", result);
+
+		result = "";
+		a1 = r1.getFieldNamesAndTypes(4);
+		assertEquals(7, a1.length);
+		for ( int idx = 0; idx < a1.length; idx++ )
+		{
+			result += a1[idx];
+		}
+		assertEquals("fiel   (String)fiel   (Integer)fiel   (Number)fiel   (Boolean)fiel   (BigNumber)fiel   (String)fiel   (Date)", result);		
+	}
+
+	/**
+	 * Test the read/write methods (not yet finished).
+	 */
+	public void testReadWrite() throws KettleFileException 
+	{
+		Value values1[] = {
+			    new Value("field1", "KETTLE"),                // String
+				new Value("field2", 123L),                    // integer
+				new Value("field3", 10.5D),                   // double
+				new Value("field4", true),                    // Boolean
+				new Value("field5", new BigDecimal(123.0)),   // BigDecimal
+				new Value("field6", (String)null),            // NULL value
+				new Value("field7", new Date(10000000L)),     // Date
+		};
+
+		Row r1 = new Row();
+		for (int i=0; i < values1.length; i++ )
+		{
+			r1.addValue(values1[i]);
+		}
+
+		DataOutputStream store = new DataOutputStream(new ByteArrayOutputStream());
+		r1.writeData(store);
+		
+		// finish reading
+	}
 }

@@ -72,7 +72,7 @@ public class SortRowsTest extends TestCase
     private static String target_table = "sort_target";
     private static String source_table = "sort_source";
     
-    public static int MAX_COUNT = 500;
+    public static int MAX_COUNT = 503;
     
 	/**
 	 * Create source and target table.
@@ -233,7 +233,7 @@ public class SortRowsTest extends TestCase
             // Sort step
             //
             String sortstepname = "sort step";
-            SortRowsMeta srm = new SortRowsMeta();            
+            SortRowsMeta srm = new SortRowsMeta();
             srm.setSortSize(MAX_COUNT/10);
             String [] sortFields = { "KEY1", "KEY2" };
             boolean [] ascendingFields = { true, true };
