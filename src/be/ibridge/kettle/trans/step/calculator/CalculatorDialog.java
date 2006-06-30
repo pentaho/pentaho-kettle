@@ -21,6 +21,11 @@
 
 package be.ibridge.kettle.trans.step.calculator;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -65,11 +70,15 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
     private FormData     fdlFields, fdFields;
     
 	private CalculatorMeta input;
+    
+    private Map      inputFields;
+    private ColumnInfo[] colinf;
 
 	public CalculatorDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
 		input=(CalculatorMeta)in;
+        inputFields =new HashMap();
 	}
 
 	public String open()
@@ -128,17 +137,17 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         
         final int FieldsRows=input.getCalculation()!=null ? input.getCalculation().length : 1;
         
-        final ColumnInfo[] colinf=new ColumnInfo[]
+        colinf=new ColumnInfo[]
                {
                     new ColumnInfo(Messages.getString("CalculatorDialog.NewFieldColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.CalculationColumn.Column"),   ColumnInfo.COLUMN_TYPE_CCOMBO, CalculatorMetaFunction.calcLongDesc ),
+                    new ColumnInfo(Messages.getString("CalculatorDialog.CalculationColumn.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, CalculatorMetaFunction.calcLongDesc ),
                     new ColumnInfo(Messages.getString("CalculatorDialog.FieldAColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
                     new ColumnInfo(Messages.getString("CalculatorDialog.FieldBColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
                     new ColumnInfo(Messages.getString("CalculatorDialog.FieldCColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
                     new ColumnInfo(Messages.getString("CalculatorDialog.ValueTypeColumn.Column"),    ColumnInfo.COLUMN_TYPE_CCOMBO, Value.getTypes() ),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.LengthColumn.Column"),        ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.PrecisionColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.RemoveColumn.Column"),        ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") } )
+                    new ColumnInfo(Messages.getString("CalculatorDialog.LengthColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(Messages.getString("CalculatorDialog.PrecisionColumn.Column"),    ColumnInfo.COLUMN_TYPE_TEXT,   false),
+                    new ColumnInfo(Messages.getString("CalculatorDialog.RemoveColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { Messages.getString("System.Combo.No"), Messages.getString("System.Combo.Yes") } )
                };
         
         colinf[1].setSelectionAdapter(
@@ -191,9 +200,13 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
                     {
                         Row row = transMeta.getPrevStepFields(stepMeta);
                         
-                        colinf[2].setComboValues(row.getFieldNames());
-                        colinf[3].setComboValues(row.getFieldNames());
-                        colinf[4].setComboValues(row.getFieldNames());
+                        // Remember these fields...
+                        for (int i=0;i<row.size();i++)
+                        {
+                            inputFields.put(row.getValue(i).getName(), new Integer(i));
+                        }
+                        
+                        setComboBoxes();
                     }
                     catch(KettleException e)
                     {
@@ -203,6 +216,24 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
             }
         };
         new Thread(runnable).start();
+        
+        wFields.addModifyListener(new ModifyListener()
+            {
+                public void modifyText(ModifyEvent arg0)
+                {
+                    // Now set the combo's
+                    shell.getDisplay().asyncExec(new Runnable()
+                    {
+                        public void run()
+                        {
+                            setComboBoxes();
+                        }
+                    
+                    });
+                    
+                }
+            }
+        );
         
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -241,7 +272,42 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
 		return stepname;
 	}
 	
-	/**
+	protected void setComboBoxes()
+    {
+        // Something was changed in the row.
+        //
+        final Map fields = new HashMap();
+        
+        // Add the input fields...
+        fields.putAll(inputFields);
+        
+        shell.getDisplay().syncExec(new Runnable()
+            {
+                public void run()
+                {
+                    // Add the newly create fields.
+                    //
+                    for (int i=0;i<wFields.nrNonEmpty();i++)
+                    {
+                        TableItem item = wFields.getNonEmpty(i);
+                        fields.put(item.getText(1), new Integer(1000000+i));  // The number is just to debug the origin of the fieldname
+                    }
+                }
+            }
+        );
+        
+        Set keySet = fields.keySet();
+        ArrayList entries = new ArrayList(keySet);
+        
+        String fieldNames[] = (String[]) entries.toArray(new String[entries.size()]);
+
+        Const.sortStrings(fieldNames);
+        colinf[2].setComboValues(fieldNames);
+        colinf[3].setComboValues(fieldNames);
+        colinf[4].setComboValues(fieldNames);
+    }
+
+    /**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
 	public void getData()
