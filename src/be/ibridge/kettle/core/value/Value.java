@@ -348,7 +348,6 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
 	/**
 	 * Clears the content and name of a Value 
-	 * 
 	 */
 	public void clearValue()
 	{
@@ -363,7 +362,6 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		if (value==null) return null;
 		return (ValueInterface)value.clone();
 	}
-
 
 	/**
 	 * Sets the name of a Value
@@ -904,29 +902,17 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
 					if (value.getPrecision()<0)  // Default: two decimals
 					{
-						if (value.getLength()<0)           //  format: 1234,56 (-1,-1)
-						{
-							fmt.append("0.00");
-						}
-						else                    //  format 0000001234,00 --> (10,-1)
-						{
-							for (i=0;i<value.getLength();i++) fmt.append('0');
-							fmt.append(".00"); // for the .00
-						}
-					}
-					else
-					if (value.getLength()==0) // No decimals 0000001234 --> (10,0)
-					{
-						for (i=0;i<value.getLength();i++) fmt.append('0'); // all zeroes.
+						for (i=0;i<value.getLength();i++) fmt.append('0');
+						fmt.append(".00"); // for the .00
 					}
 					else  // Floating point format   00001234,56  --> (12,2)
 					{
-							for (i=0;i<=value.getLength();i++) fmt.append('0'); // all zeroes.
-							int pos = value.getLength()-value.getPrecision()+1-(value.getNumber()<0?1:0);
-							if (pos>=0 && pos <fmt.length())
-							{
-								fmt.setCharAt(value.getLength()-value.getPrecision()+1-(value.getNumber()<0?1:0), '.'); // one 'comma'
-							}
+						for (i=0;i<=value.getLength();i++) fmt.append('0'); // all zeroes.
+						int pos = value.getLength()-value.getPrecision()+1-(value.getNumber()<0?1:0);
+						if (pos>=0 && pos <fmt.length())
+						{
+							fmt.setCharAt(value.getLength()-value.getPrecision()+1-(value.getNumber()<0?1:0), '.'); // one 'comma'
+						}
 					}
 					form= new DecimalFormat(fmt.toString());
 					retval=form.format(value.getNumber());
@@ -1036,28 +1022,9 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	
 				if (value.getInteger()>=0) fmt.append(' '); // to compensate for minus sign.
 
-				if (getPrecision()<0)  // Default: two decimals
-				{
-					if (getLength()<0)           //  format: 1234,56 (-1,-1)
-					{
-						fmt.append("0.00");
-					}
-					else                    //  format 0000001234,00 --> (10,-1)
-					{
-						for (i=0;i<getLength();i++) fmt.append('0');
-						fmt.append(".00"); // for the .00
-					}
-				}
-				else
-				if (getPrecision()==0) // No decimals 0000001234 --> (10,0)
-				{
-					for (i=0;i<getLength();i++) fmt.append('0'); // all zeroes.
-				}
-				else  // Floating point format   00001234,56  --> (12,2)
-				{
-						for (i=0;i<=getLength();i++) fmt.append('0'); // all zeroes.
-						fmt.setCharAt(getLength()-getPrecision()+1-(value.getInteger()<0?1:0), '.');     // one 'comma'
-				}
+				int len = getLength();
+				for (i=0;i<len;i++) fmt.append('0'); // all zeroes.
+				
 				form= new DecimalFormat(fmt.toString());
 				retval=form.format(value.getInteger());
 			}
@@ -1186,15 +1153,12 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	public static final String[] getTypes()
 	{
 		String retval[] = new String[valueTypeCode.length-1];
-		for (int i=1;i<valueTypeCode.length;i++)
-		{
-			retval[i-1]=valueTypeCode[i];
-		}
+		System.arraycopy(valueTypeCode, 1, retval, 0, valueTypeCode.length-1);
 		return retval;
 	}
 
 	/**
-	 * get an array of String describing the possible types a Value can have.
+	 * Get an array of String describing the possible types a Value can have.
 	 * @return an array of String describing the possible types a Value can have.
 	 */
 	public static final String[] getAllTypes()
@@ -1554,6 +1518,34 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
 		switch(getType())
 		{
+		case VALUE_TYPE_STRING:
+        {
+			String one = Const.rtrim(getString());
+			String two = Const.rtrim(v.getString());
+
+			int cmp=0;
+            if (caseInsensitive)
+            {
+                cmp = one.compareToIgnoreCase(two);
+            }
+            else
+            {
+                cmp = one.compareTo(two);
+            }
+
+            return cmp;
+        }
+
+		case VALUE_TYPE_INTEGER:
+        {
+		    return Double.compare(getNumber(), v.getNumber());
+        }
+
+		case VALUE_TYPE_DATE   :
+        {
+		    return Double.compare(getNumber(), v.getNumber());
+        }        
+
 		case VALUE_TYPE_BOOLEAN:
 		    {
     			if (getBoolean() &&  v.getBoolean() || 
@@ -1562,35 +1554,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
     			return -1;  // false < true
             }
 
-		case VALUE_TYPE_DATE   :
-            {
-			    return Double.compare(getNumber(), v.getNumber());
-            }
-
 		case VALUE_TYPE_NUMBER :
-            {
-			    return Double.compare(getNumber(), v.getNumber());
-            }
-
-		case VALUE_TYPE_STRING:
-            {
-    			String one = Const.rtrim(getString());
-    			String two = Const.rtrim(v.getString());
-
-    			int cmp=0;
-                if (caseInsensitive)
-                {
-                    cmp = one.compareToIgnoreCase(two);
-                }
-                else
-                {
-                    cmp = one.compareTo(two);
-                }
-
-                return cmp;
-            }
-
-		case VALUE_TYPE_INTEGER:
             {
 			    return Double.compare(getNumber(), v.getNumber());
             }
@@ -1602,7 +1566,6 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 
 		// Still here?  Not possible!  But hey, give back 0, mkay?
-
 		return 0;
 	}
 
