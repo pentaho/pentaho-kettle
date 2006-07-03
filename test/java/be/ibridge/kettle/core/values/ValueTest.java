@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import junit.framework.TestCase;
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.value.Value;
 
 /**
@@ -250,7 +251,7 @@ public class ValueTest extends TestCase
 	public void testToStringNumber()
 	{	
 	    Value vs1 = new Value("Name", Value.VALUE_TYPE_NUMBER);
-	    assertEquals(" 0.0", vs1.toString(true));
+	    assertEquals(" 0"+Const.DEFAULT_DECIMAL_SEPARATOR+"0", vs1.toString(true));
 	    
 	    Value vs2 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs2.setNull();
@@ -265,30 +266,31 @@ public class ValueTest extends TestCase
 	    Value vs4 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs4.setValue(100.0D);
 	    vs4.setLength(6);	    
-	    assertEquals(" 000100.00", vs4.toString(true));
+	    assertEquals(" 000100"+Const.DEFAULT_DECIMAL_SEPARATOR+"00", vs4.toString(true));
 	    
 	    Value vs5 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs5.setValue(100.5D);
 	    vs5.setLength(-1);	    
 	    vs5.setPrecision(-1);
-	    assertEquals(" 100.5", vs5.toString(true));	    
+	    assertEquals(" 100"+Const.DEFAULT_DECIMAL_SEPARATOR+"5", vs5.toString(true));	    
 
 	    Value vs6 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs6.setValue(100.5D);
 	    vs6.setLength(8);	    
 	    vs6.setPrecision(-1);
-	    assertEquals(" 00000100.50", vs6.toString(true));	  
+	    assertEquals(" 00000100"+Const.DEFAULT_DECIMAL_SEPARATOR+"50", vs6.toString(true));	  
 
 	    Value vs7 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs7.setValue(100.5D);
 	    vs7.setLength(0);	    
 	    vs7.setPrecision(3);
-	    assertEquals(" 100.5", vs7.toString(true));	  
+	    assertEquals(" 100"+Const.DEFAULT_DECIMAL_SEPARATOR+"5", vs7.toString(true));	  
 	    
 	    Value vs8 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs8.setValue(100.5D);
 	    vs8.setLength(5);	    
 	    vs8.setPrecision(3);
+        System.out.println("vs8: ["+vs8.toString(false)+"]");
 	    assertEquals("100.5", vs8.toString(false));	
 	    
 	    Value vs9 = new Value("Name", Value.VALUE_TYPE_NUMBER);
@@ -324,7 +326,7 @@ public class ValueTest extends TestCase
 	    vs14.setValue(100.5D);
 	    vs14.setLength(5);	    
 	    vs14.setPrecision(3);
-	    assertEquals(" 100.500", vs14.toString(true));	
+	    assertEquals(" 100"+Const.DEFAULT_DECIMAL_SEPARATOR+"500", vs14.toString(true));	
 	}
 
 	/**
