@@ -922,7 +922,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		else
 		{
 			if (isNull()) retval=Const.NULL_NUMBER;
-			else retval=""+value.getNumber();
+			else retval=Double.toString(value.getNumber());
 		}
 		return retval;
 	}
