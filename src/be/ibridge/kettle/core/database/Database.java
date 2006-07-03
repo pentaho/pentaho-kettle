@@ -3359,7 +3359,7 @@ public class Database
 				String isql;
 				if (!databaseMeta.supportsAutoinc() || !use_autoinc)
 				{
-					isql = isql = "insert into "+databaseMeta.quoteField(tablename)+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (0, 1)";
+					isql = "insert into "+databaseMeta.quoteField(tablename)+"("+databaseMeta.quoteField(tk)+", "+databaseMeta.quoteField(version)+") values (0, 1)";
 				}
 				else
 				{

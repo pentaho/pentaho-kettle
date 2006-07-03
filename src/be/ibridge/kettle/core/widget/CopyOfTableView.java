@@ -1817,7 +1817,7 @@ public class CopyOfTableView extends Composite
 				}
 				else
 				{
-				    str=str = ti.getText(c);
+				    str = ti.getText(c);
 				}
 				if (str==null) str="";
 				int len = dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x;
