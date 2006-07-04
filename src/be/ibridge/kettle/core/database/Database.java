@@ -2468,12 +2468,21 @@ public class Database
  					valtype=Value.VALUE_TYPE_STRING;
                     length=rm.getPrecision(i); 
                     precision=rm.getScale(i);
+                    
+                    if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_DB2)
+                    {
+                        if (type == java.sql.Types.BINARY && ((2 * length) == rm.getColumnDisplaySize(i)))
+                        {
+                        	// Patch for DB2 "CHAR FOR BITDATA". E.g. when getPrecision() is 10,
+                        	// the display size is 20.
+                        	length = rm.getColumnDisplaySize(i);
+                        }
+                    }
  					break;
 				}
                 // TODO: grab the comment as a description to the field, later
 				// comment=rm.getColumnLabel(i);
-                
-                
+
 				v=new Value(name, valtype);
 				v.setLength(length, precision);
 				rowinfo.addValue(v);			
@@ -2494,7 +2503,7 @@ public class Database
 		return getRowInfo(rsmd);
 	}
     */
-	
+
 	public boolean absolute(ResultSet rs, int position) throws KettleDatabaseException
 	{
 		try
@@ -2506,7 +2515,7 @@ public class Database
 			throw new KettleDatabaseException("Unable to move resultset to position "+position, e);
 		}
 	}
-	
+
 	public boolean relative(ResultSet rs, int rows)  throws KettleDatabaseException
 	{
 		try
@@ -2519,7 +2528,6 @@ public class Database
 		}
 	}
 
-	
 	public void afterLast(ResultSet rs)
 		throws KettleDatabaseException
 	{
@@ -2641,7 +2649,7 @@ public class Database
 			log.logError(toString(), "");
 		}
 	}
-	
+
 	public void setLookup(String table, String codes[], String condition[], 
             String gets[], String rename[], String orderby
             ) throws KettleDatabaseException
@@ -2665,9 +2673,9 @@ public class Database
 				sql+=" AS "+databaseMeta.quoteField(rename[i]);
 			}
 		}
-		
+
 		sql += " FROM "+databaseMeta.quoteField(table)+" WHERE ";
-		
+
 		for (int i=0;i<codes.length;i++)
 		{
 			if (i!=0) sql += " AND ";
@@ -2686,7 +2694,7 @@ public class Database
 				sql+=" "+condition[i]+" ? ";
 			}
 		}
-		
+
 		if (orderby!=null && orderby.length()!=0)
 		{
 			sql += " ORDER BY "+orderby;
@@ -2711,20 +2719,20 @@ public class Database
 	public boolean prepareUpdate(String table, String codes[], String condition[], String sets[])
 	{
 		StringBuffer sql = new StringBuffer(128);
-	
+
 		int i;
-		
+
 		sql.append("UPDATE ").append(databaseMeta.quoteField(table)).append(Const.CR).append("SET ");
-		
+
 		for (i=0;i<sets.length;i++)
 		{
 			if (i!=0) sql.append(",   ");
 			sql.append(databaseMeta.quoteField(sets[i]));
 			sql.append(" = ?").append(Const.CR);
 		}
-		
+
 		sql.append("WHERE ");
-		
+
 		for (i=0;i<codes.length;i++)
 		{
 			if (i!=0) sql.append("AND   ");
@@ -2743,7 +2751,7 @@ public class Database
 				sql.append(" ").append(condition[i]).append(" ? ");
 			}
 		}
-		
+
 		try
 		{
 			String s = sql.toString();
@@ -2755,10 +2763,10 @@ public class Database
 			printSQLException(ex);
 			return false;
 		}
-		
+
 		return true;
 	}
-    
+
     /**
      * Prepare a delete statement by giving it the tablename, fields and conditions to work with.
      * @param table The table-name to delete in
@@ -2766,14 +2774,12 @@ public class Database
      * @param condition
      * @return
      */
-    
-    
     public boolean prepareDelete(String table, String codes[], String condition[])
     {
         String sql;
-    
+
         int i;
-        
+
         sql = "DELETE FROM "+table+Const.CR;
         sql+= "WHERE ";
         
@@ -2795,7 +2801,7 @@ public class Database
                 sql+=" "+condition[i]+" ? ";
             }
         }
-        
+
         try
         {
             log.logDetailed(toString(), "Setting update preparedStatement to ["+sql+"]");
@@ -2806,12 +2812,11 @@ public class Database
             printSQLException(ex);
             return false;
         }
-        
+
         return true;
     }
 
-	
-	public void setProcLookup(String proc, String arg[], String argdir[], int argtype[], String returnvalue, int returntype)
+    public void setProcLookup(String proc, String arg[], String argdir[], int argtype[], String returnvalue, int returntype)
 		throws KettleDatabaseException
 	{
 		String sql;
