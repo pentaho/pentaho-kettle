@@ -1,0 +1,4 @@
+<data>
+    <Priority id="1" sequence="1" name="Blocker"/>
+    <Priority id="2" sequence="2" name="Critical"/>
+</data>

@@ -1,0 +1,5 @@
+field1;field2;field3;field4
+"a";"aa";"aaa";"aaaa"
+"bbbb";"bbb";"bb";"b"
+"cc";"c";"cccc";"ccc"
+"ddd";"dd";"c";"dddd"
