@@ -11,31 +11,33 @@ import be.ibridge.kettle.repository.Repository;
 public class CalculatorMetaFunction implements Cloneable
 {
     public static final String XML_TAG = "calculation";  
-    
-    public static final int CALC_NONE               =  0;
-    public static final int CALC_CONSTANT           =  1;
-    public static final int CALC_ADD                =  2;
-    public static final int CALC_SUBTRACT           =  3;
-    public static final int CALC_MULTIPLY           =  4;
-    public static final int CALC_DIVIDE             =  5;
-    public static final int CALC_SQUARE             =  6;
-    public static final int CALC_SQUARE_ROOT        =  7;
-    public static final int CALC_PERCENT_1          =  8;
-    public static final int CALC_PERCENT_2          =  9;
-    public static final int CALC_PERCENT_3          = 10;
-    public static final int CALC_COMBINATION_1      = 11;
-    public static final int CALC_COMBINATION_2      = 12;
-    public static final int CALC_ROUND_1            = 13;
-    public static final int CALC_ROUND_2            = 14;
-    public static final int CALC_NVL                = 15;
-    public static final int CALC_ADD_DAYS           = 16;
-    public static final int CALC_YEAR_OF_DATE       = 17;
-    public static final int CALC_MONTH_OF_DATE      = 18;
-    public static final int CALC_DAY_OF_YEAR        = 19;
-    public static final int CALC_DAY_OF_MONTH       = 20;
-    public static final int CALC_DAY_OF_WEEK        = 21;
-    public static final int CALC_WEEK_OF_YEAR       = 22;
-    
+
+    public static final int CALC_NONE                 =  0;
+    public static final int CALC_CONSTANT             =  1;
+    public static final int CALC_ADD                  =  2;
+    public static final int CALC_SUBTRACT             =  3;
+    public static final int CALC_MULTIPLY             =  4;
+    public static final int CALC_DIVIDE               =  5;
+    public static final int CALC_SQUARE               =  6;
+    public static final int CALC_SQUARE_ROOT          =  7;
+    public static final int CALC_PERCENT_1            =  8;
+    public static final int CALC_PERCENT_2            =  9;
+    public static final int CALC_PERCENT_3            = 10;
+    public static final int CALC_COMBINATION_1        = 11;
+    public static final int CALC_COMBINATION_2        = 12;
+    public static final int CALC_ROUND_1              = 13;
+    public static final int CALC_ROUND_2              = 14;
+    public static final int CALC_NVL                  = 15;
+    public static final int CALC_ADD_DAYS             = 16;
+    public static final int CALC_YEAR_OF_DATE         = 17;
+    public static final int CALC_MONTH_OF_DATE        = 18;
+    public static final int CALC_DAY_OF_YEAR          = 19;
+    public static final int CALC_DAY_OF_MONTH         = 20;
+    public static final int CALC_DAY_OF_WEEK          = 21;
+    public static final int CALC_WEEK_OF_YEAR         = 22;
+    public static final int CALC_WEEK_OF_YEAR_ISO8601 = 23;
+    public static final int CALC_YEAR_OF_DATE_ISO8601 = 24;
+
     public static final String calc_desc[] = 
         { 
             "-", 
@@ -60,7 +62,9 @@ public class CalculatorMetaFunction implements Cloneable
             "DAY_OF_YEAR",
             "DAY_OF_MONTH",
             "DAY_OF_WEEK",
-            "WEEK_OF_YEAR"
+            "WEEK_OF_YEAR",
+            "WEEK_OF_YEAR_ISO8601",
+            "YEAR_OF_DATE_ISO8601"
         };
     
     public static final String calcLongDesc[] = 
@@ -87,7 +91,9 @@ public class CalculatorMetaFunction implements Cloneable
             Messages.getString("CalculatorMetaFunction.CalcFunctions.DayOfYear"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.DayOfMonth"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.DayOfWeek"),
-            Messages.getString("CalculatorMetaFunction.CalcFunctions.WeekOfYear")
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.WeekOfYear"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.WeekOfYearISO8601"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.YearOfDateISO8601")
         };
    
     private String fieldName;

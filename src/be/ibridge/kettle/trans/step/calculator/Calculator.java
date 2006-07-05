@@ -17,6 +17,7 @@ package be.ibridge.kettle.trans.step.calculator;
 
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Locale;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
@@ -31,24 +32,22 @@ import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 
-
 /**
  * Calculate new field values using pre-defined functions. 
  * 
  * @author Matt
  * @since 8-sep-2005
  */
-
 public class Calculator extends BaseStep implements StepInterface
 {
 	private CalculatorMeta meta;
 	private CalculatorData data;
-	
+
 	public Calculator(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
-	
+
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta=(CalculatorMeta)smi;
@@ -60,7 +59,7 @@ public class Calculator extends BaseStep implements StepInterface
 			setOutputDone();
 			return false;
 		}
-        
+
         log.logRowlevel(toString(), "Read row #"+linesRead+" : "+r);
 
         calcFields(r);		
@@ -68,14 +67,14 @@ public class Calculator extends BaseStep implements StepInterface
 
         log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+r);        
 		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesRead);
-			
+
 		return true;
 	}
 
     private void calcFields(Row r) throws KettleValueException
     {
         int rowSize = r.size();
-        
+
         if (meta.getCalculation()!=null)
         for (int i=0;i<meta.getCalculation().length;i++)
         {
@@ -83,7 +82,7 @@ public class Calculator extends BaseStep implements StepInterface
             if (fn.getFieldName()!=null && fn.getFieldName().length()>0)
             {
                 Value value  = null;
-                
+
                 Value fieldA = null;
                 Value fieldB = null;
                 Value fieldC = null;
@@ -107,7 +106,7 @@ public class Calculator extends BaseStep implements StepInterface
                         data.indexCache.put(fn.getFieldB(), idxB);
                         fieldB = r.getValue(idxB.intValue());
                     }
-                    
+
                     if (!Const.isEmpty(fn.getFieldC()))
                     {
                         Integer idxC = (Integer)data.indexCache.get(fn.getFieldC());
@@ -117,7 +116,7 @@ public class Calculator extends BaseStep implements StepInterface
                         fieldC = r.getValue(idxC.intValue());
                     }
                 }
-                
+
                 switch(fn.getCalcType())
                 {
                 case CalculatorMetaFunction.CALC_NONE: 
@@ -327,6 +326,53 @@ public class Calculator extends BaseStep implements StepInterface
                         }
                     }
                     break;
+                case CalculatorMetaFunction.CALC_WEEK_OF_YEAR_ISO8601   : // What is the week of year (Integer) of a date ISO8601 style?
+                    {
+                        value = new Value(fn.getFieldName(), fieldA);                        
+                        Date date = fieldA.getDate();
+                        if (date!=null)
+                        {
+                        	// Calendar should not be 'promoted' to class level as it's not
+                        	// thread safe (read the java docs).
+                        	Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
+                        	calendar.setMinimalDaysInFirstWeek(4);
+                        	calendar.setFirstDayOfWeek(Calendar.MONDAY);
+                            calendar.setTime(date);
+                            value.setValue(calendar.get(Calendar.WEEK_OF_YEAR));
+                        }
+                        else
+                        {
+                            throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
+                        }
+                    }
+                    break;                    
+                case CalculatorMetaFunction.CALC_YEAR_OF_DATE_ISO8601     : // What is the year (Integer) of a date ISO8601 style?
+                    {
+                        value = new Value(fn.getFieldName(), fieldA);                        
+                        Date date = fieldA.getDate();
+                        if (date!=null)
+                        {
+                       	    // Calendar should not be 'promoted' to class level as it's not
+                    	    // thread safe (read the java docs).
+                    	    Calendar calendar = Calendar.getInstance(Locale.ENGLISH);
+                    	    calendar.setMinimalDaysInFirstWeek(4);
+                    	    calendar.setFirstDayOfWeek(Calendar.MONDAY);
+                            calendar.setTime(date);
+                            
+                            int week  = calendar.get(Calendar.WEEK_OF_YEAR);
+                            int month = calendar.get(Calendar.MONTH);
+                            int year = calendar.get(Calendar.YEAR);
+                            // fix up for the year taking into account ISO8601 weeks
+                            if ( week >= 52 && month == 0  ) year--;
+                            if ( week <= 2  && month == 11 ) year++;
+                            value.setValue(year);
+                        }
+                        else
+                        {
+                            throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
+                        }
+                    }
+                    break;                    
                 default:
                     throw new KettleValueException("Unknown calculation type #"+fn.getCalcType());
                 }
@@ -339,23 +385,10 @@ public class Calculator extends BaseStep implements StepInterface
                         value.setLength(fn.getValueLength(), fn.getValuePrecision());
                     }
                     r.addValue(value); // add to the row!
-                                }
+                }
             }
         }
-        
-        // Add the fields to the cache so that they can be removed easily.
-        /*
-        if (first)
-        {
-            first=false;
-            
-            for (int i=rowSize;i<r.size();i++)
-            {
-                data.indexCache.put(r.getValue(i).getName(), new Integer(i));
-            }
-        }
-        */
-        
+
         // OK, see which fields we need to remove from the result?
         for (int i=meta.getCalculation().length-1;i>=0;i--)
         {
