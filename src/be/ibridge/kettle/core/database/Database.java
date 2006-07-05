@@ -1842,8 +1842,7 @@ public class Database
     }
     
 
-    public ResultSet openQuery(PreparedStatement ps, Row params)
-		throws KettleDatabaseException
+    public ResultSet openQuery(PreparedStatement ps, Row params) throws KettleDatabaseException
 	{
 		ResultSet res;
 		String debug = "Start";
@@ -1878,7 +1877,12 @@ public class Database
 			res = ps.executeQuery();
 
 			debug = "OQ getRowInfo()";
-			rowinfo = getRowInfo(res.getMetaData());
+			// rowinfo = getRowInfo(res.getMetaData());
+            
+             // MySQL Hack only. It seems too much for the cursor type of operation on MySQL, to have another cursor opened
+            // to get the length of a String field.  So, on MySQL, we ingore the length of Strings in result rows.
+            // 
+            rowinfo = getRowInfo(res.getMetaData(), databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL);
 		}
 		catch(SQLException ex)
 		{
@@ -2318,8 +2322,7 @@ public class Database
 	}
 
 
-	public void closeQuery(ResultSet res)
-		throws KettleDatabaseException
+	public void closeQuery(ResultSet res) throws KettleDatabaseException
 	{
 		// close everything involved in the query!
 		try
@@ -2541,8 +2544,7 @@ public class Database
 		}
 	}
 
-	public void first(ResultSet rs)
-		throws KettleDatabaseException
+	public void first(ResultSet rs) throws KettleDatabaseException
 	{
 		try
 		{
@@ -2584,8 +2586,7 @@ public class Database
 	 * @param rs The resultset to get the row from
 	 * @return one row or null if no row was found on the resultset or if an error occurred.
 	 */
-	public Row getRow(ResultSet rs, ResultSetMetaData resultSetMetaData, Row rowInfo)
-		throws KettleDatabaseException
+	public Row getRow(ResultSet rs, ResultSetMetaData resultSetMetaData, Row rowInfo) throws KettleDatabaseException
 	{
 		Row row;
 		int nrcols, i;
