@@ -25,6 +25,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.TraverseEvent;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -387,4 +389,54 @@ public class BaseStepDialog extends Dialog
 			shell.setLocation(middleX, middleY);
 		}
 	}
+
+    public static final void setTraverseOrder(final Control[] controls)
+    {
+        for (int i=0;i<controls.length;i++)
+        {
+            final int controlNr = i;
+            if (i<controls.length-1)
+            {
+                controls[i].addTraverseListener(new TraverseListener()
+                    {
+                        public void keyTraversed(TraverseEvent te)
+                        {
+                            te.doit=false;
+                            // set focus on the next control.
+                            // What is the next control?
+                            int thisOne = controlNr+1;
+                            while (!controls[thisOne].isEnabled())
+                            {
+                                thisOne++;
+                                if (thisOne>=controls.length) thisOne=0;
+                                if (thisOne==controlNr) return; // already tried all others, time to quit.
+                            }
+                            controls[thisOne].setFocus();
+                        }
+                    }
+                );
+            }
+            else // Link last item to first.
+            {
+                controls[i].addTraverseListener(new TraverseListener()
+                {
+                    public void keyTraversed(TraverseEvent te)
+                    {
+                        te.doit=false;
+                        // set focus on the next control.
+                        // set focus on the next control.
+                        // What is the next control : 0
+                        int thisOne = 0;
+                        while (!controls[thisOne].isEnabled())
+                        {
+                            thisOne++;
+                            if (thisOne>=controls.length) return; // already tried all others, time to quit.
+                        }
+                        controls[thisOne].setFocus();
+                    }
+                }
+            );            }
+        }
+    }
+
 }

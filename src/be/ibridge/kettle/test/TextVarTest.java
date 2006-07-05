@@ -15,19 +15,18 @@
  
 
 package be.ibridge.kettle.test;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
-import be.ibridge.kettle.core.widget.TextVar;
+import be.ibridge.kettle.core.util.EnvUtil;
+import be.ibridge.kettle.core.widget.LabelTextVar;
 
 
 
@@ -43,11 +42,12 @@ public class TextVarTest
 
 	public static void main(String[] args) 
 	{
-        Label             wlTWV;
-        TextVar  wTWV;
-        FormData          fdlTWV, fdTWV;
+        LabelTextVar  wTWV;
+        FormData      fdTWV;
 
         ///////////////////////////////////////////////////////////////////////////////////////////////
+        
+        EnvUtil.environmentInit();
         
         final Display display = new Display();
         final Shell shell = new Shell(display);
@@ -63,26 +63,13 @@ public class TextVarTest
         
         ///////////////////////////////////////////////////////////////////////////////////////////////
         
-        int middle = Const.MIDDLE_PCT;
-        int margin = Const.MARGIN;
-        
-        wlTWV=new Label(shell, SWT.RIGHT);
-        wlTWV.setText("Text With Variable: ");
-        props.setLook(wlTWV);
-        fdlTWV=new FormData();
-        fdlTWV.left = new FormAttachment(0, 0);
-        fdlTWV.right= new FormAttachment(middle, -margin);
-        fdlTWV.top  = new FormAttachment(0, 0);
-        wlTWV.setLayoutData(fdlTWV);
-        wTWV=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wTWV=new LabelTextVar(shell, "Text With Variable", "Click on this button to insert a variable");
         props.setLook(wTWV);
         fdTWV=new FormData();
-        fdTWV.left = new FormAttachment(middle, 0);
+        fdTWV.left = new FormAttachment(0, 0);
         fdTWV.top  = new FormAttachment(0, 0);
         fdTWV.right= new FormAttachment(100, 0);
         wTWV.setLayoutData(fdTWV);
-
-        
         
         shell.layout();
 

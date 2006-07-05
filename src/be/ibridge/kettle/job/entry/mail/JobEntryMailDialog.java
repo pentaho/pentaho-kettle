@@ -13,12 +13,6 @@
  **                                                                   **
  **********************************************************************/
 
- 
-/*
- * Created on 19-jun-2003
- *
- */
-
 package be.ibridge.kettle.job.entry.mail;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -31,6 +25,7 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -38,12 +33,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.core.widget.LabelText;
+import be.ibridge.kettle.core.widget.LabelTextVar;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -57,38 +53,30 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
  */
 public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterface
 {
-	private Label        wlName;
-	private Text         wName;
-	private FormData     fdlName, fdName;
+	private LabelText    wName;
+	private FormData     fdName;
 
-	private Label        wlDestination;
-	private Text         wDestination;
-	private FormData     fdlDestination, fdDestination;
+	private LabelTextVar wDestination;
+	private FormData     fdDestination;
 
-	private Label        wlServer;
-	private Text         wServer;
-	private FormData     fdlServer, fdServer;
+	private LabelTextVar wServer;
+	private FormData     fdServer;
 
     private Label        wlUseAuth;
     private Button       wUseAuth;
     private FormData     fdlUseAuth, fdUseAuth;
 
-    private Label        wlAuthUser;
-    private Text         wAuthUser;
-    private FormData     fdlAuthUser, fdAuthUser;
+    private LabelTextVar wAuthUser;
+    private FormData     fdAuthUser;
 
-    private Label        wlAuthPass;
-    private Text         wAuthPass;
-    private FormData     fdlAuthPass, fdAuthPass;
+    private LabelTextVar wAuthPass;
+    private FormData     fdAuthPass;
 
-    
-	private Label        wlReply;
-	private Text         wReply;
-	private FormData     fdlReply, fdReply;
+	private LabelTextVar wReply;
+	private FormData     fdReply;
 
-	private Label        wlSubject;
-	private Text         wSubject;
-	private FormData     fdlSubject, fdSubject;
+	private LabelTextVar wSubject;
+	private FormData     fdSubject;
 
 	private Label        wlAddDate;
 	private Button       wAddDate;
@@ -106,22 +94,17 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 	private Button       wZipFiles;
 	private FormData     fdlZipFiles, fdZipFiles;
 
-	private Label        wlZipFilename;
-	private Text         wZipFilename;
-	private FormData     fdlZipFilename, fdZipFilename;
-
+	private LabelTextVar  wZipFilename;
+	private FormData     fdZipFilename;
 	
-	private Label        wlPerson;
-	private Text         wPerson;
-	private FormData     fdlPerson, fdPerson;
+	private LabelTextVar wPerson;
+	private FormData     fdPerson;
 
-	private Label        wlPhone;
-	private Text         wPhone;
-	private FormData     fdlPhone, fdPhone;
+	private LabelTextVar wPhone;
+	private FormData     fdPhone;
 
-	private Label        wlComment;
-	private Text         wComment;
-	private FormData     fdlComment, fdComment;
+	private LabelTextVar wComment;
+	private FormData     fdComment;
 
 
 
@@ -172,57 +155,28 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		int margin = Const.MARGIN;
 
 		// Name line
-		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText("Name of mail job entry");
- 		props.setLook(wlName);
-		fdlName=new FormData();
-		fdlName.left = new FormAttachment(0, 0);
-		fdlName.top  = new FormAttachment(0, 0);
-		fdlName.right= new FormAttachment(middle, 0);
-		wlName.setLayoutData(fdlName);
-
-		wName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wName);
-		wName.addModifyListener(lsMod);
+		wName=new LabelText(shell, "Name of mail job entry", "Name of mail job entry");
+ 		wName.addModifyListener(lsMod);
 		fdName=new FormData();
 		fdName.top  = new FormAttachment(0, 0);
-		fdName.left = new FormAttachment(middle, margin);
+		fdName.left = new FormAttachment(0, 0);
 		fdName.right= new FormAttachment(100, 0);
 		wName.setLayoutData(fdName);
 
 		// Destination line
-		wlDestination=new Label(shell, SWT.RIGHT);
-		wlDestination.setText("Destination address");
- 		props.setLook(wlDestination);
-		fdlDestination=new FormData();
-		fdlDestination.left = new FormAttachment(0, 0);
-		fdlDestination.top  = new FormAttachment(wName, margin);
-		fdlDestination.right= new FormAttachment(middle, 0);
-		wlDestination.setLayoutData(fdlDestination);
-
-		wDestination=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wDestination);
+		wDestination=new LabelTextVar(shell, "Destination address", "Destination address");
 		wDestination.addModifyListener(lsMod);
 		fdDestination=new FormData();
-		fdDestination.left = new FormAttachment(middle, margin);
+		fdDestination.left = new FormAttachment(0, 0);
 		fdDestination.top  = new FormAttachment(wName, margin);
 		fdDestination.right= new FormAttachment(100, 0);
 		wDestination.setLayoutData(fdDestination);
 
 		// Server line
-		wlServer=new Label(shell, SWT.RIGHT);
-		wlServer.setText("SMTP Server");
- 		props.setLook(wlServer);
-		fdlServer=new FormData();
-		fdlServer.left = new FormAttachment(0, 0);
-		fdlServer.top  = new FormAttachment(wDestination, margin);
-		fdlServer.right= new FormAttachment(middle, 0);
-		wlServer.setLayoutData(fdlServer);
-		wServer=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wServer);
+		wServer=new LabelTextVar(shell, "SMTP Server", "SMTP Server");
 		wServer.addModifyListener(lsMod);
 		fdServer=new FormData();
-		fdServer.left = new FormAttachment(middle, margin);
+		fdServer.left = new FormAttachment(0, 0);
 		fdServer.top  = new FormAttachment(wDestination, margin);
 		fdServer.right= new FormAttachment(100, 0);
 		wServer.setLayoutData(fdServer);
@@ -256,74 +210,38 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         );
 
         // AuthUser line
-        wlAuthUser=new Label(shell, SWT.RIGHT);
-        wlAuthUser.setText("Authentication user");
-        props.setLook(wlAuthUser);
-        fdlAuthUser=new FormData();
-        fdlAuthUser.left = new FormAttachment(0, 0);
-        fdlAuthUser.top  = new FormAttachment(wUseAuth, margin);
-        fdlAuthUser.right= new FormAttachment(middle, 0);
-        wlAuthUser.setLayoutData(fdlAuthUser);
-        wAuthUser=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wAuthUser);
+        wAuthUser=new LabelTextVar(shell, "Authentication user", "Authentication user");
         wAuthUser.addModifyListener(lsMod);
         fdAuthUser=new FormData();
-        fdAuthUser.left = new FormAttachment(middle, margin);
+        fdAuthUser.left = new FormAttachment(0, 0);
         fdAuthUser.top  = new FormAttachment(wUseAuth, margin);
         fdAuthUser.right= new FormAttachment(100, 0);
         wAuthUser.setLayoutData(fdAuthUser);
 
         // AuthPass line
-        wlAuthPass=new Label(shell, SWT.RIGHT);
-        wlAuthPass.setText("Authentication password");
-        props.setLook(wlAuthPass);
-        fdlAuthPass=new FormData();
-        fdlAuthPass.left = new FormAttachment(0, 0);
-        fdlAuthPass.top  = new FormAttachment(wAuthUser, margin);
-        fdlAuthPass.right= new FormAttachment(middle, 0);
-        wlAuthPass.setLayoutData(fdlAuthPass);
-        wAuthPass=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wAuthPass=new LabelTextVar(shell, "Authentication password", "Authentication password");
         wAuthPass.setEchoChar('*');
-        props.setLook(wAuthPass);
         wAuthPass.addModifyListener(lsMod);
         fdAuthPass=new FormData();
-        fdAuthPass.left = new FormAttachment(middle, margin);
+        fdAuthPass.left = new FormAttachment(0, 0);
         fdAuthPass.top  = new FormAttachment(wAuthUser, margin);
         fdAuthPass.right= new FormAttachment(100, 0);
         wAuthPass.setLayoutData(fdAuthPass);
 
 		// Reply line
-		wlReply=new Label(shell, SWT.RIGHT);
-		wlReply.setText("Reply address");
- 		props.setLook(wlReply);
-		fdlReply=new FormData();
-		fdlReply.left = new FormAttachment(0, 0);
-		fdlReply.top  = new FormAttachment(wAuthPass, margin);
-		fdlReply.right= new FormAttachment(middle, 0);
-		wlReply.setLayoutData(fdlReply);
-		wReply=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wReply);
+		wReply=new LabelTextVar(shell, "Reply address", "Reply address");
 		wReply.addModifyListener(lsMod);
 		fdReply=new FormData();
-		fdReply.left = new FormAttachment(middle, margin);
+		fdReply.left = new FormAttachment(0, 0);
 		fdReply.top  = new FormAttachment(wAuthPass, margin);
 		fdReply.right= new FormAttachment(100, 0);
 		wReply.setLayoutData(fdReply);
 
 		// Subject line
-		wlSubject=new Label(shell, SWT.RIGHT);
-		wlSubject.setText("Subject");
- 		props.setLook(wlSubject);
-		fdlSubject=new FormData();
-		fdlSubject.left = new FormAttachment(0, 0);
-		fdlSubject.top  = new FormAttachment(wReply, margin);
-		fdlSubject.right= new FormAttachment(middle, 0);
-		wlSubject.setLayoutData(fdlSubject);
-		wSubject=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wSubject);
+		wSubject=new LabelTextVar(shell, "Subject", "Subject");
 		wSubject.addModifyListener(lsMod);
 		fdSubject=new FormData();
-		fdSubject.left = new FormAttachment(middle, margin);
+		fdSubject.left = new FormAttachment(0, 0);
 		fdSubject.top  = new FormAttachment(wReply, margin);
 		fdSubject.right= new FormAttachment(100, 0);
 		wSubject.setLayoutData(fdSubject);
@@ -431,78 +349,37 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		);
 		
 		// ZipFilename line
-		wlZipFilename=new Label(shell, SWT.RIGHT);
-		wlZipFilename.setText("The zip filename");
- 		props.setLook(wlZipFilename);
-		fdlZipFilename=new FormData();
-		fdlZipFilename.left = new FormAttachment(0, 0);
-		fdlZipFilename.top  = new FormAttachment(wZipFiles, margin);
-		fdlZipFilename.right= new FormAttachment(middle, 0);
-		wlZipFilename.setLayoutData(fdlZipFilename);
-		wZipFilename=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wZipFilename);
-		wZipFilename.addModifyListener(lsMod);
+		wZipFilename=new LabelTextVar(shell, "The zip filename", "The zip filename");
+ 		wZipFilename.addModifyListener(lsMod);
 		fdZipFilename=new FormData();
-		fdZipFilename.left = new FormAttachment(middle, margin);
+		fdZipFilename.left = new FormAttachment(0, 0);
 		fdZipFilename.top  = new FormAttachment(wZipFiles, margin);
 		fdZipFilename.right= new FormAttachment(100, 0);
 		wZipFilename.setLayoutData(fdZipFilename);
 
-
-
 		// ZipFilename line
-		wlPerson=new Label(shell, SWT.RIGHT);
-		wlPerson.setText("Contact person");
- 		props.setLook(wlPerson);
-		fdlPerson=new FormData();
-		fdlPerson.left = new FormAttachment(0, 0);
-		fdlPerson.top  = new FormAttachment(wZipFilename, margin);
-		fdlPerson.right= new FormAttachment(middle, 0);
-		wlPerson.setLayoutData(fdlPerson);
-
-		wPerson=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wPerson);
+		wPerson=new LabelTextVar(shell, "Contact person", "Contact person");
 		wPerson.addModifyListener(lsMod);
 		fdPerson=new FormData();
-		fdPerson.left = new FormAttachment(middle, margin);
+		fdPerson.left = new FormAttachment(0, 0);
 		fdPerson.top  = new FormAttachment(wZipFilename, margin);
 		fdPerson.right= new FormAttachment(100, 0);
 		wPerson.setLayoutData(fdPerson);
 
 		// Phone line
-		wlPhone=new Label(shell, SWT.RIGHT);
-		wlPhone.setText("Contact Phone");
- 		props.setLook(wlPhone);
-		fdlPhone=new FormData();
-		fdlPhone.left = new FormAttachment(0, 0);
-		fdlPhone.top  = new FormAttachment(wPerson, margin);
-		fdlPhone.right= new FormAttachment(middle, 0);
-		wlPhone.setLayoutData(fdlPhone);
-
-		wPhone=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wPhone);
+		wPhone=new LabelTextVar(shell, "Contact Phone", "Contact Phone");
 		wPhone.addModifyListener(lsMod);
 		fdPhone=new FormData();
-		fdPhone.left = new FormAttachment(middle, margin);
+		fdPhone.left = new FormAttachment(0, 0);
 		fdPhone.top  = new FormAttachment(wPerson, margin);
 		fdPhone.right= new FormAttachment(100, 0);
 		wPhone.setLayoutData(fdPhone);
 
 		// Comment line
-		wlComment=new Label(shell, SWT.RIGHT);
-		wlComment.setText("Comment");
- 		props.setLook(wlComment);
-		fdlComment=new FormData();
-		fdlComment.left = new FormAttachment(0, 0);
-		fdlComment.top  = new FormAttachment(wPhone, margin);
-		fdlComment.right= new FormAttachment(middle, 0);
-		wlComment.setLayoutData(fdlComment);
-
-		wComment=new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
- 		props.setLook(wComment);
+		wComment=new LabelTextVar(shell, "Comment", "Comment");
 		wComment.addModifyListener(lsMod);
 		fdComment=new FormData();
-		fdComment.left   = new FormAttachment(middle, margin);
+		fdComment.left   = new FormAttachment(0, 0);
 		fdComment.top    = new FormAttachment(wPhone, margin);
 		fdComment.right  = new FormAttachment(100, 0);
 		fdComment.bottom = new FormAttachment(100, -50);
@@ -537,6 +414,9 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		// Detect [X] or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
+        BaseStepDialog.setTraverseOrder(new Control[] {wName, wDestination, wServer, wUseAuth, wAuthUser, wAuthPass, wReply, 
+                wSubject, wAddDate, wIncludeFiles, wTypes, wZipFiles, wZipFilename, wPerson, wPhone, wComment, wOK, wCancel });
+                
 		getData();
 		
 		BaseStepDialog.setSize(shell);
@@ -549,18 +429,15 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		return jobmail;
 	}
 
-	protected void setFlags()
+    protected void setFlags()
 	{
 		wlTypes.setEnabled(wIncludeFiles.getSelection());
 		wTypes.setEnabled(wIncludeFiles.getSelection());
 		wlZipFiles.setEnabled(wIncludeFiles.getSelection());
 		wZipFiles.setEnabled(wIncludeFiles.getSelection());
-		wlZipFilename.setEnabled(wIncludeFiles.getSelection() && wZipFiles.getSelection());
 		wZipFilename.setEnabled(wIncludeFiles.getSelection() && wZipFiles.getSelection());
         
-        wlAuthUser.setEnabled(wUseAuth.getSelection());
         wAuthUser.setEnabled(wUseAuth.getSelection());
-        wlAuthPass.setEnabled(wUseAuth.getSelection());
         wAuthPass.setEnabled(wUseAuth.getSelection());
 	}
 
@@ -573,14 +450,15 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		
 	public void getData()
 	{
-		if (jobmail.getName()!=null)     wName.setText(jobmail.getName());
-		if (jobmail.getDestination()!=null) wDestination.setText(jobmail.getDestination());
-		if (jobmail.getServer()!=null)      wServer.setText(jobmail.getServer());
-		if (jobmail.getReplyAddress()!=null) wReply.setText(jobmail.getReplyAddress());
-		if (jobmail.getSubject()!=null) wSubject.setText(jobmail.getSubject());
+		if (jobmail.getName()!=null)          wName.setText(jobmail.getName());
+		if (jobmail.getDestination()!=null)   wDestination.setText(jobmail.getDestination());
+		if (jobmail.getServer()!=null)        wServer.setText(jobmail.getServer());
+		if (jobmail.getReplyAddress()!=null)  wReply.setText(jobmail.getReplyAddress());
+		if (jobmail.getSubject()!=null)       wSubject.setText(jobmail.getSubject());
 		if (jobmail.getContactPerson()!=null) wPerson.setText(jobmail.getContactPerson());
-		if (jobmail.getContactPhone()!=null) wPhone.setText(jobmail.getContactPhone());
-		if (jobmail.getComment()!=null) wComment.setText(jobmail.getComment());
+		if (jobmail.getContactPhone()!=null)  wPhone.setText(jobmail.getContactPhone());
+		if (jobmail.getComment()!=null)       wComment.setText(jobmail.getComment());
+        
 		wAddDate.setSelection(jobmail.getIncludeDate());
 		wIncludeFiles.setSelection(jobmail.isIncludingFiles());
 		
@@ -594,7 +472,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		if (jobmail.getZipFilename()!=null) wZipFilename.setText(jobmail.getZipFilename());
         
         wUseAuth.setSelection(jobmail.isUsingAuthentication());
-        if (jobmail.getAuthenticationUser()!=null) wAuthUser.setText( jobmail.getAuthenticationUser() );
+        if (jobmail.getAuthenticationUser()!=null)     wAuthUser.setText( jobmail.getAuthenticationUser() );
         if (jobmail.getAuthenticationPassword()!=null) wAuthPass.setText( jobmail.getAuthenticationPassword() );
         
 		setFlags();

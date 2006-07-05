@@ -1,6 +1,8 @@
 package be.ibridge.kettle.core.widget;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -42,7 +44,7 @@ public class LabelText extends Composite
         
         wText = new Text(this, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         FormData fdText = new FormData();
-        fdText.left = new FormAttachment(middle, 0);
+        fdText.left = new FormAttachment(middle, margin);
         fdText.right= new FormAttachment(100, 0);
         wText.setLayoutData(fdText);
         wText.setToolTipText(toolTipText);
@@ -52,7 +54,7 @@ public class LabelText extends Composite
         wLabel.setText(labelText);
         FormData fdLabel = new FormData();
         fdLabel.left = new FormAttachment(0,0);
-        fdLabel.right= new FormAttachment(middle, -margin);
+        fdLabel.right= new FormAttachment(middle, 0);
         fdLabel.top  = new FormAttachment(wText, 0, SWT.CENTER);
         wLabel.setLayoutData(fdLabel);
         wLabel.setToolTipText(toolTipText);
@@ -71,5 +73,21 @@ public class LabelText extends Composite
     public Text getTextWidget()
     {
         return wText;
+    }
+
+    public void addModifyListener(ModifyListener lsMod)
+    {
+        wText.addModifyListener(lsMod);
+    }
+
+    public void addSelectionListener(SelectionListener lsDef)
+    {
+        wText.addSelectionListener(lsDef);
+    }
+    
+    public void setEnabled(boolean flag)
+    {
+        wText.setEnabled(flag);
+        wLabel.setEnabled(flag);
     }
 }

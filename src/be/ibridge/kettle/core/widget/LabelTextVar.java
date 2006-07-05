@@ -1,6 +1,9 @@
 package be.ibridge.kettle.core.widget;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -35,11 +38,14 @@ public class LabelTextVar extends Composite
         FormLayout formLayout = new FormLayout();
         formLayout.marginWidth  = 0;
         formLayout.marginHeight = 0;
+        formLayout.marginTop = 0;
+        formLayout.marginBottom = 0;
+        
         this.setLayout(formLayout);
         
         wText = new TextVar(this, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         FormData fdText = new FormData();
-        fdText.left = new FormAttachment(middle, 0);
+        fdText.left = new FormAttachment(middle, margin);
         fdText.right= new FormAttachment(100, 0);
         wText.setLayoutData(fdText);
         wText.getTextWidget().setToolTipText(toolTipText);
@@ -48,11 +54,51 @@ public class LabelTextVar extends Composite
         props.setLook(wLabel);
         wLabel.setText(labelText);
         FormData fdLabel = new FormData();
-        fdLabel.left = new FormAttachment(0,0);
-        fdLabel.right= new FormAttachment(middle, -margin);
+        fdLabel.left = new FormAttachment(0, 0);
+        fdLabel.right= new FormAttachment(middle, 0);
         fdLabel.top  = new FormAttachment(wText, 0, SWT.CENTER);
         wLabel.setLayoutData(fdLabel);
         wLabel.setToolTipText(toolTipText);
     }
+
+    public void addModifyListener(ModifyListener lsMod)
+    {
+        wText.addModifyListener(lsMod);
+    }
+
+    public void addSelectionListener(SelectionAdapter lsDef)
+    {
+        wText.addSelectionListener(lsDef);
+    }
+
+    public void setText(String name)
+    {
+        wText.setText(name);
+    }
+
+    public String getText()
+    {
+        return wText.getText();
+    }
+
+    public void setEchoChar(char c)
+    {
+        wText.setEchoChar(c);
+    }
     
+    public void setEnabled(boolean flag)
+    {
+        wText.setEnabled(flag);
+        wLabel.setEnabled(flag);
+    }
+    
+    public boolean setFocus()
+    {
+        return wText.setFocus();
+    }
+    
+    public void addTraverseListener(TraverseListener tl)
+    {
+        wText.addTraverseListener(tl);
+    }
 }

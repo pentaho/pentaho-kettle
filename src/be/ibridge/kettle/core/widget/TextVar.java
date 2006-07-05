@@ -9,6 +9,7 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -17,7 +18,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
 
-import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
@@ -41,11 +41,13 @@ public class TextVar extends Composite
         super(arg0, SWT.NONE);
         props.setLook(this);
         
-        int margin = Const.MARGIN;
+        // int margin = Const.MARGIN;
         
         FormLayout formLayout = new FormLayout();
         formLayout.marginWidth  = 0;
         formLayout.marginHeight = 0;
+        formLayout.marginTop = 0;
+        formLayout.marginBottom = 0;
 
         this.setLayout(formLayout);
 
@@ -58,20 +60,22 @@ public class TextVar extends Composite
         
         // add a button...
         wVariable = new Button(this, SWT.PUSH);
+        wVariable.setToolTipText("Insert variable (CTRL-SPACE)");
         props.setLook(wVariable);
 
-        wVariable.setText(Messages.getString("System.Button.Variable"));
+        // wVariable.setText(Messages.getString("System.Button.Variable")); // $NON-NLS-1$
+        wVariable.setText("$"); // $NON-NLS-1$
         wVariable.addSelectionListener(lsVar);
         
         FormData fdVariable = new FormData();
-        fdVariable.top   = new FormAttachment(0,0);
-        fdVariable.right = new FormAttachment(100,0);
+        fdVariable.top    = new FormAttachment(0,0);
+        fdVariable.right  = new FormAttachment(100,0);
         wVariable.setLayoutData(fdVariable);
 
         FormData fdText = new FormData();
-        fdText.top   = new FormAttachment(0,0);
+        fdText.top   = new FormAttachment(wVariable, 0, SWT.CENTER);
         fdText.left  = new FormAttachment(0,0);
-        fdText.right = new FormAttachment(wVariable, -margin);
+        fdText.right = new FormAttachment(wVariable, 0);
         wText.setLayoutData(fdText);
     }
     
@@ -81,7 +85,10 @@ public class TextVar extends Composite
         {
             public void modifyText(ModifyEvent e)
             {
-                textField.setToolTipText(StringUtil.environmentSubstitute( textField.getText() ) );
+                if (textField.getEchoChar()=='\0') // Can't show passwords ;-)
+                {
+                    textField.setToolTipText(StringUtil.environmentSubstitute( textField.getText() ) );
+                }
             }
         };
     }
@@ -139,5 +146,30 @@ public class TextVar extends Composite
     {
         wText.addModifyListener(modifyListener);
     }
+
+    public void addSelectionListener(SelectionAdapter lsDef)
+    {
+        wText.addSelectionListener(lsDef);
+    }
+
+    public void setEchoChar(char c)
+    {
+        wText.setEchoChar(c);
+    }
  
+    public void setEnabled(boolean flag)
+    {
+        wText.setEnabled(flag);
+        wVariable.setEnabled(flag);
+    }
+    
+    public boolean setFocus()
+    {
+        return wText.setFocus();
+    }
+    
+    public void addTraverseListener(TraverseListener tl)
+    {
+        wText.addTraverseListener(tl);
+    }
 }
