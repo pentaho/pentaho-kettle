@@ -702,7 +702,7 @@ public class TextFileImportWizardPage2 extends WizardPage
 		{
 			String line = (String)rows.get(i);
 	
-            if (position<length)
+            if (position<line.length())
             {
     			if (position+length>=line.length()) retval[i] = line.substring(position);
     			else                                retval[i] = line.substring(position, position+length);
