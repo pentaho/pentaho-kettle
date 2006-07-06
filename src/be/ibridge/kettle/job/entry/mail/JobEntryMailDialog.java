@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
@@ -40,9 +41,11 @@ import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.LabelText;
 import be.ibridge.kettle.core.widget.LabelTextVar;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
+import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 
 /**
@@ -103,8 +106,9 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 	private LabelTextVar wPhone;
 	private FormData     fdPhone;
 
-	private LabelTextVar wComment;
-	private FormData     fdComment;
+    private Label        wlComment;
+	private Text         wComment;
+	private FormData     fdlComment, fdComment;
 
 
 
@@ -375,16 +379,28 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		fdPhone.right= new FormAttachment(100, 0);
 		wPhone.setLayoutData(fdPhone);
 
-		// Comment line
-		wComment=new LabelTextVar(shell, "Comment", "Comment");
-		wComment.addModifyListener(lsMod);
-		fdComment=new FormData();
-		fdComment.left   = new FormAttachment(0, 0);
-		fdComment.top    = new FormAttachment(wPhone, margin);
-		fdComment.right  = new FormAttachment(100, 0);
-		fdComment.bottom = new FormAttachment(100, -50);
-		wComment.setLayoutData(fdComment);
+        // Comment line
+        wlComment=new Label(shell, SWT.RIGHT);
+        wlComment.setText("Comment: ");
+        props.setLook(wlComment);
+        fdlComment=new FormData();
+        fdlComment.left = new FormAttachment(0, 0);
+        fdlComment.top  = new FormAttachment(wPhone, margin);
+        fdlComment.right= new FormAttachment(middle, 0);
+        wlComment.setLayoutData(fdlComment);
 
+        wComment=new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        props.setLook(wComment);
+        wComment.addModifyListener(lsMod);
+        fdComment=new FormData();
+        fdComment.left   = new FormAttachment(middle, 0);
+        fdComment.top    = new FormAttachment(wPhone, margin);
+        fdComment.right  = new FormAttachment(100, 0);
+        fdComment.bottom = new FormAttachment(100, -50);
+        wComment.setLayoutData(fdComment);
+        SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wComment);
+        wComment.addKeyListener(TextVar.getControlSpaceKeyListener(wComment, lsVar));
+        
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText("  &OK  ");
