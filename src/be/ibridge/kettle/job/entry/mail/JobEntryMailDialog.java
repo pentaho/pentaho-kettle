@@ -386,14 +386,14 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         fdlComment=new FormData();
         fdlComment.left = new FormAttachment(0, 0);
         fdlComment.top  = new FormAttachment(wPhone, margin);
-        fdlComment.right= new FormAttachment(middle, 0);
+        fdlComment.right= new FormAttachment(middle, margin);
         wlComment.setLayoutData(fdlComment);
 
         wComment=new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
         props.setLook(wComment);
         wComment.addModifyListener(lsMod);
         fdComment=new FormData();
-        fdComment.left   = new FormAttachment(middle, 0);
+        fdComment.left   = new FormAttachment(middle, margin);
         fdComment.top    = new FormAttachment(wPhone, margin);
         fdComment.right  = new FormAttachment(100, 0);
         fdComment.bottom = new FormAttachment(100, -50);
