@@ -853,4 +853,47 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 		this.updateBypassed = updateBypassed;
 	}
 
+    
+    public Row getRequiredFields() throws KettleException
+    {
+        if (database!=null)
+        {
+            Database db = new Database(database);
+            try
+            {
+                db.connect();
+                
+                if (tableName!=null && tableName.length()!=0)
+                {
+                    // Check if this table exists...
+                    if (db.checkTableExists(tableName))
+                    {
+                        return db.getTableFields(tableName);
+                    }
+                    else
+                    {
+                        throw new KettleException(Messages.getString("InsertUpdateMeta.Exception.TableNotFound"));
+                    }
+                }
+                else
+                {
+                    throw new KettleException(Messages.getString("InsertUpdateMeta.Exception.TableNotSpecified"));
+                }
+            }
+            catch(Exception e)
+            {
+                throw new KettleException(Messages.getString("InsertUpdateMeta.Exception.ErrorGettingFields"), e);
+            }
+            finally
+            {
+                db.disconnect();
+            }
+        }
+        else
+        {
+            throw new KettleException(Messages.getString("InsertUpdateMeta.Exception.ConnectionNotDefined"));
+        }
+
+    }
+
 }
