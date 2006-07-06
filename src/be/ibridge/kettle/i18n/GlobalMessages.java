@@ -22,9 +22,9 @@ public class GlobalMessages
 
     private static final Map         locales               = Collections.synchronizedMap(new HashMap());
 
-    public static final String[] localeCodes = { "en_US", "nl_NL", "zh_CN", "es_ES", "fr_FR", "de_DE", "pt_PT" };
+    public static final String[] localeCodes = { "en_US", "nl_NL", "zh_CN", "es_ES", "fr_FR", "de_DE", "pt_BR" };
     
-    public static final String[] localeDescr = { "English (US)", "Nederlands", "Simplified Chinese", "Espa\u00F1iol", "Fran\u00E7ais", "Deutch", "Portuguese" };
+    public static final String[] localeDescr = { "English (US)", "Nederlands", "Simplified Chinese", "Espa\u00F1iol", "Fran\u00E7ais", "Deutch", "Portuguese (Brazil)" };
     
     protected static Map getLocales()
     {
