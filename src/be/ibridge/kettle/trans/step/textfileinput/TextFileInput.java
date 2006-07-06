@@ -175,7 +175,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 					// "aa;aa";123;"aaa-aaa";000;...
 					if (len_encl > 0 && line.substring(from, from + len_encl).equalsIgnoreCase(inf.getEnclosure()))
 					{
-						log.logRowlevel("convert line to row", "encl substring=[" + line.substring(from, from + len_encl) + "]");
+                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "encl substring=[" + line.substring(from, from + len_encl) + "]");
 						encl_found = true;
 						int p = from + len_encl;
 
@@ -228,7 +228,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 						if (p >= length) next = p;
 						else next = p + len_encl;
 
-						log.logRowlevel("convert line to row", "End of enclosure @ position " + p);
+                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "End of enclosure @ position " + p);
 					}
 					else
 					{
@@ -269,12 +269,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 					if (encl_found)
 					{
 						pol = line.substring(from + len_encl, next - len_encl);
-						log.logRowlevel("convert line to row", "Enclosed field found: [" + pol + "]");
+                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "Enclosed field found: [" + pol + "]");
 					}
 					else
 					{
 						pol = line.substring(from, next);
-						log.logRowlevel("convert line to row", "Normal field found: [" + pol + "]");
+                        if (log.isRowLevel()) log.logRowlevel("convert line to row", "Normal field found: [" + pol + "]");
 					}
 
 					if (dencl)

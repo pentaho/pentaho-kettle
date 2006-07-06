@@ -258,7 +258,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 
 				linesOutput++;
 
-				log.logRowlevel(toString(), Messages.getString("CombinationLookup.Log.AddedDimensionEntry")+val_key); //$NON-NLS-1$
+                if (log.isRowLevel()) log.logRowlevel(toString(), Messages.getString("CombinationLookup.Log.AddedDimensionEntry")+val_key); //$NON-NLS-1$
 
 				// Also store it in our Hashtable...
 				storeInCache(lu, val_key);
