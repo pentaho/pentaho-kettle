@@ -22,19 +22,21 @@ public class GetAPI
            {
                if (method[i].getReturnType().equals(value.getClass()))
                {
-                   System.out.print(method[i].getName()+"(");
+                   boolean allValues=true;
                    
                    Class par[] = method[i].getParameterTypes();
                    for (int p=0;p<par.length;p++)
                    {
-                       if (p>0) System.out.print(", ");
-                       System.out.print(par[p]. getName());
+                       if (!par[p].equals(value.getClass())) allValues=false;
                    }
-                   System.out.println(")");
+                   if (allValues)
+                   {
+                       ValueMethod valueMethod = new ValueMethod(method[i], par);
+                       System.out.println(valueMethod);
+                   }
                }
            }
        }
-       
     }
 
 }

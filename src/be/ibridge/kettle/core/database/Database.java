@@ -790,7 +790,7 @@ public class Database
 
 			try
 			{
-				log.logDebug(toString(), "Preparing statement: ["+sql+"]");
+                if (log.isDebug()) log.logDebug(toString(), "Preparing statement: ["+sql+"]");
 				pstmt_dup=connection.prepareStatement(databaseMeta.stripCR(sql));
 			}
 			catch(SQLException ex) 
@@ -952,13 +952,13 @@ public class Database
 			rins.addValue( val );
 		}
 		
-		log.logDebug(toString(), "rins, size="+rins.size()+", values="+rins.toString());
+		if (log.isDebug()) log.logDebug(toString(), "rins, size="+rins.size()+", values="+rins.toString());
 		
 		// INSERT NEW VALUE!
 		setValues(rins, prepStatementInsert);
 		insertRow(prepStatementInsert);
 			
-		log.logDebug(toString(), "Row inserted!");
+        if (log.isDebug()) log.logDebug(toString(), "Row inserted!");
 		if (keyfield==null)
 		{
 			try
@@ -996,13 +996,13 @@ public class Database
 			}
 			rupd.addValue(val_version);
 			
-			log.logRowlevel(toString(), "UPDATE using rupd="+rupd.toString());
+			if (log.isRowLevel()) log.logRowlevel(toString(), "UPDATE using rupd="+rupd.toString());
 
 			// UPDATE VALUES
 			setValues(rupd, prepStatementUpdate);  // set values for update
-			log.logDebug(toString(), "Values set for update ("+rupd.size()+")");
+            if (log.isDebug()) log.logDebug(toString(), "Values set for update ("+rupd.size()+")");
 			insertRow(prepStatementUpdate); // do the actual update
-			log.logDebug(toString(), "Row updated!");
+            if (log.isDebug()) log.logDebug(toString(), "Row updated!");
 		}
 	}
 
@@ -1693,7 +1693,7 @@ public class Database
 							}
 							else
 							{
-								log.logDebug(toString(), "Error executing query: "+Const.CR+sql);
+                                if (log.isDebug()) log.logDebug(toString(), "Error executing query: "+Const.CR+sql);
 							}
 						}
 						finally 
@@ -1704,7 +1704,7 @@ public class Database
 							}
 							catch (SQLException ex )
 							{
-								log.logDebug(toString(), "Error closing query: "+Const.CR+sql);
+                                if (log.isDebug()) log.logDebug(toString(), "Error closing query: "+Const.CR+sql);
 							}
 						}						
 					}
@@ -2001,8 +2001,7 @@ public class Database
 	 * @param idx_fields The fields on which the indexe is checked
 	 * @return True if the index exists
 	 */
-	public boolean checkIndexExists(String tablename, String idx_fields[])
-		throws KettleDatabaseException
+	public boolean checkIndexExists(String tablename, String idx_fields[]) throws KettleDatabaseException
 	{
 		if (!checkTableExists(tablename)) return false;
 		
@@ -3045,7 +3044,7 @@ public class Database
 		try
 		{
 			String sqlStatement = sql.toString();
-			log.logDebug(toString(), "preparing combi-lookup statement:"+Const.CR+sqlStatement);
+            if (log.isDebug()) log.logDebug(toString(), "preparing combi-lookup statement:"+Const.CR+sqlStatement);
 			prepStatementLookup=connection.prepareStatement(databaseMeta.stripCR(sqlStatement));
 			prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
 		}
@@ -4035,7 +4034,7 @@ public class Database
 			while (alltables.next())
 			{
 				String table = alltables.getString("TABLE_NAME");
-				log.logRowlevel(toString(), "got table from meta-data: "+table);
+                if (log.isRowLevel()) log.logRowlevel(toString(), "got table from meta-data: "+table);
 				names.add(table);
 			}
 		}
@@ -4076,7 +4075,7 @@ public class Database
 			while (alltables.next())
 			{
 				String table = alltables.getString("TABLE_NAME");
-				log.logRowlevel(toString(), "got view from meta-data: "+table);
+                if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+table);
 				names.add(table);
 			}
 		}
@@ -4116,7 +4115,7 @@ public class Database
 			while (alltables.next())
 			{
 				String table = alltables.getString("TABLE_NAME");
-				log.logRowlevel(toString(), "got view from meta-data: "+table);
+                if (log.isRowLevel()) log.logRowlevel(toString(), "got view from meta-data: "+table);
 				names.add(table);
 			}
 		}

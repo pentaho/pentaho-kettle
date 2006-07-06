@@ -35,9 +35,9 @@
 	<classpathentry output="testClasses" kind="src" path="test/useCases/replay"/>
 	<classpathentry kind="lib" path="test/libext/junit.jar"/>
 	<classpathentry kind="src" path="test/useCases/normal"/>
-	<classpathentry sourcepath="C:/Soft/eclipse/src.zip" kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="lib" path="libext/xdbjdbc.jar"/>
 	<classpathentry kind="lib" path="libext/mysql-connector-java-3.1.13-bin.jar"/>
 	<classpathentry kind="lib" path="libext/postgresql-8.1-407.jdbc3.jar"/>
+	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

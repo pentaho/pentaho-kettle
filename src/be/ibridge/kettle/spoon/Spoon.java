@@ -4673,6 +4673,7 @@ public class Spoon
         catch(KettleException ke)
         {
             log.logError(APP_NAME, Messages.getString("Spoon.Log.ErrorOccurred")+Const.CR+ke.getMessage());//"An error occurred: "
+            win.rep=null;
             // ke.printStackTrace();
         }
                 

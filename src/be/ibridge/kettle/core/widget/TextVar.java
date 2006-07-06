@@ -36,7 +36,7 @@ public class TextVar extends Composite
     private Text wText;
     private Button wVariable;
     
-    public TextVar(Composite arg0, int arg1)
+    public TextVar(Composite arg0, int flags)
     {
         super(arg0, SWT.NONE);
         props.setLook(this);
@@ -52,7 +52,7 @@ public class TextVar extends Composite
         this.setLayout(formLayout);
 
         // add a text field on it...
-        wText = new Text(this, arg1);
+        wText = new Text(this, flags);
         props.setLook(wText);
         wText.addModifyListener(getModifyListenerTooltipText(wText));
         SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(this, wText);

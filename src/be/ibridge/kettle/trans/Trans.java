@@ -332,7 +332,7 @@ public class Trans
 			// How many copies are launched of this step?
 			nrcopies=stepMeta.getCopies();
 
-			log.logDebug(toString(), Messages.getString("Trans.Log.StepHasNumberRowCopies",String.valueOf(nrcopies))); //$NON-NLS-1$
+            if (log.isDebug()) log.logDebug(toString(), Messages.getString("Trans.Log.StepHasNumberRowCopies",String.valueOf(nrcopies))); //$NON-NLS-1$
 
 			// At least run once...
 			for (int c=0;c<nrcopies;c++)
