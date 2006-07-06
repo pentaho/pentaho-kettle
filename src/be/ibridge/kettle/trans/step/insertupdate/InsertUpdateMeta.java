@@ -329,8 +329,12 @@ public class InsertUpdateMeta extends BaseStepMeta implements StepMetaInterface
 				if(updateValue==null) {
 					//default TRUE
 					update[i] = Boolean.TRUE;
-				} else {
-					update[i] = Boolean.valueOf(updateValue);
+				} else 
+                {
+                    if (updateValue.equalsIgnoreCase("Y"))
+                        update[i] = Boolean.TRUE;
+                    else
+                        update[i] = Boolean.FALSE; 
 				}
 			}
 		}
