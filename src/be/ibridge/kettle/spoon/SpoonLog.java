@@ -963,7 +963,9 @@ public class SpoonLog extends Composite
 			{
 				String line = all.substring(startpos, i);
 				if (line.toUpperCase().indexOf(Messages.getString("SpoonLog.System.ERROR")) >= 0 || //$NON-NLS-1$
-						line.toUpperCase().indexOf(Messages.getString("SpoonLog.System.EXCEPTION")) >= 0 //$NON-NLS-1$
+						line.toUpperCase().indexOf(Messages.getString("SpoonLog.System.EXCEPTION")) >= 0 || //$NON-NLS-1$
+						line.toUpperCase().indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. 
+						line.toUpperCase().indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o.
 				)
 				{
 					err.add(line);
