@@ -372,6 +372,18 @@ public class Calculator extends BaseStep implements StepInterface
                             throw new KettleValueException("Unable to get date from field ["+fieldA+"]");
                         }
                     }
+                    break;
+                case CalculatorMetaFunction.CALC_HEX_ENCODE           : // Hex encode string field A
+                    {
+                        value = new Value(fn.getFieldName(), fieldA);
+                        value.hexEncode();
+                    }
+                    break;
+                case CalculatorMetaFunction.CALC_HEX_DECODE           : // Hex decode string field A
+                    {
+                        value = new Value(fn.getFieldName(), fieldA);
+                        value.hexDecode();
+                    }
                     break;                    
                 default:
                     throw new KettleValueException("Unknown calculation type #"+fn.getCalcType());

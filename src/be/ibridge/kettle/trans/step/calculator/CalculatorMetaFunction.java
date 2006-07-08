@@ -37,6 +37,8 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_WEEK_OF_YEAR         = 22;
     public static final int CALC_WEEK_OF_YEAR_ISO8601 = 23;
     public static final int CALC_YEAR_OF_DATE_ISO8601 = 24;
+    public static final int CALC_HEX_ENCODE           = 25;
+    public static final int CALC_HEX_DECODE           = 26;
 
     public static final String calc_desc[] = 
         { 
@@ -64,7 +66,9 @@ public class CalculatorMetaFunction implements Cloneable
             "DAY_OF_WEEK",
             "WEEK_OF_YEAR",
             "WEEK_OF_YEAR_ISO8601",
-            "YEAR_OF_DATE_ISO8601"
+            "YEAR_OF_DATE_ISO8601",
+            "HEX_ENCODE",
+            "HEX_DECODE"
         };
     
     public static final String calcLongDesc[] = 
@@ -93,7 +97,9 @@ public class CalculatorMetaFunction implements Cloneable
             Messages.getString("CalculatorMetaFunction.CalcFunctions.DayOfWeek"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.WeekOfYear"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.WeekOfYearISO8601"),
-            Messages.getString("CalculatorMetaFunction.CalcFunctions.YearOfDateISO8601")
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.YearOfDateISO8601"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.HexEncode"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.HexDecode")
         };
    
     private String fieldName;

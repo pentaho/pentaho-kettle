@@ -22,6 +22,7 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.core.value.Value;
 
 /**
@@ -37,7 +38,7 @@ public class ValueTest extends TestCase
 	public void testConstructor1()
 	{
 	    Value vs = new Value();
-	    
+
 	    // Set by clearValue()
 	    assertFalse(vs.isNull());             // historical probably
 	    assertTrue(vs.isEmpty());             // historical probably
@@ -51,9 +52,9 @@ public class ValueTest extends TestCase
 	    assertFalse(vs.isBigNumber());
 	    assertFalse(vs.isNumber());
 	    assertFalse(vs.isBoolean());
-	    
+
 	    Value vs1 = new Value("Name");
-	    
+
 	    // Set by clearValue()
 	    assertFalse(vs1.isNull());            // historical probably
 	    assertTrue(vs1.isEmpty());            // historical probably
@@ -133,7 +134,7 @@ public class ValueTest extends TestCase
 	    assertEquals(vs.isNull(), copy.isNull());
 	    assertEquals(vs.getOrigin(), copy.getOrigin());
 	    assertEquals(vs.getName(), copy.getName());
-	    
+
 	    // Show it's a deep copy
 	    copy.setName("newName");
 	    assertEquals("Name", vs.getName());
@@ -142,12 +143,11 @@ public class ValueTest extends TestCase
 	    copy.setOrigin("newOrigin");
 	    assertEquals("origin", vs.getOrigin());
 	    assertEquals("newOrigin", copy.getOrigin());
-	    
+
 	    copy.setValue(11.0D);
 	    assertEquals(10.0D, vs.getNumber(), 0.1D);
 	    assertEquals(11.0D, copy.getNumber(), 0.1D);
 
-	
 	    Value vs1 = new Value("Name",  Value.VALUE_TYPE_NUMBER);
 	    vs1.setName(null);
 	    // name and origin are null
@@ -159,7 +159,7 @@ public class ValueTest extends TestCase
 	    assertEquals(vs1.isNull(), copy1.isNull());
 	    assertEquals(vs1.getOrigin(), copy1.getOrigin());
 	    assertEquals(vs1.getName(), copy1.getName());
-	    
+
 	    Value vs2 = new Value((Value)null);
 	    assertTrue(vs2.isNull());
 	    assertNull(vs2.getName());
@@ -184,30 +184,30 @@ public class ValueTest extends TestCase
 	    Value vs = new Value("Name", 10.0D);
 	    assertEquals(Value.VALUE_TYPE_NUMBER, vs.getType());
 	    assertEquals("Name", vs.getName());
-	    
+
 	    Value copy = new Value("newName", vs);
 	    assertEquals("newName", copy.getName());
 	    assertFalse(!vs.equals(copy));
 	    copy.setName("Name");
 	    assertTrue(vs.equals(copy));
 	}
-	
+
 	/**
 	 * Test of string representation of String Value.
 	 */
 	public void testToStringString()
 	{
 		String result = null;
-		
+
 	    Value vs = new Value("Name", Value.VALUE_TYPE_STRING);	    
 	    vs.setValue("test string");
 	    result = vs.toString(true);
 	    assertEquals("test string", result);
-	    
+
 	    vs.setLength(20);
 	    result = vs.toString(true);  // padding
 	    assertEquals("test string         ", result);
-	    
+
 	    vs.setLength(4);              
 	    result = vs.toString(true);  // truncate
 	    assertEquals("test", result);
@@ -215,28 +215,28 @@ public class ValueTest extends TestCase
 	    vs.setLength(0);              
 	    result = vs.toString(true);  // on 0 => full string
 	    assertEquals("test string", result);
-	    
+
 	    // no padding
 	    result = vs.toString(false);
 	    assertEquals("test string", result);
-	    
+
 	    vs.setLength(20);
 	    result = vs.toString(false); 
 	    assertEquals("test string", result);
-	    
+
 	    vs.setLength(4);              
 	    result = vs.toString(false); 
 	    assertEquals("test string", result);
 
-	    vs.setLength(0);              
+        vs.setLength(0);              
 	    result = vs.toString(false);
 	    assertEquals("test string", result);
-	    
+
 	    vs.setLength(4);              
 	    vs.setNull(); 
 	    result = vs.toString(false);
 	    assertEquals("", result);
-	    
+
 	    Value vs1 = new Value("Name", Value.VALUE_TYPE_STRING);
 	    assertEquals("", vs1.toString());
 	    
@@ -252,28 +252,28 @@ public class ValueTest extends TestCase
 	{	
 	    Value vs1 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    assertEquals(" 0"+Const.DEFAULT_DECIMAL_SEPARATOR+"0", vs1.toString(true));
-	    
+
 	    Value vs2 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs2.setNull();
 	    assertEquals("", vs2.toString(true));
-	    
+
 	    Value vs3 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs3.setValue(100.0D);
 	    vs3.setLength(6);
 	    vs3.setNull();
 	    assertEquals("      ", vs3.toString(true));
-	    
+
 	    Value vs4 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs4.setValue(100.0D);
 	    vs4.setLength(6);	    
 	    assertEquals(" 000100"+Const.DEFAULT_DECIMAL_SEPARATOR+"00", vs4.toString(true));
-	    
+
 	    Value vs5 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs5.setValue(100.5D);
 	    vs5.setLength(-1);	    
 	    vs5.setPrecision(-1);
-	    assertEquals(" 100"+Const.DEFAULT_DECIMAL_SEPARATOR+"5", vs5.toString(true));	    
 
+	    assertEquals(" 100"+Const.DEFAULT_DECIMAL_SEPARATOR+"5", vs5.toString(true));	    
 	    Value vs6 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs6.setValue(100.5D);
 	    vs6.setLength(8);	    
@@ -285,19 +285,18 @@ public class ValueTest extends TestCase
 	    vs7.setLength(0);	    
 	    vs7.setPrecision(3);
 	    assertEquals(" 100"+Const.DEFAULT_DECIMAL_SEPARATOR+"5", vs7.toString(true));	  
-	    
+
 	    Value vs8 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs8.setValue(100.5D);
 	    vs8.setLength(5);	    
 	    vs8.setPrecision(3);
-        System.out.println("vs8: ["+vs8.toString(false)+"]");
 	    assertEquals("100.5", vs8.toString(false));	
-	    
+
 	    Value vs9 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs9.setValue(100.0D);
 	    vs9.setLength(6);	    
 	    assertEquals("100.0", vs9.toString(false));
-	    
+
 	    Value vs10 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs10.setValue(100.5D);
 	    vs10.setLength(-1);	    
@@ -321,7 +320,7 @@ public class ValueTest extends TestCase
 	    vs13.setLength(5);	    
 	    vs13.setPrecision(3);
 	    assertEquals("100.5", vs13.toString(false));
-	    
+
 	    Value vs14 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs14.setValue(100.5D);
 	    vs14.setLength(5);	    
@@ -336,22 +335,22 @@ public class ValueTest extends TestCase
 	{	
 	    Value vs1 = new Value("Name", Value.VALUE_TYPE_INTEGER);
 	    assertEquals(" 0", vs1.toString(true));
-	    
+
 	    Value vs2 = new Value("Name", Value.VALUE_TYPE_INTEGER);
 	    vs2.setNull();
 	    assertEquals("", vs2.toString(true));
-	    
+
 	    Value vs3 = new Value("Name", Value.VALUE_TYPE_INTEGER);
 	    vs3.setValue(100);
 	    vs3.setLength(6);
 	    vs3.setNull();
 	    assertEquals("      ", vs3.toString(true));
-	    
+
 	    Value vs4 = new Value("Name", Value.VALUE_TYPE_INTEGER);
 	    vs4.setValue(100);
 	    vs4.setLength(6);	    
 	    assertEquals(" 000100", vs4.toString(true));
-	    
+
 	    Value vs5 = new Value("Name", Value.VALUE_TYPE_INTEGER);
 	    vs5.setValue(100);
 	    vs5.setLength(-1);	    
@@ -369,18 +368,18 @@ public class ValueTest extends TestCase
 	    vs7.setLength(0);	    
 	    vs7.setPrecision(3);
 	    assertEquals(" 100", vs7.toString(true));	  
-	    
+
 	    Value vs8 = new Value("Name", Value.VALUE_TYPE_INTEGER);
 	    vs8.setValue(100);
 	    vs8.setLength(5);	    
 	    vs8.setPrecision(3);
 	    assertEquals(" 00100", vs8.toString(false));	
-	    
+
 	    Value vs9 = new Value("Name", Value.VALUE_TYPE_INTEGER);
 	    vs9.setValue(100);
 	    vs9.setLength(6);	    
 	    assertEquals(" 000100", vs9.toString(false));
-	    
+
 	    Value vs10 = new Value("Name", Value.VALUE_TYPE_INTEGER);
 	    vs10.setValue(100);
 	    vs10.setLength(-1);	    
@@ -404,7 +403,7 @@ public class ValueTest extends TestCase
 	    vs13.setLength(5);	    
 	    vs13.setPrecision(3);
 	    assertEquals(" 00100", vs13.toString(false));
-	    
+
 	    Value vs14 = new Value("Name", Value.VALUE_TYPE_INTEGER);
 	    vs14.setValue(100);
 	    vs14.setLength(5);	    
@@ -418,17 +417,17 @@ public class ValueTest extends TestCase
 	public void testToStringBoolean()
 	{
 		String result = null;
-		
+
 	    Value vs = new Value("Name", Value.VALUE_TYPE_BOOLEAN);	    
 	    vs.setValue(true);
 	    result = vs.toString(true);
 	    assertEquals("true", result);
-	    
+
 	    Value vs1 = new Value("Name", Value.VALUE_TYPE_BOOLEAN);	    
 	    vs1.setValue(false);
 	    result = vs1.toString(true);
 	    assertEquals("false", result);
-	    
+
 	    // set to "null"
 	    Value vs2 = new Value("Name", Value.VALUE_TYPE_BOOLEAN);	    
 	    vs2.setValue(true);
@@ -442,7 +441,7 @@ public class ValueTest extends TestCase
 	    vs3.setNull();
 	    result = vs3.toString(true);
 	    assertEquals("", result);		    
-	    
+
 	    // set to length = 1 => get Y/N
 	    Value vs4 = new Value("Name", Value.VALUE_TYPE_BOOLEAN);	    
 	    vs4.setValue(true); 
@@ -1088,7 +1087,61 @@ public class ValueTest extends TestCase
 	    assertEquals("", vs2.Clone().rtrim().getString());
 	    assertEquals("", vs2.Clone().trim().getString());
 	}
-	
+
+	/**
+	 * Test hexDecode.
+	 */
+	public void testHexDecode() throws KettleValueException 
+	{
+	    Value vs1 = new Value("Name1", Value.VALUE_TYPE_INTEGER);
+
+	    vs1.setValue("6120622063");
+	    vs1.hexDecode();
+	    assertEquals("a b c", vs1.getString());
+
+	    vs1.setValue("4161426243643039207A5A2E3F2F");
+	    vs1.hexDecode();
+	    assertEquals("AaBbCd09 zZ.?/", vs1.getString());
+
+	    vs1.setValue("4161426243643039207a5a2e3f2f");
+	    vs1.hexDecode();
+	    assertEquals("AaBbCd09 zZ.?/", vs1.getString());
+	    
+	    // leading 0 if odd.
+	    vs1.setValue("F6120622063");
+	    vs1.hexDecode();
+	    assertEquals("\u000fa b c", vs1.getString());
+
+	    try  
+	    {
+	        vs1.setValue("g");
+	        vs1.hexDecode();
+	        fail("Expected KettleValueException");
+	    }
+	    catch (KettleValueException ex)
+	    { }
+	}
+
+	/**
+	 * Test hexEncode.
+	 */
+	public void testHexEncode() throws KettleValueException 
+	{
+	    Value vs1 = new Value("Name1", Value.VALUE_TYPE_INTEGER);
+
+	    vs1.setValue("AaBbCd09 zZ.?/");
+	    vs1.hexEncode();
+	    assertEquals("4161426243643039207A5A2E3F2F", vs1.getString());
+
+	    vs1.setValue("1234567890");
+	    vs1.hexEncode();
+	    assertEquals("31323334353637383930", vs1.getString());
+	    
+	    vs1.setNull();
+	    vs1.hexEncode();
+	    assertNull(vs1.getString());
+	}
+
 	/**
 	 * Test like.
 	 */
