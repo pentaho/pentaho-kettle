@@ -1287,9 +1287,24 @@ public class EnterOptionsDialog extends Dialog
         props.setAntiAliasingEnabled             ( wAntiAlias.getSelection()   );
         props.setExitWarningShown                ( wExitWarning.getSelection() );
         props.setOSLookShown                     ( wOriginalLook.getSelection());
-		
-        LanguageChoice.getInstance().setDefaultLocale( new Locale( GlobalMessages.localeCodes[ wDefaultLocale.getSelectionIndex()]) );
-        LanguageChoice.getInstance().setFailoverLocale( new Locale( GlobalMessages.localeCodes[ wFailoverLocale.getSelectionIndex()]) );
+
+        int defaultLocaleIndex = wDefaultLocale.getSelectionIndex();
+        if ( defaultLocaleIndex < 0 || 
+             defaultLocaleIndex >= GlobalMessages.localeCodes.length )
+        {
+        	// Code hardening, when the combo-box ever gets in a strange state,
+        	// use the first language as default (should be English)
+            defaultLocaleIndex = 0;
+        }
+        int failoverLocaleIndex = wFailoverLocale.getSelectionIndex();
+        if ( failoverLocaleIndex < 0  ||
+        	 failoverLocaleIndex >= GlobalMessages.localeCodes.length )
+        {
+        	failoverLocaleIndex = 0;
+        }
+       
+        LanguageChoice.getInstance().setDefaultLocale( new Locale( GlobalMessages.localeCodes[defaultLocaleIndex]) );
+        LanguageChoice.getInstance().setFailoverLocale( new Locale( GlobalMessages.localeCodes[failoverLocaleIndex]) );
         LanguageChoice.getInstance().saveSettings();
         
         props.saveProps();
