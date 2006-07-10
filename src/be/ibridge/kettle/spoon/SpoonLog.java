@@ -79,7 +79,7 @@ import be.ibridge.kettle.trans.step.StepMeta;
  *  
  * @see be.ibridge.kettle.spoon.Spoon
  * @author Matt
- * @since  17-mei-2003
+ * @since  17 may 2003
  */
 public class SpoonLog extends Composite
 {
@@ -945,7 +945,6 @@ public class SpoonLog extends Composite
 	{
 		LogSettingsDialog lsd = new LogSettingsDialog(shell, SWT.NONE, log, spoon.props);
 		lsd.open();
-
 	}
 
 	public void showErrors()
@@ -962,10 +961,11 @@ public class SpoonLog extends Composite
 			if (all.substring(i, i + crlen).equalsIgnoreCase(Const.CR))
 			{
 				String line = all.substring(startpos, i);
-				if (line.toUpperCase().indexOf(Messages.getString("SpoonLog.System.ERROR")) >= 0 || //$NON-NLS-1$
-						line.toUpperCase().indexOf(Messages.getString("SpoonLog.System.EXCEPTION")) >= 0 || //$NON-NLS-1$
-						line.toUpperCase().indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. 
-						line.toUpperCase().indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o.
+				String uLine = line.toUpperCase();
+				if (uLine.indexOf(Messages.getString("SpoonLog.System.ERROR")) >= 0 || //$NON-NLS-1$
+						uLine.indexOf(Messages.getString("SpoonLog.System.EXCEPTION")) >= 0 || //$NON-NLS-1$
+						uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. 
+						uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o.
 				)
 				{
 					err.add(line);
@@ -977,8 +977,9 @@ public class SpoonLog extends Composite
 			i++;
 		}
 		String line = all.substring(startpos);
-		if (line.toUpperCase().indexOf(Messages.getString("SpoonLog.System.ERROR2")) >= 0 || //$NON-NLS-1$
-				line.toUpperCase().indexOf(Messages.getString("SpoonLog.System.EXCEPTION2")) >= 0 //$NON-NLS-1$
+		String uLine = line.toUpperCase();
+		if (uLine.indexOf(Messages.getString("SpoonLog.System.ERROR2")) >= 0 || //$NON-NLS-1$
+				uLine.indexOf(Messages.getString("SpoonLog.System.EXCEPTION2")) >= 0 //$NON-NLS-1$
 		)
 		{
 			err.add(line);
