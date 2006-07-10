@@ -1864,7 +1864,7 @@ public class Spoon
                         stepname = newname;
                         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
                         mb.setMessage(Messages.getString("Spoon.Dialog.StepnameExists.Message", stepname)); // $NON-NLS-1$
-                        mb.setText(Messages.getString("Spoon.Dialog.Tip.Message")); // $NON-NLS-1$
+                        mb.setText(Messages.getString("Spoon.Dialog.StepnameExists.Title")); // $NON-NLS-1$
                         mb.open();
                     }
                     stepMeta.setName(stepname);
