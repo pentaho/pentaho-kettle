@@ -322,5 +322,8 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 				;
 	}
 
-
+    public boolean supportsOptionsInURL()
+    {
+        return false;
+    }	
 }
