@@ -401,6 +401,7 @@ public class Calculator extends BaseStep implements StepInterface
             }
         }
 
+        int inpFieldsRemoved = 0;
         // OK, see which fields we need to remove from the result?
         for (int i=meta.getCalculation().length-1;i>=0;i--)
         {
@@ -411,12 +412,23 @@ public class Calculator extends BaseStep implements StepInterface
                 Integer idx = (Integer) data.indexCache.get(fn.getFieldName());
                 if (idx!=null)
                 {
-                    r.removeValue(idx.intValue()); // value from the original row.
+                	int y = idx.intValue();
+                	if ( y < rowSize )
+                	{
+                        // value from the original row.
+           	            r.removeValue(idx.intValue());
+           	            inpFieldsRemoved++;
+                	}
+                	else
+                	{
+                		// calculated value used in calculation
+                		r.removeValue(idx.intValue() - inpFieldsRemoved);
+                	}
                 }
                 else
                 {
-                    r.removeValue(rowSize+i); // calculated value
-                    // throw new KettleValueException("Couldn't find field ["+fn.getFieldName()+"] to remove from result.");
+                    // calculated value not used in other calculation
+                    r.removeValue(rowSize+i); 
                 }
             }
         }
