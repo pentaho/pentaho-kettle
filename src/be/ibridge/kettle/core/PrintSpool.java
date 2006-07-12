@@ -47,7 +47,11 @@ public class PrintSpool
 	public PrintSpool()
 	{
 		printerdata = Printer.getDefaultPrinterData();
-		printer = new Printer(printerdata);
+		if ( printerdata != null )
+		{
+			// Fail silently instead of crashing.
+		    printer = new Printer(printerdata);
+		}
 	}
 	
 	public PrinterData getPrinterData()
