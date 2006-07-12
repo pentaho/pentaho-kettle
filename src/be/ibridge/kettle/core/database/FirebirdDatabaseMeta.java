@@ -321,9 +321,20 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 				"WHERE RDB$OWNER_NAME = '"+getUsername().toUpperCase()+"' "
 				;
 	}
-
-    public boolean supportsOptionsInURL()
+	
+    /**
+     * @return The extra option separator in database URL for this platform. 
+     */
+    public String getExtraOptionSeparator()
     {
-        return false;
+        return "&";
+    }
+    
+    /**
+     * @return This indicator separates the normal URL from the options
+     */
+    public String getExtraOptionIndicator()
+    {
+        return "?";
     }	
 }

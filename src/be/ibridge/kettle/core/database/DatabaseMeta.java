@@ -928,8 +928,6 @@ public class DatabaseMeta implements Cloneable, XMLInterface
             Map map = getExtraOptions();
             if (map.size()>0)
             {
-                url.append(optionIndicator);
-                
                 Iterator iterator = map.keySet().iterator();
                 boolean first=true;
                 while (iterator.hasNext())
@@ -946,15 +944,17 @@ public class DatabaseMeta implements Cloneable, XMLInterface
                         //
                         if (databaseInterface.getDatabaseTypeDesc().equals(typeCode))
                         {
-                            if (!first) url.append(optionSeparator);
+                            if (first) url.append(optionIndicator);
+                            else url.append(optionSeparator);
+
                             url.append(parameter);
                             if (!Const.isEmpty(value) && !value.equals(EMPTY_OPTIONS_STRING))
                             {
                                 url.append(valueSeparator).append(value);
                             }
+                            first=false;
                         }
                     }
-                    first=false;
                 }
             }
         }
