@@ -38,10 +38,10 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class MergeRows extends BaseStep implements StepInterface
 {
-    private static final Value VALUE_IDENTICAL  = new Value("flag", "identical"); //$NON-NLS-1$ //$NON-NLS-2$
-    private static final Value VALUE_CHANGED    = new Value("flag", "changed"); //$NON-NLS-1$ //$NON-NLS-2$
-    private static final Value VALUE_NEW        = new Value("flag", "new"); //$NON-NLS-1$ //$NON-NLS-2$
-    private static final Value VALUE_DELETED    = new Value("flag", "deleted"); //$NON-NLS-1$ //$NON-NLS-2$
+    private final Value VALUE_IDENTICAL  = new Value("flag", "identical"); //$NON-NLS-1$ //$NON-NLS-2$
+    private final Value VALUE_CHANGED    = new Value("flag", "changed"); //$NON-NLS-1$ //$NON-NLS-2$
+    private final Value VALUE_NEW        = new Value("flag", "new"); //$NON-NLS-1$ //$NON-NLS-2$
+    private final Value VALUE_DELETED    = new Value("flag", "deleted"); //$NON-NLS-1$ //$NON-NLS-2$
     
 	private MergeRowsMeta meta;
 	private MergeRowsData data;
@@ -59,9 +59,22 @@ public class MergeRows extends BaseStep implements StepInterface
         if (first)
         {
             first = false;
+            
+            //
+            // Set the name of the "static" values used for the flag
+            //
+            String flagName = meta.getFlagField();
+            if ( flagName != null )
+            {
+            	VALUE_IDENTICAL.setName(flagName);
+            	VALUE_CHANGED.setName(flagName);
+            	VALUE_NEW.setName(flagName);
+            	VALUE_CHANGED.setName(flagName);
+            }
+
     		data.one=getRowFrom(meta.getReferenceStepName());
             data.two=getRowFrom(meta.getCompareStepName());
-            
+
             if (data.one!=null)
             {
                 // Find the key indexes:
@@ -79,7 +92,7 @@ public class MergeRows extends BaseStep implements StepInterface
                     data.keyAsc[i] = true;
                 }
             }
-            
+
             if (data.two!=null)
             {
                 data.valueNrs = new int[meta.getValueFields().length];
@@ -99,18 +112,18 @@ public class MergeRows extends BaseStep implements StepInterface
         }
 
         if (log.isRowLevel()) logRowlevel(Messages.getString("MergeRows.Log.DataInfo",data.one+"")+data.two); //$NON-NLS-1$ //$NON-NLS-2$
-        
+
         if (data.one==null && data.two==null)
         {
             setOutputDone();
             return false;
         }
-        
+
         if (data.one==null && data.two!=null) // Record 2 is flagged as new!
         {
             data.two.addValue(VALUE_NEW);
             putRow(data.two);
-            
+
             // Also get a next row from compare rowset...
             data.two=getRowFrom(meta.getCompareStepName());
         }
@@ -119,7 +132,7 @@ public class MergeRows extends BaseStep implements StepInterface
         {
             data.one.addValue(VALUE_DELETED);
             putRow(data.one);
-            
+
             // Also get a next row from reference rowset...
             data.one=getRowFrom(meta.getReferenceStepName());
         }
@@ -139,7 +152,7 @@ public class MergeRows extends BaseStep implements StepInterface
                     data.two.addValue(VALUE_CHANGED);
                     putRow(data.two);
                 }
-                
+
                 // Get a new row from both streams...
                 data.one=getRowFrom(meta.getReferenceStepName());
                 data.two=getRowFrom(meta.getCompareStepName());
@@ -160,9 +173,9 @@ public class MergeRows extends BaseStep implements StepInterface
                 }
             }
         }
-        
+
         if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("MergeRows.LineNumber")+linesRead); //$NON-NLS-1$
-			
+
 		return true;
 	}
 
@@ -187,7 +200,7 @@ public class MergeRows extends BaseStep implements StepInterface
         }
         return false;
     }
-	
+
 	//
 	// Run is were the action happens!
 	public void run()
