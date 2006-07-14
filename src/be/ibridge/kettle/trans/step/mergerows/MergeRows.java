@@ -16,6 +16,7 @@
 package be.ibridge.kettle.trans.step.mergerows;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.value.Value;
@@ -69,11 +70,16 @@ public class MergeRows extends BaseStep implements StepInterface
             	VALUE_IDENTICAL.setName(flagName);
             	VALUE_CHANGED.setName(flagName);
             	VALUE_NEW.setName(flagName);
-            	VALUE_CHANGED.setName(flagName);
+            	VALUE_DELETED.setName(flagName);
             }
-
+            
     		data.one=getRowFrom(meta.getReferenceStepName());
             data.two=getRowFrom(meta.getCompareStepName());
+            
+            if (!isInputLayoutValid(data.one, data.two))
+            {
+            	throw new KettleException("MergeRows.Exception.InvalidLayoutDetected");
+            }            
 
             if (data.one!=null)
             {
@@ -99,7 +105,7 @@ public class MergeRows extends BaseStep implements StepInterface
                 data.valueAsc = new boolean[meta.getValueFields().length];
                 for (int i=0;i<data.valueNrs.length;i++)
                 {
-                    data.valueNrs[i] = data.one.searchValueIndex(meta.getValueFields()[i]);
+                    data.valueNrs[i] = data.two.searchValueIndex(meta.getValueFields()[i]);
                     if (data.valueNrs[i]<0)
                     {
                         String message = Messages.getString("MergeRows.Exception.UnableToFindFieldInReferenceStream",meta.getValueFields()[i]);  //$NON-NLS-1$ //$NON-NLS-2$
@@ -199,6 +205,67 @@ public class MergeRows extends BaseStep implements StepInterface
             }            
         }
         return false;
+    }
+
+    /**
+     * Checks whether 2 template rows are compatible for the mergestep. 
+     * 
+     * @param refRow Reference row
+     * @param compareRow Row to compare to
+     * 
+     * @return true when templates are compatible.
+     */
+    protected boolean isInputLayoutValid(Row refRow, Row compareRow)
+    {
+        if (refRow!=null && compareRow!=null)
+        {
+            // Compare the key types
+        	String keyFields[] = meta.getKeyFields();
+            int nrKeyFields = keyFields.length;
+            
+            for (int i=0;i<nrKeyFields;i++)
+            {
+            	Value refValue = refRow.searchValue(keyFields[i]);
+                if (refValue == null)
+                {
+                	return false;
+                }
+            	Value compareValue = compareRow.searchValue(keyFields[i]);
+                if (compareValue == null)
+                {
+                	return false;
+                }          
+                if ( ! refValue.equalValueType(compareValue) )
+                {
+                	return false;
+                }
+            }
+            
+            // Compare the value types
+        	String valueFields[] = meta.getValueFields();
+            int nrValueFields = valueFields.length;
+
+            for (int i=0;i<nrValueFields;i++)
+            {
+            	Value refValue = refRow.searchValue(valueFields[i]);
+                if (refValue == null)
+                {
+                	return false;
+                }
+            	Value compareValue = compareRow.searchValue(valueFields[i]);
+                if (compareValue == null)
+                {
+                	return false;
+                }          
+                if ( ! refValue.equalValueType(compareValue) )
+                {
+                	return false;
+                }
+            }            
+        }
+        
+        // we got here, all seems to be ok.
+        return true;
     }
 
 	//

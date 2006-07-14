@@ -191,8 +191,6 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
         this.flagField = flagField;
     }
 
-    
-    
 	public void allocate(int nrKeys, int nrValues)
 	{
         keyFields = new String[nrKeys];

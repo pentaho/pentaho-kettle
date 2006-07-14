@@ -3454,4 +3454,31 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			throw new KettleException("Unable to load Value from repository with id_value="+id_value, dbe);
 		}
 	}
+
+	/**
+	 * Returns whether "types" of the values are exactly the same: type, 
+	 * name, length, precision.
+	 * 
+	 * @param v Value to compare type against.
+	 * 
+	 * @return == true when types are the same
+	 *         == false when the types differ
+	 */
+	public boolean equalValueType(Value v)
+	{
+	    if (v == null)
+	    	return false;
+	    if (getType() != v.getType())
+	    	return false;
+	    if ((getName() == null && v.getName() != null) || 
+	    	(getName() != null && v.getName() == null) ||
+	    	!(getName().equals(v.getName())))
+	    	return false;	    
+	    if (getLength() != v.getLength())
+	    	return false;
+	    if (getPrecision() != v.getPrecision())
+	    	return false;
+	    
+	    return true;
+	}
 }
