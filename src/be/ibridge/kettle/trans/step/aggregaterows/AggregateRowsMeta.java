@@ -164,7 +164,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		for (int i=0;i<nrfields;i++)
 		{
 			retval.fieldName[i]     = fieldName[i];
-			retval.fieldNewName[i]   = fieldNewName[i];
+			retval.fieldNewName[i]  = fieldNewName[i];
 			retval.aggregateType[i] = aggregateType[i];
 		}
 		return retval;
@@ -185,10 +185,10 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 			
 			for (i=0;i<nrfields;i++)
 			{
-				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
+				Node fnode       = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 				fieldName[i]     = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
-				fieldNewName[i]   = XMLHandler.getTagValue(fnode, "rename"); //$NON-NLS-1$
-				type              = XMLHandler.getTagValue(fnode, "type"); //$NON-NLS-1$
+				fieldNewName[i]  = XMLHandler.getTagValue(fnode, "rename"); //$NON-NLS-1$
+				type             = XMLHandler.getTagValue(fnode, "type"); //$NON-NLS-1$
 				aggregateType[i] = getType(type);
 			}
 		}
@@ -209,7 +209,7 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		for (i=0;i<nrfields;i++)
 		{
 			fieldName[i]     = Messages.getString("AggregateRowsMeta.Fieldname.Label"); //$NON-NLS-1$
-			fieldNewName[i]   = Messages.getString("AggregateRowsMeta.NewName.Label"); //$NON-NLS-1$
+			fieldNewName[i]  = Messages.getString("AggregateRowsMeta.NewName.Label"); //$NON-NLS-1$
 			aggregateType[i] = TYPE_AGGREGATE_SUM; 
 		}
 	}
@@ -316,8 +316,6 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		}
 	}
 
-
-
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
 	{
 		CheckResult cr;
@@ -413,5 +411,4 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new AggregateRowsData();
 	}
-
 }

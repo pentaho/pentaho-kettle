@@ -165,7 +165,7 @@ public class AggregateRows extends BaseStep implements StepInterface
 			return false;
 		}
 		
-		if (linesRead==0)
+		if (linesRead==1)
 		{
 			logError(Messages.getString("AggregateRows.Log.RowInfo")+r.toString()); //$NON-NLS-1$
 			logError(Messages.getString("AggregateRows.Log.RowSize")+r.size()); //$NON-NLS-1$

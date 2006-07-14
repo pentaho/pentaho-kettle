@@ -214,7 +214,7 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 			TableItem ti = new TableItem(table, SWT.NONE);
 			ti.setText(0, ""+(i+1)); //$NON-NLS-1$
 			if (input.getFieldName()[i]  !=null) ti.setText(1, input.getFieldName()[i]);
-			if (input.getFieldNewName()[i]!=null && !input.getFieldNewName()[i].equals(input.getFieldNewName()[i])) 
+			if (input.getFieldNewName()[i]!=null && !input.getFieldNewName()[i].equals(input.getFieldName()[i])) 
 				ti.setText(2, input.getFieldNewName()[i]);
 			ti.setText(3, AggregateRowsMeta.aggregateTypeDesc[input.getAggregateType()[i]]);
 		}
@@ -246,7 +246,7 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 		for (i=0;i<nrfields;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
-			input.getFieldName()[i]     = item.getText(1);
+			input.getFieldName()[i]      = item.getText(1);
 			input.getFieldNewName()[i]   = item.getText(2);
 			if (input.getFieldNewName()[i]==null || input.getFieldNewName()[i].length()==0)
 				input.getFieldNewName()[i] = input.getFieldName()[i];
@@ -292,5 +292,4 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 			new ErrorDialog(shell, props, Messages.getString("AggregateRowsDialog.GetFieldsFailed.DialogTitle"), Messages.getString("AggregateRowsDialog.GetFieldsFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
-
 }
