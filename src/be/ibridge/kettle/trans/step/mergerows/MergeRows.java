@@ -78,7 +78,7 @@ public class MergeRows extends BaseStep implements StepInterface
             
             if (!isInputLayoutValid(data.one, data.two))
             {
-            	throw new KettleException("MergeRows.Exception.InvalidLayoutDetected");
+            	throw new KettleException(Messages.getString("MergeRows.Exception.InvalidLayoutDetected"));
             }            
 
             if (data.one!=null)
@@ -225,6 +225,11 @@ public class MergeRows extends BaseStep implements StepInterface
             
             for (int i=0;i<nrKeyFields;i++)
             {
+            	if (refRow.searchValueIndex(keyFields[i]) != 
+            		compareRow.searchValueIndex(keyFields[i]))
+            	{
+            		return false;
+            	}
             	Value refValue = refRow.searchValue(keyFields[i]);
                 if (refValue == null)
                 {
@@ -247,6 +252,11 @@ public class MergeRows extends BaseStep implements StepInterface
 
             for (int i=0;i<nrValueFields;i++)
             {
+            	if (refRow.searchValueIndex(valueFields[i]) != 
+            		compareRow.searchValueIndex(valueFields[i]))
+            	{
+            		return false;
+            	}            	
             	Value refValue = refRow.searchValue(valueFields[i]);
                 if (refValue == null)
                 {
