@@ -32,7 +32,6 @@ import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 
-
 /**
  * Looks up values in a database using keys from input streams.
  * 
@@ -43,12 +42,12 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 {
 	private DatabaseLookupMeta meta;
 	private DatabaseLookupData data;
-	
+
 	public DatabaseLookup(StepMeta stepMeta, StepDataInterface stepDataInterface, int copyNr, TransMeta transMeta, Trans trans)
 	{
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
-	
+
 	/**
 	 * Performs the lookup based on the meta-data and the input row.
 	 * @param row The row to use as lookup data and the row to add the returned lookup fields to
@@ -60,11 +59,11 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		Row lu;
 		Row add;
 		boolean cache_now=false;		
-		
+
 		if (first)
 		{
             first=false;
-            
+
 			if (meta.isCached())
 			{
 				if (meta.getCacheSize()>0)
@@ -78,12 +77,12 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			}
 
 			data.db.setLookup(meta.getTablename(), meta.getTableKeyField(), meta.getKeyCondition(), meta.getReturnValueField(), meta.getReturnValueNewName(), meta.getOrderByClause(), meta.isFailingOnMultipleResults());
-			
+
 			// lookup the values!
 			if (log.isDetailed()) logDetailed(Messages.getString("DatabaseLookup.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
 			data.keynrs = new int[meta.getStreamKeyField1().length];
 			data.keynrs2= new int[meta.getStreamKeyField1().length];
-			
+
 			for (int i=0;i<meta.getStreamKeyField1().length;i++)
 			{
 				data.keynrs[i]=row.searchValueIndex(meta.getStreamKeyField1()[i]);
@@ -103,7 +102,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 				}
 				if (log.isDebug()) logDebug(Messages.getString("DatabaseLookup.Log.FieldHasIndex1")+meta.getStreamKeyField1()[i]+Messages.getString("DatabaseLookup.Log.FieldHasIndex2")+data.keynrs[i]); //$NON-NLS-1$ //$NON-NLS-2$
 			}
-			
+
 			data.nullif = new Value[meta.getReturnValueField().length];
 
 			for (int i=0;i<meta.getReturnValueField().length;i++)
@@ -111,15 +110,16 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 				data.nullif[i] = new Value(meta.getReturnValueNewName()[i], meta.getReturnValueDefaultType()[i]);
 				if (meta.getReturnValueDefault()[i]!=null && meta.getReturnValueDefault()[i].length()>0 )
 				{
-					data.nullif[i].setValue(meta.getReturnValueDefault()[i]);
 					data.nullif[i].setType(meta.getReturnValueDefaultType()[i]);
+					data.nullif[i].setValue(meta.getReturnValueDefault()[i]);
 				}
 				else
 				{
+					data.nullif[i].setType(meta.getReturnValueDefaultType()[i]);
 					data.nullif[i].setNull();
 				}
 			}
-			
+
 			// Determine the types...
 			data.keytypes = new int[meta.getTableKeyField().length];
 			Row fields = data.db.getTableFields(meta.getTablename());
@@ -144,39 +144,46 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 				throw new KettleStepException(Messages.getString("DatabaseLookup.ERROR0002.UnableToDetermineFieldsOfTable")+meta.getTablename()+"]"); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
-		
+
 		lu = new Row();
 		for (int i=0;i<meta.getStreamKeyField1().length;i++)
 		{
 			if (data.keynrs[i]>=0)
 			{
 				Value value = row.getValue(data.keynrs[i]);
-				// Try to convert type if needed!
-				if (value.getType()!=data.keytypes[i]) value.setType(data.keytypes[i]);
-				lu.addValue( value );
+				// Try to convert type if needed in a clone, we don't want to
+				// change the type in the original row
+				Value clonedValue = value.Clone();
+
+				if (clonedValue.getType()!=data.keytypes[i]) clonedValue.setType(data.keytypes[i]);
+				lu.addValue( clonedValue );
 			}
 			if (data.keynrs2[i]>=0)
 			{
 				Value value = row.getValue(data.keynrs2[i]);
-				// Try to convert type if needed!
-				if (value.getType()!=data.keytypes[i]) value.setType(data.keytypes[i]);
-				lu.addValue( value );
+
+				// Try to convert type if needed in a clone, we don't want to
+				// change the type in the original row
+				Value clonedValue = value.Clone();
+
+				if (clonedValue.getType()!=data.keytypes[i]) clonedValue.setType(data.keytypes[i]);
+				lu.addValue( clonedValue );
 			}
 		}
-        
+
 		// First, check if we looked up before
 		if (meta.isCached()) add=(Row)data.look.get(lu);
 		else add=null; 
-		
+
 		if (add==null)
 		{
 			if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow1")+meta.getStreamKeyField1().length+Messages.getString("DatabaseLookup.Log.AddedValuesToLookupRow2")+lu); //$NON-NLS-1$ //$NON-NLS-2$
-            
+
 			data.db.setValuesLookup(lu);
 			add=data.db.getLookup(meta.isFailingOnMultipleResults());
 			cache_now=true;
 		}
-				
+
 		if (add==null) // nothing was found, unknown code: add default values
 		{
 			if (meta.isEatingRowOnLookupFailure())
@@ -202,14 +209,30 @@ public class DatabaseLookup extends BaseStep implements StepInterface
         else
         {
         	if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.FoundResultsAfterLookup")+add); //$NON-NLS-1$
-        }
+
+        	int types[] = meta.getReturnValueDefaultType();
+
+        	// The assumption here is that the types are in the same order
+        	// as the returned lookup row, but since we make the lookup row
+        	// that should not be a problem.
+        	for (int i=0;i<types.length;i++)
+        	{  
+        		Value value = add.getValue(i);
+        		if ( value != null && types[i] > 0 && 
+        			 types[i] !=  value.getType() )
+        		{
+        			// Set the type to the default return type
+        		    value.setType(types[i]);
+        		}
+        	}        	
+        } 
 
 		// Store in cache if we need to!
 		if (meta.isCached() && cache_now)
 		{
 			add.setLogdate();
 			data.look.put(lu, add);
-			
+
 			// See if we have to limit the cache_size.
 			if (meta.getCacheSize()>0 && data.look.size()>meta.getCacheSize())
 			{
@@ -229,7 +252,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 				 if (smallest!=null) data.look.remove(smallest);
 			}
 		} 
-	
+
 		for (int i=0;i<add.size();i++)
 		{
 			row.addValue( add.getValue(i) );
@@ -237,7 +260,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 
 		return true;
 	}
-	
+
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 		meta=(DatabaseLookupMeta)smi;
@@ -271,10 +294,10 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			setOutputDone();  // signal end to receiver(s)
 			return false;
 		}
-			
+
 		return true;
 	}
-	
+
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{
 		meta=(DatabaseLookupMeta)smi;
@@ -287,7 +310,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			{
 				data.db.connect();
 				logBasic(Messages.getString("DatabaseLookup.Log.ConnectedToDatabase")); //$NON-NLS-1$
-				
+
 				return true;
 			}
 			catch(Exception e)
@@ -298,24 +321,23 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		}
 		return false;
 	}
-		
+
 	public void dispose(StepMetaInterface smi, StepDataInterface sdi)
 	{
 	    meta = (DatabaseLookupMeta)smi;
 	    data = (DatabaseLookupData)sdi;
-	    
+
 	    data.db.disconnect();
-	    
+
 	    super.dispose(smi, sdi);
 	}
-	
 
 	//
 	// Run is were the action happens!
 	public void run()
 	{
 		logBasic(Messages.getString("DatabaseLookup.Log.StartingToRun")); //$NON-NLS-1$
-		
+
 		try
 		{
 			logBasic(Messages.getString("DatabaseLookup.Log.ConnectedToDatabase2"));	 //$NON-NLS-1$
@@ -336,7 +358,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			markStop();
 		}
 	}
-	
+
 	public String toString()
 	{
 		return this.getClass().getName();

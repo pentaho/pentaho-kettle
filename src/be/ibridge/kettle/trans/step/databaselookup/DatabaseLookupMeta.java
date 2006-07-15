@@ -101,13 +101,6 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		super(); // allocate BaseStepMeta
 	}
 	
-	
-	
-
-
-
-	
-	
 	/**
 	 * @return Returns the cached.
 	 */
@@ -324,7 +317,6 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         return failingOnMultipleResults;
     }
 
-
     /**
      * @param failOnMultipleResults The failOnMultipleResults to set.
      */
@@ -332,10 +324,6 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
     {
         this.failingOnMultipleResults = failOnMultipleResults;
     }
-
-
-    
-    
 	
 	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
 		throws KettleXMLException
@@ -348,12 +336,12 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
 	public void allocate(int nrkeys, int nrvalues)
 	{
-		streamKeyField1          = new String[nrkeys];
-		tableKeyField            = new String[nrkeys];
-		keyCondition = new String[nrkeys];
-		streamKeyField2         = new String[nrkeys];
-		returnValueField        = new String[nrvalues];
-		returnValueNewName    = new String[nrvalues];
+		streamKeyField1        = new String[nrkeys];
+		tableKeyField          = new String[nrkeys];
+		keyCondition           = new String[nrkeys];
+		streamKeyField2        = new String[nrkeys];
+		returnValueField       = new String[nrvalues];
+		returnValueNewName     = new String[nrvalues];
 		returnValueDefault     = new String[nrvalues];
 		returnValueDefaultType = new int[nrvalues];
 	}
@@ -369,16 +357,16 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		
 		for (int i=0;i<nrkeys;i++)
 		{
-			retval.streamKeyField1         [i] = streamKeyField1[i];
-			retval.tableKeyField   [i] = tableKeyField[i];
-			retval.keyCondition[i] = keyCondition[i];
-			retval.streamKeyField2        [i] = streamKeyField2[i];
+			retval.streamKeyField1[i] = streamKeyField1[i];
+			retval.tableKeyField[i]   = tableKeyField[i];
+			retval.keyCondition[i]    = keyCondition[i];
+			retval.streamKeyField2[i] = streamKeyField2[i];
 		}
 
 		for (int i=0;i<nrvalues;i++)
 		{
-			retval.returnValueField[i]        = returnValueField[i];
-			retval.returnValueNewName[i]    = returnValueNewName[i];
+			retval.returnValueField[i]       = returnValueField[i];
+			retval.returnValueNewName[i]     = returnValueNewName[i];
 			retval.returnValueDefault[i]     = returnValueDefault[i];
 			retval.returnValueDefaultType[i] = returnValueDefaultType[i];
 		}		
@@ -447,12 +435,12 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 
 	public void setDefault()
 	{
-		streamKeyField1			= null;
-		returnValueField		= null;
-		databaseMeta  = null;
-		cached       = false;
-		cacheSize  = 0;
-		tablename       = Messages.getString("DatabaseLookupMeta.Default.TableName"); //$NON-NLS-1$
+		streamKeyField1	 = null;
+		returnValueField = null;
+		databaseMeta     = null;
+		cached           = false;
+		cacheSize        = 0;
+		tablename        = Messages.getString("DatabaseLookupMeta.Default.TableName"); //$NON-NLS-1$
 
 		int nrkeys   = 0;
 		int nrvalues = 0;
@@ -462,9 +450,9 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		for (int i=0;i<nrkeys;i++)
 		{
 			tableKeyField[i]   = Messages.getString("DatabaseLookupMeta.Default.KeyFieldPrefix"); //$NON-NLS-1$
-			keyCondition[i]= Messages.getString("DatabaseLookupMeta.Default.KeyCondition"); //$NON-NLS-1$
-			streamKeyField1[i]         = Messages.getString("DatabaseLookupMeta.Default.KeyStreamField1"); //$NON-NLS-1$
-			streamKeyField2[i]        = Messages.getString("DatabaseLookupMeta.Default.KeyStreamField2"); //$NON-NLS-1$
+			keyCondition[i]    = Messages.getString("DatabaseLookupMeta.Default.KeyCondition"); //$NON-NLS-1$
+			streamKeyField1[i] = Messages.getString("DatabaseLookupMeta.Default.KeyStreamField1"); //$NON-NLS-1$
+			streamKeyField2[i] = Messages.getString("DatabaseLookupMeta.Default.KeyStreamField2"); //$NON-NLS-1$
 		}
 
 		for (int i=0;i<nrvalues;i++)
@@ -573,17 +561,17 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			
 			for (int i=0;i<nrkeys;i++)
 			{
-				streamKeyField1[i]          = rep.getStepAttributeString(id_step, i, "lookup_key_name"); //$NON-NLS-1$
-				tableKeyField[i]    = rep.getStepAttributeString(id_step, i, "lookup_key_field"); //$NON-NLS-1$
-				keyCondition[i] = rep.getStepAttributeString(id_step, i, "lookup_key_condition"); //$NON-NLS-1$
-				streamKeyField2[i]         = rep.getStepAttributeString(id_step, i, "lookup_key_name2"); //$NON-NLS-1$
+				streamKeyField1[i] = rep.getStepAttributeString(id_step, i, "lookup_key_name"); //$NON-NLS-1$
+				tableKeyField[i]   = rep.getStepAttributeString(id_step, i, "lookup_key_field"); //$NON-NLS-1$
+				keyCondition[i]    = rep.getStepAttributeString(id_step, i, "lookup_key_condition"); //$NON-NLS-1$
+				streamKeyField2[i] = rep.getStepAttributeString(id_step, i, "lookup_key_name2"); //$NON-NLS-1$
 			}
 	
 			for (int i=0;i<nrvalues;i++)
 			{
-				returnValueField[i]        =                rep.getStepAttributeString (id_step, i, "return_value_name"); //$NON-NLS-1$
-				returnValueNewName[i]    =                rep.getStepAttributeString (id_step, i, "return_value_rename"); //$NON-NLS-1$
-				returnValueDefault[i]     =                rep.getStepAttributeString (id_step, i, "return_value_default"); //$NON-NLS-1$
+				returnValueField[i]       = rep.getStepAttributeString (id_step, i, "return_value_name"); //$NON-NLS-1$
+				returnValueNewName[i]     = rep.getStepAttributeString (id_step, i, "return_value_rename"); //$NON-NLS-1$
+				returnValueDefault[i]     = rep.getStepAttributeString (id_step, i, "return_value_default"); //$NON-NLS-1$
 				returnValueDefaultType[i] = Value.getType( rep.getStepAttributeString (id_step, i, "return_value_type") ); //$NON-NLS-1$
 			}
 		}
@@ -759,10 +747,6 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 					cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepinfo);
 					remarks.add(cr);
 				}
-
-			
-			
-			
 			}
 			catch(KettleDatabaseException dbe)
 			{
@@ -793,9 +777,8 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 			cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, Messages.getString("DatabaseLookupMeta.Check.NoInputReceivedFromOtherSteps"), stepinfo); //$NON-NLS-1$
 			remarks.add(cr);
 		}
-
 	}
-	
+
 	public Row getTableFields()
 	{
 		LogWriter log = LogWriter.getInstance();
@@ -836,7 +819,6 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 	{
 		return new DatabaseLookupData();
 	}
-
 
 	public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
 	{
@@ -888,13 +870,6 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
         }
     }
 
-
-
-
-
-
-
-
 	/**
 	 * @return Returns the eatingRowOnLookupFailure.
 	 */
@@ -903,13 +878,6 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 		return eatingRowOnLookupFailure;
 	}
 
-
-
-
-
-
-
-
 	/**
 	 * @param eatingRowOnLookupFailure The eatingRowOnLookupFailure to set.
 	 */
@@ -917,6 +885,4 @@ public class DatabaseLookupMeta extends BaseStepMeta implements StepMetaInterfac
 	{
 		this.eatingRowOnLookupFailure = eatingRowOnLookupFailure;
 	}
-
-    
 }
