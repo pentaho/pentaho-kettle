@@ -1173,7 +1173,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         props.setLook(wNrLinesDocHeader);
         wNrLinesDocHeader.addModifyListener(lsMod);
         fdNrLinesDocHeader=new FormData();
-        
+
         fdNrLinesDocHeader.left = new FormAttachment(wlNrLinesPerPage, margin);
         fdNrLinesDocHeader.top  = new FormAttachment(wNrLinesPerPage, margin);
         fdNrLinesDocHeader.right = new FormAttachment(100, 0);
@@ -1638,6 +1638,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wbvErrorDestDir.setToolTipText(Messages.getString("System.Tooltip.VariableToDir"));
         fdbvErrorDestDir=new FormData();
         fdbvErrorDestDir.right= new FormAttachment(wbbErrorDestDir, -margin);
+        fdbvErrorDestDir.left= new FormAttachment(wbvWarnDestDir, 0, SWT.LEFT);
         fdbvErrorDestDir.top  = new FormAttachment(previous, margin);
         wbvErrorDestDir.setLayoutData(fdbvErrorDestDir);
 
@@ -1645,8 +1646,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         props.setLook(wErrorExt);
         wErrorExt.addModifyListener(lsMod);
         fdErrorDestExt=new FormData();
-        fdErrorDestExt.left = new FormAttachment(wbvErrorDestDir, -150);
-        fdErrorDestExt.right= new FormAttachment(wbvErrorDestDir, -margin);
+        fdErrorDestExt.left = new FormAttachment(wWarnExt, 0, SWT.LEFT);
+        fdErrorDestExt.right= new FormAttachment(wWarnExt, 0, SWT.RIGHT);
         fdErrorDestExt.top  = new FormAttachment(previous, margin);
         wErrorExt.setLayoutData(fdErrorDestExt);
 
@@ -1700,10 +1701,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         wbvLineNrDestDir=new Button(wErrorComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbvLineNrDestDir);
-        wbvLineNrDestDir.setText("&Variable");
+        wbvLineNrDestDir.setText(Messages.getString("System.Button.Variable"));
         wbvLineNrDestDir.setToolTipText("System.Tooltip.VariableToDir");
         fdbvLineNrDestDir=new FormData();
         fdbvLineNrDestDir.right= new FormAttachment(wbbLineNrDestDir, -margin);
+        fdbvLineNrDestDir.left = new FormAttachment(wbvErrorDestDir, 0, SWT.LEFT);
         fdbvLineNrDestDir.top  = new FormAttachment(previous, margin);
         wbvLineNrDestDir.setLayoutData(fdbvLineNrDestDir);
 
@@ -1711,8 +1713,8 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         props.setLook(wLineNrExt);
         wLineNrExt.addModifyListener(lsMod);
         fdLineNrDestExt=new FormData();
-        fdLineNrDestExt.left = new FormAttachment(wbvLineNrDestDir, -150);
-        fdLineNrDestExt.right= new FormAttachment(wbvLineNrDestDir, -margin);
+        fdLineNrDestExt.left = new FormAttachment(wErrorExt, 0, SWT.LEFT);
+        fdLineNrDestExt.right= new FormAttachment(wErrorExt, 0, SWT.RIGHT);
         fdLineNrDestExt.top  = new FormAttachment(previous, margin);
         wLineNrExt.setLayoutData(fdLineNrDestExt);
 
