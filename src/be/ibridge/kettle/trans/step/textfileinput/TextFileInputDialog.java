@@ -262,8 +262,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private Label        wlDateLocale;
 	private CCombo       wDateLocale;
 	private FormData     fdlDateLocale, fdDateLocale;
-    
-
 
     // ERROR HANDLING...
     private Label        wlErrorIgnored;
@@ -706,7 +704,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdlFilemask=new FormData();
         fdlFilemask.left = new FormAttachment(0, 0);
         fdlFilemask.top  = new FormAttachment(wFilename, margin);
-        fdlFilemask.right= new FormAttachment(middle, -margin);
+        fdlFilemask.right= new FormAttachment(middle, -margin);        
         wlFilemask.setLayoutData(fdlFilemask);
         wFilemask=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFilemask);
@@ -714,16 +712,15 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdFilemask=new FormData();
         fdFilemask.left = new FormAttachment(middle, 0);
         fdFilemask.top  = new FormAttachment(wFilename, margin);
-        fdFilemask.right= new FormAttachment(100, 0);
+        fdFilemask.right= new FormAttachment(wbaFilename, -margin);
         wFilemask.setLayoutData(fdFilemask);
 
         // Whenever something changes, set the tooltip to the expanded version of the filename:
         wFilename.addModifyListener(getModifyListenerTooltipText(wFilename));
-        
+
         // Listen to the Variable... button
         wbvFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
 
-        
         // Filename list line
         wlFilenameList=new Label(wFileComp, SWT.RIGHT);
         wlFilenameList.setText(Messages.getString("TextFileInputDialog.FilenameList.Label"));
@@ -750,6 +747,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wbeFilename.setToolTipText(Messages.getString("TextFileInputDialog.FilenameEdit.Tooltip"));
         fdbeFilename=new FormData();
         fdbeFilename.right = new FormAttachment(100, 0);
+        fdbeFilename.left = new FormAttachment(wbdFilename, 0, SWT.LEFT);
         fdbeFilename.top  = new FormAttachment (wbdFilename, margin);
         wbeFilename.setLayoutData(fdbeFilename);
 
@@ -804,7 +802,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdAccFilenames.left = new FormAttachment(middle, 0);
         fdAccFilenames.right= new FormAttachment(100, 0);
         wAccFilenames.setLayoutData(fdAccFilenames);
-        
+
         // Which step to read from?
         wlAccStep=new Label(gAccepting, SWT.RIGHT);
         wlAccStep.setText(Messages.getString("TextFileInputDialog.AcceptStep.Label"));
@@ -823,7 +821,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdAccStep.right= new FormAttachment(100, 0);
         wAccStep.setLayoutData(fdAccStep);
 
-        
         // Which field?
         //
         wlAccField=new Label(gAccepting, SWT.RIGHT);
@@ -842,22 +839,20 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdAccField.left = new FormAttachment(middle, 0);
         fdAccField.right= new FormAttachment(100, 0);
         wAccField.setLayoutData(fdAccField);
-                
+
         // Fill in the source steps...
         StepMeta[] prevSteps = transMeta.getPrevSteps(transMeta.findStep(stepname));
         for (int i=0;i<prevSteps.length;i++)
         {
             wAccStep.add(prevSteps[i].getName());
         }
-        
+
         fdAccepting=new FormData();
         fdAccepting.left   = new FormAttachment(middle, 0);
         fdAccepting.right  = new FormAttachment(100, 0);
         fdAccepting.bottom = new FormAttachment(wFirstHeader, -margin*2);
         // fdAccepting.bottom = new FormAttachment(wAccStep, margin);
         gAccepting.setLayoutData(fdAccepting);
-        
-        
 
         ColumnInfo[] colinfo=new ColumnInfo[]
             {
@@ -884,25 +879,24 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdFilenameList.bottom = new FormAttachment(gAccepting, -margin);
         wFilenameList.setLayoutData(fdFilenameList);
 
-    
         fdFileComp=new FormData();
         fdFileComp.left  = new FormAttachment(0, 0);
         fdFileComp.top   = new FormAttachment(0, 0);
         fdFileComp.right = new FormAttachment(100, 0);
         fdFileComp.bottom= new FormAttachment(100, 0);
         wFileComp.setLayoutData(fdFileComp);
-    
+
         wFileComp.pack();
         Rectangle bounds = wFileComp.getBounds();
-        
+
         wFileSComp.setContent(wFileComp);
         wFileSComp.setExpandHorizontal(true);
         wFileSComp.setExpandVertical(true);
         wFileSComp.setMinWidth(bounds.width);
         wFileSComp.setMinHeight(bounds.height);
-        
+
         wFileTab.setControl(wFileSComp);
-        
+
         /////////////////////////////////////////////////////////////
         /// END OF FILE TAB
         /////////////////////////////////////////////////////////////
@@ -919,7 +913,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         FormLayout contentLayout = new FormLayout ();
         contentLayout.marginWidth  = 3;
         contentLayout.marginHeight = 3;
-        
+
         wContentSComp = new ScrolledComposite(wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
         wContentSComp.setLayout(new FillLayout());
 
@@ -1391,7 +1385,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdDateLocale.top  = new FormAttachment(wDateLenient, margin);
         fdDateLocale.right= new FormAttachment(100, 0);
         wDateLocale.setLayoutData(fdDateLocale);
-        
+
         Runnable runnable = new Runnable()
 		{
 			public void run()
@@ -1419,17 +1413,17 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			}
 		};
         shell.getDisplay().asyncExec(runnable);
-        
+
         wContentComp.pack();
         // What's the size: 
         Rectangle bounds = wContentComp.getBounds();
-        
+
         wContentSComp.setContent(wContentComp);
         wContentSComp.setExpandHorizontal(true);
         wContentSComp.setExpandVertical(true);
         wContentSComp.setMinWidth(bounds.width);
         wContentSComp.setMinHeight(bounds.height);
-        
+
         fdContentComp = new FormData();
         fdContentComp.left  = new FormAttachment(0, 0);
         fdContentComp.top   = new FormAttachment(0, 0);
@@ -1549,13 +1543,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdErrorText.top  = new FormAttachment(wErrorFields, margin);
         fdErrorText.right= new FormAttachment(100, 0);
         wErrorText.setLayoutData(fdErrorText);
-        
-        
-        
-        
-        // Bad lines files directory + extention
+
+        // Bad lines files directory + extension
         Control previous = wErrorText;
-        
+
         // BadDestDir line
         wlWarnDestDir=new Label(wErrorComp, SWT.RIGHT);
         wlWarnDestDir.setText(Messages.getString("TextFileInputDialog.WarnDestDir.Label"));
@@ -1618,14 +1609,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         // Whenever something changes, set the tooltip to the expanded version of the directory:
         wWarnDestDir.addModifyListener(getModifyListenerTooltipText(wWarnDestDir));
-        
-        
 
-
-        
-        // Error lines files directory + extention
+        // Error lines files directory + extension
         previous = wWarnDestDir;
-        
+
         // ErrorDestDir line
         wlErrorDestDir=new Label(wErrorComp, SWT.RIGHT);
         wlErrorDestDir.setText(Messages.getString("TextFileInputDialog.ErrorDestDir.Label"));
@@ -1641,7 +1628,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wbbErrorDestDir.setText(Messages.getString("System.Button.Browse"));
         wbbErrorDestDir.setToolTipText(Messages.getString("System.Tooltip.BrowseForDir"));
         fdbErrorDestDir=new FormData();
-        fdbErrorDestDir.right= new FormAttachment(100, 0);
+        fdbErrorDestDir.right= new FormAttachment(100, 0);       
         fdbErrorDestDir.top  = new FormAttachment(previous, margin);
         wbbErrorDestDir.setLayoutData(fdbErrorDestDir);
 
@@ -1754,7 +1741,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         
         // Whenever something changes, set the tooltip to the expanded version of the directory:
         wLineNrDestDir.addModifyListener(getModifyListenerTooltipText(wLineNrDestDir));
-
         
         fdErrorComp = new FormData();
         fdErrorComp.left  = new FormAttachment(0, 0);

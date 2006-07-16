@@ -288,7 +288,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdExtension=new FormData();
 		fdExtension.left = new FormAttachment(middle, 0);
 		fdExtension.top  = new FormAttachment(wFilename, margin);
-		fdExtension.right= new FormAttachment(100, 0);
+		fdExtension.right= new FormAttachment(wbcFilename, -margin);
 		wExtension.setLayoutData(fdExtension);
 
 		// Create multi-part file?
@@ -780,10 +780,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdFieldsComp.right = new FormAttachment(100, 0);
 		fdFieldsComp.bottom= new FormAttachment(100, 0);
 		wFieldsComp.setLayoutData(fdFieldsComp);
-		
+
 		wFieldsComp.layout();
 		wFieldsTab.setControl(wFieldsComp);
-		
+
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
 		fdTabFolder.top   = new FormAttachment(wStepname, margin);
@@ -793,7 +793,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK"));
-		
+
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
@@ -809,13 +809,13 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wGet.addListener   (SWT.Selection, lsGet   );
 		wMinWidth.addListener (SWT.Selection, lsMinWidth );
 		wCancel.addListener(SWT.Selection, lsCancel);
-		
+
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		
+
 		wStepname.addSelectionListener( lsDef );
 		wFilename.addSelectionListener( lsDef );
 		wSeparator.addSelectionListener( lsDef );
-	
+
 		// Whenever something changes, set the tooltip to the expanded version:
 		wFilename.addModifyListener(new ModifyListener()
 			{
