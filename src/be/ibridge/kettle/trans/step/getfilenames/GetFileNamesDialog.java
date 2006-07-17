@@ -67,13 +67,13 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 {
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
-	
+
 	private CTabItem     wFileTab;
 
 	private Composite    wFileComp;
-    
+
 	private FormData     fdFileComp;
-    
+
 	private Label        wlFilename;
 	private Button       wbbFilename; // Browse: add file or directory
 	private Button       wbvFilename; // Variable
@@ -98,7 +98,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
     private int middle, margin;
     private ModifyListener lsMod;
-		
+
 	public GetFileNamesDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
@@ -120,15 +120,15 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 				input.setChanged();
 			}
 		};
-		changed         = input.hasChanged();
-		
-		FormLayout formLayout = new FormLayout ();
+		changed = input.hasChanged();
+
+		FormLayout formLayout   = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
 		shell.setText(Messages.getString("GetFileNamesDialog.DialogTitle"));
-		
+
 		middle = props.getMiddlePct();
 		margin = Const.MARGIN;
 
@@ -159,7 +159,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		//////////////////////////
 		wFileTab=new CTabItem(wTabFolder, SWT.NONE);
 		wFileTab.setText(Messages.getString("GetFileNamesDialog.FileTab.TabTitle"));
-		
+
 		wFileComp = new Composite(wTabFolder, SWT.NONE);
  		props.setLook(wFileComp);
 
@@ -228,15 +228,15 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		fdFilemask=new FormData();
 		fdFilemask.left = new FormAttachment(middle, 0);
 		fdFilemask.top  = new FormAttachment(wFilename, margin);
-		fdFilemask.right= new FormAttachment(100, 0);
+		fdFilemask.right= new FormAttachment(wFilename, 0, SWT.RIGHT);
 		wFilemask.setLayoutData(fdFilemask);
 
         // Whenever something changes, set the tooltip to the expanded version of the filename:
         wFilename.addModifyListener(getModifyListenerTooltipText(wFilename));
-        
+
         // Listen to the Variable... button
         wbvFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
-        
+
 		// Filename list line
 		wlFilenameList=new Label(wFileComp, SWT.RIGHT);
 		wlFilenameList.setText(Messages.getString("GetFileNamesDialog.FilenameList.Label"));
@@ -263,7 +263,8 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		wbeFilename.setToolTipText(Messages.getString("GetFileNamesDialog.FilenameEdit.Tooltip"));
 		fdbeFilename=new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
-		fdbeFilename.top  = new FormAttachment (wbdFilename, margin);
+		fdbeFilename.left  = new FormAttachment(wbdFilename, 0, SWT.LEFT);
+		fdbeFilename.top   = new FormAttachment(wbdFilename, margin);
 		wbeFilename.setLayoutData(fdbeFilename);
 
 		wbShowFiles=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
@@ -279,9 +280,9 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 				new ColumnInfo(Messages.getString("GetFileNamesDialog.FileDirColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false),
 				new ColumnInfo(Messages.getString("GetFileNamesDialog.WildcardColumn.Column"), ColumnInfo.COLUMN_TYPE_TEXT,    false ),
 			};
-		
+
 		colinfo[ 1].setToolTip(Messages.getString("GetFileNamesDialog.RegExpColumn.Column"));
-		
+
 		wFilenameList = new TableView(wFileComp, 
 						      SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, 
 						      colinfo, 
@@ -297,17 +298,16 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		fdFilenameList.bottom = new FormAttachment(wbShowFiles, -margin);
 		wFilenameList.setLayoutData(fdFilenameList);
 
-	
 		fdFileComp=new FormData();
 		fdFileComp.left  = new FormAttachment(0, 0);
 		fdFileComp.top   = new FormAttachment(0, 0);
 		fdFileComp.right = new FormAttachment(100, 0);
 		fdFileComp.bottom= new FormAttachment(100, 0);
 		wFileComp.setLayoutData(fdFileComp);
-	
+
 		wFileComp.layout();
 		wFileTab.setControl(wFileComp);
-		
+
 		/////////////////////////////////////////////////////////////
 		/// END OF FILE TAB
 		/////////////////////////////////////////////////////////////
@@ -318,29 +318,29 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		fdTabFolder.right = new FormAttachment(100, 0);
 		fdTabFolder.bottom= new FormAttachment(100, -50);
 		wTabFolder.setLayoutData(fdTabFolder);
-		
+
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK"));
 
 		wPreview=new Button(shell, SWT.PUSH);
 		wPreview.setText(Messages.getString("GetFileNamesDialog.Preview.Button"));
-		
+
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
-		
+
 		setButtonPositions(new Button[] { wOK, wPreview, wCancel }, margin, wTabFolder);
 
 		// Add listeners
 		lsOK          = new Listener() { public void handleEvent(Event e) { ok();           } };
 		lsPreview     = new Listener() { public void handleEvent(Event e) { preview();      } };
 		lsCancel      = new Listener() { public void handleEvent(Event e) { cancel();       } };
-		
+
 		wOK.addListener           (SWT.Selection, lsOK          );
 		wPreview.addListener      (SWT.Selection, lsPreview     );
 		wCancel.addListener       (SWT.Selection, lsCancel      );
-		
+
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		
+
 		wStepname.addSelectionListener( lsDef );
 
 		// Add the file to the list of files...
@@ -358,7 +358,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		};
 		wbaFilename.addSelectionListener(selA);
 		wFilename.addSelectionListener(selA);
-		
+
 		// Delete files from the list of files...
 		wbdFilename.addSelectionListener(new SelectionAdapter()
 		{
@@ -413,8 +413,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 				}
 			}
 		);
-        
-        
+
 		// Listen to the Browse... button
 		wbbFilename.addSelectionListener
 		(
@@ -430,7 +429,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 							String fpath = StringUtil.environmentSubstitute(wFilename.getText());
 							dialog.setFilterPath( fpath );
 						}
-						
+
 						if (dialog.open()!=null)
 						{
 							String str= dialog.getFilterPath();
@@ -446,9 +445,9 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 							String fname = StringUtil.environmentSubstitute(wFilename.getText());
 							dialog.setFileName( fname );
 						}
-						
+
 						dialog.setFilterNames(new String[] {Messages.getString("GetFileNamesDialog.FileType.TextAndCSVFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.AllFiles")});
-						
+
 						if (dialog.open()!=null)
 						{
 							String str = dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName();
@@ -458,7 +457,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 				}
 			}
 		);
-		
+
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
@@ -477,7 +476,6 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		return stepname;
 	}
 
-    
     public ModifyListener getModifyListenerTooltipText(final Text textField)
     {
         return new ModifyListener()
@@ -497,7 +495,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 	public void getData(GetFileNamesMeta meta)
 	{
         final GetFileNamesMeta in = meta;
-        
+
 		if (in.getFileName() !=null) 
 		{
 			wFilenameList.removeAll();
@@ -511,20 +509,20 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		}
 		wStepname.selectAll();
 	}
-	
+
     private void cancel()
 	{
 		stepname=null;
 		input.setChanged(changed);
 		dispose();
 	}
-	
+
 	private void ok()
 	{
 		getInfo(input);
 		dispose();
 	}
-	
+
 	private void getInfo(GetFileNamesMeta in)
 	{
 		stepname = wStepname.getText(); // return value
@@ -536,7 +534,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		in.setFileMask( wFilenameList.getItems(1) );
 		in.setFileRequired( wFilenameList.getItems(2) );
 	}
-		
+
     // Preview the data
     private void preview()
     {
@@ -545,35 +543,34 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
         getInfo(oneMeta);
 
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
-        
+
         EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("GetFileNamesDialog.PreviewSize.DialogTitle"), Messages.getString("GetFileNamesDialog.PreviewSize.DialogMessage"));
         int previewSize = numberDialog.open();
         if (previewSize>0)
         {
             TransPreviewProgressDialog progressDialog = new TransPreviewProgressDialog(shell, previewMeta, new String[] { wStepname.getText() }, new int[] { previewSize } );
             progressDialog.open();
-            
+
             if (!progressDialog.isCancelled())
             {
                 Trans trans = progressDialog.getTrans();
                 String loggingText = progressDialog.getLoggingText();
-                
+
                 if (trans.getResult()!=null && trans.getResult().getNrErrors()>0)
                 {
                 	EnterTextDialog etd = new EnterTextDialog(shell, Messages.getString("System.Dialog.Error.Title"),  Messages.getString("GetFileNamesDialog.ErrorInPreview.DialogMessage"), loggingText, true );
                 	etd.setReadOnly();
                 	etd.open();
                 }
-                
+
                 PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
                 prd.open();
             }
         }
     }
-	
+
 	public String toString()
 	{
 		return this.getClass().getName();
 	}
-
 }
