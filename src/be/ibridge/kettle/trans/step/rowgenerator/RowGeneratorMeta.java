@@ -265,8 +265,8 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 			retval.decimal[i]  = decimal[i];
 			retval.group[i]    = group[i];
 			retval.value[i]        = value[i];
-			fieldLength[i]        = fieldLength[i]; 
-			fieldPrecision[i]     = fieldPrecision[i]; 
+			retval.fieldLength[i]        = fieldLength[i]; 
+			retval.fieldPrecision[i]     = fieldPrecision[i]; 
 		}
 		
 		return retval;
