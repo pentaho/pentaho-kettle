@@ -75,6 +75,7 @@ public class EnvUtil
         KettleVariables vars = KettleVariables.getInstance();
         
         Properties sysprops = new Properties();
+        sysprops.putAll( System.getenv() );
         sysprops.putAll( System.getProperties() );
         sysprops.putAll( vars.getProperties() );
         
