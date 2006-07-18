@@ -135,7 +135,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Get files by SCP");
+		shell.setText("Get files by SFTP");
 		
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
@@ -285,9 +285,9 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		fdWildcard.right= new FormAttachment(100, 0);
 		wWildcard.setLayoutData(fdWildcard);
 
-		// Remove files after retreival...
+		// Remove files after retrieval...
 		wlRemove=new Label(shell, SWT.RIGHT);
-		wlRemove.setText("Remove files after retreival? ");
+		wlRemove.setText("Remove files after retrieval? ");
  		props.setLook(wlRemove);
 		fdlRemove=new FormData();
 		fdlRemove.left = new FormAttachment(0, 0);
