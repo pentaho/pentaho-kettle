@@ -62,6 +62,7 @@ public class RowGenerator extends BaseStep implements StepInterface
             if (meta.getFieldName()[i]!=null)
             {
                 value=new Value(meta.getFieldName()[i], valtype); // build a value!
+                value.setLength(meta.getFieldLength()[i], meta.getFieldPrecision()[i]);
                 String stringValue = meta.getValue()[i];
                 
                 // If the value is empty: consider it to be NULL.
