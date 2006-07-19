@@ -66,7 +66,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	private boolean binaryMode;
 	private int     timeout;
 	private boolean remove;
-    private boolean onlyGettingNewFiles;
+    private boolean onlyGettingNewFiles;  /* Don't overwrite files */
 	
 	public JobEntryFTP(String n)
 	{
@@ -88,20 +88,20 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 
 	public String getXML()
 	{
-        StringBuffer retval = new StringBuffer();
+        StringBuffer retval = new StringBuffer(128);
 		
 		retval.append(super.getXML());
 		
-		retval.append("      "+XMLHandler.addTagValue("servername",   serverName));
-		retval.append("      "+XMLHandler.addTagValue("username",     userName));
-		retval.append("      "+XMLHandler.addTagValue("password",     password));
-		retval.append("      "+XMLHandler.addTagValue("ftpdirectory", ftpDirectory));
-		retval.append("      "+XMLHandler.addTagValue("targetdirectory", targetDirectory));
-		retval.append("      "+XMLHandler.addTagValue("wildcard",     wildcard));
-		retval.append("      "+XMLHandler.addTagValue("binary",       binaryMode));
-		retval.append("      "+XMLHandler.addTagValue("timeout",      timeout));
-		retval.append("      "+XMLHandler.addTagValue("remove",       remove));
-        retval.append("      "+XMLHandler.addTagValue("only_new",     onlyGettingNewFiles));
+		retval.append("      ").append(XMLHandler.addTagValue("servername",   serverName));
+		retval.append("      ").append(XMLHandler.addTagValue("username",     userName));
+		retval.append("      ").append(XMLHandler.addTagValue("password",     password));
+		retval.append("      ").append(XMLHandler.addTagValue("ftpdirectory", ftpDirectory));
+		retval.append("      ").append(XMLHandler.addTagValue("targetdirectory", targetDirectory));
+		retval.append("      ").append(XMLHandler.addTagValue("wildcard",     wildcard));
+		retval.append("      ").append(XMLHandler.addTagValue("binary",       binaryMode));
+		retval.append("      ").append(XMLHandler.addTagValue("timeout",      timeout));
+		retval.append("      ").append(XMLHandler.addTagValue("remove",       remove));
+        retval.append("      ").append(XMLHandler.addTagValue("only_new",     onlyGettingNewFiles));
 		
 		return retval.toString();
 	}
@@ -176,8 +176,6 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 		}
 	}
 
-	
-	
 	/**
 	 * @return Returns the binaryMode.
 	 */
@@ -185,7 +183,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		return binaryMode;
 	}
-	
+
 	/**
 	 * @param binaryMode The binaryMode to set.
 	 */
@@ -193,7 +191,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		this.binaryMode = binaryMode;
 	}
-	
+
 	/**
 	 * @return Returns the directory.
 	 */
@@ -201,7 +199,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		return ftpDirectory;
 	}
-	
+
 	/**
 	 * @param directory The directory to set.
 	 */
@@ -209,7 +207,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		this.ftpDirectory = directory;
 	}
-	
+
 	/**
 	 * @return Returns the password.
 	 */
@@ -217,7 +215,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		return password;
 	}
-	
+
 	/**
 	 * @param password The password to set.
 	 */
@@ -225,7 +223,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		this.password = password;
 	}
-	
+
 	/**
 	 * @return Returns the serverName.
 	 */
@@ -233,7 +231,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		return serverName;
 	}
-	
+
 	/**
 	 * @param serverName The serverName to set.
 	 */
@@ -241,7 +239,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		this.serverName = serverName;
 	}
-	
+
 	/**
 	 * @return Returns the userName.
 	 */
@@ -249,7 +247,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		return userName;
 	}
-	
+
 	/**
 	 * @param userName The userName to set.
 	 */
@@ -257,7 +255,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		this.userName = userName;
 	}
-	
+
 	/**
 	 * @return Returns the wildcard.
 	 */
@@ -265,7 +263,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		return wildcard;
 	}
-	
+
 	/**
 	 * @param wildcard The wildcard to set.
 	 */
@@ -273,7 +271,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		this.wildcard = wildcard;
 	}
-	
+
 	/**
 	 * @return Returns the targetDirectory.
 	 */
@@ -281,7 +279,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		return targetDirectory;
 	}
-	
+
 	/**
 	 * @param targetDirectory The targetDirectory to set.
 	 */
@@ -289,7 +287,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		this.targetDirectory = targetDirectory;
 	}
-	
+
 	/**
 	 * @param timeout The timeout to set.
 	 */
@@ -297,7 +295,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		this.timeout = timeout;
 	}
-	
+
 	/**
 	 * @return Returns the timeout.
 	 */
@@ -305,7 +303,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		return timeout;
 	}
-	
+
 	/**
 	 * @param remove The remove to set.
 	 */
@@ -313,7 +311,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		this.remove = remove;
 	}
-	
+
 	/**
 	 * @return Returns the remove.
 	 */
@@ -321,7 +319,6 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	{
 		return remove;
 	}
-	
 
     /**
      * @return Returns the onlyGettingNewFiles.
@@ -344,7 +341,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 		LogWriter log = LogWriter.getInstance();
 
         log4j.info("Started FTP job to "+serverName);
-        
+
 		Result result = new Result(nr);
 		result.setResult( false );
 		long filesRetrieved = 0;
@@ -367,7 +364,8 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 
 			// login to ftp host ...
 			ftpclient.login(userName, password);
-			log.logDetailed(toString(), "logged in using "+userName+"/"+password);
+			//  Remove password from logging, you don't know where it ends up.
+			log.logDetailed(toString(), "logged in using "+userName);
 
 			// move to spool dir ...
 			if (ftpDirectory!=null && ftpDirectory.length()>0)
@@ -392,7 +390,6 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 				log.logDetailed(toString(), "set ASCII transfer mode");
 			}
 
-            
 			// Some FTP servers return a message saying no files found as a string in the filenlist
 			// e.g. Solaris 8
 			// CHECK THIS !!!
@@ -410,9 +407,8 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 			{
                 String translatedWildcard = StringUtil.environmentSubstitute(wildcard);
                 pattern = Pattern.compile(translatedWildcard);
-				
 			}
-			
+
 			// Get the files in the list...
 			for (int i=0;i<filelist.length && !parentJob.isStopped();i++)
 			{
@@ -424,26 +420,27 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 					Matcher matcher = pattern.matcher(filelist[i]);
 					getIt = matcher.matches();
 				}
-				
+
 				if (getIt)
 				{
                     log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+StringUtil.environmentSubstitute(targetDirectory)+"]");
 					String targetFilename = getTargetFilename(filelist[i]);
                     File targetFile = new File(targetFilename);
-                    
-                    if (onlyGettingNewFiles && needsDownload(filelist[i]))
+
+                    if ( (onlyGettingNewFiles == false) ||
+                    	 (onlyGettingNewFiles == true) && needsDownload(filelist[i]))
                     {
     					ftpclient.get(targetFilename, filelist[i]);
     					filesRetrieved++; 
-    					
+
     					// Add to the result files...
     					ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, targetFile, parentJob.getJobname(), toString());
                         resultFile.setComment("Downloaded from ftp server "+serverName);
     					result.getResultFiles().add(resultFile);
-    					
+
     					log.logDetailed(toString(), "Got file ["+filelist[i]+"]");
                     }
-    					
+
 					// Delete the file if this is needed!
 					if (remove) 
 					{

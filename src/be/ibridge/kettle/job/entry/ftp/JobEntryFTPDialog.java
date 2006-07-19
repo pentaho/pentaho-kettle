@@ -310,9 +310,9 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		fdTimeout.right= new FormAttachment(100, 0);
 		wTimeout.setLayoutData(fdTimeout);
 		
-		// Remove files after retreival...
+		// Remove files after retrieval...
 		wlRemove=new Label(shell, SWT.RIGHT);
-		wlRemove.setText("Remove files after retreival? ");
+		wlRemove.setText("Remove files after retrieval? ");
  		props.setLook(wlRemove);
 		fdlRemove=new FormData();
 		fdlRemove.left = new FormAttachment(0, 0);
@@ -327,9 +327,9 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		fdRemove.right= new FormAttachment(100, 0);
 		wRemove.setLayoutData(fdRemove);
 
-        // OnlyNew files after retreival...
+        // OnlyNew files after retrieval...
         wlOnlyNew=new Label(shell, SWT.RIGHT);
-        wlOnlyNew.setText("Only download new files?");
+        wlOnlyNew.setText("Don't overwrite files");
         props.setLook(wlOnlyNew);
         fdlOnlyNew=new FormData();
         fdlOnlyNew.left = new FormAttachment(0, 0);
@@ -354,12 +354,12 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		
+
 		wCancel.addListener(SWT.Selection, lsCancel);
 		wOK.addListener    (SWT.Selection, lsOK    );
-		
+
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		
+
 		wName.addSelectionListener( lsDef );
         wServerName.addSelectionListener( lsDef );
         wUserName.addSelectionListener( lsDef );
@@ -369,12 +369,12 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         wFtpDirectory.addSelectionListener( lsDef );
         wWildcard.addSelectionListener( lsDef );
         wTimeout.addSelectionListener( lsDef );
-        
+
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
-				
+
 		getData();
-		
+
 		BaseStepDialog.setSize(shell);
 
 		shell.open();
@@ -391,7 +391,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		props.setScreen(winprop);
 		shell.dispose();
 	}
-	
+
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
 	 */ 
@@ -411,14 +411,14 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		wRemove.setSelection(jobentry.getRemove());
         wOnlyNew.setSelection(jobentry.isOnlyGettingNewFiles());
 	}
-	
+
 	private void cancel()
 	{
 		jobentry.setChanged(changed);
 		jobentry=null;
 		dispose();
 	}
-	
+
 	private void ok()
 	{
 		jobentry.setName(wName.getText());
@@ -440,7 +440,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 	{
 		return this.getClass().getName();
 	}
-	
+
 	public boolean evaluates()
 	{
 		return true;
