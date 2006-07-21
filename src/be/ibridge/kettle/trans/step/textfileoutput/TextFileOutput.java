@@ -149,7 +149,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				{
 					if (i>0) data.writer.write(meta.getSeparator().toCharArray());
 					v=r.getValue(i);
-					if(!writeField(v, i)) return false;
+					if(!writeField(v, -1)) return false;
 				}
                 data.writer.write(meta.getNewline().toCharArray());
 			}
