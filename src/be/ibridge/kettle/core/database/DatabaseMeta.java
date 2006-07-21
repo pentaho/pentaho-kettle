@@ -246,7 +246,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	 */
 	public void setDefault()
 	{
-		setValues("", "Oracle", "Native", "", "", "1526", "", "");
+		setValues("", "Oracle", "Native", "", "", "1521", "", "");
 	}
     
     /**
