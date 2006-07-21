@@ -82,7 +82,7 @@ public class ProfileMeta
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleException("Coudln't create profile with id="+id_profile, dbe);
+			throw new KettleException("Couldn't create profile with id="+id_profile, dbe);
 		}
 	}
 	

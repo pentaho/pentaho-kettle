@@ -795,7 +795,7 @@ public class Database
 			}
 			catch(SQLException ex) 
 			{
-				throw new KettleDatabaseException("Coudln't prepare statement :"+Const.CR+sql, ex);
+				throw new KettleDatabaseException("Couldn't prepare statement :"+Const.CR+sql, ex);
 			}
 		}
 		
@@ -3575,7 +3575,7 @@ public class Database
 	// Get the fields back from an SQL query
 	public Row getParameterMetaData(String sql, Row inform)
 	{
-		// The database coudln't handle it: try manually!
+		// The database couldn't handle it: try manually!
 		int q=countParameters(sql);
 		
 		Row par=new Row();
