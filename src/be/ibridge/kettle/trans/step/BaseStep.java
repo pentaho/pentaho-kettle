@@ -926,7 +926,7 @@ public class BaseStep extends Thread
 		return row;
 	}
 
-	private void safeModeChecking(Row row)
+	private synchronized void safeModeChecking(Row row)
 	{
 		//String saveDebug=debug;
 		//debug="Safe mode checking";
