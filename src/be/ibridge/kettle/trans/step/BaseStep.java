@@ -625,9 +625,9 @@ public class BaseStep extends Thread
 	/**
 	 * putRow is used to copy a row, to the alternate rowset(s)
 	 * This should get priority over everything else! (synchronized)
-	 * If distribute is true, a a row is copied only once to a single output rowset!
+	 * If distribute is true, a row is copied only once to the output rowsets, otherwise copies are sent to each rowset!
 	 * 
-	 * @param row The row to put to the destination rowsets.
+	 * @param row The row to put to the destination rowset(s).
 	 */
 	public synchronized void putRow(Row row)
 	{
@@ -655,8 +655,6 @@ public class BaseStep extends Thread
             return; // we're done here!
         }
 		
-		//logDebug("putRow() start, output:"+output.size()+", line="+lines_read);
-
 		// Before we copy this row to output, wait for room...
 		for (int i=0;i<outputRowSets.size();i++)  // Wait for all rowsets: keep synchronised!
 		{
@@ -715,17 +713,19 @@ public class BaseStep extends Thread
 		}
 		else // Copy the row to all output rowsets!
 		{
+            // Copy to the row in the other output rowsets...       
+            for (int i=1;i<outputRowSets.size();i++)  // start at 1
+            {
+                RowSet rs=(RowSet)outputRowSets.get(i);
+                rs.putRow(new Row(row));
+                linesWritten++;
+            }
+
             // set row in first output rowset
-			RowSet rs=(RowSet)outputRowSets.get(0);
-			rs.putRow(row);
-			linesWritten++;
-			
-			// Copy to the row in the other output rowsets...		
-			for (int i=1;i<outputRowSets.size();i++)  // start at 1, 0==input rowset
-			{
-				rs=(RowSet)outputRowSets.get(i);
-				rs.putRow(new Row(row));
-			}
+            RowSet rs=(RowSet)outputRowSets.get(0);
+            rs.putRow(row);
+            linesWritten++;
+            
 		}
 	}
 	
