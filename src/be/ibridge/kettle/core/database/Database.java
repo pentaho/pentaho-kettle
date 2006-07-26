@@ -534,11 +534,14 @@ public class Database
 			    debug="Number";
                 if (!v.isNull()) 
                 {
+                    debug="Number, not null, getting number from value";
                     double num = v.getNumber();
                     if (databaseMeta.supportsFloatRoundingOnUpdate() && v.getPrecision()>=0)
                     {
+                        debug="Number, rounding to precision ["+v.getPrecision()+"]";
                         num = Const.round(num, v.getPrecision());
                     }
+                    debug="Number, setting ["+num+"] on position #"+pos+" of the prepared statement";
                     ps.setDouble(pos, num);
                 }
 				else 
