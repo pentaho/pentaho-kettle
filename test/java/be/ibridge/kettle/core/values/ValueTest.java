@@ -1172,7 +1172,7 @@ public class ValueTest extends TestCase
 	
 	/**
 	 * Constructors using Values DEBUG CLONE
-	 *
+	 */
 	public void testClone2()
 	{
 	    Value vs = new Value("Name",  Value.VALUE_TYPE_NUMBER);
@@ -1218,8 +1218,7 @@ public class ValueTest extends TestCase
 	    assertTrue(vs2.isNull());
 	    assertNull(vs2.getName());
 	    assertNull(vs2.getOrigin());
-	}
-*/	
+	}	
 		
 	// Value.clone returns shallow copies of Value, is this intended 
 	// behaviour.
