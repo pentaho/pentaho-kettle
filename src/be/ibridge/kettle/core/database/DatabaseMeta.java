@@ -159,6 +159,11 @@ public class DatabaseMeta implements Cloneable, XMLInterface
     */
     public static final int TYPE_DATABASE_EXTENDB    = 20;
     
+    /**
+     * Connection to a Teradata database
+     */
+     public static final int TYPE_DATABASE_TERADATA  = 21;
+     
 
 	/**
 	 * Connect natively through JDBC thin driver to the database.
