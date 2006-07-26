@@ -185,7 +185,7 @@ public class Condition implements Cloneable, XMLInterface
 			retval.function        = function;
 			if (right_exact!=null)
 			{
-				retval.right_exact = (Value)right_exact.clone();
+				retval.right_exact = new Value(right_exact);
 			}
 			else
 			{
