@@ -785,7 +785,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 									if ( v != null )
 									{
 										String name = keyLookup[i];
-									    Value newValue = (Value)v.clone();
+									    Value newValue = new Value(v);
 									    newValue.setName(name);
 
         								if ( name.equals(vkeyfield.getName()) ||
