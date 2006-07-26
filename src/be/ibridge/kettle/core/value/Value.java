@@ -327,6 +327,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		try
 		{
 			retval = (Value)super.clone();
+            if (value!=null) retval.value = (ValueInterface) value.clone();
 		}
 		catch(CloneNotSupportedException e)
 		{
