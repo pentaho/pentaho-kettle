@@ -718,7 +718,6 @@ public class BaseStep extends Thread
             {
                 RowSet rs=(RowSet)outputRowSets.get(i);
                 rs.putRow(new Row(row));
-                linesWritten++;
             }
 
             // set row in first output rowset
