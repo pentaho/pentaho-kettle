@@ -658,7 +658,7 @@ public class Row implements XMLInterface, Comparable, Serializable
 	 *
 	 * @return an exact copy of this row
 	 */
-	public Row Clone()  // Clone the row!
+	public synchronized Row Clone()  // Clone the row!
 	{
 		return new Row(this);
 	}

@@ -181,6 +181,7 @@ public class RowSet
 		thread_to   = to;
 	}
 	
+    /** @deprecated */
 	public boolean waitFrom()
 	{
 		try
@@ -195,6 +196,7 @@ public class RowSet
 		return true;
 	}
 
+    /** @deprecated */
 	public boolean waitTo()
 	{
 		try
@@ -209,6 +211,7 @@ public class RowSet
 		return true;
 	}
 
+    /** @deprecated */
 	public boolean notifyFrom()
 	{
 		if (!thread_from.waiting) return true;
@@ -223,6 +226,7 @@ public class RowSet
 		return true;
 	}
 
+    /** @deprecated */
 	public boolean notifyTo()
 	{
 		if (!thread_to.waiting) return true;
@@ -237,7 +241,7 @@ public class RowSet
 		return true;
 	}
 
-	public boolean setPriorityFrom(int prior)
+	public synchronized boolean setPriorityFrom(int prior)
 	{
 		if ( thread_from == null ||
 		     thread_from.getPriority()==prior ||
@@ -255,7 +259,7 @@ public class RowSet
 		return true;
 	}
 
-	public boolean setPriorityTo(int prior)
+	public synchronized boolean setPriorityTo(int prior)
 	{
 		if ( thread_to == null ||
 			 thread_to.getPriority()==prior ||
@@ -273,11 +277,13 @@ public class RowSet
 		return true;
 	}
 	
+    /** @deprecated */
 	public boolean waitingThreadFrom()
 	{
 		return thread_from.waiting;
 	}
 
+    /** @deprecated */
 	public boolean waitingThreadTo()
 	{
 		return thread_to.waiting;
