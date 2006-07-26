@@ -1136,7 +1136,7 @@ public class ValueTest extends TestCase
 	    vs1.setValue("1234567890");
 	    vs1.hexEncode();
 	    assertEquals("31323334353637383930", vs1.getString());
-	    
+
 	    vs1.setNull();
 	    vs1.hexEncode();
 	    assertNull(vs1.getString());
@@ -1154,7 +1154,7 @@ public class ValueTest extends TestCase
 	    vs1.setValue("This is a test");	   
 	    vs2.setValue("is a");
 	    vs3.setValue("not");
-	    
+
 	    assertEquals(true,  (vs1.Clone().like(vs2)).getBoolean());
 	    assertEquals(true,  (vs1.Clone().like(vs1)).getBoolean());
 	    assertEquals(false, (vs1.Clone().like(vs3)).getBoolean());
@@ -1169,9 +1169,9 @@ public class ValueTest extends TestCase
 		assertEquals(Value.VALUE_TYPE_NONE, Value.getType("INVALID_TYPE"));
 		assertEquals("String", Value.getTypeDesc(Value.VALUE_TYPE_STRING));
 	}
-	
+
 	/**
-	 * Constructors using Values DEBUG CLONE
+	 * Constructors using Values.
 	 */
 	public void testClone2()
 	{
@@ -1187,7 +1187,7 @@ public class ValueTest extends TestCase
 	    assertEquals(vs.isNull(), copy.isNull());
 	    assertEquals(vs.getOrigin(), copy.getOrigin());
 	    assertEquals(vs.getName(), copy.getName());
-	    
+
 	    // Show it's a deep copy
 	    copy.setName("newName");
 	    assertEquals("Name", vs.getName());
@@ -1196,12 +1196,11 @@ public class ValueTest extends TestCase
 	    copy.setOrigin("newOrigin");
 	    assertEquals("origin", vs.getOrigin());
 	    assertEquals("newOrigin", copy.getOrigin());
-	    
+
 	    copy.setValue(11.0D);
 	    assertEquals(10.0D, vs.getNumber(), 0.1D);
 	    assertEquals(11.0D, copy.getNumber(), 0.1D);
 
-	
 	    Value vs1 = new Value("Name",  Value.VALUE_TYPE_NUMBER);
 	    vs1.setName(null);
 	    // name and origin are null
@@ -1213,13 +1212,10 @@ public class ValueTest extends TestCase
 	    assertEquals(vs1.isNull(), copy1.isNull());
 	    assertEquals(vs1.getOrigin(), copy1.getOrigin());
 	    assertEquals(vs1.getName(), copy1.getName());
-	    
+
 	    Value vs2 = new Value((Value)null);
 	    assertTrue(vs2.isNull());
 	    assertNull(vs2.getName());
 	    assertNull(vs2.getOrigin());
-	}	
-		
-	// Value.clone returns shallow copies of Value, is this intended 
-	// behaviour.
+	}
 }
