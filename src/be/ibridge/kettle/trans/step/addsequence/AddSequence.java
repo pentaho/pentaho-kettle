@@ -49,8 +49,7 @@ public class AddSequence extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	public synchronized boolean addSequence(Row row)
-		throws KettleException
+	public boolean addSequence(Row row) throws KettleException
 	{
 		Value next = null;
 		
