@@ -164,6 +164,12 @@ public class DatabaseMeta implements Cloneable, XMLInterface
      */
      public static final int TYPE_DATABASE_TERADATA  = 21;
      
+    /**
+     * Connection to an Oracle RDB database
+     */
+    public static final int TYPE_DATABASE_ORACLE_RDB = 22;
+    
+    
 
 	/**
 	 * Connect natively through JDBC thin driver to the database.

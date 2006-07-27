@@ -52,6 +52,7 @@ set CLASSPATH=%CLASSPATH%;libext\jsch-0.1.24.jar
 set CLASSPATH=%CLASSPATH%;libext\interclient.jar
 set CLASSPATH=%CLASSPATH%;libext\sapdbc.jar
 set CLASSPATH=%CLASSPATH%;libext\xdbjdbc.jar
+set CLASSPATH=%CLASSPATH%;libext\rdbthin.jar
 
 REM *****************
 REM   SWT Libraries
