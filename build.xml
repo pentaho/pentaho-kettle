@@ -163,7 +163,6 @@
 		  	todir="Development packages"
 		    description="kettle javadoc for version ${version}" 
 			keywords="Kettle, library, Spoon, Chef" 
-		    comments="Can be used to program the Kettle API"
 		  />
 	  </target>
 
@@ -193,7 +192,6 @@
 		  	todir="Development packages"
 		    description="kettle base library" 
 			keywords="Kettle, library, Spoon, Chef" 
-		    comments="Can be used to program Kettle meta-data or update you Kettle distribution package"
 		  />
 	  </target>
 
@@ -274,7 +272,6 @@
 		  	todir="Development packages"
  		    description="This zip file contains the binaries to run Kettle (Spoon, Chef) on all platforms" 
  	 		keywords="Kettle, binary, Spoon, Chef" 
- 		    comments="Also contains JDBC drivers, libs etc which explains the large size"
 		 />
 	  </target>
 
@@ -301,7 +298,6 @@
 		 	todir="Development packages"
  		    description="This zip file contains the source files and libraries and everything to compile Kettle" 
  	 		keywords="Kettle, binary, Spoon, Chef source files" 
- 		    comments="Also contains JDBC drivers, libs etc which explains the large size"
 		 />
 
 	  </target>
