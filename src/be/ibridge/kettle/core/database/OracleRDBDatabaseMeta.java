@@ -124,6 +124,11 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	{
 		return true;
 	}
+    
+    public boolean supportsRepository()
+    {
+        return false;
+    }
 
     /**
      * Check if a sequence exists.
