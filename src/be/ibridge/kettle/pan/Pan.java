@@ -319,6 +319,11 @@ public class Pan
 			
 		    // allocate & run the required sub-threads
 			boolean ok = trans.execute((String[])args.toArray(new String[args.size()])); 
+            if (!ok)
+            {
+                System.out.println("Unable to prepare and initialize this transformation");
+                System.exit(3);
+            }
 			trans.waitUntilFinished();
 			trans.endProcessing("end");
 
@@ -332,7 +337,7 @@ public class Pan
 			log.logMinimal("Pan", "Start="+begin+", Stop="+end);
 			long millis=stop.getTime()-start.getTime();
 			log.logMinimal("Pan", "Processing ended after "+(millis/1000)+" seconds.");
-			if (ok) 
+			if (trans.getResult().getNrErrors()==0) 
 			{
 				trans.printStats((int)millis/1000);
                 System.exit(0);
