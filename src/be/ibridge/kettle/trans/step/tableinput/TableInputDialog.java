@@ -314,12 +314,10 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 	
 	protected void setSQLToolTip()
     {
-       String sql = wSQL.getText();
-       
-       if (wVariables.getSelection()) sql=StringUtil.environmentSubstitute(sql);
-       
-       wSQL.setToolTipText(sql);
-        
+       if (wVariables.getSelection())
+       {
+           wSQL.setToolTipText(StringUtil.environmentSubstitute(wSQL.getText()));
+       }
     }
 
     /**
