@@ -858,7 +858,10 @@ public class BaseStep extends Thread
 		int switches;
 		
 		// If everything is finished, we can stop immediately!
-		if (inputRowSets.size()==0) return null;
+		if (inputRowSets.size()==0) 
+        {
+            return null;
+        }
 
 		// What's the current input stream?
 		RowSet in=currentInputStream();
@@ -867,7 +870,7 @@ public class BaseStep extends Thread
 		while (in.isEmpty() && !stopped)
 		{
 			// in : empty
-			if (/*in.isEmpty() &&*/ in.isDone()) // nothing more here: remove it from input
+			if (in.isEmpty() && in.isDone()) // nothing more here: remove it from input
 			{
 				inputRowSets.remove(in_handling);
 				if (inputRowSets.size()==0) // nothing more to be found! 
