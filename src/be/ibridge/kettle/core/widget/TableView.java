@@ -677,8 +677,12 @@ public class TableView extends Composite
                         case SWT.ARROW_DOWN: 
                         	activeTableRow++; 
                         	if (activeTableRow>=maxrows) 
-                        	{ 
-                        		insertRowAfter(); 
+                        	{
+                        		if(!readonly) {
+                        			insertRowAfter();
+                        		} else {
+                        			activeTableRow=maxrows-1;
+                        		}
                         	}
                         	break;
                         case SWT.ARROW_UP  : activeTableRow--; if (activeTableRow<0) activeTableRow=0; break;
