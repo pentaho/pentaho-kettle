@@ -49,21 +49,28 @@ public class TableInput extends BaseStep implements StepInterface
 		super(stepMeta, stepDataInterface, copyNr, transMeta, trans);
 	}
 	
-	private synchronized Row readStartDate()
+	private synchronized Row readStartDate() throws KettleException
     {
 		if (log.isDetailed()) logDetailed("Reading from step [" + meta.getLookupStepname() + "]");
 
         Row parameters = new Row();
 
         Row r = getRowFrom(meta.getLookupStepname()); // rows are originating from "lookup_from"
-
-        for (int i = 0; i < r.size(); i++) // take all values from input row
+        while (r!=null)
         {
-            Value val = r.getValue(i);
-
-            parameters.addValue(val);
+            for (int i = 0; i < r.size(); i++) // take all values from input row
+            {
+                Value val = r.getValue(i);
+    
+                parameters.addValue(val);
+            }
+            r = getRowFrom(meta.getLookupStepname()); // take all input rows if needed!
         }
-        r = getRowFrom(meta.getLookupStepname()); // take all input rows if needed!
+        
+        if (parameters.size()==0)
+        {
+            throw new KettleException("Expected to read parameters from step ["+meta.getLookupStepname()+"] but none were found.");
+        }
         
         return parameters;
     }	
