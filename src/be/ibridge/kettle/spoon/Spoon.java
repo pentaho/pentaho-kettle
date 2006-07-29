@@ -927,12 +927,14 @@ public class Spoon
                             {
                                 // OK, we're connected to the new repository...
                                 // Load the transformation...
-                                TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, fn, rep.getDirectoryTree().findDirectory(fd));
+                            	RepositoryDirectory fdRepdir = rep.getDirectoryTree().findDirectory(fd);
+                                TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, fn, fdRepdir);
                                 TransMeta transInfo = tlpd.open();
                                 if (transInfo!=null)
                                 {
                                     transMeta = transInfo;
                                     transMeta.clearChanged();
+                                    props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fn, fdRepdir.getPath(), true, rep.getName());
                                 }
                             }
                             else
@@ -952,6 +954,7 @@ public class Spoon
                                 transMeta = new TransMeta(fn);
                                 transMeta.clearChanged();
                                 transMeta.setFilename(fn);
+                                props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fn, null, false, null);
                             }
                             catch(KettleException ke)
                             {
@@ -961,6 +964,7 @@ public class Spoon
                             }
                         }
                         setShellText();
+                        addMenuLast();
                         refreshTree();
                         refreshGraph();
                         refreshHistory();
@@ -2526,7 +2530,7 @@ public class Spoon
                     try
                     {
                         transMeta = new TransMeta(fname);
-                        props.addLastFile(Props.TYPE_PROPERTIES_MENU, fname, Const.FILE_SEPARATOR, false, "");
+                        props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fname, Const.FILE_SEPARATOR, false, "");
                         addMenuLast();
                         if (!importfile) transMeta.clearChanged();
                         setFilename(fname);
