@@ -343,7 +343,8 @@ public class SpoonGraph extends Canvas
                         {
                             if (e.button == 1)
                             {
-                                if (lastclick.x == e.x && lastclick.y == e.y)
+                            	Point realclick = screen2real(e.x, e.y);
+                                if (lastclick.x == realclick.x && lastclick.y == realclick.y)
                                 {
                                     // Flip selection when control is pressed!
                                     if (control)
