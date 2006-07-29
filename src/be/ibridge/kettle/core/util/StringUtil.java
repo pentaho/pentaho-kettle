@@ -11,7 +11,6 @@ import be.ibridge.kettle.core.KettleVariables;
  * A collection of utilities to manipulate strings.
  * 
  * @author wdeclerc
- * 
  */
 public class StringUtil
 {
@@ -42,11 +41,11 @@ public class StringUtil
 	public static String substitute(String aString, Map variablesValues, String open, String close)
 	{
 		if (aString==null) return null;
-		
+
 		StringBuffer buffer = new StringBuffer();
 
 		String rest = aString;
-        
+
 		// search for opening string
 		int i = rest.indexOf(open);
 		while (i > -1)
@@ -87,7 +86,7 @@ public class StringUtil
 	public static final String environmentSubstitute(String aString)
 	{
         KettleVariables vars = KettleVariables.getInstance();
-        
+
         Properties systemProperties = new Properties();
         systemProperties.putAll( System.getProperties() );
         systemProperties.putAll( vars.getProperties() ); // overwrite with local vars
@@ -101,7 +100,6 @@ public class StringUtil
      * @param aString the string on which to apply the substitution.
      * @param systemProperties the system properties to use
      * @return the string with the substitution applied.
-
      */
 	private static final String environmentSubstitute(String aString, Properties systemProperties)
     {
@@ -119,11 +117,11 @@ public class StringUtil
 	public static final String[] environmentSubstitute(String string[])
 	{
         KettleVariables vars = KettleVariables.getInstance();
-        
+
         Properties systemProperties = new Properties();
         systemProperties.putAll( System.getProperties() );
         systemProperties.putAll( vars.getProperties() ); // overwrite with local vars
-        
+
         String retval[] = new String[string.length];
 		for (int i = 0; i < string.length; i++)
 		{
@@ -173,8 +171,7 @@ public class StringUtil
 	{
 		return substitute(aString, variables, WINDOWS_OPEN, WINDOWS_CLOSE);
 	}
-    
-    
+
     /**
      * Search the string and report back on the variables used
      * @param aString The string to search
@@ -183,7 +180,7 @@ public class StringUtil
     private static void getUsedVariables(String aString, String open, String close, List list)
     {
         if (aString==null) return;
-        
+
         int p=0;
         while (p<aString.length())
         {
@@ -193,29 +190,32 @@ public class StringUtil
                 // See if it's closed...
                 int from = p+open.length();
                 int to = aString.indexOf(close, from+1);
-                String variable = aString.substring(from, to);
-                
-                if (Const.indexOfString(variable, list)<0) 
+
+                if ( to >= 0 )
                 {
-                	if (System.getProperty(variable)==null) // Filter out set environment variables
-                	{
-                		list.add(variable);
-                	}
-                }
-                
-                // OK, continue
-                p=to;
+                    String variable = aString.substring(from, to);
+
+                    if (Const.indexOfString(variable, list)<0) 
+                    {
+                	    if (System.getProperty(variable)==null) // Filter out set environment variables
+                	    {
+                		    list.add(variable);
+                	    }
+                    }
+                    // OK, continue
+                    p=to + close.length();
+                }                
             }
             p++;
         }
     }
-    
+
     public static void getUsedVariables(String aString, List list)
     {
         getUsedVariables(aString, UNIX_OPEN, UNIX_CLOSE, list);
         getUsedVariables(aString, WINDOWS_OPEN, WINDOWS_CLOSE, list);
     }
-    
+
     /**
      * Return the value of a Kettle or system variable. (in that order or occurence)
      * 
@@ -226,7 +226,7 @@ public class StringUtil
     public static final String getVariable(String variable, String defaultValue)
     {
         KettleVariables vars = KettleVariables.getInstance();
-        
+
         Properties systemProperties = new Properties();
         systemProperties.putAll( System.getProperties() );
         systemProperties.putAll( vars.getProperties() ); // overwrite with local vars
@@ -234,4 +234,3 @@ public class StringUtil
         return systemProperties.getProperty(variable, defaultValue);
     }
 }
-
