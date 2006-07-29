@@ -528,7 +528,7 @@ public class Props implements Cloneable
 		{
 			if ( lf.equalsIgnoreCase(lastfiles[i]) && 
 			     lasttypes[i]==lt &&
-				 ld!=null && ld.equalsIgnoreCase(lastdirs[i])
+				 (ld==null || ld.equalsIgnoreCase(lastdirs[i]))
 			    )
 			{
 				exists=true;
