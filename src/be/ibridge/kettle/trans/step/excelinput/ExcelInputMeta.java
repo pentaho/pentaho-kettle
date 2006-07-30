@@ -106,8 +106,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	 * The fieldname that holds the name of the sheet
 	 */
 	private String       sheetField;
-	
-	
+
 	/**
 	 * The cell-range starts with a header-row
 	 */
@@ -126,8 +125,16 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 	/**
 	 * The fieldname containing the row number.
 	 * An empty (null) value means that no row number is included in the output.
+	 * This is the rownumber of all written rows (not the row in the sheet).
 	 */
 	private  String  rowNumberField;
+
+	/**
+	 * The fieldname containing the sheet row number.
+	 * An empty (null) value means that no sheet row number is included in the output.
+	 * Sheet row number is the row number in the sheet.
+	 */
+	private  String  sheetRowNumberField;
 
 	/**
 	 * The maximum number of rows that this step writes to the next step.
@@ -178,15 +185,11 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 
     /** The step to accept filenames from */
     private StepMeta acceptingStep;
-    
-	
+
 	public ExcelInputMeta()
 	{
 		super(); // allocate BaseStepMeta
 	}
-	
-	
-	
 
     /**
      * @return Returns the fieldLength.
@@ -195,7 +198,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return field;
     }
-    
+
     /**
      * @param fieldLength The fieldLength to set.
      */
@@ -299,7 +302,23 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.rowNumberField = rowNumberField;
     }
+
+    /**
+     * @return Returns the sheetRowNumberField.
+     */
+    public String getSheetRowNumberField()
+    {
+        return sheetRowNumberField;
+    }
     
+    /**
+     * @param sheetRowNumberField The sheetRowNumberField to set.
+     */
+    public void setSheetRowNumberField(String rowNumberField)
+    {
+        this.sheetRowNumberField = rowNumberField;
+    }
+
     /**
      * @return Returns the sheetField.
      */
@@ -395,9 +414,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.stopOnEmpty = stopOnEmpty;
     }
-    
-    
-    
+
 	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
 		throws KettleXMLException
 	{
@@ -413,23 +430,23 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		int nrfields = field.length;
 
 		retval.allocate(nrfiles, nrsheets, nrfields);
-		
+
 		for (int i=0;i<nrfields;i++)
 		{
 			retval.field[i] = (ExcelInputField) field[i].clone();
 		}
-		
+
 		for (int i=0;i<nrfiles;i++)
 		{
 			retval.fileName[i] = fileName[i];
 			retval.fileMask[i] = fileMask[i];
 		}
-		
+
 		for (int i=0;i<nrsheets;i++)
 		{
 			retval.sheetName[i] = sheetName[i];
 		}
-		
+
 		return retval;
 	}
 
@@ -443,8 +460,9 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			ignoreEmptyRows         = YES.equalsIgnoreCase(nempty) || nempty==null;
 			String soempty  = XMLHandler.getTagValue(stepnode, "stoponempty");
 			stopOnEmpty     = YES.equalsIgnoreCase(soempty) || nempty==null;
+			sheetRowNumberField = XMLHandler.getTagValue(stepnode, "sheetrownumfield");
 			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownum_field");
-			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownumfield");
+			rowNumberField    = XMLHandler.getTagValue(stepnode, "rownumfield");			
 			rowLimit           = Const.toLong(XMLHandler.getTagValue(stepnode, "limit"), 0);
 			sheetField      = XMLHandler.getTagValue(stepnode, "sheetfield");
 			fileField       = XMLHandler.getTagValue(stepnode, "filefield");
@@ -537,6 +555,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		startsWithHeader     = true;
 		ignoreEmptyRows    = true;
 		rowNumberField = "";
+		sheetRowNumberField = "";
 		
 		int nrfiles=0;
 		int nrfields=0;
@@ -605,6 +624,13 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			v.setOrigin(name);
 			row.addValue(v);
 		}
+		if (sheetRowNumberField!=null && sheetRowNumberField.length()>0)
+		{
+			Value v = new Value(sheetRowNumberField, Value.VALUE_TYPE_NUMBER);
+			v.setLength(7, 0);
+			v.setOrigin(name);
+			row.addValue(v);
+		}
 		if (rowNumberField!=null && rowNumberField.length()>0)
 		{
 			Value v = new Value(rowNumberField, Value.VALUE_TYPE_NUMBER);
@@ -614,16 +640,17 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		return row;
 	}
-	
+
 	public String getXML()
 	{
         StringBuffer retval = new StringBuffer();
-		
+
 		retval.append("    "+XMLHandler.addTagValue("header",          startsWithHeader));
 		retval.append("    "+XMLHandler.addTagValue("noempty",         ignoreEmptyRows));
 		retval.append("    "+XMLHandler.addTagValue("stoponempty",     stopOnEmpty));
 		retval.append("    "+XMLHandler.addTagValue("filefield",       fileField));
 		retval.append("    "+XMLHandler.addTagValue("sheetfield",      sheetField));
+		retval.append("    "+XMLHandler.addTagValue("sheetrownumfield", sheetRowNumberField));		
 		retval.append("    "+XMLHandler.addTagValue("rownumfield",     rowNumberField));
 		retval.append("    "+XMLHandler.addTagValue("sheetfield",      sheetField));
 		retval.append("    "+XMLHandler.addTagValue("filefield",       fileField));
@@ -707,6 +734,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			stopOnEmpty       =      rep.getStepAttributeBoolean(id_step, "stoponempty");  
 			fileField         =      rep.getStepAttributeString (id_step, "filefield");
 			sheetField        =      rep.getStepAttributeString (id_step, "sheetfield");
+			sheetRowNumberField =    rep.getStepAttributeString (id_step, "sheetrownumfield");
 			rowNumberField    =      rep.getStepAttributeString (id_step, "rownumfield");
 			rowLimit          = (int)rep.getStepAttributeInteger(id_step, "limit");
 	
@@ -781,7 +809,8 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "stoponempty",     stopOnEmpty);
 			rep.saveStepAttribute(id_transformation, id_step, "filefield",       fileField);
 			rep.saveStepAttribute(id_transformation, id_step, "sheetfield",      sheetField);
-			rep.saveStepAttribute(id_transformation, id_step, "rownumfield",     rowNumberField);
+			rep.saveStepAttribute(id_transformation, id_step, "sheetrownumfield", sheetRowNumberField);
+			rep.saveStepAttribute(id_transformation, id_step, "rownumfield",     rowNumberField);			
 			rep.saveStepAttribute(id_transformation, id_step, "limit",           rowLimit);
 			
             rep.saveStepAttribute(id_transformation, id_step, "accept_filenames", acceptingFilenames);
@@ -1093,9 +1122,6 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
         this.acceptingFilenames = acceptingFilenames;
     }
 
-
-
-
     /**
      * @return Returns the acceptingStep.
      */
@@ -1103,9 +1129,6 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return acceptingStep;
     }
-
-
-
 
     /**
      * @param acceptingStep The acceptingStep to set.
@@ -1115,9 +1138,6 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
         this.acceptingStep = acceptingStep;
     }
 
-
-
-
     /**
      * @return Returns the acceptingStepName.
      */
@@ -1126,9 +1146,6 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
         return acceptingStepName;
     }
 
-
-
-
     /**
      * @param acceptingStepName The acceptingStepName to set.
      */
@@ -1136,6 +1153,4 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.acceptingStepName = acceptingStepName;
     }
-
-
 }

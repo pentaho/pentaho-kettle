@@ -261,10 +261,19 @@ public class ExcelInput extends BaseStep implements StepInterface
 			r.addValue(value);
 		}
 
+		// Do we need to include the sheet rownumber?
+		if (meta.getSheetRowNumberField() != null && meta.getSheetRowNumberField().length() > 0)
+		{
+			Value value = new Value(meta.getSheetRowNumberField(), Value.VALUE_TYPE_INTEGER);
+			value.setValue(data.rownr);
+			r.addValue(value);
+		}
+		
 		// Do we need to include the rownumber?
 		if (meta.getRowNumberField() != null && meta.getRowNumberField().length() > 0)
 		{
-			Value value = new Value(meta.getRowNumberField(), linesWritten + 1);
+			Value value = new Value(meta.getRowNumberField(), Value.VALUE_TYPE_INTEGER);
+			value.setValue(linesWritten + 1);
 			r.addValue(value);
 		}
 

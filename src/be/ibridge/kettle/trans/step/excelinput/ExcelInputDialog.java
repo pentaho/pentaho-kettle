@@ -160,6 +160,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	private Label        wlInclRownumField;
 	private Text         wInclRownumField;
 	private FormData     fdlInclRownumField, fdInclRownumField;
+
+	private Label        wlInclSheetRownumField;
+	private Text         wInclSheetRownumField;
+	private FormData     fdlInclSheetRownumField, fdInclSheetRownumField;
 	
 	private Label        wlLimit;
 	private Text         wLimit;
@@ -349,7 +353,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdFilemask=new FormData();
 		fdFilemask.left = new FormAttachment(middle, 0);
 		fdFilemask.top  = new FormAttachment(wFilename, margin);
-		fdFilemask.right= new FormAttachment(100, 0);
+		fdFilemask.right= new FormAttachment(wbaFilename, -margin);
 		wFilemask.setLayoutData(fdFilemask);
 
 		// Filename list line
@@ -378,6 +382,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wbeFilename.setToolTipText(Messages.getString("ExcelInputDialog.FilenameEdit.Tooltip"));
 		fdbeFilename=new FormData();
 		fdbeFilename.right = new FormAttachment(100, 0);
+		fdbeFilename.left  = new FormAttachment (wbdFilename, 0, SWT.LEFT);
 		fdbeFilename.top  = new FormAttachment (wbdFilename, margin);
 		wbeFilename.setLayoutData(fdbeFilename);
 
@@ -389,12 +394,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdbShowFiles.bottom = new FormAttachment(100, -margin);
 		wbShowFiles.setLayoutData(fdbShowFiles);
         
-        
-        
-        
         // Accepting filenames group
         // 
-        
         gAccepting = new Group(wFileComp, SWT.SHADOW_ETCHED_IN);
         gAccepting.setText(Messages.getString("ExcelInputDialog.AcceptingGroup.Label")); //$NON-NLS-1$;
         FormLayout acceptingLayout = new FormLayout();
@@ -402,7 +403,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         acceptingLayout.marginHeight = 3;
         gAccepting.setLayout(acceptingLayout);
         props.setLook(gAccepting);
-        
+
         // Accept filenames from previous steps?
         //
         wlAccFilenames=new Label(gAccepting, SWT.RIGHT);
@@ -481,10 +482,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         fdAccepting.bottom = new FormAttachment(wbShowFiles, -margin*2);
         // fdAccepting.bottom = new FormAttachment(wAccStep, margin);
         gAccepting.setLayoutData(fdAccepting);
-
-        
-        
-        
 
 		ColumnInfo[] colinfo=new ColumnInfo[3];
 		colinfo[ 0]=new ColumnInfo(Messages.getString("ExcelInputDialog.FileDir.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,    false);
@@ -693,13 +690,30 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdInclSheetnameField.top  = new FormAttachment(wInclFilenameField, margin);
 		fdInclSheetnameField.right= new FormAttachment(100, 0);
 		wInclSheetnameField.setLayoutData(fdInclSheetnameField);
+
+		wlInclSheetRownumField=new Label(wContentComp, SWT.RIGHT);
+		wlInclSheetRownumField.setText(Messages.getString("ExcelInputDialog.InclSheetRownumField.Label"));
+ 		props.setLook(wlInclSheetRownumField);
+		fdlInclSheetRownumField=new FormData();
+		fdlInclSheetRownumField.left  = new FormAttachment(0, 0);
+		fdlInclSheetRownumField.top   = new FormAttachment(wInclSheetnameField, margin);
+		fdlInclSheetRownumField.right = new FormAttachment(middle, -margin);
+		wlInclSheetRownumField.setLayoutData(fdlInclSheetRownumField);
+		wInclSheetRownumField=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wInclSheetRownumField);
+		wInclSheetRownumField.addModifyListener(lsMod);
+		fdInclSheetRownumField=new FormData();
+		fdInclSheetRownumField.left = new FormAttachment(middle, 0);
+		fdInclSheetRownumField.top  = new FormAttachment(wInclSheetnameField, margin);
+		fdInclSheetRownumField.right= new FormAttachment(100, 0);
+		wInclSheetRownumField.setLayoutData(fdInclSheetRownumField);
 		
 		wlInclRownumField=new Label(wContentComp, SWT.RIGHT);
 		wlInclRownumField.setText(Messages.getString("ExcelInputDialog.InclRownumField.Label"));
  		props.setLook(wlInclRownumField);
 		fdlInclRownumField=new FormData();
 		fdlInclRownumField.left  = new FormAttachment(0, 0);
-		fdlInclRownumField.top   = new FormAttachment(wInclSheetnameField, margin);
+		fdlInclRownumField.top   = new FormAttachment(wInclSheetRownumField, margin);
 		fdlInclRownumField.right = new FormAttachment(middle, -margin);
 		wlInclRownumField.setLayoutData(fdlInclRownumField);
 		wInclRownumField=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -707,10 +721,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wInclRownumField.addModifyListener(lsMod);
 		fdInclRownumField=new FormData();
 		fdInclRownumField.left = new FormAttachment(middle, 0);
-		fdInclRownumField.top  = new FormAttachment(wInclSheetnameField, margin);
+		fdInclRownumField.top  = new FormAttachment(wInclSheetRownumField, margin);
 		fdInclRownumField.right= new FormAttachment(100, 0);
-		wInclRownumField.setLayoutData(fdInclRownumField);
-
+		wInclRownumField.setLayoutData(fdInclRownumField);	
+		
 		wlLimit=new Label(wContentComp, SWT.RIGHT);
 		wlLimit.setText(Messages.getString("ExcelInputDialog.Limit.Label"));
  		props.setLook(wlLimit);
@@ -792,9 +806,9 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			new ColumnInfo(Messages.getString("ExcelInputDialog.Decimal.Column"),    ColumnInfo.COLUMN_TYPE_TEXT),
 			new ColumnInfo(Messages.getString("ExcelInputDialog.Grouping.Column"),   ColumnInfo.COLUMN_TYPE_TEXT)
 		};
-		
+
 		colinf[ 5].setToolTip(Messages.getString("ExcelInputDialog.Repeat.Tooltip"));
-		
+
 		wFields=new TableView(wFieldsComp, 
 						      SWT.FULL_SELECTION | SWT.MULTI, 
 						      colinf, 
@@ -1100,6 +1114,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		wStoponempty.setSelection(meta.stopOnEmpty());
 		if (meta.getFileField()!=null) wInclFilenameField.setText(meta.getFileField());
 		if (meta.getSheetField()!=null) wInclSheetnameField.setText(meta.getSheetField());
+		if (meta.getSheetRowNumberField()!=null) wInclSheetRownumField.setText(meta.getSheetRowNumberField());
 		if (meta.getRowNumberField()!=null) wInclRownumField.setText(meta.getRowNumberField());
 		wLimit.setText(""+meta.getRowLimit());
 		
@@ -1181,7 +1196,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		getInfo(input);
 		dispose();
 	}
-	
+
 	private void getInfo(ExcelInputMeta meta)
 	{
 		stepname = wStepname.getText(); // return value
@@ -1190,8 +1205,9 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		meta.setRowLimit( Const.toLong(wLimit.getText(), 0) );
 		meta.setFileField( wInclFilenameField.getText() );
 		meta.setSheetField( wInclSheetnameField.getText() );
+		meta.setSheetRowNumberField( wInclSheetRownumField.getText() );
 		meta.setRowNumberField( wInclRownumField.getText() );
-		
+
 		meta.setStartsWithHeader( wHeader.getSelection() );
 		meta.setIgnoreEmptyRows( wNoempty.getSelection() );
 		meta.setStopOnEmpty( wStoponempty.getSelection() );
@@ -1203,7 +1219,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		int nrfiles    = wFilenameList.nrNonEmpty();
 		int nrsheets   = wSheetnameList.nrNonEmpty();
 		int nrfields   = wFields.nrNonEmpty();
-		
+
 		meta.allocate(nrfiles, nrsheets, nrfields);
 
 		for (int i=0;i<nrfiles;i++)
@@ -1226,7 +1242,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		{
 			TableItem item  = wFields.getNonEmpty(i);
 			meta.getField()[i] = new ExcelInputField();
-			
+
 			meta.getField()[i].setName( item.getText(1) );
 			meta.getField()[i].setType( Value.getType(item.getText(2)) );
 			String slength  = item.getText(3);
@@ -1242,12 +1258,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			meta.getField()[i].setDecimalSymbol( item.getText(9) );
 			meta.getField()[i].setGroupSymbol( item.getText(10) );
 		}	
-		
+
 		// Error handling fields...
 		meta.setStrictTypes( wStrictTypes.getSelection() );
         meta.setErrorIgnored( wErrorIgnored.getSelection() );
         meta.setErrorLineSkipped( wSkipErrorLines.getSelection() );
-        
+
         meta.setWarningFilesDestinationDirectory( wWarningDestDir.getText() );
         meta.setBadLineFilesExtension( wWarningExt.getText() );
         meta.setErrorFilesDestinationDirectory( wErrorDestDir.getText() );
@@ -1256,8 +1272,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         meta.setLineNumberFilesExtension( wLineNrExt.getText() );
 		
 	}
-	
-	
+
 	public ModifyListener getModifyListenerTooltipText(final Text textField)
     {
         return new ModifyListener()
@@ -1409,10 +1424,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         // Whenever something changes, set the tooltip to the expanded version of the directory:
         wWarningDestDir.addModifyListener(getModifyListenerTooltipText(wWarningDestDir));
         
-        
-
-
-        
         // Error lines files directory + extention
         previous = wWarningDestDir;
         
@@ -1548,13 +1559,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
         wErrorComp.layout();
         wErrorTab.setControl(wErrorComp);
 
-
         /////////////////////////////////////////////////////////////
         /// END OF CONTENT TAB
         /////////////////////////////////////////////////////////////
-
     }
-
 	
 	/**
 	 * Preview the data generated by this step.
@@ -1566,7 +1574,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		// Create the excel reader step...
 		ExcelInputMeta oneMeta = new ExcelInputMeta();
 		getInfo(oneMeta);
-        
+
         if (oneMeta.isAcceptingFilenames())
         {
             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
@@ -1575,9 +1583,9 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
             mb.open();
             return;
         }
-        
+
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
-        
+
         EnterNumberDialog numberDialog = new EnterNumberDialog(shell, props, 500, Messages.getString("ExcelInputDialog.PreviewSize.DialogTitle"), Messages.getString("ExcelInputDialog.PreviewSize.DialogMessage"));
         int previewSize = numberDialog.open();
         if (previewSize>0)
@@ -1598,13 +1606,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
                 	etd.open();
                 }
             }
-            
+
             PreviewRowsDialog prd =new PreviewRowsDialog(shell, SWT.NONE, wStepname.getText(), progressDialog.getPreviewRows(wStepname.getText()), loggingText);
             prd.open();
         }
 	}
-		
-	
+
 	/**
 	 * Get the names of the sheets from the Excel workbooks and let the user select some or all of them.
 	 *
@@ -1612,7 +1619,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 	public void getSheets()
 	{
 		ArrayList sheetnames = new ArrayList();
-		
+
 		ExcelInputMeta info = new ExcelInputMeta();
 		getInfo(info);
 
@@ -1642,10 +1649,10 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 				mb.open(); 
 			}
 		}
-		
+
 		// Put it in an array:
 		String lst[] = (String[])sheetnames.toArray(new String[sheetnames.size()]);
-		
+
 		// Let the user select the sheet-names...
 		EnterListDialog esd = new EnterListDialog(shell, SWT.NONE, lst);
 		String selection[] = esd.open();
@@ -1659,18 +1666,15 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			wSheetnameList.setRowNums();
 			wSheetnameList.optWidth(true);
 		}
-
-
 	}
 
 	/**
 	 * Get the list of fields in the Excel workbook and put the result in the fields table view.
-	 *
 	 */
 	public void getFields()
 	{
 		Row fields = new Row();
-		
+
 		ExcelInputMeta info = new ExcelInputMeta();
 		getInfo(info);
 
@@ -1680,12 +1684,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			try
 			{
 				Workbook workbook = Workbook.getWorkbook(file);
-				
+
 				int nrSheets = workbook.getNumberOfSheets();
 				for (int j=0;j<nrSheets;j++)
 				{
 					Sheet sheet = workbook.getSheet(j);
-					
+
 					// See if it's a selected sheet:
 					int sheetIndex = Const.indexOfString(sheet.getName(), info.getSheetName()); 
 					if (sheetIndex>=0)
@@ -1698,21 +1702,21 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 						for (int colnr=startcol;colnr<256 && !stop;colnr++)
 						{
 							// System.out.println("Checking out (colnr, rownr) : ("+colnr+", "+rownr+")");
-							
+
 							try
 							{
 								String fieldname = null;
 								int    fieldtype = Value.VALUE_TYPE_NONE;
-		
+
 								Cell cell = sheet.getCell(colnr, rownr);
 								if (!cell.getType().equals( CellType.EMPTY ))
 								{
 									// We found a field.
 									fieldname = cell.getContents();
 								}
-								
+
                                 // System.out.println("Fieldname = "+fieldname);
-                                
+
 								Cell below = sheet.getCell(colnr, rownr+1);
 								if (below.getType().equals(CellType.BOOLEAN))
 								{
@@ -1733,12 +1737,12 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 								{
 									fieldtype = Value.VALUE_TYPE_NUMBER;
 								}
-                                
+
                                 if (fieldname!=null && fieldtype==Value.VALUE_TYPE_NONE)
                                 {
                                     fieldtype = Value.VALUE_TYPE_STRING;
                                 }
-								
+
 								if (fieldname!=null && fieldtype!=Value.VALUE_TYPE_NONE)
 								{
 									Value field = new Value(fieldname, fieldtype);
@@ -1757,7 +1761,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 						}
 					}
 				}
-				
+
 				workbook.close();
 			}
 			catch(Exception e)
@@ -1769,7 +1773,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 				mb.open(); 
 			}
 		}
-		
+
 		if (fields.size()>0)
 		{
 			for (int j=0;j<fields.size();j++)
@@ -1777,7 +1781,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 				Value field = fields.getValue(j);
 				wFields.add(new String[] { field.getName(), field.getTypeDesc(), "-1", "-1", "none", "N" } );
 			}
-	
 			wFields.removeEmptyRows();
 			wFields.setRowNums();
 			wFields.optWidth(true);

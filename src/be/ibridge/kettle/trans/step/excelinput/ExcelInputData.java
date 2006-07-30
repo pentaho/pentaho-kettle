@@ -13,7 +13,6 @@
  **                                                                   **
  **********************************************************************/
  
-
 package be.ibridge.kettle.trans.step.excelinput;
 
 import java.io.File;
@@ -27,11 +26,9 @@ import be.ibridge.kettle.trans.step.errorhandling.FileErrorHandler;
 import be.ibridge.kettle.trans.step.fileinput.FileInputList;
 import be.ibridge.kettle.trans.step.playlist.FilePlayList;
 
-
 /**
  * @author Matt
  * @since 24-jan-2005
- *
  */
 public class ExcelInputData extends BaseStepData implements StepDataInterface
 {
@@ -39,17 +36,17 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface
 	 * Empty row containing the expected fields.
 	 */
 	public Row row;
-    
+
     /**
      * The previous row in case we want to repeat values...
      */
     public Row previousRow;
-	
+
 	/**
 	 * The maximum length of all filenames...
 	 */
 	public int maxfilelength;
-	
+
 	/**
 	 * The maximum length of all sheets...
 	 */
@@ -64,44 +61,43 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface
 	 * The file number that's being handled...
 	 */
 	public int filenr;
-	
+
 	public String filename;
-	
+
 	public File file;
-	
+
 	/**
 	 * The workbook that's being processed...
 	 */
 	public Workbook workbook;
-	
+
 	/**
 	 * The sheet number that's being processed...
 	 */
 	public int sheetnr;
-	
+
 	/**
 	 * The sheet that's being processed...
 	 */
 	public Sheet sheet;
-	
-	
+
 	/**
 	 * The row where we left off the previous time...
 	 */
 	public int rownr;
-	
+
 	/**
 	 * The column where we left off previous time...
 	 */
 	public int colnr;
-	
+
 	/**
 	 * The error handler when processing of a row fails.
 	 */
 	public FileErrorHandler errorHandler;
-	
+
 	public FilePlayList filePlayList;
-	
+
 	/**
 	 * 
 	 */
@@ -114,5 +110,4 @@ public class ExcelInputData extends BaseStepData implements StepDataInterface
 		rownr=-1;
 		colnr=-1;
 	}
-
 }
