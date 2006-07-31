@@ -1518,8 +1518,8 @@ public class DimensionLookupMeta extends BaseStepMeta implements StepMetaInterfa
 									.logDebug(toString(), Messages.getString("DimensionLookupMeta.Log.GetDDLForTable") + tableName + "] : " //$NON-NLS-1$ //$NON-NLS-2$
 															+ fields.toStringMeta());
 
-							sql += db.getDDL(tableName, fields, (sequenceName != null && sequenceName.length() == 0) ? keyField
-																											: null,
+							sql += db.getDDL(tableName, fields, (sequenceName != null && sequenceName.length() != 0) ? null
+																											: keyField,
 												autoIncrement, null, true);
 
 							log.logDebug(toString(), "sql =" + sql); //$NON-NLS-1$

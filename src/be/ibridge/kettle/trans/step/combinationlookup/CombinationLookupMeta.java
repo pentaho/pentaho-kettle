@@ -869,7 +869,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 						cr_table = db.getDDL(tablename,
 								             fields,
 								             (CREATION_METHOD_SEQUENCE.equals(getTechKeyCreation()) &&
-										     sequenceFrom!=null && sequenceFrom.length()==0)?technicalKeyField:null,
+										     sequenceFrom!=null && sequenceFrom.length()!=0)?null:technicalKeyField,
 											 CREATION_METHOD_AUTOINC.equals(getTechKeyCreation()),
 											 null,
 											 true);

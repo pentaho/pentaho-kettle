@@ -3201,14 +3201,15 @@ public class Database
 		
 		// First, check for reserved SQL in the input row r...
 		databaseMeta.quoteReservedWords(fields);
+		String quotedTk = tk != null ? databaseMeta.quoteField(tk) : null;
 		
 		if (checkTableExists(tablename))
 		{
-			retval=getAlterTableStatement(tablename, fields, tk, use_autoinc, pk, semicolon);
+			retval=getAlterTableStatement(tablename, fields, quotedTk, use_autoinc, pk, semicolon);
 		}
 		else
 		{
-			retval=getCreateTableStatement(tablename, fields, tk, use_autoinc, pk, semicolon);
+			retval=getCreateTableStatement(tablename, fields, quotedTk, use_autoinc, pk, semicolon);
 		}
 		
 		return retval;
