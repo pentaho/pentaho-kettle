@@ -16,6 +16,7 @@
  
 
 package be.ibridge.kettle.core;
+import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -184,7 +185,7 @@ public class DBCache
 			if (!file.exists() || file.canWrite())
 			{
 				FileOutputStream fos = new FileOutputStream(file);
-				DataOutputStream dos = new DataOutputStream(fos);
+				DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(fos, 100000));
 				
 				int counter = 0;
 				boolean ok = true;
