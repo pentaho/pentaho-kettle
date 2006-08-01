@@ -25,7 +25,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
@@ -457,14 +456,13 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		wReply.addSelectionListener(lsDef);
 		wPerson.addSelectionListener(lsDef);
 		wPhone.addSelectionListener(lsDef);
-		wComment.addSelectionListener(lsDef);
 		wZipFilename.addSelectionListener(lsDef);
 
 		// Detect [X] or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 
-        BaseStepDialog.setTraverseOrder(new Control[] {wName, wDestination, wServer, wUseAuth, wAuthUser, wAuthPass, wReply, 
-                wSubject, wAddDate, wIncludeFiles, wTypes, wZipFiles, wZipFilename, wPerson, wPhone, wComment, wOK, wCancel });
+        // BaseStepDialog.setTraverseOrder(new Control[] {wName, wDestination, wServer, wUseAuth, wAuthUser, wAuthPass, wReply, 
+        //        wSubject, wAddDate, wIncludeFiles, wTypes, wZipFiles, wZipFilename, wPerson, wPhone, wComment, wOK, wCancel });
                 
 		getData();
 		
@@ -523,7 +521,9 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         wUseAuth.setSelection(jobmail.isUsingAuthentication());
         if (jobmail.getAuthenticationUser()!=null)     wAuthUser.setText( jobmail.getAuthenticationUser() );
         if (jobmail.getAuthenticationPassword()!=null) wAuthPass.setText( jobmail.getAuthenticationPassword() );
-        
+
+        wOnlyComment.setSelection(jobmail.isOnlySendComment());
+
 		setFlags();
 	}
 	
