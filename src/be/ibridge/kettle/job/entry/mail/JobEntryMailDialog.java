@@ -110,6 +110,9 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 	private Text         wComment;
 	private FormData     fdlComment, fdComment;
 
+    private Label        wlOnlyComment;
+    private Button       wOnlyComment;
+    private FormData     fdlOnlyComment, fdOnlyComment;
 
 
 	private Button wOK, wCancel;
@@ -379,6 +382,40 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		fdPhone.right= new FormAttachment(100, 0);
 		wPhone.setLayoutData(fdPhone);
 
+        // Some buttons
+        wOK=new Button(shell, SWT.PUSH);
+        wOK.setText("  &OK  ");
+        wCancel=new Button(shell, SWT.PUSH);
+        wCancel.setText("  &Cancel  ");
+
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
+        
+        // Only send the comment in the mail body
+        wlOnlyComment=new Label(shell, SWT.RIGHT);
+        wlOnlyComment.setText("Only send the comment in the mail body?");
+        props.setLook(wlOnlyComment);
+        fdlOnlyComment=new FormData();
+        fdlOnlyComment.left = new FormAttachment(0, 0);
+        fdlOnlyComment.bottom = new FormAttachment(wOK, -margin*2);
+        fdlOnlyComment.right= new FormAttachment(middle, -margin);
+        wlOnlyComment.setLayoutData(fdlOnlyComment);
+        wOnlyComment=new Button(shell, SWT.CHECK);
+        props.setLook(wOnlyComment);
+        fdOnlyComment=new FormData();
+        fdOnlyComment.left = new FormAttachment(middle, margin);
+        fdOnlyComment.bottom = new FormAttachment(wOK, -margin*2);
+        fdOnlyComment.right= new FormAttachment(100, 0);
+        wOnlyComment.setLayoutData(fdOnlyComment);
+        wOnlyComment.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    jobmail.setOnlySendComment(!jobmail.isOnlySendComment());
+                    jobmail.setChanged();
+                }
+            }
+        );
+        
         // Comment line
         wlComment=new Label(shell, SWT.RIGHT);
         wlComment.setText("Comment: ");
@@ -388,7 +425,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         fdlComment.top  = new FormAttachment(wPhone, margin);
         fdlComment.right= new FormAttachment(middle, margin);
         wlComment.setLayoutData(fdlComment);
-
+        
         wComment=new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
         props.setLook(wComment);
         wComment.addModifyListener(lsMod);
@@ -396,18 +433,14 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
         fdComment.left   = new FormAttachment(middle, margin);
         fdComment.top    = new FormAttachment(wPhone, margin);
         fdComment.right  = new FormAttachment(100, 0);
-        fdComment.bottom = new FormAttachment(100, -50);
+        fdComment.bottom = new FormAttachment(wOnlyComment, -margin);
         wComment.setLayoutData(fdComment);
         SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(shell, wComment);
         wComment.addKeyListener(TextVar.getControlSpaceKeyListener(wComment, lsVar));
         
-		// Some buttons
-		wOK=new Button(shell, SWT.PUSH);
-		wOK.setText("  &OK  ");
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wComment);
+
+
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };

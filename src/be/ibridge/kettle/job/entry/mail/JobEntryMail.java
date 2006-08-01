@@ -95,6 +95,8 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
     private String authenticationUser;
     private String authenticationPassword;
     
+    private boolean onlySendComment;
+    
 	public JobEntryMail(String n)
 	{
 		super(n, "");
@@ -136,6 +138,8 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
         retval.append("      ").append(XMLHandler.addTagValue("auth_user", authenticationUser));
         retval.append("      ").append(XMLHandler.addTagValue("auth_password", authenticationPassword));
 
+        retval.append("      ").append(XMLHandler.addTagValue("only_comment", onlySendComment));
+
         retval.append("      <filetypes>");
         if (fileType!=null)
         for (int i=0;i<fileType.length;i++)
@@ -170,6 +174,8 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
             setUsingAuthentication( "Y".equalsIgnoreCase(XMLHandler.getTagValue(entrynode, "use_auth")) );
             setAuthenticationUser( XMLHandler.getTagValue(entrynode, "auth_user") );
             setAuthenticationPassword( XMLHandler.getTagValue(entrynode, "auth_password") );
+
+            setOnlySendComment( "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "only_comment") ) );
             
 			Node ftsnode = XMLHandler.getSubNode(entrynode, "filetypes");
 			int nrTypes = XMLHandler.countNodes(ftsnode, "filetype");
@@ -212,7 +218,9 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
             usingAuthentication = rep.getJobEntryAttributeBoolean(id_jobentry, "use_auth");
             authenticationUser = rep.getJobEntryAttributeString(id_jobentry, "auth_user");
             authenticationPassword = rep.getJobEntryAttributeString(id_jobentry, "auth_password");
-            
+
+            onlySendComment = rep.getJobEntryAttributeBoolean(id_jobentry, "only_comment");
+
 			int nrTypes = rep.countNrJobEntryAttributes(id_jobentry, "file_type");
 			allocate(nrTypes);
 			
@@ -251,6 +259,8 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
             rep.saveJobEntryAttribute(id_job, getID(), "use_auth", usingAuthentication);
             rep.saveJobEntryAttribute(id_job, getID(), "auth_user", authenticationUser);
             rep.saveJobEntryAttribute(id_job, getID(), "auth_password", authenticationPassword);
+            
+            rep.saveJobEntryAttribute(id_job, getID(), "only_comment", onlySendComment);
 			
 			if (fileType!=null)
 			{
@@ -456,7 +466,24 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
     {
         this.usingAuthentication = usingAuthentication;
     }
-	
+
+    /**
+     * @return the onlySendComment flag
+     */
+    public boolean isOnlySendComment()
+    {
+        return onlySendComment;
+    }
+
+    /**
+     * @param onlySendComment the onlySendComment flag to set
+     */
+    public void setOnlySendComment(boolean onlySendComment)
+    {
+        this.onlySendComment = onlySendComment;
+    }
+    
+    
 	public Result execute(Result result, int nr, Repository rep, Job parentJob)
 	{
 		LogWriter log = LogWriter.getInstance();
@@ -511,19 +538,22 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		        messageText.append(StringUtil.environmentSubstitute(comment)).append(Const.CR).append(Const.CR);
 		    }
 
-	        messageText.append("Job:").append(Const.CR);
-	        messageText.append("-----").append(Const.CR);
-	        messageText.append("Name       : ").append(parentJob.getJobMeta().getName()).append(Const.CR);
-	        messageText.append("Directory  : ").append(parentJob.getJobMeta().getDirectory()).append(Const.CR);
-	        messageText.append("JobEntry   : ").append(getName()).append(Const.CR);
-	        messageText.append(Const.CR);
+            if (!onlySendComment)
+            {
+    	        messageText.append("Job:").append(Const.CR);
+    	        messageText.append("-----").append(Const.CR);
+    	        messageText.append("Name       : ").append(parentJob.getJobMeta().getName()).append(Const.CR);
+    	        messageText.append("Directory  : ").append(parentJob.getJobMeta().getDirectory()).append(Const.CR);
+    	        messageText.append("JobEntry   : ").append(getName()).append(Const.CR);
+    	        messageText.append(Const.CR);
+            }
 
 		    if (includeDate) 
 		    {
 		        Value date = new Value("date", new Date());
 		        messageText.append("Message date: ").append(date.toString()).append(Const.CR).append(Const.CR);
 		    }
-		    if (result!=null)
+		    if (!onlySendComment && result!=null)
 		    {
 		        messageText.append("Previous result:").append(Const.CR);
 		        messageText.append("-----------------").append(Const.CR);
@@ -539,7 +569,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			    messageText.append(Const.CR);
 		    }
 
-		    if (!Const.isEmpty(StringUtil.environmentSubstitute(contactPerson)) || !Const.isEmpty(StringUtil.environmentSubstitute(contactPhone)) )
+		    if (!onlySendComment && ( !Const.isEmpty(StringUtil.environmentSubstitute(contactPerson)) || !Const.isEmpty(StringUtil.environmentSubstitute(contactPhone)) ))
 		    {
 		        messageText.append("Contact information :").append(Const.CR);
 		        messageText.append("---------------------").append(Const.CR);
@@ -549,14 +579,17 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		    }
 		    
 		    // Include the path to this job entry...
-		    JobTracker jobTracker = parentJob.getJobTracker();
-		    if (jobTracker!=null)
-		    {
-		        messageText.append("Path to this job entry:").append(Const.CR);
-		        messageText.append("------------------------").append(Const.CR);
-                
-                addBacktracking(jobTracker, messageText);
-		    }
+            if (!onlySendComment)
+            {
+    		    JobTracker jobTracker = parentJob.getJobTracker();
+    		    if (jobTracker!=null)
+    		    {
+    		        messageText.append("Path to this job entry:").append(Const.CR);
+    		        messageText.append("------------------------").append(Const.CR);
+                    
+                    addBacktracking(jobTracker, messageText);
+    		    }
+            }
 		    		    
 		    Multipart parts = new MimeMultipart();
 			MimeBodyPart part1 = new MimeBodyPart(); // put the text in the
@@ -800,6 +833,8 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
         return new JobEntryMailDialog(shell,this);
     }
+
+
 
 
 
