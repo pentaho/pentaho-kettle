@@ -964,8 +964,8 @@ public class SpoonLog extends Composite
 				String uLine = line.toUpperCase();
 				if (uLine.indexOf(Messages.getString("SpoonLog.System.ERROR")) >= 0 || //$NON-NLS-1$
 						uLine.indexOf(Messages.getString("SpoonLog.System.EXCEPTION")) >= 0 || //$NON-NLS-1$
-						uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. 
-						uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o.
+						uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$ 
+						uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$
 				)
 				{
 					err.add(line);
@@ -979,7 +979,9 @@ public class SpoonLog extends Composite
 		String line = all.substring(startpos);
 		String uLine = line.toUpperCase();
 		if (uLine.indexOf(Messages.getString("SpoonLog.System.ERROR2")) >= 0 || //$NON-NLS-1$
-				uLine.indexOf(Messages.getString("SpoonLog.System.EXCEPTION2")) >= 0 //$NON-NLS-1$
+				uLine.indexOf(Messages.getString("SpoonLog.System.EXCEPTION2")) >= 0 || //$NON-NLS-1$
+				uLine.indexOf("ERROR") >= 0 || // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$ 
+				uLine.indexOf("EXCEPTION") >= 0 // i18n for compatibilty to non translated steps a.s.o. //$NON-NLS-1$
 		)
 		{
 			err.add(line);
