@@ -244,8 +244,8 @@ public class GUIResource
                 gc.dispose();
             }
 
-            imagesSteps.put(steps[i].getID(), image);
-            imagesStepsSmall.put(steps[i].getID(), small_image);
+            imagesSteps.put(steps[i].getID()[0], image);
+            imagesStepsSmall.put(steps[i].getID()[0], small_image);
         }
     }
     

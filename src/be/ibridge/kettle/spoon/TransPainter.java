@@ -4,10 +4,10 @@ import java.util.Hashtable;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.ScrollBar;
 
 import be.ibridge.kettle.core.Const;
@@ -93,11 +93,11 @@ public class TransPainter
         linewidth = props.getLineWidth();
     }
     
-    public Image getTransformationImage()
+    public Image getTransformationImage(Device device)
     {
-        Display disp = GUIResource.getInstance().getDisplay();
-        Image img = new Image(disp, area.x, area.y);
+        Image img = new Image(device, area.x, area.y);
         GC gc = new GC(img);
+        
         // First clear the image in the background color
         gc.setBackground(background);
         gc.fillRectangle(0, 0, area.x, area.y);

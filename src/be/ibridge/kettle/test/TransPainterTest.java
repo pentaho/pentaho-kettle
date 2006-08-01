@@ -45,7 +45,7 @@ public class TransPainterTest
        Point area = transMeta.getMaximum();
  
        TransPainter transPainter = new TransPainter(transMeta, area, null, null, null, null, null);
-       Image image = transPainter.getTransformationImage();
+       Image image = transPainter.getTransformationImage(display);
 
        Shell shell = new Shell(display);
        ShowImageDialog sid = new ShowImageDialog(shell, image);

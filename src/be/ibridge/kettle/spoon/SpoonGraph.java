@@ -37,8 +37,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
@@ -70,7 +69,6 @@ import be.ibridge.kettle.trans.StepPlugin;
 import be.ibridge.kettle.trans.TransHopMeta;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.StepMeta;
-import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
 
 /**
@@ -92,8 +90,6 @@ public class SpoonGraph extends Canvas
     private LogWriter        log;
 
     private int              iconsize;
-
-    private int              linewidth;
 
     private Point            lastclick;
 
@@ -132,8 +128,6 @@ public class SpoonGraph extends Canvas
     private TransHopMeta     last_hop_split;
 
     private Rectangle        selrect;
-
-    private int              shadowsize;
 
 	private Menu mPop;
 
@@ -1765,334 +1759,14 @@ public class SpoonGraph extends Canvas
         spoon.setShellText();
     }
 
-    public Image getTransformationImage(Display disp, int x, int y)
+    public Image getTransformationImage(Device device, int x, int y)
     {
         TransPainter transPainter = new TransPainter(spoon.getTransMeta(), new Point(x, y), hori, vert, candidate, drop_candidate, selrect);
-        Image img = transPainter.getTransformationImage();
+        Image img = transPainter.getTransformationImage(device);
 
         return img;
     }
 
-    public void drawTrans(GC gc)
-    {
-        if (spoon.props.isAntiAliasingEnabled()) gc.setAntialias(SWT.ON);
-
-        shadowsize = spoon.props.getShadowSize();
-
-        Point area = getArea();
-        Point max = spoon.getTransMeta().getMaximum();
-        Point thumb = getThumb(area, max);
-        offset = getOffset(thumb, area);
-
-        hori.setThumb(thumb.x);
-        vert.setThumb(thumb.y);
-
-        gc.setFont(GUIResource.getInstance().getFontNote());
-
-        // First the notes
-        for (int i = 0; i < spoon.getTransMeta().nrNotes(); i++)
-        {
-            NotePadMeta ni = spoon.getTransMeta().getNote(i);
-            drawNote(gc, ni);
-        }
-
-        gc.setFont(GUIResource.getInstance().getFontGraph());
-        gc.setBackground(GUIResource.getInstance().getColorGraph());
-
-        if (shadowsize > 0)
-        {
-            for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
-            {
-                StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-                if (stepMeta.isDrawn()) drawStepShadow(gc, stepMeta);
-            }
-        }
-
-        for (int i = 0; i < spoon.getTransMeta().nrTransHops(); i++)
-        {
-            TransHopMeta hi = spoon.getTransMeta().getTransHop(i);
-            drawHop(gc, hi);
-        }
-
-        if (candidate != null)
-        {
-            drawHop(gc, candidate, true);
-        }
-
-        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
-        {
-            StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isDrawn()) drawStep(gc, stepMeta);
-        }
-
-        if (drop_candidate != null)
-        {
-            gc.setLineStyle(SWT.LINE_SOLID);
-            gc.setForeground(GUIResource.getInstance().getColorBlack());
-            Point screen = real2screen(drop_candidate.x, drop_candidate.y);
-            gc.drawRectangle(screen.x, screen.y, iconsize, iconsize);
-        }
-
-        drawRect(gc, selrect);
-    }
-
-    private void drawHop(GC gc, TransHopMeta hi)
-    {
-        drawHop(gc, hi, false);
-    }
-
-    private void drawNote(GC gc, NotePadMeta ni)
-    {
-        int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_TRANSPARENT;
-
-        if (ni.isSelected())
-            gc.setLineWidth(2);
-        else
-            gc.setLineWidth(1);
-
-        org.eclipse.swt.graphics.Point ext = gc.textExtent(ni.getNote(), flags);
-        Point p = new Point(ext.x, ext.y);
-        Point loc = ni.getLocation();
-        Point note = real2screen(loc.x, loc.y);
-        int margin = Const.NOTE_MARGIN;
-        p.x += 2 * margin;
-        p.y += 2 * margin;
-        int width = ni.width;
-        int height = ni.height;
-        if (p.x > width) width = p.x;
-        if (p.y > height) height = p.y;
-
-        int noteshape[] = new int[] { note.x, note.y, // Top left
-                note.x + width + 2 * margin, note.y, // Top right
-                note.x + width + 2 * margin, note.y + height, // bottom right 1
-                note.x + width, note.y + height + 2 * margin, // bottom right 2
-                note.x + width, note.y + height, // bottom right 3
-                note.x + width + 2 * margin, note.y + height, // bottom right 1
-                note.x + width, note.y + height + 2 * margin, // bottom right 2
-                note.x, note.y + height + 2 * margin // bottom left
-        };
-        int s = spoon.props.getShadowSize();
-        int shadow[] = new int[] { note.x + s, note.y + s, // Top left
-                note.x + width + 2 * margin + s, note.y + s, // Top right
-                note.x + width + 2 * margin + s, note.y + height + s, // bottom
-                // right 1
-                note.x + width + s, note.y + height + 2 * margin + s, // bottom
-                // right 2
-                note.x + s, note.y + height + 2 * margin + s // bottom left
-        };
-
-        gc.setForeground(GUIResource.getInstance().getColorLightGray());
-        gc.setBackground(GUIResource.getInstance().getColorLightGray());
-        gc.fillPolygon(shadow);
-
-        gc.setForeground(GUIResource.getInstance().getColorGray());
-        gc.setBackground(GUIResource.getInstance().getColorYellow());
-
-        gc.fillPolygon(noteshape);
-        gc.drawPolygon(noteshape);
-        // gc.fillRectangle(ni.xloc, ni.yloc, width+2*margin, heigth+2*margin);
-        // gc.drawRectangle(ni.xloc, ni.yloc, width+2*margin, heigth+2*margin);
-        gc.setForeground(GUIResource.getInstance().getColorBlack());
-        gc.drawText(ni.getNote(), note.x + margin, note.y + margin, flags);
-
-        ni.width = width; // Save for the "mouse" later on...
-        ni.height = height;
-
-        if (ni.isSelected())
-            gc.setLineWidth(1);
-        else
-            gc.setLineWidth(2);
-    }
-
-    private void drawHop(GC gc, TransHopMeta hi, boolean is_candidate)
-    {
-        StepMeta fs = hi.getFromStep();
-        StepMeta ts = hi.getToStep();
-
-        if (fs != null && ts != null)
-        {
-            if (shadowsize > 0) drawLineShadow(gc, fs, ts, hi, false);
-            drawLine(gc, fs, ts, hi, is_candidate);
-        }
-    }
-
-    private void drawStepShadow(GC gc, StepMeta stepMeta)
-    {
-        if (stepMeta == null) return;
-
-        Point pt = stepMeta.getLocation();
-
-        int x, y;
-        if (pt != null)
-        {
-            x = pt.x;
-            y = pt.y;
-        }
-        else
-        {
-            x = 50;
-            y = 50;
-        }
-
-        Point screen = real2screen(x, y);
-
-        // First draw the shadow...
-        gc.setBackground(GUIResource.getInstance().getColorLightGray());
-        gc.setForeground(GUIResource.getInstance().getColorLightGray());
-        int s = shadowsize;
-        gc.fillRectangle(screen.x + s, screen.y + s, iconsize, iconsize);
-    }
-
-    private void drawStep(GC gc, StepMeta stepMeta)
-    {
-        if (stepMeta == null) return;
-
-        Point pt = stepMeta.getLocation();
-
-        int x, y;
-        if (pt != null)
-        {
-            x = pt.x;
-            y = pt.y;
-        }
-        else
-        {
-            x = 50;
-            y = 50;
-        }
-
-        Point screen = real2screen(x, y);
-
-        String name = stepMeta.getName();
-
-        if (stepMeta.isSelected())
-            gc.setLineWidth(linewidth + 2);
-        else
-            gc.setLineWidth(linewidth);
-        gc.setBackground(GUIResource.getInstance().getColorRed());
-        gc.setForeground(GUIResource.getInstance().getColorBlack());
-        gc.fillRectangle(screen.x, screen.y, iconsize, iconsize);
-        String steptype = stepMeta.getStepID();
-        Image im = (Image) GUIResource.getInstance().getImagesSteps().get(steptype);
-        if (im != null) // Draw the icon!
-        {
-            org.eclipse.swt.graphics.Rectangle bounds = im.getBounds();
-            gc.drawImage(im, 0, 0, bounds.width, bounds.height, screen.x, screen.y, iconsize, iconsize);
-        }
-        gc.setBackground(GUIResource.getInstance().getColorBackground());
-        gc.drawRectangle(screen.x - 1, screen.y - 1, iconsize + 1, iconsize + 1);
-        // gc.setXORMode(true);
-        org.eclipse.swt.graphics.Point textsize = gc.textExtent(name);
-
-        int xpos = screen.x + (iconsize / 2) - (textsize.x / 2);
-        int ypos = screen.y + iconsize + 5;
-
-        if (shadowsize > 0)
-        {
-            gc.setForeground(GUIResource.getInstance().getColorLightGray());
-            gc.drawText(name, xpos + shadowsize, ypos + shadowsize, SWT.DRAW_TRANSPARENT);
-        }
-
-        gc.setForeground(GUIResource.getInstance().getColorBlack());
-        gc.drawText(name, xpos, ypos, SWT.DRAW_TRANSPARENT);
-
-        if (stepMeta.getCopies() > 1)
-        {
-            gc.setBackground(GUIResource.getInstance().getColorBackground());
-            gc.setForeground(GUIResource.getInstance().getColorBlack());
-            gc.drawText("x" + stepMeta.getCopies(), screen.x - 5, screen.y - 5); //$NON-NLS-1$
-        }
-    }
-
-    private void drawLineShadow(GC gc, StepMeta fs, StepMeta ts, TransHopMeta hi, boolean is_candidate)
-    {
-        int line[] = getLine(fs, ts);
-        int s = shadowsize;
-        for (int i = 0; i < line.length; i++)
-            line[i] += s;
-
-        gc.setLineWidth(linewidth);
-
-        gc.setForeground(GUIResource.getInstance().getColorLightGray());
-
-        drawArrow(gc, line);
-    }
-
-    private void drawLine(GC gc, StepMeta fs, StepMeta ts, TransHopMeta hi, boolean is_candidate)
-    {
-        StepMetaInterface fsii = fs.getStepMetaInterface();
-        StepMetaInterface tsii = ts.getStepMetaInterface();
-
-        int line[] = getLine(fs, ts);
-
-        gc.setLineWidth(linewidth);
-        Color col;
-
-        if (is_candidate)
-        {
-            col = GUIResource.getInstance().getColorBlue();
-        }
-        else
-        {
-            if (hi.isEnabled())
-            {
-                String[] targetSteps = fsii.getTargetSteps();
-                String[] infoSteps = tsii.getInfoSteps();
-
-                // System.out.println("Normal step: "+fs+" --> "+ts+",
-                // "+(infoSteps!=null)+", "+(targetSteps!=null));
-
-                if (targetSteps == null) // Normal link: distribute or copy data...
-                {
-                    // Or perhaps it's an informational link: draw different
-                    // color...
-                    if (Const.indexOfString(fs.getName(), infoSteps) >= 0)
-                    {
-                        if (fs.distributes)
-                            col = GUIResource.getInstance().getColorYellow();
-                        else
-                            col = GUIResource.getInstance().getColorMagenta();
-                    }
-                    else
-                    {
-                        if (fs.distributes)
-                            col = GUIResource.getInstance().getColorGreen();
-                        else
-                            col = GUIResource.getInstance().getColorRed();
-                    }
-                }
-                else
-                {
-                    // Visual check to see if the target step is specified...
-                    if (Const.indexOfString(ts.getName(), fsii.getTargetSteps()) >= 0)
-                    {
-                        col = GUIResource.getInstance().getColorBlack();
-                    }
-                    else
-                    {
-                        gc.setLineStyle(SWT.LINE_DOT);
-                        col = GUIResource.getInstance().getColorOrange();
-                    }
-                }
-            }
-            else
-            {
-                col = GUIResource.getInstance().getColorGray();
-            }
-        }
-
-        gc.setForeground(col);
-
-        if (hi.split) gc.setLineWidth(linewidth + 2);
-
-        drawArrow(gc, line);
-
-        if (hi.split) gc.setLineWidth(linewidth);
-
-        gc.setForeground(GUIResource.getInstance().getColorBlack());
-        gc.setBackground(GUIResource.getInstance().getColorBackground());
-        gc.setLineStyle(SWT.LINE_SOLID);
-    }
 
     private Point getArea()
     {
@@ -2184,68 +1858,6 @@ public class SpoonGraph extends Canvas
         StepMeta fr = spoon.getTransMeta().getSelectedStep(0);
         StepMeta to = spoon.getTransMeta().getSelectedStep(1);
         spoon.newHop(fr, to);
-    }
-
-    private void drawArrow(GC gc, int line[])
-    {
-        double theta = Math.toRadians(10); // arrowhead sharpness
-        int size = 30 + (linewidth - 1) * 5; // arrowhead length
-
-        Point screen_from = real2screen(line[0], line[1]);
-        Point screen_to = real2screen(line[2], line[3]);
-
-        int mx, my;
-        int x1 = screen_from.x;
-        int y1 = screen_from.y;
-        int x2 = screen_to.x;
-        int y2 = screen_to.y;
-        int x3;
-        int y3;
-        int x4;
-        int y4;
-        int a, b, dist;
-        double factor, angle;
-
-        gc.drawLine(x1, y1, x2, y2);
-
-        // in between 2 points
-        mx = x1 + (x2 - x1) / 2;
-        my = y1 + (y2 - y1) / 2;
-
-        a = Math.abs(x2 - x1);
-        b = Math.abs(y2 - y1);
-        dist = (int) Math.sqrt(a * a + b * b);
-
-        // determine factor (position of arrow to left side or right side
-        // 0-->100%)
-        if (dist >= 2 * iconsize)
-            factor = 1.5;
-        else
-            factor = 1.2;
-
-        // in between 2 points
-        mx = (int) (x1 + factor * (x2 - x1) / 2);
-        my = (int) (y1 + factor * (y2 - y1) / 2);
-
-        // calculate points for arrowhead
-        angle = Math.atan2(y2 - y1, x2 - x1) + Math.PI;
-
-        x3 = (int) (mx + Math.cos(angle - theta) * size);
-        y3 = (int) (my + Math.sin(angle - theta) * size);
-
-        x4 = (int) (mx + Math.cos(angle + theta) * size);
-        y4 = (int) (my + Math.sin(angle + theta) * size);
-
-        // draw arrowhead
-        // gc.drawLine( mx, my, x3, y3 );
-        // gc.drawLine( mx, my, x4, y4 );
-        // gc.drawLine( x3, y3, x4, y4 );
-
-        Color fore = gc.getForeground();
-        Color back = gc.getBackground();
-        gc.setBackground(fore);
-        gc.fillPolygon(new int[] { mx, my, x3, y3, x4, y4 });
-        gc.setBackground(back);
     }
 
     private boolean pointOnLine(int x, int y, int line[])
@@ -2659,16 +2271,6 @@ public class SpoonGraph extends Canvas
         redraw();
     }
 
-    private void drawRect(GC gc, Rectangle rect)
-    {
-        if (rect == null) return;
-        gc.setLineStyle(SWT.LINE_DASHDOT);
-        gc.setLineWidth(linewidth);
-        gc.setForeground(GUIResource.getInstance().getColorGray());
-        gc.drawRectangle(rect.x + offset.x, rect.y + offset.y, rect.width, rect.height);
-        gc.setLineStyle(SWT.LINE_SOLID);
-    }
-
     // Preview the selected steps...
     public void preview()
     {
@@ -2706,7 +2308,6 @@ public class SpoonGraph extends Canvas
         GUIResource.getInstance().reload();
 
         iconsize = spoon.props.getIconSize();
-        linewidth = spoon.props.getLineWidth();
     }
 
     public String toString()

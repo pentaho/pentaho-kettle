@@ -88,7 +88,7 @@ public class StepLoader
         for (int i = 0; i < BaseStep.steps.length; i++)
         {
             StepPluginMeta pluginMeta = BaseStep.steps[i];
-            String id = pluginMeta.getId();
+            String id[] = pluginMeta.getId();
             String long_desc = pluginMeta.getLongDesc();
             String tooltip = pluginMeta.getTooltipDesc();
             String iconfile = Const.IMAGE_DIRECTORY + pluginMeta.getImageFileName();;
@@ -98,7 +98,7 @@ public class StepLoader
             String category = pluginMeta.getCategory();
 
             StepPlugin sp = new StepPlugin(StepPlugin.TYPE_NATIVE, id, long_desc, tooltip, directory, jarfiles, iconfile, classname, category, null);
-            if (id.equalsIgnoreCase("ScriptValues")) sp.setSeparateClassloaderNeeded(true);  //$NON-NLS-1$
+            if (sp.handles("ScriptValues")) sp.setSeparateClassloaderNeeded(true);  //$NON-NLS-1$
 
             pluginList.add(sp);
         }
@@ -173,7 +173,7 @@ public class StepLoader
 		                            
 		                            String iconFilename = pi.toString() + Const.FILE_SEPARATOR + iconfile;
                                     
-		                            StepPlugin sp = new StepPlugin(StepPlugin.TYPE_PLUGIN, id, description, tooltip, dirs[i], jarfiles, iconFilename, classname, category, pi.getPath()+Const.FILE_SEPARATOR+errorHelpfile);
+		                            StepPlugin sp = new StepPlugin(StepPlugin.TYPE_PLUGIN, new String[] { id }, description, tooltip, dirs[i], jarfiles, iconFilename, classname, category, pi.getPath()+Const.FILE_SEPARATOR+errorHelpfile);
 		                            
 		                            /*
 		                             * If the step plugin is not yet in the list with the specified ID, just add it.
@@ -367,7 +367,7 @@ public class StepLoader
         for (int i = 0; i < pluginList.size(); i++)
         {
             StepPlugin sp = (StepPlugin) pluginList.get(i);
-            if (sp.getID().equalsIgnoreCase(stepid)) return sp;
+            if (sp.handles(stepid)) return sp;
         }
         return null;
     }
@@ -481,7 +481,7 @@ public class StepLoader
         for (int i = 0; i < nrStepsWithType(StepPlugin.TYPE_ALL); i++)
         {
             StepPlugin sp = getStepWithType(StepPlugin.TYPE_ALL, i);
-            if (sp.getClassname() == sii.getClass().getName()) return sp.getID();
+            if (sp.getClassname() == sii.getClass().getName()) return sp.getID()[0]; // return the first = default
         }
         return null;
     }

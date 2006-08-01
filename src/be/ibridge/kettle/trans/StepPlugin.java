@@ -33,7 +33,7 @@ public class StepPlugin
 
     private int             type;
 
-    private String          id;
+    private String          id[];
 
     private String          description;
 
@@ -53,7 +53,7 @@ public class StepPlugin
     
     private boolean         separateClassloaderNeeded;
 
-    public StepPlugin(int type, String id, String description, String tooltip, String directory, String jarfiles[], String icon_filename,
+    public StepPlugin(int type, String id[], String description, String tooltip, String directory, String jarfiles[], String icon_filename,
             String classname, String category, String errorHelpFile)
     {
         this.type = type;
@@ -87,7 +87,7 @@ public class StepPlugin
     /**
      * @return The ID (code String) of the step or plugin. (TextFileInput, DatabaseLookup, ...)
      */
-    public String getID()
+    public String[] getID()
     {
         return id;
     }
@@ -140,7 +140,28 @@ public class StepPlugin
 
     public boolean equals(Object obj)
     {
-        return getID().equals(((StepPlugin) obj).getID());
+        return handles( ((StepPlugin)obj).getID() );
+    }
+    
+    public boolean handles(String pluginID)
+    {
+        for (int i=0;i<id.length;i++)
+        {
+            if (id[i].equals(pluginID)) return true;
+        }
+        return false;
+    }
+    
+    public boolean handles(String pluginID[])
+    {
+        for (int i=0;i<id.length;i++)
+        {
+            for (int j=0;j<pluginID.length;j++)
+            {
+                if (id[i].equals(pluginID[j])) return true;
+            }
+        }
+        return false;
     }
     
     public void setErrorHelpFile(String errorHelpText)

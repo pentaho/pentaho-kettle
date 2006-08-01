@@ -240,7 +240,7 @@ public class BaseStep extends Thread
         new StepPluginMeta(DenormaliserMeta.class, "Denormaliser", 
                             Messages.getString("BaseStep.TypeLongDesc.RowDenormaliser"), Messages.getString("BaseStep.TypeTooltipDesc.RowsDenormalises",Const.CR), 
                             "UNP.png", CATEGORY_TRANSFORM),
-        new StepPluginMeta(FlattenerMeta.class, "Flatterner", 
+        new StepPluginMeta(FlattenerMeta.class, new String[] { "Flattener", "Flatterner" },
                             Messages.getString("BaseStep.TypeLongDesc.RowFalttener"), Messages.getString("BaseStep.TypeTooltipDesc.Rowflattener"), 
                             "FLA.png", CATEGORY_TRANSFORM),
         new StepPluginMeta(ValueMapperMeta.class, "ValueMapper", 

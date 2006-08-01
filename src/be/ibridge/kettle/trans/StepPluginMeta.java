@@ -3,7 +3,7 @@ package be.ibridge.kettle.trans;
 public class StepPluginMeta {
 
     protected Class className;
-    protected String id;
+    protected String id[];
     protected String longDesc;
     protected String tooltipDesc;
     protected String imageFileName;
@@ -12,13 +12,22 @@ public class StepPluginMeta {
     
     public StepPluginMeta(Class className, String id, String longDesc, String tooltipDesc, String imageFileName, String category) {
         this.className = className;
-        this.id = id;
+        this.id = new String[] { id };
         this.longDesc = longDesc;
         this.tooltipDesc = tooltipDesc;
         this.imageFileName = imageFileName;
         this.category = category;
     }
-    
+
+    public StepPluginMeta(Class className, String id[], String longDesc, String tooltipDesc, String imageFileName, String category) {
+        this.className = className;
+        this.id = id ;
+        this.longDesc = longDesc;
+        this.tooltipDesc = tooltipDesc;
+        this.imageFileName = imageFileName;
+        this.category = category;
+    }
+
     public String getCategory() {
         return category;
     }
@@ -32,11 +41,11 @@ public class StepPluginMeta {
         this.className = className;
     }
     
-    public String getId() {
+    public String[] getId() {
         return id;
     }
 
-    public void setId(String id) {
+    public void setId(String id[]) {
         this.id = id;
     }
 

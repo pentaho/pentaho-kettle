@@ -4634,7 +4634,7 @@ public class Repository
 		for (int i = 0; i < steploader.nrStepsWithType(StepPlugin.TYPE_ALL); i++)
 		{
 			StepPlugin sp = steploader.getStepWithType(StepPlugin.TYPE_ALL, i);
-			long id = getStepTypeID(sp.getID());
+			long id = getStepTypeID(sp.getID()[0]);
 			if (id < 0) // Not found, we need to add this one...
 			{
 				// We need to add this one ...
@@ -4642,7 +4642,7 @@ public class Repository
 
 				Row table = new Row();
 				table.addValue(new Value("ID_STEP_TYPE", id));
-				table.addValue(new Value("CODE", sp.getID()));
+				table.addValue(new Value("CODE", sp.getID()[0]));
 				table.addValue(new Value("DESCRIPTION", sp.getDescription()));
 				table.addValue(new Value("HELPTEXT", sp.getTooltip()));
 

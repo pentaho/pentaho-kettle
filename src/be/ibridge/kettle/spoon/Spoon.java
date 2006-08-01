@@ -48,10 +48,8 @@ import org.eclipse.swt.events.ShellAdapter;
 import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -3052,7 +3050,7 @@ public class Spoon
             {
                 StepMeta inf = transMeta.getStep(i);
                 String step_name = inf.getName();
-                String step_desc = inf.getStepID();
+                String step_id = inf.getStepID();
                 String ti_name = "";
                 if (j<ti.length) ti_name = ti[j].getText();
                 if (!step_name.equalsIgnoreCase(ti_name))
@@ -3061,7 +3059,7 @@ public class Spoon
                     TreeItem newitem = new TreeItem(tiStep, j);
                     newitem.setText(inf.getName());
                     // Set the small image...
-                    Image img = (Image)GUIResource.getInstance().getImagesStepsSmall().get(step_desc);
+                    Image img = (Image)GUIResource.getInstance().getImagesStepsSmall().get(step_id);
                     newitem.setImage(img);
                     j++;
                     ti = tiStep.getItems();
@@ -3218,7 +3216,7 @@ public class Spoon
                     StepDialogInterface dialog = info.getDialog(shell, info, transMeta, name);
                     name = dialog.open();
                 }
-                inf=new StepMeta(log, stepPlugin.getID(), name, info);
+                inf=new StepMeta(log, stepPlugin.getID()[0], name, info);
     
                 if (name!=null) // OK pressed in the dialog: we have a step-name
                 {
@@ -3250,7 +3248,7 @@ public class Spoon
                     }
                     
                     // Also store it in the pluginHistory list...
-                    props.addPluginHistory(stepPlugin.getID());
+                    props.addPluginHistory(stepPlugin.getID()[0]);
         
                     refreshTree();
                 }
@@ -3327,7 +3325,7 @@ public class Spoon
                 StepPlugin sp = steploader.findStepPluginWithDescription(description);
                 if (sp!=null)
                 {
-                    Image stepimg = (Image)GUIResource.getInstance().getImagesStepsSmall().get(sp.getID());
+                    Image stepimg = (Image)GUIResource.getInstance().getImagesStepsSmall().get(sp.getID()[0]);
                     if (stepimg!=null)
                     {
                         stepitem.setImage(stepimg);
@@ -3415,31 +3413,10 @@ public class Spoon
         // Create an image of the screen
         Point max = transMeta.getMaximum();
         
-        PaletteData pal = ps.getPaletteData();      
-        
-        ImageData imd = new ImageData(max.x, max.y, printer.getDepth(), pal);
-        Image img = new Image(printer, imd);
-        
-        GC img_gc = new GC(img);
-        
-        // Clear the background first, fill with background color...
-        if (props.getBackgroundRGB()!=null)
-        {
-            Color bg = new Color(printer, props.getBackgroundRGB());
-            img_gc.setForeground(bg);
-            bg.dispose();
-        }
-        img_gc.fillRectangle(0,0,max.x, max.y);
-        
-        // Draw the transformation...
-        spoongraph.drawTrans(img_gc);
-        
-        //ShowImageDialog sid = new ShowImageDialog(shell, props, img);
-        //sid.open();
-        
+        Image img = spoongraph.getTransformationImage(printer, max.x, max.y);
+
         ps.printImage(shell, props, img);
         
-        img_gc.dispose();
         img.dispose();
         ps.dispose();
     }
