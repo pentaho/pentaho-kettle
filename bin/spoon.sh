@@ -127,7 +127,7 @@ fi
 # ** Change 256m to higher values in case you run out of memory.  **
 # ******************************************************************
 
-OPT="-Xmx256m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_REPOSITORY=\"$KETTLE_REPOSITORY\" -DKETTLE_USER=\"$KETTLE_USER\" -DKETTLE_PASSWORD=\"$KETTLE_PASSWORD\""
+OPT="-Xmx256m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=\"$KETTLE_HOME\" -DKETTLE_REPOSITORY=\"$KETTLE_REPOSITORY\" -DKETTLE_USER=\"$KETTLE_USER\" -DKETTLE_PASSWORD=\"$KETTLE_PASSWORD\""
 
 # ***************
 # ** Run...    **

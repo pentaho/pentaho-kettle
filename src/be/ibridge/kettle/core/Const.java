@@ -350,7 +350,7 @@ public class Const
 	/**
 	 * Path to the users home directory
 	 */
-	public static final String USER_HOME_DIRECTORY = System.getProperty("user.home");
+	public static final String USER_HOME_DIRECTORY = Const.isEmpty(System.getProperty("KETTLE_HOME"))?System.getProperty("user.home"):System.getProperty("KETTLE_HOME");
 
 	/**
 	 * The base name of the Chef logfile
@@ -1051,7 +1051,7 @@ public class Const
 	 */
 	public static final String getKettleDirectory()
 	{
-		return System.getProperty("user.home") + FILE_SEPARATOR + ".kettle";
+		return USER_HOME_DIRECTORY + FILE_SEPARATOR + ".kettle";
 	}
 
 	/**
