@@ -1044,7 +1044,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 								pr=0;
 							}
 							
-							String mask=" ";
+							String mask="";
 							for (int m=0;m<le-pr;m++)
 							{
 								mask+="0";
