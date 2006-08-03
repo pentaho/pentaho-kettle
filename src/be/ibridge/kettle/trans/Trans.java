@@ -211,7 +211,7 @@ public class Trans
 		/*
 		 * Set the arguments on the transformation...
 		 */
-		transMeta.setArguments(arguments);
+		if (arguments!=null) transMeta.setArguments(arguments);
 
 		/* OK, see if we need to capture the logging into a String and
 		 * then put it in a database field later on.
