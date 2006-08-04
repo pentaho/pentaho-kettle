@@ -45,7 +45,7 @@ public class NotePadMeta implements Cloneable, XMLInterface
 	public NotePadMeta()
 	{
 		note = null;
-		location = null;
+		location = new Point(-1, -1);
 		width = -1;
 		height = -1;
 		selected = false;
@@ -254,4 +254,36 @@ public class NotePadMeta implements Cloneable, XMLInterface
 		
 		return retval.toString();
 	}
+
+    /**
+     * @return the height
+     */
+    public int getHeight()
+    {
+        return height;
+    }
+
+    /**
+     * @param height the height to set
+     */
+    public void setHeight(int height)
+    {
+        this.height = height;
+    }
+
+    /**
+     * @return the width
+     */
+    public int getWidth()
+    {
+        return width;
+    }
+
+    /**
+     * @param width the width to set
+     */
+    public void setWidth(int width)
+    {
+        this.width = width;
+    }
 }
