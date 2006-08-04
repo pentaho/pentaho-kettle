@@ -1373,7 +1373,7 @@ public class Spoon
                         createDatabaseWizard();
                     }
                 } );
-                MenuItem miCache  = new MenuItem(mCSH, SWT.PUSH); miCache.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCache"));//Clear complete DB Cache
+                MenuItem miCache  = new MenuItem(mCSH, SWT.PUSH); miCache.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCacheComplete"));//Clear complete DB Cache
                 miCache.addListener( SWT.Selection, lsCache );
             }
         }
