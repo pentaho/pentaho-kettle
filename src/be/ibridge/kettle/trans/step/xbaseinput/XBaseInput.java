@@ -95,7 +95,7 @@ public class XBaseInput extends BaseStep implements StepInterface
             }
 
             // Open the first file & read the required rows in the buffer, stop
-            // if it fails, exception whil stop processLoop
+            // if it fails, exception will stop processLoop
             //
             openNextFile();
         }
@@ -182,7 +182,7 @@ public class XBaseInput extends BaseStep implements StepInterface
             data.fields = data.xbi.getFields();
             
             // Add this to the result file names...
-            ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(meta.getDbfFileName()), getTransMeta().getName(), getStepname());
+            ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(data.file_dbf.getPath()), getTransMeta().getName(), getStepname());
             resultFile.setComment(Messages.getString("XBaseInput.ResultFile.Comment"));
             addResultFile(resultFile);
         }
