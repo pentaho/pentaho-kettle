@@ -264,10 +264,10 @@ public class Props implements Cloneable
 				filename=directory+Const.FILE_SEPARATOR+".chefrc";
 				break;
 			case TYPE_PROPERTIES_MENU:
-				filename=directory+Const.FILE_SEPARATOR+".menu";
+				filename=directory+Const.FILE_SEPARATOR+".menurc";
 				break;
 			case TYPE_PROPERTIES_PLATE:
-				filename=directory+Const.FILE_SEPARATOR+".plate";
+				filename=directory+Const.FILE_SEPARATOR+".platerc";
 				break;
 			default: break;
 		}
