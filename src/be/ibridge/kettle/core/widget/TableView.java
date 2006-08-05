@@ -1718,6 +1718,17 @@ public class TableView extends Composite
         
         if (text!=null && !text.isDisposed()) text.dispose();
 		
+        if (columns[colnr-1].getSelectionAdapter()!=null)
+        {
+            Event e = new Event();
+            e.widget=this;
+            e.x = colnr;
+            e.y = rownr;
+            columns[colnr-1].getSelectionAdapter().widgetSelected(new SelectionEvent(e));
+            return;
+        }
+        
+        
 		text   = new Text(table, SWT.NONE);
         props.setLook(text, Props.WIDGET_STYLE_TABLE);
 		text.addTraverseListener(lsTraverse);
