@@ -111,7 +111,13 @@ import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
 import be.ibridge.kettle.trans.step.selectvalues.SelectValuesMeta;
 import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
 
-
+/**
+ * Schema designer, didn't see any action in a long time...
+ * 
+ * @author Matt
+ *
+ * @deprecated
+ */
 public class PMenu
 {
 	protected StepLoader steploader;

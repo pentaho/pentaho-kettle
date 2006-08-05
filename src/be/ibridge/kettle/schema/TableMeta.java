@@ -30,6 +30,10 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
  * 
  */
  
+/**
+ * Old stuff
+ * @deprecated
+ */
 public class TableMeta implements Cloneable, XMLInterface
 {
 	private String       name;

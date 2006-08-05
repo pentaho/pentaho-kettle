@@ -20,6 +20,10 @@ package be.ibridge.kettle.schema;
  *
  */
 
+/**
+ * Old stuff
+ * @deprecated
+ */
 public class SelectionField
 {
 	private String name; 

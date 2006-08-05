@@ -51,6 +51,10 @@ import be.ibridge.kettle.schema.TableField;
 import be.ibridge.kettle.schema.TableMeta;
 
 
+/**
+ * Old stuff
+ * @deprecated
+ */
 public class RelationshipDialog extends Dialog
 {
 	private Label        wlFrom;

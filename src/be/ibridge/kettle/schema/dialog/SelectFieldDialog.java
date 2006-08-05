@@ -66,6 +66,10 @@ import be.ibridge.kettle.schema.TableMeta;
 import be.ibridge.kettle.schema.WhereCondition;
 
 
+/**
+ * Old stuff
+ * @deprecated
+ */
 public class SelectFieldDialog extends Dialog 
 {
 	private LogWriter log;

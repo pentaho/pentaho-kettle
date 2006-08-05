@@ -43,6 +43,10 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleException;
 
  
+/**
+ * Old stuff
+ * @deprecated
+ */
 public class SchemaMeta implements XMLInterface
 {
 	private   String         name;

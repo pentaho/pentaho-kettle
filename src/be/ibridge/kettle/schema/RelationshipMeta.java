@@ -27,6 +27,10 @@ import be.ibridge.kettle.core.XMLInterface;
  * 
  */
  
+/**
+ * Old stuff
+ * @deprecated
+ */
 public class RelationshipMeta implements Cloneable, XMLInterface
 {
 	private TableMeta table_from, table_to;

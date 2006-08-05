@@ -47,6 +47,9 @@ import be.ibridge.kettle.spoon.dialog.LogSettingsDialog;
 
 //import org.eclipse.swt.dnd.*;
 
+/**
+ * @deprecated
+ */
 public class PMenuLog extends Composite
 {
 	public final static String START_TEXT = "&Start transformation"; 

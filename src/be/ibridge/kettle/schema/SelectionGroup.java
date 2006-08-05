@@ -22,6 +22,10 @@
 package be.ibridge.kettle.schema;
 import java.util.ArrayList;
 
+/**
+ * Old stuff
+ * @deprecated
+ */
 public class SelectionGroup
 {
 	private String         name; 

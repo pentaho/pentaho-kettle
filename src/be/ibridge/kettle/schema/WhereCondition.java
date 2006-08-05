@@ -28,6 +28,10 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
 
+/**
+ * Old stuff
+ * @deprecated
+ */
 public class WhereCondition implements Cloneable, XMLInterface
 {
 	private TableMeta table;

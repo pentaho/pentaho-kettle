@@ -23,6 +23,10 @@ import java.util.Hashtable;
  *
  */
 
+/**
+ * Old stuff
+ * @deprecated
+ */
 public class Joins
 {
 	private ArrayList joins;  // contains Relationship objects

@@ -62,7 +62,11 @@ import be.ibridge.kettle.schema.RelationshipMeta;
 import be.ibridge.kettle.schema.SchemaMeta;
 import be.ibridge.kettle.schema.TableMeta;
 
-
+/**
+ * 
+ * @author Matt
+ * @deprecated
+ */
 public class PMenuGraph extends Canvas
 {
 	private static final int HOP_SEL_MARGIN = 9;

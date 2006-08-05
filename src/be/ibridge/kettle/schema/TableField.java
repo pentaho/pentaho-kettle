@@ -28,6 +28,10 @@ import be.ibridge.kettle.core.XMLInterface;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 
 
+/**
+ * Old stuff
+ * @deprecated
+ */
 public class TableField implements XMLInterface
 {
 	public static final int TYPE_FIELD_NONE      = 0;

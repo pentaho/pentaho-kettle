@@ -23,6 +23,10 @@ import java.util.Hashtable;
  *
  */
 
+/**
+ * Old stuff
+ * @deprecated
+ */
 public class Path
 {
 	private ArrayList path;  // contains Relationship objects
