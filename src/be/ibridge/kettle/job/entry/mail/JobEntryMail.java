@@ -521,7 +521,16 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		{
 			// create a message
 		    Message msg = new MimeMessage(session);
-		    msg.setFrom(new InternetAddress(StringUtil.environmentSubstitute(replyAddress)));
+		    
+		    String email_address = StringUtil.environmentSubstitute(replyAddress);
+		    if ( email_address != null )
+		    {
+		        msg.setFrom(new InternetAddress());
+		    }
+		    else
+		    {
+				throw new MessagingException("reply e-mail address is not filled in");			
+		    }
             
             // Split the mail-address: space separated
             String destinations[] = StringUtil.environmentSubstitute(destination).split(" ");
@@ -577,7 +586,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		        messageText.append("Telephone number  : ").append(StringUtil.environmentSubstitute(contactPhone)).append(Const.CR);
 			    messageText.append(Const.CR);
 		    }
-		    
+
 		    // Include the path to this job entry...
             if (!onlySendComment)
             {
@@ -586,14 +595,14 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
     		    {
     		        messageText.append("Path to this job entry:").append(Const.CR);
     		        messageText.append("------------------------").append(Const.CR);
-                    
+
                     addBacktracking(jobTracker, messageText);
     		    }
             }
-		    		    
+
 		    Multipart parts = new MimeMultipart();
 			MimeBodyPart part1 = new MimeBodyPart(); // put the text in the
-														// 1st part
+ 	 												 // 1st part
 			part1.setText(messageText.toString());
 			parts.addBodyPart(part1);
 			if (includingFiles && result != null)
@@ -631,14 +640,14 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 						try
 						{
 							zipOutputStream = new ZipOutputStream(new FileOutputStream(masterZipfile));
-							
+
 							for (Iterator iter = resultFiles.iterator(); iter.hasNext();) 
 							{
 								ResultFile resultFile = (ResultFile) iter.next();
 								File file = resultFile.getFile();
 								ZipEntry zipEntry = new ZipEntry(file.getPath());
 								zipOutputStream.putNextEntry(zipEntry);
-								
+
 								// Now put the content of this file into this archive...
 								BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
 								int c;
@@ -673,7 +682,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 								}
 							}
 						}
-						
+
 						// Now attach the master zip file to the message.
 						if (result.getNrErrors()==0)
 						{
@@ -705,7 +714,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 				if (ex instanceof SendFailedException) 
 				{
 				    SendFailedException sfex = (SendFailedException)ex;
-				    
+
 				    Address[] invalid = sfex.getInvalidAddresses();
 				    if (invalid != null) 
 				    {
@@ -716,7 +725,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			    			result.setNrErrors(1);
 			    		}
 				    }
-				    
+
 				    Address[] validUnsent = sfex.getValidUnsentAddresses();
 				    if (validUnsent != null) 
 				    {
@@ -727,7 +736,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 			    			result.setNrErrors(1);
 			    		}
 				    }
-				    
+
 				    Address[] validSent = sfex.getValidSentAddresses();
 				    if (validSent != null) 
 				    {
@@ -777,7 +786,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 	private void addBacktracking(JobTracker jobTracker, StringBuffer messageText, int level)    
     {
        int nr = jobTracker.nrJobTrackers();
- 
+
        messageText.append(Const.rightPad(" ", level*2));
        messageText.append(Const.NVL( jobTracker.getJobMeta().getName(), "-") );
        JobEntryResult jer = jobTracker.getJobEntryResult(); 
@@ -812,7 +821,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
            }
        }
        messageText.append(Const.CR);
-       
+
        for (int i=0;i<nr;i++)
        {
            JobTracker jt = jobTracker.getJobTracker(i);
@@ -829,13 +838,8 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 	{
 		return true;
 	}
-    
+
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
         return new JobEntryMailDialog(shell,this);
     }
-
-
-
-
-
 }
