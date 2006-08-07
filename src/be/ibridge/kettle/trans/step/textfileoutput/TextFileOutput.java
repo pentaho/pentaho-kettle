@@ -187,10 +187,39 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
 		TextFileField field = null;
 		if (idx>=0) field = meta.getOutputFields()[idx];
-		
+
         if (v.isBigNumber())
         {
-            retval+=v.getString(); // Sorry, no formatting yet, just dump it...
+			if (idx>=0 && field!=null && field.getFormat()!=null)
+			{
+				if (v.isNull())
+				{
+					if (field.getNullString()!=null) retval=field.getNullString();
+					else retval = "";
+				}
+				else
+				{
+					data.df.applyPattern(field.getFormat());
+					if (field.getDecimalSymbol()!=null && field.getDecimalSymbol().length()>0)  data.dfs.setDecimalSeparator( field.getDecimalSymbol().charAt(0) );
+					if (field.getGroupingSymbol()!=null && field.getGroupingSymbol().length()>0)    data.dfs.setGroupingSeparator( field.getGroupingSymbol().charAt(0) );
+					if (field.getCurrencySymbol()!=null) data.dfs.setCurrencySymbol( field.getCurrencySymbol() );
+							
+					data.df.setDecimalFormatSymbols(data.dfs);
+					retval=data.df.format(v.getBigNumber());
+				}
+			}
+			else
+			{
+				if (v.isNull()) 
+				{
+					if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
+					else retval = "";
+				}
+				else
+				{
+					retval=v.toString();
+				}
+			}
         }
         else
 		if (v.isNumeric())
@@ -200,6 +229,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				if (v.isNull())
 				{
 					if (field.getNullString()!=null) retval=field.getNullString();
+					else retval = "";
 				}
 				else
 				{
