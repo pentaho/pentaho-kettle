@@ -178,7 +178,7 @@
 	  	<jar jarfile="${lib}/kettle.jar" 
 	    	 basedir="${classes}" 
 	    	 includes="**/*"
-	  	     excludes="**/Thumbs.db"
+	  	     excludes="**/Thumbs.db be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
 	  		/>
 
 	  </target>
