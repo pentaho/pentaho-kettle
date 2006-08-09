@@ -969,6 +969,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 			if (log.isRowLevel()) logRowlevel("Putting row: " + r.toString());
 			putRow(r);
 
+			if ( linesInput > meta.getRowLimit() )
+			{
+			    closeLastFile();
+			    setOutputDone(); // signal end to receiver(s)
+			    return false;
+			}
 		}
 
 		if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic("linenr " + linesInput);
