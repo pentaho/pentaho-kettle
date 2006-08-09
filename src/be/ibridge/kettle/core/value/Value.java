@@ -46,7 +46,6 @@ import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.exception.KettleValueException;
 import be.ibridge.kettle.repository.Repository;
 
-
 /**
  * This class is one of the core classes of the Kettle framework.
  * It contains everything you need to manipulate atomic data (Values/Fields/...)
@@ -3246,25 +3245,24 @@ public class Value implements Cloneable, XMLInterface, Serializable
         final char hexDigits[] =
     	{ '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F' };
 
-        setType(VALUE_TYPE_STRING);
-	    if (isNull()) 
-	    {
-		    return this;
-	    }
-
-	    String hex = getString();
-
-  	    byte[] s = hex.getBytes();
-   	    StringBuffer hexString = new StringBuffer(2 * s.length);
-
-	    for (int i = 0; i < s.length; i++)
-	    {
-			hexString.append(hexDigits[(s[i] & 0xF0) >> 4]); // hi nibble
-			hexString.append(hexDigits[s[i] & 0x0F]);        // lo nibble
-	    }
-
-	    setValue( hexString );
-
+		setType(VALUE_TYPE_STRING);
+		if (isNull()) 
+		{
+			return this;
+		}
+		
+		String hex = getString();
+		
+		char[] s = hex.toCharArray();
+		StringBuffer hexString = new StringBuffer(2 * s.length);
+		
+		for (int i = 0; i < s.length; i++)
+		{
+			hexString.append(hexDigits[(s[i] & 0x00F0) >> 4]); // hi nibble
+			hexString.append(hexDigits[s[i] & 0x000F]);        // lo nibble
+		}
+		
+		setValue( hexString );
 	    return this;
 	}
 
@@ -3274,7 +3272,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 * hexadecimal string is of odd length a leading zero will be used.
 	 *  
 	 * @return Value itself
-	 * @throws KettleValueException
+	 * @throws KettleValueException  
 	 */    
 	public Value hexDecode() throws KettleValueException 
 	{
@@ -3283,48 +3281,50 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		{			
 			return this;
 		}
-
+		
 		setValue( getString() );
-
+		
 		String hexString = getString();
 		
-    	int		len = hexString.length();
-    	StringBuffer buffer = new StringBuffer((len + 1) / 2);
+		int len = hexString.length();
+		char chArray[] = new char[(len + 1) / 2];
 		boolean	evenByte = true;
-		byte	nextByte = 0;
-
+		int nextByte = 0;
+		
 		// we assume a leading 0 if the length is not even.
 		if ((len % 2) == 1)
 			evenByte = false;
-
+		
 		int nibble;
-    	for (int i = 0; i < len; i++)
-    	{
-    		char	c = hexString.charAt(i);
-
-    		if ((c >= '0') && (c <= '9'))
-    			nibble = c - '0';
-    		else if ((c >= 'A') && (c <= 'F'))
-    			nibble = c - 'A' + 0x0A;
-    		else if ((c >= 'a') && (c <= 'f'))
-    			nibble = c - 'a' + 0x0A;
-    		else
-    			throw new KettleValueException("invalid hex digit '" + c + "'.");
-
-    		if (evenByte)
-    		{
-    			nextByte = (byte)(nibble << 4);
-    		}
-    		else
-    		{
-    			nextByte += (byte)nibble;
-    			buffer.append((char)nextByte);
-    		}
-
-    		evenByte = ! evenByte;
-    	}
-    	setValue(buffer);
-
+		int i, j;
+		for (i = 0, j = 0; i < len; i++)
+		{
+			char	c = hexString.charAt(i);
+			
+			if ((c >= '0') && (c <= '9'))
+				nibble = c - '0';
+			else if ((c >= 'A') && (c <= 'F'))
+				nibble = c - 'A' + 0x0A;
+			else if ((c >= 'a') && (c <= 'f'))
+				nibble = c - 'a' + 0x0A;
+			else
+				throw new KettleValueException("invalid hex digit '" + c + "'.");
+			
+			if (evenByte)
+			{
+				nextByte = (nibble << 4);
+			}
+			else
+			{
+				nextByte += nibble;
+				chArray[j] = (char)nextByte;
+				j++;
+			}
+			
+			evenByte = ! evenByte;
+		}
+		setValue(new String(chArray));
+				
 		return this;
 	}
 
