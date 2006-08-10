@@ -50,6 +50,7 @@ public class Job extends Thread
 	private LogWriter log;
 	private JobMeta jobMeta;
 	private Repository rep;
+	private int errors = 0;
 	
     /** The job that's launching this (sub-) job. This gives us access to the whole chain, including the parent variables, etc. */
     private Job parentJob;
@@ -287,8 +288,9 @@ public class Job extends Thread
 
         // Execute this entry...
         Result result = jei.execute(prevResult, nr, rep, this);
+		addErrors((int)result.getNrErrors());
 		
-		// Save this result as well...
+        // Save this result as well...
         JobEntryResult jerAfter = new JobEntryResult(result, "Job entry ended", null, startpoint);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerAfter));
 				
@@ -313,7 +315,7 @@ public class Job extends Thread
 			{
 				if (result.getResult())
                 {
-					nextComment = "Followed link after succes!";
+					nextComment = "Followed link after success!";
                 }
 				else
                 {
@@ -382,10 +384,37 @@ public class Job extends Thread
         }
 	}
 
+	/**
+	 * Get the number of errors that happened in the job.
+	 * 
+	 * @return nr of error that have occurred during execution. 
+	 *         During execution of a job the number can change.
+	 */
 	public int getErrors()
 	{	
-		int errors=0;
 		return errors;
+	}
+
+	/**
+	 * Set the number of occured errors to 0.
+	 */
+	public void resetErrors()
+	{
+	    errors = 0;
+	}
+
+	/**
+	 * Add a number of errors to the total number of erros that occured
+	 * during execution.
+	 *
+	 * @param nrToAdd nr of errors to add.
+	 */
+	public void addErrors(int nrToAdd)
+	{
+	    if ( nrToAdd > 0 )
+	    {
+	        errors += nrToAdd;
+	    }
 	}
 
 	//
@@ -397,6 +426,7 @@ public class Job extends Thread
 		startDate   = Const.MIN_DATE;
 		endDate     = currentDate;
 		
+		resetErrors();
 		DatabaseMeta logcon = jobMeta.getLogConnection();
 		if (logcon!=null && !Const.isEmpty(jobMeta.getLogTable()))
 		{
@@ -433,6 +463,7 @@ public class Job extends Thread
 			}
 			catch(KettleDatabaseException dbe)
 			{
+				addErrors(1);  // This is even before actual execution 
 				throw new KettleJobException("Unable to begin processing by logging start in logtable "+jobMeta.getLogTable(), dbe);
 			}
 			finally
@@ -470,6 +501,7 @@ public class Job extends Thread
 			}
 			catch(KettleDatabaseException dbe)
 			{
+				addErrors(1);
 				throw new KettleJobException("Unable to end processing by writing log record to table "+jobMeta.getLogTable(), dbe);
 			}
 			finally
@@ -632,7 +664,7 @@ public class Job extends Thread
     {
         return result;
     }
-    
+
     public void setResult(Result result)
     {
         this.result = result;
@@ -651,5 +683,3 @@ public class Job extends Thread
         return initialized;
     }
 }
-
-
