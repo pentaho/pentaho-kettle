@@ -337,7 +337,7 @@ public class ChefGraph extends Canvas
 				{
 					if (e.button == 1)
 					{
-						if (lastclick.x == e.x && lastclick.y == e.y)
+						if (lastclick.x == real.x && lastclick.y == real.y)
 						{
 							// Flip selection when control is pressed!
 							if (control)
@@ -412,7 +412,7 @@ public class ChefGraph extends Canvas
 					Point note = new Point(real.x - noteoffset.x, real.y - noteoffset.y);
 					if (last_button == 1)
 					{
-						if (lastclick.x != e.x || lastclick.y != e.y)
+						if (lastclick.x != real.x || lastclick.y != real.y)
 						{
 							int indexes[] = new int[] { chef.jobMeta.indexOfNote(selected_note) };
 							chef.addUndoPosition(new NotePadMeta[] { selected_note }, indexes, new Point[] { previous_note_location }, new Point[] { note });
