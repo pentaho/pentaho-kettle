@@ -149,10 +149,10 @@ public class RectangleTest extends TestCase
 	 */
 	public void testIsEmpty()
 	{
-		Rectangle r1 = new Rectangle(100, 100, 40, 60);
-		Rectangle r2 = new Rectangle(130, 130, 80, 90);
-		Rectangle r3 = new Rectangle(0,  0, 0, 0);
-		Rectangle r4 = new Rectangle(-10,  -40, 0, -61);
+		/* Rectangle r1 = */ new Rectangle(100, 100, 40, 60);
+		/* Rectangle r2 = */ new Rectangle(130, 130, 80, 90);
+		/* Rectangle r3 = */ new Rectangle(0,  0, 0, 0);
+		/* Rectangle r4 = */ new Rectangle(-10,  -40, 0, -61);
 	}	
 
 	/**

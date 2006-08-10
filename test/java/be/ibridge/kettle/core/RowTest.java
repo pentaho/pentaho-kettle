@@ -303,13 +303,11 @@ public class RowTest extends TestCase
 		// assumptions is that all Rows on a certain stream are
 		// of the same width (same number of columns).
 		//////////////////////////////////////////////////////////
-		Value v = null;
 		try  {
-		    v = r1.getValue(values.length + 1);
+		    r1.getValue(values.length + 1);
 		    fail("expected out of bounds exception");
 		}
 		catch ( IndexOutOfBoundsException e ) {	
-			v = null;  // not important
 		}
 	}
 
