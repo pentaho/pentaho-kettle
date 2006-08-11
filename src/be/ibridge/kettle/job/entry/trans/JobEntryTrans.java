@@ -464,16 +464,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                             }
                         }
                     }
-                    else
-                    {
-                        // Keep it as it was: set all rows on the previous result
-                    	// However, in this case, it doesn't make sense to do so if you selected 
-                    	// to clear the result rows before running...
-                    	if (!clearResultRows) 
-                    	{
-                    		trans.getTransMeta().getPreviousResult().getRows().addAll(result.getRows());
-                    	}
-                    }
                 }
                 
     			// Execute!
