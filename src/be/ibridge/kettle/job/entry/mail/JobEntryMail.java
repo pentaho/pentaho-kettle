@@ -525,7 +525,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		    String email_address = StringUtil.environmentSubstitute(replyAddress);
 		    if ( email_address != null )
 		    {
-		        msg.setFrom(new InternetAddress());
+		        msg.setFrom(new InternetAddress(email_address));
 		    }
 		    else
 		    {
