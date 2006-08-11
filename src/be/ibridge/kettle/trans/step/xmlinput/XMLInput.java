@@ -79,14 +79,9 @@ public class XMLInput extends BaseStep implements StepInterface
 		
 	private Row getRowFromXML() throws KettleValueException
     {
-        if (data.itemPosition>=data.itemCount) // finished reading the file, read the next file!
+        while (data.itemPosition>=data.itemCount || data.filename==null) // finished reading the file, read the next file!
         {
             data.filename=null;
-        }
-        
-        // First, see if we need to open a new file
-        if (data.filename==null)
-        {
             if (!openNextFile())
             {
                 return null;
