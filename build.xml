@@ -367,8 +367,8 @@
 	<target name="keystore" depends="copy2webstart" description="Create the keystore...">
     	<echo>Create the keystore...</echo>
 
-		<exec executable="keytool" inputstring="${keystorePassword}${cr}Matt Casters${cr}i-Bridge bvba${cr}Kettle${cr}Okegem${cr}OVL${cr}BE${cr}yes${cr}${cr}${keystorePassword}">
-			<arg line="-genkey -keyalg RSA -keystore &quot;${keystore}&quot; -alias kettle"/>
+		<exec executable="keytool">
+			<arg line="-genkey -keyalg RSA -alias kettle -keystore &quot;${keystore}&quot; -storepass &quot;${keystorePassword}&quot; -keypass &quot;${keystorePassword}&quot; -dname &quot;CN=Matt Casters, OU=Pentaho Corporation, O=Pentaho Data Integration, L=Orlando, S=FL, C=US&quot;"/>
 		</exec>
 	</target>
 	
