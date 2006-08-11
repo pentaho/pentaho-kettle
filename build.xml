@@ -409,7 +409,7 @@
 	       ==========================
 	  -->
 
-	<target name="default" depends="distrib,webstart,compileTests" description="default = build all"/>
+	<target name="default" depends="distrib" description="default = build distribution package"/>
 
 	<!--
 	       ==========================
