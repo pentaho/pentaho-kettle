@@ -19,7 +19,6 @@
 	<classpathentry kind="lib" path="libext/SQLBaseJDBC.jar"/>
 	<classpathentry kind="lib" path="libswt/jface.jar"/>
 	<classpathentry kind="lib" path="libswt/runtime.jar"/>
-	<classpathentry sourcepath="/KTable" kind="lib" path="libext/ktable.jar"/>
 	<classpathentry kind="lib" path="libext/db2jcc.jar"/>
 	<classpathentry kind="lib" path="libext/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="libext/javadbf.jar"/>
