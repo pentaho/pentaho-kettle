@@ -3220,7 +3220,9 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			// MINUTES
 			case 2: cal.set(Calendar.MINUTE, 0);
 			// SECONDS
-			case 1: cal.set(Calendar.SECOND, 0);  break;
+			case 1: cal.set(Calendar.SECOND, 0);
+            // MILI-SECONDS
+            case 0: cal.set(Calendar.MILLISECOND, 0);  break;
 			default:
 				throw new KettleValueException("Argument of TRUNC of date has to be between 1 and 5");
 			}
