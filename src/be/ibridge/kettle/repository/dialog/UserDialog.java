@@ -199,6 +199,17 @@ public class UserDialog extends Dialog
 		fdProfile.right= new FormAttachment(wnProfile, -margin);
 		fdProfile.top  = new FormAttachment(wDescription, margin);
 		wProfile.setLayoutData(fdProfile);
+        
+        // If the repository user is not an administrator, changing the users' profile is not allowed...
+        //
+        if (!rep.getUserInfo().isAdministrator() || userinfo.isAdministrator())
+        {
+            wlProfile.setEnabled(false);
+            wProfile.setEnabled(false);
+            wnProfile.setEnabled(false);
+            weProfile.setEnabled(false);
+            wdProfile.setEnabled(false);
+        }
 
 		// Buttons
 		wOK     = new Button(shell, SWT.PUSH); 
