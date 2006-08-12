@@ -271,19 +271,14 @@ public class Job extends Thread
         JobEntryResult jerBefore = new JobEntryResult(null, "Job entry started", reason, startpoint);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerBefore));
 
-        Result prevResult = prev_result;
-        // If we don't have any result yet or if there are no result rows available, use the results from the parent job
-        if (prev_result==null)
+        Result prevResult = null;
+        if ( prev_result != null )
         {
-            prevResult = new Result();
-            prevResult.setRows(sourceRows);
+            prevResult = (Result)prev_result.clone();
         }
         else
         {
-            if (prevResult.getRows()==null)
-            {
-                prevResult.setRows(sourceRows);
-            }
+            prevResult = new Result();
         }
 
         // Execute this entry...
