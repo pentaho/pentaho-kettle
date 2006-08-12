@@ -555,7 +555,7 @@ public class Database
 				{
 					if (databaseMeta.supportsSetLong())
 					{
-                        ps.setLong(pos, Math.round( v.getNumber() ) );
+                        ps.setLong(pos, v.getInteger() );
 					}
 					else
 					{
@@ -571,7 +571,7 @@ public class Database
 				}
 				else 
                 {
-                    ps.setNull(pos, java.sql.Types.BIGINT);   
+                    ps.setNull(pos, java.sql.Types.INTEGER);   
                 }
 				break;
 			case Value.VALUE_TYPE_STRING : 

@@ -239,7 +239,14 @@ public class TextFileOutput extends BaseStep implements StepInterface
 					if (field.getCurrencySymbol()!=null) data.dfs.setCurrencySymbol( field.getCurrencySymbol() );
 							
 					data.df.setDecimalFormatSymbols(data.dfs);
-					retval=data.df.format(v.getNumber());
+					if ( v.isInteger() )
+					{
+					    retval=data.df.format(v.getInteger());
+					}
+					else if ( v.isNumber() )
+					{
+					    retval=data.df.format(v.getNumber());
+					}						
 				}
 			}
 			else
