@@ -373,16 +373,28 @@ public class Calculator extends BaseStep implements StepInterface
                         }
                     }
                     break;
-                case CalculatorMetaFunction.CALC_HEX_ENCODE           : // Hex encode string field A
+                case CalculatorMetaFunction.CALC_BYTE_TO_HEX_ENCODE   : // Byte to Hex encode string field A
                     {
                         value = new Value(fn.getFieldName(), fieldA);
-                        value.hexEncode();
+                        value.byteToHexEncode();
                     }
                     break;
-                case CalculatorMetaFunction.CALC_HEX_DECODE           : // Hex decode string field A
+                case CalculatorMetaFunction.CALC_HEX_TO_BYTE_DECODE   : // Hex to Byte decode string field A
                     {
                         value = new Value(fn.getFieldName(), fieldA);
-                        value.hexDecode();
+                        value.hexToByteDecode();
+                    }
+                    break;                    
+                case CalculatorMetaFunction.CALC_CHAR_TO_HEX_ENCODE   : // Char to Hex encode string field A
+                    {
+                        value = new Value(fn.getFieldName(), fieldA);
+                        value.charToHexEncode();
+                    }
+                    break;
+                case CalculatorMetaFunction.CALC_HEX_TO_CHAR_DECODE   : // Hex to Char decode string field A
+                    {
+                        value = new Value(fn.getFieldName(), fieldA);
+                        value.hexToCharDecode();
                     }
                     break;                    
                 default:

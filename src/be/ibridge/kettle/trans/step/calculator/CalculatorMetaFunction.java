@@ -37,8 +37,10 @@ public class CalculatorMetaFunction implements Cloneable
     public static final int CALC_WEEK_OF_YEAR         = 22;
     public static final int CALC_WEEK_OF_YEAR_ISO8601 = 23;
     public static final int CALC_YEAR_OF_DATE_ISO8601 = 24;
-    public static final int CALC_HEX_ENCODE           = 25;
-    public static final int CALC_HEX_DECODE           = 26;
+    public static final int CALC_BYTE_TO_HEX_ENCODE   = 25;
+    public static final int CALC_HEX_TO_BYTE_DECODE   = 26;
+    public static final int CALC_CHAR_TO_HEX_ENCODE   = 27;
+    public static final int CALC_HEX_TO_CHAR_DECODE   = 28;
 
     public static final String calc_desc[] = 
         { 
@@ -67,8 +69,10 @@ public class CalculatorMetaFunction implements Cloneable
             "WEEK_OF_YEAR",
             "WEEK_OF_YEAR_ISO8601",
             "YEAR_OF_DATE_ISO8601",
-            "HEX_ENCODE",
-            "HEX_DECODE"
+            "BYTE_TO_HEX_ENCODE",
+            "HEX_TO_BYTE_DECODE",
+            "CHAR_TO_HEX_ENCODE",
+            "HEX_TO_CHAR_DECODE"            
         };
     
     public static final String calcLongDesc[] = 
@@ -98,8 +102,10 @@ public class CalculatorMetaFunction implements Cloneable
             Messages.getString("CalculatorMetaFunction.CalcFunctions.WeekOfYear"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.WeekOfYearISO8601"),
             Messages.getString("CalculatorMetaFunction.CalcFunctions.YearOfDateISO8601"),
-            Messages.getString("CalculatorMetaFunction.CalcFunctions.HexEncode"),
-            Messages.getString("CalculatorMetaFunction.CalcFunctions.HexDecode")
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.ByteToHexEncode"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.HexToByteDecode"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.CharToHexEncode"),
+            Messages.getString("CalculatorMetaFunction.CalcFunctions.HexToCharDecode")
         };
    
     private String fieldName;
