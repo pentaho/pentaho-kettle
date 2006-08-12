@@ -1089,33 +1089,33 @@ public class ValueTest extends TestCase
 	}
 
 	/**
-	 * Test hexDecode.
+	 * Test hexToByteDecode.
 	 */
-	public void testHexDecode() throws KettleValueException 
+	public void testHexToByteDecode() throws KettleValueException 
 	{
 	    Value vs1 = new Value("Name1", Value.VALUE_TYPE_INTEGER);
 
 	    vs1.setValue("6120622063");
-	    vs1.hexDecode();
+	    vs1.hexToByteDecode();
 	    assertEquals("a b c", vs1.getString());
 
 	    vs1.setValue("4161426243643039207A5A2E3F2F");
-	    vs1.hexDecode();
+	    vs1.hexToByteDecode();
 	    assertEquals("AaBbCd09 zZ.?/", vs1.getString());
 
 	    vs1.setValue("4161426243643039207a5a2e3f2f");
-	    vs1.hexDecode();
+	    vs1.hexToByteDecode();
 	    assertEquals("AaBbCd09 zZ.?/", vs1.getString());
 	    
 	    // leading 0 if odd.
 	    vs1.setValue("F6120622063");
-	    vs1.hexDecode();
+	    vs1.hexToByteDecode();
 	    assertEquals("\u000fa b c", vs1.getString());
 
 	    try  
 	    {
 	        vs1.setValue("g");
-	        vs1.hexDecode();
+	        vs1.hexToByteDecode();
 	        fail("Expected KettleValueException");
 	    }
 	    catch (KettleValueException ex)
@@ -1125,23 +1125,80 @@ public class ValueTest extends TestCase
 	/**
 	 * Test hexEncode.
 	 */
-	public void testHexEncode() throws KettleValueException 
+	public void testByteToHexEncode() throws KettleValueException 
 	{
 	    Value vs1 = new Value("Name1", Value.VALUE_TYPE_INTEGER);
 
 	    vs1.setValue("AaBbCd09 zZ.?/");
-	    vs1.hexEncode();
+	    vs1.byteToHexEncode();
 	    assertEquals("4161426243643039207A5A2E3F2F", vs1.getString());
 
 	    vs1.setValue("1234567890");
-	    vs1.hexEncode();
+	    vs1.byteToHexEncode();
 	    assertEquals("31323334353637383930", vs1.getString());
 
 	    vs1.setNull();
-	    vs1.hexEncode();
+	    vs1.byteToHexEncode();
 	    assertNull(vs1.getString());
 	}
 
+	/**
+	 * Regression test for bug: hexdecode/encode would not
+	 * work for some UTF8 strings. 
+	 */
+	public void testHexByteRegression() throws KettleValueException 
+	{
+	    Value vs1 = new Value("Name1", Value.VALUE_TYPE_INTEGER);
+
+	    vs1.setValue("9B");
+	    vs1.hexToByteDecode();
+	    vs1.byteToHexEncode();
+	    assertEquals("9B", vs1.getString());    
+	    
+	    vs1.setValue("A7");
+	    vs1.hexToByteDecode();
+	    vs1.byteToHexEncode();
+	    assertEquals("A7", vs1.getString());
+	    
+	    vs1.setValue("74792121212121212121212121C2A7");
+	    vs1.hexToByteDecode();
+	    vs1.byteToHexEncode();
+	    assertEquals("74792121212121212121212121C2A7", vs1.getString());
+	    
+	    vs1.setValue("70616E2D6C656FC5A1");
+	    vs1.hexToByteDecode();
+	    vs1.byteToHexEncode();
+	    assertEquals("70616E2D6C656FC5A1", vs1.getString());
+	    
+	    vs1.setValue("736B76C49B6C6520");
+	    vs1.hexToByteDecode();
+	    vs1.byteToHexEncode();
+	    assertEquals("736B76C49B6C6520", vs1.getString());
+	}
+
+	/**
+	 * Test for Hex to Char decoding and vica versa.
+	 */
+	public void testHexCharTest() throws KettleValueException 
+	{
+	    Value vs1 = new Value("Name1", Value.VALUE_TYPE_INTEGER);
+
+	    vs1.setValue("009B");
+	    vs1.hexToCharDecode();
+	    vs1.charToHexEncode();
+	    assertEquals("009B", vs1.getString());    
+	    	    
+	    vs1.setValue("007400790021002100C200A7");
+	    vs1.hexToCharDecode();
+	    vs1.charToHexEncode();
+	    assertEquals("007400790021002100C200A7", vs1.getString());
+	    
+	    vs1.setValue("FFFF00FFFF000F0FF0F0");
+	    vs1.hexToCharDecode();
+	    vs1.charToHexEncode();
+	    assertEquals("FFFF00FFFF000F0FF0F0", vs1.getString());
+	}
+	
 	/**
 	 * Test like.
 	 */
