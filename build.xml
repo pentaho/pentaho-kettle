@@ -33,6 +33,7 @@
 	  <property name="webstart"				location="webstart"/>
 	  <property name="keystore"				location="keystore"/>
 	  <property name="keystorePassword"		location="abcd1234"/>
+	  <property name="buildVersion"         location="${src}/be/ibridge/kettle/version/build_version.xml"/>
 
 	  <property name="sourcezipfile"        location="Kettle-src-${version}.zip"/>
 		  
@@ -58,6 +59,7 @@
 
 	  <target name="compile" depends="init" description="compile the source " >
 	  	<echo>Compiling Kettle...</echo>
+	  	<touch file="${buildVersion}"/>
 	    <javac srcdir="${src}" 
 	    	   destdir="${classes}"
 	    	   target="1.4"

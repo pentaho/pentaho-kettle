@@ -146,6 +146,7 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.selectvalues.SelectValuesMeta;
 import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
 import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
+import be.ibridge.kettle.version.BuildVersion;
 
 /**
  * This class handles the main window of the Spoon graphical transformation editor.
@@ -2890,7 +2891,9 @@ public class Spoon
     {
         MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION | SWT.CENTER);
         String mess = Messages.getString("System.ProductInfo")+Const.VERSION+Const.CR+Const.CR+Const.CR;//Kettle - Spoon version 
-        mess+=Messages.getString("System.CompanyInfo")+Const.CR+"         "+Messages.getString("System.ProductWebsiteUrl")+Const.CR; //(c) 2001-2004 i-Bridge bvba     www.kettle.be
+        mess+=Messages.getString("System.CompanyInfo")+Const.CR;
+        mess+="         "+Messages.getString("System.ProductWebsiteUrl")+Const.CR; //(c) 2001-2004 i-Bridge bvba     www.kettle.be
+        mess+="         "+BuildVersion.getInstance().getVersion()+Const.CR;
         
         mb.setMessage(mess);
         mb.setText(APP_NAME);
