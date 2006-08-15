@@ -134,7 +134,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		int type         = v.getType();
 		switch(type)
 		{
-		case Value.VALUE_TYPE_DATE   : retval+="DATETIME"; break;
+		case Value.VALUE_TYPE_DATE   : retval+="TIMESTAMP"; break;
 		case Value.VALUE_TYPE_BOOLEAN: retval+="CHAR(1)"; break;
 		case Value.VALUE_TYPE_NUMBER : 
 		case Value.VALUE_TYPE_INTEGER: 
@@ -158,7 +158,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
             }
 			break;
 		case Value.VALUE_TYPE_STRING:
-			if (length>=DatabaseMeta.CLOB_LENGTH)
+			if (length>getMaxVARCHARLength() || length>=DatabaseMeta.CLOB_LENGTH)
 			{
 				retval+="CLOB";
 			}
@@ -252,4 +252,14 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     {
         return false;
     }
+    
+	/**
+	 * Get the maximum length of a text field (VARCHAR) for this database connection.
+	 * If this size is exceeded use a CLOB.
+	 * @return The maximum VARCHAR field length for this database type. (mostly identical to getMaxTextFieldLength() - CLOB_LENGTH)
+	 */
+	public int getMaxVARCHARLength()
+	{
+		return 32672;
+	}
 }
