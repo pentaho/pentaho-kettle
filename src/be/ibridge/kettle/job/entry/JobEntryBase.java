@@ -294,6 +294,16 @@ public class JobEntryBase implements Cloneable
 	}
 	
 	/**
+	 * Is a reset of the number of errors required before execution.
+	 * 
+	 * @return 
+	 */
+	public boolean resetErrorsBeforeExecution()
+	{
+	    return true;
+	}
+	
+	/**
 	 * check whether or not this job entry evaluates.
 	 * @return true if the job entry evaluates
 	 */

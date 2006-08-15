@@ -505,5 +505,9 @@ public class JobEntryCopy implements Cloneable, XMLInterface
 	{
 		entry.setName(name);
 	}
-			
+	
+	public boolean resetErrorsBeforeExecution()
+	{
+	    return entry.resetErrorsBeforeExecution();
+	}
 }

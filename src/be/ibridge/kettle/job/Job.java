@@ -330,8 +330,12 @@ public class Job extends Thread
 				log.logBasic(jobMeta.toString(), "Starting entry ["+nextEntry.getName()+"]");
                 
                 // Pass along the previous result, perhaps the next job can use it...
-                // However, set the number of errors back to 0
-                result.setNrErrors(0);
+                // However, set the number of errors back to 0 (if it should be reset)
+				// When an evaluation is executed the errors e.g. should not be reset.
+				if ( nextEntry.resetErrorsBeforeExecution() )
+				{
+                    result.setNrErrors(0);
+				}
                 
                 // Now execute!
                 try

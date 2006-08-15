@@ -150,6 +150,7 @@ public interface JobEntryInterface
 	public boolean isDummy();
 	public Object  clone();
 	
+	public boolean resetErrorsBeforeExecution();
 	public boolean evaluates();
 	public boolean isUnconditional();
 	

@@ -189,16 +189,20 @@ public class JobEntryEval extends JobEntryBase implements JobEntryInterface
 				debug="toBoolean";
 				boolean retval = Context.toBoolean(res);
 				// System.out.println(result.toString()+" + ["+this.script+"] --> "+retval);
+				result.setNrErrors(0);
+
 				return retval;
 			}
 			catch(Exception e)
 			{
+				result.setNrErrors(1);
 				log.logError(toString(), "Couldn't compile javascript: "+e.toString());
 				return false;
 			}
 		}
 		catch(Exception e)
 		{
+			result.setNrErrors(1);
 			log.logError(toString(), "Error evaluating expression in ["+debug+"] : "+e.toString());
 			return false;
 		}
@@ -219,6 +223,13 @@ public class JobEntryEval extends JobEntryBase implements JobEntryInterface
 		prev_result.setResult( evaluate(prev_result) );
 		
 		return prev_result;
+	}
+	
+	public boolean resetErrorsBeforeExecution()
+	{
+		// we should be able to evaluate the errors in
+		// the previous jobentry.
+	    return false;
 	}
 	
 	public boolean evaluates()
