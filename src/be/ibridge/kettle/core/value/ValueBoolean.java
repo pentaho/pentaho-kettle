@@ -158,4 +158,11 @@ public class ValueBoolean implements ValueInterface, Cloneable
     public Serializable getSerializable() {
         return new Boolean(bool);
     }
+    
+	public byte[] getBytes() {
+		return null;
+	}
+
+	public void setBytes(byte[] b) {
+	}
 }

@@ -162,4 +162,11 @@ public class ValueDate implements ValueInterface, Cloneable
     public Serializable getSerializable() {
         return date;
     }
+    
+	public byte[] getBytes() {
+		return null;
+	}
+
+	public void setBytes(byte[] b) {
+	}
 }

@@ -519,17 +519,6 @@ public class Database
 		{
 			switch(v.getType())
 			{
-            case Value.VALUE_TYPE_BIGNUMBER:
-                debug="BigNumber";
-                if (!v.isNull()) 
-                {
-                    ps.setBigDecimal(pos, v.getBigNumber());
-                }
-                else 
-                {
-                    ps.setNull(pos, java.sql.Types.DECIMAL);   
-                }
-                break;
 			case Value.VALUE_TYPE_NUMBER :
 			    debug="Number";
                 if (!v.isNull()) 
@@ -672,6 +661,28 @@ public class Database
                     }
                 }
 				break;
+            case Value.VALUE_TYPE_BIGNUMBER:
+                debug="BigNumber";
+                if (!v.isNull()) 
+                {
+                    ps.setBigDecimal(pos, v.getBigNumber());
+                }
+                else 
+                {
+                    ps.setNull(pos, java.sql.Types.DECIMAL);   
+                }
+                break;
+			case Value.VALUE_TYPE_BINARY:
+				debug="Binary";
+				if (!v.isNull()) 
+				{
+                    ps.setBytes(pos, v.getBytes());
+				}
+				else
+				{
+                    ps.setNull(pos, java.sql.Types.BINARY);   
+                }
+				break;                
 			default:
 				debug="default";
             // placeholder
@@ -2468,21 +2479,18 @@ public class Database
 				case java.sql.Types.BIT:
 					valtype=Value.VALUE_TYPE_BOOLEAN;
 					break;
+					
+				case java.sql.Types.BINARY:
+					valtype=Value.VALUE_TYPE_BINARY;
+                    length=rm.getPrecision(i); 
+                    precision=rm.getScale(i);
+
+					break;
 
 				default:
  					valtype=Value.VALUE_TYPE_STRING;
                     length=rm.getPrecision(i); 
-                    precision=rm.getScale(i);
-                    
-                    if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_DB2)
-                    {
-                        if (type == java.sql.Types.BINARY && ((2 * length) == rm.getColumnDisplaySize(i)))
-                        {
-                        	// Patch for DB2 "CHAR FOR BITDATA". E.g. when getPrecision() is 10,
-                        	// the display size is 20.
-                        	length = rm.getColumnDisplaySize(i);
-                        }
-                    }
+                    precision=rm.getScale(i);                    
  					break;
 				}
                 // TODO: grab the comment as a description to the field, later
@@ -2499,15 +2507,6 @@ public class Database
 			throw new KettleDatabaseException("Error getting row information from database: ", ex);
 		}
 	}
-
-	//
-	// Build the row using ResultSetMetaData rsmd
-	/*
-	private Row getRowInfo() throws KettleDatabaseException
-	{
-		return getRowInfo(rsmd);
-	}
-    */
 
 	public boolean absolute(ResultSet rs, int position) throws KettleDatabaseException
 	{
@@ -2611,6 +2610,7 @@ public class Database
                     case Value.VALUE_TYPE_BIGNUMBER : val.setValue( rs.getBigDecimal(i+1) ); break;
 					case Value.VALUE_TYPE_INTEGER   : val.setValue( rs.getLong(i+1) ); break;
 					case Value.VALUE_TYPE_STRING    : val.setValue( rs.getString(i+1) ); break;
+					case Value.VALUE_TYPE_BINARY    : val.setValue( rs.getBytes(i+1) ); break;
 					case Value.VALUE_TYPE_DATE      :
                         if (databaseMeta.supportsTimeStampToDateConversion())
                         {

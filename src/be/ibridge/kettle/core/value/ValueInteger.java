@@ -162,4 +162,11 @@ public class ValueInteger implements ValueInterface, Cloneable
     public Serializable getSerializable() {
         return new Long(number);
     }
+    
+	public byte[] getBytes() {
+		return null;
+	}
+
+	public void setBytes(byte[] b) {
+	}
 }

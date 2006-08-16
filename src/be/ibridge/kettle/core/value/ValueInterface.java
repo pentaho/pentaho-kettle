@@ -40,7 +40,8 @@ public interface ValueInterface
 	public boolean    getBoolean();
 	public long       getInteger();
     public BigDecimal getBigNumber();
-	public Serializable     getSerializable();
+	public Serializable getSerializable();
+    public byte[]     getBytes();
     
 	public void       setString(String string);
 	public void       setNumber(double number);
@@ -49,7 +50,8 @@ public interface ValueInterface
 	public void       setInteger(long number);
     public void       setBigNumber(BigDecimal number);
 	public void       setSerializable(Serializable ser);
-    
+	public void       setBytes(byte[] b);
+        
 	public int        getLength();
 	public int        getPrecision();
 	public void       setLength(int length);

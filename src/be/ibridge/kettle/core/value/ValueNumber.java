@@ -165,4 +165,11 @@ public class ValueNumber implements ValueInterface, Cloneable
     public Serializable getSerializable() {
         return new Double(number);
     }
+    
+	public byte[] getBytes() {
+		return null;
+	}
+
+	public void setBytes(byte[] b) {
+	}
 }

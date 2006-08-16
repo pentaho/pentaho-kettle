@@ -175,7 +175,14 @@ public class ValueString implements ValueInterface, Cloneable
     public Serializable getSerializable() {
         return string;
     }
+
     public void setSerializable(Serializable ser) {
-        
     }
+
+	public byte[] getBytes() {
+		return null;
+	}
+
+	public void setBytes(byte[] b) {
+	}    
 }

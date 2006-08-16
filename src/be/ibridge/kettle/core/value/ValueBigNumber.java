@@ -173,4 +173,11 @@ public class ValueBigNumber implements ValueInterface, Cloneable
     {
         this.number = number;
     }
+
+	public byte[] getBytes() {
+		return null;
+	}
+
+	public void setBytes(byte[] b) {
+	}
 }

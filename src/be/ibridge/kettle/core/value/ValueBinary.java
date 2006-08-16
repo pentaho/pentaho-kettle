@@ -4,16 +4,32 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public class ValueSerializable implements ValueInterface, Cloneable {
-    
-    protected Serializable serializable;
-    
-    public ValueSerializable(Serializable ser) {
-        this.serializable = ser;
+/**
+ * This class contains a Value of type Binary. It's supposed to contain
+ * CLOBS, LOBS, ... GIF data, jpg's, ...
+ */
+public class ValueBinary implements ValueInterface, Cloneable {
+
+    protected byte[] bytes;
+    private int length;
+
+	public ValueBinary()
+	{
+		this.bytes   = null;
+		this.length  = -1;
+	}    
+
+    public ValueBinary(byte[] bytes) {
+        this.bytes = bytes;
+        this.length = -1;
     }
-    
-    public Serializable getSerializable() {
-        return serializable;
+
+    public byte[] getBytes() {
+        return bytes;
+    }
+
+    public void setBytes(byte[] b) {
+    	this.bytes = b;
     }
 
     public int getPrecision() {
@@ -21,28 +37,43 @@ public class ValueSerializable implements ValueInterface, Cloneable {
     }
 
     public String getString() {
-        return (serializable != null) ? serializable.toString() : null;
+        return (bytes != null) ? new String(bytes) : null;
     }
 
     public int getType() {
-        return Value.VALUE_TYPE_SERIALIZABLE;
+        return Value.VALUE_TYPE_BINARY;
     }
 
     public String getTypeDesc() {
-        return "Object";
+        return "Binary";
     }
 
     public Object clone() {
         try {
-            ValueSerializable retval = (ValueSerializable) super.clone();
+            ValueBinary retval = (ValueBinary) super.clone();
             return retval;
         } catch (CloneNotSupportedException e) {
             return null;
         }
     }
 
+    public void setLength(int length) {
+    	this.length = length;
+    }
+
+    public void setLength(int length, int precision) {
+    	this.length = length;
+    }
+
+    public int getLength() {
+        return length;
+    }
 
     //These dont do anything but are needed for the ValueInterface
+	public Serializable getSerializable() {
+		return null;
+	}
+
     public void setBigNumber(BigDecimal number) {
     }
 
@@ -55,12 +86,6 @@ public class ValueSerializable implements ValueInterface, Cloneable {
     public void setInteger(long number) {
     }
 
-    public void setLength(int length, int precision) {
-    }
-
-    public void setLength(int length) {
-    }
-
     public void setNumber(double number) {
     }
 
@@ -70,10 +95,9 @@ public class ValueSerializable implements ValueInterface, Cloneable {
     public void setString(String string) {
     }
 
-    public void setSerializable(Serializable ser) {
-        
+    public void setSerializable(Serializable ser) {        
     }
-    
+
     public BigDecimal getBigNumber() {
         return null;
     }
@@ -90,18 +114,7 @@ public class ValueSerializable implements ValueInterface, Cloneable {
         return 0;
     }
 
-    public int getLength() {
-        return 0;
-    }
-
     public double getNumber() {
         return 0;
-    }
-
-	public byte[] getBytes() {
-		return null;
-	}
-
-	public void setBytes(byte[] b) {
-	}
+    }    
 }

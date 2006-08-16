@@ -253,6 +253,11 @@ public class Const
 	public static final String NULL_INTEGER = "";
 
 	/**
+	 * Default string representing Null Binary values (empty)
+	 */
+	public static final String NULL_BINARY = "";
+	
+	/**
 	 * Default string representing Null Undefined values (empty)
 	 */
 	public static final String NULL_NONE = "";

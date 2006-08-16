@@ -90,7 +90,12 @@ public class Value implements Cloneable, XMLInterface, Serializable
     /**
      * Value type indicating that the value contains an Object.
      */
-    public static final int VALUE_TYPE_SERIALIZABLE   = 7;
+    public static final int VALUE_TYPE_SERIALIZABLE= 7;
+    /**
+     * Value type indicating that the value contains binary data:
+     * BLOB, CLOB, ...
+     */
+    public static final int VALUE_TYPE_BINARY      = 8;
 
 	/**
 	 * The descriptions of the value types.
@@ -98,7 +103,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	private static final String valueTypeCode[]=
 		{
 			"-",                                                          // $NON-NLS-1$
-			"Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable" // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$ $NON-NLS-4$ $NON-NLS-5$ $NON-NLS-6$
+			"Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary" // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$ $NON-NLS-4$ $NON-NLS-5$ $NON-NLS-6$ $NON-NLS-7$
 		};
 
 	private ValueInterface value;
@@ -148,12 +153,13 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	{
 		switch(val_type)
 		{
-		case VALUE_TYPE_NUMBER   : value = new ValueNumber(); break;
+		case VALUE_TYPE_INTEGER  : value = new ValueInteger(); break;
 		case VALUE_TYPE_STRING   : value = new ValueString(); break;
 		case VALUE_TYPE_DATE     : value = new ValueDate(); break;
+		case VALUE_TYPE_NUMBER   : value = new ValueNumber(); break;
 		case VALUE_TYPE_BOOLEAN  : value = new ValueBoolean(); break;
-		case VALUE_TYPE_INTEGER  : value = new ValueInteger(); break;
         case VALUE_TYPE_BIGNUMBER: value = new ValueBigNumber(); break;
+        case VALUE_TYPE_BINARY   : value = new ValueBinary(); break;
 		default: value = null;
 		}
 	}
@@ -297,6 +303,19 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		setName(name);
 	}
 
+	/**
+	 * Constructs a new Value of Type VALUE_TYPE_BINARY, with a name, containing a bytes value
+	 *
+	 * @param name Sets the name of the Value
+	 * @param b The bytes to store in this Value
+	 */
+	public Value(String name, byte[] b)
+	{
+		clearValue();
+		setValue(b);
+		setName(name);
+	}
+	
 	/**
 	 * Constructs a new Value as a copy of another value
 	 *
@@ -506,6 +525,22 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	}
 
 	/**
+	 * Sets the Value to a long integer
+	 * @param l The long integer to which the Value is set.
+	 */
+	public void setValue(byte[] b)
+	{
+		if (value==null || value.getType()!=VALUE_TYPE_BINARY)  value = new ValueBinary(b);
+		else value.setBytes(b);
+		
+		if ( b == null )
+	        setNull(true);
+		else
+		    setNull(false);
+	}
+	
+	
+	/**
 	 * Copy the Value from another Value.
 	 * It doesn't copy the name.
 	 * @param v The Value to copy the settings and value from
@@ -622,6 +657,12 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		return value.getInteger();
 	}
 
+	public byte[] getBytes()
+	{
+		if (value==null || isNull()) return null;
+		return value.getBytes();
+	}
+	
 	/**
 	 * Set the type of this Value
 	 * @param val_type The type to which the Value will be set.
@@ -768,11 +809,12 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		switch(getType())
 		{
 		case VALUE_TYPE_STRING :  retval=toStringString(pad);  break;
+		case VALUE_TYPE_INTEGER:  retval=toStringInteger(pad); break;
 		case VALUE_TYPE_NUMBER :  retval=toStringNumber(pad);  break;
 		case VALUE_TYPE_DATE   :  retval=toStringDate();    break;
 		case VALUE_TYPE_BOOLEAN:  retval=toStringBoolean(); break;
-		case VALUE_TYPE_INTEGER:  retval=toStringInteger(pad); break;
         case VALUE_TYPE_BIGNUMBER: retval=toStringBigNumber(pad); break;
+        case VALUE_TYPE_BINARY :  retval=toStringBinary(pad); break;
 		default: retval=""; break; 
 		}
 
@@ -1050,8 +1092,30 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
         return retval;
     }
-   
 
+	/**
+	 * Returns a String representing the binary value.
+     *
+	 * @return a String representing the binary value.
+	 */
+	private String toStringBinary(boolean pad)
+	{
+		String retval;
+		if (value==null) return null;
+
+		if (isNull() || value.getBytes() == null)
+		{
+			retval=Const.NULL_BINARY;
+		}
+		else
+		{
+			retval = new String(value.getBytes());
+		}
+
+		return retval;
+	}
+    
+    
 	/**
 	 * Sets the length of the Number, Integer or String to the specified length
 	 * Note: no truncation of the value takes place, this is meta-data only!
