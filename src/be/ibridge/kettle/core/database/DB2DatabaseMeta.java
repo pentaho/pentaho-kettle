@@ -214,6 +214,23 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 				retval+=")";
 				break;
 			}
+		case Value.VALUE_TYPE_BINARY:
+			if (length>getMaxVARCHARLength() || length>=DatabaseMeta.CLOB_LENGTH)
+			{
+				retval+="BLOB("+length+")";
+			}
+			else
+			{
+				if (length>0)
+				{	
+				    retval+="CHAR("+length+") FOR BIT DATA";
+				}
+				else
+				{
+					retval+="BLOB"; // not going to work, but very close
+				}
+				break;
+			}			
 		default:
 			retval+=" UNKNOWN";
 			break;
@@ -319,5 +336,12 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 	{
 		return 32672;
 	}
+	
+    public boolean supportsBatchUpdates()
+    {
+    	// DB2 support batches but big decimals and binary data is
+    	// broken, so for the moment batches are not done in DB2.
+        return false;
+    }
 }
 
