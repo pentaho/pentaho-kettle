@@ -287,6 +287,11 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 				}
 			}
 			break;
+        case Value.VALUE_TYPE_BINARY: // the BLOB can contain binary data.
+            {
+                retval.append("BLOB");
+            }
+            break;
 		default:
 			retval.append(" UNKNOWN");
 			break;
