@@ -546,6 +546,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 			case Value.VALUE_TYPE_DATE:
 				null_value = Const.NULL_DATE;
 				break;
+			case Value.VALUE_TYPE_BINARY:
+				null_value = Const.NULL_BINARY;
+				break;				
 			default:
 				null_value = Const.NULL_NONE;
 				break;
@@ -670,6 +673,13 @@ public class TextFileInput extends BaseStep implements StepInterface
 							throw (e);
 						}
 					}
+					else
+					{
+						if (value.isBinary())
+						{
+						    value.setValue(pol.getBytes());	
+						}
+					}	
 				}
 			}
 		}
