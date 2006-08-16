@@ -54,7 +54,6 @@ import be.ibridge.kettle.repository.Repository;
  * @author Matt
  * @since Beginning 2003
  */
-
 public class Value implements Cloneable, XMLInterface, Serializable
 {
     private static final long serialVersionUID = -6310073485210258622L;
@@ -757,6 +756,19 @@ public class Value implements Cloneable, XMLInterface, Serializable
         }
         return value.getType() == VALUE_TYPE_SERIALIZABLE;
     }
+
+    /**
+     * Checks whether or not this value is of type Binary
+     * @retur true if this value has type Binary
+     */
+    public boolean isBinary() {
+    	// Serializable is not included here as it used for
+    	// internal purposes only.
+        if(value == null) {
+            return false;
+        }
+        return value.getType() == VALUE_TYPE_BINARY;
+    }   
     
 	/**
 	 * Checks whether or not this value is an Integer
