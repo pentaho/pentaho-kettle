@@ -19,6 +19,7 @@
 package be.ibridge.kettle.core.dialog;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
@@ -92,10 +93,10 @@ public class DatabaseExplorerDialog extends Dialog
 	private String    tableName; 
 	
 	private boolean justLook;
-	private String selectTable;
-	private ArrayList databases;
+	private String  selectTable;
+	private List    databases;
 	
-	public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList databases)
+	public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, List databases)
 	{
 		super(par, style);
 		props=pr;
@@ -107,7 +108,7 @@ public class DatabaseExplorerDialog extends Dialog
 		selectTable=null;
 	}
 
-	public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList databases, boolean look)
+	public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, List databases, boolean look)
 	{
 		this(par, pr, style, conn, databases);
 		justLook=look;
@@ -438,7 +439,7 @@ public class DatabaseExplorerDialog extends Dialog
 		}
 
 	    GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(log, props, shell, dbMeta, tableName, limit);
-	    ArrayList rows = pd.open();
+	    List rows = pd.open();
 	    if (rows!=null) // otherwise an already shown error...
 	    {
 			if (rows.size()>0)
@@ -522,7 +523,7 @@ public class DatabaseExplorerDialog extends Dialog
     			// Now select the other connection...
                 
                 // Only take non-SAP R/3 connections....
-                ArrayList dbs = new ArrayList();
+                List dbs = new ArrayList();
                 for (int i=0;i<databases.size();i++) 
                     if (((DatabaseMeta)databases.get(i)).getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_SAPR3) dbs.add(databases.get(i));
                 

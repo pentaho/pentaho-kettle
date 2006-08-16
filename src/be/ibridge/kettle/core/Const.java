@@ -1081,7 +1081,7 @@ public class Const
 	 * @param dbname The name of the database connection
 	 * @return The database object if one was found, null otherwise.
 	 */
-	public static final DatabaseMeta findDatabase(ArrayList databases, String dbname)
+	public static final DatabaseMeta findDatabase(List databases, String dbname)
 	{
 		if (databases == null)
 			return null;
@@ -1101,7 +1101,7 @@ public class Const
 	 * @param id The id of the database connection
 	 * @return The database object if one was found, null otherwise.
 	 */
-	public static final DatabaseMeta findDatabase(ArrayList databases, long id)
+	public static final DatabaseMeta findDatabase(List databases, long id)
 	{
 		if (databases == null)
 			return null;
@@ -1120,9 +1120,9 @@ public class Const
 	 * @param databases All the databases
 	 * @return SAP R/3 databases in a List of databases.
 	 */
-	public static final ArrayList selectSAPR3Databases(ArrayList databases)
+	public static final List selectSAPR3Databases(List databases)
 	{
-		ArrayList sap = new ArrayList();
+		List sap = new ArrayList();
 
 		Iterator it = databases.iterator();
 		while (it.hasNext())
@@ -1138,12 +1138,12 @@ public class Const
 	}
 
 	/**
-	 * Find a jobentry with a certain ID in an arraylist of job entries.
-	 * @param jobentries The ArrayList of jobentries
+	 * Find a jobentry with a certain ID in a list of job entries.
+	 * @param jobentries The List of jobentries
 	 * @param id_jobentry The id of the jobentry
 	 * @return The JobEntry object if one was found, null otherwise.
 	 */
-	public static final JobEntryInterface findJobEntry(ArrayList jobentries, long id_jobentry)
+	public static final JobEntryInterface findJobEntry(List jobentries, long id_jobentry)
 	{
 		if (jobentries == null)
 			return null;
@@ -1158,12 +1158,12 @@ public class Const
 	}
 
 	/**
-	 * Find a jobentrycopy with a certain ID in an arraylist of job entry copies.
-	 * @param jobcopies The ArrayList of jobentry copies
+	 * Find a jobentrycopy with a certain ID in a list of job entry copies.
+	 * @param jobcopies The List of jobentry copies
 	 * @param id_jobentry_copy The id of the jobentry copy
 	 * @return The JobEntryCopy object if one was found, null otherwise.
 	 */
-	public static final JobEntryCopy findJobEntryCopy(ArrayList jobcopies, long id_jobentry_copy)
+	public static final JobEntryCopy findJobEntryCopy(List jobcopies, long id_jobentry_copy)
 	{
 		if (jobcopies == null)
 			return null;
@@ -1184,7 +1184,7 @@ public class Const
 	 * @return The value of the commandline option specified.
 	 * @deprecated
 	 */
-	public static final String getCommandlineOption(ArrayList args, String option)
+	public static final String getCommandlineOption(List args, String option)
 	{
 		String optionStart[] = new String[] { "-", "/" };
 		String optionDelim[] = new String[] { "=", ":" };
@@ -1208,7 +1208,7 @@ public class Const
 	 * @param prefix The prefix to look for
 	 * @return The content.
 	 */
-	private static final String searchCommandLineOption(ArrayList args, String prefix)
+	private static final String searchCommandLineOption(List args, String prefix)
 	{
 		String retval = null;
 
@@ -1352,19 +1352,19 @@ public class Const
 	}
 
 	/**
-	 * Search for a string in an ArrayList of strings and return the index.
+	 * Search for a string in a list of strings and return the index.
 	 * @param lookup The string to search for
-	 * @param array The ArrayList of strings to look in
+	 * @param list The ArrayList of strings to look in
 	 * @return The index of a search string in an array of strings. -1 if not found.
 	 */
-	public static final int indexOfString(String lookup, List array)
+	public static final int indexOfString(String lookup, List list)
 	{
-		if (array == null)
+		if (list == null)
 			return -1;
 
-		for (int i = 0; i < array.size(); i++)
+		for (int i = 0; i < list.size(); i++)
 		{
-			String compare = (String) array.get(i);
+			String compare = (String) list.get(i);
 			if (lookup.equalsIgnoreCase(compare))
 				return i;
 		}
@@ -1401,7 +1401,7 @@ public class Const
 		 *   Example a;b;c;d    -->    new String[] { a, b, c, d }
 		 */
 		// System.out.println("splitString ["+path+"] using ["+separator+"]");
-		ArrayList list = new ArrayList();
+		List list = new ArrayList();
 
 		if (string == null || string.length() == 0)
 		{
@@ -1450,7 +1450,7 @@ public class Const
 		 *   Example a;b;c;d    -->    new String[] { a, b, c, d }
 		 */
 		// System.out.println("splitString ["+path+"] using ["+separator+"]");
-		ArrayList list = new ArrayList();
+		List list = new ArrayList();
 
 		if (string == null || string.length() == 0)
 		{
@@ -1547,9 +1547,9 @@ public class Const
 	}
 
 	/** 
-	 * Sort the entire ArrayList, if it is not empty
+	 * Sort the entire List, if it is not empty
 	 */
-	public static final void quickSort(ArrayList elements)
+	public static final void quickSort(List elements)
 	{
 		if (!elements.isEmpty())
 		{
@@ -1582,7 +1582,7 @@ public class Const
 	 * without fee is hereby granted.
 	 * See http://www.sum-it.nl/security/index.html for copyright laws.
 	 */
-	private static final void quickSort(ArrayList elements, int lowIndex, int highIndex)
+	private static final void quickSort(List elements, int lowIndex, int highIndex)
 	{
 		int lowToHighIndex;
 		int highToLowIndex;
