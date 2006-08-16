@@ -206,7 +206,6 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 							}
 						}
 					}
-					
 				}
 				else
 				{
@@ -232,16 +231,19 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 				retval+="BLOB SUB_TYPE TEXT";
 			}
 			break;
+		case Value.VALUE_TYPE_BINARY:
+			retval+="BLOB";
+			break;
 		default:
-			retval+=" UNKNOWN";
+			retval+="UNKNOWN";
 			break;
 		}
-		
+
 		if (add_cr) retval+=Const.CR;
 		
 		return retval;
 	}
-	
+
 	public String [] getReservedWords()
 	{
 		return new String[] {
