@@ -1122,7 +1122,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 		else
 		{
-			retval = "Binary, length="+getBytes().length+", string content=["+new String(value.getBytes())+"]";
+			retval = new String(value.getBytes());
 		}
 
 		return retval;
