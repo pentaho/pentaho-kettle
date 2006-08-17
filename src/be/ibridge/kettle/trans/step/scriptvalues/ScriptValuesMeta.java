@@ -607,6 +607,11 @@ public class ScriptValuesMeta extends BaseStepMeta implements StepMetaInterface
 					case Value.VALUE_TYPE_BOOLEAN: 
 						res.setValue( ((Boolean)result).booleanValue()); 
 						break;
+                    case Value.VALUE_TYPE_BINARY:
+                        byte[] bytes = new byte[1];
+                        byte[] content = (byte[])Context.toType(result, bytes.getClass());
+                        res.setValue(content);
+                        break;
 					default: res.setNull();
 					}
 				}
@@ -617,7 +622,7 @@ public class ScriptValuesMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			catch(Exception e)
 			{
-				message.append(Messages.getString("ScriptValuesMeta.CheckResult.ErrorRetrievingValue",name[i])+" : "+e.toString()); //$NON-NLS-1$ //$NON-NLS-2$
+				message.append(Messages.getString("ScriptValuesMeta.CheckResult.ErrorRetrievingValue", "["+name[i]+"]")+" : "+e.toString()+Const.CR+Const.getStackTracker(e)); //$NON-NLS-1$ //$NON-NLS-2$
 				error_found=true;
 			}
 			res.setLength(length[i], precision[i]);
@@ -641,6 +646,7 @@ public class ScriptValuesMeta extends BaseStepMeta implements StepMetaInterface
 	public StepInterface getStep(StepMeta stepMeta, StepDataInterface stepDataInterface, int cnr, TransMeta transMeta, Trans trans)
 	{
 		return new ScriptValues(stepMeta, stepDataInterface, cnr, transMeta, trans);
+        
 	}
 
 	public StepDataInterface getStepData()

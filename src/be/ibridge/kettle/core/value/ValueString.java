@@ -177,12 +177,15 @@ public class ValueString implements ValueInterface, Cloneable
     }
 
     public void setSerializable(Serializable ser) {
+        ser.toString();
     }
 
 	public byte[] getBytes() {
-		return null;
+        if (string==null) return null;
+        return string.getBytes();
 	}
 
 	public void setBytes(byte[] b) {
+        string = new String(b);
 	}    
 }

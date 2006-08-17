@@ -1770,4 +1770,15 @@ public class Const
             throw new KettleException("Unexpected error during classloader creation", e);
         }
     }
+    
+    /**
+     * Utility class for use in JavaScript to create a new byte array.
+     * This is surprisingly difficult to do in JavaScript.
+     * 
+     * @return a new java byte array
+     */
+    public static final byte[] createByteArray(int size)
+    {
+        return new byte[size];
+    }
 }

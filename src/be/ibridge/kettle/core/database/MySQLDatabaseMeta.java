@@ -255,6 +255,9 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 				retval+="TINYTEXT";
 			}
 			break;
+        case Value.VALUE_TYPE_BINARY:
+            retval+="LONGBLOB";
+            break;
 		default:
 			retval+=" UNKNOWN";
 			break;

@@ -181,6 +181,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			case VALUE_TYPE_BOOLEAN   : value = new ValueBoolean(value.getBoolean()); break;
 			case VALUE_TYPE_INTEGER   : value = new ValueInteger(value.getInteger()); break;
             case VALUE_TYPE_BIGNUMBER : value = new ValueBigNumber(value.getBigNumber()); break;
+            case VALUE_TYPE_BINARY    : value = new ValueBinary(value.getBytes()); break;
 			default: value = null;
 			}
 		}
@@ -1121,7 +1122,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 		else
 		{
-			retval = new String(value.getBytes());
+			retval = "Binary, length="+getBytes().length+", string content=["+new String(value.getBytes())+"]";
 		}
 
 		return retval;

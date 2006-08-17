@@ -19,6 +19,7 @@ package be.ibridge.kettle.core.database;
 
 import java.io.StringReader;
 import java.sql.BatchUpdateException;
+import java.sql.Blob;
 import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
@@ -674,7 +675,7 @@ public class Database
                 break;
 			case Value.VALUE_TYPE_BINARY:
 				debug="Binary";
-				if (!v.isNull()) 
+				if (!v.isNull() && v.getBytes()!=null) 
 				{
                     ps.setBytes(pos, v.getBytes());
 				}
@@ -2481,10 +2482,10 @@ public class Database
 					break;
 					
 				case java.sql.Types.BINARY:
+                case java.sql.Types.BLOB:
 					valtype=Value.VALUE_TYPE_BINARY;
-                    length=rm.getPrecision(i); 
-                    precision=rm.getScale(i);
-
+                    length=-1; 
+                    precision=-1;
 					break;
 
 				default:
@@ -2610,7 +2611,17 @@ public class Database
                     case Value.VALUE_TYPE_BIGNUMBER : val.setValue( rs.getBigDecimal(i+1) ); break;
 					case Value.VALUE_TYPE_INTEGER   : val.setValue( rs.getLong(i+1) ); break;
 					case Value.VALUE_TYPE_STRING    : val.setValue( rs.getString(i+1) ); break;
-					case Value.VALUE_TYPE_BINARY    : val.setValue( rs.getBytes(i+1) ); break;
+					case Value.VALUE_TYPE_BINARY    : 
+                        {
+                            // This doesn't work on Oracle.
+                            // val.setValue( rs.getBytes(i+1) );
+                            
+                            // A blob does work on Oracle:
+                            // How about the others?
+                            Blob blob = rs.getBlob(i+1);
+                            val.setValue( blob.getBytes(1L, (int)blob.length()) );
+                        }
+                        break;
 					case Value.VALUE_TYPE_DATE      :
                         if (databaseMeta.supportsTimeStampToDateConversion())
                         {
