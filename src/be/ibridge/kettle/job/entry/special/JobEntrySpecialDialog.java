@@ -100,7 +100,6 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
 			}
 
 			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
 				
 			}});
 		placeControl(shell,"Repeat: ",wRepeat,null,null);
@@ -114,7 +113,6 @@ public class JobEntrySpecialDialog extends Dialog implements JobEntryDialogInter
 			}
 
 			public void widgetDefaultSelected(SelectionEvent arg0) {
-				// TODO Auto-generated method stub
 				
 			}});
 		wType.add(NOSCHEDULING);

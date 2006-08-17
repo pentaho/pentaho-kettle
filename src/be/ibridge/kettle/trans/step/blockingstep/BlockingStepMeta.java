@@ -51,18 +51,12 @@ public class BlockingStepMeta  extends BaseStepMeta implements StepMetaInterface
     }
 
     public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException {
-        // TODO Auto-generated method stub
-        
     }
 
     public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException {
-        // TODO Auto-generated method stub
-        
     }
 
-    public void setDefault() {
-        // TODO Auto-generated method stub
-        
+    public void setDefault() {        
     }
 
     private void readData(Node stepnode)

@@ -116,7 +116,7 @@ public class CopyTableWizardPage2 extends WizardPage
 			{
 				public void widgetDefaultSelected(SelectionEvent e)
 				{
-					//TODO: find out how to go to next page on double click!
+					// find out how to go to next page on double click!
 				}
 			}
 		);

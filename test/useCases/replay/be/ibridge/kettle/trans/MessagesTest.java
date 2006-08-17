@@ -18,7 +18,6 @@ public class MessagesTest extends TestCase {
 	 * Test method for 'be.ibridge.kettle.trans.Messages.getString(String, String, String, String, String, String)'
 	 */
 	public void testGetString5() {
-		// TODO Auto-generated method stub
 		System.out.println(be.ibridge.kettle.trans.Messages.getString("Trans.Log.ProcessErrorInfo","copy table","1","1","1","1"));
 		System.out.println(be.ibridge.kettle.trans.Messages.getString("Trans.Log.ProcessErrorInfo2","copy table","1","1","1","1"));
 		
@@ -28,7 +27,6 @@ public class MessagesTest extends TestCase {
 	 * Test method for 'be.ibridge.kettle.trans.Messages.getString(String, String, String, String, String)'
 	 */
 	public void testGetString4() {
-		// TODO Auto-generated method stub
 		System.out.println(be.ibridge.kettle.trans.Messages.getString("Trans.Log.ProcessSuccessfullyInfo","copy table","1","1","1"));
 		
 	}
@@ -37,7 +35,6 @@ public class MessagesTest extends TestCase {
 	 * Test method for 'be.ibridge.kettle.trans.Messages.getString(String, String, String, String)'
 	 */
 	public void testGetString3() {
-		// TODO Auto-generated method stub
 		System.out.println(be.ibridge.kettle.trans.Messages.getString("Trans.Log.AllocatedRowsets","10","copy table","1"));
 		
 	}

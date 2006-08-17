@@ -362,10 +362,6 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	public boolean supportsSetCharacterStream()
 	{
 		return true;
-		
-		/*
-		 *   TODO: Not yet tested on AS/400, Informix, Sybase, PostgreSQL, Hypersonic
-		 */
 	}
 	
 	/**

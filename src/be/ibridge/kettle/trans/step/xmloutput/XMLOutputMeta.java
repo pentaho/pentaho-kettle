@@ -13,8 +13,6 @@
  **                                                                   **
  **********************************************************************/
 
-//TODO: add custom header & footer fields in different Tab on dialog.
-
 package be.ibridge.kettle.trans.step.xmloutput;
 
 import java.text.DecimalFormat;

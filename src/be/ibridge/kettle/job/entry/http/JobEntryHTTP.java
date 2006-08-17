@@ -57,9 +57,6 @@ import be.ibridge.kettle.repository.Repository;
 /**
  * This defines an HTTP job entry.
  * 
- * TODO: allow for Environment variables to be set.
- * TODO: show tooltip of actual URL and files that is sent.
- * 
  * @author Matt
  * @since 05-11-2003
  * 

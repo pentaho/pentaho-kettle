@@ -146,7 +146,6 @@ public class DbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	 * @param semicolon whether or not to add a semi-colon behind the statement.
 	 * @return the SQL statement to add a column to the specified table
 	 * 
-	 * TODO: Set to default: check if this is correct!
 	 */
 	public String getAddColumnStatement(String tablename, Value v, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
