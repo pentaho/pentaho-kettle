@@ -18,6 +18,7 @@
 package be.ibridge.kettle.core.value;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -182,10 +183,27 @@ public class ValueString implements ValueInterface, Cloneable
 
 	public byte[] getBytes() {
         if (string==null) return null;
-        return string.getBytes();
+        
+        char arr[] = string.toCharArray();
+        byte retByte[] = new byte[arr.length];
+        
+        for (int i = 0; i < arr.length; i++)
+        {
+        	// only take low byte of char.
+        	retByte[i] = (byte)(arr[i] & 0xFF);
+        }
+        return retByte;
 	}
 
 	public void setBytes(byte[] b) {
-        string = new String(b);
+		try
+		{
+            string = new String(b, "US-ASCII");
+		}
+		catch (UnsupportedEncodingException e)
+		{
+			// we should not get here, ASCII is a mandatory encoding
+		    string = null;
+		}
 	}    
 }
