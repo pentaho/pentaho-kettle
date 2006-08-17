@@ -31,7 +31,7 @@ import be.ibridge.kettle.repository.Repository;
  *
  */
 
-public class NotePadMeta implements Cloneable, XMLInterface
+public class NotePadMeta implements Cloneable, XMLInterface, GUIPositionInterface, GUISizeInterface
 {
 	private String note;
 	private Point location;
