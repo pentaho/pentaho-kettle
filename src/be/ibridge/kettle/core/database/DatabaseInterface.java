@@ -570,4 +570,10 @@ public interface DatabaseInterface extends Cloneable
      * @return extra help text on the supported options on the selected database platform.
      */
     public String getExtraOptionsHelpText();
+    
+    /**
+     * @return true if the database JDBC driver supports getBlob on the resultset.  If not we must use getBytes() to get the data.
+     */
+    public boolean supportsGetBlob();
+
 }

@@ -2613,13 +2613,15 @@ public class Database
 					case Value.VALUE_TYPE_STRING    : val.setValue( rs.getString(i+1) ); break;
 					case Value.VALUE_TYPE_BINARY    : 
                         {
-                            // This doesn't work on Oracle.
-                            // val.setValue( rs.getBytes(i+1) );
-                            
-                            // A blob does work on Oracle:
-                            // How about the others?
-                            Blob blob = rs.getBlob(i+1);
-                            val.setValue( blob.getBytes(1L, (int)blob.length()) );
+                            if (databaseMeta.supportsGetBlob())
+                            {
+                                Blob blob = rs.getBlob(i+1);
+                                val.setValue( blob.getBytes(1L, (int)blob.length()) );
+                            }
+                            else
+                            {
+                                val.setValue( rs.getBytes(i+1) );
+                            }
                         }
                         break;
 					case Value.VALUE_TYPE_DATE      :

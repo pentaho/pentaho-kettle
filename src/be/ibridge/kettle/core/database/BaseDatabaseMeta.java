@@ -832,4 +832,13 @@ public abstract class BaseDatabaseMeta implements Cloneable
     {
         return null;
     }
+    
+    /**
+     * @return true if the database JDBC driver supports getBlob on the resultset.  If not we must use getBytes() to get the data.
+     */
+    public boolean supportsGetBlob()
+    {
+        return true;
+    }
+
 }

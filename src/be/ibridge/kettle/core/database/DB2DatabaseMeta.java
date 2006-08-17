@@ -343,5 +343,13 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
     	// broken, so for the moment batches are not done in DB2.
         return false;
     }
+    
+    /**
+     * @return false because the DB2 JDBC driver doesn't support getBlob on the resultset.  We must use getBytes() to get the data.
+     */
+    public boolean supportsGetBlob()
+    {
+        return false;
+    }
 }
 
