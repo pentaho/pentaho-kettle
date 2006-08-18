@@ -2484,6 +2484,7 @@ public class Database
 				case java.sql.Types.BINARY:
                 case java.sql.Types.BLOB:
                 case java.sql.Types.VARBINARY:
+                case java.sql.Types.LONGVARBINARY:
 					valtype=Value.VALUE_TYPE_BINARY;
                     length=-1; 
                     precision=-1;
