@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -188,7 +189,41 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		TextFileField field = null;
 		if (idx>=0) field = meta.getOutputFields()[idx];
 
-        if (v.isBigNumber())
+		if (v.isString())
+		{
+			if (v.isNull() || v.getString()==null) 
+			{
+				if (idx>=0 && field!=null && field.getNullString()!=null) 
+                {
+                    if (meta.isEnclosureForced() && meta.getEnclosure()!=null)
+                    {
+                        retval=meta.getEnclosure()+field.getNullString()+meta.getEnclosure();
+                    }
+                    else
+                    {
+                        retval=field.getNullString();
+                    }
+                }
+			}
+			else
+			{
+				// Any separators in string?
+				// example: 123.4;"a;b;c";Some name
+				//
+                if (meta.isEnclosureForced() && meta.getEnclosure()!=null) // Force enclosure?
+                {
+                    retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
+                }
+                else // See if there is a separator in the String...
+                {
+    				int seppos = v.toString().indexOf(meta.getSeparator());
+    				
+    				if (seppos<0) retval=v.toString();
+    				else          retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
+                }
+			}
+		}
+		else if (v.isBigNumber())
         {
 			if (idx>=0 && field!=null && field.getFormat()!=null)
 			{
@@ -221,8 +256,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				}
 			}
         }
-        else
-		if (v.isNumeric())
+        else if (v.isNumeric())
 		{
 			if (idx>=0 && field!=null && field.getFormat()!=null)
 			{
@@ -261,8 +295,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				}
 			}
 		}
-		else
-		if (v.isDate())
+		else if (v.isDate())
 		{
 			if (idx>=0 && field!=null && field.getFormat()!=null && v.getDate()!=null)
 			{
@@ -282,41 +315,24 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				}
 			}
 		}
-		else
-		if (v.isString())
+		else if (v.isBinary())
 		{
-			if (v.isNull() || v.getString()==null) 
+			if (v.isNull())
 			{
-				if (idx>=0 && field!=null && field.getNullString()!=null) 
-                {
-                    if (meta.isEnclosureForced() && meta.getEnclosure()!=null)
-                    {
-                        retval=meta.getEnclosure()+field.getNullString()+meta.getEnclosure();
-                    }
-                    else
-                    {
-                        retval=field.getNullString();
-                    }
-                }
+				if (field.getNullString()!=null) retval=field.getNullString();
+				else retval=Const.NULL_BINARY;
 			}
 			else
-			{
-				// Any separators in string?
-				// example: 123.4;"a;b;c";Some name
-				//
-                if (meta.isEnclosureForced() && meta.getEnclosure()!=null) // Force enclosure?
-                {
-                    retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
-                }
-                else // See if there is a separator in the String...
-                {
-    				int seppos = v.toString().indexOf(meta.getSeparator());
-    				
-    				if (seppos<0) retval=v.toString();
-    				else          retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
-                }
+			{					
+                try {
+					retval=new String(v.getBytes(), "US-ASCII");
+				} catch (UnsupportedEncodingException e) {
+					// changes are small we'll get here. US_ASCII is
+					// mandatory.
+					retval=Const.NULL_BINARY;	
+				}					
 			}
-		}
+		}        
 		else // Boolean
 		{
 			if (v.isNull()) 
