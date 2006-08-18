@@ -2483,6 +2483,7 @@ public class Database
 					
 				case java.sql.Types.BINARY:
                 case java.sql.Types.BLOB:
+                case java.sql.Types.VARBINARY:
 					valtype=Value.VALUE_TYPE_BINARY;
                     length=-1; 
                     precision=-1;
@@ -2490,7 +2491,7 @@ public class Database
 
 				default:
  					valtype=Value.VALUE_TYPE_STRING;
-                    length=rm.getPrecision(i); 
+                    if (!ignoreLength) length=rm.getPrecision(i); 
                     precision=rm.getScale(i);                    
  					break;
 				}
