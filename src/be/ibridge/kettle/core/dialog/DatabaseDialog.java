@@ -1031,7 +1031,6 @@ public class DatabaseDialog extends Dialog
 		
 		// Port number
 		databaseMeta.setDBPort( wPort.getText() );
-        // System.out.println("[getInfo()] Database port : "+databaseMeta.getDatabasePortNumberString());
         		
 		// Username
 		databaseMeta.setUsername( wUsername.getText() );
@@ -1119,9 +1118,7 @@ public class DatabaseDialog extends Dialog
 	{
 		try
 		{
-			System.out.println("Creating new database info object");
 			DatabaseMeta dbinfo=new DatabaseMeta();
-			System.out.println("Getting info");
 			getInfo(dbinfo);
 			test(shell, dbinfo, props);
 		}
@@ -1135,15 +1132,12 @@ public class DatabaseDialog extends Dialog
 	 */
 	public static final void test(Shell shell, DatabaseMeta dbinfo, Props props)
 	{
-		System.out.println("Checking parameters");
-        String[] remarks = dbinfo.checkParameters(); 
+		String[] remarks = dbinfo.checkParameters(); 
 		if (remarks.length==0)
 		{
-			System.out.println("Creating database connection");
 			Database db = new Database(dbinfo);
 			try
 			{
-				System.out.println("Connecting to database");
 				db.connect();
 
 				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
