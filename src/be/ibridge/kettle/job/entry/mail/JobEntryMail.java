@@ -493,6 +493,14 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		// Send an e-mail...
 		// create some properties and get the default Session
 		Properties props = new Properties();
+        if (Const.isEmpty(server))
+        {
+            log.logError(toString(), "Unable to send the mail because the mail-server (SMTP host) is not specified");
+            result.setNrErrors(1L);
+            result.setResult(false);
+            return result;
+        }
+        
 		props.put("mail.smtp.host", StringUtil.environmentSubstitute(server));
 		boolean debug = log.getLogLevel()>=LogWriter.LOG_LEVEL_DEBUG;
 		
@@ -523,7 +531,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
 		    Message msg = new MimeMessage(session);
 		    
 		    String email_address = StringUtil.environmentSubstitute(replyAddress);
-		    if ( email_address != null )
+		    if ( !Const.isEmpty(email_address) )
 		    {
 		        msg.setFrom(new InternetAddress(email_address));
 		    }
