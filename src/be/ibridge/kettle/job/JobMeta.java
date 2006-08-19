@@ -1266,30 +1266,20 @@ public class JobMeta implements Cloneable, XMLInterface
 
 	public JobHopMeta[] getAllJobHopsUsing(String name)
 	{
-		int count=0;
-		for (int i=0;i<nrJobHops();i++)
-		{
-			JobHopMeta hi = getJobHop(i);
-			if (hi.from_entry.getName().equalsIgnoreCase(name) ||
-				hi.to_entry.getName().equalsIgnoreCase(name) )
-			{
-				count++;
-			}
-		}
-		JobHopMeta retval[] = new JobHopMeta[count];
+        List hops = new ArrayList();
 
-		count=0;
-		for (int i=0;i<nrJobHops();i++)
+        for (int i=0;i<nrJobHops();i++)
 		{
 			JobHopMeta hi = getJobHop(i);
-			if (hi.from_entry.getName().equalsIgnoreCase(name) ||
-				hi.to_entry.getName().equalsIgnoreCase(name) )
-			{
-				retval[count]=hi;
-				count++;
-			}
+            if (hi.from_entry!=null && hi.to_entry!=null)
+            {
+                if (hi.from_entry.getName().equalsIgnoreCase(name) || hi.to_entry.getName().equalsIgnoreCase(name) )
+                {
+                    hops.add(hi);
+                }
+            }
 		}
-		return retval;
+		return (JobHopMeta[]) hops.toArray(new JobHopMeta[hops.size()]);
 	}
 
 	public NotePadMeta getNote(int x, int y)
