@@ -484,10 +484,19 @@ public class LogWriter
         logger.addAppender(appender);
     }
     
-    public void removeAppender(Log4jFileAppender appender)
+    public void removeAppender(Appender appender)
     {
         Logger logger = Logger.getRootLogger();
         logger.removeAppender(appender);
     }
 
+    public Log4jConsoleAppender getConsoleAppender()
+    {
+        return consoleAppender;
+    }
+    
+    public Log4jStringAppender getStringAppender()
+    {
+        return stringAppender;
+    }
 }
