@@ -18,7 +18,9 @@ import java.util.ArrayList;
 
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.core.ChangedFlagInterface;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.GUIPositionInterface;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Row;
@@ -41,7 +43,7 @@ import be.ibridge.kettle.repository.Repository;
  *
  */
 
-public class JobEntryCopy implements Cloneable, XMLInterface 
+public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterface, ChangedFlagInterface
 {
 	private JobEntryInterface entry;
 	private int     nr;          // Copy nr. 0 is the base copy...

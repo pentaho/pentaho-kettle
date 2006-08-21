@@ -75,6 +75,7 @@ import org.w3c.dom.Node;
 import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage1;
 import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage2;
 import be.ibridge.kettle.chef.wizards.RipDatabaseWizardPage3;
+import be.ibridge.kettle.core.AddUndoPositionInterface;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
 import be.ibridge.kettle.core.GUIResource;
@@ -142,7 +143,7 @@ import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
  * @since 16-05-2003
  *
  */
-public class Chef
+public class Chef implements AddUndoPositionInterface
 {
     public static final String APP_NAME = Messages.getString("Chef.Application.Name"); //$NON-NLS-1$
 

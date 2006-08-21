@@ -15,6 +15,8 @@
 
  
 package be.ibridge.kettle.chef;
+import java.util.List;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -52,6 +54,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Rectangle;
+import be.ibridge.kettle.core.SnapAllignDistribute;
 import be.ibridge.kettle.core.XMLTransfer;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
@@ -1932,330 +1935,53 @@ public class ChefGraph extends Canvas
 		return false;
 	}
 
+    private SnapAllignDistribute createSnapAllignDistribute()
+    {
+        List elements = chef.getJobMeta().getSelectedDrawnJobEntryList();
+        int[] indices = chef.getJobMeta().getEntryIndexes((JobEntryCopy[])elements.toArray(new JobEntryCopy[elements.size()]));
+
+        return new SnapAllignDistribute(elements, indices, chef);
+    }
+
     private void snaptogrid(int size)
     {
-        // First look for the minimum x coordinate...
-        
-        JobEntryCopy jobentries[] = new JobEntryCopy[chef.jobMeta.nrSelected()];
-        Point before[]   = new Point[chef.jobMeta.nrSelected()];
-        Point after[]    = new Point[chef.jobMeta.nrSelected()];
-        int nr = 0;
-        
-        for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
-        {
-            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
-            if (entryCopy.isSelected() && entryCopy.isDrawn())
-            {
-                jobentries[nr] = entryCopy;
-                Point p = entryCopy.getLocation();
-                before[nr] = new Point(p.x, p.y);
-                
-                // What's the modulus ?
-                int dx = p.x % size;
-                int dy = p.y % size;
-
-                // Correct the location to the nearest grid line!
-                // This means for size = 10
-                // x = 3: dx=3, dx<=5 --> x=3-3 = 0;
-                // x = 7: dx=7, dx> 5 --> x=3+10-3 = 10;
-                // x = 10: dx=0, dx<=5 --> x=10-0 = 10;
-
-                if (dx > size / 2)
-                    p.x += size - dx;
-                else
-                    p.x -= dx;
-                if (dy > size / 2)
-                    p.y += size - dy;
-                else
-                    p.y -= dy;
-                after[nr] = new Point(p.x, p.y);
-                nr++;
-            }
-        }
-        
-        chef.addUndoPosition(jobentries, chef.jobMeta.getEntryIndexes(jobentries), before, after );
-        
+        createSnapAllignDistribute().snaptogrid(size);
         redraw();
     }
 
     private void allignleft()
     {
-        if (chef.getJobMeta().nrSelected() == 0) return;
-
-        JobEntryCopy jobentries[] = new JobEntryCopy[chef.jobMeta.nrSelected()];
-        Point before[]   = new Point[chef.jobMeta.nrSelected()];
-        Point after[]    = new Point[chef.jobMeta.nrSelected()];
-        int nr = 0;
-
-        int min = 99999;
-
-        // First look for the minimum x coordinate...
-        for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
-        {
-            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
-            if (entryCopy.isSelected() && entryCopy.isDrawn())
-            {
-                Point p = entryCopy.getLocation();
-                if (p.x < min) min = p.x;
-            }
-        }
-        
-        // Then apply the coordinate...
-        for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
-        {
-            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
-            if (entryCopy.isSelected() && entryCopy.isDrawn())
-            {
-                jobentries[nr] = entryCopy;
-                Point p = entryCopy.getLocation();
-                before[nr] = new Point(p.x, p.y);
-                entryCopy.setLocation(min, p.y);
-                after[nr] = new Point(min, p.y);
-                nr++;
-            }
-        }
-        chef.addUndoPosition(jobentries, chef.jobMeta.getEntryIndexes(jobentries), before, after );
+        createSnapAllignDistribute().allignleft();
         redraw();
     }
 
     private void allignright()
     {
-        JobEntryCopy jobentries[] = new JobEntryCopy[chef.jobMeta.nrSelected()];
-        Point before[]   = new Point[chef.jobMeta.nrSelected()];
-        Point after[]    = new Point[chef.jobMeta.nrSelected()];
-        int nr = 0;
-
-        int max = -99999;
-
-        // First look for the maximum x coordinate...
-        for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
-        {
-            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
-            if (entryCopy.isSelected() && entryCopy.isDrawn())
-            {
-                Point p = entryCopy.getLocation();
-                if (p.x > max) max = p.x;
-            }
-        }
-        // Then apply the coordinate...
-        for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
-        {
-            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
-            if (entryCopy.isSelected() && entryCopy.isDrawn())
-            {
-                jobentries[nr] = entryCopy;
-                Point p = entryCopy.getLocation();
-                before[nr] = new Point(p.x, p.y);
-                entryCopy.setLocation(max, p.y);
-                after[nr] = new Point(max, p.y);
-                nr++;
-           }
-        }
-        chef.addUndoPosition(jobentries, chef.jobMeta.getEntryIndexes(jobentries), before, after );
+        createSnapAllignDistribute().allignright();
         redraw();
     }
 
     private void alligntop()
     {
-        JobEntryCopy jobentries[] = new JobEntryCopy[chef.jobMeta.nrSelected()];
-        Point before[]   = new Point[chef.jobMeta.nrSelected()];
-        Point after[]    = new Point[chef.jobMeta.nrSelected()];
-        int nr = 0;
-        
-        int min = 99999;
-
-        // First look for the minimum y coordinate...
-        for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
-        {
-            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
-            if (entryCopy.isSelected() && entryCopy.isDrawn())
-            {
-                Point p = entryCopy.getLocation();
-                if (p.y < min) min = p.y;
-            }
-        }
-        // Then apply the coordinate...
-        for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
-        {
-            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
-            if (entryCopy.isSelected() && entryCopy.isDrawn())
-            {
-                jobentries[nr] = entryCopy;
-                Point p = entryCopy.getLocation();
-                before[nr] = new Point(p.x, p.y);
-                entryCopy.setLocation(p.x, min);
-                after[nr] = new Point(p.x, min);
-                nr++;
-           }
-        }
-        chef.addUndoPosition(jobentries, chef.jobMeta.getEntryIndexes(jobentries), before, after );
+        createSnapAllignDistribute().alligntop();
         redraw();
     }
 
     private void allignbottom()
     {
-        JobEntryCopy jobentries[] = new JobEntryCopy[chef.jobMeta.nrSelected()];
-        Point before[]   = new Point[chef.jobMeta.nrSelected()];
-        Point after[]    = new Point[chef.jobMeta.nrSelected()];
-        int nr = 0;
-        
-        int max = -99999;
-
-        // First look for the maximum y coordinate...
-        for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
-        {
-            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
-            if (entryCopy.isSelected() && entryCopy.isDrawn())
-            {
-                Point p = entryCopy.getLocation();
-                if (p.y > max) max = p.y;
-            }
-        }
-        // Then apply the coordinate...
-        for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
-        {
-            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
-            if (entryCopy.isSelected() && entryCopy.isDrawn())
-            {
-                jobentries[nr] = entryCopy;
-                Point p = entryCopy.getLocation();
-                before[nr] = new Point(p.x, p.y);
-                entryCopy.setLocation(p.x, max);
-                after[nr] = new Point(p.x, max);
-                nr++;
-            }
-        }
-        chef.addUndoPosition(jobentries, chef.jobMeta.getEntryIndexes(jobentries), before, after );
+        createSnapAllignDistribute().allignbottom();
         redraw();
     }
 
     private void distributehorizontal()
     {
-        JobEntryCopy jobentries[] = new JobEntryCopy[chef.jobMeta.nrSelected()];
-        Point before[]   = new Point[chef.jobMeta.nrSelected()];
-        Point after[]    = new Point[chef.jobMeta.nrSelected()];
-        
-        int min = 99999;
-        int max = -99999;
-        int sels = chef.jobMeta.nrSelected();
-        if (sels <= 1) return;
-        int order[] = new int[sels];
-
-        // First look for the minimum & maximum x coordinate...
-        int selnr = 0;
-        for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
-        {
-            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
-            if (entryCopy.isSelected() && entryCopy.isDrawn())
-            {
-                Point p = entryCopy.getLocation();
-                if (p.x < min) min = p.x;
-                if (p.x > max) max = p.x;
-                order[selnr] = i;
-                selnr++;
-            }
-        }
-
-        // Difficult to keep the jobentries in the correct order.
-        // If you just set the x-coordinates, you get special effects.
-        // Best is to keep the current order of things.
-        // First build an arraylist and store the order there.
-        // Then sort order[], based upon the coordinate of the step.
-        for (int i = 0; i < sels; i++)
-        {
-            for (int j = 0; j < sels - 1; j++)
-            {
-                Point p1 = chef.jobMeta.getJobEntry(order[j]).getLocation();
-                Point p2 = chef.jobMeta.getJobEntry(order[j + 1]).getLocation();
-                if (p1.x > p2.x) // swap
-                {
-                    int dummy = order[j];
-                    order[j] = order[j + 1];
-                    order[j + 1] = dummy;
-                }
-            }
-        }
-
-        // The distance between two jobentries becomes.
-        int distance = (max - min) / (sels - 1);
-
-        for (int i = 0; i < sels; i++)
-        {
-            jobentries[i] = chef.jobMeta.getJobEntry(order[i]);
-            Point p = jobentries[i].getLocation();
-            before[i] = new Point(p.x, p.y);
-            p.x = min + (i * distance);
-            after[i] = new Point(p.x, p.y);
-        }
-        
-        // Undo!
-        chef.addUndoPosition(jobentries, chef.jobMeta.getEntryIndexes(jobentries), before, after );
-
+        createSnapAllignDistribute().distributehorizontal();
         redraw();
     }
 
     public void distributevertical()
     {
-        JobEntryCopy jobentries[] = new JobEntryCopy[chef.jobMeta.nrSelected()];
-        Point before[]   = new Point[chef.jobMeta.nrSelected()];
-        Point after[]    = new Point[chef.jobMeta.nrSelected()];
-
-        int min = 99999;
-        int max = -99999;
-        int sels = chef.jobMeta.nrSelected();
-        if (sels <= 1) return;
-        int order[] = new int[sels];
-
-        // First look for the minimum & maximum y coordinate...
-        int selnr = 0;
-        for (int i = 0; i < chef.jobMeta.nrJobEntries(); i++)
-        {
-            JobEntryCopy entryCopy = chef.jobMeta.getJobEntry(i);
-            if (entryCopy.isSelected() && entryCopy.isDrawn())
-            {
-                Point p = entryCopy.getLocation();
-                if (p.y < min) min = p.y;
-                if (p.y > max) max = p.y;
-                order[selnr] = i;
-                selnr++;
-            }
-        }
-
-        // Difficult to keep the jobentries in the correct order.
-        // If you just set the x-coordinates, you get special effects.
-        // Best is to keep the current order of things.
-        // First build an arraylist and store the order there.
-        // Then sort order[], based upon the coordinate of the step.
-        for (int i = 0; i < sels; i++)
-        {
-            for (int j = 0; j < sels - 1; j++)
-            {
-                Point p1 = chef.jobMeta.getJobEntry(order[j]).getLocation();
-                Point p2 = chef.jobMeta.getJobEntry(order[j + 1]).getLocation();
-                if (p1.y > p2.y) // swap
-                {
-                    int dummy = order[j];
-                    order[j] = order[j + 1];
-                    order[j + 1] = dummy;
-                }
-            }
-        }
-
-        // The distance between two jobentries becomes.
-        int distance = (max - min) / (sels - 1);
-
-        for (int i = 0; i < sels; i++)
-        {
-            jobentries[i] = chef.jobMeta.getJobEntry(order[i]);
-            Point p = jobentries[i].getLocation();
-            before[i] = new Point(p.x, p.y);
-            p.y = min + (i * distance);
-            after[i] = new Point(p.x, p.y);
-        }
-
-        // Undo!
-        chef.addUndoPosition(jobentries, chef.jobMeta.getEntryIndexes(jobentries), before, after );
-        
+        createSnapAllignDistribute().distributevertical();
         redraw();
     }
 

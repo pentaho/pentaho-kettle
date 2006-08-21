@@ -1771,4 +1771,21 @@ public class JobMeta implements Cloneable, XMLInterface
         return varList;
     }
 
+    /**
+     * Get an array of all the selected job entries
+     *
+     * @return A list containing all the selected & drawn job entries.
+     */
+    public List getSelectedDrawnJobEntryList()
+    {
+        List list = new ArrayList();
+        
+        for (int i = 0; i < nrJobEntries(); i++)
+        {
+            JobEntryCopy jobEntryCopy = getJobEntry(i);
+            if (jobEntryCopy.isDrawn() && jobEntryCopy.isSelected()) list.add(jobEntryCopy);
+
+        }
+        return list;
+    }
 }
