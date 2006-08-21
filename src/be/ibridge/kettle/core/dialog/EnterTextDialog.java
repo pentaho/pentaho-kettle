@@ -33,6 +33,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.DescriptionInterface;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -235,4 +236,11 @@ public class EnterTextDialog extends Dialog
 		text = wDesc.getText();
 		dispose();
 	}
+    
+    public static final void editDescription(Shell shell, DescriptionInterface descriptionInterface, String shellText, String message)
+    {
+        EnterTextDialog textDialog = new EnterTextDialog(shell, shellText, message, descriptionInterface.getDescription());
+        String description = textDialog.open();
+        if (description != null) descriptionInterface.setDescription(description);
+    }
 }
