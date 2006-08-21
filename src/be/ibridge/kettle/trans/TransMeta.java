@@ -2665,6 +2665,24 @@ public class TransMeta implements XMLInterface
         }
         return retval;
     }
+    
+    /**
+     * Get an array of all the selected steps
+     *
+     * @return A list containing all the selected & drawn steps.
+     */
+    public List getSelectedDrawnStepsList()
+    {
+        List list = new ArrayList();
+        
+        for (int i = 0; i < nrSteps(); i++)
+        {
+            StepMeta stepMeta = getStep(i);
+            if (stepMeta.isDrawn() && stepMeta.isSelected()) list.add(stepMeta);
+
+        }
+        return list;
+    }
 
     /**
      * Get an array of all the selected notes

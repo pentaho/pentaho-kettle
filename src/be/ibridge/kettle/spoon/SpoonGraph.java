@@ -16,6 +16,7 @@
 package be.ibridge.kettle.spoon;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.List;
 import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -58,6 +59,7 @@ import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Rectangle;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.SnapAllignDistribute;
 import be.ibridge.kettle.core.XMLTransfer;
 import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
@@ -1896,341 +1898,53 @@ public class SpoonGraph extends Canvas
         return false;
     }
 
+    private SnapAllignDistribute createSnapAllignDistribute()
+    {
+        List elements = spoon.getTransMeta().getSelectedDrawnStepsList();
+        int[] indices = spoon.getTransMeta().getStepIndexes((StepMeta[])elements.toArray(new StepMeta[elements.size()]));
+
+        return new SnapAllignDistribute(elements, indices, spoon);
+    }
+    
     private void snaptogrid(int size)
     {
-        if (spoon.getTransMeta().nrSelectedSteps() == 0) return;
-
-        // First look for the minimum x coordinate...
-
-        StepMeta steps[] = new StepMeta[spoon.getTransMeta().nrSelectedSteps()];
-        Point before[] = new Point[spoon.getTransMeta().nrSelectedSteps()];
-        Point after[] = new Point[spoon.getTransMeta().nrSelectedSteps()];
-        int nr = 0;
-
-        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
-        {
-            StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected() && stepMeta.isDrawn())
-            {
-                steps[nr] = stepMeta;
-                Point p = stepMeta.getLocation();
-                before[nr] = new Point(p.x, p.y);
-
-                // What's the modulus ?
-                int dx = p.x % size;
-                int dy = p.y % size;
-
-                // Correct the location to the nearest grid line!
-                // This means for size = 10
-                // x = 3: dx=3, dx<=5 --> x=3-3 = 0;
-                // x = 7: dx=7, dx> 5 --> x=3+10-3 = 10;
-                // x = 10: dx=0, dx<=5 --> x=10-0 = 10;
-
-                if (dx > size / 2)
-                    p.x += size - dx;
-                else
-                    p.x -= dx;
-                if (dy > size / 2)
-                    p.y += size - dy;
-                else
-                    p.y -= dy;
-                after[nr] = new Point(p.x, p.y);
-                nr++;
-            }
-        }
-
-        spoon.addUndoPosition(steps, spoon.getTransMeta().getStepIndexes(steps), before, after);
-
+        createSnapAllignDistribute().snaptogrid(size);
         redraw();
     }
 
     private void allignleft()
     {
-        if (spoon.getTransMeta().nrSelectedSteps() == 0) return;
-
-        StepMeta steps[] = new StepMeta[spoon.getTransMeta().nrSelectedSteps()];
-        Point before[] = new Point[spoon.getTransMeta().nrSelectedSteps()];
-        Point after[] = new Point[spoon.getTransMeta().nrSelectedSteps()];
-        int nr = 0;
-
-        int min = 99999;
-
-        // First look for the minimum x coordinate...
-        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
-        {
-            StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected() && stepMeta.isDrawn())
-            {
-                Point p = stepMeta.getLocation();
-                if (p.x < min) min = p.x;
-            }
-        }
-        // Then apply the coordinate...
-        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
-        {
-            StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected() && stepMeta.isDrawn())
-            {
-                steps[nr] = stepMeta;
-                Point p = stepMeta.getLocation();
-                before[nr] = new Point(p.x, p.y);
-                stepMeta.setLocation(min, p.y);
-                after[nr] = new Point(min, p.y);
-                nr++;
-            }
-        }
-        spoon.addUndoPosition(steps, spoon.getTransMeta().getStepIndexes(steps), before, after);
+        createSnapAllignDistribute().allignleft();
         redraw();
     }
 
     private void allignright()
     {
-        if (spoon.getTransMeta().nrSelectedSteps() == 0) return;
-
-        StepMeta steps[] = new StepMeta[spoon.getTransMeta().nrSelectedSteps()];
-        Point before[] = new Point[spoon.getTransMeta().nrSelectedSteps()];
-        Point after[] = new Point[spoon.getTransMeta().nrSelectedSteps()];
-        int nr = 0;
-
-        int max = -99999;
-
-        // First look for the maximum x coordinate...
-        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
-        {
-            StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected() && stepMeta.isDrawn())
-            {
-                Point p = stepMeta.getLocation();
-                if (p.x > max) max = p.x;
-            }
-        }
-        // Then apply the coordinate...
-        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
-        {
-            StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected() && stepMeta.isDrawn())
-            {
-                steps[nr] = stepMeta;
-                Point p = stepMeta.getLocation();
-                before[nr] = new Point(p.x, p.y);
-                stepMeta.setLocation(max, p.y);
-                after[nr] = new Point(max, p.y);
-                nr++;
-            }
-        }
-        spoon.addUndoPosition(steps, spoon.getTransMeta().getStepIndexes(steps), before, after);
+        createSnapAllignDistribute().allignright();
         redraw();
     }
 
     private void alligntop()
     {
-        if (spoon.getTransMeta().nrSelectedSteps() == 0) return;
-
-        StepMeta steps[] = new StepMeta[spoon.getTransMeta().nrSelectedSteps()];
-        Point before[] = new Point[spoon.getTransMeta().nrSelectedSteps()];
-        Point after[] = new Point[spoon.getTransMeta().nrSelectedSteps()];
-        int nr = 0;
-
-        int min = 99999;
-
-        // First look for the minimum y coordinate...
-        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
-        {
-            StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected() && stepMeta.isDrawn())
-            {
-                Point p = stepMeta.getLocation();
-                if (p.y < min) min = p.y;
-            }
-        }
-        // Then apply the coordinate...
-        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
-        {
-            StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected() && stepMeta.isDrawn())
-            {
-                steps[nr] = stepMeta;
-                Point p = stepMeta.getLocation();
-                before[nr] = new Point(p.x, p.y);
-                stepMeta.setLocation(p.x, min);
-                after[nr] = new Point(p.x, min);
-                nr++;
-            }
-        }
-        spoon.addUndoPosition(steps, spoon.getTransMeta().getStepIndexes(steps), before, after);
+        createSnapAllignDistribute().alligntop();
         redraw();
     }
 
     private void allignbottom()
     {
-        if (spoon.getTransMeta().nrSelectedSteps() == 0) return;
-
-        StepMeta steps[] = new StepMeta[spoon.getTransMeta().nrSelectedSteps()];
-        Point before[] = new Point[spoon.getTransMeta().nrSelectedSteps()];
-        Point after[] = new Point[spoon.getTransMeta().nrSelectedSteps()];
-        int nr = 0;
-
-        int max = -99999;
-
-        // First look for the maximum y coordinate...
-        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
-        {
-            StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected() && stepMeta.isDrawn())
-            {
-                Point p = stepMeta.getLocation();
-                if (p.y > max) max = p.y;
-            }
-        }
-        // Then apply the coordinate...
-        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
-        {
-            StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected() && stepMeta.isDrawn())
-            {
-                steps[nr] = stepMeta;
-                Point p = stepMeta.getLocation();
-                before[nr] = new Point(p.x, p.y);
-                stepMeta.setLocation(p.x, max);
-                after[nr] = new Point(p.x, max);
-                nr++;
-            }
-        }
-        spoon.addUndoPosition(steps, spoon.getTransMeta().getStepIndexes(steps), before, after);
+        createSnapAllignDistribute().allignbottom();
         redraw();
     }
 
     private void distributehorizontal()
     {
-        if (spoon.getTransMeta().nrSelectedSteps() == 0) return;
-
-        StepMeta steps[] = new StepMeta[spoon.getTransMeta().nrSelectedSteps()];
-        Point before[] = new Point[spoon.getTransMeta().nrSelectedSteps()];
-        Point after[] = new Point[spoon.getTransMeta().nrSelectedSteps()];
-
-        int min = 99999;
-        int max = -99999;
-        int sels = spoon.getTransMeta().nrSelectedSteps();
-        if (sels <= 1) return;
-        int order[] = new int[sels];
-
-        // First look for the minimum & maximum x coordinate...
-        int selnr = 0;
-        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
-        {
-            StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected() && stepMeta.isDrawn())
-            {
-                Point p = stepMeta.getLocation();
-                if (p.x < min) min = p.x;
-                if (p.x > max) max = p.x;
-                order[selnr] = i;
-                selnr++;
-            }
-        }
-
-        // Difficult to keep the steps in the correct order.
-        // If you just set the x-coordinates, you get special effects.
-        // Best is to keep the current order of things.
-        // First build an arraylist and store the order there.
-        // Then sort order[], based upon the coordinate of the step.
-        for (int i = 0; i < sels; i++)
-        {
-            for (int j = 0; j < sels - 1; j++)
-            {
-                Point p1 = spoon.getTransMeta().getStep(order[j]).getLocation();
-                Point p2 = spoon.getTransMeta().getStep(order[j + 1]).getLocation();
-                if (p1.x > p2.x) // swap
-                {
-                    int dummy = order[j];
-                    order[j] = order[j + 1];
-                    order[j + 1] = dummy;
-                }
-            }
-        }
-
-        // The distance between two steps becomes.
-        int distance = (max - min) / (sels - 1);
-
-        for (int i = 0; i < sels; i++)
-        {
-            steps[i] = spoon.getTransMeta().getStep(order[i]);
-            Point p = steps[i].getLocation();
-            before[i] = new Point(p.x, p.y);
-            p.x = min + (i * distance);
-            after[i] = new Point(p.x, p.y);
-        }
-
-        // Undo!
-        spoon.addUndoPosition(steps, spoon.getTransMeta().getStepIndexes(steps), before, after);
-
+        createSnapAllignDistribute().distributehorizontal();
         redraw();
     }
 
     public void distributevertical()
     {
-        if (spoon.getTransMeta().nrSelectedSteps() == 0) return;
-
-        StepMeta steps[] = new StepMeta[spoon.getTransMeta().nrSelectedSteps()];
-        Point before[] = new Point[spoon.getTransMeta().nrSelectedSteps()];
-        Point after[] = new Point[spoon.getTransMeta().nrSelectedSteps()];
-
-        int min = 99999;
-        int max = -99999;
-        int sels = spoon.getTransMeta().nrSelectedSteps();
-        if (sels <= 1) return;
-        int order[] = new int[sels];
-
-        // First look for the minimum & maximum y coordinate...
-        int selnr = 0;
-        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
-        {
-            StepMeta stepMeta = spoon.getTransMeta().getStep(i);
-            if (stepMeta.isSelected() && stepMeta.isDrawn())
-            {
-                Point p = stepMeta.getLocation();
-                if (p.y < min) min = p.y;
-                if (p.y > max) max = p.y;
-                order[selnr] = i;
-                selnr++;
-            }
-        }
-
-        // Difficult to keep the steps in the correct order.
-        // If you just set the x-coordinates, you get special effects.
-        // Best is to keep the current order of things.
-        // First build an arraylist and store the order there.
-        // Then sort order[], based upon the coordinate of the step.
-        for (int i = 0; i < sels; i++)
-        {
-            for (int j = 0; j < sels - 1; j++)
-            {
-                Point p1 = spoon.getTransMeta().getStep(order[j]).getLocation();
-                Point p2 = spoon.getTransMeta().getStep(order[j + 1]).getLocation();
-                if (p1.y > p2.y) // swap
-                {
-                    int dummy = order[j];
-                    order[j] = order[j + 1];
-                    order[j + 1] = dummy;
-                }
-            }
-        }
-
-        // The distance between two steps becomes.
-        int distance = (max - min) / (sels - 1);
-
-        for (int i = 0; i < sels; i++)
-        {
-            steps[i] = spoon.getTransMeta().getStep(order[i]);
-            Point p = steps[i].getLocation();
-            before[i] = new Point(p.x, p.y);
-            p.y = min + (i * distance);
-            after[i] = new Point(p.x, p.y);
-        }
-
-        // Undo!
-        spoon.addUndoPosition(steps, spoon.getTransMeta().getStepIndexes(steps), before, after);
-
+        createSnapAllignDistribute().distributevertical();
         redraw();
     }
 

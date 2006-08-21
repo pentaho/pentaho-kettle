@@ -72,6 +72,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.core.AddUndoPositionInterface;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
 import be.ibridge.kettle.core.GUIResource;
@@ -158,7 +159,7 @@ import be.ibridge.kettle.version.BuildVersion;
  * import the package:be.ibridge.kettle.i18n.Messages
  * @modified by vitoelv since 07-Feb-2006
  */
-public class Spoon
+public class Spoon implements AddUndoPositionInterface
 {
     public static final String APP_NAME = Messages.getString("Spoon.Application.Name");  //"Spoon";
     
