@@ -54,6 +54,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Rectangle;
+import be.ibridge.kettle.core.Redrawable;
 import be.ibridge.kettle.core.SnapAllignDistribute;
 import be.ibridge.kettle.core.XMLTransfer;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
@@ -77,7 +78,7 @@ import be.ibridge.kettle.trans.TransMeta;
  *
  */
 
-public class ChefGraph extends Canvas 
+public class ChefGraph extends Canvas implements Redrawable
 {
 	private static final int HOP_SEL_MARGIN = 9;
 

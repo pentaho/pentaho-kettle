@@ -2734,7 +2734,9 @@ public class TransMeta implements XMLInterface
         int retval[] = new int[steps.length];
 
         for (int i = 0; i < steps.length; i++)
+        {
             retval[i] = indexOfStep(steps[i]);
+        }
 
         return retval;
     }
