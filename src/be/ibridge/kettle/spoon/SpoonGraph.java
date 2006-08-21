@@ -1904,49 +1904,42 @@ public class SpoonGraph extends Canvas implements Redrawable
         List elements = spoon.getTransMeta().getSelectedDrawnStepsList();
         int[] indices = spoon.getTransMeta().getStepIndexes((StepMeta[])elements.toArray(new StepMeta[elements.size()]));
 
-        return new SnapAllignDistribute(elements, indices, spoon);
+        return new SnapAllignDistribute(elements, indices, spoon, this);
     }
     
     private void snaptogrid(int size)
     {
         createSnapAllignDistribute().snaptogrid(size);
-        redraw();
     }
 
     private void allignleft()
     {
         createSnapAllignDistribute().allignleft();
-        redraw();
     }
 
     private void allignright()
     {
         createSnapAllignDistribute().allignright();
-        redraw();
     }
 
     private void alligntop()
     {
         createSnapAllignDistribute().alligntop();
-        redraw();
     }
 
     private void allignbottom()
     {
         createSnapAllignDistribute().allignbottom();
-        redraw();
     }
 
     private void distributehorizontal()
     {
         createSnapAllignDistribute().distributehorizontal();
-        redraw();
     }
 
     public void distributevertical()
     {
         createSnapAllignDistribute().distributevertical();
-        redraw();
     }
 
     private void detach(StepMeta stepMeta)

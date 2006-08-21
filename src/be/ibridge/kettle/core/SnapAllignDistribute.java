@@ -7,12 +7,14 @@ public class SnapAllignDistribute
     private List elements;
     private AddUndoPositionInterface addUndoPositionInterface;
     private int[] indices;
+    private Redrawable redrawable;
     
-    public SnapAllignDistribute(List elements, int[] indices, AddUndoPositionInterface addUndoPositionInterface)
+    public SnapAllignDistribute(List elements, int[] indices, AddUndoPositionInterface addUndoPositionInterface, Redrawable redrawable)
     {
         this.elements = elements;
         this.indices = indices;
         this.addUndoPositionInterface = addUndoPositionInterface;
+        this.redrawable = redrawable;
     }
     
     public void snaptogrid(int size)
@@ -56,6 +58,7 @@ public class SnapAllignDistribute
         }
 
         addUndoPositionInterface.addUndoPosition(elemArray, indices, before, after);
+        redrawable.redraw();
     }
 
     public void allignleft()
@@ -89,6 +92,7 @@ public class SnapAllignDistribute
         }
         
         addUndoPositionInterface.addUndoPosition(elemArray, indices, before, after);
+        redrawable.redraw();
     }
 
     public void allignright()
@@ -122,6 +126,7 @@ public class SnapAllignDistribute
         }
         
         addUndoPositionInterface.addUndoPosition(elemArray, indices, before, after);
+        redrawable.redraw();
     }
 
     public void alligntop()
@@ -152,7 +157,9 @@ public class SnapAllignDistribute
             element.setLocation(p.x, min);
             after[i] = new Point(p.x, min);
         }
+        
         addUndoPositionInterface.addUndoPosition(elemArray, indices, before, after);
+        redrawable.redraw();
     }
 
     public void allignbottom()
@@ -187,6 +194,7 @@ public class SnapAllignDistribute
         }
         
         addUndoPositionInterface.addUndoPosition(elemArray, indices, before, after);
+        redrawable.redraw();
     }
 
     public void distributehorizontal()
@@ -249,6 +257,7 @@ public class SnapAllignDistribute
 
         // Undo!
         addUndoPositionInterface.addUndoPosition(elemArray, indices, before, after);
+        redrawable.redraw();
     }
 
     public void distributevertical()
@@ -313,5 +322,6 @@ public class SnapAllignDistribute
 
         // Undo!
         addUndoPositionInterface.addUndoPosition(elemArray, indices, before, after);
+        redrawable.redraw();
     }
 }

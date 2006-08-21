@@ -1941,49 +1941,42 @@ public class ChefGraph extends Canvas implements Redrawable
         List elements = chef.getJobMeta().getSelectedDrawnJobEntryList();
         int[] indices = chef.getJobMeta().getEntryIndexes((JobEntryCopy[])elements.toArray(new JobEntryCopy[elements.size()]));
 
-        return new SnapAllignDistribute(elements, indices, chef);
+        return new SnapAllignDistribute(elements, indices, chef, this);
     }
 
     private void snaptogrid(int size)
     {
         createSnapAllignDistribute().snaptogrid(size);
-        redraw();
     }
 
     private void allignleft()
     {
         createSnapAllignDistribute().allignleft();
-        redraw();
     }
 
     private void allignright()
     {
         createSnapAllignDistribute().allignright();
-        redraw();
     }
 
     private void alligntop()
     {
         createSnapAllignDistribute().alligntop();
-        redraw();
     }
 
     private void allignbottom()
     {
         createSnapAllignDistribute().allignbottom();
-        redraw();
     }
 
     private void distributehorizontal()
     {
         createSnapAllignDistribute().distributehorizontal();
-        redraw();
     }
 
     public void distributevertical()
     {
         createSnapAllignDistribute().distributevertical();
-        redraw();
     }
 
 	private void drawRect(GC gc, Rectangle rect) 
