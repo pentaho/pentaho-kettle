@@ -5,6 +5,7 @@ import java.util.Hashtable;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
@@ -59,6 +60,7 @@ public class GUIResource
     private ManagedFont fontGraph;
     private ManagedFont fontNote;
     private ManagedFont fontFixed;
+    private ManagedFont fontLarge;
 
     /* * * Images * * */
     private Hashtable imagesSteps;
@@ -136,6 +138,11 @@ public class GUIResource
         fontGraph   = new ManagedFont(display, props.getGraphFont());
         fontNote    = new ManagedFont(display, props.getNoteFont());
         fontFixed   = new ManagedFont(display, props.getFixedFont());
+
+        // Create a large version of the graph font
+        FontData largeFontData = props.getGraphFont();
+        largeFontData.setHeight(largeFontData.getHeight()*3);
+        fontLarge   = new ManagedFont(display, largeFontData);
         
         // Load all images from files...
         if (!reload)
@@ -173,6 +180,7 @@ public class GUIResource
         fontGraph  .dispose();
         fontNote   .dispose();
         fontFixed  .dispose();
+        fontLarge  .dispose();
     }
     
     /**
@@ -653,5 +661,13 @@ public class GUIResource
     public void setImageChef(Image imageChef)
     {
         this.imageChef = imageChef;
+    }
+
+    /**
+     * @return the fontLarge
+     */
+    public ManagedFont getFontLarge()
+    {
+        return fontLarge;
     }
 }
