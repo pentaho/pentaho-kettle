@@ -684,7 +684,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                     Point p = getRealPosition(canvas, event.x, event.y);
     
                     // 
-                    // We expect a piece of XML...
+                    // We expect a Drag and Drop container... (encased in XML)
                     try
                     {
                         DragAndDropContainer container = (DragAndDropContainer)event.data;
