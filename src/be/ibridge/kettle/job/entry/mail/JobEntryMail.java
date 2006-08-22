@@ -510,6 +510,7 @@ public class JobEntryMail extends JobEntryBase implements JobEntryInterface
         
         if (usingAuthentication)
         {
+        	props.put("mail.smtp.auth","true"); 
             authenticator = new Authenticator()
             {
                 protected PasswordAuthentication getPasswordAuthentication()
