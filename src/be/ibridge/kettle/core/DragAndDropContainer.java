@@ -27,8 +27,29 @@ public class DragAndDropContainer implements XMLInterface
 	public static final int TYPE_TEXT                = 5;
     public static final int TYPE_JOB_ENTRY           = 6;
     public static final int TYPE_BASE_JOB_ENTRY      = 7;
+    public static final int TYPE_PHYSICAL_TABLE      = 8;
+    public static final int TYPE_PHYSICAL_COLUMN     = 9;
+    public static final int TYPE_BUSINESS_VIEW       = 10;
+    public static final int TYPE_BUSINESS_TABLE      = 11;
+    public static final int TYPE_BUSINESS_COLUMN     = 12;
+    public static final int TYPE_RELATIONSHIP        = 13;
     
-	private static final String typeCodes[] = { "", "Step", "BaseStep", "DatabaseConnection", "TransHop", "Text", "Jobentry", "BaseJobentry" };
+	private static final String typeCodes[] = { 
+        "", 
+        "Step", 
+        "BaseStep", 
+        "DatabaseConnection", 
+        "TransHop", 
+        "Text", 
+        "Jobentry", 
+        "BaseJobentry",
+        "PhysicalTable", 
+        "PhysicalColumn", 
+        "BusinessView", 
+        "BusinessTable", 
+        "BusinessColumn", 
+        "Relationship" 
+    };
 	
 	private int type;
 	private String data;
