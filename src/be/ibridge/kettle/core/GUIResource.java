@@ -666,8 +666,8 @@ public class GUIResource
     /**
      * @return the fontLarge
      */
-    public ManagedFont getFontLarge()
+    public Font getFontLarge()
     {
-        return fontLarge;
+        return fontLarge.getFont();
     }
 }
