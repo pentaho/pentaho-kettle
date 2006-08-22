@@ -3662,7 +3662,7 @@ public class Database
 
 		if (use_jobid)
 		{
-			v=new Value("ID_JOB",       Value.VALUE_TYPE_STRING); v.setLength(50);   r.addValue(v);
+			v=new Value("ID_JOB",      Value.VALUE_TYPE_INTEGER); v.setLength(8,0);   r.addValue(v);
 		}
 		
 		v=new Value("JOBNAME",         Value.VALUE_TYPE_STRING); v.setLength(50);    r.addValue(v);
@@ -3677,7 +3677,7 @@ public class Database
 		v=new Value("ENDDATE",         Value.VALUE_TYPE_DATE  );                     r.addValue(v);
 		v=new Value("LOGDATE",         Value.VALUE_TYPE_DATE  );                     r.addValue(v);
 		v=new Value("DEPDATE",         Value.VALUE_TYPE_DATE  );                     r.addValue(v);
-        v=new Value("REPLAYDATE",      Value.VALUE_TYPE_DATE   );                    r.addValue(v);
+        v=new Value("REPLAYDATE",      Value.VALUE_TYPE_DATE  );                     r.addValue(v);
 
 		if (use_logfield)
 		{
