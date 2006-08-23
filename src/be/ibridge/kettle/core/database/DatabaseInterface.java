@@ -318,6 +318,11 @@ public interface DatabaseInterface extends Cloneable
 	 */
 	public boolean supportsSchemas();
 	
+    /**
+     * @return true if the database supports catalogs
+     */
+    public boolean supportsCatalogs();
+
 	/**
 	 * 
 	 * @return true when the database engine supports empty transaction.
@@ -575,5 +580,6 @@ public interface DatabaseInterface extends Cloneable
      * @return true if the database JDBC driver supports getBlob on the resultset.  If not we must use getBytes() to get the data.
      */
     public boolean supportsGetBlob();
+
 
 }

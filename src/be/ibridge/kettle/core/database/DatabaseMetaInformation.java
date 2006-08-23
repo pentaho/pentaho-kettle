@@ -151,7 +151,7 @@ public class DatabaseMetaInformation
 
 			if (monitor!=null && monitor.isCanceled()) return;
 			if (monitor!=null) monitor.subTask("Getting catalog information");
-			if (dbmd.supportsCatalogsInTableDefinitions())
+			if (dbInfo.supportsCatalogs() && dbmd.supportsCatalogsInTableDefinitions())
 			{
 				ArrayList catalogList = new ArrayList();
 				ResultSet catalogs = dbmd.getCatalogs();

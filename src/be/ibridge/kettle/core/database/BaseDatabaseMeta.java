@@ -439,6 +439,14 @@ public abstract class BaseDatabaseMeta implements Cloneable
 		return true;
 	}
 
+    /**
+     * @return true if the database supports catalogs
+     */
+    public boolean supportsCatalogs()
+    {
+        return true;
+    }
+
 	/**
 	 * 
 	 * @return true when the database engine supports empty transaction.

@@ -110,6 +110,15 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	{
 		return false;
 	}
+    
+    /**
+     * @return true if the database supports catalogs
+     */
+    public boolean supportsCatalogs()
+    {
+        return false;
+    }
+
 
 	/**
 	 * Generates the SQL statement to add a column to the specified table

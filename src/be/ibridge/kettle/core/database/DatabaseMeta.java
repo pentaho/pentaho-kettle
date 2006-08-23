@@ -1086,6 +1086,14 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		return databaseInterface.supportsSchemas();
 	}
 	
+    /**
+     * @return true if the database supports catalogs
+     */
+    public boolean supportsCatalogs()
+    {
+        return databaseInterface.supportsCatalogs();
+    }
+
 	/**
 	 * 
 	 * @return true when the database engine supports empty transaction.
@@ -1918,4 +1926,5 @@ public class DatabaseMeta implements Cloneable, XMLInterface
     {
         return databaseInterface.supportsGetBlob();
     }
+
 }
