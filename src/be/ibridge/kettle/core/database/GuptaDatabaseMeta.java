@@ -119,6 +119,14 @@ public class GuptaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
         return false;
     }
 
+    /**
+     * @return true if the database supports timestamp to date conversion.
+     * Gupta doesn't support this!
+     */
+    public boolean supportsTimeStampToDateConversion()
+    {
+        return false;
+    }
 
 	/**
 	 * Generates the SQL statement to add a column to the specified table
