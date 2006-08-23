@@ -16,6 +16,7 @@
  
 package be.ibridge.kettle.core.dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.ShellAdapter;
@@ -23,7 +24,9 @@ import org.eclipse.swt.events.ShellEvent;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
@@ -52,7 +55,9 @@ public class ShowImageDialog extends Dialog
     private FormData     fdOK;
     private Listener     lsOK;
     
-	private Canvas       wCanvas;
+    private ScrolledComposite wSComp;
+    
+	private Canvas        wCanvas;
     private FormData     fdCanvas;
     
 	private Shell  shell;
@@ -60,8 +65,12 @@ public class ShowImageDialog extends Dialog
 	
 	private int prefWidth = -1;
 	private int prefHeight = -1;
+    
+    private boolean scaling = false;
 	
 	private int buttonHeight = 30;
+
+    private FormData fdSComp;
 	
     /**
      * @deprecated
@@ -115,6 +124,8 @@ public class ShowImageDialog extends Dialog
 		Shell parent = getParent();
 		Display display = parent.getDisplay();
 		
+        Point imageSize = new Point(image.getBounds().width, image.getBounds().height);
+
 		shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL | SWT.RESIZE | SWT.MAX | SWT.MIN);
  		props.setLook(shell);
 
@@ -128,8 +139,16 @@ public class ShowImageDialog extends Dialog
 		int margin = Const.MARGIN;
 		
 		// Canvas
-		wCanvas=new Canvas(shell, SWT.BORDER);
+        wSComp = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.H_SCROLL);
+        wSComp.setLayout(new FillLayout());
+        
+		wCanvas=new Canvas(wSComp, SWT.BORDER);
  		props.setLook(wCanvas);
+        if (!scaling)
+        {
+            wCanvas.setSize(imageSize.x, imageSize.y);
+        }
+
 		wCanvas.addPaintListener(new PaintListener() 
 			{
 				public void paintControl(PaintEvent pe) 
@@ -139,12 +158,27 @@ public class ShowImageDialog extends Dialog
 			}
 		)
 		;
-		fdCanvas=new FormData();
-		fdCanvas.left  = new FormAttachment(0, 0);
-		fdCanvas.top   = new FormAttachment(0, margin);
-		fdCanvas.right = new FormAttachment(100, 0);
-		fdCanvas.bottom= new FormAttachment(100, -buttonHeight);
-		wCanvas.setLayoutData(fdCanvas);
+        
+        fdCanvas=new FormData();
+        fdCanvas.left  = new FormAttachment(0, 0);
+        fdCanvas.top   = new FormAttachment(0, margin);
+        fdCanvas.right = new FormAttachment(100, 0);
+        fdCanvas.bottom= new FormAttachment(100, 0);
+        wCanvas.setLayoutData(fdCanvas);
+        
+		fdSComp=new FormData();
+        fdSComp.left  = new FormAttachment(0, 0);
+        fdSComp.top   = new FormAttachment(0, margin);
+        fdSComp.right = new FormAttachment(100, 0);
+        fdSComp.bottom= new FormAttachment(100, -buttonHeight);
+		wSComp.setLayoutData(fdSComp);
+
+        wSComp.setContent(wCanvas);
+        wSComp.setExpandHorizontal(true);
+        wSComp.setExpandVertical(true);
+
+        wSComp.setMinWidth(imageSize.x);
+        wSComp.setMinHeight(imageSize.y);
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
@@ -204,7 +238,13 @@ public class ShowImageDialog extends Dialog
 	{
 		ImageData imd = image.getImageData();
 		
-		if (prefHeight<0 || prefWidth<0)
+        if (scaling)
+        {
+            wSComp.setMinWidth(width);
+            wSComp.setMinHeight(height);
+        }
+        
+		if (scaling && (prefHeight<0 || prefWidth<0))
 		{
 			gc.drawImage(image, 0, 0, imd.width, imd.height,
 							  0, 0, width, height
@@ -215,5 +255,15 @@ public class ShowImageDialog extends Dialog
 			gc.drawImage(image, 0, 0);
 		}
 	}
+
+    public boolean isScaling()
+    {
+        return scaling;
+    }
+
+    public void setScaling(boolean scaling)
+    {
+        this.scaling = scaling;
+    }
 
 }

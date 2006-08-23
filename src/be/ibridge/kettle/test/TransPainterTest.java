@@ -49,6 +49,7 @@ public class TransPainterTest
 
        Shell shell = new Shell(display);
        ShowImageDialog sid = new ShowImageDialog(shell, image);
+       sid.setScaling(true);
        sid.open();
        
        ImageLoader imageLoader = new ImageLoader();
