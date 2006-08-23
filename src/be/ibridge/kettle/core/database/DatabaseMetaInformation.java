@@ -155,7 +155,7 @@ public class DatabaseMetaInformation
 			{
 				ArrayList catalogList = new ArrayList();
 				ResultSet catalogs = dbmd.getCatalogs();
-				while (catalogs.next())
+				while (catalogs!=null && catalogs.next())
 				{
 					String catalogName = catalogs.getString(1);
 					ArrayList catalogItems = new ArrayList();
@@ -198,7 +198,7 @@ public class DatabaseMetaInformation
 				try 
 				{
 					schemas = dbmd.getSchemas();
-					while (schemas.next())
+					while (schemas!=null && schemas.next())
 					{
 						ArrayList schemaItems = new ArrayList();
 						String schemaName = schemas.getString(1);
