@@ -21,7 +21,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Properties;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -79,11 +81,13 @@ import be.ibridge.kettle.core.AddUndoPositionInterface;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
 import be.ibridge.kettle.core.GUIResource;
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.PrintSpool;
 import be.ibridge.kettle.core.Props;
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.TransAction;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.XMLHandler;
@@ -92,7 +96,10 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseDialog;
 import be.ibridge.kettle.core.dialog.DatabaseExplorerDialog;
 import be.ibridge.kettle.core.dialog.EnterOptionsDialog;
+import be.ibridge.kettle.core.dialog.EnterSearchDialog;
+import be.ibridge.kettle.core.dialog.EnterStringsDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
+import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
 import be.ibridge.kettle.core.dialog.SQLStatementsDialog;
 import be.ibridge.kettle.core.dialog.Splash;
@@ -100,6 +107,7 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.reflection.StringSearchResult;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
@@ -195,6 +203,8 @@ public class Chef implements AddUndoPositionInterface
 	public  KeyAdapter defKeys;
 
     public ToolItem tiFileRun;
+
+    public Row variables;
 	
 	public Chef(LogWriter log, Display d, Repository rep)
 	{
@@ -218,6 +228,11 @@ public class Chef implements AddUndoPositionInterface
 		layout.marginHeight = 0;
 		shell.setLayout (layout);
 		
+        // Clean out every time we start, auto-loading etc, is not a good idea
+        // If they are needed that often, set them in the kettle.properties file
+        //
+        variables = new Row(); 
+
 		// INIT Data structure
 		jobMeta = new JobMeta(log);
 		
@@ -422,6 +437,9 @@ public class Chef implements AddUndoPositionInterface
 		miEditUndo         = new MenuItem(msEdit, SWT.CASCADE);
 		miEditRedo         = new MenuItem(msEdit, SWT.CASCADE);
 		setUndoMenu();
+        new MenuItem(msEdit, SWT.SEPARATOR);
+        MenuItem miEditSearch       = new MenuItem(msEdit, SWT.CASCADE); miEditSearch.setText(Messages.getString("Chef.Menu.Edit.Search"));  //Search Metadata \tCTRL-F
+        MenuItem miEditVars         = new MenuItem(msEdit, SWT.CASCADE); miEditVars.setText(Messages.getString("Chef.Menu.Edit.Variables"));  //Edit/Enter variables \tCTRL-F
 		new MenuItem(msEdit, SWT.SEPARATOR);
 		MenuItem miEditUnselectAll  = new MenuItem(msEdit, SWT.CASCADE); miEditUnselectAll.setText(Messages.getString("Chef.Menu.Edit.ClearSelection")); //$NON-NLS-1$
 		MenuItem miEditSelectAll    = new MenuItem(msEdit, SWT.CASCADE); miEditSelectAll.setText(Messages.getString("Chef.Menu.Edit.SelectAllSteps")); //$NON-NLS-1$
@@ -430,12 +448,16 @@ public class Chef implements AddUndoPositionInterface
 
 		Listener lsEditUndo        = new Listener() { public void handleEvent(Event e) { undoAction(); } };
 		Listener lsEditRedo        = new Listener() { public void handleEvent(Event e) { redoAction(); } };
+        Listener lsEditSearch      = new Listener() { public void handleEvent(Event e) { searchMetaData(); } };
+        Listener lsEditVars        = new Listener() { public void handleEvent(Event e) { getVariables(); } };
 		Listener lsEditUnselectAll = new Listener() { public void handleEvent(Event e) { editUnselectAll(); } };
 		Listener lsEditSelectAll   = new Listener() { public void handleEvent(Event e) { editSelectAll();   } };
 		Listener lsEditOptions     = new Listener() { public void handleEvent(Event e) { editOptions();     } };
 
 	    miEditUndo       .addListener(SWT.Selection, lsEditUndo);
 	    miEditRedo       .addListener(SWT.Selection, lsEditRedo);
+        miEditSearch     .addListener(SWT.Selection, lsEditSearch);
+        miEditVars       .addListener(SWT.Selection, lsEditVars);
 	    miEditUnselectAll.addListener(SWT.Selection, lsEditUnselectAll);
 	    miEditSelectAll  .addListener(SWT.Selection, lsEditSelectAll);
 	    miEditOptions    .addListener(SWT.Selection, lsEditOptions);
@@ -2122,6 +2144,7 @@ public class Chef implements AddUndoPositionInterface
 			addUndoDelete(hi, hix);
 			for (int i=hix.length-1;i>=0;i--) jobMeta.removeJobHop(hix[i]);
 		}
+        
 		// Then delete all the entries with name:
 		JobEntryCopy je[] = jobMeta.getAllChefGraphEntries(name);
 		int jex[] = new int[je.length];
@@ -2639,6 +2662,88 @@ public class Chef implements AddUndoPositionInterface
 		refreshTree();
 		refreshGraph();
 	}
+    
+    /**
+     * Search the transformation meta-data.
+     *
+     */
+    public void searchMetaData()
+    {
+        EnterSearchDialog esd = new EnterSearchDialog(shell);
+        if (esd.open())
+        {
+            String filterString = esd.getFilterString();
+            String filter = filterString;
+            if (filter!=null) filter = filter.toUpperCase();
+            
+            List stringList = jobMeta.getStringList(esd.isSearchingSteps(), esd.isSearchingDatabases(), esd.isSearchingNotes());
+            ArrayList rows = new ArrayList();
+            for (int i=0;i<stringList.size();i++)
+            {
+                StringSearchResult result = (StringSearchResult) stringList.get(i);
+
+                boolean add = Const.isEmpty(filter);
+                if (filter!=null && result.getString().toUpperCase().indexOf(filter)>=0) add=true;
+                if (filter!=null && result.getFieldName().toUpperCase().indexOf(filter)>=0) add=true;
+                if (filter!=null && result.getParentObject().toString().toUpperCase().indexOf(filter)>=0) add=true;
+                
+                if (add) rows.add(result.toRow());
+            }
+            
+            if (rows.size()!=0)
+            {
+                PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, "String searcher", rows);
+                prd.open();
+            }
+            else
+            {
+                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+                mb.setMessage(Messages.getString("Spoon.Dialog.NothingFound.Message")); // Nothing found that matches your criteria
+                mb.setText(Messages.getString("Spoon.Dialog.NothingFound.Title")); // Sorry!
+                mb.open();
+            }
+        }
+    }
+    
+    public void getVariables()
+    {
+        Properties sp = new Properties();
+        KettleVariables kettleVariables = KettleVariables.getInstance();
+        sp.putAll(kettleVariables.getProperties());
+        sp.putAll(System.getProperties());
+        
+        List list = jobMeta.getUsedVariables();
+        for (int i=0;i<list.size();i++)
+        {
+            String varName = (String)list.get(i);
+            String varValue = sp.getProperty(varName, "");
+            System.out.println("variable ["+varName+"] is defined as : "+varValue);
+            if (variables.searchValueIndex(varName)<0)
+            {
+                variables.addValue(new Value(varName, varValue));
+            }
+        }
+        
+        // Now ask the use for more info on these!
+        EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, variables);
+        esd.setReadOnly(false); 
+        if (esd.open()!=null)
+        {
+            for (int i=0;i<variables.size();i++)
+            {
+                Value varval = variables.getValue(i);
+                if (!Const.isEmpty(varval.getString()))
+                {
+                    kettleVariables.setVariable(varval.getName(), varval.getString());
+                    System.out.println("Variable ${"+varval.getName()+"} set to ["+varval.getString()+"] for thread ["+Thread.currentThread()+"]");
+                }
+            }
+        }
+
+    }
+
+    
+    
 
 	public void undoAction()
 	{
