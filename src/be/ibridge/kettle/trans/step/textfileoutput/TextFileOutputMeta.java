@@ -102,6 +102,8 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     /** The encoding to use for reading: null or empty string means system default encoding */
     private String encoding;
 
+    /** The string to use for append to end line of the whole file: null or empty string means no line needed */
+    private String endedLine;
     
     
 	/** Calculated value ... */
@@ -470,7 +472,22 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     }
 
     
-    
+    /**
+     * @return The desired encoding of output file, null or empty if the default system encoding needs to be used. 
+     */
+    public String getEndedLine()
+    {
+        return endedLine;
+    }
+
+
+    /**
+     * @param encoding The desired encoding of output file, null or empty if the default system encoding needs to be used.
+     */
+    public void setEndedLine(String EndedLine)
+    {
+        this.endedLine = EndedLine;
+    }    
     
     
     
@@ -518,6 +535,9 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			fileFormat       = XMLHandler.getTagValue(stepnode, "format");
             encoding         = XMLHandler.getTagValue(stepnode, "encoding");
 
+            endedLine  = XMLHandler.getTagValue(stepnode, "endedLine");
+			if (endedLine==null) endedLine="";
+
 			fileName  = XMLHandler.getTagValue(stepnode, "file", "name");
 			extension = XMLHandler.getTagValue(stepnode, "file", "extention");
 			fileAppended    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "append"));
@@ -550,6 +570,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 				outputFields[i].setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
 				outputFields[i].setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
 			}
+			
 		}
 		catch(Exception e)
 		{
@@ -744,6 +765,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		retval.append("    "+XMLHandler.addTagValue("footer",    footerEnabled));
 		retval.append("    "+XMLHandler.addTagValue("format",    fileFormat));
         retval.append("    "+XMLHandler.addTagValue("encoding",  encoding));
+        retval.append("    "+XMLHandler.addTagValue("endedLine",  endedLine));
 
 		retval.append("    <file>"+Const.CR);
 		retval.append("      "+XMLHandler.addTagValue("name",       fileName));
@@ -824,7 +846,9 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			    outputFields[i].setNullString(		rep.getStepAttributeString (id_step, i, "field_nullif") );
 			    outputFields[i].setLength(	   (int)rep.getStepAttributeInteger(id_step, i, "field_length") );
 			    outputFields[i].setPrecision(  (int)rep.getStepAttributeInteger(id_step, i, "field_precision") );
-			}		
+			}
+            endedLine        =      rep.getStepAttributeString (id_step, "endedLine");
+			
 		}
 		catch(Exception e)
 		{
@@ -868,6 +892,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_length",    field.getLength());
 				rep.saveStepAttribute(id_transformation, id_step, i, "field_precision", field.getPrecision());
 			}
+            rep.saveStepAttribute(id_transformation, id_step, "endedLine",         endedLine);
 		}
 		catch(Exception e)
 		{

@@ -117,6 +117,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	private Text         wEnclosure;
 	private FormData     fdlEnclosure, fdEnclosure;
 
+	private Label        wlEndedLine;
+	private Text         wEndedLine;
+	private FormData     fdlEndedLine, fdEndedLine;
+	
     private Label        wlEnclForced;
     private Button       wEnclForced;
     private FormData     fdlEnclForced, fdEnclForced;
@@ -700,6 +704,24 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdSplitEvery.right= new FormAttachment(100, 0);
 		wSplitEvery.setLayoutData(fdSplitEvery);
 
+		//Bruise:
+		wlEndedLine=new Label(wContentComp, SWT.RIGHT);
+		wlEndedLine.setText(Messages.getString("TextFileOutputDialog.EndedLine.Label"));
+ 		props.setLook(wlEndedLine);
+		fdlEndedLine=new FormData();
+		fdlEndedLine.left = new FormAttachment(0, 0);
+		fdlEndedLine.top  = new FormAttachment(wSplitEvery, margin);
+		fdlEndedLine.right= new FormAttachment(middle, -margin);
+		wlEndedLine.setLayoutData(fdlEndedLine);
+		wEndedLine=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wEndedLine);
+ 		wEndedLine.addModifyListener(lsMod);
+		fdEndedLine=new FormData();
+		fdEndedLine.left = new FormAttachment(middle, 0);
+		fdEndedLine.top  = new FormAttachment(wSplitEvery, margin);
+		fdEndedLine.right= new FormAttachment(100, 0);
+		wEndedLine.setLayoutData(fdEndedLine);
+		
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
 		fdContentComp.top   = new FormAttachment(0, 0);
@@ -916,6 +938,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		if (input.getEnclosure() !=null) wEnclosure.setText(input.getEnclosure());
 		if (input.getFileFormat()!=null) wFormat.setText(input.getFileFormat());
         if (input.getEncoding()  !=null) wEncoding.setText(input.getEncoding());
+        if (input.getEndedLine() !=null) wEndedLine.setText(input.getEndedLine());
         
 		wSplitEvery.setText(""+input.getSplitEvery());
 
@@ -969,6 +992,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		tfoi.setEnclosure(  wEnclosure.getText() );
 		tfoi.setExtension(  wExtension.getText() );
 		tfoi.setSplitEvery( Const.toInt(wSplitEvery.getText(), 0) );
+		tfoi.setEndedLine( wEndedLine.getText() );
 
         tfoi.setEnclosureForced( wEnclForced.getSelection() ); 
 		tfoi.setHeaderEnabled( wHeader.getSelection() ); 

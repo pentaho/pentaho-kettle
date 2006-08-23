@@ -61,7 +61,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
 		Row r;
 		boolean result=true;
-		
+		boolean bEndedLineWrote=false;
 		r=getRow();       // This also waits for a row to be finished.
 		
 		if ( ( r==null && data.headerrow!=null && meta.isFooterEnabled() ) ||
@@ -70,6 +70,12 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		{
 			if (writeHeader()) linesOutput++;
 			
+			if (r==null)
+			{
+				//add tag to last line if needed
+				writeEndedLine();
+				bEndedLineWrote=true;
+			}
 			// Done with this part or with everything.
 			closeFile();
 			
@@ -90,6 +96,13 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		
 		if (r==null)  // no more input to be expected...
 		{
+			if (false==bEndedLineWrote)
+			{
+				//add tag to last line if needed
+				writeEndedLine();
+				bEndedLineWrote=true;
+			}
+			
 			setOutputDone();
 			return false;
 		}
@@ -388,6 +401,28 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			return false;
 		}
 		return true;
+	}
+	
+	private boolean writeEndedLine()
+	{
+		boolean retval=false;
+		try
+		{
+			String sLine = meta.getEndedLine();
+			if (sLine!=null)
+			{
+				if (sLine.trim().length()>0)
+					data.writer.write(sLine.toCharArray());
+			}
+		}
+		catch(Exception e)
+		{
+			logError("Error writing ended tag line: "+e.toString());
+			e.printStackTrace();
+			retval=true;
+		}
+		linesOutput++;
+		return retval;
 	}
 	
 	private boolean writeHeader()
