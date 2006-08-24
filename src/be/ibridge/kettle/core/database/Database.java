@@ -2489,7 +2489,17 @@ public class Database
                 case java.sql.Types.VARBINARY:
                 case java.sql.Types.LONGVARBINARY:
 					valtype=Value.VALUE_TYPE_BINARY;
-                    length=-1; 
+                    
+                    if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_DB2 &&
+                    	(2 * rm.getPrecision(i)) == rm.getColumnDisplaySize(i)) 
+                    {
+                    	// set the length for "CHAR(X) FOR BIT DATA"
+                    	length = rm.getPrecision(i);
+                    }
+                    else
+                    {
+                        length=-1; 
+                    }
                     precision=-1;
 					break;
 
