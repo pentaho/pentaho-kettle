@@ -788,7 +788,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			{
 				retval.append("      <field>"+Const.CR);
 				retval.append("        "+XMLHandler.addTagValue("name",      field.getName()));
-				retval.append("        "+XMLHandler.addTagValue("type",      field.getType()));
+				retval.append("        "+XMLHandler.addTagValue("type",      field.getTypeDesc()));
 				retval.append("        "+XMLHandler.addTagValue("format",    field.getFormat()));
 				retval.append("        "+XMLHandler.addTagValue("currency",  field.getCurrencySymbol()));
 				retval.append("        "+XMLHandler.addTagValue("decimal",   field.getDecimalSymbol()));
