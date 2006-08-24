@@ -539,7 +539,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					jobentry.clearResultRows=!jobentry.clearResultRows;
+					jobentry.clearResultFiles=!jobentry.clearResultFiles;
 					jobentry.setChanged();
 				}
 			}
