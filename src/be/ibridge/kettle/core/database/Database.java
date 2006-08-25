@@ -2303,7 +2303,7 @@ public class Database
 					debug="getParameterMetaData()";
 					if (par==null) par = getParameterMetaData(ps);
 					debug="getParameterMetaData()";
-					if (par==null) par = getParameterMetaData(sql, inform);
+					if (par==null || par.isEmpty()) par = getParameterMetaData(sql, inform);
 	
 					setValues(par, ps);
 				}
@@ -3525,7 +3525,7 @@ public class Database
 		try
 		{
 			ParameterMetaData pmd = ps.getParameterMetaData();
-			for (int i=1;i<pmd.getParameterCount();i++)
+			for (int i=1;i<=pmd.getParameterCount();i++)
 			{
 				String name    = "par"+i;
 				int    sqltype = pmd.getParameterType(i);
