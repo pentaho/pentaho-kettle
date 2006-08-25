@@ -2301,7 +2301,8 @@ public class Database
 					Row par = inform;
 					
 					debug="getParameterMetaData()";
-					if (par==null) par = getParameterMetaData(ps);
+					if (par==null || par.isEmpty()) par = getParameterMetaData(ps);
+                    
 					debug="getParameterMetaData()";
 					if (par==null || par.isEmpty()) par = getParameterMetaData(sql, inform);
 	
