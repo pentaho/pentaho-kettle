@@ -2960,22 +2960,22 @@ public class Value implements Cloneable, XMLInterface, Serializable
 					DecimalFormat        df  = (DecimalFormat)nf;
 					DecimalFormatSymbols dfs =new DecimalFormatSymbols();
 						
-                    if ( pattern !=null && pattern .length()>0 ) df.applyPattern( pattern );
-                    if ( decimal !=null && decimal .length()>0 ) dfs.setDecimalSeparator( decimal.charAt(0) );
-                    if ( grouping!=null && grouping.length()>0 ) dfs.setGroupingSeparator( grouping.charAt(0) );
-					if ( currency!=null && currency.length()>0 ) dfs.setCurrencySymbol( currency );
+                    if ( !Const.isEmpty(pattern ) ) df.applyPattern( pattern );
+                    if ( !Const.isEmpty(decimal ) ) dfs.setDecimalSeparator( decimal.charAt(0) );
+                    if ( !Const.isEmpty(grouping) ) dfs.setGroupingSeparator( grouping.charAt(0) );
+					if ( !Const.isEmpty(currency) ) dfs.setCurrencySymbol( currency );
 					try
 					{
                         df.setDecimalFormatSymbols(dfs);
-						setValue( nf.parse(getString()).doubleValue() );
+						setValue( df.parse(getString()).doubleValue() );
 					}
 					catch(Exception e)
 					{
                         String message = "Couldn't convert string to number "+e.toString();
-                        if ( pattern !=null && pattern .length()>0 ) message+=" pattern="+pattern;
-                        if ( decimal !=null && decimal .length()>0 ) message+=" decimal="+decimal;
-                        if ( grouping!=null && grouping.length()>0 ) message+=" grouping="+grouping.charAt(0);
-                        if ( currency!=null && currency.length()>0 ) message+=" currency="+currency;
+                        if ( !Const.isEmpty(pattern ) ) message+=" pattern="+pattern;
+                        if ( !Const.isEmpty(decimal ) ) message+=" decimal="+decimal;
+                        if ( !Const.isEmpty(grouping) ) message+=" grouping="+grouping.charAt(0);
+                        if ( !Const.isEmpty(currency) ) message+=" currency="+currency;
 						throw new KettleValueException(message);
 					}
 				}
