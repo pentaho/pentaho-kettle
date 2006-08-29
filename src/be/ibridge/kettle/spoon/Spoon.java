@@ -4544,16 +4544,21 @@ public class Spoon implements AddUndoPositionInterface
                                 
                                 if (win.rep.userinfo.getID()>0)
                                 {
-                                    RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(optionDirname.toString());
-                                    if (repdir!=null)
+                                    // OK, if we have a specified transformation, try to load it...
+                                    // If not, keep the repository logged in.
+                                    if (!Const.isEmpty(optionTransname))
                                     {
-                                        win.transMeta = new TransMeta(win.rep, optionTransname.toString(), repdir);
-                                        win.setFilename(optionRepname.toString());
-                                        win.transMeta.clearChanged();
-                                    }
-                                    else
-                                    {
-                                        log.logError(APP_NAME, Messages.getString("Spoon.Log.UnableFindDirectory",optionDirname.toString()));//"Can't find directory ["+dirname+"] in the repository."
+                                        RepositoryDirectory repdir = win.rep.getDirectoryTree().findDirectory(optionDirname.toString());
+                                        if (repdir!=null)
+                                        {
+                                            win.transMeta = new TransMeta(win.rep, optionTransname.toString(), repdir);
+                                            win.setFilename(optionRepname.toString());
+                                            win.transMeta.clearChanged();
+                                        }
+                                        else
+                                        {
+                                            log.logError(APP_NAME, Messages.getString("Spoon.Log.UnableFindDirectory",optionDirname.toString()));//"Can't find directory ["+dirname+"] in the repository."
+                                        }
                                     }
                                 }
                                 else
