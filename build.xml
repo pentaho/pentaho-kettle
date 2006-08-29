@@ -66,6 +66,7 @@
 	    	   source="1.4"
 	           deprecation="true"
 	    	   debug="true"
+	    	   excludes="be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
 	    	>
 
 	    	<classpath id="cp-kettle">
