@@ -82,6 +82,8 @@ public class JoinRows extends BaseStep implements StepInterface
 				    if (rs.getOriginStepName().equalsIgnoreCase(meta.getMainStepname()))
 				    {
 				        // swap this one and position 0...
+                        // That means, the main stream is always stream 0 --> easy!
+                        //
 				        RowSet zero = (RowSet)inputRowSets.get(0);
 				        inputRowSets.set(0, rs);
 				        inputRowSets.set(i, zero);
@@ -132,6 +134,11 @@ public class JoinRows extends BaseStep implements StepInterface
 		return false;
 	}
     
+    /**
+     * Get a row of data from the indicated rowset or buffer (memory/disk) 
+     * @param filenr The rowset or buffer to read a row from
+     * @return a row of data
+     */
 	public Row getRowData(int filenr)
 	{
 		data.restart[filenr] = false;
@@ -222,6 +229,10 @@ public class JoinRows extends BaseStep implements StepInterface
 				}
 				r = (Row)data.cache[filenr].get(data.position[data.filenr]);
 			
+                // Don't forget to clone the data to protect it against data alteration downstream.
+                //
+                r = (Row)r.Clone();
+                
 				data.position[filenr]++;
 				
 				// If the file is at the end, close it.
