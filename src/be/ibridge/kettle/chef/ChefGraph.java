@@ -68,7 +68,6 @@ import be.ibridge.kettle.job.entry.job.JobEntryJob;
 import be.ibridge.kettle.job.entry.trans.JobEntryTrans;
 import be.ibridge.kettle.spoon.Spoon;
 import be.ibridge.kettle.trans.TransMeta;
-import be.ibridge.kettle.trans.step.StepMeta;
 
 
 /**
