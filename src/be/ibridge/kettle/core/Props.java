@@ -1201,7 +1201,7 @@ public class Props implements Cloneable
     public void setLook(Control control, int style)
     {
         if (!Const.getOS().startsWith("Windows")) return;
-        if (props.isOSLookShown()) return;
+        if (props.isOSLookShown() && style!=WIDGET_STYLE_FIXED) return;
         
         GUIResource gui = GUIResource.getInstance();
         Font font        = null;
@@ -1215,7 +1215,7 @@ public class Props implements Cloneable
             font       = null; // GUIResource.getInstance().getFontDefault();
             break;
         case WIDGET_STYLE_FIXED   : 
-            background = gui.getColorBackground(); 
+            if (!props.isOSLookShown()) background = gui.getColorBackground(); 
             font       = gui.getFontFixed();
             break;
         case WIDGET_STYLE_TABLE   : 
