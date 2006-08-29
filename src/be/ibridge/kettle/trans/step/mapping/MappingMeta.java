@@ -29,6 +29,7 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -378,7 +379,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             try
             {
             	// OK, load the meta-data from file...
-                mappingTransMeta = new TransMeta(fileName);
+                mappingTransMeta = new TransMeta( StringUtil.environmentSubstitute(fileName) );
                 LogWriter.getInstance().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file ["+fileName+"]");
            }
             catch(Exception e)
@@ -397,7 +398,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
                 {
                     try
                     {
-                        mappingTransMeta = new TransMeta(rep, transName, repdir);
+                        mappingTransMeta = new TransMeta(rep, StringUtil.environmentSubstitute(transName), repdir);
                         LogWriter.getInstance().logDetailed("Loading Mapping from repository", "Mapping transformation ["+transName+"] was loaded from the repository");
                     }
                     catch(Exception e)
