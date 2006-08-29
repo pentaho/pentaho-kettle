@@ -110,6 +110,21 @@ public class AggregateRows extends BaseStep implements StepInterface
 					data.values[i].setNull();
 				} 
 			}
+            
+            switch(meta.getAggregateType()[i])
+            {
+            case AggregateRowsMeta.TYPE_AGGREGATE_FIRST_NULL: // First value, EVEN if it's NULL:
+                if (data.values[i]==null)
+                {
+                    data.values[i]=new Value(val);
+                }
+                break;
+            case AggregateRowsMeta.TYPE_AGGREGATE_LAST_NULL: // First value, EVEN if it's NULL:
+                data.values[i]=new Value(val);
+                break;
+            default: break;
+            }
+
 		}
 	}
 	

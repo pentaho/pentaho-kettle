@@ -46,19 +46,30 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 {
-	public final static int TYPE_AGGREGATE_NONE    = 0;
-	public final static int TYPE_AGGREGATE_SUM     = 1;
-	public final static int TYPE_AGGREGATE_AVERAGE = 2;
-	public final static int TYPE_AGGREGATE_COUNT   = 3;
-	public final static int TYPE_AGGREGATE_MIN     = 4;
-	public final static int TYPE_AGGREGATE_MAX     = 5;
-	public final static int TYPE_AGGREGATE_FIRST   = 6;
-	public final static int TYPE_AGGREGATE_LAST    = 7;
+	public final static int TYPE_AGGREGATE_NONE       = 0;
+	public final static int TYPE_AGGREGATE_SUM        = 1;
+	public final static int TYPE_AGGREGATE_AVERAGE    = 2;
+	public final static int TYPE_AGGREGATE_COUNT      = 3;
+	public final static int TYPE_AGGREGATE_MIN        = 4;
+	public final static int TYPE_AGGREGATE_MAX        = 5;
+	public final static int TYPE_AGGREGATE_FIRST      = 6;
+	public final static int TYPE_AGGREGATE_LAST       = 7;
+    public final static int TYPE_AGGREGATE_FIRST_NULL = 8;
+    public final static int TYPE_AGGREGATE_LAST_NULL  = 9;
+    
 	 
 	public final static String aggregateTypeDesc[] =
 		{
-			Messages.getString("AggregateRowsMeta.AggregateTypeDesc.NONE"), //$NON-NLS-1$
-			Messages.getString("AggregateRowsMeta.AggregateTypeDesc.SUM"), Messages.getString("AggregateRowsMeta.AggregateTypeDesc.AVERAGE"), Messages.getString("AggregateRowsMeta.AggregateTypeDesc.COUNT"), Messages.getString("AggregateRowsMeta.AggregateTypeDesc.MIN"), Messages.getString("AggregateRowsMeta.AggregateTypeDesc.MAX"), Messages.getString("AggregateRowsMeta.AggregateTypeDesc.FIRST"), Messages.getString("AggregateRowsMeta.AggregateTypeDesc.LAST") //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+			Messages.getString("AggregateRowsMeta.AggregateTypeDesc.NONE"),     //$NON-NLS-1$
+			Messages.getString("AggregateRowsMeta.AggregateTypeDesc.SUM"),     //$NON-NLS-1$
+            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.AVERAGE"),//$NON-NLS-1$
+            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.COUNT"), //$NON-NLS-1$
+            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.MIN"),  //$NON-NLS-1$
+            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.MAX"),          //$NON-NLS-1$
+            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.FIRST"),        //$NON-NLS-1$
+            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.LAST"),        //$NON-NLS-1$
+            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.FIRST_NULL"), //$NON-NLS-1$
+            Messages.getString("AggregateRowsMeta.AggregateTypeDesc.LAST_NULL"), //$NON-NLS-1$
 		};
 	
 	private  String fieldName[];
@@ -146,7 +157,6 @@ public class AggregateRowsMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			if (aggregateTypeDesc[i].equalsIgnoreCase(at)) 
 			{
-				//if (i==0) return TYPE_AGGREGATE_FIRST;
 				return i;
 			} 
 		}
