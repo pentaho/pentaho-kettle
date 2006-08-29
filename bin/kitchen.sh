@@ -29,7 +29,11 @@ case `uname -s` in
 	AIX)
 		LIBPATH=libswt/aix/
 		;;
-
+		
+	OS400)
+		LIBPATH=libswt/aix/
+		;;
+		 
 	SunOS) 
 		LIBPATH=libswt/solaris/
 		;;
