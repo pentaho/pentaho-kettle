@@ -68,6 +68,7 @@ import be.ibridge.kettle.job.entry.job.JobEntryJob;
 import be.ibridge.kettle.job.entry.trans.JobEntryTrans;
 import be.ibridge.kettle.spoon.Spoon;
 import be.ibridge.kettle.trans.TransMeta;
+import be.ibridge.kettle.trans.step.StepMeta;
 
 
 /**
@@ -714,6 +715,15 @@ public class ChefGraph extends Canvas implements Redrawable
 					chef.jobMeta.unselectAll();
 					redraw();
 				}
+                // Delete
+                if (e.keyCode == SWT.DEL)
+                {
+                    JobEntryCopy copies[] = chef.getJobMeta().getSelectedEntries();
+                    if (copies != null && copies.length > 0)
+                    {
+                        delSelected();
+                    }
+                }
                 // CTRL-UP : allignTop();
                 if (e.keyCode == SWT.ARROW_UP && (e.stateMask & SWT.CONTROL) != 0)
                 {
@@ -757,7 +767,30 @@ public class ChefGraph extends Canvas implements Redrawable
 		setBackground(GUIResource.getInstance().getColorBackground());
 	}
 	
-	public void clearSettings()
+	public void delSelected()
+    {
+        JobEntryCopy[] copies = chef.getJobMeta().getSelectedEntries();
+        int nrsels = copies.length;
+        
+        if (nrsels==0) return;
+        
+        MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_WARNING);
+        mb.setText("Warning!"); //$NON-NLS-1$
+        String message = "Are you sure you want to delete "+ nrsels + (nrsels==1?" job entry":" job entries") + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
+        mb.setMessage(message);
+        int answer = mb.open();
+        if (answer==SWT.YES)
+        {
+            for (int i=0;i<copies.length;i++)
+            {
+                chef.deleteChefGraphEntry(copies[i].getName());
+            }
+            chef.refreshTree(true);
+            chef.refreshGraph();
+        }
+    }
+
+    public void clearSettings()
 	{
 		selected_icon = null;
 		selected_note = null;
