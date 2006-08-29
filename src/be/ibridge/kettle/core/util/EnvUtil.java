@@ -132,6 +132,49 @@ public class EnvUtil
         }
 
         return envp;
-
     }
+
+    /**
+     * This method is written especially for weird JVM's like IBM's on AIX and OS/400.
+     * On these platforms, we notice that environment variables have an extra double quote around it...
+     * This is messing up the ability to specify things.
+     *  
+     * @param key The key, the name of the environment variable to return
+     * @param def The default value to return in case the key can't be found
+     * @return The value of a System environment variable in the java virtual machine.  
+     *         If the key is not present, the variable is not defined and the default value is returned.
+     */
+    public static final String getSystemPropertyStripQuotes(String key, String def)
+    {
+        String value = System.getProperty(key, def);
+        if (value.startsWith("\"") && value.endsWith("\"") && value.length()>1)
+        {
+            return value.substring(1,value.length()-2);
+        }
+        return value;
+    }
+
+    /**
+     * This method is written especially for weird JVM's like 
+     * @param key The key, the name of the environment variable to return
+     * @param def The default value to return in case the key can't be found
+     * @return The value of a System environment variable in the java virtual machine.  
+     *         If the key is not present, the variable is not defined and the default value is returned.
+     */
+    public static final String getSystemProperty(String key, String def)
+    {
+        String value = System.getProperty(key, def);
+        return value;
+    }
+    
+    /**
+     * @param key The key, the name of the environment variable to return
+     * @return The value of a System environment variable in the java virtual machine.  
+     *         If the key is not present, the variable is not defined and null returned.
+     */
+    public static final String getSystemProperty(String key)
+    {
+        return getSystemProperty(key, null);
+    }
+    
 }
