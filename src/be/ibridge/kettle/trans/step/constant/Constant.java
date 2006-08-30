@@ -171,7 +171,7 @@ public class Constant extends BaseStep implements StepInterface
             return false;
         }
         
-        r.addRow(data.constants);
+        r.addRow( new Row(data.constants) );
 		putRow(r);
 
 		if ((linesWritten>0) && (linesWritten%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesWritten);
