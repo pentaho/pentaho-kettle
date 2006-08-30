@@ -562,6 +562,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		
 		try
 		{
+			data.writer.close();
 			if (meta.isZipped())
 			{
 				//System.out.println("close zip entry ");
@@ -570,19 +571,14 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				data.zip.finish();
 				data.zip.close();
 			}
-			else
-			{
-				data.writer.close();
-			}
-
 			//System.out.println("Closed file...");
-			
+
 			retval=true;
 		}
 		catch(Exception e)
 		{
 		}
-		
+
 		return retval;
 	}
 	
