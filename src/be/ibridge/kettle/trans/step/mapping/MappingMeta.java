@@ -374,42 +374,45 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 
     private void loadMappingMeta(Repository rep) throws KettleException
     {
-        if (fileName!=null && fileName.length()>0)
+        String realFilename = StringUtil.environmentSubstitute(fileName);
+        String realTransname = StringUtil.environmentSubstitute(transName);
+        
+        if ( !Const.isEmpty(realFilename))
         {
             try
             {
             	// OK, load the meta-data from file...
-                mappingTransMeta = new TransMeta( StringUtil.environmentSubstitute(fileName) );
-                LogWriter.getInstance().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file ["+fileName+"]");
+                mappingTransMeta = new TransMeta(realFilename  );
+                LogWriter.getInstance().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file ["+realFilename+"]");
            }
             catch(Exception e)
             {
-                LogWriter.getInstance().logError("Loading Mapping from XML", "Unable to load transformation ["+transName+"] : "+e.toString());
+                LogWriter.getInstance().logError("Loading Mapping from XML", "Unable to load transformation ["+realFilename+"] : "+e.toString());
                 LogWriter.getInstance().logError("Loading Mapping from XML", Const.getStackTracker(e));
             }
         }
         else
         {
             // OK, load the meta-data from the repository...
-            if (transName!=null && directoryPath!=null && rep!=null)
+            if (!Const.isEmpty(realTransname) && directoryPath!=null && rep!=null)
             {
                 RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(directoryPath);
                 if (repdir!=null)
                 {
                     try
                     {
-                        mappingTransMeta = new TransMeta(rep, StringUtil.environmentSubstitute(transName), repdir);
-                        LogWriter.getInstance().logDetailed("Loading Mapping from repository", "Mapping transformation ["+transName+"] was loaded from the repository");
+                        mappingTransMeta = new TransMeta(rep, realTransname, repdir);
+                        LogWriter.getInstance().logDetailed("Loading Mapping from repository", "Mapping transformation ["+realTransname+"] was loaded from the repository");
                     }
                     catch(Exception e)
                     {
-                        LogWriter.getInstance().logError("Loading Mapping from repository", "Unable to load transformation ["+transName+"] : "+e.toString());
+                        LogWriter.getInstance().logError("Loading Mapping from repository", "Unable to load transformation ["+realTransname+"] : "+e.toString());
                         LogWriter.getInstance().logError("Loading Mapping from repository", Const.getStackTracker(e));
                     }
                 }
                 else
                 {
-                    throw new KettleException(Messages.getString("MappingMeta.Exception.UnableToLoadTransformation",transName)+directoryPath); //$NON-NLS-1$ //$NON-NLS-2$
+                    throw new KettleException(Messages.getString("MappingMeta.Exception.UnableToLoadTransformation",realTransname)+directoryPath); //$NON-NLS-1$ //$NON-NLS-2$
                 }
             }
         }
