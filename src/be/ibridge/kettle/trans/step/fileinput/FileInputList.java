@@ -77,9 +77,17 @@ public class FileInputList
                         }
                     });
 
-                    if (fileNames != null) for (int j = 0; j < fileNames.length; j++)
+                    if (fileNames != null) 
                     {
-                        fileInputList.addFile(new File(file, fileNames[j]));
+                        for (int j = 0; j < fileNames.length; j++)
+                        {
+                            fileInputList.addFile(new File(file, fileNames[j]));
+                        }
+                    }
+                    
+                    if (fileNames==null || fileNames.length==0)
+                    {
+                        if (onerequired) fileInputList.addNonAccessibleFile(file);
                     }
                 }
                 catch (Exception e)
@@ -98,10 +106,14 @@ public class FileInputList
                         if (file.isFile()) fileInputList.addFile(file);
                     }
                     else
+                    {
                         if (onerequired) fileInputList.addNonAccessibleFile(file);
+                    }
                 }
                 else
+                {
                     if (onerequired) fileInputList.addNonExistantFile(file);
+                }
             }
         }
 
