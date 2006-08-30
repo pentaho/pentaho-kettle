@@ -85,6 +85,8 @@ public class StringUtil
 	 */
 	public static final String environmentSubstitute(String aString)
 	{
+        if (aString==null || aString.length()==0) return aString;
+        
         KettleVariables vars = KettleVariables.getInstance();
 
         Properties systemProperties = new Properties();
