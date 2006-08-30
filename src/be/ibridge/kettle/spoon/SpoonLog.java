@@ -125,7 +125,9 @@ public class SpoonLog extends Composite
 
 	private FormData fdText, fdSash, fdStart, fdPreview, fdError, fdClear, fdLog, fdOnlyActive, fdSafeMode;
 
-	private boolean running, preview;
+	private boolean running;
+    private boolean preview;
+    private boolean initialized;
 
 	public boolean preview_shown = false;
 
@@ -139,7 +141,8 @@ public class SpoonLog extends Composite
 
 	private Spoon spoon;
 
-    protected boolean initialized;
+    private boolean halted;
+
 
 	public SpoonLog(Composite parent, int style, Spoon sp, LogWriter l, String fname)
 	{
@@ -391,24 +394,28 @@ public class SpoonLog extends Composite
 
     private void checkTransEnded()
     {
-        if (trans != null && trans.isFinished() && running)
+        if (trans != null)
         {
-            log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.TransformationHasFinished")); //$NON-NLS-1$
-
-            running = false;
-            initialized=false;
-            
-            try
+            if (trans.isFinished() && ( running || halted ))
             {
-                trans.endProcessing("end"); //$NON-NLS-1$
-                spoonHistoryRefresher.markRefreshNeeded();
+                log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.TransformationHasFinished")); //$NON-NLS-1$
+    
+                running = false;
+                initialized=false;
+                halted = false;
+                
+                try
+                {
+                    trans.endProcessing("end"); //$NON-NLS-1$
+                    spoonHistoryRefresher.markRefreshNeeded();
+                }
+                catch (KettleException e)
+                {
+                    new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                }
+                
+                wStart.setText(START_TEXT);
             }
-            catch (KettleException e)
-            {
-                new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-            
-            wStart.setText(START_TEXT);
         }
     }
 
@@ -595,6 +602,7 @@ public class SpoonLog extends Composite
 			wStart.setText(START_TEXT);
             running = false;
             initialized = false;
+            halted = false;
 			if (preview)
 			{
 				preview = false;
@@ -611,6 +619,7 @@ public class SpoonLog extends Composite
             {
                 LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
                 initialized = trans.prepareExecution(args);
+                halted = trans.hasHaltedSteps();
             }
         };
         Thread thread = new Thread(runnable);

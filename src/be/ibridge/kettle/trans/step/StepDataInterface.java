@@ -29,12 +29,13 @@ package be.ibridge.kettle.trans.step;
 public interface StepDataInterface
 {
 	public static final int STATUS_EMPTY         = 0;
-	public static final int STATUS_INIT          = 1;
-	public static final int STATUS_RUNNING       = 2;
-	public static final int STATUS_IDLE          = 3;
-	public static final int STATUS_FINISHED      = 4;
-    public static final int STATUS_STOPPED       = 5;
-	public static final int STATUS_DISPOSED      = 6;
+	public static final int STATUS_INIT          = 1; // Initialising step
+	public static final int STATUS_RUNNING       = 2; // Running
+	public static final int STATUS_IDLE          = 3; // Waiting to be run, after init
+	public static final int STATUS_FINISHED      = 4; // finished after running
+    public static final int STATUS_STOPPED       = 5; // Stopped because of user request of error
+	public static final int STATUS_DISPOSED      = 6; // cleaned out, step is gone
+    public static final int STATUS_HALTED        = 7; // Not launching because init failed 
     
 	public void setStatus(int status);
 	public int getStatus();

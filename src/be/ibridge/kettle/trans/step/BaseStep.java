@@ -287,6 +287,7 @@ public class BaseStep extends Thread
         Messages.getString("BaseStep.status.Finished"),
         Messages.getString("BaseStep.status.Stopped"),
         Messages.getString("BaseStep.status.Disposed"),
+        Messages.getString("BaseStep.status.Halted"),
     };
     
     private    TransMeta transMeta;

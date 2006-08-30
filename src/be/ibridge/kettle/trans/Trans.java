@@ -438,16 +438,18 @@ public class Trans
         boolean ok = true;
         
         // All step are initialized now: see if there was one that didn't do it correctly!
-        for (int i=0;i<initThreads.length && ok;i++)
+        for (int i=0;i<initThreads.length;i++)
         {
             StepMetaDataCombi combi = initThreads[i].getCombi();
             if (!initThreads[i].isOk()) 
             {
                 log.logError(toString(), Messages.getString("Trans.Log.StepFailedToInit", combi.stepname+"."+combi.copy));
+                combi.data.setStatus(StepDataInterface.STATUS_STOPPED);
                 ok=false;
             }
             else
             {
+                combi.data.setStatus(StepDataInterface.STATUS_IDLE);
                 log.logDetailed(toString(), Messages.getString("Trans.Log.StepInitialized", combi.stepname+"."+combi.copy));
             }
         }
@@ -455,6 +457,17 @@ public class Trans
 		if (!ok)
 		{
 			log.logError(toString(), Messages.getString("Trans.Log.FailToInitializeAtLeastOneStep")); //$NON-NLS-1$
+
+            // Halt the other threads as well, signal end-of-the line to the outside world...
+            //
+            for (int i=0;i<initThreads.length;i++)
+            {
+                StepMetaDataCombi combi = initThreads[i].getCombi();
+                if (initThreads[i].isOk()) 
+                {
+                    combi.data.setStatus(StepDataInterface.STATUS_HALTED);
+                }
+            }
 			return false;
 		}
 
@@ -535,18 +548,28 @@ public class Trans
 
 	public int getEnded()
 	{
-		int ended=0;
+		int nrEnded=0;
 
 		if (steps==null) return 0;
 
 		for (int i=0;i<steps.size();i++)
 		{
 			StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
-			BaseStep thr=(BaseStep)sid.step;
-			if (thr!=null && !thr.isAlive()) ended++;
+			
+            BaseStep thr=(BaseStep)sid.step;
+            StepDataInterface data = sid.data;
+            
+			if ((thr!=null && !thr.isAlive()) ||  // Should normally not be needed anymore, status is kept in data.
+                    data.getStatus()==StepDataInterface.STATUS_FINISHED || // Finished processing 
+                    data.getStatus()==StepDataInterface.STATUS_HALTED ||   // Not launching because of init error
+                    data.getStatus()==StepDataInterface.STATUS_STOPPED     // Stopped because of an error
+                    )
+            {
+                nrEnded++;
+            }
 		}
 
-		return ended;
+		return nrEnded;
 	}
 
 
@@ -1016,7 +1039,6 @@ public class Trans
 
 			result.setNrErrors(result.getNrErrors()+sid.step.getErrors());
 			result.getResultFiles().addAll(rt.getResultFiles());
-			// System.out.println("Getresult: sid.Stepname = "+sid.stepname+", outputstep=["+transMeta.outputstep+"], lines_output="+rt.lines_output);
 
 			if (transMeta.getReadStep()  !=null && rt.getStepname().equals(transMeta.getReadStep().getName()))   result.setNrLinesRead(result.getNrLinesRead()+ rt.linesRead);
 			if (transMeta.getInputStep() !=null && rt.getStepname().equals(transMeta.getInputStep().getName()))  result.setNrLinesInput(result.getNrLinesInput() + rt.linesInput);
@@ -1102,7 +1124,6 @@ public class Trans
 			{
 				if (rt.isAlive() && rt.previewBuffer.size() < rt.previewSize)
 				{
-					// System.out.println("Step: ["+rt.getName()+"] preview not complete ["+rt.preview_buffer.size()+"/"+rt.preview_size+"]");
 					return false;
 				}
 			}
@@ -1431,6 +1452,20 @@ public class Trans
             if (sid.stepname.equals(stepname) && sid.copy==stepcopy) return sid.data;
         }
         return null;
+    }
+
+    /**
+     * 
+     * @return true if one or more steps are halted
+     */
+    public boolean hasHaltedSteps()
+    {
+        for (int i=0;i<steps.size();i++)
+        {
+            StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+            if (sid.data.getStatus()==StepDataInterface.STATUS_HALTED) return true;
+        }
+        return false;
     }
 }
 
