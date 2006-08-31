@@ -272,9 +272,17 @@ public class Chef implements AddUndoPositionInterface
 					if ((int)e.character ==  4) { closeRepository(); };
 					// CTRL-E --> Explore the repository
 					if ((int)e.character ==  5) { exploreRepository(); };
-					// CTRL-I --> Import file from XML
+
+                    // CTRL-F --> Java examination
+                    if ((int)e.character ==  6 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { searchMetaData(); chefgraph.clearSettings(); };
+
+                    // CTRL-I --> Import file from XML
 					if ((int)e.character ==  9) { openFile(true); };
-					// CTRL-J --> Job Dialog : edit job settings
+					
+                    // CTRL-K --> Get variables
+                    if ((int)e.character == 10 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { getVariables(); chefgraph.clearSettings(); };
+
+                    // CTRL-J --> Job Dialog : edit job settings
 					if ((int)e.character == 10) { setJob(); };
 					// CTRL-N --> new
 					if ((int)e.character == 14) { newFile();         } 
@@ -400,28 +408,34 @@ public class Chef implements AddUndoPositionInterface
 		 * 
 		 */		
 		MenuItem mFile = new MenuItem(mBar, SWT.CASCADE); mFile.setText(Messages.getString("Chef.Menu.File")); //$NON-NLS-1$
-		  msFile = new Menu(shell, SWT.DROP_DOWN);
-		  mFile.setMenu(msFile);
-		  MenuItem miFileNew    = new MenuItem(msFile, SWT.CASCADE); miFileNew.setText(Messages.getString("Chef.Menu.File.New")); //$NON-NLS-1$
-		  MenuItem miFileOpen   = new MenuItem(msFile, SWT.CASCADE); miFileOpen.setText(Messages.getString("Chef.Menu.File.Open")); //$NON-NLS-1$
-		  MenuItem miFileSave   = new MenuItem(msFile, SWT.CASCADE); miFileSave.setText(Messages.getString("Chef.Menu.File.Save")); //$NON-NLS-1$
-		  MenuItem miFileSaveAs = new MenuItem(msFile, SWT.CASCADE); miFileSaveAs.setText(Messages.getString("Chef.Menu.File.SaveAs")); //$NON-NLS-1$
-		  new MenuItem(msFile, SWT.SEPARATOR);
-		  MenuItem miFilePrint  = new MenuItem(msFile, SWT.CASCADE); miFilePrint.setText(Messages.getString("Chef.Menu.File.Print")); //$NON-NLS-1$
-		  new MenuItem(msFile, SWT.SEPARATOR);
-		  MenuItem miFileQuit   = new MenuItem(msFile, SWT.CASCADE); miFileQuit.setText(Messages.getString("Chef.Menu.File.Quit")); //$NON-NLS-1$
- 		  miFileSep3 = new MenuItem(msFile, SWT.SEPARATOR);
-		  addMenuLast();
+        msFile = new Menu(shell, SWT.DROP_DOWN);
+		mFile.setMenu(msFile);
+		MenuItem miFileNew    = new MenuItem(msFile, SWT.CASCADE); miFileNew.setText(Messages.getString("Chef.Menu.File.New")); //$NON-NLS-1$
+		MenuItem miFileOpen   = new MenuItem(msFile, SWT.CASCADE); miFileOpen.setText(Messages.getString("Chef.Menu.File.Open")); //$NON-NLS-1$
+        MenuItem miFileImport = new MenuItem(msFile, SWT.CASCADE); miFileImport.setText(Messages.getString("Chef.Menu.File.Import")); //"&Import from an XML file\tCTRL-I"
+        MenuItem miFileExport = new MenuItem(msFile, SWT.CASCADE); miFileExport.setText(Messages.getString("Chef.Menu.File.Export")); //&Export to an XML file
+		MenuItem miFileSave   = new MenuItem(msFile, SWT.CASCADE); miFileSave.setText(Messages.getString("Chef.Menu.File.Save")); //$NON-NLS-1$
+		MenuItem miFileSaveAs = new MenuItem(msFile, SWT.CASCADE); miFileSaveAs.setText(Messages.getString("Chef.Menu.File.SaveAs")); //$NON-NLS-1$
+		new MenuItem(msFile, SWT.SEPARATOR);
+		MenuItem miFilePrint  = new MenuItem(msFile, SWT.CASCADE); miFilePrint.setText(Messages.getString("Chef.Menu.File.Print")); //$NON-NLS-1$
+		new MenuItem(msFile, SWT.SEPARATOR);
+		MenuItem miFileQuit   = new MenuItem(msFile, SWT.CASCADE); miFileQuit.setText(Messages.getString("Chef.Menu.File.Quit")); //$NON-NLS-1$
+ 		miFileSep3 = new MenuItem(msFile, SWT.SEPARATOR);
+		addMenuLast();
 
+        Listener lsFileNew        = new Listener() { public void handleEvent(Event e) { newFile();        } };
 		Listener lsFileOpen       = new Listener() { public void handleEvent(Event e) { openFile(false);  } };
-		Listener lsFileNew        = new Listener() { public void handleEvent(Event e) { newFile();        } };
+        Listener lsFileImport     = new Listener() { public void handleEvent(Event e) { openFile(true);     } };
+        Listener lsFileExport     = new Listener() { public void handleEvent(Event e) { saveXMLFile();      } };
 		Listener lsFileSave       = new Listener() { public void handleEvent(Event e) { saveFile();       } };
 		Listener lsFileSaveAs     = new Listener() { public void handleEvent(Event e) { saveFileAs();     } };
 		Listener lsFilePrint      = new Listener() { public void handleEvent(Event e) { printFile();      } };
 		Listener lsFileQuit       = new Listener() { public void handleEvent(Event e) { quitFile();       } };
 
+        miFileNew       .addListener (SWT.Selection, lsFileNew    );
 		miFileOpen      .addListener (SWT.Selection, lsFileOpen   );
-		miFileNew       .addListener (SWT.Selection, lsFileNew    );
+        miFileImport    .addListener (SWT.Selection, lsFileImport );
+        miFileExport    .addListener (SWT.Selection, lsFileExport );
 		miFileSave      .addListener (SWT.Selection, lsFileSave   );
 		miFileSaveAs    .addListener (SWT.Selection, lsFileSaveAs );
 		miFilePrint     .addListener (SWT.Selection, lsFilePrint  );
@@ -440,7 +454,7 @@ public class Chef implements AddUndoPositionInterface
 		setUndoMenu();
         new MenuItem(msEdit, SWT.SEPARATOR);
         MenuItem miEditSearch       = new MenuItem(msEdit, SWT.CASCADE); miEditSearch.setText(Messages.getString("Chef.Menu.Edit.Search"));  //Search Metadata \tCTRL-F
-        MenuItem miEditVars         = new MenuItem(msEdit, SWT.CASCADE); miEditVars.setText(Messages.getString("Chef.Menu.Edit.Variables"));  //Edit/Enter variables \tCTRL-F
+        MenuItem miEditVars         = new MenuItem(msEdit, SWT.CASCADE); miEditVars.setText(Messages.getString("Chef.Menu.Edit.Variables"));  //Edit/Enter variables \tCTRL-K
 		new MenuItem(msEdit, SWT.SEPARATOR);
 		MenuItem miEditUnselectAll  = new MenuItem(msEdit, SWT.CASCADE); miEditUnselectAll.setText(Messages.getString("Chef.Menu.Edit.ClearSelection")); //$NON-NLS-1$
 		MenuItem miEditSelectAll    = new MenuItem(msEdit, SWT.CASCADE); miEditSelectAll.setText(Messages.getString("Chef.Menu.Edit.SelectAllSteps")); //$NON-NLS-1$
@@ -1655,6 +1669,51 @@ public class Chef implements AddUndoPositionInterface
 			}
 		}
 	}
+    
+    private boolean saveXMLFile()
+    {
+        boolean saved=false;
+        
+        FileDialog dialog = new FileDialog(shell, SWT.SAVE);
+        dialog.setFilterExtensions(Const.STRING_JOB_FILTER_EXT);
+        dialog.setFilterNames(Const.STRING_JOB_FILTER_NAMES);
+        String fname = dialog.open();
+        if (fname!=null) 
+        {
+            // Is the filename ending on .ktr, .xml?
+            boolean ending=false;
+            for (int i=0;i<Const.STRING_JOB_FILTER_EXT.length-1;i++)
+            {
+                if (fname.endsWith(Const.STRING_JOB_FILTER_EXT[i].substring(1))) 
+                {
+                    ending=true;
+                } 
+            }
+            if (fname.endsWith(Const.STRING_JOB_DEFAULT_EXT)) ending=true;
+            if (!ending)
+            {
+                fname+=Const.STRING_JOB_DEFAULT_EXT;
+            }
+            // See if the file already exists...
+            File f = new File(fname);
+            int id = SWT.YES;
+            if (f.exists())
+            {
+                MessageBox mb = new MessageBox(shell, SWT.NO | SWT.YES | SWT.ICON_WARNING);
+                mb.setMessage(Messages.getString("Chef.Dialog.PromptOverwriteFile.Message"));//"This file already exists.  Do you want to overwrite it?"
+                mb.setText(Messages.getString("Chef.Dialog.PromptOverwriteFile.Title"));//"This file already exists!"
+                id = mb.open();
+            }
+            if (id==SWT.YES)
+            {
+                saved=save(fname);
+                setFilename(fname);
+            }
+        }
+        
+        return saved;
+    }
+
 
 	public void saveRepository()
 	{
@@ -1786,14 +1845,17 @@ public class Chef implements AddUndoPositionInterface
 		} 
 	}
 	
-	private void save(String fname)
+	private boolean save(String fname)
 	{
+        boolean saved = false;
 		String xml = XMLHandler.getXMLHeader() + jobMeta.getXML();
 		try
 		{
             DataOutputStream dos = new DataOutputStream(new FileOutputStream(new File(fname)));
             dos.write(xml.getBytes(Const.XML_ENCODING));
             dos.close();
+            
+            saved=true;
 
             // Handle last opened files...
 			props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fname, RepositoryDirectory.DIRECTORY_SEPARATOR, false, ""); //$NON-NLS-1$
@@ -1813,6 +1875,7 @@ public class Chef implements AddUndoPositionInterface
 			mb.setText(Messages.getString("Chef.Dialog.ErrorSavingFile.Title")); //$NON-NLS-1$
 			mb.open();
 		}
+        return saved;
 	}
 	
 	public void helpAbout()

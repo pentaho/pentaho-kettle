@@ -661,40 +661,40 @@ public class Spoon implements AddUndoPositionInterface
         
         // main File menu...
         MenuItem mFile = new MenuItem(mBar, SWT.CASCADE); 
-          //mFile.setText("&File");
-          mFile.setText(Messages.getString("Spoon.Menu.File") );
-          msFile = new Menu(shell, SWT.DROP_DOWN);
-          mFile.setMenu(msFile);
-          MenuItem miFileNew       = new MenuItem(msFile, SWT.CASCADE); miFileNew.setText(Messages.getString("Spoon.Menu.File.New")); //miFileNew.setText("&New \tCTRL-N");
-          MenuItem miFileOpen      = new MenuItem(msFile, SWT.CASCADE); miFileOpen.setText(Messages.getString("Spoon.Menu.File.Open")); //&Open \tCTRL-O
-          MenuItem miFileImport    = new MenuItem(msFile, SWT.CASCADE); miFileImport.setText(Messages.getString("Spoon.Menu.File.Import")); //"&Import from an XML file\tCTRL-I"
-          MenuItem miFileExport    = new MenuItem(msFile, SWT.CASCADE); miFileExport.setText(Messages.getString("Spoon.Menu.File.Export")); //&Export to an XML file
-          MenuItem miFileSave      = new MenuItem(msFile, SWT.CASCADE); miFileSave.setText(Messages.getString("Spoon.Menu.File.Save"));  //"&Save \tCTRL-S"
-          MenuItem miFileSaveAs    = new MenuItem(msFile, SWT.CASCADE); miFileSaveAs.setText(Messages.getString("Spoon.Menu.File.SaveAs"));  //"Save &as..."
-          new MenuItem(msFile, SWT.SEPARATOR);
-          MenuItem miFilePrint     = new MenuItem(msFile, SWT.CASCADE); miFilePrint.setText(Messages.getString("Spoon.Menu.File.Print")); //"&Print \tCTRL-P"
-          new MenuItem(msFile, SWT.SEPARATOR);
-          MenuItem miFileQuit      = new MenuItem(msFile, SWT.CASCADE); miFileQuit.setText(Messages.getString("Spoon.Menu.File.Quit")); //miFileQuit.setText("&Quit");
-          miFileSep3               = new MenuItem(msFile, SWT.SEPARATOR);
-          addMenuLast();
+        //mFile.setText("&File");
+        mFile.setText(Messages.getString("Spoon.Menu.File") );
+        msFile = new Menu(shell, SWT.DROP_DOWN);
+        mFile.setMenu(msFile);
+        MenuItem miFileNew       = new MenuItem(msFile, SWT.CASCADE); miFileNew.setText(Messages.getString("Spoon.Menu.File.New")); //miFileNew.setText("&New \tCTRL-N");
+        MenuItem miFileOpen      = new MenuItem(msFile, SWT.CASCADE); miFileOpen.setText(Messages.getString("Spoon.Menu.File.Open")); //&Open \tCTRL-O
+        MenuItem miFileImport    = new MenuItem(msFile, SWT.CASCADE); miFileImport.setText(Messages.getString("Spoon.Menu.File.Import")); //"&Import from an XML file\tCTRL-I"
+        MenuItem miFileExport    = new MenuItem(msFile, SWT.CASCADE); miFileExport.setText(Messages.getString("Spoon.Menu.File.Export")); //&Export to an XML file
+        MenuItem miFileSave      = new MenuItem(msFile, SWT.CASCADE); miFileSave.setText(Messages.getString("Spoon.Menu.File.Save"));  //"&Save \tCTRL-S"
+        MenuItem miFileSaveAs    = new MenuItem(msFile, SWT.CASCADE); miFileSaveAs.setText(Messages.getString("Spoon.Menu.File.SaveAs"));  //"Save &as..."
+        new MenuItem(msFile, SWT.SEPARATOR);
+        MenuItem miFilePrint     = new MenuItem(msFile, SWT.CASCADE); miFilePrint.setText(Messages.getString("Spoon.Menu.File.Print")); //"&Print \tCTRL-P"
+        new MenuItem(msFile, SWT.SEPARATOR);
+        MenuItem miFileQuit      = new MenuItem(msFile, SWT.CASCADE); miFileQuit.setText(Messages.getString("Spoon.Menu.File.Quit")); //miFileQuit.setText("&Quit");
+        miFileSep3               = new MenuItem(msFile, SWT.SEPARATOR);
+        addMenuLast();
         
+        Listener lsFileNew        = new Listener() { public void handleEvent(Event e) { newFile();          } };
         Listener lsFileOpen       = new Listener() { public void handleEvent(Event e) { openFile(false);    } };
         Listener lsFileImport     = new Listener() { public void handleEvent(Event e) { openFile(true);     } };
         Listener lsFileExport     = new Listener() { public void handleEvent(Event e) { saveXMLFile();      } };
-        Listener lsFileNew        = new Listener() { public void handleEvent(Event e) { newFile();          } };
         Listener lsFileSave       = new Listener() { public void handleEvent(Event e) { saveFile();         } };
         Listener lsFileSaveAs     = new Listener() { public void handleEvent(Event e) { saveFileAs();       } };
         Listener lsFilePrint      = new Listener() { public void handleEvent(Event e) { printFile();        } };
         Listener lsFileQuit       = new Listener() { public void handleEvent(Event e) { quitFile();         } };
         
-        miFileOpen      .addListener (SWT.Selection, lsFileOpen     );
-        miFileImport    .addListener (SWT.Selection, lsFileImport   );
-        miFileExport    .addListener (SWT.Selection, lsFileExport   );
-        miFileNew       .addListener (SWT.Selection, lsFileNew      );
-        miFileSave      .addListener (SWT.Selection, lsFileSave     );
-        miFileSaveAs    .addListener (SWT.Selection, lsFileSaveAs   );
-        miFilePrint     .addListener (SWT.Selection, lsFilePrint    );
-        miFileQuit      .addListener (SWT.Selection, lsFileQuit     );
+        miFileNew       .addListener (SWT.Selection, lsFileNew    );
+        miFileOpen      .addListener (SWT.Selection, lsFileOpen   );
+        miFileImport    .addListener (SWT.Selection, lsFileImport );
+        miFileExport    .addListener (SWT.Selection, lsFileExport );
+        miFileSave      .addListener (SWT.Selection, lsFileSave   );
+        miFileSaveAs    .addListener (SWT.Selection, lsFileSaveAs );
+        miFilePrint     .addListener (SWT.Selection, lsFilePrint  );
+        miFileQuit      .addListener (SWT.Selection, lsFileQuit   );
 
         // main Edit menu...
         MenuItem mEdit = new MenuItem(mBar, SWT.CASCADE); mEdit.setText(Messages.getString("Spoon.Menu.Edit")); //&Edit
