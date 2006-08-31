@@ -2819,7 +2819,6 @@ public class Spoon implements AddUndoPositionInterface
         boolean saved=false;
         
         FileDialog dialog = new FileDialog(shell, SWT.SAVE);
-        dialog.setFilterPath("C:\\Projects\\kettle\\source\\");
         dialog.setFilterExtensions(Const.STRING_TRANS_FILTER_EXT);
         dialog.setFilterNames(Const.STRING_TRANS_FILTER_NAMES);
         String fname = dialog.open();
