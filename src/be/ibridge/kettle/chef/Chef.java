@@ -110,6 +110,7 @@ import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.reflection.StringSearchResult;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobHopMeta;
@@ -782,6 +783,7 @@ public class Chef implements AddUndoPositionInterface
 		
 		// Now set up the main CSH tree
 		tMain = new Tree(cCSH, SWT.SINGLE | SWT.BORDER);
+        TreeMemory.addTreeListener(tMain);
 		
         // Add the connections subtree
         //
@@ -1957,6 +1959,8 @@ public class Chef implements AddUndoPositionInterface
             }
 			if (je.getName()!=null) item.setText(je.getName());
 		}
+        
+        TreeMemory.setExpandedFromMemory(tMain);
 
 		tMain.setFocus();
 		setShellText();
