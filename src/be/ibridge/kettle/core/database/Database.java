@@ -2381,6 +2381,7 @@ public class Database
 		int type, valtype;
 		int precision;
 		int length;
+        int fieldNr=1;
 		
 		if (rm==null) return null;
 		
@@ -2392,6 +2393,16 @@ public class Database
 			for (i=1;i<=nrcols;i++)
 			{
 				name=new String(rm.getColumnName(i));
+                
+                // Check the name, sometimes it's empty.
+                //
+                if (Const.isEmpty(name) || Const.onlySpaces(name))
+                {
+                    name = "Field"+fieldNr;
+                    fieldNr++;
+                }
+                
+                
 				type=rm.getColumnType(i);
 				valtype=Value.VALUE_TYPE_NONE;
 
