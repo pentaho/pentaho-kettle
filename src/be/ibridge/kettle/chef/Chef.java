@@ -1035,8 +1035,8 @@ public class Chef implements AddUndoPositionInterface
 		cheflog = new ChefLog(tabfolder, SWT.NONE, this);
 
         tiTabsHist = new CTabItem(tabfolder, SWT.NULL); 
-        tiTabsHist.setText(Messages.getString("Chef.Tab.LogView.Text")); //$NON-NLS-1$
-        tiTabsHist.setToolTipText(Messages.getString("Chef.Tab.LogView.ToolTip")); //$NON-NLS-1$
+        tiTabsHist.setText(Messages.getString("Chef.Tab.HistoryView.Text")); //$NON-NLS-1$
+        tiTabsHist.setToolTipText(Messages.getString("Chef.Tab.HistoryView.ToolTip")); //$NON-NLS-1$
         chefhist = new ChefHistory(tabfolder, SWT.NONE, this, log, null, cheflog, shell);
 
 		tiTabsGraph.setControl(chefgraph);
