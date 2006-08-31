@@ -98,6 +98,7 @@ public class ChefLog extends Composite
     private int previousNrItems;
     private boolean isRunning;
     private JobTracker jobTracker;
+    private ChefHistoryRefresher chefHistoryRefresher;
 
     /** @deprecated */
     public ChefLog(Composite parent, int style, LogWriter log, Chef chef)
@@ -316,8 +317,14 @@ public class ChefLog extends Composite
 			}
 		);
 	}
+    
+    public synchronized void startJob()
+    {
+        startJob(null);
+    }
+    
 	
-	public synchronized void startJob()
+	public synchronized void startJob(Date replayDate)
 	{
 		if (job==null) // Not running, start the transformation...
 		{
@@ -581,6 +588,7 @@ public class ChefLog extends Composite
 
             job=null;
             isRunning=false;
+            chefHistoryRefresher.markRefreshNeeded();
             log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.JobHasEnded")); //$NON-NLS-1$
         }
 		
@@ -666,4 +674,10 @@ public class ChefLog extends Composite
 			}
 		}
 	}
+    
+
+    public void setChefHistoryRefresher(ChefHistoryRefresher chefHistoryRefresher)
+    {
+        this.chefHistoryRefresher = chefHistoryRefresher;
+    }
 }

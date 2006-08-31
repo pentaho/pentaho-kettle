@@ -165,13 +165,17 @@ public class Chef implements AddUndoPositionInterface
 	public  Repository rep;
 	
 	public JobMeta jobMeta;
-	private ChefGraph chefgraph;
+    
+    private SashForm   sashform;
+    public  CTabFolder tabfolder;
+    private CTabItem   tiTabsGraph;
+    private CTabItem   tiTabsLog;
+    private CTabItem   tiTabsHist;
 
-	private ChefLog    cheflog;
-	private SashForm   sashform;
-	private CTabFolder tabfolder;
-	private CTabItem   tiTabsGraph;
-	private CTabItem   tiTabsList;
+	private ChefGraph   chefgraph;
+    private ChefHistory chefhist;
+    private ChefLog     cheflog;
+
 
 	// public  Font variable_font, fixed_font, graph_font, grid_font;
 
@@ -258,18 +262,25 @@ public class Chef implements AddUndoPositionInterface
 					
 					// ESC --> Unselect All steps
 					if (e.keyCode == SWT.ESC)   { jobMeta.unselectAll(); refreshGraph(); };
-					// F3 --> create database connection wizard
+					
+                    // F3 --> create database connection wizard
 					if (e.keyCode == SWT.F3)    { createDatabaseWizard(); }
-					// F5 --> refresh
+					
+                    // F5 --> refresh
 					if (e.keyCode == SWT.F5)    { refreshGraph(); refreshTree(true); }
-					// F9 --> run
+					
+                    // F9 --> run
 					if (e.keyCode == SWT.F9)    { tabfolder.setSelection(1); cheflog.startJob(); }
-					// F10 --> ripDB wizard
+					
+                    // F10 --> ripDB wizard
 					if (e.keyCode == SWT.F10)    { ripDBWizard(); }
-					// CTRL-A --> Select All steps
+					
+                    // CTRL-A --> Select All steps
 					if ((int)e.character ==  1) { jobMeta.selectAll(); refreshGraph(); };
-					// CTRL-D --> Disconnect from repository
+					
+                    // CTRL-D --> Disconnect from repository
 					if ((int)e.character ==  4) { closeRepository(); };
+                    
 					// CTRL-E --> Explore the repository
 					if ((int)e.character ==  5) { exploreRepository(); };
 
@@ -278,27 +289,33 @@ public class Chef implements AddUndoPositionInterface
 
                     // CTRL-I --> Import file from XML
 					if ((int)e.character ==  9) { openFile(true); };
-					
-                    // CTRL-K --> Get variables
-                    if ((int)e.character == 10 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { getVariables(); chefgraph.clearSettings(); };
 
                     // CTRL-J --> Job Dialog : edit job settings
-					if ((int)e.character == 10) { setJob(); };
+                    if ((int)e.character == 10) { setJob(); };
+
+                    // CTRL-K --> Get variables
+                    if ((int)e.character == 11 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { getVariables(); chefgraph.clearSettings(); };
+
 					// CTRL-N --> new
-					if ((int)e.character == 14) { newFile();         } 
+                    if ((int)e.character == 14) { newFile();         }
+                    
 					// CTRL-O --> open
-					if ((int)e.character == 15) { openFile(false);    } 
+					if ((int)e.character == 15) { openFile(false);    }
+                    
 					// CTRL-P --> print
-					if ((int)e.character == 16) { printFile();   } 
+					if ((int)e.character == 16) { printFile();   }
+                    
 					// CTRL-R --> Connect to repository
 					if ((int)e.character == 18) { openRepository(); };
+                    
 					// CTRL-S --> save
 					if ((int)e.character == 19) { saveFile();    } 
+                    
 					// CTRL-Y --> save
 					if ((int)e.character == 25) { redoAction();  } 
+                    
 					// CTRL-Z --> save
 					if ((int)e.character == 26) { undoAction();  } 
-
 				}
 			};
 
@@ -1007,20 +1024,32 @@ public class Chef implements AddUndoPositionInterface
 		tabfolder= new CTabFolder(child, SWT.BORDER);
 		props.setLook(tabfolder, Props.WIDGET_STYLE_TAB);
 
-		tiTabsGraph = new CTabItem(tabfolder, SWT.NONE); tiTabsGraph.setText(Messages.getString("Chef.Tab.GraphicalView.Text")); //$NON-NLS-1$
+		tiTabsGraph = new CTabItem(tabfolder, SWT.NONE); 
+        tiTabsGraph.setText(Messages.getString("Chef.Tab.GraphicalView.Text")); //$NON-NLS-1$
 		tiTabsGraph.setToolTipText(Messages.getString("Chef.Tab.GraphicalView.ToolTip")); //$NON-NLS-1$
-		tiTabsList  = new CTabItem(tabfolder, SWT.NULL); tiTabsList.setText(Messages.getString("Chef.Tab.LogView.Text")); //$NON-NLS-1$
-		tiTabsList.setToolTipText(Messages.getString("Chef.Tab.LogView.ToolTip")); //$NON-NLS-1$
-		
-		chefgraph = new ChefGraph(tabfolder, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND, this);
-		cheflog   = new ChefLog(tabfolder, SWT.NONE, this);
-				
+        chefgraph = new ChefGraph(tabfolder, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND, this);
+
+        tiTabsLog = new CTabItem(tabfolder, SWT.NULL); 
+        tiTabsLog.setText(Messages.getString("Chef.Tab.LogView.Text")); //$NON-NLS-1$
+		tiTabsLog.setToolTipText(Messages.getString("Chef.Tab.LogView.ToolTip")); //$NON-NLS-1$
+		cheflog = new ChefLog(tabfolder, SWT.NONE, this);
+
+        tiTabsHist = new CTabItem(tabfolder, SWT.NULL); 
+        tiTabsHist.setText(Messages.getString("Chef.Tab.LogView.Text")); //$NON-NLS-1$
+        tiTabsHist.setToolTipText(Messages.getString("Chef.Tab.LogView.ToolTip")); //$NON-NLS-1$
+        chefhist = new ChefHistory(tabfolder, SWT.NONE, this, log, null, cheflog, shell);
+
 		tiTabsGraph.setControl(chefgraph);
-		tiTabsList.setControl(cheflog);
-		
+		tiTabsLog.setControl(cheflog);
+        tiTabsHist.setControl(chefhist);
+        
 		tabfolder.setSelection(0);
 				
 		sashform.addKeyListener(defKeys);
+        
+        ChefHistoryRefresher chefHistoryRefresher = new ChefHistoryRefresher(tiTabsHist, chefhist);
+        tabfolder.addSelectionListener(chefHistoryRefresher);
+        cheflog.setChefHistoryRefresher(chefHistoryRefresher);
 	}
 
 	public String getRepositoryName()
