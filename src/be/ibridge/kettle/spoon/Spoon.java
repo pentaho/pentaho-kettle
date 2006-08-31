@@ -110,6 +110,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.reflection.StringSearchResult;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.pan.CommandLineOption;
@@ -1092,6 +1093,9 @@ public class Spoon implements AddUndoPositionInterface
         selectionTree = new Tree(leftSash, SWT.SINGLE | SWT.BORDER);
         props.setLook(selectionTree);
         selectionTree.setLayout(new FillLayout());
+        
+        // Add a tree memory as well...
+        TreeMemory.addTreeListener(selectionTree);
         
         tiConn   = new TreeItem(selectionTree, SWT.NONE); tiConn.setText(STRING_CONNECTIONS);
         tiStep   = new TreeItem(selectionTree, SWT.NONE); tiStep.setText(STRING_STEPS);
@@ -3012,7 +3016,6 @@ public class Spoon implements AddUndoPositionInterface
                     j++;
                 }
             }
-            // tiConn.setExpanded(true);
         }
 
         //ni.setImage(gv.hop_image);
@@ -3083,8 +3086,6 @@ public class Spoon implements AddUndoPositionInterface
                 if (transMeta.isStepUsedInTransHops(inf)) newcol=GUIResource.getInstance().getColorBlack(); else newcol=GUIResource.getInstance().getColorGray();
                 if (!newcol.equals(col)) ti[i].setForeground(newcol);
             }
-
-            //tiStep.setExpanded(true);
         }
         
         // Refresh the Hops...
@@ -3134,8 +3135,10 @@ public class Spoon implements AddUndoPositionInterface
                     j++;
                 }
             }
-            // tiTrns.setExpanded(false);
         }
+        
+        // Set the expanded state of the complete tree.
+        TreeMemory.setExpandedFromMemory(selectionTree);
 
         selectionTree.setFocus();
         setShellText();

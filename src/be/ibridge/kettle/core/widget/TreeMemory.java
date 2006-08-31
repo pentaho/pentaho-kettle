@@ -50,13 +50,18 @@ public class TreeMemory
         
         public int hashCode()
         {
-            return path.hashCode() ^ tree.hashCode();
+            int code = tree.hashCode();
+            for (int i=0;i<path.length;i++)
+            {
+                code^=path[i].hashCode();
+            }
+            return code;
         }
         
         public boolean equals(Object obj)
         {
             TreeMemoryEntry entry = (TreeMemoryEntry) obj;
-            if (!entry.tree.equals(tree)) return false;
+            if (!entry.tree.equals(tree))return false;
             if (entry.path.length!=path.length) return false;
             for (int i=0;i<path.length;i++)
             {
@@ -74,7 +79,15 @@ public class TreeMemory
     public boolean isExpanded(Tree tree, String[] path)
     {
         Boolean expanded = (Boolean) map.get(new TreeMemoryEntry(tree, path));
-        return expanded.booleanValue();
+        if (expanded!=null)
+        {
+            System.out.println("TreeMemory entry found for ["+path[path.length-1]+"] : "+expanded.booleanValue());
+            return expanded.booleanValue();
+        }
+        else
+        {
+            return false;
+        }
     }
     
     public void clear()
@@ -99,6 +112,8 @@ public class TreeMemory
                 String[] path = Const.getTreeStrings(treeItem);
                 TreeMemory treeMemory = TreeMemory.getInstance();
                 treeMemory.storeExpanded(tree, path, true);
+                
+                System.out.println("Expanded item: "+Const.getTreePath(treeItem, 0));
             }
         
             public void treeCollapsed(TreeEvent e)
@@ -107,10 +122,41 @@ public class TreeMemory
                 String[] path = Const.getTreeStrings(treeItem);
                 TreeMemory treeMemory = TreeMemory.getInstance();
                 treeMemory.storeExpanded(tree, path, false);
+                
+                System.out.println("Collapsed item: "+Const.getTreePath(treeItem, 0));
             }
         
         };
         tree.addTreeListener(treeListener);
         return treeListener;
+    }
+
+    /**
+     * Expand of collapse all TreeItems in the complete tree based on the values stored in memory.
+     *  
+     * @param tree The tree to format.
+     */
+    public static void setExpandedFromMemory(Tree tree)
+    {
+        TreeItem[] items = tree.getItems();
+        for (int i=0;i<items.length;i++)
+        {
+            setExpandedFromMemory(tree, items[i]);
+        }
+    }
+    
+    private static void setExpandedFromMemory(Tree tree, TreeItem treeItem)
+    {
+        TreeMemory treeMemory = TreeMemory.getInstance();
+        
+        String[] path = Const.getTreeStrings(treeItem);
+        boolean expanded = treeMemory.isExpanded(tree, path);
+        treeItem.setExpanded(expanded);
+        
+        TreeItem[] items = treeItem.getItems();
+        for (int i=0;i<items.length;i++)
+        {
+            setExpandedFromMemory(tree, items[i]);
+        }
     }
 }
