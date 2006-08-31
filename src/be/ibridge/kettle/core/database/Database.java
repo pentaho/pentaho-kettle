@@ -167,6 +167,16 @@ public class Database
 			{
 				connect(databaseMeta.getDriverClass());
 				log.logDetailed(toString(), "Connected to database.");
+                
+                // See if we need to execute extra SQL statemtent...
+                String sql = StringUtil.environmentSubstitute( databaseMeta.getConnectSQL() ); 
+                
+                // only execute if the SQL is not empty, null and is not just a bunch of spaces, tabs, CR etc.
+                if (!Const.isEmpty(sql) && !Const.onlySpaces(sql))
+                {
+                    execStatements(sql);
+                    log.logDetailed(toString(), "Executed connect time SQL statements:"+Const.CR+sql);
+                }
 			}
 			else
 			{
@@ -1634,8 +1644,7 @@ public class Database
      * @throws KettleDatabaseException In case an error occurs
      * @return A result with counts of the number or records updates, inserted, deleted or read.
      */
-	public Result execStatements(String script)
-		throws KettleDatabaseException
+	public Result execStatements(String script) throws KettleDatabaseException
 	{
         Result result = new Result();
         

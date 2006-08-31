@@ -499,7 +499,9 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		di.setDataTablespace( getDataTablespace() );
 		di.setIndexTablespace( getIndexTablespace() );
 
-        di.databaseInterface = (DatabaseInterface) di.getDatabaseInterface().clone();
+        di.databaseInterface = (DatabaseInterface) databaseInterface.clone();
+        
+        di.databaseInterface.getURL();
         
 		return di; 
 	}
@@ -1926,5 +1928,20 @@ public class DatabaseMeta implements Cloneable, XMLInterface
     {
         return databaseInterface.supportsGetBlob();
     }
+    
+    /**
+     * @return The SQL to execute right after connecting
+     */
+    public String getConnectSQL()
+    {
+        return databaseInterface.getConnectSQL();
+    }
 
+    /**
+     * @param sql The SQL to execute right after connecting
+     */
+    public void setConnectSQL(String sql)
+    {
+        databaseInterface.setConnectSQL(sql);
+    }
 }

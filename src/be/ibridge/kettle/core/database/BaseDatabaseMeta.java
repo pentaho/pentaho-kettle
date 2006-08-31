@@ -46,6 +46,11 @@ public abstract class BaseDatabaseMeta implements Cloneable
      * The prefix for all the extra options attributes
      */
     public static final String ATTRIBUTE_PREFIX_EXTRA_OPTION    = "EXTRA_OPTION_"; 
+    
+    /**
+     * The SQL to execute at connect time (right after connecting)
+     */
+    public static final String ATTRIBUTE_SQL_CONNECT            = "SQL_CONNECT";
 
 	private String name;
 	private int    accessType;        // Database.TYPE_ODBC / NATIVE / OCI
@@ -331,7 +336,7 @@ public abstract class BaseDatabaseMeta implements Cloneable
 			retval = (BaseDatabaseMeta)super.clone();
             
             // CLone the attributes as well...
-            retval.attributes = (Properties) attributes.clone(); 
+            retval.attributes = (Properties) attributes.clone();
 		}
 		catch(CloneNotSupportedException e)
 		{
@@ -843,6 +848,22 @@ public abstract class BaseDatabaseMeta implements Cloneable
     public boolean supportsGetBlob()
     {
         return true;
+    }
+    
+    /**
+     * @return The SQL to execute right after connecting
+     */
+    public String getConnectSQL()
+    {
+        return attributes.getProperty(ATTRIBUTE_SQL_CONNECT);
+    }
+
+    /**
+     * @param sql The SQL to execute right after connecting
+     */
+    public void setConnectSQL(String sql)
+    {
+        attributes.setProperty(ATTRIBUTE_SQL_CONNECT, sql);
     }
 
 }

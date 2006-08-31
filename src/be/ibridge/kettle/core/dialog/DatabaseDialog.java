@@ -76,10 +76,10 @@ public class DatabaseDialog extends Dialog
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wDbTab, wOracleTab, wIfxTab, wSAPTab, wGenericTab, wOptionsTab;
+	private CTabItem     wDbTab, wOracleTab, wIfxTab, wSAPTab, wGenericTab, wOptionsTab, wSQLTab;
 
-	private Composite    wDbComp, wOracleComp, wIfxComp, wSAPComp, wGenericComp, wOptionsComp;
-	private FormData     fdDbComp, fdOracleComp, fdIfxComp, fdSAPComp, fdGenericComp, fdOptionsComp;
+	private Composite    wDbComp, wOracleComp, wIfxComp, wSAPComp, wGenericComp, wOptionsComp, wSQLComp;
+	private FormData     fdDbComp, fdOracleComp, fdIfxComp, fdSAPComp, fdGenericComp, fdOptionsComp, fdSQLComp;
 
 	private Shell     shell;
 
@@ -105,9 +105,15 @@ public class DatabaseDialog extends Dialog
     private FormData fdlURL, fdlDriverClass;
     private FormData fdURL, fdDriverClass;
     
+    // Options
     private TableView wOptions;
     private FormData  fdOptions;
 
+    // SQL
+    private Label     wlSQL;
+    private Text      wSQL;
+    private FormData  fdlSQL, fdSQL;
+    
 	private Button    wOK, wTest, wExp, wList, wCancel, wOptionsHelp;
 	
 	private String connectionName;
@@ -194,6 +200,7 @@ public class DatabaseDialog extends Dialog
         addSAPTab();
         addGenericTab();
         addOptionsTab();
+        addSQLTab();
         
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
@@ -811,6 +818,54 @@ public class DatabaseDialog extends Dialog
         wOptionsTab.setControl(wOptionsComp);
     }
 
+    private void addSQLTab()
+    {
+        //////////////////////////
+        // START OF SQL TAB///
+        ///
+        wSQLTab=new CTabItem(wTabFolder, SWT.NONE);
+        wSQLTab.setText("SQL");
+        wSQLTab.setToolTipText("Specify the SQL to execute after connecting");
+
+        FormLayout sqlLayout = new FormLayout ();
+        sqlLayout.marginWidth  = margin;
+        sqlLayout.marginHeight = margin;
+        
+        wSQLComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook( wSQLComp);
+        wSQLComp.setLayout(sqlLayout);
+
+        wlSQL = new Label(wSQLComp, SWT.LEFT);
+        props.setLook(wlSQL);
+        wlSQL.setText("The statements to execute right after connecting (separated by ;)");
+
+        fdlSQL = new FormData();
+        fdlSQL.left = new FormAttachment(0, 0);
+        fdlSQL.top = new FormAttachment(0, 0);
+        wlSQL.setLayoutData(fdlSQL);
+        
+        wSQL = new Text(wSQLComp, SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI | SWT.BORDER);
+        props.setLook( wSQL, Props.WIDGET_STYLE_FIXED );
+        
+        fdSQL = new FormData();
+        fdSQL.left = new FormAttachment(0, 0);
+        fdSQL.right = new FormAttachment(100, 0);
+        fdSQL.top = new FormAttachment(wlSQL, margin);
+        fdSQL.bottom = new FormAttachment(100, 0);
+        wSQL.setLayoutData(fdSQL);
+        
+        fdSQLComp = new FormData();
+        fdSQLComp.left  = new FormAttachment(0, 0);
+        fdSQLComp.top   = new FormAttachment(0, 0);
+        fdSQLComp.right = new FormAttachment(100, 0);
+        fdSQLComp.bottom= new FormAttachment(100, 0);
+        wSQLComp.setLayoutData(fdSQLComp);
+
+        wSQLComp.layout();
+        wSQLTab.setControl(wSQLComp);
+    }
+
+    
     private void showOptionsHelpText()
     {
         DatabaseMeta meta = new DatabaseMeta();
@@ -873,6 +928,8 @@ public class DatabaseDialog extends Dialog
         wDriverClass.setText( connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, ""));
         
         setOptionsList();
+        
+        wSQL.setText( NVL(connection.getConnectSQL(),"") );
         
 		wConn.setFocus();
 		wConn.selectAll();
@@ -1083,6 +1140,9 @@ public class DatabaseDialog extends Dialog
                 databaseMeta.getAttributes().put(typedParameter, value);
             }
         }
+        
+        // The SQL to execute...
+        databaseMeta.setConnectSQL( wSQL.getText() );
 	}
 	
     /**

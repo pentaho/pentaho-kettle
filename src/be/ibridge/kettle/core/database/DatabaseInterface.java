@@ -581,5 +581,14 @@ public interface DatabaseInterface extends Cloneable
      */
     public boolean supportsGetBlob();
 
+    /**
+     * @return The SQL to execute right after connecting
+     */
+    public String getConnectSQL();
+
+    /**
+     * @param sql The SQL to execute right after connecting
+     */
+    public void setConnectSQL(String sql);
 
 }
