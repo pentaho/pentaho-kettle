@@ -81,7 +81,6 @@ public class TreeMemory
         Boolean expanded = (Boolean) map.get(new TreeMemoryEntry(tree, path));
         if (expanded!=null)
         {
-            System.out.println("TreeMemory entry found for ["+path[path.length-1]+"] : "+expanded.booleanValue());
             return expanded.booleanValue();
         }
         else
@@ -112,8 +111,6 @@ public class TreeMemory
                 String[] path = Const.getTreeStrings(treeItem);
                 TreeMemory treeMemory = TreeMemory.getInstance();
                 treeMemory.storeExpanded(tree, path, true);
-                
-                System.out.println("Expanded item: "+Const.getTreePath(treeItem, 0));
             }
         
             public void treeCollapsed(TreeEvent e)
@@ -122,8 +119,6 @@ public class TreeMemory
                 String[] path = Const.getTreeStrings(treeItem);
                 TreeMemory treeMemory = TreeMemory.getInstance();
                 treeMemory.storeExpanded(tree, path, false);
-                
-                System.out.println("Collapsed item: "+Const.getTreePath(treeItem, 0));
             }
         
         };
