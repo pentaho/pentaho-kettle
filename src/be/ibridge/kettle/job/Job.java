@@ -201,6 +201,12 @@ public class Job extends Thread
 
 	public Result execute() throws KettleException
     {
+        if (jobMeta.isLogfieldUsed())
+        {
+            log.startStringCapture();
+            log.setString("START"+Const.CR);
+        }
+        
         // Start the tracking...
         JobEntryResult jerStart = new JobEntryResult(null, "Start of job execution", "start", null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
@@ -481,6 +487,15 @@ public class Job extends Thread
 		
 		logDate     = new Date();
 
+        // Change the logging back to stream...
+        String log_string = null;
+        if (jobMeta.isLogfieldUsed())
+        {
+            log_string = log.getString();
+            log_string+=Const.CR+"END"+Const.CR; //$NON-NLS-1$
+            log.setString(""); //$NON-NLS-1$
+            log.endStringCapture();
+        }
 		/*
 		 * Sums errors, read, written, etc.
 		 */		
@@ -495,7 +510,7 @@ public class Job extends Thread
 				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), jobMeta.getBatchId(), true, jobMeta.getName(), status, 
 				                   read,written,updated,input,output,errors, 
 				                   startDate, endDate, logDate, depDate, currentDate,
-								   log.getString()
+								   log_string
 								   );
 			}
 			catch(KettleDatabaseException dbe)
