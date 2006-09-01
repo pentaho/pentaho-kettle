@@ -286,7 +286,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		int i;
 		log.logDebug(toString(), Messages.getString("DatabaseJoinDialog.Log.GettingKeyInfo")); //$NON-NLS-1$
 		
-		wSQL.setText(input.getSql());
+		wSQL.setText( Const.NVL(input.getSql(), ""));
 		wLimit.setText(""+input.getRowLimit()); //$NON-NLS-1$
 		wOuter.setSelection(input.isOuterJoin());
 		

@@ -49,39 +49,41 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 	public final static int TYPE_SYSTEM_INFO_NONE             =  0;
 	public final static int TYPE_SYSTEM_INFO_SYSTEM_DATE      =  1;
 	public final static int TYPE_SYSTEM_INFO_SYSTEM_START     =  2;
-	public final static int TYPE_SYSTEM_INFO_DATE_FROM        =  3;
-	public final static int TYPE_SYSTEM_INFO_DATE_TO          =  4;
-	public final static int TYPE_SYSTEM_INFO_PREV_DAY_START   =  5;
-	public final static int TYPE_SYSTEM_INFO_PREV_DAY_END     =  6;
-	public final static int TYPE_SYSTEM_INFO_THIS_DAY_START   =  7;
-	public final static int TYPE_SYSTEM_INFO_THIS_DAY_END     =  8;
-	public final static int TYPE_SYSTEM_INFO_NEXT_DAY_START   =  9;
-	public final static int TYPE_SYSTEM_INFO_NEXT_DAY_END     = 10;
-	public final static int TYPE_SYSTEM_INFO_PREV_MONTH_START = 11;
-	public final static int TYPE_SYSTEM_INFO_PREV_MONTH_END   = 12;
-	public final static int TYPE_SYSTEM_INFO_THIS_MONTH_START = 13;
-	public final static int TYPE_SYSTEM_INFO_THIS_MONTH_END   = 14;
-	public final static int TYPE_SYSTEM_INFO_NEXT_MONTH_START = 15;
-	public final static int TYPE_SYSTEM_INFO_NEXT_MONTH_END   = 16;
-	public final static int TYPE_SYSTEM_INFO_COPYNR           = 17;
-	public final static int TYPE_SYSTEM_INFO_TRANS_NAME       = 18;
-	public final static int TYPE_SYSTEM_INFO_FILENAME         = 19;
-	public final static int TYPE_SYSTEM_INFO_MODIFIED_USER    = 20;
-	public final static int TYPE_SYSTEM_INFO_MODIFIED_DATE    = 21;
-	public final static int TYPE_SYSTEM_INFO_BATCH_ID         = 22;
-    public final static int TYPE_SYSTEM_INFO_JOB_BATCH_ID     = 23;
-	public final static int TYPE_SYSTEM_INFO_HOSTNAME         = 24;
-	public final static int TYPE_SYSTEM_INFO_IP_ADDRESS       = 25;
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_01      = 26;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_02      = 27;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_03      = 28;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_04      = 29;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_05      = 30;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_06      = 31;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_07      = 32;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_08      = 33;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_09      = 34;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_10      = 35;	
+	public final static int TYPE_SYSTEM_INFO_TRANS_DATE_FROM  =  3;
+	public final static int TYPE_SYSTEM_INFO_TRANS_DATE_TO    =  4;
+    public final static int TYPE_SYSTEM_INFO_JOB_DATE_FROM    =  5;
+    public final static int TYPE_SYSTEM_INFO_JOB_DATE_TO      =  6;
+	public final static int TYPE_SYSTEM_INFO_PREV_DAY_START   =  7;
+	public final static int TYPE_SYSTEM_INFO_PREV_DAY_END     =  8;
+	public final static int TYPE_SYSTEM_INFO_THIS_DAY_START   =  9;
+	public final static int TYPE_SYSTEM_INFO_THIS_DAY_END     = 10;
+	public final static int TYPE_SYSTEM_INFO_NEXT_DAY_START   = 11;
+	public final static int TYPE_SYSTEM_INFO_NEXT_DAY_END     = 12;
+	public final static int TYPE_SYSTEM_INFO_PREV_MONTH_START = 13;
+	public final static int TYPE_SYSTEM_INFO_PREV_MONTH_END   = 14;
+	public final static int TYPE_SYSTEM_INFO_THIS_MONTH_START = 15;
+	public final static int TYPE_SYSTEM_INFO_THIS_MONTH_END   = 16;
+	public final static int TYPE_SYSTEM_INFO_NEXT_MONTH_START = 17;
+	public final static int TYPE_SYSTEM_INFO_NEXT_MONTH_END   = 18;
+	public final static int TYPE_SYSTEM_INFO_COPYNR           = 19;
+	public final static int TYPE_SYSTEM_INFO_TRANS_NAME       = 20;
+	public final static int TYPE_SYSTEM_INFO_FILENAME         = 21;
+	public final static int TYPE_SYSTEM_INFO_MODIFIED_USER    = 22;
+	public final static int TYPE_SYSTEM_INFO_MODIFIED_DATE    = 23;
+	public final static int TYPE_SYSTEM_INFO_TRANS_BATCH_ID         = 24;
+    public final static int TYPE_SYSTEM_INFO_JOB_BATCH_ID     = 25;
+	public final static int TYPE_SYSTEM_INFO_HOSTNAME         = 26;
+	public final static int TYPE_SYSTEM_INFO_IP_ADDRESS       = 27;
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_01      = 28;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_02      = 29;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_03      = 30;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_04      = 31;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_05      = 32;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_06      = 33;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_07      = 34;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_08      = 35;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_09      = 36;	
+	public final static int TYPE_SYSTEM_INFO_ARGUMENT_10      = 37;	
 
 	public final static String typeCode[] = 
 		{
@@ -90,6 +92,8 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 			"system date (fixed)",
 			"start date range",
 			"end date range",
+            "job start date range",
+            "job end date range",
 			"yesterday start",
 			"yesterday end",
 			"today start",
@@ -130,6 +134,8 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 			Messages.getString("SystemDataMeta.TypeDesc.SystemDateFixed"),
 			Messages.getString("SystemDataMeta.TypeDesc.StartDateRange"),
 			Messages.getString("SystemDataMeta.TypeDesc.EndDateRange"),
+            Messages.getString("SystemDataMeta.TypeDesc.JobStartDateRange"),
+            Messages.getString("SystemDataMeta.TypeDesc.JobEndDateRange"),
 			Messages.getString("SystemDataMeta.TypeDesc.YesterdayStart"),
 			Messages.getString("SystemDataMeta.TypeDesc.YesterdayEnd"),
 			Messages.getString("SystemDataMeta.TypeDesc.TodayStart"),
@@ -302,8 +308,10 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 			{
 			case TYPE_SYSTEM_INFO_SYSTEM_START:      // All date values...
 			case TYPE_SYSTEM_INFO_SYSTEM_DATE:  
-			case TYPE_SYSTEM_INFO_DATE_FROM: 
-			case TYPE_SYSTEM_INFO_DATE_TO: 
+			case TYPE_SYSTEM_INFO_TRANS_DATE_FROM: 
+			case TYPE_SYSTEM_INFO_TRANS_DATE_TO: 
+            case TYPE_SYSTEM_INFO_JOB_DATE_FROM: 
+            case TYPE_SYSTEM_INFO_JOB_DATE_TO: 
 			case TYPE_SYSTEM_INFO_PREV_DAY_START: 
 			case TYPE_SYSTEM_INFO_PREV_DAY_END: 
 			case TYPE_SYSTEM_INFO_THIS_DAY_START: 
@@ -321,8 +329,10 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 				break;
 				
 			case TYPE_SYSTEM_INFO_COPYNR:
-			case TYPE_SYSTEM_INFO_BATCH_ID:
+			case TYPE_SYSTEM_INFO_TRANS_BATCH_ID:
+            case TYPE_SYSTEM_INFO_JOB_BATCH_ID:
 				v = new Value(fieldName[i], Value.VALUE_TYPE_INTEGER);
+                v.setLength(9, 0);
 				break;
 				
 			case TYPE_SYSTEM_INFO_TRANS_NAME :

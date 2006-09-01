@@ -55,7 +55,7 @@ public class KettleLogRecord
         this.logConnection = transMeta.getLogConnection();
         this.logTable = transMeta.getLogTable();
         this.batchIdUsed = transMeta.isBatchIdUsed();
-        this.batchId = transMeta.getBatchId();
+        this.batchId = trans.getBatchId();
         this.jobType = jobType;
         this.name = transMeta.getName();
         this.status = status;

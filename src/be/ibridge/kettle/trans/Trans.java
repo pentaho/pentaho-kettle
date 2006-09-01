@@ -74,6 +74,12 @@ public class Trans
 	private boolean monitored;
 
 	private Date      startDate, endDate, currentDate, logDate, depDate;
+    private Date      jobStartDate, jobEndDate;
+    
+    private long      batchId;
+    
+    /** This is the batch ID that is passed from job to job to transformation, if nothing is passed, it's the transformation's batch id */
+    private long      passedBatchId;
 
 	/**
 	 * An arraylist of all the rowsets
@@ -975,9 +981,12 @@ public class Trans
 					if (transMeta.isBatchIdUsed())
 					{
 						ldb.getNextValue(transMeta.getCounters(), transMeta.getLogTable(), id_batch);
-						transMeta.setBatchId( id_batch.getInteger() );
+						setBatchId( id_batch.getInteger() );
+                        if (getPassedBatchId()<=0) 
+                        {
+                            setPassedBatchId(id_batch.getInteger());
+                        }
 					}
-
 				}
 
                 // OK, now we have a date-range.  See if we need to set a maximum!
@@ -998,7 +1007,7 @@ public class Trans
                 {
                     ldb.writeLogRecord(transMeta.getLogTable(),
                                transMeta.isBatchIdUsed(),
-                               transMeta.getBatchId(),
+                               getBatchId(),
                                false,
                                transMeta.getName(),
                                "start",  //$NON-NLS-1$
@@ -1085,7 +1094,7 @@ public class Trans
 					(
 						transMeta.getLogTable(),
 						transMeta.isBatchIdUsed(),
-						transMeta.getBatchId(),
+						getBatchId(),
 						false,
 						transMeta.getName(),
 						status,
@@ -1466,6 +1475,64 @@ public class Trans
             if (sid.data.getStatus()==StepDataInterface.STATUS_HALTED) return true;
         }
         return false;
+    }
+
+    public Date getJobStartDate()
+    {
+        return jobStartDate;
+    }
+    
+    public Date getJobEndDate()
+    {
+        return jobEndDate;
+    }
+
+    /**
+     * @param jobEndDate the jobEndDate to set
+     */
+    public void setJobEndDate(Date jobEndDate)
+    {
+        this.jobEndDate = jobEndDate;
+    }
+
+    /**
+     * @param jobStartDate the jobStartDate to set
+     */
+    public void setJobStartDate(Date jobStartDate)
+    {
+        this.jobStartDate = jobStartDate;
+    }
+
+    /**
+     * @return the jobBatchId
+     */
+    public long getPassedBatchId()
+    {
+        return passedBatchId;
+    }
+
+    /**
+     * @param jobBatchId the jobBatchId to set
+     */
+    public void setPassedBatchId(long jobBatchId)
+    {
+        this.passedBatchId = jobBatchId;
+    }
+
+    /**
+     * @return the batchId
+     */
+    public long getBatchId()
+    {
+        return batchId;
+    }
+
+    /**
+     * @param batchId the batchId to set
+     */
+    public void setBatchId(long batchId)
+    {
+        this.batchId = batchId;
     }
 }
 

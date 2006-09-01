@@ -64,6 +64,11 @@ public class Job extends Thread
 	
 	private boolean active, stopped;
     
+    private long    batchId;
+    
+    /** This is the batch ID that is passed from job to job to transformation, if nothing is passed, it's the job's batch id */
+    private long    passedBatchId;
+    
     /**
      * The rows that were passed onto this job by a previous transformation.  
      * These rows are passed onto the first job entry in this job (on the result object)
@@ -99,6 +104,8 @@ public class Job extends Thread
         jobTracker = new JobTracker(jobMeta);
         parentThread = Thread.currentThread();  // It _is_ before you start to run the job.
         initialized=false;
+        batchId = -1;
+        passedBatchId = -1;
 	}
 
 	public Job(LogWriter lw, StepLoader steploader, Repository rep, JobMeta ti)
@@ -456,10 +463,14 @@ public class Job extends Thread
                 if (jobMeta.isBatchIdUsed())
                 {
                     ldb.getNextValue(null, jobMeta.getLogTable(), id_batch);
-                    jobMeta.setBatchId( id_batch.getInteger() );
+                    setBatchId( id_batch.getInteger() );
+                    if (getPassedBatchId()<=0) 
+                    {
+                        setPassedBatchId(id_batch.getInteger());
+                    }
                 }
-				
-				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), jobMeta.getBatchId(), true, jobMeta.getName(), "start", 
+
+				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), "start", 
 				                   0L, 0L, 0L, 0L, 0L, 0L, 
 				                   startDate, endDate, logDate, depDate, currentDate,
 								   log.getString()
@@ -507,7 +518,7 @@ public class Job extends Thread
 			try
 			{
 				ldb.connect();
-				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), jobMeta.getBatchId(), true, jobMeta.getName(), status, 
+				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), status, 
 				                   read,written,updated,input,output,errors, 
 				                   startDate, endDate, logDate, depDate, currentDate,
 								   log_string
@@ -695,5 +706,38 @@ public class Job extends Thread
     public boolean isInitialized()
     {
         return initialized;
+    }
+
+    /**
+     * @return Returns the batchId.
+     */
+    public long getBatchId()
+    {
+        return batchId;
+    }
+
+    /**
+     * @param batchId The batchId to set.
+     */
+    public void setBatchId(long batchId)
+    {
+        this.batchId = batchId;
+    }
+
+
+    /**
+     * @return the jobBatchId
+     */
+    public long getPassedBatchId()
+    {
+        return passedBatchId;
+    }
+
+    /**
+     * @param jobBatchId the jobBatchId to set
+     */
+    public void setPassedBatchId(long jobBatchId)
+    {
+        this.passedBatchId = jobBatchId;
     }
 }

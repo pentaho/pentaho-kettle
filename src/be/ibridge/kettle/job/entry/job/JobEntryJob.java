@@ -359,7 +359,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 
                 if (parentJob.getJobMeta().isBatchIdPassed())
                 {
-                    job.getJobMeta().setBatchId(parentJob.getJobMeta().getBatchId());
+                    job.setPassedBatchId(parentJob.getBatchId());
                 }
     			
                 if (execPerRow) // Execute for each input row

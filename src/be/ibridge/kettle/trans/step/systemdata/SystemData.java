@@ -65,12 +65,18 @@ public class SystemData extends BaseStep implements StepInterface
 			case SystemDataMeta.TYPE_SYSTEM_INFO_SYSTEM_DATE:
 				row.addValue(new Value(meta.getFieldName()[i], new Date()));
 				break;
-			case SystemDataMeta.TYPE_SYSTEM_INFO_DATE_FROM:
+			case SystemDataMeta.TYPE_SYSTEM_INFO_TRANS_DATE_FROM:
 				row.addValue(new Value(meta.getFieldName()[i], getTrans().getStartDate()));
 				break;
-			case SystemDataMeta.TYPE_SYSTEM_INFO_DATE_TO:
-				row.addValue(new Value(meta.getFieldName()[i], getTrans().getEndDate()));
+			case SystemDataMeta.TYPE_SYSTEM_INFO_TRANS_DATE_TO:
+				row.addValue(new Value(meta.getFieldName()[i], getTrans().getStartDate()));
 				break;
+            case SystemDataMeta.TYPE_SYSTEM_INFO_JOB_DATE_FROM:
+                row.addValue(new Value(meta.getFieldName()[i], getTrans().getJobStartDate()));
+                break;
+            case SystemDataMeta.TYPE_SYSTEM_INFO_JOB_DATE_TO:
+                row.addValue(new Value(meta.getFieldName()[i], getTrans().getJobEndDate()));
+                break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_PREV_DAY_START:
 				cal = Calendar.getInstance();
 				cal.add(Calendar.DAY_OF_MONTH, -1);
@@ -193,11 +199,11 @@ public class SystemData extends BaseStep implements StepInterface
 			case SystemDataMeta.TYPE_SYSTEM_INFO_MODIFIED_DATE:
 				row.addValue(new Value(meta.getFieldName()[i], getTransMeta().getModifiedDate()));
 				break;
-			case SystemDataMeta.TYPE_SYSTEM_INFO_BATCH_ID:
-				row.addValue(new Value(meta.getFieldName()[i], getTransMeta().getBatchId()));
+			case SystemDataMeta.TYPE_SYSTEM_INFO_TRANS_BATCH_ID:
+				row.addValue(new Value(meta.getFieldName()[i], getTrans().getBatchId()));
 				break;
             case SystemDataMeta.TYPE_SYSTEM_INFO_JOB_BATCH_ID:
-                row.addValue(new Value(meta.getFieldName()[i], getTransMeta().getJobBatchId()));
+                row.addValue(new Value(meta.getFieldName()[i], getTrans().getPassedBatchId()));
                 break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_HOSTNAME:
 				row.addValue(new Value(meta.getFieldName()[i], Const.getHostname()));

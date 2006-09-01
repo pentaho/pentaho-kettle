@@ -393,14 +393,15 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                 log.logDetailed(toString(), "Starting transformation...(file="+getFileName()+", name="+getName()+"), repinfo="+getDescription());
                 
                 TransMeta transMeta = getTransMeta(rep);
-                if (parentJob.getJobMeta().isBatchIdPassed())
-                {
-                    transMeta.setJobBatchId(parentJob.getJobMeta().getBatchId());
-                }
     
                 // Create the transformation from meta-data
                 Trans trans = new Trans(logwriter, transMeta);
                 
+                if (parentJob.getJobMeta().isBatchIdPassed())
+                {
+                    trans.setPassedBatchId(parentJob.getPassedBatchId());
+                }
+
                 // Set the result rows for the next one...
                 trans.getTransMeta().setPreviousResult(result);
 

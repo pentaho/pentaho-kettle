@@ -55,6 +55,7 @@ import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleJobException;
+import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobEntryResult;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
@@ -130,6 +131,7 @@ public class ChefLog extends Composite
 		// Create the tree table...
 		wTree = new Tree(sash, SWT.V_SCROLL | SWT.H_SCROLL);
         wTree.setHeaderVisible(true);
+        TreeMemory.addTreeListener(wTree);
         
         TreeColumn column1 = new TreeColumn(wTree, SWT.LEFT);
         column1.setText(Messages.getString("ChefLog.Column.JobJobEntry")); //$NON-NLS-1$
@@ -510,8 +512,9 @@ public class ChefLog extends Composite
                 {
                     addTrackerToTree(jobTracker.getJobTracker(i), treeItem);
                 }
-                treeItem.setExpanded(true);
                 previousNrItems = nrItems;
+                
+                TreeMemory.setExpandedFromMemory(wTree);
             }
         }
     }

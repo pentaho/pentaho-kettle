@@ -15,6 +15,7 @@
 
  
 package be.ibridge.kettle.chef;
+import java.io.File;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -1447,9 +1448,23 @@ public class ChefGraph extends Canvas implements Redrawable
 			{
 				// Read from file...
 				Spoon sp = new Spoon(log, chef.disp, null);
-				sp.setTransMeta( new TransMeta( StringUtil.environmentSubstitute(entry.getFileName() )) );
+
+                // only try to load if the file exists...
+                String exactFilename = StringUtil.environmentSubstitute(entry.getFileName() );
+                File file = new File(exactFilename);
+                TransMeta launchTransMeta = null;
+                if (file.exists())
+                {
+                    launchTransMeta = new TransMeta( exactFilename ); 
+                }
+                else
+                {
+                    launchTransMeta = new TransMeta();
+                }
+                
+				sp.setTransMeta( launchTransMeta );
 				sp.getTransMeta().clearChanged();
-				sp.setFilename(StringUtil.environmentSubstitute(entry.getFileName()));
+				sp.setFilename( exactFilename );
 				sp.open();
 			}
 			catch(Throwable xe)
@@ -1489,8 +1504,21 @@ public class ChefGraph extends Canvas implements Redrawable
 			try
 			{
 				Chef ch = new Chef(log, chef.disp, null);
-				ch.jobMeta = new JobMeta(log, StringUtil.environmentSubstitute(entry.getFileName()), chef.rep);
-				ch.jobMeta.setFilename( StringUtil.environmentSubstitute(entry.getFileName()) );
+
+                // only try to load if the file exists...
+                String exactFilename = StringUtil.environmentSubstitute(entry.getFileName() );
+                File file = new File(exactFilename);
+                
+                if (file.exists())
+                {
+                    ch.jobMeta = new JobMeta(log, exactFilename, chef.rep);
+                }
+                else
+                {
+                    ch.jobMeta = new JobMeta(log);
+                }
+                
+				ch.jobMeta.setFilename( exactFilename );
 				ch.jobMeta.clearChanged();
 				ch.refreshTree();
 				ch.refreshGraph();

@@ -105,8 +105,6 @@ public class JobMeta implements Cloneable, XMLInterface
     
     private boolean             useBatchId;
 
-    private long                batchId;
-
     private boolean             batchIdPassed;
 
     private boolean             logfieldUsed;
@@ -1553,22 +1551,6 @@ public class JobMeta implements Cloneable, XMLInterface
 		if (getName()!=null) return getName();
 		else return getClass().getName();	
 	}
-
-    /**
-     * @return Returns the batchId.
-     */
-    public long getBatchId()
-    {
-        return batchId;
-    }
-
-    /**
-     * @param batchId The batchId to set.
-     */
-    public void setBatchId(long batchId)
-    {
-        this.batchId = batchId;
-    }
 
     /**
      * @return Returns the logfieldUsed.

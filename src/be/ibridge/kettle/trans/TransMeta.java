@@ -135,10 +135,6 @@ public class TransMeta implements XMLInterface
 
     private boolean             useBatchId;
 
-    private long                batchId;
-
-    private long                jobBatchId;
-
     private boolean             logfieldUsed;
 
     private String              createdUser, modifiedUser;
@@ -253,7 +249,6 @@ public class TransMeta implements XMLInterface
         clearChanged();
 
         useBatchId = true; // Make this one the default from now on...
-        batchId = 0;
         logfieldUsed = false; // Don't use the log-field by default...
 
         modifiedUser = "-"; //$NON-NLS-1$
@@ -3885,22 +3880,6 @@ public class TransMeta implements XMLInterface
     }
 
     /**
-     * @return Returns the batchId.
-     */
-    public long getBatchId()
-    {
-        return batchId;
-    }
-
-    /**
-     * @param batchId The batchId to set.
-     */
-    public void setBatchId(long batchId)
-    {
-        this.batchId = batchId;
-    }
-
-    /**
      * @return Returns the useBatchId.
      */
     public boolean isBatchIdUsed()
@@ -4141,22 +4120,6 @@ public class TransMeta implements XMLInterface
         if (logConnection!=null && logConnection.equals(databaseMeta)) return true;
 
         return false;
-    }
-
-    /**
-     * @return Returns the jobBatchId.
-     */
-    public long getJobBatchId()
-    {
-        return jobBatchId;
-    }
-
-    /**
-     * @param jobBatchId The jobBatchId to set.
-     */
-    public void setJobBatchId(long jobBatchId)
-    {
-        this.jobBatchId = jobBatchId;
     }
 
     public List getInputFiles() {
