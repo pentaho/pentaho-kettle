@@ -1,0 +1,48 @@
+<HTML>
+<TITLE>The Weekly Kettle Tip #9: Auditing</TITLE>
+<BODY>
+<H1>Auditing and operational meta-data</H1>
+
+This Kettle tip was requested by one of the Kettle users and is about auditing.<br>
+The need for auditing and operational meta-data usually comes up after a number of transformations and jobs have been written and the whole collection has been running for a while.<p>
+Usually, simple questions come first and more complex ones come later, for example:<p>
+<li>Did all my transformations ran without error last night?</li>
+<li>How many rows have were processed by a certain transformation last Friday?</li>
+<li>What is the date range since the last time the transformation ran succesfully?</li>
+<p>
+Fortunately, both kind of questions can be answered by setting up a logging table in your transformation or job.<br>
+<H2>Transformation audit trail</H2>
+Setting up a logging table in your transformation is easy in the Trasformation dialog. (CTRL-T or menu Transformation/Settings... )<p>
+Make sure you enter a name, even if you are using XML to store the transformation and then go to the "<b>logging</b>" tab:<p>
+<img class="inline" src="images/auditing/trans-dialog.png"/><p>
+The meaning of the "Use batch-ID?" checkbox is that every run of the transformation will get a unique ID in the logging table.  This is required if you want to use the history view.(see below)<br>
+The use "logfield to store logging in?" checkbox means that the transformation stores the output of the logging also in a "large" text field in the logging table.  <i>Usually this is a CLOB/LONGTEXT type of field.</i> This feature is very usefull too in combination with the history view. (see below)<br>
+
+If you want to create the logging table, select the "SQL" button:<p>
+<img class="inline" src="images/auditing/trans-log-sql.png"/><p>
+When you have created this logging table, a record will be inserted/updated (depending on the presence of the batch-id) into this table BEFORE and AFTER each run of the transformation.<p>
+In our case, after a couple of runs, the table looks like this:<p>
+<a href="images/auditing/trans-log-preview.png"><img src="images/auditing/trans-log-preview.png" height="100" width="500"/></a><p>
+A couple of remarks:<p>
+<li>From the status column we learn that if we stop a transformation, the status becomes "stop", otherwise we will find "end".</li>
+<li>If there is an error, we will see that the column "errors" contains a number larger than 0, usually just one. (we stop at the first error)</li>
+<li>The "startdate"/"enddate" columns contains the date-range <b>"since the last time that the transformation ran without error"</b>.<br>  --><b>NOTE:</b> <i>If you want to get a hold of this date range, use a "Get System Info" step and select options "Start of date range" and "End of date range".</i></li>
+<li>The logdate is the date that the last record was inserted into the transformation and as such the time the transformation stopped running. (the ending date)</li>
+<li>The replay date is the date you can use to "replay" this transformation and is effectively the time that the transformation was executed. (execution date)</li>
+<p>
+Of-course, if you want, you can build reports on this, but we also have introduced a convenient "History view" in Spoon and Chef that will allow you to examine these log records with greater ease.<br>
+This history view is updated/refreshed when you load or execute a transformation:<p>
+<a href="images/auditing/trans-history.png"><img src="images/auditing/trans-history.png" height="525" width="840"/></a><p>
+<i>If you click on a logging entry in the history view table, the corresponding logging text will be shown below.</i><p>
+<p>
+<H2>Job audit trail</H2>
+Hey, Matt, what about Chef?  Well, I'm please to announce that we have implemented this history view as well for Chef this week.  This allows you to check on the succesful completion of your job as well.<br>
+If you enter the appropriate details in the job settings dialog (CTRL-J or menu Job/Settings...) you will find the follow recognisable options:<p>
+<img class="inline" src="images/auditing/job-dialog.png"/><p>
+The audit functionality of the job log is the same, but make sure to set up <b>2 different tables</b> for transformations and logs as the content is comparable but not 100% the same.<p> 
+<p>
+Let us know what you think of these new features and how we can improve on them in the future.<br>
+Until next time, enjoy Kettle,<p>
+<p><a href="http://www.ibridge.be">Matt</a></p>
+</BODY>
+</HTML>
