@@ -65,10 +65,16 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		r=getRow();       // This also waits for a row to be finished.
 		
 		if ( ( r==null && data.headerrow!=null && meta.isFooterEnabled() ) ||
-		     ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && (linesOutput%meta.getSplitEvery())==0)
+		     ( r!=null && linesOutput>0 && meta.getSplitEvery()>0 && ((linesOutput+1)%meta.getSplitEvery())==0)
 		   )
 		{
-			if (writeHeader()) linesOutput++;
+			if (data.headerrow!=null) 
+			{
+			   if ( meta.isFooterEnabled() )
+			   {
+			      writeHeader();
+			   }
+			}
 			
 			if (r==null)
 			{
@@ -134,9 +140,12 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				if (!meta.isFileAppended() && ( meta.isHeaderEnabled() || meta.isFooterEnabled())) // See if we have to write a header-line)
 				{
 					data.headerrow=new Row(r); // copy the row for the footer!
-					if (meta.isHeaderEnabled())
+					if (meta.isHeaderEnabled() && data.headerrow!=null)
 					{
-						if (writeHeader()) return false;
+						if (writeHeader() )
+                        {
+							return false;
+                        }
 					}
 				}
 				
