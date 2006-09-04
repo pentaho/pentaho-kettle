@@ -107,6 +107,8 @@ public class ChefLog extends Composite
         this(parent, style, chef);
     }
 
+    private static final String STRING_CHEF_LOG_TREE_NAME = "Chef Log Tree";
+    
 	public ChefLog(Composite parent, int style, Chef chef)
 	{
 		super(parent, style);
@@ -131,7 +133,7 @@ public class ChefLog extends Composite
 		// Create the tree table...
 		wTree = new Tree(sash, SWT.V_SCROLL | SWT.H_SCROLL);
         wTree.setHeaderVisible(true);
-        TreeMemory.addTreeListener(wTree);
+        TreeMemory.addTreeListener(wTree, STRING_CHEF_LOG_TREE_NAME);
         
         TreeColumn column1 = new TreeColumn(wTree, SWT.LEFT);
         column1.setText(Messages.getString("ChefLog.Column.JobJobEntry")); //$NON-NLS-1$
@@ -514,7 +516,7 @@ public class ChefLog extends Composite
                 }
                 previousNrItems = nrItems;
                 
-                TreeMemory.setExpandedFromMemory(wTree);
+                TreeMemory.setExpandedFromMemory(wTree, STRING_CHEF_LOG_TREE_NAME);
             }
         }
     }

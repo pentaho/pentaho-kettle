@@ -74,6 +74,7 @@ import be.ibridge.kettle.core.dialog.EnterStringDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.repository.ProfileMeta;
 import be.ibridge.kettle.repository.Repository;
@@ -155,6 +156,8 @@ public class RepositoryExplorerDialog extends Dialog
 
 		objectName = null;
 	}
+    
+    private static final String STRING_REPOSITORY_EXPLORER_TREE_NAME = "Repository Exporer Tree Name";
 
 	public String open() 
 	{
@@ -212,6 +215,9 @@ public class RepositoryExplorerDialog extends Dialog
      		wTree = new Tree(shell, SWT.MULTI | SWT.BORDER /*| (multiple?SWT.CHECK:SWT.NONE)*/);
      		props.setLook(wTree);
     
+            // Add a memory to the tree.
+            TreeMemory.addTreeListener(wTree,STRING_REPOSITORY_EXPLORER_TREE_NAME);
+            
      		// Buttons
     		wOK = new Button(shell, SWT.PUSH); 
     		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
@@ -884,7 +890,8 @@ public class RepositoryExplorerDialog extends Dialog
 			switch(cat)
 			{
 			case ITEM_CATEGORY_DATABASE : 
-				renameDatabase(); break;
+				renameDatabase(); 
+                break;
 			case ITEM_CATEGORY_TRANSFORMATION :
 				{
 					final String name = item.getText();
@@ -971,10 +978,8 @@ public class RepositoryExplorerDialog extends Dialog
 			for (int i=0;i<dbs.length;i++)
 			{
 				TreeItem newDB = new TreeItem(tiDB, SWT.NONE);
-				newDB.setText(dbs[i]);
+				newDB.setText(Const.NVL(dbs[i], ""));
 			}
-				
-			tiDB.setExpanded(false);
 			
 			// The transformations...				
 			if (userinfo.useTransformations())
@@ -984,8 +989,6 @@ public class RepositoryExplorerDialog extends Dialog
 				
 				TreeItem newCat = new TreeItem(tiCat, SWT.NONE);
 				rep.getDirectoryTree().getTreeWithNames(newCat, rep, dircolor, true, false, false);
-				
-				tiCat.setExpanded(true);
 			}
 			
 			// The Jobs...				
@@ -996,29 +999,7 @@ public class RepositoryExplorerDialog extends Dialog
 	
 				TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
 				rep.getDirectoryTree().getTreeWithNames(newJob, rep, dircolor, false, true, false);
-				
-				tiJob.setExpanded(true);
-	
 			}
-	
-			// The schema's
-			if (userinfo.useSchemas())
-			{
-				TreeItem tiSch = new TreeItem(tiObj, SWT.NONE); 
-				tiSch.setText(STRING_SCHEMAS);
-				
-	/*				String schs[] = rep.getSchemaNames();			
-		
-					for (int i=0;i<jobs.length;i++)
-					{
-						TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
-						newJob.setText(jobs[i]);
-					}
-	*/
-				tiSch.setExpanded(true);
-			}
-	
-			tiObj.setExpanded(true);
 	
 			//
 			// Add the users or only yourself
@@ -1035,7 +1016,6 @@ public class RepositoryExplorerDialog extends Dialog
 					newUser.setText(users[i]);
 				}
 			}
-			tiUser.setExpanded(true);
 	
 			//
 			// Add the profiles if you're admin...
@@ -1051,10 +1031,13 @@ public class RepositoryExplorerDialog extends Dialog
 					TreeItem newProf = new TreeItem(tiProf, SWT.NONE);
 					newProf.setText(prof[i]);
 				}
-				tiProf.setExpanded(true);
 			}
-	
-			tiTree.setExpanded(true);
+            
+            // Set the expanded flags based on the TreeMemory
+			TreeMemory.setExpandedFromMemory(wTree, STRING_REPOSITORY_EXPLORER_TREE_NAME);
+            
+            // Always expand the top level entry...
+            tiTree.setExpanded(true);
 		}
 		catch(KettleException dbe)
 		{
@@ -1160,13 +1143,8 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					public void focusLost(FocusEvent arg0) 
 					{
-						// Focus is lost: connect to repository and change name.
-						String newname = text.getText();
-						if (renameTransformation(fname, newname, frepdir)) 
-						{
-							ti.setText(newname);
-						} 
-						text.dispose();
+                        // Focus is lost: don't change anything UNLESS you hit enter!
+                        text.dispose();
 					}
 				}
 			);
@@ -1213,6 +1191,10 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		try
 		{
+            if (Const.isEmpty(newname))
+            {
+                throw new KettleException(Messages.getString("RepositoryExplorerDialog.Exception.NameCanNotBeEmpty"));
+            }
 			if (!name.equals(newname))
 			{
 				long id = rep.getTransformationID(name, repdir.getID());
@@ -1231,7 +1213,7 @@ public class RepositoryExplorerDialog extends Dialog
 				mb.open();
 			}
 		}
-		catch(KettleDatabaseException dbe)
+		catch(KettleException dbe)
 		{
 			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorRenaming.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorRenaming.Message")+name+"]!", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
@@ -1346,13 +1328,8 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					public void focusLost(FocusEvent arg0) 
 					{
-						// Focus is lost: connect to repository and change name.
-						String newname = text.getText();
-						if (renameJob(fname, newname, frepdir)) 
-						{
-							ti.setText(newname);
-						} 
-						text.dispose();
+                        // Focus is lost: don't change anything UNLESS you hit enter!
+                        text.dispose();
 					}
 				}
 			);
@@ -1399,6 +1376,10 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		try
 		{
+            if (Const.isEmpty(newname))
+            {
+                throw new KettleException(Messages.getString("RepositoryExplorerDialog.Exception.NameCanNotBeEmpty"));
+            }
 			if (!name.equals(newname))
 			{
 				long id = rep.getJobID(name, repdir.getID());
@@ -1417,7 +1398,7 @@ public class RepositoryExplorerDialog extends Dialog
 				mb.open();
 			}
 		}
-		catch(KettleDatabaseException dbe)
+		catch(KettleException dbe)
 		{
 			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
@@ -1481,13 +1462,8 @@ public class RepositoryExplorerDialog extends Dialog
 			{
 				public void focusLost(FocusEvent arg0) 
 				{
-					// Focus is lost: connect to repository and change name.
-					String newname = text.getText();
-					if (renameJob(name, repdir, newname)) 
-					{
-						ti.setText(newname);
-					} 
-					text.dispose();
+                    // Focus is lost: don't change anything UNLESS you hit enter!
+                    text.dispose();
 				}
 			}
 		);
@@ -1532,6 +1508,10 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		try
 		{
+            if (Const.isEmpty(newname))
+            {
+                throw new KettleException(Messages.getString("RepositoryExplorerDialog.Exception.NameCanNotBeEmpty"));
+            }
 			if (!name.equals(newname))
 			{
 				long id = rep.getJobID(name, repdir.getID());
@@ -1550,7 +1530,7 @@ public class RepositoryExplorerDialog extends Dialog
 				}								
 			}
 		}
-		catch(KettleDatabaseException dbe)
+		catch(KettleException dbe)
 		{
 			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
@@ -1654,13 +1634,8 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					public void focusLost(FocusEvent arg0) 
 					{
-						// Focus is lost: connect to repository and change name.
-						String newname = text.getText();
-						if (renameUser(name, newname)) 
-						{
-							ti.setText(newname);
-						} 
-						text.dispose();
+                        // Focus is lost: don't change anything UNLESS you hit enter!
+                        text.dispose();
 					}
 				}
 			);
@@ -1708,6 +1683,10 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		try
 		{
+            if (Const.isEmpty(newname))
+            {
+                throw new KettleException(Messages.getString("RepositoryExplorerDialog.Exception.NameCanNotBeEmpty"));
+            }
 			if (!name.equals(newname))
 			{
 				long id = rep.getUserID(name);
@@ -1751,13 +1730,8 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					public void focusLost(FocusEvent arg0) 
 					{
-						// Focus is lost: connect to repository and change name.
-						String newname = text.getText();
-						if (renameProfile(name, newname)) 
-						{
-							ti.setText(newname);
-						} 
-						text.dispose();
+                        // Focus is lost: don't change anything UNLESS you hit enter!
+                        text.dispose();
 					}
 				}
 			);
@@ -1807,6 +1781,10 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		try
 		{
+            if (Const.isEmpty(newname))
+            {
+                throw new KettleException(Messages.getString("RepositoryExplorerDialog.Exception.NameCanNotBeEmpty"));
+            }
 			if (!name.equals(newname))
 			{
 				long id = rep.getProfileID(name);
@@ -1931,13 +1909,8 @@ public class RepositoryExplorerDialog extends Dialog
 				{
 					public void focusLost(FocusEvent arg0) 
 					{
-						// Focus is lost: connect to repository and change name.
-						String newname = text.getText();
-						if (renameDatabase(name, newname)) 
-						{
-							ti.setText(newname);
-						} 
-						text.dispose();
+						// Focus is lost: don't change anything UNLESS you hit enter!
+                        text.dispose();
 					}
 				}
 			);
@@ -1953,12 +1926,15 @@ public class RepositoryExplorerDialog extends Dialog
 						// ENTER --> Save changes...
 						if (e.character == SWT.CR )
 						{
-							String newname = text.getText();
-							if (renameDatabase(name, newname)) 
-							{
-								ti.setText(newname);
-							}
-							text.dispose();
+                            if (ti.getText().equals(name))  // Only if the name wasn't changed already.
+                            {
+    							String newname = text.getText();
+    							if (renameDatabase(name, newname)) 
+    							{
+    								ti.setText(newname);
+    							}
+    							text.dispose();
+                            }
 						}
 					}
 				}
@@ -1984,6 +1960,10 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		try
 		{
+            if (Const.isEmpty(newname))
+            {
+                throw new KettleException(Messages.getString("RepositoryExplorerDialog.Exception.NameCanNotBeEmpty"));
+            }
 			if (!name.equals(newname))
 			{
 				long id = rep.getDatabaseID(name);
@@ -2025,12 +2005,7 @@ public class RepositoryExplorerDialog extends Dialog
 			{
 				public void focusLost(FocusEvent arg0) 
 				{
-					// Focus is lost: connect to repository and change name.
-					String newname = text.getText();
-					if (renameDirectory(repdir, name, newname)) 
-					{
-						ti.setText(newname);
-					} 
+					// Focus is lost: don't change anything UNLESS you hit enter!
 					text.dispose();
 				}
 			}
@@ -2074,23 +2049,34 @@ public class RepositoryExplorerDialog extends Dialog
 	public boolean renameDirectory(RepositoryDirectory repdir, String name, String newname)
 	{
 		boolean retval=false;
-		
-		if (!name.equals(newname))
-		{
-			repdir.setDirectoryName(newname);
-			if (!repdir.renameInRep(rep))
-			{
-				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
-				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Title")); //$NON-NLS-1$
-				mb.open();
-			}
-			else
-			{
-				retval=true;
-			}
-		}
-		
+
+        try
+        {
+            if (Const.isEmpty(newname))
+            {
+                throw new KettleException(Messages.getString("RepositoryExplorerDialog.Exception.NameCanNotBeEmpty"));
+            }
+    		if (!name.equals(newname))
+    		{
+    			repdir.setDirectoryName(newname);
+    			if (!repdir.renameInRep(rep))
+    			{
+    				MessageBox mb = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+    				mb.setMessage(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Message1")+name+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+    				mb.setText(Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Title")); //$NON-NLS-1$
+    				mb.open();
+    			}
+    			else
+    			{
+    				retval=true;
+    			}
+    		}
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+        
 		return retval;
 	}
 

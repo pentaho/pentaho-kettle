@@ -1078,7 +1078,8 @@ public class Spoon implements AddUndoPositionInterface
         tBar.pack();
     }
 
-
+    private static final String STRING_SPOON_MAIN_TREE = "Spoon Main Tree";
+    
     private void addTree()
     {
         if (leftSash!=null)
@@ -1095,7 +1096,7 @@ public class Spoon implements AddUndoPositionInterface
         selectionTree.setLayout(new FillLayout());
         
         // Add a tree memory as well...
-        TreeMemory.addTreeListener(selectionTree);
+        TreeMemory.addTreeListener(selectionTree, STRING_SPOON_MAIN_TREE);
         
         tiConn   = new TreeItem(selectionTree, SWT.NONE); tiConn.setText(STRING_CONNECTIONS);
         tiStep   = new TreeItem(selectionTree, SWT.NONE); tiStep.setText(STRING_STEPS);
@@ -3137,7 +3138,7 @@ public class Spoon implements AddUndoPositionInterface
         }
         
         // Set the expanded state of the complete tree.
-        TreeMemory.setExpandedFromMemory(selectionTree);
+        TreeMemory.setExpandedFromMemory(selectionTree, STRING_SPOON_MAIN_TREE);
 
         selectionTree.setFocus();
         setShellText();

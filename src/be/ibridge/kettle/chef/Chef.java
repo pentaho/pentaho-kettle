@@ -801,6 +801,7 @@ public class Chef implements AddUndoPositionInterface
     }
     
 
+    private static final String STRING_CHEF_MAIN_TREE_NAME = "Chef Main tree"; 
     private void addTree()
 	{
 		SashForm leftsplit = new SashForm(sashform, SWT.VERTICAL);
@@ -814,7 +815,7 @@ public class Chef implements AddUndoPositionInterface
 		
 		// Now set up the main CSH tree
 		tMain = new Tree(cCSH, SWT.SINGLE | SWT.BORDER);
-        TreeMemory.addTreeListener(tMain);
+        TreeMemory.addTreeListener(tMain, STRING_CHEF_MAIN_TREE_NAME);
 		
         // Add the connections subtree
         //
@@ -2052,7 +2053,7 @@ public class Chef implements AddUndoPositionInterface
 			if (je.getName()!=null) item.setText(je.getName());
 		}
         
-        TreeMemory.setExpandedFromMemory(tMain);
+        TreeMemory.setExpandedFromMemory(tMain, STRING_CHEF_MAIN_TREE_NAME);
 
 		tMain.setFocus();
 		setShellText();

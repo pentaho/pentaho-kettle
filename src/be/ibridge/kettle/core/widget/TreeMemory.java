@@ -39,18 +39,18 @@ public class TreeMemory
     
     private class TreeMemoryEntry
     {
-        private Tree tree;
+        private String treeName;
         private String[] path;
 
-        TreeMemoryEntry(Tree tree, String[] path)
+        TreeMemoryEntry(String treeName, String[] path)
         {
-            this.tree = tree;
             this.path = path;
+            this.treeName = treeName;
         }
         
         public int hashCode()
         {
-            int code = tree.hashCode();
+            int code = treeName.hashCode();
             for (int i=0;i<path.length;i++)
             {
                 code^=path[i].hashCode();
@@ -61,7 +61,7 @@ public class TreeMemory
         public boolean equals(Object obj)
         {
             TreeMemoryEntry entry = (TreeMemoryEntry) obj;
-            if (!entry.tree.equals(tree))return false;
+            if (!entry.treeName.equals(treeName))return false;
             if (entry.path.length!=path.length) return false;
             for (int i=0;i<path.length;i++)
             {
@@ -71,14 +71,14 @@ public class TreeMemory
         }
     }
     
-    public void storeExpanded(Tree tree, String[] path, boolean expanded)
+    public void storeExpanded(String treeName, String[] path, boolean expanded)
     {
-        map.put(new TreeMemoryEntry(tree, path), new Boolean(expanded));
+        map.put(new TreeMemoryEntry(treeName, path), new Boolean(expanded));
     }
     
-    public boolean isExpanded(Tree tree, String[] path)
+    public boolean isExpanded(String treeName, String[] path)
     {
-        Boolean expanded = (Boolean) map.get(new TreeMemoryEntry(tree, path));
+        Boolean expanded = (Boolean) map.get(new TreeMemoryEntry(treeName, path));
         if (expanded!=null)
         {
             return expanded.booleanValue();
@@ -101,7 +101,7 @@ public class TreeMemory
      * @param tree The tree to add the listener to
      * @return The created/added TreeListener
      */
-    public static final TreeListener addTreeListener(final Tree tree)
+    public static final TreeListener addTreeListener(final Tree tree, final String treeName)
     {
         TreeListener treeListener = new TreeListener()
         {        
@@ -110,7 +110,7 @@ public class TreeMemory
                 TreeItem treeItem = (TreeItem) e.item;
                 String[] path = Const.getTreeStrings(treeItem);
                 TreeMemory treeMemory = TreeMemory.getInstance();
-                treeMemory.storeExpanded(tree, path, true);
+                treeMemory.storeExpanded(treeName, path, true);
             }
         
             public void treeCollapsed(TreeEvent e)
@@ -118,7 +118,7 @@ public class TreeMemory
                 TreeItem treeItem = (TreeItem) e.item;
                 String[] path = Const.getTreeStrings(treeItem);
                 TreeMemory treeMemory = TreeMemory.getInstance();
-                treeMemory.storeExpanded(tree, path, false);
+                treeMemory.storeExpanded(treeName, path, false);
             }
         
         };
@@ -131,27 +131,27 @@ public class TreeMemory
      *  
      * @param tree The tree to format.
      */
-    public static void setExpandedFromMemory(Tree tree)
+    public static void setExpandedFromMemory(Tree tree, String treeName)
     {
         TreeItem[] items = tree.getItems();
         for (int i=0;i<items.length;i++)
         {
-            setExpandedFromMemory(tree, items[i]);
+            setExpandedFromMemory(tree, treeName, items[i]);
         }
     }
     
-    private static void setExpandedFromMemory(Tree tree, TreeItem treeItem)
+    private static void setExpandedFromMemory(Tree tree, String treeName, TreeItem treeItem)
     {
         TreeMemory treeMemory = TreeMemory.getInstance();
         
         String[] path = Const.getTreeStrings(treeItem);
-        boolean expanded = treeMemory.isExpanded(tree, path);
+        boolean expanded = treeMemory.isExpanded(treeName, path);
         treeItem.setExpanded(expanded);
         
         TreeItem[] items = treeItem.getItems();
         for (int i=0;i<items.length;i++)
         {
-            setExpandedFromMemory(tree, items[i]);
+            setExpandedFromMemory(tree, treeName, items[i]);
         }
     }
 }
