@@ -5,7 +5,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libext/activation.jar"/>
 	<classpathentry kind="lib" path="libext/CacheDB.jar"/>
-	<classpathentry kind="lib" path="libext/edtftpj-1.4.5.jar"/>
 	<classpathentry kind="lib" path="libext/firebirdsql-full.jar"/>
 	<classpathentry kind="lib" path="libext/hsqldb.jar"/>
 	<classpathentry kind="lib" path="libext/ifxjdbc.jar"/>
@@ -27,7 +26,6 @@
 	<classpathentry kind="lib" path="libext/sapdbc.jar"/>
 	<classpathentry kind="lib" path="libext/edbc.jar"/>
 	<classpathentry kind="src" path="extra"/>
-	<classpathentry kind="lib" path="libext/ehcache-1.1.jar"/>
 	<classpathentry kind="lib" path="libext/jtds-1.2.jar"/>
 	<classpathentry kind="lib" path="libext/jsch-0.1.24.jar"/>
 	<classpathentry kind="lib" path="libext/interclient.jar"/>
@@ -38,5 +36,6 @@
 	<classpathentry kind="lib" path="libext/mysql-connector-java-3.1.13-bin.jar"/>
 	<classpathentry kind="lib" path="libext/postgresql-8.1-407.jdbc3.jar"/>
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
+	<classpathentry kind="lib" path="libext/edtftpj-1.5.3.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
