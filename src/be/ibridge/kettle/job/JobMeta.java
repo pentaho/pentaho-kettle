@@ -20,6 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -28,6 +31,7 @@ import be.ibridge.kettle.core.DBCache;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
+import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Rectangle;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.SQLStatement;
@@ -497,6 +501,9 @@ public class JobMeta implements Cloneable, XMLInterface
 
 	public void loadXML(Node jobnode, Repository rep) throws KettleXMLException
 	{
+        Props props = null;
+        if (Props.isInitialized()) props=Props.getInstance();
+
 		try
 		{		
             // clear the jobs;
@@ -507,6 +514,13 @@ public class JobMeta implements Cloneable, XMLInterface
 			//
 			name = XMLHandler.getTagValue(jobnode, "name");
 
+            // Load the default list of databases
+            if (rep!=null)
+            {
+                readDatabases(rep);
+                clearChanged();
+            }
+            
 			// 
 			// Read the database connections
 			//
@@ -514,8 +528,47 @@ public class JobMeta implements Cloneable, XMLInterface
 			for (int i=0;i<nr;i++)
 			{
 				Node dbnode = XMLHandler.getSubNodeByNr(jobnode, "connection", i);
-				DatabaseMeta dbinf = new DatabaseMeta(dbnode);
-				addDatabase(dbinf);
+				DatabaseMeta dbcon = new DatabaseMeta(dbnode);
+                
+                DatabaseMeta exist = findDatabase(dbcon.getName());
+                if (exist == null)
+                {
+                    addDatabase(dbcon);
+                }
+                else
+                {
+                    boolean askOverwrite = Props.isInitialized() ? props.askAboutReplacingDatabaseConnections() : false;
+                    boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
+                    if (askOverwrite)
+                    {
+                        // That means that we have a Display variable set in Props...
+                        if (props.getDisplay()!=null)
+                        {
+                            Shell shell = props.getDisplay().getActiveShell();
+                            
+                            MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+                                "Warning",  
+                                null,
+                                "Connection ["+dbcon.getName()+"] already exists, do you want to overwrite this database connection?",
+                                MessageDialog.WARNING,
+                                new String[] { "Yes", "No" },//"Yes", "No" 
+                                1,
+                                "Please, don't show this warning anymore.",
+                                !props.askAboutReplacingDatabaseConnections()
+                           );
+                           int idx = md.open();
+                           props.setAskAboutReplacingDatabaseConnections(!md.getToggleState());
+                           overwrite = (idx==0); // Yes means: overwrite
+                        }
+                    }
+
+                    if (overwrite)
+                    {
+                        int idx = indexOfDatabase(exist);
+                        removeDatabase(idx);
+                        addDatabase(idx, dbcon);
+                    }
+                }
 			}
 			
 			/*
@@ -1747,7 +1800,7 @@ public class JobMeta implements Cloneable, XMLInterface
         for (int i=0;i<stringList.size();i++)
         {
             StringSearchResult result = (StringSearchResult) stringList.get(i);
-            StringUtil.getUsedVariables(result.getString(), varList);
+            StringUtil.getUsedVariables(result.getString(), varList, false);
         }
 
         return varList;

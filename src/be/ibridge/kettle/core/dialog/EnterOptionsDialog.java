@@ -171,6 +171,14 @@ public class EnterOptionsDialog extends Dialog
     private Button       wDBConnXML;
     private FormData     fdlDBConnXML, fdDBConnXML;
 
+    private Label        wlAskReplaceDB;
+    private Button       wAskReplaceDB;
+    private FormData     fdlAskReplaceDB, fdAskReplaceDB;
+
+    private Label        wlReplaceDB;
+    private Button       wReplaceDB;
+    private FormData     fdlReplaceDB, fdReplaceDB;
+
 	private Label        wlSaveConf;
 	private Button       wSaveConf;
 	private FormData     fdlSaveConf, fdSaveConf;
@@ -381,13 +389,49 @@ public class EnterOptionsDialog extends Dialog
         fdDBConnXML.right= new FormAttachment(100, 0);
         wDBConnXML.setLayoutData(fdDBConnXML);
 
+        // Ask about replacing existing connections?
+        wlAskReplaceDB=new Label(wGeneralComp, SWT.RIGHT);
+        wlAskReplaceDB.setText("Ask about replacing existing connections on open/import? ");
+        props.setLook(wlAskReplaceDB);
+        fdlAskReplaceDB=new FormData();
+        fdlAskReplaceDB.left = new FormAttachment(0, 0);
+        fdlAskReplaceDB.top  = new FormAttachment(wDBConnXML, margin);
+        fdlAskReplaceDB.right= new FormAttachment(middle, -margin);
+        wlAskReplaceDB.setLayoutData(fdlAskReplaceDB);
+        wAskReplaceDB=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wAskReplaceDB);
+        wAskReplaceDB.setSelection(props.askAboutReplacingDatabaseConnections());
+        fdAskReplaceDB=new FormData();
+        fdAskReplaceDB.left = new FormAttachment(middle, 0);
+        fdAskReplaceDB.top  = new FormAttachment(wDBConnXML, margin);
+        fdAskReplaceDB.right= new FormAttachment(100, 0);
+        wAskReplaceDB.setLayoutData(fdAskReplaceDB);
+
+        // Only save used connections to XML?
+        wlReplaceDB=new Label(wGeneralComp, SWT.RIGHT);
+        wlReplaceDB.setText("Replace existing database connections on open/import? ");
+        props.setLook(wlReplaceDB);
+        fdlReplaceDB=new FormData();
+        fdlReplaceDB.left = new FormAttachment(0, 0);
+        fdlReplaceDB.top  = new FormAttachment(wAskReplaceDB, margin);
+        fdlReplaceDB.right= new FormAttachment(middle, -margin);
+        wlReplaceDB.setLayoutData(fdlReplaceDB);
+        wReplaceDB=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wReplaceDB);
+        wReplaceDB.setSelection(props.replaceExistingDatabaseConnections());
+        fdReplaceDB=new FormData();
+        fdReplaceDB.left = new FormAttachment(middle, 0);
+        fdReplaceDB.top  = new FormAttachment(wAskReplaceDB, margin);
+        fdReplaceDB.right= new FormAttachment(100, 0);
+        wReplaceDB.setLayoutData(fdReplaceDB);
+
 		// Show confirmation after save?
 		wlSaveConf=new Label(wGeneralComp, SWT.RIGHT);
 		wlSaveConf.setText("Show save confirmation? ");
         props.setLook(wlSaveConf);
 		fdlSaveConf=new FormData();
 		fdlSaveConf.left = new FormAttachment(0, 0);
-		fdlSaveConf.top  = new FormAttachment(wDBConnXML, margin);
+		fdlSaveConf.top  = new FormAttachment(wReplaceDB, margin);
 		fdlSaveConf.right= new FormAttachment(middle, -margin);
 		wlSaveConf.setLayoutData(fdlSaveConf);
 		wSaveConf=new Button(wGeneralComp, SWT.CHECK);
@@ -395,7 +439,7 @@ public class EnterOptionsDialog extends Dialog
 		wSaveConf.setSelection(props.getSaveConfirmation());
 		fdSaveConf=new FormData();
 		fdSaveConf.left = new FormAttachment(middle, 0);
-		fdSaveConf.top  = new FormAttachment(wDBConnXML, margin);
+		fdSaveConf.top  = new FormAttachment(wReplaceDB, margin);
 		fdSaveConf.right= new FormAttachment(100, 0);
 		wSaveConf.setLayoutData(fdSaveConf);
 
@@ -1275,18 +1319,20 @@ public class EnterOptionsDialog extends Dialog
         
         props.setDefaultPreviewSize( Const.toInt( wDefaultPreview.getText(), props.getDefaultPreviewSize() ));
 
-		props.setMaxUndo                         ( Const.toInt(wMaxUndo.getText(), props.getMaxUndo() ));
-		props.setShowTips                        ( wShowTips.getSelection()    );
-		props.setUseDBCache                      ( wUseCache.getSelection()    );
-		props.setOpenLastFile                    ( wOpenLast.getSelection()    );
-		props.setAutoSave                        ( wAutoSave.getSelection()    );
-        props.setOnlyUsedConnectionsSavedToXML   ( wDBConnXML.getSelection()   );
-		props.setSaveConfirmation                ( wSaveConf.getSelection()    );
-		props.setAutoSplit                       ( wAutoSplit.getSelection()   );
-        props.setRepositoriesDialogAtStartupShown( wShowRep.getSelection()     );
-        props.setAntiAliasingEnabled             ( wAntiAlias.getSelection()   );
-        props.setExitWarningShown                ( wExitWarning.getSelection() );
-        props.setOSLookShown                     ( wOriginalLook.getSelection());
+		props.setMaxUndo                             ( Const.toInt(wMaxUndo.getText(), props.getMaxUndo() ));
+		props.setShowTips                            ( wShowTips.getSelection()    );
+		props.setUseDBCache                          ( wUseCache.getSelection()    );
+		props.setOpenLastFile                        ( wOpenLast.getSelection()    );
+		props.setAutoSave                            ( wAutoSave.getSelection()    );
+        props.setOnlyUsedConnectionsSavedToXML       ( wDBConnXML.getSelection()   );
+        props.setAskAboutReplacingDatabaseConnections( wAskReplaceDB.getSelection());
+        props.setReplaceDatabaseConnections          ( wReplaceDB.getSelection()   );
+		props.setSaveConfirmation                    ( wSaveConf.getSelection()    );
+		props.setAutoSplit                           ( wAutoSplit.getSelection()   );
+        props.setRepositoriesDialogAtStartupShown    ( wShowRep.getSelection()     );
+        props.setAntiAliasingEnabled                 ( wAntiAlias.getSelection()   );
+        props.setExitWarningShown                    ( wExitWarning.getSelection() );
+        props.setOSLookShown                         ( wOriginalLook.getSelection());
 
         int defaultLocaleIndex = wDefaultLocale.getSelectionIndex();
         if ( defaultLocaleIndex < 0 || 

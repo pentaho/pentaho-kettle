@@ -22,6 +22,9 @@ import java.util.Hashtable;
 import java.util.List;
 
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.dialogs.MessageDialogWithToggle;
+import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -122,7 +125,6 @@ public class TransMeta implements XMLInterface
 
     private boolean             changed, changed_steps, changed_databases, changed_hops, changed_notes;
 
-    // public Props props;
     private ArrayList           undo;
 
     private int                 max_undo;
@@ -2009,10 +2011,22 @@ public class TransMeta implements XMLInterface
 
     /**
      * Parse a file containing the XML that describes the transformation.
+     * No default connections are loaded since no repository is available at this time.
      *
      * @param fname The filename
      */
     public TransMeta(String fname) throws KettleXMLException
+    {
+        this(fname, null);
+    }
+
+    /**
+     * Parse a file containing the XML that describes the transformation.
+     *
+     * @param fname The filename
+     * @param rep The repository to load the default set of connections from, null if no repository is avaailable
+     */
+    public TransMeta(String fname, Repository rep) throws KettleXMLException
     {
         Document doc = XMLHandler.loadXMLFile(fname);
         if (doc != null)
@@ -2025,7 +2039,7 @@ public class TransMeta implements XMLInterface
             Node transnode = XMLHandler.getSubNode(doc, "transformation"); //$NON-NLS-1$
 
             // Load from this node...
-            loadXML(transnode);
+            loadXML(transnode, rep);
 
             setFilename(fname);
         }
@@ -2048,17 +2062,41 @@ public class TransMeta implements XMLInterface
 
     /**
      * Parse a file containing the XML that describes the transformation.
+     * (no repository is available to load default list of database connections from)
      *
      * @param transnode The XML node to load from
      * @throws KettleXMLException
      */
     private void loadXML(Node transnode) throws KettleXMLException
     {
+        loadXML(transnode, null);
+    }
+
+    
+    /**
+     * Parse a file containing the XML that describes the transformation.
+     *
+     * @param transnode The XML node to load from
+     * @param rep The repository to load the default list of database connections from (null if no repository is available)
+     * @throws KettleXMLException
+     */
+    private void loadXML(Node transnode, Repository rep) throws KettleXMLException
+    {
+        Props props = null;
+        if (Props.isInitialized()) props=Props.getInstance();
+        
         try
         {
             // Clear the transformation
             clearUndo();
             clear();
+            
+            // Read all the database connections from the repository to make sure that we don't overwrite any there by loading from XML.
+            if (rep!=null)
+            {
+                readDatabases(rep);
+                clearChanged();
+            }
 
             // Handle connections
             int n = XMLHandler.countNodes(transnode, "connection"); //$NON-NLS-1$
@@ -2077,9 +2115,37 @@ public class TransMeta implements XMLInterface
                 }
                 else
                 {
-                    int idx = indexOfDatabase(exist);
-                    removeDatabase(idx);
-                    addDatabase(idx, dbcon);
+                    boolean askOverwrite = Props.isInitialized() ? props.askAboutReplacingDatabaseConnections() : false;
+                    boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
+                    if (askOverwrite)
+                    {
+                        // That means that we have a Display variable set in Props...
+                        if (props.getDisplay()!=null)
+                        {
+                            Shell shell = props.getDisplay().getActiveShell();
+                            
+                            MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+                                "Warning",  
+                                null,
+                                "Connection ["+dbcon.getName()+"] already exists, do you want to overwrite this database connection?",
+                                MessageDialog.WARNING,
+                                new String[] { "Yes", "No" },//"Yes", "No" 
+                                1,
+                                "Please, don't show this warning anymore.",
+                                !props.askAboutReplacingDatabaseConnections()
+                           );
+                           int idx = md.open();
+                           props.setAskAboutReplacingDatabaseConnections(!md.getToggleState());
+                           overwrite = (idx==0); // Yes means: overwrite
+                        }
+                    }
+
+                    if (overwrite)
+                    {
+                        int idx = indexOfDatabase(exist);
+                        removeDatabase(idx);
+                        addDatabase(idx, dbcon);
+                    }
                 }
             }
 
@@ -4190,7 +4256,7 @@ public class TransMeta implements XMLInterface
         for (int i=0;i<stringList.size();i++)
         {
             StringSearchResult result = (StringSearchResult) stringList.get(i);
-            StringUtil.getUsedVariables(result.getString(), varList);
+            StringUtil.getUsedVariables(result.getString(), varList, false);
         }
 
         return varList;

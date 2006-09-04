@@ -890,7 +890,20 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		retval.append("    "+XMLHandler.addTagValue("database",   getDatabaseName()));
 		retval.append("    "+XMLHandler.addTagValue("port",       getDatabasePortNumberString()));
 		retval.append("    "+XMLHandler.addTagValue("username",   getUsername()));
-		retval.append("    "+XMLHandler.addTagValue("password",   "Encrypted "+Encr.encryptPassword(getPassword())) );	
+        
+        String encrPassword = "";
+        List varList = new ArrayList();
+        StringUtil.getUsedVariables(getPassword(), varList, true);
+        if (varList.size()==0)
+        {
+            encrPassword = "Encrypted "+Encr.encryptPassword(getPassword());
+        }
+        else
+        {
+            encrPassword = getPassword();
+        }
+        
+        retval.append("    "+XMLHandler.addTagValue("password",  encrPassword));	
 		retval.append("    "+XMLHandler.addTagValue("servername", getServername()));
 		retval.append("    "+XMLHandler.addTagValue("data_tablespace", getDataTablespace()));
 		retval.append("    "+XMLHandler.addTagValue("index_tablespace", getIndexTablespace()));

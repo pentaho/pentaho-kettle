@@ -177,9 +177,12 @@ public class StringUtil
     /**
      * Search the string and report back on the variables used
      * @param aString The string to search
+     * @param open the open or "start of variable" characters ${ or %%
+     * @param close the close or "end of variable" characters } or %%
      * @param list the list of variables to add to
+     * @param includeSystemVariables also check for system variables.
      */
-    private static void getUsedVariables(String aString, String open, String close, List list)
+    private static void getUsedVariables(String aString, String open, String close, List list, boolean includeSystemVariables)
     {
         if (aString==null) return;
 
@@ -199,7 +202,8 @@ public class StringUtil
 
                     if (Const.indexOfString(variable, list)<0) 
                     {
-                	    if (System.getProperty(variable)==null) // Filter out set environment variables
+                        // Optionally filter out set environment variables
+                	    if (includeSystemVariables || System.getProperty(variable)==null) 
                 	    {
                 		    list.add(variable);
                 	    }
@@ -212,10 +216,10 @@ public class StringUtil
         }
     }
 
-    public static void getUsedVariables(String aString, List list)
+    public static void getUsedVariables(String aString, List list, boolean includeSystemVariables)
     {
-        getUsedVariables(aString, UNIX_OPEN, UNIX_CLOSE, list);
-        getUsedVariables(aString, WINDOWS_OPEN, WINDOWS_CLOSE, list);
+        getUsedVariables(aString, UNIX_OPEN, UNIX_CLOSE, list, includeSystemVariables);
+        getUsedVariables(aString, WINDOWS_OPEN, WINDOWS_CLOSE, list, includeSystemVariables);
     }
 
     /**

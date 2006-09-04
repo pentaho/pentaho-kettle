@@ -55,6 +55,7 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.database.GenericDatabaseMeta;
 import be.ibridge.kettle.core.database.SAPR3DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
@@ -267,6 +268,16 @@ public class DatabaseDialog extends Dialog
 		wConn.addSelectionListener(selAdapter);
 		wData.addSelectionListener(selAdapter);
 		wIndex.addSelectionListener(selAdapter);
+        
+        // OK, if the password contains a variable, we don't want to have the password hidden...
+        wPassword.addModifyListener(new ModifyListener()
+            {
+                public void modifyText(ModifyEvent e)
+                {
+                    checkPasswordVisible();
+                }
+            }
+        );
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -300,6 +311,21 @@ public class DatabaseDialog extends Dialog
 		return connectionName;
 	}
 	
+    public void checkPasswordVisible()
+    {
+        String password = wPassword.getText();
+        java.util.List list = new ArrayList();
+        StringUtil.getUsedVariables(password, list, true);
+        if (list.size()==0)
+        {
+            wPassword.setEchoChar('*');
+        }
+        else
+        {
+            wPassword.setEchoChar('\0'); // Show it all...
+        }
+    }
+
     private void addGeneralTab()
     {
         //////////////////////////
@@ -928,6 +954,7 @@ public class DatabaseDialog extends Dialog
         wDriverClass.setText( connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, ""));
         
         setOptionsList();
+        checkPasswordVisible();
         
         wSQL.setText( NVL(connection.getConnectSQL(),"") );
         

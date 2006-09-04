@@ -137,6 +137,9 @@ public class Props implements Cloneable
     public static final String STRING_DEFAULT_PREVIEW_SIZE    = "DefaultPreviewSize";
     public static final String STRING_ONLY_USED_DB_TO_XML     = "SaveOnlyUsedConnectionsToXML";
 		
+    public static final String STRING_ASK_ABOUT_REPLACING_DATABASES = "AskAboutReplacingDatabases";
+    public static final String STRING_REPLACE_DATABASES             = "ReplaceDatabases";
+
 	private Properties properties;
 	
 	private String lastfiles[];
@@ -1418,5 +1421,28 @@ public class Props implements Cloneable
     {
         properties.setProperty(STRING_ONLY_USED_DB_TO_XML, onlyUsedConnections?"Y":"N");
     }
+
+    public boolean askAboutReplacingDatabaseConnections()
+    {
+        String ask = properties.getProperty(STRING_ASK_ABOUT_REPLACING_DATABASES, "N");
+        return "Y".equalsIgnoreCase(ask);
+    }
+    
+    public void setAskAboutReplacingDatabaseConnections(boolean ask)
+    {
+        properties.setProperty(STRING_ASK_ABOUT_REPLACING_DATABASES, ask?"Y":"N");
+    }
+
+    public boolean replaceExistingDatabaseConnections()
+    {
+        String replace = properties.getProperty(STRING_REPLACE_DATABASES, "Y");
+        return "Y".equalsIgnoreCase(replace);
+    }
+
+    public void setReplaceDatabaseConnections(boolean replace)
+    {
+        properties.setProperty(STRING_REPLACE_DATABASES, replace?"Y":"N");
+    }
+
 
 }

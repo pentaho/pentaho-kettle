@@ -2533,7 +2533,7 @@ public class Spoon implements AddUndoPositionInterface
                 {
                     try
                     {
-                        transMeta = new TransMeta(fname);
+                        transMeta = new TransMeta(fname, rep);
                         props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fname, Const.FILE_SEPARATOR, false, "");
                         addMenuLast();
                         if (!importfile) transMeta.clearChanged();
