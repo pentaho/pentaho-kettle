@@ -1143,6 +1143,17 @@ public class Const
 	}
 
 	/**
+	 * Select the SAP R/3 databases in the List of databases.
+	 * @param databases All the databases
+	 * @return SAP R/3 databases in a List of databases.
+	 * @deprecated
+	 */
+	public static final ArrayList selectSAPR3Databases(ArrayList databases)
+	{
+		return (ArrayList)selectSAPR3Databases((List)databases);
+	}
+
+	/**
 	 * Find a jobentry with a certain ID in a list of job entries.
 	 * @param jobentries The List of jobentries
 	 * @param id_jobentry The id of the jobentry
