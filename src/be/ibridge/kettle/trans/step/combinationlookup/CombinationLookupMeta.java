@@ -563,7 +563,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 			{
 				db.connect();
 
-				if (tablename!=null && tablename.length()!=0)
+				if (!Const.isEmpty(tablename))
 				{
 					boolean first=true;
 					boolean error_found=false;
@@ -660,7 +660,7 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
 				// Check sequence
     			if (database.supportsSequences() && CREATION_METHOD_SEQUENCE.equals(getTechKeyCreation()) )
 				{
-    				if ( sequenceFrom == null || sequenceFrom.length() == 0 )
+    				if ( Const.isEmpty(sequenceFrom) )
     				{
 						error_message+=Messages.getString("CombinationLookupMeta.CheckResult.ErrorNoSequenceName") + "!"; //$NON-NLS-1$ //$NON-NLS-2$
 						cr = new CheckResult(CheckResult.TYPE_RESULT_ERROR, error_message, stepMeta);
@@ -670,10 +670,9 @@ public class CombinationLookupMeta extends BaseStepMeta implements StepMetaInter
     				{
     				    // It doesn't make sense to check the sequence name
     					// if it's not filled in.
-					    Value last = db.checkSequence(sequenceFrom);
-					    if (last!=null)
+					    if (db.checkSequenceExists(sequenceFrom))
 					    {
-						    error_message = Messages.getString("CombinationLookupMeta.CheckResult.ReadingSequenceOK",sequenceFrom,""+last); //$NON-NLS-1$ //$NON-NLS-2$
+						    error_message = Messages.getString("CombinationLookupMeta.CheckResult.ReadingSequenceOK",sequenceFrom); //$NON-NLS-1$ //$NON-NLS-2$
 					 	    cr = new CheckResult(CheckResult.TYPE_RESULT_OK, error_message, stepMeta);
 						    remarks.add(cr);
 					    }
