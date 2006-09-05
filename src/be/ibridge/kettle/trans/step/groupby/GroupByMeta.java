@@ -54,9 +54,9 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 	public static final int TYPE_GROUP_COUNT_ALL      = 5;
     public static final int TYPE_GROUP_CONCAT_COMMA   = 6;
 
-	public static final String type_group_desc[] = 
+	public static final String typeGroupCode[] =  /* WARNING: DO NOT TRANSLATE THIS. WE ARE SERIOUS, DON'T TRANSLATE! */ 
 		{
-			"-", Messages.getString("GroupByMeta.Type_group_desc.SUM"), Messages.getString("GroupByMeta.Type_group_desc.AVERAGE"), Messages.getString("GroupByMeta.Type_group_desc.MIN"), Messages.getString("GroupByMeta.Type_group_desc.MAX"), Messages.getString("GroupByMeta.Type_group_desc.COUNT_ALL"), Messages.getString("GroupByMeta.Type_group_desc.CONCAT_COMMA")	 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+			"-", "SUM", "AVERAGE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA"	 //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
 		};
 
 	public static final String typeGroupLongDesc[] = 
@@ -291,9 +291,9 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public static final int getType(String desc)
 	{
-		for (int i=0;i<type_group_desc.length;i++)
+		for (int i=0;i<typeGroupCode.length;i++)
 		{
-			if (type_group_desc[i].equalsIgnoreCase(desc)) return i;
+			if (typeGroupCode[i].equalsIgnoreCase(desc)) return i;
 		}
 		for (int i=0;i<typeGroupLongDesc.length;i++)
 		{
@@ -304,8 +304,8 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 
 	public static final String getTypeDesc(int i)
 	{
-		if (i<0 || i>=type_group_desc.length) return null;
-		return type_group_desc[i];
+		if (i<0 || i>=typeGroupCode.length) return null;
+		return typeGroupCode[i];
 	}
 
 	public static final String getTypeDescLong(int i)
