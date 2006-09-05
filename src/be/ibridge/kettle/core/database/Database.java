@@ -3447,8 +3447,14 @@ public class Database
 		}
 	}
 
-	public Value checkSequence(String seqname)
-		throws KettleDatabaseException
+    /**
+     * @param seqname The sequence to check
+     * @return the current sequence value
+     * @throws KettleDatabaseException in case something goes wrong (and something always does in this case)
+     * @deprecated because it causes an error if you read the current value and the next val has not yet been called in the current session (is usually the case) 
+     * 
+     */
+	public Value checkSequence(String seqname) throws KettleDatabaseException
 	{
 		String sql=null;
 		if (databaseMeta.supportsSequences())
