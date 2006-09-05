@@ -34,6 +34,7 @@ public class ValueDate implements ValueInterface, Cloneable
 {
 	public static final String DATE_FORMAT = "yyyy/MM/dd HH:mm:ss.SSS";
 	private Date date;
+    public int precision;
 
 	public ValueDate()
 	{
@@ -121,7 +122,7 @@ public class ValueDate implements ValueInterface, Cloneable
 	
 	public int getPrecision()
 	{
-		return -1;
+		return precision;
 	}
 	
 	public void setLength(int length, int precision)
@@ -134,6 +135,7 @@ public class ValueDate implements ValueInterface, Cloneable
 	
 	public void setPrecision(int precision)
 	{
+        this.precision = precision;
 	}
 	
 	public Object clone()
