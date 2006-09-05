@@ -31,9 +31,9 @@ public class DenormaliserTargetField
     public static final int TYPE_AGGR_COUNT_ALL      = 5;
     public static final int TYPE_AGGR_CONCAT_COMMA   = 6;
 
-    public static final String typeAggrDesc[] = 
+    public static final String typeAggrDesc[] =  /* WARNING: DO NOT TRANSLATE THIS. WE ARE SERIOUS, DON'T TRANSLATE! */ 
         {
-            "-", Messages.getString("DenormaliserTargetField.TypeAggrDesc.Sum"), Messages.getString("DenormaliserTargetField.TypeAggrDesc.Average"), Messages.getString("DenormaliserTargetField.TypeAggrDesc.Min"), Messages.getString("DenormaliserTargetField.TypeAggrDesc.Max"), Messages.getString("DenormaliserTargetField.TypeAggrDesc.CountAll"), Messages.getString("DenormaliserTargetField.TypeAggrDesc.ConcatComma")     //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+            "-", "SUM", "AVERAGE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA"     //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
         };
 
     public static final String typeAggrLongDesc[] = 
