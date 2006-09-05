@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>test new TableOutput with table name in field</name>
+    <directory>\</directory>
+    <log>
+      <read></read>
+      <write></write>
+      <input></input>
+      <output></output>
+      <update></update>
+      <connection></connection>
+      <table></table>
+      <use_batchid>N</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection></connection>
+      <table></table>
+      <field></field>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>350</size_rowset>
+    <dependencies>
+      </dependencies>
+    </info>
+  <notepads>
+    </notepads>
+  <connection>
+    <name>MySQL Test @ Localhost</name>
+    <server>localhost</server>
+    <type>MYSQL</type>
+    <access>Native</access>
+    <database>test</database>
+    <port>3306</port>
+    <username>matt</username>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
+    <servername></servername>
+    <data_tablespace></data_tablespace>
+    <index_tablespace></index_tablespace>
+    <attributes>
+    </attributes>
+  </connection>
+  <order>
+  <hop> <from>Table input</from><to>Filter rows</to><enabled>Y</enabled> </hop>  <hop> <from>Execute SQL script</from><to>Table input</to><enabled>Y</enabled> </hop>  <hop> <from>Filter rows</from><to>Table output</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Execute SQL script</name>
+    <type>ExecSQL</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>MySQL Test @ Localhost</connection>
+    <execute_each_row>N</execute_each_row>
+    <sql>truncate table N;
+truncate table F;
+truncate table E;
+truncate table D;
+</sql>
+    <insert_field></insert_field>
+    <update_field></update_field>
+    <delete_field></delete_field>
+    <read_field></read_field>
+    <arguments>
+    </arguments>
+    <GUI>
+      <xloc>146</xloc>
+      <yloc>61</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Filter rows</name>
+    <type>FilterRows</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+<send_true_to></send_true_to>
+<send_false_to></send_false_to>
+    <compare>
+<condition>
+ <negated>N</negated>
+ <leftvalue>lang</leftvalue>
+ <function>IS NOT NULL</function>
+ <rightvalue></rightvalue>
+ </condition>
+    </compare>
+    <GUI>
+      <xloc>569</xloc>
+      <yloc>165</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Table input</name>
+    <type>TableInput</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>MySQL Test @ Localhost</connection>
+    <sql>SELECT
+  customernr
+, Name
+, firstname
+, lang
+, sex
+, street
+, housnr
+, bus
+, zipcode
+, location
+, country
+, date_of_birth
+FROM customer
+</sql>
+    <limit>0</limit>
+    <lookup></lookup>
+    <GUI>
+      <xloc>306</xloc>
+      <yloc>165</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Table output</name>
+    <type>TableOutput</type>
+    <description></description>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection>MySQL Test @ Localhost</connection>
+    <table>table name</table>
+    <commit>100</commit>
+    <truncate>N</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field></partitioning_field>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>Y</tablename_in_field>
+    <tablename_field>lang</tablename_field>
+    <tablename_in_table>N</tablename_in_table>
+    <GUI>
+      <xloc>869</xloc>
+      <yloc>165</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>

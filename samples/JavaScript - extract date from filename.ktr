@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>1000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+    </info>
+  <notepads>
+    </notepads>
+  <order>
+  <hop> <from>Generate Rows</from><to>Java Script Value</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Generate Rows</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>DIR</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>C:\temp\LIM_kettle\ST18.PROTOKL.TENOPROD_2006_07_21_00_09</nullif>
+        <length>200</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <limit>10</limit>
+    <GUI>
+      <xloc>139</xloc>
+      <yloc>94</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Java Script Value</name>
+    <type>ScriptValue</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <script>
+// C:\temp\LIM_kettle\ST18.PROTOKL.TENOPROD_2006_07_21_00_09
+
+var dat = DIR.Clone().rightstr(16).str2dat(&quot;yyyy_MM_dd_HH_mm&quot;);
+</script>
+    <fields>      <field>        <name>dat</name>
+        <rename>dat</rename>
+        <type>Date</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>      </fields>    <GUI>
+      <xloc>429</xloc>
+      <yloc>94</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>

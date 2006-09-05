@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>350</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+    </info>
+  <notepads>
+    </notepads>
+  <order>
+  <hop> <from>Generate Rows</from><to>Calculator</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Generate Rows</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>count</name>
+        <type>Number</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>21</nullif>
+        <length>5</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>one</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>1</nullif>
+        <length>1</length>
+        <precision>0</precision>
+        </field>
+      </fields>
+    <limit>10</limit>
+    <GUI>
+      <xloc>160</xloc>
+      <yloc>166</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Calculator</name>
+    <type>Calculator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+       <calculation><field_name>newfield</field_name>
+<calc_type>SUBTRACT</calc_type>
+<field_a>count</field_a>
+<field_b>one</field_b>
+<field_c/>
+<value_type>Number</value_type>
+<value_length>7</value_length>
+<value_precision>0</value_precision>
+<remove>N</remove>
+</calculation>
+    <GUI>
+      <xloc>342</xloc>
+      <yloc>166</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>

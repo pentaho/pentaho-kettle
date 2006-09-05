@@ -1,0 +1,1074 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name>Generate D_DATE</name>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>N</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>350</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+    </info>
+  <notepads>
+    <notepad>
+      <note>This transformation generates 40000 dates from 1950 until somewhere in the two thousand fifties.
+It determines the year, month, day, quarter, week, etc and adds the description of the days and months.
+If you want these descriptions in your local language, just change the Row Generator steps.</note>
+      <xloc>200</xloc>
+      <yloc>29</yloc>
+      <width>715</width>
+      <heigth>64</heigth>
+      </notepad>
+    </notepads>
+  <order>
+  <hop> <from>40000 days: 100+ years</from><to>Days_since</to><enabled>Y</enabled> </hop>  <hop> <from>Days_since</from><to>Calc Date</to><enabled>Y</enabled> </hop>  <hop> <from>DayOfWeekDesc Gen</from><to>DayOfWeekDesc Norm</to><enabled>Y</enabled> </hop>  <hop> <from>Calc Date</from><to>DayOfWeekDesc</to><enabled>Y</enabled> </hop>  <hop> <from>DayOfWeekDesc Norm</from><to>DayOfWeekDesc</to><enabled>Y</enabled> </hop>  <hop> <from>MonthDesc Gen</from><to>MonthDesc Norm</to><enabled>Y</enabled> </hop>  <hop> <from>DayOfWeekDesc</from><to>MonthDesc</to><enabled>Y</enabled> </hop>  <hop> <from>MonthDesc Norm</from><to>MonthDesc</to><enabled>Y</enabled> </hop>  <hop> <from>MonthDesc</from><to>Select values</to><enabled>Y</enabled> </hop>  <hop> <from>Select values</from><to>Table output</to><enabled>N</enabled> </hop>  </order>
+
+  <step>
+    <name>40000 days: 100+ years</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>START_DAY</name>
+        <type>Date</type>
+        <format>yyyyMMdd</format>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>19500101</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <limit>40000</limit>
+    <GUI>
+      <xloc>126</xloc>
+      <yloc>129</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Calc Date</name>
+    <type>Calculator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+       <calculation><field_name>one</field_name>
+<calc_type>CONSTANT</calc_type>
+<field_a>1</field_a>
+<field_b/>
+<field_c/>
+<value_type>Integer</value_type>
+<value_length>1</value_length>
+<value_precision>0</value_precision>
+<remove>Y</remove>
+</calculation>
+       <calculation><field_name>four</field_name>
+<calc_type>CONSTANT</calc_type>
+<field_a>4</field_a>
+<field_b/>
+<field_c/>
+<value_type>Integer</value_type>
+<value_length>1</value_length>
+<value_precision>0</value_precision>
+<remove>Y</remove>
+</calculation>
+       <calculation><field_name>Date</field_name>
+<calc_type>ADD_DAYS</calc_type>
+<field_a>START_DAY</field_a>
+<field_b>Days_Since</field_b>
+<field_c/>
+<value_type>Date</value_type>
+<value_length>-1</value_length>
+<value_precision>-1</value_precision>
+<remove>N</remove>
+</calculation>
+       <calculation><field_name>Year</field_name>
+<calc_type>YEAR_OF_DATE</calc_type>
+<field_a>Date</field_a>
+<field_b/>
+<field_c/>
+<value_type>Integer</value_type>
+<value_length>4</value_length>
+<value_precision>0</value_precision>
+<remove>N</remove>
+</calculation>
+       <calculation><field_name>Month</field_name>
+<calc_type>MONTH_OF_DATE</calc_type>
+<field_a>Date</field_a>
+<field_b/>
+<field_c/>
+<value_type>Integer</value_type>
+<value_length>2</value_length>
+<value_precision>0</value_precision>
+<remove>N</remove>
+</calculation>
+       <calculation><field_name>DayOfYear</field_name>
+<calc_type>DAY_OF_YEAR</calc_type>
+<field_a>Date</field_a>
+<field_b/>
+<field_c/>
+<value_type>Integer</value_type>
+<value_length>3</value_length>
+<value_precision>0</value_precision>
+<remove>N</remove>
+</calculation>
+       <calculation><field_name>DayOfMonth</field_name>
+<calc_type>DAY_OF_MONTH</calc_type>
+<field_a>Date</field_a>
+<field_b/>
+<field_c/>
+<value_type>Integer</value_type>
+<value_length>2</value_length>
+<value_precision>0</value_precision>
+<remove>N</remove>
+</calculation>
+       <calculation><field_name>DayOfWeek</field_name>
+<calc_type>DAY_OF_WEEK</calc_type>
+<field_a>Date</field_a>
+<field_b/>
+<field_c/>
+<value_type>Integer</value_type>
+<value_length>1</value_length>
+<value_precision>0</value_precision>
+<remove>N</remove>
+</calculation>
+       <calculation><field_name>WeekOfYear</field_name>
+<calc_type>WEEK_OF_YEAR</calc_type>
+<field_a>Date</field_a>
+<field_b/>
+<field_c/>
+<value_type>Integer</value_type>
+<value_length>2</value_length>
+<value_precision>0</value_precision>
+<remove>N</remove>
+</calculation>
+       <calculation><field_name>QuarterTmp</field_name>
+<calc_type>DIVIDE</calc_type>
+<field_a>Month</field_a>
+<field_b>four</field_b>
+<field_c/>
+<value_type>Integer</value_type>
+<value_length>1</value_length>
+<value_precision>0</value_precision>
+<remove>Y</remove>
+</calculation>
+       <calculation><field_name>Quarter</field_name>
+<calc_type>ADD</calc_type>
+<field_a>QuarterTmp</field_a>
+<field_b>one</field_b>
+<field_c/>
+<value_type>Integer</value_type>
+<value_length>1</value_length>
+<value_precision>0</value_precision>
+<remove>N</remove>
+</calculation>
+       <calculation><field_name>date_tk</field_name>
+<calc_type>ADD</calc_type>
+<field_a>Days_Since</field_a>
+<field_b>one</field_b>
+<field_c/>
+<value_type>Integer</value_type>
+<value_length>1</value_length>
+<value_precision>0</value_precision>
+<remove>N</remove>
+</calculation>
+    <GUI>
+      <xloc>442</xloc>
+      <yloc>129</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>DayOfWeekDesc</name>
+    <type>StreamLookup</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <from>DayOfWeekDesc Norm</from>
+    <input_sorted>N</input_sorted>
+    <lookup>
+      <key>
+        <name>DayOfWeek</name>
+        <field>DayNr</field>
+      </key>
+      <value>
+        <name>DayDesc</name>
+        <rename>DayOfWeekDesc</rename>
+        <default/>
+        <type>String</type>
+      </value>
+      <value>
+        <name>DayDescShort</name>
+        <rename>DayOfWeekShortDesc</rename>
+        <default/>
+        <type>String</type>
+      </value>
+    </lookup>
+    <GUI>
+      <xloc>600</xloc>
+      <yloc>129</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>DayOfWeekDesc Gen</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>DayNr1</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>2</nullif>
+        <length>1</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayDesc1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Monday</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayDescShort1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>MON</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayNr2</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>3</nullif>
+        <length>1</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayDesc2</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Tuesday</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayDescShort2</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>TUE</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayNr3</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>4</nullif>
+        <length>1</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayDesc3</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Wednesday</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayDescShort3</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>WED</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayNr4</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>5</nullif>
+        <length>1</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayDesc4</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Thursday</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayDescShort4</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>THU</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayNr5</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>6</nullif>
+        <length>1</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayDesc5</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Friday</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayDescShort5</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>FRI</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayNr6</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>7</nullif>
+        <length>1</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayDesc6</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Saturday</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayDescShort6</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>SAT</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayNr7</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>1</nullif>
+        <length>1</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayDesc7</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Sunday</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>DayDescShort7</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>SUN</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      </fields>
+    <limit>1</limit>
+    <GUI>
+      <xloc>600</xloc>
+      <yloc>345</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>DayOfWeekDesc Norm</name>
+    <type>Normaliser</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+   <typefield>typefield</typefield>
+    <fields>      <field>        <name>DayNr1</name>
+        <value>1</value>
+        <norm>DayNr</norm>
+        </field>      <field>        <name>DayDesc1</name>
+        <value>1</value>
+        <norm>DayDesc</norm>
+        </field>      <field>        <name>DayDescShort1</name>
+        <value>1</value>
+        <norm>DayDescShort</norm>
+        </field>      <field>        <name>DayNr2</name>
+        <value>2</value>
+        <norm>DayNr</norm>
+        </field>      <field>        <name>DayDesc2</name>
+        <value>2</value>
+        <norm>DayDesc</norm>
+        </field>      <field>        <name>DayDescShort2</name>
+        <value>2</value>
+        <norm>DayDescShort</norm>
+        </field>      <field>        <name>DayNr3</name>
+        <value>3</value>
+        <norm>DayNr</norm>
+        </field>      <field>        <name>DayDesc3</name>
+        <value>3</value>
+        <norm>DayDesc</norm>
+        </field>      <field>        <name>DayDescShort3</name>
+        <value>3</value>
+        <norm>DayDescShort</norm>
+        </field>      <field>        <name>DayNr4</name>
+        <value>4</value>
+        <norm>DayNr</norm>
+        </field>      <field>        <name>DayDesc4</name>
+        <value>4</value>
+        <norm>DayDesc</norm>
+        </field>      <field>        <name>DayDescShort4</name>
+        <value>4</value>
+        <norm>DayDescShort</norm>
+        </field>      <field>        <name>DayNr5</name>
+        <value>5</value>
+        <norm>DayNr</norm>
+        </field>      <field>        <name>DayDesc5</name>
+        <value>5</value>
+        <norm>DayDesc</norm>
+        </field>      <field>        <name>DayDescShort5</name>
+        <value>5</value>
+        <norm>DayDescShort</norm>
+        </field>      <field>        <name>DayNr6</name>
+        <value>6</value>
+        <norm>DayNr</norm>
+        </field>      <field>        <name>DayDesc6</name>
+        <value>6</value>
+        <norm>DayDesc</norm>
+        </field>      <field>        <name>DayDescShort6</name>
+        <value>6</value>
+        <norm>DayDescShort</norm>
+        </field>      <field>        <name>DayNr7</name>
+        <value>7</value>
+        <norm>DayNr</norm>
+        </field>      <field>        <name>DayDesc7</name>
+        <value>7</value>
+        <norm>DayDesc</norm>
+        </field>      <field>        <name>DayDescShort7</name>
+        <value>7</value>
+        <norm>DayDescShort</norm>
+        </field>      </fields>    <GUI>
+      <xloc>600</xloc>
+      <yloc>237</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Days_since</name>
+    <type>Sequence</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+      <valuename>Days_since</valuename>
+      <use_database>N</use_database>
+      <connection/>
+      <seqname>SEQ_</seqname>
+      <use_counter>Y</use_counter>
+      <start_at>0</start_at>
+      <increment_by>1</increment_by>
+      <max_value>10000000</max_value>
+    <GUI>
+      <xloc>284</xloc>
+      <yloc>129</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>MonthDesc</name>
+    <type>StreamLookup</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <from>MonthDesc Norm</from>
+    <input_sorted>N</input_sorted>
+    <lookup>
+      <key>
+        <name>Month</name>
+        <field>MonthNr</field>
+      </key>
+      <value>
+        <name>MonthDesc</name>
+        <rename>MonthDesc</rename>
+        <default/>
+        <type>String</type>
+      </value>
+      <value>
+        <name>MonthDescShort</name>
+        <rename>MonthShortDesc</rename>
+        <default/>
+        <type>String</type>
+      </value>
+    </lookup>
+    <GUI>
+      <xloc>758</xloc>
+      <yloc>129</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>MonthDesc Gen</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>desc1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>January</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>short1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>JAN</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>desc2</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>February</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>short2</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>FEB</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>desc3</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>March</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>short3</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>MAR</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>desc4</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>April</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>short4</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>APR</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>desc5</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>May</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>short5</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>MAY</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>desc6</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>June</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>short6</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>JUN</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>desc7</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>July</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>short7</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>JUL</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>desc8</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>August</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>short8</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>AUG</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>desc9</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>September</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>short9</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>SEP</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>desc10</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>October</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>short10</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>OCT</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>desc11</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>November</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>short11</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>NOV</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>desc12</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>December</nullif>
+        <length>30</length>
+        <precision>0</precision>
+        </field>
+      <field>
+        <name>short12</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>DEC</nullif>
+        <length>3</length>
+        <precision>0</precision>
+        </field>
+      </fields>
+    <limit>1</limit>
+    <GUI>
+      <xloc>758</xloc>
+      <yloc>341</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>MonthDesc Norm</name>
+    <type>Normaliser</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+   <typefield>MonthNr</typefield>
+    <fields>      <field>        <name>desc1</name>
+        <value>1</value>
+        <norm>MonthDesc</norm>
+        </field>      <field>        <name>desc2</name>
+        <value>2</value>
+        <norm>MonthDesc</norm>
+        </field>      <field>        <name>desc3</name>
+        <value>3</value>
+        <norm>MonthDesc</norm>
+        </field>      <field>        <name>desc4</name>
+        <value>4</value>
+        <norm>MonthDesc</norm>
+        </field>      <field>        <name>desc5</name>
+        <value>5</value>
+        <norm>MonthDesc</norm>
+        </field>      <field>        <name>desc6</name>
+        <value>6</value>
+        <norm>MonthDesc</norm>
+        </field>      <field>        <name>desc7</name>
+        <value>7</value>
+        <norm>MonthDesc</norm>
+        </field>      <field>        <name>desc8</name>
+        <value>8</value>
+        <norm>MonthDesc</norm>
+        </field>      <field>        <name>desc9</name>
+        <value>9</value>
+        <norm>MonthDesc</norm>
+        </field>      <field>        <name>desc10</name>
+        <value>10</value>
+        <norm>MonthDesc</norm>
+        </field>      <field>        <name>desc11</name>
+        <value>11</value>
+        <norm>MonthDesc</norm>
+        </field>      <field>        <name>desc12</name>
+        <value>12</value>
+        <norm>MonthDesc</norm>
+        </field>      <field>        <name>short1</name>
+        <value>1</value>
+        <norm>MonthDescShort</norm>
+        </field>      <field>        <name>short2</name>
+        <value>2</value>
+        <norm>MonthDescShort</norm>
+        </field>      <field>        <name>short3</name>
+        <value>3</value>
+        <norm>MonthDescShort</norm>
+        </field>      <field>        <name>short4</name>
+        <value>4</value>
+        <norm>MonthDescShort</norm>
+        </field>      <field>        <name>short5</name>
+        <value>5</value>
+        <norm>MonthDescShort</norm>
+        </field>      <field>        <name>short6</name>
+        <value>6</value>
+        <norm>MonthDescShort</norm>
+        </field>      <field>        <name>short7</name>
+        <value>7</value>
+        <norm>MonthDescShort</norm>
+        </field>      <field>        <name>short8</name>
+        <value>8</value>
+        <norm>MonthDescShort</norm>
+        </field>      <field>        <name>short9</name>
+        <value>9</value>
+        <norm>MonthDescShort</norm>
+        </field>      <field>        <name>short10</name>
+        <value>10</value>
+        <norm>MonthDescShort</norm>
+        </field>      <field>        <name>short11</name>
+        <value>11</value>
+        <norm>MonthDescShort</norm>
+        </field>      <field>        <name>short12</name>
+        <value>12</value>
+        <norm>MonthDescShort</norm>
+        </field>      </fields>    <GUI>
+      <xloc>758</xloc>
+      <yloc>235</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Select values</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>      <field>        <name>date_tk</name>
+        <rename/>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      <field>        <name>Date</name>
+        <rename>date_field</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      <field>        <name>Year</name>
+        <rename>year</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      <field>        <name>Month</name>
+        <rename>month</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      <field>        <name>DayOfYear</name>
+        <rename>day_of_year</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      <field>        <name>DayOfMonth</name>
+        <rename>day_of_month</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      <field>        <name>DayOfWeek</name>
+        <rename>day_of_week</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      <field>        <name>WeekOfYear</name>
+        <rename>week_of_year</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      <field>        <name>DayOfWeekDesc</name>
+        <rename>day_of_week_desc</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      <field>        <name>DayOfWeekShortDesc</name>
+        <rename>day_of_week_short_desc</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      <field>        <name>MonthDesc</name>
+        <rename>month_desc</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      <field>        <name>MonthShortDesc</name>
+        <rename>month_short_desc</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      <field>        <name>Quarter</name>
+        <rename>quarter</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      </fields>    <GUI>
+      <xloc>916</xloc>
+      <yloc>129</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Table output</name>
+    <type>TableOutput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <connection/>
+    <table>D_DATE</table>
+    <commit>100</commit>
+    <truncate>Y</truncate>
+    <ignore_errors>N</ignore_errors>
+    <use_batch>Y</use_batch>
+    <partitioning_enabled>N</partitioning_enabled>
+    <partitioning_field/>
+    <partitioning_daily>N</partitioning_daily>
+    <partitioning_monthly>Y</partitioning_monthly>
+    <tablename_in_field>N</tablename_in_field>
+    <tablename_field/>
+    <tablename_in_table>Y</tablename_in_table>
+    <return_keys>N</return_keys>
+    <return_field/>
+    <GUI>
+      <xloc>1074</xloc>
+      <yloc>129</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>

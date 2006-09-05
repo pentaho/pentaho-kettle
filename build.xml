@@ -21,6 +21,7 @@
 	  <property name="lib"        			location="lib"/>
 	  <property name="plugins"        		location="plugins"/>
 	  <property name="homepage"        		location="homepage"/>
+	  <property name="samples"        		location="samples"/>
 	  <property name="libext"     			location="libext"/>
 	  <property name="testlibext"     		location="${test}/libext"/>
 	  <property name="libswt"     			location="libswt"/>
@@ -242,6 +243,14 @@
 	  			<fileset dir="${docs}" 
 	  				     includes="**/*.pdf **/*.htm **/*.html **/*.png **/*.PNG **/*.swf **/cn_ZN.zip"
 	  			         excludes="**/*.dot **/*.doc **/*.sxw **/*.odt **/*.vpn **/*feature list*" />
+	  			</copy>
+
+	        <!-- samples -->
+	  		<mkdir dir="${distrib}/samples"/>
+	  		<copy todir="${distrib}/samples">
+	  			<fileset dir="${samples}" 
+	  				     includes="**/*.*"
+	  				     excludes="**/.svn"/>
 	  			</copy>
 
 	        <!-- extra stuff -->

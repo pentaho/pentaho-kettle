@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>1000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+    </info>
+  <notepads>
+    </notepads>
+  <order>
+  <hop> <from>Generate Rows</from><to>Java Script Value</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Generate Rows</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>Str</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>€2,345.67</nullif>
+        <length>20</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>Num</name>
+        <type>Number</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>2345,67</nullif>
+        <length>7</length>
+        <precision>2</precision>
+        </field>
+      </fields>
+    <limit>10</limit>
+    <GUI>
+      <xloc>158</xloc>
+      <yloc>180</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Java Script Value</name>
+    <type>ScriptValue</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <script>
+
+var numFromStr = Str.Clone().str2num(&quot;€#,###.##&quot;, &quot;.&quot;, &quot;,&quot;, &quot;€&quot;).getNumber();
+var strFromNum = Num.Clone().num2str(&quot;€#,###.##&quot;).getString()</script>
+    <fields>      <field>        <name>numFromStr</name>
+        <rename>numFromStr</rename>
+        <type>Number</type>
+        <length>9</length>
+        <precision>2</precision>
+        </field>      <field>        <name>strFromNum</name>
+        <rename>strFromNum</rename>
+        <type>String</type>
+        <length>15</length>
+        <precision>-1</precision>
+        </field>      </fields>    <GUI>
+      <xloc>335</xloc>
+      <yloc>179</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>

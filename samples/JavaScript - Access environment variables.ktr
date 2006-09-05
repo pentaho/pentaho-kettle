@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>1000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+    </info>
+  <notepads>
+    </notepads>
+  <order>
+  <hop> <from>Generate Rows</from><to>Java Script Value</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Generate Rows</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      </fields>
+    <limit>10</limit>
+    <GUI>
+      <xloc>118</xloc>
+      <yloc>108</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Java Script Value</name>
+    <type>ScriptValue</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <script>
+var v1 = Packages.be.ibridge.kettle.core.util.StringUtil.getVariable(&quot;VAR1&quot;, &quot;&quot;);
+var v2 = Packages.be.ibridge.kettle.core.util.StringUtil.getVariable(&quot;java.io.tmpdir&quot;, &quot;&quot;);</script>
+    <fields>      <field>        <name>v1</name>
+        <rename>v1</rename>
+        <type>String</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>      <field>        <name>v2</name>
+        <rename>v2</rename>
+        <type>String</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>      </fields>    <GUI>
+      <xloc>286</xloc>
+      <yloc>108</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>
