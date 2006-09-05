@@ -158,7 +158,7 @@ public class DBProc extends BaseStep implements StepInterface
         }
         catch(KettleDatabaseException e)
         {
-            logError(Messages.getString("DBProc.Log.CommitError", e.getMessage()));
+            logError(Messages.getString("DBProc.Log.CommitError")+e.getMessage());
         }
 	    data.db.disconnect();
 	    
