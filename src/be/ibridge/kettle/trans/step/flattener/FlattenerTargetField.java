@@ -25,9 +25,9 @@ public class FlattenerTargetField
     public static final int TYPE_AGGR_COUNT_ALL      = 5;
     public static final int TYPE_AGGR_CONCAT_COMMA   = 6;
 
-    public static final String typeAggrDesc[] = 
+    public static final String typeAggrCode[] =  /* WARNING: DO NOT TRANSLATE THIS. WE ARE SERIOUS, DON'T TRANSLATE! */ 
         {
-            "-", Messages.getString("FlattenerTargetField.TypeAggrDesc.SUM"), Messages.getString("FlattenerTargetField.TypeAggrDesc.AVERAGE"), Messages.getString("FlattenerTargetField.TypeAggrDesc.MIN"), Messages.getString("FlattenerTargetField.TypeAggrDesc.MAX"), Messages.getString("FlattenerTargetField.TypeAggrDesc.COUNT_ALL"), Messages.getString("FlattenerTargetField.TypeAggrDesc.CONCAT_COMMA")     //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+            "-", "SUM", "AVERAGE", "MIN", "MAX", "COUNT_ALL", "CONCAT_COMMA"     //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
         };
 
     public static final String typeAggrLongDesc[] = 
@@ -241,9 +241,9 @@ public class FlattenerTargetField
     
     public static final int getAggregationType(String desc)
     {
-        for (int i=0;i<typeAggrDesc.length;i++)
+        for (int i=0;i<typeAggrCode.length;i++)
         {
-            if (typeAggrDesc[i].equalsIgnoreCase(desc)) return i;
+            if (typeAggrCode[i].equalsIgnoreCase(desc)) return i;
         }
         for (int i=0;i<typeAggrLongDesc.length;i++)
         {
@@ -254,8 +254,8 @@ public class FlattenerTargetField
 
     public static final String getAggregationTypeDesc(int i)
     {
-        if (i<0 || i>=typeAggrDesc.length) return null;
-        return typeAggrDesc[i];
+        if (i<0 || i>=typeAggrCode.length) return null;
+        return typeAggrCode[i];
     }
 
     public static final String getAggregationTypeDescLong(int i)
