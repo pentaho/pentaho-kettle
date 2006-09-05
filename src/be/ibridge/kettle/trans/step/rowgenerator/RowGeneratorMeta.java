@@ -27,6 +27,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.Trans;
@@ -46,8 +47,8 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 {
-	private  long   rowLimit;
-	
+	private  String rowLimit;
+    
 	private  String currency[];
 	private  String decimal[];
 	private  String group[];
@@ -198,7 +199,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @return Returns the rowLimit.
      */
-    public long getRowLimit()
+    public String getRowLimit()
     {
         return rowLimit;
     }
@@ -206,7 +207,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
     /**
      * @param rowLimit The rowLimit to set.
      */
-    public void setRowLimit(long rowLimit)
+    public void setRowLimit(String rowLimit)
     {
         this.rowLimit = rowLimit;
     }
@@ -272,16 +273,12 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		return retval;
 	}
 
-	private void readData(Node stepnode)
-		throws KettleXMLException
+	private void readData(Node stepnode) throws KettleXMLException
 	{
 		try
 		{
-			int nrfields;
-			String lim;
-					
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
-			nrfields=XMLHandler.countNodes(fields, "field");
+			int nrfields=XMLHandler.countNodes(fields, "field");
 	
 			allocate(nrfields);
 			
@@ -306,8 +303,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			
 			// Is there a limit on the number of rows we process?
-			lim=XMLHandler.getTagValue(stepnode, "limit");
-			rowLimit = Const.toLong(lim, 0);
+            rowLimit=XMLHandler.getTagValue(stepnode, "limit");
 		}
 		catch(Exception e)
 		{
@@ -334,7 +330,7 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 			value[i]       = "-";
 		}
 			
-		rowLimit=10;
+		rowLimit="10";
 	}
 	
 	public Row getFields(Row r, String name, Row info)
@@ -410,7 +406,16 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 				fieldPrecision[i] =  (int)rep.getStepAttributeInteger(id_step, i, "field_precision");
 			}
 			
-			rowLimit = (int)rep.getStepAttributeInteger(id_step, "limit");
+            long longLimit = rep.getStepAttributeInteger(id_step, "limit");
+            if (longLimit<=0)
+            {
+                rowLimit = rep.getStepAttributeString(id_step, "limit");
+            }
+            else
+            {
+                rowLimit = Long.toString(longLimit);
+            }
+			 
 		}
 		catch(Exception e)
 		{
@@ -460,14 +465,15 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 			cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RowGeneratorMeta.CheckResult.NoInputStreamOk"), stepMeta);
 			remarks.add(cr);
 			
-			if (rowLimit==0.0)
+            String strLimit = StringUtil.environmentSubstitute(rowLimit);
+			if (Const.toLong(strLimit, -1L)<=0)
 			{
 				cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("RowGeneratorMeta.CheckResult.WarnNoRows"), stepMeta);
 				remarks.add(cr);
 			}
 			else
 			{
-				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RowGeneratorMeta.CheckResult.WillReturnRows", ""+(long)rowLimit), stepMeta);
+				cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("RowGeneratorMeta.CheckResult.WillReturnRows", strLimit), stepMeta);
 				remarks.add(cr);
 			}
 		}

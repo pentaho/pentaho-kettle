@@ -38,6 +38,7 @@ public class RowGeneratorData extends BaseStepData implements StepDataInterface
 	public SimpleDateFormat daf;
 	public DateFormatSymbols dafs;
     public Row constants;
+    public long rowLimit;
     
 	/**
 	 * 

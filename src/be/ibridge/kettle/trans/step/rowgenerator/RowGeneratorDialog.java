@@ -45,7 +45,10 @@ import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.dialog.EnterNumberDialog;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
+import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.trans.Trans;
@@ -236,7 +239,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		int i;
 		log.logDebug(toString(), "getting fields info...");
 		
-		wLimit.setText(""+(int)input.getRowLimit());
+		wLimit.setText(input.getRowLimit());
 
 		for (i=0;i<input.getFieldName().length;i++)
 		{
@@ -280,13 +283,21 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 	private void ok()
 	{
 		stepname = wStepname.getText(); // return value
-		getInfo(input);
-		dispose();
+        try
+        {
+            getInfo(new RowGeneratorMeta()); // to see if there is an exception
+            getInfo(input); // to put the content on the input structure for real if all is well.
+            dispose();
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, props, Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Title"), Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Message"), e);
+        }
 	}
 	
-	private void getInfo(RowGeneratorMeta meta)
+	private void getInfo(RowGeneratorMeta meta) throws KettleException
     {
-        meta.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
+        meta.setRowLimit( wLimit.getText() );
         
         int nrfields = wFields.nrNonEmpty();
 
@@ -309,6 +320,15 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
             meta.getFieldLength()[i]    = Const.toInt( slength, -1);
             meta.getFieldPrecision()[i] = Const.toInt( sprec  , -1);
         }
+        
+        // Performs checks...
+        long longLimit = Const.toLong(StringUtil.environmentSubstitute( wLimit.getText()), -1L );
+        if (longLimit<0)
+        {
+            throw new KettleException( Messages.getString("RowGeneratorDialog.Wrong.RowLimit.Number") );
+        }
+        
+
     }
 
     public String toString()
@@ -325,7 +345,15 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
     {
         // Create the excel reader step...
         RowGeneratorMeta oneMeta = new RowGeneratorMeta();
-        getInfo(oneMeta);
+        try
+        {
+            getInfo(oneMeta);
+        }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, props, Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Title"), Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Message"), e);
+            return;
+        }
         
         TransMeta previewMeta = TransPreviewFactory.generatePreviewTransformation(oneMeta, wStepname.getText());
         

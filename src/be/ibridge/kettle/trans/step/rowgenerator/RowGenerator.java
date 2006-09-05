@@ -22,6 +22,7 @@ import be.ibridge.kettle.core.CheckResult;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -93,7 +94,7 @@ public class RowGenerator extends BaseStep implements StepInterface
                         }
                         catch(Exception e)
                         {
-                            String message = "Couldn't parse number field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
+                            String message = Messages.getString("RowGenerator.BuildRow.Error.Parsing.Number", value.getName(), stringValue, e.toString() );
                             remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
                         }
                         break;
@@ -113,7 +114,7 @@ public class RowGenerator extends BaseStep implements StepInterface
                         }
                         catch(Exception e)
                         {
-                            String message = "Couldn't parse date field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
+                            String message = Messages.getString("RowGenerator.BuildRow.Error.Parsing.Date", value.getName(), stringValue, e.toString() );
                             remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
                         }
                         break;
@@ -125,7 +126,7 @@ public class RowGenerator extends BaseStep implements StepInterface
                         }
                         catch(Exception e)
                         {
-                            String message = "Couldn't parse Integer field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
+                            String message = Messages.getString("RowGenerator.BuildRow.Error.Parsing.Integer", value.getName(), stringValue, e.toString() );
                             remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
                         }
                         break;
@@ -137,7 +138,7 @@ public class RowGenerator extends BaseStep implements StepInterface
                         }
                         catch(Exception e)
                         {
-                            String message = "Couldn't parse BigNumber field ["+value.getName()+"] with value ["+stringValue+"] -->"+e.toString();
+                            String message = Messages.getString("RowGenerator.BuildRow.Error.Parsing.BigNumber", value.getName(), stringValue, e.toString() );
                             remarks.add(new CheckResult(CheckResult.TYPE_RESULT_ERROR, message, null));
                         }
                         break;
@@ -168,7 +169,7 @@ public class RowGenerator extends BaseStep implements StepInterface
 		Row r=null;
 		boolean retval=true;
 		
-		if (linesWritten<meta.getRowLimit())
+		if (linesWritten<data.rowLimit)
 		{
 			r=new Row(data.constants); // Copy the data, otherwise it gets manipulated aferwards.
 		}
@@ -180,8 +181,14 @@ public class RowGenerator extends BaseStep implements StepInterface
 		
 		putRow(r);
 
-        if (log.isRowLevel()) log.logRowlevel(toString(), "Wrote row #"+linesWritten+" : "+r);
-		if ((linesWritten>0) && (linesWritten%Const.ROWS_UPDATE)==0) logBasic("Linenr "+linesWritten);
+        if (log.isRowLevel())
+        {
+            log.logRowlevel(toString(), Messages.getString("RowGenerator.Log.Wrote.Row", Long.toString(linesWritten), r.toString()) );
+        }
+		if ((linesWritten>0) && (linesWritten%Const.ROWS_UPDATE)==0) 
+        {
+            logBasic( Messages.getString("RowGenerator.Log.LineNr", Long.toString(linesWritten) ) );
+        }
 		
 		return retval;
 	}
@@ -193,6 +200,15 @@ public class RowGenerator extends BaseStep implements StepInterface
         
         if (super.init(smi, sdi))
         {
+            // Determine the number of rows to generate...
+            data.rowLimit = Const.toLong(StringUtil.environmentSubstitute(meta.getRowLimit()), -1L);
+            
+            if (data.rowLimit<0L) // Unable to parse
+            {
+                logError(Messages.getString("RowGenerator.Wrong.RowLimit.Number"));
+                return false; // fail
+            }
+            
             // Create a row (constants) with all the values in it...
             ArrayList remarks = new ArrayList(); // stores the errors...
             data.constants = buildRow(meta, data, remarks);
@@ -205,7 +221,7 @@ public class RowGenerator extends BaseStep implements StepInterface
                 for (int i=0;i<remarks.size();i++)
                 {
                     CheckResult cr = (CheckResult) remarks.get(i);
-                    log.logError(getStepname(), cr.getText());
+                    logError(cr.getText());
                 }
             }
         }
@@ -219,7 +235,7 @@ public class RowGenerator extends BaseStep implements StepInterface
 	{
 		try
 		{
-			logBasic("Starting to run...");
+			logBasic(Messages.getString("RowGenerator.Log.StartToRun"));
 			while (processRow(meta, data) && !isStopped());
 		}
 		catch(Exception e)
