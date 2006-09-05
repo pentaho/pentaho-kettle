@@ -224,6 +224,12 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
                 retval.append("    "+XMLHandler.addTagValue("filename", mappingTransMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
+        else
+        {
+            retval.append("    "+XMLHandler.addTagValue("trans_name", transName) ); //$NON-NLS-1$
+            retval.append("    "+XMLHandler.addTagValue("filename", fileName )); //$NON-NLS-1$
+            retval.append("    "+XMLHandler.addTagValue("directory_path", directoryPath )); //$NON-NLS-1$
+        }
         
         retval.append("  <input>"+Const.CR); //$NON-NLS-1$
         for (int i=0;i<inputField.length;i++)
