@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -197,7 +198,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 		XMLField field = null;
 		if (idx>=0) field = meta.getOutputFields()[idx];
 		
-        if (v.isBigNumber())
+        if (v.isBigNumber() || v.isNumber() || v.isInteger())
         {
 			if (idx>=0 && field!=null && field.getFormat()!=null)
 			{
@@ -208,13 +209,57 @@ public class XMLOutput extends BaseStep implements StepInterface
 				}
 				else
 				{
-					data.df.applyPattern(field.getFormat());
-					if (field.getDecimalSymbol()!=null && field.getDecimalSymbol().length()>0)  data.dfs.setDecimalSeparator( field.getDecimalSymbol().charAt(0) );
-					if (field.getGroupingSymbol()!=null && field.getGroupingSymbol().length()>0)    data.dfs.setGroupingSeparator( field.getGroupingSymbol().charAt(0) );
-					if (field.getCurrencySymbol()!=null) data.dfs.setCurrencySymbol( field.getCurrencySymbol() );
+                    // Formatting
+                    if ( !Const.isEmpty(field.getFormat()) )
+                    {
+                        data.df.applyPattern(field.getFormat());
+                    }
+                    else
+                    {
+                        data.df.applyPattern(data.defaultDecimalFormat.toLocalizedPattern());
+                    }
+                    // Decimal 
+					if ( !Const.isEmpty( field.getDecimalSymbol()) )
+                    {
+                        data.dfs.setDecimalSeparator( field.getDecimalSymbol().charAt(0) );
+                    }
+                    else
+                    {
+                        data.dfs.setDecimalSeparator( data.defaultDecimalFormatSymbols.getDecimalSeparator() );
+                    }
+                    // Grouping
+					if ( !Const.isEmpty( field.getGroupingSymbol()) )
+                    {
+                        data.dfs.setGroupingSeparator( field.getGroupingSymbol().charAt(0) );
+                    }
+                    else
+                    {
+                        data.dfs.setGroupingSeparator( data.defaultDecimalFormatSymbols.getGroupingSeparator() );
+                    }
+                    // Currency symbol
+					if ( !Const.isEmpty( field.getCurrencySymbol()) ) 
+                    {
+                        data.dfs.setCurrencySymbol( field.getCurrencySymbol() );
+                    }
+                    else
+                    {
+                        data.dfs.setCurrencySymbol( data.defaultDecimalFormatSymbols.getCurrencySymbol() );
+                    }
 							
 					data.df.setDecimalFormatSymbols(data.dfs);
-					retval=data.df.format(v.getBigNumber());
+                    
+                    if (v.isBigNumber())
+                    {
+                        retval=data.df.format(v.getBigNumber());
+                    }
+                    else if (v.isNumber())
+                    {
+                        retval=data.df.format(v.getNumber());
+                    }
+                    else // Integer
+                    {
+                        retval=data.df.format(v.getInteger());
+                    }
 				}
 			}
 			else
@@ -230,45 +275,19 @@ public class XMLOutput extends BaseStep implements StepInterface
 				}
 			}
         }
-        else
-		if (v.isNumeric())
-		{
-			if (idx>=0 && field!=null && field.getFormat()!=null)
-			{
-				if (v.isNull())
-				{
-					if (field.getNullString()!=null) retval=field.getNullString();
-					else retval = "";
-				}
-				else
-				{
-					data.df.applyPattern(field.getFormat());
-					if (field.getDecimalSymbol()!=null && field.getDecimalSymbol().length()>0)  data.dfs.setDecimalSeparator( field.getDecimalSymbol().charAt(0) );
-					if (field.getGroupingSymbol()!=null && field.getGroupingSymbol().length()>0)    data.dfs.setGroupingSeparator( field.getGroupingSymbol().charAt(0) );
-					if (field.getCurrencySymbol()!=null) data.dfs.setCurrencySymbol( field.getCurrencySymbol() );
-							
-					data.df.setDecimalFormatSymbols(data.dfs);
-					retval=data.df.format(v.getNumber());
-				}
-			}
-			else
-			{
-				if (v.isNull()) 
-				{
-					if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
-				}
-				else
-				{
-					retval=v.toString();
-				}
-			}
-		}
 		else
 		if (v.isDate())
 		{
 			if (idx>=0 && field!=null && field.getFormat()!=null && v.getDate()!=null)
 			{
-				data.daf.applyPattern( field.getFormat() );
+                if (!Const.isEmpty(field.getFormat()))
+                {
+                    data.daf.applyPattern( field.getFormat() );
+                }
+                else
+                {
+                    data.daf.applyPattern( data.defaultDateFormat.toLocalizedPattern() );
+                }
 				data.daf.setDateFormatSymbols(data.dafs);
 				retval= data.daf.format(v.getDate());
 			}
@@ -299,6 +318,24 @@ public class XMLOutput extends BaseStep implements StepInterface
 				retval=v.toString();
 			}
 		}
+        else if (v.isBinary())
+        {
+            if (v.isNull())
+            {
+                if (field.getNullString()!=null) retval=field.getNullString();
+                else retval=Const.NULL_BINARY;
+            }
+            else
+            {                   
+                try {
+                    retval=new String(v.getBytes(), "US-ASCII");
+                } catch (UnsupportedEncodingException e) {
+                    // chances are small we'll get here. US_ASCII is
+                    // mandatory.
+                    retval=Const.NULL_BINARY;   
+                }                   
+            }
+        }        
 		else // Boolean
 		{
 			if (v.isNull()) 
@@ -427,7 +464,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 			data.splitnr=0;
-			
+            
 			if (openNewFile())
 			{
 				return true;

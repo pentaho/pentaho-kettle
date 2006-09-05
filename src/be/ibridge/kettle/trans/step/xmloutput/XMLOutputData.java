@@ -51,6 +51,12 @@ public class XMLOutputData extends BaseStepData implements StepDataInterface
     
     public OutputStreamWriter writer;
 
+    public DecimalFormat        defaultDecimalFormat;
+    public DecimalFormatSymbols defaultDecimalFormatSymbols;
+
+    public SimpleDateFormat  defaultDateFormat;
+    public DateFormatSymbols defaultDateFormatSymbols;
+
 	/**
 	 * 
 	 */
@@ -61,9 +67,16 @@ public class XMLOutputData extends BaseStepData implements StepDataInterface
 		nf = NumberFormat.getInstance();
 		df = (DecimalFormat)nf;
 		dfs=new DecimalFormatSymbols();
-
-		daf = new SimpleDateFormat();
+        
+        defaultDecimalFormat = (DecimalFormat)NumberFormat.getInstance();
+        defaultDecimalFormatSymbols =  new DecimalFormatSymbols();
+		
+        daf = new SimpleDateFormat();
 		dafs= new DateFormatSymbols();
+        
+        defaultDateFormat = new SimpleDateFormat();
+        defaultDateFormatSymbols = new DateFormatSymbols();
+        
 	}
 
 }

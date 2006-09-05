@@ -51,6 +51,12 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
     
     public OutputStreamWriter writer;
 
+    public DecimalFormat        defaultDecimalFormat;
+    public DecimalFormatSymbols defaultDecimalFormatSymbols;
+
+    public SimpleDateFormat  defaultDateFormat;
+    public DateFormatSymbols defaultDateFormatSymbols;
+
 	/**
 	 * 
 	 */
@@ -64,6 +70,12 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 
 		daf = new SimpleDateFormat();
 		dafs= new DateFormatSymbols();
+        
+        defaultDecimalFormat = (DecimalFormat)NumberFormat.getInstance();
+        defaultDecimalFormatSymbols =  new DecimalFormatSymbols();
+
+        defaultDateFormat = new SimpleDateFormat();
+        defaultDateFormatSymbols = new DateFormatSymbols();
 	}
 
 }

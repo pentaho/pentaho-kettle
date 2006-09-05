@@ -204,18 +204,18 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		return true;
 	}
 	
-	private String formatField(Value v, int idx)
-	{
-		String retval="";
+    private String formatField(Value v, int idx)
+    {
+        String retval="";
 
-		TextFileField field = null;
-		if (idx>=0) field = meta.getOutputFields()[idx];
-
-		if (v.isString())
-		{
-			if (v.isNull() || v.getString()==null) 
-			{
-				if (idx>=0 && field!=null && field.getNullString()!=null) 
+        TextFileField field = null;
+        if (idx>=0) field = meta.getOutputFields()[idx];
+        
+        if (v.isString())
+        {
+            if (v.isNull() || v.getString()==null) 
+            {
+                if (idx>=0 && field!=null && field.getNullString()!=null) 
                 {
                     if (meta.isEnclosureForced() && meta.getEnclosure()!=null)
                     {
@@ -226,177 +226,192 @@ public class TextFileOutput extends BaseStep implements StepInterface
                         retval=field.getNullString();
                     }
                 }
-			}
-			else
-			{
-				// Any separators in string?
-				// example: 123.4;"a;b;c";Some name
-				//
+            }
+            else
+            {
+                // Any separators in string?
+                // example: 123.4;"a;b;c";Some name
+                //
                 if (meta.isEnclosureForced() && meta.getEnclosure()!=null) // Force enclosure?
                 {
                     retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
                 }
                 else // See if there is a separator in the String...
                 {
-    				int seppos = v.toString().indexOf(meta.getSeparator());
-    				
-    				if (seppos<0) retval=v.toString();
-    				else          retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
+                    int seppos = v.toString().indexOf(meta.getSeparator());
+                    
+                    if (seppos<0) retval=v.toString();
+                    else          retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
                 }
-			}
-		}
-		else if (v.isBigNumber())
-        {
-			if (idx>=0 && field!=null && field.getFormat()!=null)
-			{
-				if (v.isNull())
-				{
-					if (field.getNullString()!=null) retval=field.getNullString();
-					else retval = "";
-				}
-				else
-				{
-					data.df.applyPattern(field.getFormat());
-					if (field.getDecimalSymbol()!=null && field.getDecimalSymbol().length()>0)  data.dfs.setDecimalSeparator( field.getDecimalSymbol().charAt(0) );
-					if (field.getGroupingSymbol()!=null && field.getGroupingSymbol().length()>0)    data.dfs.setGroupingSeparator( field.getGroupingSymbol().charAt(0) );
-					if (field.getCurrencySymbol()!=null) data.dfs.setCurrencySymbol( field.getCurrencySymbol() );
-							
-					data.df.setDecimalFormatSymbols(data.dfs);
-					retval=data.df.format(v.getBigNumber());
-				}
-			}
-			else
-			{
-				if (v.isNull()) 
-				{
-					if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
-					else retval = "";
-				}
-				else
-				{
-					retval=v.toString();
-				}
-			}
+            }
         }
-        else if (v.isNumeric())
-		{
-			if (idx>=0 && field!=null && field.getFormat()!=null)
-			{
-				if (v.isNull())
-				{
-					if (field.getNullString()!=null) retval=field.getNullString();
-					else retval = "";
-				}
-				else
-				{
-					data.df.applyPattern(field.getFormat());
-					if (field.getDecimalSymbol()!=null && field.getDecimalSymbol().length()>0)  data.dfs.setDecimalSeparator( field.getDecimalSymbol().charAt(0) );
-					if (field.getGroupingSymbol()!=null && field.getGroupingSymbol().length()>0)    data.dfs.setGroupingSeparator( field.getGroupingSymbol().charAt(0) );
-					if (field.getCurrencySymbol()!=null) data.dfs.setCurrencySymbol( field.getCurrencySymbol() );
-							
-					data.df.setDecimalFormatSymbols(data.dfs);
-					if ( v.isInteger() )
-					{
-					    retval=data.df.format(v.getInteger());
-					}
-					else if ( v.isNumber() )
-					{
-					    retval=data.df.format(v.getNumber());
-					}						
-				}
-			}
-			else
-			{
-				if (v.isNull()) 
-				{
-					if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
-				}
-				else
-				{
-					retval=v.toString();
-				}
-			}
-		}
-		else if (v.isDate())
-		{
-			if (idx>=0 && field!=null && field.getFormat()!=null && v.getDate()!=null)
-			{
-				data.daf.applyPattern( field.getFormat() );
-				data.daf.setDateFormatSymbols(data.dafs);
-				retval= data.daf.format(v.getDate());
-			}
-			else
-			{
-				if (v.isNull() || v.getDate()==null) 
-				{
-					if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
-				}
-				else
-				{
-					retval=v.toString();
-				}
-			}
-		}
-		else if (v.isBinary())
-		{
-			if (v.isNull())
-			{
-				if (field.getNullString()!=null) retval=field.getNullString();
-				else retval=Const.NULL_BINARY;
-			}
-			else
-			{					
+        else if (v.isBigNumber() || v.isNumber() || v.isInteger())
+        {
+            if (idx>=0 && field!=null && field.getFormat()!=null)
+            {
+                if (v.isNull())
+                {
+                    if (field.getNullString()!=null) retval=field.getNullString();
+                    else retval = "";
+                }
+                else
+                {
+                    // Formatting
+                    if ( !Const.isEmpty(field.getFormat()) )
+                    {
+                        data.df.applyPattern(field.getFormat());
+                    }
+                    else
+                    {
+                        data.df.applyPattern(data.defaultDecimalFormat.toLocalizedPattern());
+                    }
+                    // Decimal 
+                    if ( !Const.isEmpty( field.getDecimalSymbol()) )
+                    {
+                        data.dfs.setDecimalSeparator( field.getDecimalSymbol().charAt(0) );
+                    }
+                    else
+                    {
+                        data.dfs.setDecimalSeparator( data.defaultDecimalFormatSymbols.getDecimalSeparator() );
+                    }
+                    // Grouping
+                    if ( !Const.isEmpty( field.getGroupingSymbol()) )
+                    {
+                        data.dfs.setGroupingSeparator( field.getGroupingSymbol().charAt(0) );
+                    }
+                    else
+                    {
+                        data.dfs.setGroupingSeparator( data.defaultDecimalFormatSymbols.getGroupingSeparator() );
+                    }
+                    // Currency symbol
+                    if ( !Const.isEmpty( field.getCurrencySymbol()) ) 
+                    {
+                        data.dfs.setCurrencySymbol( field.getCurrencySymbol() );
+                    }
+                    else
+                    {
+                        data.dfs.setCurrencySymbol( data.defaultDecimalFormatSymbols.getCurrencySymbol() );
+                    }
+                            
+                    data.df.setDecimalFormatSymbols(data.dfs);
+                    
+                    if (v.isBigNumber())
+                    {
+                        retval=data.df.format(v.getBigNumber());
+                    }
+                    else if (v.isNumber())
+                    {
+                        retval=data.df.format(v.getNumber());
+                    }
+                    else // Integer
+                    {
+                        retval=data.df.format(v.getInteger());
+                    }
+                }
+            }
+            else
+            {
+                if (v.isNull()) 
+                {
+                    if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
+                    else retval = "";
+                }
+                else
+                {
+                    retval=v.toString();
+                }
+            }
+        }
+        else if (v.isDate())
+        {
+            if (idx>=0 && field!=null && field.getFormat()!=null && v.getDate()!=null)
+            {
+                if (!Const.isEmpty(field.getFormat()))
+                {
+                    data.daf.applyPattern( field.getFormat() );
+                }
+                else
+                {
+                    data.daf.applyPattern( data.defaultDateFormat.toLocalizedPattern() );
+                }
+                data.daf.setDateFormatSymbols(data.dafs);
+                retval= data.daf.format(v.getDate());
+            }
+            else
+            {
+                if (v.isNull() || v.getDate()==null) 
+                {
+                    if (idx>=0 && field!=null && field.getNullString()!=null)
+                    {
+                        retval=field.getNullString();
+                    }
+                }
+                else
+                {
+                    retval=v.toString();
+                }
+            }
+        }
+        else if (v.isBinary())
+        {
+            if (v.isNull())
+            {
+                if (field.getNullString()!=null) retval=field.getNullString();
+                else retval=Const.NULL_BINARY;
+            }
+            else
+            {                   
                 try {
-					retval=new String(v.getBytes(), "US-ASCII");
-				} catch (UnsupportedEncodingException e) {
-					// changes are small we'll get here. US_ASCII is
-					// mandatory.
-					retval=Const.NULL_BINARY;	
-				}					
-			}
-		}        
-		else // Boolean
-		{
-			if (v.isNull()) 
-			{
-				if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
-			}
-			else
-			{
-				retval=v.toString();
-			}
-		}
-		
-		if (meta.isPadded()) // maybe we need to rightpad to field length?
-		{
-			// What's the field length?
-			int length, precision;
-			
-			if (idx<0 || field==null) // Nothing specified: get it from the values themselves.
-			{
-				length   =v.getLength()<0?0:v.getLength();
-				precision=v.getPrecision()<0?0:v.getPrecision();
-			}
-			else // Get the info from the specified lengths & precision...
-			{
-				length   =field.getLength()   <0?0:field.getLength();
-				precision=field.getPrecision()<0?0:field.getPrecision();
-			}
+                    retval=new String(v.getBytes(), "US-ASCII");
+                } catch (UnsupportedEncodingException e) {
+                    // chances are small we'll get here. US_ASCII is
+                    // mandatory.
+                    retval=Const.NULL_BINARY;   
+                }                   
+            }
+        }        
+        else // Boolean
+        {
+            if (v.isNull()) 
+            {
+                if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
+            }
+            else
+            {
+                retval=v.toString();
+            }
+        }
+        
+        if (meta.isPadded()) // maybe we need to rightpad to field length?
+        {
+            // What's the field length?
+            int length, precision;
+            
+            if (idx<0 || field==null) // Nothing specified: get it from the values themselves.
+            {
+                length   =v.getLength()<0?0:v.getLength();
+                precision=v.getPrecision()<0?0:v.getPrecision();
+            }
+            else // Get the info from the specified lengths & precision...
+            {
+                length   =field.getLength()   <0?0:field.getLength();
+                precision=field.getPrecision()<0?0:field.getPrecision();
+            }
 
-			if (v.isNumber())
-			{
-				length++; // for the sign...
-				if (precision>0) length++; // for the decimal point... 
-			}
-			if (v.isDate()) { length=23; precision=0; }
-			if (v.isBoolean()) { length=5; precision=0; }
-			
-			retval=Const.rightPad(new StringBuffer(retval), length+precision);
-		}
-		
+            if (v.isNumber())
+            {
+                length++; // for the sign...
+                if (precision>0) length++; // for the decimal point... 
+            }
+            if (v.isDate()) { length=23; precision=0; }
+            if (v.isBoolean()) { length=5; precision=0; }
+            
+            retval=Const.rightPad(new StringBuffer(retval), length+precision);
+        }
+
         return retval;
-	}
-	
+    }
+
 	private boolean writeField(Value v, int idx)
 	{
 		try
