@@ -4,7 +4,7 @@ import java.util.Date;
 
 public class UpdateBuildVersion
 {
-    public static final String BASE_DIRECTORY = "src";
+    public static final String BASE_DIRECTORY = "src/be/ibridge/kettle/version/";
     
     public static void main(String[] args)
     {

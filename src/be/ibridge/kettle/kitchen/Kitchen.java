@@ -41,6 +41,7 @@ import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.repository.RepositoryMeta;
 import be.ibridge.kettle.repository.UserInfo;
 import be.ibridge.kettle.trans.StepLoader;
+import be.ibridge.kettle.version.BuildVersion;
 
 
 public class Kitchen
@@ -64,7 +65,7 @@ public class Kitchen
 		Job            job      = null;
 		
 		StringBuffer optionRepname, optionUsername, optionPassword, optionJobname, optionDirname, optionFilename, optionLoglevel;
-        StringBuffer optionLogfile, optionListdir, optionListjobs, optionListrep, optionNorep;
+        StringBuffer optionLogfile, optionListdir, optionListjobs, optionListrep, optionNorep, optionVersion;
 
 		CommandLineOption options[] = new CommandLineOption[] 
             {
@@ -81,6 +82,7 @@ public class Kitchen
 			    new CommandLineOption("listjobs", "List the jobs in the specified directory", optionListjobs=new StringBuffer(), true, false),
 			    new CommandLineOption("listrep", "List the available repositories", optionListrep=new StringBuffer(), true, false),
 		        new CommandLineOption("norep", "Do not log into the repository", optionNorep=new StringBuffer(), true, false),
+                new CommandLineOption("version", "show the version, revision and build date", optionVersion=new StringBuffer(), true, false),
             };
 
 		if (args.size()==0 ) 
@@ -116,6 +118,15 @@ public class Kitchen
             log.logMinimal(STRING_KITCHEN, "Logging is at level : "+log.getLogLevelDesc());
         } 
 		
+        if (!Const.isEmpty(optionVersion))
+        {
+            BuildVersion buildVersion = BuildVersion.getInstance();
+            log.logBasic("Pan", "Kettle version "+Const.VERSION+", revision "+buildVersion.getRevision()+", build date : "+buildVersion.getBuildDate());
+            if (args.size()==1) System.exit(6);
+        }
+        
+        // Start the action...
+        //
         if (!Const.isEmpty(optionRepname) && !Const.isEmpty(optionUsername)) log.logDetailed(STRING_KITCHEN, "Repository and username supplied");
 
 		log.logMinimal(STRING_KITCHEN, "Start of run.");

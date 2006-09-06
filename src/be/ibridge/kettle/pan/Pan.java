@@ -36,6 +36,7 @@ import be.ibridge.kettle.repository.UserInfo;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
+import be.ibridge.kettle.version.BuildVersion;
 
 
 public class Pan
@@ -59,7 +60,7 @@ public class Pan
 
 		// The options: 
 		StringBuffer optionRepname, optionUsername, optionPassword, optionTransname, optionDirname, optionFilename, optionLoglevel;
-		StringBuffer optionLogfile, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode;
+		StringBuffer optionLogfile, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode, optionVersion;
         
 		CommandLineOption options[] = new CommandLineOption[] 
             {
@@ -78,6 +79,7 @@ public class Pan
 		        new CommandLineOption("exprep", "Export all repository objects to one XML file", optionExprep=new StringBuffer(), true, false),
 		        new CommandLineOption("norep", "Do not log into the repository", optionNorep=new StringBuffer(), true, false),
 		        new CommandLineOption("safemode", "Run in safe mode: with extra checking enabled", optionSafemode=new StringBuffer(), true, false),
+                new CommandLineOption("version", "show the version, revision and build date", optionVersion=new StringBuffer(), true, false),
             };
 
 		if (args.size()==0 ) 
@@ -97,7 +99,7 @@ public class Pan
         if (kettleUsername!=null && kettleUsername.length()>0) optionUsername = new StringBuffer(kettleUsername);
         if (kettlePassword!=null && kettlePassword.length()>0) optionPassword = new StringBuffer(kettlePassword);
         
-		LogWriter log;
+        LogWriter log;
         if (Const.isEmpty(optionLogfile))
         {
             log=LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
@@ -111,6 +113,13 @@ public class Pan
         {
             log.setLogLevel(optionLoglevel.toString());
             log.logMinimal("Pan", "Logging is at level : "+log.getLogLevelDesc());
+        }
+        
+        if (!Const.isEmpty(optionVersion))
+        {
+            BuildVersion buildVersion = BuildVersion.getInstance();
+            log.logBasic("Pan", "Kettle version "+Const.VERSION+", revision "+buildVersion.getRevision()+", build date : "+buildVersion.getBuildDate());
+            if (args.size()==1) System.exit(6);
         }
         
         /////////////////////////////////////////////////////////////////////////////////////////////////////
