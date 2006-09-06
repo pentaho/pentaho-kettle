@@ -2,6 +2,7 @@ package be.ibridge.kettle.version;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
@@ -53,7 +54,14 @@ public class BuildVersion
             if (inputStream==null) // not found
             {
                 System.out.println("Stream not found for filename [/"+filename+"], looking for it on the normal filesystem...");
-                inputStream = new FileInputStream(filename); // Retry from normal file system
+                try
+                {
+                    inputStream = new FileInputStream(filename); // Retry from normal file system
+                }
+                catch(FileNotFoundException e)
+                {
+                    inputStream = new FileInputStream("./"+filename);
+                }
             }
             
             // read the file into a String
@@ -125,12 +133,11 @@ public class BuildVersion
     public void save()
     {
         FileWriter fileWriter = null;
+        String filename = BUILD_VERSION_FILE;
+        File file = new File( filename );
         
         try
         {
-            String filename = BUILD_VERSION_FILE;
-            
-            File file = new File( filename );
             fileWriter = new FileWriter(file);
             
             // First write the revision
@@ -146,7 +153,7 @@ public class BuildVersion
             // Return
             fileWriter.write("\n\r");
             
-            System.out.println("Saved build version info to file ["+filename+"]");
+            System.out.println("Saved build version info to file ["+file.getAbsolutePath()+"]");
         }
         catch(Exception e)
         {
