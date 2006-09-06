@@ -87,7 +87,7 @@
 	  	  <java classname="be.ibridge.kettle.version.UpdateBuildVersion"
 		  	    classpath="${classes}"
 	  	  	  />
-		  <concat><filelist dir="${src}" files="be/ibridge/kettle/version/build_version.txt"/></concat>
+		  <concat><filelist dir="." files="build_version.txt"/></concat>
 	    </target>
 	
 		<!--
@@ -121,9 +121,8 @@
 	  <target name="copy" depends="compile" description="copy images etc to classes directory" >
 	  	<echo>Copying images etc to classes directory...</echo>
 	    <copy todir="${classes}">
-	    	<fileset 
-	    		dir="${src}" 
-	    		includes="**/*.png **/*.xml **/*properties **/build_version.txt"/>
+	    	<fileset dir="${src}" includes="**/*.png **/*.xml **/*properties"/>
+	    	<fileset dir="." file="build_version.txt"/>
 	  	    </copy>
 	  </target>
 	

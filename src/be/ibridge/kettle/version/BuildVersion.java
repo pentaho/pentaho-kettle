@@ -49,9 +49,10 @@ public class BuildVersion
         try
         {
             // The version file only contains a single lines of text
-            InputStream inputStream = getClass().getResourceAsStream( filename ); // try to find it in the jars...
+            InputStream inputStream = getClass().getResourceAsStream( "/"+filename ); // try to find it in the jars...
             if (inputStream==null) // not found
             {
+                System.out.println("Stream not found for filename [/"+filename+"], looking for it on the normal filesystem...");
                 inputStream = new FileInputStream(filename); // Retry from normal file system
             }
             
@@ -144,6 +145,8 @@ public class BuildVersion
             
             // Return
             fileWriter.write("\n\r");
+            
+            System.out.println("Saved build version info to file ["+filename+"]");
         }
         catch(Exception e)
         {
