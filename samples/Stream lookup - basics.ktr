@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>350</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+    </info>
+  <notepads>
+    <notepad>
+      <note>Revision notes:
+2006-09-05 Jens Bleuel: created</note>
+      <xloc>32</xloc>
+      <yloc>570</yloc>
+      <width>166</width>
+      <heigth>36</heigth>
+      </notepad>
+    <notepad>
+      <note>To see the result, do a preview on this Dummy step
+... or add an output step.</note>
+      <xloc>398</xloc>
+      <yloc>277</yloc>
+      <width>257</width>
+      <heigth>36</heigth>
+      </notepad>
+    <notepad>
+      <note>Add a field with a lookup from Tab B</note>
+      <xloc>170</xloc>
+      <yloc>283</yloc>
+      <width>182</width>
+      <heigth>23</heigth>
+      </notepad>
+    </notepads>
+  <order>
+  <hop> <from>Tab A</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Tab B</from><to>Stream lookup</to><enabled>Y</enabled> </hop>  <hop> <from>Stream lookup</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>404</xloc>
+      <yloc>214</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Stream lookup</name>
+    <type>StreamLookup</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <from>Tab B</from>
+    <input_sorted>N</input_sorted>
+    <lookup>
+      <key>
+        <name>Mandt</name>
+        <field>B_Mandt</field>
+      </key>
+      <key>
+        <name>Benutzer</name>
+        <field>B_Benutzer</field>
+      </key>
+      <value>
+        <name>B_Zusatz</name>
+        <rename>B_Zusatz</rename>
+        <default/>
+        <type>String</type>
+      </value>
+    </lookup>
+    <GUI>
+      <xloc>249</xloc>
+      <yloc>214</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Tab A</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>Mandt</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>100</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>Benutzer</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>BW</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <limit>10</limit>
+    <GUI>
+      <xloc>96</xloc>
+      <yloc>214</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Tab B</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>B_Mandt</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>100</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>B_Benutzer</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>BW</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>B_Zusatz</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>Winter</nullif>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <limit>10</limit>
+    <GUI>
+      <xloc>252</xloc>
+      <yloc>103</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>
