@@ -18,7 +18,7 @@ import be.ibridge.kettle.core.Const;
 public class BuildVersion
 {
     /** name of the Kettle version file, updated in the ant script, contains date and time of build */
-    public static final String BUILD_VERSION_FILE = "/build_version.txt";
+    public static final String BUILD_VERSION_FILE = "build_version.txt";
 
     public static final String SEPARATOR = "@";
     
