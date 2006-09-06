@@ -154,7 +154,10 @@ public class DBProc extends BaseStep implements StepInterface
 	    
         try
         {
-            data.db.commit();
+            if (!meta.isAutoCommit())
+            {
+                data.db.commit();
+            }
         }
         catch(KettleDatabaseException e)
         {
