@@ -122,7 +122,7 @@
 	  	<echo>Copying images etc to classes directory...</echo>
 	    <copy todir="${classes}">
 	    	<fileset dir="${src}" includes="**/*.png **/*.xml **/*properties"/>
-	    	<fileset dir="." file="build_version.txt"/>
+	    	<fileset file="build_version.txt"/>
 	  	    </copy>
 	  </target>
 	
