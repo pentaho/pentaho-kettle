@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="ScriptValuesMod"
+   iconfile="SCR_mod.png"
+   description="ScriptValuesMod"
+   tooltip="This is a modified plugin for the Scripting Values"
+   category="Transform"
+   classname="be.ibridge.kettle.trans.step.scriptvalues_mod.ScriptValuesMetaMod">
+   <libraries>
+    <library name="ScriptValuesMod.jar"/>
+    </libraries>
+	<js_libraries>
+		<js_lib name="jsKettleLib.jar" classname="de.proconis.jsFunctions" js_name="kfl"/>
+	</js_libraries>
+</plugin>
