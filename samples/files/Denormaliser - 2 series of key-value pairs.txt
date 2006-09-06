@@ -1,0 +1,22 @@
+group;key;unit-name         ;unit-id
+US    ;  0;US Cars           ;   1100
+US    ;  1;US Trucks         ;   1200
+US    ;  2;US Boats          ;   1300
+US    ;  3;US Construction   ;   1400
+US    ;  4;US Aero           ;   1500
+US    ;  5;US Space          ;   1600
+US    ;  6;US Medical        ;   1700
+EMEA  ;  0;EMEA Cars         ;   2105
+EMEA  ;  1;EMEA Trucks       ;   2205
+EMEA  ;  2;EMEA Boats        ;   2305
+EMEA  ;  3;EMEA Construction ;   2405
+EMEA  ;  4;EMEA Aero         ;   2505
+EMEA  ;  5;EMEA Space        ;   2605
+EMEA  ;  6;EMEA Medical      ;   2705
+Asia  ;  0;Asia Cars         ;   3101
+Asia  ;  1;Asia Trucks       ;   3201
+Asia  ;  2;Asia Boats        ;   3301
+Asia  ;  3;Asia Construction ;   3401
+Asia  ;  4;Asia Aero         ;   3501
+Asia  ;  5;Asia Space        ;   3601
+Asia  ;  6;Asia Medical      ;   3701
