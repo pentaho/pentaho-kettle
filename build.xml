@@ -122,6 +122,8 @@
 	  	<echo>Copying images etc to classes directory...</echo>
 	    <copy todir="${classes}">
 	    	<fileset dir="${src}" includes="**/*.png **/*.xml **/*properties"/>
+	  	    </copy>
+	    <copy todir="${classes}">
 	    	<fileset file="build_version.txt"/>
 	  	    </copy>
 	  </target>
@@ -191,7 +193,7 @@
 	  	<echo>Generating the Kettle library kettle.jar ...</echo>
 	  	<jar jarfile="${lib}/kettle.jar" 
 	    	 basedir="${classes}" 
-	    	 includes="**/*"
+	    	 includes="**/* ../build_version.txt"
 	  	     excludes="**/Thumbs.db be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
 	  		/>
 
