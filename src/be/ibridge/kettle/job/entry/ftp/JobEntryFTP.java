@@ -351,7 +351,9 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 		try
 		{
 			// Create ftp client to host:port ...
-			FTPClient ftpclient = new FTPClient(InetAddress.getByName(serverName));
+			FTPClient ftpclient = new FTPClient();
+            ftpclient.setRemoteAddr(InetAddress.getByName(serverName));
+            
 			log.logDetailed(toString(), "Opened FTP connection to server ["+serverName+"]");
 	
 			// set passive connectmode ...
