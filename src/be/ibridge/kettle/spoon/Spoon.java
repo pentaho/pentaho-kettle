@@ -2898,7 +2898,11 @@ public class Spoon implements AddUndoPositionInterface
         String mess = Messages.getString("System.ProductInfo")+Const.VERSION+Const.CR+Const.CR+Const.CR;//Kettle - Spoon version 
         mess+=Messages.getString("System.CompanyInfo")+Const.CR;
         mess+="         "+Messages.getString("System.ProductWebsiteUrl")+Const.CR; //(c) 2001-2004 i-Bridge bvba     www.kettle.be
-        mess+="         "+BuildVersion.getInstance().getRevision()+" - "+BuildVersion.getInstance().getBuildDate()+Const.CR;
+        mess+=Const.CR; 
+        mess+=Const.CR; 
+        mess+=Const.CR; 
+        mess+="         Revision   : "+BuildVersion.getInstance().getRevision()+Const.CR;
+        mess+="         Build date : "+BuildVersion.getInstance().getBuildDate()+Const.CR;
         
         mb.setMessage(mess);
         mb.setText(APP_NAME);

@@ -143,6 +143,7 @@ import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
 import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
+import be.ibridge.kettle.version.BuildVersion;
 
 
 /**
@@ -1913,7 +1914,12 @@ public class Chef implements AddUndoPositionInterface
 		MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION | SWT.CENTER);
 		String mess = Messages.getString("Chef.Dialog.About.KettleChefVersion")+Const.VERSION+Const.CR+Const.CR+Const.CR; //$NON-NLS-1$
 		mess+=Messages.getString("Chef.Dialog.About.Company")+Const.CR+Messages.getString("Chef.Dialog.About.WebSite")+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
-		        
+        mess+=Const.CR; 
+        mess+=Const.CR; 
+        mess+=Const.CR; 
+        mess+="         Revision   : "+BuildVersion.getInstance().getRevision()+Const.CR;
+        mess+="         Build date : "+BuildVersion.getInstance().getBuildDate()+Const.CR;
+        
         mb.setMessage(mess);
 		mb.setText(Messages.getString("Chef.Application.Name")); //$NON-NLS-1$
 		mb.open();

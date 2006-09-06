@@ -1,10 +1,13 @@
 package be.ibridge.kettle.version;
 
 import java.io.File;
-import java.io.FileReader;
+import java.io.FileInputStream;
 import java.io.FileWriter;
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import be.ibridge.kettle.core.Const;
 
 /**
  * Singleton class to allow us to see on which date & time the kettle.jar was built.
@@ -15,7 +18,7 @@ import java.util.Date;
 public class BuildVersion
 {
     /** name of the Kettle version file, updated in the ant script, contains date and time of build */
-    public static final String BUILD_VERSION_FILE = "src/be/ibridge/kettle/version/build_version.txt";
+    public static final String BUILD_VERSION_FILE = "be/ibridge/kettle/version/build_version.txt";
 
     public static final String SEPARATOR = "@";
     
@@ -23,11 +26,29 @@ public class BuildVersion
     
     private static BuildVersion buildVersion;
     
+    /**
+     * The default usage : grabs the file from kettle.jar
+     * @return the instance of the BuildVersion singleton
+     */
     public static final BuildVersion getInstance()
     {
         if (buildVersion!=null) return buildVersion;
         
-        buildVersion = new BuildVersion();
+        buildVersion = new BuildVersion(null);
+        
+        return buildVersion;
+    }
+    
+    /**
+     * Alternate use: run from ant to bump the revision number and set the build date...
+     * @param baseDirectory The directory to run in usually "src"
+     * @return the instance of the BuildVersion singleton
+     */
+    public static final BuildVersion getInstance(String baseDirectory)
+    {
+        if (buildVersion!=null) return buildVersion;
+        
+        buildVersion = new BuildVersion(baseDirectory);
         
         return buildVersion;
     }
@@ -35,21 +56,27 @@ public class BuildVersion
     private int revision;
     private Date buildDate;
     
-    private BuildVersion()
+    private BuildVersion(String baseDirectory)
     {
+        String filename = BUILD_VERSION_FILE;
+        if (baseDirectory!=null) filename = baseDirectory + "/" + BUILD_VERSION_FILE;
         StringBuffer buffer = new StringBuffer(30);
+
         try
         {
             // The version file only contains a single lines of text
-            File file = new File( BUILD_VERSION_FILE );
-            FileReader fileReader = new FileReader(file);
+            InputStream inputStream = getClass().getResourceAsStream( filename ); // try to find it in the jars...
+            if (inputStream==null) // not found
+            {
+                inputStream = new FileInputStream(filename); // Retry from normal file system
+            }
             
             // read the file into a String
-            int c=fileReader.read();
+            int c=inputStream.read();
             while ( c!=0 && c!='\n' && c!='\r' )
             {
                 if (c!=' ' && c!='\t') buffer.append((char)c);  // no spaces or tabs please ;-)
-                c=fileReader.read();
+                c=inputStream.read();
             }
             
             // The 2 parts we expect are in here: 
@@ -70,6 +97,9 @@ public class BuildVersion
         }
         catch(Exception e)
         {
+            System.out.println("Unable to load revision number from file : ["+filename+"] : "+e.toString());
+            System.out.println(Const.getStackTracker(e));
+            
             revision = 1;
             buildDate = new Date();
         }
@@ -107,13 +137,16 @@ public class BuildVersion
         this.revision = revision;
     }
     
-    public void save()
+    public void save(String baseDirectory)
     {
         FileWriter fileWriter = null;
         
         try
         {
-            File file = new File( BUILD_VERSION_FILE );
+            String filename = BUILD_VERSION_FILE;
+            if (baseDirectory!=null) filename = baseDirectory + "/" + BUILD_VERSION_FILE;
+            
+            File file = new File( filename );
             fileWriter = new FileWriter(file);
             
             // First write the revision
