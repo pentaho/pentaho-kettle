@@ -504,12 +504,15 @@ public class ChefLog extends Composite
                 // Re-populate this...
                 TreeItem treeItem = new TreeItem(wTree, SWT.NONE);
                 String jobName = jobTracker.getJobMeta().getName();
+
                 if(Const.isEmpty(jobName)) 
                 {
                     if (!Const.isEmpty(jobTracker.getJobMeta().getFilename())) jobName = jobTracker.getJobMeta().getFilename();
                     else jobName = Messages.getString("ChefLog.Tree.StringToDisplayWhenJobHasNoName"); //$NON-NLS-1$
                 }
-                treeItem.setText( 0,jobName);
+                treeItem.setText(0, jobName);
+                TreeMemory.getInstance().storeExpanded(STRING_CHEF_LOG_TREE_NAME, new String[] { jobName }, true);
+
                 for (int i=0;i<jobTracker.nrJobTrackers();i++)
                 {
                     addTrackerToTree(jobTracker.getJobTracker(i), treeItem);
