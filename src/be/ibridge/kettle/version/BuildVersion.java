@@ -18,7 +18,7 @@ import be.ibridge.kettle.core.Const;
 public class BuildVersion
 {
     /** name of the Kettle version file, updated in the ant script, contains date and time of build */
-    public static final String BUILD_VERSION_FILE = "build_version.txt";
+    public static final String BUILD_VERSION_FILE = "/build_version.txt";
 
     public static final String SEPARATOR = "@";
     
@@ -27,28 +27,13 @@ public class BuildVersion
     private static BuildVersion buildVersion;
     
     /**
-     * The default usage : grabs the file from kettle.jar
      * @return the instance of the BuildVersion singleton
      */
     public static final BuildVersion getInstance()
     {
         if (buildVersion!=null) return buildVersion;
         
-        buildVersion = new BuildVersion(null);
-        
-        return buildVersion;
-    }
-    
-    /**
-     * Alternate use: run from ant to bump the revision number and set the build date...
-     * @param baseDirectory The directory to run in usually "src"
-     * @return the instance of the BuildVersion singleton
-     */
-    public static final BuildVersion getInstance(String baseDirectory)
-    {
-        if (buildVersion!=null) return buildVersion;
-        
-        buildVersion = new BuildVersion(baseDirectory);
+        buildVersion = new BuildVersion();
         
         return buildVersion;
     }
@@ -56,10 +41,9 @@ public class BuildVersion
     private int revision;
     private Date buildDate;
     
-    private BuildVersion(String baseDirectory)
+    private BuildVersion()
     {
         String filename = BUILD_VERSION_FILE;
-        if (baseDirectory!=null) filename = baseDirectory + "/" + BUILD_VERSION_FILE;
         StringBuffer buffer = new StringBuffer(30);
 
         try
@@ -137,14 +121,13 @@ public class BuildVersion
         this.revision = revision;
     }
     
-    public void save(String baseDirectory)
+    public void save()
     {
         FileWriter fileWriter = null;
         
         try
         {
             String filename = BUILD_VERSION_FILE;
-            if (baseDirectory!=null) filename = baseDirectory + "/" + BUILD_VERSION_FILE;
             
             File file = new File( filename );
             fileWriter = new FileWriter(file);
