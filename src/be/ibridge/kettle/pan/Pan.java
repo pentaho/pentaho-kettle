@@ -118,7 +118,7 @@ public class Pan
         if (!Const.isEmpty(optionVersion))
         {
             BuildVersion buildVersion = BuildVersion.getInstance();
-            log.logBasic("Pan", "Kettle version "+Const.VERSION+", revision "+buildVersion.getRevision()+", build date : "+buildVersion.getBuildDate());
+            log.logBasic("Pan", "Kettle version "+Const.VERSION+", build "+buildVersion.getVersion()+", build date : "+buildVersion.getBuildDate());
             if (a.length==1) System.exit(6);
         }
         

@@ -7,6 +7,7 @@ import org.apache.log4j.Layout;
 import org.apache.log4j.spi.LoggingEvent;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.version.BuildVersion;
 
 public class Log4jKettleLayout extends Layout
 {
@@ -49,7 +50,9 @@ public class Log4jKettleLayout extends Layout
                 
                 if (message.isError())  
                 {
-                    line+="ERROR : ";
+                    BuildVersion buildVersion = BuildVersion.getInstance();
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    line+="ERROR (version "+Const.VERSION+", build "+buildVersion.getVersion()+" from "+format.format(buildVersion.getBuildDate())+") : ";
                 }
                 
                 line+=parts[i];

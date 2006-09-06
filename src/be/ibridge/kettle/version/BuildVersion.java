@@ -39,7 +39,7 @@ public class BuildVersion
         return buildVersion;
     }
     
-    private int revision;
+    private int version;
     private Date buildDate;
     
     private BuildVersion()
@@ -81,7 +81,7 @@ public class BuildVersion
             }
             
             // Get the revision
-            revision = Integer.parseInt(parts[0]);
+            version = Integer.parseInt(parts[0]);
 
             // Get the build date
             SimpleDateFormat format = new SimpleDateFormat(BUILD_DATE_FORMAT);
@@ -93,7 +93,7 @@ public class BuildVersion
             System.out.println("Unable to load revision number from file : ["+filename+"] : "+e.toString());
             System.out.println(Const.getStackTracker(e));
             
-            revision = 1;
+            version = 1;
             buildDate = new Date();
         }
     }
@@ -117,17 +117,17 @@ public class BuildVersion
     /**
      * @return the revision
      */
-    public int getRevision()
+    public int getVersion()
     {
-        return revision;
+        return version;
     }
 
     /**
      * @param revision the revision to set
      */
-    public void setRevision(int revision)
+    public void setVersion(int revision)
     {
-        this.revision = revision;
+        this.version = revision;
     }
     
     public void save()
@@ -141,7 +141,7 @@ public class BuildVersion
             fileWriter = new FileWriter(file);
             
             // First write the revision
-            fileWriter.write(Integer.toString(revision)+" ");
+            fileWriter.write(Integer.toString(version)+" ");
             
             // Then the separator
             fileWriter.write(SEPARATOR);

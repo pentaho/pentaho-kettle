@@ -1917,8 +1917,8 @@ public class Chef implements AddUndoPositionInterface
         mess+=Const.CR; 
         mess+=Const.CR; 
         mess+=Const.CR; 
-        mess+="         Revision   : "+BuildVersion.getInstance().getRevision()+Const.CR;
-        mess+="         Build date : "+BuildVersion.getInstance().getBuildDate()+Const.CR;
+        mess+="         Build version : "+BuildVersion.getInstance().getVersion()+Const.CR;
+        mess+="         Build date    : "+BuildVersion.getInstance().getBuildDate()+Const.CR;
         
         mb.setMessage(mess);
 		mb.setText(Messages.getString("Chef.Application.Name")); //$NON-NLS-1$
