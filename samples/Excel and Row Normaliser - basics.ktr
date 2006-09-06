@@ -1,0 +1,402 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>350</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+    </info>
+  <notepads>
+    <notepad>
+      <note>Determine the directory of this transformation
+and add the filename.</note>
+      <xloc>38</xloc>
+      <yloc>126</yloc>
+      <width>231</width>
+      <heigth>36</heigth>
+      </notepad>
+    <notepad>
+      <note>To see the result, do a preview on this Dummy step
+... or add an output step.</note>
+      <xloc>369</xloc>
+      <yloc>407</yloc>
+      <width>257</width>
+      <heigth>36</heigth>
+      </notepad>
+    <notepad>
+      <note>Load the Excel example.</note>
+      <xloc>299</xloc>
+      <yloc>127</yloc>
+      <width>127</width>
+      <heigth>23</heigth>
+      </notepad>
+    <notepad>
+      <note>Revision notes:
+2006-08-22 Jens Bleuel: created</note>
+      <xloc>16</xloc>
+      <yloc>569</yloc>
+      <width>166</width>
+      <heigth>36</heigth>
+      </notepad>
+    <notepad>
+      <note>This example reads an Excel file with planning data per material and month 
+and uses the Row Normaliser.</note>
+      <xloc>36</xloc>
+      <yloc>41</yloc>
+      <width>370</width>
+      <heigth>36</heigth>
+      </notepad>
+    <notepad>
+      <note>Map the month columns to 
+one new column.</note>
+      <xloc>462</xloc>
+      <yloc>126</yloc>
+      <width>139</width>
+      <heigth>36</heigth>
+      </notepad>
+    </notepads>
+  <order>
+  <hop> <from>GetFilenameKTR</from><to>Get example filename</to><enabled>Y</enabled> </hop>  <hop> <from>Get example filename</from><to>Excel Input</to><enabled>Y</enabled> </hop>  <hop> <from>Excel Input</from><to>Row Normaliser</to><enabled>Y</enabled> </hop>  <hop> <from>Row Normaliser</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>469</xloc>
+      <yloc>327</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Excel Input</name>
+    <type>ExcelInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <header>Y</header>
+    <noempty>Y</noempty>
+    <stoponempty>Y</stoponempty>
+    <filefield/>
+    <sheetfield/>
+    <sheetrownumfield/>
+    <rownumfield/>
+    <sheetfield/>
+    <filefield/>
+    <limit>0</limit>
+    <accept_filenames>Y</accept_filenames>
+    <accept_field>filenameXLS</accept_field>
+    <accept_stepname>Get example filename</accept_stepname>
+    <file>
+      </file>
+    <fields>
+      <field>
+        <name>Material</name>
+        <type>String</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format>#</format>
+        <currency/>
+        <decimal/>
+        <group/>
+        </field>
+      <field>
+        <name>01</name>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        </field>
+      <field>
+        <name>02</name>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        </field>
+      <field>
+        <name>03</name>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        </field>
+      <field>
+        <name>04</name>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        </field>
+      <field>
+        <name>05</name>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        </field>
+      <field>
+        <name>06</name>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        </field>
+      <field>
+        <name>07</name>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        </field>
+      <field>
+        <name>08</name>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        </field>
+      <field>
+        <name>09</name>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        </field>
+      <field>
+        <name>10</name>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        </field>
+      <field>
+        <name>11</name>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        </field>
+      <field>
+        <name>12</name>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        </field>
+      <field>
+        <name>Summ</name>
+        <type>Number</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        </field>
+      </fields>
+    <sheets>
+      <sheet>
+        <name>PlanningData</name>
+        <startrow>0</startrow>
+        <startcol>0</startcol>
+        </sheet>
+      </sheets>
+    <strict_types>N</strict_types>
+    <error_ignored>N</error_ignored>
+    <error_line_skipped>N</error_line_skipped>
+    <bad_line_files_destination_directory/>
+    <bad_line_files_extension>warning</bad_line_files_extension>
+    <error_line_files_destination_directory/>
+    <error_line_files_extension>error</error_line_files_extension>
+    <line_number_files_destination_directory/>
+    <line_number_files_extension>line</line_number_files_extension>
+    <GUI>
+      <xloc>332</xloc>
+      <yloc>196</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Get example filename</name>
+    <type>ScriptValue</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <script>var fileSeparator = Packages.be.ibridge.kettle.core.Const.FILE_SEPARATOR;
+var subDirEndsAt = FilenameKTR.getString().lastIndexOf(fileSeparator);
+var subDir = FilenameKTR.getString().substr(0, subDirEndsAt+1);
+var filenameXLS = subDir + &quot;Excel and Row Normaliser - sample data.xls&quot;
+
+</script>
+    <fields>      <field>        <name>filenameXLS</name>
+        <rename>filenameXLS</rename>
+        <type>String</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>      </fields>    <GUI>
+      <xloc>221</xloc>
+      <yloc>195</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>GetFilenameKTR</name>
+    <type>SystemInfo</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>FilenameKTR</name>
+        <type>transformation file name</type>
+        </field>
+      </fields>
+    <GUI>
+      <xloc>72</xloc>
+      <yloc>195</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Row Normaliser</name>
+    <type>Normaliser</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+   <typefield>Month</typefield>
+    <fields>      <field>        <name>01</name>
+        <value>01</value>
+        <norm>ValuePerMonth</norm>
+        </field>      <field>        <name>02</name>
+        <value>02</value>
+        <norm>ValuePerMonth</norm>
+        </field>      <field>        <name>03</name>
+        <value>03</value>
+        <norm>ValuePerMonth</norm>
+        </field>      <field>        <name>04</name>
+        <value>04</value>
+        <norm>ValuePerMonth</norm>
+        </field>      <field>        <name>05</name>
+        <value>05</value>
+        <norm>ValuePerMonth</norm>
+        </field>      <field>        <name>06</name>
+        <value>06</value>
+        <norm>ValuePerMonth</norm>
+        </field>      <field>        <name>07</name>
+        <value>07</value>
+        <norm>ValuePerMonth</norm>
+        </field>      <field>        <name>08</name>
+        <value>08</value>
+        <norm>ValuePerMonth</norm>
+        </field>      <field>        <name>09</name>
+        <value>09</value>
+        <norm>ValuePerMonth</norm>
+        </field>      <field>        <name>10</name>
+        <value>10</value>
+        <norm>ValuePerMonth</norm>
+        </field>      <field>        <name>11</name>
+        <value>11</value>
+        <norm>ValuePerMonth</norm>
+        </field>      <field>        <name>12</name>
+        <value>12</value>
+        <norm>ValuePerMonth</norm>
+        </field>      </fields>    <GUI>
+      <xloc>469</xloc>
+      <yloc>196</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>
