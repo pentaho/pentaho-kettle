@@ -87,7 +87,7 @@
 	  	  <java classname="be.ibridge.kettle.version.UpdateBuildVersion"
 		  	    classpath="${classes}"
 	  	  	  />
-		  <concat><filelist dir="." files="build_version.txt"/></concat>
+		 <!-- <concat><filelist dir="." files="build_version.txt"/></concat> -->
 	    </target>
 	
 		<!--
