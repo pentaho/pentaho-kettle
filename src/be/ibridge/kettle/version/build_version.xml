@@ -1,9 +1,0 @@
-<buildVersion>
-  <empty>
-      
-       This is an empty XML document.  
-       We just change the timestamp in the ant task and use that time to pass along to the Kettle runtime to see when the build was run.
-       
-  
-  </empty>
-</buildVersion>
