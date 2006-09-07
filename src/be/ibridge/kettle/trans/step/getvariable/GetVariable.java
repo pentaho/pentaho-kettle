@@ -69,7 +69,9 @@ public class GetVariable extends BaseStep implements StepInterface
         // 
         for (int i=0;i<meta.getFieldName().length;i++)
         {
-            Value v = new Value(meta.getFieldName()[i], StringUtil.environmentSubstitute(meta.getVariableString()[i]));
+            String newValue = StringUtil.environmentSubstitute(meta.getVariableString()[i]);
+            logDetailed("set field ["+meta.getFieldName()[i]+"] to value ["+newValue+"]");
+            Value v = new Value(meta.getFieldName()[i], newValue);
             row.addValue(v);
         }
 		

@@ -197,8 +197,8 @@ public class Job extends Thread
             LocalVariables.getInstance().createKettleVariables(getName(), parentThread.getName(), false);
             initialized = true;
             
-            execute(); // Run the job
-			endProcessing("end");
+            Result result = execute(); // Run the job
+			endProcessing("end", result);
 		}
 		catch(KettleException je)
 		{
@@ -253,6 +253,12 @@ public class Job extends Thread
         // Where do we start?
         JobEntryCopy startpoint;
 
+        // Perhaps there is already a list of input rows available?
+        if (getSourceRows()!=null)
+        {
+            result.setRows(getSourceRows());
+        }
+        
         startpoint = jobMeta.findJobEntry(JobMeta.STRING_SPECIAL_START, 0, false);
         if (startpoint == null) 
         {
@@ -492,9 +498,16 @@ public class Job extends Thread
 	
 	//
 	// Handle logging at end
-	public boolean endProcessing(String status) throws KettleJobException
+	public boolean endProcessing(String status, Result res) throws KettleJobException
 	{
-		long read=0L, written=0L, updated=0L, errors=0L, input=0L, output=0L;
+		long read=res.getNrErrors();
+        long written=res.getNrLinesWritten();
+        long updated=res.getNrLinesUpdated();
+        long errors=res.getNrErrors();
+        long input=res.getNrLinesInput();
+        long output=res.getNrLinesOutput();
+        
+        if (errors==0 && !res.getResult()) errors=1;
 		
 		logDate     = new Date();
 

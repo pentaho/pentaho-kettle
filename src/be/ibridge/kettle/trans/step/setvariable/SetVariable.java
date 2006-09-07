@@ -17,6 +17,7 @@ package be.ibridge.kettle.trans.step.setvariable;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.KettleVariables;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
@@ -82,15 +83,17 @@ public class SetVariable extends BaseStep implements StepInterface
                     break;
                 case SetVariableMeta.VARIABLE_TYPE_ROOT_JOB:
                     {
+                        KettleVariables.getInstance().setVariable(varname, value);
+
                         Job parentJob = getTrans().getParentJob();
                         Job rootJob = parentJob;
                         while (parentJob!=null)
                         {
-                            parentJob.getKettleVariables().setVariable(varname, value);
+                            KettleVariables vars = LocalVariables.getKettleVariables(parentJob.getName());
+                            vars.setVariable(varname, value);
                             rootJob = parentJob;
                             parentJob = parentJob.getParentJob();
                         }
-                        
                         // OK, we have the rootjob, set the variable on it...
                         if (rootJob==null)
                         {
@@ -100,6 +103,8 @@ public class SetVariable extends BaseStep implements StepInterface
                     break;
                 case SetVariableMeta.VARIABLE_TYPE_GRAND_PARENT_JOB:
                     {
+                        KettleVariables.getInstance().setVariable(varname, value);
+
                         Job parentJob = getTrans().getParentJob();
                         if (parentJob!=null)
                         {
@@ -119,19 +124,11 @@ public class SetVariable extends BaseStep implements StepInterface
                             throw new KettleStepException("Can't set variable ["+varname+"] on grand parent job: the parent job is not available");
                         }
                     }
-                    break;
                 case SetVariableMeta.VARIABLE_TYPE_PARENT_JOB:
                     {
-                        Job parentJob = getTrans().getParentJob();
-                        if (parentJob!=null)
-                        {
-                            KettleVariables kettleVariables = parentJob.getKettleVariables();
-                            kettleVariables.setVariable(varname, value);
-                        }
-                        else
-                        {
-                            throw new KettleStepException("Can't set variable ["+varname+"] on parent job: the parent job is not available");
-                        }
+                        // This thread, the transformation and the parent job run in the same namespace.
+                        //
+                        KettleVariables.getInstance().setVariable(varname, value);
                     }
                 }
                 

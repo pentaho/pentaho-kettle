@@ -132,8 +132,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 		data.cache.put(row, tk);
 	}
 
-	private void lookupValues(Row row)
-		throws KettleException
+	private void lookupValues(Row row) throws KettleException
 	{
 		Value val_hash    = null;
 		Value val_key     = null;

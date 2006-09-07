@@ -190,14 +190,13 @@ public class JobEntrySpecial extends JobEntryBase implements JobEntryInterface
 			} catch (InterruptedException e) {
 				throw new KettleJobException(e);
 			}
-			result = new Result(nr);
+			result = prev_result;
 			result.setResult( true );
 		}
 		else
 		if (isDummy())
 		{
-			result = new Result(nr);
-			result.setResult( prev_result.getResult() );
+			result = prev_result;
 		}
 		return result;
 	}

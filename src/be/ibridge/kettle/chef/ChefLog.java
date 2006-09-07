@@ -430,7 +430,7 @@ public class ChefLog extends Composite
             if (job!=null && isRunning && job.isInitialized()) 
             {
                 job.stopAll();
-                job.endProcessing("stop"); //$NON-NLS-1$
+                job.endProcessing("stop", new Result()); //$NON-NLS-1$
                 job.waitUntilFinished(5000); // wait until everything is stopped, maximum 5 seconds...
                 LocalVariables.getInstance().removeKettleVariables(job.getName());
                 job=null;

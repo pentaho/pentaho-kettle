@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
@@ -352,10 +353,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 job.setParentJob(parentJob);
                 
                 // Variables are passed down automagically now...
-                // LocalVariables localVariables = LocalVariables.getInstance();
+                LocalVariables localVariables = LocalVariables.getInstance();
                 
                 // Create a new KettleVariables instance here...
-                // localVariables.createKettleVariables(job, parentJob, false);
+                localVariables.createKettleVariables(job.getName(), parentJob.getName(), false);
                 
                 if (parentJob.getJobMeta().isBatchIdPassed())
                 {
@@ -426,11 +427,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         			{
         				job.stopAll();
         				runner.waitUntilFinished(); // Wait until finished!
-        				job.endProcessing("stop");
+        				job.endProcessing("stop", new Result()); // dummy result
         			}
         			else
         			{
-        				job.endProcessing("end");
+        				job.endProcessing("end", runner.getResult()); // the result of the execution to be stored in the log file.
         			}
                 }
         		catch(KettleException je)

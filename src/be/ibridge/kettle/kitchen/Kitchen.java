@@ -311,13 +311,19 @@ public class Kitchen
             LocalVariables.getInstance().createKettleVariables(job.getName(), parentThread.getName(), true);
             
 			result = job.execute(); // Execute the selected job.
-			job.endProcessing("end");  // The bookkeeping...
+			job.endProcessing("end", result);  // The bookkeeping...
 		}
 		catch(KettleJobException je)
 		{
+            if (result==null)
+            {
+                result = new Result();
+            }
+            result.setNrErrors(1L);
+            
 			try
 			{
-				job.endProcessing("error");
+				job.endProcessing("error", result);
 			}
 			catch(KettleJobException je2)
 			{
