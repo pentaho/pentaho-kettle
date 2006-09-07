@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
@@ -363,6 +364,9 @@ public class Spoon implements AddUndoPositionInterface
                     // CTRL-J --> Get variables
                     if ((int)e.character == 10 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { getVariables(); spoongraph.clearSettings(); };
 
+                    // CTRL-L --> Show variables
+                    if ((int)e.character == 12 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { showVariables(); spoongraph.clearSettings(); };
+
                     // CTRL-N --> new
                     if ((int)e.character == 14) { newFile();     spoongraph.clearSettings(); }
                         
@@ -502,7 +506,7 @@ public class Spoon implements AddUndoPositionInterface
             }
         }
     }
-    
+
     public void getVariables()
     {
         Properties sp = new Properties();
@@ -516,7 +520,7 @@ public class Spoon implements AddUndoPositionInterface
             String varName = (String)list.get(i);
             String varValue = sp.getProperty(varName, "");
             System.out.println("variable ["+varName+"] is defined as : "+varValue);
-            if (variables.searchValueIndex(varName)<0)
+            if (variables.searchValueIndex(varName)<0 && !varName.startsWith(Const.INTERNAL_VARIABLE_PREFIX))
             {
                 variables.addValue(new Value(varName, varValue));
             }
@@ -524,6 +528,8 @@ public class Spoon implements AddUndoPositionInterface
         
         // Now ask the use for more info on these!
         EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, variables);
+        esd.setTitle(Messages.getString("Spoon.Dialog.SetVariables.Title"));
+        esd.setMessage(Messages.getString("Spoon.Dialog.SetVariables.Message"));
         esd.setReadOnly(false); 
         if (esd.open()!=null)
         {
@@ -537,8 +543,34 @@ public class Spoon implements AddUndoPositionInterface
                 }
             }
         }
-
     }
+    
+    public void showVariables()
+    {
+        Properties sp = new Properties();
+        KettleVariables kettleVariables = KettleVariables.getInstance();
+        sp.putAll(kettleVariables.getProperties());
+        sp.putAll(System.getProperties());
+
+        Row allVars = new Row();
+        
+        Enumeration keys = kettleVariables.getProperties().keys();
+        while (keys.hasMoreElements())
+        {
+            String key = (String) keys.nextElement();
+            String value = kettleVariables.getVariable(key);
+            
+            allVars.addValue(new Value(key, value));
+        }
+        
+        // Now ask the use for more info on these!
+        EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, allVars);
+        esd.setTitle(Messages.getString("Spoon.Dialog.ShowVariables.Title"));
+        esd.setMessage(Messages.getString("Spoon.Dialog.ShowVariables.Message"));
+        esd.setReadOnly(true); 
+        esd.open();
+    }
+
     
     public void clear()
     {
@@ -705,7 +737,8 @@ public class Spoon implements AddUndoPositionInterface
           setUndoMenu();
           new MenuItem(msEdit, SWT.SEPARATOR);
           MenuItem miEditSearch       = new MenuItem(msEdit, SWT.CASCADE); miEditSearch.setText(Messages.getString("Spoon.Menu.Edit.Search"));  //Search Metadata \tCTRL-F
-          MenuItem miEditVars         = new MenuItem(msEdit, SWT.CASCADE); miEditVars.setText(Messages.getString("Spoon.Menu.Edit.Variables"));  //Edit/Enter variables \tCTRL-F
+          MenuItem miEditVars         = new MenuItem(msEdit, SWT.CASCADE); miEditVars.setText(Messages.getString("Spoon.Menu.Edit.Variables"));  //Set variables \tCTRL-J
+          MenuItem miEditSVars        = new MenuItem(msEdit, SWT.CASCADE); miEditSVars.setText(Messages.getString("Spoon.Menu.Edit.ShowVariables"));  //Show variables \tCTRL-L
           new MenuItem(msEdit, SWT.SEPARATOR);
           MenuItem miEditUnselectAll  = new MenuItem(msEdit, SWT.CASCADE); miEditUnselectAll.setText(Messages.getString("Spoon.Menu.Edit.ClearSelection"));  //&Clear selection \tESC
           MenuItem miEditSelectAll    = new MenuItem(msEdit, SWT.CASCADE); miEditSelectAll.setText(Messages.getString("Spoon.Menu.Edit.SelectAllSteps")); //"&Select all steps \tCTRL-A"
@@ -721,6 +754,7 @@ public class Spoon implements AddUndoPositionInterface
         Listener lsEditRedo        = new Listener() { public void handleEvent(Event e) { redoAction(); } };
         Listener lsEditSearch      = new Listener() { public void handleEvent(Event e) { searchMetaData(); } };
         Listener lsEditVars        = new Listener() { public void handleEvent(Event e) { getVariables(); } };
+        Listener lsEditSVars       = new Listener() { public void handleEvent(Event e) { showVariables(); } };
         Listener lsEditUnselectAll = new Listener() { public void handleEvent(Event e) { editUnselectAll(); } };
         Listener lsEditSelectAll   = new Listener() { public void handleEvent(Event e) { editSelectAll();   } };
         Listener lsEditOptions     = new Listener() { public void handleEvent(Event e) { editOptions();     } };
@@ -729,6 +763,7 @@ public class Spoon implements AddUndoPositionInterface
         miEditRedo       .addListener(SWT.Selection, lsEditRedo);
         miEditSearch     .addListener(SWT.Selection, lsEditSearch);
         miEditVars       .addListener(SWT.Selection, lsEditVars);
+        miEditSVars      .addListener(SWT.Selection, lsEditSVars);
         miEditUnselectAll.addListener(SWT.Selection, lsEditUnselectAll);
         miEditSelectAll  .addListener(SWT.Selection, lsEditSelectAll);
         miEditOptions    .addListener(SWT.Selection, lsEditOptions);

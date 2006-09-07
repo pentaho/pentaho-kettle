@@ -437,6 +437,9 @@ public class Const
 	/** Name of the kettle parameters file */
 	public static final String KETTLE_PROPERTIES = "kettle.properties";
 
+    /** The prefix that all internal kettle variables should have */
+    public static final String INTERNAL_VARIABLE_PREFIX = "Internal";
+
 	/** 
      *  rounds double f to any number of places after decimal point
 	 *  Does arithmetic using BigDecimal class to avoid integer overflow while rounding

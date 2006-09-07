@@ -648,18 +648,24 @@ public class SpoonLog extends Composite
             for (int i=0;i<vars.size();i++) 
             {
                 String varname = (String)vars.get(i);
-                Value varval = new Value(varname, sp.getProperty(varname, ""));
-                variables.addValue( varval );
+                if (!varname.startsWith(Const.INTERNAL_VARIABLE_PREFIX))
+                {
+                    Value varval = new Value(varname, sp.getProperty(varname, ""));
+                    variables.addValue( varval );
+                }
             }
             
-            EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, variables);
-            if (esd.open()!=null)
+            if (variables.size()>0)
             {
-                for (int i=0;i<variables.size();i++)
+                EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, variables);
+                if (esd.open()!=null)
                 {
-                    Value varval = variables.getValue(i);
-                    kettleVariables.setVariable(varval.getName(), varval.getString());
-                    System.out.println("Variable ${"+varval.getName()+"} set to ["+varval.getString()+"]");
+                    for (int i=0;i<variables.size();i++)
+                    {
+                        Value varval = variables.getValue(i);
+                        kettleVariables.setVariable(varval.getName(), varval.getString());
+                        System.out.println("Variable ${"+varval.getName()+"} set to ["+varval.getString()+"]");
+                    }
                 }
             }
         }

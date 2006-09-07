@@ -62,7 +62,7 @@
     <format>DOS</format>
     <encoding/>
     <file>
-      <name>D:\Projects\SVN\javaForge\Kettle\trunk\samples\files\Denormaliser - 2 series of key-value pairs.txt</name>
+      <name>${Internal.Transformation.Filename.Directory}/files/Denormaliser - 2 series of key-value pairs.txt</name>
       <filemask/>
       <file_required/>
       <type>CSV</type>
@@ -147,8 +147,8 @@
     <date_format_lenient>Y</date_format_lenient>
     <date_format_locale>nl_nl</date_format_locale>
     <GUI>
-      <xloc>165</xloc>
-      <yloc>121</yloc>
+      <xloc>131</xloc>
+      <yloc>75</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -364,8 +364,8 @@
           </field>
         </fields>
     <GUI>
-      <xloc>564</xloc>
-      <yloc>121</yloc>
+      <xloc>530</xloc>
+      <yloc>75</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

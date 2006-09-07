@@ -4,6 +4,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.Method;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Properties;
@@ -12,6 +13,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.version.BuildVersion;
 
 public class EnvUtil
 {
@@ -65,10 +67,32 @@ public class EnvUtil
         
         // OK, initialize the KettleVariables as well...
         LocalVariables local = LocalVariables.getInstance();
-        local.createKettleVariables(Thread.currentThread().getName(), null, false);
+        KettleVariables variables = local.createKettleVariables(Thread.currentThread().getName(), null, false);
+
+        // add a bunch of internal variables...
+        addInternalVariables(variables);
 	}
-    
-	/**
+
+    /**
+     * Add a number of internal variables to the Kettle Variables at the root.
+     * @param variables
+     */
+    private static void addInternalVariables(KettleVariables variables)
+    {
+        // Add a bunch of internal variables
+        String prefix = Const.INTERNAL_VARIABLE_PREFIX+".Kettle.";
+        
+        // The Kettle version
+        variables.setVariable(prefix+"Version", Const.VERSION);
+
+        // The Kettle build version
+        variables.setVariable(prefix+"Build.Version", Integer.toString( BuildVersion.getInstance().getVersion() ));
+
+        // The Kettle build date
+        variables.setVariable(prefix+"Build.Date", new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format( BuildVersion.getInstance().getBuildDate() ));
+    }
+
+    /**
 	 * Get System.getenv() in a reflection kind of way. The problem is
 	 * that System.getenv() was deprecated in Java 1.4 while reinstated in 1.5
 	 * This method will get at getenv() using reflection and will return

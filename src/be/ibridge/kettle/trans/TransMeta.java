@@ -15,6 +15,8 @@
 
 package be.ibridge.kettle.trans;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -31,6 +33,7 @@ import org.w3c.dom.Node;
 import be.ibridge.kettle.core.CheckResult;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DBCache;
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
@@ -266,6 +269,8 @@ public class TransMeta implements XMLInterface
         
         resultRows = new ArrayList();
         resultFiles = new ArrayList();
+        
+        setInternalKettleVariables();
     }
 
     public void clearUndo()
@@ -1739,6 +1744,10 @@ public class TransMeta implements XMLInterface
         {
             throw new KettleException(Messages.getString("TransMeta.Exception.UnableToLoadTransformationInfoFromRepository"), dbe); //$NON-NLS-1$
         }
+        finally
+        {
+            setInternalKettleVariables();
+        }
     }
 
     /**
@@ -2260,6 +2269,10 @@ public class TransMeta implements XMLInterface
         {
             throw new KettleXMLException(Messages.getString("TransMeta.Exception.ErrorReadingTransformation"), xe); //$NON-NLS-1$
         }
+        finally
+        {
+            setInternalKettleVariables();
+        }
 
     }
 
@@ -2319,6 +2332,7 @@ public class TransMeta implements XMLInterface
     public void setName(String n)
     {
         name = n;
+        setInternalKettleVariables();
     }
 
     /**
@@ -2339,6 +2353,7 @@ public class TransMeta implements XMLInterface
     public void setFilename(String fname)
     {
         filename = fname;
+        setInternalKettleVariables();
     }
 
     /**
@@ -3610,6 +3625,7 @@ public class TransMeta implements XMLInterface
     public void setDirectory(RepositoryDirectory directory)
     {
         this.directory = directory;
+        setInternalKettleVariables();
     }
 
     /**
@@ -4293,4 +4309,45 @@ public class TransMeta implements XMLInterface
 	{
 		this.resultFiles = resultFiles;
 	}
+    
+    /**
+     * This method sets various internal kettle variables that can be used by the transformation.
+     */
+    public void setInternalKettleVariables()
+    {
+        KettleVariables variables = KettleVariables.getInstance();
+        
+        String prefix = Const.INTERNAL_VARIABLE_PREFIX+"."+"Transformation.";
+        
+        if (filename!=null) // we have a finename that's defined.
+        {
+            File file = new File(filename);
+            try
+            {
+                file = file.getCanonicalFile();
+            }
+            catch(IOException e)
+            {
+                file = file.getAbsoluteFile();
+            }
+            
+            // The directory of the transformation
+            variables.setVariable(prefix+"Filename.Directory", file.getParent());
+
+            // The filename of the transformation
+            variables.setVariable(prefix+"Filename.Name", file.getName());
+        }
+        else
+        {
+            variables.setVariable(prefix+"Filename.Directory", "");
+            variables.setVariable(prefix+"Filename.Name", "");
+        }
+        
+        // The name of the transformation
+        variables.setVariable(prefix+"Name", Const.NVL(name, ""));
+
+        // The name of the directory in the repository
+        variables.setVariable(prefix+"Repository.Directory", directory!=null?directory.getPath():"");
+
+    }
 }

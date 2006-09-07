@@ -65,6 +65,8 @@ public class EnterStringsDialog extends Dialog
 	private Props 		  props;
     
     private boolean       readOnly;
+    private String message;
+    private String title;
 
     /**
      * Constructs a new dialog
@@ -74,10 +76,13 @@ public class EnterStringsDialog extends Dialog
      */
 	public EnterStringsDialog(Shell parent, int style, Row strings)
 	{
-			super(parent, style);
-			this.strings=strings;
-			props=Props.getInstance();
-            readOnly=true;
+		super(parent, style);
+		this.strings=strings;
+		props=Props.getInstance();
+        readOnly=true;
+        
+        title = "Enter string values";
+        message = "Enter values for the Strings specified below : ";
 	}
 
 	public Row open()
@@ -93,13 +98,15 @@ public class EnterStringsDialog extends Dialog
 		formLayout.marginHeight = Const.FORM_MARGIN;
 
 		shell.setLayout(formLayout);
-		shell.setText("Enter string values");
+		shell.setText(title);
 		
 		int margin = Const.MARGIN;
+        
+        
 
-		// Filename line
+		// Message line
 		wlFields=new Label(shell, SWT.NONE);
-		wlFields.setText("Enter values for the Strings specified below : ");
+		wlFields.setText(message);
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
@@ -111,7 +118,7 @@ public class EnterStringsDialog extends Dialog
         ColumnInfo[] colinf=new ColumnInfo[]
             {
                 new ColumnInfo("String name",  ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly),
-                new ColumnInfo("String value", ColumnInfo.COLUMN_TYPE_TEXT, false, false)                
+                new ColumnInfo("String value", ColumnInfo.COLUMN_TYPE_TEXT, false, readOnly)                
             };
         
         wFields=new TableView(shell, 
@@ -121,7 +128,8 @@ public class EnterStringsDialog extends Dialog
                               null,
                               props
                               );
-
+        wFields.setReadonly(readOnly);
+        
         fdFields=new FormData();
         fdFields.left   = new FormAttachment(0, 0);
         fdFields.top    = new FormAttachment(wlFields, 30);
@@ -240,5 +248,37 @@ public class EnterStringsDialog extends Dialog
     public void setReadOnly(boolean readOnly)
     {
         this.readOnly = readOnly;
+    }
+
+    /**
+     * @return the message
+     */
+    public String getMessage()
+    {
+        return message;
+    }
+
+    /**
+     * @param message the message to set
+     */
+    public void setMessage(String message)
+    {
+        this.message = message;
+    }
+
+    /**
+     * @return the title
+     */
+    public String getTitle()
+    {
+        return title;
+    }
+
+    /**
+     * @param title the title to set
+     */
+    public void setTitle(String title)
+    {
+        this.title = title;
     }
 }

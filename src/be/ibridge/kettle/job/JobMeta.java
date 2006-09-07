@@ -16,6 +16,8 @@
 
 package be.ibridge.kettle.job;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -28,6 +30,7 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DBCache;
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
@@ -155,6 +158,8 @@ public class JobMeta implements Cloneable, XMLInterface
 		modified_date = null;
 		
 		directory = new RepositoryDirectory();
+        
+        setInternalKettleVariables();
 	}
 	
 	public void addDefaults()
@@ -262,6 +267,7 @@ public class JobMeta implements Cloneable, XMLInterface
 	public void setName(String name)
 	{
 		this.name=name;
+        setInternalKettleVariables();
 	}
 	
 	/**
@@ -278,6 +284,7 @@ public class JobMeta implements Cloneable, XMLInterface
     public void setDirectory(RepositoryDirectory directory)
     {
         this.directory = directory;
+        setInternalKettleVariables();
     }
 
 	public String getFilename()
@@ -288,6 +295,7 @@ public class JobMeta implements Cloneable, XMLInterface
 	public void setFilename(String filename)
 	{
 		this.filename=filename;
+        setInternalKettleVariables();
 	}
 
 	public DatabaseMeta getLogConnection()
@@ -462,8 +470,7 @@ public class JobMeta implements Cloneable, XMLInterface
 	 * @param rep The repository to bind againt, null if there is no repository available.
 	 * @throws KettleXMLException
 	 */
-	public JobMeta(LogWriter log, String fname, Repository rep)
-		throws KettleXMLException
+	public JobMeta(LogWriter log, String fname, Repository rep) throws KettleXMLException
 	{
 		this.log = log;
 		try
@@ -649,6 +656,10 @@ public class JobMeta implements Cloneable, XMLInterface
 		{
 			throw new KettleXMLException("Unable to load job info from XML node", e);
 		}
+        finally
+        {
+            setInternalKettleVariables();
+        }
 	}
 
 	/**
@@ -822,8 +833,7 @@ public class JobMeta implements Cloneable, XMLInterface
 	 * @param repdir The directory in which the job resides.
 	 * @throws KettleException
 	 */
-	public JobMeta(LogWriter log, Repository rep, String jobname, RepositoryDirectory repdir, IProgressMonitor monitor)
-		throws KettleException
+	public JobMeta(LogWriter log, Repository rep, String jobname, RepositoryDirectory repdir, IProgressMonitor monitor) throws KettleException
 	{
 		this.log = log;
 		
@@ -928,6 +938,10 @@ public class JobMeta implements Cloneable, XMLInterface
 		{
 			throw new KettleException("An error occurred reading job ["+jobname+"] from the repository", dbe);
 		}
+        finally
+        {
+            setInternalKettleVariables();
+        }
 	}
 
 	public JobEntryCopy getChefGraphEntry(int x, int y, int iconsize)
@@ -1825,5 +1839,45 @@ public class JobMeta implements Cloneable, XMLInterface
 
         }
         return list;
+    }
+    
+    /**
+     * This method sets various internal kettle variables that can be used by the transformation.
+     */
+    public void setInternalKettleVariables()
+    {
+        KettleVariables variables = KettleVariables.getInstance();
+        
+        String prefix = Const.INTERNAL_VARIABLE_PREFIX+"."+"Job.";
+        
+        if (filename!=null) // we have a finename that's defined.
+        {
+            File file = new File(filename);
+            try
+            {
+                file = file.getCanonicalFile();
+            }
+            catch(IOException e)
+            {
+                file = file.getAbsoluteFile();
+            }
+            
+            // The directory of the transformation
+            variables.setVariable(prefix+"Filename.Directory", file.getParent());
+
+            // The filename of the transformation
+            variables.setVariable(prefix+"Filename.Name", file.getName());
+        }
+        else
+        {
+            variables.setVariable(prefix+"Filename.Directory", "");
+            variables.setVariable(prefix+"Filename.Name", "");
+        }
+        
+        // The name of the job
+        variables.setVariable(prefix+"Name", Const.NVL(name, ""));
+
+        // The name of the directory in the repository
+        variables.setVariable(prefix+"Repository.Directory", directory!=null?directory.getPath():"");
     }
 }
