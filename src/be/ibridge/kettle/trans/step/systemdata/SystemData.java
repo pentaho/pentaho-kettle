@@ -29,6 +29,7 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.version.BuildVersion;
 
 
 /**
@@ -237,6 +238,15 @@ public class SystemData extends BaseStep implements StepInterface
 					row.addValue(empty);
 				}
 				break;
+            case SystemDataMeta.TYPE_SYSTEM_INFO_KETTLE_VERSION:
+                row.addValue(new Value(meta.getFieldName()[i], Const.VERSION) );
+                break;
+            case SystemDataMeta.TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION:
+                row.addValue(new Value(meta.getFieldName()[i], (long)BuildVersion.getInstance().getVersion()) );
+                break;
+            case SystemDataMeta.TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE:
+                row.addValue(new Value(meta.getFieldName()[i], BuildVersion.getInstance().getBuildDate()) );
+                break;
 			default: break;
 			}
 		}

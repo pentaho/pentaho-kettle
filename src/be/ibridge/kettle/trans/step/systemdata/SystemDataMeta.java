@@ -46,129 +46,94 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 {
-	public final static int TYPE_SYSTEM_INFO_NONE             =  0;
-	public final static int TYPE_SYSTEM_INFO_SYSTEM_DATE      =  1;
-	public final static int TYPE_SYSTEM_INFO_SYSTEM_START     =  2;
-	public final static int TYPE_SYSTEM_INFO_TRANS_DATE_FROM  =  3;
-	public final static int TYPE_SYSTEM_INFO_TRANS_DATE_TO    =  4;
+    public final static int TYPE_SYSTEM_INFO_NONE             =  0;
+    public final static int TYPE_SYSTEM_INFO_SYSTEM_DATE      =  1;
+    public final static int TYPE_SYSTEM_INFO_SYSTEM_START     =  2;
+    public final static int TYPE_SYSTEM_INFO_TRANS_DATE_FROM  =  3;
+    public final static int TYPE_SYSTEM_INFO_TRANS_DATE_TO    =  4;
     public final static int TYPE_SYSTEM_INFO_JOB_DATE_FROM    =  5;
     public final static int TYPE_SYSTEM_INFO_JOB_DATE_TO      =  6;
-	public final static int TYPE_SYSTEM_INFO_PREV_DAY_START   =  7;
-	public final static int TYPE_SYSTEM_INFO_PREV_DAY_END     =  8;
-	public final static int TYPE_SYSTEM_INFO_THIS_DAY_START   =  9;
-	public final static int TYPE_SYSTEM_INFO_THIS_DAY_END     = 10;
-	public final static int TYPE_SYSTEM_INFO_NEXT_DAY_START   = 11;
-	public final static int TYPE_SYSTEM_INFO_NEXT_DAY_END     = 12;
-	public final static int TYPE_SYSTEM_INFO_PREV_MONTH_START = 13;
-	public final static int TYPE_SYSTEM_INFO_PREV_MONTH_END   = 14;
-	public final static int TYPE_SYSTEM_INFO_THIS_MONTH_START = 15;
-	public final static int TYPE_SYSTEM_INFO_THIS_MONTH_END   = 16;
-	public final static int TYPE_SYSTEM_INFO_NEXT_MONTH_START = 17;
-	public final static int TYPE_SYSTEM_INFO_NEXT_MONTH_END   = 18;
-	public final static int TYPE_SYSTEM_INFO_COPYNR           = 19;
-	public final static int TYPE_SYSTEM_INFO_TRANS_NAME       = 20;
-	public final static int TYPE_SYSTEM_INFO_FILENAME         = 21;
-	public final static int TYPE_SYSTEM_INFO_MODIFIED_USER    = 22;
-	public final static int TYPE_SYSTEM_INFO_MODIFIED_DATE    = 23;
-	public final static int TYPE_SYSTEM_INFO_TRANS_BATCH_ID         = 24;
+    public final static int TYPE_SYSTEM_INFO_PREV_DAY_START   =  7;
+    public final static int TYPE_SYSTEM_INFO_PREV_DAY_END     =  8;
+    public final static int TYPE_SYSTEM_INFO_THIS_DAY_START   =  9;
+    public final static int TYPE_SYSTEM_INFO_THIS_DAY_END     = 10;
+    public final static int TYPE_SYSTEM_INFO_NEXT_DAY_START   = 11;
+    public final static int TYPE_SYSTEM_INFO_NEXT_DAY_END     = 12;
+    public final static int TYPE_SYSTEM_INFO_PREV_MONTH_START = 13;
+    public final static int TYPE_SYSTEM_INFO_PREV_MONTH_END   = 14;
+    public final static int TYPE_SYSTEM_INFO_THIS_MONTH_START = 15;
+    public final static int TYPE_SYSTEM_INFO_THIS_MONTH_END   = 16;
+    public final static int TYPE_SYSTEM_INFO_NEXT_MONTH_START = 17;
+    public final static int TYPE_SYSTEM_INFO_NEXT_MONTH_END   = 18;
+    public final static int TYPE_SYSTEM_INFO_COPYNR           = 19;
+    public final static int TYPE_SYSTEM_INFO_TRANS_NAME       = 20;
+    public final static int TYPE_SYSTEM_INFO_FILENAME         = 21;
+    public final static int TYPE_SYSTEM_INFO_MODIFIED_USER    = 22;
+    public final static int TYPE_SYSTEM_INFO_MODIFIED_DATE    = 23;
+    public final static int TYPE_SYSTEM_INFO_TRANS_BATCH_ID   = 24;
     public final static int TYPE_SYSTEM_INFO_JOB_BATCH_ID     = 25;
-	public final static int TYPE_SYSTEM_INFO_HOSTNAME         = 26;
-	public final static int TYPE_SYSTEM_INFO_IP_ADDRESS       = 27;
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_01      = 28;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_02      = 29;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_03      = 30;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_04      = 31;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_05      = 32;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_06      = 33;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_07      = 34;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_08      = 35;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_09      = 36;	
-	public final static int TYPE_SYSTEM_INFO_ARGUMENT_10      = 37;	
+    public final static int TYPE_SYSTEM_INFO_HOSTNAME         = 26;
+    public final static int TYPE_SYSTEM_INFO_IP_ADDRESS       = 27;
+    public final static int TYPE_SYSTEM_INFO_ARGUMENT_01      = 28; 
+    public final static int TYPE_SYSTEM_INFO_ARGUMENT_02      = 29; 
+    public final static int TYPE_SYSTEM_INFO_ARGUMENT_03      = 30; 
+    public final static int TYPE_SYSTEM_INFO_ARGUMENT_04      = 31; 
+    public final static int TYPE_SYSTEM_INFO_ARGUMENT_05      = 32; 
+    public final static int TYPE_SYSTEM_INFO_ARGUMENT_06      = 33; 
+    public final static int TYPE_SYSTEM_INFO_ARGUMENT_07      = 34; 
+    public final static int TYPE_SYSTEM_INFO_ARGUMENT_08      = 35; 
+    public final static int TYPE_SYSTEM_INFO_ARGUMENT_09      = 36; 
+    public final static int TYPE_SYSTEM_INFO_ARGUMENT_10      = 37; 
+    
+    public final static int TYPE_SYSTEM_INFO_KETTLE_VERSION        = 38; 
+    public final static int TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION  = 39; 
+    public final static int TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE     = 40; 
 
-	public final static String typeCode[] = 
-		{
-			"-",
-			"system date (variable)",
-			"system date (fixed)",
-			"start date range",
-			"end date range",
-            "job start date range",
-            "job end date range",
-			"yesterday start",
-			"yesterday end",
-			"today start",
-			"today end",
-			"tomorrow start",
-			"tomorrow end",
-			"last month start",
-			"last month end",
-			"this month start",
-			"this month end",
-			"next month start",
-			"next month end",
-			"copy of step",
-			"transformation name",
-			"transformation file name",
-			"User modified",
-			"Date modified",
-			"batch ID",
-            "job batch ID",
-			"Hostname",
-			"IP address",
-			"command line argument 1",
-			"command line argument 2",
-			"command line argument 3",
-			"command line argument 4",
-			"command line argument 5",
-			"command line argument 6",
-			"command line argument 7",
-			"command line argument 8",
-			"command line argument 9",
-			"command line argument 10"
-		};
+    public static final SystemDataMetaFunction functions[] = new SystemDataMetaFunction[] {
+            null,
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_SYSTEM_DATE      , "system date (variable)", Messages.getString("SystemDataMeta.TypeDesc.SystemDateVariable")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_SYSTEM_START     , "system date (fixed)", Messages.getString("SystemDataMeta.TypeDesc.SystemDateFixed")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_TRANS_DATE_FROM  , "start date range", Messages.getString("SystemDataMeta.TypeDesc.StartDateRange")),
+        	new SystemDataMetaFunction(TYPE_SYSTEM_INFO_TRANS_DATE_TO    , "end date range", Messages.getString("SystemDataMeta.TypeDesc.EndDateRange")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_JOB_DATE_FROM    , "job start date range",    Messages.getString("SystemDataMeta.TypeDesc.JobStartDateRange")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_JOB_DATE_TO      , "job end date range",    Messages.getString("SystemDataMeta.TypeDesc.JobEndDateRange")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_DAY_START   , "yesterday start",    Messages.getString("SystemDataMeta.TypeDesc.YesterdayStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_DAY_END     , "yesterday end",    Messages.getString("SystemDataMeta.TypeDesc.YesterdayEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_DAY_START   , "today start",    Messages.getString("SystemDataMeta.TypeDesc.TodayStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_DAY_END     , "today end",    Messages.getString("SystemDataMeta.TypeDesc.TodayEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_DAY_START   , "tomorrow start",    Messages.getString("SystemDataMeta.TypeDesc.TomorrowStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_DAY_END     , "tomorrow end",    Messages.getString("SystemDataMeta.TypeDesc.TomorrowEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_MONTH_START , "last month start",    Messages.getString("SystemDataMeta.TypeDesc.LastMonthStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_PREV_MONTH_END   , "last month end",    Messages.getString("SystemDataMeta.TypeDesc.LastMonthEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_MONTH_START , "this month start",    Messages.getString("SystemDataMeta.TypeDesc.ThisMonthStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_THIS_MONTH_END   , "this month end",    Messages.getString("SystemDataMeta.TypeDesc.ThisMonthEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_MONTH_START , "next month start",    Messages.getString("SystemDataMeta.TypeDesc.NextMonthStart")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_NEXT_MONTH_END   , "next month end",    Messages.getString("SystemDataMeta.TypeDesc.NextMonthEnd")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_COPYNR           , "copy of step",    Messages.getString("SystemDataMeta.TypeDesc.CopyOfStep")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_TRANS_NAME       , "transformation name",    Messages.getString("SystemDataMeta.TypeDesc.TransformationName")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_FILENAME         , "transformation file name",    Messages.getString("SystemDataMeta.TypeDesc.TransformationFileName")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_MODIFIED_USER    , "User modified",    Messages.getString("SystemDataMeta.TypeDesc.UserModified")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_MODIFIED_DATE    , "Date modified",    Messages.getString("SystemDataMeta.TypeDesc.DateModified")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_TRANS_BATCH_ID   , "batch ID",    Messages.getString("SystemDataMeta.TypeDesc.BatchID")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_JOB_BATCH_ID     , "job batch ID",    Messages.getString("SystemDataMeta.TypeDesc.JobBatchID")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_HOSTNAME         , "Hostname",    Messages.getString("SystemDataMeta.TypeDesc.Hostname")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_IP_ADDRESS       , "IP address",    Messages.getString("SystemDataMeta.TypeDesc.IPAddress")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_01      , "command line argument 1",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument1")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_02      , "command line argument 2",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument2")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_03      , "command line argument 3",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument3")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_04      , "command line argument 4",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument4")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_05      , "command line argument 5",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument5")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_06      , "command line argument 6",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument6")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_07      , "command line argument 7",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument7")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_08      , "command line argument 8",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument8")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_09      , "command line argument 9",    Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument9")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_ARGUMENT_10      , "command line argument 10",   Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument10")),
 
-	public final static String typeDesc[] = 
-		{
-			"-",
-			Messages.getString("SystemDataMeta.TypeDesc.SystemDateVariable"),
-			Messages.getString("SystemDataMeta.TypeDesc.SystemDateFixed"),
-			Messages.getString("SystemDataMeta.TypeDesc.StartDateRange"),
-			Messages.getString("SystemDataMeta.TypeDesc.EndDateRange"),
-            Messages.getString("SystemDataMeta.TypeDesc.JobStartDateRange"),
-            Messages.getString("SystemDataMeta.TypeDesc.JobEndDateRange"),
-			Messages.getString("SystemDataMeta.TypeDesc.YesterdayStart"),
-			Messages.getString("SystemDataMeta.TypeDesc.YesterdayEnd"),
-			Messages.getString("SystemDataMeta.TypeDesc.TodayStart"),
-			Messages.getString("SystemDataMeta.TypeDesc.TodayEnd"),
-			Messages.getString("SystemDataMeta.TypeDesc.TomorrowStart"),
-			Messages.getString("SystemDataMeta.TypeDesc.TomorrowEnd"),
-			Messages.getString("SystemDataMeta.TypeDesc.LastMonthStart"),
-			Messages.getString("SystemDataMeta.TypeDesc.LastMonthEnd"),
-			Messages.getString("SystemDataMeta.TypeDesc.ThisMonthStart"),
-			Messages.getString("SystemDataMeta.TypeDesc.ThisMonthEnd"),
-			Messages.getString("SystemDataMeta.TypeDesc.NextMonthStart"),
-			Messages.getString("SystemDataMeta.TypeDesc.NextMonthEnd"),
-			Messages.getString("SystemDataMeta.TypeDesc.CopyOfStep"),
-			Messages.getString("SystemDataMeta.TypeDesc.TransformationName"),
-			Messages.getString("SystemDataMeta.TypeDesc.TransformationFileName"),
-			Messages.getString("SystemDataMeta.TypeDesc.UserModified"),
-			Messages.getString("SystemDataMeta.TypeDesc.DateModified"),
-			Messages.getString("SystemDataMeta.TypeDesc.BatchID"),
-      Messages.getString("SystemDataMeta.TypeDesc.JobBatchID"),
-			Messages.getString("SystemDataMeta.TypeDesc.Hostname"),
-			Messages.getString("SystemDataMeta.TypeDesc.IPAddress"),
-			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument1"),
-			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument2"),
-			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument3"),
-			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument4"),
-			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument5"),
-			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument6"),
-			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument7"),
-			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument8"),
-			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument9"),
-			Messages.getString("SystemDataMeta.TypeDesc.CommandLineArgument10")
-		};
-	
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_KETTLE_VERSION       , "kettle version",       Messages.getString("SystemDataMeta.TypeDesc.KettleVersion")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION , "kettle build version", Messages.getString("SystemDataMeta.TypeDesc.KettleBuildVersion")),
+            new SystemDataMetaFunction(TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE    , "kettle build date",    Messages.getString("SystemDataMeta.TypeDesc.KettleBuildDate")),
+};
+    
 	private String fieldName[];
 	private int    fieldType[];
 	
@@ -267,18 +232,18 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public static final int getType(String type)
 	{
-		for (int i=0;i<typeCode.length;i++)
+		for (int i=1;i<functions.length;i++)
 		{
-			if (typeCode[i].equalsIgnoreCase(type)) return i;
-			if (typeDesc[i].equalsIgnoreCase(type)) return i;
+			if (functions[i].getCode().equalsIgnoreCase(type)) return i;
+			if (functions[i].getDescription().equalsIgnoreCase(type)) return i;
 		}
 		return 0;
 	}
 	
 	public static final String getTypeDesc(int t)
 	{
-		if (t<0 || t>=typeCode.length) return null;
-		return typeCode[t];
+		if (t<0 || t>=functions.length) return null;
+		return functions[t].getDescription();
 	}
 
 	public void setDefault()
@@ -325,12 +290,14 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 			case TYPE_SYSTEM_INFO_NEXT_MONTH_START: 
 			case TYPE_SYSTEM_INFO_NEXT_MONTH_END: 
 			case TYPE_SYSTEM_INFO_MODIFIED_DATE:
+            case TYPE_SYSTEM_INFO_KETTLE_BUILD_DATE:
 				v = new Value(fieldName[i], Value.VALUE_TYPE_DATE); 
 				break;
 				
 			case TYPE_SYSTEM_INFO_COPYNR:
 			case TYPE_SYSTEM_INFO_TRANS_BATCH_ID:
             case TYPE_SYSTEM_INFO_JOB_BATCH_ID:
+            case TYPE_SYSTEM_INFO_KETTLE_BUILD_VERSION:
 				v = new Value(fieldName[i], Value.VALUE_TYPE_INTEGER);
                 v.setLength(9, 0);
 				break;
@@ -350,6 +317,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 			case TYPE_SYSTEM_INFO_MODIFIED_USER:
 			case TYPE_SYSTEM_INFO_HOSTNAME:
 			case TYPE_SYSTEM_INFO_IP_ADDRESS:
+            case TYPE_SYSTEM_INFO_KETTLE_VERSION:
 				v=new Value(fieldName[i], Value.VALUE_TYPE_STRING);
 				break;
 			default: 
@@ -372,7 +340,7 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			retval.append("      <field>"+Const.CR);
 			retval.append("        "+XMLHandler.addTagValue("name", fieldName[i]));
-			retval.append("        "+XMLHandler.addTagValue("type", typeCode[fieldType[i]]));
+			retval.append("        "+XMLHandler.addTagValue("type", functions[fieldType[i]].getCode()));
 			retval.append("        </field>"+Const.CR);
 		}
 		retval.append("      </fields>"+Const.CR);
