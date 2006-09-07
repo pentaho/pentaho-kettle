@@ -56,6 +56,7 @@ import be.ibridge.kettle.trans.step.denormaliser.DenormaliserMeta;
 import be.ibridge.kettle.trans.step.dimensionlookup.DimensionLookupMeta;
 import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
 import be.ibridge.kettle.trans.step.excelinput.ExcelInputMeta;
+import be.ibridge.kettle.trans.step.exceloutput.ExcelOutputMeta;
 import be.ibridge.kettle.trans.step.fieldsplitter.FieldSplitterMeta;
 import be.ibridge.kettle.trans.step.filesfromresult.FilesFromResultMeta;
 import be.ibridge.kettle.trans.step.filestoresult.FilesToResultMeta;
@@ -266,7 +267,10 @@ public class BaseStep extends Thread
                             "BLK.png", CATEGORY_EXTRA),
         new StepPluginMeta(InjectorMeta.class, "Injector", 
                             Messages.getString("BaseStep.TypeLongDesc.Injector"), Messages.getString("BaseStep.TypeTooltipDesc.Injector"), 
-                            "INJ.png", CATEGORY_EXTRA)
+                            "INJ.png", CATEGORY_EXTRA),
+        new StepPluginMeta(ExcelOutputMeta.class, "ExcelOutput", 
+                            Messages.getString("BaseStep.TypeLongDesc.ExcelOutput"), Messages.getString("BaseStep.TypeTooltipDesc.ExcelOutput"), 
+                            "XLO.png", CATEGORY_OUTPUT),
 
     };
     
