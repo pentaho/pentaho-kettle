@@ -1503,10 +1503,10 @@ public class ChefGraph extends Canvas implements Redrawable
 		{
 			try
 			{
-				Chef ch = new Chef(log, chef.disp, null);
-
-                // only try to load if the file exists...
                 String exactFilename = StringUtil.environmentSubstitute(entry.getFileName() );
+
+                Chef ch = new Chef(log, chef.disp, null);
+
                 File file = new File(exactFilename);
                 
                 if (file.exists())
