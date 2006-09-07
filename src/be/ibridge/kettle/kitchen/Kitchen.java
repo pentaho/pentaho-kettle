@@ -55,7 +55,7 @@ public class Kitchen
         LocalVariables.getInstance().createKettleVariables(parentThread.getName(), null, false);
 		
 	    ArrayList args = new ArrayList();
-	    for (int i=0;i<a.length;i++) 
+	    for (int i=0;i<a.length;i++)
 	    {
 	        if (a[i].length()>0) args.add(a[i]);
 	    }
