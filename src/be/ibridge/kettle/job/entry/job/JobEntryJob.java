@@ -31,6 +31,7 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.logging.Log4jFileAppender;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
@@ -297,13 +298,35 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 	
 	public Result execute(Result result, int nr, Repository rep, Job parentJob) throws KettleException
 	{
+		result.setEntryNr( nr );
+
+        LogWriter logwriter = log;
+        
+        Log4jFileAppender appender = null;
+        int backupLogLevel = log.getLogLevel();
+        if (setLogfile)
+        {
+            try
+            {
+                appender = LogWriter.createFileAppender(StringUtil.environmentSubstitute(getLogFilename()), true);
+            }
+            catch(KettleException e)
+            {
+                log.logError(toString(), "Unable to open file appender for file ["+getLogFilename()+"] : "+e.toString());
+                log.logError(toString(), Const.getStackTracker(e));
+                result.setNrErrors(1);
+                result.setResult(false);
+                return result;
+            }
+            log.addAppender(appender);
+            log.setLogLevel(loglevel);
+        }
+
+		if (setLogfile) logwriter = LogWriter.getInstance(StringUtil.environmentSubstitute(getLogFilename()), true, loglevel);
+
         try
         {
-    		result.setEntryNr( nr );
-    		
-    		LogWriter logwriter = log;
-    		if (setLogfile) logwriter = LogWriter.getInstance(getLogFilename(), true, loglevel);
-    		
+
             int iteration = 0;
             String args[] = arguments;
             Row resultRow = null;
@@ -450,18 +473,6 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 iteration++;
             }
     		
-    		if (setLogfile) logwriter.close();
-    		
-    		if (result.getNrErrors() > 0)
-    		{
-    			result.setResult( false );
-    		}
-    		else
-    		{
-    			result.setResult( true );
-    		}
-    
-    		return result;
         }
         catch(KettleException ke)
         {
@@ -470,9 +481,28 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             
             result.setResult(false);
             result.setNrErrors(1L);
-            
-            return result;
         }
+
+        if (setLogfile)
+        {
+            if (appender!=null) 
+            {
+                log.removeAppender(appender);
+                appender.close();
+            }
+            log.setLogLevel(backupLogLevel);
+        }
+        
+        if (result.getNrErrors() > 0)
+        {
+            result.setResult( false );
+        }
+        else
+        {
+            result.setResult( true );
+        }
+
+        return result;
 	}
 	
 

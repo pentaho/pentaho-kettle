@@ -265,8 +265,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	
 	// Save the attributes of this job entry
 	//
-	public void saveRep(Repository rep, long id_job)
-		throws KettleException
+	public void saveRep(Repository rep, long id_job) throws KettleException
 	{
 		try
 		{
@@ -342,7 +341,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         {
             try
             {
-                appender = LogWriter.createFileAppender(getLogFilename(), true);
+                appender = LogWriter.createFileAppender(StringUtil.environmentSubstitute(getLogFilename()), true);
             }
             catch(KettleException e)
             {
