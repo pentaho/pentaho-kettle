@@ -584,7 +584,6 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
                     {
                         input.setFileName(wTransformation.getText());
                         input.loadMappingMeta(repository);
-                        input.getMappingTransMeta().setFilename(wTransformation.getText());
                     }
                 }
                 catch(KettleException e)

@@ -390,6 +390,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             	// OK, load the meta-data from file...
                 mappingTransMeta = new TransMeta(realFilename  );
                 LogWriter.getInstance().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file ["+realFilename+"]");
+                mappingTransMeta.setFilename(fileName);
+                // mappingTransMeta.setName(transName);
            }
             catch(Exception e)
             {
