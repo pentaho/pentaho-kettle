@@ -217,7 +217,7 @@ public class StringUtil
     /**
      * Return the value of a Kettle or system variable. (in that order or occurence)
      * 
-     * @param aString the variable to look for, without the $ or % variable specification, just the name.
+     * @param variable the variable to look for, without the $ or % variable specification, just the name.
      * @param defaultValue the default value in case nothing was found.
      * @return the value for that (kettle) variable
      */

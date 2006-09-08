@@ -48,7 +48,6 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     
     /**
      * @return Returns the databaseType
-     * @see be.ibridge.kettle.core.database.BaseDatabaseMeta#getDatabaseType()
      */
     public int getDatabaseType()
     {

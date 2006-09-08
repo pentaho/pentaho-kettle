@@ -227,7 +227,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 	
     /**
      * @deprecated use getFilename() instead
-     * @return
+     * @return the filename
      */
     public String getFileName()
 	{
