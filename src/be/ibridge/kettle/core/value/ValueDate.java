@@ -39,11 +39,13 @@ public class ValueDate implements ValueInterface, Cloneable
 	public ValueDate()
 	{
 		this.date     = null;
+        this.precision = -1;
 	}
 	
 	public ValueDate(Date date)
 	{
 		this.date      = date;
+        this.precision = -1;
 	}
 
 	public int getType()
@@ -127,6 +129,7 @@ public class ValueDate implements ValueInterface, Cloneable
 	
 	public void setLength(int length, int precision)
 	{
+        this.precision = precision;
 	}
 	
 	public void setLength(int length)
