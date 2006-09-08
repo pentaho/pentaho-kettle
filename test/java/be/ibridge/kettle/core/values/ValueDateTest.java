@@ -68,10 +68,10 @@ public class ValueDateTest extends TestCase
 
 		vs1.setLength(4, 2);
 		assertEquals(-1, vs1.getLength());
-		assertEquals(-1, vs1.getPrecision());
+		assertEquals( 2, vs1.getPrecision());
 
 		vs1.setPrecision(3);
-		assertEquals(-1, vs1.getPrecision());		
+		assertEquals(3, vs1.getPrecision());		
 	}
 
 	/**
