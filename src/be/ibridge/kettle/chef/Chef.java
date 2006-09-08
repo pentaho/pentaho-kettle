@@ -1758,7 +1758,7 @@ public class Chef implements AddUndoPositionInterface
 		saveRepository(false);
 	}
 
-	public void saveRepository(boolean ask_name)
+	public boolean saveRepository(boolean ask_name)
 	{
 		log.logDetailed(toString(), "Save to repository..."); //$NON-NLS-1$
 		if (rep!=null)
@@ -1782,6 +1782,7 @@ public class Chef implements AddUndoPositionInterface
 			{
 				if (!rep.getUserInfo().isReadonly())
 				{
+                    boolean saved=false;
 					int response = SWT.YES;
 					if (jobMeta.showReplaceWarning(rep))
 					{
@@ -1825,6 +1826,7 @@ public class Chef implements AddUndoPositionInterface
 							setShellText();
 						}
 					}
+                    return saved;
 				}
 				else
 				{
@@ -1842,9 +1844,28 @@ public class Chef implements AddUndoPositionInterface
 			mb.setText(Messages.getString("Chef.Dialog.NoRepositoryConnectionAvailable.Title")); //$NON-NLS-1$
 			mb.open();
 		}
+        return false;
 	}
+    
+    public boolean saveFileAs()
+    {
+        boolean saved=false;
+        
+        if (rep!=null)
+        {
+            jobMeta.setID(-1L);
+            saved=saveRepository(true);
+        }
+        else
+        {
+            saved=saveXMLFile();
+        }
+        
+        return saved;
+    }
 
-	public void saveFileAs()
+
+	public void saveFileAsXML()
 	{
 		log.logBasic(toString(), "Save file as..."); //$NON-NLS-1$
 
