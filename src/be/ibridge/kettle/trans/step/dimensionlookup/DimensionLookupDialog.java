@@ -361,13 +361,13 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		wFieldsTab = new CTabItem(wTabFolder, SWT.NONE);
 		wFieldsTab.setText(Messages.getString("DimensionLookupDialog.FieldsTab.CTabItem.Title")); //$NON-NLS-1$
 
-		FormLayout fieldsLayout = new FormLayout ();
-		fieldsLayout.marginWidth  = Const.FORM_MARGIN;
-		fieldsLayout.marginHeight = Const.FORM_MARGIN;
-
 		Composite wFieldsComp = new Composite(wTabFolder, SWT.NONE);
-		wFieldsComp.setLayout(fieldsLayout);
- 		props.setLook(wFieldsComp);
+        props.setLook(wFieldsComp);
+        
+        FormLayout fieldsCompLayout = new FormLayout ();
+        fieldsCompLayout.marginWidth  = Const.FORM_MARGIN;
+        fieldsCompLayout.marginHeight = Const.FORM_MARGIN;
+		wFieldsComp.setLayout(fieldsCompLayout);
 
 		// THE UPDATE/INSERT TABLE
 		wlUpIns=new Label(wFieldsComp, SWT.NONE);
@@ -398,7 +398,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		fdUpIns.left  = new FormAttachment(0, 0);
 		fdUpIns.top   = new FormAttachment(wlUpIns, margin);
 		fdUpIns.right = new FormAttachment(100, 0);
-		fdUpIns.bottom= new FormAttachment(100, 100);
+		fdUpIns.bottom= new FormAttachment(100, 0);
 		wUpIns.setLayoutData(fdUpIns);
 
 		fdFieldsComp=new FormData();
