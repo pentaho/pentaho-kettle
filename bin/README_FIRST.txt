@@ -4,7 +4,7 @@ WELCOME TO KETTLE!
 
 Thank you for using Kettle.
 
-To get started, look in the [docs] directory for the file [Spoon-2.1.pdf].
+To get started, look in the [docs] directory for the file [Spoon-2.3.pdf].
 In it, you'll find an installation description and a user manual for Spoon.
 
 Basically, what it comes down to is:
