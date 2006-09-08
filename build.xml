@@ -265,7 +265,10 @@
 
 	        <!-- samples -->
 	  		<mkdir dir="${distrib}/samples"/>
-	  		<mkdir dir="${distrib}/samples/output"/>
+	  		<mkdir dir="${distrib}/samples/transformations"/>
+	  		<mkdir dir="${distrib}/samples/jobs"/>
+	  		<mkdir dir="${distrib}/samples/transformations/output"/>
+	  		<mkdir dir="${distrib}/samples/jobs/output"/>
 	  		<copy todir="${distrib}/samples">
 	  			<fileset dir="${samples}" 
 	  				     includes="**/*.*"
