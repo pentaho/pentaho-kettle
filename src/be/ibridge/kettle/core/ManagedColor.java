@@ -17,8 +17,8 @@ public class ManagedColor
     private boolean systemColor;
     
     /**
-     * @param color
-     * @param sytemColor
+     * @param color The color
+     * @param systemColor true if this is a system color and doesn't need to be disposed off
      */
     public ManagedColor(Color color, boolean systemColor)
     {

@@ -33,7 +33,7 @@ public class ResultFile implements Cloneable
 	/**
 	 * Construct a new result file
 	 * @param type The type of file : FILE_TYPE_GENERAL, ...
-	 * @param name The filename
+	 * @param file The file to use
 	 * @param originParent The transformation or job that has generated this result file
 	 * @param origin The step or job entry that has generated this result file
 	 */

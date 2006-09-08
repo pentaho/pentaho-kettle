@@ -17,8 +17,8 @@ public class ManagedFont
     private boolean systemFont;
     
     /**
-     * @param font
-     * @param sytemFont
+     * @param font The font
+     * @param systemFont true if this is a system font and doesn't need to be disposed off
      */
     public ManagedFont(Font font, boolean systemFont)
     {
@@ -28,8 +28,8 @@ public class ManagedFont
 
     /**
      * Create a new managed font by using fontdata
-     * @param display
-     * @param rgb
+     * @param display the display to use
+     * @param fontData The fontdata to create the font with.
      */
     public ManagedFont(Display display, FontData fontData)
     {

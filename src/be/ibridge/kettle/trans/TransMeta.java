@@ -4215,7 +4215,7 @@ public class TransMeta implements XMLInterface
     /**
      * Get a list of all the strings used in this transformation.
      *
-     * @return
+     * @return A list of StringSearchResult with strings used in the 
      */
     public List getStringList(boolean searchSteps, boolean searchDatabases, boolean searchNotes)
     {

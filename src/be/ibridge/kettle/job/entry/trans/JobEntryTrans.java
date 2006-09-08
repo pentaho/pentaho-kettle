@@ -97,8 +97,8 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 	}
 	
     /**
-     * @deprecated, use getFilename() instead
-     * @return
+     * @deprecated use getFilename() instead
+     * @return the filename
      */
 	public String getFileName()
 	{
@@ -335,14 +335,17 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		clearResultFiles=true;
 	}
 
-	
-	/**
-	 * Execute this job entry and return the result.
-	 * In this case it means, just set the result boolean in the Result class.
-	 * @param prev_result The result of the previous execution
-	 * @return The Result of the execution.
-	 */
-	public Result execute(Result result, int nr, Repository rep, Job parentJob) throws KettleException
+
+    /**
+     * Execute this job entry and return the result.
+     * In this case it means, just set the result boolean in the Result class.
+     * @param result The result of the previous execution
+     * @param nr the job entry number
+     * @param rep the repository connection to use
+     * @param parentJob the parent job
+     * @return The Result of the execution.
+     */
+    public Result execute(Result result, int nr, Repository rep, Job parentJob) throws KettleException
 	{
 		LogWriter log       = LogWriter.getInstance();
 		result.setEntryNr( nr );

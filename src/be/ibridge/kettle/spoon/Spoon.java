@@ -159,7 +159,9 @@ import be.ibridge.kettle.version.BuildVersion;
  * 
  * Add i18n support
  * import the package:be.ibridge.kettle.i18n.Messages
- * @modified by vitoelv since 07-Feb-2006
+ *
+ * @since 07-Feb-2006
+ *  
  */
 public class Spoon implements AddUndoPositionInterface
 {

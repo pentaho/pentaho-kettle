@@ -53,7 +53,7 @@ public class KettleVariables
     
     /**
      * Create the KettleVariables object and uses the argument as starting point.
-     * @param properties The properties to add to an empty set of Kettle Variables.
+     * @param map The values to add to an empty set of Kettle Variables.
      * If properties is null, nothing gets added.
      */
     public void putAll(Map map)

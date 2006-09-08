@@ -1756,7 +1756,7 @@ public class JobMeta implements Cloneable, XMLInterface
     /**
      * Get a list of all the strings used in this job.
      *
-     * @return
+     * @return A list of StringSearchResult with strings used in the job
      */
     public List getStringList(boolean searchSteps, boolean searchDatabases, boolean searchNotes)
     {

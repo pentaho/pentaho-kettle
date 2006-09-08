@@ -2824,7 +2824,7 @@ public class Database
      * @param table The table-name to delete in
      * @param codes  
      * @param condition
-     * @return
+     * @return true when everything went OK, false when something went wrong.
      */
     public boolean prepareDelete(String table, String codes[], String condition[])
     {

@@ -525,8 +525,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	}
 
 	/**
-	 * Sets the Value to a long integer
-	 * @param l The long integer to which the Value is set.
+	 * Sets the Value to a byte array
+	 * @param b The byte array to which the Value has to be set.
 	 */
 	public void setValue(byte[] b)
 	{
@@ -749,7 +749,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
     /**
      * Checks whether or not this value is of type Serializable
-     * @retur true if this value has type Serializable
+     * @return true if this value has type Serializable
      */
     public boolean isSerializableType() {
         if(value == null) {
@@ -760,7 +760,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
     /**
      * Checks whether or not this value is of type Binary
-     * @retur true if this value has type Binary
+     * @return true if this value has type Binary
      */
     public boolean isBinary() {
     	// Serializable is not included here as it used for
@@ -836,7 +836,6 @@ public class Value implements Cloneable, XMLInterface, Serializable
 
 	/**
 	 * a String text representation of this Value, optionally padded to the specified length
-	 * @param pad true if you want to pad the resulting String
 	 * @return a String text representation of this Value, optionally padded to the specified length
 	 */
 	public String toStringMeta()

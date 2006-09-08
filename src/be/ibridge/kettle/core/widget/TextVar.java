@@ -112,8 +112,7 @@ public class TextVar extends Composite
     }
 
     /**
-     * Get the text in the Text widget
-     * @return
+     * @return the text in the Text widget   
      */
     public String getText()
     {

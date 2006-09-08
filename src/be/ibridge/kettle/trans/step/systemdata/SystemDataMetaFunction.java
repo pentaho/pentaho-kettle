@@ -46,9 +46,9 @@ public class SystemDataMetaFunction
     /**
      * @param description the description to set
      */
-    public void setDescription(String desc)
+    public void setDescription(String description)
     {
-        this.description = desc;
+        this.description = description;
     }
 
     /**

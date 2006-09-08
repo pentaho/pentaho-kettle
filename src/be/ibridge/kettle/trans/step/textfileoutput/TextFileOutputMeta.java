@@ -473,7 +473,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 
     
     /**
-     * @return The desired encoding of output file, null or empty if the default system encoding needs to be used. 
+     * @return The desired last line in the output file, null or empty if nothing has to be added. 
      */
     public String getEndedLine()
     {
@@ -482,11 +482,11 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 
 
     /**
-     * @param encoding The desired encoding of output file, null or empty if the default system encoding needs to be used.
+     * @param endedLine The desired last line in the output file, null or empty if nothing has to be added. 
      */
-    public void setEndedLine(String EndedLine)
+    public void setEndedLine(String endedLine)
     {
-        this.endedLine = EndedLine;
+        this.endedLine = endedLine;
     }    
     
     

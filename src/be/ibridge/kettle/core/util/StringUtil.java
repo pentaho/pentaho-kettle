@@ -139,13 +139,9 @@ public class StringUtil
 	 * 
 	 * @param aString
 	 *            the string on which to apply the substitution.
-	 * @param variablesValues
+	 * @param variables
 	 *            a map containg the variable values. The keys are the variable
 	 *            names, the values are the variable values.
-	 * @param open
-	 *            the open delimiter for variables.
-	 * @param close
-	 *            the close delimiter for variables.
 	 * @return the string with the substitution applied.
 	 */
 	public static String substituteUnix(String aString, Map variables)
@@ -160,13 +156,9 @@ public class StringUtil
 	 * 
 	 * @param aString
 	 *            the string on which to apply the substitution.
-	 * @param variablesValues
+	 * @param variables
 	 *            a map containg the variable values. The keys are the variable
 	 *            names, the values are the variable values.
-	 * @param open
-	 *            the open delimiter for variables.
-	 * @param close
-	 *            the close delimiter for variables.
 	 * @return the string with the substitution applied.
 	 */
 	public static String substituteWindows(String aString, Map variables)

@@ -1384,7 +1384,7 @@ public class Trans
 
 	/**
 	 * Turn on safe mode during running: the transformation will run slower but with more checking enabled.
-	 * @param safeMode true for safe mode
+	 * @param safeModeEnabled true for safe mode
 	 */
 	public void setSafeModeEnabled(boolean safeModeEnabled)
 	{
@@ -1405,7 +1405,6 @@ public class Trans
      *
      * @param stepname The step to produce rows for
      * @param copynr The copynr of the step to produce row for (normally 0 unless you have multiple copies running)
-     * @param producer The object implementing the RowProducer interface
      * @throws KettleException in case the thread/step to produce rows for could not be found.
      */
     public RowProducer addRowProducer(String stepname, int copynr) throws KettleException

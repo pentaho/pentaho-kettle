@@ -200,7 +200,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     }
 
     /**
-     * @param fieldLength The fieldLength to set.
+     * @param fields The excel input fields to set.
      */
     public void setField(ExcelInputField[] fields)
     {
@@ -312,7 +312,7 @@ public class ExcelInputMeta extends BaseStepMeta implements StepMetaInterface
     }
     
     /**
-     * @param sheetRowNumberField The sheetRowNumberField to set.
+     * @param rowNumberField The rowNumberField to set.
      */
     public void setSheetRowNumberField(String rowNumberField)
     {

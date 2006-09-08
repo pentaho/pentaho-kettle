@@ -71,10 +71,9 @@ public abstract class BaseDatabaseMeta implements Cloneable
 
 
 	/**
-	 * Construct a new database connections.  Note that not all these parameters are not allways mandatory.
+	 * Constructs a new database connections.  Note that not all these parameters are not allways mandatory.
 	 * 
 	 * @param name The database name
-	 * @param type The type of database
 	 * @param access The type of database access
 	 * @param host The hostname or IP address
 	 * @param db The database name

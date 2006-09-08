@@ -14,9 +14,8 @@ public class XMLHandlerCacheEntry
     private String tag;
 
     /**
-     * @param parentNode
-     * @param tag
-     * @param position
+     * @param parentNode The parent node
+     * @param tag The tag
      */
     public XMLHandlerCacheEntry(Node parentNode, String tag)
     {

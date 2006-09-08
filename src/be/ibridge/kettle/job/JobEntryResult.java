@@ -104,7 +104,7 @@ public class JobEntryResult implements Cloneable
 	}
 	
 	/**
-	 * @param thisJobEntry The thisJobEntry to set.
+	 * @param jobEntry The thisJobEntry to set.
 	 */
 	public void setJobEntry(JobEntryCopy jobEntry)
 	{

@@ -146,8 +146,7 @@ public class CommandLineOption
 	
 	/**
 	 * Gets the value of a commandline option 
-	 * @param args The command line arguments
-	 * @param option The option to look for
+	 * @param arg The command line argument
 	 * @return The value of the commandline option specified.
 	 */
 	public String extractAndSetArgument(String arg)

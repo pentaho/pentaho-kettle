@@ -85,7 +85,7 @@ public class ValueMethod
      * Execute this method on a value and arguments
      * @param sourceValue the value to work on
      * @param arguments the arguments.
-     * @return
+     * @return the value returned by the execution
      */
     public Object executeMethod(Value sourceValue, Value[] arguments) throws KettleException
     {

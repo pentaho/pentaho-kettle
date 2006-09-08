@@ -115,7 +115,7 @@ public interface DatabaseInterface extends Cloneable
 	public String getDatabasePortNumberString();
 	
 	/**
-	 * @param databasePortNumber The databasePortNumber to set as a string.
+	 * @param databasePortNumberString The databasePortNumber to set as a string.
 	 */
 	public void setDatabasePortNumberString(String databasePortNumberString);
 
