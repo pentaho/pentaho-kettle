@@ -79,7 +79,7 @@ public class EnterStringsDialog extends Dialog
 		super(parent, style);
 		this.strings=strings;
 		props=Props.getInstance();
-        readOnly=true;
+        readOnly=false;
         
         title = "Enter string values";
         message = "Enter values for the Strings specified below : ";
