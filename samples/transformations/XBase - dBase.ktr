@@ -29,39 +29,32 @@
     </info>
   <notepads>
     <notepad>
-      <note>Determine the directory of this transformation
-and add the filename.</note>
-      <xloc>37</xloc>
-      <yloc>53</yloc>
-      <width>231</width>
-      <heigth>36</heigth>
-      </notepad>
-    <notepad>
       <note>To see the result, do a preview on this Dummy step
 ... or add an output step.</note>
-      <xloc>407</xloc>
-      <yloc>192</yloc>
-      <width>257</width>
-      <heigth>36</heigth>
+      <xloc>149</xloc>
+      <yloc>196</yloc>
+      <width>268</width>
+      <heigth>37</heigth>
       </notepad>
     <notepad>
       <note>Load the example dBase file.</note>
-      <xloc>299</xloc>
-      <yloc>54</yloc>
-      <width>148</width>
+      <xloc>41</xloc>
+      <yloc>58</yloc>
+      <width>150</width>
       <heigth>23</heigth>
       </notepad>
     <notepad>
       <note>Revision notes:
-2006-08-07 Jens Bleuel: created</note>
+2006-08-07 Jens Bleuel: created
+2006-09-08 Specified the filename using internal variable, simplify example</note>
       <xloc>14</xloc>
       <yloc>567</yloc>
-      <width>166</width>
-      <heigth>36</heigth>
+      <width>375</width>
+      <heigth>50</heigth>
       </notepad>
     </notepads>
   <order>
-  <hop> <from>GetFilenameKTR</from><to>Get example filename</to><enabled>Y</enabled> </hop>  <hop> <from>Get example filename</from><to>XBase input</to><enabled>Y</enabled> </hop>  <hop> <from>XBase input</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>XBase input</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
 
   <step>
     <name>Dummy (do nothing)</name>
@@ -70,51 +63,8 @@ and add the filename.</note>
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>520</xloc>
-      <yloc>104</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Get example filename</name>
-    <type>ScriptValue</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <script>var fileSeparator = Packages.be.ibridge.kettle.core.Const.FILE_SEPARATOR;
-var subDirEndsAt = FilenameKTR.getString().lastIndexOf(fileSeparator);
-var subDir = FilenameKTR.getString().substr(0, subDirEndsAt+1);
-var filenameDBF = subDir + &quot;XBase - dBase sample data.dbf&quot;
-
-</script>
-    <fields>      <field>        <name>filenameDBF</name>
-        <rename>filenameDBF</rename>
-        <type>String</type>
-        <length>-1</length>
-        <precision>-1</precision>
-        </field>      </fields>    <GUI>
-      <xloc>220</xloc>
-      <yloc>105</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>GetFilenameKTR</name>
-    <type>SystemInfo</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <fields>
-      <field>
-        <name>FilenameKTR</name>
-        <type>transformation file name</type>
-        </field>
-      </fields>
-    <GUI>
-      <xloc>71</xloc>
-      <yloc>105</yloc>
+      <xloc>262</xloc>
+      <yloc>108</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -125,18 +75,18 @@ var filenameDBF = subDir + &quot;XBase - dBase sample data.dbf&quot;
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
-    <file_dbf/>
+    <file_dbf>${Internal.Transformation.Filename.Directory}/files/XBase - dBase sample data.dbf</file_dbf>
     <limit>0</limit>
     <add_rownr>N</add_rownr>
     <field_rownr/>
     <include>N</include>
     <include_field/>
-    <accept_filenames>Y</accept_filenames>
+    <accept_filenames>N</accept_filenames>
     <accept_field>filenameDBF</accept_field>
-    <accept_stepname>Get example filename</accept_stepname>
+    <accept_stepname/>
     <GUI>
-      <xloc>351</xloc>
-      <yloc>104</yloc>
+      <xloc>93</xloc>
+      <yloc>108</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

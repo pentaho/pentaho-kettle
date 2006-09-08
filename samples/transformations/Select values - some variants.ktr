@@ -29,60 +29,53 @@
     </info>
   <notepads>
     <notepad>
-      <note>Determine the directory of this transformation
-and add the filename.</note>
-      <xloc>37</xloc>
-      <yloc>53</yloc>
-      <width>231</width>
-      <heigth>36</heigth>
-      </notepad>
-    <notepad>
       <note>To see the result, do a preview on this Dummy step
 ... or add an output step.</note>
-      <xloc>465</xloc>
-      <yloc>510</yloc>
-      <width>257</width>
-      <heigth>36</heigth>
+      <xloc>217</xloc>
+      <yloc>476</yloc>
+      <width>268</width>
+      <heigth>37</heigth>
       </notepad>
     <notepad>
       <note>Load the example fixed length textfile.</note>
-      <xloc>299</xloc>
-      <yloc>54</yloc>
-      <width>196</width>
+      <xloc>51</xloc>
+      <yloc>20</yloc>
+      <width>197</width>
       <heigth>23</heigth>
       </notepad>
     <notepad>
       <note>Revision notes:
-2006-08-07 Jens Bleuel: created</note>
-      <xloc>16</xloc>
-      <yloc>569</yloc>
-      <width>166</width>
-      <heigth>36</heigth>
+2006-08-07 Jens Bleuel: created
+2006-09-08 Matt Casters: set file location using Internal variable</note>
+      <xloc>26</xloc>
+      <yloc>616</yloc>
+      <width>323</width>
+      <heigth>50</heigth>
       </notepad>
     <notepad>
       <note>Remove unused fields</note>
-      <xloc>461</xloc>
-      <yloc>208</yloc>
-      <width>115</width>
+      <xloc>213</xloc>
+      <yloc>174</yloc>
+      <width>116</width>
       <heigth>23</heigth>
       </notepad>
     <notepad>
       <note>Change the meta-data (field name, type, length, precision)</note>
-      <xloc>462</xloc>
-      <yloc>303</yloc>
-      <width>294</width>
+      <xloc>214</xloc>
+      <yloc>269</yloc>
+      <width>296</width>
       <heigth>23</heigth>
       </notepad>
     <notepad>
       <note>Change the field order, name, length, precision</note>
-      <xloc>462</xloc>
-      <yloc>415</yloc>
-      <width>237</width>
+      <xloc>214</xloc>
+      <yloc>381</yloc>
+      <width>239</width>
       <heigth>23</heigth>
       </notepad>
     </notepads>
   <order>
-  <hop> <from>GetFilenameKTR</from><to>Get example filename</to><enabled>Y</enabled> </hop>  <hop> <from>Get example filename</from><to>Text file input</to><enabled>Y</enabled> </hop>  <hop> <from>Text file input</from><to>Select values - remove</to><enabled>Y</enabled> </hop>  <hop> <from>Select values - remove</from><to>Select values - meta-data</to><enabled>Y</enabled> </hop>  <hop> <from>Select values - meta-data</from><to>Select values - select &amp; alter</to><enabled>Y</enabled> </hop>  <hop> <from>Select values - select &amp; alter</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Text file input</from><to>Select values - remove</to><enabled>Y</enabled> </hop>  <hop> <from>Select values - remove</from><to>Select values - meta-data</to><enabled>Y</enabled> </hop>  <hop> <from>Select values - meta-data</from><to>Select values - select &amp; alter</to><enabled>Y</enabled> </hop>  <hop> <from>Select values - select &amp; alter</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
 
   <step>
     <name>Dummy (do nothing)</name>
@@ -91,51 +84,8 @@ and add the filename.</note>
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>368</xloc>
-      <yloc>508</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Get example filename</name>
-    <type>ScriptValue</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <script>var fileSeparator = Packages.be.ibridge.kettle.core.Const.FILE_SEPARATOR;
-var subDirEndsAt = FilenameKTR.getString().lastIndexOf(fileSeparator);
-var subDir = FilenameKTR.getString().substr(0, subDirEndsAt+1);
-var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&quot;
-
-</script>
-    <fields>      <field>        <name>filenameTXT</name>
-        <rename>filenameTXT</rename>
-        <type>String</type>
-        <length>-1</length>
-        <precision>-1</precision>
-        </field>      </fields>    <GUI>
-      <xloc>219</xloc>
-      <yloc>105</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>GetFilenameKTR</name>
-    <type>SystemInfo</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <fields>
-      <field>
-        <name>FilenameKTR</name>
-        <type>transformation file name</type>
-        </field>
-      </fields>
-    <GUI>
-      <xloc>71</xloc>
-      <yloc>105</yloc>
+      <xloc>120</xloc>
+      <yloc>474</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -182,8 +132,8 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
         <length>2</length>
         <precision>-2</precision>
         </meta>      </fields>    <GUI>
-      <xloc>366</xloc>
-      <yloc>305</yloc>
+      <xloc>118</xloc>
+      <yloc>271</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -198,8 +148,8 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
         </remove>      <remove>        <name>Reserved</name>
         </remove>      <remove>        <name>Remarks</name>
         </remove>      </fields>    <GUI>
-      <xloc>366</xloc>
-      <yloc>205</yloc>
+      <xloc>118</xloc>
+      <yloc>171</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -219,8 +169,8 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
         <length>-2</length>
         <precision>-2</precision>
         </field>      </fields>    <GUI>
-      <xloc>365</xloc>
-      <yloc>405</yloc>
+      <xloc>117</xloc>
+      <yloc>371</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -231,9 +181,9 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
-    <accept_filenames>Y</accept_filenames>
+    <accept_filenames>N</accept_filenames>
     <accept_field>filenameTXT</accept_field>
-    <accept_stepname>Get example filename</accept_stepname>
+    <accept_stepname/>
     <separator>;</separator>
     <enclosure>&quot;</enclosure>
     <enclosure_breaks>N</enclosure_breaks>
@@ -255,7 +205,7 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
     <format>DOS</format>
     <encoding/>
     <file>
-      <name/>
+      <name>${Internal.Transformation.Filename.Directory}/files/Textfile input - fixed length sample data.txt</name>
       <filemask/>
       <file_required/>
       <type>Fixed</type>
@@ -550,8 +500,8 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
     <date_format_lenient>Y</date_format_lenient>
     <date_format_locale>de_de</date_format_locale>
     <GUI>
-      <xloc>366</xloc>
-      <yloc>105</yloc>
+      <xloc>118</xloc>
+      <yloc>71</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

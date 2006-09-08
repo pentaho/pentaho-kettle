@@ -64,7 +64,7 @@
         <precision>-1</precision>
         </field>
       </fields>
-    <limit>100000000</limit>
+    <limit>10000</limit>
     <GUI>
       <xloc>160</xloc>
       <yloc>171</yloc>

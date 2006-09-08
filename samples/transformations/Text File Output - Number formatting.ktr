@@ -128,7 +128,7 @@
     <encoding/>
     <endedLine/>
     <file>
-      <name>C:\Temp\number_formatting_sample</name>
+      <name>${Internal.Transformation.Filename.Directory}/output/number_formatting_sample</name>
       <extention>txt</extention>
       <append>N</append>
       <split>N</split>

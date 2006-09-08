@@ -29,69 +29,62 @@
     </info>
   <notepads>
     <notepad>
-      <note>Determine the directory of this transformation
-and add the filename.</note>
-      <xloc>37</xloc>
-      <yloc>53</yloc>
-      <width>231</width>
-      <heigth>36</heigth>
-      </notepad>
-    <notepad>
       <note>To see the result, do a preview on this Dummy step
 ... or add an output step.</note>
-      <xloc>436</xloc>
-      <yloc>542</yloc>
-      <width>257</width>
-      <heigth>36</heigth>
+      <xloc>173</xloc>
+      <yloc>516</yloc>
+      <width>268</width>
+      <heigth>37</heigth>
       </notepad>
     <notepad>
       <note>Load the example fixed length textfile.</note>
-      <xloc>299</xloc>
-      <yloc>54</yloc>
-      <width>196</width>
+      <xloc>36</xloc>
+      <yloc>28</yloc>
+      <width>197</width>
       <heigth>23</heigth>
       </notepad>
     <notepad>
       <note>Revision notes:
-2006-08-07 Jens Bleuel: created</note>
-      <xloc>16</xloc>
-      <yloc>569</yloc>
-      <width>166</width>
-      <heigth>36</heigth>
+2006-08-07 Jens Bleuel: created
+2006-09-08 Matt Casters: revised to use Internal variables to point to input file</note>
+      <xloc>27</xloc>
+      <yloc>625</yloc>
+      <width>393</width>
+      <heigth>50</heigth>
       </notepad>
     <notepad>
       <note>Sort rows by Gender for the following group by</note>
-      <xloc>431</xloc>
-      <yloc>191</yloc>
-      <width>236</width>
+      <xloc>168</xloc>
+      <yloc>165</yloc>
+      <width>239</width>
       <heigth>23</heigth>
       </notepad>
     <notepad>
       <note>Group and aggregate rows 
 (include all rows is checked)</note>
-      <xloc>435</xloc>
-      <yloc>272</yloc>
-      <width>142</width>
-      <heigth>36</heigth>
+      <xloc>172</xloc>
+      <yloc>246</yloc>
+      <width>149</width>
+      <heigth>37</heigth>
       </notepad>
     <notepad>
       <note>Count the rows</note>
-      <xloc>436</xloc>
-      <yloc>370</yloc>
+      <xloc>173</xloc>
+      <yloc>344</yloc>
       <width>84</width>
       <heigth>23</heigth>
       </notepad>
     <notepad>
       <note>Calculate the average Internet usage in hours per week and
 the percentage of students knowing about Internet.</note>
-      <xloc>438</xloc>
-      <yloc>448</yloc>
-      <width>300</width>
-      <heigth>36</heigth>
+      <xloc>175</xloc>
+      <yloc>422</yloc>
+      <width>308</width>
+      <heigth>37</heigth>
       </notepad>
     </notepads>
   <order>
-  <hop> <from>GetFilenameKTR</from><to>Get example filename</to><enabled>Y</enabled> </hop>  <hop> <from>Get example filename</from><to>Text file input</to><enabled>Y</enabled> </hop>  <hop> <from>Sort rows</from><to>Group by - Sums</to><enabled>Y</enabled> </hop>  <hop> <from>Text file input</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>Group by - Sums</from><to>Group by - rowcount</to><enabled>Y</enabled> </hop>  <hop> <from>Group by - rowcount</from><to>Calculator</to><enabled>Y</enabled> </hop>  <hop> <from>Calculator</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Sort rows</from><to>Group by - Sums</to><enabled>Y</enabled> </hop>  <hop> <from>Text file input</from><to>Sort rows</to><enabled>Y</enabled> </hop>  <hop> <from>Group by - Sums</from><to>Group by - rowcount</to><enabled>Y</enabled> </hop>  <hop> <from>Group by - rowcount</from><to>Calculator</to><enabled>Y</enabled> </hop>  <hop> <from>Calculator</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
 
   <step>
     <name>Calculator</name>
@@ -120,8 +113,8 @@ the percentage of students knowing about Internet.</note>
 <remove>N</remove>
 </calculation>
     <GUI>
-      <xloc>370</xloc>
-      <yloc>456</yloc>
+      <xloc>107</xloc>
+      <yloc>430</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -133,51 +126,8 @@ the percentage of students knowing about Internet.</note>
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>370</xloc>
-      <yloc>554</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Get example filename</name>
-    <type>ScriptValue</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <script>var fileSeparator = Packages.be.ibridge.kettle.core.Const.FILE_SEPARATOR;
-var subDirEndsAt = FilenameKTR.getString().lastIndexOf(fileSeparator);
-var subDir = FilenameKTR.getString().substr(0, subDirEndsAt+1);
-var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&quot;
-
-</script>
-    <fields>      <field>        <name>filenameTXT</name>
-        <rename>filenameTXT</rename>
-        <type>String</type>
-        <length>-1</length>
-        <precision>-1</precision>
-        </field>      </fields>    <GUI>
-      <xloc>220</xloc>
-      <yloc>105</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>GetFilenameKTR</name>
-    <type>SystemInfo</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <fields>
-      <field>
-        <name>FilenameKTR</name>
-        <type>transformation file name</type>
-        </field>
-      </fields>
-    <GUI>
-      <xloc>71</xloc>
-      <yloc>105</yloc>
+      <xloc>107</xloc>
+      <yloc>528</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -211,8 +161,8 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
           </field>
         </fields>
     <GUI>
-      <xloc>367</xloc>
-      <yloc>280</yloc>
+      <xloc>104</xloc>
+      <yloc>254</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -247,8 +197,8 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
           </field>
         </fields>
     <GUI>
-      <xloc>368</xloc>
-      <yloc>375</yloc>
+      <xloc>105</xloc>
+      <yloc>349</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -269,8 +219,8 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
         </field>
       </fields>
     <GUI>
-      <xloc>367</xloc>
-      <yloc>191</yloc>
+      <xloc>104</xloc>
+      <yloc>165</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -281,9 +231,9 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
-    <accept_filenames>Y</accept_filenames>
+    <accept_filenames>N</accept_filenames>
     <accept_field>filenameTXT</accept_field>
-    <accept_stepname>Get example filename</accept_stepname>
+    <accept_stepname/>
     <separator>;</separator>
     <enclosure>&quot;</enclosure>
     <enclosure_breaks>N</enclosure_breaks>
@@ -305,7 +255,7 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
     <format>DOS</format>
     <encoding/>
     <file>
-      <name/>
+      <name>${Internal.Transformation.Filename.Directory}/files/Textfile input - fixed length sample data.txt</name>
       <filemask/>
       <file_required/>
       <type>Fixed</type>
@@ -600,8 +550,8 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
     <date_format_lenient>Y</date_format_lenient>
     <date_format_locale>de_de</date_format_locale>
     <GUI>
-      <xloc>366</xloc>
-      <yloc>107</yloc>
+      <xloc>103</xloc>
+      <yloc>81</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

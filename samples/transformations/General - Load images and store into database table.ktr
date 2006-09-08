@@ -37,7 +37,7 @@
     <database>ORCL</database>
     <port>1521</port>
     <username>scott</username>
-    <password>tiger</password>
+    <password>Encrypted 2be98afc86aa7f2e4cb79ce64d795aac8</password>
     <servername/>
     <data_tablespace/>
     <index_tablespace/>
@@ -48,7 +48,7 @@
     </attributes>
   </connection>
   <order>
-  <hop> <from>Get File Names</from><to>Java Script Value</to><enabled>Y</enabled> </hop>  <hop> <from>Java Script Value</from><to>Table output</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Get File Names</from><to>Java Script Value</to><enabled>Y</enabled> </hop>  <hop> <from>Java Script Value</from><to>Table output</to><enabled>N</enabled> </hop>  </order>
 
   <step>
     <name>Get File Names</name>
@@ -57,13 +57,13 @@
     <distribute>Y</distribute>
     <copies>1</copies>
     <file>
-      <name>C:\testfiles\images</name>
+      <name>${Internal.Transformation.Filename.Directory}/files/</name>
       <filemask>.*\.png$</filemask>
-      <file_required>N</file_required>
+      <file_required/>
   </file>
     <GUI>
-      <xloc>200</xloc>
-      <yloc>163</yloc>
+      <xloc>98</xloc>
+      <yloc>86</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -86,8 +86,8 @@ fileInputStream.close();</script>
         <length>-1</length>
         <precision>-1</precision>
         </field>      </fields>    <GUI>
-      <xloc>397</xloc>
-      <yloc>163</yloc>
+      <xloc>295</xloc>
+      <yloc>86</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -114,8 +114,8 @@ fileInputStream.close();</script>
     <return_keys>N</return_keys>
     <return_field/>
     <GUI>
-      <xloc>628</xloc>
-      <yloc>163</yloc>
+      <xloc>480</xloc>
+      <yloc>86</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

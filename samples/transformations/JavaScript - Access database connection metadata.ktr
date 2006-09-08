@@ -60,8 +60,8 @@
       </fields>
     <limit>1</limit>
     <GUI>
-      <xloc>172</xloc>
-      <yloc>153</yloc>
+      <xloc>73</xloc>
+      <yloc>66</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -89,8 +89,8 @@ var hostname = db.getHostname();
         <length>250</length>
         <precision>-1</precision>
         </field>      </fields>    <GUI>
-      <xloc>342</xloc>
-      <yloc>153</yloc>
+      <xloc>243</xloc>
+      <yloc>66</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

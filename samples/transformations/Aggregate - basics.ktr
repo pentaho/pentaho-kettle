@@ -29,35 +29,28 @@
     </info>
   <notepads>
     <notepad>
-      <note>Determine the directory of this transformation
-and add the filename.</note>
-      <xloc>37</xloc>
-      <yloc>53</yloc>
-      <width>231</width>
-      <heigth>36</heigth>
-      </notepad>
-    <notepad>
       <note>To see the result, do a preview on this Dummy step
 ... or add an output step.</note>
-      <xloc>434</xloc>
-      <yloc>412</yloc>
-      <width>257</width>
-      <heigth>36</heigth>
+      <xloc>196</xloc>
+      <yloc>379</yloc>
+      <width>268</width>
+      <heigth>37</heigth>
       </notepad>
     <notepad>
       <note>Load the example fixed length textfile.</note>
-      <xloc>299</xloc>
-      <yloc>54</yloc>
-      <width>196</width>
+      <xloc>61</xloc>
+      <yloc>21</yloc>
+      <width>197</width>
       <heigth>23</heigth>
       </notepad>
     <notepad>
       <note>Revision notes:
-2006-08-07 Jens Bleuel: created</note>
+2006-08-07 Jens Bleuel: created
+2006-09-08 Matt Casters: set input file location using Internal variable</note>
       <xloc>16</xloc>
-      <yloc>569</yloc>
-      <width>166</width>
-      <heigth>36</heigth>
+      <yloc>580</yloc>
+      <width>351</width>
+      <heigth>50</heigth>
       </notepad>
     <notepad>
       <note>Count all not null values, BUT:
@@ -67,14 +60,14 @@ aggregating rows of data.
 
 THE AGGREGATE STEP WILL BE REMOVED IN A
 FUTURE VERSION.</note>
-      <xloc>433</xloc>
-      <yloc>209</yloc>
-      <width>306</width>
-      <heigth>101</heigth>
+      <xloc>195</xloc>
+      <yloc>176</yloc>
+      <width>318</width>
+      <heigth>103</heigth>
       </notepad>
     </notepads>
   <order>
-  <hop> <from>GetFilenameKTR</from><to>Get example filename</to><enabled>Y</enabled> </hop>  <hop> <from>Get example filename</from><to>Text file input</to><enabled>Y</enabled> </hop>  <hop> <from>Aggregate Rows</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Text file input</from><to>Aggregate Rows</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Aggregate Rows</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  <hop> <from>Text file input</from><to>Aggregate Rows</to><enabled>Y</enabled> </hop>  </order>
 
   <step>
     <name>Aggregate Rows</name>
@@ -90,8 +83,8 @@ FUTURE VERSION.</note>
         </field>
       </fields>
     <GUI>
-      <xloc>366</xloc>
-      <yloc>243</yloc>
+      <xloc>128</xloc>
+      <yloc>210</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -103,51 +96,8 @@ FUTURE VERSION.</note>
     <distribute>Y</distribute>
     <copies>1</copies>
     <GUI>
-      <xloc>366</xloc>
-      <yloc>421</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Get example filename</name>
-    <type>ScriptValue</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <script>var fileSeparator = Packages.be.ibridge.kettle.core.Const.FILE_SEPARATOR;
-var subDirEndsAt = FilenameKTR.getString().lastIndexOf(fileSeparator);
-var subDir = FilenameKTR.getString().substr(0, subDirEndsAt+1);
-var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&quot;
-
-</script>
-    <fields>      <field>        <name>filenameTXT</name>
-        <rename>filenameTXT</rename>
-        <type>String</type>
-        <length>-1</length>
-        <precision>-1</precision>
-        </field>      </fields>    <GUI>
-      <xloc>220</xloc>
-      <yloc>105</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>GetFilenameKTR</name>
-    <type>SystemInfo</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <fields>
-      <field>
-        <name>FilenameKTR</name>
-        <type>transformation file name</type>
-        </field>
-      </fields>
-    <GUI>
-      <xloc>71</xloc>
-      <yloc>105</yloc>
+      <xloc>128</xloc>
+      <yloc>388</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -158,9 +108,9 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
-    <accept_filenames>Y</accept_filenames>
+    <accept_filenames>N</accept_filenames>
     <accept_field>filenameTXT</accept_field>
-    <accept_stepname>Get example filename</accept_stepname>
+    <accept_stepname/>
     <separator>;</separator>
     <enclosure>&quot;</enclosure>
     <enclosure_breaks>N</enclosure_breaks>
@@ -182,7 +132,7 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
     <format>DOS</format>
     <encoding/>
     <file>
-      <name/>
+      <name>${Internal.Transformation.Filename.Directory}/files/Textfile input - fixed length sample data.txt</name>
       <filemask/>
       <file_required/>
       <type>Fixed</type>
@@ -477,8 +427,8 @@ var filenameTXT = subDir + &quot;Textfile input - fixed length sample data.txt&q
     <date_format_lenient>Y</date_format_lenient>
     <date_format_locale>de_de</date_format_locale>
     <GUI>
-      <xloc>366</xloc>
-      <yloc>107</yloc>
+      <xloc>128</xloc>
+      <yloc>74</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

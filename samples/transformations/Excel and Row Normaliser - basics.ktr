@@ -33,22 +33,22 @@
 and add the filename.</note>
       <xloc>38</xloc>
       <yloc>126</yloc>
-      <width>231</width>
-      <heigth>36</heigth>
+      <width>240</width>
+      <heigth>37</heigth>
       </notepad>
     <notepad>
       <note>To see the result, do a preview on this Dummy step
 ... or add an output step.</note>
       <xloc>369</xloc>
       <yloc>407</yloc>
-      <width>257</width>
-      <heigth>36</heigth>
+      <width>268</width>
+      <heigth>37</heigth>
       </notepad>
     <notepad>
       <note>Load the Excel example.</note>
       <xloc>299</xloc>
       <yloc>127</yloc>
-      <width>127</width>
+      <width>128</width>
       <heigth>23</heigth>
       </notepad>
     <notepad>
@@ -56,24 +56,24 @@ and add the filename.</note>
 2006-08-22 Jens Bleuel: created</note>
       <xloc>16</xloc>
       <yloc>569</yloc>
-      <width>166</width>
-      <heigth>36</heigth>
+      <width>167</width>
+      <heigth>37</heigth>
       </notepad>
     <notepad>
       <note>This example reads an Excel file with planning data per material and month 
 and uses the Row Normaliser.</note>
       <xloc>36</xloc>
       <yloc>41</yloc>
-      <width>370</width>
-      <heigth>36</heigth>
+      <width>386</width>
+      <heigth>37</heigth>
       </notepad>
     <notepad>
       <note>Map the month columns to 
 one new column.</note>
       <xloc>462</xloc>
       <yloc>126</yloc>
-      <width>139</width>
-      <heigth>36</heigth>
+      <width>150</width>
+      <heigth>37</heigth>
       </notepad>
     </notepads>
   <order>
@@ -315,7 +315,7 @@ one new column.</note>
     <script>var fileSeparator = Packages.be.ibridge.kettle.core.Const.FILE_SEPARATOR;
 var subDirEndsAt = FilenameKTR.getString().lastIndexOf(fileSeparator);
 var subDir = FilenameKTR.getString().substr(0, subDirEndsAt+1);
-var filenameXLS = subDir + &quot;Excel and Row Normaliser - sample data.xls&quot;
+var filenameXLS = subDir + &quot;files/&quot; + &quot;Excel and Row Normaliser - sample data.xls&quot;
 
 </script>
     <fields>      <field>        <name>filenameXLS</name>
