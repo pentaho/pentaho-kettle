@@ -182,8 +182,6 @@ public class AggregateRows extends BaseStep implements StepInterface
 		
 		if (linesRead==1)
 		{
-			logError(Messages.getString("AggregateRows.Log.RowInfo")+r.toString()); //$NON-NLS-1$
-			logError(Messages.getString("AggregateRows.Log.RowSize")+r.size()); //$NON-NLS-1$
 			for (int i=0;i<meta.getFieldName().length;i++) 
 			{
 				data.fieldnrs[i]=r.searchValueIndex(meta.getFieldName()[i]);
