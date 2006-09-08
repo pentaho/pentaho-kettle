@@ -679,6 +679,7 @@ public class SpoonLog extends Composite
 		if (arguments.size() > 0)
 		{
 			EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, arguments);
+            esd.setReadOnly(false);
 			if (esd.open() == null)
 			{
 				arguments = null;
