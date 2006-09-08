@@ -2092,7 +2092,10 @@ public class TransMeta implements XMLInterface
     private void loadXML(Node transnode, Repository rep) throws KettleXMLException
     {
         Props props = null;
-        if (Props.isInitialized()) props=Props.getInstance();
+        if (Props.isInitialized())
+        {
+            props=Props.getInstance();
+        }
         
         try
         {
