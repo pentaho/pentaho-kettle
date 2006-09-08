@@ -19,6 +19,10 @@ public class LocalVariables
     
     private Map map;
     
+    
+    /** This is the root of all variables */
+    private static KettleVariables root;
+    
     /**
      * Create a new KettleVariables variable map in the local variables map for the specified thread.
      * @param localThread The local thread to attach to
@@ -58,6 +62,10 @@ public class LocalVariables
             {
                 throw new RuntimeException("No parent Kettle Variables found for thread ["+parentThread+"], local thread is ["+localThread+"]");
             }
+        }
+        else // The newly created KettleVariables become the root!!
+        {
+            root = vars; 
         }
 
         // Before we add this, for debugging, just see if we're not overwriting anything.
@@ -182,5 +190,10 @@ public class LocalVariables
             }
         }
         return children;
+    }
+    
+    public static KettleVariables getRoot()
+    {
+        return root;
     }
 }
