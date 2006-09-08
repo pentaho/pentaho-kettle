@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<job>
+  <name/>
+  <directory>/</directory>
+  <logconnection/>
+  <logtable/>
+   <use_batchid>N</use_batchid>
+   <pass_batchid>N</pass_batchid>
+   <use_logfield>N</use_logfield>
+  <entries>
+    <entry>
+      <name>START</name>
+      <description>A job starts to process here.</description>
+      <type>SPECIAL</type>
+      <start>Y</start>
+      <dummy>N</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <interval>60</interval>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>186</xloc>
+      <yloc>129</yloc>
+      </entry>
+    <entry>
+      <name>DUMMY</name>
+      <description>A dummy entry.</description>
+      <type>SPECIAL</type>
+      <start>N</start>
+      <dummy>Y</dummy>
+      <repeat>N</repeat>
+      <schedulerType>0</schedulerType>
+      <interval>60</interval>
+      <hour>12</hour>
+      <minutes>0</minutes>
+      <weekDay>1</weekDay>
+      <DayOfMonth>1</DayOfMonth>
+      <parallel>N</parallel>
+      <draw>N</draw>
+      <nr>0</nr>
+      <xloc>50</xloc>
+      <yloc>50</yloc>
+      </entry>
+    <entry>
+      <name>OK</name>
+      <description>This comparisson is true when no errors have occured.</description>
+      <type>EVAL</type>
+      <script>errors == 0</script>
+      <parallel>N</parallel>
+      <draw>N</draw>
+      <nr>0</nr>
+      <xloc>0</xloc>
+      <yloc>0</yloc>
+      </entry>
+    <entry>
+      <name>ERROR</name>
+      <description>This comparisson is true when one or more errors have occured.</description>
+      <type>EVAL</type>
+      <script>errors != 0</script>
+      <parallel>N</parallel>
+      <draw>N</draw>
+      <nr>0</nr>
+      <xloc>0</xloc>
+      <yloc>0</yloc>
+      </entry>
+    <entry>
+      <name>Run transformation.ktr</name>
+      <description/>
+      <type>TRANS</type>
+      <filename>${Internal.Job.Filename.Directory}/Run transformation.ktr</filename>
+      <transname/>
+      <directory>/</directory>
+      <arg_from_previous>N</arg_from_previous>
+      <exec_per_row>N</exec_per_row>
+      <clear_rows>N</clear_rows>
+      <clear_files>N</clear_files>
+      <set_logfile>N</set_logfile>
+      <logfile/>
+      <logext/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <loglevel>Error</loglevel>
+      <argument0>ArgOne</argument0>
+      <argument1>ArgTwo</argument1>
+      <argument2>ArgThree</argument2>
+      <parallel>N</parallel>
+      <draw>Y</draw>
+      <nr>0</nr>
+      <xloc>347</xloc>
+      <yloc>129</yloc>
+      </entry>
+    </entries>
+  <hops>
+    <hop>
+      <from>START</from>
+      <to>Run transformation.ktr</to>
+      <from_nr>0</from_nr>
+      <to_nr>0</to_nr>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>Y</unconditional>
+      </hop>
+    </hops>
+  <notepads>
+    </notepads>
+  </job>
