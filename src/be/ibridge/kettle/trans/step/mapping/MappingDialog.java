@@ -88,11 +88,14 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     private FormData     fdbOutput;
     
     TransMeta mappingTransMeta = null;
+
+    protected boolean transModified;
     
 	public MappingDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
 		input=(MappingMeta )in;
+        transModified=false;
 	}
 
 	public String open()
@@ -177,6 +180,15 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         fdTransformation.top  = new FormAttachment(wStepname, margin);
         wTransformation.setLayoutData(fdTransformation);
   
+        wTransformation.addModifyListener(new ModifyListener()
+            {
+                public void modifyText(ModifyEvent e)
+                {
+                    transModified = true;
+                }
+            }
+        );
+        
         wbTransformation.addSelectionListener(new SelectionAdapter()
             {
                 public void widgetSelected(SelectionEvent e)
@@ -533,13 +545,17 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             if (fileName!=null)
             {
                 wTransformation.setText(fileName);
+                transModified=false;
             }
             else
             if (repdir!=null)
             {
                 if (repdir.isRoot()) wTransformation.setText( repdir+transName ); 
                 else wTransformation.setText( repdir+RepositoryDirectory.DIRECTORY_SEPARATOR+transName );
+                
+                transModified=false;
             }
+            
         }
     }
 	
@@ -560,7 +576,26 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         }
         else
         {
-            input.setMappingTransMeta(mappingTransMeta);
+            if (transModified && repository==null) // someone manually entered a transformation to an XML file... 
+            {
+                try
+                {
+                    if (repository==null)
+                    {
+                        input.setFileName(wTransformation.getText());
+                        input.loadMappingMeta(repository);
+                        input.getMappingTransMeta().setFilename(wTransformation.getText());
+                    }
+                }
+                catch(KettleException e)
+                {
+                    new ErrorDialog(shell, props, "Error", "There was an error parsing transformation ["+wTransformation.getText()+"]");
+                }
+            }
+            else
+            {
+                input.setMappingTransMeta(mappingTransMeta);
+            }
         }
         
         int nrInput  = wInputFields.nrNonEmpty();

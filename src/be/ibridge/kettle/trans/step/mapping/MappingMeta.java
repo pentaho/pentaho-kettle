@@ -378,7 +378,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    private void loadMappingMeta(Repository rep) throws KettleException
+    public void loadMappingMeta(Repository rep) throws KettleException
     {
         String realFilename = StringUtil.environmentSubstitute(fileName);
         String realTransname = StringUtil.environmentSubstitute(transName);
@@ -553,6 +553,54 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		return new MappingData();
 	}
+
+    /**
+     * @return the directoryPath
+     */
+    public String getDirectoryPath()
+    {
+        return directoryPath;
+    }
+
+    /**
+     * @param directoryPath the directoryPath to set
+     */
+    public void setDirectoryPath(String directoryPath)
+    {
+        this.directoryPath = directoryPath;
+    }
+
+    /**
+     * @return the fileName
+     */
+    public String getFileName()
+    {
+        return fileName;
+    }
+
+    /**
+     * @param fileName the fileName to set
+     */
+    public void setFileName(String fileName)
+    {
+        this.fileName = fileName;
+    }
+
+    /**
+     * @return the transName
+     */
+    public String getTransName()
+    {
+        return transName;
+    }
+
+    /**
+     * @param transName the transName to set
+     */
+    public void setTransName(String transName)
+    {
+        this.transName = transName;
+    }
 
 
 }
