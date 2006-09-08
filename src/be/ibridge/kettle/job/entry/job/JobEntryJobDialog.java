@@ -628,7 +628,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
 		if (jobentry.getDirectory()!=null) wDirectory.setText(jobentry.getDirectory().getPath());
 		if (jobentry.getName()!=null)      wName.setText(jobentry.getName());
 		if (jobentry.getJobName()!=null)   wJobname.setText(jobentry.getJobName()); 
-		if (jobentry.getFileName()!=null)  wFilename.setText(jobentry.getFileName());
+		if (jobentry.getFilename()!=null)  wFilename.setText(jobentry.getFilename());
 		if (jobentry.arguments!=null)
 		{
 			for (int i=0;i<jobentry.arguments.length;i++)

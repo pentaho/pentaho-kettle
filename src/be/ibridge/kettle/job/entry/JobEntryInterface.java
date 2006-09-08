@@ -164,5 +164,8 @@ public interface JobEntryInterface
     public ArrayList getSQLStatements(Repository repository) throws KettleException;
     
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep);
+    
+    public String getFilename();
+    public String getRealFilename();
 }
 

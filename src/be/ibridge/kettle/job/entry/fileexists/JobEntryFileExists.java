@@ -127,6 +127,11 @@ public class JobEntryFileExists extends JobEntryBase implements JobEntryInterfac
 	{
 		return filename;
 	}
+    
+    public String getRealFilename()
+    {
+        return StringUtil.environmentSubstitute(getFilename());
+    }
 	
 	public Result execute(Result prev_result, int nr, Repository rep, Job parentJob)
 	{
@@ -136,7 +141,7 @@ public class JobEntryFileExists extends JobEntryBase implements JobEntryInterfac
 	
 		if (filename!=null)
 		{
-			File file = new File(StringUtil.environmentSubstitute(filename));
+			File file = new File(getRealFilename());
 			if (file.exists() && file.canRead())
 			{
 				log.logDetailed(toString(), "File ["+filename+"] exists.");

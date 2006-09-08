@@ -1392,7 +1392,7 @@ public class ChefGraph extends Canvas implements Redrawable
 		if (jobentry.getType()==JobEntryInterface.TYPE_JOBENTRY_JOB)
 		{
 			final JobEntryJob entry = (JobEntryJob)jobentry.getEntry();
-			if ( ( entry!=null && entry.getFileName()!=null && chef.rep==null) ||
+			if ( ( entry!=null && entry.getFilename()!=null && chef.rep==null) ||
 			     ( entry!=null && entry.getName()!=null && chef.rep!=null)
 			   )
 			{
@@ -1403,7 +1403,7 @@ public class ChefGraph extends Canvas implements Redrawable
 		if (jobentry.getType()==JobEntryInterface.TYPE_JOBENTRY_TRANSFORMATION)
 		{
 			final JobEntryTrans entry = (JobEntryTrans)jobentry.getEntry();
-			if ( ( entry!=null && entry.getFileName()!=null && chef.rep==null) ||
+			if ( ( entry!=null && entry.getFilename()!=null && chef.rep==null) ||
 			     ( entry!=null && entry.getName()!=null && chef.rep!=null)
 			   )
 			{
@@ -1414,22 +1414,25 @@ public class ChefGraph extends Canvas implements Redrawable
 	
 	public void launchSpoon(JobEntryTrans entry)
 	{
+        String exactFilename = StringUtil.environmentSubstitute(entry.getFilename() );
+        String exactTransname = StringUtil.environmentSubstitute(entry.getTransname() );
+        
 		// Load from repository?
-		if ( Const.isEmpty(entry.getFileName()) && !Const.isEmpty(entry.getTransname()) )
+		if ( Const.isEmpty(exactFilename) && !Const.isEmpty(exactTransname) )
 		{
 			try
 			{
 				Spoon sp = new Spoon(log, chef.disp, chef.rep);
 				// New transformation?
 				//
-				long id = sp.rep.getTransformationID(StringUtil.environmentSubstitute(entry.getTransname()), entry.getDirectory().getID());
+				long id = sp.rep.getTransformationID(exactTransname, entry.getDirectory().getID());
 				if (id<0) // New
 				{
-					sp.setTransMeta( new TransMeta(null, StringUtil.environmentSubstitute(entry.getTransname()), entry.arguments) );
+					sp.setTransMeta( new TransMeta(null, exactTransname, entry.arguments) );
 				}
 				else
 				{
-					sp.setTransMeta( new TransMeta(sp.rep, StringUtil.environmentSubstitute(entry.getTransname()), entry.getDirectory()) );
+					sp.setTransMeta( new TransMeta(sp.rep, exactTransname, entry.getDirectory()) );
 				}
 				sp.getTransMeta().clearChanged();
 				sp.open();
@@ -1450,7 +1453,7 @@ public class ChefGraph extends Canvas implements Redrawable
 				Spoon sp = new Spoon(log, chef.disp, null);
 
                 // only try to load if the file exists...
-                String exactFilename = StringUtil.environmentSubstitute(entry.getFileName() );
+                
                 File file = new File(exactFilename);
                 TransMeta launchTransMeta = null;
                 if (file.exists())
@@ -1480,13 +1483,16 @@ public class ChefGraph extends Canvas implements Redrawable
 
 	public void launchChef(JobEntryJob entry)
 	{
+        String exactFilename = StringUtil.environmentSubstitute(entry.getFilename() );
+        String exactJobname = StringUtil.environmentSubstitute(entry.getJobName() );
+        
 		// Load from repository?
-		if ( Const.isEmpty(entry.getFileName()) && !Const.isEmpty(entry.getName()) )
+		if ( Const.isEmpty(exactFilename) && !Const.isEmpty(exactJobname) )
 		{
 			try
 			{
 				Chef ch = new Chef(log, chef.disp, chef.rep);
-				ch.jobMeta = new JobMeta(log, ch.rep, StringUtil.environmentSubstitute(entry.getJobName()), entry.getDirectory());
+				ch.jobMeta = new JobMeta(log, ch.rep, exactJobname, entry.getDirectory());
 	
 				ch.jobMeta.clearChanged();
 				ch.open();
@@ -1503,8 +1509,6 @@ public class ChefGraph extends Canvas implements Redrawable
 		{
 			try
 			{
-                String exactFilename = StringUtil.environmentSubstitute(entry.getFileName() );
-
                 Chef ch = new Chef(log, chef.disp, null);
 
                 File file = new File(exactFilename);

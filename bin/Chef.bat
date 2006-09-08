@@ -71,10 +71,10 @@ set CLASSPATH=%CLASSPATH%;libswt\win32\swt.jar
 
 REM ******************************************************************
 REM ** Set java runtime options                                     **
-REM ** Change 256m to higher values in case you run out of memory.  **
+REM ** Change 512m to higher values in case you run out of memory.  **
 REM ******************************************************************
 
-set OPT=-Xmx256m -cp %CLASSPATH% -Djava.library.path=libswt\win32\ -DKETTLE_HOME="%KETTLE_HOME%" -DKETTLE_REPOSITORY="%KETTLE_REPOSITORY%" -DKETTLE_USER="%KETTLE_USER%" -DKETTLE_PASSWORD="%KETTLE_PASSWORD%"
+set OPT=-Xmx512m -cp %CLASSPATH% -Djava.library.path=libswt\win32\ -DKETTLE_HOME="%KETTLE_HOME%" -DKETTLE_REPOSITORY="%KETTLE_REPOSITORY%" -DKETTLE_USER="%KETTLE_USER%" -DKETTLE_PASSWORD="%KETTLE_PASSWORD%"
 
 REM ***************
 REM ** Run...    **

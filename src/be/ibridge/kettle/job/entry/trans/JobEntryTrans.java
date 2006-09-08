@@ -96,10 +96,24 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		filename=n;
 	}
 	
+    /**
+     * @deprecated, use getFilename() instead
+     * @return
+     */
 	public String getFileName()
 	{
 		return filename;
 	}
+
+    public String getFilename()
+    {
+        return filename;
+    }
+    
+    public String getRealFilename()
+    {
+        return StringUtil.environmentSubstitute(getFilename());
+    }
 
 	public void setTransname(String transname)
 	{
@@ -358,11 +372,11 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
 		// Open the transformation...
 		// Default directory for now...
 		
-        log.logBasic(toString(), "Opening filename : ["+StringUtil.environmentSubstitute(getFileName())+"]");
+        log.logBasic(toString(), "Opening filename : ["+StringUtil.environmentSubstitute(getFilename())+"]");
         
-        if (!Const.isEmpty(getFileName()))
+        if (!Const.isEmpty(getFilename()))
         {
-            log.logBasic(toString(), "Opening transformation: ["+StringUtil.environmentSubstitute(getFileName())+"]");
+            log.logBasic(toString(), "Opening transformation: ["+StringUtil.environmentSubstitute(getFilename())+"]");
         }
         else
         {
@@ -389,7 +403,7 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             
     		try
     		{
-                log.logDetailed(toString(), "Starting transformation...(file="+getFileName()+", name="+getName()+"), repinfo="+getDescription());
+                log.logDetailed(toString(), "Starting transformation...(file="+getFilename()+", name="+getName()+"), repinfo="+getDescription());
                 
                 TransMeta transMeta = getTransMeta(rep);
     
@@ -541,10 +555,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         LogWriter log = LogWriter.getInstance();
         
         TransMeta transMeta = null;
-        if (!Const.isEmpty(getFileName())) // Load from an XML file
+        if (!Const.isEmpty(getFilename())) // Load from an XML file
         {
-            log.logBasic(toString(), "Loading transformation from XML file ["+StringUtil.environmentSubstitute(getFileName())+"]");
-            transMeta = new TransMeta(StringUtil.environmentSubstitute(getFileName()));
+            log.logBasic(toString(), "Loading transformation from XML file ["+StringUtil.environmentSubstitute(getFilename())+"]");
+            transMeta = new TransMeta(StringUtil.environmentSubstitute(getFilename()));
         }
         else
         if (!Const.isEmpty(getTransname()) && getDirectory() != null)  // Load from the repository

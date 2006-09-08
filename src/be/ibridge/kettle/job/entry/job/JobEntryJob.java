@@ -95,11 +95,25 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 		filename=n;
 	}
 	
+    /**
+     * @deprecated, use getFilename() instead.
+     * @return
+     */
 	public String getFileName()
 	{
 		return filename;
 	}
-
+    
+    public String getFilename()
+    {
+        return filename;
+    }
+    
+    public String getRealFilename()
+    {
+        return StringUtil.environmentSubstitute(getFilename());
+    }
+    
 	public void setJobName(String jobname)
 	{
 		this.jobname=jobname;
@@ -548,7 +562,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
         }
         else
         {
-            return new JobMeta(LogWriter.getInstance(), getFileName(), rep);
+            return new JobMeta(LogWriter.getInstance(), getFilename(), rep);
         }
     }
 

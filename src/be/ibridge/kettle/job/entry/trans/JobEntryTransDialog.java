@@ -716,7 +716,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
         }
 		if (jobentry.getName()!=null)      wName.setText(jobentry.getName());
 		if (jobentry.getTransname()!=null) wTransname.setText(jobentry.getTransname()); 
-		if (jobentry.getFileName()!=null)  wFilename.setText(jobentry.getFileName());
+		if (jobentry.getFilename()!=null)  wFilename.setText(jobentry.getFilename());
 		if (jobentry.arguments!=null)
 		{
 			for (int i=0;i<jobentry.arguments.length;i++)

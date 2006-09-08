@@ -151,13 +151,17 @@ public class ChefLog extends Composite
         column4.setText(Messages.getString("ChefLog.Column.Reason")); //$NON-NLS-1$
         column4.setWidth(200);
 
-        TreeColumn column5 = new TreeColumn(wTree, SWT.RIGHT);
-        column5.setText(Messages.getString("ChefLog.Column.Nr")); //$NON-NLS-1$
-        column5.setWidth(50);
+        TreeColumn column5 = new TreeColumn(wTree, SWT.LEFT);
+        column5.setText(Messages.getString("ChefLog.Column.Filename")); //$NON-NLS-1$
+        column5.setWidth(200);
 
         TreeColumn column6 = new TreeColumn(wTree, SWT.RIGHT);
-        column6.setText(Messages.getString("ChefLog.Column.LogDate")); //$NON-NLS-1$
-        column6.setWidth(120);
+        column6.setText(Messages.getString("ChefLog.Column.Nr")); //$NON-NLS-1$
+        column6.setWidth(50);
+
+        TreeColumn column7 = new TreeColumn(wTree, SWT.RIGHT);
+        column7.setText(Messages.getString("ChefLog.Column.LogDate")); //$NON-NLS-1$
+        column7.setWidth(120);
 
 		FormData fdTable=new FormData();
 		fdTable.left   = new FormAttachment(0, 0);
@@ -551,6 +555,11 @@ public class ChefLog extends Composite
                         if (jec!=null)
                         {
                             treeItem.setText( 0, jec.getName() );
+                            
+                            if (jec.getEntry()!=null)
+                            {
+                                treeItem.setText( 4, Const.NVL( jec.getEntry().getRealFilename(), "") );
+                            }
                         }
                         else
                         {
@@ -565,7 +574,7 @@ public class ChefLog extends Composite
                         if (res!=null)
                         {
                             treeItem.setText(2, res.getResult()?Messages.getString("ChefLog.Tree.Success"):Messages.getString("ChefLog.Tree.Failure")); //$NON-NLS-1$ //$NON-NLS-2$
-                            treeItem.setText(4, ""+res.getEntryNr()); //$NON-NLS-1$
+                            treeItem.setText(5, ""+res.getEntryNr()); //$NON-NLS-1$
                         }
                         String reason = result.getReason();
                         if (reason!=null)
@@ -575,7 +584,7 @@ public class ChefLog extends Composite
                         Date logDate = result.getLogDate();
                         if (logDate!=null)
                         {
-                            treeItem.setText(5, new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(logDate)); //$NON-NLS-1$
+                            treeItem.setText(6, new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(logDate)); //$NON-NLS-1$
                         }
                     }
                 }

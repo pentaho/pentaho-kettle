@@ -546,7 +546,7 @@ public class JobEntryShellDialog extends Dialog implements JobEntryDialogInterfa
 	public void getData()
 	{
 		if (jobentry.getName()!=null)     wName.setText(jobentry.getName());
-		if (jobentry.getFileName()!=null) wFilename.setText(jobentry.getFileName());
+		if (jobentry.getFilename()!=null) wFilename.setText(jobentry.getFilename());
 		if (jobentry.arguments!=null)
 		{
 			for (int i=0;i<jobentry.arguments.length;i++)

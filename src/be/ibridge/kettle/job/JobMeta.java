@@ -159,7 +159,7 @@ public class JobMeta implements Cloneable, XMLInterface
 		
 		directory = new RepositoryDirectory();
         
-        setInternalKettleVariables();
+        // setInternalKettleVariables(); Don't clear the internal variables for ad-hoc jobs, it's ruines the previews etc.
 	}
 	
 	public void addDefaults()

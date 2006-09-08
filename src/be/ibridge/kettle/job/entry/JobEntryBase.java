@@ -321,4 +321,14 @@ public class JobEntryBase implements Cloneable
     {
         return new ArrayList();
     }
+    
+    public String getFilename()
+    {
+        return null;
+    }
+    
+    public String getRealFilename()
+    {
+        return null;
+    }
 }

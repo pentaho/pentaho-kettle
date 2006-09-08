@@ -270,7 +270,7 @@ public class TransMeta implements XMLInterface
         resultRows = new ArrayList();
         resultFiles = new ArrayList();
         
-        setInternalKettleVariables();
+        // setInternalKettleVariables(); Don't clear the internal variables for ad-hoc transformations, it's ruines the previews
     }
 
     public void clearUndo()
@@ -4334,7 +4334,7 @@ public class TransMeta implements XMLInterface
             // The directory of the transformation
             variables.setVariable(prefix+"Filename.Directory", file.getParent());
 
-            // The filename of the transformation
+           // The filename of the transformation
             variables.setVariable(prefix+"Filename.Name", file.getName());
         }
         else
@@ -4349,5 +4349,6 @@ public class TransMeta implements XMLInterface
         // The name of the directory in the repository
         variables.setVariable(prefix+"Repository.Directory", directory!=null?directory.getPath():"");
 
+        
     }
 }

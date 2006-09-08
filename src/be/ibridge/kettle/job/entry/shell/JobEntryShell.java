@@ -225,11 +225,25 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
 		filename=n;
 	}
 	
-	public String getFileName()
+    /**
+     * @deprecated, use getFilename() instead
+     * @return
+     */
+    public String getFileName()
 	{
 		return filename;
 	}
 
+    public String getFilename()
+    {
+        return filename;
+    }
+
+    public String getRealFilename()
+    {
+        return StringUtil.environmentSubstitute(getFilename());
+    }
+    
 	public String getLogFilename()
 	{
 		String retval="";
@@ -265,7 +279,7 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
         {
             try
             {
-                appender = LogWriter.createFileAppender(getLogFilename(), true);
+                appender = LogWriter.createFileAppender(StringUtil.environmentSubstitute(getLogFilename()), true);
             }
             catch(KettleException e)
             {
@@ -380,16 +394,16 @@ public class JobEntryShell extends JobEntryBase implements Cloneable, JobEntryIn
             
             if( Const.getOS().equals( "Windows 95" ) )
             {
-                base = new String[] { "command.com", "/C", StringUtil.environmentSubstitute(getFileName()) };
+                base = new String[] { "command.com", "/C", StringUtil.environmentSubstitute(getFilename()) };
             }
             else
             if( Const.getOS().startsWith( "Windows" ) )
             {
-                base = new String[] { "cmd.exe", "/C", StringUtil.environmentSubstitute(getFileName()) };
+                base = new String[] { "cmd.exe", "/C", StringUtil.environmentSubstitute(getFilename()) };
             }
             else 
             {
-                base = new String[] { StringUtil.environmentSubstitute(getFileName()) };
+                base = new String[] { StringUtil.environmentSubstitute(getFilename()) };
             }
     
             // Construct the arguments...
