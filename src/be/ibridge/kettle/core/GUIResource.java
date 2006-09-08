@@ -3,6 +3,9 @@ package be.ibridge.kettle.core;
 import java.util.Hashtable;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.FontData;
@@ -82,6 +85,12 @@ public class GUIResource
     
     private Image     imageSplash;
 
+    /**
+     * GUIResource also contains the clipboard as it has to be allocated only once!
+     * I don't want to put it in a seperate singleton just for this one member.
+     */
+    private static Clipboard clipboard;
+
     private GUIResource(Display display)
     {
         this.display = display;
@@ -96,6 +105,8 @@ public class GUIResource
                 }
             }
         );
+        
+        clipboard = null;
     }
     
     public static final GUIResource getInstance()
@@ -669,5 +680,37 @@ public class GUIResource
     public Font getFontLarge()
     {
         return fontLarge.getFont();
+    }
+    
+    /**
+     * @return Returns the clipboard.
+     */
+    public Clipboard getNewClipboard()
+    {
+        if (clipboard!=null)
+        {
+            clipboard.dispose();
+            clipboard=null;
+        }
+        clipboard=new Clipboard(display);
+        
+        return clipboard;
+    }
+
+    public void toClipboard(String cliptext)
+    {
+        if (cliptext==null) return;
+
+        getNewClipboard();
+        TextTransfer tran = TextTransfer.getInstance();
+        clipboard.setContents(new String[] { cliptext }, new Transfer[] { tran });
+    }
+    
+    public String fromClipboard()
+    {
+        getNewClipboard();
+        TextTransfer tran = TextTransfer.getInstance();
+
+        return (String)clipboard.getContents(tran);
     }
 }

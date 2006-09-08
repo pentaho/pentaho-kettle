@@ -573,7 +573,7 @@ public class ConditionEditor extends Composite
 					{
 					    Condition c = active_condition.getCondition(cond_nr);
 					    String xml = c.getXML();
-						props.toClipboard(xml);
+                        GUIResource.getInstance().toClipboard(xml);
 						widget.redraw();
 
 					}
@@ -584,7 +584,7 @@ public class ConditionEditor extends Composite
 				{
 					public void widgetSelected(SelectionEvent e)
 					{
-					    String xml = props.fromClipboard();
+					    String xml = GUIResource.getInstance().fromClipboard();
 					    try
 					    {
 						    Document d = XMLHandler.loadXMLString(xml);
@@ -617,7 +617,7 @@ public class ConditionEditor extends Composite
 				{
 					public void widgetSelected(SelectionEvent e)
 					{
-					    String xml = props.fromClipboard();
+					    String xml = GUIResource.getInstance().fromClipboard();
 					    try
 					    {
 						    Document d = XMLHandler.loadXMLString(xml);

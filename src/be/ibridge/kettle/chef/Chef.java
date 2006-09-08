@@ -2397,12 +2397,12 @@ public class Chef implements AddUndoPositionInterface
 
 	public void toClipboard(String cliptext)
 	{
-	    props.toClipboard(cliptext);
+	    GUIResource.getInstance().toClipboard(cliptext);
 	}
 	
 	public String fromClipboard()
 	{
-	    return props.fromClipboard();
+	    return GUIResource.getInstance().fromClipboard();
 	}
 	
 	public void setShellText()

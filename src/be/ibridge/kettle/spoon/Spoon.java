@@ -4190,12 +4190,12 @@ public class Spoon implements AddUndoPositionInterface
     
     public void toClipboard(String cliptext)
     {
-        props.toClipboard(cliptext);
+        GUIResource.getInstance().toClipboard(cliptext);
     }
     
     public String fromClipboard()
     {
-        return props.fromClipboard();
+        return GUIResource.getInstance().fromClipboard();
     }
     
     /**
@@ -4229,7 +4229,7 @@ public class Spoon implements AddUndoPositionInterface
     
     public void copyTransformationImage()
     {
-        Clipboard clipboard = props.getNewClipboard();
+        Clipboard clipboard = GUIResource.getInstance().getNewClipboard();
         
         Point area = transMeta.getMaximum();
         Image image = spoongraph.getTransformationImage(Display.getCurrent(), area.x, area.y);

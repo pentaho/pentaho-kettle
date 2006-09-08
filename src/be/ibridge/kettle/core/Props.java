@@ -30,9 +30,6 @@ import java.util.Properties;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.swt.dnd.TextTransfer;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Device;
 import org.eclipse.swt.graphics.Font;
@@ -150,13 +147,7 @@ public class Props implements Cloneable
     private ArrayList pluginHistory;
 	
 	private Display display;
-	
-	/**
-	 * Props also contains the clipboard as it has to be allocated only once!
-	 * I don't want to put it in a seperate singleton just for this one member.
-	 */
-	private Clipboard clipboard;
-	
+		
 	private int type;
 	
 	private Hashtable screens;
@@ -224,7 +215,6 @@ public class Props implements Cloneable
 		properties = new Properties();
 		setDefault();
 		type=t;
-		clipboard = null;
         
         pluginHistory = new ArrayList();
 
@@ -310,38 +300,6 @@ public class Props implements Cloneable
 		return type;
 	}
 	
-	/**
-     * @return Returns the clipboard.
-     */
-    public Clipboard getNewClipboard()
-    {
-        if (clipboard!=null)
-        {
-            clipboard.dispose();
-            clipboard=null;
-        }
-        clipboard=new Clipboard(display);
-        
-        return clipboard;
-    }
-
-	public void toClipboard(String cliptext)
-	{
-		if (cliptext==null) return;
-
-		getNewClipboard();
-		TextTransfer tran = TextTransfer.getInstance();
-		clipboard.setContents(new String[] { cliptext }, new Transfer[] { tran });
-	}
-	
-	public String fromClipboard()
-	{
-	    getNewClipboard();
-		TextTransfer tran = TextTransfer.getInstance();
-
-		return (String)clipboard.getContents(tran);
-	}
-
 	public void setDefault()
 	{
 		FontData fd;
