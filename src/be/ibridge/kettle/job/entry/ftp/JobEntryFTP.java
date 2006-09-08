@@ -365,6 +365,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 			log.logDetailed(toString(), "set timeout to "+timeout);
 
 			// login to ftp host ...
+            ftpclient.connect();
 			ftpclient.login(userName, password);
 			//  Remove password from logging, you don't know where it ends up.
 			log.logDetailed(toString(), "logged in using "+userName);
