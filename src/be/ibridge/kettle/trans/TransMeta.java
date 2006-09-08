@@ -4110,25 +4110,22 @@ public class TransMeta implements XMLInterface
 
         // Set the default values on it...
         // Also change the name to "Argument 1" .. "Argument 10"
-        if (arguments != null)
+        for (int i = 0; i < args.size(); i++)
         {
-            for (int i = 0; i < args.size(); i++)
+            Value arg = args.getValue(i);
+            int argNr = Const.toInt(arg.getName(), -1);
+            if (arguments!=null && argNr >= 0 && argNr < arguments.length)
             {
-                Value arg = args.getValue(i);
-                int argNr = Const.toInt(arg.getName(), -1);
-                if (argNr >= 0 && argNr < arguments.length)
-                {
-                    arg.setValue(arguments[argNr]);
-                }
-                if (arg.isNull() || arg.getString() == null) // try the saved option...
-                {
-                    if (argNr >= 0 && argNr < saved.length && saved[argNr] != null)
-                    {
-                        arg.setValue(saved[argNr]);
-                    }
-                }
-                arg.setName("Argument " + arg.getName()); //$NON-NLS-1$
+                arg.setValue(arguments[argNr]);
             }
+            if (arg.isNull() || arg.getString() == null) // try the saved option...
+            {
+                if (argNr >= 0 && argNr < saved.length && saved[argNr] != null)
+                {
+                    arg.setValue(saved[argNr]);
+                }
+            }
+            arg.setName("Argument " + arg.getName()); //$NON-NLS-1$
         }
 
         return args;
