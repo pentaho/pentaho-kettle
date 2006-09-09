@@ -23,6 +23,8 @@ package be.ibridge.kettle.trans.step;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.TraverseEvent;
@@ -46,6 +48,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseDialog;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.TransMeta;
 
@@ -202,6 +205,18 @@ public class BaseStepDialog extends Dialog
 
 		}
 	}		
+    
+    public static final ModifyListener getModifyListenerTooltipText(final Text textField)
+    {
+        return new ModifyListener()
+        {
+            public void modifyText(ModifyEvent e)
+            {
+                textField.setToolTipText(StringUtil.environmentSubstitute( textField.getText() ) );
+            }
+        };
+    }
+
 	
 	public void addDatabases(CCombo wConnection)
 	{

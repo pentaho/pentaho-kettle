@@ -87,6 +87,8 @@ public class Repository
     /** The maximum length of a text field in a Kettle repository : 2.000.000 is enough for everyone ;-) */ 
     private static final int REP_STRING_LENGTH      = 2000000;
     private static final int REP_STRING_CODE_LENGTH =     255;
+    
+    private static Repository currentRepository;
 
 	public Repository(LogWriter log, RepositoryMeta repinfo, UserInfo userinfo)
 	{
@@ -229,6 +231,9 @@ public class Repository
             {
                 directoryTree = new RepositoryDirectory();
             }
+            
+            // OK, the repository is available
+            currentRepository = this;
 		}
 		catch (KettleException e)
 		{
@@ -298,6 +303,7 @@ public class Repository
 	{
 		try
 		{
+            currentRepository=null;
 			closeStepAttributeLookupPreparedStatement();
 			if (!database.isAutoCommit()) commit();
 			repinfo.setLock(false);
@@ -4858,6 +4864,16 @@ public class Repository
         if (monitor!=null) monitor.worked(1);
         
         return xml.toString();
+    }
+
+    public static Repository getCurrentRepository()
+    {
+        return currentRepository;
+    }
+
+    public static void setCurrentRepository(Repository currentRepository)
+    {
+        Repository.currentRepository = currentRepository;
     }
 
 }

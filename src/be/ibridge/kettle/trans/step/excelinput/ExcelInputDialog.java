@@ -1273,17 +1273,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		
 	}
 
-	public ModifyListener getModifyListenerTooltipText(final Text textField)
-    {
-        return new ModifyListener()
-        {
-            public void modifyText(ModifyEvent e)
-            {
-                textField.setToolTipText(StringUtil.environmentSubstitute( textField.getText() ) );
-            }
-        };
-    }
-	
     private void addErrorTab()
     {
         //////////////////////////

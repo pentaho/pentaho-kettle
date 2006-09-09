@@ -1759,7 +1759,20 @@ public class TransMeta implements XMLInterface
      */
     public TransMeta(Repository rep, String transname, RepositoryDirectory repdir) throws KettleException
     {
-        this(rep, transname, repdir, null);
+        this(rep, transname, repdir, null, true);
+    }
+
+    /**
+     * Read a transformation with a certain name from a repository
+     *
+     * @param rep The repository to read from.
+     * @param transname The name of the transformation.
+     * @param repdir the path to the repository directory
+     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
+     */
+    public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, boolean setInternalVariables) throws KettleException
+    {
+        this(rep, transname, repdir, null, setInternalVariables);
     }
 
     /**
@@ -1771,6 +1784,20 @@ public class TransMeta implements XMLInterface
      * @param monitor The progress monitor to display the progress of the file-open operation in a dialog
      */
     public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, IProgressMonitor monitor) throws KettleException
+    {
+        this(rep, transname, repdir, monitor, true);
+    }
+
+    /**
+     * Read a transformation with a certain name from a repository
+     *
+     * @param rep The repository to read from.
+     * @param transname The name of the transformation.
+     * @param repdir the path to the repository directory
+     * @param monitor The progress monitor to display the progress of the file-open operation in a dialog
+     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
+     */
+    public TransMeta(Repository rep, String transname, RepositoryDirectory repdir, IProgressMonitor monitor, boolean setInternalVariables) throws KettleException
     {
         try
         {
@@ -1883,6 +1910,10 @@ public class TransMeta implements XMLInterface
         {
             log.logError(toString(), Messages.getString("TransMeta.Log.DatabaseErrorOccuredReadingTransformation") + Const.CR + e); //$NON-NLS-1$
             throw new KettleException(Messages.getString("TransMeta.Exception.DatabaseErrorOccuredReadingTransformation2"), e); //$NON-NLS-1$
+        }
+        finally
+        {
+            if (setInternalVariables) setInternalKettleVariables();
         }
     }
 
@@ -2023,10 +2054,23 @@ public class TransMeta implements XMLInterface
      * No default connections are loaded since no repository is available at this time.
      *
      * @param fname The filename
+     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
      */
     public TransMeta(String fname) throws KettleXMLException
     {
-        this(fname, null);
+        this(fname, true);
+    }
+
+    /**
+     * Parse a file containing the XML that describes the transformation.
+     * No default connections are loaded since no repository is available at this time.
+     *
+     * @param fname The filename
+     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
+     */
+    public TransMeta(String fname, boolean setInternalVariables) throws KettleXMLException
+    {
+        this(fname, null, setInternalVariables);
     }
 
     /**
@@ -2034,8 +2078,20 @@ public class TransMeta implements XMLInterface
      *
      * @param fname The filename
      * @param rep The repository to load the default set of connections from, null if no repository is avaailable
-     */
+      */
     public TransMeta(String fname, Repository rep) throws KettleXMLException
+    {
+        this(fname, rep, true);
+    }
+
+    /**
+     * Parse a file containing the XML that describes the transformation.
+     *
+     * @param fname The filename
+     * @param rep The repository to load the default set of connections from, null if no repository is avaailable
+     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
+      */
+    public TransMeta(String fname, Repository rep, boolean setInternalVariables ) throws KettleXMLException
     {
         Document doc = XMLHandler.loadXMLFile(fname);
         if (doc != null)
@@ -2048,9 +2104,9 @@ public class TransMeta implements XMLInterface
             Node transnode = XMLHandler.getSubNode(doc, "transformation"); //$NON-NLS-1$
 
             // Load from this node...
-            loadXML(transnode, rep);
+            loadXML(transnode, rep, setInternalVariables);
 
-            setFilename(fname);
+            this.filename=fname;
         }
         else
         {
@@ -2078,7 +2134,7 @@ public class TransMeta implements XMLInterface
      */
     private void loadXML(Node transnode) throws KettleXMLException
     {
-        loadXML(transnode, null);
+        loadXML(transnode, null, false);
     }
 
     
@@ -2087,9 +2143,10 @@ public class TransMeta implements XMLInterface
      *
      * @param transnode The XML node to load from
      * @param rep The repository to load the default list of database connections from (null if no repository is available)
+     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
      * @throws KettleXMLException
      */
-    private void loadXML(Node transnode, Repository rep) throws KettleXMLException
+    private void loadXML(Node transnode, Repository rep, boolean setInternalVariables ) throws KettleXMLException
     {
         Props props = null;
         if (Props.isInitialized())
@@ -2274,7 +2331,7 @@ public class TransMeta implements XMLInterface
         }
         finally
         {
-            setInternalKettleVariables();
+            if (setInternalVariables) setInternalKettleVariables();
         }
 
     }

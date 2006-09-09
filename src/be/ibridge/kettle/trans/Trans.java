@@ -156,8 +156,7 @@ public class Trans
 		return transMeta.getName();
 	}
 
-	public void open(Repository rep, String name, String dirname, String filename)
-		throws KettleException
+	public void open(Repository rep, String name, String dirname, String filename) throws KettleException
 	{
 		try
 		{
@@ -166,7 +165,7 @@ public class Trans
 				RepositoryDirectory repdir = rep.getDirectoryTree().findDirectory(dirname);
 				if (repdir!=null)
 				{
-					transMeta = new TransMeta(rep, name, repdir);
+					transMeta = new TransMeta(rep, name, repdir, false);
 				}
 				else
 				{
@@ -175,7 +174,7 @@ public class Trans
 			}
 			else
 			{
-				transMeta = new TransMeta(filename);
+				transMeta = new TransMeta(filename, false);
 			}
 		}
 		catch(KettleException e)

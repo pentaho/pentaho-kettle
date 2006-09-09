@@ -608,6 +608,7 @@ public class SpoonLog extends Composite
 				preview = false;
 				showPreview();
 			}
+            spoon.getTransMeta().setInternalKettleVariables(); // set the original vars back as they may be changed by a mapping 
 		}
 	}
 

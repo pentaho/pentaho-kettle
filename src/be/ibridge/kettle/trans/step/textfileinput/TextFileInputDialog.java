@@ -1895,17 +1895,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wFieldsTab.setControl(wFieldsComp);
     }
     
-    public ModifyListener getModifyListenerTooltipText(final Text textField)
-    {
-        return new ModifyListener()
-        {
-            public void modifyText(ModifyEvent e)
-            {
-                textField.setToolTipText(StringUtil.environmentSubstitute( textField.getText() ) );
-            }
-        };
-    }
-
     public void setFlags()
 	{
     	boolean accept = wAccFilenames.getSelection();

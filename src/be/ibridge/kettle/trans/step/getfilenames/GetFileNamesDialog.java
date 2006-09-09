@@ -476,17 +476,6 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		return stepname;
 	}
 
-    public ModifyListener getModifyListenerTooltipText(final Text textField)
-    {
-        return new ModifyListener()
-        {
-            public void modifyText(ModifyEvent e)
-            {
-                textField.setToolTipText(StringUtil.environmentSubstitute( textField.getText() ) );
-            }
-        };
-    }
-
 	/**
 	 * Read the data from the TextFileInputMeta object and show it in this dialog.
 	 * 

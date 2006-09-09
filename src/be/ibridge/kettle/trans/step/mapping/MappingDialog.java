@@ -36,6 +36,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.FileDialog;
+import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
@@ -51,6 +52,7 @@ import be.ibridge.kettle.core.SourceToTargetMapping;
 import be.ibridge.kettle.core.dialog.EnterMappingDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.repository.dialog.SelectObjectDialog;
@@ -62,34 +64,54 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.mappinginput.MappingInputMeta;
 import be.ibridge.kettle.trans.step.mappingoutput.MappingOutputMeta;
+import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 
 public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private MappingMeta input;
-    
-    private Label wlTransformation;
-    private FormData fdlTransformation, fdTransformation;
-    private Text wTransformation;
-    private Button wbTransformation, weTransformation;
-    private FormData fdbTransformation, fdeTransformation;
 
+    private Group       gTransGroup;
+    private FormData    fdTransGroup;
     
-    private TableView    wInputFields;
-    private FormData     fdInputFields;
-
-    private Button       wbInput;
-    private FormData     fdbInput;
-
-    private TableView    wOutputFields;
-    private FormData     fdOutputFields;
+    // File
+    private Button      wFileRadio;
+    private FormData    fdFileRadio;
     
-    private Button       wbOutput;
-    private FormData     fdbOutput;
+    private Button       wbbFilename; // Browse: add file or directory
+    private Button       wbvFilename; // Variable
+    private Text         wFilename;
+    private FormData     fdbFilename, fdbvFilename, fdFilename;
+    
+    // Repository
+    private Button      wRepRadio;
+    private FormData    fdRepRadio;
+    
+    private Text        wTransName, wTransDir;
+    private FormData    fdTransName, fdTransDir;
+    private Button      wvTrans, wbTrans;
+    private FormData    fdvTrans, fdbTrans;
+    
+    private Button      wEditTrans;
+    private FormData    fdEditTrans;
+    
+    private TableView   wInputFields;
+    private FormData    fdInputFields;
+
+    private Button      wbInput;
+    private FormData    fdbInput;
+
+    private TableView   wOutputFields;
+    private FormData    fdOutputFields;
+    
+    private Button      wbOutput;
+    private FormData    fdbOutput;
     
     TransMeta mappingTransMeta = null;
 
     protected boolean transModified;
+
+
     
 	public MappingDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
@@ -143,76 +165,151 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		fdStepname.top  = new FormAttachment(0, margin);
 		fdStepname.right= new FormAttachment(100, 0);
 		wStepname.setLayoutData(fdStepname);
-        
-        // Transformation line
-        wlTransformation=new Label(shell, SWT.RIGHT);
-        wlTransformation.setText(Messages.getString("MappingDialog.Transformation.Label")); //$NON-NLS-1$
-        props.setLook(wlTransformation);
-        fdlTransformation=new FormData();
-        fdlTransformation.left = new FormAttachment(0, 0);
-        fdlTransformation.right= new FormAttachment(middle, -margin);
-        fdlTransformation.top  = new FormAttachment(wStepname, margin);
-        wlTransformation.setLayoutData(fdlTransformation);
 
-        weTransformation=new Button(shell, SWT.PUSH );
-        weTransformation.setText(Messages.getString("MappingDialog.Edit.Button")); //$NON-NLS-1$
-        props.setLook(weTransformation);
-        fdeTransformation=new FormData();
-        fdeTransformation.right= new FormAttachment(100, 0);
-        fdeTransformation.top  = new FormAttachment(wStepname, margin);
-        weTransformation.setLayoutData(fdeTransformation);
+        // Show a group with 2 main options: a transformation in the repository or on file
+        //
+        
+        ////////////////////////////////////////////////////
+        // The key creation box
+        ////////////////////////////////////////////////////
+        //
+        gTransGroup = new Group(shell, SWT.SHADOW_ETCHED_IN);
+        gTransGroup.setText(Messages.getString("MappingDialog.TransGroup.Label")); //$NON-NLS-1$;
+        gTransGroup.setBackground(shell.getBackground()); // the default looks ugly
+        FormLayout transGroupLayout = new FormLayout();
+        transGroupLayout.marginLeft=margin*2;
+        transGroupLayout.marginTop=margin*2;
+        transGroupLayout.marginRight=margin*2;
+        transGroupLayout.marginBottom=margin*2;
+        gTransGroup.setLayout(transGroupLayout);
+        
+        // Radio button: The mapping is in a file 
+        // 
+        wFileRadio=new Button(gTransGroup, SWT.RADIO);
+        props.setLook(wFileRadio);
+        wFileRadio.setSelection(false);
+        wFileRadio.setText(Messages.getString("MappingDialog.RadioFile.Label")); //$NON-NLS-1$
+        wFileRadio.setToolTipText(Messages.getString("MappingDialog.RadioFile.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+        fdFileRadio=new FormData();
+        fdFileRadio.left   = new FormAttachment(0, 0);
+        fdFileRadio.right  = new FormAttachment(100, 0);
+        fdFileRadio.top    = new FormAttachment(0, 0); 
+        wFileRadio.setLayoutData(fdFileRadio);
+        
+        wbbFilename=new Button(gTransGroup, SWT.PUSH| SWT.CENTER); // Browse
+        props.setLook(wbbFilename);
+        wbbFilename.setText(Messages.getString("System.Button.Browse"));
+        wbbFilename.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+        fdbFilename=new FormData();
+        fdbFilename.right= new FormAttachment(100, 0);
+        fdbFilename.top  = new FormAttachment(wFileRadio, margin);
+        wbbFilename.setLayoutData(fdbFilename);
+        wbbFilename.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { selectFileTrans(); }});
 
-        wbTransformation=new Button(shell, SWT.PUSH );
-        wbTransformation.setText(Messages.getString("MappingDialog.Select.Button")); //$NON-NLS-1$
-        props.setLook(wbTransformation);
-        fdbTransformation=new FormData();
-        fdbTransformation.right= new FormAttachment(weTransformation, 0);
-        fdbTransformation.top  = new FormAttachment(wStepname, margin);
-        wbTransformation.setLayoutData(fdbTransformation);
+        wbvFilename=new Button(gTransGroup, SWT.PUSH| SWT.CENTER); // Variable
+        props.setLook(wbvFilename);
+        wbvFilename.setText(Messages.getString("System.Button.Variable"));
+        wbvFilename.setToolTipText(Messages.getString("System.Tooltip.VariableToFileOrDir"));
+        fdbvFilename=new FormData();
+        fdbvFilename.right= new FormAttachment(wbbFilename, -margin);
+        fdbvFilename.top  = new FormAttachment(wFileRadio, margin);
+        wbvFilename.setLayoutData(fdbvFilename);
+
+        wFilename=new Text(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wFilename);
+        wFilename.addModifyListener(lsMod);
+        fdFilename=new FormData();
+        fdFilename.left = new FormAttachment(0, 25);
+        fdFilename.right= new FormAttachment(wbvFilename, -margin);
+        fdFilename.top  = new FormAttachment(wbvFilename, 0, SWT.CENTER);
+        wFilename.setLayoutData(fdFilename);
         
-        wTransformation=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wTransformation.setEditable(true);
-        props.setLook(wTransformation);
-        wTransformation.addModifyListener(lsMod);
-        fdTransformation=new FormData();
-        fdTransformation.left = new FormAttachment(middle, 0);
-        fdTransformation.right= new FormAttachment(wbTransformation, -margin);
-        fdTransformation.top  = new FormAttachment(wStepname, margin);
-        wTransformation.setLayoutData(fdTransformation);
-  
-        wTransformation.addModifyListener(new ModifyListener()
-            {
-                public void modifyText(ModifyEvent e)
-                {
-                    transModified = true;
-                }
-            }
-        );
+        // Listen to the Var button...
+        wbvFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
+        wFilename.addModifyListener(getModifyListenerTooltipText(wFilename));
         
-        wbTransformation.addSelectionListener(new SelectionAdapter()
-            {
-                public void widgetSelected(SelectionEvent e)
-                {
-                    selectTrans();
-                }
-            }
-        );
+        // Radio button: The mapping is in the repository
+        // 
+        wRepRadio=new Button(gTransGroup, SWT.RADIO);
+        props.setLook(wRepRadio);
+        wRepRadio.setSelection(false);
+        wRepRadio.setText(Messages.getString("MappingDialog.RadioRep.Label")); //$NON-NLS-1$
+        wRepRadio.setToolTipText(Messages.getString("MappingDialog.RadioRep.Tooltip",Const.CR)); //$NON-NLS-1$ //$NON-NLS-2$
+        fdRepRadio=new FormData();
+        fdRepRadio.left   = new FormAttachment(0, 0);
+        fdRepRadio.right  = new FormAttachment(100, 0);
+        fdRepRadio.top    = new FormAttachment(wbvFilename, 2*margin); 
+        wRepRadio.setLayoutData(fdRepRadio);
+
+        wbTrans=new Button(gTransGroup, SWT.PUSH| SWT.CENTER); // Browse
+        props.setLook(wbTrans);
+        wbTrans.setText(Messages.getString("MappingDialog.Select.Button"));
+        wbTrans.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+        fdbTrans=new FormData();
+        fdbTrans.right= new FormAttachment(100, 0);
+        fdbTrans.top  = new FormAttachment(wRepRadio, 2*margin);
+        wbTrans.setLayoutData(fdbTrans);
+        wbTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { selectRepositoryTrans(); }});
         
-        weTransformation.addSelectionListener(new SelectionAdapter()
-            {
-            
-                public void widgetSelected(SelectionEvent e)
-                {
-                    editTrans();
-                }
-            
-            }
-        );
-		
+        wvTrans=new Button(gTransGroup, SWT.PUSH| SWT.CENTER); // Variable
+        props.setLook(wvTrans);
+        wvTrans.setText(Messages.getString("System.Button.Variable"));
+        wvTrans.setToolTipText(Messages.getString("System.Tooltip.VariableToFileOrDir"));
+        fdvTrans=new FormData();
+        fdvTrans.right= new FormAttachment(wbTrans, -margin);
+        fdvTrans.top  = new FormAttachment(wRepRadio, 2*margin);
+        wvTrans.setLayoutData(fdvTrans);
+
+        wTransDir=new Text(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wTransDir);
+        wTransDir.addModifyListener(lsMod);
+        fdTransDir=new FormData();
+        fdTransDir.left = new FormAttachment(middle+(100-middle)/2, 0);
+        fdTransDir.right= new FormAttachment(wvTrans, -margin);
+        fdTransDir.top  = new FormAttachment(wvTrans, 0, SWT.CENTER);
+        wTransDir.setLayoutData(fdTransDir);
+
+        wTransName=new Text(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wTransName);
+        wTransName.addModifyListener(lsMod);
+        fdTransName=new FormData();
+        fdTransName.left = new FormAttachment(0, 25);
+        fdTransName.right= new FormAttachment(wTransDir, -margin);
+        fdTransName.top  = new FormAttachment(wvTrans, 0, SWT.CENTER);
+        wTransName.setLayoutData(fdTransName);
+        
+        // Listen to the Var button...
+        wvTrans.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wTransName));
+        wTransName.addModifyListener(getModifyListenerTooltipText(wTransName));
+        wTransDir.addModifyListener(getModifyListenerTooltipText(wTransDir));
+        
+        wEditTrans=new Button(gTransGroup, SWT.PUSH| SWT.CENTER); // Browse
+        props.setLook(wEditTrans);
+        wEditTrans.setText(Messages.getString("MappingDialog.Edit.Button"));
+        wEditTrans.setToolTipText(Messages.getString("System.Tooltip.BrowseForFileOrDirAndAdd"));
+        fdEditTrans=new FormData();
+        fdEditTrans.left = new FormAttachment(0,   0);
+        fdEditTrans.right= new FormAttachment(100, 0);
+        fdEditTrans.top  = new FormAttachment(wTransName, 3*margin);
+        wEditTrans.setLayoutData(fdEditTrans);
+        wEditTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editTrans(); }});
+
+        fdTransGroup=new FormData();
+        fdTransGroup.left   = new FormAttachment(0, 0);
+        fdTransGroup.top    = new FormAttachment(wStepname, 2*margin); 
+        fdTransGroup.right  = new FormAttachment(100, 0);
+        // fdTransGroup.bottom = new FormAttachment(wStepname, 350);
+        gTransGroup.setLayoutData(fdTransGroup);
+
+        
+
+
+        
+
+        /*
         /*
          * INPUT MAPPING CONNECTORS
          */
-        
         ColumnInfo[] colinfo=new ColumnInfo[]
         {
             new ColumnInfo(Messages.getString("MappingDialog.ColumnInfo.InputField"),    ColumnInfo.COLUMN_TYPE_TEXT,    false ), //$NON-NLS-1$
@@ -231,7 +328,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         fdInputFields=new FormData();
         fdInputFields.left   = new FormAttachment(0, 0);
         fdInputFields.right  = new FormAttachment(50, -margin);
-        fdInputFields.top    = new FormAttachment(wbTransformation, margin);
+        fdInputFields.top    = new FormAttachment(gTransGroup, margin*2);
         fdInputFields.bottom = new FormAttachment(100, -75);
         wInputFields.setLayoutData(fdInputFields);
         
@@ -251,11 +348,9 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             }
         );
        
-
         /*
          * OUTPUT MAPPING CONNECTORS
          */
-        
         ColumnInfo[] colinfoOutput = new ColumnInfo[] 
         { 
             new ColumnInfo(Messages.getString("MappingDialog.ColumnInfo.OutputMapping"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
@@ -268,7 +363,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         fdOutputFields = new FormData();
         fdOutputFields.left = new FormAttachment(50, 0);
         fdOutputFields.right = new FormAttachment(100, 0);
-        fdOutputFields.top = new FormAttachment(wbTransformation, margin);
+        fdOutputFields.top = new FormAttachment(gTransGroup, margin*2);
         fdOutputFields.bottom = new FormAttachment(100, -75);
         wOutputFields.setLayoutData(fdOutputFields);
 
@@ -289,13 +384,14 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             );
 
 
+
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wbInput);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -303,7 +399,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		
 		wCancel.addListener(SWT.Selection, lsCancel);
 		wOK.addListener    (SWT.Selection, lsOK    );
-		
+        
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		
 		wStepname.addSelectionListener( lsDef );
@@ -325,66 +421,110 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 		return stepname;
 	}
 	
-    private void selectTrans()
+    private void selectRepositoryTrans()
     {
-        if (repository!=null)
+        try
+        {
+            SelectObjectDialog sod = new SelectObjectDialog(shell, props, repository, true, false, false);
+            String transName = sod.open();
+            RepositoryDirectory repdir = sod.getDirectory();
+            if (transName!=null && repdir!=null)
+            {
+                loadRepositoryTrans(transName, repdir);
+                wTransName.setText(mappingTransMeta.getName());
+                wTransDir.setText(mappingTransMeta.getDirectory().getPath());
+                wFilename.setText("");
+                wRepRadio.setSelection(true);
+                wFileRadio.setSelection(false);
+            }
+        }
+        catch(KettleException ke)
+        {
+            new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorSelectingObject.DialogTitle"), Messages.getString("MappingDialog.ErrorSelectingObject.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
+    
+    private void loadRepositoryTrans(String transName, RepositoryDirectory repdir) throws KettleException
+    {
+        // Read the transformation...
+        //
+        mappingTransMeta = new TransMeta(repository, StringUtil.environmentSubstitute(transName), repdir);
+        mappingTransMeta.clearChanged();
+    }
+
+    private void selectFileTrans()
+    {
+        FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+        dialog.setFilterExtensions(Const.STRING_TRANS_FILTER_EXT);
+        dialog.setFilterNames(Const.STRING_TRANS_FILTER_NAMES);
+        String fname = dialog.open();
+        if (fname!=null)
         {
             try
             {
-                SelectObjectDialog sod = new SelectObjectDialog(shell, props, repository, true, false, false);
-                String transName = sod.open();
-                RepositoryDirectory repdir = sod.getDirectory();
-                if (transName!=null && repdir!=null)
-                {
-                    // Read the transformation...
-                    //
-                    mappingTransMeta = new TransMeta(repository, transName, repdir);
-                    mappingTransMeta.clearChanged();
-                    updateTransformationPath(mappingTransMeta);
-                }
+                loadFileTrans(fname);
+                wFilename.setText(mappingTransMeta.getFilename());
+                wTransName.setText(Const.NVL(mappingTransMeta.getName(), ""));
+                wTransDir.setText("");
+                wFileRadio.setSelection(true);
+                wRepRadio.setSelection(false);
             }
-            catch(KettleException ke)
+            catch(KettleException e)
             {
-                new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorSelectingObject.DialogTitle"), Messages.getString("MappingDialog.ErrorSelectingObject.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-        }
-        else
-        {
-            FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-            dialog.setFilterExtensions(Const.STRING_TRANS_FILTER_EXT);
-            dialog.setFilterNames(Const.STRING_TRANS_FILTER_NAMES);
-            String fname = dialog.open();
-            if (fname!=null)
-            {
-                try
-                {
-                    mappingTransMeta = new TransMeta(fname);
-                    mappingTransMeta.clearChanged();                    
-                    updateTransformationPath(mappingTransMeta);
-                }
-                catch(KettleException e)
-                {
-                    new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
-                }
+                new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
     }
 
+    private void loadFileTrans(String fname) throws KettleException
+    {
+        mappingTransMeta = new TransMeta(StringUtil.environmentSubstitute(fname));
+        mappingTransMeta.clearChanged();
+    }
+
     private void editTrans()
     {
-        LogWriter log = LogWriter.getInstance();
-        if (mappingTransMeta!=null)
+        // Load the transformation again to make sure it's still there and refreshed
+        // It's an extra check to make sure it's still OK...
+        
+        try
         {
+            loadTransformation();
+            
+            // If we're still here, mappingTransMeta is valid.
+            
+            LogWriter log = LogWriter.getInstance();
             Spoon spoon = new Spoon(log, shell.getDisplay(), mappingTransMeta, repository);
             spoon.open();
         }
+        catch(KettleException e)
+        {
+            new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorShowingTransformation.Title"), Messages.getString("MappingDialog.ErrorShowingTransformation.Message"), e);
+        }
+    }
+
+    private void loadTransformation() throws KettleException
+    {
+        if (wFileRadio.getSelection() && !Const.isEmpty(wFilename.getText())) // Read from file...
+        {
+            loadFileTrans(wFilename.getText());
+        }
         else
         {
-            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage(Messages.getString("MappingDialog.TransformationSelecting.DialogMessage")); //$NON-NLS-1$
-            mb.setText(Messages.getString("MappingDialog.TransformationSelecting.DialogTitle")); //$NON-NLS-1$
-            mb.open();
-        }
+            if (wRepRadio.getSelection() && repository!=null && !Const.isEmpty(wTransName.getText()) && !Const.isEmpty(wTransDir.getText()) )
+            {
+                RepositoryDirectory repdir = repository.getDirectoryTree().findDirectory(wTransDir.getText());
+                if (repdir==null)
+                {
+                    throw new KettleException(Messages.getString("MappingDialog.Exception.UnableToFindRepositoryDirectory)"));
+                }
+                loadRepositoryTrans(wTransName.getText(), repdir);
+            }
+            else
+            {
+                 throw new KettleException(Messages.getString("MappingDialog.Exception.NoValidMappingDetailsFound"));
+            }
+        }    
     }
 
     private void getInput()
@@ -506,8 +646,25 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	public void getData()
 	{
 		wStepname.selectAll();
-        mappingTransMeta = input.getMappingTransMeta();
-        updateTransformationPath(mappingTransMeta);
+        
+        wFilename.setText(Const.NVL(input.getFileName(), ""));
+        wTransName.setText(Const.NVL(input.getTransName(), ""));
+        wTransDir.setText(Const.NVL(input.getDirectoryPath(), ""));
+
+        // if we have a filename, then we use the filename, otherwise we go with the repository...
+        if (input.getFileName()!=null)
+        {
+            wFileRadio.setSelection(true);
+        }
+        else
+        {
+            if (repository!=null && !Const.isEmpty(input.getTransName()) && !Const.isEmpty(input.getDirectoryPath()))
+            {
+                wRepRadio.setSelection(true);
+            }
+        }
+        
+        setFlags();
         
         if (input.getInputField()!=null)
         for (int i=0;i<input.getInputField().length;i++)
@@ -534,31 +691,18 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wOutputFields.optWidth(true);
 	}
     
-    private void updateTransformationPath(TransMeta tm )
+    private void setFlags()
     {
-        if (tm!=null)
+        if (repository==null)
         {
-            String transName = tm.getName();
-            RepositoryDirectory repdir = tm.getDirectory();
-            String fileName = tm.getFilename();
-            
-            if (fileName!=null)
-            {
-                wTransformation.setText(fileName);
-                transModified=false;
-            }
-            else
-            if (repdir!=null)
-            {
-                if (repdir.isRoot()) wTransformation.setText( repdir+transName ); 
-                else wTransformation.setText( repdir+RepositoryDirectory.DIRECTORY_SEPARATOR+transName );
-                
-                transModified=false;
-            }
-            
+            wRepRadio.setEnabled(false);
+            wbTrans.setEnabled(false);
+            wvTrans.setEnabled(false);
+            wTransName.setEnabled(false);
+            wTransDir.setEnabled(false);
         }
     }
-	
+
 	private void cancel()
 	{
 		stepname=null;
@@ -567,55 +711,38 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 	}
 	
 	private void ok()
-	{
-		stepname = wStepname.getText(); // return value
-		
-        if (Const.isEmpty(wTransformation.getText()))
+    {
+        try
         {
-            input.setMappingTransMeta(null);
-        }
-        else
-        {
-            if (transModified && repository==null) // someone manually entered a transformation to an XML file... 
+            stepname = wStepname.getText(); // return value
+
+            loadTransformation();
+
+            int nrInput = wInputFields.nrNonEmpty();
+            int nrOutput = wOutputFields.nrNonEmpty();
+
+            input.allocate(nrInput, nrOutput);
+
+            for (int i = 0; i < nrInput; i++)
             {
-                try
-                {
-                    if (repository==null)
-                    {
-                        input.setFileName(wTransformation.getText());
-                        input.loadMappingMeta(repository);
-                    }
-                }
-                catch(KettleException e)
-                {
-                    new ErrorDialog(shell, props, "Error", "There was an error parsing transformation ["+wTransformation.getText()+"]");
-                }
+                TableItem item = wInputFields.getNonEmpty(i);
+                input.getInputField()[i] = item.getText(1);
+                input.getInputMapping()[i] = item.getText(2);
             }
-            else
+
+            for (int i = 0; i < nrOutput; i++)
             {
-                input.setMappingTransMeta(mappingTransMeta);
+                TableItem item = wOutputFields.getNonEmpty(i);
+                input.getOutputMapping()[i] = item.getText(1);
+                input.getOutputField()[i] = item.getText(2);
             }
         }
-        
-        int nrInput  = wInputFields.nrNonEmpty();
-        int nrOutput = wOutputFields.nrNonEmpty();
-        
-        input.allocate(nrInput, nrOutput);
-        
-        for (int i=0;i<nrInput;i++)
+        catch (KettleException e)
         {
-            TableItem item = wInputFields.getNonEmpty(i);
-            input.getInputField()[i] = item.getText(1);
-            input.getInputMapping()[i] = item.getText(2);
+            new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Title"), 
+                    Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
         }
+        dispose();
 
-        for (int i=0;i<nrOutput;i++)
-        {
-            TableItem item = wOutputFields.getNonEmpty(i);
-            input.getOutputMapping()[i] = item.getText(1);
-            input.getOutputField()[i] = item.getText(2);
-        }
-
-		dispose();
-	}
+    }
 }

@@ -21,6 +21,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -203,23 +204,33 @@ public class Mapping extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
 		    // First we need to load the mapping (transformation)
-            if (meta.getMappingTransMeta()!=null) // Do we have a mapping at all?
+            try
             {
-                // Create the transformation from meta-data...
-                LogWriter log = LogWriter.getInstance();
-                data.trans = new Trans(log, meta.getMappingTransMeta());
-                
-                // We launch the transformation in the processRow when the first row is received.
-                // This will allow the correct variables to be passed.
-                // Otherwise the parent is the init() thread which will be gone once the init is done.
+                Repository repository = Repository.getCurrentRepository();
+                data.mappingTransMeta = MappingMeta.loadMappingMeta(meta.getFileName(), meta.getTransName(), meta.getDirectoryPath(), repository);
+                if (data.mappingTransMeta!=null) // Do we have a mapping at all?
+                {
+                    // Create the transformation from meta-data...
+                    LogWriter log = LogWriter.getInstance();
+                    data.trans = new Trans(log, data.mappingTransMeta);
+                    
+                    // We launch the transformation in the processRow when the first row is received.
+                    // This will allow the correct variables to be passed.
+                    // Otherwise the parent is the init() thread which will be gone once the init is done.
+                    return true;
+                }
+                else
+                {
+                    logError("No valid mapping was specified!");
+                    return false;
+                }
             }
-            else
+            catch(Exception e)
             {
-                logError("No valid mapping was specified!");
-                return false;
+                logError("Unable to load the mapping transformation because of an error : "+e.toString());
+                logError(Const.getStackTracker(e));
             }
             
-		    return true;
 		}
 		return false;
 	}

@@ -205,14 +205,15 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		wConnection.addModifyListener(lsMod);
 
 		wConnection.addModifyListener(new ModifyListener()
-		{
-			public void modifyText(ModifyEvent e)
-			{
-				// We have new content: change ci connection:
-				ci = transMeta.findDatabase(wConnection.getText());
-				setFlags();
-			}
-		});
+    		{
+    			public void modifyText(ModifyEvent e)
+    			{
+    				// We have new content: change ci connection:
+    				ci = transMeta.findDatabase(wConnection.getText());
+    				setFlags();
+    			}
+    		}
+        );
 
 		// Table line...
 		wlTable=new Label(shell, SWT.RIGHT);

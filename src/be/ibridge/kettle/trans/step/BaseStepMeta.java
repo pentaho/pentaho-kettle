@@ -39,7 +39,7 @@ public class BaseStepMeta implements Cloneable
     
     /** database connection object to use for searching fields & checking steps */
     protected Database databases[];
-	
+
 	public BaseStepMeta()
 	{
 		changed    = false;

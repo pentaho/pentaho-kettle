@@ -53,8 +53,6 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 {
-    private TransMeta mappingTransMeta;
-    
     private String transName;
     private String fileName;
     private String directoryPath;
@@ -69,22 +67,6 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		super(); // allocate BaseStepMeta
 	}
-
-    /**
-     * @return Returns the mappingTransMeta.
-     */
-    public TransMeta getMappingTransMeta()
-    {
-        return mappingTransMeta;
-    }
-
-    /**
-     * @param mappingTransMeta The mappingTransMeta to set.
-     */
-    public void setMappingTransMeta(TransMeta mappingTransMeta)
-    {
-        this.mappingTransMeta = mappingTransMeta;
-    }
 
     /**
      * @return Returns the inputField.
@@ -196,8 +178,6 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             outputField[i]   = XMLHandler.getTagValue(outputConnector, "field"); //$NON-NLS-1$
             outputMapping[i] = XMLHandler.getTagValue(outputConnector, "mapping"); //$NON-NLS-1$
         }
-        
-        loadMappingMeta(null);
 	}
     
     public void allocate(int nrInput, int nrOutput)
@@ -212,24 +192,9 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
     {
         StringBuffer retval = new StringBuffer();
         
-        if (mappingTransMeta!=null)
-        {
-            retval.append("    "+XMLHandler.addTagValue("trans_name", mappingTransMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
-            if (mappingTransMeta.getDirectory()!=null)
-            {
-                retval.append("    "+XMLHandler.addTagValue("directory_path", mappingTransMeta.getDirectory().getPath())); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-            if (mappingTransMeta.getFilename()!=null)
-            {
-                retval.append("    "+XMLHandler.addTagValue("filename", mappingTransMeta.getFilename())); //$NON-NLS-1$ //$NON-NLS-2$
-            }
-        }
-        else
-        {
-            retval.append("    "+XMLHandler.addTagValue("trans_name", transName) ); //$NON-NLS-1$
-            retval.append("    "+XMLHandler.addTagValue("filename", fileName )); //$NON-NLS-1$
-            retval.append("    "+XMLHandler.addTagValue("directory_path", directoryPath )); //$NON-NLS-1$
-        }
+        retval.append("    "+XMLHandler.addTagValue("trans_name", transName) ); //$NON-NLS-1$
+        retval.append("    "+XMLHandler.addTagValue("filename", fileName )); //$NON-NLS-1$
+        retval.append("    "+XMLHandler.addTagValue("directory_path", directoryPath )); //$NON-NLS-1$
         
         retval.append("  <input>"+Const.CR); //$NON-NLS-1$
         for (int i=0;i<inputField.length;i++)
@@ -283,7 +248,18 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 		}
 
     	// Then see which fields get added to the row.
-    	// 
+    	//
+        Repository repository = Repository.getCurrentRepository(); 
+        TransMeta mappingTransMeta = null;
+        try
+        {
+            mappingTransMeta = loadMappingMeta(fileName, transName, directoryPath, repository);
+        }
+        catch(KettleException e)
+        {
+            throw new KettleStepException(Messages.getString("MappingMeta.Exception.UnableToLoadMappingTransformation"), e);
+        }
+
         if (mappingTransMeta!=null)
         {
             StepMeta stepMeta = mappingTransMeta.getMappingOutputStep();
@@ -341,27 +317,13 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             outputField[i]   = rep.getStepAttributeString(id_step, i, "output_field"); //$NON-NLS-1$
             outputMapping[i] = rep.getStepAttributeString(id_step, i, "output_mapping"); //$NON-NLS-1$
         }
-
-        loadMappingMeta(rep);
 	}
     
     public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
     {
-        if (mappingTransMeta!=null)
-        {
-            if (mappingTransMeta.getFilename()!=null)
-            {
-                rep.saveStepAttribute(id_transformation, id_step, "filename", mappingTransMeta.getFilename()); //$NON-NLS-1$
-            }
-            else
-            {
-                rep.saveStepAttribute(id_transformation, id_step, "trans_name", mappingTransMeta.getName()); //$NON-NLS-1$
-                if (mappingTransMeta.getDirectory()!=null)
-                {
-                    rep.saveStepAttribute(id_transformation, id_step, "directory_path", mappingTransMeta.getDirectory().getPath()); //$NON-NLS-1$
-                }
-            }
-        }
+        rep.saveStepAttribute(id_transformation, id_step, "filename", fileName); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, "trans_name", transName); //$NON-NLS-1$
+        rep.saveStepAttribute(id_transformation, id_step, "directory_path", directoryPath); //$NON-NLS-1$
         
         if (inputField!=null)
         for (int i=0;i<inputField.length;i++)
@@ -378,8 +340,10 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public void loadMappingMeta(Repository rep) throws KettleException
+    public static final TransMeta loadMappingMeta(String fileName, String transName, String directoryPath, Repository rep) throws KettleException
     {
+        TransMeta mappingTransMeta = null;
+        
         String realFilename = StringUtil.environmentSubstitute(fileName);
         String realTransname = StringUtil.environmentSubstitute(transName);
         
@@ -388,10 +352,9 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
             try
             {
             	// OK, load the meta-data from file...
-                mappingTransMeta = new TransMeta(realFilename  );
+                mappingTransMeta = new TransMeta( realFilename, false ); // don't set internal variables: they belong to the parent thread!
                 LogWriter.getInstance().logDetailed("Loading Mapping from repository", "Mapping transformation was loaded from XML file ["+realFilename+"]");
-                mappingTransMeta.setFilename(fileName);
-                // mappingTransMeta.setName(transName);
+                // mappingTransMeta.setFilename(fileName);
            }
             catch(Exception e)
             {
@@ -424,6 +387,8 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
                 }
             }
         }
+        
+        return mappingTransMeta;
     }
 	
 
@@ -484,7 +449,20 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 		}
 
     	// Then check the fields that get added to the row.
-    	// 
+    	//
+        
+        Repository repository = Repository.getCurrentRepository(); 
+        TransMeta mappingTransMeta = null;
+        try
+        {
+            mappingTransMeta = loadMappingMeta(fileName, transName, directoryPath, repository);
+        }
+        catch(KettleException e)
+        {
+            cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("MappingMeta.CheckResult.UnableToLoadMappingTransformation")+":"+Const.getStackTracker(e), stepinfo); //$NON-NLS-1$
+            remarks.add(cr);
+        }
+
         if (mappingTransMeta!=null)
         {
             cr = new CheckResult(CheckResult.TYPE_RESULT_OK, Messages.getString("MappingMeta.CheckResult.MappingTransformationSpecified"), stepinfo); //$NON-NLS-1$
