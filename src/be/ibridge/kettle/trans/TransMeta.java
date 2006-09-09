@@ -2106,7 +2106,7 @@ public class TransMeta implements XMLInterface
             // Load from this node...
             loadXML(transnode, rep, setInternalVariables);
 
-            this.filename=fname;
+            setFilename(fname);
         }
         else
         {
