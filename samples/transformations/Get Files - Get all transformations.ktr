@@ -65,9 +65,9 @@ Try that one after setting up a database.</note>
 <condition>
  <negated>N</negated>
  <leftvalue>short_filename</leftvalue>
- <function>&lt;&gt;</function>
+ <function>CONTAINS</function>
  <rightvalue/>
-<value>   <name>constant</name><type>String</type><text>Table Output - Tablename in field.ktr</text><length>-1</length><precision>-1</precision><isnull>N</isnull>  </value> </condition>
+<value>   <name>constant</name><type>String</type><text>JavaScript</text><length>-1</length><precision>-1</precision><isnull>N</isnull>  </value> </condition>
     </compare>
     <GUI>
       <xloc>259</xloc>

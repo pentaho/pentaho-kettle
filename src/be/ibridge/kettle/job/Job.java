@@ -30,6 +30,7 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleJobException;
+import be.ibridge.kettle.core.logging.Log4jStringAppender;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.entry.JobEntryCopy;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
@@ -83,6 +84,7 @@ public class Job extends Thread
      */
     private Result result;
     private boolean initialized;
+    private Log4jStringAppender stringAppender;
     
     public Job(LogWriter lw, String name, String file, String args[])
     {
@@ -208,12 +210,6 @@ public class Job extends Thread
 
 	public Result execute() throws KettleException
     {
-        if (jobMeta.isLogfieldUsed())
-        {
-            log.startStringCapture();
-            log.setString("START"+Const.CR);
-        }
-        
         // Start the tracking...
         JobEntryResult jerStart = new JobEntryResult(null, "Start of job execution", "start", null);
         jobTracker.addJobTracker(new JobTracker(jobMeta, jerStart));
@@ -493,6 +489,15 @@ public class Job extends Thread
 				ldb.disconnect();
 			}
 		}
+        
+        if (jobMeta.isLogfieldUsed())
+        {
+            stringAppender = LogWriter.createStringAppender();
+            log.addAppender(stringAppender);
+            stringAppender.setBuffer(new StringBuffer("START"+Const.CR));
+        }
+        
+        
 		return true;
 	}
 	
@@ -513,13 +518,13 @@ public class Job extends Thread
 
         // Change the logging back to stream...
         String log_string = null;
+        
         if (jobMeta.isLogfieldUsed())
         {
-            log_string = log.getString();
-            log_string+=Const.CR+"END"+Const.CR; //$NON-NLS-1$
-            log.setString(""); //$NON-NLS-1$
-            log.endStringCapture();
+            log_string = stringAppender.getBuffer().append(Const.CR+"END"+Const.CR).toString();
+            log.removeAppender(stringAppender);
         }
+        
 		/*
 		 * Sums errors, read, written, etc.
 		 */		

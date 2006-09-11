@@ -480,12 +480,14 @@ public class JobMeta implements Cloneable, XMLInterface
 			{
 				// Clear the job
 				clear();
-				setFilename(fname);
 			
 				// The jobnode
 				Node jobnode = XMLHandler.getSubNode(doc, "job");
 				
 				loadXML(jobnode, rep);
+                
+                // Do this at the end
+                setFilename(fname);
 			}
 			else
 			{

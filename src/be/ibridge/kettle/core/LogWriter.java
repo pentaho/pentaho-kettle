@@ -230,6 +230,14 @@ public class LogWriter
 			return filename;
 		}
 	}
+    
+    public static final Log4jStringAppender createStringAppender()
+    {
+        Log4jStringAppender appender = new Log4jStringAppender();
+        appender.setLayout(KETTLE_LAYOUT);
+        
+        return appender;
+    }
 
 	public int getType()
 	{
@@ -466,6 +474,7 @@ public class LogWriter
     }
 
     /**
+     * @deprecated please create your own StringAppender, otherwise this is not thread safe!
      * @return The logging text from since startStringCapture() is called until endStringCapture().
      */
     public String getString()
@@ -473,12 +482,16 @@ public class LogWriter
         return stringAppender.getBuffer().toString();
     }
 
+    /**
+     * @deprecated please create your own StringAppender, otherwise this is not thread safe!
+     * @param string the string to set on the string appender buffer
+     */
     public void setString(String string)
     {
         stringAppender.setBuffer(new StringBuffer(string));
     }
 
-    public void addAppender(Log4jFileAppender appender)
+    public void addAppender(Appender appender)
     {
         Logger logger = Logger.getRootLogger();
         logger.addAppender(appender);
@@ -495,6 +508,10 @@ public class LogWriter
         return consoleAppender;
     }
     
+    /**
+     * @deprecated please create your own StringAppender, otherwise this is not thread safe!
+     * @return the string appender
+     */
     public Log4jStringAppender getStringAppender()
     {
         return stringAppender;

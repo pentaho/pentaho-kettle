@@ -334,9 +334,9 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
             }
             log.addAppender(appender);
             log.setLogLevel(loglevel);
+            
+            logwriter = LogWriter.getInstance(StringUtil.environmentSubstitute(getLogFilename()), true, loglevel);
         }
-
-		if (setLogfile) logwriter = LogWriter.getInstance(StringUtil.environmentSubstitute(getLogFilename()), true, loglevel);
 
         try
         {
@@ -360,13 +360,15 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 }
                 
                 JobMeta jobMeta = null;
-                if (rep!=null && !Const.isEmpty(jobname) && directory!=null) // load from the repository...
+                boolean fromRepository = rep!=null && !Const.isEmpty(jobname) && directory!=null;
+                boolean fromXMLFile = !Const.isEmpty(filename); 
+                if (fromRepository) // load from the repository...
                 {
                     log.logDetailed(toString(), "Loading job from repository : ["+directory+" : "+StringUtil.environmentSubstitute(jobname)+"]");
                     jobMeta = new JobMeta(logwriter, rep, StringUtil.environmentSubstitute(jobname), directory);
                 }
                 else // Get it from the XML file
-                if (!Const.isEmpty(filename))
+                if (fromXMLFile)
                 {
                     log.logDetailed(toString(), "Loading job from XML file : ["+StringUtil.environmentSubstitute(filename)+"]");
                     jobMeta = new JobMeta(logwriter, StringUtil.environmentSubstitute(filename), rep);
@@ -379,6 +381,20 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                 
                 // Create a new job 
                 Job job = new Job(logwriter, StepLoader.getInstance(), rep, jobMeta);
+                
+                // Don't forget the logging...
+                job.beginProcessing();
+                
+                // Tell logging what job entry we are launching...
+                if (fromRepository)
+                {
+                    log.logBasic(toString(), "Starting job, loaded from repository : ["+directory+" : "+StringUtil.environmentSubstitute(jobname)+"]");
+                }
+                else
+                if (fromXMLFile)
+                {
+                    log.logDetailed(toString(), "Starting job, loaded from XML file : ["+StringUtil.environmentSubstitute(filename)+"]");
+                }
                 
                 // Link the job with the sub-job
                 parentJob.getJobTracker().addJobTracker(job.getJobTracker()); 

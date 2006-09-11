@@ -272,14 +272,16 @@ public class JobDialog extends Dialog
 		fdLogconnection.left = new FormAttachment(middle, 0);
 		fdLogconnection.right= new FormAttachment(wbLogconnection, -margin);
 		wLogconnection.setLayoutData(fdLogconnection);
-        
 
-        // populare the combo box...
+        // populate the combo box...
         for (int i=0;i<jobMeta.nrDatabases();i++)
         {
             DatabaseMeta meta = jobMeta.getDatabase(i);
             wLogconnection.add(meta.getName());
         }
+        
+        // add a listener
+        wLogconnection.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent e) { setFlags(); } } );
 
 		// Log table...:
 		wlLogtable=new Label(shell, SWT.RIGHT);
@@ -407,7 +409,19 @@ public class JobDialog extends Dialog
         wBatch.setSelection(jobMeta.isBatchIdUsed());
         wBatchTrans.setSelection(jobMeta.isBatchIdPassed());
         wLogfield.setSelection(jobMeta.isLogfieldUsed());
+        
+        setFlags();
 	}
+    
+    public void setFlags()
+    {
+        wbDirectory.setEnabled(rep!=null);
+        wDirectory.setEnabled(rep!=null);
+        wlDirectory.setEnabled(rep!=null);
+        
+        DatabaseMeta dbMeta = jobMeta.findDatabase(wLogconnection.getText());
+        wbLogconnection.setEnabled(dbMeta!=null);
+    }
 	
 	private void cancel()
 	{
@@ -425,7 +439,7 @@ public class JobDialog extends Dialog
         jobMeta.setUseBatchId( wBatch.getSelection());
         jobMeta.setBatchIdPassed( wBatchTrans.getSelection());
         jobMeta.setLogfieldUsed( wLogfield.getSelection());
-
+        
 		dispose();
 	}
 	
