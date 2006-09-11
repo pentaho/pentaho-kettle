@@ -3,6 +3,8 @@ package be.ibridge.kettle.core;
 import java.util.Map;
 import java.util.Properties;
 
+import be.ibridge.kettle.core.util.EnvUtil;
+
 /**
  * This class is a container for "Local" enrvironment variables.
  * This is a singleton.  We are going to launch jobs using a customer classloader.
@@ -57,6 +59,10 @@ public class KettleVariables
                 throw new RuntimeException("Unable to find Kettle Variables for thread ["+thread.getName()+"]");
             }
         }
+        // Add the internal variables, just to make sure that they are always present 
+        // if people skip EnvUtil.environmentInit(), like the pentaho framework...
+        //
+        EnvUtil.addInternalVariables(kettleVariables);
         return kettleVariables;
     }
     

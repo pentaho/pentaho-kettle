@@ -77,7 +77,7 @@ public class EnvUtil
      * Add a number of internal variables to the Kettle Variables at the root.
      * @param variables
      */
-    private static void addInternalVariables(KettleVariables variables)
+    public static void addInternalVariables(KettleVariables variables)
     {
         // Add a bunch of internal variables
         String prefix = Const.INTERNAL_VARIABLE_PREFIX+".Kettle.";
