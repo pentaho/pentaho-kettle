@@ -31,6 +31,7 @@ import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleTransException;
+import be.ibridge.kettle.core.logging.Log4jStringAppender;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.repository.Repository;
@@ -109,6 +110,8 @@ public class Trans
 	private int    preview_sizes[];
 
 	private boolean safeModeEnabled;
+
+    private Log4jStringAppender stringAppender;
 
 	/*
 	 * Initialize new empty transformation...
@@ -1026,7 +1029,12 @@ public class Trans
 				if (ldb!=null) ldb.disconnect();
 			}
 
-
+            if (transMeta.isLogfieldUsed())
+            {
+                stringAppender = LogWriter.createStringAppender();
+                log.addAppender(stringAppender);
+                stringAppender.setBuffer(new StringBuffer("START"+Const.CR));
+            }
 		}
 		catch(KettleException e)
 		{
@@ -1075,10 +1083,8 @@ public class Trans
 		String log_string = null;
 		if (transMeta.isLogfieldUsed())
 		{
-			log_string = log.getString();
-			log_string+=Const.CR+Messages.getString("Trans.Log.Status.End"); //$NON-NLS-1$
-			log.setString(""); //$NON-NLS-1$
-			log.endStringCapture();
+            log_string = stringAppender.getBuffer().append(Const.CR+"END"+Const.CR).toString();
+            log.removeAppender(stringAppender);
 		}
 
 		DatabaseMeta logcon = transMeta.getLogConnection();
