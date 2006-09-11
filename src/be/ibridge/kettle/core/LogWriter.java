@@ -19,6 +19,7 @@ package be.ibridge.kettle.core;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.util.Hashtable;
 
 import org.apache.log4j.Logger;
@@ -72,6 +73,11 @@ public class LogWriter
 			"Rowlevel (very detailed)"
 		};
 
+
+
+	// Stream
+	private OutputStream stream;
+	
 	// File
 	private String filename;
 	private File file;  // Write to a certain file...
@@ -143,6 +149,20 @@ public class LogWriter
 		level  = lvl;
 		filter = null;
 	}
+    
+    public static final LogWriter getInstance(int lvl, OutputStream stream)
+    {
+        LogWriter log = findLogWriter(NO_FILE_NAME);
+        
+        if (log != null) return log;
+        
+        lastLog = new LogWriter(lvl);
+        lastLog.stream = stream;
+        logs.put(NO_FILE_NAME, lastLog);
+        
+        return lastLog;
+    }
+
 
 	/**
 	 * Get a new log instance for the specified file if it is not open yet! 
@@ -215,14 +235,9 @@ public class LogWriter
 		boolean retval=true;
 		try
 		{
+			stream.close();
 			// Remove this one from the hashtable...
 			logs.remove(getFilename());
-			if(fileAppender != null)
-			{
-				fileAppender.close();
-				rootLogger.removeAppender(fileAppender);
-				fileAppender = null;
-			}
 		}
 		catch(Exception e) 
 		{ 
@@ -320,18 +335,17 @@ public class LogWriter
         }
 	}
 	
-	public void logMinimal(String subject, String message)  { println(LOG_LEVEL_MINIMAL, subject, message) ; }
-    public void logBasic(String subject, String message)    { println(LOG_LEVEL_BASIC, subject, message) ; }
+    public void logMinimal(String subject, String message)  { println(LOG_LEVEL_MINIMAL, subject, message) ; }
+	public void logBasic(String subject, String message)    { println(LOG_LEVEL_BASIC, subject, message) ; }
 	public void logDetailed(String subject, String message) { println(LOG_LEVEL_DETAILED, subject, message); }
 	public void logDebug(String subject, String message)    { println(LOG_LEVEL_DEBUG, subject, message); }
 	public void logRowlevel(String subject, String message) { println(LOG_LEVEL_ROWLEVEL, subject, message); }
 	public void logError(String subject, String message)    { println(LOG_LEVEL_ERROR, subject, message); }
 	
     /** @deprecated */
-	public Object getStream() {
-		if (fileAppender != null)
-			return fileAppender.getFileOutputStream();
-		return null;
+	public Object getStream()
+	{
+        return fileAppender.getFileOutputStream();
 	}
 	
 	public void setFilter(String filter)
