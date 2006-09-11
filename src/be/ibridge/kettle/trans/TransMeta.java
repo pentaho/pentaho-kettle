@@ -2052,9 +2052,9 @@ public class TransMeta implements XMLInterface
     /**
      * Parse a file containing the XML that describes the transformation.
      * No default connections are loaded since no repository is available at this time.
+     * Since the filename is set, internal variables are being set that relate to this.
      *
      * @param fname The filename
-     * @param setInternalVariables true if you want to set the internal variables based on this transformation information
      */
     public TransMeta(String fname) throws KettleXMLException
     {
