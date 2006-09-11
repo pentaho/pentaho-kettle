@@ -29,12 +29,11 @@
     </info>
   <notepads>
     <notepad>
-      <note>Select all transformations except one that reads/writes from/to a database.
-Try that one after setting up a database.</note>
-      <xloc>32</xloc>
-      <yloc>42</yloc>
-      <width>514</width>
-      <heigth>42</heigth>
+      <note>Select all JavaScript transformations</note>
+      <xloc>99</xloc>
+      <yloc>27</yloc>
+      <width>249</width>
+      <heigth>26</heigth>
       </notepad>
     </notepads>
   <order>

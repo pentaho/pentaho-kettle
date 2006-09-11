@@ -2,29 +2,11 @@
 <job>
   <name>Run all sample transformations</name>
   <directory>/</directory>
-  <connection>
-    <name>log</name>
-    <server>localhost</server>
-    <type>MYSQL</type>
-    <access>Native</access>
-    <database>test</database>
-    <port>3307</port>
-    <username>matt</username>
-    <password>Encrypted 2be98afc86aa7f2e4cb79ce10df90acde</password>
-    <servername/>
-    <data_tablespace/>
-    <index_tablespace/>
-    <attributes>
-      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
-      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
-      <attribute><code>PORT_NUMBER</code><attribute>3307</attribute></attribute>
-    </attributes>
-  </connection>
-  <logconnection>log</logconnection>
-  <logtable>l_job</logtable>
-   <use_batchid>Y</use_batchid>
-   <pass_batchid>Y</pass_batchid>
-   <use_logfield>Y</use_logfield>
+  <logconnection/>
+  <logtable/>
+   <use_batchid>N</use_batchid>
+   <pass_batchid>N</pass_batchid>
+   <use_logfield>N</use_logfield>
   <entries>
     <entry>
       <name>START</name>
@@ -152,5 +134,13 @@
       </hop>
     </hops>
   <notepads>
+    <notepad>
+      <note>This job executes a selection of transformations from the transformation samples.
+In this example we execute all JavaScript samples.</note>
+      <xloc>51</xloc>
+      <yloc>36</yloc>
+      <width>557</width>
+      <heigth>42</heigth>
+      </notepad>
     </notepads>
   </job>
