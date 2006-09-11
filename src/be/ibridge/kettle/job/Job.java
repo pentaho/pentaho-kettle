@@ -475,7 +475,7 @@ public class Job extends Thread
 				ldb.writeLogRecord(jobMeta.getLogTable(), jobMeta.isBatchIdUsed(), getBatchId(), true, jobMeta.getName(), "start", 
 				                   0L, 0L, 0L, 0L, 0L, 0L, 
 				                   startDate, endDate, logDate, depDate, currentDate,
-								   log.getString()
+								   null
 								   );
 				ldb.disconnect();
 			}

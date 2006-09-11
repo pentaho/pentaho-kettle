@@ -18,6 +18,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.logging.Log4jStringAppender;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 
@@ -127,7 +128,8 @@ public class TransPreviewProgressDialog
         progressMonitor.beginTask(Messages.getString("TransPreviewProgressDialog.Monitor.BeginTask.Title"), 100); //$NON-NLS-1$
         
         // Log preview activity to a String:
-        log.startStringCapture();
+        Log4jStringAppender stringAppender = LogWriter.createStringAppender();
+        log.addAppender(stringAppender);
         
         // This transformation is ready to run in preview!
         trans = new Trans(log, transMeta, previewStepNames, previewSize);
@@ -167,9 +169,8 @@ public class TransPreviewProgressDialog
         trans.stopAll();
         
         // Log preview activity to a String:
-        log.startStringCapture();
-        loggingText = log.getString();
-        log.setString(""); //$NON-NLS-1$
+        log.removeAppender(stringAppender);
+        loggingText = stringAppender.getBuffer().toString();
         
         progressMonitor.done();
     }

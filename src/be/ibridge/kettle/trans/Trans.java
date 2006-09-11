@@ -221,17 +221,6 @@ public class Trans
 		 */
 		if (arguments!=null) transMeta.setArguments(arguments);
 
-		/* OK, see if we need to capture the logging into a String and
-		 * then put it in a database field later on.
-		 * From here until the execution is finished, the log will be captured.
-		 *
-		 */
-		if (transMeta.isLogfieldUsed())
-		{
-			log.startStringCapture();
-			log.setString(Messages.getString("Trans.Log.Start")+Const.CR); //$NON-NLS-1$
-		}
-
 		if (transMeta.getName()==null)
 		{
 			if (transMeta.getFilename()!=null)
@@ -1033,7 +1022,7 @@ public class Trans
             {
                 stringAppender = LogWriter.createStringAppender();
                 log.addAppender(stringAppender);
-                stringAppender.setBuffer(new StringBuffer("START"+Const.CR));
+                stringAppender.setBuffer(new StringBuffer(Messages.getString("Trans.Log.Start")+Const.CR));
             }
 		}
 		catch(KettleException e)
