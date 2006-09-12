@@ -127,11 +127,10 @@
 	    	<fileset file="build_version.txt"/>
 	  	    </copy>
 	  	
-	  	<!--
-		    <copy todir="${classes}">
-		    	<fileset dir="/backup/javaforge/repository/src/318/" includes="build_version.txt"/>
-		  	    </copy>
-	     -->
+	    <copy todir="${classes}">
+	    	<fileset dir="/backup/javaforge/repository/src/318/" includes="build_version.txt"/>
+	  	    </copy>
+	  	
 	  </target>
 	
 	
@@ -199,7 +198,7 @@
 	  	<echo>Generating the Kettle library kettle.jar ...</echo>
 	  	<jar jarfile="${lib}/kettle.jar" 
 	    	 basedir="${classes}" 
-	    	 includes="**/* ../build_version.txt /backup/javaforge/repository/src/318/build_version.txt"
+	    	 includes="**/* ../build_version.txt"
 	  	     excludes="**/Thumbs.db be/ibridge/kettle/schema/**/* be/ibridge/kettle/menu/**/*"
 	  		/>
 	  	
