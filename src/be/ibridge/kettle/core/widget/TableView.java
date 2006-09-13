@@ -151,6 +151,7 @@ public class TableView extends Composite
 	private Condition condition;
     private Color defaultBackgroundColor;
     private Map usedColors;
+    private ColumnInfo numberColumn;
 
 	public TableView(Composite par, int st, ColumnInfo[] c, int r, ModifyListener lsm, Props pr)
 	{
@@ -170,7 +171,7 @@ public class TableView extends Composite
 				
 		sortfield = 0;
 		sort_desc = false;
-		
+        		
 		selectionStart = -1;
 		previous_shift = false;
 		
@@ -182,6 +183,8 @@ public class TableView extends Composite
 		
 		clearUndo();
 		
+        numberColumn = new ColumnInfo("#", ColumnInfo.COLUMN_TYPE_TEXT, true, true);
+        
 		lsUndo = new ModifyListener()
 			{
 				public void modifyText(ModifyEvent arg0)
@@ -255,6 +258,10 @@ public class TableView extends Composite
         defaultBackgroundColor = table.getItem(0).getBackground();
 		
 		setRowNums();
+
+        // Set the sort sign on the first column. (0)
+        table.setSortColumn(table.getColumn(sortfield));
+        table.setSortDirection( sort_desc ? SWT.DOWN : SWT.UP );
 		
 		// create a ControlEditor field to edit the contents of a cell
 		editor = new TableEditor(table);
@@ -1004,7 +1011,10 @@ public class TableView extends Composite
                 sortfield=colnr;
                 sort_desc = false;
             }
-            
+
+            table.setSortColumn(table.getColumn(colnr));
+            table.setSortDirection( sort_desc ? SWT.DOWN : SWT.UP );
+
             // First, get all info and put it in a Vector of Rows...
             TableItem[] items = table.getItems();
             Vector v = new Vector();
@@ -1031,7 +1041,12 @@ public class TableView extends Composite
                 
                 for (int j=0;j<table.getColumnCount();j++)
                 {
+                    ColumnInfo colInfo;
+                    if (j>0) colInfo = columns[j-1];
+                    else     colInfo = numberColumn;
+                    
                     Value value = new Value("Col#"+j, item.getText(j));
+                    value.setType(colInfo.getValueType()); // Do conversion if required.
                     r.addValue(value);
                 }
                 v.addElement(r);
@@ -1066,7 +1081,7 @@ public class TableView extends Composite
                 for (int i=1;i<r.size();i++)
                 {
                     Value value = r.getValue(i);
-                    item.setText(i-1, value.getString());
+                    if (value.getString()!=null) item.setText(i-1, value.getString());
                 }
             }
         }

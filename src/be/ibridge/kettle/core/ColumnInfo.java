@@ -20,6 +20,8 @@ package be.ibridge.kettle.core;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 
+import be.ibridge.kettle.core.value.Value;
+
 /**
  * Used to define the behaviour and the content of a Table column in a TableView object.
  * 
@@ -39,12 +41,14 @@ public class ColumnInfo
 	private String   name;
 
 	private String[] combovals;
-	private boolean  number; 
+	private boolean  numeric; 
 	private String   tooltip;
 	private int      allignement;
 	private boolean  readonly;
 	private String   button_text;
 	private boolean  hide_negative;
+    
+    private int      valueType;
 	
 	private SelectionAdapter selButton;
 
@@ -55,16 +59,23 @@ public class ColumnInfo
         this(colname, coltype);
 	}
     
+    /**
+     * Creates a column info class for use with the TableView class.
+     * 
+     * @param colname The column name
+     * @param coltype The column type (see: COLUMN_TYPE_...)
+     */
     public ColumnInfo(String colname, int coltype)
     {
         name=colname;
         type=coltype;
         combovals=null;
-        number=false;
+        numeric=false;
         tooltip=null;
         allignement=SWT.LEFT;
         readonly=false;
         hide_negative=false;
+        valueType=Value.VALUE_TYPE_STRING;
     }
 
     /** @deprecated */
@@ -74,15 +85,24 @@ public class ColumnInfo
     }
 
     
+    /**
+     * Creates a column info class for use with the TableView class.
+     * The type of column info to be created is : COLUMN_TYPE_CCOMBO
+     * 
+     * @param colname The column name
+     * @param coltype The column type (see: COLUMN_TYPE_...)
+     * @param combo   The choices in the combo box
+     */
 	public ColumnInfo(String colname, int coltype, String[] combo)
 	{
 		this(colname, coltype);
 		combovals=combo;
-		number=false;
+		numeric=false;
 		tooltip=null;
 		allignement=SWT.LEFT;
 		readonly=false;
 		hide_negative=false;
+        valueType=Value.VALUE_TYPE_STRING;
 	}
 
     /** @deprecated */
@@ -91,15 +111,30 @@ public class ColumnInfo
         this(colname, coltype, num);
     }
 
-	public ColumnInfo(String colname, int coltype, boolean num)
+    /**
+     * Creates a column info class for use with the TableView class.
+     * 
+     * @param colname The column name
+     * @param coltype The column type (see: COLUMN_TYPE_...)
+     * @param numeric true if the column type is numeric.   Use setValueType() to specify the type of numeric: Value.VALUE_TYPE_INTEGER is the default.
+     */
+	public ColumnInfo(String colname, int coltype, boolean numeric)
 	{
 		this(colname, coltype);
-		combovals=null;
-		number=num;
-		tooltip=null;
-		allignement=SWT.LEFT;
-		readonly=false;
-		hide_negative=false;
+		this.combovals=null;
+		this.numeric=numeric;
+		this.tooltip=null;
+		this.allignement=SWT.LEFT;
+		this.readonly=false;
+		this.hide_negative=false;
+        if (numeric)
+        {
+            valueType=Value.VALUE_TYPE_INTEGER;
+        }
+        else
+        {
+            valueType=Value.VALUE_TYPE_STRING;
+        }
 	}
 
     /** @deprecated */
@@ -108,6 +143,15 @@ public class ColumnInfo
         this(colname, coltype, combo, ro);
     }
     
+    /**
+     * Creates a column info class for use with the TableView class.
+     * The type of column info to be created is : COLUMN_TYPE_CCOMBO
+     * 
+     * @param colname The column name
+     * @param coltype The column type (see: COLUMN_TYPE_...)
+     * @param combo   The choices in the combo box
+     * @param ro      true if the column is read-only (you can't type in the combo box, you CAN make a choice)
+     */
 	public ColumnInfo(String colname, int coltype, String[] combo, boolean ro)
 	{
 		this(colname, coltype, combo);
@@ -120,6 +164,14 @@ public class ColumnInfo
 		this(colname, coltype, num, ro);
 	}
 
+    /**
+     * Creates a column info class for use with the TableView class.
+     * 
+     * @param colname The column name
+     * @param coltype The column type (see: COLUMN_TYPE_...)
+     * @param num     true if the column type is numeric. Use setValueType() to specify the type of numeric: Value.VALUE_TYPE_INTEGER is the default.
+     * @param ro      true if the column is read-only.  
+     */
     public ColumnInfo(String colname, int coltype, boolean num, boolean ro)
     {
         this(colname, coltype, num);
@@ -134,28 +186,97 @@ public class ColumnInfo
     }
 
 	
-	public void     setToolTip(String tip)      { tooltip=tip; }
-	public void     setReadOnly(boolean ro)     { readonly=ro; }
-	public void     setAllignement(int allign)  { allignement=allign; }
-	public void     setComboValues(String cv[]) { combovals=cv; }
-	public void     setButtonText(String bt)    { button_text=bt; }
+	public void setToolTip(String tip)
+    {
+        tooltip = tip;
+    }
 
-	public String   getName()        { return name;        }
-	public int      getType()        { return type;        }
-    
+    public void setReadOnly(boolean ro)
+    {
+        readonly = ro;
+    }
+
+    public void setAllignement(int allign)
+    {
+        allignement = allign;
+    }
+
+    public void setComboValues(String cv[])
+    {
+        combovals = cv;
+    }
+
+    public void setButtonText(String bt)
+    {
+        button_text = bt;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+
+    public int getType()
+    {
+        return type;
+    }
+
     /** @deprecated */
-	public String   getDefault()     { return "";    }
-    
-	public String[] getComboValues() 
-	{
-		String retval[] = combovals; // Copy structure!
-		return retval;   
-	}
-	public boolean  isNumber()       { return number;      }
-	public String   getToolTip()     { return tooltip;     }       
-	public int      getAllignement() { return allignement; }
-	public boolean  isReadOnly()     { return readonly;    }
-	public String   getButtonText()  { return button_text; }       
+    public String getDefault()
+    {
+        return "";
+    }
+
+    public String[] getComboValues()
+    {
+        String retval[] = combovals; // Copy structure!
+        return retval;
+    }
+
+    /**
+     * @deprecated please use isNumeric()
+     * @return true if the column contains a numeric value
+     */
+    public boolean isNumber()
+    {
+        return numeric;
+    }
+
+    /**
+     * @return the numeric
+     */
+    public boolean isNumeric()
+    {
+        return numeric;
+    }
+
+    /**
+     * @param numeric the numeric to set
+     */
+    public void setNumeric(boolean numeric)
+    {
+        this.numeric = numeric;
+    }
+
+    public String getToolTip()
+    {
+        return tooltip;
+    }
+
+    public int getAllignement()
+    {
+        return allignement;
+    }
+
+    public boolean isReadOnly()
+    {
+        return readonly;
+    }
+
+    public String getButtonText()
+    {
+        return button_text;
+    }       
 	
 	public void setSelectionAdapter(SelectionAdapter sb)
 	{
@@ -181,4 +302,22 @@ public class ColumnInfo
 	{
 		return hide_negative;
 	}
+
+    /**
+     * Get the type of value (numeric) in this column: Value.VALUE_TYPE_INTEGER is the default.
+     * @return the valueType
+     */
+    public int getValueType()
+    {
+        return valueType;
+    }
+
+    /**
+     * Use setValueType() to specify the type of numeric: Value.VALUE_TYPE_INTEGER is the default.
+     * @param valueType the valueType to set
+     */
+    public void setValueType(int valueType)
+    {
+        this.valueType = valueType;
+    }
 }

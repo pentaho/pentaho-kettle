@@ -1070,17 +1070,24 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			}
 			else
 			{
-				StringBuffer fmt=new StringBuffer();
-				int i;
-				DecimalFormat form;
-	
-				if (value.getInteger()>=0) fmt.append(' '); // to compensate for minus sign.
-
-				int len = getLength();
-				for (i=0;i<len;i++) fmt.append('0'); // all zeroes.
-				
-				form= new DecimalFormat(fmt.toString());
-				retval=form.format(value.getInteger());
+                if (pad)
+                {
+    				StringBuffer fmt=new StringBuffer();
+    				int i;
+    				DecimalFormat form;
+    	
+    				if (value.getInteger()>=0) fmt.append(' '); // to compensate for minus sign.
+    
+    				int len = getLength();
+    				for (i=0;i<len;i++) fmt.append('0'); // all zeroes.
+    				
+    				form= new DecimalFormat(fmt.toString());
+    				retval=form.format(value.getInteger());
+                }
+                else
+                {
+                    retval = Long.toString(value.getInteger());
+                }
 			}
 		}
 		return retval;

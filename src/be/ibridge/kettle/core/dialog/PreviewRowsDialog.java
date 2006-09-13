@@ -160,8 +160,10 @@ public class PreviewRowsDialog extends Dialog
 		for (int i=0;i<row.size();i++)
 		{
 			Value v=row.getValue(i);
-			colinf[i]=new ColumnInfo(v.getName(),  ColumnInfo.COLUMN_TYPE_TEXT,   false);
+			colinf[i]=new ColumnInfo(v.getName(),  ColumnInfo.COLUMN_TYPE_TEXT, v.isNumeric());
 			colinf[i].setToolTip(v.toStringMeta());
+            colinf[i].setValueType(v.getType());
+            
 		}
 		
 		wFields=new TableView(shell, 
@@ -238,9 +240,11 @@ public class PreviewRowsDialog extends Dialog
                     for (int c=0;c<row.size();c++)
                     {
                         Value v=row.getValue(c);
-                        String show;
+                        String show = v.toString(false);
+                        /*
                         if (v.isNumeric()) show = v.toString(true);
                         else               show = v.toString(false);
+                        */
                         if (show!=null) item.setText(c+1, show);
                     }
                 }

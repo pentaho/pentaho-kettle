@@ -107,21 +107,21 @@ public class ChefHistory extends Composite
 		final int FieldsRows=1;
 		
 		colinf=new ColumnInfo[] {
-            new ColumnInfo(Messages.getString("ChefHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("ChefHistory.Column.Status"),          ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("ChefHistory.Column.Read"),            ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("ChefHistory.Column.Written"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("ChefHistory.Column.Updated"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("ChefHistory.Column.Input"),           ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("ChefHistory.Column.Output"),          ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("ChefHistory.Column.Errors"),          ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("ChefHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("ChefHistory.Column.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("ChefHistory.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("ChefHistory.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("ChefHistory.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("ChefHistory.Column.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("ChefHistory.Column.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("ChefHistory.Column.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
             new ColumnInfo(Messages.getString("ChefHistory.Column.StartDate"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
             new ColumnInfo(Messages.getString("ChefHistory.Column.EndDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
     		new ColumnInfo(Messages.getString("ChefHistory.Column.LogDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
             new ColumnInfo(Messages.getString("ChefHistory.Column.DependencyDate"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
             new ColumnInfo(Messages.getString("ChefHistory.Column.ReplayDate"),     ColumnInfo.COLUMN_TYPE_TEXT, false, true) //$NON-NLS-1$
         };
-		
+        
         for (int i=0;i<colinf.length;i++) colinf[i].setAllignement(SWT.RIGHT);
         
         wFields=new TableView(sash, 
@@ -287,7 +287,7 @@ public class ChefHistory extends Composite
                             {
                                 row = (Row) rowList.get(i);
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
-                                String batchID = row.searchValue("ID_JOB").toString(true);
+                                String batchID = row.getString("ID_JOB", "");
                                 if(batchID != null)
                                 item.setText( 1, batchID);           //$NON-NLS-1$ //$NON-NLS-2$
                                 item.setText( 2, Const.NVL( row.getString("STATUS", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$

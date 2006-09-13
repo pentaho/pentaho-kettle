@@ -107,14 +107,14 @@ public class SpoonHistory extends Composite
 		final int FieldsRows=1;
 		
 		colinf=new ColumnInfo[] {
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Status"),          ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.Read"),            ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Written"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-            new ColumnInfo(Messages.getString("SpoonHistory.Column.Updated"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Input"),           ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Output"),          ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Errors"),          ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("SpoonHistory.Column.BatchID"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Status"),         ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("SpoonHistory.Column.Read"),           ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Written"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+            new ColumnInfo(Messages.getString("SpoonHistory.Column.Updated"),        ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Input"),          ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Output"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
+    		new ColumnInfo(Messages.getString("SpoonHistory.Column.Errors"),         ColumnInfo.COLUMN_TYPE_TEXT, true , true), //$NON-NLS-1$
             new ColumnInfo(Messages.getString("SpoonHistory.Column.StartDate"),      ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
             new ColumnInfo(Messages.getString("SpoonHistory.Column.EndDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
     		new ColumnInfo(Messages.getString("SpoonHistory.Column.LogDate"),        ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
@@ -287,7 +287,7 @@ public class SpoonHistory extends Composite
                             {
                                 row = (Row) rowList.get(i);
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
-                                String batchID = row.searchValue("ID_BATCH").toString(true);
+                                String batchID = row.getString("ID_BATCH", "");
                                 if(batchID != null)
                                 item.setText( 1, batchID);           //$NON-NLS-1$ //$NON-NLS-2$
                                 item.setText( 2, Const.NVL( row.getString("STATUS", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
