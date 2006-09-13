@@ -170,7 +170,7 @@ public class JobEntryMailDialog extends Dialog implements JobEntryDialogInterfac
 		wName.setLayoutData(fdName);
 
 		// Destination line
-		wDestination=new LabelTextVar(shell, "Destination address", "Destination address");
+		wDestination=new LabelTextVar(shell, "Destination addresses", "Destination addresses, separated by a space");
 		wDestination.addModifyListener(lsMod);
 		fdDestination=new FormData();
 		fdDestination.left = new FormAttachment(0, 0);

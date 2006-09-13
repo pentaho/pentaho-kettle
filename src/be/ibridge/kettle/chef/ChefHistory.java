@@ -287,7 +287,7 @@ public class ChefHistory extends Composite
                             {
                                 row = (Row) rowList.get(i);
                                 TableItem item = new TableItem(wFields.table, SWT.NONE);
-                                String batchID = row.getString("ID_JOB", "");
+                                String batchID = row.searchValue("ID_JOB").toString(true);
                                 if(batchID != null)
                                 item.setText( 1, batchID);           //$NON-NLS-1$ //$NON-NLS-2$
                                 item.setText( 2, Const.NVL( row.getString("STATUS", ""), ""));           //$NON-NLS-1$ //$NON-NLS-2$
