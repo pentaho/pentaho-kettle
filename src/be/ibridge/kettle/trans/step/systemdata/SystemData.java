@@ -70,7 +70,7 @@ public class SystemData extends BaseStep implements StepInterface
 				row.addValue(new Value(meta.getFieldName()[i], getTrans().getStartDate()));
 				break;
 			case SystemDataMeta.TYPE_SYSTEM_INFO_TRANS_DATE_TO:
-				row.addValue(new Value(meta.getFieldName()[i], getTrans().getStartDate()));
+				row.addValue(new Value(meta.getFieldName()[i], getTrans().getEndDate()));
 				break;
             case SystemDataMeta.TYPE_SYSTEM_INFO_JOB_DATE_FROM:
                 row.addValue(new Value(meta.getFieldName()[i], getTrans().getJobStartDate()));
