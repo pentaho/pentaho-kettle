@@ -761,6 +761,7 @@ public class Const
 	 */
 	public static final String getHostname()
 	{
+        String lastHostname = "localhost";
 		try
 		{
 			Enumeration en = NetworkInterface.getNetworkInterfaces();
@@ -773,13 +774,14 @@ public class Const
 				while (ip.hasMoreElements())
 				{
 					InetAddress in = (InetAddress) ip.nextElement();
+                    lastHostname=in.getHostName();
 					//System.out.println("  ip address bound : "+in.getHostAddress());
 					//System.out.println("  hostname         : "+in.getHostName());
 					//System.out.println("  Cann.hostname    : "+in.getCanonicalHostName());
 					//System.out.println("  ip string        : "+in.toString());
-					if (!in.getHostName().equalsIgnoreCase("localhost"))
+					if (!lastHostname.equalsIgnoreCase("localhost") && !(lastHostname.indexOf(":")>=0) )
 					{
-						return in.getHostName();
+						return lastHostname;
 					}
 				}
 			}
@@ -788,7 +790,7 @@ public class Const
 
 		}
 
-		return "localhost";
+		return lastHostname;
 	}
 
 	/**
