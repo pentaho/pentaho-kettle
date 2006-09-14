@@ -390,7 +390,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 					TableItem ti = new TableItem(table, SWT.NONE);
 					ti.setText(0, ""+(count+i+1));
 					ti.setText(1, v.getName());
-					ti.setText(2, "Y");
+					ti.setText(2, Messages.getString("System.Combo.Yes"));
 				}
 				wFields.removeEmptyRows();
 				wFields.setRowNums();
