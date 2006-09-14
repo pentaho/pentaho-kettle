@@ -755,41 +755,43 @@ public class Const
 		return getOS().startsWith("Windows");
 	}
 
-	/**
-	 * Determine the hostname of the machine Kettle is running on
-	 * @return The hostname
-	 */
-	public static final String getHostname()
-	{
-		try
-		{
-			Enumeration en = NetworkInterface.getNetworkInterfaces();
-			while (en.hasMoreElements())
-			{
-				NetworkInterface nwi = (NetworkInterface) en.nextElement();
-				//System.out.println("nwi : "+nwi.getName()+" ("+nwi.toString()+")");
-				Enumeration ip = nwi.getInetAddresses();
+    /**
+     * Determine the hostname of the machine Kettle is running on
+     * @return The hostname
+     */
+    public static final String getHostname()
+    {
+        String lastHostname = "localhost";
+        try
+        {
+            Enumeration en = NetworkInterface.getNetworkInterfaces();
+            while (en.hasMoreElements())
+            {
+                NetworkInterface nwi = (NetworkInterface) en.nextElement();
+                //System.out.println("nwi : "+nwi.getName()+" ("+nwi.toString()+")");
+                Enumeration ip = nwi.getInetAddresses();
 
-				while (ip.hasMoreElements())
-				{
-					InetAddress in = (InetAddress) ip.nextElement();
-					//System.out.println("  ip address bound : "+in.getHostAddress());
-					//System.out.println("  hostname         : "+in.getHostName());
-					//System.out.println("  Cann.hostname    : "+in.getCanonicalHostName());
-					//System.out.println("  ip string        : "+in.toString());
-					if (!in.getHostName().equalsIgnoreCase("localhost"))
-					{
-						return in.getHostName();
-					}
-				}
-			}
-		} catch (SocketException e)
-		{
+                while (ip.hasMoreElements())
+                {
+                    InetAddress in = (InetAddress) ip.nextElement();
+                    lastHostname=in.getHostName();
+                    //System.out.println("  ip address bound : "+in.getHostAddress());
+                    //System.out.println("  hostname         : "+in.getHostName());
+                    //System.out.println("  Cann.hostname    : "+in.getCanonicalHostName());
+                    //System.out.println("  ip string        : "+in.toString());
+                    if (!lastHostname.equalsIgnoreCase("localhost") && !(lastHostname.indexOf(":")>=0) )
+                    {
+                        return lastHostname;
+                    }
+                }
+            }
+        } catch (SocketException e)
+        {
 
-		}
+        }
 
-		return "localhost";
-	}
+        return lastHostname;
+    }
 
 	/**
 	 * Determins the IP address of the machine Kettle is running on.
