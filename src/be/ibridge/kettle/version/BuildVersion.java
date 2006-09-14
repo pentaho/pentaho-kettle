@@ -41,6 +41,7 @@ public class BuildVersion
     
     private int version;
     private Date buildDate;
+    private String hostname;
     
     private BuildVersion()
     {
@@ -72,12 +73,12 @@ public class BuildVersion
                 c=inputStream.read();
             }
             
-            // The 2 parts we expect are in here: 
+            // The 3 parts we expect are in here: 
             String parts[] = buffer.toString().split(SEPARATOR);
             
-            if (parts.length!=2)
+            if (parts.length!=3)
             {
-                throw new RuntimeException("Could not find 2 parts in versioning line : ["+buffer+"]");
+                throw new RuntimeException("Could not find 3 parts in versioning line : ["+buffer+"]");
             }
             
             // Get the revision
@@ -86,6 +87,7 @@ public class BuildVersion
             // Get the build date
             SimpleDateFormat format = new SimpleDateFormat(BUILD_DATE_FORMAT);
             buildDate = format.parse(parts[1]);
+            hostname = parts[2];
             
         }
         catch(Exception e)
@@ -149,7 +151,13 @@ public class BuildVersion
             // Finally the build date
             SimpleDateFormat format = new SimpleDateFormat(BUILD_DATE_FORMAT);
             fileWriter.write(" "+format.format(buildDate));
+
+            // Then the separator
+            fileWriter.write(SEPARATOR);
             
+            // Then the hostname
+            fileWriter.write(Const.getHostname());
+
             // Return
             fileWriter.write("\n\r");
             
@@ -173,6 +181,22 @@ public class BuildVersion
                 throw new RuntimeException("Unable to close file ["+BUILD_VERSION_FILE+"] after writing", e);
             }
         }
+    }
+
+    /**
+     * @return the hostname
+     */
+    public String getHostname()
+    {
+        return hostname;
+    }
+
+    /**
+     * @param hostname the hostname to set
+     */
+    public void setHostname(String hostname)
+    {
+        this.hostname = hostname;
     }
     
 

@@ -52,7 +52,10 @@ public class Log4jKettleLayout extends Layout
                 {
                     BuildVersion buildVersion = BuildVersion.getInstance();
                     SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
-                    line+="ERROR (version "+Const.VERSION+", build "+buildVersion.getVersion()+" from "+format.format(buildVersion.getBuildDate())+") : ";
+                    line+="ERROR (version "+Const.VERSION+
+                                  ", build "+buildVersion.getVersion()+
+                                  " from "+format.format(buildVersion.getBuildDate())+
+                                  " @ "+buildVersion.getHostname()+") : ";
                 }
                 
                 line+=parts[i];
