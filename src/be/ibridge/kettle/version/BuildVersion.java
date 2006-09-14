@@ -159,7 +159,7 @@ public class BuildVersion
             fileWriter.write(" "+Const.getHostname());
 
             // Return
-            fileWriter.write("\n\r");
+            fileWriter.write(Const.CR);
             
             System.out.println("Saved build version info to file ["+file.getAbsolutePath()+"]");
         }
