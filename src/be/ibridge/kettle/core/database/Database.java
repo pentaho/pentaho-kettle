@@ -2518,6 +2518,15 @@ public class Database
                     	length = rm.getPrecision(i);
                     }
                     else
+                    if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_ORACLE &&
+                        ( type==java.sql.Types.VARBINARY || type==java.sql.Types.LONGVARBINARY )
+                       )
+                    {
+                        // set the length for Oracle "RAW" or "LONGRAW" data types
+                        valtype = Value.VALUE_TYPE_STRING;
+                        length = rm.getPrecision(i);
+                    }
+                    else
                     {
                         length=-1; 
                     }
