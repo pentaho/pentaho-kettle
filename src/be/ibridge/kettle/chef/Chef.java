@@ -3352,6 +3352,7 @@ public class Chef implements AddUndoPositionInterface
 		Locale.setDefault(Const.DEFAULT_LOCALE);
 				
         LogWriter log;
+        LogWriter.setConsoleAppenderDebug();
         if (Const.isEmpty(optionLogfile))
         {
             log=LogWriter.getInstance(Const.SPOON_LOG_FILE, false, LogWriter.LOG_LEVEL_BASIC);

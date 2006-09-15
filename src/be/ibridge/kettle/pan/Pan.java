@@ -100,6 +100,7 @@ public class Pan
         if (kettlePassword!=null && kettlePassword.length()>0) optionPassword = new StringBuffer(kettlePassword);
         
         LogWriter log;
+        LogWriter.setConsoleAppenderDebug();
         if (Const.isEmpty(optionLogfile))
         {
             log=LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
