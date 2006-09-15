@@ -2524,7 +2524,7 @@ public class Database
                     {
                         // set the length for Oracle "RAW" or "LONGRAW" data types
                         valtype = Value.VALUE_TYPE_STRING;
-                        length = rm.getPrecision(i);
+                        length = rm.getColumnDisplaySize(i);
                     }
                     else
                     {
