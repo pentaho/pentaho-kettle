@@ -164,7 +164,14 @@ public class ValueString implements ValueInterface, Cloneable
     
     public BigDecimal getBigNumber()
     {
-        if (string==null) return null;
+        if (Const.isEmpty(string)) return null;
+        
+        // Localise , to .
+        if (Const.DEFAULT_DECIMAL_SEPARATOR!='.')
+        {
+            string = string.replace(Const.DEFAULT_DECIMAL_SEPARATOR, '.');
+        }
+        
         return new BigDecimal(string);
     }
     
