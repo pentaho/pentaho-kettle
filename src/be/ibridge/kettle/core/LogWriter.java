@@ -24,6 +24,7 @@ import java.util.Enumeration;
 import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
 import org.apache.log4j.Logger;
+import org.apache.log4j.Priority;
 
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleFileException;
@@ -239,6 +240,20 @@ public class LogWriter
         return appender;
     }
 
+    public static void setConsoleAppenderDebug() {
+        Enumeration appenders = Logger.getRootLogger().getAllAppenders();
+        
+        while(appenders.hasMoreElements())
+        {
+            Object appender = appenders.nextElement();
+            if (appender instanceof ConsoleAppender || appender instanceof Log4jConsoleAppender) {
+                if(appender instanceof ConsoleAppender) {
+                    ((ConsoleAppender)appender).setThreshold(Priority.DEBUG);
+                }
+            }
+        }
+    }
+    
 	public int getType()
 	{
 		return type;
