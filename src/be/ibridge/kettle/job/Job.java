@@ -204,7 +204,8 @@ public class Job extends Thread
 		}
 		catch(KettleException je)
 		{
-			System.out.println("A serious error occurred!"+Const.CR+je.getMessage());
+			log.logError(toString(), "A serious error occurred during job execution!"+Const.CR+je.getMessage());
+            log.logError(toString(), Const.getStackTracker(je));
 		}
 	}
 
