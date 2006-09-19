@@ -77,5 +77,4 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
-REM java %OPT% be.ibridge.kettle.spoon.Spoon %1 %2 %3 %4 %5 %6 %7 %8 %9
-kettlew %OPT% be.ibridge.kettle.spoon.Spoon %1 %2 %3 %4 %5 %6 %7 %8 %9
+start javaw %OPT% be.ibridge.kettle.spoon.Spoon %1 %2 %3 %4 %5 %6 %7 %8 %9
