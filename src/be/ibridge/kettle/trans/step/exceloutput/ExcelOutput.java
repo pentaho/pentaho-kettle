@@ -301,6 +301,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		catch(Exception e)
 		{
 			logError("Error writing field ("+data.positionX+","+data.positionY+") : "+e.toString());
+            logError(Const.getStackTracker(e));
 			return false;
 		}
         finally
