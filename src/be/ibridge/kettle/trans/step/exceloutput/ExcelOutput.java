@@ -21,6 +21,7 @@ import java.util.Locale;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
+import jxl.biff.EmptyCell;
 import jxl.write.DateFormat;
 import jxl.write.DateFormats;
 import jxl.write.DateTime;
@@ -227,34 +228,48 @@ public class ExcelOutput extends BaseStep implements StepInterface
             {
             case Value.VALUE_TYPE_DATE:
                 {
-                    if (cellFormat==null)
+                    if (!v.isNull() && v.getDate()!=null)
                     {
-                        if (excelField!=null && excelField.getFormat()!=null)
+                        if (cellFormat==null)
                         {
-                            DateFormat dateFormat = new DateFormat(excelField.getFormat());
-                            cellFormat=new WritableCellFormat(dateFormat);
+                            if (excelField!=null && excelField.getFormat()!=null)
+                            {
+                                DateFormat dateFormat = new DateFormat(excelField.getFormat());
+                                cellFormat=new WritableCellFormat(dateFormat);
+                            }
+                            else
+                            {
+                                cellFormat =  new WritableCellFormat(DateFormats.FORMAT9);
+                            }
+                            data.formats.put(hashName, cellFormat); // save for next time around...
                         }
-                        else
-                        {
-                            cellFormat =  new WritableCellFormat(DateFormats.FORMAT9);
-                        }
-                        data.formats.put(hashName, cellFormat); // save for next time around...
+                        DateTime dateTime = new DateTime(data.positionX, data.positionY, v.getDate(), cellFormat);
+                        data.sheet.addCell(dateTime);
                     }
-                    DateTime dateTime = new DateTime(data.positionX, data.positionY, v.getDate(), cellFormat);
-                    data.sheet.addCell(dateTime);
+                    else
+                    {
+                        data.sheet.addCell(new EmptyCell(data.positionX, data.positionY));
+                    }
                 }
                 break;
             case Value.VALUE_TYPE_STRING:
             case Value.VALUE_TYPE_BOOLEAN:
             case Value.VALUE_TYPE_BINARY:
                 {
-                    if (cellFormat==null)
+                    if (!v.isNull())
                     {
-                        cellFormat = new WritableCellFormat(data.writableFont);
-                        data.formats.put(hashName, cellFormat);
+                        if (cellFormat==null)
+                        {
+                            cellFormat = new WritableCellFormat(data.writableFont);
+                            data.formats.put(hashName, cellFormat);
+                        }
+                        Label label = new Label(data.positionX, data.positionY, v.getString(), cellFormat);
+                        data.sheet.addCell(label);
                     }
-                    Label label = new Label(data.positionX, data.positionY, v.getString(), cellFormat);
-                    data.sheet.addCell(label);
+                    else
+                    {
+                        data.sheet.addCell(new EmptyCell(data.positionX, data.positionY));
+                    }
                 }
                 break;
             case Value.VALUE_TYPE_NUMBER:
