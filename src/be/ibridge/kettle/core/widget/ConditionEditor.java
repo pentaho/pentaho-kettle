@@ -455,8 +455,12 @@ public class ConditionEditor extends Composite
 		if (fields!=null)
 		for (int i=0;i<fields.size();i++)
 		{
-			int len = fields.getValue(i).getName().length(); 
-			if (len>max_field_length) max_field_length=len;
+            Value value = fields.getValue(i);
+            if (value!=null && value.getName()!=null)
+            {
+    			int len = fields.getValue(i).getName().length(); 
+    			if (len>max_field_length) max_field_length=len;
+            }
 		}
 	}
 
