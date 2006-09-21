@@ -149,16 +149,16 @@ public class BuildVersion
             
             // Finally the build date
             SimpleDateFormat format = new SimpleDateFormat(BUILD_DATE_FORMAT);
-            fileWriter.write(" "+format.format(buildDate));
+            fileWriter.write(" "+format.format(buildDate)+" ");
             
             // Then the separator
             fileWriter.write(SEPARATOR);
             
             // Then the hostname
-            fileWriter.write(Const.getHostname());
+            fileWriter.write(" "+Const.getHostname());
 
             // Return
-            fileWriter.write("\n\r");
+            fileWriter.write(Const.CR);
             
             System.out.println("Saved build version info to file ["+file.getAbsolutePath()+"]");
         }
