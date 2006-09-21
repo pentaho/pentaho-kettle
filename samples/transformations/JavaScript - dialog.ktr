@@ -33,7 +33,7 @@
 It is  a proof of concept if dialogs could be used within transformations and may be not supported in the future.
 This could be a base for discussion if a general input step dialog should be created.
 It runs within Spoon, Pan and launched by the &quot;Test script&quot; button within the JavaScript editor.
-</note>
+ATTENTION Mac OSX users: This functionality is not yet implemented in the SWT (see Bug ID 3492)</note>
       <xloc>19</xloc>
       <yloc>16</yloc>
       <width>544</width>
@@ -77,6 +77,19 @@ returns two additional fields:
     </notepads>
   <order>
   <hop> <from>Generate a row with defaults</from><to>Java-Script with dialog</to><enabled>Y</enabled> </hop>  <hop> <from>Java-Script with dialog</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>538</xloc>
+      <yloc>122</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
 
   <step>
     <name>Generate a row with defaults</name>
@@ -185,19 +198,6 @@ if(displayHasToBeDisposed) {
         </field>      </fields>    <GUI>
       <xloc>333</xloc>
       <yloc>120</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Dummy (do nothing)</name>
-    <type>Dummy</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <GUI>
-      <xloc>538</xloc>
-      <yloc>122</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
