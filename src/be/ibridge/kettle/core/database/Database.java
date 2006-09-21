@@ -2661,7 +2661,14 @@ public class Database
                             if (databaseMeta.supportsGetBlob())
                             {
                                 Blob blob = rs.getBlob(i+1);
-                                val.setValue( blob.getBytes(1L, (int)blob.length()) );
+                                if (blob!=null)
+                                {
+                                    val.setValue( blob.getBytes(1L, (int)blob.length()) );
+                                }
+                                else
+                                {
+                                    val.setNull();
+                                }
                             }
                             else
                             {
