@@ -272,6 +272,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void setDefault()
 	{
+        flagField = "flagfield";
         allocate(0,0);
 	}
     
@@ -355,6 +356,7 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
     
     public Row getFields(Row r, String name, Row info) throws KettleStepException
     {
+        if (Const.isEmpty(flagField)) throw new KettleStepException(Messages.getString("MergeRowsMeta.Exception.FlagFieldNotSpecified"));
         Value flagFieldValue = new Value(flagField, Value.VALUE_TYPE_STRING);
         flagFieldValue.setOrigin(name);
         
