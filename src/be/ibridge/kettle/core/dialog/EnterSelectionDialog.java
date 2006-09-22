@@ -236,6 +236,7 @@ public class EnterSelectionDialog extends Dialog
 		{
 			selection = null;
 			selectionNr = -1;
+            indices = new int[0];
 		}
 		dispose();
 	}
