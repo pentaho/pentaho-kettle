@@ -68,6 +68,7 @@ public class EnterSelectionDialog extends Dialog
 	private boolean viewOnly, modal;
 	private int selectedNr;
     private boolean multi;
+    private int[] indices;
 		
 	/**
 	 * Create a new dialog allow someone to pick one value out of a list of values
@@ -229,6 +230,7 @@ public class EnterSelectionDialog extends Dialog
 		{
 			selection    = wSelection.getSelection()[0];
 			selectionNr = wSelection.getSelectionIndices()[0];
+            indices = wSelection.getSelectionIndices();
 		}
 		else
 		{
@@ -264,6 +266,6 @@ public class EnterSelectionDialog extends Dialog
     
     public int[] getSelectionIndeces()
     {
-        return wSelection.getSelectionIndices();
+        return indices;
     }
 }
