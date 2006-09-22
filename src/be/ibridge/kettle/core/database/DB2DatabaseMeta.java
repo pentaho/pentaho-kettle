@@ -212,9 +212,10 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 					retval+="("; // Maybe use some default DB String length?
 				}
 				retval+=")";
-				break;
+
 			}
-		case Value.VALUE_TYPE_BINARY:
+            break;
+       case Value.VALUE_TYPE_BINARY:
 			if (length>getMaxVARCHARLength() || length>=DatabaseMeta.CLOB_LENGTH)
 			{
 				retval+="BLOB("+length+")";
@@ -229,9 +230,9 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 				{
 					retval+="BLOB"; // not going to work, but very close
 				}
-				break;
 			}			
-		default:
+            break;
+        default:
 			retval+=" UNKNOWN";
 			break;
 		}
