@@ -67,6 +67,7 @@ public class EnterSelectionDialog extends Dialog
 	
 	private boolean viewOnly, modal;
 	private int selectedNr;
+    private boolean multi;
 		
 	/**
 	 * Create a new dialog allow someone to pick one value out of a list of values
@@ -87,6 +88,7 @@ public class EnterSelectionDialog extends Dialog
 		viewOnly = false;
 		modal = true;
 		selectedNr = -1;
+        multi=false;
 	}
 	
 	public void setViewOnly()
@@ -130,7 +132,11 @@ public class EnterSelectionDialog extends Dialog
 		fdlSelection.left = new FormAttachment(0, 0);
 		fdlSelection.top  = new FormAttachment(0, margin);
 		wlSelection.setLayoutData(fdlSelection);
-		wSelection=new List(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        
+        int options = SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL;
+        if (multi) options|=SWT.MULTI; else options|=SWT.SINGLE;  
+        
+		wSelection=new List(shell, options );
 		for (int i=0;i<list.length;i++) wSelection.add(list[i]);
 		if (selectedNr>=0)
 		{
@@ -245,4 +251,19 @@ public class EnterSelectionDialog extends Dialog
 	{
 		return selectionNr;
 	}
+
+    public boolean isMulti()
+    {
+        return multi;
+    }
+
+    public void setMulti(boolean multi)
+    {
+        this.multi = multi;
+    }
+    
+    public int[] getSelectionIndeces()
+    {
+        return wSelection.getSelectionIndices();
+    }
 }
