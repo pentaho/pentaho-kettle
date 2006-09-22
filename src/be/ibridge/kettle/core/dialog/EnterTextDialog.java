@@ -243,4 +243,14 @@ public class EnterTextDialog extends Dialog
         String description = textDialog.open();
         if (description != null) descriptionInterface.setDescription(description);
     }
+
+    public boolean isFixed()
+    {
+        return fixed;
+    }
+
+    public void setFixed(boolean fixed)
+    {
+        this.fixed = fixed;
+    }
 }
