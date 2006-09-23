@@ -186,7 +186,15 @@ public class TransPainter
 
         if (ni.isSelected()) gc.setLineWidth(2); else gc.setLineWidth(1);
         
-        org.eclipse.swt.graphics.Point ext = gc.textExtent(ni.getNote(), flags); 
+        org.eclipse.swt.graphics.Point ext;
+        if (Const.isEmpty(ni.getNote()))
+        {
+            ext = new org.eclipse.swt.graphics.Point(10,10); // Empty note
+        }
+        else
+        {
+            ext = gc.textExtent(ni.getNote(), flags);
+        }
         Point p = new Point(ext.x, ext.y);
         Point loc = ni.getLocation();
         Point note = real2screen(loc.x, loc.y);
@@ -229,7 +237,10 @@ public class TransPainter
         //gc.fillRectangle(ni.xloc, ni.yloc, width+2*margin, heigth+2*margin);
         //gc.drawRectangle(ni.xloc, ni.yloc, width+2*margin, heigth+2*margin);
         gc.setForeground(black);
-        gc.drawText(ni.getNote(), note.x + margin, note.y + margin, flags);
+        if ( !Const.isEmpty(ni.getNote()) )
+        {
+            gc.drawText(ni.getNote(), note.x + margin, note.y + margin, flags);
+        }
 
         ni.width = width; // Save for the "mouse" later on...
         ni.height = height;
