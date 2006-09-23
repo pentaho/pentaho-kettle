@@ -575,10 +575,14 @@ public class EnterMappingDialog extends Dialog
 
     private void delete()
     {
-        int resultIndex[] = wResult.getSelectionIndices();
-        for (int i = resultIndex.length - 1; i >= 0; i--)
+        String[] result = wResult.getSelection();
+        for (int i=0;i<result.length;i++)
         {
-            mappings.remove(resultIndex[i]);
+            int idx = wResult.indexOf(result[i]);
+            if (idx>=0 && idx<mappings.size())
+            {
+                mappings.remove(idx);
+            }
         }
         refreshMappings();
     }
