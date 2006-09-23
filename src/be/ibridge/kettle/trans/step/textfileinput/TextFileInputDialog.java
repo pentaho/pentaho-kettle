@@ -2040,7 +2040,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			String def      = field.getNullString();
             String ifNull   = field.getIfNullValue();
 			String trim     = field.getTrimTypeDesc();
-			String rep      = field.isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Button.No");
+			String rep      = field.isRepeated()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No");
 			
 			if (type    !=null) item.setText( 2, type    );
 			if (format  !=null) item.setText( 3, format  );
@@ -2081,7 +2081,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             TextFileFilter filter = in.getFilter()[i];
             if (filter.getFilterString()  !=null) item.setText(1, filter.getFilterString());
             if (filter.getFilterPosition()>=0   ) item.setText(2, ""+filter.getFilterPosition());
-            item.setText(3, filter.isFilterLastLine()?Messages.getString("System.Button.Yes"):Messages.getString("System.Button.No"));
+            item.setText(3, filter.isFilterLastLine()?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
         }
         
         // Date locale
@@ -2200,7 +2200,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			field.setNullString( item.getText(10) );
             field.setIfNullValue(item.getText(11));
 			field.setTrimType( TextFileInputMeta.getTrimTypeByDesc(item.getText(12)) );
-			field.setRepeated( Messages.getString("System.Button.Yes").equalsIgnoreCase(item.getText(13)) );		
+			field.setRepeated( Messages.getString("System.Combo.Yes").equalsIgnoreCase(item.getText(13)) );		
 			
 			meta.getInputFields()[i] = field;
 		}
@@ -2213,7 +2213,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
             
             filter.setFilterString( item.getText(1) );
             filter.setFilterPosition( Const.toInt(item.getText(2), -1) );
-            filter.setFilterLastLine( Messages.getString("System.Button.Yes").equalsIgnoreCase( item.getText(3) ) );
+            filter.setFilterLastLine( Messages.getString("System.Combo.Yes").equalsIgnoreCase( item.getText(3) ) );
         }
         // Error handling fields...
         meta.setErrorIgnored( wErrorIgnored.getSelection() );
