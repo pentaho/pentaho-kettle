@@ -127,6 +127,7 @@ public class TableView extends Composite
 	
 	private int sortfield;
 	private boolean sort_desc;
+    private boolean sortable;
 	
 	private boolean field_changed; 
 	
@@ -171,6 +172,7 @@ public class TableView extends Composite
 				
 		sortfield = 0;
 		sort_desc = false;
+        sortable  = true;
         		
 		selectionStart = -1;
 		previous_shift = false;
@@ -1000,6 +1002,7 @@ public class TableView extends Composite
 	
 	public void sortTable(int colnr)
     {
+        if (!sortable) return;
         try
         {
             if (sortfield==colnr)
@@ -2689,6 +2692,22 @@ public class TableView extends Composite
     public void setReadonly(boolean readonly)
     {
         this.readonly = readonly;
+    }
+
+    /**
+     * @return the sortable
+     */
+    public boolean isSortable()
+    {
+        return sortable;
+    }
+
+    /**
+     * @param sortable the sortable to set
+     */
+    public void setSortable(boolean sortable)
+    {
+        this.sortable = sortable;
     }
 	
 };
