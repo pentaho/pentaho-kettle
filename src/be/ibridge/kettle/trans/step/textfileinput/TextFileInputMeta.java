@@ -898,12 +898,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 				field.setLength(Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1));
 				field.setPrecision(Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1));
 				field.setTrimType(getTrimTypeByCode(XMLHandler.getTagValue(fnode, "trim_type")));
-
-				String srepeat = XMLHandler.getTagValue(fnode, "repeat");
-				if (srepeat != null)
-					field.setRepeated(YES.equalsIgnoreCase(srepeat));
-				else
-					field.setRepeated(false);
+				field.setRepeated(YES.equalsIgnoreCase(XMLHandler.getTagValue(fnode, "repeat")));
 
 				inputFields[i] = field;
 			}
