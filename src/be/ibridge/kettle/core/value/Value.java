@@ -2889,9 +2889,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		{
 			if (isNumeric())
 			{
-				value = new ValueDate();
-				value.setInteger(getInteger());
-				setType(VALUE_TYPE_DATE);
+				setValue(new Date(getInteger()));
 				setLength(-1,-1);
 			}
 			else
