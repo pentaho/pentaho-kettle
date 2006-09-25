@@ -131,7 +131,7 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
      */
     public boolean supportsAutoInc()
     {
-        return false;
+        return true;
     }
     
     public String getLimitClause(int nrRows)
