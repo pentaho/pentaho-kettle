@@ -3395,7 +3395,7 @@ public class Spoon implements AddUndoPositionInterface
                 StepPlugin sp = steploader.findStepPluginWithDescription(description);
                 if (sp!=null)
                 {
-                    Image stepimg = (Image)GUIResource.getInstance().getImagesStepsSmall().get(sp.getID());
+                    Image stepimg = (Image)((GUIResource.getInstance().getImagesStepsSmall()).get(sp.getID()[0]));
                     if (stepimg!=null)
                     {
                         stepitem.setImage(stepimg);

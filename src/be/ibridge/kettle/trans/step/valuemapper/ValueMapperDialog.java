@@ -271,7 +271,7 @@ public class ValueMapperDialog extends BaseStepDialog implements StepDialogInter
 		for (int i=0;i<count;i++)
 		{
 			TableItem item = wFields.getNonEmpty(i);
-			input.getSourceValue()[i]   = item.getText(1);
+			input.getSourceValue()[i]  = Const.isEmpty(item.getText(1))?null:item.getText(1);
 			input.getTargetValue()[i]  = item.getText(2);
 		}
 		dispose();

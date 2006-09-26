@@ -108,10 +108,10 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			for (int i=0;i<meta.getReturnValueField().length;i++)
 			{
 				data.nullif[i] = new Value(meta.getReturnValueNewName()[i], meta.getReturnValueDefaultType()[i]);
-				if (meta.getReturnValueDefault()[i]!=null && meta.getReturnValueDefault()[i].length()>0 )
+				if (!Const.isEmpty(meta.getReturnValueDefault()[i]))
 				{
+                    data.nullif[i].setValue(meta.getReturnValueDefault()[i]);
 					data.nullif[i].setType(meta.getReturnValueDefaultType()[i]);
-					data.nullif[i].setValue(meta.getReturnValueDefault()[i]);
 				}
 				else
 				{

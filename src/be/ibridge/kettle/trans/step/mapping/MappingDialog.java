@@ -717,6 +717,10 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             stepname = wStepname.getText(); // return value
 
             loadTransformation();
+            
+            input.setFileName(wFilename.getText());
+            input.setTransName(wTransName.getText());
+            input.setDirectoryPath(wTransDir.getText());
 
             int nrInput = wInputFields.nrNonEmpty();
             int nrOutput = wOutputFields.nrNonEmpty();
@@ -736,13 +740,13 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
                 input.getOutputMapping()[i] = item.getText(1);
                 input.getOutputField()[i] = item.getText(2);
             }
+            
+            dispose();
         }
         catch (KettleException e)
         {
             new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Title"), 
                     Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
         }
-        dispose();
-
     }
 }
