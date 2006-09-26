@@ -66,7 +66,14 @@ public class StreamLookup extends BaseStep implements StepInterface
 			switch(meta.getValueDefaultType()[i])
 			{
 			case Value.VALUE_TYPE_STRING: 
-				data.nullIf[i].setValue(meta.getValueDefault()[i]); 
+				if (Const.isEmpty(meta.getValueDefault()[i]))
+                {
+                    data.nullIf[i].setNull();
+                }
+                else
+                {
+                    data.nullIf[i].setValue(meta.getValueDefault()[i]);
+                }
 				break;
 			case Value.VALUE_TYPE_DATE  :
 				try{ data.nullIf[i].setValue( DateFormat.getInstance().parse(meta.getValueDefault()[i]) ); }
