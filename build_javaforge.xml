@@ -127,6 +127,10 @@
 	    	<fileset file="build_version.txt"/>
 	  	    </copy>
 	  	
+	    <copy todir="${classes}">
+	    	<fileset dir="/backup/javaforge/repository/src/318/" includes="build_version.txt"/>
+	  	    </copy>
+	  	
 	  </target>
 	
 	
