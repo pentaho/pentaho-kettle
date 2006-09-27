@@ -872,36 +872,46 @@ public class SpoonLog extends Composite
 		refresh_busy = false;
 	}
 
-	public void preview()
+	public synchronized void preview()
 	{
-		try
-		{
-			log.logDetailed(toString(), Messages.getString("SpoonLog.Log.DoPreview")); //$NON-NLS-1$
-			PreviewSelectDialog psd = new PreviewSelectDialog(shell, SWT.NONE, log, spoon.props, spoon.getTransMeta());
-			psd.open();
-			if (psd.previewSteps != null)
-			{
-                String[] args=null;
-				Row arguments = getArguments(spoon.getTransMeta());
-				if (arguments != null)
-				{
-					args = convertArguments(arguments);
-                }
-                getVariables(spoon.getTransMeta());
-
-				spoon.tabfolder.setSelection(1);
-				trans = new Trans(log, spoon.getTransMeta(), psd.previewSteps, psd.previewSizes);
-				trans.execute(args);
-				preview = true;
-				readLog();
-				running = !running;
-				wStart.setText(STOP_TEXT);
-			}
-		}
-		catch (Exception e)
-		{
-			new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.UnexpectedErrorDuringPreview.Title"), Messages.getString("SpoonLog.Dialog.UnexpectedErrorDuringPreview.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-		}
+        if (!running)
+        {
+    		try
+    		{
+    			log.logDetailed(toString(), Messages.getString("SpoonLog.Log.DoPreview")); //$NON-NLS-1$
+    			PreviewSelectDialog psd = new PreviewSelectDialog(shell, SWT.NONE, log, spoon.props, spoon.getTransMeta());
+    			psd.open();
+    			if (psd.previewSteps != null)
+    			{
+                    String[] args=null;
+    				Row arguments = getArguments(spoon.getTransMeta());
+    				if (arguments != null)
+    				{
+    					args = convertArguments(arguments);
+                    }
+                    getVariables(spoon.getTransMeta());
+    
+    				spoon.tabfolder.setSelection(1);
+    				trans = new Trans(log, spoon.getTransMeta(), psd.previewSteps, psd.previewSizes);
+    				trans.execute(args);
+    				preview = true;
+    				readLog();
+    				running = !running;
+    				wStart.setText(STOP_TEXT);
+    			}
+    		}
+    		catch (Exception e)
+    		{
+    			new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.UnexpectedErrorDuringPreview.Title"), Messages.getString("SpoonLog.Dialog.UnexpectedErrorDuringPreview.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+    		}
+        }
+        else
+        {
+            MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
+            m.setText(Messages.getString("SpoonLog.Dialog.DoNoPreviewWhileRunning.Title")); //$NON-NLS-1$
+            m.setMessage(Messages.getString("SpoonLog.Dialog.DoNoPreviewWhileRunning.Message")); //$NON-NLS-1$
+            m.open();
+        }
 	}
 
 	private String[] convertArguments(Row arguments)
