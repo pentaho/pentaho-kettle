@@ -101,6 +101,10 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
     private Button       wOnlyNew;
     private FormData     fdlOnlyNew, fdOnlyNew;
 
+    private Label        wlActive;
+    private Button       wActive;
+    private FormData     fdlActive, fdActive;
+
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
 
@@ -344,12 +348,29 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         fdOnlyNew.right= new FormAttachment(100, 0);
         wOnlyNew.setLayoutData(fdOnlyNew);
 
+        // active connection?
+        wlActive=new Label(shell, SWT.RIGHT);
+        wlActive.setText("Use active FTP connection");
+        props.setLook(wlActive);
+        fdlActive=new FormData();
+        fdlActive.left = new FormAttachment(0, 0);
+        fdlActive.top  = new FormAttachment(wOnlyNew, margin);
+        fdlActive.right= new FormAttachment(middle, -margin);
+        wlActive.setLayoutData(fdlActive);
+        wActive=new Button(shell, SWT.CHECK);
+        props.setLook(wActive);
+        fdActive=new FormData();
+        fdActive.left = new FormAttachment(middle, 0);
+        fdActive.top  = new FormAttachment(wOnlyNew, margin);
+        fdActive.right= new FormAttachment(100, 0);
+        wActive.setLayoutData(fdActive);
+
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(" &OK ");
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(" &Cancel ");
 
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wOnlyNew);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wActive);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -410,6 +431,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		wTimeout.setText(""+jobentry.getTimeout());
 		wRemove.setSelection(jobentry.getRemove());
         wOnlyNew.setSelection(jobentry.isOnlyGettingNewFiles());
+        wActive.setSelection(jobentry.isActiveConnection());
 	}
 
 	private void cancel()
@@ -432,6 +454,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		jobentry.setTimeout(Const.toInt(wTimeout.getText(), 10000));
 		jobentry.setRemove(wRemove.getSelection());
         jobentry.setOnlyGettingNewFiles(wOnlyNew.getSelection());
+        jobentry.setActiveConnection(wActive.getSelection());
 
 		dispose();
 	}

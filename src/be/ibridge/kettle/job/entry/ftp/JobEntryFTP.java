@@ -67,6 +67,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 	private int     timeout;
 	private boolean remove;
     private boolean onlyGettingNewFiles;  /* Don't overwrite files */
+    private boolean activeConnection;
 	
 	public JobEntryFTP(String n)
 	{
@@ -102,6 +103,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 		retval.append("      ").append(XMLHandler.addTagValue("timeout",      timeout));
 		retval.append("      ").append(XMLHandler.addTagValue("remove",       remove));
         retval.append("      ").append(XMLHandler.addTagValue("only_new",     onlyGettingNewFiles));
+        retval.append("      ").append(XMLHandler.addTagValue("active",       activeConnection));
 		
 		return retval.toString();
 	}
@@ -122,6 +124,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 			timeout             = Const.toInt(XMLHandler.getTagValue(entrynode, "timeout"), 10000);
 			remove              = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "remove") );
             onlyGettingNewFiles = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "only_new") );
+            activeConnection    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(entrynode, "active") );
 		}
 		catch(KettleXMLException xe)
 		{
@@ -145,6 +148,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 			timeout             = (int)rep.getJobEntryAttributeInteger(id_jobentry, "timeout");
             remove              = rep.getJobEntryAttributeBoolean(id_jobentry, "remove");
 			onlyGettingNewFiles = rep.getJobEntryAttributeBoolean(id_jobentry, "only_new");
+            activeConnection    = rep.getJobEntryAttributeBoolean(id_jobentry, "active");
 		}
 		catch(KettleException dbe)
 		{
@@ -169,6 +173,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 			rep.saveJobEntryAttribute(id_job, getID(), "timeout",         timeout);
             rep.saveJobEntryAttribute(id_job, getID(), "remove",          remove);
 			rep.saveJobEntryAttribute(id_job, getID(), "only_new",        onlyGettingNewFiles);
+            rep.saveJobEntryAttribute(id_job, getID(), "active",          activeConnection);
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -356,9 +361,17 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
             
 			log.logDetailed(toString(), "Opened FTP connection to server ["+serverName+"]");
 	
-			// set passive connectmode ...
-			ftpclient.setConnectMode(FTPConnectMode.PASV);
-			log.logDetailed(toString(), "set Passive ftp connection mode");
+			// set activeConnection connectmode ...
+            if (activeConnection)
+            {
+                ftpclient.setConnectMode(FTPConnectMode.ACTIVE);
+                log.logDetailed(toString(), "set active ftp connection mode");
+            }
+            else
+            {
+                ftpclient.setConnectMode(FTPConnectMode.PASV);
+                log.logDetailed(toString(), "set passive ftp connection mode");
+            }
 			
 			// Set the timeout
 			ftpclient.setTimeout(timeout);
@@ -497,6 +510,22 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
     
     public JobEntryDialogInterface getDialog(Shell shell,JobEntryInterface jei,JobMeta jobMeta,String jobName,Repository rep) {
         return new JobEntryFTPDialog(shell,this,jobMeta);
+    }
+
+    /**
+     * @return the activeConnection
+     */
+    public boolean isActiveConnection()
+    {
+        return activeConnection;
+    }
+
+    /**
+     * @param activeConnection the activeConnection to set
+     */
+    public void setActiveConnection(boolean passive)
+    {
+        this.activeConnection = passive;
     }
 
 }
