@@ -247,83 +247,96 @@ public class Denormaliser extends BaseStep implements StepInterface
         {
             // Get all the indexes for the given key value...
             List indexes = (List) data.keyValue.get(key);
-            for (int i=0;i<indexes.size();i++)
+            if (indexes!=null) // otherwise we're not interested.
             {
-                Integer keyNr = (Integer) indexes.get(i);
-                if (keyNr!=null)
+                for (int i=0;i<indexes.size();i++)
                 {
-                    // keyNr is the field in DenormaliserTargetField[]
-                    //
-                    int idx = keyNr.intValue();
-                    DenormaliserTargetField field = meta.getDenormaliserTargetField()[idx];
-                    
-                    Value targetValue = r.getValue(data.fieldNameIndex[idx]); // This is the value we need to de-normalise, convert, aggregate.
-        
-                    // System.out.println("Value type: "+targetValue.getTypeDesc()+"("+targetValue+"), convert to type : "+field.getTargetTypeDesc());
-        
-                    // See if we need to convert this value
-                    if (targetValue.getType() != field.getTargetType())
+                    Integer keyNr = (Integer) indexes.get(i);
+                    if (keyNr!=null)
                     {
-                        switch(targetValue.getType())
+                        // keyNr is the field in DenormaliserTargetField[]
+                        //
+                        int idx = keyNr.intValue();
+                        DenormaliserTargetField field = meta.getDenormaliserTargetField()[idx];
+                        
+                        Value targetValue = r.getValue(data.fieldNameIndex[idx]); // This is the value we need to de-normalise, convert, aggregate.
+            
+                        // System.out.println("Value type: "+targetValue.getTypeDesc()+"("+targetValue+"), convert to type : "+field.getTargetTypeDesc());
+            
+                        // See if we need to convert this value
+                        if (targetValue.getType() != field.getTargetType())
                         {
-                        case Value.VALUE_TYPE_STRING:
-                            switch(field.getTargetType())
+                            switch(targetValue.getType())
                             {
-                            case Value.VALUE_TYPE_DATE:      
-                                if (targetValue.isNull() || targetValue.getString()==null || targetValue.getString().length()==0)
+                            case Value.VALUE_TYPE_STRING:
+                                switch(field.getTargetType())
                                 {
-                                    targetValue.setNull();
-                                    targetValue.setType(Value.VALUE_TYPE_DATE);
+                                case Value.VALUE_TYPE_DATE:      
+                                    if (targetValue.isNull() || targetValue.getString()==null || targetValue.getString().length()==0)
+                                    {
+                                        targetValue.setNull();
+                                        targetValue.setType(Value.VALUE_TYPE_DATE);
+                                    }
+                                    else
+                                    {
+                                        targetValue.str2dat(field.getTargetFormat());
+                                    };
+                                    break;
+                                case Value.VALUE_TYPE_INTEGER:   
+                                    if (targetValue.isNull() || targetValue.getString()==null || targetValue.getString().length()==0)
+                                    {
+                                        targetValue.setNull();
+                                        targetValue.setType(Value.VALUE_TYPE_INTEGER);
+                                    }
+                                    else
+                                    {
+                                        targetValue.setType(targetValue.getType());
+                                    }
+                                    break;
+                                case Value.VALUE_TYPE_NUMBER:
+                                    if (targetValue.isNull() || targetValue.getString()==null || targetValue.getString().length()==0)
+                                    {
+                                        targetValue.setNull();
+                                        targetValue.setType(Value.VALUE_TYPE_NUMBER);
+                                    }
+                                    else
+                                    {
+                                        targetValue.str2num(field.getTargetFormat(), field.getTargetDecimalSymbol(), field.getTargetGroupingSymbol(), field.getTargetCurrencySymbol());
+                                    }
+                                    break;
+                                case Value.VALUE_TYPE_BIGNUMBER: 
+                                    if (targetValue.isNull() || targetValue.getString()==null || targetValue.getString().length()==0)
+                                    {
+                                        targetValue.setNull();
+                                        targetValue.setType(Value.VALUE_TYPE_BIGNUMBER);
+                                    }
+                                    else
+                                    {
+                                        targetValue.setType(targetValue.getType()); 
+                                    }
+                                    break;
+                                case Value.VALUE_TYPE_BOOLEAN:   
+                                    if (targetValue.isNull() || targetValue.getString()==null || targetValue.getString().length()==0)
+                                    {
+                                        targetValue.setNull();
+                                        targetValue.setType(Value.VALUE_TYPE_BOOLEAN);
+                                    }
+                                    else
+                                    {
+                                        targetValue.setType(targetValue.getType()); 
+                                    }
+                                    break;
+                                default:
+                                    if (targetValue.isNull() || targetValue.getString()==null || targetValue.getString().length()==0)
+                                    {
+                                        targetValue.setNull();
+                                    }
+                                    else
+                                    {
+                                        targetValue.setType(targetValue.getType()); 
+                                    }
+                                    break;
                                 }
-                                else
-                                {
-                                    targetValue.str2dat(field.getTargetFormat());
-                                };
-                                break;
-                            case Value.VALUE_TYPE_INTEGER:   
-                                if (targetValue.isNull() || targetValue.getString()==null || targetValue.getString().length()==0)
-                                {
-                                    targetValue.setNull();
-                                    targetValue.setType(Value.VALUE_TYPE_INTEGER);
-                                }
-                                else
-                                {
-                                    targetValue.setType(targetValue.getType());
-                                }
-                                break;
-                            case Value.VALUE_TYPE_NUMBER:
-                                if (targetValue.isNull() || targetValue.getString()==null || targetValue.getString().length()==0)
-                                {
-                                    targetValue.setNull();
-                                    targetValue.setType(Value.VALUE_TYPE_NUMBER);
-                                }
-                                else
-                                {
-                                    targetValue.str2num(field.getTargetFormat(), field.getTargetDecimalSymbol(), field.getTargetGroupingSymbol(), field.getTargetCurrencySymbol());
-                                }
-                                break;
-                            case Value.VALUE_TYPE_BIGNUMBER: 
-                                if (targetValue.isNull() || targetValue.getString()==null || targetValue.getString().length()==0)
-                                {
-                                    targetValue.setNull();
-                                    targetValue.setType(Value.VALUE_TYPE_BIGNUMBER);
-                                }
-                                else
-                                {
-                                    targetValue.setType(targetValue.getType()); 
-                                }
-                                break;
-                            case Value.VALUE_TYPE_BOOLEAN:   
-                                if (targetValue.isNull() || targetValue.getString()==null || targetValue.getString().length()==0)
-                                {
-                                    targetValue.setNull();
-                                    targetValue.setType(Value.VALUE_TYPE_BOOLEAN);
-                                }
-                                else
-                                {
-                                    targetValue.setType(targetValue.getType()); 
-                                }
-                                break;
                             default:
                                 if (targetValue.isNull() || targetValue.getString()==null || targetValue.getString().length()==0)
                                 {
@@ -335,47 +348,37 @@ public class Denormaliser extends BaseStep implements StepInterface
                                 }
                                 break;
                             }
-                        default:
-                            if (targetValue.isNull() || targetValue.getString()==null || targetValue.getString().length()==0)
+                        }
+                 
+                        Value prevTarget = data.targetResult.getValue(idx);
+                        // System.out.println("TargetValue="+targetValue+", Prev TargetResult="+prevTarget);
+                        
+                        switch(field.getTargetAggregationType())
+                        {
+                        case DenormaliserTargetField.TYPE_AGGR_SUM:
+                            prevTarget.plus(targetValue);
+                            break;
+                        case DenormaliserTargetField.TYPE_AGGR_MIN:
+                            if (targetValue.compare(prevTarget)<0) prevTarget.setValue(targetValue);
+                            break;
+                        case DenormaliserTargetField.TYPE_AGGR_MAX:
+                            if (targetValue.compare(prevTarget)>0) prevTarget.setValue(targetValue);
+                            break;
+                        case DenormaliserTargetField.TYPE_AGGR_COUNT_ALL:
+                            if (!targetValue.isNull()) prevTarget.setValue(prevTarget.getInteger()+1);
+                            break;
+                        case DenormaliserTargetField.TYPE_AGGR_AVERAGE:
+                            if (!targetValue.isNull()) 
                             {
-                                targetValue.setNull();
-                            }
-                            else
-                            {
-                                targetValue.setType(targetValue.getType()); 
+                                data.counters[idx]++;
+                                data.sum[idx].plus(targetValue);
                             }
                             break;
+                        case DenormaliserTargetField.TYPE_AGGR_NONE:
+                        default:
+                            prevTarget.setValue(targetValue); // Overwrite the previous
+                            break;
                         }
-                    }
-             
-                    Value prevTarget = data.targetResult.getValue(idx);
-                    // System.out.println("TargetValue="+targetValue+", Prev TargetResult="+prevTarget);
-                    
-                    switch(field.getTargetAggregationType())
-                    {
-                    case DenormaliserTargetField.TYPE_AGGR_SUM:
-                        prevTarget.plus(targetValue);
-                        break;
-                    case DenormaliserTargetField.TYPE_AGGR_MIN:
-                        if (targetValue.compare(prevTarget)<0) prevTarget.setValue(targetValue);
-                        break;
-                    case DenormaliserTargetField.TYPE_AGGR_MAX:
-                        if (targetValue.compare(prevTarget)>0) prevTarget.setValue(targetValue);
-                        break;
-                    case DenormaliserTargetField.TYPE_AGGR_COUNT_ALL:
-                        if (!targetValue.isNull()) prevTarget.setValue(prevTarget.getInteger()+1);
-                        break;
-                    case DenormaliserTargetField.TYPE_AGGR_AVERAGE:
-                        if (!targetValue.isNull()) 
-                        {
-                            data.counters[idx]++;
-                            data.sum[idx].plus(targetValue);
-                        }
-                        break;
-                    case DenormaliserTargetField.TYPE_AGGR_NONE:
-                    default:
-                        prevTarget.setValue(targetValue); // Overwrite the previous
-                        break;
                     }
                 }
             }
