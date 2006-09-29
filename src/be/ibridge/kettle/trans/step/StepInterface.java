@@ -64,10 +64,19 @@ public interface StepInterface
 	
 	/**
 	 * Stop running operations...
+     * @param stepMetaInterface The metadata that might be needed by the step to stop running.
+	 * @param stepDataInterface The interface to the step data containing the connections, resultsets, open files, etc.  
 	 *
 	 */
-	public void     stopRunning();
+	public void stopRunning(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) throws KettleException;
 
+    /**
+     * Stops running operations
+     * This method is deprecated, please use the method specifying the metadata and data interfaces.
+     * @deprecated
+     */
+    public void stopRunning();
+    
 	/**
 	 * Is the thread still alive?
 	 * @return true if the thread is still alive...

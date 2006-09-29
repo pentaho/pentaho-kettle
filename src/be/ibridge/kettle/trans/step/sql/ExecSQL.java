@@ -22,7 +22,6 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.database.Database;
-import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.value.Value;
@@ -176,16 +175,12 @@ public class ExecSQL extends BaseStep implements StepInterface
 	}
 	
 	/** Stop the running query */
-	public void stopRunning()
+	public void stopRunning(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-	    try
-	    {
-	        if (data.db!=null) data.db.cancelQuery();
-	    }
-	    catch(KettleDatabaseException e)
-	    {
-	        
-	    }
+        meta=(ExecSQLMeta)smi;
+        data=(ExecSQLData)sdi;
+
+        if (data.db!=null) data.db.cancelQuery();
 	}
 	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)

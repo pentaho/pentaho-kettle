@@ -297,6 +297,16 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 
 		return true;
 	}
+    
+    /** Stop the running query */
+    public void stopRunning(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+    {
+        meta=(DatabaseLookupMeta)smi;
+        data=(DatabaseLookupData)sdi;
+
+        if (data.db!=null) data.db.cancelQuery();
+    }
+
 
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)
 	{

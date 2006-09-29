@@ -1432,11 +1432,22 @@ public class BaseStep extends Thread
 	 * Perform actions to stop a running step.
 	 * This can be stopping running SQL queries (cancel), etc.
 	 * Default it doesn't do anything.
-	 */
-	public void stopRunning()
-	{
-	    
-	}
+     * @param stepDataInterface The interface to the step data containing the connections, resultsets, open files, etc. 
+     * @throws KettleException in case something goes wrong 
+     *
+     */
+    public void stopRunning(StepMetaInterface stepMetaInterface, StepDataInterface stepDataInterface) throws KettleException
+    {
+    }
+    
+    /**
+     * Stops running operations
+     * This method is deprecated, please use the method specifying the metadata and data interfaces.
+     * @deprecated
+     */
+    public void stopRunning()
+    {
+    }
 	
 	public void logSummary()
 	{

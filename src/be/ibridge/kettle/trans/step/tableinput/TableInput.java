@@ -220,16 +220,12 @@ public class TableInput extends BaseStep implements StepInterface
 	}
 	
 	/** Stop the running query */
-	public void stopRunning()
+	public void stopRunning(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
-	    try
-	    {
-	        if (data.db!=null) data.db.cancelQuery();
-	    }
-	    catch(KettleDatabaseException e)
-	    {
-	        
-	    }
+        meta=(TableInputMeta)smi;
+        data=(TableInputData)sdi;
+
+        if (data.db!=null) data.db.cancelQuery();
 	}
 	
 	public boolean init(StepMetaInterface smi, StepDataInterface sdi)

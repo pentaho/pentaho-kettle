@@ -725,7 +725,15 @@ public class Trans
 
 			// Cancel queries etc. by force...
 			StepInterface si = (StepInterface)rt;
-			si.stopRunning();
+            try
+            {
+                si.stopRunning(sid.meta, sid.data);
+            }
+            catch(Exception e)
+            {
+                log.logError(toString(), "Something went wrong while trying to stop the transformation: "+e.toString());
+                log.logError(toString(), Const.getStackTracker(e));
+            }
 		}
 	}
 

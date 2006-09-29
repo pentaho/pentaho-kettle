@@ -283,25 +283,36 @@ public class Database
 		}
 	}
 	
+    /**
+     * Cancel the open/running queries on the database connection
+     * @throws KettleDatabaseException
+     */
 	public void cancelQuery() throws KettleDatabaseException
 	{
-		try
-		{
-			if (pstmt    !=null) 
-			{ 
-			    pstmt.cancel(); 
-			} 
-			if (sel_stmt !=null) 
-			{ 
-			    sel_stmt.cancel();
-			} 
-			log.logDetailed(toString(), "Open query canceled!");
-		}
-		catch(SQLException ex) 
-		{
-			throw new KettleDatabaseException("Error cancelling query", ex);
-		}
+        cancelStatement(pstmt);
+        cancelStatement(sel_stmt);
 	}
+    
+    /**
+     * Cancel an open/running SQL statement 
+     * @param statement the statement to cancel
+     * @throws KettleDatabaseException
+     */
+    public void cancelStatement(Statement statement) throws KettleDatabaseException
+    {
+        try
+        {
+            if (statement!=null) 
+            { 
+                statement.cancel(); 
+            } 
+            log.logDetailed(toString(), "Statement canceled!");
+        }
+        catch(SQLException ex) 
+        {
+            throw new KettleDatabaseException("Error cancelling statement", ex);
+        }
+    }
 
 	/**
 	 * Specify after how many rows a commit needs to occur when inserting or updating values.
