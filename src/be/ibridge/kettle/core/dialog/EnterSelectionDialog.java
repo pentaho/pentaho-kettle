@@ -69,6 +69,7 @@ public class EnterSelectionDialog extends Dialog
 	private int selectedNr;
     private boolean multi;
     private int[] indices;
+    private boolean fixed;
 		
 	/**
 	 * Create a new dialog allow someone to pick one value out of a list of values
@@ -90,6 +91,7 @@ public class EnterSelectionDialog extends Dialog
 		modal = true;
 		selectedNr = -1;
         multi=false;
+        fixed=false;
 	}
 	
 	public void setViewOnly()
@@ -144,7 +146,14 @@ public class EnterSelectionDialog extends Dialog
 			wSelection.select(selectedNr);
 			wSelection.showSelection();
 		}
- 		props.setLook(wSelection);
+        if (fixed)
+        {
+            props.setLook(wSelection, Props.WIDGET_STYLE_FIXED);
+        }
+        else
+        {
+            props.setLook(wSelection);
+        }
 
 
 		// Some buttons
@@ -268,5 +277,21 @@ public class EnterSelectionDialog extends Dialog
     public int[] getSelectionIndeces()
     {
         return indices;
+    }
+
+    /**
+     * @return the fixed
+     */
+    public boolean isFixed()
+    {
+        return fixed;
+    }
+
+    /**
+     * @param fixed the fixed to set
+     */
+    public void setFixed(boolean fixed)
+    {
+        this.fixed = fixed;
     }
 }
