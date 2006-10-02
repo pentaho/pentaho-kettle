@@ -164,11 +164,16 @@ public class DatabaseMeta implements Cloneable, XMLInterface
      */
      public static final int TYPE_DATABASE_TERADATA  = 21;
      
-    /**
-     * Connection to an Oracle RDB database
-     */
-    public static final int TYPE_DATABASE_ORACLE_RDB = 22;
-    
+     /**
+      * Connection to an Oracle RDB database
+      */
+     public static final int TYPE_DATABASE_ORACLE_RDB = 22;
+     
+     /**
+      * Connection to a JNDI database
+      */
+     public static final int TYPE_DATABASE_JNDI = 23;
+     
     
 
 	/**
@@ -191,15 +196,21 @@ public class DatabaseMeta implements Cloneable, XMLInterface
      */
     public static final int TYPE_ACCESS_PLUGIN        =  3;
     
+    /**
+     * Connect to the database using plugin specific method. (SAP R/3)
+     */
+    public static final int TYPE_ACCESS_JNDI        =  4;
+    
 	/**
 	 * Short description of the access type, used in XML and the repository.
 	 */
 	public static final String dbAccessTypeCode[] = 
 		{
-			"Native",
+		"Native",
 			"ODBC",
 			"OCI",
-            "Plugin"
+            "Plugin",
+			"JNDI"
 		};
 
 	/**
@@ -210,7 +221,8 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 			"Native (JDBC)",
 			"ODBC",
 			"OCI",
-            "Plugin specific access method"
+            "Plugin specific access method",
+			"JNDI"
 		};
 
 	/**

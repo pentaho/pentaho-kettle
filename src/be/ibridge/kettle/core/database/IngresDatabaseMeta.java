@@ -41,7 +41,7 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		
 	public int[] getAccessTypeList()
 	{
-		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC };
+		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
 	public int getDefaultDatabasePort()

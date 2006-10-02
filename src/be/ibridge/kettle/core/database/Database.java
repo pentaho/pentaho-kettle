@@ -35,7 +35,11 @@ import java.util.Calendar;
 import java.util.Hashtable;
 import java.util.Properties;
 
+import javax.sql.DataSource;
+
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.pentaho.core.util.DatasourceHelper;
+import org.pentaho.messages.Messages;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Counter;
@@ -165,7 +169,8 @@ public class Database
 		{
 			if (databaseMeta!=null)
 			{
-				connect(databaseMeta.getDriverClass());
+				
+				connect(databaseMeta.getDriverClass() );
 				log.logDetailed(toString(), "Connected to database.");
                 
                 // See if we need to execute extra SQL statemtent...
@@ -189,6 +194,24 @@ public class Database
 		}
 	}
 
+	
+	  private void initWithJNDI(String jndiName) throws KettleDatabaseException {
+		  connection = null;
+		  try {
+			  DataSource dataSource = DatasourceHelper.getDataSourceFromJndi(jndiName);
+			  if (dataSource != null) {
+				  connection = dataSource.getConnection();
+				  if (connection == null) {
+					  throw new KettleDatabaseException( "Invalid JNDI connection"+ jndiName); //$NON-NLS-1$
+				  }
+		      } else {
+				  throw new KettleDatabaseException( "Invalid JNDI connection"+ jndiName); //$NON-NLS-1$
+		      }
+		  } catch (Exception e) {
+			  throw new KettleDatabaseException( "Invalid JNDI connection"+ jndiName + ": " + e.getMessage()); //$NON-NLS-1$
+		  }
+	  }
+
 	/**
 	 * Connect using the correct classname 
 	 * @param classname for example "org.gjt.mm.mysql.Driver"
@@ -199,6 +222,12 @@ public class Database
 	{
 		// Install and load the jdbc Driver
 
+		// first see if this is a JNDI connection
+		if( databaseMeta.getAccessType() == DatabaseMeta.TYPE_ACCESS_JNDI ) {
+			initWithJNDI( databaseMeta.getDatabaseName() );
+			return;
+		}
+		
 		try 
 		{
 			Class.forName(classname);

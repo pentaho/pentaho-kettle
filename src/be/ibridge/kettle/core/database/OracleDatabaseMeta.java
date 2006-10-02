@@ -52,7 +52,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		
 	public int[] getAccessTypeList()
 	{
-		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_OCI};
+		return new int[] { DatabaseMeta.TYPE_ACCESS_NATIVE, DatabaseMeta.TYPE_ACCESS_ODBC, DatabaseMeta.TYPE_ACCESS_OCI, DatabaseMeta.TYPE_ACCESS_JNDI };
 	}
 	
 	public int getDefaultDatabasePort()
