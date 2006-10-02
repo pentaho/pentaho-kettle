@@ -36,5 +36,7 @@
 	<classpathentry kind="lib" path="libext/postgresql-8.1-407.jdbc3.jar"/>
 	<classpathentry kind="lib" path="libext/edtftpj-1.5.3.jar"/>
 	<classpathentry kind="lib" path="libswt/win32/swt.jar"/>
+	<classpathentry kind="lib" path="libext/pentaho-1.2.0.jar"/>
+	<classpathentry kind="lib" path="libext/simple-jndi-0.11.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
