@@ -15,6 +15,7 @@
 
  
 package be.ibridge.kettle.core.dialog;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Map;
@@ -142,6 +143,19 @@ public class DatabaseDialog extends Dialog
         this.databases = null;
         this.extraOptions = conn.getExtraOptions();
         this.database_id = conn.getID();
+        
+        String path = "";
+        try {
+            File file = new File( "simple-jndi" );
+            path= file.getCanonicalPath();
+        } catch (Exception e) {
+        	e.printStackTrace();
+        }
+        
+        System.setProperty("java.naming.factory.initial", "org.osjava.sj.SimpleContextFactory"); //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("org.osjava.sj.root", path ); //$NON-NLS-1$ //$NON-NLS-2$
+        System.setProperty("org.osjava.sj.delimiter", "/"); //$NON-NLS-1$ //$NON-NLS-2$
+
 	}
 	
 	public String open() 
@@ -1001,17 +1015,40 @@ public class DatabaseDialog extends Dialog
 		if (!type.equalsIgnoreCase(previousDatabaseType)) setAccessList();
 		previousDatabaseType=type;
 		
+        int idxAccType = wConnAcc.getSelectionIndex();
+        int acctype = -1;
+        if (idxAccType>=0)
+        {
+            acctype = DatabaseMeta.getAccessType( wConnAcc.getItem(idxAccType) );    
+        }
+
+        // Hide the fields not relevent to JNDI data sources
+        wlHostName.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wHostName.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+//        wlDBName.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+//        wDBName.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wlPort.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wPort.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI);
+        
+        wlURL.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wURL.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wlDriverClass.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wDriverClass.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        	        
+        wlUsername.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wUsername.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wlPassword.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wPassword.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        
+        if( acctype == DatabaseMeta.TYPE_ACCESS_JNDI ) {
+        		return;
+        }
+        
 		// If the type is not Informix: disable the servername field!
 		int idxDBType = wConnType.getSelectionIndex();
 		if (idxDBType>=0)
 		{
 			int dbtype = DatabaseMeta.getDatabaseType( wConnType.getItem(idxDBType) );
-            int idxAccType = wConnAcc.getSelectionIndex();
-            int acctype = -1;
-            if (idxAccType>=0)
-            {
-                acctype = DatabaseMeta.getAccessType( wConnAcc.getItem(idxAccType) );    
-            }
 
 			wlServername.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_INFORMIX );
 			wServername.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_INFORMIX );
@@ -1034,7 +1071,7 @@ public class DatabaseDialog extends Dialog
             wTest.setEnabled( dbtype!=DatabaseMeta.TYPE_DATABASE_SAPR3 );
             wExp.setEnabled( dbtype!=DatabaseMeta.TYPE_DATABASE_SAPR3 );
             
-            wlHostName.setEnabled(  !(dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE));
+            wlHostName.setEnabled(  !(dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE) || (dbtype ==  DatabaseMeta.TYPE_ACCESS_JNDI ));
             wHostName.setEnabled(   !(dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE));
             wlDBName.setEnabled(    !(dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE));
             wDBName.setEnabled(     !(dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE));
