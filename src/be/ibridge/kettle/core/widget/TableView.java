@@ -1910,7 +1910,7 @@ public class TableView extends Composite
             if (item!=null)
             {
     			String num=""+(i+1);
-    			for(int j=num.length();j<3;j++) num="0"+num;
+    			// for(int j=num.length();j<3;j++) num="0"+num;
     			item.setText(0, num);
             }
 		}
