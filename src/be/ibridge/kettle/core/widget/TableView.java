@@ -1800,16 +1800,6 @@ public class TableView extends Composite
 	
 	private void editCombo(TableItem row, int rownr, int colnr)
 	{
-	    if (columns[colnr-1].getSelectionAdapter()!=null)
-	    {
-			Event e = new Event();
-			e.widget=this;
-			e.x = colnr;
-			e.y = rownr;
-	        columns[colnr-1].getSelectionAdapter().widgetSelected(new SelectionEvent(e));
-	        return;
-	    }
-
 		before_edit = getItemText(row);
 		field_changed = false;
 		ColumnInfo colinfo = columns[colnr-1];
@@ -1829,6 +1819,11 @@ public class TableView extends Composite
 		if (tooltip!=null) combo.setToolTipText(tooltip); else combo.setToolTipText("");			
 		combo.setVisible(true);		
 		combo.addKeyListener(lsKeyCombo);
+        
+        if (columns[colnr-1].getSelectionAdapter()!=null)
+        {
+            combo.addSelectionListener(columns[colnr-1].getSelectionAdapter());
+        }
 
 		editor.horizontalAlignment = SWT.LEFT;
 		editor.layout();
@@ -1909,13 +1904,15 @@ public class TableView extends Composite
 	
 	public void setRowNums()
 	{
-		int i;
-		for (i=0;i<table.getItemCount();i++)
+		for (int i=0;i<table.getItemCount();i++)
 		{
 			TableItem item = table.getItem(i);
-			String num=""+(i+1);
-			for(int j=num.length();j<3;j++) num="0"+num;
-			item.setText(0, num);
+            if (item!=null)
+            {
+    			String num=""+(i+1);
+    			for(int j=num.length();j<3;j++) num="0"+num;
+    			item.setText(0, num);
+            }
 		}
 	}
     
@@ -1938,44 +1935,47 @@ public class TableView extends Composite
 			for (int r=0;r<table.getItemCount() && ( r<nrLines || nrLines<=0);r++)
 			{
 				TableItem ti = table.getItem(r);
-				String str = "";
-				if (c>0)
-				{
-					switch(columns[c-1].getType())
-					{
-					case ColumnInfo.COLUMN_TYPE_TEXT:
-					    str = ti.getText(c);
-						break;
-					case ColumnInfo.COLUMN_TYPE_CCOMBO:
-					    str = ti.getText(c);
-					    int minLength = str.length();
-						String[] options = columns[c-1].getComboValues();
-						if (options!=null)
-						{
-							for (int x=0;x<options.length;x++)
-							{
-							    if (options[x].length()>minLength)
-							    {
-							        str = options[x];
-							        minLength = options[x].length();
-							    }
-							}
-						}
-						break;
-					case ColumnInfo.COLUMN_TYPE_BUTTON:
-					    str = columns[c-1].getButtonText();
-						break;
-					default:
-					    break;
-					}
-				}
-				else
-				{
-				    str = ti.getText(c);
-				}
-				if (str==null) str="";
-				int len = dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x;
-				if (len>max) max=len;
+                if (ti!=null)
+                {
+    				String str = "";
+    				if (c>0)
+    				{
+    					switch(columns[c-1].getType())
+    					{
+    					case ColumnInfo.COLUMN_TYPE_TEXT:
+    					    str = ti.getText(c);
+    						break;
+    					case ColumnInfo.COLUMN_TYPE_CCOMBO:
+    					    str = ti.getText(c);
+    					    int minLength = str.length();
+    						String[] options = columns[c-1].getComboValues();
+    						if (options!=null)
+    						{
+    							for (int x=0;x<options.length;x++)
+    							{
+    							    if (options[x].length()>minLength)
+    							    {
+    							        str = options[x];
+    							        minLength = options[x].length();
+    							    }
+    							}
+    						}
+    						break;
+    					case ColumnInfo.COLUMN_TYPE_BUTTON:
+    					    str = columns[c-1].getButtonText();
+    						break;
+    					default:
+    					    break;
+    					}
+    				}
+    				else
+    				{
+    				    str = ti.getText(c);
+    				}
+    				if (str==null) str="";
+    				int len = dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x;
+    				if (len>max) max=len;
+                }
 			}
 			try
 			{
@@ -2000,20 +2000,23 @@ public class TableView extends Composite
 	{
 		boolean empty=false;
 		TableItem item = table.getItem(rownr);
-		if (colnr>=0) 
-		{
-			String str = item.getText(colnr);
-			if (str==null || str.length()==0) empty=true;
-		}
-		else
-		{
-			empty=true;
-			for (int j=1;j<table.getColumnCount();j++)
-			{
-				String str = item.getText(j);
-				if (str!=null && str.length()>0) empty=false;
-			}
-		} 
+        if (item!=null)
+        {
+    		if (colnr>=0) 
+    		{
+    			String str = item.getText(colnr);
+    			if (str==null || str.length()==0) empty=true;
+    		}
+    		else
+    		{
+    			empty=true;
+    			for (int j=1;j<table.getColumnCount();j++)
+    			{
+    				String str = item.getText(j);
+                    if (str!=null && str.length()>0) empty=false;
+    			}
+    		}
+        }
 		return empty;
 	}
 	
