@@ -1053,12 +1053,12 @@ public class SpoonGraph extends Canvas implements Redrawable
             int sels = spoon.getTransMeta().nrSelectedSteps();
             if (sels == 2)
             {
-                miNewHop = new MenuItem(mPop, SWT.CASCADE);
+                miNewHop = new MenuItem(mPop, SWT.NONE);
                 miNewHop.setText(Messages.getString("SpoonGraph.PopupMenu.NewHop")); //$NON-NLS-1$
             }
-            MenuItem miEditStep = new MenuItem(mPop, SWT.CASCADE);
+            MenuItem miEditStep = new MenuItem(mPop, SWT.NONE);
             miEditStep.setText(Messages.getString("SpoonGraph.PopupMenu.EditStep")); //$NON-NLS-1$
-            MenuItem miEditDesc = new MenuItem(mPop, SWT.CASCADE);
+            MenuItem miEditDesc = new MenuItem(mPop, SWT.NONE);
             miEditDesc.setText(Messages.getString("SpoonGraph.PopupMenu.EditStepDescription")); //$NON-NLS-1$
 
             new MenuItem(mPop, SWT.SEPARATOR);
@@ -1068,9 +1068,9 @@ public class SpoonGraph extends Canvas implements Redrawable
             miPopDC.setText(Messages.getString("SpoonGraph.PopupMenu.DataMovement")); //$NON-NLS-1$
 
             Menu mPopDC = new Menu(miPopDC);
-            MenuItem miStepDist = new MenuItem(mPopDC, SWT.CASCADE | SWT.CHECK);
+            MenuItem miStepDist = new MenuItem(mPopDC, SWT.NONE | SWT.CHECK);
             miStepDist.setText(Messages.getString("SpoonGraph.PopupMenu.DistributeData")); //$NON-NLS-1$
-            MenuItem miStepCopy = new MenuItem(mPopDC, SWT.CASCADE | SWT.CHECK);
+            MenuItem miStepCopy = new MenuItem(mPopDC, SWT.NONE | SWT.CHECK);
             miStepCopy.setText(Messages.getString("SpoonGraph.PopupMenu.CopyData")); //$NON-NLS-1$
             miPopDC.setMenu(mPopDC);
 
@@ -1079,25 +1079,25 @@ public class SpoonGraph extends Canvas implements Redrawable
             else
                 miStepCopy.setSelection(true);
 
-            MenuItem miCopies = new MenuItem(mPop, SWT.CASCADE);
+            MenuItem miCopies = new MenuItem(mPop, SWT.NONE);
             miCopies.setText(Messages.getString("SpoonGraph.PopupMenu.NumberOfCopies")); //$NON-NLS-1$
 
             new MenuItem(mPop, SWT.SEPARATOR);
             // ---------------------------------------
 
             // Clipboard operations...
-            MenuItem miCopyStep = new MenuItem(mPop, SWT.CASCADE);
+            MenuItem miCopyStep = new MenuItem(mPop, SWT.NONE);
             miCopyStep.setText(Messages.getString("SpoonGraph.PopupMenu.CopyToClipboard")); //$NON-NLS-1$
 
-            MenuItem miDupeStep = new MenuItem(mPop, SWT.CASCADE);
+            MenuItem miDupeStep = new MenuItem(mPop, SWT.NONE);
             miDupeStep.setText(Messages.getString("SpoonGraph.PopupMenu.DuplicateStep")); //$NON-NLS-1$
 
-            MenuItem miDelStep = new MenuItem(mPop, SWT.CASCADE);
+            MenuItem miDelStep = new MenuItem(mPop, SWT.NONE);
             miDelStep.setText(Messages.getString("SpoonGraph.PopupMenu.DeleteStep")); //$NON-NLS-1$
 
             if (stepMeta.isDrawn() && !spoon.getTransMeta().isStepUsedInTransHops(stepMeta))
             {
-                miHideStep = new MenuItem(mPop, SWT.CASCADE);
+                miHideStep = new MenuItem(mPop, SWT.NONE);
                 miHideStep.setText(Messages.getString("SpoonGraph.PopupMenu.HideStep")); //$NON-NLS-1$
                 miHideStep.addSelectionListener(new SelectionAdapter()
                 {
@@ -1121,7 +1121,7 @@ public class SpoonGraph extends Canvas implements Redrawable
 
             if (spoon.getTransMeta().isStepUsedInTransHops(stepMeta))
             {
-                MenuItem miDetach = new MenuItem(mPop, SWT.CASCADE);
+                MenuItem miDetach = new MenuItem(mPop, SWT.NONE);
                 miDetach.setText(Messages.getString("SpoonGraph.PopupMenu.DetachStep")); //$NON-NLS-1$
                 miDetach.addSelectionListener(new SelectionAdapter()
                 {
@@ -1136,9 +1136,9 @@ public class SpoonGraph extends Canvas implements Redrawable
             new MenuItem(mPop, SWT.SEPARATOR);
             // ---------------------------------------
 
-            MenuItem miPopFieldsBef = new MenuItem(mPop, SWT.CASCADE);
+            MenuItem miPopFieldsBef = new MenuItem(mPop, SWT.NONE);
             miPopFieldsBef.setText(Messages.getString("SpoonGraph.PopupMenu.ShowInputFields")); //$NON-NLS-1$
-            MenuItem miPopFieldsAft = new MenuItem(mPop, SWT.CASCADE);
+            MenuItem miPopFieldsAft = new MenuItem(mPop, SWT.NONE);
             miPopFieldsAft.setText(Messages.getString("SpoonGraph.PopupMenu.ShowOutputFields")); //$NON-NLS-1$
 
             // Allign & Distribute options...
@@ -1147,21 +1147,21 @@ public class SpoonGraph extends Canvas implements Redrawable
             miPopAD.setText(Messages.getString("SpoonGraph.PopupMenu.AllignDistribute")); //$NON-NLS-1$
 
             Menu mPopAD = new Menu(miPopAD);
-            MenuItem miPopALeft = new MenuItem(mPopAD, SWT.CASCADE);
+            MenuItem miPopALeft = new MenuItem(mPopAD, SWT.NONE);
             miPopALeft.setText(Messages.getString("SpoonGraph.PopupMenu.AllignLeft")); //$NON-NLS-1$
-            MenuItem miPopARight = new MenuItem(mPopAD, SWT.CASCADE);
+            MenuItem miPopARight = new MenuItem(mPopAD, SWT.NONE);
             miPopARight.setText(Messages.getString("SpoonGraph.PopupMenu.AllignRight")); //$NON-NLS-1$
-            MenuItem miPopATop = new MenuItem(mPopAD, SWT.CASCADE);
+            MenuItem miPopATop = new MenuItem(mPopAD, SWT.NONE);
             miPopATop.setText(Messages.getString("SpoonGraph.PopupMenu.AllignTop")); //$NON-NLS-1$
-            MenuItem miPopABottom = new MenuItem(mPopAD, SWT.CASCADE);
+            MenuItem miPopABottom = new MenuItem(mPopAD, SWT.NONE);
             miPopABottom.setText(Messages.getString("SpoonGraph.PopupMenu.AllignBottom")); //$NON-NLS-1$
             new MenuItem(mPopAD, SWT.SEPARATOR);
-            MenuItem miPopDHoriz = new MenuItem(mPopAD, SWT.CASCADE);
+            MenuItem miPopDHoriz = new MenuItem(mPopAD, SWT.NONE);
             miPopDHoriz.setText(Messages.getString("SpoonGraph.PopupMenu.DistributeHorizontally")); //$NON-NLS-1$
-            MenuItem miPopDVertic = new MenuItem(mPopAD, SWT.CASCADE);
+            MenuItem miPopDVertic = new MenuItem(mPopAD, SWT.NONE);
             miPopDVertic.setText(Messages.getString("SpoonGraph.PopupMenu.DistributeVertically")); //$NON-NLS-1$
             new MenuItem(mPopAD, SWT.SEPARATOR);
-            MenuItem miPopSSnap = new MenuItem(mPopAD, SWT.CASCADE);
+            MenuItem miPopSSnap = new MenuItem(mPopAD, SWT.NONE);
             miPopSSnap.setText(Messages.getString("SpoonGraph.PopupMenu.SnapToGrid") + Const.GRID_SIZE + ")\tALT-HOME"); //$NON-NLS-1$ //$NON-NLS-2$
             miPopAD.setMenu(mPopAD);
 
@@ -1225,7 +1225,7 @@ public class SpoonGraph extends Canvas implements Redrawable
              * Check...
              */
             new MenuItem(mPop, SWT.SEPARATOR);
-            MenuItem miPreview = new MenuItem(mPop, SWT.CASCADE);
+            MenuItem miPreview = new MenuItem(mPop, SWT.NONE);
             miPreview.setText(Messages.getString("SpoonGraph.PopupMenu.CheckSelectedSteps")); //$NON-NLS-1$
             miPreview.addSelectionListener(new SelectionAdapter()
             {
@@ -1240,7 +1240,7 @@ public class SpoonGraph extends Canvas implements Redrawable
              * 
              * Check...
              */
-            MenuItem miMapping = new MenuItem(mPop, SWT.CASCADE);
+            MenuItem miMapping = new MenuItem(mPop, SWT.NONE);
             miMapping.setText(Messages.getString("SpoonGraph.PopupMenu.GenerateMappingToThisStep")); //$NON-NLS-1$
             miMapping.addSelectionListener(new SelectionAdapter()
             {
@@ -1384,16 +1384,16 @@ public class SpoonGraph extends Canvas implements Redrawable
             final TransHopMeta hi = findHop(x, y);
             if (hi != null) // We clicked on a HOP!
             {
-                MenuItem miEditHop = new MenuItem(mPop, SWT.CASCADE);
+                MenuItem miEditHop = new MenuItem(mPop, SWT.NONE);
                 miEditHop.setText(Messages.getString("SpoonGraph.PopupMenu.EditHop")); //$NON-NLS-1$
-                MenuItem miFlipHop = new MenuItem(mPop, SWT.CASCADE);
+                MenuItem miFlipHop = new MenuItem(mPop, SWT.NONE);
                 miFlipHop.setText(Messages.getString("SpoonGraph.PopupMenu.FlipDirection")); //$NON-NLS-1$
-                MenuItem miDisHop = new MenuItem(mPop, SWT.CASCADE);
+                MenuItem miDisHop = new MenuItem(mPop, SWT.NONE);
                 if (hi.isEnabled())
                     miDisHop.setText(Messages.getString("SpoonGraph.PopupMenu.DisableHop")); //$NON-NLS-1$
                 else
                     miDisHop.setText(Messages.getString("SpoonGraph.PopupMenu.EnableHop")); //$NON-NLS-1$
-                MenuItem miDelHop = new MenuItem(mPop, SWT.CASCADE);
+                MenuItem miDelHop = new MenuItem(mPop, SWT.NONE);
                 miDelHop.setText(Messages.getString("SpoonGraph.PopupMenu.DeleteHop")); //$NON-NLS-1$
 
                 miEditHop.addSelectionListener(new SelectionAdapter()
@@ -1479,9 +1479,9 @@ public class SpoonGraph extends Canvas implements Redrawable
                 {
                     // Delete note
                     // Edit note
-                    MenuItem miNoteEdit = new MenuItem(mPop, SWT.CASCADE);
+                    MenuItem miNoteEdit = new MenuItem(mPop, SWT.NONE);
                     miNoteEdit.setText(Messages.getString("SpoonGraph.PopupMenu.EditNote")); //$NON-NLS-1$
-                    MenuItem miNoteDel = new MenuItem(mPop, SWT.CASCADE);
+                    MenuItem miNoteDel = new MenuItem(mPop, SWT.NONE);
                     miNoteDel.setText(Messages.getString("SpoonGraph.PopupMenu.DeleteNote")); //$NON-NLS-1$
 
                     miNoteEdit.addSelectionListener(new SelectionAdapter()
@@ -1512,7 +1512,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                 else
                 {
                 	// No step, hop or note: clicked on the background....
-                    MenuItem miNoteNew = new MenuItem(mPop, SWT.CASCADE);
+                    MenuItem miNoteNew = new MenuItem(mPop, SWT.NONE);
                     miNoteNew.setText(Messages.getString("SpoonGraph.PopupMenu.NewNote")); //$NON-NLS-1$
                     miNoteNew.addSelectionListener(new SelectionAdapter()
                     {
@@ -1544,7 +1544,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                         // System.out.println("Add step type :
                         // "+sp[i].getDescription());
 
-                        MenuItem miStepX = new MenuItem(mStep, SWT.CASCADE);
+                        MenuItem miStepX = new MenuItem(mStep, SWT.NONE);
                         miStepX.setText(sp[i].getDescription());
 
                         final String description = sp[i].getDescription();
@@ -1560,7 +1560,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                         });
                     }
 
-                    MenuItem miPasteStep = new MenuItem(mPop, SWT.CASCADE);
+                    MenuItem miPasteStep = new MenuItem(mPop, SWT.NONE);
                     miPasteStep.setText(Messages.getString("SpoonGraph.PopupMenu.PasteStepFromClipboard")); //$NON-NLS-1$
 
                     final String clipcontent = spoon.fromClipboard();
