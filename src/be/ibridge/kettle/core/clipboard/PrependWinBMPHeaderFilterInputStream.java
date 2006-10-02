@@ -3,8 +3,6 @@ package be.ibridge.kettle.core.clipboard;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.eclipse.swt.internal.win32.BITMAPINFOHEADER;
-
 /**
  * Converts a DIB (Device Independent Bitmap) taken from the clipboard, into a
  * Bitmap File.

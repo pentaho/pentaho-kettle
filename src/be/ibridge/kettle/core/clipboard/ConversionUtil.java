@@ -1,7 +1,5 @@
 package be.ibridge.kettle.core.clipboard;
 
-import org.eclipse.swt.internal.win32.BITMAPINFOHEADER;
-
 /**
  * Converts between byte[] and simple types (and BITMAPINFOHEADER)
  *

@@ -10,7 +10,6 @@ import org.eclipse.swt.dnd.ByteArrayTransfer;
 import org.eclipse.swt.dnd.TransferData;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
-import org.eclipse.swt.internal.ole.win32.COM;
 
 /**
  * Singleton class that reads Images (CF_DIB) from the Windows Clipboard as
@@ -23,9 +22,11 @@ import org.eclipse.swt.internal.ole.win32.COM;
  */
 public class ImageDataTransfer extends ByteArrayTransfer {
 
+    public static final int COM_CF_DIB          = 8;
+    
       private static final ImageDataTransfer INSTANCE = new   ImageDataTransfer();
       private static final String CF_DIB = "CF_DIB";
-      private static final int CF_DIBID = COM.CF_DIB;
+      private static final int CF_DIBID = COM_CF_DIB;
 
       private ImageDataTransfer() {
               //Singleton

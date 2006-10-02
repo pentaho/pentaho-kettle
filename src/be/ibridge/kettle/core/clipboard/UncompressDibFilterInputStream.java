@@ -3,9 +3,6 @@ package be.ibridge.kettle.core.clipboard;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.eclipse.swt.internal.win32.BITMAPINFOHEADER;
-import org.eclipse.swt.internal.win32.OS;
-
 /**
  * As of Eclipse 3.0 SWT does not recognize Bitmaps with
  * BITMAPINFOHEADER.biCompression set to BI_BITFIELDS
@@ -23,6 +20,9 @@ import org.eclipse.swt.internal.win32.OS;
  */
 class UncompressDibFilterInputStream extends InputStream {
 
+    public static final int OS_BI_BITFIELDS = 3;
+    public static final int OS_BI_RGB = 0;
+    
       private final InputStream in;
       private byte[] buffer;
       private int index = 0;
@@ -45,12 +45,12 @@ class UncompressDibFilterInputStream extends InputStream {
               BITMAPINFOHEADER origInfoHeader = new BITMAPINFOHEADER();
               ConversionUtil.fromBytes(origInfoHeader, this.buffer, 0);
 
-              this.isCompressed = origInfoHeader.biCompression == OS.BI_BITFIELDS;
+              this.isCompressed = origInfoHeader.biCompression == OS_BI_BITFIELDS;
 
               if (this.isCompressed) {
                       this.bitCount = origInfoHeader.biBitCount;
 
-                      origInfoHeader.biCompression = OS.BI_RGB;
+                      origInfoHeader.biCompression = OS_BI_RGB;
                       origInfoHeader.biSizeImage = 0;
 
                       ConversionUtil.toBytes(origInfoHeader, this.buffer, 0);
