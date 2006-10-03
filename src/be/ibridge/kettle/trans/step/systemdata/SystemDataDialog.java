@@ -129,8 +129,8 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
         for (int i=1;i<SystemDataMeta.functions.length;i++) functionDesc[i-1]=SystemDataMeta.functions[i].getDescription();
 		
 		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("SystemDataDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT,   false);
-		colinf[1]=new ColumnInfo(Messages.getString("SystemDataDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, functionDesc );
+		colinf[0]=new ColumnInfo(Messages.getString("SystemDataDialog.NameColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT, false);
+		colinf[1]=new ColumnInfo(Messages.getString("SystemDataDialog.TypeColumn.Column"),       ColumnInfo.COLUMN_TYPE_TEXT, false);
 		colinf[1].setSelectionAdapter(
 		    new SelectionAdapter()
 	        {

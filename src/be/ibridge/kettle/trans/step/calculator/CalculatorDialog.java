@@ -140,7 +140,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
         colinf=new ColumnInfo[]
                {
                     new ColumnInfo(Messages.getString("CalculatorDialog.NewFieldColumn.Column"),     ColumnInfo.COLUMN_TYPE_TEXT,   false),
-                    new ColumnInfo(Messages.getString("CalculatorDialog.CalculationColumn.Column"),  ColumnInfo.COLUMN_TYPE_CCOMBO, CalculatorMetaFunction.calcLongDesc ),
+                    new ColumnInfo(Messages.getString("CalculatorDialog.CalculationColumn.Column"),  ColumnInfo.COLUMN_TYPE_TEXT,   false),
                     new ColumnInfo(Messages.getString("CalculatorDialog.FieldAColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
                     new ColumnInfo(Messages.getString("CalculatorDialog.FieldBColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
                     new ColumnInfo(Messages.getString("CalculatorDialog.FieldCColumn.Column"),       ColumnInfo.COLUMN_TYPE_CCOMBO, new String[] { "" }, false),
