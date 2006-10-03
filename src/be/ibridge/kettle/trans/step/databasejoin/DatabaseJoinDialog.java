@@ -372,7 +372,7 @@ public class DatabaseJoinDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("DatabaseJoinDialog.GetFieldsFailed.DialogTitle"), Messages.getString("DatabaseJoinDialog.GetFieldsFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("DatabaseJoinDialog.GetFieldsFailed.DialogTitle"), Messages.getString("DatabaseJoinDialog.GetFieldsFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}

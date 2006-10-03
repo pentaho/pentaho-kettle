@@ -440,7 +440,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         }
         catch(KettleException ke)
         {
-            new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorSelectingObject.DialogTitle"), Messages.getString("MappingDialog.ErrorSelectingObject.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorSelectingObject.DialogTitle"), Messages.getString("MappingDialog.ErrorSelectingObject.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
     
@@ -471,7 +471,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
             }
             catch(KettleException e)
             {
-                new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("MappingDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
             }
         }
     }
@@ -499,7 +499,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorShowingTransformation.Title"), Messages.getString("MappingDialog.ErrorShowingTransformation.Message"), e);
+            new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorShowingTransformation.Title"), Messages.getString("MappingDialog.ErrorShowingTransformation.Message"), e);
         }
     }
 
@@ -547,7 +547,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
                 }
                 catch(KettleException e)
                 {
-                	new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorGettingPreviousFields.DialogTitle"), Messages.getString("MappingDialog.ErrorGettingPreviousFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                	new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorGettingPreviousFields.DialogTitle"), Messages.getString("MappingDialog.ErrorGettingPreviousFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 
                 if (prev!=null)
@@ -745,7 +745,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         }
         catch (KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Title"), 
+            new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Title"), 
                     Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
         }
     }

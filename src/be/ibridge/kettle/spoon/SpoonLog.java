@@ -411,7 +411,7 @@ public class SpoonLog extends Composite
                 }
                 catch (KettleException e)
                 {
-                    new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                    new ErrorDialog(shell, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 
                 wStart.setText(START_TEXT);
@@ -512,7 +512,7 @@ public class SpoonLog extends Composite
 					catch (KettleException e)
 					{
 						trans = null;
-						new ErrorDialog(shell, spoon.props,
+						new ErrorDialog(shell,
 								Messages.getString("SpoonLog.Dialog.ErrorOpeningTransformation.Title"), Messages.getString("SpoonLog.Dialog.ErrorOpeningTransformation.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					readLog();
@@ -597,7 +597,7 @@ public class SpoonLog extends Composite
 			}
 			catch (KettleException e)
 			{
-				new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 			wStart.setText(START_TEXT);
             running = false;
@@ -902,7 +902,7 @@ public class SpoonLog extends Composite
     		}
     		catch (Exception e)
     		{
-    			new ErrorDialog(shell, spoon.props, Messages.getString("SpoonLog.Dialog.UnexpectedErrorDuringPreview.Title"), Messages.getString("SpoonLog.Dialog.UnexpectedErrorDuringPreview.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+    			new ErrorDialog(shell, Messages.getString("SpoonLog.Dialog.UnexpectedErrorDuringPreview.Title"), Messages.getString("SpoonLog.Dialog.UnexpectedErrorDuringPreview.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
     		}
         }
         else

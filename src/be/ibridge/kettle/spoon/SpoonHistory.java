@@ -40,7 +40,6 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
@@ -234,7 +233,7 @@ public class SpoonHistory extends Composite
 						spoon.tabfolder.setSelection(1);
 						spoonLog.startstop(date);
 					} catch (ParseException e1) {
-						new ErrorDialog(shell, spoon.props,
+						new ErrorDialog(shell, 
 								Messages.getString("SpoonHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
 								Messages.getString("SpoonHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
 					}
@@ -317,7 +316,7 @@ public class SpoonHistory extends Composite
                     }
                     catch(KettleException e)
                     {
-                        new ErrorDialog(this.getShell(), Props.getInstance(), Messages.getString("SpoonHistory.Error.GettingLoggingInfo"), Messages.getString("SpoonHistory.Error.GettingInfoFromLoggingTable"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                        new ErrorDialog(this.getShell(), Messages.getString("SpoonHistory.Error.GettingLoggingInfo"), Messages.getString("SpoonHistory.Error.GettingInfoFromLoggingTable"), e); //$NON-NLS-1$ //$NON-NLS-2$
                         wFields.clearAll(false);
                     }
                     finally

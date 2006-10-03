@@ -28,18 +28,26 @@ import be.ibridge.kettle.core.database.DatabaseMetaInformation;
  */
 public class GetDatabaseInfoProgressDialog
 {
-	private Props props;
 	private Shell shell;
 	private DatabaseMeta dbInfo;
     private Thread parentThread;
-    
+
+    /**
+     * Creates a new dialog that will handle the wait while we're 
+     * finding out what tables, views etc we can reach in the database.
+     * @deprecated please use the constructor version without log or props
+     */
+    public GetDatabaseInfoProgressDialog(LogWriter log, Props props, Shell shell, DatabaseMeta dbInfo)
+    {
+        this(shell, dbInfo);
+    }
+
 	/**
 	 * Creates a new dialog that will handle the wait while we're 
 	 * finding out what tables, views etc we can reach in the database.
 	 */
-	public GetDatabaseInfoProgressDialog(LogWriter log, Props props, Shell shell, DatabaseMeta dbInfo)
+	public GetDatabaseInfoProgressDialog(Shell shell, DatabaseMeta dbInfo)
 	{
-		this.props = props;
 		this.shell = shell;
 		this.dbInfo = dbInfo;
         
@@ -75,12 +83,12 @@ public class GetDatabaseInfoProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, "Error getting information", "An error occured getting information from the database!", e);
+			new ErrorDialog(shell, "Error getting information", "An error occured getting information from the database!", e);
 			return null;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, "Error getting information", "An error occured getting information from the database!", e);
+			new ErrorDialog(shell, "Error getting information", "An error occured getting information from the database!", e);
 			return null;
 		}
 		

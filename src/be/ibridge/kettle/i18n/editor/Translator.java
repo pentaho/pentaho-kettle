@@ -180,7 +180,7 @@ public class Translator
         }
         catch(Exception e)
         {
-            new ErrorDialog(shell, Props.getInstance(), "Error reading translations", "There was an unexpected error reading the translations", e);        
+            new ErrorDialog(shell, "Error reading translations", "There was an unexpected error reading the translations", e);        
         }
         
         // Put something on the screen
@@ -277,7 +277,7 @@ public class Translator
         }
         catch(Exception e)
         {
-            new ErrorDialog(shell, props, "Error loading data", "There was an unexpected error re-loading the data", e);
+            new ErrorDialog(shell, "Error loading data", "There was an unexpected error re-loading the data", e);
         }
     }
 
@@ -506,7 +506,7 @@ public class Translator
         }
         catch(Exception e)
         {
-            new ErrorDialog(shell, props, "Error loading data", "There was an unexpected error loading data for the translation grid", e);
+            new ErrorDialog(shell, "Error loading data", "There was an unexpected error loading data for the translation grid", e);
         }
         finally
         {

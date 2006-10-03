@@ -283,7 +283,7 @@ public class JoinRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		catch(KettleException ke)
 		{
 			inputfields = new Row();
-			new ErrorDialog(shell, props, Messages.getString("JoinRowsDialog.FailedToGetFields.DialogTitle"), Messages.getString("JoinRowsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("JoinRowsDialog.FailedToGetFields.DialogTitle"), Messages.getString("JoinRowsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		wOK=new Button(shell, SWT.PUSH);

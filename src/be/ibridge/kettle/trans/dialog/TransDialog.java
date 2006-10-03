@@ -1048,7 +1048,7 @@ public class TransDialog extends Dialog
 			{
 		 		transMeta.setDirectory( dirFrom );
 		 		OK=false;
-		 		new ErrorDialog(shell, props, Messages.getString("TransDialog.ErrorMovingTransformation.DialogTitle"), Messages.getString("TransDialog.ErrorMovingTransformation.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+		 		new ErrorDialog(shell, Messages.getString("TransDialog.ErrorMovingTransformation.DialogTitle"), Messages.getString("TransDialog.ErrorMovingTransformation.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 		}
 

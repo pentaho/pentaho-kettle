@@ -950,7 +950,7 @@ public class Spoon implements AddUndoPositionInterface
                                 catch(KettleException ke)
                                 {
                                     rep=null;
-                                    new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnableConnectRepository.Title"), Messages.getString("Spoon.Dialog.UnableConnectRepository.Message"), ke);  //$NON-NLS-1$ //$NON-NLS-2$
+                                    new ErrorDialog(shell, Messages.getString("Spoon.Dialog.UnableConnectRepository.Title"), Messages.getString("Spoon.Dialog.UnableConnectRepository.Message"), ke);  //$NON-NLS-1$ //$NON-NLS-2$
                                 }
                             }
                             else
@@ -998,7 +998,7 @@ public class Spoon implements AddUndoPositionInterface
                             {
                                 clear();
                                 //"Error loading transformation", "I was unable to load this transformation from the XML file because of an error"
-                                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.LoadTransformationError.Title"), Messages.getString("Spoon.Dialog.LoadTransformationError.Message"), ke);
+                                new ErrorDialog(shell, Messages.getString("Spoon.Dialog.LoadTransformationError.Title"), Messages.getString("Spoon.Dialog.LoadTransformationError.Message"), ke);
                             }
                         }
                         setShellText();
@@ -1841,12 +1841,12 @@ public class Spoon implements AddUndoPositionInterface
                     catch(KettleDatabaseException dbe)
                     {
                         
-                        new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Title"), Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Message",name), dbe);//"Error deleting connection ["+db+"] from repository!"
+                        new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Title"), Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Message",name), dbe);//"Error deleting connection ["+db+"] from repository!"
                     }
                 }
                 else
                 {
-                    new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Title"),Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Message",name) , new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyUser")));//"Error deleting connection ["+db+"] from repository!" //This user is read-only!
+                    new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Title"),Messages.getString("Spoon.Dialog.ErrorDeletingConnection.Message",name) , new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyUser")));//"Error deleting connection ["+db+"] from repository!" //This user is read-only!
                 }
             }
 
@@ -1931,7 +1931,7 @@ public class Spoon implements AddUndoPositionInterface
             catch (Throwable e)
             {
                 if (shell.isDisposed()) return null;
-                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnableOpenDialog.Title"), Messages
+                new ErrorDialog(shell, Messages.getString("Spoon.Dialog.UnableOpenDialog.Title"), Messages
                         .getString("Spoon.Dialog.UnableOpenDialog.Message"), new Exception(e));//"Unable to open dialog for this step"
             }
         }
@@ -2107,7 +2107,7 @@ public class Spoon implements AddUndoPositionInterface
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnablePasteSteps.Title"),Messages.getString("Spoon.Dialog.UnablePasteSteps.Message") , e);//"Error pasting steps...", "I was unable to paste steps to this transformation"
+            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.UnablePasteSteps.Title"),Messages.getString("Spoon.Dialog.UnablePasteSteps.Message") , e);//"Error pasting steps...", "I was unable to paste steps to this transformation"
         }
     }
     
@@ -2328,12 +2328,12 @@ public class Spoon implements AddUndoPositionInterface
                 catch(KettleException ke)
                 {
                     rep.rollback(); // In case of failure: undo changes!
-                    new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorSavingConnection.Title"),Messages.getString("Spoon.Dialog.ErrorSavingConnection.Message",db.getDatabaseName()), ke);//"Can't save...","Error saving connection ["+db+"] to repository!"
+                    new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorSavingConnection.Title"),Messages.getString("Spoon.Dialog.ErrorSavingConnection.Message",db.getDatabaseName()), ke);//"Can't save...","Error saving connection ["+db+"] to repository!"
                 }
             }
             else
             {
-                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnableSave.Title"),Messages.getString("Spoon.Dialog.ErrorSavingConnection.Message",db.getDatabaseName()), new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyRepositoryUser")));//This repository user is read-only!
+                new ErrorDialog(shell, Messages.getString("Spoon.Dialog.UnableSave.Title"),Messages.getString("Spoon.Dialog.ErrorSavingConnection.Message",db.getDatabaseName()), new KettleException(Messages.getString("Spoon.Dialog.Exception.ReadOnlyRepositoryUser")));//This repository user is read-only!
             }
         }
     }
@@ -2392,7 +2392,7 @@ public class Spoon implements AddUndoPositionInterface
             catch(KettleException ke)
             {
                 rep=null;
-                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorConnectingRepository.Title"), Messages.getString("Spoon.Dialog.ErrorConnectingRepository.Message",Const.CR), ke); //$NON-NLS-1$ //$NON-NLS-2$
+                new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorConnectingRepository.Title"), Messages.getString("Spoon.Dialog.ErrorConnectingRepository.Message",Const.CR), ke); //$NON-NLS-1$ //$NON-NLS-2$
             }
             
             // Set for the existing databases, the ID's at -1!
@@ -2728,7 +2728,7 @@ public class Spoon implements AddUndoPositionInterface
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorSavingDatabaseCache.Title"), Messages.getString("Spoon.Dialog.ErrorSavingDatabaseCache.Message"), e);//"An error occured saving the database cache to disk"
+            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorSavingDatabaseCache.Title"), Messages.getString("Spoon.Dialog.ErrorSavingDatabaseCache.Message"), e);//"An error occured saving the database cache to disk"
         }
         
         return saved;
@@ -2783,7 +2783,7 @@ public class Spoon implements AddUndoPositionInterface
                         transMeta.getModifiedDate().sysdate();
                         transMeta.setModifiedUser( rep.getUserInfo().getLogin() );
 
-                        TransSaveProgressDialog tspd = new TransSaveProgressDialog(log, props, shell, rep, transMeta);
+                        TransSaveProgressDialog tspd = new TransSaveProgressDialog(shell, rep, transMeta);
                         if (tspd.open())
                         {
                             saved=true;
@@ -3332,18 +3332,18 @@ public class Spoon implements AddUndoPositionInterface
                 }
                 catch(Exception ex)
                 {
-                    new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorShowingHelpText.Title"), Messages.getString("Spoon.Dialog.ErrorShowingHelpText.Message"), ex);//"Error showing help text"
+                    new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorShowingHelpText.Title"), Messages.getString("Spoon.Dialog.ErrorShowingHelpText.Message"), ex);//"Error showing help text"
                 }
             }
             else
             {
-                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnableCreateNewStep.Title"),Messages.getString("Spoon.Dialog.UnableCreateNewStep.Message") , e);//"Error creating step"  "I was unable to create a new step"
+                new ErrorDialog(shell, Messages.getString("Spoon.Dialog.UnableCreateNewStep.Title"),Messages.getString("Spoon.Dialog.UnableCreateNewStep.Message") , e);//"Error creating step"  "I was unable to create a new step"
             }
             return null;
         }
         catch(Throwable e)
         {
-            if (!shell.isDisposed()) new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorCreatingStep.Title"), Messages.getString("Spoon.Dialog.UnableCreateNewStep.Message"), new Exception(e));//"Error creating step"
+            if (!shell.isDisposed()) new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorCreatingStep.Title"), Messages.getString("Spoon.Dialog.UnableCreateNewStep.Message"), new Exception(e));//"Error creating step"
             return null;
         }
                 
@@ -4036,7 +4036,7 @@ public class Spoon implements AddUndoPositionInterface
      */
     public void checkTrans(boolean only_selected)
     {
-        CheckTransProgressDialog ctpd = new CheckTransProgressDialog(log, props, shell, transMeta, remarks, only_selected);
+        CheckTransProgressDialog ctpd = new CheckTransProgressDialog(shell, transMeta, remarks, only_selected);
         ctpd.open(); // manages the remarks arraylist...
         showLastTransCheck();
     }
@@ -4125,7 +4125,7 @@ public class Spoon implements AddUndoPositionInterface
     
     public void analyseImpact()
     {
-        AnalyseImpactProgressDialog aipd = new AnalyseImpactProgressDialog(log, props, shell, transMeta, impact);
+        AnalyseImpactProgressDialog aipd = new AnalyseImpactProgressDialog(shell, transMeta, impact);
         impactHasRun = aipd.open();
         if (impactHasRun) showLastImpactAnalyses();
     }
@@ -4168,7 +4168,7 @@ public class Spoon implements AddUndoPositionInterface
      */
     public void getSQL()
     {
-        GetSQLProgressDialog pspd = new GetSQLProgressDialog(log, props, shell, transMeta);
+        GetSQLProgressDialog pspd = new GetSQLProgressDialog(shell, transMeta);
         ArrayList stats = pspd.open();
         if (stats!=null) // null means error, but we already displayed the error
         {
@@ -4217,7 +4217,7 @@ public class Spoon implements AddUndoPositionInterface
             }
             catch(KettleException e)
             {
-                new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.ErrorPastingTransformation.Title"),  Messages.getString("Spoon.Dialog.ErrorPastingTransformation.Message"), e);//Error pasting transformation  "An error occurred pasting a transformation from the clipboard"
+                new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorPastingTransformation.Title"),  Messages.getString("Spoon.Dialog.ErrorPastingTransformation.Message"), e);//Error pasting transformation  "An error occurred pasting a transformation from the clipboard"
             }
         }
     }
@@ -4423,7 +4423,7 @@ public class Spoon implements AddUndoPositionInterface
         }
         catch(Exception e)
         {
-            new ErrorDialog(shell, props, Messages.getString("Spoon.Dialog.UnexpectedError.Title"), Messages.getString("Spoon.Dialog.UnexpectedError.Message"), new KettleException(e.getMessage(), e));//"Unexpected error"  "An unexpected error occurred creating the new transformation" 
+            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.UnexpectedError.Title"), Messages.getString("Spoon.Dialog.UnexpectedError.Message"), new KettleException(e.getMessage(), e));//"Unexpected error"  "An unexpected error occurred creating the new transformation" 
             return false;
         }
         return true;
@@ -4821,7 +4821,7 @@ public class Spoon implements AddUndoPositionInterface
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, Props.getInstance(), "Error creating mapping", "There was an error when Kettle tried to generate a mapping against the target step", e);
+            new ErrorDialog(shell, "Error creating mapping", "There was an error when Kettle tried to generate a mapping against the target step", e);
         }
     }
     

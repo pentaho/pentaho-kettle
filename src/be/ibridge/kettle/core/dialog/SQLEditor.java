@@ -295,7 +295,7 @@ public class SQLEditor extends Dialog
 							}
 							catch(KettleDatabaseException dbe)
 							{
-								new ErrorDialog(shell, props, "Error", "I encountered an error executing statement #"+nrstats, dbe);
+								new ErrorDialog(shell, "Error", "I encountered an error executing statement #"+nrstats, dbe);
 							}
 						}
 						else
@@ -313,7 +313,7 @@ public class SQLEditor extends Dialog
 							}
 							catch(Exception dbe)
 							{
-								new ErrorDialog(shell, props, "Error", "Error executing SQL statement nr "+nrstats+" :", dbe);
+								new ErrorDialog(shell, "Error", "Error executing SQL statement nr "+nrstats+" :", dbe);
 							}
 						}
 					}

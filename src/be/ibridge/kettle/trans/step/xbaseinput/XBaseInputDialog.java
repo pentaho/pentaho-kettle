@@ -587,7 +587,7 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
     	}
     	catch(Exception e)
     	{
-    		new ErrorDialog(shell, props, Messages.getString("System.Dialog.PreviewError.Title"),  //$NON-NLS-1$
+    		new ErrorDialog(shell, Messages.getString("System.Dialog.PreviewError.Title"),  //$NON-NLS-1$
     				Messages.getString("System.Dialog.PreviewError.Message"), e); //$NON-NLS-1$
     	}
     }

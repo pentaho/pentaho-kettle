@@ -40,7 +40,6 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
@@ -234,7 +233,7 @@ public class ChefHistory extends Composite
 						chef.tabfolder.setSelection(1);
 						chefLog.startJob(date);
 					} catch (ParseException e1) {
-						new ErrorDialog(shell, chef.props,
+						new ErrorDialog(shell, 
 								Messages.getString("ChefHistory.Error.ReplayingJob2"), //$NON-NLS-1$
 								Messages.getString("ChefHistory.Error.InvalidReplayDate") + dateString, e1); //$NON-NLS-1$
 					}
@@ -317,7 +316,7 @@ public class ChefHistory extends Composite
                     }
                     catch(KettleException e)
                     {
-                        new ErrorDialog(this.getShell(), Props.getInstance(), Messages.getString("ChefHistory.Error.GettingLoggingInfo"), Messages.getString("ChefHistory.Error.GettingInfoFromLoggingTable"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                        new ErrorDialog(this.getShell(), Messages.getString("ChefHistory.Error.GettingLoggingInfo"), Messages.getString("ChefHistory.Error.GettingInfoFromLoggingTable"), e); //$NON-NLS-1$ //$NON-NLS-2$
                         wFields.clearAll(false);
                     }
                     finally

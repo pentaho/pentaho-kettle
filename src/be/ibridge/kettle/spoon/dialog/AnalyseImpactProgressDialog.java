@@ -29,19 +29,26 @@ import be.ibridge.kettle.trans.TransMeta;
  */
 public class AnalyseImpactProgressDialog
 {
-	private Props props;
 	private Shell shell;
 	private TransMeta transMeta;
 	private ArrayList impact;
 	private boolean impactHasRun;
     private Thread parentThread;
 
+    /**
+     * Creates a new dialog that will handle the wait while determining the impact of the transformation on the databases used...
+     * @deprecated Use the variation without log or props in the constructor.
+     */
+    public AnalyseImpactProgressDialog(LogWriter log, Props props, Shell shell, TransMeta transMeta, ArrayList impact)
+    {
+        this(shell, transMeta, impact);
+    }
+    
 	/**
 	 * Creates a new dialog that will handle the wait while determining the impact of the transformation on the databases used...
 	 */
-	public AnalyseImpactProgressDialog(LogWriter log, Props props, Shell shell, TransMeta transMeta, ArrayList impact)
+	public AnalyseImpactProgressDialog(Shell shell, TransMeta transMeta, ArrayList impact)
 	{
-		this.props = props;
 		this.shell = shell;
 		this.transMeta = transMeta;
 		this.impact = impact;
@@ -80,11 +87,11 @@ public class AnalyseImpactProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title"), Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages"), e); //"Error checking transformation","An error occured checking this transformation\!"
+			new ErrorDialog(shell, Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title"), Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages"), e); //"Error checking transformation","An error occured checking this transformation\!"
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title"), Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages"), e); //"Error checking transformation","An error occured checking this transformation\!"
+			new ErrorDialog(shell, Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Title"), Messages.getString("AnalyseImpactProgressDialog.Dialog.UnableToAnalyzeImpact.Messages"), e); //"Error checking transformation","An error occured checking this transformation\!"
 		}
 		
 		return impactHasRun;

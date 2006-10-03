@@ -413,7 +413,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("DenormaliserDialog.FailedToGetFields.DialogTitle"), Messages.getString("DenormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("DenormaliserDialog.FailedToGetFields.DialogTitle"), Messages.getString("DenormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -452,7 +452,7 @@ public class DenormaliserDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("DenormaliserDialog.FailedToGetFields.DialogTitle"), Messages.getString("DenormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("DenormaliserDialog.FailedToGetFields.DialogTitle"), Messages.getString("DenormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	

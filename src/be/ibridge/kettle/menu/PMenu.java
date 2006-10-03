@@ -2503,7 +2503,7 @@ public class PMenu
 		}
 		catch(Exception e)
 		{
-			new ErrorDialog(shell,Props.getInstance(), "Error occured", "An unexpected error occured: ", e);
+			new ErrorDialog(shell, "Error occured", "An unexpected error occured: ", e);
 		}
 	}
 	

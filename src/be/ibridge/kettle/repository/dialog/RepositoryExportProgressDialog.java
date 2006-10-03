@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LocalVariables;
-import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.repository.Repository;
@@ -28,7 +27,6 @@ import be.ibridge.kettle.repository.Repository;
  */
 public class RepositoryExportProgressDialog
 {
-	private Props props;
 	private Shell shell;
 	private Repository rep;
 	private String filename;
@@ -36,7 +34,6 @@ public class RepositoryExportProgressDialog
 	
 	public RepositoryExportProgressDialog(Shell shell, Repository rep, String filename)
 	{
-		this.props = Props.getInstance();
 		this.shell = shell;
 		this.rep = rep;
 		this.filename = filename;
@@ -76,14 +73,14 @@ public class RepositoryExportProgressDialog
 		{
 		    System.out.println("Error creating repository: "+e.toString());
 		    e.printStackTrace();
-			new ErrorDialog(shell, props, "Error exporting the repository", "An error occured exporting the repository to XML!", e);
+			new ErrorDialog(shell, "Error exporting the repository", "An error occured exporting the repository to XML!", e);
 			retval=false;
 		}
 		catch (InterruptedException e)
 		{
 		    System.out.println("Error creating repository: "+e.toString());
 		    e.printStackTrace();
-			new ErrorDialog(shell, props, "Error exporting the repository", "An error occured exporting the repository to XML!", e);
+			new ErrorDialog(shell, "Error exporting the repository", "An error occured exporting the repository to XML!", e);
 			retval=false;
 		}
 

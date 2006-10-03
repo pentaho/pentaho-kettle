@@ -567,7 +567,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("SelectValuesDialog.FailedToGetFields.DialogTitle"), Messages.getString("SelectValuesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("SelectValuesDialog.FailedToGetFields.DialogTitle"), Messages.getString("SelectValuesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 }

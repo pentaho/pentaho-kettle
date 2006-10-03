@@ -502,7 +502,7 @@ public class RepositoriesDialog
                     
                     if (!(e instanceof KettleDatabaseException))
                     {
-                        new ErrorDialog(shell, props, Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Title"), Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                        new ErrorDialog(shell, Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Title"), Messages.getString("RepositoriesDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
                     }
 				}
 				finally

@@ -158,7 +158,7 @@ public class FilesToResultDialog extends BaseStepDialog implements StepDialogInt
 				}
 				catch(Exception ke)
 				{
-					new ErrorDialog(shell, props, Messages.getString("FilesToResultDialog.FailedToGetFields.DialogTitle"), Messages.getString("FilesToResultDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+					new ErrorDialog(shell, Messages.getString("FilesToResultDialog.FailedToGetFields.DialogTitle"), Messages.getString("FilesToResultDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
 		};

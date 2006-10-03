@@ -1090,7 +1090,7 @@ public class TableView extends Composite
         }
         catch(Exception e)
         {
-            new ErrorDialog(this.getShell(), Props.getInstance(), "Unexpected error", "There was an unexpected error sorting the table view column", e);
+            new ErrorDialog(this.getShell(), "Unexpected error", "There was an unexpected error sorting the table view column", e);
         }
     }
 

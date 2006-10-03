@@ -67,7 +67,6 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
-import be.ibridge.kettle.trans.step.dimensionlookup.Messages;
 
 /**
  *  Dialog for the Dimension Lookup/Update step. 
@@ -1079,7 +1078,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("DimensionLookupDialog.FailedToGetFields.DialogTitle"), Messages.getString("DimensionLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("DimensionLookupDialog.FailedToGetFields.DialogTitle"), Messages.getString("DimensionLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -1178,7 +1177,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("DimensionLookupDialog.FailedToGetFields.DialogTitle"), Messages.getString("DimensionLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("DimensionLookupDialog.FailedToGetFields.DialogTitle"), Messages.getString("DimensionLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}		
 	}	
 	
@@ -1222,7 +1221,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("DimensionLookupDialog.UnableToBuildSQLError.DialogMessage"), Messages.getString("DimensionLookupDialog.UnableToBuildSQLError.DialogTitle"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("DimensionLookupDialog.UnableToBuildSQLError.DialogMessage"), Messages.getString("DimensionLookupDialog.UnableToBuildSQLError.DialogTitle"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 

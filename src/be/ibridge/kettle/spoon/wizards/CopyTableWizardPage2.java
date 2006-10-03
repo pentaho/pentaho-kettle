@@ -138,7 +138,7 @@ public class CopyTableWizardPage2 extends WizardPage
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			new ErrorDialog(shell, props, Messages.getString("CopyTableWizardPage2.ErrorGettingTables.DialogTitle"), Messages.getString("CopyTableWizardPage2.ErrorGettingTables.DialogMessage"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("CopyTableWizardPage2.ErrorGettingTables.DialogTitle"), Messages.getString("CopyTableWizardPage2.ErrorGettingTables.DialogMessage"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 			input = null;
 			return false;
 		}

@@ -552,7 +552,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch (KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("InsertUpdateDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
+			new ErrorDialog(shell, Messages.getString("InsertUpdateDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
 					Messages.getString("InsertUpdateDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
 		}
 	}
@@ -584,7 +584,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch (KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("InsertUpdateDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
+			new ErrorDialog(shell, Messages.getString("InsertUpdateDialog.FailedToGetFields.DialogTitle"), //$NON-NLS-1$
 					Messages.getString("InsertUpdateDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$
 		}
 	}
@@ -629,7 +629,7 @@ public class InsertUpdateDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch (KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("InsertUpdateDialog.CouldNotBuildSQL.DialogTitle"), //$NON-NLS-1$
+			new ErrorDialog(shell, Messages.getString("InsertUpdateDialog.CouldNotBuildSQL.DialogTitle"), //$NON-NLS-1$
 					Messages.getString("InsertUpdateDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$
 		}
 

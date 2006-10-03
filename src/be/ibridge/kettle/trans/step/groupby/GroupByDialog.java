@@ -479,7 +479,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("GroupByDialog.FailedToGetFields.DialogTitle"), Messages.getString("GroupByDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("GroupByDialog.FailedToGetFields.DialogTitle"), Messages.getString("GroupByDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -506,7 +506,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("GroupByDialog.FailedToGetFields.DialogTitle"), Messages.getString("GroupByDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("GroupByDialog.FailedToGetFields.DialogTitle"), Messages.getString("GroupByDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	

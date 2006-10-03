@@ -46,7 +46,6 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
-import be.ibridge.kettle.trans.step.dimensionlookup.Messages;
 
 /**
  * @author Matt

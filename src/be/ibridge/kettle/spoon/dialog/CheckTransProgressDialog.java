@@ -28,19 +28,26 @@ import be.ibridge.kettle.trans.TransMeta;
  */
 public class CheckTransProgressDialog
 {
-	private Props props;
 	private Shell shell;
 	private TransMeta transMeta;
 	private ArrayList remarks;
 	private boolean onlySelected;
     private Thread parentThread;
 
+    /**
+     * Creates a new dialog that will handle the wait while checking a transformation...
+     * @deprecated please use the variation that doesn't use log nor props
+     */
+    public CheckTransProgressDialog(LogWriter log, Props props, Shell shell, TransMeta transMeta, ArrayList remarks, boolean onlySelected)
+    {
+        this(shell, transMeta, remarks, onlySelected);
+    }
+
 	/**
 	 * Creates a new dialog that will handle the wait while checking a transformation...
 	 */
-	public CheckTransProgressDialog(LogWriter log, Props props, Shell shell, TransMeta transMeta, ArrayList remarks, boolean onlySelected)
+	public CheckTransProgressDialog(Shell shell, TransMeta transMeta, ArrayList remarks, boolean onlySelected)
 	{
-		this.props = props;
 		this.shell = shell;
 		this.transMeta = transMeta;
 		this.onlySelected = onlySelected;
@@ -97,11 +104,11 @@ public class CheckTransProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title"), Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message"), e); // "Error checking transformation","An error occured checking this transformation\!"
+			new ErrorDialog(shell, Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title"), Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message"), e); // "Error checking transformation","An error occured checking this transformation\!"
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title"), Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message"), e); // "Error checking transformation","An error occured checking this transformation\!"
+			new ErrorDialog(shell, Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Title"), Messages.getString("CheckTransProgressDialog.Dialog.ErrorCheckingTransformation.Message"), e); // "Error checking transformation","An error occured checking this transformation\!"
 		}
 	}
 }

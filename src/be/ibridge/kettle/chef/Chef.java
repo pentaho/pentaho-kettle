@@ -647,7 +647,7 @@ public class Chef implements AddUndoPositionInterface
                                 catch(KettleException ke)
                                 {
                                     rep=null;
-                                    new ErrorDialog(shell, props, Messages.getString("Chef.Dialog.UnableToConnectToRepository.Title"), Messages.getString("Chef.Dialog.UnableToConnectToRepository.Message"), ke);
+                                    new ErrorDialog(shell, Messages.getString("Chef.Dialog.UnableToConnectToRepository.Title"), Messages.getString("Chef.Dialog.UnableToConnectToRepository.Message"), ke);
                                 }
 				      		}
 				      		else
@@ -678,7 +678,7 @@ public class Chef implements AddUndoPositionInterface
 			      				catch(KettleException ke)
 								{
 									jobMeta.clear();
-									new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.ErrorLoadingJob.Title"), Messages.getString("Chef.ErrorDialog.ErrorLoadingJob.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+									new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.ErrorLoadingJob.Title"), Messages.getString("Chef.ErrorDialog.ErrorLoadingJob.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 								}
 				      		}
 				      		else
@@ -701,7 +701,7 @@ public class Chef implements AddUndoPositionInterface
 				      		catch(KettleException ke)
 							{
 								jobMeta.clear();
-								new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.UnableToLoadJobFromXML.Title"), Messages.getString("Chef.ErrorDialog.UnableToLoadJobFromXML.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+								new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.UnableToLoadJobFromXML.Title"), Messages.getString("Chef.ErrorDialog.UnableToLoadJobFromXML.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 							}
 				      	}
 
@@ -1287,12 +1287,12 @@ public class Chef implements AddUndoPositionInterface
                     catch(KettleDatabaseException dbe)
                     {
                         
-                        new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.ErrorDeletingConnection.Title"), Messages.getString("Chef.ErrorDialog.ErrorDeletingConnection.Message")+db+Messages.getString("Chef.ErrorDialog.ErrorDeletingConnection.Message2"), dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.ErrorDeletingConnection.Title"), Messages.getString("Chef.ErrorDialog.ErrorDeletingConnection.Message")+db+Messages.getString("Chef.ErrorDialog.ErrorDeletingConnection.Message2"), dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                     }
                 }
                 else
                 {
-                    new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Title"),  Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Message")+db+Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                    new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Title"),  Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Message")+db+Messages.getString("Chef.ErrorDialog.DeleteConnectionUserIsReadOnly.Message2")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
                 }
             }
 
@@ -1350,7 +1350,7 @@ public class Chef implements AddUndoPositionInterface
             catch(KettleException ke)
             {
 				rep=null;
-                new ErrorDialog(shell, props, Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Title"), Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Message1")+Const.CR+Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Message2"), ke); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$  
+                new ErrorDialog(shell, Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Title"), Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Message1")+Const.CR+Messages.getString("Chef.Dialog.ErrorConnectingToTheRepository.Message2"), ke); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$  
 			}
 			
             // Set for the existing databases, the ID's at -1!
@@ -1573,7 +1573,7 @@ public class Chef implements AddUndoPositionInterface
                 RepositoryDirectory repdir = sod.getDirectory();
                 if (fname!=null && repdir!=null)
                 {
-                    JobLoadProgressDialog jlpd = new JobLoadProgressDialog(log, props, shell, rep, fname, repdir);
+                    JobLoadProgressDialog jlpd = new JobLoadProgressDialog(shell, rep, fname, repdir);
                     JobMeta jobInfo = jlpd.open();
                     if (jobInfo!=null)
                     {
@@ -1799,7 +1799,7 @@ public class Chef implements AddUndoPositionInterface
 						jobMeta.modified_date.sysdate();
 						jobMeta.modified_user = rep.getUserInfo().getLogin();
 
-						JobSaveProgressDialog jspd = new JobSaveProgressDialog(log, props, shell, rep, jobMeta);
+						JobSaveProgressDialog jspd = new JobSaveProgressDialog(shell, rep, jobMeta);
 						if (jspd.open())
 						{
 							if (!props.getSaveConfirmation())
@@ -2130,12 +2130,12 @@ public class Chef implements AddUndoPositionInterface
 				}
 				catch(KettleException ke)
 				{
-					new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Title"), Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Message1")+db+Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Message2"), ke);  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+					new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Title"), Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Message1")+db+Messages.getString("Chef.ErrorDialog.ErrorSavingConnection.Message2"), ke);  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 				}
 			}
 			else
 			{
-				new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.ReadOnlyUserErrorSavingConnection.Title"), Messages.getString("Chef.ErrorDialog.ReadOnlyUserErrorSavingConnection.Message"), new KettleException(Messages.getString("Chef.ErrorDialog.ReadOnlyUserErrorSavingConnection.Exception")));  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+				new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.ReadOnlyUserErrorSavingConnection.Title"), Messages.getString("Chef.ErrorDialog.ReadOnlyUserErrorSavingConnection.Message"), new KettleException(Messages.getString("Chef.ErrorDialog.ReadOnlyUserErrorSavingConnection.Exception")));  //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 	}
@@ -2203,7 +2203,7 @@ public class Chef implements AddUndoPositionInterface
 		}
 		catch(Throwable e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.UnexpectedErrorCreatingNewChefGraphEntry.Title"), Messages.getString("Chef.ErrorDialog.UnexpectedErrorCreatingNewChefGraphEntry.Message"),new Exception(e));  //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.UnexpectedErrorCreatingNewChefGraphEntry.Title"), Messages.getString("Chef.ErrorDialog.UnexpectedErrorCreatingNewChefGraphEntry.Message"),new Exception(e));  //$NON-NLS-1$ //$NON-NLS-2$
 			return null;
 		}
 	}
@@ -2245,7 +2245,7 @@ public class Chef implements AddUndoPositionInterface
         }
         catch(Exception e)
         {
-            if (!shell.isDisposed()) new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.ErrorEditingJobEntry.Title"), Messages.getString("Chef.ErrorDialog.ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            if (!shell.isDisposed()) new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.ErrorEditingJobEntry.Title"), Messages.getString("Chef.ErrorDialog.ErrorEditingJobEntry.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
 	}
 
@@ -2390,7 +2390,7 @@ public class Chef implements AddUndoPositionInterface
 		}
 		catch(KettleException e)
 		{
-		    new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.ErrorPasingJobEntries.Title"), Messages.getString("Chef.ErrorDialog.ErrorPasingJobEntries.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+		    new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.ErrorPasingJobEntries.Title"), Messages.getString("Chef.ErrorDialog.ErrorPasingJobEntries.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
@@ -2681,12 +2681,12 @@ public class Chef implements AddUndoPositionInterface
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Title"), Messages.getString("Chef.ErrorDialog.RipDB.ErrorRippingTheDatabase.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			return false;
 		}
 		finally
@@ -3516,7 +3516,7 @@ public class Chef implements AddUndoPositionInterface
 									{
                                         log.logDetailed(APP_NAME, Messages.getString("Chef.Log.AutoLoading")+lastfiles[0]+Messages.getString("Chef.Log.AutoLoading2")+repdir.getPath()+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 										// win.jobinfo = new JobInfo(log, win.rep, lastfiles[0], repdir);
-										JobLoadProgressDialog jlpd = new JobLoadProgressDialog(log, win.props, win.shell, win.rep, lastfiles[0], repdir);
+										JobLoadProgressDialog jlpd = new JobLoadProgressDialog(win.shell, win.rep, lastfiles[0], repdir);
 										JobMeta jobInfo = jlpd.open();
 										if (jobInfo!=null)
 										{

@@ -602,7 +602,7 @@ public class DatabaseLookupDialog extends BaseStepDialog implements StepDialogIn
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("DatabaseLookupDialog.GetFieldsFailed.DialogTitle"), Messages.getString("DatabaseLookupDialog.GetFieldsFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("DatabaseLookupDialog.GetFieldsFailed.DialogTitle"), Messages.getString("DatabaseLookupDialog.GetFieldsFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}

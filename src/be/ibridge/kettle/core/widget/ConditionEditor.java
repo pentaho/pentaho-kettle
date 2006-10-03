@@ -601,14 +601,14 @@ public class ConditionEditor extends Composite
 						    }
 						    else
 						    {
-					            new ErrorDialog(shell, props, "Error", "No condition found in the XML", 
+					            new ErrorDialog(shell, "Error", "No condition found in the XML", 
 					                    new KettleXMLException("No condition found in XML:"+Const.CR+Const.CR+xml)
 					                    );
 						    }
 				        }
 				        catch(KettleXMLException ex)
 				        {
-				            new ErrorDialog(shell, props, "Error", "Error pasting condition", ex);
+				            new ErrorDialog(shell, "Error", "Error pasting condition", ex);
 				        }
 					}
 				});
@@ -634,14 +634,14 @@ public class ConditionEditor extends Composite
 						    }
 						    else
 						    {
-					            new ErrorDialog(shell, props, "Error", "No condition found in the XML", 
+					            new ErrorDialog(shell, "Error", "No condition found in the XML", 
 					                    new KettleXMLException("No condition found in XML:"+Const.CR+Const.CR+xml)
 					                    );
 						    }
 				        }
 				        catch(KettleXMLException ex)
 				        {
-				            new ErrorDialog(shell, props, "Error", "Error pasting condition", ex);
+				            new ErrorDialog(shell, "Error", "Error pasting condition", ex);
 				        }
 					}
 				});

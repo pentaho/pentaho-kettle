@@ -441,7 +441,7 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("ScriptValuesDialog.FailedToGetFields.DialogTitle"), Messages.getString("ScriptValuesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("ScriptValuesDialog.FailedToGetFields.DialogTitle"), Messages.getString("ScriptValuesDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
@@ -613,7 +613,7 @@ public class ScriptValuesDialog extends BaseStepDialog implements StepDialogInte
 		catch(KettleException ke)
 		{
 			retval=false;
-			new ErrorDialog(shell, props, Messages.getString("ScriptValuesDialog.TestFailed.DialogTitle"), Messages.getString("ScriptValuesDialog.TestFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("ScriptValuesDialog.TestFailed.DialogTitle"), Messages.getString("ScriptValuesDialog.TestFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		finally
 		{

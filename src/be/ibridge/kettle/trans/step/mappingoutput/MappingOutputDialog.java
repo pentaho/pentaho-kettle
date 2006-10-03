@@ -300,6 +300,6 @@ public class MappingOutputDialog extends BaseStepDialog implements StepDialogInt
         }
         catch(KettleException ke)
         {
-            new ErrorDialog(shell, props, Messages.getString("MappingOutputDialog.FailedToGetFields.DiaogTitle"), Messages.getString("MappingOutputDialog.FailedToGetFields.DiaogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("MappingOutputDialog.FailedToGetFields.DiaogTitle"), Messages.getString("MappingOutputDialog.FailedToGetFields.DiaogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }}

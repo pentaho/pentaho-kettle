@@ -416,7 +416,7 @@ public class DeleteDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("DeleteDialog.FailedToGetFields.DialogTitle"), Messages.getString("DeleteDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("DeleteDialog.FailedToGetFields.DialogTitle"), Messages.getString("DeleteDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 

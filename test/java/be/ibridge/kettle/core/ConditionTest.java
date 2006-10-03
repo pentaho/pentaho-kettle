@@ -15,8 +15,8 @@
  
 package be.ibridge.kettle.core;
 
-import be.ibridge.kettle.core.value.Value;
 import junit.framework.TestCase;
+import be.ibridge.kettle.core.value.Value;
 
 /**
  * Test class for the basic functionality of Condition.

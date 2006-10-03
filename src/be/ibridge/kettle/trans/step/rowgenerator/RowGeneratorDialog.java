@@ -291,7 +291,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Title"), Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Message"), e);
+            new ErrorDialog(shell, Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Title"), Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Message"), e);
         }
 	}
 	
@@ -351,7 +351,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Title"), Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Message"), e);
+            new ErrorDialog(shell, Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Title"), Messages.getString("RowGeneratorDialog.Illegal.Dialog.Settings.Message"), e);
             return;
         }
         

@@ -727,7 +727,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
                     }
                     catch(KettleException ex)
                     {
-                        new ErrorDialog(shell, props, Messages.getString("XMLInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), ex);
+                        new ErrorDialog(shell, Messages.getString("XMLInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), ex);
                     }
 				}
 			}
@@ -945,7 +945,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("XMLInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), e);
+            new ErrorDialog(shell, Messages.getString("XMLInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), e);
         }
 		dispose();
 	}
@@ -1110,7 +1110,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("XMLInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), e);
+            new ErrorDialog(shell, Messages.getString("XMLInputDialog.ErrorParsingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorParsingData.DialogMessage"), e);
         }
 	}
     
@@ -1274,7 +1274,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("XMLInputDialog.ErrorPreviewingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorPreviewingData.DialogMessage"), e);
+            new ErrorDialog(shell, Messages.getString("XMLInputDialog.ErrorPreviewingData.DialogTitle"), Messages.getString("XMLInputDialog.ErrorPreviewingData.DialogMessage"), e);
        }
 	}
 

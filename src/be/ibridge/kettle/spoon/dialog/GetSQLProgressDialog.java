@@ -28,17 +28,24 @@ import be.ibridge.kettle.trans.TransMeta;
  */
 public class GetSQLProgressDialog
 {
-	private Props props;
 	private Shell shell;
 	private TransMeta transMeta;
 	private ArrayList stats;
-	
+
+    /**
+     * Creates a new dialog that will handle the wait while getting the SQL for a transformation...
+     * @deprecated please use the constructor version without log or props
+     */
+    public GetSQLProgressDialog(LogWriter log, Props props, Shell shell, TransMeta transMeta)
+    {
+        this(shell, transMeta);
+    }
+    
 	/**
 	 * Creates a new dialog that will handle the wait while getting the SQL for a transformation...
 	 */
-	public GetSQLProgressDialog(LogWriter log, Props props, Shell shell, TransMeta transMeta)
+	public GetSQLProgressDialog(Shell shell, TransMeta transMeta)
 	{
-		this.props = props;
 		this.shell = shell;
 		this.transMeta = transMeta;
 	}
@@ -71,12 +78,12 @@ public class GetSQLProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Title"), Messages.getString("GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Message"), e); //"Error generating SQL for transformation","An error occured generating the SQL for this transformation\!"
+			new ErrorDialog(shell, Messages.getString("GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Title"), Messages.getString("GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Message"), e); //"Error generating SQL for transformation","An error occured generating the SQL for this transformation\!"
 			stats = null;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Title"), Messages.getString("GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Message"), e); //"Error generating SQL for transformation","An error occured generating the SQL for this transformation\!"
+			new ErrorDialog(shell, Messages.getString("GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Title"), Messages.getString("GetSQLProgressDialog.Dialog.UnableToGenerateSQL.Message"), e); //"Error generating SQL for transformation","An error occured generating the SQL for this transformation\!"
 			stats = null;
 		}
 

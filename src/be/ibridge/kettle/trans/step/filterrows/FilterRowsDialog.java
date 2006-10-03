@@ -203,7 +203,7 @@ public class FilterRowsDialog extends BaseStepDialog implements StepDialogInterf
 		catch(KettleException ke)
 		{
 			inputfields = new Row();
-			new ErrorDialog(shell, props, Messages.getString("FilterRowsDialog.FailedToGetFields.DialogTitle"), Messages.getString("FilterRowsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("FilterRowsDialog.FailedToGetFields.DialogTitle"), Messages.getString("FilterRowsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		// Some buttons

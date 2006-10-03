@@ -418,7 +418,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogTitle"), Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogTitle"), Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
     
@@ -445,7 +445,7 @@ public class MergeRowsDialog extends BaseStepDialog implements StepDialogInterfa
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogTitle"), Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogTitle"), Messages.getString("MergeRowsDialog.ErrorGettingFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
     }
 }

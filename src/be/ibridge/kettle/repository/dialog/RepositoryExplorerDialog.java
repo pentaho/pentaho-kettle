@@ -464,7 +464,7 @@ public class RepositoryExplorerDialog extends Dialog
                     }
                     catch(Throwable e)
                     {
-                        new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Drop.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Drop.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Drop.UnexpectedError.Message2"), new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Drop.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Drop.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Drop.UnexpectedError.Message2"), new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
                     }
     			}
     
@@ -493,7 +493,7 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(Throwable e)
         {
-            new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Message2")+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Message3"), new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Message1")+debug+"]"+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Message2")+Const.CR+Messages.getString("RepositoryExplorerDialog.Dialog.Main.UnexpectedError.Message3"), new Exception(e)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         }
 		return objectName;
 
@@ -949,7 +949,7 @@ public class RepositoryExplorerDialog extends Dialog
 	    }
 	    catch(KettleException e)
 	    {
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.PopupMenu.Dialog.ErrorCommitingChanges.Title"), Messages.getString("RepositoryExplorerDialog.PopupMenu.Dialog.ErrorCommitingChanges.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.PopupMenu.Dialog.ErrorCommitingChanges.Title"), Messages.getString("RepositoryExplorerDialog.PopupMenu.Dialog.ErrorCommitingChanges.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 	    }
 		dispose();
 	}
@@ -1041,7 +1041,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException dbe)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.PopupMenu.Dialog.ErrorRefreshingTree.Title"), Messages.getString("RepositoryExplorerDialog.PopupMenu.Dialog.ErrorRefreshingTree.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.PopupMenu.Dialog.ErrorRefreshingTree.Title"), Messages.getString("RepositoryExplorerDialog.PopupMenu.Dialog.ErrorRefreshingTree.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
@@ -1095,7 +1095,7 @@ public class RepositoryExplorerDialog extends Dialog
 					}
 					catch(KettleDatabaseException dbe)
 					{
-						new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorRemoving.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorRemoving.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+						new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorRemoving.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorRemoving.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 						error=true;
 					}
 				}
@@ -1116,7 +1116,7 @@ public class RepositoryExplorerDialog extends Dialog
 			}
 			catch(KettleDatabaseException dbe)
 			{
-				new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorDeleting.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorDeleting.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+				new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorDeleting.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Delete.ErrorDeleting.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 				error=true;
 			}
 		}
@@ -1215,7 +1215,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException dbe)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorRenaming.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorRenaming.Message")+name+"]!", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorRenaming.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Rename.ErrorRenaming.Message")+name+"]!", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
 		return retval;
@@ -1258,7 +1258,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(Exception dbe)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnexpectedError.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnexpectedError.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		return retval;
@@ -1301,7 +1301,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(Exception dbe)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnexpectedError.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Trans.Move.UnexpectedError.Message"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		return retval;
@@ -1400,7 +1400,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException dbe)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Job.Move.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 
 		return retval;
@@ -1440,7 +1440,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Job.Delete.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			error=true;
 		}
 			
@@ -1532,7 +1532,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException dbe)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Job.Rename.UnexpectedError.Message")+name+"]", dbe); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
 		return retval;
@@ -1563,7 +1563,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.User.Edit.UnexpectedError.Message.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.Edit.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.User.Edit.UnexpectedError.Message.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.Edit.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -1595,7 +1595,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.User.New.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.New.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.User.New.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.New.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -1611,7 +1611,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.User.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.User.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		refreshTree();
@@ -1707,7 +1707,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.User.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.Rename.UnexpectedError.Message")+name+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.User.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.User.Rename.UnexpectedError.Message")+name+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
 		return retval;
@@ -1804,7 +1804,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Rename.UnexpectedError.Message")+name+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Rename.UnexpectedError.Message")+name+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 		
 		return retval;
@@ -1838,7 +1838,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Edit.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Edit.UnexpectedError.Message")+databasename+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Edit.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Edit.UnexpectedError.Message")+databasename+"]", e); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 
@@ -1870,7 +1870,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -1888,7 +1888,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -1984,7 +1984,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Rename.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Connection.Rename.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		
 		return retval;
@@ -2074,7 +2074,7 @@ public class RepositoryExplorerDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Rename.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
 		return retval;
@@ -2159,7 +2159,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Edit.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Edit.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Edit.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Edit.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -2192,7 +2192,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Create.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Create.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Create.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
@@ -2211,7 +2211,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Delete.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.Profile.Delete.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	
@@ -2258,7 +2258,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, 
+			new ErrorDialog(shell,
 					Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Delete.ErrorRemoving.Title"), //$NON-NLS-1$
 					Messages.getString("RepositoryExplorerDialog.Dialog.Directory.Delete.ErrorRemoving.Message1"), //$NON-NLS-1$
 					e
@@ -2314,7 +2314,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.ExportTrans.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.ExportTrans.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.ExportTrans.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.ExportTrans.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
@@ -2367,7 +2367,7 @@ public class RepositoryExplorerDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("RepositoryExplorerDialog.Dialog.ExportJobs.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.ExportJobs.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("RepositoryExplorerDialog.Dialog.ExportJobs.UnexpectedError.Title"), Messages.getString("RepositoryExplorerDialog.Dialog.ExportJobs.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 	

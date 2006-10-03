@@ -386,7 +386,7 @@ public class ChefLog extends Composite
 					}
 					catch(KettleException e)
 					{
-						new ErrorDialog(shell, chef.props, Messages.getString("ChefLog.Dialog.CanNotOpenJob.Title"), Messages.getString("ChefLog.Dialog.CanNotOpenJob.Message"), e);  //$NON-NLS-1$ //$NON-NLS-2$
+						new ErrorDialog(shell, Messages.getString("ChefLog.Dialog.CanNotOpenJob.Title"), Messages.getString("ChefLog.Dialog.CanNotOpenJob.Message"), e);  //$NON-NLS-1$ //$NON-NLS-2$
 						job=null;
 					}
 				}

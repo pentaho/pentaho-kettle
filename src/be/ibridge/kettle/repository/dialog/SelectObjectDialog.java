@@ -178,7 +178,7 @@ public class SelectObjectDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Title"), 
+            new ErrorDialog(shell, Messages.getString("SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Title"), 
                     Messages.getString("SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
@@ -214,7 +214,7 @@ public class SelectObjectDialog extends Dialog
         }
         catch(KettleDatabaseException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("SelectObjectDialog.Dialog.UnexpectedError.Title"), Messages.getString("SelectObjectDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("SelectObjectDialog.Dialog.UnexpectedError.Title"), Messages.getString("SelectObjectDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
 	}
 	

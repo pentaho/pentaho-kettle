@@ -548,7 +548,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("UpdateDialog.FailedToGetFields.DialogTitle"), Messages.getString("UpdateDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("UpdateDialog.FailedToGetFields.DialogTitle"), Messages.getString("UpdateDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -578,7 +578,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("UpdateDialog.FailedToGetFields.DialogTitle"), Messages.getString("UpdateDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("UpdateDialog.FailedToGetFields.DialogTitle"), Messages.getString("UpdateDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}
@@ -622,7 +622,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("UpdateDialog.CouldNotBuildSQL.DialogTitle"), Messages.getString("UpdateDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("UpdateDialog.CouldNotBuildSQL.DialogTitle"), Messages.getString("UpdateDialog.CouldNotBuildSQL.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}

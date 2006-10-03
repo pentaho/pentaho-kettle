@@ -279,7 +279,7 @@ public class NormaliserDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("NormaliserDialog.FailedToGetFields.DialogTitle"), Messages.getString("NormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("NormaliserDialog.FailedToGetFields.DialogTitle"), Messages.getString("NormaliserDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 }

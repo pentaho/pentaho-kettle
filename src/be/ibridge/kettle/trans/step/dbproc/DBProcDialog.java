@@ -196,7 +196,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 					}
 					catch(KettleDatabaseException dbe)
 					{
-						new ErrorDialog(shell, props, Messages.getString("DBProcDialog.ErrorGettingProceduresList.DialogTitle"), Messages.getString("DBProcDialog.ErrorGettingProceduresList.DialogMessage"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
+						new ErrorDialog(shell, Messages.getString("DBProcDialog.ErrorGettingProceduresList.DialogTitle"), Messages.getString("DBProcDialog.ErrorGettingProceduresList.DialogMessage"), dbe); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 					finally
 					{
@@ -471,7 +471,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("DBProcDialog.FailedToGetFields.DialogTitle"), Messages.getString("DBProcDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("DBProcDialog.FailedToGetFields.DialogTitle"), Messages.getString("DBProcDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}

@@ -335,7 +335,7 @@ public class UniqueRowsDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("UniqueRowsDialog.FailedToGetFields.DialogTitle"), Messages.getString("UniqueRowsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("UniqueRowsDialog.FailedToGetFields.DialogTitle"), Messages.getString("UniqueRowsDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 

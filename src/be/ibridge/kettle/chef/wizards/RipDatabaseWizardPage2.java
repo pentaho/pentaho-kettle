@@ -397,7 +397,7 @@ public class RipDatabaseWizardPage2 extends WizardPage
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			new ErrorDialog(shell, props, "Error getting tables", "Error obtaining table list from database!", dbe);
+			new ErrorDialog(shell, "Error getting tables", "Error obtaining table list from database!", dbe);
 			input = null;
 			return false;
 		}

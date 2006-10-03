@@ -418,7 +418,7 @@ public class RepositoryImportProgressDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error importing repository objects", "There was an error while importing repository objects from an XML file", e);
+			new ErrorDialog(shell, "Error importing repository objects", "There was an error while importing repository objects from an XML file", e);
 		}
 	}
 }

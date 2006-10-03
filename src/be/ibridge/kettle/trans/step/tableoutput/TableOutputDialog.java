@@ -797,7 +797,7 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("TableOutputDialog.BuildSQLError.DialogTitle"), Messages.getString("TableOutputDialog.BuildSQLError.DialogMessage"), ke);
+			new ErrorDialog(shell, Messages.getString("TableOutputDialog.BuildSQLError.DialogTitle"), Messages.getString("TableOutputDialog.BuildSQLError.DialogMessage"), ke);
 		}
 	}
 

@@ -67,15 +67,31 @@ public class ErrorDialog extends Dialog
 	private SelectionAdapter lsDef;
 	private Props props;
 	
+    /**
+     * @deprecated it is not longer required to specify the Props object (it's a singleton now)
+     */
 	public ErrorDialog(Shell parent, Props props, String title, String message)
 	{
-		this(parent, props, title, message, null);
+		this(parent, title, message, null);
 	}
 
-	public ErrorDialog(Shell parent, Props props, String title, String message, Exception exception)
+    public ErrorDialog(Shell parent, String title, String message)
+    {
+        this(parent, title, message, null);
+    }
+
+    /**
+     * @deprecated it is not longer required to specify the Props object (it's a singleton now)
+     */
+    public ErrorDialog(Shell parent, Props props, String title, String message, Exception exception)
+    {
+        this(parent, title, message, exception);
+    }
+
+	public ErrorDialog(Shell parent, String title, String message, Exception exception)
 	{
 		super(parent, SWT.NONE);
-		this.props     = props;
+		this.props = Props.getInstance();
 
 		Display display  = parent.getDisplay();
 		final Color gray = GUIResource.getInstance().getColorLightGray();

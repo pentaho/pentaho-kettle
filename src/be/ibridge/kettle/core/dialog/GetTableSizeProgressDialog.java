@@ -26,7 +26,6 @@ import be.ibridge.kettle.core.exception.KettleException;
  */
 public class GetTableSizeProgressDialog
 {
-	private Props props;
 	private Shell shell;
 	private DatabaseMeta dbMeta;
 	private String tableName;
@@ -35,12 +34,20 @@ public class GetTableSizeProgressDialog
 	private Database db;
     private Thread parentThread;
 
+    /**
+     * Creates a new dialog that will handle the wait while we're doing the hard work.
+     * @deprecated please use the constructor version without log or props
+     */
+    public GetTableSizeProgressDialog(LogWriter log, Props props, Shell shell, DatabaseMeta dbInfo, String tableName)
+    {
+        this(shell, dbInfo, tableName);
+    }
+    
 	/**
 	 * Creates a new dialog that will handle the wait while we're doing the hard work.
 	 */
-	public GetTableSizeProgressDialog(LogWriter log, Props props, Shell shell, DatabaseMeta dbInfo, String tableName)
+	public GetTableSizeProgressDialog(Shell shell, DatabaseMeta dbInfo, String tableName)
 	{
-		this.props = props;
 		this.shell = shell;
 		this.dbMeta = dbInfo;
 		this.tableName = tableName;
@@ -107,12 +114,12 @@ public class GetTableSizeProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, "Error getting information", "An error occured getting information from the database!", e);
+			new ErrorDialog(shell, "Error getting information", "An error occured getting information from the database!", e);
 			return null;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, "Error getting information", "An error occured getting information from the database!", e);
+			new ErrorDialog(shell, "Error getting information", "An error occured getting information from the database!", e);
 			return null;
 		}
 		

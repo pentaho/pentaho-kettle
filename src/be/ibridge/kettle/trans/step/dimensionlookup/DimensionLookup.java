@@ -31,7 +31,6 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
-import be.ibridge.kettle.trans.step.dimensionlookup.Messages;
 
 
 /**

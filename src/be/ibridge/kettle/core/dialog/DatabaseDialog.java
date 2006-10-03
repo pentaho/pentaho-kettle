@@ -922,7 +922,7 @@ public class DatabaseDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, "Error!", "Unable to get the help text.  Please make sure all required parameters are entered correctly!", e);
+            new ErrorDialog(shell, "Error!", "Unable to get the help text.  Please make sure all required parameters are entered correctly!", e);
         }
     }
 
@@ -1228,7 +1228,7 @@ public class DatabaseDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error!", "Please make sure all required parameters are entered correctly!", e);
+			new ErrorDialog(shell, "Error!", "Please make sure all required parameters are entered correctly!", e);
 		}
 	}
 	
@@ -1248,7 +1248,7 @@ public class DatabaseDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error", "Unable to get the connection information", e);
+			new ErrorDialog(shell, "Error", "Unable to get the connection information", e);
 		}		
 	}
 	/**
@@ -1273,7 +1273,7 @@ public class DatabaseDialog extends Dialog
 			{
 				// e.printStackTrace();
 
-				new ErrorDialog(shell, props, "Error!", "An error occurred connecting to the database: ", e);
+				new ErrorDialog(shell, "Error!", "An error occurred connecting to the database: ", e);
 			}
 			finally
 			{
@@ -1303,7 +1303,7 @@ public class DatabaseDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, props, "Error!", "Please make sure all required parameters are entered correctly!", e);
+			new ErrorDialog(shell, "Error!", "Please make sure all required parameters are entered correctly!", e);
 		}
 	}
     
@@ -1320,7 +1320,7 @@ public class DatabaseDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, "Error!", "Unable to get feature list.  Please make sure all required parameters are entered correctly!", e);
+            new ErrorDialog(shell, "Error!", "Unable to get feature list.  Please make sure all required parameters are entered correctly!", e);
         }
 
     }

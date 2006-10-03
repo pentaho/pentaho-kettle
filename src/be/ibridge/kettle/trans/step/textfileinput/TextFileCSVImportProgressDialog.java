@@ -39,8 +39,6 @@ import be.ibridge.kettle.core.value.Value;
  */
 public class TextFileCSVImportProgressDialog
 {
-    private Props             props;
-
     private Shell             shell;
 
     private TextFileInputMeta meta;
@@ -58,10 +56,11 @@ public class TextFileCSVImportProgressDialog
     private InputStreamReader reader;
     
     private Thread parentThread;  
-    
+
     /**
      * Creates a new dialog that will handle the wait while we're finding out what tables, views etc we can reach in the
      * database.
+     * @deprecated please use the constructor version without log or props
      */
     public TextFileCSVImportProgressDialog( LogWriter log, 
                                             Props props, 
@@ -72,7 +71,15 @@ public class TextFileCSVImportProgressDialog
                                             int clearFields
                                           )
     {
-        this.props = props;
+        this(shell, meta, reader, samples, clearFields);
+    }
+    
+    /**
+     * Creates a new dialog that will handle the wait while we're finding out what tables, views etc we can reach in the
+     * database.
+     */
+    public TextFileCSVImportProgressDialog( Shell shell, TextFileInputMeta meta, InputStreamReader reader, int samples, int clearFields )
+    {
         this.shell = shell;
         this.meta = meta;
         this.reader = reader;
@@ -113,11 +120,11 @@ public class TextFileCSVImportProgressDialog
         }
         catch (InvocationTargetException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("TextFileCSVImportProgressDialog.ErrorScanningFile.Title"), Messages.getString("TextFileCSVImportProgressDialog.ErrorScanningFile.Message"), e);
+            new ErrorDialog(shell, Messages.getString("TextFileCSVImportProgressDialog.ErrorScanningFile.Title"), Messages.getString("TextFileCSVImportProgressDialog.ErrorScanningFile.Message"), e);
         }
         catch (InterruptedException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("TextFileCSVImportProgressDialog.ErrorScanningFile.Title"), Messages.getString("TextFileCSVImportProgressDialog.ErrorScanningFile.Message"), e);
+            new ErrorDialog(shell, Messages.getString("TextFileCSVImportProgressDialog.ErrorScanningFile.Title"), Messages.getString("TextFileCSVImportProgressDialog.ErrorScanningFile.Message"), e);
         }
   
         return message;

@@ -29,18 +29,25 @@ import be.ibridge.kettle.trans.TransMeta;
  */
 public class TransSaveProgressDialog
 {
-	private Props props;
 	private Shell shell;
 	private Repository rep;
 	private TransMeta transInfo;
     private Thread parentThread;
 	
+    /**
+     * Creates a new dialog that will handle the wait while saving a transformation...
+     * @deprecated please use the constructor version without log or props
+     */
+    public TransSaveProgressDialog(LogWriter log, Props props, Shell shell, Repository rep, TransMeta transInfo)
+    {
+        this(shell, rep, transInfo);
+    }
+    
 	/**
 	 * Creates a new dialog that will handle the wait while saving a transformation...
 	 */
-	public TransSaveProgressDialog(LogWriter log, Props props, Shell shell, Repository rep, TransMeta transInfo)
+	public TransSaveProgressDialog(Shell shell, Repository rep, TransMeta transInfo)
 	{
-		this.props = props;
 		this.shell = shell;
 		this.rep = rep;
 		this.transInfo = transInfo;
@@ -77,12 +84,12 @@ public class TransSaveProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle"), Messages.getString("TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle"), Messages.getString("TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			retval=false;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle"), Messages.getString("TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("TransSaveProgressDialog.ErrorSavingTransformation.DialogTitle"), Messages.getString("TransSaveProgressDialog.ErrorSavingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			retval=false;
 		}
 

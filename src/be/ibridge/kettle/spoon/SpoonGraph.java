@@ -803,7 +803,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                     }
                     catch(Exception e)
                     {
-                    	new ErrorDialog(shell, spoon.props, Messages.getString("SpoonGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("SpoonGraph.Dialog.ErrorDroppingObject.Title"), e);
+                    	new ErrorDialog(shell, Messages.getString("SpoonGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("SpoonGraph.Dialog.ErrorDroppingObject.Title"), e);
                     }
                 }
     
@@ -1339,7 +1339,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                     }
                     catch(Exception ex)
                     {
-                        new ErrorDialog(shell, spoon.props, Messages.getString("SpoonGraph.Dialog.ErrorDuplicatingStep.Title"), Messages.getString("SpoonGraph.Dialog.ErrorDuplicatingStep.Message"), ex); //$NON-NLS-1$ //$NON-NLS-2$
+                        new ErrorDialog(shell, Messages.getString("SpoonGraph.Dialog.ErrorDuplicatingStep.Title"), Messages.getString("SpoonGraph.Dialog.ErrorDuplicatingStep.Message"), ex); //$NON-NLS-1$ //$NON-NLS-2$
                     }
                 }
             });
@@ -1716,11 +1716,11 @@ public class SpoonGraph extends Canvas implements Redrawable
         }
         catch (InvocationTargetException e)
         {
-            new ErrorDialog(shell, spoon.props, Messages.getString("SpoonGraph.Dialog.GettingFields.Title"), Messages.getString("SpoonGraph.Dialog.GettingFields.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("SpoonGraph.Dialog.GettingFields.Title"), Messages.getString("SpoonGraph.Dialog.GettingFields.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
         catch (InterruptedException e)
         {
-            new ErrorDialog(shell, spoon.props, Messages.getString("SpoonGraph.Dialog.GettingFields.Title"), Messages.getString("SpoonGraph.Dialog.GettingFields.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("SpoonGraph.Dialog.GettingFields.Title"), Messages.getString("SpoonGraph.Dialog.GettingFields.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         Row fields = op.getFields();

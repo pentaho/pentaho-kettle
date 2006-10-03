@@ -2354,7 +2354,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
                     {
                         getInfo(meta);
 
-    			        TextFileCSVImportProgressDialog pd = new TextFileCSVImportProgressDialog(log, props, shell, meta, reader, samples, clearFields);
+    			        TextFileCSVImportProgressDialog pd = new TextFileCSVImportProgressDialog(shell, meta, reader, samples, clearFields);
                         String message = pd.open();
                         if (message!=null)
                         {
@@ -2380,11 +2380,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			}
 			catch(IOException e)
 			{
-                new ErrorDialog(shell, props, Messages.getString("TextFileInputDialog.IOError.DialogTitle"), Messages.getString("TextFileInputDialog.IOError.DialogMessage"), e);
+                new ErrorDialog(shell, Messages.getString("TextFileInputDialog.IOError.DialogTitle"), Messages.getString("TextFileInputDialog.IOError.DialogMessage"), e);
 			}
             catch(KettleException e)
             {
-                new ErrorDialog(shell, props, Messages.getString("System.Dialog.Error.Title"), Messages.getString("TextFileInputDialog.ErrorGettingFileDesc.DialogMessage"), e);
+                new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("TextFileInputDialog.ErrorGettingFileDesc.DialogMessage"), e);
             }
 			finally
 			{
@@ -2555,7 +2555,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         }
 		catch(KettleException e)
 		{
-            new ErrorDialog(shell, props, Messages.getString("System.Dialog.Error.Title"), Messages.getString("TextFileInputDialog.ErrorGettingData.DialogMessage"), e);
+            new ErrorDialog(shell, Messages.getString("System.Dialog.Error.Title"), Messages.getString("TextFileInputDialog.ErrorGettingData.DialogMessage"), e);
 		}
 	}
 	
@@ -2738,7 +2738,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         }
         catch(Exception e)
         {
-            new ErrorDialog(shell, props, Messages.getString("TextFileInputDialog.ErrorShowingFixedWizard.DialogTitle"), Messages.getString("TextFileInputDialog.ErrorShowingFixedWizard.DialogMessage"), e);
+            new ErrorDialog(shell, Messages.getString("TextFileInputDialog.ErrorShowingFixedWizard.DialogTitle"), Messages.getString("TextFileInputDialog.ErrorShowingFixedWizard.DialogMessage"), e);
         }
 	}
 	

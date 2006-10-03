@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
-import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.logging.Log4jStringAppender;
@@ -105,12 +104,12 @@ public class TransPreviewProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, Props.getInstance(), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			transMeta = null;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, Props.getInstance(), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogTitle"), Messages.getString("TransPreviewProgressDialog.ErrorLoadingTransformation.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
 			transMeta = null;
 		}
 

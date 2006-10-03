@@ -421,7 +421,7 @@ public class ExecSQLDialog extends BaseStepDialog implements StepDialogInterface
         }
         catch(KettleException ke)
         {
-            new ErrorDialog(shell, props, Messages.getString("ExecSQLDialog.FailedToGetFields.DialogTitle"), Messages.getString("ExecSQLDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+            new ErrorDialog(shell, Messages.getString("ExecSQLDialog.FailedToGetFields.DialogTitle"), Messages.getString("ExecSQLDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
     }

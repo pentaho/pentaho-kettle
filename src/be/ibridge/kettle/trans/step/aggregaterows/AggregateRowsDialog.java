@@ -289,7 +289,7 @@ public class AggregateRowsDialog extends BaseStepDialog implements StepDialogInt
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("AggregateRowsDialog.GetFieldsFailed.DialogTitle"), Messages.getString("AggregateRowsDialog.GetFieldsFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("AggregateRowsDialog.GetFieldsFailed.DialogTitle"), Messages.getString("AggregateRowsDialog.GetFieldsFailed.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 }

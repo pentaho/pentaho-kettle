@@ -124,7 +124,7 @@ public class SelectDirectoryDialog extends Dialog
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, props, Messages.getString("SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Title"), 
+            new ErrorDialog(shell, Messages.getString("SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Title"), 
                     Messages.getString("SelectDirectoryDialog.Dialog.ErrorRefreshingDirectoryTree.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
             return null;
         }

@@ -29,18 +29,25 @@ import be.ibridge.kettle.repository.Repository;
  */
 public class JobSaveProgressDialog
 {
-	private Props props;
 	private Shell shell;
 	private Repository rep;
 	private JobMeta jobInfo;
     private Thread parentThread;
 	
+    /**
+     * Creates a new dialog that will handle the wait while saving a job...
+     * @deprecated please use the constructor version without log or props
+     */
+    public JobSaveProgressDialog(LogWriter log, Props props, Shell shell, Repository rep, JobMeta jobInfo)
+    {
+        this(shell, rep, jobInfo);
+    }
+    
 	/**
 	 * Creates a new dialog that will handle the wait while saving a job...
 	 */
-	public JobSaveProgressDialog(LogWriter log, Props props, Shell shell, Repository rep, JobMeta jobInfo)
+	public JobSaveProgressDialog(Shell shell, Repository rep, JobMeta jobInfo)
 	{
-		this.props = props;
 		this.shell = shell;
 		this.rep = rep;
 		this.jobInfo = jobInfo;
@@ -77,12 +84,12 @@ public class JobSaveProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, "Error saving job", "An error occured saving the job!", e);
+			new ErrorDialog(shell, "Error saving job", "An error occured saving the job!", e);
 			retval=false;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, "Error saving job", "An error occured saving the job!", e);
+			new ErrorDialog(shell, "Error saving job", "An error occured saving the job!", e);
 			retval=false;
 		}
 

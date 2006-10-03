@@ -673,7 +673,7 @@ public class ChefGraph extends Canvas implements Redrawable
 				}
                 catch(Exception e)
                 {
-                    new ErrorDialog(shell, chef.props, Messages.getString("ChefGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("Chefraph.Dialog.ErrorDroppingObject.Title"), e);
+                    new ErrorDialog(shell, Messages.getString("ChefGraph.Dialog.ErrorDroppingObject.Message"), Messages.getString("Chefraph.Dialog.ErrorDroppingObject.Title"), e);
                 }
             }
             

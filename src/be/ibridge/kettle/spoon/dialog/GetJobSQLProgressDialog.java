@@ -13,7 +13,6 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.swt.widgets.Shell;
 
-import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.job.JobMeta;
@@ -28,7 +27,6 @@ import be.ibridge.kettle.repository.Repository;
  */
 public class GetJobSQLProgressDialog
 {
-	private Props props;
 	private Shell shell;
 	private JobMeta jobMeta;
 	private ArrayList stats;
@@ -40,7 +38,6 @@ public class GetJobSQLProgressDialog
 	 */
 	public GetJobSQLProgressDialog(Shell shell, JobMeta jobMeta, Repository repository)
 	{
-		this.props = Props.getInstance();
 		this.shell = shell;
 		this.jobMeta = jobMeta;
         this.repository = repository;
@@ -75,12 +72,12 @@ public class GetJobSQLProgressDialog
 		}
 		catch (InvocationTargetException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Title"), Messages.getString("GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Message"), e); //"Error generating SQL for job","An error occured generating the SQL for this job\!"
+			new ErrorDialog(shell, Messages.getString("GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Title"), Messages.getString("GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Message"), e); //"Error generating SQL for job","An error occured generating the SQL for this job\!"
 			stats = null;
 		}
 		catch (InterruptedException e)
 		{
-			new ErrorDialog(shell, props, Messages.getString("GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Title"), Messages.getString("GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Message"), e); //"Error generating SQL for job","An error occured generating the SQL for this job\!"
+			new ErrorDialog(shell, Messages.getString("GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Title"), Messages.getString("GetJobSQLProgressDialog.Dialog.UnableToGenerateSQL.Message"), e); //"Error generating SQL for job","An error occured generating the SQL for this job\!"
 			stats = null;
 		}
 

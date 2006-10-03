@@ -238,7 +238,7 @@ public class DatabaseExplorerDialog extends Dialog
 	
 	private boolean getData()
 	{
-		GetDatabaseInfoProgressDialog gdipd = new GetDatabaseInfoProgressDialog(log, props, shell, dbMeta);
+		GetDatabaseInfoProgressDialog gdipd = new GetDatabaseInfoProgressDialog(shell, dbMeta);
 		DatabaseMetaInformation dmi = gdipd.open();
 		if (dmi!=null)
 		{
@@ -438,7 +438,7 @@ public class DatabaseExplorerDialog extends Dialog
 			if (samples>=0) limit=samples;
 		}
 
-	    GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(log, props, shell, dbMeta, tableName, limit);
+	    GetPreviewTableProgressDialog pd = new GetPreviewTableProgressDialog(shell, dbMeta, tableName, limit);
 	    List rows = pd.open();
 	    if (rows!=null) // otherwise an already shown error...
 	    {
@@ -466,7 +466,7 @@ public class DatabaseExplorerDialog extends Dialog
 	public void showTable(String tableName)
 	{
 	    String sql = dbMeta.getSQLQueryFields(tableName);
-	    GetQueryFieldsProgressDialog pd = new GetQueryFieldsProgressDialog(log, props, shell, dbMeta, sql);
+	    GetQueryFieldsProgressDialog pd = new GetQueryFieldsProgressDialog(shell, dbMeta, sql);
 	    Row result = pd.open();         
 		if (result!=null)
 		{
@@ -477,7 +477,7 @@ public class DatabaseExplorerDialog extends Dialog
 
 	public void showCount(String tableName)
 	{
-	    GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(log, props, shell, dbMeta, tableName);
+	    GetTableSizeProgressDialog pd = new GetTableSizeProgressDialog(shell, dbMeta, tableName);
 		Row r = pd.open();
 		if (r!=null)
 		{
@@ -501,7 +501,7 @@ public class DatabaseExplorerDialog extends Dialog
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			new ErrorDialog(shell, props, "Error", "Couldn't retrieve the table layout.", dbe);
+			new ErrorDialog(shell, "Error", "Couldn't retrieve the table layout.", dbe);
 		}
 		finally
 		{
@@ -544,7 +544,7 @@ public class DatabaseExplorerDialog extends Dialog
     		}
     		catch(KettleDatabaseException dbe)
     		{
-    			new ErrorDialog(shell, props, "Error", "Couldn't generate the DDL", dbe);
+    			new ErrorDialog(shell, "Error", "Couldn't generate the DDL", dbe);
     		}
     		finally
     		{

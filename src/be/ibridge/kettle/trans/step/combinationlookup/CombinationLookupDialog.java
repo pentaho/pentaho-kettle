@@ -62,7 +62,6 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
-import be.ibridge.kettle.trans.step.combinationlookup.Messages;
 
 
 public class CombinationLookupDialog extends BaseStepDialog implements StepDialogInterface
@@ -770,7 +769,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("CombinationLookupDialog.UnableToGetFieldsError.DialogTitle"), Messages.getString("CombinationLookupDialog.UnableToGetFieldsError.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("CombinationLookupDialog.UnableToGetFieldsError.DialogTitle"), Messages.getString("CombinationLookupDialog.UnableToGetFieldsError.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -814,7 +813,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("CombinationLookupDialog.UnableToCreateSQL.DialogTitle"), Messages.getString("CombinationLookupDialog.UnableToCreateSQL.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("CombinationLookupDialog.UnableToCreateSQL.DialogTitle"), Messages.getString("CombinationLookupDialog.UnableToCreateSQL.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 

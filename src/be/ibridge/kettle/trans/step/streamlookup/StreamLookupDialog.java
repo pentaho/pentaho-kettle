@@ -400,7 +400,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("StreamLookupDialog.FailedToGetFields.DialogTitle"), Messages.getString("StreamLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("StreamLookupDialog.FailedToGetFields.DialogTitle"), Messages.getString("StreamLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	}
 
@@ -446,7 +446,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		}
 		catch(KettleException ke)
 		{
-			new ErrorDialog(shell, props, Messages.getString("StreamLookupDialog.FailedToGetFields.DialogTitle"), Messages.getString("StreamLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
+			new ErrorDialog(shell, Messages.getString("StreamLookupDialog.FailedToGetFields.DialogTitle"), Messages.getString("StreamLookupDialog.FailedToGetFields.DialogMessage"), ke); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 	}

@@ -28,17 +28,24 @@ import be.ibridge.kettle.repository.Repository;
  */
 public class UpgradeRepositoryProgressDialog
 {
-	private Props props;
 	private Shell shell;
 	private Repository rep;
 	private boolean upgrade;
-	
+
+    /**
+     * Creates a new dialog that will handle the wait while upgrading or creating a repository...
+     * @deprecated please use the constructor version without log or props
+     */
+    public UpgradeRepositoryProgressDialog(LogWriter log, Props props, Shell shell, Repository rep, boolean upgrade)
+    {
+        this(shell, rep, upgrade);
+    }
+    
 	/**
 	 * Creates a new dialog that will handle the wait while upgrading or creating a repository...
 	 */
-	public UpgradeRepositoryProgressDialog(LogWriter log, Props props, Shell shell, Repository rep, boolean upgrade)
+	public UpgradeRepositoryProgressDialog(Shell shell, Repository rep, boolean upgrade)
 	{
-		this.props = props;
 		this.shell = shell;
 		this.rep = rep;
 		this.upgrade = upgrade;
@@ -77,14 +84,14 @@ public class UpgradeRepositoryProgressDialog
 		{
 		    System.out.println("Error creating repository: "+e.toString());
 		    e.printStackTrace();
-			new ErrorDialog(shell, props, "Error "+(upgrade?"upgrading":"creating")+" repository", "An error occured "+(upgrade?"upgrading":"creating")+" the repository!", e);
+			new ErrorDialog(shell, "Error "+(upgrade?"upgrading":"creating")+" repository", "An error occured "+(upgrade?"upgrading":"creating")+" the repository!", e);
 			retval=false;
 		}
 		catch (InterruptedException e)
 		{
 		    System.out.println("Error creating repository: "+e.toString());
 		    e.printStackTrace();
-			new ErrorDialog(shell, props, "Error "+(upgrade?"upgrading":"creating")+" repository", "An error occured "+(upgrade?"upgrading":"creating")+" the repository!", e);
+			new ErrorDialog(shell, "Error "+(upgrade?"upgrading":"creating")+" repository", "An error occured "+(upgrade?"upgrading":"creating")+" the repository!", e);
 			retval=false;
 		}
 

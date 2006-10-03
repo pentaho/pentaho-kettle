@@ -438,7 +438,7 @@ public class RepositoryDialog
 							}
 							catch(KettleException e)
 							{
-								new ErrorDialog(shell, props, Messages.getString("RepositoryDialog.Dialog.UnableToVerifyUser.Title"), Messages.getString("RepositoryDialog.Dialog.UnableToVerifyUser.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+								new ErrorDialog(shell, Messages.getString("RepositoryDialog.Dialog.UnableToVerifyUser.Title"), Messages.getString("RepositoryDialog.Dialog.UnableToVerifyUser.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 							}
 						}
 					}
@@ -446,7 +446,7 @@ public class RepositoryDialog
 					if (goAhead)
 					{
 						System.out.println(Messages.getString("RepositoryDialog.Dialog.TryingToUpgradeRepository.Message1")+cu+Messages.getString("RepositoryDialog.Dialog.TryingToUpgradeRepository.Message2")); //$NON-NLS-1$ //$NON-NLS-2$
-						UpgradeRepositoryProgressDialog urpd = new UpgradeRepositoryProgressDialog(log, props, shell, rep, upgrade);
+						UpgradeRepositoryProgressDialog urpd = new UpgradeRepositoryProgressDialog(shell, rep, upgrade);
 						if (urpd.open())
 						{
 							MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
@@ -461,7 +461,7 @@ public class RepositoryDialog
 			}
 			catch(KettleException ke)
 			{
-                new ErrorDialog(shell, props, Messages.getString("RepositoryDialog.Dialog.UnableToConnectToUpgrade.Title"), Messages.getString("RepositoryDialog.Dialog.UnableToConnectToUpgrade.Message")+Const.CR, ke); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                new ErrorDialog(shell, Messages.getString("RepositoryDialog.Dialog.UnableToConnectToUpgrade.Title"), Messages.getString("RepositoryDialog.Dialog.UnableToConnectToUpgrade.Message")+Const.CR, ke); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			}
 		}
 		else
@@ -528,7 +528,7 @@ public class RepositoryDialog
 					}
 					catch(KettleException e)
 					{
-						new ErrorDialog(shell, props, Messages.getString("RepositoryDialog.Dialog.UnableToVerifyAdminUser.Title"), Messages.getString("RepositoryDialog.Dialog.UnableToVerifyAdminUser.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+						new ErrorDialog(shell, Messages.getString("RepositoryDialog.Dialog.UnableToVerifyAdminUser.Title"), Messages.getString("RepositoryDialog.Dialog.UnableToVerifyAdminUser.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
 					}
 				}
 			}
@@ -536,7 +536,7 @@ public class RepositoryDialog
 		}
 		catch(KettleException ke)
 		{
-            new ErrorDialog(shell, props, Messages.getString("RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Title"), Messages.getString("RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            new ErrorDialog(shell, Messages.getString("RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Title"), Messages.getString("RepositoryDialog.Dialog.NoRepositoryFoundOnConnection.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 		}
 	}
 }

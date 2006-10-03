@@ -305,12 +305,12 @@ public class SQLStatementsDialog extends Dialog
 						catch(KettleDatabaseException dbe)
 						{
 							errors++;
-							new ErrorDialog(shell, props, "Error", "The following statement could not be executed: "+Const.CR+stat.getSQL(), dbe);
+							new ErrorDialog(shell, "Error", "The following statement could not be executed: "+Const.CR+stat.getSQL(), dbe);
 						}
 					}
 					catch(KettleDatabaseException dbe)
 					{
-						new ErrorDialog(shell, props, "Error", "I was unable to connect to database connection ["+(di==null?"":di.getName())+"]", dbe);
+						new ErrorDialog(shell, "Error", "I was unable to connect to database connection ["+(di==null?"":di.getName())+"]", dbe);
 					}
 					finally
 					{
