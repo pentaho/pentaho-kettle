@@ -389,7 +389,10 @@ public class TableView extends Composite
                         }
 																
 						String after_edit[] = getItemText(row);
-						checkChanged(new String[][] { before_edit }, new String[][] { after_edit }, new int[] { rownr });
+                        if (after_edit!=null)
+                        {
+                            checkChanged(new String[][] { before_edit }, new String[][] { after_edit }, new int[] { rownr });
+                        }
 					}
 					combo.dispose();
 				}
@@ -1718,6 +1721,8 @@ public class TableView extends Composite
 	
 	private String[] getItemText(TableItem row)
 	{
+        if (row.isDisposed()) return null;
+        
 		String retval[] = new String[table.getColumnCount()-1];
 		for (int i=0;i<retval.length;i++) retval[i] = row.getText(i+1);
 		
