@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>1000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+    </info>
+  <notepads>
+    </notepads>
+  <order>
+  <hop> <from>Credit</from><to>Java Script Value</to><enabled>Y</enabled> </hop>  <hop> <from>Debit</from><to>Java Script Value</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Credit</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>amountField</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>C100.00</nullif>
+        <length>100</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <limit>1</limit>
+    <GUI>
+      <xloc>167</xloc>
+      <yloc>112</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Debit</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>amountField</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>D100.00</nullif>
+        <length>100</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <limit>1</limit>
+    <GUI>
+      <xloc>172</xloc>
+      <yloc>218</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Java Script Value</name>
+    <type>ScriptValue</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <script>
+var first = amountField.Clone().substr(0,1).getString();
+var amount = amountField.Clone().substr(1).str2num(&quot;###.00&quot;, &quot;.&quot;).getNumber();
+
+if (first.equals(&quot;D&quot;))
+{
+  amount = -amount;
+}</script>
+    <fields>      <field>        <name>first</name>
+        <rename>first</rename>
+        <type>String</type>
+        <length>-1</length>
+        <precision>-1</precision>
+        </field>      <field>        <name>amount</name>
+        <rename>amount</rename>
+        <type>Number</type>
+        <length>7</length>
+        <precision>2</precision>
+        </field>      </fields>    <GUI>
+      <xloc>334</xloc>
+      <yloc>168</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>
