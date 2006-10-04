@@ -529,114 +529,134 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
 
     private void getInput()
     {
-        // Get the fields from the mapping...
-        if (mappingTransMeta!=null)
+        try
         {
-            StepMeta inputStepMeta  = mappingTransMeta.getMappingInputStep();
+            loadTransformation();
             
-            if (inputStepMeta!=null)
+            // Get the fields from the mapping...
+            if (mappingTransMeta!=null)
             {
-                MappingInputMeta mappingInputMeta = (MappingInputMeta) inputStepMeta.getStepMetaInterface();
+                StepMeta inputStepMeta  = mappingTransMeta.getMappingInputStep();
                 
-                String[] source = mappingInputMeta.getFieldName();
-                
-                Row prev = null;
-                try
+                if (inputStepMeta!=null)
                 {
-                	prev=transMeta.getPrevStepFields(stepname);
-                }
-                catch(KettleException e)
-                {
-                	new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorGettingPreviousFields.DialogTitle"), Messages.getString("MappingDialog.ErrorGettingPreviousFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
-                }
-                
-                if (prev!=null)
-                {
-	                String[] target = prev.getFieldNames();
-	                
-	                EnterMappingDialog dialog = new EnterMappingDialog(shell, source, target);
-	                List mappings = dialog.open();
-	                if (mappings!=null)
-	                {
-	                	for (int i=0;i<mappings.size();i++)
-	                	{
-	                		TableItem item = new TableItem(wInputFields.table, SWT.NONE);
-	                		SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
-	                		item.setText(2, mapping.getSourceString(source));
-	                		item.setText(1, mapping.getTargetString(target));
-	                	}
-	                }
+                    MappingInputMeta mappingInputMeta = (MappingInputMeta) inputStepMeta.getStepMetaInterface();
+                    
+                    String[] source = mappingInputMeta.getFieldName();
+                    
+                    Row prev = null;
+                    try
+                    {
+                    	prev=transMeta.getPrevStepFields(stepname);
+                    }
+                    catch(KettleException e)
+                    {
+                    	new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorGettingPreviousFields.DialogTitle"), Messages.getString("MappingDialog.ErrorGettingPreviousFields.DialogMessage"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                    }
+                    
+                    if (prev!=null)
+                    {
+    	                String[] target = prev.getFieldNames();
+    	                
+    	                EnterMappingDialog dialog = new EnterMappingDialog(shell, source, target);
+    	                List mappings = dialog.open();
+    	                if (mappings!=null)
+    	                {
+    	                	for (int i=0;i<mappings.size();i++)
+    	                	{
+    	                		TableItem item = new TableItem(wInputFields.table, SWT.NONE);
+    	                		SourceToTargetMapping mapping = (SourceToTargetMapping) mappings.get(i);
+    	                		item.setText(2, mapping.getSourceString(source));
+    	                		item.setText(1, mapping.getTargetString(target));
+    	                	}
+    	                }
+                    }
+                    else
+                    {
+    	                log.logDetailed(stepname, Messages.getString("MappingDialog.Log.GettingInputFields")+source.length+")"); //$NON-NLS-1$ //$NON-NLS-2$
+    	                for (int i=0;i<source.length;i++)
+    	                {
+    	                    TableItem item = new TableItem(wInputFields.table, SWT.NONE);
+    	                    item.setText(2, source[i]);
+    	                }
+                    }
+                    wInputFields.removeEmptyRows();
+                    wInputFields.setRowNums();
+                    wInputFields.optWidth(true);
                 }
                 else
                 {
-	                log.logDetailed(stepname, Messages.getString("MappingDialog.Log.GettingInputFields")+source.length+")"); //$NON-NLS-1$ //$NON-NLS-2$
-	                for (int i=0;i<source.length;i++)
-	                {
-	                    TableItem item = new TableItem(wInputFields.table, SWT.NONE);
-	                    item.setText(2, source[i]);
-	                }
+                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                    mb.setMessage(Messages.getString("MappingDialog.MappingInputStepNeeded.DialogMessage")); //$NON-NLS-1$
+                    mb.setText(Messages.getString("MappingDialog.MappingInputStepNeeded.DialogTitle")); //$NON-NLS-1$
+                    mb.open();
                 }
-                wInputFields.removeEmptyRows();
-                wInputFields.setRowNums();
-                wInputFields.optWidth(true);
             }
             else
             {
                 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                mb.setMessage(Messages.getString("MappingDialog.MappingInputStepNeeded.DialogMessage")); //$NON-NLS-1$
-                mb.setText(Messages.getString("MappingDialog.MappingInputStepNeeded.DialogTitle")); //$NON-NLS-1$
+                mb.setMessage(Messages.getString("MappingDialog.NoMappingSpecified.DialogMessage")); //$NON-NLS-1$
+                mb.setText(Messages.getString("MappingDialog.NoMappingSpecified.DialogTitle")); //$NON-NLS-1$
                 mb.open();
             }
         }
-        else
+        catch(Exception e)
         {
-            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage(Messages.getString("MappingDialog.NoMappingSpecified.DialogMessage")); //$NON-NLS-1$
-            mb.setText(Messages.getString("MappingDialog.NoMappingSpecified.DialogTitle")); //$NON-NLS-1$
-            mb.open();
+            new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Title"), 
+                    Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
+
         }
     }
 
     private void getOutput()
     {
-        // Get the fields from the mapping...
-        if (mappingTransMeta!=null)
+        try
         {
-            StepMeta outputStepMeta  = mappingTransMeta.getMappingOutputStep();
-            
-            if (outputStepMeta!=null)
+            loadTransformation();
+            // Get the fields from the mapping...
+            if (mappingTransMeta!=null)
             {
-                MappingOutputMeta mappingOutputMeta = (MappingOutputMeta) outputStepMeta.getStepMetaInterface();
-                System.out.println(Messages.getString("MappingDialog.Log.GettingInputFields")+mappingOutputMeta.getFieldName().length+")"); //$NON-NLS-1$ //$NON-NLS-2$
-
-                for (int i=0;i<mappingOutputMeta.getFieldName().length;i++)
-                {
-                    if (mappingOutputMeta.getFieldAdded()[i]) // We can only map added fields!
-                    {
-                        TableItem item = new TableItem(wOutputFields.table, SWT.NONE);
-                        item.setText(1, mappingOutputMeta.getFieldName()[i]);
-                        item.setText(2, mappingOutputMeta.getFieldName()[i]);
-                    }
-                }
+                StepMeta outputStepMeta  = mappingTransMeta.getMappingOutputStep();
                 
-                wOutputFields.removeEmptyRows();
-                wOutputFields.setRowNums();
-                wOutputFields.optWidth(true);
+                if (outputStepMeta!=null)
+                {
+                    MappingOutputMeta mappingOutputMeta = (MappingOutputMeta) outputStepMeta.getStepMetaInterface();
+                    System.out.println(Messages.getString("MappingDialog.Log.GettingInputFields")+mappingOutputMeta.getFieldName().length+")"); //$NON-NLS-1$ //$NON-NLS-2$
+    
+                    for (int i=0;i<mappingOutputMeta.getFieldName().length;i++)
+                    {
+                        if (mappingOutputMeta.getFieldAdded()[i]) // We can only map added fields!
+                        {
+                            TableItem item = new TableItem(wOutputFields.table, SWT.NONE);
+                            item.setText(1, mappingOutputMeta.getFieldName()[i]);
+                            item.setText(2, mappingOutputMeta.getFieldName()[i]);
+                        }
+                    }
+                    
+                    wOutputFields.removeEmptyRows();
+                    wOutputFields.setRowNums();
+                    wOutputFields.optWidth(true);
+                }
+                else
+                {
+                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                    mb.setMessage(Messages.getString("MappingDialog.MappingOutputStepNeeded.DialogMessage")); //$NON-NLS-1$
+                    mb.setText(Messages.getString("MappingDialog.MappingOutputStepNeeded.DialogTitle")); //$NON-NLS-1$
+                    mb.open();
+                }
             }
             else
             {
                 MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                mb.setMessage(Messages.getString("MappingDialog.MappingOutputStepNeeded.DialogMessage")); //$NON-NLS-1$
-                mb.setText(Messages.getString("MappingDialog.MappingOutputStepNeeded.DialogTitle")); //$NON-NLS-1$
+                mb.setMessage(Messages.getString("MappingDialog.NoMappingSpecified2.DialogMessage")); //$NON-NLS-1$
+                mb.setText(Messages.getString("MappingDialog.NoMappingSpecified2.DialogTitle")); //$NON-NLS-1$
                 mb.open();
             }
         }
-        else
+        catch(Exception e)
         {
-            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-            mb.setMessage(Messages.getString("MappingDialog.NoMappingSpecified2.DialogMessage")); //$NON-NLS-1$
-            mb.setText(Messages.getString("MappingDialog.NoMappingSpecified2.DialogTitle")); //$NON-NLS-1$
-            mb.open();
+            new ErrorDialog(shell, Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Title"), 
+                    Messages.getString("MappingDialog.ErrorLoadingSpecifiedTransformation.Message"), e);
         }
     }
 
