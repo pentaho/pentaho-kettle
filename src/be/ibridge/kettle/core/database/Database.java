@@ -304,10 +304,12 @@ public class Database
 		catch(SQLException ex) 
 		{
 			log.logError(toString(), "Error disconnecting from database:"+Const.CR+ex.getMessage());
+            log.logError(toString(), Const.getStackTracker(ex));
 		}
 		catch(KettleDatabaseException dbe)
 		{
 			log.logError(toString(), "Error disconnecting from database:"+Const.CR+dbe.getMessage());
+            log.logError(toString(), Const.getStackTracker(dbe));
 		}
 	}
 	
@@ -467,6 +469,7 @@ public class Database
 	public void closeLookup() throws KettleDatabaseException
 	{
 		closePreparedStatement(pstmt);
+        pstmt=null;
 	}
 
 	public void closePreparedStatement(PreparedStatement ps) throws KettleDatabaseException
@@ -510,6 +513,7 @@ public class Database
 			try 
 			{
 				prepStatementUpdate.close();
+                prepStatementUpdate=null;
 			}
 			catch(SQLException e)
 			{
