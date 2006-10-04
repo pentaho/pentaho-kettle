@@ -50,7 +50,8 @@ public interface DatabaseInterface extends Cloneable
             SAPR3DatabaseMeta.class,
             IngresDatabaseMeta.class,
             InterbaseDatabaseMeta.class,
-            ExtenDBDatabaseMeta.class
+            ExtenDBDatabaseMeta.class,
+            H2DatabaseMeta.class
 		};
 	
 	/**

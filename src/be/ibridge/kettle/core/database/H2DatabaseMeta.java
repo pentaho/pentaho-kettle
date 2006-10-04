@@ -117,7 +117,21 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 	{
 		return true;
 	}
-
+    
+    public boolean supportsAutoInc()
+    {
+        return true;
+    }
+    
+    public boolean supportsGetBlob()
+    {
+        return true;
+    }
+    
+    public boolean supportsSetCharacterStream()
+    {
+        return false;
+    }
 
 	/**
 	 * Generates the SQL statement to add a column to the specified table
