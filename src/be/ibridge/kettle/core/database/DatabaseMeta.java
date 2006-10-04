@@ -1969,4 +1969,12 @@ public class DatabaseMeta implements Cloneable, XMLInterface
     {
         databaseInterface.setConnectSQL(sql);
     }
+    
+    /**
+     * @return true if the database supports setting the maximum number of return rows in a resultset.
+     */
+    public boolean supportsSetMaxRows()
+    {
+        return databaseInterface.supportsSetMaxRows();
+    }
 }

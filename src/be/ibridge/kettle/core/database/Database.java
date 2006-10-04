@@ -1846,7 +1846,7 @@ public class Database
 					pstmt.setFetchDirection(fetch_mode);
 				} 
 				debug = "P Set max rows";
-				if (rowlimit>0) pstmt.setMaxRows(rowlimit);
+				if (rowlimit>0 && databaseMeta.supportsSetMaxRows()) pstmt.setMaxRows(rowlimit);
 				debug = "exec query";
 				res = pstmt.executeQuery();
 			}
@@ -1870,7 +1870,7 @@ public class Database
 					sel_stmt.setFetchDirection(fetch_mode);
 				} 
 				debug = "Set max rows";
-				if (rowlimit>0) sel_stmt.setMaxRows(rowlimit);
+				if (rowlimit>0 && databaseMeta.supportsSetMaxRows()) sel_stmt.setMaxRows(rowlimit);
 
 				debug = "exec query";
 				res=sel_stmt.executeQuery(databaseMeta.stripCR(sql));
@@ -1934,7 +1934,7 @@ public class Database
 			} 
 			
 			debug = "OQ Set max rows";
-			if (rowlimit>0) ps.setMaxRows(rowlimit);
+			if (rowlimit>0 && databaseMeta.supportsSetMaxRows()) ps.setMaxRows(rowlimit);
 			
 			debug = "OQ exec query";
 			res = ps.executeQuery();
@@ -2328,7 +2328,7 @@ public class Database
                     }
 				}
 				debug = "Set max rows to 1";
-				sel_stmt.setMaxRows(1);
+                if (databaseMeta.supportsSetMaxRows()) sel_stmt.setMaxRows(1);
 				
 				debug = "exec query";
 				ResultSet r=sel_stmt.executeQuery(databaseMeta.stripCR(sql));
@@ -2811,7 +2811,7 @@ public class Database
 		{
 			log.logDetailed(toString(), "Setting preparedStatement to ["+sql+"]");
 			prepStatementLookup=connection.prepareStatement(databaseMeta.stripCR(sql));
-			if (!checkForMultipleResults)
+			if (!checkForMultipleResults && databaseMeta.supportsSetMaxRows())
 			{
 				prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
 			}
@@ -3057,7 +3057,10 @@ public class Database
 		{
 			log.logDetailed(toString(), "Dimension Lookup setting preparedStatement to ["+sql+"]");
 			prepStatementLookup=connection.prepareStatement(databaseMeta.stripCR(sql));
-			prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
+			if (databaseMeta.supportsSetMaxRows())
+            {
+                prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
+            }
             if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_MYSQL)
             {
                 prepStatementLookup.setFetchSize(0); // Make sure to DISABLE Streaming Result sets
@@ -3153,7 +3156,10 @@ public class Database
 			String sqlStatement = sql.toString();
             if (log.isDebug()) log.logDebug(toString(), "preparing combi-lookup statement:"+Const.CR+sqlStatement);
 			prepStatementLookup=connection.prepareStatement(databaseMeta.stripCR(sqlStatement));
-			prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
+			if (databaseMeta.supportsSetMaxRows())
+            {
+                prepStatementLookup.setMaxRows(1); // alywas get only 1 line back!
+            }
 		}
 		catch(SQLException ex) 
 		{

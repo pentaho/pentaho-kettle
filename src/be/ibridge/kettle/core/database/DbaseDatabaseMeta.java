@@ -126,6 +126,14 @@ public class DbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	{
 		return false;
 	}
+    
+    /**
+     * @return true if the database supports setting the maximum number of return rows in a resultset.
+     */
+    public boolean supportsSetMaxRows()
+    {
+        return false;
+    }
 	
 	/**
 	 * @param tableName The table to be truncated.

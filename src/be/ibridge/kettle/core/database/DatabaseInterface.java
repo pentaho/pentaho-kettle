@@ -591,4 +591,8 @@ public interface DatabaseInterface extends Cloneable
      */
     public void setConnectSQL(String sql);
 
+    /**
+     * @return true if the database supports setting the maximum number of return rows in a resultset.
+     */
+    public boolean supportsSetMaxRows();
 }
