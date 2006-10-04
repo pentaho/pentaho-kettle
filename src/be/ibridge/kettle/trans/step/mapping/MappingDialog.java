@@ -652,7 +652,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wTransDir.setText(Const.NVL(input.getDirectoryPath(), ""));
 
         // if we have a filename, then we use the filename, otherwise we go with the repository...
-        if (input.getFileName()!=null)
+        if (!Const.isEmpty(input.getFileName()))
         {
             wFileRadio.setSelection(true);
         }
