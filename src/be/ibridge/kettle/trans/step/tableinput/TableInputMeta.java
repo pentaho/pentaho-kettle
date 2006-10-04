@@ -223,7 +223,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 		}
 		catch(KettleDatabaseException dbe)
 		{
-			throw new KettleStepException("Unable to get queryfields for SQL: "+Const.CR+sql, dbe);
+			throw new KettleStepException("Unable to get queryfields for SQL: "+Const.CR+sNewSQL, dbe);
 		}
 
 		if (add!=null)
@@ -243,7 +243,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 				
 				if (getLookupStepname()!=null) param=true;
 				
-				add = db.getQueryFields(sql, param, info);
+				add = db.getQueryFields(sNewSQL, param, info);
 				
 				if (add==null) return row;
 				for (int i=0;i<add.size();i++)
@@ -255,7 +255,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 			catch(KettleException ke)
 			{
-				throw new KettleStepException("Unable to get queryfields for SQL: "+Const.CR+sql, ke);
+				throw new KettleStepException("Unable to get queryfields for SQL: "+Const.CR+sNewSQL, ke);
 			}
 			finally
 			{
