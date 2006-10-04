@@ -170,11 +170,11 @@ public class DatabaseMeta implements Cloneable, XMLInterface
      public static final int TYPE_DATABASE_ORACLE_RDB = 22;
      
      /**
-      * Connection to a JNDI database
+      * Connection to an H2 database
       */
-     public static final int TYPE_DATABASE_JNDI = 23;
+     public static final int TYPE_DATABASE_H2         = 23;
      
-    
+
 
 	/**
 	 * Connect natively through JDBC thin driver to the database.
@@ -200,6 +200,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
      * Connect to the database using plugin specific method. (SAP R/3)
      */
     public static final int TYPE_ACCESS_JNDI        =  4;
+    
     
 	/**
 	 * Short description of the access type, used in XML and the repository.
