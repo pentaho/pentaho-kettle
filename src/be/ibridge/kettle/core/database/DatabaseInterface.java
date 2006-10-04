@@ -51,6 +51,8 @@ public interface DatabaseInterface extends Cloneable
             IngresDatabaseMeta.class,
             InterbaseDatabaseMeta.class,
             ExtenDBDatabaseMeta.class,
+            TeradataDatabaseMeta.class,
+            OracleRDBDatabaseMeta.class,
             H2DatabaseMeta.class
 		};
 	

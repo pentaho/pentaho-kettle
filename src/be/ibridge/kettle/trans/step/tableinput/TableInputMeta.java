@@ -199,8 +199,7 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	    return new String[] { getLookupStepname() };
 	}
 
-	public Row getFields(Row r, String name, Row info)
-		throws KettleStepException
+	public Row getFields(Row r, String name, Row info) throws KettleStepException
 	{
 		Row row;
 		boolean param=false;
