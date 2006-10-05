@@ -95,11 +95,23 @@ public class DatabaseExplorerDialog extends Dialog
 	private boolean justLook;
 	private String  selectTable;
 	private List    databases;
-	
-	public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, List databases)
+
+    /** @deprecated */
+    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList databases)
+    {
+        this(par, style, conn, (List)databases);
+    }
+
+    /** @deprecated */
+    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, List databases)
+    {
+        this(par, style, conn, databases);
+    }
+
+	public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List databases)
 	{
 		super(par, style);
-		props=pr;
+		props=Props.getInstance();
 		log=LogWriter.getInstance();
 		dbMeta=conn;
 		dbcache = DBCache.getInstance();
@@ -108,9 +120,15 @@ public class DatabaseExplorerDialog extends Dialog
 		selectTable=null;
 	}
 
-	public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, List databases, boolean look)
+    /** @deprecated */
+    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList databases, boolean look)
+    {
+        this(par, style, conn, databases, look);
+    }
+    
+	public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List databases, boolean look)
 	{
-		this(par, pr, style, conn, databases);
+		this(par, style, conn, databases);
 		justLook=look;
 	}
 
