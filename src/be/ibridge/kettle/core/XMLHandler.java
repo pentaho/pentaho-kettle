@@ -603,21 +603,7 @@ public class XMLHandler
             value.append(tag);
             value.append(">");
             
-            for (int i=0;i<val.length();i++)
-            {
-                char c = val.charAt(i);
-                switch(c)
-                {
-                case '&'  : value.append("&amp;"); break;
-                case '\'' : value.append("&apos;"); break;
-                case '<'  : value.append("&lt;"); break;
-                case '>'  : value.append("&gt;"); break;
-                case '"'  : value.append("&quot;"); break;
-                case 0x1A : value.append("{ILLEGAL XML CHARACTER 0x1A}"); break;
-                default: 
-                    value.append(c);
-                }
-            }
+            appendReplacedChars(value, val);
             
             value.append("</");
             value.append(tag);
@@ -638,7 +624,33 @@ public class XMLHandler
 		return value.toString();
 	}
 
-	/**
+    /**
+     * Take the characters from string val and append them to the value stringbuffer
+     * In case a character is not allowed in XML, we convert it to an XML code
+     * 
+     * @param value the stringbuffer to append to
+     * @param string the string to "encode"
+     */
+	private static void appendReplacedChars(StringBuffer value, String string)
+    {
+        for (int i=0;i<string.length();i++)
+        {
+            char c = string.charAt(i);
+            switch(c)
+            {
+            case '&'  : value.append("&amp;"); break;
+            case '\'' : value.append("&apos;"); break;
+            case '<'  : value.append("&lt;"); break;
+            case '>'  : value.append("&gt;"); break;
+            case '"'  : value.append("&quot;"); break;
+            case 0x1A : value.append("{ILLEGAL XML CHARACTER 0x1A}"); break;
+            default: 
+                value.append(c);
+            }
+        }        
+    }
+
+    /**
 	 * Build an XML string (including a cariage return) for a certain tag String value
 	 * @param tag The XML tag
 	 * @param val The String value of the tag
