@@ -38,11 +38,12 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.core.widget.LabelText;
+import be.ibridge.kettle.core.widget.LabelTextVar;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
@@ -57,41 +58,33 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
  */
 public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 {
-	private Label        wlName;
-	private Text         wName;
-    private FormData     fdlName, fdName;
+	private LabelText    wName;
+    private FormData     fdName;
 
-	private Label        wlServerName;
-	private Text         wServerName;
-	private FormData     fdlServerName, fdServerName;
+	private LabelTextVar wServerName;
+	private FormData     fdServerName;
 	
-	private Label        wlUserName;
-	private Text         wUserName;
-	private FormData     fdlUserName, fdUserName;
+	private LabelTextVar wUserName;
+	private FormData     fdUserName;
 	
-	private Label        wlPassword;
-	private Text         wPassword;
-	private FormData     fdlPassword, fdPassword;
+	private LabelTextVar wPassword;
+	private FormData     fdPassword;
 	
-	private Label        wlFtpDirectory;
-	private Text         wFtpDirectory;
-	private FormData     fdlFtpDirectory, fdFtpDirectory;
+	private LabelTextVar wFtpDirectory;
+	private FormData     fdFtpDirectory;
 	
-	private Label        wlTargetDirectory;
-	private Text         wTargetDirectory;
-	private FormData     fdlTargetDirectory, fdTargetDirectory;
+	private LabelTextVar wTargetDirectory;
+	private FormData     fdTargetDirectory;
 	
-	private Label        wlWildcard;
-	private Text         wWildcard;
-	private FormData     fdlWildcard, fdWildcard;
+	private LabelTextVar wWildcard;
+	private FormData     fdWildcard;
 	
 	private Label        wlBinaryMode;
 	private Button       wBinaryMode;
 	private FormData     fdlBinaryMode, fdBinaryMode;
 	
-	private Label        wlTimeout;
-	private Text         wTimeout;
-	private FormData     fdlTimeout, fdTimeout;
+	private LabelTextVar wTimeout;
+	private FormData     fdTimeout;
 	
 	private Label        wlRemove;
 	private Button       wRemove;
@@ -152,129 +145,72 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		int middle = props.getMiddlePct();
 		int margin = Const.MARGIN;
 
-		// Filename line
-		wlName=new Label(shell, SWT.RIGHT);
-		wlName.setText("Job entry name ");
- 		props.setLook(wlName);
-		fdlName=new FormData();
-		fdlName.left = new FormAttachment(0, 0);
-		fdlName.right= new FormAttachment(middle, -margin);
-		fdlName.top  = new FormAttachment(0, margin);
-		wlName.setLayoutData(fdlName);
-		wName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wName);
-		wName.addModifyListener(lsMod);
-		fdName=new FormData();
-		fdName.left = new FormAttachment(middle, 0);
-		fdName.top  = new FormAttachment(0, margin);
-		fdName.right= new FormAttachment(100, 0);
-		wName.setLayoutData(fdName);
+		// Job entry name line
+        wName=new LabelText(shell, "Name of the job entry", "The unique name of job entry");
+        wName.addModifyListener(lsMod);
+        fdName=new FormData();
+        fdName.top  = new FormAttachment(0, 0);
+        fdName.left = new FormAttachment(0, 0);
+        fdName.right= new FormAttachment(100, 0);
+        wName.setLayoutData(fdName);
 
 		// ServerName line
-		wlServerName=new Label(shell, SWT.RIGHT);
-		wlServerName.setText("FTP-server name (IP)");
- 		props.setLook(wlServerName);
-		fdlServerName=new FormData();
-		fdlServerName.left = new FormAttachment(0, 0);
-		fdlServerName.top  = new FormAttachment(wName, margin);
-		fdlServerName.right= new FormAttachment(middle, -margin);
-		wlServerName.setLayoutData(fdlServerName);
-		wServerName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wServerName=new LabelTextVar(shell, "FTP-server name (IP)", "The FTP server name or IP address");
  		props.setLook(wServerName);
 		wServerName.addModifyListener(lsMod);
 		fdServerName=new FormData();
-		fdServerName.left = new FormAttachment(middle, 0);
+		fdServerName.left = new FormAttachment(0, 0);
 		fdServerName.top  = new FormAttachment(wName, margin);
 		fdServerName.right= new FormAttachment(100, 0);
 		wServerName.setLayoutData(fdServerName);
 
 		// UserName line
-		wlUserName=new Label(shell, SWT.RIGHT);
-		wlUserName.setText("Username");
- 		props.setLook(wlUserName);
-		fdlUserName=new FormData();
-		fdlUserName.left = new FormAttachment(0, 0);
-		fdlUserName.top  = new FormAttachment(wServerName, margin);
-		fdlUserName.right= new FormAttachment(middle, -margin);
-		wlUserName.setLayoutData(fdlUserName);
-		wUserName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wUserName=new LabelTextVar(shell, "Username", "Enter the FTP server username");
  		props.setLook(wUserName);
 		wUserName.addModifyListener(lsMod);
 		fdUserName=new FormData();
-		fdUserName.left = new FormAttachment(middle, 0);
+		fdUserName.left = new FormAttachment(0, 0);
 		fdUserName.top  = new FormAttachment(wServerName, margin);
 		fdUserName.right= new FormAttachment(100, 0);
 		wUserName.setLayoutData(fdUserName);
 
 		// Password line
-		wlPassword=new Label(shell, SWT.RIGHT);
-		wlPassword.setText("Password");
- 		props.setLook(wlPassword);
-		fdlPassword=new FormData();
-		fdlPassword.left = new FormAttachment(0, 0);
-		fdlPassword.top  = new FormAttachment(wUserName, margin);
-		fdlPassword.right= new FormAttachment(middle, -margin);
-		wlPassword.setLayoutData(fdlPassword);
-		wPassword=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wPassword=new LabelTextVar(shell, "Password", "The FTP server password");
  		props.setLook(wPassword);
         wPassword.setEchoChar('*');
 		wPassword.addModifyListener(lsMod);
 		fdPassword=new FormData();
-		fdPassword.left = new FormAttachment(middle, 0);
+		fdPassword.left = new FormAttachment(0, 0);
 		fdPassword.top  = new FormAttachment(wUserName, margin);
 		fdPassword.right= new FormAttachment(100, 0);
 		wPassword.setLayoutData(fdPassword);
 
 		// FtpDirectory line
-		wlFtpDirectory=new Label(shell, SWT.RIGHT);
-		wlFtpDirectory.setText("Remote directory");
- 		props.setLook(wlFtpDirectory);
-		fdlFtpDirectory=new FormData();
-		fdlFtpDirectory.left = new FormAttachment(0, 0);
-		fdlFtpDirectory.top  = new FormAttachment(wPassword, margin);
-		fdlFtpDirectory.right= new FormAttachment(middle, -margin);
-		wlFtpDirectory.setLayoutData(fdlFtpDirectory);
-		wFtpDirectory=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFtpDirectory=new LabelTextVar(shell, "Remote directory", "The directory on the FTP server");
  		props.setLook(wFtpDirectory);
 		wFtpDirectory.addModifyListener(lsMod);
 		fdFtpDirectory=new FormData();
-		fdFtpDirectory.left = new FormAttachment(middle, 0);
+		fdFtpDirectory.left = new FormAttachment(0, 0);
 		fdFtpDirectory.top  = new FormAttachment(wPassword, margin);
 		fdFtpDirectory.right= new FormAttachment(100, 0);
 		wFtpDirectory.setLayoutData(fdFtpDirectory);
 
 		// TargetDirectory line
-		wlTargetDirectory=new Label(shell, SWT.RIGHT);
-		wlTargetDirectory.setText("Target directory");
- 		props.setLook(wlTargetDirectory);
-		fdlTargetDirectory=new FormData();
-		fdlTargetDirectory.left = new FormAttachment(0, 0);
-		fdlTargetDirectory.top  = new FormAttachment(wFtpDirectory, margin);
-		fdlTargetDirectory.right= new FormAttachment(middle, -margin);
-		wlTargetDirectory.setLayoutData(fdlTargetDirectory);
-		wTargetDirectory=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTargetDirectory=new LabelTextVar(shell, "Target directory", "The target directory on the local server");
  		props.setLook(wTargetDirectory);
 		wTargetDirectory.addModifyListener(lsMod);
 		fdTargetDirectory=new FormData();
-		fdTargetDirectory.left = new FormAttachment(middle, 0);
+		fdTargetDirectory.left = new FormAttachment(0, 0);
 		fdTargetDirectory.top  = new FormAttachment(wFtpDirectory, margin);
 		fdTargetDirectory.right= new FormAttachment(100, 0);
 		wTargetDirectory.setLayoutData(fdTargetDirectory);
 
 		// Wildcard line
-		wlWildcard=new Label(shell, SWT.RIGHT);
-		wlWildcard.setText("Wildcard (regular expression)");
- 		props.setLook(wlWildcard);
-		fdlWildcard=new FormData();
-		fdlWildcard.left = new FormAttachment(0, 0);
-		fdlWildcard.top  = new FormAttachment(wTargetDirectory, margin);
-		fdlWildcard.right= new FormAttachment(middle, -margin);
-		wlWildcard.setLayoutData(fdlWildcard);
-		wWildcard=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wWildcard=new LabelTextVar(shell, "Wildcard (regular expression)", "Enter a regular expression to specify the filenames to retrieve.\nFor example .*\\.txt$ : get all text files.");
  		props.setLook(wWildcard);
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard=new FormData();
-		fdWildcard.left = new FormAttachment(middle, 0);
+		fdWildcard.left = new FormAttachment(0, 0);
 		fdWildcard.top  = new FormAttachment(wTargetDirectory, margin);
 		fdWildcard.right= new FormAttachment(100, 0);
 		wWildcard.setLayoutData(fdWildcard);
@@ -286,30 +222,22 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		fdlBinaryMode=new FormData();
 		fdlBinaryMode.left = new FormAttachment(0, 0);
 		fdlBinaryMode.top  = new FormAttachment(wWildcard, margin);
-		fdlBinaryMode.right= new FormAttachment(middle, -margin);
+		fdlBinaryMode.right= new FormAttachment(middle, 0);
 		wlBinaryMode.setLayoutData(fdlBinaryMode);
 		wBinaryMode=new Button(shell, SWT.CHECK);
  		props.setLook(wBinaryMode);
 		fdBinaryMode=new FormData();
-		fdBinaryMode.left = new FormAttachment(middle, 0);
+		fdBinaryMode.left = new FormAttachment(middle, margin);
 		fdBinaryMode.top  = new FormAttachment(wWildcard, margin);
 		fdBinaryMode.right= new FormAttachment(100, 0);
 		wBinaryMode.setLayoutData(fdBinaryMode);
 
 		// Timeout line
-		wlTimeout=new Label(shell, SWT.RIGHT);
-		wlTimeout.setText("Timeout");
- 		props.setLook(wlTimeout);
-		fdlTimeout=new FormData();
-		fdlTimeout.left = new FormAttachment(0, 0);
-		fdlTimeout.top  = new FormAttachment(wlBinaryMode, margin);
-		fdlTimeout.right= new FormAttachment(middle, -margin);
-		wlTimeout.setLayoutData(fdlTimeout);
-		wTimeout=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTimeout=new LabelTextVar(shell, "Timeout", "The timeout in seconds");
  		props.setLook(wTimeout);
 		wTimeout.addModifyListener(lsMod);
 		fdTimeout=new FormData();
-		fdTimeout.left = new FormAttachment(middle, 0);
+		fdTimeout.left = new FormAttachment(0, 0);
 		fdTimeout.top  = new FormAttachment(wlBinaryMode, margin);
 		fdTimeout.right= new FormAttachment(100, 0);
 		wTimeout.setLayoutData(fdTimeout);
@@ -321,12 +249,12 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		fdlRemove=new FormData();
 		fdlRemove.left = new FormAttachment(0, 0);
 		fdlRemove.top  = new FormAttachment(wTimeout, margin);
-		fdlRemove.right= new FormAttachment(middle, -margin);
+		fdlRemove.right= new FormAttachment(middle, 0);
 		wlRemove.setLayoutData(fdlRemove);
 		wRemove=new Button(shell, SWT.CHECK);
  		props.setLook(wRemove);
 		fdRemove=new FormData();
-		fdRemove.left = new FormAttachment(middle, 0);
+		fdRemove.left = new FormAttachment(middle, margin);
 		fdRemove.top  = new FormAttachment(wTimeout, margin);
 		fdRemove.right= new FormAttachment(100, 0);
 		wRemove.setLayoutData(fdRemove);
@@ -338,12 +266,12 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         fdlOnlyNew=new FormData();
         fdlOnlyNew.left = new FormAttachment(0, 0);
         fdlOnlyNew.top  = new FormAttachment(wRemove, margin);
-        fdlOnlyNew.right= new FormAttachment(middle, -margin);
+        fdlOnlyNew.right= new FormAttachment(middle, 0);
         wlOnlyNew.setLayoutData(fdlOnlyNew);
         wOnlyNew=new Button(shell, SWT.CHECK);
         props.setLook(wOnlyNew);
         fdOnlyNew=new FormData();
-        fdOnlyNew.left = new FormAttachment(middle, 0);
+        fdOnlyNew.left = new FormAttachment(middle, margin);
         fdOnlyNew.top  = new FormAttachment(wRemove, margin);
         fdOnlyNew.right= new FormAttachment(100, 0);
         wOnlyNew.setLayoutData(fdOnlyNew);
@@ -355,12 +283,12 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
         fdlActive=new FormData();
         fdlActive.left = new FormAttachment(0, 0);
         fdlActive.top  = new FormAttachment(wOnlyNew, margin);
-        fdlActive.right= new FormAttachment(middle, -margin);
+        fdlActive.right= new FormAttachment(middle, 0);
         wlActive.setLayoutData(fdlActive);
         wActive=new Button(shell, SWT.CHECK);
         props.setLook(wActive);
         fdActive=new FormData();
-        fdActive.left = new FormAttachment(middle, 0);
+        fdActive.left = new FormAttachment(middle, margin);
         fdActive.top  = new FormAttachment(wOnlyNew, margin);
         fdActive.right= new FormAttachment(100, 0);
         wActive.setLayoutData(fdActive);
@@ -419,7 +347,7 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 	public void getData()
 	{
 		if (jobentry.getName()    != null) wName.setText( jobentry.getName() );
-		wName.selectAll();
+		wName.getTextWidget().selectAll();
 
 		wServerName.setText(Const.NVL(jobentry.getServerName(), ""));
 		wUserName.setText(Const.NVL(jobentry.getUserName(), ""));

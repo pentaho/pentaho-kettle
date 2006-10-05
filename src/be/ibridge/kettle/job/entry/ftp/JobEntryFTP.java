@@ -353,10 +353,12 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 
 		log.logDetailed(toString(), "Start of FTP job entry");
 
+        FTPClient ftpclient=null;
+        
 		try
 		{
 			// Create ftp client to host:port ...
-			FTPClient ftpclient = new FTPClient();
+			ftpclient = new FTPClient();
             ftpclient.setRemoteAddr(InetAddress.getByName(serverName));
             
 			log.logDetailed(toString(), "Opened FTP connection to server ["+serverName+"]");
@@ -472,9 +474,23 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 		catch(Exception e)
 		{
 			result.setNrErrors(1);
-			e.printStackTrace();
 			log.logError(toString(), "Error getting files from FTP : "+e.getMessage());
+            log.logError(toString(), Const.getStackTracker(e));
 		}
+        finally
+        {
+            if (ftpclient!=null && ftpclient.connected())
+            {
+                try
+                {
+                    ftpclient.quit();
+                }
+                catch(Exception e)
+                {
+                    log.logError(toString(), "Error quiting FTP connection: "+e.getMessage());
+                }
+            }
+        }
 		
 		return result;
 	}
