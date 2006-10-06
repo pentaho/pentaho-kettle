@@ -141,15 +141,16 @@ public class JobEntryFileExists extends JobEntryBase implements JobEntryInterfac
 	
 		if (filename!=null)
 		{
-			File file = new File(getRealFilename());
+            String realFilename = getRealFilename(); 
+			File file = new File(realFilename);
 			if (file.exists() && file.canRead())
 			{
-				log.logDetailed(toString(), "File ["+filename+"] exists.");
+				log.logDetailed(toString(), "File ["+realFilename+"] exists.");
 				result.setResult( true );
 			}
 			else
 			{
-				log.logDetailed(toString(), "File ["+filename+"] doesn't exist!");
+				log.logDetailed(toString(), "File ["+realFilename+"] doesn't exist!");
 			}
 		}
 		else
