@@ -126,6 +126,12 @@ public class DatabaseExplorerDialog extends Dialog
         this(par, style, conn, databases, look);
     }
     
+    /** @deprecated */
+    public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, List databases, boolean look)
+    {
+        this(par, style, conn, databases, look);
+    }
+    
 	public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List databases, boolean look)
 	{
 		this(par, style, conn, databases);
