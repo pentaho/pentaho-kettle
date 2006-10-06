@@ -134,6 +134,19 @@ public class AccessOutput extends BaseStep implements StepInterface
         }
         
         // Let's write a row to the database.
+        Object[] values = AccessOutputMeta.createObjectsForRow(r);
+        try
+        {
+            data.table.addRow(values);
+        }
+        catch(IOException e)
+        {
+            logError(Messages.getString("AccessOutput.Exception.UnexpectedErrorWritingRow", r.toString()));
+            logError(Const.getStackTracker(e));
+            setErrors(1);
+            stopAll();
+            return false;
+        }
         
 		return true;
 	}

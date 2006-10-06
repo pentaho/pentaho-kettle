@@ -367,6 +367,57 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
     }
 
 
+    public static Object[] createObjectsForRow(Row r)
+    {
+        Object[] values = new Object[r.size()];
+        for (int i=0;i<r.size();i++)
+        {
+            Value value = r.getValue(i);
+            int length = value.getLength();
+            
+            switch(value.getType())
+            {
+            case Value.VALUE_TYPE_INTEGER:
+                if (length<3)
+                {
+                    values[i] = new Byte((byte)value.getInteger());
+                }
+                else
+                {
+                    if (length<5)
+                    {
+                        values[i] = new Short((short)value.getInteger());
+                    }
+                    else
+                    {
+                        values[i] = new Long(value.getInteger());
+                    }
+                }
+                break;
+            case Value.VALUE_TYPE_NUMBER:
+                values[i] = new Double(value.getNumber());
+                break;
+            case Value.VALUE_TYPE_DATE:
+                values[i] = new Short((short)value.getInteger());
+                break;
+            case Value.VALUE_TYPE_STRING:
+                values[i] = value.getString();
+                break;
+            case Value.VALUE_TYPE_BINARY:
+                values[i] = value.getBytes();
+                break;
+            case Value.VALUE_TYPE_BOOLEAN:
+                values[i] = new Boolean(value.getBoolean());
+                break;
+            case Value.VALUE_TYPE_BIGNUMBER:
+                values[i] = new Double(value.getNumber());
+                break;
+            default: break;
+            }
+        }
+        return values;
+    }
+
     /**
      * @return the fileCreated
      */
@@ -422,4 +473,5 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
     {
         return tableTruncated;
     }
+
 }
