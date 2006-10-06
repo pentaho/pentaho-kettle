@@ -28,6 +28,7 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -182,14 +183,15 @@ public class JobEntryTableExists extends JobEntryBase implements JobEntryInterfa
 			try
 			{
 				db.connect();
+                String realTablename = StringUtil.environmentSubstitute(tablename);
 				if (db.checkTableExists(tablename))
 				{
-					log.logDetailed(toString(), "Table ["+tablename+"] exists.");
+					log.logDetailed(toString(), "Table ["+realTablename+"] exists.");
 					result.setResult(true);
 				}
 				else
 				{
-					log.logDetailed(toString(), "Table ["+tablename+"] doesn't exist!");
+					log.logDetailed(toString(), "Table ["+realTablename+"] doesn't exist!");
 				}
 				db.disconnect();
 			}
