@@ -40,6 +40,7 @@ import be.ibridge.kettle.trans.StepPlugin;
 import be.ibridge.kettle.trans.StepPluginMeta;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
+import be.ibridge.kettle.trans.step.accessoutput.AccessOutputMeta;
 import be.ibridge.kettle.trans.step.addsequence.AddSequenceMeta;
 import be.ibridge.kettle.trans.step.aggregaterows.AggregateRowsMeta;
 import be.ibridge.kettle.trans.step.blockingstep.BlockingStepMeta;
@@ -272,6 +273,9 @@ public class BaseStep extends Thread
         new StepPluginMeta(ExcelOutputMeta.class, "ExcelOutput", 
                             Messages.getString("BaseStep.TypeLongDesc.ExcelOutput"), Messages.getString("BaseStep.TypeTooltipDesc.ExcelOutput"), 
                             "XLO.png", CATEGORY_OUTPUT),
+        new StepPluginMeta(AccessOutputMeta.class, "AccessOutput", 
+                            Messages.getString("BaseStep.TypeLongDesc.AccessOutput"), Messages.getString("BaseStep.TypeTooltipDesc.AccessOutput"), 
+                            "ACO.png", CATEGORY_OUTPUT),
 
     };
     

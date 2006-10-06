@@ -40,5 +40,13 @@
 	<classpathentry kind="lib" path="libext/pentaho-1.2.0.jar"/>
 	<classpathentry kind="lib" path="libext/simple-jndi-0.11.1.jar"/>
 	<classpathentry kind="lib" path="libext/h2.jar"/>
+	<classpathentry kind="lib" path="libext/jackcess-1.0.jar">
+		<attributes>
+			<attribute value="file:/C:/Soft/jackcess-1.0/docs/apidocs/" name="javadoc_location"/>
+		</attributes>
+	</classpathentry>
+	<classpathentry kind="lib" path="libext/commons-logging.jar"/>
+	<classpathentry kind="lib" path="libext/commons-collections-3.1.jar"/>
+	<classpathentry kind="lib" path="libext/commons-lang-2.2.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

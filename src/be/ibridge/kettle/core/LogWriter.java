@@ -23,6 +23,7 @@ import java.util.Enumeration;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
 
@@ -135,6 +136,10 @@ public class LogWriter
         // 
         boolean found = false;
         Enumeration appenders = rootLogger.getAllAppenders();
+        
+        // Set the logging level for the Jackcess stuff to INFO...
+        // TODO: make some kind of general configuation possible for this, load from file, etc.
+        Logger.getLogger("com.healthmarketscience.jackcess").setLevel(Level.INFO);
         
         while(appenders.hasMoreElements())
         {

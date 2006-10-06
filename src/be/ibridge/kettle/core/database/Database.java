@@ -2412,9 +2412,11 @@ public class Database
         return getRowInfo(rm, false);
     }
 
-	//
-	// Build the row using ResultSetMetaData rsmd
-	//
+	/**
+	 * Build the row using ResultSetMetaData rsmd
+     * @param rm The resultset metadata to inquire
+     * @param ignoreLength true if you want to ignore the length (workaround for MySQL bug/problem)
+	 */
 	private Row getRowInfo(ResultSetMetaData rm, boolean ignoreLength) throws KettleDatabaseException
 	{
 		int nrcols;
@@ -2444,7 +2446,6 @@ public class Database
                     name = "Field"+fieldNr;
                     fieldNr++;
                 }
-                
                 
 				type=rm.getColumnType(i);
 				valtype=Value.VALUE_TYPE_NONE;
@@ -2526,6 +2527,7 @@ public class Database
                         }
                     }
                     if (length>18 || precision>18) valtype=Value.VALUE_TYPE_BIGNUMBER;
+                    
 					if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE)
 					{
 						if (precision<=0 && length<=0) // undefined size: BIGNUMBER
