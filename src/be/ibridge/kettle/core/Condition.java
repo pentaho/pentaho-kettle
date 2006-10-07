@@ -424,7 +424,16 @@ public class Condition implements Cloneable, XMLInterface
 					case FUNC_SMALLER_EQUAL : retval = (field.compare(field2)<=0); break;
 					case FUNC_LARGER        : retval = (field.compare(field2)> 0); break;
 					case FUNC_LARGER_EQUAL  : retval = (field.compare(field2)>=0); break;
-					case FUNC_REGEXP        : retval = Pattern.matches(field2.getString(), field.getString()); break;
+					case FUNC_REGEXP        :
+                        if (field.isNull() || field2.isNull())
+                        {
+                            retval = false;
+                        }
+                        else
+                        {
+                            retval = Pattern.matches(field2.getString(), field.getString());
+                        }
+                        break;
 					case FUNC_NULL          : retval = (field.isNull());           break;
 					case FUNC_NOT_NULL      : retval = (!field.isNull());          break;
 					case FUNC_IN_LIST		: 
