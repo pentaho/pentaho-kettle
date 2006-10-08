@@ -386,10 +386,11 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 			log.logDetailed(toString(), "logged in using "+userName);
 
 			// move to spool dir ...
-			if (ftpDirectory!=null && ftpDirectory.length()>0)
+			String realFtpDirectory = StringUtil.environmentSubstitute(ftpDirectory);
+			if (!Const.isEmpty(realFtpDirectory))
 			{
-				ftpclient.chdir(ftpDirectory);
-				log.logDetailed(toString(), "Changed to directory ["+ftpDirectory+"]");
+				ftpclient.chdir(realFtpDirectory);
+				log.logDetailed(toString(), "Changed to directory ["+realFtpDirectory+"]");
 			}
 			
 			// Get all the files in the current directory...
@@ -421,10 +422,10 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 			}
 
 			Pattern pattern = null;
-			if (wildcard!=null && wildcard.length()>0) 
+			if (!Const.isEmpty(wildcard)) 
 			{
-                String translatedWildcard = StringUtil.environmentSubstitute(wildcard);
-                pattern = Pattern.compile(translatedWildcard);
+				String realWildcard = StringUtil.environmentSubstitute(wildcard);
+                pattern = Pattern.compile(realWildcard);
 			}
 
 			// Get the files in the list...
