@@ -1510,7 +1510,7 @@ public class Chef implements AddUndoPositionInterface
 					DatabaseMeta dbinfo = jobMeta.findDatabase(name);
 					if (dbinfo!=null)
 					{
-						DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, props, SWT.NONE, dbinfo, jobMeta.databases, true );
+						DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, dbinfo, jobMeta.databases, true );
 						std.open();
 					}
 					else

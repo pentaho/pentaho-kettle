@@ -4104,7 +4104,7 @@ public class Spoon implements AddUndoPositionInterface
                     DatabaseMeta dbinfo = transMeta.findDatabase(name);
                     if (dbinfo!=null)
                     {
-                        DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, props, SWT.NONE, dbinfo, transMeta.getDatabases(), true );
+                        DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, dbinfo, transMeta.getDatabases(), true );
                         std.open();
                     }
                     else

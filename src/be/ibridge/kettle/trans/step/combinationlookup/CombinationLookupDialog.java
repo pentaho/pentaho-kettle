@@ -726,7 +726,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 		{
 			log.logDebug(toString(), Messages.getString("CombinationLookupDialog.Log.LookingAtConnection", inf.toString()));
 
-			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, props, SWT.NONE, inf, transMeta.getDatabases());
+			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
 			std.setSelectedTable(wTable.getText());
 			String tableName = (String) std.open();
 			if (tableName != null)

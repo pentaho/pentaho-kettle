@@ -386,7 +386,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		DatabaseMeta inf = transMeta.findDatabase(wConnection.getText());
 		if (inf!=null)
 		{	
-			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, props, SWT.NONE, inf, transMeta.getDatabases());
+			DatabaseExplorerDialog std = new DatabaseExplorerDialog(shell, SWT.NONE, inf, transMeta.getDatabases());
 			String tableName = (String)std.open();
 			if (tableName != null)
 			{
