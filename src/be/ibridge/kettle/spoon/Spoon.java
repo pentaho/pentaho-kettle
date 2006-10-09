@@ -1776,29 +1776,22 @@ public class Spoon implements AddUndoPositionInterface
 
     public void dupeConnection(String name)
     {
-        DatabaseMeta db = transMeta.findDatabase(name);
-        int pos = transMeta.indexOfDatabase(db);                
-        if (db!=null)
+        DatabaseMeta databaseMeta = transMeta.findDatabase(name);
+        int pos = transMeta.indexOfDatabase(databaseMeta);                
+        if (databaseMeta!=null)
         {
-            DatabaseMeta newdb = (DatabaseMeta)db.clone();
+            DatabaseMeta copy = (DatabaseMeta)databaseMeta.clone();
             String dupename = Messages.getString("Spoon.Various.DupeName") +name; //"(copy of) "
-            newdb.setName(dupename);
-            transMeta.addDatabase(pos+1, newdb);
-            refreshTree();
+            copy.setName(dupename);
 
-            DatabaseDialog con = new DatabaseDialog(shell, SWT.NONE, log, newdb, props);
+            DatabaseDialog con = new DatabaseDialog(shell, SWT.NONE, log, copy, props);
             String newname = con.open(); 
             if (newname != null)  // null: CANCEL
             {
-                transMeta.removeDatabase(pos+1);
-                transMeta.addDatabase(pos+1, newdb);
-                
-                if (!newname.equalsIgnoreCase(dupename)) refreshTree();
-            }
-            else
-            {
-                addUndoNew(new DatabaseMeta[] { (DatabaseMeta)db.clone() }, new int[] { pos });
-                saveConnection(db);             
+                transMeta.addDatabase(pos+1, copy);
+                addUndoNew(new DatabaseMeta[] { (DatabaseMeta)copy.clone() }, new int[] { pos+1 });
+                saveConnection(copy);             
+                refreshTree();
             }
         }
     }
@@ -1821,9 +1814,9 @@ public class Spoon implements AddUndoPositionInterface
     public void delConnection(String name)
     {
         DatabaseMeta db = transMeta.findDatabase(name);
-        int pos = transMeta.indexOfDatabase(db);                
         if (db!=null)
         {
+            int pos = transMeta.indexOfDatabase(db);                
             boolean worked=false;
             
             // delete from repository?
@@ -1856,7 +1849,7 @@ public class Spoon implements AddUndoPositionInterface
                 transMeta.removeDatabase(pos);
             }
 
-            refreshTree();
+            refreshTree(true);
         }
         setShellText();
     }
@@ -2324,6 +2317,8 @@ public class Spoon implements AddUndoPositionInterface
                     
                     // Put a commit behind it!
                     rep.commit();
+                    
+                    db.setChanged(false);
                 }
                 catch(KettleException ke)
                 {

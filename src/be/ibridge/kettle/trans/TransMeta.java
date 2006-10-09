@@ -305,7 +305,6 @@ public class TransMeta implements XMLInterface
     public void addDatabase(DatabaseMeta ci)
     {
         databases.add(ci);
-        changed_databases = true;
     }
 
     /**
@@ -484,7 +483,6 @@ public class TransMeta implements XMLInterface
     {
         if (i < 0 || i >= databases.size()) return;
         databases.remove(i);
-        changed_databases = true;
     }
 
     /**

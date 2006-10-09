@@ -177,7 +177,7 @@ public abstract class BaseDatabaseMeta implements Cloneable
 	 */
 	public String getDatabasePortNumberString()
 	{
-		return getAttributes().getProperty(ATTRIBUTE_PORT_NUMBER, "0");
+		return getAttributes().getProperty(ATTRIBUTE_PORT_NUMBER, "-1");
 	}
 	
 	/**
