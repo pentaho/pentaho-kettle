@@ -356,6 +356,7 @@ public class LogWriter
 		if (level<lvl) return; // not for our eyes.
 		
         
+        // Where did this come from???
         Logger logger = Logger.getLogger(subject);
         
         Log4jMessage message = new Log4jMessage(msg, subject, lvl);
