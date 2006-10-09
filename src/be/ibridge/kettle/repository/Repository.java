@@ -59,6 +59,17 @@ import be.ibridge.kettle.trans.TransMeta;
  */
 public class Repository
 {
+
+    private final String repositoryTableNames[] = new String[] 
+         { 
+            "R_DATABASE_TYPE", "R_DATABASE_CONTYPE", "R_DATABASE", "R_DATABASE_ATTRIBUTE", "R_NOTE",
+            "R_TRANSFORMATION", "R_DIRECTORY", "R_TRANS_ATTRIBUTE", "R_DEPENDENCY", "R_TRANS_STEP_CONDITION",
+            "R_CONDITION", "R_VALUE", "R_TRANS_HOP", "R_STEP_TYPE", "R_STEP", "R_STEP_ATTRIBUTE", "R_TRANS_NOTE",
+            "R_JOB", "R_LOGLEVEL", "R_LOG", "R_JOBENTRY", "R_JOBENTRY_COPY", "R_JOBENTRY_TYPE",
+            "R_JOBENTRY_ATTRIBUTE", "R_JOB_HOP", "R_JOB_NOTE", "R_PROFILE", "R_USER",
+            "R_PERMISSION", "R_PROFILE_PERMISSION", "R_STEP_DATABASE" 
+         };
+    
     public static final int REQUIRED_MAJOR_VERSION = 2;
     public static final int REQUIRED_MINOR_VERSION = 3;
     
@@ -177,17 +188,17 @@ public class Repository
 	 * @param locksource
 	 * @return true if the connection went well, false if we couldn't connect.
 	 */
-	public boolean connect(String locksource) throws KettleException
+	public synchronized boolean connect(String locksource) throws KettleException
 	{
 		return connect(false, true, locksource, false);
 	}
 
-    public boolean connect(boolean no_lookup, boolean readDirectory, String locksource) throws KettleException
+    public synchronized boolean connect(boolean no_lookup, boolean readDirectory, String locksource) throws KettleException
     {
         return connect(no_lookup, readDirectory, locksource, false);
     }
 
-	public boolean connect(boolean no_lookup, boolean readDirectory, String locksource, boolean ignoreVersion) throws KettleException
+	public synchronized boolean connect(boolean no_lookup, boolean readDirectory, String locksource, boolean ignoreVersion) throws KettleException
 	{
 		if (repinfo.isLocked())
 		{
@@ -285,7 +296,7 @@ public class Repository
         }
     }
 
-    public void refreshRepositoryDirectoryTree() throws KettleException
+    public synchronized void refreshRepositoryDirectoryTree() throws KettleException
     {
         try
         {
@@ -299,7 +310,7 @@ public class Repository
 
     }
 
-	public void disconnect()
+	public synchronized void disconnect()
 	{
 		try
 		{
@@ -316,7 +327,7 @@ public class Repository
 		}
 	}
 
-	public void setAutoCommit(boolean autocommit)
+	public synchronized void setAutoCommit(boolean autocommit)
 	{
 		if (!autocommit)
 			database.setCommit(99999999);
@@ -324,7 +335,7 @@ public class Repository
 			database.setCommit(0);
 	}
 
-	public void commit() throws KettleException
+	public synchronized void commit() throws KettleException
 	{
 		try
 		{
@@ -339,7 +350,7 @@ public class Repository
 		}
 	}
 
-	public void rollback()
+	public synchronized void rollback()
 	{
 		try
 		{
@@ -370,7 +381,7 @@ public class Repository
         this.stepAttributesBuffer = stepAttributesBuffer;
     }
 	
-	public void fillStepAttributesBuffer(long id_transformation) throws KettleDatabaseException
+	public synchronized void fillStepAttributesBuffer(long id_transformation) throws KettleDatabaseException
 	{
 	    String sql = "SELECT ID_STEP, CODE, NR, VALUE_NUM, VALUE_STR "+
 	                 "FROM R_STEP_ATTRIBUTE "+
@@ -383,7 +394,7 @@ public class Repository
         Collections.sort(stepAttributesBuffer);  // just to make sure...
 	}
 	
-	private Row searchStepAttributeInBuffer(long id_step, String code, long nr)
+	private synchronized Row searchStepAttributeInBuffer(long id_step, String code, long nr)
 	{
 	    int idx = searchStepAttributeIndexInBuffer(id_step, code, nr);
 	    if (idx<0) return null;
@@ -396,7 +407,7 @@ public class Repository
 	}
 	
 	
-	private int searchStepAttributeIndexInBuffer(long id_step, String code, long nr)
+	private synchronized int searchStepAttributeIndexInBuffer(long id_step, String code, long nr)
 	{
 	    Row compare = new Row();
 	    compare.addValue(new Value("ID_STEP", id_step));
@@ -417,7 +428,7 @@ public class Repository
         return -1;
 	}
 
-	private int searchNrStepAttributes(long id_step, String code)
+	private synchronized int searchNrStepAttributes(long id_step, String code)
 	{
 	    // Search the index of the first step attribute with the specified code...
 	    int idx = searchStepAttributeIndexInBuffer(id_step, code, 0L);
@@ -457,72 +468,72 @@ public class Repository
 	// LOOKUP ID
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	public long getJobID(String name, long id_directory) throws KettleDatabaseException
+	public synchronized long getJobID(String name, long id_directory) throws KettleDatabaseException
 	{
 		return getIDWithValue("R_JOB", "ID_JOB", "NAME", name, "ID_DIRECTORY", id_directory);
 	}
 
-	public long getTransformationID(String name, long id_directory) throws KettleDatabaseException
+	public synchronized long getTransformationID(String name, long id_directory) throws KettleDatabaseException
 	{
 		return getIDWithValue("R_TRANSFORMATION", "ID_TRANSFORMATION", "NAME", name, "ID_DIRECTORY", id_directory);
 	}
 
-	public long getNoteID(String note) throws KettleDatabaseException
+	public synchronized long getNoteID(String note) throws KettleDatabaseException
 	{
 		return getIDWithValue("R_NOTE", "ID_NOTE", "VALUE_STR", note);
 	}
 
-	public long getDatabaseID(String name) throws KettleDatabaseException
+	public synchronized long getDatabaseID(String name) throws KettleDatabaseException
 	{
 		return getIDWithValue("R_DATABASE", "ID_DATABASE", "NAME", name);
 	}
 
-	public long getDatabaseTypeID(String code) throws KettleDatabaseException
+	public synchronized long getDatabaseTypeID(String code) throws KettleDatabaseException
 	{
 		return getIDWithValue("R_DATABASE_TYPE", "ID_DATABASE_TYPE", "CODE", code);
 	}
 
-	public long getDatabaseConTypeID(String code) throws KettleDatabaseException
+	public synchronized long getDatabaseConTypeID(String code) throws KettleDatabaseException
 	{
 		return getIDWithValue("R_DATABASE_CONTYPE", "ID_DATABASE_CONTYPE", "CODE", code);
 	}
 
-	public long getStepTypeID(String code) throws KettleDatabaseException
+	public synchronized long getStepTypeID(String code) throws KettleDatabaseException
 	{
 		return getIDWithValue("R_STEP_TYPE", "ID_STEP_TYPE", "CODE", code);
 	}
 
-	public long getJobEntryID(String name, long id_job) throws KettleDatabaseException
+	public synchronized long getJobEntryID(String name, long id_job) throws KettleDatabaseException
 	{
 		return getIDWithValue("R_JOBENTRY", "ID_JOBENTRY", "NAME", name, "ID_JOB", id_job);
 	}
 
-	public long getJobEntryTypeID(String code) throws KettleDatabaseException
+	public synchronized long getJobEntryTypeID(String code) throws KettleDatabaseException
 	{
 		return getIDWithValue("R_JOBENTRY_TYPE", "ID_JOBENTRY_TYPE", "CODE", code);
 	}
 
-	public long getStepID(String name, long id_transformation) throws KettleDatabaseException
+	public synchronized long getStepID(String name, long id_transformation) throws KettleDatabaseException
 	{
 		return getIDWithValue("R_STEP", "ID_STEP", "NAME", name, "ID_TRANSFORMATION", id_transformation);
 	}
 
-	public long getUserID(String login) throws KettleDatabaseException
+	public synchronized long getUserID(String login) throws KettleDatabaseException
 	{
 		return getIDWithValue("R_USER", "ID_USER", "LOGIN", login);
 	}
 
-	public long getProfileID(String profilename) throws KettleDatabaseException
+	public synchronized long getProfileID(String profilename) throws KettleDatabaseException
 	{
 		return getIDWithValue("R_PROFILE", "ID_PROFILE", "NAME", profilename);
 	}
 
-	public long getPermissionID(String code) throws KettleDatabaseException
+	public synchronized long getPermissionID(String code) throws KettleDatabaseException
 	{
 		return getIDWithValue("R_PERMISSION", "ID_PERMISSION", "CODE", code);
 	}
 
-	public long getTransHopID(long id_transformation, long id_step_from, long id_step_to)
+	public synchronized long getTransHopID(long id_transformation, long id_step_from, long id_step_to)
 			throws KettleDatabaseException
 	{
 		String lookupkey[] = new String[] { "ID_TRANSFORMATION", "ID_STEP_FROM", "ID_STEP_TO" };
@@ -531,7 +542,7 @@ public class Repository
 		return getIDWithValue("R_TRANS_HOP", "ID_TRANS_HOP", lookupkey, key);
 	}
 
-	public long getJobHopID(long id_job, long id_jobentry_copy_from, long id_jobentry_copy_to)
+	public synchronized long getJobHopID(long id_job, long id_jobentry_copy_from, long id_jobentry_copy_to)
 			throws KettleDatabaseException
 	{
 		String lookupkey[] = new String[] { "ID_JOB", "ID_JOBENTRY_COPY_FROM", "ID_JOBENTRY_COPY_TO" };
@@ -540,7 +551,7 @@ public class Repository
 		return getIDWithValue("R_JOB_HOP", "ID_JOB_HOP", lookupkey, key);
 	}
 
-	public long getDependencyID(long id_transformation, long id_database, String tablename)
+	public synchronized long getDependencyID(long id_transformation, long id_database, String tablename)
 			throws KettleDatabaseException
 	{
 		String lookupkey[] = new String[] { "ID_TRANSFORMATION", "ID_DATABASE" };
@@ -549,7 +560,7 @@ public class Repository
 		return getIDWithValue("R_DEPENDENCY", "ID_DEPENDENCY", "TABLE_NAME", tablename, lookupkey, key);
 	}
 
-	public long getRootDirectoryID() throws KettleDatabaseException
+	public synchronized long getRootDirectoryID() throws KettleDatabaseException
 	{
 		Row result = database.getOneRow("SELECT ID_DIRECTORY FROM R_DIRECTORY WHERE ID_DIRECTORY_PARENT = 0");
 		if (result != null && result.getValue(0).isNumeric())
@@ -557,7 +568,7 @@ public class Repository
 		return -1;
 	}
 
-	public int getNrSubDirectories(long id_directory) throws KettleDatabaseException
+	public synchronized int getNrSubDirectories(long id_directory) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -571,7 +582,7 @@ public class Repository
 		return retval;
 	}
 
-	public long[] getSubDirectoryIDs(long id_directory) throws KettleDatabaseException
+	public synchronized long[] getSubDirectoryIDs(long id_directory) throws KettleDatabaseException
 	{
 		int nr = getNrSubDirectories(id_directory);
 		long retval[] = new long[nr];
@@ -592,7 +603,7 @@ public class Repository
 		return retval;
 	}
 
-	private long getIDWithValue(String tablename, String idfield, String lookupfield, String value) throws KettleDatabaseException
+	private synchronized long getIDWithValue(String tablename, String idfield, String lookupfield, String value) throws KettleDatabaseException
 	{
 		Row par = new Row();
 		par.addValue(new Value("value", value));
@@ -603,8 +614,7 @@ public class Repository
 		return -1;
 	}
 
-	private long getIDWithValue(String tablename, String idfield, String lookupfield, String value, String lookupkey,
-			long key) throws KettleDatabaseException
+	private synchronized long getIDWithValue(String tablename, String idfield, String lookupfield, String value, String lookupkey, long key) throws KettleDatabaseException
 	{
 		Row par = new Row();
 		par.addValue(new Value("value", value));
@@ -617,8 +627,7 @@ public class Repository
 		return -1;
 	}
 
-	private long getIDWithValue(String tablename, String idfield, String lookupkey[], long key[])
-			throws KettleDatabaseException
+	private synchronized long getIDWithValue(String tablename, String idfield, String lookupkey[], long key[]) throws KettleDatabaseException
 	{
 		Row par = new Row();
 		String sql = "SELECT " + databaseMeta.quoteField(idfield) + " FROM " + databaseMeta.quoteField(tablename) + " ";
@@ -638,8 +647,7 @@ public class Repository
 		return -1;
 	}
 
-	private long getIDWithValue(String tablename, String idfield, String lookupfield, String value, String lookupkey[],
-			long key[]) throws KettleDatabaseException
+	private synchronized long getIDWithValue(String tablename, String idfield, String lookupfield, String value, String lookupkey[], long key[]) throws KettleDatabaseException
 	{
 		Row par = new Row();
 		par.addValue(new Value(lookupfield, value));
@@ -658,23 +666,22 @@ public class Repository
 		return -1;
 	}
 
-	public String getDatabaseTypeCode(long id_database_type) throws KettleDatabaseException
+	public synchronized String getDatabaseTypeCode(long id_database_type) throws KettleDatabaseException
 	{
 		return getStringWithID("R_DATABASE_TYPE", "ID_DATABASE_TYPE", id_database_type, "CODE");
 	}
 
-	public String getDatabaseConTypeCode(long id_database_contype) throws KettleDatabaseException
+	public synchronized String getDatabaseConTypeCode(long id_database_contype) throws KettleDatabaseException
 	{
 		return getStringWithID("R_DATABASE_CONTYPE", "ID_DATABASE_CONTYPE", id_database_contype, "CODE");
 	}
 
-	public String getStepTypeCode(long id_database_type) throws KettleDatabaseException
+	public synchronized String getStepTypeCode(long id_database_type) throws KettleDatabaseException
 	{
 		return getStringWithID("R_STEP_TYPE", "ID_STEP_TYPE", id_database_type, "CODE");
 	}
 
-	private String getStringWithID(String tablename, String keyfield, long id, String fieldname)
-			throws KettleDatabaseException
+	private synchronized String getStringWithID(String tablename, String keyfield, long id, String fieldname) throws KettleDatabaseException
 	{
 		String sql = "SELECT " + databaseMeta.quoteField(fieldname) + " FROM " + databaseMeta.quoteField(tablename) + " WHERE " + databaseMeta.quoteField(keyfield) + " = ?";
 		Row par = new Row();
@@ -691,8 +698,7 @@ public class Repository
 	// DIRECTORIES
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	public void moveTransformation(String transname, long id_directory_from, long id_directory_to)
-			throws KettleDatabaseException
+	public synchronized void moveTransformation(String transname, long id_directory_from, long id_directory_to) throws KettleDatabaseException
 	{
 		String sql = "UPDATE R_TRANSFORMATION SET ID_DIRECTORY = ? WHERE NAME = ? AND ID_DIRECTORY = ?";
 
@@ -704,7 +710,7 @@ public class Repository
 		database.execStatement(sql, par);
 	}
 
-	public void moveJob(String jobname, long id_directory_from, long id_directory_to) throws KettleDatabaseException
+	public synchronized void moveJob(String jobname, long id_directory_from, long id_directory_to) throws KettleDatabaseException
 	{
 		String sql = "UPDATE R_JOB SET ID_DIRECTORY = ? WHERE NAME = ? AND ID_DIRECTORY = ?";
 
@@ -720,122 +726,122 @@ public class Repository
 	// GET NEW IDS
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	public long getNextTransformationID() throws KettleDatabaseException
+	public synchronized long getNextTransformationID() throws KettleDatabaseException
 	{
 		return getNextID("R_TRANSFORMATION", "ID_TRANSFORMATION");
 	}
 
-	public long getNextJobID() throws KettleDatabaseException
+	public synchronized long getNextJobID() throws KettleDatabaseException
 	{
 		return getNextID("R_JOB", "ID_JOB");
 	}
 
-	public long getNextNoteID() throws KettleDatabaseException
+	public synchronized long getNextNoteID() throws KettleDatabaseException
 	{
 		return getNextID("R_NOTE", "ID_NOTE");
 	}
 
-	public long getNextDatabaseID() throws KettleDatabaseException
+	public synchronized long getNextDatabaseID() throws KettleDatabaseException
 	{
 		return getNextID("R_DATABASE", "ID_DATABASE");
 	}
 
-	public long getNextDatabaseTypeID() throws KettleDatabaseException
+	public synchronized long getNextDatabaseTypeID() throws KettleDatabaseException
 	{
 		return getNextID("R_DATABASE_TYPE", "ID_DATABASE_TYPE");
 	}
 
-	public long getNextDatabaseConnectionTypeID() throws KettleDatabaseException
+	public synchronized long getNextDatabaseConnectionTypeID() throws KettleDatabaseException
 	{
 		return getNextID("R_DATABASE_CONTYPE", "ID_DATABASE_CONTYPE");
 	}
 
-	public long getNextLoglevelID() throws KettleDatabaseException
+	public synchronized long getNextLoglevelID() throws KettleDatabaseException
 	{
 		return getNextID("R_LOGLEVEL", "ID_LOGLEVEL");
 	}
 
-	public long getNextStepTypeID() throws KettleDatabaseException
+	public synchronized long getNextStepTypeID() throws KettleDatabaseException
 	{
 		return getNextID("R_STEP_TYPE", "ID_STEP_TYPE");
 	}
 
-	public long getNextStepID() throws KettleDatabaseException
+	public synchronized long getNextStepID() throws KettleDatabaseException
 	{
 		return getNextID("R_STEP", "ID_STEP");
 	}
 
-	public long getNextJobEntryID() throws KettleDatabaseException
+	public synchronized long getNextJobEntryID() throws KettleDatabaseException
 	{
 		return getNextID("R_JOBENTRY", "ID_JOBENTRY");
 	}
 
-	public long getNextJobEntryTypeID() throws KettleDatabaseException
+	public synchronized long getNextJobEntryTypeID() throws KettleDatabaseException
 	{
 		return getNextID("R_JOBENTRY_TYPE", "ID_JOBENTRY_TYPE");
 	}
 
-	public long getNextJobEntryCopyID() throws KettleDatabaseException
+	public synchronized long getNextJobEntryCopyID() throws KettleDatabaseException
 	{
 		return getNextID("R_JOBENTRY_COPY", "ID_JOBENTRY_COPY");
 	}
 
-	public long getNextStepAttributeID() throws KettleDatabaseException
+	public synchronized long getNextStepAttributeID() throws KettleDatabaseException
 	{
 		return getNextID("R_STEP_ATTRIBUTE", "ID_STEP_ATTRIBUTE");
 	}
     
-    public long getNextDatabaseAttributeID() throws KettleDatabaseException
+    public synchronized long getNextDatabaseAttributeID() throws KettleDatabaseException
     {
         return getNextID("R_DATABASE_ATTRIBUTE", "ID_DATABASE_ATTRIBUTE");
     }
 
-	public long getNextTransHopID() throws KettleDatabaseException
+	public synchronized long getNextTransHopID() throws KettleDatabaseException
 	{
 		return getNextID("R_TRANS_HOP", "ID_TRANS_HOP");
 	}
 
-	public long getNextJobHopID() throws KettleDatabaseException
+	public synchronized long getNextJobHopID() throws KettleDatabaseException
 	{
 		return getNextID("R_JOB_HOP", "ID_JOB_HOP");
 	}
 
-	public long getNextDepencencyID() throws KettleDatabaseException
+	public synchronized long getNextDepencencyID() throws KettleDatabaseException
 	{
 		return getNextID("R_DEPENDENCY", "ID_DEPENDENCY");
 	}
 
-	public long getNextConditionID() throws KettleDatabaseException
+	public synchronized long getNextConditionID() throws KettleDatabaseException
 	{
 		return getNextID("R_CONDITION", "ID_CONDITION");
 	}
 
-	public long getNextValueID() throws KettleDatabaseException
+	public synchronized long getNextValueID() throws KettleDatabaseException
 	{
 		return getNextID("R_VALUE", "ID_VALUE");
 	}
 
-	public long getNextUserID() throws KettleDatabaseException
+	public synchronized long getNextUserID() throws KettleDatabaseException
 	{
 		return getNextID("R_USER", "ID_USER");
 	}
 
-	public long getNextProfileID() throws KettleDatabaseException
+	public synchronized long getNextProfileID() throws KettleDatabaseException
 	{
 		return getNextID("R_PROFILE", "ID_PROFILE");
 	}
 
-	public long getNextPermissionID() throws KettleDatabaseException
+	public synchronized long getNextPermissionID() throws KettleDatabaseException
 	{
 		return getNextID("R_PERMISSION", "ID_PERMISSION");
 	}
 
-	public long getNextJobEntryAttributeID() throws KettleDatabaseException
+	public synchronized long getNextJobEntryAttributeID() throws KettleDatabaseException
 	{
 	    return getNextID("R_JOBENTRY_ATTRIBUTE", "ID_JOBENTRY_ATTRIBUTE");
 	}
 	
-	public long getNextID(String tableName, String fieldName) throws KettleDatabaseException
+	public synchronized long getNextID(String tableName, String fieldName) throws KettleDatabaseException
 	{
 	    String counterName = tableName+"."+fieldName;
 	    Counter counter = Counters.getInstance().getCounter(counterName);
@@ -852,17 +858,17 @@ public class Repository
 	    }
 	}
     
-    public void clearNextIDCounters()
+    public synchronized void clearNextIDCounters()
     {
         Counters.getInstance().clear();
     }
 
-	public long getNextDirectoryID() throws KettleDatabaseException
+	public synchronized long getNextDirectoryID() throws KettleDatabaseException
 	{
 		return getNextID("R_DIRECTORY", "ID_DIRECTORY");
 	}
 
-	private long getNextTableID(String tablename, String idfield) throws KettleDatabaseException
+	private synchronized long getNextTableID(String tablename, String idfield) throws KettleDatabaseException
 	{
 		long retval = -1;
 
@@ -893,7 +899,7 @@ public class Repository
 	// INSERT VALUES
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	public void insertTransformation(long id_transformation, String name, long id_step_read, long id_step_write,
+	public synchronized void insertTransformation(long id_transformation, String name, long id_step_read, long id_step_write,
 			long id_step_input, long id_step_output, long id_step_update, long id_database_log, String table_name_log,
 			boolean use_batchid, boolean use_logfield, long id_database_maxdate, String table_name_maxdate,
 			String field_name_maxdate, double offset_maxdate, double diff_maxdate, String modified_user,
@@ -934,7 +940,7 @@ public class Repository
 		if (id_database_maxdate>0) insertStepDatabase(id_transformation, -1L, id_database_maxdate);
 	}
 
-	public void insertJob(long id_job, long id_directory, String name, long id_database_log, String table_name_log,
+	public synchronized void insertJob(long id_job, long id_directory, String name, long id_database_log, String table_name_log,
 			String modified_user, Value modified_date, boolean useBatchId, boolean batchIdPassed, boolean logfieldUsed) throws KettleDatabaseException
 	{
 		Row table = new Row();
@@ -957,7 +963,7 @@ public class Repository
 		database.closeInsert();
 	}
 
-	public long insertNote(String note, long gui_location_x, long gui_location_y, long gui_location_width,
+	public synchronized long insertNote(String note, long gui_location_x, long gui_location_y, long gui_location_width,
 			long gui_location_height) throws KettleDatabaseException
 	{
 		long id = getNextNoteID();
@@ -979,7 +985,7 @@ public class Repository
 		return id;
 	}
 
-	public void insertTransNote(long id_transformation, long id_note) throws KettleDatabaseException
+	public synchronized void insertTransNote(long id_transformation, long id_note) throws KettleDatabaseException
 	{
 		Row table = new Row();
 
@@ -992,7 +998,7 @@ public class Repository
 		database.closeInsert();
 	}
 
-	public void insertJobNote(long id_job, long id_note) throws KettleDatabaseException
+	public synchronized void insertJobNote(long id_job, long id_note) throws KettleDatabaseException
 	{
 		Row table = new Row();
 
@@ -1005,7 +1011,7 @@ public class Repository
 		database.closeInsert();
 	}
 
-	public long insertDatabase(String name, String type, String access, String host, String dbname, String port,
+	public synchronized long insertDatabase(String name, String type, String access, String host, String dbname, String port,
 			String user, String pass, String servername, String data_tablespace, String index_tablespace)
 			throws KettleDatabaseException
 	{
@@ -1059,7 +1065,7 @@ public class Repository
 		return id;
 	}
 
-	public long insertStep(long id_transformation, String name, String description, String steptype,
+	public synchronized long insertStep(long id_transformation, String name, String description, String steptype,
 			boolean distribute, long copies, long gui_location_x, long gui_location_y, boolean gui_draw)
 			throws KettleDatabaseException
 	{
@@ -1088,7 +1094,7 @@ public class Repository
 		return id;
 	}
 
-	public long insertStepAttribute(long id_transformation, long id_step, long nr, String code, double value_num,
+	public synchronized long insertStepAttribute(long id_transformation, long id_step, long nr, String code, double value_num,
 			String value_str) throws KettleDatabaseException
 	{
 		long id = getNextStepAttributeID();
@@ -1127,7 +1133,7 @@ public class Repository
 		return id;
 	}
 
-	public void insertStepDatabase(long id_transformation, long id_step, long id_database)
+	public synchronized void insertStepDatabase(long id_transformation, long id_step, long id_database)
 			throws KettleDatabaseException
 	{
 		// First check if the relationship is already there.
@@ -1145,7 +1151,7 @@ public class Repository
 		}
 	}
 	
-    public long insertDatabaseAttribute(long id_database, String code, String value_str) throws KettleDatabaseException
+    public synchronized long insertDatabaseAttribute(long id_database, String code, String value_str) throws KettleDatabaseException
     {
         long id = getNextDatabaseAttributeID();
 
@@ -1170,7 +1176,7 @@ public class Repository
     }
 
 	
-	public long insertJobEntryAttribute(long id_job, long id_jobentry, long nr, String code, double value_num,
+	public synchronized long insertJobEntryAttribute(long id_job, long id_jobentry, long nr, String code, double value_num,
 			String value_str) throws KettleDatabaseException
 	{
 		long id = getNextJobEntryAttributeID();
@@ -1193,7 +1199,7 @@ public class Repository
 		return id;
 	}
 
-	public long insertTransHop(long id_transformation, long id_step_from, long id_step_to, boolean enabled)
+	public synchronized long insertTransHop(long id_transformation, long id_step_from, long id_step_to, boolean enabled)
 			throws KettleDatabaseException
 	{
 		long id = getNextTransHopID();
@@ -1214,7 +1220,7 @@ public class Repository
 		return id;
 	}
 
-	public long insertJobHop(long id_job, long id_jobentry_copy_from, long id_jobentry_copy_to, boolean enabled,
+	public synchronized long insertJobHop(long id_job, long id_jobentry_copy_from, long id_jobentry_copy_to, boolean enabled,
 			boolean evaluation, boolean unconditional) throws KettleDatabaseException
 	{
 		long id = getNextJobHopID();
@@ -1237,7 +1243,7 @@ public class Repository
 		return id;
 	}
 
-	public long insertDependency(long id_transformation, long id_database, String tablename, String fieldname)
+	public synchronized long insertDependency(long id_transformation, long id_database, String tablename, String fieldname)
 			throws KettleDatabaseException
 	{
 		long id = getNextDepencencyID();
@@ -1258,7 +1264,7 @@ public class Repository
 		return id;
 	}
 
-	public long insertCondition(long id_condition_parent, Condition condition) throws KettleDatabaseException
+	public synchronized long insertCondition(long id_condition_parent, Condition condition) throws KettleDatabaseException
 	{
 		long id = getNextConditionID();
 
@@ -1291,7 +1297,7 @@ public class Repository
 		return id;
 	}
 
-	public void insertTransStepCondition(long id_transformation, long id_step, long id_condition)
+	public synchronized void insertTransStepCondition(long id_transformation, long id_step, long id_condition)
 			throws KettleDatabaseException
 	{
 		String tablename = "R_TRANS_STEP_CONDITION";
@@ -1306,7 +1312,7 @@ public class Repository
 		database.closeInsert();
 	}
 
-	public long insertDirectory(long id_directory_parent, RepositoryDirectory dir) throws KettleDatabaseException
+	public synchronized long insertDirectory(long id_directory_parent, RepositoryDirectory dir) throws KettleDatabaseException
 	{
 		long id = getNextDirectoryID();
 
@@ -1325,13 +1331,13 @@ public class Repository
 		return id;
 	}
 
-	public void deleteDirectory(long id_directory) throws KettleDatabaseException
+	public synchronized void deleteDirectory(long id_directory) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_DIRECTORY WHERE ID_DIRECTORY = " + id_directory;
 		database.execStatement(sql);
 	}
 
-	public void renameDirectory(long id_directory, String name) throws KettleDatabaseException
+	public synchronized void renameDirectory(long id_directory, String name) throws KettleDatabaseException
 	{
 		Row r = new Row();
 		r.addValue(new Value("DIRECTORY_NAME", name));
@@ -1344,7 +1350,7 @@ public class Repository
 		database.execStatement(sql, r);
 	}
 
-	public long lookupValue(String name, String type, String value_str, boolean isnull) throws KettleDatabaseException
+	public synchronized long lookupValue(String name, String type, String value_str, boolean isnull) throws KettleDatabaseException
 	{
 		String tablename = "R_VALUE";
 		Row table = new Row();
@@ -1366,7 +1372,7 @@ public class Repository
 			return -1;
 	}
 
-	public long insertValue(String name, String type, String value_str, boolean isnull, long id_value_prev)
+	public synchronized long insertValue(String name, String type, String value_str, boolean isnull, long id_value_prev)
 			throws KettleDatabaseException
 	{
 		long id_value = lookupValue(name, type, value_str, isnull);
@@ -1394,7 +1400,7 @@ public class Repository
 		return id_value;
 	}
 
-	public long insertJobEntry(long id_job, String name, String description, String jobentrytype)
+	public synchronized long insertJobEntry(long id_job, String name, String description, String jobentrytype)
 			throws KettleDatabaseException
 	{
 		long id = getNextJobEntryID();
@@ -1419,7 +1425,7 @@ public class Repository
 		return id;
 	}
 
-	public long insertJobEntryCopy(long id_job, long id_jobentry, long id_jobentry_type, int nr, long gui_location_x,
+	public synchronized long insertJobEntryCopy(long id_job, long id_jobentry, long id_jobentry_type, int nr, long gui_location_x,
 			long gui_location_y, boolean gui_draw, boolean parallel) throws KettleDatabaseException
 	{
 		long id = getNextJobEntryCopyID();
@@ -1444,7 +1450,7 @@ public class Repository
 		return id;
 	}
 
-	public void insertTableRow(String tablename, Row values) throws KettleDatabaseException
+	public synchronized void insertTableRow(String tablename, Row values) throws KettleDatabaseException
 	{
 		database.prepareInsert(values, tablename);
 		database.setValuesInsert(values);
@@ -1456,7 +1462,7 @@ public class Repository
 	// UPDATE VALUES
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	public void updateDatabase(long id_database, String name, String type, String access, String host, String dbname,
+	public synchronized void updateDatabase(long id_database, String name, String type, String access, String host, String dbname,
 			String port, String user, String pass, String servername, String data_tablespace, String index_tablespace)
 			throws KettleDatabaseException
 	{
@@ -1479,7 +1485,7 @@ public class Repository
 		updateTableRow("R_DATABASE", "ID_DATABASE", table, id_database);
 	}
 
-	public void updateTableRow(String tablename, String idfield, Row values, long id) throws KettleDatabaseException
+	public synchronized void updateTableRow(String tablename, String idfield, Row values, long id) throws KettleDatabaseException
 	{
 		String sets[] = new String[values.size()];
 		for (int i = 0; i < values.size(); i++)
@@ -1496,7 +1502,7 @@ public class Repository
 		database.closeUpdate();
 	}
 
-	public void updateTableRow(String tablename, String idfield, Row values) throws KettleDatabaseException
+	public synchronized void updateTableRow(String tablename, String idfield, Row values) throws KettleDatabaseException
 	{
 		long id = values.searchValue(idfield).getInteger();
 		values.removeValue(idfield);
@@ -1518,7 +1524,7 @@ public class Repository
 	// READ DATA FROM REPOSITORY
 	//////////////////////////////////////////////////////////////////////////////////////////
 
-	public int getNrJobs() throws KettleDatabaseException
+	public synchronized int getNrJobs() throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1532,7 +1538,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrTransformations(long id_directory) throws KettleDatabaseException
+	public synchronized int getNrTransformations(long id_directory) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1546,7 +1552,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrJobs(long id_directory) throws KettleDatabaseException
+	public synchronized int getNrJobs(long id_directory) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1560,19 +1566,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrSchemas(long id_directory) throws KettleDatabaseException
-	{
-		int retval = 0;
-
-		/*
-		 String sql = "SELECT COUNT(*) FROM R_SCHEMA WHERE ID_DIRECTORY = "+id_directory;
-		 Row r = db.getOneRow(sql);
-		 if (r!=null) { retval = (int)r.getValue(0).getInteger(); }
-		 */
-		return retval;
-	}
-
-	public int getNrDirectories(long id_directory) throws KettleDatabaseException
+    public synchronized int getNrDirectories(long id_directory) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1586,7 +1580,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrConditions(long id_transforamtion) throws KettleDatabaseException
+	public synchronized int getNrConditions(long id_transforamtion) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1600,7 +1594,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrDatabases(long id_transforamtion) throws KettleDatabaseException
+	public synchronized int getNrDatabases(long id_transforamtion) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1614,7 +1608,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrSubConditions(long id_condition) throws KettleDatabaseException
+	public synchronized int getNrSubConditions(long id_condition) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1628,7 +1622,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrTransNotes(long id_transformation) throws KettleDatabaseException
+	public synchronized int getNrTransNotes(long id_transformation) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1642,7 +1636,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrJobNotes(long id_job) throws KettleDatabaseException
+	public synchronized int getNrJobNotes(long id_job) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1656,7 +1650,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrDatabases() throws KettleDatabaseException
+	public synchronized int getNrDatabases() throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1670,7 +1664,7 @@ public class Repository
 		return retval;
 	}
 
-    public int getNrDatabaseAttributes(long id_database) throws KettleDatabaseException
+    public synchronized int getNrDatabaseAttributes(long id_database) throws KettleDatabaseException
     {
         int retval = 0;
 
@@ -1684,7 +1678,7 @@ public class Repository
         return retval;
     }
 
-	public int getNrSteps(long id_transformation) throws KettleDatabaseException
+	public synchronized int getNrSteps(long id_transformation) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1698,7 +1692,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrStepDatabases(long id_database) throws KettleDatabaseException
+	public synchronized int getNrStepDatabases(long id_database) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1712,7 +1706,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrStepAttributes(long id_step) throws KettleDatabaseException
+	public synchronized int getNrStepAttributes(long id_step) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1726,7 +1720,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrTransHops(long id_transformation) throws KettleDatabaseException
+	public synchronized int getNrTransHops(long id_transformation) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1740,7 +1734,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrJobHops(long id_job) throws KettleDatabaseException
+	public synchronized int getNrJobHops(long id_job) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1754,7 +1748,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrTransDependencies(long id_transformation) throws KettleDatabaseException
+	public synchronized int getNrTransDependencies(long id_transformation) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1768,7 +1762,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrJobEntries(long id_job) throws KettleDatabaseException
+	public synchronized int getNrJobEntries(long id_job) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1782,7 +1776,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrJobEntryCopies(long id_job, long id_jobentry) throws KettleDatabaseException
+	public synchronized int getNrJobEntryCopies(long id_job, long id_jobentry) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1797,7 +1791,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrJobEntryCopies(long id_job) throws KettleDatabaseException
+	public synchronized int getNrJobEntryCopies(long id_job) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1811,7 +1805,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrUsers() throws KettleDatabaseException
+	public synchronized int getNrUsers() throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1825,7 +1819,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrPermissions(long id_profile) throws KettleDatabaseException
+	public synchronized int getNrPermissions(long id_profile) throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1839,7 +1833,7 @@ public class Repository
 		return retval;
 	}
 
-	public int getNrProfiles() throws KettleDatabaseException
+	public synchronized int getNrProfiles() throws KettleDatabaseException
 	{
 		int retval = 0;
 
@@ -1853,7 +1847,7 @@ public class Repository
 		return retval;
 	}
 
-	public String[] getTransformationNames(long id_directory) throws KettleDatabaseException
+	public synchronized String[] getTransformationNames(long id_directory) throws KettleDatabaseException
 	{
 		int nr = getNrTransformations(id_directory);
 
@@ -1878,7 +1872,7 @@ public class Repository
 		return Const.sortStrings(retval);
 	}
 
-	public String[] getJobNames(long id_directory) throws KettleDatabaseException
+	public synchronized String[] getJobNames(long id_directory) throws KettleDatabaseException
 	{
 		int nr = getNrJobs(id_directory);
 		String retval[] = new String[nr];
@@ -1902,7 +1896,7 @@ public class Repository
 		return Const.sortStrings(retval);
 	}
 
-	public String[] getDirectoryNames(long id_directory) throws KettleDatabaseException
+	public synchronized String[] getDirectoryNames(long id_directory) throws KettleDatabaseException
 	{
 		int nr = getNrDirectories(id_directory);
 		String retval[] = new String[nr];
@@ -1926,7 +1920,7 @@ public class Repository
 		return Const.sortStrings(retval);
 	}
 
-	public String[] getJobNames() throws KettleDatabaseException
+	public synchronized String[] getJobNames() throws KettleDatabaseException
 	{
 		int nr = getNrJobs();
 		String retval[] = new String[nr];
@@ -2104,7 +2098,7 @@ public class Repository
     }
 
 
-	public String[] getDatabaseNames() throws KettleDatabaseException
+	public synchronized String[] getDatabaseNames() throws KettleDatabaseException
 	{
 		int nr = getNrDatabases();
 		String retval[] = new String[nr];
@@ -2150,7 +2144,7 @@ public class Repository
 		return retval;
 	}
 
-	public String[] getTransformationsUsingDatabase(long id_database) throws KettleDatabaseException
+	public synchronized String[] getTransformationsUsingDatabase(long id_database) throws KettleDatabaseException
 	{
 		String sql = "SELECT DISTINCT ID_TRANSFORMATION FROM R_STEP_DATABASE WHERE ID_DATABASE = " + id_database;
 
@@ -2264,7 +2258,7 @@ public class Repository
 		return retval;
 	}
 
-	public String[] getUserLogins() throws KettleDatabaseException
+	public synchronized String[] getUserLogins() throws KettleDatabaseException
 	{
 		int nr = getNrUsers();
 		String retval[] = new String[nr];
@@ -2377,7 +2371,7 @@ public class Repository
 		return retval;
 	}
 
-	public String[] getProfiles() throws KettleDatabaseException
+	public synchronized String[] getProfiles() throws KettleDatabaseException
 	{
 		int nr = getNrProfiles();
 		String retval[] = new String[nr];
@@ -2517,38 +2511,38 @@ public class Repository
 
 	// STEP ATTRIBUTES: SAVE
 
-	public long saveStepAttribute(long id_transformation, long id_step, String code, String value)
+	public synchronized long saveStepAttribute(long id_transformation, long id_step, String code, String value)
 			throws KettleDatabaseException
 	{
 		return saveStepAttribute(code, 0, id_transformation, id_step, 0.0, value);
 	}
 
-	public long saveStepAttribute(long id_transformation, long id_step, String code, double value)
+	public synchronized long saveStepAttribute(long id_transformation, long id_step, String code, double value)
 			throws KettleDatabaseException
 	{
 		return saveStepAttribute(code, 0, id_transformation, id_step, value, null);
 	}
 
-	public long saveStepAttribute(long id_transformation, long id_step, String code, boolean value)
+	public synchronized long saveStepAttribute(long id_transformation, long id_step, String code, boolean value)
 			throws KettleDatabaseException
 	{
 		return saveStepAttribute(code, 0, id_transformation, id_step, 0.0, value ? "Y" : "N");
 	}
 
-	public long saveStepAttribute(long id_transformation, long id_step, long nr, String code, String value)
+	public synchronized long saveStepAttribute(long id_transformation, long id_step, long nr, String code, String value)
 			throws KettleDatabaseException
 	{
 	    if (value==null || value.length()==0) return -1L;
 		return saveStepAttribute(code, nr, id_transformation, id_step, 0.0, value);
 	}
 
-	public long saveStepAttribute(long id_transformation, long id_step, long nr, String code, double value)
+	public synchronized long saveStepAttribute(long id_transformation, long id_step, long nr, String code, double value)
 			throws KettleDatabaseException
 	{
 		return saveStepAttribute(code, nr, id_transformation, id_step, value, null);
 	}
 
-	public long saveStepAttribute(long id_transformation, long id_step, long nr, String code, boolean value)
+	public synchronized long saveStepAttribute(long id_transformation, long id_step, long nr, String code, boolean value)
 			throws KettleDatabaseException
 	{
 		return saveStepAttribute(code, nr, id_transformation, id_step, 0.0, value ? "Y" : "N");
@@ -2562,20 +2556,20 @@ public class Repository
 
 	// STEP ATTRIBUTES: GET
 
-	public void setLookupStepAttribute() throws KettleDatabaseException
+	public synchronized void setLookupStepAttribute() throws KettleDatabaseException
 	{
 		String sql = "SELECT VALUE_STR, VALUE_NUM FROM R_STEP_ATTRIBUTE WHERE ID_STEP = ?  AND CODE = ?  AND NR = ? ";
 
 		psStepAttributesLookup = database.prepareSQL(sql);
 	}
 
-	public void closeStepAttributeLookupPreparedStatement() throws KettleDatabaseException
+	public synchronized void closeStepAttributeLookupPreparedStatement() throws KettleDatabaseException
 	{
 		database.closePreparedStatement(psStepAttributesLookup);
 		psStepAttributesLookup = null;
 	}
 	
-	public void closeStepAttributeInsertPreparedStatement() throws KettleDatabaseException
+	public synchronized void closeStepAttributeInsertPreparedStatement() throws KettleDatabaseException
 	{
 	    if (psStepAttributesInsert!=null)
 	    {
@@ -2598,7 +2592,7 @@ public class Repository
 		return database.getLookup(psStepAttributesLookup);
 	}
 
-	public long getStepAttributeInteger(long id_step, int nr, String code) throws KettleDatabaseException
+	public synchronized long getStepAttributeInteger(long id_step, int nr, String code) throws KettleDatabaseException
 	{
 		Row r = null;
 		if (stepAttributesBuffer!=null) r = searchStepAttributeInBuffer(id_step, code, (long)nr);
@@ -2618,7 +2612,7 @@ public class Repository
 		return r.searchValue("VALUE_NUM").getNumber();
 	}
 
-	public String getStepAttributeString(long id_step, int nr, String code) throws KettleDatabaseException
+	public synchronized String getStepAttributeString(long id_step, int nr, String code) throws KettleDatabaseException
 	{
 		Row r = null;
 		if (stepAttributesBuffer!=null) r = searchStepAttributeInBuffer(id_step, code, (long)nr);
@@ -2655,12 +2649,12 @@ public class Repository
 		return getStepAttributeNumber(id_step, 0, code);
 	}
 
-	public long getStepAttributeInteger(long id_step, String code) throws KettleDatabaseException
+	public synchronized long getStepAttributeInteger(long id_step, String code) throws KettleDatabaseException
 	{
 		return getStepAttributeInteger(id_step, 0, code);
 	}
 
-	public String getStepAttributeString(long id_step, String code) throws KettleDatabaseException
+	public synchronized String getStepAttributeString(long id_step, String code) throws KettleDatabaseException
 	{
 		return getStepAttributeString(id_step, 0, code);
 	}
@@ -2670,7 +2664,7 @@ public class Repository
 		return getStepAttributeBoolean(id_step, 0, code);
 	}
 
-	public int countNrStepAttributes(long id_step, String code) throws KettleDatabaseException
+	public synchronized int countNrStepAttributes(long id_step, String code) throws KettleDatabaseException
 	{
 	    if (stepAttributesBuffer!=null) // see if we can do this in memory...
 	    {
@@ -2695,37 +2689,37 @@ public class Repository
 
 	// WANTED: throw extra exceptions to locate storage problems (strings too long etc)
 	//
-	public long saveJobEntryAttribute(long id_job, long id_jobentry, String code, String value)
+	public synchronized long saveJobEntryAttribute(long id_job, long id_jobentry, String code, String value)
 			throws KettleDatabaseException
 	{
 		return saveJobEntryAttribute(code, 0, id_job, id_jobentry, 0.0, value);
 	}
 
-	public long saveJobEntryAttribute(long id_job, long id_jobentry, String code, double value)
+	public synchronized long saveJobEntryAttribute(long id_job, long id_jobentry, String code, double value)
 			throws KettleDatabaseException
 	{
 		return saveJobEntryAttribute(code, 0, id_job, id_jobentry, value, null);
 	}
 
-	public long saveJobEntryAttribute(long id_job, long id_jobentry, String code, boolean value)
+	public synchronized long saveJobEntryAttribute(long id_job, long id_jobentry, String code, boolean value)
 			throws KettleDatabaseException
 	{
 		return saveJobEntryAttribute(code, 0, id_job, id_jobentry, 0.0, value ? "Y" : "N");
 	}
 
-	public long saveJobEntryAttribute(long id_job, long id_jobentry, long nr, String code, String value)
+	public synchronized long saveJobEntryAttribute(long id_job, long id_jobentry, long nr, String code, String value)
 			throws KettleDatabaseException
 	{
 		return saveJobEntryAttribute(code, nr, id_job, id_jobentry, 0.0, value);
 	}
 
-	public long saveJobEntryAttribute(long id_job, long id_jobentry, long nr, String code, double value)
+	public synchronized long saveJobEntryAttribute(long id_job, long id_jobentry, long nr, String code, double value)
 			throws KettleDatabaseException
 	{
 		return saveJobEntryAttribute(code, nr, id_job, id_jobentry, value, null);
 	}
 
-	public long saveJobEntryAttribute(long id_job, long id_jobentry, long nr, String code, boolean value)
+	public synchronized long saveJobEntryAttribute(long id_job, long id_jobentry, long nr, String code, boolean value)
 			throws KettleDatabaseException
 	{
 		return saveJobEntryAttribute(code, nr, id_job, id_jobentry, 0.0, value ? "Y" : "N");
@@ -2739,14 +2733,14 @@ public class Repository
 
 	// JOBENTRY ATTRIBUTES: GET
 
-	public void setLookupJobEntryAttribute() throws KettleDatabaseException
+	public synchronized void setLookupJobEntryAttribute() throws KettleDatabaseException
 	{
 		String sql = "SELECT VALUE_STR, VALUE_NUM FROM R_JOBENTRY_ATTRIBUTE WHERE ID_JOBENTRY = ?  AND CODE = ?  AND NR = ? ";
 
 		pstmt_entry_attributes = database.prepareSQL(sql);
 	}
 
-	public void closeLookupJobEntryAttribute() throws KettleDatabaseException
+	public synchronized void closeLookupJobEntryAttribute() throws KettleDatabaseException
 	{
 		database.closePreparedStatement(pstmt_entry_attributes);
 	}
@@ -2762,7 +2756,7 @@ public class Repository
 		return database.getLookup(pstmt_entry_attributes);
 	}
 
-	public long getJobEntryAttributeInteger(long id_jobentry, int nr, String code) throws KettleDatabaseException
+	public synchronized long getJobEntryAttributeInteger(long id_jobentry, int nr, String code) throws KettleDatabaseException
 	{
 		Row r = getJobEntryAttributeRow(id_jobentry, nr, code);
 		if (r == null)
@@ -2778,7 +2772,7 @@ public class Repository
 		return r.searchValue("VALUE_NUM").getNumber();
 	}
 
-	public String getJobEntryAttributeString(long id_jobentry, int nr, String code) throws KettleDatabaseException
+	public synchronized String getJobEntryAttributeString(long id_jobentry, int nr, String code) throws KettleDatabaseException
 	{
 		Row r = getJobEntryAttributeRow(id_jobentry, nr, code);
 		if (r == null)
@@ -2805,12 +2799,12 @@ public class Repository
 		return getJobEntryAttributeNumber(id_jobentry, 0, code);
 	}
 
-	public long getJobEntryAttributeInteger(long id_jobentry, String code) throws KettleDatabaseException
+	public synchronized long getJobEntryAttributeInteger(long id_jobentry, String code) throws KettleDatabaseException
 	{
 		return getJobEntryAttributeInteger(id_jobentry, 0, code);
 	}
 
-	public String getJobEntryAttributeString(long id_jobentry, String code) throws KettleDatabaseException
+	public synchronized String getJobEntryAttributeString(long id_jobentry, String code) throws KettleDatabaseException
 	{
 		return getJobEntryAttributeString(id_jobentry, 0, code);
 	}
@@ -2825,7 +2819,7 @@ public class Repository
 		return getJobEntryAttributeBoolean(id_jobentry, 0, code, def);
 	}
 
-	public int countNrJobEntryAttributes(long id_jobentry, String code) throws KettleDatabaseException
+	public synchronized int countNrJobEntryAttributes(long id_jobentry, String code) throws KettleDatabaseException
 	{
 		String sql = "SELECT COUNT(*) FROM R_JOBENTRY_ATTRIBUTE WHERE ID_JOBENTRY = ? AND CODE = ?";
 		Row table = new Row();
@@ -2841,13 +2835,13 @@ public class Repository
 	// DELETE DATA IN REPOSITORY
 	//////////////////////////////////////////////////////////////////////////////////////////
 
-	public void delSteps(long id_transformation) throws KettleDatabaseException
+	public synchronized void delSteps(long id_transformation) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_STEP WHERE ID_TRANSFORMATION = " + id_transformation;
 		database.execStatement(sql);
 	}
 
-	public void delCondition(long id_condition) throws KettleDatabaseException
+	public synchronized void delCondition(long id_condition) throws KettleDatabaseException
 	{
 		boolean ok = true;
 		long ids[] = getSubConditionIDs(id_condition);
@@ -2869,7 +2863,7 @@ public class Repository
 		}
 	}
 
-	public void delStepConditions(long id_transformation) throws KettleDatabaseException
+	public synchronized void delStepConditions(long id_transformation) throws KettleDatabaseException
 	{
 		long ids[] = getConditionIDs(id_transformation);
 		for (int i = 0; i < ids.length; i++)
@@ -2885,55 +2879,55 @@ public class Repository
 	 * @param id_transformation the transformation for which we want to delete the databases.
 	 * @throws KettleDatabaseException in case something unexpected happens.
 	 */
-	public void delStepDatabases(long id_transformation) throws KettleDatabaseException
+	public synchronized void delStepDatabases(long id_transformation) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_STEP_DATABASE WHERE ID_TRANSFORMATION = " + id_transformation;
 		database.execStatement(sql);
 	}
 
-	public void delJobEntries(long id_job) throws KettleDatabaseException
+	public synchronized void delJobEntries(long id_job) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_JOBENTRY WHERE ID_JOB = " + id_job;
 		database.execStatement(sql);
 	}
 
-	public void delJobEntryCopies(long id_job) throws KettleDatabaseException
+	public synchronized void delJobEntryCopies(long id_job) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_JOBENTRY_COPY WHERE ID_JOB = " + id_job;
 		database.execStatement(sql);
 	}
 
-	public void delDependencies(long id_transformation) throws KettleDatabaseException
+	public synchronized void delDependencies(long id_transformation) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_DEPENDENCY WHERE ID_TRANSFORMATION = " + id_transformation;
 		database.execStatement(sql);
 	}
 
-	public void delStepAttributes(long id_transformation) throws KettleDatabaseException
+	public synchronized void delStepAttributes(long id_transformation) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_STEP_ATTRIBUTE WHERE ID_TRANSFORMATION = " + id_transformation;
 		database.execStatement(sql);
 	}
 
-	public void delJobEntryAttributes(long id_job) throws KettleDatabaseException
+	public synchronized void delJobEntryAttributes(long id_job) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_JOBENTRY_ATTRIBUTE WHERE ID_JOB = " + id_job;
 		database.execStatement(sql);
 	}
 
-	public void delTransHops(long id_transformation) throws KettleDatabaseException
+	public synchronized void delTransHops(long id_transformation) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_TRANS_HOP WHERE ID_TRANSFORMATION = " + id_transformation;
 		database.execStatement(sql);
 	}
 
-	public void delJobHops(long id_job) throws KettleDatabaseException
+	public synchronized void delJobHops(long id_job) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_JOB_HOP WHERE ID_JOB = " + id_job;
 		database.execStatement(sql);
 	}
 
-	public void delTransNotes(long id_transformation) throws KettleDatabaseException
+	public synchronized void delTransNotes(long id_transformation) throws KettleDatabaseException
 	{
 		long ids[] = getTransNoteIDs(id_transformation);
 
@@ -2947,7 +2941,7 @@ public class Repository
 		database.execStatement(sql);
 	}
 
-	public void delJobNotes(long id_job) throws KettleDatabaseException
+	public synchronized void delJobNotes(long id_job) throws KettleDatabaseException
 	{
 		long ids[] = getJobNoteIDs(id_job);
 
@@ -2961,19 +2955,19 @@ public class Repository
 		database.execStatement(sql);
 	}
 
-	public void delTrans(long id_transformation) throws KettleDatabaseException
+	public synchronized void delTrans(long id_transformation) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_TRANSFORMATION WHERE ID_TRANSFORMATION = " + id_transformation;
 		database.execStatement(sql);
 	}
 
-	public void delJob(long id_job) throws KettleDatabaseException
+	public synchronized void delJob(long id_job) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_JOB WHERE ID_JOB = " + id_job;
 		database.execStatement(sql);
 	}
 
-	public void delDatabase(long id_database) throws KettleDatabaseException
+	public synchronized void delDatabase(long id_database) throws KettleDatabaseException
 	{
 		// First, see if the database connection is still used by other connections...
 		// If so, generate an error!!
@@ -3000,43 +2994,43 @@ public class Repository
 		}
 	}
     
-    public void delDatabaseAttributes(long id_database) throws KettleDatabaseException
+    public synchronized void delDatabaseAttributes(long id_database) throws KettleDatabaseException
     {
         String sql = "DELETE FROM R_DATABASE_ATTRIBUTE WHERE ID_DATABASE = " + id_database;
         database.execStatement(sql);
     }
 
-	public void delTransStepCondition(long id_transformation) throws KettleDatabaseException
+	public synchronized void delTransStepCondition(long id_transformation) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_TRANS_STEP_CONDITION WHERE ID_TRANSFORMATION = " + id_transformation;
 		database.execStatement(sql);
 	}
 
-	public void delValue(long id_value) throws KettleDatabaseException
+	public synchronized void delValue(long id_value) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_VALUE WHERE ID_VALUE = " + id_value;
 		database.execStatement(sql);
 	}
 
-	public void delUser(long id_user) throws KettleDatabaseException
+	public synchronized void delUser(long id_user) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_USER WHERE ID_USER = " + id_user;
 		database.execStatement(sql);
 	}
 
-	public void delProfile(long id_profile) throws KettleDatabaseException
+	public synchronized void delProfile(long id_profile) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_PROFILE WHERE ID_PROFILE = " + id_profile;
 		database.execStatement(sql);
 	}
 
-	public void delProfilePermissions(long id_profile) throws KettleDatabaseException
+	public synchronized void delProfilePermissions(long id_profile) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_PROFILE_PERMISSION WHERE ID_PROFILE = " + id_profile;
 		database.execStatement(sql);
 	}
 
-	public void delAllFromTrans(long id_transformation) throws KettleDatabaseException
+	public synchronized void delAllFromTrans(long id_transformation) throws KettleDatabaseException
 	{
 		delTransNotes(id_transformation);
 		delStepAttributes(id_transformation);
@@ -3048,7 +3042,7 @@ public class Repository
 		delTrans(id_transformation);
 	}
 
-	public void renameTransformation(long id_transformation, String newname) throws KettleDatabaseException
+	public synchronized void renameTransformation(long id_transformation, String newname) throws KettleDatabaseException
 	{
         String nameField = databaseMeta.quoteField("NAME");
 		String sql = "UPDATE R_TRANSFORMATION SET "+nameField+" = ? WHERE ID_TRANSFORMATION = ?";
@@ -3060,7 +3054,7 @@ public class Repository
 		database.execStatement(sql, table);
 	}
 
-	public void renameUser(long id_user, String newname) throws KettleDatabaseException
+	public synchronized void renameUser(long id_user, String newname) throws KettleDatabaseException
 	{
         String nameField = databaseMeta.quoteField("NAME");
 		String sql = "UPDATE R_USER SET "+nameField+" = ? WHERE ID_USER = ?";
@@ -3072,7 +3066,7 @@ public class Repository
 		database.execStatement(sql, table);
 	}
 
-	public void renameProfile(long id_profile, String newname) throws KettleDatabaseException
+	public synchronized void renameProfile(long id_profile, String newname) throws KettleDatabaseException
 	{
         String nameField = databaseMeta.quoteField("NAME");
 		String sql = "UPDATE R_PROFILE SET "+nameField+" = ? WHERE ID_PROFILE = ?";
@@ -3084,7 +3078,7 @@ public class Repository
 		database.execStatement(sql, table);
 	}
 
-	public void renameDatabase(long id_database, String newname) throws KettleDatabaseException
+	public synchronized void renameDatabase(long id_database, String newname) throws KettleDatabaseException
 	{
         String nameField = databaseMeta.quoteField("NAME");
 		String sql = "UPDATE R_DATABASE SET "+nameField+" = ? WHERE ID_DATABASE = ?";
@@ -3096,7 +3090,7 @@ public class Repository
 		database.execStatement(sql, table);
 	}
 
-	public void delAllFromJob(long id_job) throws KettleDatabaseException
+	public synchronized void delAllFromJob(long id_job) throws KettleDatabaseException
 	{
 		// log.logBasic(toString(), "Deleting info in repository on ID_JOB: "+id_job);
 
@@ -3110,7 +3104,7 @@ public class Repository
 		// log.logBasic(toString(), "All deleted on job with ID_JOB: "+id_job);
 	}
 
-	public void renameJob(long id_job, String newname) throws KettleDatabaseException
+	public synchronized void renameJob(long id_job, String newname) throws KettleDatabaseException
 	{
         String nameField = databaseMeta.quoteField("NAME");
 		String sql = "UPDATE R_JOB SET "+nameField+" = ? WHERE ID_JOB = ?";
@@ -3129,7 +3123,7 @@ public class Repository
      * @param upgrade True if you want to upgrade the repository, false if you want to create it.
      * @throws KettleDatabaseException in case something goes wrong!
      */
-	public void createRepositorySchema(IProgressMonitor monitor, boolean upgrade) throws KettleDatabaseException
+	public synchronized void createRepositorySchema(IProgressMonitor monitor, boolean upgrade) throws KettleDatabaseException
 	{
 		Row table;
 		String sql;
@@ -4591,16 +4585,6 @@ public class Repository
 
 	}
 
-    private final String repositoryTableNames[] = new String[] 
-                                      { 
-                                        "R_DATABASE_TYPE", "R_DATABASE_CONTYPE", "R_DATABASE", "R_DATABASE_ATTRIBUTE", "R_NOTE",
-                                        "R_TRANSFORMATION", "R_DIRECTORY", "R_TRANS_ATTRIBUTE", "R_DEPENDENCY", "R_TRANS_STEP_CONDITION",
-                                        "R_CONDITION", "R_VALUE", "R_TRANS_HOP", "R_STEP_TYPE", "R_STEP", "R_STEP_ATTRIBUTE", "R_TRANS_NOTE",
-                                        "R_JOB", "R_LOGLEVEL", "R_LOG", "R_JOBENTRY", "R_JOBENTRY_COPY", "R_JOBENTRY_TYPE",
-                                        "R_JOBENTRY_ATTRIBUTE", "R_JOB_HOP", "R_JOB_NOTE", "R_PROFILE", "R_USER",
-                                        "R_PERMISSION", "R_PROFILE_PERMISSION", "R_STEP_DATABASE" 
-                                      };
-
 	public boolean dropRepositorySchema() throws KettleDatabaseException
 	{
 		// Make sure we close shop before dropping everything. 
@@ -4634,7 +4618,7 @@ public class Repository
 	 * 
 	 * @throws KettleDatabaseException if the update didn't go as planned.
 	 */
-	public void updateStepTypes() throws KettleDatabaseException
+	public synchronized void updateStepTypes() throws KettleDatabaseException
 	{
 		// We should only do an update if something has changed...
 		for (int i = 0; i < steploader.nrStepsWithType(StepPlugin.TYPE_ALL); i++)
@@ -4667,7 +4651,7 @@ public class Repository
 	 * 
 	 * @exception KettleDatabaseException if something went wrong during the update.
 	 */
-	public void updateJobEntryTypes() throws KettleDatabaseException
+	public synchronized void updateJobEntryTypes() throws KettleDatabaseException
 	{
 		// We should only do an update if something has changed...
 		for (int i = 1; i < JobEntryInterface.typeCode.length; i++)
@@ -4693,7 +4677,7 @@ public class Repository
 	}
 
 
-	public String toString()
+	public synchronized String toString()
 	{
 		if (repinfo == null)
 			return getClass().getName();
@@ -4728,22 +4712,22 @@ public class Repository
     /**
      * @param directoryTree The directoryTree to set.
      */
-    public void setDirectoryTree(RepositoryDirectory directoryTree)
+    public synchronized void setDirectoryTree(RepositoryDirectory directoryTree)
     {
         this.directoryTree = directoryTree;
     }
     
-    public void lockRepository() throws KettleDatabaseException
+    public synchronized void lockRepository() throws KettleDatabaseException
     {
         database.lockTables(repositoryTableNames);
     }
     
-    public void unlockRepository() throws KettleDatabaseException
+    public synchronized void unlockRepository() throws KettleDatabaseException
     {
         database.unlockTables(repositoryTableNames);
     }
     
-    public void exportAllObjects(IProgressMonitor monitor, String xmlFilename) throws KettleException
+    public synchronized void exportAllObjects(IProgressMonitor monitor, String xmlFilename) throws KettleException
     {
         if (monitor!=null) monitor.beginTask("Exporting the repository to XML...", 3);
         
@@ -4866,12 +4850,12 @@ public class Repository
         return xml.toString();
     }
 
-    public static Repository getCurrentRepository()
+    public synchronized static Repository getCurrentRepository()
     {
         return currentRepository;
     }
 
-    public static void setCurrentRepository(Repository currentRepository)
+    public synchronized static void setCurrentRepository(Repository currentRepository)
     {
         Repository.currentRepository = currentRepository;
     }

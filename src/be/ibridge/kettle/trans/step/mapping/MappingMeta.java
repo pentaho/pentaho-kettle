@@ -340,7 +340,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public static final TransMeta loadMappingMeta(String fileName, String transName, String directoryPath, Repository rep) throws KettleException
+    public synchronized static final TransMeta loadMappingMeta(String fileName, String transName, String directoryPath, Repository rep) throws KettleException
     {
         TransMeta mappingTransMeta = null;
         
