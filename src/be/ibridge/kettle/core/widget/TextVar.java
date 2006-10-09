@@ -171,4 +171,9 @@ public class TextVar extends Composite
     {
         wText.addTraverseListener(tl);
     }
+
+    public Button getButtonWidget()
+    {
+        return wVariable;
+    }
 }

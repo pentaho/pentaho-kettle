@@ -21,6 +21,8 @@
 
 package be.ibridge.kettle.job.entry.ftp;
 
+import java.util.ArrayList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -42,6 +44,7 @@ import org.eclipse.swt.widgets.Shell;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.widget.LabelText;
 import be.ibridge.kettle.core.widget.LabelTextVar;
 import be.ibridge.kettle.job.JobMeta;
@@ -185,6 +188,17 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		fdPassword.right= new FormAttachment(100, 0);
 		wPassword.setLayoutData(fdPassword);
 
+        // OK, if the password contains a variable, we don't want to have the password hidden...
+        wPassword.getTextWidget().addModifyListener(new ModifyListener()
+            {
+                public void modifyText(ModifyEvent e)
+                {
+                    checkPasswordVisible();
+                }
+            }
+        );
+
+        
 		// FtpDirectory line
 		wFtpDirectory=new LabelTextVar(shell, "Remote directory", "The directory on the FTP server");
  		props.setLook(wFtpDirectory);
@@ -333,7 +347,22 @@ public class JobEntryFTPDialog extends Dialog implements JobEntryDialogInterface
 		}
 		return jobentry;
 	}
-
+    
+    public void checkPasswordVisible()
+    {
+        String password = wPassword.getText();
+        java.util.List list = new ArrayList();
+        StringUtil.getUsedVariables(password, list, true);
+        if (list.size()==0)
+        {
+            wPassword.setEchoChar('*');
+        }
+        else
+        {
+            wPassword.setEchoChar('\0'); // Show it all...
+        }
+    }
+    
 	public void dispose()
 	{
 		WindowProperty winprop = new WindowProperty(shell);

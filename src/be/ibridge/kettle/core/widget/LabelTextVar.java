@@ -7,8 +7,10 @@ import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
@@ -108,5 +110,20 @@ public class LabelTextVar extends Composite
     public void addTraverseListener(TraverseListener tl)
     {
         wText.addTraverseListener(tl);
+    }
+    
+    public Text getTextWidget()
+    {
+        return wText.getTextWidget();
+    }
+    
+    public Label getLabelWidget()
+    {
+        return wLabel;
+    }
+    
+    public Button getButtonWidget()
+    {
+        return wText.getButtonWidget();
     }
 }
