@@ -359,9 +359,10 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 		{
 			// Create ftp client to host:port ...
 			ftpclient = new FTPClient();
-            ftpclient.setRemoteAddr(InetAddress.getByName(serverName));
+            String realServername = StringUtil.environmentSubstitute(serverName);
+            ftpclient.setRemoteAddr(InetAddress.getByName(realServername));
             
-			log.logDetailed(toString(), "Opened FTP connection to server ["+serverName+"]");
+			log.logDetailed(toString(), "Opened FTP connection to server ["+realServername+"]");
 	
 			// set activeConnection connectmode ...
             if (activeConnection)
@@ -381,14 +382,16 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 
 			// login to ftp host ...
             ftpclient.connect();
-			ftpclient.login(userName, password);
+            String realUsername = StringUtil.environmentSubstitute(userName);
+            String realPassword = StringUtil.environmentSubstitute(password);
+			ftpclient.login(realUsername, realPassword);
 			//  Remove password from logging, you don't know where it ends up.
-			log.logDetailed(toString(), "logged in using "+userName);
+			log.logDetailed(toString(), "logged in using "+realPassword);
 
 			// move to spool dir ...
-			String realFtpDirectory = StringUtil.environmentSubstitute(ftpDirectory);
-			if (!Const.isEmpty(realFtpDirectory))
+			if (!Const.isEmpty(ftpDirectory))
 			{
+                String realFtpDirectory = StringUtil.environmentSubstitute(ftpDirectory);
 				ftpclient.chdir(realFtpDirectory);
 				log.logDetailed(toString(), "Changed to directory ["+realFtpDirectory+"]");
 			}
@@ -424,7 +427,7 @@ public class JobEntryFTP extends JobEntryBase implements JobEntryInterface
 			Pattern pattern = null;
 			if (!Const.isEmpty(wildcard)) 
 			{
-				String realWildcard = StringUtil.environmentSubstitute(wildcard);
+                String realWildcard = StringUtil.environmentSubstitute(wildcard);
                 pattern = Pattern.compile(realWildcard);
 			}
 
