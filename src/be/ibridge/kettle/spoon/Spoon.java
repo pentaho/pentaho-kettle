@@ -1757,8 +1757,10 @@ public class Spoon implements AddUndoPositionInterface
             DatabaseDialog con = new DatabaseDialog(shell, SWT.NONE, log, db, props);
             con.setDatabases(transMeta.getDatabases());
             String newname = con.open(); 
-            if (newname != null && newname.length()>0)  // null: CANCEL
+            if (!Const.isEmpty(newname))  // null: CANCEL
             {                
+                newname = db.verifyAndModifyDatabaseName(transMeta.getDatabases());
+                
                 // Store undo/redo information
                 DatabaseMeta after = (DatabaseMeta)db.clone();
                 addUndoChange(new DatabaseMeta[] { before }, new DatabaseMeta[] { after }, new int[] { transMeta.indexOfDatabase(db) } );
@@ -1768,7 +1770,7 @@ public class Spoon implements AddUndoPositionInterface
                 // The connection is saved, clear the changed flag.
                 db.setChanged(false);
                 
-                if (!name.equalsIgnoreCase(newname)) refreshTree(true);
+                refreshTree(true);
             }
         }
         setShellText();
@@ -1788,6 +1790,7 @@ public class Spoon implements AddUndoPositionInterface
             String newname = con.open(); 
             if (newname != null)  // null: CANCEL
             {
+                copy.verifyAndModifyDatabaseName(transMeta.getDatabases());
                 transMeta.addDatabase(pos+1, copy);
                 addUndoNew(new DatabaseMeta[] { (DatabaseMeta)copy.clone() }, new int[] { pos+1 });
                 saveConnection(copy);             
@@ -2294,8 +2297,9 @@ public class Spoon implements AddUndoPositionInterface
         DatabaseMeta db = new DatabaseMeta(); 
         DatabaseDialog con = new DatabaseDialog(shell, SWT.APPLICATION_MODAL, log, db, props);
         String con_name = con.open(); 
-        if (con_name!=null && con_name.length()>0)
+        if (!Const.isEmpty(con_name))
         {
+            db.verifyAndModifyDatabaseName(transMeta.getDatabases());
             transMeta.addDatabase(db);
             addUndoNew(new DatabaseMeta[] { (DatabaseMeta)db.clone() }, new int[] { transMeta.indexOfDatabase(db) });
             saveConnection(db);

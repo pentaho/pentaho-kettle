@@ -1991,4 +1991,21 @@ public class DatabaseMeta implements Cloneable, XMLInterface
     {
         return databaseInterface.supportsSetMaxRows();
     }
+
+    /**
+     * Verify the name of the database and if required, change it if it already exists in the list of databases.
+     * @param databases the databases to check against.
+     * @return the new name of the database connection
+     */
+    public String verifyAndModifyDatabaseName(ArrayList databases)
+    {
+        String name = getName();
+        int nr = 2;
+        while (Const.findDatabase(databases, getName())!=null)
+        {
+            setName(name+" "+nr);
+            nr++;
+        }
+        return getName();
+    }
 }
