@@ -387,14 +387,13 @@ public class Database
 		}
 	}
 	
-	public void rollback()
-		throws KettleDatabaseException
+	public void rollback() throws KettleDatabaseException
 	{
 		try
 		{
             if (getDatabaseMetaData().supportsTransactions())
             {
-                connection.rollback();
+                if (connection!=null) connection.rollback();
             }
             else
             {
