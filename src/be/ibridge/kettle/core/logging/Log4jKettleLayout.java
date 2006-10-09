@@ -55,7 +55,8 @@ public class Log4jKettleLayout extends Layout
                     line+="ERROR (version "+Const.VERSION+
                     ", build "+buildVersion.getVersion()+
                     " from "+format.format(buildVersion.getBuildDate())+
-                    " @ "+buildVersion.getHostname()+") : ";                }
+                    (Const.isEmpty(buildVersion.getHostname())?"":" @ "+buildVersion.getHostname()+") : ");                
+                 }
                 
                 line+=parts[i];
                 if (i<parts.length-1) line+=Const.CR; // put the CR's back in there!
