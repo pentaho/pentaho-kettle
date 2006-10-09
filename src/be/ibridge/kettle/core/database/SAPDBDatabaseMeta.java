@@ -73,11 +73,6 @@ public class SAPDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 			return "com.sap.dbtech.jdbc.DriverSapDB";
 		}
 	}
-
-    public boolean useSchemaNameForTableList()
-    {
-        return true;
-    }
     
 	public String getURL()
 	{
