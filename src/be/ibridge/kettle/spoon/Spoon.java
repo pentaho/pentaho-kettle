@@ -1791,7 +1791,7 @@ public class Spoon implements AddUndoPositionInterface
                 transMeta.addDatabase(pos+1, copy);
                 addUndoNew(new DatabaseMeta[] { (DatabaseMeta)copy.clone() }, new int[] { pos+1 });
                 saveConnection(copy);             
-                refreshTree();
+                refreshTree(true);
             }
         }
     }
@@ -1965,7 +1965,7 @@ public class Spoon implements AddUndoPositionInterface
                 stMeta.setLocation(loc.x+20, loc.y+20);
                 transMeta.addStep(stMeta);
                 addUndoNew(new StepMeta[] { (StepMeta)stMeta.clone() }, new int[] { transMeta.indexOfStep(stMeta) });
-                refreshTree();
+                refreshTree(true);
                 refreshGraph();
             }
         }
@@ -2299,7 +2299,7 @@ public class Spoon implements AddUndoPositionInterface
             transMeta.addDatabase(db);
             addUndoNew(new DatabaseMeta[] { (DatabaseMeta)db.clone() }, new int[] { transMeta.indexOfDatabase(db) });
             saveConnection(db);
-            refreshTree();
+            refreshTree(true);
         }
     }
     

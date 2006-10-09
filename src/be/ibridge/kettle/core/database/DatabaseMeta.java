@@ -517,6 +517,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         di.databaseInterface.getURL();
         
         di.setID(-1L);
+        di.setChanged();
         
 		return di; 
 	}

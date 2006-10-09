@@ -359,7 +359,6 @@ public class TransMeta implements XMLInterface
     public void addDatabase(int p, DatabaseMeta ci)
     {
         databases.add(p, ci);
-        changed_databases = true;
     }
 
     /**
