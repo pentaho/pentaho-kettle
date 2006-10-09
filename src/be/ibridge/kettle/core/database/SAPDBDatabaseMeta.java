@@ -53,7 +53,7 @@ public class SAPDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		// if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE) return 3050;
 		return -1;
 	}
-
+    
 	/**
 	 * @return Whether or not the database can use auto increment type of fields (pk)
 	 */
