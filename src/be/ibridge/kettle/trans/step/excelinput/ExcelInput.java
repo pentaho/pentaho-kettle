@@ -510,13 +510,14 @@ public class ExcelInput extends BaseStep implements StepInterface
 						Row r = fillRow(data.row, data.colnr, excelInputRow);
 						if (log.isRowLevel()) logRowlevel("Converted line to row #" + lineNr + " : " + r);
 
-						if (line.length > 0 || !meta.ignoreEmptyRows())
+                        boolean isEmpty = isLineEmpty(line);
+						if (!isEmpty || !meta.ignoreEmptyRows())
 						{
 							// Put the row
 							retval = r;
 						}
 
-						if (isLineEmpty(line) && meta.stopOnEmpty())
+						if (isEmpty && meta.stopOnEmpty())
 						{
 							nextsheet = true;
 						}
