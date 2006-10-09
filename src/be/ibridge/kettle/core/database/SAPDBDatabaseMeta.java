@@ -74,6 +74,11 @@ public class SAPDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		}
 	}
 
+    public boolean useSchemaNameForTableList()
+    {
+        return true;
+    }
+    
 	public String getURL()
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
