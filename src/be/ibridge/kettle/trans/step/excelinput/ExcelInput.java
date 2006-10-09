@@ -516,7 +516,7 @@ public class ExcelInput extends BaseStep implements StepInterface
 							retval = r;
 						}
 
-						if (line.length == 0 && meta.stopOnEmpty())
+						if (isLineEmpty(line) && meta.stopOnEmpty())
 						{
 							nextsheet = true;
 						}
@@ -565,7 +565,19 @@ public class ExcelInput extends BaseStep implements StepInterface
 		return retval;
 	}
 
-	private void jumpToNextFile() throws KettleException
+	private boolean isLineEmpty(Cell[] line)
+    {
+        if (line.length == 0) return true;
+        
+        boolean isEmpty = true;
+        for (int i=0;i<line.length && isEmpty;i++)
+        {
+            if ( !Const.isEmpty(line[i].getContents()) ) isEmpty=false;
+        }
+        return isEmpty;
+    }
+
+    private void jumpToNextFile() throws KettleException
 	{
 		data.sheetnr = 0;
 
