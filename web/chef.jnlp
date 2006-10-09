@@ -7,13 +7,12 @@
   <homepage href="index.html"/>
   <description>Kettle - Chef : The Visual Job Editor</description>
   <description kind="short">Chef Job Editor</description>
+  <icon href="www.kettle.be/webstart/kettle_logo.gif" kind="splash"/> 
  </information>
 
   <security>
      <all-permissions/>
   </security>
-
- <icon href="kettle_logo.png" kind="splash"/> 
 
  <resources>
   <j2se version="1.4+" java-vm-args="-Xmx256M"/>

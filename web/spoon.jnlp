@@ -7,13 +7,13 @@
   <homepage href="index.html"/>
   <description>Kettle - Spoon : The Visual Transformation Editor</description>
   <description kind="short">Spoon Transformation Editor</description>
+  <icon href="www.kettle.be/webstart/kettle_logo.gif" kind="splash"/> 
  </information>
 
   <security>
      <all-permissions/>
   </security>
 
- <icon href="kettle_logo.png" kind="splash"/> 
 
  <resources>
   <j2se version="1.4+" java-vm-args="-Xmx256M"/>
