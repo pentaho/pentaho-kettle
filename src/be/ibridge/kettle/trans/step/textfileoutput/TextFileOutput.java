@@ -170,7 +170,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				 */
 				for (int i=0;i<r.size();i++)
 				{
-					if (i>0) data.writer.write(meta.getSeparator().toCharArray());
+					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
+						data.writer.write(meta.getSeparator().toCharArray());
 					v=r.getValue(i);
 					if(!writeField(v, -1)) return false;
 				}
@@ -183,7 +184,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				 */
 				for (int i=0;i<meta.getOutputFields().length;i++)
 				{
-					if (i>0) data.writer.write(meta.getSeparator().toCharArray());
+					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
+						data.writer.write(meta.getSeparator().toCharArray());
 	
 					v=r.getValue(data.fieldnrs[i]);
 					v.setLength(meta.getOutputFields()[i].getLength(), meta.getOutputFields()[i].getPrecision());
@@ -229,21 +231,26 @@ public class TextFileOutput extends BaseStep implements StepInterface
             }
             else
             {
-                // Any separators in string?
-                // example: 123.4;"a;b;c";Some name
-                //
-                if (meta.isEnclosureForced() && meta.getEnclosure()!=null) // Force enclosure?
-                {
-                    retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
-                }
-                else // See if there is a separator in the String...
-                {
-                    int seppos = v.toString().indexOf(meta.getSeparator());
-                    
-                    if (seppos<0) retval=v.toString();
-                    else          retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
-                }
-            }
+       		    // Any separators in string?
+		    // example: 123.4;"a;b;c";Some name
+		    String value = v.toString();
+		    // do not output separator if it is null or when 
+		    // there is no separator in the value and enclosure
+		    // is not forced (i.e. optional enclosure).
+		    // N.B. be careful not to call indexOf with null string.
+		    
+		    String separator = meta.getSeparator();
+		    boolean enclosureIsOptional = !meta.isEnclosureForced();
+		    
+		    if(separator == null || (value.indexOf(separator) < 0 && enclosureIsOptional))
+		    {
+				retval = v.toString();
+		    }
+		    else {
+			    retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
+		    }
+	    }
+					    
         }
         else if (v.isBigNumber() || v.isNumber() || v.isInteger())
         {
@@ -487,7 +494,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			{
 				for (int i=0;i<r.size();i++)
 				{
-					if (i>0) data.writer.write(meta.getSeparator().toCharArray());
+					if (i>0 && meta.getSeparator()!=null && meta.getSeparator().length()>0)
+						data.writer.write(meta.getSeparator().toCharArray());
 					Value v = r.getValue(i);
 					
                     // Header-value contains the name of the value
