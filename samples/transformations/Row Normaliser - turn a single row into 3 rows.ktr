@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>1000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+    </info>
+  <notepads>
+    </notepads>
+  <order>
+  <hop> <from>Generate Rows</from><to>Split Fields</to><enabled>Y</enabled> </hop>  <hop> <from>Split Fields</from><to>Row Normaliser</to><enabled>Y</enabled> </hop>  <hop> <from>Row Normaliser</from><to>Select values</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Generate Rows</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      <field>
+        <name>Field1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>a b 1</nullif>
+        <length>20</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>Field2</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>2</nullif>
+        <length>3</length>
+        <precision>-1</precision>
+        </field>
+      <field>
+        <name>Field3</name>
+        <type>Integer</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <nullif>3</nullif>
+        <length>3</length>
+        <precision>-1</precision>
+        </field>
+      </fields>
+    <limit>1</limit>
+    <GUI>
+      <xloc>148</xloc>
+      <yloc>110</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Split Fields</name>
+    <type>FieldSplitter</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+   <splitfield>Field1</splitfield>
+   <delimiter> </delimiter>
+    <fields>      <field>        <name>FieldI</name>
+        <id/>
+        <idrem>N</idrem>
+        <type>String</type>
+        <format/>
+        <group/>
+        <decimal/>
+        <length>10</length>
+        <precision>-1</precision>
+        <nullif/>
+        </field>      <field>        <name>FieldII</name>
+        <id/>
+        <idrem>N</idrem>
+        <type>String</type>
+        <format/>
+        <group/>
+        <decimal/>
+        <length>10</length>
+        <precision>-1</precision>
+        <nullif/>
+        </field>      <field>        <name>FieldIII</name>
+        <id/>
+        <idrem>N</idrem>
+        <type>Integer</type>
+        <format/>
+        <group/>
+        <decimal/>
+        <length>3</length>
+        <precision>-1</precision>
+        <nullif/>
+        </field>      </fields>    <GUI>
+      <xloc>321</xloc>
+      <yloc>110</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Row Normaliser</name>
+    <type>Normaliser</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+   <typefield>typefield</typefield>
+    <fields>      <field>        <name>FieldIII</name>
+        <value>One</value>
+        <norm>Nr</norm>
+        </field>      <field>        <name>Field2</name>
+        <value>Two</value>
+        <norm>Nr</norm>
+        </field>      <field>        <name>Field3</name>
+        <value>Three</value>
+        <norm>Nr</norm>
+        </field>      </fields>    <GUI>
+      <xloc>484</xloc>
+      <yloc>110</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Select values</name>
+    <type>SelectValues</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>      <field>        <name>FieldI</name>
+        <rename>Field1</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      <field>        <name>FieldII</name>
+        <rename>Field2</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      <field>        <name>Nr</name>
+        <rename>Field3</rename>
+        <length>-2</length>
+        <precision>-2</precision>
+        </field>      </fields>    <GUI>
+      <xloc>636</xloc>
+      <yloc>110</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>
