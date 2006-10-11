@@ -167,6 +167,8 @@ public class TransMeta implements XMLInterface
 
     public static final String  desc_type_undo[]   = { "", Messages.getString("TransMeta.UndoTypeDesc.UndoChange"), Messages.getString("TransMeta.UndoTypeDesc.UndoNew"), Messages.getString("TransMeta.UndoTypeDesc.UndoDelete"), Messages.getString("TransMeta.UndoTypeDesc.UndoPosition") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
+    private static final String STRING_MODIFIED_DATE = "modified_date";
+
     /**
      * Builds a new empty transformation.
      */
@@ -2001,6 +2003,9 @@ public class TransMeta implements XMLInterface
         }
         retval.append("      </dependencies>" + Const.CR); //$NON-NLS-1$
 
+        retval.append("  "+XMLHandler.addTagValue("modified_user", modifiedUser));
+        retval.append("  "+XMLHandler.addTagValue("modified_date", modifiedDate!=null?modifiedDate.getString():""));
+
         retval.append("    </info>" + Const.CR); //$NON-NLS-1$
 
         retval.append("  <notepads>" + Const.CR); //$NON-NLS-1$
@@ -2023,8 +2028,6 @@ public class TransMeta implements XMLInterface
             {
                 retval.append(dbMeta.getXML());
             }
-
-
         }
 
         retval.append("  <order>" + Const.CR); //$NON-NLS-1$
@@ -2317,6 +2320,15 @@ public class TransMeta implements XMLInterface
             sleepTimeEmpty = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_empty"), Const.SLEEP_EMPTY_NANOS); //$NON-NLS-1$
             sleepTimeFull  = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_full"), Const.SLEEP_FULL_NANOS); //$NON-NLS-1$
 
+            // Changed user/date
+            modifiedUser = XMLHandler.getTagValue(infonode, "modified_user");
+            String modDate = XMLHandler.getTagValue(infonode, "modified_date");
+            if (modDate!=null)
+            {
+                modifiedDate = new Value(STRING_MODIFIED_DATE, modDate);
+                modifiedDate.setType(Value.VALUE_TYPE_DATE);
+            }
+            
             log.logDebug(toString(), Messages.getString("TransMeta.Log.NumberOfStepsReaded") + nrSteps()); //$NON-NLS-1$
             log.logDebug(toString(), Messages.getString("TransMeta.Log.NumberOfHopsReaded") + nrTransHops()); //$NON-NLS-1$
 

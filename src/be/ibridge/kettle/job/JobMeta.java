@@ -70,6 +70,8 @@ public class JobMeta implements Cloneable, XMLInterface
 {
 	public LogWriter log;
 	
+    private static final String STRING_MODIFIED_DATE = "MODIFIED_DATE";
+    
 	private long id;
 	
 	private String     name;
@@ -107,14 +109,16 @@ public class JobMeta implements Cloneable, XMLInterface
 	public  boolean    max[]  = new boolean[1];
 	public  Rectangle  size[] = new Rectangle[1];
 	
-	public  String  created_user, modified_user;
-	public  Value   created_date, modified_date;
+	public  String  created_user, modifiedUser;
+	public  Value   created_date, modifiedDate;
     
     private boolean             useBatchId;
 
     private boolean             batchIdPassed;
 
     private boolean             logfieldUsed;
+
+    private String string;
 
 	public JobMeta(LogWriter l)
 	{
@@ -154,8 +158,9 @@ public class JobMeta implements Cloneable, XMLInterface
 		addDefaults();
 		setChanged(false);
 
-		modified_user = "-";
-		modified_date = new Value("MODIFIED_DATE", Value.VALUE_TYPE_DATE).sysdate();
+		modifiedUser = "-";
+
+        modifiedDate = new Value(string, Value.VALUE_TYPE_DATE).sysdate();
 		
 		directory = new RepositoryDirectory();
         
@@ -382,8 +387,8 @@ public class JobMeta implements Cloneable, XMLInterface
 				getName(),
 				logconnection==null?-1:logconnection.getID(),
 				logTable,
-				modified_user,
-				modified_date,
+				modifiedUser,
+				modifiedDate,
                 useBatchId,
                 batchIdPassed,
                 logfieldUsed
@@ -419,7 +424,9 @@ public class JobMeta implements Cloneable, XMLInterface
 		retval.append("<job>"+Const.CR);
 		retval.append("  "+XMLHandler.addTagValue("name", getName()));
 		retval.append("  "+XMLHandler.addTagValue("directory", directory.getPath()));
-		
+        retval.append("  "+XMLHandler.addTagValue("modified_user", modifiedUser));
+        retval.append("  "+XMLHandler.addTagValue("modified_date", modifiedDate!=null?modifiedDate.getString():""));
+        
 		for (int i=0;i<nrDatabases();i++)
 		{
 			DatabaseMeta dbinfo = getDatabase(i);
@@ -522,6 +529,15 @@ public class JobMeta implements Cloneable, XMLInterface
 			// get job info:
 			//
 			name = XMLHandler.getTagValue(jobnode, "name");
+
+            // Changed user/date
+            modifiedUser = XMLHandler.getTagValue(jobnode, "modified_user");
+            String modDate = XMLHandler.getTagValue(jobnode, "modified_date");
+            if (modDate!=null)
+            {
+                modifiedDate = new Value(STRING_MODIFIED_DATE, modDate);
+                modifiedDate.setType(Value.VALUE_TYPE_DATE);
+            }
 
             // Load the default list of databases
             if (rep!=null)

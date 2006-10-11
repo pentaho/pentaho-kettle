@@ -1795,9 +1795,9 @@ public class Chef implements AddUndoPositionInterface
 					if (response == SWT.YES)
 					{
 						// Keep info on who & when this transformation was changed...
-						jobMeta.modified_date = new Value("MODIFIED_DATE", Value.VALUE_TYPE_DATE); 				 //$NON-NLS-1$
-						jobMeta.modified_date.sysdate();
-						jobMeta.modified_user = rep.getUserInfo().getLogin();
+						jobMeta.modifiedDate = new Value("MODIFIED_DATE", Value.VALUE_TYPE_DATE); 				 //$NON-NLS-1$
+						jobMeta.modifiedDate.sysdate();
+						jobMeta.modifiedUser = rep.getUserInfo().getLogin();
 
 						JobSaveProgressDialog jspd = new JobSaveProgressDialog(shell, rep, jobMeta);
 						if (jspd.open())
