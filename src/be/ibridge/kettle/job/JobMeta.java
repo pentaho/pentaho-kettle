@@ -155,7 +155,7 @@ public class JobMeta implements Cloneable, XMLInterface
 		setChanged(false);
 
 		modified_user = "-";
-		modified_date = null;
+		modified_date = new Value("MODIFIED_DATE", Value.VALUE_TYPE_DATE).sysdate();
 		
 		directory = new RepositoryDirectory();
         
