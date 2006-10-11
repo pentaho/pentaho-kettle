@@ -84,6 +84,22 @@ public class ManagedColor
     }
 
     /**
+     * @param color the color to set
+     */
+    public void setColor(Color color)
+    {
+        this.color = color;
+    }
+
+    /**
+     * @param systemColor the systemColor to set
+     */
+    public void setSystemColor(boolean systemColor)
+    {
+        this.systemColor = systemColor;
+    }
+
+    /**
      * @return true if this is a system color.
      */
     public boolean isSystemColor()

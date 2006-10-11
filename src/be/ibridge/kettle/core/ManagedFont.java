@@ -65,4 +65,20 @@ public class ManagedFont
     {
         return systemFont;
     }
+
+    /**
+     * @param font the font to set
+     */
+    public void setFont(Font font)
+    {
+        this.font = font;
+    }
+
+    /**
+     * @param systemFont the systemFont to set
+     */
+    public void setSystemFont(boolean systemFont)
+    {
+        this.systemFont = systemFont;
+    }
 }

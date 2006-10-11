@@ -3305,7 +3305,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
             // MILI-SECONDS
             case 0: cal.set(Calendar.MILLISECOND, 0);  break;
 			default:
-				throw new KettleValueException("Argument of TRUNC of date has to be between 1 and 5");
+				throw new KettleValueException("Argument of TRUNC of date has to be between 0 and 5");
 			}
 		}
 		else

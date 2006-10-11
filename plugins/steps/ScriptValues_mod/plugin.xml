@@ -11,6 +11,6 @@
     <library name="ScriptValuesMod.jar"/>
     </libraries>
 	<js_libraries>
-		<js_lib name="jsKettleLib.jar" classname="de.proconis.jsFunctions" js_name="kfl"/>
+		<js_lib name="jsKettleLib.jar" classname="de.proconis.jsFunctions" js_name="jsFunctions"/>
 	</js_libraries>
 </plugin>

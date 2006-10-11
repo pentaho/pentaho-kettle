@@ -44,7 +44,7 @@ import be.ibridge.kettle.core.value.Value;
 
 
 /**
- * We use Props to store all kinds of user interactive information such as the favoroute colors, fonts, positions of windows, etc.
+ * We use Props to store all kinds of user interactive information such as the selected colors, fonts, positions of windows, etc.
  * 
  * @author Matt
  * @since 15-12-2003
