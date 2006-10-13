@@ -110,7 +110,8 @@ public class AddXML extends BaseStep implements StepInterface
         
         StringWriter sw = new StringWriter();
         DOMSource domSource = new DOMSource(xmldoc);
-        try {
+        try 
+        {
             this.getSerializer().transform(domSource, new StreamResult(sw));
         } catch (TransformerException e) {
             throw new KettleException(e);
@@ -129,16 +130,14 @@ public class AddXML extends BaseStep implements StepInterface
         if(field == null)
             return "";
 
-        if(v == null || v.isNull()) {
+        if(v == null || v.isNull()) 
+        {
             String defaultNullValue = field.getNullString();
-            return defaultNullValue != null ? defaultNullValue : "";
+            return Const.isEmpty(defaultNullValue) ? "" : defaultNullValue ;
         }
 
-        if (v.isBigNumber() || v.isNumber() || v.isInteger())
+        if (v.isNumeric())
         {
-            if (field.getFormat() == null) {
-                return  v.toString();
-            }
             // Formatting
             if ( !Const.isEmpty(field.getFormat()) )
             {
@@ -146,7 +145,7 @@ public class AddXML extends BaseStep implements StepInterface
             }
             else
             {
-                data.df.applyPattern(data.defaultDecimalFormat.toLocalizedPattern());
+                data.df.applyPattern(data.defaultDecimalFormat.toPattern());
             }
             // Decimal 
             if ( !Const.isEmpty( field.getDecimalSymbol()) )
@@ -192,63 +191,72 @@ public class AddXML extends BaseStep implements StepInterface
             }
         }
         else
-            if (v.isDate())
+        if (v.isDate())
+        {
+            if (field!=null && !Const.isEmpty(field.getFormat()) && v.getDate()!=null)
             {
-                if (field!=null && field.getFormat()!=null && v.getDate()!=null)
+                if (!Const.isEmpty(field.getFormat()))
                 {
-                    if (!Const.isEmpty(field.getFormat()))
-                    {
-                        data.daf.applyPattern( field.getFormat() );
-                    }
-                    else
-                    {
-                        data.daf.applyPattern( data.defaultDateFormat.toLocalizedPattern() );
-                    }
-                    data.daf.setDateFormatSymbols(data.dafs);
-                    retval= data.daf.format(v.getDate());
+                    data.daf.applyPattern( field.getFormat() );
                 }
                 else
                 {
-                    if (v.isNull() || v.getDate()==null) 
+                    data.daf.applyPattern( data.defaultDateFormat.toLocalizedPattern() );
+                }
+                data.daf.setDateFormatSymbols(data.dafs);
+                retval= data.daf.format(v.getDate());
+            }
+            else
+            {
+                if (v.isNull() || v.getDate()==null) 
+                {
+                    if (field!=null && !Const.isEmpty(field.getNullString()))
                     {
-                        if (field!=null && field.getNullString()!=null)
-                        {
-                            retval=field.getNullString();
-                        }
+                        retval=field.getNullString();
                     }
-                    else
-                    {
-                        retval=v.toString();
-                    }
+                }
+                else
+                {
+                    retval=v.toString();
+                }
+            }
+        }
+        else
+        if (v.isString())
+        {
+            retval=v.toString();
+        }
+        else if (v.isBinary())
+        {
+            if (v.isNull())
+            {
+                if (!Const.isEmpty(field.getNullString()))
+                {
+                    retval=field.getNullString();
+                }
+                else
+                {
+                    retval=Const.NULL_BINARY;
                 }
             }
             else
-                if (v.isString())
+            {                   
+                try 
                 {
-                    retval=v.toString();
-                }
-                else if (v.isBinary())
+                    retval=new String(v.getBytes(), "UTF-8");
+                } 
+                catch (UnsupportedEncodingException e) 
                 {
-                    if (v.isNull())
-                    {
-                        if (field.getNullString()!=null) retval=field.getNullString();
-                        else retval=Const.NULL_BINARY;
-                    }
-                    else
-                    {                   
-                        try {
-                            retval=new String(v.getBytes(), "US-ASCII");
-                        } catch (UnsupportedEncodingException e) {
-                            // chances are small we'll get here. US_ASCII is
-                            // mandatory.
-                            retval=Const.NULL_BINARY;   
-                        }                   
-                    }
-                }        
-                else // Boolean
-                {
-                    retval=v.toString();
-                }
+                    // chances are small we'll get here. UTF-8 is
+                    // mandatory.
+                    retval=Const.NULL_BINARY;   
+                }                   
+            }
+        }        
+        else // Boolean
+        {
+            retval=v.toString();
+        }
 
         return retval;
     }

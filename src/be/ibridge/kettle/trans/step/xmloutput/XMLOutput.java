@@ -196,16 +196,25 @@ public class XMLOutput extends BaseStep implements StepInterface
 		String retval="";
 
 		XMLField field = null;
-		if (idx>=0) field = meta.getOutputFields()[idx];
-		
-        if (v.isBigNumber() || v.isNumber() || v.isInteger())
+		if (idx>=0)
         {
-			if (idx>=0 && field!=null && field.getFormat()!=null)
+            field = meta.getOutputFields()[idx];
+        }
+		
+        if (v.isNumeric())
+        {
+			if (idx>=0 && field!=null && !Const.isEmpty(field.getFormat()))
 			{
 				if (v.isNull())
 				{
-					if (field.getNullString()!=null) retval=field.getNullString();
-					else retval = "";
+					if (!Const.isEmpty(field.getNullString()))
+                    {
+                        retval=field.getNullString();
+                    }
+					else
+                    {
+                        retval = Const.NULL_NUMBER;
+                    }
 				}
 				else
 				{
@@ -216,7 +225,7 @@ public class XMLOutput extends BaseStep implements StepInterface
                     }
                     else
                     {
-                        data.df.applyPattern(data.defaultDecimalFormat.toLocalizedPattern());
+                        data.df.applyPattern(data.defaultDecimalFormat.toPattern());
                     }
                     // Decimal 
 					if ( !Const.isEmpty( field.getDecimalSymbol()) )
@@ -266,8 +275,14 @@ public class XMLOutput extends BaseStep implements StepInterface
 			{
 				if (v.isNull()) 
 				{
-					if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
-					else retval = "";
+					if (idx>=0 && field!=null && !Const.isEmpty(field.getNullString()))
+                    {
+                        retval=field.getNullString();
+                    }
+					else
+                    {
+                        retval = Const.NULL_NUMBER;
+                    }
 				}
 				else
 				{
@@ -278,7 +293,7 @@ public class XMLOutput extends BaseStep implements StepInterface
 		else
 		if (v.isDate())
 		{
-			if (idx>=0 && field!=null && field.getFormat()!=null && v.getDate()!=null)
+			if (idx>=0 && field!=null && !Const.isEmpty(field.getFormat()) && v.getDate()!=null)
 			{
                 if (!Const.isEmpty(field.getFormat()))
                 {
@@ -286,7 +301,7 @@ public class XMLOutput extends BaseStep implements StepInterface
                 }
                 else
                 {
-                    data.daf.applyPattern( data.defaultDateFormat.toLocalizedPattern() );
+                    data.daf.applyPattern( data.defaultDateFormat.toPattern() );
                 }
 				data.daf.setDateFormatSymbols(data.dafs);
 				retval= data.daf.format(v.getDate());
@@ -295,9 +310,13 @@ public class XMLOutput extends BaseStep implements StepInterface
 			{
 				if (v.isNull() || v.getDate()==null) 
 				{
-					if (idx>=0 && field!=null && field.getNullString()!=null)
+					if (idx>=0 && field!=null && !Const.isEmpty(field.getNullString()))
                     {
                         retval=field.getNullString();
+                    }
+                    else
+                    {
+                        retval = Const.NULL_DATE;
                     }
 				}
 				else
@@ -311,8 +330,14 @@ public class XMLOutput extends BaseStep implements StepInterface
 		{
 			if (v.isNull() || v.getString()==null) 
 			{
-				if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
-			}
+				if (idx>=0 && field!=null && !Const.isEmpty(field.getNullString()))
+                {
+                    retval=field.getNullString();
+                }
+                else
+                {
+                    retval = Const.NULL_STRING;
+                }			}
 			else
 			{
 				retval=v.toString();
@@ -322,15 +347,24 @@ public class XMLOutput extends BaseStep implements StepInterface
         {
             if (v.isNull())
             {
-                if (field.getNullString()!=null) retval=field.getNullString();
-                else retval=Const.NULL_BINARY;
+                if (!Const.isEmpty(field.getNullString()))
+                {
+                    retval=field.getNullString();
+                }
+                else
+                {
+                    retval=Const.NULL_BINARY;
+                }
             }
             else
             {                   
-                try {
-                    retval=new String(v.getBytes(), "US-ASCII");
-                } catch (UnsupportedEncodingException e) {
-                    // chances are small we'll get here. US_ASCII is
+                try 
+                {
+                    retval=new String(v.getBytes(), "UTF-8");
+                } 
+                catch (UnsupportedEncodingException e) 
+                {
+                    // chances are small we'll get here. UTF-8 is
                     // mandatory.
                     retval=Const.NULL_BINARY;   
                 }                   
@@ -340,7 +374,14 @@ public class XMLOutput extends BaseStep implements StepInterface
 		{
 			if (v.isNull()) 
 			{
-				if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
+				if (idx>=0 && field!=null && !Const.isEmpty(field.getNullString()))
+                {
+                    retval=field.getNullString();
+                }
+                else
+                {
+                    retval = Const.NULL_BOOLEAN;
+                }
 			}
 			else
 			{

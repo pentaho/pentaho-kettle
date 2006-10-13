@@ -51,7 +51,7 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
 {
     /** The base name of the output file */
 
-    /** Flag: put the destination file in a zip archive */
+    /** Flag: ommit the XML Header*/
     private  boolean omitXMLheader;
 
     /** The encoding to use for reading: null or empty string means system default encoding */
@@ -169,6 +169,7 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
                 outputFields[i].setNullString( XMLHandler.getTagValue(fnode, "nullif") );
                 outputFields[i].setLength( Const.toInt(XMLHandler.getTagValue(fnode, "length"), -1) );
                 outputFields[i].setPrecision( Const.toInt(XMLHandler.getTagValue(fnode, "precision"), -1) );
+                outputFields[i].setAttribute( "Y".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "attribute") ) );
             }
         }
         catch(Exception e)
@@ -204,6 +205,7 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
             outputFields[i].setNullString( "" );
             outputFields[i].setLength( -1 );
             outputFields[i].setPrecision( -1 );
+            outputFields[i].setAttribute( false );
         }
     }
     
@@ -250,6 +252,7 @@ public class AddXMLMeta extends BaseStepMeta  implements StepMetaInterface
                 retval.append("        "+XMLHandler.addTagValue("nullif",    field.getNullString()));
                 retval.append("        "+XMLHandler.addTagValue("length",    field.getLength()));
                 retval.append("        "+XMLHandler.addTagValue("precision", field.getPrecision()));
+                retval.append("        "+XMLHandler.addTagValue("attribute", field.isAttribute()));
                 retval.append("        </field>"+Const.CR);
             }
         }

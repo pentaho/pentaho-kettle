@@ -217,9 +217,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
         {
             if (v.isNull() || v.getString()==null) 
             {
-                if (idx>=0 && field!=null && field.getNullString()!=null) 
+                if (idx>=0 && field!=null && !Const.isEmpty(field.getNullString())) 
                 {
-                    if (meta.isEnclosureForced() && meta.getEnclosure()!=null)
+                    if (meta.isEnclosureForced() && !Const.isEmpty(meta.getEnclosure()))
                     {
                         retval=meta.getEnclosure()+field.getNullString()+meta.getEnclosure();
                     }
@@ -227,6 +227,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
                     {
                         retval=field.getNullString();
                     }
+                }
+                else
+                {
+                    retval = Const.NULL_STRING;
                 }
             }
             else
@@ -242,17 +246,18 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		    String separator = meta.getSeparator();
 		    boolean enclosureIsOptional = !meta.isEnclosureForced();
 		    
-		    if(separator == null || (value.indexOf(separator) < 0 && enclosureIsOptional))
+		    if(Const.isEmpty(separator) || (value.indexOf(separator) < 0 && enclosureIsOptional))
 		    {
 				retval = v.toString();
 		    }
-		    else {
+		    else 
+            {
 			    retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
 		    }
 	    }
 					    
         }
-        else if (v.isBigNumber() || v.isNumber() || v.isInteger())
+        else if (v.isNumeric())
         {
             if (idx>=0 && field!=null && field.getFormat()!=null)
             {
@@ -270,7 +275,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
                     }
                     else
                     {
-                        data.df.applyPattern(data.defaultDecimalFormat.toLocalizedPattern());
+                        data.df.applyPattern(data.defaultDecimalFormat.toPattern());
                     }
                     // Decimal 
                     if ( !Const.isEmpty( field.getDecimalSymbol()) )
@@ -320,8 +325,14 @@ public class TextFileOutput extends BaseStep implements StepInterface
             {
                 if (v.isNull()) 
                 {
-                    if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
-                    else retval = "";
+                    if (idx>=0 && field!=null && !Const.isEmpty(field.getNullString()))
+                    {
+                        retval=field.getNullString();
+                    }
+                    else
+                    {
+                        retval = Const.NULL_NUMBER;
+                    }
                 }
                 else
                 {
@@ -331,7 +342,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
         }
         else if (v.isDate())
         {
-            if (idx>=0 && field!=null && field.getFormat()!=null && v.getDate()!=null)
+            if (idx>=0 && field!=null && !Const.isEmpty(field.getFormat()) && v.getDate()!=null)
             {
                 if (!Const.isEmpty(field.getFormat()))
                 {
@@ -339,7 +350,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
                 }
                 else
                 {
-                    data.daf.applyPattern( data.defaultDateFormat.toLocalizedPattern() );
+                    data.daf.applyPattern( data.defaultDateFormat.toPattern() );
                 }
                 data.daf.setDateFormatSymbols(data.dafs);
                 retval= data.daf.format(v.getDate());
@@ -348,9 +359,13 @@ public class TextFileOutput extends BaseStep implements StepInterface
             {
                 if (v.isNull() || v.getDate()==null) 
                 {
-                    if (idx>=0 && field!=null && field.getNullString()!=null)
+                    if (idx>=0 && field!=null && !Const.isEmpty(field.getNullString()))
                     {
                         retval=field.getNullString();
+                    }
+                    else
+                    {
+                        retval = Const.NULL_DATE;
                     }
                 }
                 else
@@ -363,15 +378,24 @@ public class TextFileOutput extends BaseStep implements StepInterface
         {
             if (v.isNull())
             {
-                if (field.getNullString()!=null) retval=field.getNullString();
-                else retval=Const.NULL_BINARY;
+                if (!Const.isEmpty(field.getNullString()))
+                {
+                    retval=field.getNullString();
+                }
+                else
+                {
+                    retval=Const.NULL_BINARY;
+                }
             }
             else
             {                   
-                try {
-                    retval=new String(v.getBytes(), "US-ASCII");
-                } catch (UnsupportedEncodingException e) {
-                    // chances are small we'll get here. US_ASCII is
+                try 
+                {
+                    retval=new String(v.getBytes(), "UTF-8");
+                } 
+                catch (UnsupportedEncodingException e) 
+                {
+                    // chances are small we'll get here. UTF-8 is
                     // mandatory.
                     retval=Const.NULL_BINARY;   
                 }                   
@@ -381,7 +405,14 @@ public class TextFileOutput extends BaseStep implements StepInterface
         {
             if (v.isNull()) 
             {
-                if (idx>=0 && field!=null && field.getNullString()!=null) retval=field.getNullString();
+                if (idx>=0 && field!=null && !Const.isEmpty(field.getNullString()))
+                {
+                    retval=field.getNullString();
+                }
+                else
+                {
+                    retval = Const.NULL_BOOLEAN;
+                }
             }
             else
             {
