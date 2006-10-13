@@ -21,7 +21,6 @@ import java.util.Locale;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
-import jxl.biff.EmptyCell;
 import jxl.write.DateFormat;
 import jxl.write.DateFormats;
 import jxl.write.DateTime;
@@ -248,7 +247,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
                     }
                     else
                     {
-                        data.sheet.addCell(new EmptyCell(data.positionX, data.positionY));
+                        data.sheet.addCell(new Label(data.positionX, data.positionY, ""));
                     }
                 }
                 break;
@@ -268,7 +267,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
                     }
                     else
                     {
-                        data.sheet.addCell(new EmptyCell(data.positionX, data.positionY));
+                        data.sheet.addCell(new Label(data.positionX, data.positionY, ""));
                     }
                 }
                 break;
@@ -276,23 +275,30 @@ public class ExcelOutput extends BaseStep implements StepInterface
             case Value.VALUE_TYPE_BIGNUMBER:
             case Value.VALUE_TYPE_INTEGER:
                 {
-                    if (cellFormat==null)
-                    {
-                        String format;
-                        if (excelField!=null && excelField.getFormat()!=null)
-                        {
-                            format=excelField.getFormat();
-                        }
-                        else
-                        {
-                            format = "###,###.00";
-                        }
-                        NumberFormat numberFormat = new NumberFormat(format);
-                        cellFormat = new WritableCellFormat(numberFormat);
-                        data.formats.put(v.getName(), cellFormat); // save for next time around...
-                    }
-                    jxl.write.Number number = new jxl.write.Number(data.positionX, data.positionY, v.getNumber(), cellFormat);
-                    data.sheet.addCell(number);
+	                if (!v.isNull())
+	                {
+		            	if (cellFormat==null)
+	                    {
+	                        String format;
+	                        if (excelField!=null && excelField.getFormat()!=null)
+	                        {
+	                            format=excelField.getFormat();
+	                        }
+	                        else
+	                        {
+	                            format = "###,###.00";
+	                        }
+	                        NumberFormat numberFormat = new NumberFormat(format);
+	                        cellFormat = new WritableCellFormat(numberFormat);
+	                        data.formats.put(v.getName(), cellFormat); // save for next time around...
+	                    }
+	                    jxl.write.Number number = new jxl.write.Number(data.positionX, data.positionY, v.getNumber(), cellFormat);
+	                    data.sheet.addCell(number);
+	                }
+	                else
+	                {
+	                    data.sheet.addCell(new Label(data.positionX, data.positionY, ""));
+	                }
                 }
                 break;
             default: break;
