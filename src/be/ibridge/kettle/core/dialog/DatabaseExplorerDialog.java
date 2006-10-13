@@ -441,6 +441,7 @@ public class DatabaseExplorerDialog extends Dialog
 					miDDL.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getDDL(table); }});
 					MenuItem miDDL2  = new MenuItem(mTree, SWT.PUSH); miDDL2.setText("Generate DDL for other connection");
 					miDDL2.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getDDLForOther(table); }});
+                    miDDL2.setEnabled(databases!=null);
 					MenuItem miSQL  = new MenuItem(mTree, SWT.PUSH); miSQL.setText("Open SQL for ["+table+"]");
 					miSQL.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { getSQL(table); }});
 				}

@@ -42,6 +42,7 @@ import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.accessoutput.AccessOutputMeta;
 import be.ibridge.kettle.trans.step.addsequence.AddSequenceMeta;
+import be.ibridge.kettle.trans.step.addxml.AddXMLMeta;
 import be.ibridge.kettle.trans.step.aggregaterows.AggregateRowsMeta;
 import be.ibridge.kettle.trans.step.blockingstep.BlockingStepMeta;
 import be.ibridge.kettle.trans.step.calculator.CalculatorMeta;
@@ -234,6 +235,9 @@ public class BaseStep extends Thread
         new StepPluginMeta(XMLOutputMeta.class, "XMLOutput", 
                             Messages.getString("BaseStep.TypeLongDesc.XMLOutput"), Messages.getString("BaseStep.TypeTooltipDesc.XMLOutput"), 
                             "XOU.png", CATEGORY_OUTPUT),
+	    new StepPluginMeta(AddXMLMeta.class, "AddXML", 
+				            Messages.getString("BaseStep.TypeLongDesc.AddXML"), Messages.getString("BaseStep.TypeTooltipDesc.AddXML"), 
+				            "XIN.png", CATEGORY_TRANSFORM),          
         new StepPluginMeta(MergeRowsMeta.class, "MergeRows", 
                             Messages.getString("BaseStep.TypeLongDesc.MergeRows"), Messages.getString("BaseStep.TypeTooltipDesc.MergeRows"), 
                             "MRG.png", CATEGORY_TRANSFORM),
