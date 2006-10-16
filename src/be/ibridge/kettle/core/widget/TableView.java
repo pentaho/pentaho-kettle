@@ -1809,6 +1809,11 @@ public class TableView extends Composite
 		field_changed = false;
 		ColumnInfo colinfo = columns[colnr-1];
 
+        if (columns[colnr-1].isReadOnly()) 
+        {
+            return;
+        }
+        
 		combo   = new CCombo(table, colinfo.isReadOnly()?SWT.READ_ONLY:SWT.NONE );
         props.setLook(combo, Props.WIDGET_STYLE_TABLE);
 		combo.addTraverseListener(lsTraverse);
