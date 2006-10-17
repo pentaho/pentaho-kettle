@@ -43,14 +43,30 @@ public abstract class BaseDatabaseMeta implements Cloneable
     public static final String ATTRIBUTE_PORT_NUMBER            = "PORT_NUMBER"; 
 
     /**
+     * The SQL to execute at connect time (right after connecting)
+     */
+    public static final String ATTRIBUTE_SQL_CONNECT            = "SQL_CONNECT";
+
+    /**
+     * A flag to determine if we should use connection pooling or not.
+     */
+    public static final String ATTRIBUTE_USE_POOLING            = "USE_POOLING";
+
+    /**
+     * If we use connection pooling, this would contain the maximum pool size
+     */
+    public static final String ATTRIBUTE_MAXIMUM_POOL_SIZE          = "MAXIMUM_POOL_SIZE";
+
+    /**
+     * If we use connection pooling, this would contain the initial pool size
+     */
+    public static final String ATTRIBUTE_INITIAL_POOL_SIZE          = "INITIAL_POOL_SIZE";
+
+    /**
      * The prefix for all the extra options attributes
      */
     public static final String ATTRIBUTE_PREFIX_EXTRA_OPTION    = "EXTRA_OPTION_"; 
     
-    /**
-     * The SQL to execute at connect time (right after connecting)
-     */
-    public static final String ATTRIBUTE_SQL_CONNECT            = "SQL_CONNECT";
 
 	private String name;
 	private int    accessType;        // Database.TYPE_ODBC / NATIVE / OCI
@@ -871,5 +887,54 @@ public abstract class BaseDatabaseMeta implements Cloneable
     public boolean supportsSetMaxRows()
     {
         return true;
+    }
+    
+    /**
+     * @return true if we want to use a database connection pool
+     */
+    public boolean isUsingConnectionPool()
+    {
+        String usePool = attributes.getProperty(ATTRIBUTE_USE_POOLING);
+        return "Y".equalsIgnoreCase(usePool);
+    }
+    
+    /**
+     * @param usePool true if we want to use a database connection pool
+     */
+    public void setUsingConnectionPool(boolean usePool)
+    {
+        attributes.setProperty(ATTRIBUTE_USE_POOLING, usePool?"Y":"N");
+    }
+    
+    /**
+     * @return the maximum pool size
+     */
+    public int getMaximumPoolSize()
+    {
+        return Const.toInt(attributes.getProperty(ATTRIBUTE_MAXIMUM_POOL_SIZE), ConnectionPoolUtil.defaultMaximumNrOfConnections);
+    }
+
+    /**
+     * @param maximumPoolSize the maximum pool size
+     */
+    public void setMaximumPoolSize(int maximumPoolSize)
+    {
+        attributes.setProperty(ATTRIBUTE_MAXIMUM_POOL_SIZE, Integer.toString(maximumPoolSize));
+    }
+
+    /**
+     * @return the initial pool size
+     */
+    public int getInitialPoolSize()
+    {
+        return Const.toInt(attributes.getProperty(ATTRIBUTE_INITIAL_POOL_SIZE), ConnectionPoolUtil.defaultInitialNrOfConnections);
+    }
+    
+    /**
+     * @param initialPoolSize the initial pool size
+     */
+    public void setInitialPoolSize(int initialPoolSize)
+    {
+        attributes.setProperty(ATTRIBUTE_MAXIMUM_POOL_SIZE, Integer.toString(initialPoolSize));
     }
 }

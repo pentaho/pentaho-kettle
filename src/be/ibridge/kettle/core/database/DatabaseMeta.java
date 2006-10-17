@@ -1995,11 +1995,14 @@ public class DatabaseMeta implements Cloneable, XMLInterface
     /**
      * Verify the name of the database and if required, change it if it already exists in the list of databases.
      * @param databases the databases to check against.
+     * @param oldname the old name of the database
      * @return the new name of the database connection
      */
-    public String verifyAndModifyDatabaseName(ArrayList databases)
+    public String verifyAndModifyDatabaseName(ArrayList databases, String oldname)
     {
         String name = getName();
+        if (name.equalsIgnoreCase(oldname)) return name; // nothing to see here: move along!
+        
         int nr = 2;
         while (Const.findDatabase(databases, getName())!=null)
         {
@@ -2008,4 +2011,54 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         }
         return getName();
     }
+
+    /**
+     * @return true if we want to use a database connection pool
+     */
+    public boolean isUsingConnectionPool()
+    {
+        return databaseInterface.isUsingConnectionPool();
+    }
+    
+    /**
+     * @param usePool true if we want to use a database connection pool
+     */
+    public void setUsingConnectionPool(boolean usePool)
+    {
+        databaseInterface.setUsingConnectionPool(usePool);
+    }
+
+    
+    /**
+     * @return the maximum pool size
+     */
+    public int getMaximumPoolSize()
+    {
+        return databaseInterface.getMaximumPoolSize();
+    }
+
+    /**
+     * @param maximumPoolSize the maximum pool size
+     */
+    public void setMaximumPoolSize(int maximumPoolSize)
+    {
+        databaseInterface.setMaximumPoolSize(maximumPoolSize);
+    }
+
+    /**
+     * @return the initial pool size
+     */
+    public int getInitialPoolSize()
+    {
+        return databaseInterface.getInitialPoolSize();
+    }
+    
+    /**
+     * @param initalPoolSize the initial pool size
+     */
+    public void setInitialPoolSize(int initalPoolSize)
+    {
+        databaseInterface.setInitialPoolSize(initalPoolSize);
+    }
+
 }

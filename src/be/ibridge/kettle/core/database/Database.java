@@ -161,16 +161,34 @@ public class Database
 	 * Open the database connection.
 	 * @throws KettleDatabaseException if something went wrong.
 	 */
-	public void connect()
-		throws KettleDatabaseException
+	public void connect() throws KettleDatabaseException
 	{
+        if (databaseMeta==null)
+        {
+            throw new KettleDatabaseException("No valid database connection defined!");
+        }
+        
         try
 		{
-			if (databaseMeta!=null)
-			{
-				
-				connect(databaseMeta.getDriverClass() );
-				log.logDetailed(toString(), "Connected to database.");
+            // First see if we use connection pooling...
+            // TODO: see how this affects the JNDI stuff.
+            //
+            if (databaseMeta.isUsingConnectionPool()) // default = false for backward compatibility
+            {
+                try
+                {
+                    this.connection = ConnectionPoolUtil.getConnection(databaseMeta);
+                } 
+                catch (Exception e)
+                {
+                    throw new KettleDatabaseException(
+                            "Error occured while trying to connect to the database", e);
+                }
+            }
+            else
+            {
+    			connect(databaseMeta.getDriverClass() );
+    			log.logDetailed(toString(), "Connected to database.");
                 
                 // See if we need to execute extra SQL statemtent...
                 String sql = StringUtil.environmentSubstitute( databaseMeta.getConnectSQL() ); 
@@ -181,11 +199,7 @@ public class Database
                     execStatements(sql);
                     log.logDetailed(toString(), "Executed connect time SQL statements:"+Const.CR+sql);
                 }
-			}
-			else
-			{
-				throw new KettleDatabaseException("No valid database connection defined!");
-			}
+            }
 		}
 		catch(Exception e)
 		{
@@ -288,17 +302,54 @@ public class Database
 	{	
 		try
 		{
-			if (connection==null) return ; // Nothing to do...
-			if (connection.isClosed()) return ; // Nothing to do...
+			if (connection==null)
+            {
+                return ; // Nothing to do...
+            }
+			if (connection.isClosed())
+            {
+                return ; // Nothing to do...
+            }
 
-			if (!isAutoCommit()) commit();
+			if (!isAutoCommit())
+            {
+                commit();
+            }
 			
-			if (pstmt    !=null) { pstmt.close(); pstmt=null; } 
-			if (prepStatementLookup!=null) { prepStatementLookup.close(); prepStatementLookup=null; } 
-			if (prepStatementInsert!=null) { prepStatementInsert.close(); prepStatementInsert=null; } 
-			if (prepStatementUpdate!=null) { prepStatementUpdate.close(); prepStatementUpdate=null; } 
-			if (pstmt_seq!=null) { pstmt_seq.close(); pstmt_seq=null; } 
-			if (connection      !=null) { connection.close(); connection=null; } 
+			if (pstmt    !=null) 
+            { 
+                pstmt.close(); 
+                pstmt=null; 
+            } 
+			if (prepStatementLookup!=null) 
+            { 
+                prepStatementLookup.close(); 
+                prepStatementLookup=null; 
+            } 
+			if (prepStatementInsert!=null) 
+			{ 
+                prepStatementInsert.close(); 
+                prepStatementInsert=null; 
+            } 
+			if (prepStatementUpdate!=null) 
+            { 
+                prepStatementUpdate.close(); 
+                prepStatementUpdate=null; 
+            } 
+			if (pstmt_seq!=null) 
+            { 
+                pstmt_seq.close(); 
+                pstmt_seq=null; 
+            } 
+            
+			if (connection !=null) 
+            { 
+                connection.close(); 
+                if (!databaseMeta.isUsingConnectionPool()) 
+                {
+                    connection=null; 
+                }
+            } 
 			log.logDetailed(toString(), "Connection to database closed!");
 		}
 		catch(SQLException ex) 

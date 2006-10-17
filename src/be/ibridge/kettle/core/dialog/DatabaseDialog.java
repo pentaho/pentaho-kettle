@@ -51,6 +51,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.BaseDatabaseMeta;
+import be.ibridge.kettle.core.database.ConnectionPoolUtil;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.database.GenericDatabaseMeta;
@@ -78,10 +79,10 @@ public class DatabaseDialog extends Dialog
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wDbTab, wOracleTab, wIfxTab, wSAPTab, wGenericTab, wOptionsTab, wSQLTab;
+	private CTabItem     wDbTab, wPoolTab, wOracleTab, wIfxTab, wSAPTab, wGenericTab, wOptionsTab, wSQLTab;
 
-	private Composite    wDbComp, wOracleComp, wIfxComp, wSAPComp, wGenericComp, wOptionsComp, wSQLComp;
-	private FormData     fdDbComp, fdOracleComp, fdIfxComp, fdSAPComp, fdGenericComp, fdOptionsComp, fdSQLComp;
+	private Composite    wDbComp, wPoolComp, wOracleComp, wIfxComp, wSAPComp, wGenericComp, wOptionsComp, wSQLComp;
+	private FormData     fdDbComp, fdPoolComp, fdOracleComp, fdIfxComp, fdSAPComp, fdGenericComp, fdOptionsComp, fdSQLComp;
 
 	private Shell     shell;
 
@@ -92,6 +93,14 @@ public class DatabaseDialog extends Dialog
 	
 	private FormData fdlConn, fdlConnType, fdlConnAcc, fdlPort, fdlHostName, fdlDBName, fdlServername, fdlUsername, fdlPassword, fdlData, fdlIndex;
 	private FormData fdConn,  fdConnType, fdConnAcc, fdPort, fdHostName, fdDBName,  fdServername, fdUsername, fdPassword, fdData, fdIndex;
+
+    // Pooling
+    private Label    wlUsePool, wlInitPool, wlMaxPool;
+    private Button   wUsePool;
+    private Text     wInitPool,  wMaxPool;
+
+    private FormData fdlUsePool,  fdlInitPool, fdlMaxPool;
+    private FormData fdUsePool,  fdInitPool, fdMaxPool;
 
     // SAP
     private Label    wlSAPLanguage, wlSAPSystemNumber, wlSAPClient;
@@ -210,6 +219,7 @@ public class DatabaseDialog extends Dialog
  		props.setLook(wTabFolder, Props.WIDGET_STYLE_TABLE);
 
         addGeneralTab();
+        addPoolTab();
         addOracleTab();
         addInformixTab();
         addSAPTab();
@@ -352,8 +362,8 @@ public class DatabaseDialog extends Dialog
         props.setLook(wDbComp);
 
         FormLayout GenLayout = new FormLayout();
-        GenLayout.marginWidth  = 3;
-        GenLayout.marginHeight = 3;
+        GenLayout.marginWidth  = Const.FORM_MARGIN;
+        GenLayout.marginHeight = Const.FORM_MARGIN;
         wDbComp.setLayout(GenLayout);
 
         // What's the connection name?
@@ -533,6 +543,94 @@ public class DatabaseDialog extends Dialog
         /// END OF GEN TAB
         /////////////////////////////////////////////////////////////
     }
+    
+    private void addPoolTab()
+    {
+        //////////////////////////
+        // START OF POOL TAB///
+        ///
+        wPoolTab=new CTabItem(wTabFolder, SWT.NONE);
+        wPoolTab.setText("Pooling");
+
+        FormLayout poolLayout = new FormLayout ();
+        poolLayout.marginWidth  = Const.FORM_MARGIN;
+        poolLayout.marginHeight = Const.FORM_MARGIN;
+        
+        wPoolComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wPoolComp);
+        wPoolComp.setLayout(poolLayout);
+
+        // What's the data tablespace name?
+        wlUsePool = new Label(wPoolComp, SWT.RIGHT); 
+        props.setLook(wlUsePool);
+        wlUsePool.setText("Use a connection pool"); 
+        fdlUsePool = new FormData();
+        fdlUsePool.top   = new FormAttachment(0, 0);
+        fdlUsePool.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlUsePool.right = new FormAttachment(middle, -margin);
+        wlUsePool.setLayoutData(fdlUsePool);
+
+        wUsePool = new Button(wPoolComp, SWT.CHECK );
+        wUsePool.setSelection(connection.isUsingConnectionPool());
+        props.setLook(wUsePool);
+        wUsePool.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { connection.setChanged(); enableFields(); } });
+        fdUsePool = new FormData();
+        fdUsePool.top  = new FormAttachment(0, 0);
+        fdUsePool.left = new FormAttachment(middle, 0); // To the right of the label
+        wUsePool.setLayoutData(fdUsePool);
+
+        // What's the initial pool size
+        wlInitPool = new Label(wPoolComp, SWT.RIGHT); 
+        props.setLook(wlInitPool);
+        wlInitPool.setText("The initial pool size "); 
+        fdlInitPool = new FormData();
+        fdlInitPool.top   = new FormAttachment(wUsePool, margin);
+        fdlInitPool.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlInitPool.right = new FormAttachment(middle, -margin);
+        wlInitPool.setLayoutData(fdlInitPool);
+
+        wInitPool = new Text(wPoolComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wInitPool.setText( Integer.toString( connection.getInitialPoolSize() ) );
+        props.setLook(wInitPool);
+        wInitPool.addModifyListener(lsMod);
+        fdInitPool = new FormData();
+        fdInitPool.top  = new FormAttachment(wUsePool, margin);
+        fdInitPool.left = new FormAttachment(middle, 0); // To the right of the label
+        fdInitPool.right= new FormAttachment(95, 0);
+        wInitPool.setLayoutData(fdInitPool);
+
+        // What's the maximum pool size
+        wlMaxPool = new Label(wPoolComp, SWT.RIGHT); 
+        props.setLook(wlMaxPool);
+        wlMaxPool.setText("The maximum pool size "); 
+        fdlMaxPool = new FormData();
+        fdlMaxPool.top   = new FormAttachment(wInitPool, margin);
+        fdlMaxPool.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlMaxPool.right = new FormAttachment(middle, -margin);
+        wlMaxPool.setLayoutData(fdlMaxPool);
+
+        wMaxPool = new Text(wPoolComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wMaxPool.setText( Integer.toString( connection.getMaximumPoolSize() ) );
+        props.setLook(wMaxPool);
+        wMaxPool.addModifyListener(lsMod);
+        fdMaxPool = new FormData();
+        fdMaxPool.top  = new FormAttachment(wInitPool, margin);
+        fdMaxPool.left = new FormAttachment(middle, 0); // To the right of the label
+        fdMaxPool.right= new FormAttachment(95, 0);
+        wMaxPool.setLayoutData(fdMaxPool);
+
+        
+        fdPoolComp = new FormData();
+        fdPoolComp.left  = new FormAttachment(0, 0);
+        fdPoolComp.top   = new FormAttachment(0, 0);
+        fdPoolComp.right = new FormAttachment(100, 0);
+        fdPoolComp.bottom= new FormAttachment(100, 0);
+        wPoolComp.setLayoutData(fdPoolComp);
+
+        wPoolComp.layout();
+        wPoolTab.setControl(wPoolComp);
+    }
+
 
     private void addOracleTab()
     {
@@ -543,8 +641,8 @@ public class DatabaseDialog extends Dialog
         wOracleTab.setText("Oracle");
 
         FormLayout oracleLayout = new FormLayout ();
-        oracleLayout.marginWidth  = 3;
-        oracleLayout.marginHeight = 3;
+        oracleLayout.marginWidth  = Const.FORM_MARGIN;
+        oracleLayout.marginHeight = Const.FORM_MARGIN;
         
         wOracleComp = new Composite(wTabFolder, SWT.NONE);
         props.setLook(wOracleComp);
@@ -611,8 +709,8 @@ public class DatabaseDialog extends Dialog
         wIfxTab.setText("Informix");
 
         FormLayout ifxLayout = new FormLayout ();
-        ifxLayout.marginWidth  = 3;
-        ifxLayout.marginHeight = 3;
+        ifxLayout.marginWidth  = Const.FORM_MARGIN;
+        ifxLayout.marginHeight = Const.FORM_MARGIN;
         
         wIfxComp = new Composite(wTabFolder, SWT.NONE);
         props.setLook(wIfxComp);
@@ -657,8 +755,8 @@ public class DatabaseDialog extends Dialog
         wSAPTab.setText("SAP R/3");
 
         FormLayout sapLayout = new FormLayout ();
-        sapLayout.marginWidth  = 3;
-        sapLayout.marginHeight = 3;
+        sapLayout.marginWidth  = Const.FORM_MARGIN;
+        sapLayout.marginHeight = Const.FORM_MARGIN;
         
         wSAPComp = new Composite(wTabFolder, SWT.NONE);
         props.setLook(        wSAPComp);
@@ -746,8 +844,8 @@ public class DatabaseDialog extends Dialog
         wGenericTab.setToolTipText("Settings in case you want to use a generic database with a non-supported JDBC driver");
 
         FormLayout genericLayout = new FormLayout ();
-        genericLayout.marginWidth  = 3;
-        genericLayout.marginHeight = 3;
+        genericLayout.marginWidth  = Const.FORM_MARGIN;
+        genericLayout.marginHeight = Const.FORM_MARGIN;
         
         wGenericComp = new Composite(wTabFolder, SWT.NONE);
         props.setLook( wGenericComp );
@@ -1083,6 +1181,12 @@ public class DatabaseDialog extends Dialog
             wlDriverClass.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE);
             wDriverClass.setEnabled(  dbtype==DatabaseMeta.TYPE_DATABASE_GENERIC && acctype == DatabaseMeta.TYPE_ACCESS_NATIVE);
   		}
+        
+        // The connection pooling options: do those as well...
+        wlMaxPool.setEnabled( wUsePool.getSelection());
+        wMaxPool.setEnabled( wUsePool.getSelection());
+        wlInitPool.setEnabled( wUsePool.getSelection());
+        wInitPool.setEnabled( wUsePool.getSelection());
 	}
 	
 	public void setPortNumber()
@@ -1207,6 +1311,11 @@ public class DatabaseDialog extends Dialog
         
         // The SQL to execute...
         databaseMeta.setConnectSQL( wSQL.getText() );
+        
+        // The connection pooling stuff...
+        databaseMeta.setUsingConnectionPool(wUsePool.getSelection());
+        databaseMeta.setInitialPoolSize(Const.toInt( wInitPool.getText(), ConnectionPoolUtil.defaultInitialNrOfConnections) );
+        databaseMeta.setMaximumPoolSize(Const.toInt( wMaxPool.getText(), ConnectionPoolUtil.defaultMaximumNrOfConnections) );
 	}
 	
     /**

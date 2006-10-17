@@ -738,7 +738,6 @@ public class BaseStep extends Thread
             RowSet rs=(RowSet)outputRowSets.get(0);
             rs.putRow(row);
             linesWritten++;
-            
 		}
 	}
 	

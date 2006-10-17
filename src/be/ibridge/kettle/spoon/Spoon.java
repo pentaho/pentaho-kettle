@@ -1759,7 +1759,7 @@ public class Spoon implements AddUndoPositionInterface
             String newname = con.open(); 
             if (!Const.isEmpty(newname))  // null: CANCEL
             {                
-                newname = db.verifyAndModifyDatabaseName(transMeta.getDatabases());
+                newname = db.verifyAndModifyDatabaseName(transMeta.getDatabases(), name);
                 
                 // Store undo/redo information
                 DatabaseMeta after = (DatabaseMeta)db.clone();
@@ -1790,7 +1790,7 @@ public class Spoon implements AddUndoPositionInterface
             String newname = con.open(); 
             if (newname != null)  // null: CANCEL
             {
-                copy.verifyAndModifyDatabaseName(transMeta.getDatabases());
+                copy.verifyAndModifyDatabaseName(transMeta.getDatabases(), name);
                 transMeta.addDatabase(pos+1, copy);
                 addUndoNew(new DatabaseMeta[] { (DatabaseMeta)copy.clone() }, new int[] { pos+1 });
                 saveConnection(copy);             
@@ -2299,7 +2299,7 @@ public class Spoon implements AddUndoPositionInterface
         String con_name = con.open(); 
         if (!Const.isEmpty(con_name))
         {
-            db.verifyAndModifyDatabaseName(transMeta.getDatabases());
+            db.verifyAndModifyDatabaseName(transMeta.getDatabases(), null);
             transMeta.addDatabase(db);
             addUndoNew(new DatabaseMeta[] { (DatabaseMeta)db.clone() }, new int[] { transMeta.indexOfDatabase(db) });
             saveConnection(db);

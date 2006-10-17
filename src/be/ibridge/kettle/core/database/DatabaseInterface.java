@@ -598,4 +598,34 @@ public interface DatabaseInterface extends Cloneable
      * @return true if the database supports setting the maximum number of return rows in a resultset.
      */
     public boolean supportsSetMaxRows();
+
+    /**
+     * @return true if we want to use a database connection pool
+     */
+    public boolean isUsingConnectionPool();
+    
+    /**
+     * @param usePool true if we want to use a database connection pool
+     */
+    public void setUsingConnectionPool(boolean usePool);
+    
+    /**
+     * @return the maximum pool size
+     */
+    public int getMaximumPoolSize();
+
+    /**
+     * @param maximumPoolSize the maximum pool size
+     */
+    public void setMaximumPoolSize(int maximumPoolSize);
+
+    /**
+     * @return the initial pool size
+     */
+    public int getInitialPoolSize();
+    
+    /**
+     * @param initalPoolSize the initial pool size
+     */
+    public void setInitialPoolSize(int initalPoolSize);    
 }

@@ -64,6 +64,7 @@ set CLASSPATH=%CLASSPATH%;libext\jackcess-1.0.jar
 set CLASSPATH=%CLASSPATH%;libext\commons-collections-3.1.jar
 set CLASSPATH=%CLASSPATH%;libext\commons-logging.jar
 set CLASSPATH=%CLASSPATH%;libext\commons-lang-2.2.jar
+set CLASSPATH=%CLASSPATH%;libext\commons-dbcp-1.2.1.jar
 
 REM *****************
 REM   SWT Libraries
