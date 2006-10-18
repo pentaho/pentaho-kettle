@@ -1628,6 +1628,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         if (fieldname.indexOf('-')>=0) return true; 
         if (fieldname.indexOf('+')>=0) return true; 
         if (fieldname.indexOf('.')>=0) return true; 
+        if (fieldname.indexOf(',')>=0) return true; 
         if (fieldname.indexOf('*')>=0) return true; 
         if (fieldname.indexOf('(')>=0) return true; 
         if (fieldname.indexOf(')')>=0) return true; 
