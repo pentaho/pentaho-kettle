@@ -149,6 +149,7 @@ public class Props implements Cloneable
 	private Display display;
 		
 	private int type;
+    private String filename;
 	
 	private Hashtable screens;
 	
@@ -189,9 +190,29 @@ public class Props implements Cloneable
 		}
 		else
 		{
-			throw new RuntimeException("Properties, Kettle systems settings, already initialised!");
+			throw new RuntimeException("The Properties systems settings are already initialised!");
 		}
 	}
+    
+    /**
+     * Initialize the properties: load from disk.
+     * @param display The Display
+     * @param filename the filename to use 
+     */
+    public static final void init(Display display, String filename)
+    {
+        if (props==null)
+        {
+            props = new Props(display, filename);
+            
+            // Also init the colors and fonts to use...
+            GUIResource.getInstance();
+        }
+        else
+        {
+            throw new RuntimeException("The properties systems settings are already initialised!");
+        }
+    }
 	
 	/**
 	 * Check to see whether the Kettle properties where loaded.
@@ -215,19 +236,11 @@ public class Props implements Cloneable
 		properties = new Properties();
 		setDefault();
 		type=t;
+        filename=getFilename();
         
         pluginHistory = new ArrayList();
 
-		try
-		{
-			if (type!=TYPE_PROPERTIES_EMPTY)
-			{
-				properties.load(new FileInputStream(new File(getFilename())));
-			}
-		}
-		catch(IOException e)
-		{
-		}
+        loadProps();
         
         lastfiles = getLastFiles();
         lastdirs  = getLastDirs();
@@ -236,8 +249,28 @@ public class Props implements Cloneable
         loadScreens();
         loadPluginHistory();
 	}
-		
-	public String getFilename()
+
+    private Props(Display dis, String filename)
+    {
+        display=dis;
+        properties = new Properties();
+        setDefault();
+        this.type=TYPE_PROPERTIES_EMPTY;
+        this.filename=filename;
+        
+        pluginHistory = new ArrayList();
+
+        loadProps();
+        
+        lastfiles = getLastFiles();
+        lastdirs  = getLastDirs();
+        lasttypes = getLastTypes();
+        lastrepos = getLastRepositories();
+        loadScreens();
+        loadPluginHistory();
+    }
+
+    public String getFilename()
 	{
 		String directory = Const.getKettleDirectory();
 		String filename = "";
@@ -363,7 +396,7 @@ public class Props implements Cloneable
 	{
 		try
 		{
-			properties.load(new FileInputStream(getFilename()));
+			properties.load(new FileInputStream(filename));
 		}
 		catch(Exception e)
 		{
