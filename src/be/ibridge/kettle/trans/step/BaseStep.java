@@ -905,7 +905,7 @@ public class BaseStep extends Thread
 					stopAll(); 
 					return null; 
 				}
-				if (sleeptime<100) sleeptime*=1.2; else sleeptime=100; 
+				if (sleeptime<100) sleeptime = ((int)(sleeptime*1.2))+1; else sleeptime=100; 
 				nrGetSleeps+=sleeptime;
 			}
 		}
