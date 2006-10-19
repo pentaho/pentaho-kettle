@@ -174,6 +174,11 @@ public class DatabaseMeta implements Cloneable, XMLInterface
       */
      public static final int TYPE_DATABASE_H2         = 23;
      
+ 	/**
+ 	 * Connection to a Netezza database
+ 	 */
+ 	public static final int TYPE_DATABASE_NETEZZA    =  24;
+
 
 
 	/**

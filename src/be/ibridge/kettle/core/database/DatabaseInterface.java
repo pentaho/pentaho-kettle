@@ -53,7 +53,8 @@ public interface DatabaseInterface extends Cloneable
             ExtenDBDatabaseMeta.class,
             TeradataDatabaseMeta.class,
             OracleRDBDatabaseMeta.class,
-            H2DatabaseMeta.class
+            H2DatabaseMeta.class,
+            NetezzaDatabaseMeta.class,
 		};
 	
 	/**
