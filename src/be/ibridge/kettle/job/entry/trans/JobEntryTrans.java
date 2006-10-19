@@ -386,6 +386,9 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
             log.logBasic(toString(), "Opening transformation: ["+StringUtil.environmentSubstitute(getTransname())+"] in directory ["+directory.getPath()+"]");
         }
 		
+        // Load the transformation only once for the complete loop!
+        TransMeta transMeta = getTransMeta(rep);
+        
         int iteration = 0;
         String args[] = arguments;
         Row resultRow = null;
@@ -408,8 +411,6 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
     		{
                 log.logDetailed(toString(), "Starting transformation...(file="+getFilename()+", name="+getName()+"), repinfo="+getDescription());
                 
-                TransMeta transMeta = getTransMeta(rep);
-    
                 // Create the transformation from meta-data
                 Trans trans = new Trans(logwriter, transMeta);
                 
