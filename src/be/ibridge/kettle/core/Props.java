@@ -319,7 +319,7 @@ public class Props implements Cloneable
 
 	public boolean fileExists()
 	{
-		File f = new File(getFilename());
+	    File f = new File(filename);
 		return f.exists();
 	}
 	
@@ -458,7 +458,7 @@ public class Props implements Cloneable
 		
 		try
 		{
-			properties.store(new FileOutputStream(new File(getFilename())), "Kettle Properties file");
+			properties.store(new FileOutputStream(new File(filename)), "Kettle Properties file");
 			// System.out.println("properties saved");
 		}
 		catch(IOException e)
