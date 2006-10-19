@@ -31,6 +31,7 @@ import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseMoveListener;
@@ -39,7 +40,11 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Device;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.FormAttachment;
+import org.eclipse.swt.layout.FormData;
+import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -49,6 +54,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
@@ -818,6 +824,9 @@ public class SpoonGraph extends Canvas implements Redrawable
         {
             public void keyPressed(KeyEvent e)
             {
+                // F2 --> rename step
+                if (e.keyCode == SWT.F2)    { renameStep(); }
+
                 if ((int) e.character == 1) // CTRL-A
                 {
                     spoon.getTransMeta().selectAll();
@@ -913,6 +922,88 @@ public class SpoonGraph extends Canvas implements Redrawable
         addKeyListener(spoon.defKeys);
 
         setBackground(GUIResource.getInstance().getColorBackground());
+        
+        setLayout(new FormLayout());
+    }
+
+    public void renameStep()
+    {
+        StepMeta[] selection = spoon.getTransMeta().getSelectedSteps();
+        if (selection.length==1)
+        {
+            final StepMeta stepMeta = selection[0];
+            
+            // What is the location of the step?
+            String name = stepMeta.getName();
+            Point stepLocation = stepMeta.getLocation();
+            Point realStepLocation = real2screen(stepLocation.x, stepLocation.y);
+            
+            // The location of the step name?
+            GC gc = new GC(shell.getDisplay());
+            gc.setFont(GUIResource.getInstance().getFontGraph());
+            Point namePosition = TransPainter.getNamePosition(gc, name, realStepLocation, iconsize);
+            int width = gc.textExtent(name).x + 30;
+            gc.dispose();
+            
+            // at this very point, create a new text widget...
+            final Text text = new Text(this, SWT.SINGLE | SWT.BORDER);
+            text.setText(name);
+            FormData fdText = new FormData();
+            fdText.left = new FormAttachment(0, namePosition.x);
+            fdText.right= new FormAttachment(0, namePosition.x+width);
+            fdText.top  = new FormAttachment(0, namePosition.y);
+            text.setLayoutData(fdText);
+            
+            // Add a listener!
+            // Catch the keys pressed when editing a Text-field...
+            KeyListener lsKeyText = new KeyAdapter() 
+                {
+                    public void keyPressed(KeyEvent e) 
+                    {
+                        // "ENTER": close the text editor and copy the data over 
+                        if (   e.character == SWT.CR ) 
+                        {
+                            TransMeta transMeta = spoon.getTransMeta();
+                            String stepname = text.getText();
+                            String newname = stepname;
+                            
+                            StepMeta smeta = transMeta.findStep(newname, stepMeta);
+                            int nr = 2;
+                            while (smeta != null)
+                            {
+                                newname = stepname + " " + nr;
+                                smeta = transMeta.findStep(newname);
+                                nr++;
+                            }
+                            if (nr > 2)
+                            {
+                                stepname = newname;
+                                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+                                mb.setMessage(Messages.getString("Spoon.Dialog.StepnameExists.Message", stepname)); // $NON-NLS-1$
+                                mb.setText(Messages.getString("Spoon.Dialog.StepnameExists.Title")); // $NON-NLS-1$
+                                mb.open();
+                            }
+                            stepMeta.setName(stepname);
+                            stepMeta.setChanged();
+                            text.dispose();
+                            spoon.refreshTree(true); // to reflect the new name
+                            spoon.refreshGraph();
+                        }
+                            
+                        if (e.keyCode   == SWT.ESC)
+                        {
+                            text.dispose();
+                        }
+                    }
+                };
+
+            text.addKeyListener(lsKeyText);
+            
+            this.layout(true, true);
+            
+            text.setFocus();
+            text.setSelection(0, name.length());
+        }
     }
 
     public void clearSettings()

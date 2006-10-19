@@ -168,7 +168,7 @@ public class TransPainter
         {
             gc.setLineStyle(SWT.LINE_SOLID);
             gc.setForeground(black);
-            Point screen = real2screen(drop_candidate.x, drop_candidate.y);
+            Point screen = real2screen(drop_candidate.x, drop_candidate.y, offset);
             gc.drawRectangle(screen.x, screen.y,          iconsize, iconsize);
         }
 
@@ -197,7 +197,7 @@ public class TransPainter
         }
         Point p = new Point(ext.x, ext.y);
         Point loc = ni.getLocation();
-        Point note = real2screen(loc.x, loc.y);
+        Point note = real2screen(loc.x, loc.y, offset);
         int margin = Const.NOTE_MARGIN;
         p.x += 2 * margin;
         p.y += 2 * margin;
@@ -277,7 +277,7 @@ public class TransPainter
             y = 50;
         }
 
-        Point screen = real2screen(x, y);
+        Point screen = real2screen(x, y, offset);
 
         // First draw the shadow...
         gc.setBackground(lightGray);
@@ -303,7 +303,7 @@ public class TransPainter
             y = 50;
         }
 
-        Point screen = real2screen(x, y);
+        Point screen = real2screen(x, y, offset);
 
         String name = stepMeta.getName();
 
@@ -324,19 +324,17 @@ public class TransPainter
         gc.setBackground(background);
         gc.drawRectangle(screen.x - 1, screen.y - 1, iconsize + 1, iconsize + 1);
         //gc.setXORMode(true);
-        org.eclipse.swt.graphics.Point textsize = gc.textExtent(name);
 
-        int xpos = screen.x + (iconsize / 2) - (textsize.x / 2);
-        int ypos = screen.y + iconsize + 5;
-
+        Point namePosition = getNamePosition(gc, name, screen, iconsize );
+        
         if (shadowsize > 0)
         {
             gc.setForeground(lightGray);
-            gc.drawText(name, xpos + shadowsize, ypos + shadowsize, SWT.DRAW_TRANSPARENT);
+            gc.drawText(name, namePosition.x + shadowsize, namePosition.y + shadowsize, SWT.DRAW_TRANSPARENT);
         }
 
         gc.setForeground(black);
-        gc.drawText(name, xpos, ypos, SWT.DRAW_TRANSPARENT);
+        gc.drawText(name, namePosition.x, namePosition.y, SWT.DRAW_TRANSPARENT);
 
         if (stepMeta.getCopies() > 1)
         {
@@ -344,6 +342,16 @@ public class TransPainter
             gc.setForeground(black);
             gc.drawText("x" + stepMeta.getCopies(), screen.x - 5, screen.y - 5);
         }
+    }
+
+    public static final Point getNamePosition(GC gc, String string, Point screen, int iconsize)
+    {
+        org.eclipse.swt.graphics.Point textsize = gc.textExtent(string);
+        
+        int xpos = screen.x + (iconsize / 2) - (textsize.x / 2);
+        int ypos = screen.y + iconsize + 5;
+
+        return new Point(xpos, ypos);
     }
 
     private void drawLineShadow(GC gc, StepMeta fs, StepMeta ts, TransHopMeta hi, boolean is_candidate)
@@ -468,7 +476,7 @@ public class TransPainter
         return p;
     }
     
-    public Point real2screen(int x, int y)
+    public static final Point real2screen(int x, int y, Point offset)
     {
         Point screen = new Point(x + offset.x, y + offset.y);
 
@@ -504,8 +512,8 @@ public class TransPainter
         double theta = Math.toRadians(10); // arrowhead sharpness
         int size = 30 + (linewidth - 1) * 5; // arrowhead length
 
-        Point screen_from = real2screen(line[0], line[1]);
-        Point screen_to = real2screen(line[2], line[3]);
+        Point screen_from = real2screen(line[0], line[1], offset);
+        Point screen_to = real2screen(line[2], line[3], offset);
 
         int mx, my;
         int x1 = screen_from.x;
