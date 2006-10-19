@@ -2190,53 +2190,46 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	}
 
 	// implement the INITCAP function, arguments in args[]
-	public Value initcap() throws KettleValueException
+	public Value initcap()
 	{
 		if (isNull()) return this;
 		
-		if (getType()==VALUE_TYPE_STRING)
+		if (getString()==null)
 		{
-			if (getString()==null)
-			{
-				setNull();
-			}
-			else
-			{
-				StringBuffer change=new StringBuffer(getString());
-				boolean new_word;
-				int i;
-				char lower, upper, ch;
-					
-				new_word=true;
-				for (i=0 ; i<getString().length() ; i++)
-				{
-					lower=change.substring(i,i+1).toLowerCase().charAt(0); // Lowercase is default.
-					upper=change.substring(i,i+1).toUpperCase().charAt(0); // Uppercase for new words.
-					ch=upper;
-			
-					if (new_word)
-					{ 
-					  change.setCharAt(i, upper);
-					}
-					else
-					{          
-					  change.setCharAt(i, lower);  
-					}
-	
-					new_word = false;
-			
-					if ( !(ch>='A' && ch<='Z') && 
-						 !(ch>='0' && ch<='9') &&
-						 ch!='_'
-					   ) new_word = true;
-				}
-			
-				setValue( change.toString() );
-			}
+			setNull();
 		}
 		else
 		{
-			throw new KettleValueException("Function INITCAP only works with a string");
+			StringBuffer change=new StringBuffer(getString());
+			boolean new_word;
+			int i;
+			char lower, upper, ch;
+				
+			new_word=true;
+			for (i=0 ; i<getString().length() ; i++)
+			{
+				lower=change.substring(i,i+1).toLowerCase().charAt(0); // Lowercase is default.
+				upper=change.substring(i,i+1).toUpperCase().charAt(0); // Uppercase for new words.
+				ch=upper;
+		
+				if (new_word)
+				{ 
+				  change.setCharAt(i, upper);
+				}
+				else
+				{          
+				  change.setCharAt(i, lower);  
+				}
+
+				new_word = false;
+		
+				if ( !(ch>='A' && ch<='Z') && 
+					 !(ch>='0' && ch<='9') &&
+					 ch!='_'
+				   ) new_word = true;
+			}
+		
+			setValue( change.toString() );
 		}
 		return this;
 	}
