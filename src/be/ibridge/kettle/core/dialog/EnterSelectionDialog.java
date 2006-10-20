@@ -66,7 +66,7 @@ public class EnterSelectionDialog extends Dialog
 	private Props props;
 	
 	private boolean viewOnly, modal;
-	private int selectedNr;
+	private int selectedNrs[];
     private boolean multi;
     private int[] indices;
     private boolean fixed;
@@ -89,7 +89,7 @@ public class EnterSelectionDialog extends Dialog
 		selection = null;
 		viewOnly = false;
 		modal = true;
-		selectedNr = -1;
+		selectedNrs = new int[] {};
         multi=false;
         fixed=false;
 	}
@@ -106,10 +106,10 @@ public class EnterSelectionDialog extends Dialog
 	
 	public String open(int nr)
 	{
-		selectedNr = nr;
+		selectedNrs = new int[] { nr };
 		return open();
 	}
-
+    
 	public String open()
 	{
 		Shell parent = getParent();
@@ -141,9 +141,9 @@ public class EnterSelectionDialog extends Dialog
         
 		wSelection=new List(shell, options );
 		for (int i=0;i<list.length;i++) wSelection.add(list[i]);
-		if (selectedNr>=0)
+		if (selectedNrs!=null)
 		{
-			wSelection.select(selectedNr);
+			wSelection.select(selectedNrs);
 			wSelection.showSelection();
 		}
         if (fixed)
@@ -293,5 +293,21 @@ public class EnterSelectionDialog extends Dialog
     public void setFixed(boolean fixed)
     {
         this.fixed = fixed;
+    }
+
+    /**
+     * @return the selectedNrs
+     */
+    public int[] getSelectedNrs()
+    {
+        return selectedNrs;
+    }
+
+    /**
+     * @param selectedNrs the selectedNrs to set
+     */
+    public void setSelectedNrs(int[] selectedNrs)
+    {
+        this.selectedNrs = selectedNrs;
     }
 }
