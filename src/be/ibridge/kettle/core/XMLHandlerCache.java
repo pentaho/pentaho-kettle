@@ -40,7 +40,7 @@ public class XMLHandlerCache
        cacheHits = 0;
    }
    
-   public static final XMLHandlerCache getInstance()
+   public synchronized static final XMLHandlerCache getInstance()
    {
        if (cache!=null) return cache;
        
@@ -52,7 +52,7 @@ public class XMLHandlerCache
     * Store a cache entry  
     * @param entry The cache entry to store
     */
-   public void storeCache(XMLHandlerCacheEntry entry, int lastChildNr)
+   public synchronized void storeCache(XMLHandlerCacheEntry entry, int lastChildNr)
    {
        hashtable.put(entry, new Integer(lastChildNr));
        list.add(entry);
