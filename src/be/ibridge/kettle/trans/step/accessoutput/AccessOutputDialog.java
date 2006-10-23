@@ -282,8 +282,8 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
         props.setLook(wCommitSize);
         fdCommitSize=new FormData();
         fdCommitSize.left = new FormAttachment(middle, margin);
-        fdCommitSize.right= new FormAttachment(wCreateTable, -margin);
-        fdCommitSize.top  = new FormAttachment(wCreateFile, margin);
+        fdCommitSize.right= new FormAttachment(100, 0);
+        fdCommitSize.top  = new FormAttachment(wCreateTable, margin);
         wCommitSize.setLayoutData(fdCommitSize);
 
 		// Some buttons
@@ -292,7 +292,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wCommitSize);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, null);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
