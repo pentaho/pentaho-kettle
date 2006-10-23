@@ -42,6 +42,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.core.logging.Log4jKettleLayout;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 public class LogSettingsDialog extends Dialog
@@ -65,6 +66,8 @@ public class LogSettingsDialog extends Dialog
 
 	private Shell         shell, parent;
 	private Props         props;
+
+    private Log4jKettleLayout layout;
 	
 	public LogSettingsDialog(Shell par, int style, LogWriter l, Props pr)
 	{
@@ -72,6 +75,8 @@ public class LogSettingsDialog extends Dialog
 			parent=par;
 			log=l;
 			props=pr;
+            
+            layout = (Log4jKettleLayout) LogWriter.getLayout();
 	}
 
 	public Object open()
@@ -207,7 +212,7 @@ public class LogSettingsDialog extends Dialog
 		}
 		
 		wLoglevel.select(log.getLogLevel());
-		wTime.setSelection(log.getTime());
+		wTime.setSelection(layout.isTimeAdded());
 	}
 	
 	private void cancel()
@@ -229,7 +234,8 @@ public class LogSettingsDialog extends Dialog
 		{
 			log.setFilter(null); // clear filter
 		}
-		
+		layout.setTimeAdded(wTime.getSelection());
+        
 		props.setLogFilter(wFilter.getText());
 		props.setLogLevel(wLoglevel.getText());
 		props.saveProps();
