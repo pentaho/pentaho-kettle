@@ -2471,11 +2471,7 @@ public class Database
 	{
 		int nrcols;
 		int i;
-		Value v;
 		String name;
-		int type, valtype;
-		int precision;
-		int length;
         int fieldNr=1;
 		
 		if (rm==null) return null;
@@ -2497,148 +2493,7 @@ public class Database
                     fieldNr++;
                 }
                 
-				type=rm.getColumnType(i);
-				valtype=Value.VALUE_TYPE_NONE;
-
-                length=-1; 
-                precision=-1;
-
-				switch(type)
-				{
-				case java.sql.Types.CHAR:
-				case java.sql.Types.VARCHAR: 
-				case java.sql.Types.LONGVARCHAR:  // Character Large Object
-					valtype=Value.VALUE_TYPE_STRING;
-					if (!ignoreLength) length=rm.getColumnDisplaySize(i);
-					// System.out.println("Display of "+name+" = "+precision);
-					// System.out.println("Precision of "+name+" = "+rm.getPrecision(i));
-					// System.out.println("Scale of "+name+" = "+rm.getScale(i));
-					break;
-					
-				case java.sql.Types.CLOB:  
-					valtype=Value.VALUE_TYPE_STRING;
-					length=DatabaseMeta.CLOB_LENGTH;
-					break;
-
-				case java.sql.Types.BIGINT:
-					valtype=Value.VALUE_TYPE_INTEGER;
-					precision=0;   // Max 9.223.372.036.854.775.807
-					length=15;
-                    break;
-					
-				case java.sql.Types.INTEGER:
-					valtype=Value.VALUE_TYPE_INTEGER;
-					precision=0;    // Max 2.147.483.647
-					length=9;
-					break;
-					
-				case java.sql.Types.SMALLINT:
-					valtype=Value.VALUE_TYPE_INTEGER;
-					precision=0;   // Max 32.767
-					length=4;
-					break;
-					
-				case java.sql.Types.TINYINT: 
-					valtype=Value.VALUE_TYPE_INTEGER;
-					precision=0;   // Max 127
-					length=2;
-					break;
-					
-				case java.sql.Types.DECIMAL:
-				case java.sql.Types.DOUBLE:
-				case java.sql.Types.FLOAT:
-				case java.sql.Types.REAL:
-				case java.sql.Types.NUMERIC:
-					valtype=Value.VALUE_TYPE_NUMBER;
-                    length=rm.getPrecision(i); 
-                    precision=rm.getScale(i);
-					if (length    >=126) length=-1;
-					if (precision >=126) precision=-1;
-                    
-                    if (type==java.sql.Types.DOUBLE || type==java.sql.Types.FLOAT || type==java.sql.Types.REAL)
-                    {
-                        if (precision==0) 
-                        {
-                            precision=-1; // precision is obviously incorrect if the type if Double/Float/Real
-                        }
-                        
-                        // If were dealing with Postgres and double precision types 
-                        if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_POSTGRES && type==java.sql.Types.DOUBLE && precision==16 && length==16)
-                        {
-                            precision=-1;
-                            length=-1;
-                        }
-                    }
-                    else
-                    {
-                        if (precision==0 && length<18 && length>0)  // Among others Oracle is affected here.  
-                        {
-                            valtype=Value.VALUE_TYPE_INTEGER;
-                        }
-                    }
-                    if (length>18 || precision>18) valtype=Value.VALUE_TYPE_BIGNUMBER;
-                    
-					if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE)
-					{
-						if (precision<=0 && length<=0) // undefined size: BIGNUMBER
-						{
-                            valtype=Value.VALUE_TYPE_BIGNUMBER;
-							length=-1;
-							precision=-1;
-						}
-					}
-					break;
-
-				case java.sql.Types.DATE:
-				case java.sql.Types.TIME:
-				case java.sql.Types.TIMESTAMP: 
-					valtype=Value.VALUE_TYPE_DATE; 
-					break;
-
-				case java.sql.Types.BOOLEAN:
-				case java.sql.Types.BIT:
-					valtype=Value.VALUE_TYPE_BOOLEAN;
-					break;
-					
-				case java.sql.Types.BINARY:
-                case java.sql.Types.BLOB:
-                case java.sql.Types.VARBINARY:
-                case java.sql.Types.LONGVARBINARY:
-					valtype=Value.VALUE_TYPE_BINARY;
-                    
-                    if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_DB2 &&
-                    	(2 * rm.getPrecision(i)) == rm.getColumnDisplaySize(i)) 
-                    {
-                    	// set the length for "CHAR(X) FOR BIT DATA"
-                    	length = rm.getPrecision(i);
-                    }
-                    else
-                    if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_ORACLE &&
-                        ( type==java.sql.Types.VARBINARY || type==java.sql.Types.LONGVARBINARY )
-                       )
-                    {
-                        // set the length for Oracle "RAW" or "LONGRAW" data types
-                        valtype = Value.VALUE_TYPE_STRING;
-                        length = rm.getColumnDisplaySize(i);
-                    }
-                    else
-                    {
-                        length=-1; 
-                    }
-                    precision=-1;
-					break;
-
-				default:
- 					valtype=Value.VALUE_TYPE_STRING;
-                    if (!ignoreLength) length=rm.getPrecision(i); 
-                    precision=rm.getScale(i);                    
- 					break;
-				}
-                // TODO: grab the comment as a description to the field, later
-				// comment=rm.getColumnLabel(i);
-
-				v=new Value(name, valtype);
-				v.setLength(length, precision);
+				Value v = getValueFromSQLType(name, rm, i, ignoreLength);
 				rowinfo.addValue(v);			
 			}
 			return rowinfo;
@@ -2649,7 +2504,153 @@ public class Database
 		}
 	}
 
-	public boolean absolute(ResultSet rs, int position) throws KettleDatabaseException
+	public Value getValueFromSQLType(String name, ResultSetMetaData rm, int i, boolean ignoreLength) throws SQLException
+    {
+        int length=-1; 
+        int precision=-1;
+        int valtype=Value.VALUE_TYPE_NONE;
+
+        int type = rm.getColumnType(i);
+        switch(type)
+        {
+        case java.sql.Types.CHAR:
+        case java.sql.Types.VARCHAR: 
+        case java.sql.Types.LONGVARCHAR:  // Character Large Object
+            valtype=Value.VALUE_TYPE_STRING;
+            if (!ignoreLength) length=rm.getColumnDisplaySize(i);
+            // System.out.println("Display of "+name+" = "+precision);
+            // System.out.println("Precision of "+name+" = "+rm.getPrecision(i));
+            // System.out.println("Scale of "+name+" = "+rm.getScale(i));
+            break;
+            
+        case java.sql.Types.CLOB:  
+            valtype=Value.VALUE_TYPE_STRING;
+            length=DatabaseMeta.CLOB_LENGTH;
+            break;
+
+        case java.sql.Types.BIGINT:
+            valtype=Value.VALUE_TYPE_INTEGER;
+            precision=0;   // Max 9.223.372.036.854.775.807
+            length=15;
+            break;
+            
+        case java.sql.Types.INTEGER:
+            valtype=Value.VALUE_TYPE_INTEGER;
+            precision=0;    // Max 2.147.483.647
+            length=9;
+            break;
+            
+        case java.sql.Types.SMALLINT:
+            valtype=Value.VALUE_TYPE_INTEGER;
+            precision=0;   // Max 32.767
+            length=4;
+            break;
+            
+        case java.sql.Types.TINYINT: 
+            valtype=Value.VALUE_TYPE_INTEGER;
+            precision=0;   // Max 127
+            length=2;
+            break;
+            
+        case java.sql.Types.DECIMAL:
+        case java.sql.Types.DOUBLE:
+        case java.sql.Types.FLOAT:
+        case java.sql.Types.REAL:
+        case java.sql.Types.NUMERIC:
+            valtype=Value.VALUE_TYPE_NUMBER;
+            length=rm.getPrecision(i); 
+            precision=rm.getScale(i);
+            if (length    >=126) length=-1;
+            if (precision >=126) precision=-1;
+            
+            if (type==java.sql.Types.DOUBLE || type==java.sql.Types.FLOAT || type==java.sql.Types.REAL)
+            {
+                if (precision==0) 
+                {
+                    precision=-1; // precision is obviously incorrect if the type if Double/Float/Real
+                }
+                
+                // If were dealing with Postgres and double precision types 
+                if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_POSTGRES && type==java.sql.Types.DOUBLE && precision==16 && length==16)
+                {
+                    precision=-1;
+                    length=-1;
+                }
+            }
+            else
+            {
+                if (precision==0 && length<18 && length>0)  // Among others Oracle is affected here.  
+                {
+                    valtype=Value.VALUE_TYPE_INTEGER;
+                }
+            }
+            if (length>18 || precision>18) valtype=Value.VALUE_TYPE_BIGNUMBER;
+            
+            if (databaseMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_ORACLE)
+            {
+                if (precision<=0 && length<=0) // undefined size: BIGNUMBER
+                {
+                    valtype=Value.VALUE_TYPE_BIGNUMBER;
+                    length=-1;
+                    precision=-1;
+                }
+            }
+            break;
+
+        case java.sql.Types.DATE:
+        case java.sql.Types.TIME:
+        case java.sql.Types.TIMESTAMP: 
+            valtype=Value.VALUE_TYPE_DATE; 
+            break;
+
+        case java.sql.Types.BOOLEAN:
+        case java.sql.Types.BIT:
+            valtype=Value.VALUE_TYPE_BOOLEAN;
+            break;
+            
+        case java.sql.Types.BINARY:
+        case java.sql.Types.BLOB:
+        case java.sql.Types.VARBINARY:
+        case java.sql.Types.LONGVARBINARY:
+            valtype=Value.VALUE_TYPE_BINARY;
+            
+            if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_DB2 &&
+                (2 * rm.getPrecision(i)) == rm.getColumnDisplaySize(i)) 
+            {
+                // set the length for "CHAR(X) FOR BIT DATA"
+                length = rm.getPrecision(i);
+            }
+            else
+            if (databaseMeta.getDatabaseType() == DatabaseMeta.TYPE_DATABASE_ORACLE &&
+                ( type==java.sql.Types.VARBINARY || type==java.sql.Types.LONGVARBINARY )
+               )
+            {
+                // set the length for Oracle "RAW" or "LONGRAW" data types
+                valtype = Value.VALUE_TYPE_STRING;
+                length = rm.getColumnDisplaySize(i);
+            }
+            else
+            {
+                length=-1; 
+            }
+            precision=-1;
+            break;
+
+        default:
+            valtype=Value.VALUE_TYPE_STRING;
+            precision=rm.getScale(i);                    
+            break;
+        }
+        // TODO: grab the comment as a description to the field, later
+        // comment=rm.getColumnLabel(i);
+
+        Value v=new Value(name, valtype);
+        v.setLength(length, precision);
+        
+        return v;
+    }
+
+    public boolean absolute(ResultSet rs, int position) throws KettleDatabaseException
 	{
 		try
 		{

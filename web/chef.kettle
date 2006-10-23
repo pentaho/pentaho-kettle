@@ -48,7 +48,7 @@
   <jar href="libext/SQLBaseJDBC.jar"/>
   <jar href="libext/xbasej.jar"/>
   <jar href="libext/xdbjdbc.jar"/>
-  <jar href="libext/jackcess-1.0.jar"/>
+  <jar href="libext/jackcess-1.1.5.jar"/>
   <jar href="libext/commons-collections-3.1.jar"/>
   <jar href="libext/commons-logging.jar"/>
   <jar href="libext/commons-lang-2.2.jar"/>

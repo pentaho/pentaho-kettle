@@ -42,6 +42,8 @@ import com.healthmarketscience.jackcess.Database;
  */
 public class AccessOutput extends BaseStep implements StepInterface
 {
+    public static final int COMMIT_SIZE = 500;
+    
 	private AccessOutputMeta meta;
 	private AccessOutputData data;
 		
@@ -123,7 +125,7 @@ public class AccessOutput extends BaseStep implements StepInterface
                 // So truncate is out for the moment as well.
                 
             }
-            catch(IOException e)
+            catch(Exception e)
             {
                 logError(Messages.getString("AccessOutput.Exception.UnexpectedErrorCreatingTable", e.toString()));
                 logError(Const.getStackTracker(e));
@@ -134,10 +136,22 @@ public class AccessOutput extends BaseStep implements StepInterface
         }
         
         // Let's write a row to the database.
-        Object[] values = AccessOutputMeta.createObjectsForRow(r);
+        Object[] columnValues = AccessOutputMeta.createObjectsForRow(r);
         try
         {
-            data.table.addRow(values);
+            data.rows.add(columnValues);
+            if (meta.getCommitSize()>0)
+            {
+                if (data.rows.size() >= meta.getCommitSize())
+                {
+                    data.table.addRows(data.rows);
+                    data.rows.clear();
+                }
+            }
+            else
+            {
+                data.table.addRow(columnValues);
+            }
         }
         catch(IOException e)
         {
@@ -183,7 +197,7 @@ public class AccessOutput extends BaseStep implements StepInterface
                 
 				return true;
 			}
-			catch(IOException e)
+			catch(Exception e)
 			{
 				logError("An error occurred intialising this step: "+e.getMessage());
 				stopAll();
@@ -200,6 +214,12 @@ public class AccessOutput extends BaseStep implements StepInterface
 
 		try
 		{
+            // Put the last records in the table as well!
+            data.table.addRows(data.rows);
+            
+            // Just for good measure.
+            data.rows.clear();
+            
             data.db.close();
 		}
 		catch(IOException e)

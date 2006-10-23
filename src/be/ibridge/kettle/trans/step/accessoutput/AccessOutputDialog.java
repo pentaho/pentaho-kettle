@@ -84,6 +84,9 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
     private Button       wCreateTable;
     private FormData     fdlCreateTable, fdCreateTable;
 
+    private Label        wlCommitSize;
+    private Text         wCommitSize;
+    private FormData     fdlCommitSize, fdCommitSize;
 
     private AccessOutputMeta input;
 	
@@ -264,13 +267,32 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 		wCreateTable.setLayoutData(fdCreateTable);
 		wCreateTable.addSelectionListener(lsSelMod);
         
+        // The commit size...
+        wlCommitSize=new Label(shell, SWT.RIGHT);
+        wlCommitSize.setText(Messages.getString("AccessOutputDialog.CommitSize.Label"));
+        props.setLook(wlCommitSize);
+        fdlCommitSize=new FormData();
+        fdlCommitSize.left = new FormAttachment(0, 0);
+        fdlCommitSize.top  = new FormAttachment(wCreateTable, margin);
+        fdlCommitSize.right= new FormAttachment(middle, 0);
+        wlCommitSize.setLayoutData(fdlCommitSize);
+
+        wCommitSize=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wCommitSize.setToolTipText(Messages.getString("AccessOutputDialog.CommitSize.Tooltip"));
+        props.setLook(wCommitSize);
+        fdCommitSize=new FormData();
+        fdCommitSize.left = new FormAttachment(middle, margin);
+        fdCommitSize.right= new FormAttachment(wCreateTable, -margin);
+        fdCommitSize.top  = new FormAttachment(wCreateFile, margin);
+        wCommitSize.setLayoutData(fdCommitSize);
+
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK"));
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel"));
 		
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wCreateTable);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, wCommitSize);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
@@ -350,6 +372,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 		
         wCreateFile.setSelection( input.isFileCreated() );
         wCreateTable.setSelection(input.isFileCreated() );
+        if (input.getCommitSize()>0) wCommitSize.setText( Integer.toString( input.getCommitSize() ) );
 		
 		wStepname.selectAll();
 	}
@@ -367,6 +390,7 @@ public class AccessOutputDialog extends BaseStepDialog implements StepDialogInte
 		info.setTablename( wTablename.getText() );
         info.setFileCreated( wCreateFile.getSelection() );
 		info.setTableCreated( wCreateTable.getSelection() );
+        info.setCommitSize( Const.toInt(wCommitSize.getText(), -1) );
 	}
 	
 	private void ok()

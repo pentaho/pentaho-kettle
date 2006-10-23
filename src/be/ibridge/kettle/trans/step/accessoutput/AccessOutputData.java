@@ -16,6 +16,7 @@
 
 package be.ibridge.kettle.trans.step.accessoutput;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import be.ibridge.kettle.trans.step.BaseStepData;
@@ -31,13 +32,15 @@ import com.healthmarketscience.jackcess.Table;
  */
 public class AccessOutputData extends BaseStepData implements StepDataInterface
 {
-	public  Database db;
+    public  Database db;
 	public  Table    table;
     public List columns;
+    public List rows;
         
 	public AccessOutputData()
 	{
 		super();
+        rows = new ArrayList();
 	}
 
 }

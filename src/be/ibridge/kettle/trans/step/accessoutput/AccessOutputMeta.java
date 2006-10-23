@@ -17,6 +17,7 @@ package be.ibridge.kettle.trans.step.accessoutput;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -25,8 +26,10 @@ import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.CheckResult;
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
@@ -43,7 +46,7 @@ import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 import com.healthmarketscience.jackcess.Column;
-import com.healthmarketscience.jackcess.DataTypes;
+import com.healthmarketscience.jackcess.DataType;
 import com.healthmarketscience.jackcess.Database;
 import com.healthmarketscience.jackcess.Table;
 
@@ -60,6 +63,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
 	private String       tablename;
     private boolean      tableCreated;
 	private boolean      tableTruncated;
+    private int          commitSize;
 
     public AccessOutputMeta()
 	{
@@ -120,6 +124,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
 			tableTruncated = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "truncate"));
             fileCreated = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "create_file"));
             tableCreated = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "create_table"));
+            commitSize = Const.toInt( XMLHandler.getTagValue(stepnode, "commit_size"), AccessOutput.COMMIT_SIZE);
         }
 		catch(Exception e)
 		{
@@ -129,9 +134,11 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
-        fileCreated=true;
-        tableCreated=true;
-        tableTruncated=false;	}
+        fileCreated = true;
+        tableCreated = true;
+        tableTruncated = false;	
+        commitSize = AccessOutput.COMMIT_SIZE;
+    }
 
 	public String getXML()
 	{
@@ -142,6 +149,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    "+XMLHandler.addTagValue("truncate",      tableTruncated));
         retval.append("    "+XMLHandler.addTagValue("create_file",   fileCreated));
         retval.append("    "+XMLHandler.addTagValue("create_table",  tableCreated));
+        retval.append("    "+XMLHandler.addTagValue("commit_size",   commitSize));
 
 		return retval.toString();
 	}
@@ -151,11 +159,12 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-            filename         =      rep.getStepAttributeString (id_step, "filename");
-            tablename        =      rep.getStepAttributeString (id_step, "table");
+            filename          =      rep.getStepAttributeString (id_step, "filename");
+            tablename         =      rep.getStepAttributeString (id_step, "table");
 			tableTruncated    =      rep.getStepAttributeBoolean(id_step, "truncate"); 
             fileCreated       =      rep.getStepAttributeBoolean(id_step, "create_file"); 
             tableCreated      =      rep.getStepAttributeBoolean(id_step, "create_table"); 
+            commitSize        = (int)rep.getStepAttributeInteger(id_step, "commit_size"); 
 		}
 		catch(Exception e)
 		{
@@ -173,6 +182,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "truncate",        tableTruncated);
             rep.saveStepAttribute(id_transformation, id_step, "create_file",     fileCreated);
             rep.saveStepAttribute(id_transformation, id_step, "create_table",    tableCreated);
+            rep.saveStepAttribute(id_transformation, id_step, "commit_size",     commitSize);
 		}
 		catch(Exception e)
 		{
@@ -264,40 +274,116 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
         }
     }
 
-    public static final Row getLayout(Table table)
+    public static final Row getLayout(Table table) throws SQLException
     {
         Row row = new Row();
         List columns = table.getColumns();
         for (int i = 0; i < columns.size(); i++)
         {
             Column column = (Column) columns.get(i);
-            Value field = new Value(column.getName());
-            int valueType = Value.VALUE_TYPE_STRING;
             
-            switch(column.getType())
+            int valtype = Value.VALUE_TYPE_STRING;
+            int length = -1;
+            int precision = -1;
+            
+            int type = column.getType().getSQLType();
+            switch(type)
             {
-            case DataTypes.BINARY: valueType = Value.VALUE_TYPE_BINARY; break;
-            case DataTypes.BOOLEAN: valueType = Value.VALUE_TYPE_BOOLEAN; break;
-            case DataTypes.BYTE: valueType = Value.VALUE_TYPE_INTEGER; break;
-            case DataTypes.DOUBLE: valueType = Value.VALUE_TYPE_NUMBER; break;                       
-            case DataTypes.FLOAT: valueType = Value.VALUE_TYPE_NUMBER; break;
-            case DataTypes.GUID: valueType = Value.VALUE_TYPE_STRING; break;
-            case DataTypes.INT: valueType = Value.VALUE_TYPE_INTEGER; break;
-            case DataTypes.LONG: valueType = Value.VALUE_TYPE_INTEGER; break;
-            case DataTypes.MEMO: valueType = Value.VALUE_TYPE_STRING; break;
-            case DataTypes.MONEY: valueType = Value.VALUE_TYPE_NUMBER; break;
-            case DataTypes.NUMERIC: valueType = Value.VALUE_TYPE_NUMBER; break;
-            case DataTypes.OLE: valueType = Value.VALUE_TYPE_BINARY; break;
-            case DataTypes.SHORT_DATE_TIME: valueType = Value.VALUE_TYPE_DATE; break;
-            case DataTypes.TEXT: valueType = Value.VALUE_TYPE_STRING; break;
-            case DataTypes.UNKNOWN_0D: valueType = Value.VALUE_TYPE_NONE; break;
+            case java.sql.Types.CHAR:
+            case java.sql.Types.VARCHAR: 
+            case java.sql.Types.LONGVARCHAR:  // Character Large Object
+                valtype=Value.VALUE_TYPE_STRING;
+                length=column.getLength();
+                break;
+                
+            case java.sql.Types.CLOB:  
+                valtype=Value.VALUE_TYPE_STRING;
+                length=DatabaseMeta.CLOB_LENGTH;
+                break;
+
+            case java.sql.Types.BIGINT:
+                valtype=Value.VALUE_TYPE_INTEGER;
+                precision=0;   // Max 9.223.372.036.854.775.807
+                length=15;
+                break;
+                
+            case java.sql.Types.INTEGER:
+                valtype=Value.VALUE_TYPE_INTEGER;
+                precision=0;    // Max 2.147.483.647
+                length=9;
+                break;
+                
+            case java.sql.Types.SMALLINT:
+                valtype=Value.VALUE_TYPE_INTEGER;
+                precision=0;   // Max 32.767
+                length=4;
+                break;
+                
+            case java.sql.Types.TINYINT: 
+                valtype=Value.VALUE_TYPE_INTEGER;
+                precision=0;   // Max 127
+                length=2;
+                break;
+                
+            case java.sql.Types.DECIMAL:
+            case java.sql.Types.DOUBLE:
+            case java.sql.Types.FLOAT:
+            case java.sql.Types.REAL:
+            case java.sql.Types.NUMERIC:
+                valtype=Value.VALUE_TYPE_NUMBER;
+                length=column.getLength(); 
+                precision=column.getPrecision();
+                if (length    >=126) length=-1;
+                if (precision >=126) precision=-1;
+                
+                if (type==java.sql.Types.DOUBLE || type==java.sql.Types.FLOAT || type==java.sql.Types.REAL)
+                {
+                    if (precision==0) 
+                    {
+                        precision=-1; // precision is obviously incorrect if the type if Double/Float/Real
+                    }
+                }
+                else
+                {
+                    if (precision==0 && length<18 && length>0)  // Among others Oracle is affected here.  
+                    {
+                        valtype=Value.VALUE_TYPE_INTEGER;
+                    }
+                }
+                if (length>18 || precision>18) valtype=Value.VALUE_TYPE_BIGNUMBER;
+                
+                break;
+
+            case java.sql.Types.DATE:
+            case java.sql.Types.TIME:
+            case java.sql.Types.TIMESTAMP: 
+                valtype=Value.VALUE_TYPE_DATE; 
+                break;
+
+            case java.sql.Types.BOOLEAN:
+            case java.sql.Types.BIT:
+                valtype=Value.VALUE_TYPE_BOOLEAN;
+                break;
+                
+            case java.sql.Types.BINARY:
+            case java.sql.Types.BLOB:
+            case java.sql.Types.VARBINARY:
+            case java.sql.Types.LONGVARBINARY:
+                valtype=Value.VALUE_TYPE_BINARY;
+                break;
+
+            default:
+                valtype=Value.VALUE_TYPE_STRING;
+                length=column.getLength();                    
+                break;
             }
+
+            Value v=new Value(column.getName(), valtype);
+            v.setLength(length, precision);
             
-            field.setType(valueType);
-            field.setLength(column.getLength());
-            field.setPrecision(column.getPrecision());
+            row.addValue(v);
         }
-        
+            
         return row;
     }
     
@@ -318,49 +404,52 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
             case Value.VALUE_TYPE_INTEGER:
                 if (length<3)
                 {
-                    column.setType(DataTypes.BYTE);
+                    column.setType(DataType.BYTE);
                 }
                 else
                 {
                     if (length<5)
                     {
-                        column.setType(DataTypes.INT);
+                        column.setType(DataType.INT);
                     }
                     else
                     {
-                        column.setType(DataTypes.LONG);
+                        column.setType(DataType.LONG);
                     }
                 }
                 break;
             case Value.VALUE_TYPE_NUMBER:
-                column.setType(DataTypes.DOUBLE);
+                column.setType(DataType.DOUBLE);
                 break;
             case Value.VALUE_TYPE_DATE:
-                column.setType(DataTypes.SHORT_DATE_TIME);
+                column.setType(DataType.SHORT_DATE_TIME);
                 break;
             case Value.VALUE_TYPE_STRING:
                 if (length<255)
                 {
-                    column.setType(DataTypes.TEXT);
+                    column.setType(DataType.TEXT);
                 }
                 else
                 {
-                    column.setType(DataTypes.MEMO);
+                    column.setType(DataType.MEMO);
                 }
                 break;
             case Value.VALUE_TYPE_BINARY:
-                column.setType(DataTypes.BINARY);
+                column.setType(DataType.BINARY);
                 break;
             case Value.VALUE_TYPE_BOOLEAN:
-                column.setType(DataTypes.BOOLEAN);
+                column.setType(DataType.BOOLEAN);
                 break;
             case Value.VALUE_TYPE_BIGNUMBER:
-                column.setType(DataTypes.NUMERIC);
+                column.setType(DataType.NUMERIC);
                 break;
             default: break;
             }
             
-            column.setLength((short)length);
+            if (length>=0) column.setLength((short)length);
+            if (value.getPrecision()>=1 && value.getPrecision()<=28) column.setPrecision((byte)value.getPrecision());
+            
+            list.add(column);
         }
         
         return list;
@@ -398,7 +487,7 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
                 values[i] = new Double(value.getNumber());
                 break;
             case Value.VALUE_TYPE_DATE:
-                values[i] = new Short((short)value.getInteger());
+                values[i] = value.getDate();
                 break;
             case Value.VALUE_TYPE_STRING:
                 values[i] = value.getString();
@@ -472,6 +561,22 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
     public boolean isTableTruncated()
     {
         return tableTruncated;
+    }
+
+    /**
+     * @return the commitSize
+     */
+    public int getCommitSize()
+    {
+        return commitSize;
+    }
+
+    /**
+     * @param commitSize the commitSize to set
+     */
+    public void setCommitSize(int commitSize)
+    {
+        this.commitSize = commitSize;
     }
 
 }
