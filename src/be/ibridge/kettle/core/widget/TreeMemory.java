@@ -70,7 +70,13 @@ public class TreeMemory
             return true;
         }
     }
-    
+
+    public void storeExpanded(String treeName, TreeItem treeItem, boolean expanded)
+    {
+        String[] path = Const.getTreeStrings(treeItem);
+        storeExpanded(treeName, path, expanded);
+    }
+
     public void storeExpanded(String treeName, String[] path, boolean expanded)
     {
         map.put(new TreeMemoryEntry(treeName, path), new Boolean(expanded));
