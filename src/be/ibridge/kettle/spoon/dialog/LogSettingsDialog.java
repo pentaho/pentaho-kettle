@@ -151,14 +151,6 @@ public class LogSettingsDialog extends Dialog
 		fdTime.left = new FormAttachment(middle, 0);
 		fdTime.top  = new FormAttachment(wLoglevel, margin);
 		wTime.setLayoutData(fdTime);
-		wTime.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					log.setTime( !log.getTime() );
-				}
-			}
-		);
 
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK"));
