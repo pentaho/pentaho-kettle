@@ -156,7 +156,7 @@ public class UniqueRowsMeta extends BaseStepMeta implements StepMetaInterface
 				Node fnode = XMLHandler.getSubNodeByNr(fields, "field", i); //$NON-NLS-1$
 				
 				compareFields[i] = XMLHandler.getTagValue(fnode, "name"); //$NON-NLS-1$
-                caseInsensitive[i] = !"N".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "name") ); //$NON-NLS-1$ //$NON-NLS-2$
+                caseInsensitive[i] = !"N".equalsIgnoreCase( XMLHandler.getTagValue(fnode, "case_insensitive") ); //$NON-NLS-1$ //$NON-NLS-2$
 			}
 
 		}
