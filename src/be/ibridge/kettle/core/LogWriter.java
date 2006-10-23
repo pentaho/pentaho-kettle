@@ -23,6 +23,7 @@ import java.util.Enumeration;
 
 import org.apache.log4j.Appender;
 import org.apache.log4j.ConsoleAppender;
+import org.apache.log4j.Layout;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.log4j.Priority;
@@ -88,11 +89,11 @@ public class LogWriter
     private Log4jStringAppender  stringAppender;
     private Log4jFileAppender    fileAppender;
     
-    public static final Log4jKettleLayout KETTLE_LAYOUT = new Log4jKettleLayout(true);
-
     private File realFilename;
 
-	public static final LogWriter getInstance()
+    private static Layout layout;
+
+    public static final LogWriter getInstance()
 	{
 		if (logWriter!=null) return logWriter;
 		
@@ -115,15 +116,16 @@ public class LogWriter
     private LogWriter()
     {
         rootLogger = Logger.getRootLogger();
+        layout = new Log4jKettleLayout(true);
         
         // Create the console appender, don't add it yet!
         consoleAppender = new Log4jConsoleAppender();
-        consoleAppender.setLayout(KETTLE_LAYOUT);
+        consoleAppender.setLayout(layout);
         consoleAppender.setName("AppendToConsole");
 
         // Create the string appender, don't add it yet!
         stringAppender  = new Log4jStringAppender();
-        stringAppender.setLayout(KETTLE_LAYOUT);
+        stringAppender.setLayout(layout);
         stringAppender.setName("AppendToString");
     }
 
@@ -214,7 +216,7 @@ public class LogWriter
 	        File realFile = file.getAbsoluteFile();
 	
 	        Log4jFileAppender appender = new Log4jFileAppender(realFile);
-	        appender.setLayout(KETTLE_LAYOUT);
+	        appender.setLayout(new Log4jKettleLayout(true));
 	        appender.setName(LogWriter.createFileAppenderName(filename, exact));
             
             return appender;
@@ -240,7 +242,7 @@ public class LogWriter
     public static final Log4jStringAppender createStringAppender()
     {
         Log4jStringAppender appender = new Log4jStringAppender();
-        appender.setLayout(KETTLE_LAYOUT);
+        appender.setLayout(new Log4jKettleLayout(true));
         
         return appender;
     }
@@ -313,24 +315,38 @@ public class LogWriter
 		return logLevelDescription[level];
 	}
 	
+    /**
+     * @deprecated : get the layout and use that object
+     */
 	public void enableTime()
 	{
-        KETTLE_LAYOUT.setTimeAdded(true);
+        ((Log4jKettleLayout)layout).setTimeAdded(true);
 	}
 
+    /**
+     * @deprecated : get the layout and use that object
+     */
 	public void disableTime()
 	{
-		KETTLE_LAYOUT.setTimeAdded(false);
+        ((Log4jKettleLayout)layout).setTimeAdded(false);
 	}
 	
+    /**
+     * @deprecated : get the layout and use that object
+     * @return true is the time is added
+     */
 	public boolean getTime()
 	{
-        return KETTLE_LAYOUT.isTimeAdded();
+        return ((Log4jKettleLayout)layout).isTimeAdded();
 	}
 
+    /**
+     * @deprecated : get the layout and use that object
+     * @param tim true is the time has to be is added
+     */
 	public void setTime(boolean tim)
 	{
-        KETTLE_LAYOUT.setTimeAdded(tim);
+        ((Log4jKettleLayout)layout).setTimeAdded(tim);
 	}
 
 	public void println(int lvl, String msg)
@@ -536,5 +552,44 @@ public class LogWriter
     public Log4jStringAppender getStringAppender()
     {
         return stringAppender;
+    }
+
+    /**
+     * @return the rootLogger
+     */
+    public Logger getRootLogger()
+    {
+        return rootLogger;
+    }
+
+    /**
+     * @param rootLogger the rootLogger to set
+     */
+    public void setRootLogger(Logger rootLogger)
+    {
+        this.rootLogger = rootLogger;
+    }
+    
+    public static void setLayout(Layout layout)
+    {
+        LogWriter.layout = layout; // save for later creation of new files...
+        
+        Enumeration appenders = getInstance().getRootLogger().getAllAppenders();
+        while (appenders.hasMoreElements())
+        {
+            Appender appender = (Appender) appenders.nextElement();
+            if (appender instanceof Log4jConsoleAppender  ||
+                appender instanceof Log4jFileAppender ||
+                appender instanceof Log4jStringAppender
+               )
+            {
+                appender.setLayout(layout);
+            }
+        }
+    }
+    
+    public static Layout getLayout()
+    {
+        return layout;
     }
 }
