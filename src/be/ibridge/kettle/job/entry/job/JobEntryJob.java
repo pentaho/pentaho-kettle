@@ -375,6 +375,11 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
 
             int iteration = 0;
             String args[] = arguments;
+            if (args==null || args.length==0) // no arguments?  Check the parent jobs arguments
+            {
+                args = parentJob.getJobMeta().getArguments();
+            }
+            
             Row resultRow = null;
             boolean first = true;
             List rows = result.getRows();

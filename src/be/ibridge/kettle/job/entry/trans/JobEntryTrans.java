@@ -391,6 +391,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
         
         int iteration = 0;
         String args[] = arguments;
+        if (args==null || args.length==0) // No arguments set, look at the parent job.
+        {
+            args = parentJob.getJobMeta().getArguments();
+        }
         Row resultRow = null;
         boolean first = true;
         List rows = result.getRows();
