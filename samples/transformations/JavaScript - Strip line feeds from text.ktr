@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>1000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+  <modified_user>-</modified_user>
+  <modified_date>2006/10/23 16:06:25.984</modified_date>
+    </info>
+  <notepads>
+    </notepads>
+  <order>
+  <hop> <from>Generate Rows</from><to>Create Value with CRs</to><enabled>Y</enabled> </hop>  <hop> <from>Create Value with CRs</from><to>Strip out CRs</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Create Value with CRs</name>
+    <type>ScriptValue</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <script>
+
+var value = &quot;A \
+B \
+C \
+D \
+E \
+F \
+G \
+H \
+I \
+J&quot;
+
+</script>
+    <fields>      <field>        <name>value</name>
+        <rename>value</rename>
+        <type>String</type>
+        <length>100</length>
+        <precision>-1</precision>
+        </field>      </fields>    <GUI>
+      <xloc>244</xloc>
+      <yloc>125</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Generate Rows</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      </fields>
+    <limit>10</limit>
+    <GUI>
+      <xloc>74</xloc>
+      <yloc>125</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Strip out CRs</name>
+    <type>ScriptValue</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <script>
+// Which one to take depends on the platform : Unix or MS-DOS
+// Do both to make sure
+//
+value.replace(&quot;\n\r&quot;, &quot;,&quot;).replace(&quot;\n&quot;, &quot;,&quot;);
+</script>
+    <fields>      </fields>    <GUI>
+      <xloc>419</xloc>
+      <yloc>125</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>
