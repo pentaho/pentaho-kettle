@@ -15,6 +15,7 @@
 
 package be.ibridge.kettle.trans.step.rowgenerator;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -316,18 +317,20 @@ public class RowGeneratorMeta extends BaseStepMeta implements StepMetaInterface
 		int i, nrfields=0;
 	
 		allocate(nrfields);
-			
+
+        DecimalFormat decimalFormat = new DecimalFormat();
+
 		for (i=0;i<nrfields;i++)
 		{
-			fieldName[i]      = "field"+i;				
-			fieldType[i]      = "Number";
-			fieldFormat[i]    = "¤0,000,000.00;¤-0,000,000.00";
-			fieldLength[i]    = 9;
-			fieldPrecision[i] = 2;
-			currency[i]    = "€";
-			decimal[i]     = ",";
-			group[i]       = ".";
-			value[i]       = "-";
+            fieldName[i]      = "field"+i;              
+            fieldType[i]      = "Number";
+            fieldFormat[i]    = "\u00A40,000,000.00;\u00A4-0,000,000.00";
+            fieldLength[i]    = 9;
+            fieldPrecision[i] = 2;
+            currency[i]    = decimalFormat.getDecimalFormatSymbols().getCurrencySymbol();
+            decimal[i]     = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getDecimalSeparator() } );
+            group[i]       = new String(new char[] { decimalFormat.getDecimalFormatSymbols().getGroupingSeparator() } );
+            value[i]       = "-";
 		}
 			
 		rowLimit="10";

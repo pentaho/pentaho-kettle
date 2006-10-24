@@ -186,7 +186,7 @@ public class CacheDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 				}
 			}
 			break;
-		case Value.VALUE_TYPE_STRING: // CLOBs are just VARCHAR in the Caché database: can be very large!
+		case Value.VALUE_TYPE_STRING: // CLOBs are just VARCHAR in the Cache database: can be very large!
 			retval+="VARCHAR";				
 			if (length>0)
 			{

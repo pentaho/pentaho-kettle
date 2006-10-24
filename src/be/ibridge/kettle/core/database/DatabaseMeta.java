@@ -95,7 +95,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	public static final int TYPE_DATABASE_POSTGRES    =  7;
 
 	/**
-	 * Connection to an Intersystems Caché database
+	 * Connection to an Intersystems Cache database
 	 */
 	public static final int TYPE_DATABASE_CACHE       =  8;
 
