@@ -1121,22 +1121,20 @@ public class DatabaseDialog extends Dialog
         }
 
         // Hide the fields not relevent to JNDI data sources
-        wlHostName.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
-        wHostName.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
-//        wlDBName.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
-//        wDBName.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
-        wlPort.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
-        wPort.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI);
+        wlHostName.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wHostName.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wlPort.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wPort.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI);
         
-        wlURL.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
-        wURL.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
-        wlDriverClass.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
-        wDriverClass.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wlURL.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wURL.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wlDriverClass.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wDriverClass.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
         	        
-        wlUsername.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
-        wUsername.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
-        wlPassword.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
-        wPassword.setVisible( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wlUsername.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wUsername.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wlPassword.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
+        wPassword.setEnabled( acctype != DatabaseMeta.TYPE_ACCESS_JNDI );
         
         if( acctype == DatabaseMeta.TYPE_ACCESS_JNDI ) {
         		return;
