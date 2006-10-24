@@ -56,9 +56,11 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 	private String       sequenceName;
 
 	private boolean      useCounter;
+    private String       counterName;  
 	private long         startAt;
 	private long         incrementBy;
 	private long         maxValue;
+    
 
 	public AddSequenceMeta()
 	{
@@ -218,6 +220,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			sequenceName      = XMLHandler.getTagValue(stepnode, "seqname"); //$NON-NLS-1$
 			
 			useCounter  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "use_counter")); //$NON-NLS-1$ //$NON-NLS-2$
+            counterName = XMLHandler.getTagValue(stepnode, "counter_name"); //$NON-NLS-1$
 			startAt     = Const.toLong(XMLHandler.getTagValue(stepnode, "start_at"), 1); //$NON-NLS-1$
 			incrementBy = Const.toLong(XMLHandler.getTagValue(stepnode, "increment_by"), 1); //$NON-NLS-1$
 			maxValue    = Const.toLong(XMLHandler.getTagValue(stepnode, "max_value"), 999999999L); //$NON-NLS-1$
@@ -237,6 +240,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		database = null;
 		
 		useCounter  = true;
+        counterName = null;
 		startAt     = 1L;
 		incrementBy = 1L;
 		maxValue    = 9999999L;
@@ -266,6 +270,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("      "+XMLHandler.addTagValue("seqname", sequenceName)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		retval.append("      "+XMLHandler.addTagValue("use_counter", useCounter)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      "+XMLHandler.addTagValue("counter_name", counterName)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      "+XMLHandler.addTagValue("start_at", startAt)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      "+XMLHandler.addTagValue("increment_by", incrementBy)); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      "+XMLHandler.addTagValue("max_value", maxValue)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -286,6 +291,7 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			sequenceName          =      rep.getStepAttributeString (id_step, "seqname"); //$NON-NLS-1$
 	
 			useCounter      =      rep.getStepAttributeBoolean(id_step, "use_counter");  //$NON-NLS-1$
+            counterName     =      rep.getStepAttributeString (id_step, "counter_name");  //$NON-NLS-1$
 			startAt         =      rep.getStepAttributeInteger(id_step, "start_at");  //$NON-NLS-1$
 			incrementBy     =      rep.getStepAttributeInteger(id_step, "increment_by");  //$NON-NLS-1$
 			maxValue        =      rep.getStepAttributeInteger(id_step, "max_value"); //$NON-NLS-1$
@@ -308,7 +314,8 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "seqname",         sequenceName); //$NON-NLS-1$
 					
 			rep.saveStepAttribute(id_transformation, id_step, "use_counter",     useCounter); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "start_at",        startAt); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "counter_name",    counterName); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "start_at",        startAt); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "increment_by",    incrementBy); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "max_value",       maxValue); //$NON-NLS-1$
 			
@@ -430,5 +437,21 @@ public class AddSequenceMeta extends BaseStepMeta implements StepMetaInterface
         {
             return super.getUsedDatabaseConnections();
         }
+    }
+
+    /**
+     * @return the counterName
+     */
+    public String getCounterName()
+    {
+        return counterName;
+    }
+
+    /**
+     * @param counterName the counterName to set
+     */
+    public void setCounterName(String counterName)
+    {
+        this.counterName = counterName;
     }
 }

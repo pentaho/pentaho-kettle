@@ -157,7 +157,14 @@ public class AddSequence extends BaseStep implements StepInterface
 			else
 			if (meta.isCounterUsed())
 			{
-				data.setLookup( "@@sequence:"+meta.getValuename() ); //$NON-NLS-1$
+                if (meta.getCounterName()!=null)
+                {
+                    data.setLookup( "@@sequence:"+meta.getCounterName() ); //$NON-NLS-1$
+                }
+                else
+                {
+                    data.setLookup( "@@sequence:"+meta.getValuename() ); //$NON-NLS-1$
+                }
 
 				if (getTransMeta().getCounters()!=null)
 				{
