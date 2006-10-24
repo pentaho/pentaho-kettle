@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>1000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+  <modified_user>-</modified_user>
+  <modified_date>2006/10/24 11:39:02.963</modified_date>
+    </info>
+  <notepads>
+    <notepad>
+      <note>If you do a preview on the Result step you will note that the generated ID is unique.
+If you specify another counter name in either of the sequence generator steps, you will get duplicates.</note>
+      <xloc>91</xloc>
+      <yloc>32</yloc>
+      <width>509</width>
+      <heigth>37</heigth>
+      </notepad>
+    </notepads>
+  <order>
+  <hop> <from>Generate Rows</from><to>Generate ID</to><enabled>Y</enabled> </hop>  <hop> <from>Generate Rows</from><to>Generate ID (2)</to><enabled>Y</enabled> </hop>  <hop> <from>Generate ID</from><to>Result</to><enabled>Y</enabled> </hop>  <hop> <from>Generate ID (2)</from><to>Result</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Generate ID</name>
+    <type>Sequence</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+      <valuename>ID</valuename>
+      <use_database>N</use_database>
+      <connection/>
+      <seqname>SEQ_</seqname>
+      <use_counter>Y</use_counter>
+      <counter_name>id-counter</counter_name>
+      <start_at>1</start_at>
+      <increment_by>1</increment_by>
+      <max_value>9999999</max_value>
+    <GUI>
+      <xloc>449</xloc>
+      <yloc>94</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Generate ID (2)</name>
+    <type>Sequence</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+      <valuename>ID</valuename>
+      <use_database>N</use_database>
+      <connection/>
+      <seqname>SEQ_</seqname>
+      <use_counter>Y</use_counter>
+      <counter_name>id-counter</counter_name>
+      <start_at>1</start_at>
+      <increment_by>1</increment_by>
+      <max_value>9999999</max_value>
+    <GUI>
+      <xloc>445</xloc>
+      <yloc>313</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Generate Rows</name>
+    <type>RowGenerator</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <fields>
+      </fields>
+    <limit>1000</limit>
+    <GUI>
+      <xloc>266</xloc>
+      <yloc>207</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Result</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>647</xloc>
+      <yloc>203</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>
