@@ -95,7 +95,7 @@ public class ValueString implements ValueInterface, Cloneable
 
 	public long getInteger()
 	{
-		return Const.toLong(string, 0L);
+		return Const.toLong(Const.ltrim(string), 0L); // Remove the leading space to make "int to string to int" conversion possible.
 	}
 	
 	public void    setString(String string)
