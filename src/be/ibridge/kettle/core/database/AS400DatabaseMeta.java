@@ -195,7 +195,7 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		{
 			//http://publib.boulder.ibm.com/infocenter/iseries/v5r4/index.jsp
 			//This is the list of currently reserved DB2 UDB for iSeries words. Words may be added at any time. 
-			//For a list of additional words that may become reserved in the future, see the IBM® SQL and 
+			//For a list of additional words that may become reserved in the future, see the IBM SQL and 
 			//ANSI reserved words in the IBM SQL Reference Version 1 SC26-3255.				
 			"ACTIVATE", "ADD", "ALIAS", "ALL", "ALLOCATE", "ALLOW", "ALTER", "AND", "ANY", "AS", "ASENSITIVE", "AT", 
 			"ATTRIBUTES", "AUTHORIZATION", 
