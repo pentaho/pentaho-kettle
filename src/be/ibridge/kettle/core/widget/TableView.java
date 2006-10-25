@@ -1779,7 +1779,7 @@ public class TableView extends Composite
 					int colmax = tablecolumn[column_number].getWidth(); 
 					if (strmax>colmax) 
 					{
-						tablecolumn[column_number].setWidth(strmax+20);
+						tablecolumn[column_number].setWidth(strmax+40);
 						// On linux, this causes the text to select everything...
 						// This is because the focus is lost and re-gained.  Nothing we can do about it now.
 					}
@@ -1989,7 +1989,7 @@ public class TableView extends Composite
 			}
 			try
 			{
-                int extra = 20;
+                int extra = 30;
                 tc.setWidth(max+extra);
 			}
 			catch(Exception e) {}
@@ -2721,6 +2721,24 @@ public class TableView extends Composite
     public void setSortable(boolean sortable)
     {
         this.sortable = sortable;
+    }
+    
+    public void setFocusOnFirstEditableField()
+    {
+        // Look for the first field that can be edited...
+        int rownr = 0;
+        
+        boolean gotOne = false;
+        for (int colnr=0;colnr<columns.length && !gotOne;colnr++)
+        {
+            if ( !columns[colnr].isReadOnly() ) // edit this one...
+            {
+                gotOne = true;
+                activeTableItem = table.getItem(rownr);
+                activeTableColumn = colnr+1;
+                edit(rownr, colnr+1);
+            }
+        }
     }
 	
 };

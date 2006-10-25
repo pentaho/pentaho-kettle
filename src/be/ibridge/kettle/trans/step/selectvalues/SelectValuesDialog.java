@@ -307,7 +307,7 @@ public class SelectValuesDialog extends BaseStepDialog implements StepDialogInte
 		ColumnInfo[] colmeta=new ColumnInfo[MetaCols];
 		colmeta[0]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Fieldname"),   ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
 		colmeta[1]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Renameto"),   ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
-		colmeta[2]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Type"),        ColumnInfo.COLUMN_TYPE_CCOMBO,   Value.getAllTypes(), true); //$NON-NLS-1$
+		colmeta[2]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Type"),        ColumnInfo.COLUMN_TYPE_CCOMBO,   Value.getAllTypes(), false); //$NON-NLS-1$
 		colmeta[3]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Length"),      ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
 		colmeta[4]=new ColumnInfo(Messages.getString("SelectValuesDialog.ColumnInfo.Precision"),   ColumnInfo.COLUMN_TYPE_TEXT,     false ); //$NON-NLS-1$
 		

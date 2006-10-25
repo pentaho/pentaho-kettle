@@ -2200,36 +2200,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 		else
 		{
-			StringBuffer change=new StringBuffer(getString());
-			boolean new_word;
-			int i;
-			char lower, upper, ch;
-				
-			new_word=true;
-			for (i=0 ; i<getString().length() ; i++)
-			{
-				lower=change.substring(i,i+1).toLowerCase().charAt(0); // Lowercase is default.
-				upper=change.substring(i,i+1).toUpperCase().charAt(0); // Uppercase for new words.
-				ch=upper;
-		
-				if (new_word)
-				{ 
-				  change.setCharAt(i, upper);
-				}
-				else
-				{          
-				  change.setCharAt(i, lower);  
-				}
-
-				new_word = false;
-		
-				if ( !(ch>='A' && ch<='Z') && 
-					 !(ch>='0' && ch<='9') &&
-					 ch!='_'
-				   ) new_word = true;
-			}
-		
-			setValue( change.toString() );
+			setValue( Const.initCap(getString()) );
 		}
 		return this;
 	}
