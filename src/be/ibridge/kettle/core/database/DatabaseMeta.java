@@ -1655,7 +1655,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         if (fieldname.indexOf('/')>=0) return true; 
         if (fieldname.indexOf('-')>=0) return true; 
         if (fieldname.indexOf('+')>=0) return true; 
-        if (fieldname.indexOf('.')>=0) return true; 
+        // if (fieldname.indexOf('.')>=0) return true; Don't quote the dot or we can't quote anymore. 
         if (fieldname.indexOf(',')>=0) return true; 
         if (fieldname.indexOf('*')>=0) return true; 
         if (fieldname.indexOf('(')>=0) return true; 
