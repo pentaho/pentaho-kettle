@@ -1866,8 +1866,6 @@ public class JobMeta implements Cloneable, XMLInterface
     {
         KettleVariables variables = KettleVariables.getInstance();
         
-        String prefix = Const.INTERNAL_VARIABLE_PREFIX+"."+"Job.";
-        
         if (filename!=null) // we have a finename that's defined.
         {
             File file = new File(filename);
@@ -1881,21 +1879,21 @@ public class JobMeta implements Cloneable, XMLInterface
             }
             
             // The directory of the transformation
-            variables.setVariable(prefix+"Filename.Directory", file.getParent());
+            variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, file.getParent());
 
             // The filename of the transformation
-            variables.setVariable(prefix+"Filename.Name", file.getName());
+            variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, file.getName());
         }
         else
         {
-            variables.setVariable(prefix+"Filename.Directory", "");
-            variables.setVariable(prefix+"Filename.Name", "");
+            variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY, "");
+            variables.setVariable(Const.INTERNAL_VARIABLE_JOB_FILENAME_NAME, "");
         }
         
         // The name of the job
-        variables.setVariable(prefix+"Name", Const.NVL(name, ""));
+        variables.setVariable(Const.INTERNAL_VARIABLE_JOB_NAME, Const.NVL(name, ""));
 
         // The name of the directory in the repository
-        variables.setVariable(prefix+"Repository.Directory", directory!=null?directory.getPath():"");
+        variables.setVariable(Const.INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY, directory!=null?directory.getPath():"");
     }
 }

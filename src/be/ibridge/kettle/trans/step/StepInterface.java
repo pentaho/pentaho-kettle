@@ -159,7 +159,7 @@ public interface StepInterface
      * Put a row on the destination rowsets.
      * @param row The row to send to the destinations steps
      */
-    public void putRow(Row row);
+    public void putRow(Row row) throws KettleException;
     
     /**
      * @return a row from the source step(s).

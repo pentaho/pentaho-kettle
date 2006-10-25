@@ -80,16 +80,15 @@ public class EnvUtil
     public static void addInternalVariables(KettleVariables variables)
     {
         // Add a bunch of internal variables
-        String prefix = Const.INTERNAL_VARIABLE_PREFIX+".Kettle.";
         
         // The Kettle version
-        variables.setVariable(prefix+"Version", Const.VERSION);
+        variables.setVariable(Const.INTERNAL_VARIABLE_KETTLE_VERSION, Const.VERSION);
 
         // The Kettle build version
-        variables.setVariable(prefix+"Build.Version", Integer.toString( BuildVersion.getInstance().getVersion() ));
+        variables.setVariable(Const.INTERNAL_VARIABLE_KETTLE_BUILD_VERSION, Integer.toString( BuildVersion.getInstance().getVersion() ));
 
         // The Kettle build date
-        variables.setVariable(prefix+"Build.Date", new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format( BuildVersion.getInstance().getBuildDate() ));
+        variables.setVariable(Const.INTERNAL_VARIABLE_KETTLE_BUILD_DATE, new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format( BuildVersion.getInstance().getBuildDate() ));
     }
 
     /**

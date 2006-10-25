@@ -210,8 +210,8 @@ public class Trans
     {
 		RowSet    rs;
 		int    nroutput;
-		int    prevcopies;
-		int    nextcopies;
+		int    thisCopies;
+		int    nextCopies;
 
 		startDate = null;
 
@@ -270,37 +270,29 @@ public class Trans
 		// First allocate all the rowsets required!
 		for (int i=0;i<hopsteps.size();i++)
 		{
-			StepMeta stepMeta=(StepMeta)hopsteps.get(i);
-			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocateingRowsetsForStep",String.valueOf(i),stepMeta.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+			StepMeta thisStep=(StepMeta)hopsteps.get(i);
+			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocateingRowsetsForStep",String.valueOf(i),thisStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 
-			nroutput = transMeta.findNrNextSteps(stepMeta);
+			nroutput = transMeta.findNrNextSteps(thisStep);
 
 			for (int n=0;n<nroutput;n++)
 			{
 				// What's the next step?
-				StepMeta nsi = transMeta.findNextStep(stepMeta, n);
+				StepMeta nextStep = transMeta.findNextStep(thisStep, n);
 
-                // If the step is partitioned, that's going to determine the number of copies, nothing else...
-                if (stepMeta.isPartitioned())
-                {
-                    String[] partitionIDs = stepMeta.getStepMetaInterface().getPartitionIDs();
-                    if (partitionIDs!=null && partitionIDs.length>0) // yeah, the database is partitioned too!
-                    {
-                        stepMeta.setCopies(partitionIDs.length);
-                    }
-                }
+                // How many times do we start the source step?
+                thisCopies=thisStep.getCopies();
 
                 // How many times do we start the target step?
-                nextcopies=nsi.getCopies();
+                nextCopies=nextStep.getCopies();
                 
-				prevcopies=stepMeta.getCopies();
                 int nrCopies;
-				log.logDetailed(toString(), Messages.getString("Trans.Log.copiesInfo",String.valueOf(prevcopies),String.valueOf(nextcopies))); //$NON-NLS-1$ //$NON-NLS-2$
+				log.logDetailed(toString(), Messages.getString("Trans.Log.copiesInfo",String.valueOf(thisCopies),String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
 				int disptype;
-				     if (prevcopies==1 && nextcopies==1) { disptype=TYPE_DISP_1_1; nrCopies = 1; }
-				else if (prevcopies==1 && nextcopies >1) { disptype=TYPE_DISP_1_N; nrCopies = nextcopies; }
-				else if (prevcopies >1 && nextcopies==1) { disptype=TYPE_DISP_N_1; nrCopies = prevcopies; }
-				else if (prevcopies==nextcopies)         { disptype=TYPE_DISP_N_N; nrCopies = nextcopies; } // > 1!
+				     if (thisCopies==1 && nextCopies==1) { disptype=TYPE_DISP_1_1; nrCopies = 1; }
+				else if (thisCopies==1 && nextCopies >1) { disptype=TYPE_DISP_1_N; nrCopies = nextCopies; }
+				else if (thisCopies >1 && nextCopies==1) { disptype=TYPE_DISP_N_1; nrCopies = thisCopies; }
+				else if (thisCopies==nextCopies)         { disptype=TYPE_DISP_N_N; nrCopies = nextCopies; } // > 1!
 				else
 				{
 					log.logError(toString(), Messages.getString("Trans.Log.AllowedRelationships")); //$NON-NLS-1$
@@ -315,16 +307,16 @@ public class Trans
 					rs=new RowSet(transMeta.getSizeRowset());
 					switch(disptype)
 					{
-					case TYPE_DISP_1_1: rs.setThreadNameFromToCopy(stepMeta.getName(), 0, nsi.getName(), 0); break;
-					case TYPE_DISP_1_N: rs.setThreadNameFromToCopy(stepMeta.getName(), 0, nsi.getName(), c); break;
-					case TYPE_DISP_N_1: rs.setThreadNameFromToCopy(stepMeta.getName(), c, nsi.getName(), 0); break;
-					case TYPE_DISP_N_N: rs.setThreadNameFromToCopy(stepMeta.getName(), c, nsi.getName(), c); break;
+					case TYPE_DISP_1_1: rs.setThreadNameFromToCopy(thisStep.getName(), 0, nextStep.getName(), 0); break;
+					case TYPE_DISP_1_N: rs.setThreadNameFromToCopy(thisStep.getName(), 0, nextStep.getName(), c); break;
+					case TYPE_DISP_N_1: rs.setThreadNameFromToCopy(thisStep.getName(), c, nextStep.getName(), 0); break;
+					case TYPE_DISP_N_N: rs.setThreadNameFromToCopy(thisStep.getName(), c, nextStep.getName(), c); break;
 					}
 					rowsets.add(rs);
 					log.logDetailed(toString(), Messages.getString("Trans.TransformationAllocatedNewRowset",rs.toString())); //$NON-NLS-1$ //$NON-NLS-2$
 				}
 			}
-			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatedRowsets",String.valueOf(rowsets.size()),String.valueOf(i),stepMeta.getName())+" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatedRowsets",String.valueOf(rowsets.size()),String.valueOf(i),thisStep.getName())+" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
 
 		log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatingStepsAndStepData")); //$NON-NLS-1$
@@ -354,6 +346,7 @@ public class Trans
 					combi.copy     = c;
 
 					// The meta-data
+                    combi.stepMeta = stepMeta;
 					combi.meta = stepMeta.getStepMetaInterface();
 
 					// Allocate the step data
@@ -363,7 +356,7 @@ public class Trans
 					// Allocate the step
 					StepInterface step=combi.meta.getStep(stepMeta, data, c, transMeta, this);
                     
-                    // If the step is partitioned, that's going to determine the number of copies, nothing else...
+                    // If the step is partitioned, set the partitioning ID and some other things as well...
                     if (stepMeta.isPartitioned())
                     {
                         String[] partitionIDs = stepMeta.getStepMetaInterface().getPartitionIDs();
@@ -422,6 +415,71 @@ public class Trans
 				}
 			}
 		}
+
+        // Set the partition-to-rowset mapping
+        //
+        for (int i=0;i<steps.size();i++)
+        {
+            StepMetaDataCombi sid = (StepMetaDataCombi)steps.get(i);
+
+            StepMeta stepMeta = sid.stepMeta;
+            BaseStep baseStep = (BaseStep)sid.step;
+
+            baseStep.setPartitioned(stepMeta.isPartitioned());
+
+            // Now let's take a look at the source and target relation
+            //
+            // If the source step is not partitioned, and the target step is: it means we need to re-partition the incoming data.
+            // If both steps are partitioned, we don't need to re-partition
+            // If both steps are not partitioned, we don't need to re-partition
+            //
+            boolean nextPartitioned = true;
+            int nrNext = transMeta.findNrNextSteps(stepMeta);
+            for (int p=0;p<nrNext;p++)
+            {
+                StepMeta nextStep = transMeta.findNextStep(stepMeta, p);
+                if (!nextStep.isPartitioned()) nextPartitioned = false;
+            }
+            
+            baseStep.setRepartitioning(false);
+            
+            if ( !stepMeta.isPartitioned() &&  nextPartitioned ) 
+            {
+                baseStep.setRepartitioning(true);
+            }
+
+            // If the previous step is partitioned and this step is not we have to do a sorted merge
+            // The other condition is of-course that the previous step needs to be sorted on the partitioning column.
+            // TODO: make this separate from the partitioning algorithm, keep sorted partitioned data sorted is nice though.
+            // 
+            boolean prevPartitioned = true;
+            int nrPrev = transMeta.findNrPrevSteps(stepMeta);
+            for (int p=0;p<nrPrev;p++)
+            {
+                StepMeta prevStep = transMeta.findPrevStep(stepMeta, p);
+                if (!prevStep.isPartitioned()) prevPartitioned = false;
+            }
+            
+            baseStep.setPartitionMerging(false);
+
+            if (  prevPartitioned && !stepMeta.isPartitioned() )
+            {
+                baseStep.setPartitionMerging(true);
+            }
+            
+            // We want to cache the target rowsets for doing the re-partitioning
+            // This is needed to speed up things.
+            //
+            if (stepMeta.isPartitioned())
+            {
+                String[] partitionIDs = stepMeta.getStepMetaInterface().getPartitionIDs();
+                if (partitionIDs!=null && partitionIDs.length>0)
+                {
+                    baseStep.setPartitionID(partitionIDs[sid.copy]);
+                }
+            }
+        }
+            
 
         log.logBasic(toString(), Messages.getString("Trans.Log.InitialisingSteps", String.valueOf(steps.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 

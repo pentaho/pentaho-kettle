@@ -440,7 +440,49 @@ public class Const
     /** The prefix that all internal kettle variables should have */
     public static final String INTERNAL_VARIABLE_PREFIX = "Internal";
 
-	/** 
+    /** The version number as an internal variable */
+    public static final String INTERNAL_VARIABLE_KETTLE_VERSION = INTERNAL_VARIABLE_PREFIX+".Kettle.Version";
+
+    /** The build version as an internal variable */
+    public static final String INTERNAL_VARIABLE_KETTLE_BUILD_VERSION = INTERNAL_VARIABLE_PREFIX+".Kettle.Build.Version";
+
+    /** The build date as an internal variable */
+    public static final String INTERNAL_VARIABLE_KETTLE_BUILD_DATE = INTERNAL_VARIABLE_PREFIX+".Kettle.Build.Date";
+    
+    /** The job filename directory */
+    public static final String INTERNAL_VARIABLE_JOB_FILENAME_DIRECTORY = INTERNAL_VARIABLE_PREFIX+".Job.Filename.Directory";
+
+    /** The job filename name */
+    public static final String INTERNAL_VARIABLE_JOB_FILENAME_NAME = INTERNAL_VARIABLE_PREFIX+".Job.Filename.Name";
+
+    /** The job name */
+    public static final String INTERNAL_VARIABLE_JOB_NAME = INTERNAL_VARIABLE_PREFIX+".Job.Name";
+
+    /** The job directory */
+    public static final String INTERNAL_VARIABLE_JOB_REPOSITORY_DIRECTORY = INTERNAL_VARIABLE_PREFIX+".Transformation.Repository.Directory";
+
+    /** The transformation filename directory */
+    public static final String INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_DIRECTORY = INTERNAL_VARIABLE_PREFIX+".Transformation.Filename.Directory";
+
+    /** The transformation filename name */
+    public static final String INTERNAL_VARIABLE_TRANSFORMATION_FILENAME_NAME = INTERNAL_VARIABLE_PREFIX+".Transformation.Filename.Name";
+
+    /** The transformation name */
+    public static final String INTERNAL_VARIABLE_TRANSFORMATION_NAME = INTERNAL_VARIABLE_PREFIX+".Transformation.Name";
+
+    /** The transformation directory */
+    public static final String INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY = INTERNAL_VARIABLE_PREFIX+".Transformation.Repository.Directory";
+
+    /** The step partition ID */
+    public static final String INTERNAL_VARIABLE_STEP_PARTITION_ID = INTERNAL_VARIABLE_PREFIX+".Step.Partition.ID";
+
+    /** The step name */
+    public static final String INTERNAL_VARIABLE_STEP_NAME = INTERNAL_VARIABLE_PREFIX+".Step.Name";
+
+    /** The step copy nr */
+    public static final String INTERNAL_VARIABLE_STEP_COPYNR = INTERNAL_VARIABLE_PREFIX+".Step.CopyNr";
+
+    /** 
      *  rounds double f to any number of places after decimal point
 	 *  Does arithmetic using BigDecimal class to avoid integer overflow while rounding
 	 *  TODO: make the rounding itself optional in the Props for performance reasons.

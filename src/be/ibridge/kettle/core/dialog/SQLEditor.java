@@ -43,6 +43,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
+import be.ibridge.kettle.core.database.PartitionDatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
@@ -233,115 +234,136 @@ public class SQLEditor extends Dialog
 	{
 		DatabaseMeta ci = connection;
 		if (ci==null) return;
-		
-		Database db = new Database(ci);
-		try
-		{
-			db.connect();
-			
-			// Multiple statements have to be split into parts
-			// We use the ";" to separate statements...
-			String all = wScript.getText()+Const.CR;
-			int from=0;
-			int to=0;
-			int length = all.length();
-			int nrstats = 0;
-			
-			while (to<length)
-			{
-				char c = all.charAt(to);
-				if (c=='"')
-				{
-					to++;
-					c=' ';
-					while (to<length && c!='"') { c=all.charAt(to); to++; }
-				}
-				else
-				if (c=='\'') // skip until next '
-				{
-					to++;
-					c=' ';
-					while (to<length && c!='\'') { c=all.charAt(to); to++; }
-				}
-				if (c==';' || to>=length-1) // end of statement
-				{
-					if (to>=length-1) to++; // grab last char also!
-					
-					String stat = all.substring(from, to);
-					if (!onlySpaces(stat))
-					{
-						String sql=Const.trim(stat);
-						if (sql.toUpperCase().startsWith("SELECT"))
-						{
-							// A Query
-							log.logDetailed(toString(), "launch SELECT statement: "+Const.CR+sql);
-							
-							nrstats++;
-							try
-							{
-								ArrayList rows = db.getRows(sql, 1000);
-								if (rows.size()>0)
-								{
-									PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, "SQL statement #"+nrstats, rows);
-									prd.open();
-								}
-								else
-								{
-									MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-									mb.setMessage("Couldn't find any rows for statement #"+nrstats+Const.CR+Const.CR+sql);
-									mb.setText("Sorry");
-									mb.open();
-								}
-							}
-							catch(KettleDatabaseException dbe)
-							{
-								new ErrorDialog(shell, "Error", "I encountered an error executing statement #"+nrstats, dbe);
-							}
-						}
-						else
-						{
-							log.logDetailed(toString(), "launch DDL statement: "+Const.CR+sql);
 
-							// A DDL statement
-							nrstats++;
-							try
-							{
-							    log.logDetailed(toString(), "Executing SQL: "+Const.CR+sql);
-								db.execStatement(sql);
-								// Clear the database cache, in case we're using one...
-								if (dbcache!=null) dbcache.clear(ci.getName());
-							}
-							catch(Exception dbe)
-							{
-								new ErrorDialog(shell, "Error", "Error executing SQL statement nr "+nrstats+" :", dbe);
-							}
-						}
-					}
-					to++;
-					from=to;
-				}
-				else
-				{
-					to++;
-				}
-			}
-			
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION );
-			mb.setMessage(nrstats+" statement"+(nrstats==1?"":"s")+" executed");
-			mb.setText("OK");
-			mb.open(); 
-		}
-		catch(KettleDatabaseException dbe)
-		{
-			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-			mb.setMessage("Unable to connect to the database!"+Const.CR+"Please check the connection setting for connection["+(connection==null?"":connection.getName())+"]"+Const.CR+dbe.getMessage());
-			mb.setText("ERROR");
-			mb.open(); 
-		}
-		finally
-		{
-			db.disconnect();
-		}
+        StringBuffer message = new StringBuffer();
+
+		Database db = new Database(ci);
+        boolean first = true;
+        PartitionDatabaseMeta[] partitioningInformation = ci.getPartitioningInformation();
+        
+        for (int partitionNr=0;first || (partitioningInformation!=null && partitionNr<partitioningInformation.length) ; partitionNr++)
+        {
+            first = false;
+            String partitionId = null;
+            if (partitioningInformation!=null && partitioningInformation.length>0)
+            {
+                partitionId = partitioningInformation[partitionNr].getPartitionId();
+            }
+            try
+            {
+    			db.connect(partitionId);
+    			
+    			// Multiple statements have to be split into parts
+    			// We use the ";" to separate statements...
+    			String all = wScript.getText()+Const.CR;
+    			int from=0;
+    			int to=0;
+    			int length = all.length();
+    			int nrstats = 0;
+    			
+    			while (to<length)
+    			{
+    				char c = all.charAt(to);
+    				if (c=='"')
+    				{
+    					to++;
+    					c=' ';
+    					while (to<length && c!='"') { c=all.charAt(to); to++; }
+    				}
+    				else
+    				if (c=='\'') // skip until next '
+    				{
+    					to++;
+    					c=' ';
+    					while (to<length && c!='\'') { c=all.charAt(to); to++; }
+    				}
+    				if (c==';' || to>=length-1) // end of statement
+    				{
+    					if (to>=length-1) to++; // grab last char also!
+    					
+    					String stat = all.substring(from, to);
+    					if (!onlySpaces(stat))
+    					{
+    						String sql=Const.trim(stat);
+    						if (sql.toUpperCase().startsWith("SELECT"))
+    						{
+    							// A Query
+    							log.logDetailed(toString(), "launch SELECT statement: "+Const.CR+sql);
+    							
+    							nrstats++;
+    							try
+    							{
+    								ArrayList rows = db.getRows(sql, 1000);
+    								if (rows.size()>0)
+    								{
+    									PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, "SQL statement #"+nrstats, rows);
+    									prd.open();
+    								}
+    								else
+    								{
+    									MessageBox mb = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+    									mb.setMessage("Couldn't find any rows for statement #"+nrstats+Const.CR+Const.CR+sql);
+    									mb.setText("Sorry");
+    									mb.open();
+    								}
+    							}
+    							catch(KettleDatabaseException dbe)
+    							{
+    								new ErrorDialog(shell, "Error", "I encountered an error executing statement #"+nrstats, dbe);
+    							}
+    						}
+    						else
+    						{
+    							log.logDetailed(toString(), "launch DDL statement: "+Const.CR+sql);
+    
+    							// A DDL statement
+    							nrstats++;
+    							try
+    							{
+    							    log.logDetailed(toString(), "Executing SQL: "+Const.CR+sql);
+    								db.execStatement(sql);
+                                    message.append("Executed SQL : "+Const.CR+sql+Const.CR+Const.CR);
+                                    
+    								// Clear the database cache, in case we're using one...
+    								if (dbcache!=null) dbcache.clear(ci.getName());
+    							}
+    							catch(Exception dbe)
+    							{
+                                    String error = "Error executing SQL statement nr "+nrstats+" : "+dbe.toString();
+                                    message.append(error+Const.CR);
+    								new ErrorDialog(shell, "Error", error, dbe);
+    							}
+    						}
+    					}
+    					to++;
+    					from=to;
+    				}
+    				else
+    				{
+    					to++;
+    				}
+    			}
+                message.append( nrstats+" statement"+(nrstats==1?"":"s")+" executed" );
+                if (partitionId!=null) message.append(" on partition "+partitionId);
+                message.append(Const.CR);
+    		}
+    		catch(KettleDatabaseException dbe)
+    		{
+    			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+                String error = "Unable to connect to the database!"+Const.CR+"Please check the connection setting for connection["+(connection==null?"":connection.getName())+"]"+Const.CR+dbe.getMessage();
+                message.append(error+Const.CR);
+    			mb.setMessage(error);
+    			mb.setText("ERROR");
+    			mb.open(); 
+    		}
+    		finally
+    		{
+    			db.disconnect();
+    		}
+        }
+        
+        EnterTextDialog dialog = new EnterTextDialog(shell, "SQL Result", "The result of the SQL statement(s):", message.toString(), true);
+        dialog.open();
 	}
 	
 	public static final boolean onlySpaces(String str)

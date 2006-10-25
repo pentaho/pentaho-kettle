@@ -2,6 +2,7 @@ package be.ibridge.kettle.trans.step;
 
 public class StepMetaDataCombi
 {
+    public StepMeta stepMeta;
     public String stepname;
     public int    copy;
 

@@ -5,6 +5,7 @@ import org.w3c.dom.Node;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
+import be.ibridge.kettle.core.value.Value;
 
 public class StepPartitioningMeta implements XMLInterface
 {
@@ -111,5 +112,17 @@ public class StepPartitioningMeta implements XMLInterface
     public boolean isPartitioned()
     {
         return method!=PARTITIONING_METHOD_NONE;
+    }
+
+    public int getPartitionNr(Value value, int nrPartitions)
+    {
+        int nr = 0;
+        switch(method)
+        {
+        case PARTITIONING_METHOD_MOD:
+            nr = (int)(value.getInteger() % nrPartitions);
+            break;
+        }
+        return nr;
     }
 }

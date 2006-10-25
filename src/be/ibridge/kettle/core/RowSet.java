@@ -296,5 +296,10 @@ public class RowSet
 		       destinationStepName + "." + destinationStepCopy
 		       ; 
 	}
+
+    public synchronized Row lookAtFirst()
+    {
+        return (Row) set.get(0);
+    }
 	
 }

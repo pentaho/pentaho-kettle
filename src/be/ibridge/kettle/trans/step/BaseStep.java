@@ -23,9 +23,12 @@ package be.ibridge.kettle.trans.step;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.ResultFile;
@@ -380,9 +383,44 @@ public class BaseStep extends Thread
 
     
     /**
+     * This field tells the putRow() method that we are in partitioned mode 
+     */
+    private boolean partitioned;
+
+    /**
      * The partition ID at which this step copy runs, or null if this step is not running partitioned.
      */
     private String  partitionID;
+    
+    /**
+     * This field tells the putRow() method to re-partition the incoming data 
+     */
+    private boolean repartitioning;
+    
+    /**
+     * True if the step needs to perform a sorted merge on the incoming partitioned data
+     */
+    private boolean partitionMerging;
+    
+    /**
+     * The index of the column to partition or -1 if not known yet (before first row)
+     */
+    private int     partitionColumnIndex;
+    
+    /**
+     * The partitionID to rowset mapping
+     */
+    private Map     partitionTargets;
+    
+    /**
+     * Cache for the partition IDs
+     */
+    private static String[] partitionIDs;
+    
+    /**
+     * step partitioning information of the NEXT step
+     */
+    private static StepPartitioningMeta nextStepPartitioningMeta;
     
 	/**
 	 * This is the base step that forms that basis for all steps.  You can derive from this class to implement your own steps.
@@ -453,6 +491,10 @@ public class BaseStep extends Thread
 		
         rowListeners = new ArrayList();
         resultFiles = new ArrayList();
+        
+        repartitioning = false;
+        partitionColumnIndex = -1;
+        partitionTargets = new Hashtable();
         
 		dispatch();
 	}
@@ -647,8 +689,9 @@ public class BaseStep extends Thread
 	 * If distribute is true, a row is copied only once to the output rowsets, otherwise copies are sent to each rowset!
 	 * 
 	 * @param row The row to put to the destination rowset(s).
+	 * @throws KettleStepException 
 	 */
-	public synchronized void putRow(Row row)
+	public synchronized void putRow(Row row) throws KettleStepException
 	{
         if (previewSize>0 && previewBuffer.size()<previewSize) 
 		{
@@ -713,37 +756,116 @@ public class BaseStep extends Thread
 			stopAll();
 			return;
 		}
-		
-		if (distributed)
-		{
-			// Copy the row to the "next" output rowset.
-			// We keep the next one in out_handling
-			RowSet rs=(RowSet)outputRowSets.get(out_handling);
-			rs.putRow(row);
-			linesWritten++;
-			
-			// Now determine the next output rowset!
-			// Only if we have more then one output...
-			if (outputRowSets.size()>1)
-			{
-				out_handling++;
-				if (out_handling>=outputRowSets.size()) out_handling=0;
-			}
-		}
-		else // Copy the row to all output rowsets!
-		{
-            // Copy to the row in the other output rowsets...       
-            for (int i=1;i<outputRowSets.size();i++)  // start at 1
+        
+        // Repartitioning happens when the current step is not partitioned, but the next one is.
+        // That means we need to look up the partitioning information in the next step..
+        // If there are multiple steps, we need to look at the first (they should be all the same)
+        // TODO: make something smart later to allow splits etc.
+        //
+        if (repartitioning)
+        {
+            // Do some pre-processing on the first row...
+            // This is only done once and should cost very little in terms of processing time.
+            //
+            if (partitionColumnIndex<0)
             {
-                RowSet rs=(RowSet)outputRowSets.get(i);
-                rs.putRow(new Row(row));
-            }
-
-            // set row in first output rowset
-            RowSet rs=(RowSet)outputRowSets.get(0);
+                StepMeta nextSteps[] = transMeta.getNextSteps(stepMeta);
+                if (nextSteps==null || nextSteps.length==0)
+                {
+                    throw new KettleStepException("Re-partitioning is enabled but no next steps could be found: developer error!");
+                }
+                
+                // Take the partitioning logic from one of the next steps
+                nextStepPartitioningMeta = nextSteps[0].getStepPartitioningMeta();
+                
+                // What's the column index of the partitioning fieldname?
+                partitionColumnIndex = row.searchValueIndex(nextStepPartitioningMeta.getFieldName());
+                if (partitionColumnIndex<0)
+                {
+                    throw new KettleStepException("Unable to find partitioning field name ["+nextStepPartitioningMeta.getFieldName()+"] in the output row : "+row);
+                }
+                
+                // Cache the partition IDs as well... 
+                partitionIDs = nextSteps[0].getStepMetaInterface().getPartitionIDs();
+                
+                // OK, we also want to cache the target rowset
+                //
+                // We know that we have to partition in N pieces
+                // We should also have N rowsets to the next step 
+                // This is always the case, wheter the target is partitioned or not.
+                // 
+                // So what we do is now count the number of rowsets 
+                // And we take the steps copy nr to map.
+                // It's simple for the time being.
+                // 
+                // P1 : MOD(field,N)==0
+                // P2 : MOD(field,N)==1
+                // ...
+                // PN : MOD(field,N)==N-1
+                //
+                
+                for (int r=0;r<outputRowSets.size();r++)
+                {
+                    RowSet rowSet = (RowSet) outputRowSets.get(r);
+                    if (rowSet.getOriginStepName().equalsIgnoreCase(getStepname()) && rowSet.getOriginStepCopy()==getCopy())
+                    {
+                        // Find the target step metadata
+                        StepMeta targetStep = transMeta.findStep(rowSet.getDestinationStepName());
+                        
+                        // What are the target partition ID's
+                        String targetPartitions[] = targetStep.getStepMetaInterface().getPartitionIDs();
+                        
+                        // The target partitionID:
+                        String targetPartitionID = targetPartitions[rowSet.getDestinationStepCopy()];
+                        
+                        // Save the mapping: if we want to know to which rowset belongs to a partition this is the place to be.
+                        partitionTargets.put(targetPartitionID, rowSet);
+                    }
+                }
+            } // End of the one-time init code.
+            
+            // Here we go with the regular show
+            int partitionNr = nextStepPartitioningMeta.getPartitionNr(row.getValue(partitionColumnIndex), partitionIDs.length);
+            String targetPartition = partitionIDs[partitionNr];
+            
+            // Put the row forward to the next step according to the partition rule.
+            RowSet rs = (RowSet)partitionTargets.get(targetPartition);
             rs.putRow(row);
             linesWritten++;
-		}
+        }
+        else
+        {
+    		if (distributed)
+    		{
+    			// Copy the row to the "next" output rowset.
+    			// We keep the next one in out_handling
+    			RowSet rs=(RowSet)outputRowSets.get(out_handling);
+    			rs.putRow(row);
+    			linesWritten++;
+    			
+    			// Now determine the next output rowset!
+    			// Only if we have more then one output...
+    			if (outputRowSets.size()>1)
+    			{
+    				out_handling++;
+    				if (out_handling>=outputRowSets.size()) out_handling=0;
+    			}
+    		}
+    		else // Copy the row to all output rowsets!
+    		{
+                // Copy to the row in the other output rowsets...       
+                for (int i=1;i<outputRowSets.size();i++)  // start at 1
+                {
+                    RowSet rs=(RowSet)outputRowSets.get(i);
+                    rs.putRow(new Row(row));
+                }
+    
+                // set row in first output rowset
+                RowSet rs=(RowSet)outputRowSets.get(0);
+                rs.putRow(row);
+                linesWritten++;
+    		}
+        }
 	}
 	
 	/**
@@ -880,6 +1002,11 @@ public class BaseStep extends Thread
         {
             return null;
         }
+        
+        if (partitionMerging)
+        {
+            return getRowSorted();
+        }
 
 		// What's the current input stream?
 		RowSet in=currentInputStream();
@@ -946,7 +1073,102 @@ public class BaseStep extends Thread
 		return row;
 	}
 
-	private synchronized void safeModeChecking(Row row)
+    /**
+     * We read from all streams in the partition mergin mode
+     * For that we need at least one row on all input rowsets...
+     * If we don't have a row, we wait for one.
+     * 
+     * TODO: keep the inputRowSets() list sorted and go from there. That should dramatically improve speed as you only need half as many comparissons.
+     * 
+     * @return the next row
+     */
+	private synchronized Row getRowSorted() throws KettleException
+    {
+        int smallestId = 0;
+        Row smallestRow = null;
+        
+        for (int i=0;i<inputRowSets.size();i++)
+        {
+            RowSet rowSet = (RowSet)inputRowSets.get(i);
+            
+            // If it's empty : wait
+            int sleeptime=transMeta.getSleepTimeEmpty();
+            while (rowSet.isEmpty() && !stopped)
+            {
+                try { if (sleeptime>0) sleep(0, sleeptime); else super.notifyAll(); } 
+                catch(Exception e) 
+                { 
+                    logError(Messages.getString("BaseStep.Log.SleepInterupted")+e.toString()); //$NON-NLS-1$
+                    setErrors(1); 
+                    stopAll(); 
+                    return null; 
+                }
+                if (sleeptime<100) sleeptime = ((int)(sleeptime*1.2))+1; else sleeptime=100; 
+                nrGetSleeps+=sleeptime;
+            }
+            
+            if (stopped) return null;
+            
+            // OK, now get the row and compare with smallest
+            Row row = rowSet.lookAtFirst();
+            
+            if (smallestRow==null)
+            {
+                smallestRow = row;
+                smallestId = i;
+            }
+            else
+            {
+                // What field do we compare on?
+
+                // Better cache the location of the partitioning column
+                if (partitionColumnIndex<0)
+                {
+                    // The previous step is partitioned, this one is not.
+                    // So we need to grab the partitioning key from the previous step
+                    // We know we have at least one, otherwise we wouldn't be here.
+                    //
+                    StepMeta prevSteps[] = transMeta.getPrevSteps(stepMeta);
+                    
+                    String fieldName = prevSteps[0].getStepPartitioningMeta().getFieldName();
+                    partitionColumnIndex = row.searchValueIndex(fieldName);
+                    if (partitionColumnIndex<0)
+                    {
+                        throw new KettleStepException("Partition merge: unable to find partitioning fieldname ["+fieldName+"] in row : "+row);
+                    }
+                }
+
+                Value smallestValue = smallestRow.getValue(partitionColumnIndex);
+                Value compareValue = row.getValue(partitionColumnIndex);
+                
+                if (compareValue.compare(smallestValue)<0)
+                {
+                    smallestRow = row;
+                    smallestId = i;
+                }
+            }
+        }
+        
+        // OK then, take one row from the inputrow with the smallest record...
+        Row row = ((RowSet)inputRowSets.get(smallestId)).getRow();
+        
+        // Notify all rowlisteners...
+        for (int i=0;i<rowListeners.size();i++)
+        {
+            RowListener rowListener = (RowListener)rowListeners.get(i);
+            rowListener.rowReadEvent(row);
+        }
+        
+        // OK, before we return the row, let's see if we need to check on mixing row compositions...
+        if (safeModeEnabled)
+        {
+            safeModeChecking(row);
+        } // Extra checking
+        
+        return row;
+    }
+
+    private synchronized void safeModeChecking(Row row)
 	{
 		//String saveDebug=debug;
 		//debug="Safe mode checking";
@@ -1291,9 +1513,25 @@ public class BaseStep extends Thread
 	{
 		Calendar cal=Calendar.getInstance();
 		start_time=cal.getTime();
+		
+        setInternalVariables();
 	}
+    
+	public void setInternalVariables()
+    {
+        KettleVariables kettleVariables = KettleVariables.getInstance();
+        
+        kettleVariables.setVariable(Const.INTERNAL_VARIABLE_STEP_NAME, stepname);
+        kettleVariables.setVariable(Const.INTERNAL_VARIABLE_STEP_COPYNR, Integer.toString(getCopy()));
+        
+        // Also set the internal variable for the partition
+        if (!Const.isEmpty(partitionID))
+        {
+            kettleVariables.setVariable(Const.INTERNAL_VARIABLE_STEP_PARTITION_ID, partitionID);
+        }
+    }
 
-	public void markStop()
+    public void markStop()
 	{
 		Calendar cal=Calendar.getInstance();
 		stop_time=cal.getTime();
@@ -1621,6 +1859,86 @@ public class BaseStep extends Thread
     public void setPartitionID(String partitionID)
     {
         this.partitionID = partitionID;
+    }
+
+    /**
+     * @return the partitionTargets
+     */
+    public Map getPartitionTargets()
+    {
+        return partitionTargets;
+    }
+
+    /**
+     * @param partitionTargets the partitionTargets to set
+     */
+    public void setPartitionTargets(Map partitionTargets)
+    {
+        this.partitionTargets = partitionTargets;
+    }
+
+    /**
+     * @return the partitionColumnIndex
+     */
+    public int getPartitionColumnIndex()
+    {
+        return partitionColumnIndex;
+    }
+
+    /**
+     * @param partitionColumnIndex the partitionColumnIndex to set
+     */
+    public void setPartitionColumnIndex(int partitionColumnIndex)
+    {
+        this.partitionColumnIndex = partitionColumnIndex;
+    }
+
+    /**
+     * @return the repartitioning
+     */
+    public boolean isRepartitioning()
+    {
+        return repartitioning;
+    }
+
+    /**
+     * @param repartitioning the repartitioning to set
+     */
+    public void setRepartitioning(boolean repartitioning)
+    {
+        this.repartitioning = repartitioning;
+    }
+
+    /**
+     * @return the partitioned
+     */
+    public boolean isPartitioned()
+    {
+        return partitioned;
+    }
+
+    /**
+     * @param partitioned the partitioned to set
+     */
+    public void setPartitioned(boolean partitioned)
+    {
+        this.partitioned = partitioned;
+    }
+
+    /**
+     * @return the partitionMerging
+     */
+    public boolean isPartitionMerging()
+    {
+        return partitionMerging;
+    }
+
+    /**
+     * @param partitionMerging the partitionMerging to set
+     */
+    public void setPartitionMerging(boolean partitionMerging)
+    {
+        this.partitionMerging = partitionMerging;
     }
     
     
