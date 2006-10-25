@@ -91,15 +91,15 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		}
 	}
 
-	public String getURL()
-	{
+    public String getURL(String hostname, String port, String databaseName)
+    {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
-			return "jdbc:odbc:"+getDatabaseName();
+			return "jdbc:odbc:"+databaseName;
 		}
 		else
 		{
-			return "jdbc:mysql://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
+			return "jdbc:mysql://"+hostname+":"+port+"/"+databaseName;
 		}
 	}
     

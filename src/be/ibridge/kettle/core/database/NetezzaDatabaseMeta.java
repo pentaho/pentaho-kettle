@@ -82,16 +82,15 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		}
 	}
 
-	public String getURL()
-	{
+    public String getURL(String hostname, String port, String databaseName)
+    {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
-			return "jdbc:odbc:" + getDatabaseName();
+			return "jdbc:odbc:" + databaseName;
 		}
 		else
 		{
-			return "jdbc:netezza://" + getHostname() + ":" + getDatabasePortNumberString()
-			 + "/" + getDatabaseName();
+			return "jdbc:netezza://" + hostname + ":" + port + "/" + databaseName;
 		}
 	}
 

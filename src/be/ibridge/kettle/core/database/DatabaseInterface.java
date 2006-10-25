@@ -265,10 +265,13 @@ public interface DatabaseInterface extends Cloneable
 	 */
 	public String getDriverClass();
 
-	/**
-	 * @return the URL to use for connecting to the database.
-	 */
-	public String getURL();
+    /**
+     * @param hostname the hostname
+     * @param port the port as a string
+     * @param databaseName the database name
+     * @return the URL to use for connecting to the database.
+     */
+	public String getURL(String hostname, String port, String databaseName);
 
     /**
      * @return true if the database supports sequences
@@ -629,4 +632,25 @@ public interface DatabaseInterface extends Cloneable
      * @param initalPoolSize the initial pool size
      */
     public void setInitialPoolSize(int initalPoolSize);    
+    
+
+    /**
+     * @return true if the connection contains clustering information
+     */
+    public boolean isClustered();
+    
+    /**
+     * @param clustered true if the connection is set to contain clustering information
+     */
+    public void setClustered(boolean clustered);
+    
+    /**
+     * @return the available partition/host/databases/port combinations in the cluster
+     */
+    public PartitionDatabaseMeta[] getPartitioningInformation();
+    
+    /**
+     * @param clusterInfo the available partition/host/databases/port combinations in the cluster
+     */
+    public void setPartitioningInformation(PartitionDatabaseMeta[] clusterInfo);
 }

@@ -82,15 +82,15 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
 		}
 	}
 
-	public String getURL()
-	{
+    public String getURL(String hostname, String port, String databaseName)
+    {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
-			return "jdbc:odbc:"+getDatabaseName();
+			return "jdbc:odbc:"+databaseName;
 		}
 		else
 		{
-			return "jdbc:postgresql://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
+			return "jdbc:postgresql://"+hostname+":"+port+"/"+databaseName;
 		}
 	}
 

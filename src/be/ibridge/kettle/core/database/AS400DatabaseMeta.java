@@ -69,16 +69,16 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	{
 		return 65536;
 	}
-
-	public String getURL()
+    
+    public String getURL(String hostname, String port, String database)
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
-			return "jdbc:odbc:"+getDatabaseName();
+			return "jdbc:odbc:"+database;
 		}
 		else
 		{
-			return "jdbc:as400://"+getHostname()+"/"+getDatabaseName();
+			return "jdbc:as400://"+hostname+"/"+database;
 		}
 	}
 	

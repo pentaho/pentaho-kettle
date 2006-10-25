@@ -95,16 +95,15 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 	}
 
 
-	
-	public String getURL()
-	{
+    public String getURL(String hostname, String port, String databaseName)
+    {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
-			return "jdbc:odbc:"+getDatabaseName();
+			return "jdbc:odbc:"+databaseName;
 		}
         else
 		{
-            return "jdbc:rdbThin://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
+            return "jdbc:rdbThin://"+hostname+":"+port+"/"+databaseName;
 		}
 
 	}

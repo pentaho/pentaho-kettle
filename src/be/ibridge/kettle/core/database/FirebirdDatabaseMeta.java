@@ -74,15 +74,15 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		}
 	}
 
-	public String getURL()
-	{
+    public String getURL(String hostname, String port, String databaseName)
+    {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
-			return "jdbc:odbc:"+getDatabaseName();
+			return "jdbc:odbc:"+databaseName;
 		}
 		else
 		{
-			return "jdbc:firebirdsql://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
+			return "jdbc:firebirdsql://"+hostname+":"+port+"/"+databaseName;
 		}
 	}
 

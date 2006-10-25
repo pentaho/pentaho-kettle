@@ -66,6 +66,34 @@ public abstract class BaseDatabaseMeta implements Cloneable
      * The prefix for all the extra options attributes
      */
     public static final String ATTRIBUTE_PREFIX_EXTRA_OPTION    = "EXTRA_OPTION_"; 
+
+    
+    /**
+     * A flag to determine if the connection is clustered or not.
+     */
+    public static final String ATTRIBUTE_IS_CLUSTERED            = "IS_CLUSTERED";
+
+    /**
+     * The clustering partition ID name prefix
+     */
+    private static final String ATTRIBUTE_CLUSTER_PARTITION_PREFIX = "CLUSTER_PARTITION_";
+
+    /**
+     * The clustering hostname prefix
+     */
+    public static final String ATTRIBUTE_CLUSTER_HOSTNAME_PREFIX = "CLUSTER_HOSTNAME_";
+
+    /**
+     * The clustering port prefix
+     */
+    public static final String ATTRIBUTE_CLUSTER_PORT_PREFIX = "CLUSTER_PORT_";
+
+    /**
+     * The clustering database name prefix
+     */
+    public static final String ATTRIBUTE_CLUSTER_DBNAME_PREFIX = "CLUSTER_DBNAME_";
+
+    
     
 
 	private String name;
@@ -937,4 +965,64 @@ public abstract class BaseDatabaseMeta implements Cloneable
     {
         attributes.setProperty(ATTRIBUTE_MAXIMUM_POOL_SIZE, Integer.toString(initialPoolSize));
     }
+    
+    
+    
+    /**
+     * @return true if we want to use a database connection pool
+     */
+    public boolean isClustered()
+    {
+        String isClustered = attributes.getProperty(ATTRIBUTE_IS_CLUSTERED);
+        return "Y".equalsIgnoreCase(isClustered);
+    }
+    
+    /**
+     * @param usePool true if we want to use a database connection pool
+     */
+    public void setClustered(boolean clustered)
+    {
+        attributes.setProperty(ATTRIBUTE_IS_CLUSTERED, clustered?"Y":"N");
+    }
+    
+    
+    /**
+     * @return the available partition/host/databases/port combinations in the cluster
+     */
+    public PartitionDatabaseMeta[] getPartitioningInformation()
+    {
+        // find the maximum number of attributes starting with ATTRIBUTE_CLUSTER_HOSTNAME_PREFIX 
+        
+        int nr = 0;
+        while ( (attributes.getProperty(ATTRIBUTE_CLUSTER_HOSTNAME_PREFIX+nr))!=null ) nr++;
+        
+        PartitionDatabaseMeta[] clusterInfo = new PartitionDatabaseMeta[nr];
+        
+        for (nr=0;nr<clusterInfo.length;nr++)
+        {
+            String partitionId = attributes.getProperty(ATTRIBUTE_CLUSTER_PARTITION_PREFIX+nr);
+            String hostname    = attributes.getProperty(ATTRIBUTE_CLUSTER_HOSTNAME_PREFIX+nr);
+            String port        = attributes.getProperty(ATTRIBUTE_CLUSTER_PORT_PREFIX+nr);
+            String dbName      = attributes.getProperty(ATTRIBUTE_CLUSTER_DBNAME_PREFIX+nr);
+            clusterInfo[nr] = new PartitionDatabaseMeta(partitionId, hostname, port, dbName);
+        }
+        
+        return clusterInfo;
+    }
+    
+    /**
+     * @param clusterInfo the available partition/host/databases/port combinations in the cluster
+     */
+    public void setPartitioningInformation(PartitionDatabaseMeta[] clusterInfo)
+    {
+        for (int nr=0;nr<clusterInfo.length;nr++)
+        {
+            PartitionDatabaseMeta meta = clusterInfo[nr];
+            
+            attributes.put(ATTRIBUTE_CLUSTER_PARTITION_PREFIX+nr, Const.NVL(meta.getPartitionId(), ""));
+            attributes.put(ATTRIBUTE_CLUSTER_HOSTNAME_PREFIX+nr, Const.NVL(meta.getHostname(), ""));
+            attributes.put(ATTRIBUTE_CLUSTER_PORT_PREFIX+nr, Const.NVL(meta.getPort(), ""));
+            attributes.put(ATTRIBUTE_CLUSTER_DBNAME_PREFIX+nr, Const.NVL(meta.getDatabaseName(), ""));
+        }
+    } 
 }

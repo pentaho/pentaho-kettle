@@ -179,6 +179,8 @@ public class DatabaseMeta implements Cloneable, XMLInterface
  	 */
  	public static final int TYPE_DATABASE_NETEZZA    =  24;
 
+    
+    
 
 
 	/**
@@ -519,7 +521,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 
         di.databaseInterface = (DatabaseInterface) databaseInterface.clone();
         
-        di.databaseInterface.getURL();
+        // di.databaseInterface.getURL();
         
         di.setID(-1L);
         di.setChanged();
@@ -960,10 +962,30 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	{
 		return getName().equals( ((DatabaseMeta)obj).getName() );
 	}
-	
-	public String getURL()
+
+    public String getURL()
+    {
+        return getURL(null);
+    }
+
+	public String getURL(String partitionId)
 	{
-		StringBuffer url=new StringBuffer( databaseInterface.getURL() );
+        String baseUrl;
+        if (isClustered() && !Const.isEmpty(partitionId))
+        {
+            // Get the cluster information...
+            PartitionDatabaseMeta partition = getPartitionMeta(partitionId);
+            String hostname = partition.getHostname();
+            String port = partition.getPort();
+            String databaseName = partition.getDatabaseName();
+            
+            baseUrl = databaseInterface.getURL(hostname, port, databaseName);
+        }
+        else
+        {
+            baseUrl = databaseInterface.getURL(getHostname(), getDatabasePortNumberString(), getDatabaseName());
+        }
+		StringBuffer url=new StringBuffer( baseUrl );
         
         if (databaseInterface.supportsOptionsInURL())
         {
@@ -1014,6 +1036,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         return url.toString();
 	}
     
+
     public Properties getConnectionProperties()
     {
         Properties properties =new Properties();
@@ -1442,7 +1465,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
             remarks.add("Please give this database connection a name");
         }
         
-        if (getDatabaseType()!=TYPE_DATABASE_SAPR3 && getDatabaseType()!=TYPE_DATABASE_GENERIC)
+        if (!isClustered() && getDatabaseType()!=TYPE_DATABASE_SAPR3 && getDatabaseType()!=TYPE_DATABASE_GENERIC)
         {
             if (getDatabaseName()==null || getDatabaseName().length()==0) 
             {
@@ -2066,5 +2089,46 @@ public class DatabaseMeta implements Cloneable, XMLInterface
     {
         databaseInterface.setInitialPoolSize(initalPoolSize);
     }
-
+    
+    /**
+     * @return true if the connection contains clustering information
+     */
+    public boolean isClustered()
+    {
+        return databaseInterface.isClustered();
+    }
+    
+    /**
+     * @param clustered true if the connection is set to contain clustering information
+     */
+    public void setClustered(boolean clustered)
+    {
+        databaseInterface.setClustered(clustered);
+    }
+    
+    /**
+     * @return the available partition/host/databases/port combinations in the cluster
+     */
+    public PartitionDatabaseMeta[] getClusterInformation()
+    {
+        return databaseInterface.getPartitioningInformation();
+    }
+    
+    /**
+     * @param clusterInfo the available partition/host/databases/port combinations in the cluster
+     */
+    public void setgetClusteringInformation(PartitionDatabaseMeta[] clusterInfo)
+    {
+        databaseInterface.setPartitioningInformation(clusterInfo);
+    }
+    
+    private PartitionDatabaseMeta getPartitionMeta(String partitionId)
+    {
+        PartitionDatabaseMeta[] clusterInfo = getClusterInformation();
+        for (int i=0;i<clusterInfo.length;i++)
+        {
+            if (clusterInfo[i].getPartitionId().equals(partitionId)) return clusterInfo[i];
+        }
+        return null;
+    }
 }

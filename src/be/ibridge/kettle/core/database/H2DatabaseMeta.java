@@ -73,15 +73,15 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 
 	}
 	
-	public String getURL()
-	{
+    public String getURL(String hostname, String port, String databaseName)
+    {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
-            return "jdbc:h2:"+getDatabaseName();
+            return "jdbc:h2:"+databaseName;
         }
         else
         {
-            return "jdbc:odbc:"+getDatabaseName();
+            return "jdbc:odbc:"+databaseName;
         }
 	}
 

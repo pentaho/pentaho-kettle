@@ -74,15 +74,15 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
 		}
 	}
 
-	public String getURL()
+	public String getURL(String hostname, String port, String databaseName)
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
-			return "jdbc:odbc:"+getDatabaseName();
+			return "jdbc:odbc:"+databaseName;
 		}
 		else
 		{
-			return "jdbc:interbase://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
+			return "jdbc:interbase://"+hostname+":"+port+"/"+databaseName;
 		}
 	}
 

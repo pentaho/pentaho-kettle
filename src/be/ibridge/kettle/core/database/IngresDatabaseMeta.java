@@ -62,15 +62,15 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		}
 	}
 
-	public String getURL()
-	{
+    public String getURL(String hostname, String port, String databaseName)
+    {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
-			return "jdbc:odbc:"+getDatabaseName();
+			return "jdbc:odbc:"+databaseName;
 		}
 		else
 		{
-			return "jdbc:edbc://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
+			return "jdbc:edbc://"+hostname+":"+port+"/"+databaseName;
 		}
 	}
 

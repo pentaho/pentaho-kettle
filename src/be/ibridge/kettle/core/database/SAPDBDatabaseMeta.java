@@ -74,15 +74,15 @@ public class SAPDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		}
 	}
     
-	public String getURL()
-	{
+    public String getURL(String hostname, String port, String databaseName)
+    {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
-			return "jdbc:odbc:"+getDatabaseName();
+			return "jdbc:odbc:"+databaseName;
 		}
 		else
 		{
-		    return "jdbc:sapdb://"+getHostname()+"/"+getDatabaseName();
+		    return "jdbc:sapdb://"+hostname+"/"+databaseName;
 		}
 	}
 

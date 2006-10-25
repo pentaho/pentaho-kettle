@@ -78,16 +78,16 @@ public class SybaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		}
 	}
 	
-	public String getURL()
-	{
+    public String getURL(String hostname, String port, String databaseName)
+    {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
-			return "jdbc:odbc:"+getDatabaseName();
+			return "jdbc:odbc:"+databaseName;
 		}
 		else
 		{
 		    // jdbc:jtds:<server_type>://<server>[:<port>][/<database>][;<property>=<value>[;...]]
-			return "jdbc:jtds:sybase://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
+			return "jdbc:jtds:sybase://"+hostname+":"+port+"/"+databaseName;
 		}
 	}
 

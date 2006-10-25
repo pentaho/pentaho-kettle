@@ -65,24 +65,23 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 		}
 	}
 
-	public String getURL()
-	{
+    public String getURL(String hostname, String port, String databaseName)
+    {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
-			return "jdbc:odbc:"+getDatabaseName();
+			return "jdbc:odbc:"+databaseName;
 		}
 		else
 		{
-			String port = getDatabasePortNumberString();
 			if ( "0".equals(port) ) 
 			{
 				// When no port is specified, or port is 0 support local/memory
 				// HSQLDB databases.
-			    return "jdbc:hsqldb:"+getDatabaseName();
+			    return "jdbc:hsqldb:"+databaseName;
 			}
 			else
 			{
-			    return "jdbc:hsqldb:hsql://"+getHostname()+ ":" + port +"/"+getDatabaseName();
+			    return "jdbc:hsqldb:hsql://"+hostname+ ":" + port +"/"+databaseName;
 			}				
 		}
 	}

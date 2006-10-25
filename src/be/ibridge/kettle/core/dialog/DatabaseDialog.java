@@ -51,6 +51,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.BaseDatabaseMeta;
+import be.ibridge.kettle.core.database.PartitionDatabaseMeta;
 import be.ibridge.kettle.core.database.ConnectionPoolUtil;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
@@ -79,10 +80,10 @@ public class DatabaseDialog extends Dialog
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wDbTab, wPoolTab, wOracleTab, wIfxTab, wSAPTab, wGenericTab, wOptionsTab, wSQLTab;
+	private CTabItem     wDbTab, wPoolTab, wOracleTab, wIfxTab, wSAPTab, wGenericTab, wOptionsTab, wSQLTab, wClusterTab;
 
-	private Composite    wDbComp, wPoolComp, wOracleComp, wIfxComp, wSAPComp, wGenericComp, wOptionsComp, wSQLComp;
-	private FormData     fdDbComp, fdPoolComp, fdOracleComp, fdIfxComp, fdSAPComp, fdGenericComp, fdOptionsComp, fdSQLComp;
+	private Composite    wDbComp, wPoolComp, wOracleComp, wIfxComp, wSAPComp, wGenericComp, wOptionsComp, wSQLComp, wClusterComp;
+	private FormData     fdDbComp, fdPoolComp, fdOracleComp, fdIfxComp, fdSAPComp, fdGenericComp, fdOptionsComp, fdSQLComp, fdClusterComp;
 
 	private Shell     shell;
 
@@ -124,7 +125,13 @@ public class DatabaseDialog extends Dialog
     private Label     wlSQL;
     private Text      wSQL;
     private FormData  fdlSQL, fdSQL;
-    
+
+    // Cluster
+    private Label     wlUseCluster;
+    private Button    wUseCluster;
+    private TableView wCluster;
+    private FormData  fdlUseCluster, fdUseCluster, fdCluster;
+
 	private Button    wOK, wTest, wExp, wList, wCancel, wOptionsHelp;
 	
 	private String connectionName;
@@ -226,6 +233,7 @@ public class DatabaseDialog extends Dialog
         addGenericTab();
         addOptionsTab();
         addSQLTab();
+        addClusterTab();
         
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
@@ -1003,6 +1011,77 @@ public class DatabaseDialog extends Dialog
         wSQLTab.setControl(wSQLComp);
     }
 
+    private void addClusterTab()
+    {
+        //////////////////////////
+        // START OF CLUSTER TAB///
+        ///
+        
+        // The tab
+        wClusterTab=new CTabItem(wTabFolder, SWT.NONE);
+        wClusterTab.setText("Cluster");
+        wClusterTab.setToolTipText("Optional clustering information");
+
+        FormLayout clusterLayout = new FormLayout();
+        clusterLayout.marginWidth  = margin;
+        clusterLayout.marginHeight = margin;
+
+        // The composite
+        wClusterComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook( wClusterComp );
+        wClusterComp.setLayout(clusterLayout);
+
+        // The check box
+        wlUseCluster = new Label(wClusterComp, SWT.RIGHT);
+        props.setLook(wlUseCluster);
+        wlUseCluster.setText("Use clustering? EXPERIMENTAL!! ");
+        wlUseCluster.setToolTipText("Enable clustering to add all kinds of clustering information.");
+        fdlUseCluster = new FormData();
+        fdlUseCluster.left   = new FormAttachment(0, 0);
+        fdlUseCluster.right  = new FormAttachment(middle, 0);
+        fdlUseCluster.top     = new FormAttachment(0, 0);
+        wlUseCluster.setLayoutData(fdlUseCluster);
+        
+        wUseCluster = new Button(wClusterComp, SWT.CHECK);
+        props.setLook(wUseCluster);
+        fdUseCluster = new FormData();
+        fdUseCluster.left   = new FormAttachment(middle, margin);
+        fdUseCluster.right  = new FormAttachment(100, 0);
+        fdUseCluster.top    = new FormAttachment(0, 0);
+        wUseCluster.setLayoutData(fdUseCluster);
+        wUseCluster.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) {  enableFields(); } });
+        
+        // Cluster list
+        ColumnInfo[] colinfo=new ColumnInfo[]
+            {
+                new ColumnInfo("Partition ID",  ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
+                new ColumnInfo("Hostname",      ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
+                new ColumnInfo("Port",          ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
+                new ColumnInfo("Database name", ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
+            };
+
+        colinfo[0].setToolTip("The extra parameters to set in the URL to connectect to the database");
+        colinfo[1].setToolTip("The values to set for the parameters");
+
+        wCluster = new TableView(wClusterComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props);
+        props.setLook(wCluster);
+        fdCluster = new FormData();
+        fdCluster.left = new FormAttachment(0, 0);
+        fdCluster.right = new FormAttachment(100, 0);
+        fdCluster.top = new FormAttachment(wUseCluster, margin);
+        fdCluster.bottom = new FormAttachment(100, 0);
+        wCluster.setLayoutData(fdCluster);
+        
+        fdClusterComp = new FormData();
+        fdClusterComp.left  = new FormAttachment(0, 0);
+        fdClusterComp.top   = new FormAttachment(0, 0);
+        fdClusterComp.right = new FormAttachment(100, 0);
+        fdClusterComp.bottom= new FormAttachment(100, 0);
+        wClusterComp.setLayoutData(fdClusterComp);
+
+        wClusterComp.layout();
+        wClusterTab.setControl(wClusterComp);
+    }
     
     private void showOptionsHelpText()
     {
@@ -1065,16 +1144,37 @@ public class DatabaseDialog extends Dialog
         wURL.setText(         connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_URL, ""));
         wDriverClass.setText( connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, ""));
         
-        setOptionsList();
+        getOptionsData();
         checkPasswordVisible();
         
         wSQL.setText( NVL(connection.getConnectSQL(),"") );
         
 		wConn.setFocus();
 		wConn.selectAll();
+        
+		getClusterData();
 	}
     
-    private void setOptionsList()
+    private void getClusterData()
+    {
+        // The clustering information
+        wUseCluster.setSelection( connection.isClustered() );
+        PartitionDatabaseMeta[] clusterInformation = connection.getClusterInformation();
+        for (int i = 0; i < clusterInformation.length; i++)
+        {
+            PartitionDatabaseMeta meta = clusterInformation[i];
+            TableItem tableItem = new TableItem(wCluster.table, SWT.NONE);
+            tableItem.setText(1, Const.NVL(meta.getPartitionId(), ""));
+            tableItem.setText(2, Const.NVL(meta.getHostname(), ""));
+            tableItem.setText(3, Const.NVL(meta.getPort(), ""));
+            tableItem.setText(4, Const.NVL(meta.getDatabaseName(), ""));
+        }
+        wCluster.removeEmptyRows();
+        wCluster.setRowNums();
+        wCluster.optWidth(true);
+    }
+
+    private void getOptionsData()
     {
         // The extra options as well...
         Iterator keys = extraOptions.keySet().iterator();
@@ -1185,6 +1285,17 @@ public class DatabaseDialog extends Dialog
         wMaxPool.setEnabled( wUsePool.getSelection());
         wlInitPool.setEnabled( wUsePool.getSelection());
         wInitPool.setEnabled( wUsePool.getSelection());
+        
+        // How about the clustering stuff?
+        wCluster.table.setEnabled(wUseCluster.getSelection());
+        // the hostname, port and database name is of no use anymore...
+        wlHostName.setEnabled(!wUseCluster.getSelection());
+        wHostName.setEnabled(!wUseCluster.getSelection());
+        wlPort.setEnabled(!wUseCluster.getSelection());
+        wPort.setEnabled(!wUseCluster.getSelection());
+        wlDBName.setEnabled(!wUseCluster.getSelection());
+        wDBName.setEnabled(!wUseCluster.getSelection());
+
 	}
 	
 	public void setPortNumber()
@@ -1314,6 +1425,20 @@ public class DatabaseDialog extends Dialog
         databaseMeta.setUsingConnectionPool(wUsePool.getSelection());
         databaseMeta.setInitialPoolSize(Const.toInt( wInitPool.getText(), ConnectionPoolUtil.defaultInitialNrOfConnections) );
         databaseMeta.setMaximumPoolSize(Const.toInt( wMaxPool.getText(), ConnectionPoolUtil.defaultMaximumNrOfConnections) );
+        
+        // Now grab the clustering information...
+        databaseMeta.setClustered( wUseCluster.getSelection() );
+        PartitionDatabaseMeta[] clusterInfo = new PartitionDatabaseMeta[wCluster.nrNonEmpty()];
+        for (int i=0;i<clusterInfo.length;i++)
+        {
+            TableItem tableItem = wCluster.getNonEmpty(i);
+            String partitionId = tableItem.getText(1);
+            String hostname    = tableItem.getText(2);
+            String port        = tableItem.getText(3);
+            String dbName      = tableItem.getText(4);
+            clusterInfo[i] = new PartitionDatabaseMeta(partitionId, hostname, port, dbName);
+        }
+        databaseMeta.setgetClusteringInformation(clusterInfo);
 	}
 	
     /**
@@ -1366,26 +1491,60 @@ public class DatabaseDialog extends Dialog
 		String[] remarks = dbinfo.checkParameters(); 
 		if (remarks.length==0)
 		{
+            StringBuffer report = new StringBuffer();
+            
 			Database db = new Database(dbinfo);
-			try
-			{
-				db.connect();
+            if (dbinfo.isClustered())
+            {
+                PartitionDatabaseMeta[] clusterInformation = dbinfo.getClusterInformation();
+                for (int i=0;i<clusterInformation.length;i++)
+                {
+                    try
+                    {
+                        db.connect(clusterInformation[i].getPartitionId());
+                        report.append("Connection to database ["+dbinfo.getName()+"] with partition id ["+clusterInformation[i].getPartitionId()+"] is OK."+Const.CR);
+                    }
+                    catch (KettleException e)
+                    {
+                        report.append("Error connecting to database ["+dbinfo.getName()+"] with partition id ["+clusterInformation[i].getPartitionId()+"] : "+e.toString()+Const.CR);
+                        report.append(Const.getStackTracker(e)+Const.CR);
+                    }
+                    finally
+                    {
+                        db.disconnect();
+                    }
+                    report.append("   Hostname       : "+clusterInformation[i].getHostname()+Const.CR);
+                    report.append("   Port           : "+clusterInformation[i].getPort()+Const.CR);
+                    report.append("   Database name  : "+clusterInformation[i].getDatabaseName()+Const.CR);
+                    report.append(Const.CR);
+                }
+            }
+            else
+            {
+                try
+                {
+                    db.connect();
+                    report.append("Connection to database ["+dbinfo.getName()+"] is OK."+Const.CR);
+                }
+                catch (KettleException e)
+                {
+                    report.append("Error connecting to database ["+dbinfo.getName()+"] : "+e.toString()+Const.CR);
+                    report.append(Const.getStackTracker(e)+Const.CR);
+                }
+                finally
+                {
+                    db.disconnect();
+                }
+                report.append("   Hostname       : "+dbinfo.getHostname()+Const.CR);
+                report.append("   Port           : "+dbinfo.getDatabasePortNumberString()+Const.CR);
+                report.append("   Database name  : "+dbinfo.getDatabaseName()+Const.CR);
+                report.append(Const.CR);
+            }
 
-				MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-				mb.setText("Connected!");
-				mb.setMessage("OK!" + Const.CR);
-				mb.open();
-			}
-			catch (KettleException e)
-			{
-				// e.printStackTrace();
-
-				new ErrorDialog(shell, "Error!", "An error occurred connecting to the database: ", e);
-			}
-			finally
-			{
-				db.disconnect();
-			}
+            EnterTextDialog dialog = new EnterTextDialog(shell, "Connection report", "Here is the connection report", report.toString());
+            dialog.setReadOnly();
+            dialog.setFixed(true);
+            dialog.open();
 		}
 		else
 		{

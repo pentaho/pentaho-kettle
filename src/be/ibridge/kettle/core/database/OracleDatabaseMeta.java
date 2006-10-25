@@ -102,26 +102,26 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
 
 	
-	public String getURL()
-	{
+    public String getURL(String hostname, String port, String databaseName)
+    {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
-			return "jdbc:odbc:"+getDatabaseName();
+			return "jdbc:odbc:"+databaseName;
 		}
 		else
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
 		{
-			return "jdbc:oracle:thin:@"+getHostname()+":"+getDatabasePortNumberString()+":"+getDatabaseName();
+			return "jdbc:oracle:thin:@"+hostname+":"+port+":"+databaseName;
 		}
 		else // OCI
 		{
 			if (getDatabaseName()!=null && getDatabaseName().length()>0)
 			{
-				return "jdbc:oracle:oci:@(description=(address=(host="+getHostname()+")(protocol=tcp)(port="+getDatabasePortNumberString()+"))(connect_data=(sid="+getDatabaseName()+")))";
+				return "jdbc:oracle:oci:@(description=(address=(host="+hostname+")(protocol=tcp)(port="+port+"))(connect_data=(sid="+databaseName+")))";
 			}
 			else
 			{
-				return "jdbc:oracle:oci:@"+getDatabaseName();
+				return "jdbc:oracle:oci:@"+databaseName;
 			}
 		}
 	}

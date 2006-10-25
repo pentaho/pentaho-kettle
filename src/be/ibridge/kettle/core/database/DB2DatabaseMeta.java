@@ -78,15 +78,15 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
 		}
 	}
 
-	public String getURL()
+    public String getURL(String hostname, String port, String databaseName)
 	{
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
-			return "jdbc:odbc:"+getDatabaseName();
+			return "jdbc:odbc:"+databaseName;
 		}
 		else
 		{
-			return "jdbc:db2://"+getHostname()+":"+getDatabasePortNumberString()+"/"+getDatabaseName();
+			return "jdbc:db2://"+hostname+":"+port+"/"+databaseName;
 		}
 	}
 

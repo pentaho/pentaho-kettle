@@ -66,9 +66,9 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 		return "sun.jdbc.odbc.JdbcOdbcDriver"; // always ODBC!
 	}	
 
-	public String getURL()
-	{
-		return "jdbc:odbc:"+getDatabaseName();
+    public String getURL(String hostname, String port, String databaseName)
+    {
+		return "jdbc:odbc:"+databaseName;
 	}
 
 	/**

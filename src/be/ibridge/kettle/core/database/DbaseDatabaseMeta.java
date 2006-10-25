@@ -65,9 +65,9 @@ public class DbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		return "sun.jdbc.odbc.JdbcOdbcDriver"; // always ODBC
 	}
 
-	public String getURL()
+	public String getURL(String hostname, String port, String databaseName)
 	{
-		return "jdbc:odbc:"+getDatabaseName();
+		return "jdbc:odbc:"+databaseName;
 	}
 
 	/**

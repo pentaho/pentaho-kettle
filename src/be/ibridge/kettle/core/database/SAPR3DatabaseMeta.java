@@ -69,8 +69,8 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 			return null;
 	}
 
-	public String getURL()
-	{
+    public String getURL(String hostname, String port, String databaseName)
+    {
 		return null;
 	}
 

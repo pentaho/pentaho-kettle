@@ -156,12 +156,22 @@ public class Database
     {
         return prepStatementUpdate;
     }
-	
+
+    /**
+     * Open the database connection.
+     * @throws KettleDatabaseException if something went wrong.
+     */
+    public void connect() throws KettleDatabaseException
+    {
+        connect(null);
+    }
+    
 	/**
 	 * Open the database connection.
+     * @param partitionId the partition ID in the cluster to connect to.
 	 * @throws KettleDatabaseException if something went wrong.
 	 */
-	public void connect() throws KettleDatabaseException
+	public void connect(String partitionId) throws KettleDatabaseException
 	{
         if (databaseMeta==null)
         {
@@ -171,13 +181,14 @@ public class Database
         try
 		{
             // First see if we use connection pooling...
-            // TODO: see how this affects the JNDI stuff.
             //
-            if (databaseMeta.isUsingConnectionPool()) // default = false for backward compatibility
+            if ( databaseMeta.isUsingConnectionPool() &&  // default = false for backward compatibility
+                 databaseMeta.getAccessType()!=DatabaseMeta.TYPE_ACCESS_JNDI // JNDI does pooling on it's own.
+                )
             {
                 try
                 {
-                    this.connection = ConnectionPoolUtil.getConnection(databaseMeta);
+                    this.connection = ConnectionPoolUtil.getConnection(databaseMeta, partitionId);
                 } 
                 catch (Exception e)
                 {
@@ -187,7 +198,7 @@ public class Database
             }
             else
             {
-    			connect(databaseMeta.getDriverClass() );
+    			connectUsingClass(databaseMeta.getDriverClass(), partitionId );
     			log.logDetailed(toString(), "Connected to database.");
                 
                 // See if we need to execute extra SQL statemtent...
@@ -230,8 +241,7 @@ public class Database
 	 * @param classname for example "org.gjt.mm.mysql.Driver"
 	 * @return true if the connect was succesfull, false if something went wrong.
 	 */
-	private void connect(String classname)
-		throws KettleDatabaseException
+	private void connectUsingClass(String classname, String partitionId) throws KettleDatabaseException
 	{
 		// Install and load the jdbc Driver
 
@@ -260,7 +270,16 @@ public class Database
 
 		try 
 		{
-			String url = StringUtil.environmentSubstitute(databaseMeta.getURL());
+            String url;
+            
+            if (databaseMeta.isClustered() && !Const.isEmpty(partitionId))
+            {
+                url = StringUtil.environmentSubstitute(databaseMeta.getURL(partitionId));
+            }
+            else
+            {
+                url = StringUtil.environmentSubstitute(databaseMeta.getURL()); 
+            }
 			String userName = StringUtil.environmentSubstitute(databaseMeta.getUsername());
 			String password = StringUtil.environmentSubstitute(databaseMeta.getPassword());
 

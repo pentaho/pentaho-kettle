@@ -76,15 +76,15 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 
 	}
 	
-	public String getURL()
-	{
+    public String getURL(String hostname, String port, String databaseName)
+    {
         if (getAccessType()==DatabaseMeta.TYPE_ACCESS_NATIVE)
         {
             return getAttributes().getProperty(ATRRIBUTE_CUSTOM_URL, "");
         }
         else
         {
-            return "jdbc:odbc:"+getDatabaseName();
+            return "jdbc:odbc:"+databaseName;
         }
 	}
 

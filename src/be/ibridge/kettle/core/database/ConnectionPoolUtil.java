@@ -12,6 +12,8 @@ import org.apache.commons.dbcp.PoolableConnectionFactory;
 import org.apache.commons.dbcp.PoolingDriver;
 import org.apache.commons.pool.impl.GenericObjectPool;
 
+import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.util.StringUtil;
 
 public class ConnectionPoolUtil
@@ -21,6 +23,13 @@ public class ConnectionPoolUtil
     public static final int defaultInitialNrOfConnections=5;
     public static final int defaultMaximumNrOfConnections=10;
     
+    /**
+     * @deprecated as it doesn't take the partitionId into account as it should.
+     * @param dbDatabaseMeta
+     * @param initialSize
+     * @param maxiumumSize
+     * @throws Exception
+     */
     public static void createPoolingDriver(List dbDatabaseMeta, int initialSize, int maxiumumSize) throws Exception
     {
         //TODO:how to check if a given dbMeta has been processed
@@ -28,37 +37,37 @@ public class ConnectionPoolUtil
         for (Iterator iter = dbDatabaseMeta.iterator(); iter.hasNext();)
         {
             DatabaseMeta dbMeta = (DatabaseMeta) iter.next();
-            if(isPoolRegiested(dbMeta))
+            if(isPoolRegiested(dbMeta, null))
                 continue;
             
-            createPool(dbMeta, initialSize, maxiumumSize);
+            createPool(dbMeta, null, initialSize, maxiumumSize);
         }       
     }
         
-    private static boolean isPoolRegiested(DatabaseMeta dbMeta)
+    private static boolean isPoolRegiested(DatabaseMeta dbMeta, String partitionId) throws KettleDatabaseException
     {
-        String[] poolNames=null;
         try
         {
-            poolNames = pd.getPoolNames();
-        } catch (SQLException e)
-        {
-            e.printStackTrace();
-        }
-        if(poolNames!=null)
-        {
-            String name = dbMeta.getName();
-            for (int i = 0; i < poolNames.length; i++)
-            {               
-                if(poolNames[i].equals(name))
-                    return true;
+            String[] poolNames = pd.getPoolNames();
+            if(poolNames!=null)
+            {
+                String name = dbMeta.getName()+Const.NVL(partitionId, "");
+                for (int i = 0; i < poolNames.length; i++)
+                {               
+                    if(poolNames[i].equals(name))
+                        return true;
+                }
             }
+            
+            return false;
+        } 
+        catch (SQLException e)
+        {
+            throw new KettleDatabaseException("Error checking if the connection pool is registered", e);
         }
-        
-        return false;
     }
     
-    private static void createPool(DatabaseMeta databaseMeta, int initialSize, int maximumSize) throws Exception
+    private static void createPool(DatabaseMeta databaseMeta, String partitionId, int initialSize, int maximumSize) throws KettleDatabaseException
     {
         GenericObjectPool gpool=new GenericObjectPool();
         //no limit to the number of connections holded in the pool
@@ -74,7 +83,7 @@ public class ConnectionPoolUtil
         }
         catch(Exception e)
         {
-            throw new Exception("Unable to load driver for connect ["+databaseMeta.getName()+"], class ["+clazz+"]", e);
+            throw new KettleDatabaseException("Unable to load driver for connect ["+databaseMeta.getName()+"], class ["+clazz+"]", e);
         }
         
         String url;
@@ -83,13 +92,13 @@ public class ConnectionPoolUtil
         
         try
         {
-            url= StringUtil.environmentSubstitute(databaseMeta.getURL());       
+            url= StringUtil.environmentSubstitute(databaseMeta.getURL(partitionId));       
             userName= StringUtil.environmentSubstitute(databaseMeta.getUsername());     
             password= StringUtil.environmentSubstitute(databaseMeta.getPassword());
         } 
         catch (RuntimeException e)
         {
-            url=databaseMeta.getURL();
+            url=databaseMeta.getURL(partitionId);
             userName=databaseMeta.getUsername();
             password=databaseMeta.getPassword();
         }
@@ -101,7 +110,14 @@ public class ConnectionPoolUtil
         
         for (int i = 0; i < initialSize; i++)
         {
-            gpool.addObject();
+            try
+            {
+                gpool.addObject();
+            }
+            catch(Exception e)
+            {
+                throw new KettleDatabaseException("Unable to pre-load connection to the connection pool", e);
+            }
         }
         
         pd.registerPool(databaseMeta.getName(),gpool);
@@ -109,16 +125,16 @@ public class ConnectionPoolUtil
     }
     
     
-    public static Connection getConnection(DatabaseMeta dbMeta) throws Exception
+    public static Connection getConnection(DatabaseMeta dbMeta, String partitionId) throws Exception
     {
-        return getConnection(dbMeta, dbMeta.getInitialPoolSize(), dbMeta.getMaximumPoolSize());
+        return getConnection(dbMeta, partitionId, dbMeta.getInitialPoolSize(), dbMeta.getMaximumPoolSize());
     }
     
-    public static Connection getConnection(DatabaseMeta dbMeta,int initialSize, int maximumSize) throws Exception
+    public static Connection getConnection(DatabaseMeta dbMeta, String partitionId,int initialSize, int maximumSize) throws Exception
     {
-        if(!isPoolRegiested(dbMeta))
+        if(!isPoolRegiested(dbMeta, partitionId))
         {
-            createPool(dbMeta, initialSize, maximumSize);
+            createPool(dbMeta, partitionId, initialSize, maximumSize);
         }
         
         return DriverManager.getConnection("jdbc:apache:commons:dbcp:"+dbMeta.getName());
