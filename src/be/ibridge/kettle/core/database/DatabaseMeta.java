@@ -971,7 +971,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	public String getURL(String partitionId)
 	{
         String baseUrl;
-        if (isClustered() && !Const.isEmpty(partitionId))
+        if (isPartitioned() && !Const.isEmpty(partitionId))
         {
             // Get the cluster information...
             PartitionDatabaseMeta partition = getPartitionMeta(partitionId);
@@ -1465,7 +1465,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
             remarks.add("Please give this database connection a name");
         }
         
-        if (!isClustered() && getDatabaseType()!=TYPE_DATABASE_SAPR3 && getDatabaseType()!=TYPE_DATABASE_GENERIC)
+        if (!isPartitioned() && getDatabaseType()!=TYPE_DATABASE_SAPR3 && getDatabaseType()!=TYPE_DATABASE_GENERIC)
         {
             if (getDatabaseName()==null || getDatabaseName().length()==0) 
             {
@@ -2091,43 +2091,43 @@ public class DatabaseMeta implements Cloneable, XMLInterface
     }
     
     /**
-     * @return true if the connection contains clustering information
+     * @return true if the connection contains partitioning information
      */
-    public boolean isClustered()
+    public boolean isPartitioned()
     {
-        return databaseInterface.isClustered();
+        return databaseInterface.isPartitioned();
     }
     
     /**
-     * @param clustered true if the connection is set to contain clustering information
+     * @param partitioned true if the connection is set to contain partitioning information
      */
-    public void setClustered(boolean clustered)
+    public void setPartitioned(boolean partitioned)
     {
-        databaseInterface.setClustered(clustered);
+        databaseInterface.setPartitioned(partitioned);
     }
     
     /**
      * @return the available partition/host/databases/port combinations in the cluster
      */
-    public PartitionDatabaseMeta[] getClusterInformation()
+    public PartitionDatabaseMeta[] getPartitioningInformation()
     {
         return databaseInterface.getPartitioningInformation();
     }
     
     /**
-     * @param clusterInfo the available partition/host/databases/port combinations in the cluster
+     * @param partitionInfo the available partition/host/databases/port combinations in the cluster
      */
-    public void setgetClusteringInformation(PartitionDatabaseMeta[] clusterInfo)
+    public void setPartitioningInformation(PartitionDatabaseMeta[] partitionInfo)
     {
-        databaseInterface.setPartitioningInformation(clusterInfo);
+        databaseInterface.setPartitioningInformation(partitionInfo);
     }
     
     private PartitionDatabaseMeta getPartitionMeta(String partitionId)
     {
-        PartitionDatabaseMeta[] clusterInfo = getClusterInformation();
-        for (int i=0;i<clusterInfo.length;i++)
+        PartitionDatabaseMeta[] partitionInfo = getPartitioningInformation();
+        for (int i=0;i<partitionInfo.length;i++)
         {
-            if (clusterInfo[i].getPartitionId().equals(partitionId)) return clusterInfo[i];
+            if (partitionInfo[i].getPartitionId().equals(partitionId)) return partitionInfo[i];
         }
         return null;
     }

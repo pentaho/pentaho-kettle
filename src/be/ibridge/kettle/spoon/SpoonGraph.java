@@ -1328,8 +1328,7 @@ public class SpoonGraph extends Canvas implements Redrawable
 
             
             /*
-             * 
-             * Check...
+             * Mappings...
              */
             MenuItem miMapping = new MenuItem(mPop, SWT.NONE);
             miMapping.setText(Messages.getString("SpoonGraph.PopupMenu.GenerateMappingToThisStep")); //$NON-NLS-1$
@@ -1338,6 +1337,19 @@ public class SpoonGraph extends Canvas implements Redrawable
                 public void widgetSelected(SelectionEvent e)
                 {
                     spoon.generateMapping(stepMeta);
+                }
+            });
+
+            /*
+             * Partitioning...
+             */
+            MenuItem miPartition = new MenuItem(mPop, SWT.NONE);
+            miPartition.setText(Messages.getString("SpoonGraph.PopupMenu.Partitioning")); //$NON-NLS-1$
+            miPartition.addSelectionListener(new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent e)
+                {
+                    spoon.editPartitioning(stepMeta);
                 }
             });
 

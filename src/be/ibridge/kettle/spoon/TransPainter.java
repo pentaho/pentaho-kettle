@@ -20,6 +20,7 @@ import be.ibridge.kettle.trans.TransHopMeta;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.StepPartitioningMeta;
 
 public class TransPainter
 {
@@ -336,6 +337,20 @@ public class TransPainter
         gc.setForeground(black);
         gc.drawText(name, namePosition.x, namePosition.y, SWT.DRAW_TRANSPARENT);
 
+        if (stepMeta.isPartitioned())
+        {
+            StepPartitioningMeta meta = stepMeta.getStepPartitioningMeta();
+            String message = "P";
+            if ( !Const.isEmpty(meta.getFieldName()) )
+            {
+                message+="("+meta.getFieldName()+")";
+            }
+            
+            gc.setBackground(background);
+            gc.setForeground(black);
+            gc.drawText(message, screen.x - 12, screen.y - 12);
+        }
+        else
         if (stepMeta.getCopies() > 1)
         {
             gc.setBackground(background);

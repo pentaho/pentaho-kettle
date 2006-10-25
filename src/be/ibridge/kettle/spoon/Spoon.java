@@ -99,6 +99,8 @@ import be.ibridge.kettle.core.dialog.DatabaseExplorerDialog;
 import be.ibridge.kettle.core.dialog.EnterMappingDialog;
 import be.ibridge.kettle.core.dialog.EnterOptionsDialog;
 import be.ibridge.kettle.core.dialog.EnterSearchDialog;
+import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
+import be.ibridge.kettle.core.dialog.EnterStringDialog;
 import be.ibridge.kettle.core.dialog.EnterStringsDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
@@ -146,6 +148,7 @@ import be.ibridge.kettle.trans.step.BaseStep;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.StepPartitioningMeta;
 import be.ibridge.kettle.trans.step.selectvalues.SelectValuesMeta;
 import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
 import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
@@ -1759,7 +1762,7 @@ public class Spoon implements AddUndoPositionInterface
             String newname = con.open(); 
             if (!Const.isEmpty(newname))  // null: CANCEL
             {                
-                newname = db.verifyAndModifyDatabaseName(transMeta.getDatabases(), name);
+                // newname = db.verifyAndModifyDatabaseName(transMeta.getDatabases(), name);
                 
                 // Store undo/redo information
                 DatabaseMeta after = (DatabaseMeta)db.clone();
@@ -4821,6 +4824,32 @@ public class Spoon implements AddUndoPositionInterface
         catch(KettleException e)
         {
             new ErrorDialog(shell, "Error creating mapping", "There was an error when Kettle tried to generate a mapping against the target step", e);
+        }
+    }
+
+    public void editPartitioning(StepMeta stepMeta)
+    {
+        StepPartitioningMeta partitioningMeta = stepMeta.getStepPartitioningMeta();
+        if (partitioningMeta==null) partitioningMeta = new StepPartitioningMeta();
+        
+        String[] options = StepPartitioningMeta.methodDescriptions;
+        EnterSelectionDialog dialog = new EnterSelectionDialog(shell, props, options, "Partioning method", "Select the partitioning method");
+        String methodDescription = dialog.open(partitioningMeta.getMethod());
+        if (methodDescription!=null)
+        {
+            int method = StepPartitioningMeta.getMethod(methodDescription);
+            partitioningMeta.setMethod(method);
+            switch(method)
+            {
+            case StepPartitioningMeta.PARTITIONING_METHOD_NONE:  break;
+            case StepPartitioningMeta.PARTITIONING_METHOD_MOD:
+                // ask for a fieldname
+                EnterStringDialog stringDialog = new EnterStringDialog(shell, props, Const.NVL(partitioningMeta.getFieldName(), ""), "Fieldname", "Enter a field name to partition on");
+                String fieldName = stringDialog.open();
+                partitioningMeta.setFieldName(fieldName);
+                break;
+            }
+            refreshGraph();
         }
     }
     

@@ -1158,8 +1158,8 @@ public class DatabaseDialog extends Dialog
     private void getClusterData()
     {
         // The clustering information
-        wUseCluster.setSelection( connection.isClustered() );
-        PartitionDatabaseMeta[] clusterInformation = connection.getClusterInformation();
+        wUseCluster.setSelection( connection.isPartitioned() );
+        PartitionDatabaseMeta[] clusterInformation = connection.getPartitioningInformation();
         for (int i = 0; i < clusterInformation.length; i++)
         {
             PartitionDatabaseMeta meta = clusterInformation[i];
@@ -1427,7 +1427,7 @@ public class DatabaseDialog extends Dialog
         databaseMeta.setMaximumPoolSize(Const.toInt( wMaxPool.getText(), ConnectionPoolUtil.defaultMaximumNrOfConnections) );
         
         // Now grab the clustering information...
-        databaseMeta.setClustered( wUseCluster.getSelection() );
+        databaseMeta.setPartitioned( wUseCluster.getSelection() );
         PartitionDatabaseMeta[] clusterInfo = new PartitionDatabaseMeta[wCluster.nrNonEmpty()];
         for (int i=0;i<clusterInfo.length;i++)
         {
@@ -1438,7 +1438,7 @@ public class DatabaseDialog extends Dialog
             String dbName      = tableItem.getText(4);
             clusterInfo[i] = new PartitionDatabaseMeta(partitionId, hostname, port, dbName);
         }
-        databaseMeta.setgetClusteringInformation(clusterInfo);
+        databaseMeta.setPartitioningInformation(clusterInfo);
 	}
 	
     /**
@@ -1494,28 +1494,28 @@ public class DatabaseDialog extends Dialog
             StringBuffer report = new StringBuffer();
             
 			Database db = new Database(dbinfo);
-            if (dbinfo.isClustered())
+            if (dbinfo.isPartitioned())
             {
-                PartitionDatabaseMeta[] clusterInformation = dbinfo.getClusterInformation();
-                for (int i=0;i<clusterInformation.length;i++)
+                PartitionDatabaseMeta[] partitioningInformation = dbinfo.getPartitioningInformation();
+                for (int i=0;i<partitioningInformation.length;i++)
                 {
                     try
                     {
-                        db.connect(clusterInformation[i].getPartitionId());
-                        report.append("Connection to database ["+dbinfo.getName()+"] with partition id ["+clusterInformation[i].getPartitionId()+"] is OK."+Const.CR);
+                        db.connect(partitioningInformation[i].getPartitionId());
+                        report.append("Connection to database ["+dbinfo.getName()+"] with partition id ["+partitioningInformation[i].getPartitionId()+"] is OK."+Const.CR);
                     }
                     catch (KettleException e)
                     {
-                        report.append("Error connecting to database ["+dbinfo.getName()+"] with partition id ["+clusterInformation[i].getPartitionId()+"] : "+e.toString()+Const.CR);
+                        report.append("Error connecting to database ["+dbinfo.getName()+"] with partition id ["+partitioningInformation[i].getPartitionId()+"] : "+e.toString()+Const.CR);
                         report.append(Const.getStackTracker(e)+Const.CR);
                     }
                     finally
                     {
                         db.disconnect();
                     }
-                    report.append("   Hostname       : "+clusterInformation[i].getHostname()+Const.CR);
-                    report.append("   Port           : "+clusterInformation[i].getPort()+Const.CR);
-                    report.append("   Database name  : "+clusterInformation[i].getDatabaseName()+Const.CR);
+                    report.append("   Hostname       : "+partitioningInformation[i].getHostname()+Const.CR);
+                    report.append("   Port           : "+partitioningInformation[i].getPort()+Const.CR);
+                    report.append("   Database name  : "+partitioningInformation[i].getDatabaseName()+Const.CR);
                     report.append(Const.CR);
                 }
             }

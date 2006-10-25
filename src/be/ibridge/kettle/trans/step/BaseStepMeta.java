@@ -136,8 +136,7 @@ public class BaseStepMeta implements Cloneable
 	 * 
 	 * @return The fields that are being put out by this step.
 	 */
-	public Row getFields(Row r, String name, Row info)
-		throws KettleStepException
+	public Row getFields(Row r, String name, Row info) throws KettleStepException
 	{
 		Row row;
 		if (r==null) row=new Row(); // give back values
@@ -159,8 +158,7 @@ public class BaseStepMeta implements Cloneable
 	 * @param output The names of the output-steps
 	 * @param info Row containing meta-data for the informative (lookup) steps.
 	 */
-	public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepMeta, Row prev, String input[], String output[], Row info)
-		throws KettleStepException
+	public void analyseImpact(ArrayList impact, TransMeta transMeta, StepMeta stepMeta, Row prev, String input[], String output[], Row info) throws KettleStepException
 	{
 		// default: this step has NO impact on any database
 	}
@@ -233,4 +231,15 @@ public class BaseStepMeta implements Cloneable
     {
         return new DatabaseMeta[] { };
     }
+    
+    /**
+     * @return Return the partitions to use, can come from the transformation metadata or from the database metadata
+     * <br>This depends obviously on the step and the use, flags etc.
+     * <p>Default: returns null
+     */
+    public String[] getPartitionIDs()
+    {
+        return null;
+    }
+
 }

@@ -198,4 +198,8 @@ public interface StepInterface
      */
     public List getOutputRowSets();
 
+    /**
+     * @param partitionID the partitionID to set
+     */
+    public void setPartitionID(String partitionID);
 }

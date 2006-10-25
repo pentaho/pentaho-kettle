@@ -240,7 +240,7 @@ public class TableInput extends BaseStep implements StepInterface
 
 			try
 			{
-				data.db.connect();
+				data.db.connect(getPartitionID()); // Connect to the right partition
                 if (meta.getDatabaseMeta().getDatabaseType()!=DatabaseMeta.TYPE_DATABASE_SYBASE)
                 {
                     data.db.setCommit(100); // needed for PGSQL it seems...

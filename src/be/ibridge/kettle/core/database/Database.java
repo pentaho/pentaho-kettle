@@ -272,7 +272,7 @@ public class Database
 		{
             String url;
             
-            if (databaseMeta.isClustered() && !Const.isEmpty(partitionId))
+            if (databaseMeta.isPartitioned() && !Const.isEmpty(partitionId))
             {
                 url = StringUtil.environmentSubstitute(databaseMeta.getURL(partitionId));
             }

@@ -55,22 +55,26 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 	private String        description;
 	private boolean       terminator;
 	
+    private StepPartitioningMeta stepPartitioningMeta;
+    
 	private LogWriter log;
 		
 	private long id;
 
-	public StepMeta(LogWriter l, String stepid, String name, StepMetaInterface info)
+	public StepMeta(LogWriter log, String stepid, String stepname, StepMetaInterface stepMetaInterface)
 	{
-		log=l;
-		this.stepid = stepid;
-		stepname    = name;
-		stepMetaInterface    = info;
+		this.log               = log;
+		this.stepid            = stepid;
+		this.stepname          = stepname;
+		this.stepMetaInterface = stepMetaInterface;
+        
 		selected    = false;
 		distributes  = true;
 		copies      = 1;
 		location    = new Point(0,0);
 		drawstep    = false;
 		description = null;
+        stepPartitioningMeta = new StepPartitioningMeta();
 	}
 		
 	public StepMeta(LogWriter log)
@@ -80,25 +84,26 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 
 	public String getXML()
 	{
-		String retval=""; //$NON-NLS-1$
+		StringBuffer retval=new StringBuffer(); //$NON-NLS-1$
 		
-		retval+="  <step>"+Const.CR; //$NON-NLS-1$
-		retval+="    "+XMLHandler.addTagValue("name",        getName()); //$NON-NLS-1$ //$NON-NLS-2$
-		retval+="    "+XMLHandler.addTagValue("type",        getStepID()); //$NON-NLS-1$ //$NON-NLS-2$
-		retval+="    "+XMLHandler.addTagValue("description", description); //$NON-NLS-1$ //$NON-NLS-2$
-		retval+="    "+XMLHandler.addTagValue("distribute",  distributes); //$NON-NLS-1$ //$NON-NLS-2$
-		retval+="    "+XMLHandler.addTagValue("copies",      copies); //$NON-NLS-1$ //$NON-NLS-2$
-
-		retval+=stepMetaInterface.getXML();
+		retval.append("  <step>"+Const.CR); //$NON-NLS-1$
+		retval.append("    "+XMLHandler.addTagValue("name",        getName()) ); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("type",        getStepID()) ); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("description", description) ); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("distribute",  distributes) ); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("    "+XMLHandler.addTagValue("copies",      copies) ); //$NON-NLS-1$ //$NON-NLS-2$
+        
+        retval.append( stepPartitioningMeta.getXML() );
+		retval.append( stepMetaInterface.getXML() );
 			
-		retval+="    <GUI>"+Const.CR; //$NON-NLS-1$
-		retval+="      <xloc>"+location.x+"</xloc>"+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
-		retval+="      <yloc>"+location.y+"</yloc>"+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
-		retval+="      <draw>"+(drawstep?"Y":"N")+"</draw>"+Const.CR; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		retval+="      </GUI>"+Const.CR; //$NON-NLS-1$
-		retval+="    </step>"+Const.CR+Const.CR; //$NON-NLS-1$
+		retval.append("    <GUI>"+Const.CR); //$NON-NLS-1$
+		retval.append("      <xloc>"+location.x+"</xloc>"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      <yloc>"+location.y+"</yloc>"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
+		retval.append("      <draw>"+(drawstep?"Y":"N")+"</draw>"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+		retval.append("      </GUI>"+Const.CR); //$NON-NLS-1$
+		retval.append("    </step>"+Const.CR+Const.CR); //$NON-NLS-1$
 		
-		return retval;
+		return retval.toString();
 	}
 
 	/**
@@ -109,10 +114,9 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 	 * @param counters A hashtable with all defined counters.
 	 * 
 	 */
-	public StepMeta(LogWriter log, Node stepnode, ArrayList databases, Hashtable counters)
-		throws KettleXMLException
+	public StepMeta(LogWriter log, Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
 	{
-		this.log = log;
+        this(log);
 		StepLoader steploader = StepLoader.getInstance();
 
 		try
@@ -157,6 +161,11 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 			location=new Point(x,y);
 			
 			drawstep = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "GUI", "draw")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            
+            // The partitioning information?
+            Node partNode = XMLHandler.getSubNode(stepnode, "partitioning");
+            stepPartitioningMeta = new StepPartitioningMeta(partNode);
+            
 	
 			log.logDebug("StepMeta()", Messages.getString("StepMeta.Log.EndOfReadXML")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
@@ -371,15 +380,13 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 
 
 	// Load from repository
-	public StepMeta(LogWriter log, Repository rep, long id_step, ArrayList databases, Hashtable counters)
-		throws KettleException
+	public StepMeta(LogWriter log, Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
 	{
-		this.log = log;
-		
+        this(log);
+        StepLoader steploader = StepLoader.getInstance();
+
 		try
 		{
-			StepLoader steploader = StepLoader.getInstance();
-
 			Row r = rep.getStep(id_step);
 			if (r!=null)
 			{
@@ -493,5 +500,29 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 		if (getName()==null) return getClass().getName();
 		return getName();
 	}
+    
 
+    /**
+     * @return true is the step is partitioned
+     */
+    public boolean isPartitioned()
+    {
+        return stepPartitioningMeta.isPartitioned();
+    }
+    
+    /**
+     * @return the stepPartitioningMeta
+     */
+    public StepPartitioningMeta getStepPartitioningMeta()
+    {
+        return stepPartitioningMeta;
+    }
+
+    /**
+     * @param stepPartitioningMeta the stepPartitioningMeta to set
+     */
+    public void setStepPartitioningMeta(StepPartitioningMeta stepPartitioningMeta)
+    {
+        this.stepPartitioningMeta = stepPartitioningMeta;
+    }
 }

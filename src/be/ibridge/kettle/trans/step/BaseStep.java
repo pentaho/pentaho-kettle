@@ -379,6 +379,11 @@ public class BaseStep extends Thread
     private Row     referenceRow;
 
     
+    /**
+     * The partition ID at which this step copy runs, or null if this step is not running partitioned.
+     */
+    private String  partitionID;
+    
 	/**
 	 * This is the base step that forms that basis for all steps.  You can derive from this class to implement your own steps.
 	 * 
@@ -1601,4 +1606,24 @@ public class BaseStep extends Thread
         }
         return StepDataInterface.STATUS_EMPTY;
     }
+
+    /**
+     * @return the partitionID
+     */
+    public String getPartitionID()
+    {
+        return partitionID;
+    }
+
+    /**
+     * @param partitionID the partitionID to set
+     */
+    public void setPartitionID(String partitionID)
+    {
+        this.partitionID = partitionID;
+    }
+    
+    
+    
+
 }

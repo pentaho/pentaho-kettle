@@ -210,7 +210,6 @@ public class Trans
     {
 		RowSet    rs;
 		int    nroutput;
-		int    nrcopies;
 		int    prevcopies;
 		int    nextcopies;
 
@@ -281,15 +280,27 @@ public class Trans
 				// What's the next step?
 				StepMeta nsi = transMeta.findNextStep(stepMeta, n);
 
-				// How many times do we start the target step?
-				nextcopies=nsi.getCopies();
+                // If the step is partitioned, that's going to determine the number of copies, nothing else...
+                if (stepMeta.isPartitioned())
+                {
+                    String[] partitionIDs = stepMeta.getStepMetaInterface().getPartitionIDs();
+                    if (partitionIDs!=null && partitionIDs.length>0) // yeah, the database is partitioned too!
+                    {
+                        stepMeta.setCopies(partitionIDs.length);
+                    }
+                }
+
+                // How many times do we start the target step?
+                nextcopies=nsi.getCopies();
+                
 				prevcopies=stepMeta.getCopies();
+                int nrCopies;
 				log.logDetailed(toString(), Messages.getString("Trans.Log.copiesInfo",String.valueOf(prevcopies),String.valueOf(nextcopies))); //$NON-NLS-1$ //$NON-NLS-2$
 				int disptype;
-				     if (prevcopies==1 && nextcopies==1) { disptype=TYPE_DISP_1_1; nrcopies = 1; }
-				else if (prevcopies==1 && nextcopies >1) { disptype=TYPE_DISP_1_N; nrcopies = nextcopies; }
-				else if (prevcopies >1 && nextcopies==1) { disptype=TYPE_DISP_N_1; nrcopies = prevcopies; }
-				else if (prevcopies==nextcopies)         { disptype=TYPE_DISP_N_N; nrcopies = nextcopies; } // > 1!
+				     if (prevcopies==1 && nextcopies==1) { disptype=TYPE_DISP_1_1; nrCopies = 1; }
+				else if (prevcopies==1 && nextcopies >1) { disptype=TYPE_DISP_1_N; nrCopies = nextcopies; }
+				else if (prevcopies >1 && nextcopies==1) { disptype=TYPE_DISP_N_1; nrCopies = prevcopies; }
+				else if (prevcopies==nextcopies)         { disptype=TYPE_DISP_N_N; nrCopies = nextcopies; } // > 1!
 				else
 				{
 					log.logError(toString(), Messages.getString("Trans.Log.AllowedRelationships")); //$NON-NLS-1$
@@ -299,7 +310,7 @@ public class Trans
 
 				// At least run once...
 				//
-				for (int c=0;c<nrcopies;c++)
+				for (int c=0;c<nrCopies;c++)
 				{
 					rs=new RowSet(transMeta.getSizeRowset());
 					switch(disptype)
@@ -327,12 +338,12 @@ public class Trans
 			log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationIsToAllocateStep",stepMeta.getName(),stepid)); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
 			// How many copies are launched of this step?
-			nrcopies=stepMeta.getCopies();
+			int nrCopies=stepMeta.getCopies();
 
-            if (log.isDebug()) log.logDebug(toString(), Messages.getString("Trans.Log.StepHasNumberRowCopies",String.valueOf(nrcopies))); //$NON-NLS-1$
+            if (log.isDebug()) log.logDebug(toString(), Messages.getString("Trans.Log.StepHasNumberRowCopies",String.valueOf(nrCopies))); //$NON-NLS-1$
 
 			// At least run once...
-			for (int c=0;c<nrcopies;c++)
+			for (int c=0;c<nrCopies;c++)
 			{
 				// Make sure we haven't started it yet!
 				if (!hasStepStarted(stepMeta.getName(), c))
@@ -351,6 +362,16 @@ public class Trans
 
 					// Allocate the step
 					StepInterface step=combi.meta.getStep(stepMeta, data, c, transMeta, this);
+                    
+                    // If the step is partitioned, that's going to determine the number of copies, nothing else...
+                    if (stepMeta.isPartitioned())
+                    {
+                        String[] partitionIDs = stepMeta.getStepMetaInterface().getPartitionIDs();
+                        if (partitionIDs!=null && partitionIDs.length>0) 
+                        {
+                            step.setPartitionID(partitionIDs[c]); // Pass the partition ID to the step
+                        }
+                    }
 
 					// Possibly, enable safe mode in the steps...
 					((BaseStep)step).setSafeModeEnabled(safeModeEnabled);

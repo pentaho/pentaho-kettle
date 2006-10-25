@@ -635,14 +635,14 @@ public interface DatabaseInterface extends Cloneable
     
 
     /**
-     * @return true if the connection contains clustering information
+     * @return true if the connection contains partitioning information
      */
-    public boolean isClustered();
+    public boolean isPartitioned();
     
     /**
-     * @param clustered true if the connection is set to contain clustering information
+     * @param partitioned true if the connection is set to contain partitioning information
      */
-    public void setClustered(boolean clustered);
+    public void setPartitioned(boolean partitioned);
     
     /**
      * @return the available partition/host/databases/port combinations in the cluster
@@ -650,7 +650,7 @@ public interface DatabaseInterface extends Cloneable
     public PartitionDatabaseMeta[] getPartitioningInformation();
     
     /**
-     * @param clusterInfo the available partition/host/databases/port combinations in the cluster
+     * @param partitionInfo the available partition/host/databases/port combinations in the cluster
      */
-    public void setPartitioningInformation(PartitionDatabaseMeta[] clusterInfo);
+    public void setPartitioningInformation(PartitionDatabaseMeta[] partitionInfo);
 }

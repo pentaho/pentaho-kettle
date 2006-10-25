@@ -971,7 +971,7 @@ public abstract class BaseDatabaseMeta implements Cloneable
     /**
      * @return true if we want to use a database connection pool
      */
-    public boolean isClustered()
+    public boolean isPartitioned()
     {
         String isClustered = attributes.getProperty(ATTRIBUTE_IS_CLUSTERED);
         return "Y".equalsIgnoreCase(isClustered);
@@ -980,7 +980,7 @@ public abstract class BaseDatabaseMeta implements Cloneable
     /**
      * @param usePool true if we want to use a database connection pool
      */
-    public void setClustered(boolean clustered)
+    public void setPartitioned(boolean clustered)
     {
         attributes.setProperty(ATTRIBUTE_IS_CLUSTERED, clustered?"Y":"N");
     }
