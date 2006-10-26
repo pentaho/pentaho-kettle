@@ -506,6 +506,10 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                     result.clear();
                 }
                 result.add(oneResult);
+                if (oneResult.getResult()==false) // if one of them fails, set the number of errors
+                {
+                    result.setNrErrors(result.getNrErrors()+1);
+                }
     
                 iteration++;
             }
