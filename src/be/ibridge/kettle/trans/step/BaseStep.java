@@ -335,8 +335,8 @@ public class BaseStep extends Thread
 	private boolean  distributed;
 	private long     errors;
 	
-	private StepMeta    next[];
-	private StepMeta    prev[];
+	private StepMeta    nextSteps[];
+	private StepMeta    prevSteps[];
 	private int         in_handling, out_handling;
 	public  ArrayList   thr;
     
@@ -466,7 +466,7 @@ public class BaseStep extends Thread
 		
 		inputRowSets=null;
 		outputRowSets=null;
-		next=null;
+		nextSteps=null;
 		
 		terminator      = stepMeta.hasTerminator();
 		if (terminator)
@@ -1317,12 +1317,6 @@ public class BaseStep extends Thread
 	 */
 	public void dispatch()
 	{
-		int i,c;
-		RowSet rs;
-		int nrinput, nroutput;
-		int nrcopies, prevcopies, nextcopies;
-		int disptype;
-        
         if (transMeta==null) // for preview reasons, no dispatching is done!
         {
             return;
@@ -1334,54 +1328,52 @@ public class BaseStep extends Thread
 		
 		// How many next steps are there? 0, 1 or more??
 		// How many steps do we send output to?
-		nrinput  = transMeta.findNrPrevSteps(stepMeta, true);
-		nroutput = transMeta.findNrNextSteps(stepMeta);
+		int nrInput  = transMeta.findNrPrevSteps(stepMeta, true);
+		int nrOutput = transMeta.findNrNextSteps(stepMeta);
 		
 		inputRowSets   = new ArrayList(); // new RowSet[nrinput];
 		outputRowSets  = new ArrayList(); // new RowSet[nroutput+out_copies];
-		prev    = new StepMeta[nrinput];
-		next    = new StepMeta[nroutput];
+		prevSteps      = new StepMeta[nrInput];
+		nextSteps      = new StepMeta[nrOutput];
 
 		in_handling = 0;  // we start with input[0];
 
-		logDetailed(Messages.getString("BaseStep.Log.StepInfo",String.valueOf(nrinput),String.valueOf(nroutput))); //$NON-NLS-1$ //$NON-NLS-2$
+		logDetailed(Messages.getString("BaseStep.Log.StepInfo",String.valueOf(nrInput),String.valueOf(nrOutput))); //$NON-NLS-1$ //$NON-NLS-2$
 				
-		for (i=0;i<nrinput;i++)
+        for (int i=0;i<nrInput;i++)
 		{
-			prev[i]=transMeta.findPrevStep(stepMeta, i, true); // sir.getHopFromWithTo(stepname, i);
-			logDetailed(Messages.getString("BaseStep.Log.GotPreviousStep",stepname,String.valueOf(i),prev[i].getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+			prevSteps[i]=transMeta.findPrevStep(stepMeta, i, true); // sir.getHopFromWithTo(stepname, i);
+			logDetailed(Messages.getString("BaseStep.Log.GotPreviousStep",stepname,String.valueOf(i),prevSteps[i].getName())); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 			
 			// Looking at the previous step, you can have either 1 rowset to look at or more then one.
-			prevcopies = prev[i].getCopies();
-			nextcopies = stepMeta.getCopies(); 
-			logDetailed(Messages.getString("BaseStep.Log.InputRowInfo",String.valueOf(prevcopies),String.valueOf(nextcopies))); //$NON-NLS-1$ //$NON-NLS-2$
+			int prevCopies = prevSteps[i].getCopies();
+			int nextCopies = stepMeta.getCopies(); 
+			logDetailed(Messages.getString("BaseStep.Log.InputRowInfo",String.valueOf(prevCopies),String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
 	
-			if      (prevcopies==1 && nextcopies==1) { disptype=Trans.TYPE_DISP_1_1; nrcopies = 1; } 
-			else if (prevcopies==1 && nextcopies >1) { disptype=Trans.TYPE_DISP_1_N; nrcopies = 1; } 
-			else if (prevcopies >1 && nextcopies==1) { disptype=Trans.TYPE_DISP_N_1; nrcopies = prevcopies; } 
-			else if (prevcopies==nextcopies)         { disptype=Trans.TYPE_DISP_N_N; nrcopies = 1; } // > 1!
-			else 
+            int nrCopies;
+            int dispatchType;
+            
+			if      (prevCopies==1 && nextCopies==1) { dispatchType=Trans.TYPE_DISP_1_1; nrCopies = 1; } 
+			else if (prevCopies==1 && nextCopies >1) { dispatchType=Trans.TYPE_DISP_1_N; nrCopies = 1; } 
+			else if (prevCopies >1 && nextCopies==1) { dispatchType=Trans.TYPE_DISP_N_1; nrCopies = prevCopies; } 
+			else if (prevCopies==nextCopies)         { dispatchType=Trans.TYPE_DISP_N_N; nrCopies = 1; } // > 1!
+			else                                     { dispatchType=Trans.TYPE_DISP_N_M; nrCopies = prevCopies; }
+
+			for (int c=0;c<nrCopies;c++)
 			{
-				log.logError(toString(), Messages.getString("BaseStep.Log.AllowedRelationships")); //$NON-NLS-1$
-				log.logError(toString(), Messages.getString("BaseStep.Log.XYRelationshipsNotAllowed")); //$NON-NLS-1$
-				setErrors(1);
-				stopAll();
-				return;
-			}
-			for (c=0;c<nrcopies;c++)
-			{
-				rs=null;
-				switch(disptype)
+				RowSet rowSet=null;
+				switch(dispatchType)
 				{
-				case Trans.TYPE_DISP_1_1: rs=trans.findRowSet(prev[i].getName(),         0, stepname, 0        ); break;
-				case Trans.TYPE_DISP_1_N: rs=trans.findRowSet(prev[i].getName(),         0, stepname, getCopy()); break;
-				case Trans.TYPE_DISP_N_1: rs=trans.findRowSet(prev[i].getName(),         c, stepname, 0        ); break;
-				case Trans.TYPE_DISP_N_N: rs=trans.findRowSet(prev[i].getName(), getCopy(), stepname, getCopy()); break;
+				case Trans.TYPE_DISP_1_1: rowSet=trans.findRowSet(prevSteps[i].getName(),         0, stepname, 0        ); break;
+				case Trans.TYPE_DISP_1_N: rowSet=trans.findRowSet(prevSteps[i].getName(),         0, stepname, getCopy()); break;
+				case Trans.TYPE_DISP_N_1: rowSet=trans.findRowSet(prevSteps[i].getName(),         c, stepname, 0        ); break;
+				case Trans.TYPE_DISP_N_N: rowSet=trans.findRowSet(prevSteps[i].getName(), getCopy(), stepname, getCopy()); break;
+                case Trans.TYPE_DISP_N_M: rowSet=trans.findRowSet(prevSteps[i].getName(),         c, stepname, getCopy()); break;
 				}
-				if (rs!=null) 
+				if (rowSet!=null) 
 				{
-					inputRowSets.add(rs);
-					logDetailed(Messages.getString("BaseStep.Log.FoundInputRowset",rs.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+					inputRowSets.add(rowSet);
+					logDetailed(Messages.getString("BaseStep.Log.FoundInputRowset",rowSet.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 				} 
 				else
 				{
@@ -1393,41 +1385,39 @@ public class BaseStep extends Thread
 			}
 		}
 		// And now the output part!
-		for (i=0;i<nroutput;i++)
+		for (int i=0;i<nrOutput;i++)
 		{
-			next[i]= transMeta.findNextStep(stepMeta, i);
+			nextSteps[i]= transMeta.findNextStep(stepMeta, i);
 			
-			prevcopies = stepMeta.getCopies();
-			nextcopies = next[i].getCopies();
+			int prevCopies = stepMeta.getCopies();
+			int nextCopies = nextSteps[i].getCopies();
 
-			logDetailed(Messages.getString("BaseStep.Log.OutputRowInfo",String.valueOf(prevcopies),String.valueOf(nextcopies))); //$NON-NLS-1$ //$NON-NLS-2$
+			logDetailed(Messages.getString("BaseStep.Log.OutputRowInfo",String.valueOf(prevCopies),String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
 
-			if      (prevcopies==1 && nextcopies==1) { disptype=Trans.TYPE_DISP_1_1; nrcopies = 1;          } 
-			else if (prevcopies==1 && nextcopies >1) { disptype=Trans.TYPE_DISP_1_N; nrcopies = nextcopies; } 
-			else if (prevcopies >1 && nextcopies==1) { disptype=Trans.TYPE_DISP_N_1; nrcopies = 1;          } 
-			else if (prevcopies==nextcopies)         { disptype=Trans.TYPE_DISP_N_N; nrcopies = 1;          } // > 1!
-			else 
+            int nrCopies;
+            int dispatchType;
+            
+			if      (prevCopies==1 && nextCopies==1) { dispatchType=Trans.TYPE_DISP_1_1; nrCopies = 1;          } 
+			else if (prevCopies==1 && nextCopies >1) { dispatchType=Trans.TYPE_DISP_1_N; nrCopies = nextCopies; } 
+			else if (prevCopies >1 && nextCopies==1) { dispatchType=Trans.TYPE_DISP_N_1; nrCopies = 1;          } 
+			else if (prevCopies==nextCopies)         { dispatchType=Trans.TYPE_DISP_N_N; nrCopies = 1;          } // > 1!
+            else                                     { dispatchType=Trans.TYPE_DISP_N_M; nrCopies = nextCopies; }
+
+            for (int c=0;c<nrCopies;c++)
 			{
-				log.logError(toString(), Messages.getString("BaseStep.Log.AllowedRelationships")); //$NON-NLS-1$
-				log.logError(toString(), Messages.getString("BaseStep.Log.XYRelationshipsNotAllowed")); //$NON-NLS-1$
-				setErrors(1);
-				stopAll();
-				return;
-			}
-			for (c=0;c<nrcopies;c++)
-			{
-				rs=null;
-				switch(disptype)
+				RowSet rowSet=null;
+				switch(dispatchType)
 				{
-				case Trans.TYPE_DISP_1_1: rs=trans.findRowSet(stepname,         0, next[i].getName(),         0); break;
-				case Trans.TYPE_DISP_1_N: rs=trans.findRowSet(stepname,         0, next[i].getName(),         c); break;
-				case Trans.TYPE_DISP_N_1: rs=trans.findRowSet(stepname, getCopy(), next[i].getName(),         0); break;
-				case Trans.TYPE_DISP_N_N: rs=trans.findRowSet(stepname, getCopy(), next[i].getName(), getCopy()); break;
+				case Trans.TYPE_DISP_1_1: rowSet=trans.findRowSet(stepname,         0, nextSteps[i].getName(),         0); break;
+				case Trans.TYPE_DISP_1_N: rowSet=trans.findRowSet(stepname,         0, nextSteps[i].getName(),         c); break;
+				case Trans.TYPE_DISP_N_1: rowSet=trans.findRowSet(stepname, getCopy(), nextSteps[i].getName(),         0); break;
+				case Trans.TYPE_DISP_N_N: rowSet=trans.findRowSet(stepname, getCopy(), nextSteps[i].getName(), getCopy()); break;
+                case Trans.TYPE_DISP_N_M: rowSet=trans.findRowSet(stepname, getCopy(), nextSteps[i].getName(),         c); break;
 				}
-				if (rs!=null) 
+				if (rowSet!=null) 
 				{
-					outputRowSets.add(rs);
-					logDetailed(Messages.getString("BaseStep.Log.FoundOutputRowset",rs.getName())); //$NON-NLS-1$ //$NON-NLS-2$
+					outputRowSets.add(rowSet);
+					logDetailed(Messages.getString("BaseStep.Log.FoundOutputRowset",rowSet.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 				} 
 				else
 				{

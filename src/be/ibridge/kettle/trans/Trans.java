@@ -105,6 +105,7 @@ public class Trans
 	public final static int TYPE_DISP_1_N    = 2;
 	public final static int TYPE_DISP_N_1    = 3;
 	public final static int TYPE_DISP_N_N    = 4;
+    public final static int TYPE_DISP_N_M    = 5;
 
 	private String preview_steps[];
 	private int    preview_sizes[];
@@ -208,11 +209,6 @@ public class Trans
      */
     public boolean prepareExecution(String[] arguments)
     {
-		RowSet    rs;
-		int    nroutput;
-		int    thisCopies;
-		int    nextCopies;
-
 		startDate = null;
 
 		/*
@@ -273,48 +269,63 @@ public class Trans
 			StepMeta thisStep=(StepMeta)hopsteps.get(i);
 			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocateingRowsetsForStep",String.valueOf(i),thisStep.getName())); //$NON-NLS-1$ //$NON-NLS-2$
 
-			nroutput = transMeta.findNrNextSteps(thisStep);
+			int nrTargets = transMeta.findNrNextSteps(thisStep);
 
-			for (int n=0;n<nroutput;n++)
+			for (int n=0;n<nrTargets;n++)
 			{
 				// What's the next step?
 				StepMeta nextStep = transMeta.findNextStep(thisStep, n);
 
                 // How many times do we start the source step?
-                thisCopies=thisStep.getCopies();
+                int thisCopies = thisStep.getCopies();
 
                 // How many times do we start the target step?
-                nextCopies=nextStep.getCopies();
+                int nextCopies = nextStep.getCopies();
                 
                 int nrCopies;
 				log.logDetailed(toString(), Messages.getString("Trans.Log.copiesInfo",String.valueOf(thisCopies),String.valueOf(nextCopies))); //$NON-NLS-1$ //$NON-NLS-2$
-				int disptype;
-				     if (thisCopies==1 && nextCopies==1) { disptype=TYPE_DISP_1_1; nrCopies = 1; }
-				else if (thisCopies==1 && nextCopies >1) { disptype=TYPE_DISP_1_N; nrCopies = nextCopies; }
-				else if (thisCopies >1 && nextCopies==1) { disptype=TYPE_DISP_N_1; nrCopies = thisCopies; }
-				else if (thisCopies==nextCopies)         { disptype=TYPE_DISP_N_N; nrCopies = nextCopies; } // > 1!
-				else
-				{
-					log.logError(toString(), Messages.getString("Trans.Log.AllowedRelationships")); //$NON-NLS-1$
-					log.logError(toString(), Messages.getString("Trans.Log.CannotHaveXYRelationships")); //$NON-NLS-1$
-					return false;
-				}
+				int dispatchType;
+				     if (thisCopies==1 && nextCopies==1) { dispatchType=TYPE_DISP_1_1; nrCopies = 1; }
+				else if (thisCopies==1 && nextCopies >1) { dispatchType=TYPE_DISP_1_N; nrCopies = nextCopies; }
+				else if (thisCopies >1 && nextCopies==1) { dispatchType=TYPE_DISP_N_1; nrCopies = thisCopies; }
+				else if (thisCopies==nextCopies)         { dispatchType=TYPE_DISP_N_N; nrCopies = nextCopies; } // > 1!
+				else                                     { dispatchType=TYPE_DISP_N_M; nrCopies = nextCopies; } // Allocate a rowset for each destination step
 
-				// At least run once...
+				// Allocate the rowsets
 				//
-				for (int c=0;c<nrCopies;c++)
-				{
-					rs=new RowSet(transMeta.getSizeRowset());
-					switch(disptype)
-					{
-					case TYPE_DISP_1_1: rs.setThreadNameFromToCopy(thisStep.getName(), 0, nextStep.getName(), 0); break;
-					case TYPE_DISP_1_N: rs.setThreadNameFromToCopy(thisStep.getName(), 0, nextStep.getName(), c); break;
-					case TYPE_DISP_N_1: rs.setThreadNameFromToCopy(thisStep.getName(), c, nextStep.getName(), 0); break;
-					case TYPE_DISP_N_N: rs.setThreadNameFromToCopy(thisStep.getName(), c, nextStep.getName(), c); break;
-					}
-					rowsets.add(rs);
-					log.logDetailed(toString(), Messages.getString("Trans.TransformationAllocatedNewRowset",rs.toString())); //$NON-NLS-1$ //$NON-NLS-2$
-				}
+                if (dispatchType!=TYPE_DISP_N_M)
+                {
+    				for (int c=0;c<nrCopies;c++)
+    				{
+    					RowSet rowSet=new RowSet(transMeta.getSizeRowset());
+    					switch(dispatchType)
+    					{
+    					case TYPE_DISP_1_1: rowSet.setThreadNameFromToCopy(thisStep.getName(), 0, nextStep.getName(), 0); break;
+    					case TYPE_DISP_1_N: rowSet.setThreadNameFromToCopy(thisStep.getName(), 0, nextStep.getName(), c); break;
+    					case TYPE_DISP_N_1: rowSet.setThreadNameFromToCopy(thisStep.getName(), c, nextStep.getName(), 0); break;
+    					case TYPE_DISP_N_N: rowSet.setThreadNameFromToCopy(thisStep.getName(), c, nextStep.getName(), c); break;
+                        }
+    					rowsets.add(rowSet);
+    					if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.TransformationAllocatedNewRowset",rowSet.toString())); //$NON-NLS-1$ //$NON-NLS-2$
+    				}
+                }
+                else
+                {
+                    // For each N source steps we have M target steps
+                    //
+                    // From each input step we go to all output steps.
+                    // This allows maximum flexibility for re-partitioning, distribution...
+                    for (int s=0;s<thisCopies;s++)
+                    {
+                        for (int t=0;t<nextCopies;t++)
+                        {
+                            RowSet rowSet=new RowSet(transMeta.getSizeRowset());
+                            rowSet.setThreadNameFromToCopy(thisStep.getName(), s, nextStep.getName(), t);
+                            rowsets.add(rowSet);
+                            if (log.isDetailed()) log.logDetailed(toString(), Messages.getString("Trans.TransformationAllocatedNewRowset",rowSet.toString())); //$NON-NLS-1$ //$NON-NLS-2$
+                        }
+                    }
+                }
 			}
 			log.logDetailed(toString(), Messages.getString("Trans.Log.AllocatedRowsets",String.valueOf(rowsets.size()),String.valueOf(i),thisStep.getName())+" "); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		}
