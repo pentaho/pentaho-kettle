@@ -136,6 +136,7 @@ import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage1;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage2;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage3;
 import be.ibridge.kettle.trans.DatabaseImpact;
+import be.ibridge.kettle.trans.PartitionSchema;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
 import be.ibridge.kettle.trans.TransHopMeta;
@@ -4829,24 +4830,51 @@ public class Spoon implements AddUndoPositionInterface
 
     public void editPartitioning(StepMeta stepMeta)
     {
-        StepPartitioningMeta partitioningMeta = stepMeta.getStepPartitioningMeta();
-        if (partitioningMeta==null) partitioningMeta = new StepPartitioningMeta();
+        StepPartitioningMeta stepPartitioningMeta = stepMeta.getStepPartitioningMeta();
+        if (stepPartitioningMeta==null) stepPartitioningMeta = new StepPartitioningMeta();
         
         String[] options = StepPartitioningMeta.methodDescriptions;
         EnterSelectionDialog dialog = new EnterSelectionDialog(shell, props, options, "Partioning method", "Select the partitioning method");
-        String methodDescription = dialog.open(partitioningMeta.getMethod());
+        String methodDescription = dialog.open(stepPartitioningMeta.getMethod());
         if (methodDescription!=null)
         {
             int method = StepPartitioningMeta.getMethod(methodDescription);
-            partitioningMeta.setMethod(method);
+            stepPartitioningMeta.setMethod(method);
             switch(method)
             {
             case StepPartitioningMeta.PARTITIONING_METHOD_NONE:  break;
             case StepPartitioningMeta.PARTITIONING_METHOD_MOD:
                 // ask for a fieldname
-                EnterStringDialog stringDialog = new EnterStringDialog(shell, props, Const.NVL(partitioningMeta.getFieldName(), ""), "Fieldname", "Enter a field name to partition on");
+                EnterStringDialog stringDialog = new EnterStringDialog(shell, props, Const.NVL(stepPartitioningMeta.getFieldName(), ""), "Fieldname", "Enter a field name to partition on");
                 String fieldName = stringDialog.open();
-                partitioningMeta.setFieldName(fieldName);
+                stepPartitioningMeta.setFieldName(fieldName);
+
+                // Ask for a Partitioning Schema
+                String schemaNames[] = transMeta.getPartitionSchemasNames();
+                if (schemaNames.length==0)
+                {
+                    MessageBox box = new MessageBox(shell, SWT.ICON_ERROR | SWT.OK);
+                    box.setText("Create a partition schema");
+                    box.setMessage("You first need to create one or more partition schemas in the transformation settings dialog before you can select one!");
+                    box.open();
+                }
+                else
+                {
+                    // Set the partitioning schema too.
+                    PartitionSchema partitionSchema = stepPartitioningMeta.getPartitionSchema();
+                    int idx = -1;
+                    if (partitionSchema!=null)
+                    {
+                        idx = Const.indexOfString(partitionSchema.getName(), schemaNames);
+                    }
+                    EnterSelectionDialog askSchema = new EnterSelectionDialog(shell, props, schemaNames, "Select a partition schema", "Select the partition schema to use:");
+                    String schemaName = askSchema.open(idx);
+                    if (schemaName!=null)
+                    {
+                        idx = Const.indexOfString(schemaName, schemaNames);
+                        stepPartitioningMeta.setPartitionSchema((PartitionSchema) transMeta.getPartitionSchemas().get(idx));
+                    }
+                }
                 break;
             }
             refreshGraph();

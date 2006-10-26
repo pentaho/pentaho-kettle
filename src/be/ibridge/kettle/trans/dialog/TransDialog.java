@@ -21,6 +21,9 @@
 
 package be.ibridge.kettle.trans.dialog;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
 import org.eclipse.swt.custom.CTabFolder;
@@ -40,6 +43,7 @@ import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
@@ -55,7 +59,10 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
+import be.ibridge.kettle.core.database.PartitionDatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseDialog;
+import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
+import be.ibridge.kettle.core.dialog.EnterStringDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -63,6 +70,7 @@ import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.repository.dialog.SelectDirectoryDialog;
+import be.ibridge.kettle.trans.PartitionSchema;
 import be.ibridge.kettle.trans.TransDependency;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -79,91 +87,42 @@ public class TransDialog extends Dialog
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wTransTab, wLogTab, wDateTab, wDepTab, wPerfTab;
+	private CTabItem     wTransTab, wLogTab, wDateTab, wDepTab, wPerfTab, wPartTab;
 
-	private FormData     fdTransComp, fdLogComp, fdDateComp, fdDepComp, fdPerfComp;
-	
-	private Label        wlTransname;
 	private Text         wTransname;
-    private FormData     fdlTransname, fdTransname;
     
-    private Label        wlDirectory;
-	private Text         wDirectory;
+    private Text         wDirectory;
 	private Button       wbDirectory;
-    private FormData     fdlDirectory, fdbDirectory, fdDirectory;    
-
-	private Label        wlModUser;
+    
 	private Text         wModUser;
-	private FormData     fdlModUser, fdModUser;
-
-	private Label        wlModDate;
 	private Text         wModDate;
-	private FormData     fdlModDate, fdModDate;
-
-	private Label        wlReadStep;
 	private CCombo       wReadStep;
-	private FormData     fdlReadStep, fdReadStep;
-
-	private Label        wlInputStep;
 	private CCombo       wInputStep;
-	private FormData     fdlInputStep, fdInputStep;
-
-	private Label        wlWriteStep;
 	private CCombo       wWriteStep;
-	private FormData     fdlWriteStep, fdWriteStep;
-
-	private Label        wlOutputStep;
 	private CCombo       wOutputStep;
-	private FormData     fdlOutputStep, fdOutputStep;
-
-	private Label        wlUpdateStep;
 	private CCombo       wUpdateStep;
-	private FormData     fdlUpdateStep, fdUpdateStep;
 
-	private Label        wlLogconnection;
 	private Button       wbLogconnection;
 	private CCombo       wLogconnection;
-	private FormData     fdlLogconnection, fdbLogconnection, fdLogconnection;
-
-	private Label        wlLogtable;
 	private Text         wLogtable;
-	private FormData     fdlLogtable, fdLogtable;
-	
-	private Label        wlBatch;
 	private Button       wBatch;
-	private FormData     fdlBatch, fdBatch;
-
-	private Label        wlLogfield;
 	private Button       wLogfield;
-	private FormData     fdlLogfield, fdLogfield;
 
-	private Label        wlMaxdateconnection;
 	private CCombo       wMaxdateconnection;
-	private FormData     fdlMaxdateconnection, fdMaxdateconnection;
-
-	private Label        wlMaxdatetable;
 	private Text         wMaxdatetable;
-	private FormData     fdlMaxdatetable, fdMaxdatetable;
-
-	private Label        wlMaxdatefield;
 	private Text         wMaxdatefield;
-	private FormData     fdlMaxdatefield, fdMaxdatefield;
-
-	private Label        wlMaxdateoffset;
 	private Text         wMaxdateoffset;
-	private FormData     fdlMaxdateoffset, fdMaxdateoffset;
-
-	private Label        wlMaxdatediff;
 	private Text         wMaxdatediff;
-	private FormData     fdlMaxdatediff, fdMaxdatediff;
 	
-	private Label        wlFields;
 	private TableView    wFields;
-	private FormData     fdlFields, fdFields;
 
-	private Label        wlSizeRowset;
 	private Text         wSizeRowset;
-	private FormData     fdlSizeRowset, fdSizeRowset;
+
+    // Partitions tab
+    private List wSchemaList;
+    private TableView wPartitions;
+    private java.util.List schemas;
+    private Text wSchemaName;
 
 	private Button wOK, wGet, wSQL, wCancel;
 	private FormData fdGet;
@@ -179,17 +138,20 @@ public class TransDialog extends Dialog
 	private Repository rep;
 	private Props props;
 	private RepositoryDirectory newDirectory;
+
+    private int middle;
+
+    private int margin;
+
+    private String[] connectionNames;
+    private int      previousSchemaIndex;
+
+    private Button wGetPartitions;
 	
     /** @deprecated */
 	public TransDialog(Shell parent, int style, LogWriter log, Props props, TransMeta transMeta, Repository rep)
 	{
-		super(parent, style);
-		this.log      = log;
-		this.props    = props;
-		this.transMeta    = transMeta;
-		this.rep      = rep;
-		
-		this.newDirectory = null;
+		this(parent, style, transMeta, rep);
 	}
 
  
@@ -202,6 +164,13 @@ public class TransDialog extends Dialog
         this.rep      = rep;
         
         this.newDirectory = null;
+        
+        schemas = new ArrayList();
+        for (int i=0;i<transMeta.getPartitionSchemas().size();i++)
+        {
+            schemas.add( ((PartitionSchema)transMeta.getPartitionSchemas().get(i)).clone() );
+        }
+        previousSchemaIndex = -1;
     }
 
 
@@ -229,620 +198,19 @@ public class TransDialog extends Dialog
 		shell.setLayout(formLayout);
 		shell.setText(Messages.getString("TransDialog.Shell.Title")); //$NON-NLS-1$
 		
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+		middle = props.getMiddlePct();
+		margin = Const.MARGIN;
         
 		wTabFolder = new CTabFolder(shell, SWT.BORDER);
  		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
 
-		//////////////////////////
-		// START OF TRANS TAB///
-		///
-		wTransTab=new CTabItem(wTabFolder, SWT.NONE);
-		wTransTab.setText(Messages.getString("TransDialog.TransTab.Label")); //$NON-NLS-1$
-		
-		Composite wTransComp = new Composite(wTabFolder, SWT.NONE);
- 		props.setLook(wTransComp);
 
-		FormLayout transLayout = new FormLayout();
-		transLayout.marginWidth  = Const.MARGIN;
-		transLayout.marginHeight = Const.MARGIN;
-		wTransComp.setLayout(transLayout);
-
-
-		// Transformation name:
-		wlTransname=new Label(wTransComp, SWT.RIGHT);
-		wlTransname.setText(Messages.getString("TransDialog.Transname.Label")); //$NON-NLS-1$
- 		props.setLook(wlTransname);
-		fdlTransname=new FormData();
-		fdlTransname.left = new FormAttachment(0, 0);
-		fdlTransname.right= new FormAttachment(middle, -margin);
-		fdlTransname.top  = new FormAttachment(0, margin);
-		wlTransname.setLayoutData(fdlTransname);
-		wTransname=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wTransname);
-		wTransname.addModifyListener(lsMod);
-		fdTransname=new FormData();
-		fdTransname.left = new FormAttachment(middle, 0);
-		fdTransname.top  = new FormAttachment(0, margin);
-		fdTransname.right= new FormAttachment(100, 0);
-		wTransname.setLayoutData(fdTransname);
-		
-		// Directory:
-		wlDirectory=new Label(wTransComp, SWT.RIGHT);
-		wlDirectory.setText(Messages.getString("TransDialog.Directory.Label")); //$NON-NLS-1$
- 		props.setLook(wlDirectory);
-		fdlDirectory=new FormData();
-		fdlDirectory.left = new FormAttachment(0, 0);
-		fdlDirectory.right= new FormAttachment(middle, -margin);
-		fdlDirectory.top  = new FormAttachment(wTransname, margin);
-		wlDirectory.setLayoutData(fdlDirectory);
-
-		wbDirectory=new Button(wTransComp, SWT.PUSH);
-		wbDirectory.setText("..."); //$NON-NLS-1$
- 		props.setLook(wbDirectory);
-		fdbDirectory=new FormData();
-		fdbDirectory.right= new FormAttachment(100, 0);
-		fdbDirectory.top  = new FormAttachment(wTransname, margin);
-		wbDirectory.setLayoutData(fdbDirectory);
-		wbDirectory.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent arg0)
-			{
-                if (rep!=null)
-                {
-    				RepositoryDirectory directoryFrom = transMeta.getDirectory();
-    				long idDirectoryFrom  = directoryFrom.getID();
-    				
-    				SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
-    				RepositoryDirectory rd = sdd.open();
-    				if (rd!=null)
-    				{
-    					if (idDirectoryFrom!=rd.getID())
-    					{
-    						// We need to change this in the repository as well!!
-    					    // We do this when the user pressed OK
-    					    newDirectory = rd;
-    						wDirectory.setText(rd.getPath());
-    					}
-    					else
-    					{
-    						// Same directory!
-    					}
-    				}
-                }
-                else
-                {
-                    
-                }
-			}
-		});
-
-		wDirectory=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wDirectory);
-		wDirectory.setEditable(false);
-		fdDirectory=new FormData();
-		fdDirectory.left = new FormAttachment(middle, 0);
-		fdDirectory.top  = new FormAttachment(wTransname, margin);
-		fdDirectory.right= new FormAttachment(wbDirectory, 0);
-		wDirectory.setLayoutData(fdDirectory);
-
-		// Modified User:
-		wlModUser=new Label(wTransComp, SWT.RIGHT);
-		wlModUser.setText(Messages.getString("TransDialog.LastModifiedUser.Label")); //$NON-NLS-1$
- 		props.setLook(wlModUser);
-		fdlModUser=new FormData();
-		fdlModUser.left = new FormAttachment(0, 0);
-		fdlModUser.right= new FormAttachment(middle, -margin);
-		fdlModUser.top  = new FormAttachment(wDirectory, margin*3);
-		wlModUser.setLayoutData(fdlModUser);
-		wModUser=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wModUser);
-		wModUser.setEditable(false);
-		wModUser.addModifyListener(lsMod);
-		fdModUser=new FormData();
-		fdModUser.left = new FormAttachment(middle, 0);
-		fdModUser.top  = new FormAttachment(wDirectory, margin*3);
-		fdModUser.right= new FormAttachment(100, 0);
-		wModUser.setLayoutData(fdModUser);
-
-		// Modified Date:
-		wlModDate=new Label(wTransComp, SWT.RIGHT);
-		wlModDate.setText(Messages.getString("TransDialog.LastModifiedDate.Label")); //$NON-NLS-1$
- 		props.setLook(wlModDate);
-		fdlModDate=new FormData();
-		fdlModDate.left = new FormAttachment(0, 0);
-		fdlModDate.right= new FormAttachment(middle, -margin);
-		fdlModDate.top  = new FormAttachment(wModUser, margin);
-		wlModDate.setLayoutData(fdlModDate);
-		wModDate=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wModDate);
-		wModDate.setEditable(false);
-		wModDate.addModifyListener(lsMod);
-		fdModDate=new FormData();
-		fdModDate.left = new FormAttachment(middle, 0);
-		fdModDate.top  = new FormAttachment(wModUser, margin);
-		fdModDate.right= new FormAttachment(100, 0);
-		wModDate.setLayoutData(fdModDate);
-
-		fdTransComp=new FormData();
-		fdTransComp.left  = new FormAttachment(0, 0);
-		fdTransComp.top   = new FormAttachment(0, 0);
-		fdTransComp.right = new FormAttachment(100, 0);
-		fdTransComp.bottom= new FormAttachment(100, 0);
-		wTransComp.setLayoutData(fdTransComp);
-	
-		wTransComp.layout();
-		wTransTab.setControl(wTransComp);
-		
-		/////////////////////////////////////////////////////////////
-		/// END OF TRANS TAB
-		/////////////////////////////////////////////////////////////
-
-		//////////////////////////
-		// START OF LOG TAB///
-		///
-		wLogTab=new CTabItem(wTabFolder, SWT.NONE);
-		wLogTab.setText(Messages.getString("TransDialog.LogTab.Label")); //$NON-NLS-1$
-
-		FormLayout LogLayout = new FormLayout ();
-		LogLayout.marginWidth  = Const.MARGIN;
-		LogLayout.marginHeight = Const.MARGIN;
-		
-		Composite wLogComp = new Composite(wTabFolder, SWT.NONE);
- 		props.setLook(wLogComp);
-		wLogComp.setLayout(LogLayout);
-
-
-		// Log step: lines read...
-		wlReadStep=new Label(wLogComp, SWT.RIGHT);
-		wlReadStep.setText(Messages.getString("TransDialog.ReadStep.Label")); //$NON-NLS-1$
- 		props.setLook(wlReadStep);
-		fdlReadStep=new FormData();
-		fdlReadStep.left = new FormAttachment(0, 0);
-		fdlReadStep.right= new FormAttachment(middle, -margin);
-		fdlReadStep.top  = new FormAttachment(0, 0);
-		wlReadStep.setLayoutData(fdlReadStep);
-		wReadStep=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wReadStep);
-		wReadStep.addModifyListener(lsMod);
-		fdReadStep=new FormData();
-		fdReadStep.left = new FormAttachment(middle, 0);
-		fdReadStep.top  = new FormAttachment(0, 0);
-		fdReadStep.right= new FormAttachment(100, 0);
-		wReadStep.setLayoutData(fdReadStep);
-
-		// Log step: lines input...
-		wlInputStep=new Label(wLogComp, SWT.RIGHT);
-		wlInputStep.setText(Messages.getString("TransDialog.InputStep.Label")); //$NON-NLS-1$
- 		props.setLook(wlInputStep);
-		fdlInputStep=new FormData();
-		fdlInputStep.left = new FormAttachment(0, 0);
-		fdlInputStep.right= new FormAttachment(middle, -margin);
-		fdlInputStep.top  = new FormAttachment(wReadStep, margin*2);
-		wlInputStep.setLayoutData(fdlInputStep);
-		wInputStep=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wInputStep);
-		wInputStep.addModifyListener(lsMod);
-		fdInputStep=new FormData();
-		fdInputStep.left = new FormAttachment(middle, 0);
-		fdInputStep.top  = new FormAttachment(wReadStep, margin*2);
-		fdInputStep.right= new FormAttachment(100, 0);
-		wInputStep.setLayoutData(fdInputStep);
-
-		// Log step: lines written...
-		wlWriteStep=new Label(wLogComp, SWT.RIGHT);
-		wlWriteStep.setText(Messages.getString("TransDialog.WriteStep.Label")); //$NON-NLS-1$
- 		props.setLook(wlWriteStep);
-		fdlWriteStep=new FormData();
-		fdlWriteStep.left = new FormAttachment(0, 0);
-		fdlWriteStep.right= new FormAttachment(middle, -margin);
-		fdlWriteStep.top  = new FormAttachment(wInputStep, margin*2);
-		wlWriteStep.setLayoutData(fdlWriteStep);
-		wWriteStep=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wWriteStep);
-		wWriteStep.addModifyListener(lsMod);
-		fdWriteStep=new FormData();
-		fdWriteStep.left = new FormAttachment(middle, 0);
-		fdWriteStep.top  = new FormAttachment(wInputStep, margin*2);
-		fdWriteStep.right= new FormAttachment(100, 0);
-		wWriteStep.setLayoutData(fdWriteStep);
-
-		// Log step: lines to output...
-		wlOutputStep=new Label(wLogComp, SWT.RIGHT);
-		wlOutputStep.setText(Messages.getString("TransDialog.OutputStep.Label")); //$NON-NLS-1$
- 		props.setLook(wlOutputStep);
-		fdlOutputStep=new FormData();
-		fdlOutputStep.left = new FormAttachment(0, 0);
-		fdlOutputStep.right= new FormAttachment(middle, -margin);
-		fdlOutputStep.top  = new FormAttachment(wWriteStep, margin*2);
-		wlOutputStep.setLayoutData(fdlOutputStep);
-		wOutputStep=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wOutputStep);
-		wOutputStep.addModifyListener(lsMod);
-		fdOutputStep=new FormData();
-		fdOutputStep.left = new FormAttachment(middle, 0);
-		fdOutputStep.top  = new FormAttachment(wWriteStep, margin*2);
-		fdOutputStep.right= new FormAttachment(100, 0);
-		wOutputStep.setLayoutData(fdOutputStep);
-
-		// Log step: update...
-		wlUpdateStep=new Label(wLogComp, SWT.RIGHT);
-		wlUpdateStep.setText(Messages.getString("TransDialog.UpdateStep.Label")); //$NON-NLS-1$
- 		props.setLook(wlUpdateStep);
-		fdlUpdateStep=new FormData();
-		fdlUpdateStep.left = new FormAttachment(0, 0);
-		fdlUpdateStep.right= new FormAttachment(middle, -margin);
-		fdlUpdateStep.top  = new FormAttachment(wOutputStep, margin*2);
-		wlUpdateStep.setLayoutData(fdlUpdateStep);
-		wUpdateStep=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wUpdateStep);
-		wUpdateStep.addModifyListener(lsMod);
-		fdUpdateStep=new FormData();
-		fdUpdateStep.left = new FormAttachment(middle, 0);
-		fdUpdateStep.top  = new FormAttachment(wOutputStep, margin*2);
-		fdUpdateStep.right= new FormAttachment(100, 0);
-		wUpdateStep.setLayoutData(fdUpdateStep);
-
-		for (int i=0;i<transMeta.nrSteps();i++)
-		{
-			StepMeta stepMeta = transMeta.getStep(i);
-			wReadStep.add(stepMeta.getName());
-			wWriteStep.add(stepMeta.getName());
-			wInputStep.add(stepMeta.getName());
-			wOutputStep.add(stepMeta.getName());
-			wUpdateStep.add(stepMeta.getName());
-		}
-
-		// Log table connection...
-		wlLogconnection=new Label(wLogComp, SWT.RIGHT);
-		wlLogconnection.setText(Messages.getString("TransDialog.LogConnection.Label")); //$NON-NLS-1$
- 		props.setLook(wlLogconnection);
-		fdlLogconnection=new FormData();
-		fdlLogconnection.left = new FormAttachment(0, 0);
-		fdlLogconnection.right= new FormAttachment(middle, -margin);
-		fdlLogconnection.top  = new FormAttachment(wUpdateStep, margin*4);
-		wlLogconnection.setLayoutData(fdlLogconnection);
-
-		wbLogconnection=new Button(wLogComp, SWT.PUSH);
-		wbLogconnection.setText(Messages.getString("TransDialog.LogconnectionButton.Label")); //$NON-NLS-1$
-		wbLogconnection.addSelectionListener(new SelectionAdapter() 
-		{
-			public void widgetSelected(SelectionEvent e) 
-			{
-				DatabaseMeta ci = new DatabaseMeta();
-				DatabaseDialog cid = new DatabaseDialog(shell, SWT.NONE, log, ci, props);
-				if (cid.open()!=null)
-				{
-					transMeta.addDatabase(ci);
-					wLogconnection.add(ci.getName());
-					wLogconnection.select(wLogconnection.getItemCount()-1);
-				}
-			}
-		});
-		fdbLogconnection=new FormData();
-		fdbLogconnection.right= new FormAttachment(100, 0);
-		fdbLogconnection.top  = new FormAttachment(wUpdateStep, margin*4);
-		wbLogconnection.setLayoutData(fdbLogconnection);
-
-		wLogconnection=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wLogconnection);
-		wLogconnection.addModifyListener(lsMod);
-		fdLogconnection=new FormData();
-		fdLogconnection.left = new FormAttachment(middle, 0);
-		fdLogconnection.top  = new FormAttachment(wUpdateStep, margin*4);
-		fdLogconnection.right= new FormAttachment(wbLogconnection, -margin);
-		wLogconnection.setLayoutData(fdLogconnection);
-
-
-		// Log table...:
-		wlLogtable=new Label(wLogComp, SWT.RIGHT);
-		wlLogtable.setText(Messages.getString("TransDialog.Logtable.Label")); //$NON-NLS-1$
- 		props.setLook(wlLogtable);
-		fdlLogtable=new FormData();
-		fdlLogtable.left = new FormAttachment(0, 0);
-		fdlLogtable.right= new FormAttachment(middle, -margin);
-		fdlLogtable.top  = new FormAttachment(wLogconnection, margin);
-		wlLogtable.setLayoutData(fdlLogtable);
-		wLogtable=new Text(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wLogtable);
-		wLogtable.addModifyListener(lsMod);
-		fdLogtable=new FormData();
-		fdLogtable.left = new FormAttachment(middle, 0);
-		fdLogtable.top  = new FormAttachment(wLogconnection, margin);
-		fdLogtable.right= new FormAttachment(100, 0);
-		wLogtable.setLayoutData(fdLogtable);
-
-
-		wlBatch=new Label(wLogComp, SWT.RIGHT);
-		wlBatch.setText(Messages.getString("TransDialog.LogBatch.Label")); //$NON-NLS-1$
- 		props.setLook(wlBatch);
-		fdlBatch=new FormData();
-		fdlBatch.left = new FormAttachment(0, 0);
-		fdlBatch.top  = new FormAttachment(wLogtable, margin);
-		fdlBatch.right= new FormAttachment(middle, -margin);
-		wlBatch.setLayoutData(fdlBatch);
-		wBatch=new Button(wLogComp, SWT.CHECK);
- 		props.setLook(wBatch);
-		fdBatch=new FormData();
-		fdBatch.left = new FormAttachment(middle, 0);
-		fdBatch.top  = new FormAttachment(wLogtable, margin);
-		fdBatch.right= new FormAttachment(100, 0);
-		wBatch.setLayoutData(fdBatch);
-
-		wlLogfield=new Label(wLogComp, SWT.RIGHT);
-		wlLogfield.setText(Messages.getString("TransDialog.Logfield.Label")); //$NON-NLS-1$
- 		props.setLook(wlLogfield);
-		fdlLogfield=new FormData();
-		fdlLogfield.left = new FormAttachment(0, 0);
-		fdlLogfield.top  = new FormAttachment(wBatch, margin);
-		fdlLogfield.right= new FormAttachment(middle, -margin);
-		wlLogfield.setLayoutData(fdlLogfield);
-		wLogfield=new Button(wLogComp, SWT.CHECK);
- 		props.setLook(wLogfield);
-		fdLogfield=new FormData();
-		fdLogfield.left = new FormAttachment(middle, 0);
-		fdLogfield.top  = new FormAttachment(wBatch, margin);
-		fdLogfield.right= new FormAttachment(100, 0);
-		wLogfield.setLayoutData(fdLogfield);
-
-		fdLogComp=new FormData();
-		fdLogComp.left  = new FormAttachment(0, 0);
-		fdLogComp.top   = new FormAttachment(0, 0);
-		fdLogComp.right = new FormAttachment(100, 0);
-		fdLogComp.bottom= new FormAttachment(100, 0);
-		wLogComp.setLayoutData(fdLogComp);
-	
-		wLogComp.layout();
-		wLogTab.setControl(wLogComp);
-		
-		/////////////////////////////////////////////////////////////
-		/// END OF LOG TAB
-		/////////////////////////////////////////////////////////////
-
-		//////////////////////////
-		// START OF DATE TAB///
-		///
-		wDateTab=new CTabItem(wTabFolder, SWT.NONE);
-		wDateTab.setText(Messages.getString("TransDialog.DateTab.Label")); //$NON-NLS-1$
-
-		FormLayout DateLayout = new FormLayout ();
-		DateLayout.marginWidth  = Const.MARGIN;
-		DateLayout.marginHeight = Const.MARGIN;
-		
-		Composite wDateComp = new Composite(wTabFolder, SWT.NONE);
- 		props.setLook(wDateComp);
-		wDateComp.setLayout(DateLayout);
-
-		// Max date table connection...
-		wlMaxdateconnection=new Label(wDateComp, SWT.RIGHT);
-		wlMaxdateconnection.setText(Messages.getString("TransDialog.MaxdateConnection.Label")); //$NON-NLS-1$
- 		props.setLook(wlMaxdateconnection);
-		fdlMaxdateconnection=new FormData();
-		fdlMaxdateconnection.left = new FormAttachment(0, 0);
-		fdlMaxdateconnection.right= new FormAttachment(middle, -margin);
-		fdlMaxdateconnection.top  = new FormAttachment(0, 0);
-		wlMaxdateconnection.setLayoutData(fdlMaxdateconnection);
-		wMaxdateconnection=new CCombo(wDateComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wMaxdateconnection);
-		wMaxdateconnection.addModifyListener(lsMod);
-		fdMaxdateconnection=new FormData();
-		fdMaxdateconnection.left = new FormAttachment(middle, 0);
-		fdMaxdateconnection.top  = new FormAttachment(0, 0);
-		fdMaxdateconnection.right= new FormAttachment(100, 0);
-		wMaxdateconnection.setLayoutData(fdMaxdateconnection);
-
-		// Maxdate table...:
-		wlMaxdatetable=new Label(wDateComp, SWT.RIGHT);
-		wlMaxdatetable.setText(Messages.getString("TransDialog.MaxdateTable.Label")); //$NON-NLS-1$
- 		props.setLook(wlMaxdatetable);
-		fdlMaxdatetable=new FormData();
-		fdlMaxdatetable.left = new FormAttachment(0, 0);
-		fdlMaxdatetable.right= new FormAttachment(middle, -margin);
-		fdlMaxdatetable.top  = new FormAttachment(wMaxdateconnection, margin);
-		wlMaxdatetable.setLayoutData(fdlMaxdatetable);
-		wMaxdatetable=new Text(wDateComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wMaxdatetable);
-		wMaxdatetable.addModifyListener(lsMod);
-		fdMaxdatetable=new FormData();
-		fdMaxdatetable.left = new FormAttachment(middle, 0);
-		fdMaxdatetable.top  = new FormAttachment(wMaxdateconnection, margin);
-		fdMaxdatetable.right= new FormAttachment(100, 0);
-		wMaxdatetable.setLayoutData(fdMaxdatetable);
-
-		// Maxdate field...:
-		wlMaxdatefield=new Label(wDateComp, SWT.RIGHT);
-		wlMaxdatefield.setText(Messages.getString("TransDialog.MaxdateField.Label")); //$NON-NLS-1$
- 		props.setLook(wlMaxdatefield);
-		fdlMaxdatefield=new FormData();
-		fdlMaxdatefield.left = new FormAttachment(0, 0);
-		fdlMaxdatefield.right= new FormAttachment(middle, -margin);
-		fdlMaxdatefield.top  = new FormAttachment(wMaxdatetable, margin);
-		wlMaxdatefield.setLayoutData(fdlMaxdatefield);
-		wMaxdatefield=new Text(wDateComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wMaxdatefield);
-		wMaxdatefield.addModifyListener(lsMod);
-		fdMaxdatefield=new FormData();
-		fdMaxdatefield.left = new FormAttachment(middle, 0);
-		fdMaxdatefield.top  = new FormAttachment(wMaxdatetable, margin);
-		fdMaxdatefield.right= new FormAttachment(100, 0);
-		wMaxdatefield.setLayoutData(fdMaxdatefield);
-
-		// Maxdate offset...:
-		wlMaxdateoffset=new Label(wDateComp, SWT.RIGHT);
-		wlMaxdateoffset.setText(Messages.getString("TransDialog.MaxdateOffset.Label")); //$NON-NLS-1$
- 		props.setLook(wlMaxdateoffset);
-		fdlMaxdateoffset=new FormData();
-		fdlMaxdateoffset.left = new FormAttachment(0, 0);
-		fdlMaxdateoffset.right= new FormAttachment(middle, -margin);
-		fdlMaxdateoffset.top  = new FormAttachment(wMaxdatefield, margin);
-		wlMaxdateoffset.setLayoutData(fdlMaxdateoffset);
-		wMaxdateoffset=new Text(wDateComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wMaxdateoffset);
-		wMaxdateoffset.addModifyListener(lsMod);
-		fdMaxdateoffset=new FormData();
-		fdMaxdateoffset.left = new FormAttachment(middle, 0);
-		fdMaxdateoffset.top  = new FormAttachment(wMaxdatefield, margin);
-		fdMaxdateoffset.right= new FormAttachment(100, 0);
-		wMaxdateoffset.setLayoutData(fdMaxdateoffset);
-
-		// Maxdate diff...:
-		wlMaxdatediff=new Label(wDateComp, SWT.RIGHT);
-		wlMaxdatediff.setText(Messages.getString("TransDialog.Maxdatediff.Label")); //$NON-NLS-1$
- 		props.setLook(wlMaxdatediff);
-		fdlMaxdatediff=new FormData();
-		fdlMaxdatediff.left = new FormAttachment(0, 0);
-		fdlMaxdatediff.right= new FormAttachment(middle, -margin);
-		fdlMaxdatediff.top  = new FormAttachment(wMaxdateoffset, margin);
-		wlMaxdatediff.setLayoutData(fdlMaxdatediff);
-		wMaxdatediff=new Text(wDateComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wMaxdatediff);
-		wMaxdatediff.addModifyListener(lsMod);
-		fdMaxdatediff=new FormData();
-		fdMaxdatediff.left = new FormAttachment(middle, 0);
-		fdMaxdatediff.top  = new FormAttachment(wMaxdateoffset, margin);
-		fdMaxdatediff.right= new FormAttachment(100, 0);
-		wMaxdatediff.setLayoutData(fdMaxdatediff);
-
-
-		String conns[] = new String[transMeta.nrDatabases()]; 
-		for (int i=0;i<transMeta.nrDatabases();i++)
-		{
-			DatabaseMeta ci = transMeta.getDatabase(i);
-			wLogconnection.add(ci.getName());
-			wMaxdateconnection.add(ci.getName());
-			conns[i] = ci.getName();
-		}
-		
-		fdDateComp=new FormData();
-		fdDateComp.left  = new FormAttachment(0, 0);
-		fdDateComp.top   = new FormAttachment(0, 0);
-		fdDateComp.right = new FormAttachment(100, 0);
-		fdDateComp.bottom= new FormAttachment(100, 0);
-		wDateComp.setLayoutData(fdDateComp);
-	
-		wDateComp.layout();
-		wDateTab.setControl(wDateComp);
-		
-		/////////////////////////////////////////////////////////////
-		/// END OF DATE TAB
-		/////////////////////////////////////////////////////////////
-
-		//////////////////////////
-		// START OF Dep TAB///
-		///
-		wDepTab=new CTabItem(wTabFolder, SWT.NONE);
-		wDepTab.setText(Messages.getString("TransDialog.DepTab.Label")); //$NON-NLS-1$
-
-		FormLayout DepLayout = new FormLayout ();
-		DepLayout.marginWidth  = Const.MARGIN;
-		DepLayout.marginHeight = Const.MARGIN;
-		
-		Composite wDepComp = new Composite(wTabFolder, SWT.NONE);
- 		props.setLook(wDepComp);
-		wDepComp.setLayout(DepLayout);
-
-		wlFields=new Label(wDepComp, SWT.RIGHT);
-		wlFields.setText(Messages.getString("TransDialog.Fields.Label")); //$NON-NLS-1$
- 		props.setLook(wlFields);
-		fdlFields=new FormData();
-		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(0, 0);
-		wlFields.setLayoutData(fdlFields);
-		
-		final int FieldsCols=3;
-		final int FieldsRows=transMeta.nrDependencies();
-		
-		ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
-		colinf[0]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Connection.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, conns); //$NON-NLS-1$
-		colinf[1]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Table.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		colinf[2]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Field.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
-		
-		wFields=new TableView(wDepComp, 
-							  SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
-							  colinf, 
-							  FieldsRows,  
-							  lsMod,
-							  props
-							  );
-
-		wGet=new Button(wDepComp, SWT.PUSH);
-		wGet.setText(Messages.getString("TransDialog.GetDependenciesButton.Label")); //$NON-NLS-1$
-
-		fdGet = new FormData();
-		fdGet.bottom = new FormAttachment(100, 0);
-		fdGet.left   = new FormAttachment(50, 0);
-		wGet.setLayoutData(fdGet);
-		
-		fdFields=new FormData();
-		fdFields.left  = new FormAttachment(0, 0);
-		fdFields.top   = new FormAttachment(wlFields, margin);
-		fdFields.right = new FormAttachment(100, 0);
-		fdFields.bottom= new FormAttachment(wGet, 0);
-		wFields.setLayoutData(fdFields);
-
-		fdDepComp=new FormData();
-		fdDepComp.left  = new FormAttachment(0, 0);
-		fdDepComp.top   = new FormAttachment(0, 0);
-		fdDepComp.right = new FormAttachment(100, 0);
-		fdDepComp.bottom= new FormAttachment(100, 0);
-		wDepComp.setLayoutData(fdDepComp);
-		
-		wDepComp.layout();
-		wDepTab.setControl(wDepComp);
-
-		/////////////////////////////////////////////////////////////
-		/// END OF DEP TAB
-		/////////////////////////////////////////////////////////////
-
-		//////////////////////////
-		// START OF PERFORMANCE TAB///
-		///
-		wPerfTab=new CTabItem(wTabFolder, SWT.NONE);
-		wPerfTab.setText(Messages.getString("TransDialog.PerformanceTab.Label")); //$NON-NLS-1$
-		
-		Composite wPerfComp = new Composite(wTabFolder, SWT.NONE);
- 		props.setLook(wPerfComp);
-
-		FormLayout perfLayout = new FormLayout();
-		perfLayout.marginWidth  = Const.MARGIN;
-		perfLayout.marginHeight = Const.MARGIN;
-		wPerfComp.setLayout(perfLayout);
-
-
-		// Rows in Rowset:
-		wlSizeRowset=new Label(wPerfComp, SWT.RIGHT);
-		wlSizeRowset.setText(Messages.getString("TransDialog.SizeRowset.Label")); //$NON-NLS-1$
- 		props.setLook(wlSizeRowset);
-		fdlSizeRowset=new FormData();
-		fdlSizeRowset.left = new FormAttachment(0, 0);
-		fdlSizeRowset.right= new FormAttachment(middle, -margin);
-		fdlSizeRowset.top  = new FormAttachment(0, margin);
-		wlSizeRowset.setLayoutData(fdlSizeRowset);
-		wSizeRowset=new Text(wPerfComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
- 		props.setLook(wSizeRowset);
-		wSizeRowset.addModifyListener(lsMod);
-		fdSizeRowset=new FormData();
-		fdSizeRowset.left = new FormAttachment(middle, 0);
-		fdSizeRowset.top  = new FormAttachment(0, margin);
-		fdSizeRowset.right= new FormAttachment(100, 0);
-		wSizeRowset.setLayoutData(fdSizeRowset);
-
-
-		fdPerfComp=new FormData();
-		fdPerfComp.left  = new FormAttachment(0, 0);
-		fdPerfComp.top   = new FormAttachment(0, 0);
-		fdPerfComp.right = new FormAttachment(100, 0);
-		fdPerfComp.bottom= new FormAttachment(100, 0);
-		wPerfComp.setLayoutData(fdPerfComp);
-	
-		wPerfComp.layout();
-		wPerfTab.setControl(wPerfComp);
-		
-		/////////////////////////////////////////////////////////////
-		/// END OF PERF TAB
-		/////////////////////////////////////////////////////////////
-
+ 		addTransTab();
+		addLogTab();
+		addDateTab();
+		addDepTab();
+		addPerfTab();
+        addPartTab();
 		
 		fdTabFolder = new FormData();
 		fdTabFolder.left  = new FormAttachment(0, 0);
@@ -900,7 +268,850 @@ public class TransDialog extends Dialog
 		return transMeta;
 	}
 
-	public void dispose()
+	private void addTransTab()
+    {
+        //////////////////////////
+        // START OF TRANS TAB///
+        ///
+        wTransTab=new CTabItem(wTabFolder, SWT.NONE);
+        wTransTab.setText(Messages.getString("TransDialog.TransTab.Label")); //$NON-NLS-1$
+        
+        Composite wTransComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wTransComp);
+
+        FormLayout transLayout = new FormLayout();
+        transLayout.marginWidth  = Const.MARGIN;
+        transLayout.marginHeight = Const.MARGIN;
+        wTransComp.setLayout(transLayout);
+
+
+        // Transformation name:
+        Label wlTransname = new Label(wTransComp, SWT.RIGHT);
+        wlTransname.setText(Messages.getString("TransDialog.Transname.Label")); //$NON-NLS-1$
+        props.setLook(wlTransname);
+        FormData fdlTransname = new FormData();
+        fdlTransname.left = new FormAttachment(0, 0);
+        fdlTransname.right= new FormAttachment(middle, -margin);
+        fdlTransname.top  = new FormAttachment(0, margin);
+        wlTransname.setLayoutData(fdlTransname);
+        wTransname=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wTransname);
+        wTransname.addModifyListener(lsMod);
+        FormData fdTransname = new FormData();
+        fdTransname.left = new FormAttachment(middle, 0);
+        fdTransname.top  = new FormAttachment(0, margin);
+        fdTransname.right= new FormAttachment(100, 0);
+        wTransname.setLayoutData(fdTransname);
+        
+        // Directory:
+        Label wlDirectory = new Label(wTransComp, SWT.RIGHT);
+        wlDirectory.setText(Messages.getString("TransDialog.Directory.Label")); //$NON-NLS-1$
+        props.setLook(wlDirectory);
+        FormData fdlDirectory = new FormData();
+        fdlDirectory.left = new FormAttachment(0, 0);
+        fdlDirectory.right= new FormAttachment(middle, -margin);
+        fdlDirectory.top  = new FormAttachment(wTransname, margin);
+        wlDirectory.setLayoutData(fdlDirectory);
+
+        wbDirectory=new Button(wTransComp, SWT.PUSH);
+        wbDirectory.setText("..."); //$NON-NLS-1$
+        props.setLook(wbDirectory);
+        FormData fdbDirectory = new FormData();
+        fdbDirectory.right= new FormAttachment(100, 0);
+        fdbDirectory.top  = new FormAttachment(wTransname, margin);
+        wbDirectory.setLayoutData(fdbDirectory);
+        wbDirectory.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent arg0)
+            {
+                if (rep!=null)
+                {
+                    RepositoryDirectory directoryFrom = transMeta.getDirectory();
+                    long idDirectoryFrom  = directoryFrom.getID();
+                    
+                    SelectDirectoryDialog sdd = new SelectDirectoryDialog(shell, SWT.NONE, rep);
+                    RepositoryDirectory rd = sdd.open();
+                    if (rd!=null)
+                    {
+                        if (idDirectoryFrom!=rd.getID())
+                        {
+                            // We need to change this in the repository as well!!
+                            // We do this when the user pressed OK
+                            newDirectory = rd;
+                            wDirectory.setText(rd.getPath());
+                        }
+                        else
+                        {
+                            // Same directory!
+                        }
+                    }
+                }
+                else
+                {
+                    
+                }
+            }
+        });
+
+        wDirectory=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wDirectory);
+        wDirectory.setEditable(false);
+        FormData fdDirectory = new FormData();
+        fdDirectory.left = new FormAttachment(middle, 0);
+        fdDirectory.top  = new FormAttachment(wTransname, margin);
+        fdDirectory.right= new FormAttachment(wbDirectory, 0);
+        wDirectory.setLayoutData(fdDirectory);
+
+        // Modified User:
+        Label wlModUser = new Label(wTransComp, SWT.RIGHT);
+        wlModUser.setText(Messages.getString("TransDialog.LastModifiedUser.Label")); //$NON-NLS-1$
+        props.setLook(wlModUser);
+        FormData fdlModUser = new FormData();
+        fdlModUser.left = new FormAttachment(0, 0);
+        fdlModUser.right= new FormAttachment(middle, -margin);
+        fdlModUser.top  = new FormAttachment(wDirectory, margin*3);
+        wlModUser.setLayoutData(fdlModUser);
+        wModUser=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wModUser);
+        wModUser.setEditable(false);
+        wModUser.addModifyListener(lsMod);
+        FormData fdModUser = new FormData();
+        fdModUser.left = new FormAttachment(middle, 0);
+        fdModUser.top  = new FormAttachment(wDirectory, margin*3);
+        fdModUser.right= new FormAttachment(100, 0);
+        wModUser.setLayoutData(fdModUser);
+
+        // Modified Date:
+        Label wlModDate = new Label(wTransComp, SWT.RIGHT);
+        wlModDate.setText(Messages.getString("TransDialog.LastModifiedDate.Label")); //$NON-NLS-1$
+        props.setLook(wlModDate);
+        FormData fdlModDate = new FormData();
+        fdlModDate.left = new FormAttachment(0, 0);
+        fdlModDate.right= new FormAttachment(middle, -margin);
+        fdlModDate.top  = new FormAttachment(wModUser, margin);
+        wlModDate.setLayoutData(fdlModDate);
+        wModDate=new Text(wTransComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wModDate);
+        wModDate.setEditable(false);
+        wModDate.addModifyListener(lsMod);
+        FormData fdModDate = new FormData();
+        fdModDate.left = new FormAttachment(middle, 0);
+        fdModDate.top  = new FormAttachment(wModUser, margin);
+        fdModDate.right= new FormAttachment(100, 0);
+        wModDate.setLayoutData(fdModDate);
+
+        FormData fdTransComp = new FormData();
+        fdTransComp.left  = new FormAttachment(0, 0);
+        fdTransComp.top   = new FormAttachment(0, 0);
+        fdTransComp.right = new FormAttachment(100, 0);
+        fdTransComp.bottom= new FormAttachment(100, 0);
+        wTransComp.setLayoutData(fdTransComp);
+    
+        wTransComp.layout();
+        wTransTab.setControl(wTransComp);
+        
+        /////////////////////////////////////////////////////////////
+        /// END OF TRANS TAB
+        /////////////////////////////////////////////////////////////
+    }
+
+
+    private void addLogTab()
+    {
+        //////////////////////////
+        // START OF LOG TAB///
+        ///
+        wLogTab=new CTabItem(wTabFolder, SWT.NONE);
+        wLogTab.setText(Messages.getString("TransDialog.LogTab.Label")); //$NON-NLS-1$
+
+        FormLayout LogLayout = new FormLayout ();
+        LogLayout.marginWidth  = Const.MARGIN;
+        LogLayout.marginHeight = Const.MARGIN;
+        
+        Composite wLogComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wLogComp);
+        wLogComp.setLayout(LogLayout);
+
+
+        // Log step: lines read...
+        Label wlReadStep = new Label(wLogComp, SWT.RIGHT);
+        wlReadStep.setText(Messages.getString("TransDialog.ReadStep.Label")); //$NON-NLS-1$
+        props.setLook(wlReadStep);
+        FormData fdlReadStep = new FormData();
+        fdlReadStep.left = new FormAttachment(0, 0);
+        fdlReadStep.right= new FormAttachment(middle, -margin);
+        fdlReadStep.top  = new FormAttachment(0, 0);
+        wlReadStep.setLayoutData(fdlReadStep);
+        wReadStep=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wReadStep);
+        wReadStep.addModifyListener(lsMod);
+        FormData fdReadStep = new FormData();
+        fdReadStep.left = new FormAttachment(middle, 0);
+        fdReadStep.top  = new FormAttachment(0, 0);
+        fdReadStep.right= new FormAttachment(100, 0);
+        wReadStep.setLayoutData(fdReadStep);
+
+        // Log step: lines input...
+        Label wlInputStep = new Label(wLogComp, SWT.RIGHT);
+        wlInputStep.setText(Messages.getString("TransDialog.InputStep.Label")); //$NON-NLS-1$
+        props.setLook(wlInputStep);
+        FormData fdlInputStep = new FormData();
+        fdlInputStep.left = new FormAttachment(0, 0);
+        fdlInputStep.right= new FormAttachment(middle, -margin);
+        fdlInputStep.top  = new FormAttachment(wReadStep, margin*2);
+        wlInputStep.setLayoutData(fdlInputStep);
+        wInputStep=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wInputStep);
+        wInputStep.addModifyListener(lsMod);
+        FormData fdInputStep = new FormData();
+        fdInputStep.left = new FormAttachment(middle, 0);
+        fdInputStep.top  = new FormAttachment(wReadStep, margin*2);
+        fdInputStep.right= new FormAttachment(100, 0);
+        wInputStep.setLayoutData(fdInputStep);
+
+        // Log step: lines written...
+        Label wlWriteStep = new Label(wLogComp, SWT.RIGHT);
+        wlWriteStep.setText(Messages.getString("TransDialog.WriteStep.Label")); //$NON-NLS-1$
+        props.setLook(wlWriteStep);
+        FormData fdlWriteStep = new FormData();
+        fdlWriteStep.left = new FormAttachment(0, 0);
+        fdlWriteStep.right= new FormAttachment(middle, -margin);
+        fdlWriteStep.top  = new FormAttachment(wInputStep, margin*2);
+        wlWriteStep.setLayoutData(fdlWriteStep);
+        wWriteStep=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wWriteStep);
+        wWriteStep.addModifyListener(lsMod);
+        FormData fdWriteStep = new FormData();
+        fdWriteStep.left = new FormAttachment(middle, 0);
+        fdWriteStep.top  = new FormAttachment(wInputStep, margin*2);
+        fdWriteStep.right= new FormAttachment(100, 0);
+        wWriteStep.setLayoutData(fdWriteStep);
+
+        // Log step: lines to output...
+        Label wlOutputStep = new Label(wLogComp, SWT.RIGHT);
+        wlOutputStep.setText(Messages.getString("TransDialog.OutputStep.Label")); //$NON-NLS-1$
+        props.setLook(wlOutputStep);
+        FormData fdlOutputStep = new FormData();
+        fdlOutputStep.left = new FormAttachment(0, 0);
+        fdlOutputStep.right= new FormAttachment(middle, -margin);
+        fdlOutputStep.top  = new FormAttachment(wWriteStep, margin*2);
+        wlOutputStep.setLayoutData(fdlOutputStep);
+        wOutputStep=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wOutputStep);
+        wOutputStep.addModifyListener(lsMod);
+        FormData fdOutputStep = new FormData();
+        fdOutputStep.left = new FormAttachment(middle, 0);
+        fdOutputStep.top  = new FormAttachment(wWriteStep, margin*2);
+        fdOutputStep.right= new FormAttachment(100, 0);
+        wOutputStep.setLayoutData(fdOutputStep);
+
+        // Log step: update...
+        Label wlUpdateStep = new Label(wLogComp, SWT.RIGHT);
+        wlUpdateStep.setText(Messages.getString("TransDialog.UpdateStep.Label")); //$NON-NLS-1$
+        props.setLook(wlUpdateStep);
+        FormData fdlUpdateStep = new FormData();
+        fdlUpdateStep.left = new FormAttachment(0, 0);
+        fdlUpdateStep.right= new FormAttachment(middle, -margin);
+        fdlUpdateStep.top  = new FormAttachment(wOutputStep, margin*2);
+        wlUpdateStep.setLayoutData(fdlUpdateStep);
+        wUpdateStep=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wUpdateStep);
+        wUpdateStep.addModifyListener(lsMod);
+        FormData fdUpdateStep = new FormData();
+        fdUpdateStep.left = new FormAttachment(middle, 0);
+        fdUpdateStep.top  = new FormAttachment(wOutputStep, margin*2);
+        fdUpdateStep.right= new FormAttachment(100, 0);
+        wUpdateStep.setLayoutData(fdUpdateStep);
+
+        for (int i=0;i<transMeta.nrSteps();i++)
+        {
+            StepMeta stepMeta = transMeta.getStep(i);
+            wReadStep.add(stepMeta.getName());
+            wWriteStep.add(stepMeta.getName());
+            wInputStep.add(stepMeta.getName());
+            wOutputStep.add(stepMeta.getName());
+            wUpdateStep.add(stepMeta.getName());
+        }
+
+        // Log table connection...
+        Label wlLogconnection = new Label(wLogComp, SWT.RIGHT);
+        wlLogconnection.setText(Messages.getString("TransDialog.LogConnection.Label")); //$NON-NLS-1$
+        props.setLook(wlLogconnection);
+        FormData fdlLogconnection = new FormData();
+        fdlLogconnection.left = new FormAttachment(0, 0);
+        fdlLogconnection.right= new FormAttachment(middle, -margin);
+        fdlLogconnection.top  = new FormAttachment(wUpdateStep, margin*4);
+        wlLogconnection.setLayoutData(fdlLogconnection);
+
+        wbLogconnection=new Button(wLogComp, SWT.PUSH);
+        wbLogconnection.setText(Messages.getString("TransDialog.LogconnectionButton.Label")); //$NON-NLS-1$
+        wbLogconnection.addSelectionListener(new SelectionAdapter() 
+        {
+            public void widgetSelected(SelectionEvent e) 
+            {
+                DatabaseMeta ci = new DatabaseMeta();
+                DatabaseDialog cid = new DatabaseDialog(shell, SWT.NONE, log, ci, props);
+                if (cid.open()!=null)
+                {
+                    transMeta.addDatabase(ci);
+                    wLogconnection.add(ci.getName());
+                    wLogconnection.select(wLogconnection.getItemCount()-1);
+                }
+            }
+        });
+        FormData fdbLogconnection = new FormData();
+        fdbLogconnection.right= new FormAttachment(100, 0);
+        fdbLogconnection.top  = new FormAttachment(wUpdateStep, margin*4);
+        wbLogconnection.setLayoutData(fdbLogconnection);
+
+        wLogconnection=new CCombo(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wLogconnection);
+        wLogconnection.addModifyListener(lsMod);
+        FormData fdLogconnection = new FormData();
+        fdLogconnection.left = new FormAttachment(middle, 0);
+        fdLogconnection.top  = new FormAttachment(wUpdateStep, margin*4);
+        fdLogconnection.right= new FormAttachment(wbLogconnection, -margin);
+        wLogconnection.setLayoutData(fdLogconnection);
+
+
+        // Log table...:
+        Label wlLogtable = new Label(wLogComp, SWT.RIGHT);
+        wlLogtable.setText(Messages.getString("TransDialog.Logtable.Label")); //$NON-NLS-1$
+        props.setLook(wlLogtable);
+        FormData fdlLogtable = new FormData();
+        fdlLogtable.left = new FormAttachment(0, 0);
+        fdlLogtable.right= new FormAttachment(middle, -margin);
+        fdlLogtable.top  = new FormAttachment(wLogconnection, margin);
+        wlLogtable.setLayoutData(fdlLogtable);
+        wLogtable=new Text(wLogComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wLogtable);
+        wLogtable.addModifyListener(lsMod);
+        FormData fdLogtable = new FormData();
+        fdLogtable.left = new FormAttachment(middle, 0);
+        fdLogtable.top  = new FormAttachment(wLogconnection, margin);
+        fdLogtable.right= new FormAttachment(100, 0);
+        wLogtable.setLayoutData(fdLogtable);
+
+
+        Label wlBatch = new Label(wLogComp, SWT.RIGHT);
+        wlBatch.setText(Messages.getString("TransDialog.LogBatch.Label")); //$NON-NLS-1$
+        props.setLook(wlBatch);
+        FormData fdlBatch = new FormData();
+        fdlBatch.left = new FormAttachment(0, 0);
+        fdlBatch.top  = new FormAttachment(wLogtable, margin);
+        fdlBatch.right= new FormAttachment(middle, -margin);
+        wlBatch.setLayoutData(fdlBatch);
+        wBatch=new Button(wLogComp, SWT.CHECK);
+        props.setLook(wBatch);
+        FormData fdBatch = new FormData();
+        fdBatch.left = new FormAttachment(middle, 0);
+        fdBatch.top  = new FormAttachment(wLogtable, margin);
+        fdBatch.right= new FormAttachment(100, 0);
+        wBatch.setLayoutData(fdBatch);
+
+        Label wlLogfield = new Label(wLogComp, SWT.RIGHT);
+        wlLogfield.setText(Messages.getString("TransDialog.Logfield.Label")); //$NON-NLS-1$
+        props.setLook(wlLogfield);
+        FormData fdlLogfield = new FormData();
+        fdlLogfield.left = new FormAttachment(0, 0);
+        fdlLogfield.top  = new FormAttachment(wBatch, margin);
+        fdlLogfield.right= new FormAttachment(middle, -margin);
+        wlLogfield.setLayoutData(fdlLogfield);
+        wLogfield=new Button(wLogComp, SWT.CHECK);
+        props.setLook(wLogfield);
+        FormData fdLogfield = new FormData();
+        fdLogfield.left = new FormAttachment(middle, 0);
+        fdLogfield.top  = new FormAttachment(wBatch, margin);
+        fdLogfield.right= new FormAttachment(100, 0);
+        wLogfield.setLayoutData(fdLogfield);
+
+        FormData fdLogComp = new FormData();
+        fdLogComp.left  = new FormAttachment(0, 0);
+        fdLogComp.top   = new FormAttachment(0, 0);
+        fdLogComp.right = new FormAttachment(100, 0);
+        fdLogComp.bottom= new FormAttachment(100, 0);
+        wLogComp.setLayoutData(fdLogComp);
+    
+        wLogComp.layout();
+        wLogTab.setControl(wLogComp);
+        
+        /////////////////////////////////////////////////////////////
+        /// END OF LOG TAB
+        /////////////////////////////////////////////////////////////
+    }
+
+
+    private void addDateTab()
+    {
+        //////////////////////////
+        // START OF DATE TAB///
+        ///
+        wDateTab=new CTabItem(wTabFolder, SWT.NONE);
+        wDateTab.setText(Messages.getString("TransDialog.DateTab.Label")); //$NON-NLS-1$
+
+        FormLayout DateLayout = new FormLayout ();
+        DateLayout.marginWidth  = Const.MARGIN;
+        DateLayout.marginHeight = Const.MARGIN;
+        
+        Composite wDateComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wDateComp);
+        wDateComp.setLayout(DateLayout);
+
+        // Max date table connection...
+        Label wlMaxdateconnection = new Label(wDateComp, SWT.RIGHT);
+        wlMaxdateconnection.setText(Messages.getString("TransDialog.MaxdateConnection.Label")); //$NON-NLS-1$
+        props.setLook(wlMaxdateconnection);
+        FormData fdlMaxdateconnection = new FormData();
+        fdlMaxdateconnection.left = new FormAttachment(0, 0);
+        fdlMaxdateconnection.right= new FormAttachment(middle, -margin);
+        fdlMaxdateconnection.top  = new FormAttachment(0, 0);
+        wlMaxdateconnection.setLayoutData(fdlMaxdateconnection);
+        wMaxdateconnection=new CCombo(wDateComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wMaxdateconnection);
+        wMaxdateconnection.addModifyListener(lsMod);
+        FormData fdMaxdateconnection = new FormData();
+        fdMaxdateconnection.left = new FormAttachment(middle, 0);
+        fdMaxdateconnection.top  = new FormAttachment(0, 0);
+        fdMaxdateconnection.right= new FormAttachment(100, 0);
+        wMaxdateconnection.setLayoutData(fdMaxdateconnection);
+
+        // Maxdate table...:
+        Label wlMaxdatetable = new Label(wDateComp, SWT.RIGHT);
+        wlMaxdatetable.setText(Messages.getString("TransDialog.MaxdateTable.Label")); //$NON-NLS-1$
+        props.setLook(wlMaxdatetable);
+        FormData fdlMaxdatetable = new FormData();
+        fdlMaxdatetable.left = new FormAttachment(0, 0);
+        fdlMaxdatetable.right= new FormAttachment(middle, -margin);
+        fdlMaxdatetable.top  = new FormAttachment(wMaxdateconnection, margin);
+        wlMaxdatetable.setLayoutData(fdlMaxdatetable);
+        wMaxdatetable=new Text(wDateComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wMaxdatetable);
+        wMaxdatetable.addModifyListener(lsMod);
+        FormData fdMaxdatetable = new FormData();
+        fdMaxdatetable.left = new FormAttachment(middle, 0);
+        fdMaxdatetable.top  = new FormAttachment(wMaxdateconnection, margin);
+        fdMaxdatetable.right= new FormAttachment(100, 0);
+        wMaxdatetable.setLayoutData(fdMaxdatetable);
+
+        // Maxdate field...:
+        Label wlMaxdatefield = new Label(wDateComp, SWT.RIGHT);
+        wlMaxdatefield.setText(Messages.getString("TransDialog.MaxdateField.Label")); //$NON-NLS-1$
+        props.setLook(wlMaxdatefield);
+        FormData fdlMaxdatefield = new FormData();
+        fdlMaxdatefield.left = new FormAttachment(0, 0);
+        fdlMaxdatefield.right= new FormAttachment(middle, -margin);
+        fdlMaxdatefield.top  = new FormAttachment(wMaxdatetable, margin);
+        wlMaxdatefield.setLayoutData(fdlMaxdatefield);
+        wMaxdatefield=new Text(wDateComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wMaxdatefield);
+        wMaxdatefield.addModifyListener(lsMod);
+        FormData fdMaxdatefield = new FormData();
+        fdMaxdatefield.left = new FormAttachment(middle, 0);
+        fdMaxdatefield.top  = new FormAttachment(wMaxdatetable, margin);
+        fdMaxdatefield.right= new FormAttachment(100, 0);
+        wMaxdatefield.setLayoutData(fdMaxdatefield);
+
+        // Maxdate offset...:
+        Label wlMaxdateoffset = new Label(wDateComp, SWT.RIGHT);
+        wlMaxdateoffset.setText(Messages.getString("TransDialog.MaxdateOffset.Label")); //$NON-NLS-1$
+        props.setLook(wlMaxdateoffset);
+        FormData fdlMaxdateoffset = new FormData();
+        fdlMaxdateoffset.left = new FormAttachment(0, 0);
+        fdlMaxdateoffset.right= new FormAttachment(middle, -margin);
+        fdlMaxdateoffset.top  = new FormAttachment(wMaxdatefield, margin);
+        wlMaxdateoffset.setLayoutData(fdlMaxdateoffset);
+        wMaxdateoffset=new Text(wDateComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wMaxdateoffset);
+        wMaxdateoffset.addModifyListener(lsMod);
+        FormData fdMaxdateoffset = new FormData();
+        fdMaxdateoffset.left = new FormAttachment(middle, 0);
+        fdMaxdateoffset.top  = new FormAttachment(wMaxdatefield, margin);
+        fdMaxdateoffset.right= new FormAttachment(100, 0);
+        wMaxdateoffset.setLayoutData(fdMaxdateoffset);
+
+        // Maxdate diff...:
+        Label wlMaxdatediff = new Label(wDateComp, SWT.RIGHT);
+        wlMaxdatediff.setText(Messages.getString("TransDialog.Maxdatediff.Label")); //$NON-NLS-1$
+        props.setLook(wlMaxdatediff);
+        FormData fdlMaxdatediff = new FormData();
+        fdlMaxdatediff.left = new FormAttachment(0, 0);
+        fdlMaxdatediff.right= new FormAttachment(middle, -margin);
+        fdlMaxdatediff.top  = new FormAttachment(wMaxdateoffset, margin);
+        wlMaxdatediff.setLayoutData(fdlMaxdatediff);
+        wMaxdatediff=new Text(wDateComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wMaxdatediff);
+        wMaxdatediff.addModifyListener(lsMod);
+        FormData fdMaxdatediff = new FormData();
+        fdMaxdatediff.left = new FormAttachment(middle, 0);
+        fdMaxdatediff.top  = new FormAttachment(wMaxdateoffset, margin);
+        fdMaxdatediff.right= new FormAttachment(100, 0);
+        wMaxdatediff.setLayoutData(fdMaxdatediff);
+
+
+        connectionNames = new String[transMeta.nrDatabases()]; 
+        for (int i=0;i<transMeta.nrDatabases();i++)
+        {
+            DatabaseMeta ci = transMeta.getDatabase(i);
+            wLogconnection.add(ci.getName());
+            wMaxdateconnection.add(ci.getName());
+            connectionNames[i] = ci.getName();
+        }
+        
+        FormData fdDateComp = new FormData();
+        fdDateComp.left  = new FormAttachment(0, 0);
+        fdDateComp.top   = new FormAttachment(0, 0);
+        fdDateComp.right = new FormAttachment(100, 0);
+        fdDateComp.bottom= new FormAttachment(100, 0);
+        wDateComp.setLayoutData(fdDateComp);
+    
+        wDateComp.layout();
+        wDateTab.setControl(wDateComp);
+        
+        /////////////////////////////////////////////////////////////
+        /// END OF DATE TAB
+        /////////////////////////////////////////////////////////////
+    }
+
+
+    private void addDepTab()
+    {
+        //////////////////////////
+        // START OF Dep TAB///
+        ///
+        wDepTab=new CTabItem(wTabFolder, SWT.NONE);
+        wDepTab.setText(Messages.getString("TransDialog.DepTab.Label")); //$NON-NLS-1$
+
+        FormLayout DepLayout = new FormLayout ();
+        DepLayout.marginWidth  = Const.MARGIN;
+        DepLayout.marginHeight = Const.MARGIN;
+        
+        Composite wDepComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wDepComp);
+        wDepComp.setLayout(DepLayout);
+
+        Label wlFields = new Label(wDepComp, SWT.RIGHT);
+        wlFields.setText(Messages.getString("TransDialog.Fields.Label")); //$NON-NLS-1$
+        props.setLook(wlFields);
+        FormData fdlFields = new FormData();
+        fdlFields.left = new FormAttachment(0, 0);
+        fdlFields.top  = new FormAttachment(0, 0);
+        wlFields.setLayoutData(fdlFields);
+        
+        final int FieldsCols=3;
+        final int FieldsRows=transMeta.nrDependencies();
+        
+        ColumnInfo[] colinf=new ColumnInfo[FieldsCols];
+        colinf[0]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Connection.Label"), ColumnInfo.COLUMN_TYPE_CCOMBO, connectionNames); //$NON-NLS-1$
+        colinf[1]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Table.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        colinf[2]=new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.Field.Label"),      ColumnInfo.COLUMN_TYPE_TEXT,   false); //$NON-NLS-1$
+        
+        wFields=new TableView(wDepComp, 
+                              SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
+                              colinf, 
+                              FieldsRows,  
+                              lsMod,
+                              props
+                              );
+
+        wGet=new Button(wDepComp, SWT.PUSH);
+        wGet.setText(Messages.getString("TransDialog.GetDependenciesButton.Label")); //$NON-NLS-1$
+
+        fdGet = new FormData();
+        fdGet.bottom = new FormAttachment(100, 0);
+        fdGet.left   = new FormAttachment(50, 0);
+        wGet.setLayoutData(fdGet);
+        
+        FormData fdFields = new FormData();
+        fdFields.left  = new FormAttachment(0, 0);
+        fdFields.top   = new FormAttachment(wlFields, margin);
+        fdFields.right = new FormAttachment(100, 0);
+        fdFields.bottom= new FormAttachment(wGet, 0);
+        wFields.setLayoutData(fdFields);
+
+        FormData fdDepComp = new FormData();
+        fdDepComp.left  = new FormAttachment(0, 0);
+        fdDepComp.top   = new FormAttachment(0, 0);
+        fdDepComp.right = new FormAttachment(100, 0);
+        fdDepComp.bottom= new FormAttachment(100, 0);
+        wDepComp.setLayoutData(fdDepComp);
+        
+        wDepComp.layout();
+        wDepTab.setControl(wDepComp);
+
+        /////////////////////////////////////////////////////////////
+        /// END OF DEP TAB
+        /////////////////////////////////////////////////////////////
+   }
+
+
+    private void addPerfTab()
+    {
+        //////////////////////////
+        // START OF PERFORMANCE TAB///
+        ///
+        wPerfTab=new CTabItem(wTabFolder, SWT.NONE);
+        wPerfTab.setText(Messages.getString("TransDialog.PerformanceTab.Label")); //$NON-NLS-1$
+        
+        Composite wPerfComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wPerfComp);
+
+        FormLayout perfLayout = new FormLayout();
+        perfLayout.marginWidth  = Const.MARGIN;
+        perfLayout.marginHeight = Const.MARGIN;
+        wPerfComp.setLayout(perfLayout);
+
+
+        // Rows in Rowset:
+        Label wlSizeRowset = new Label(wPerfComp, SWT.RIGHT);
+        wlSizeRowset.setText(Messages.getString("TransDialog.SizeRowset.Label")); //$NON-NLS-1$
+        props.setLook(wlSizeRowset);
+        FormData fdlSizeRowset = new FormData();
+        fdlSizeRowset.left = new FormAttachment(0, 0);
+        fdlSizeRowset.right= new FormAttachment(middle, -margin);
+        fdlSizeRowset.top  = new FormAttachment(0, margin);
+        wlSizeRowset.setLayoutData(fdlSizeRowset);
+        wSizeRowset=new Text(wPerfComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wSizeRowset);
+        wSizeRowset.addModifyListener(lsMod);
+        FormData fdSizeRowset = new FormData();
+        fdSizeRowset.left = new FormAttachment(middle, 0);
+        fdSizeRowset.top  = new FormAttachment(0, margin);
+        fdSizeRowset.right= new FormAttachment(100, 0);
+        wSizeRowset.setLayoutData(fdSizeRowset);
+
+
+        FormData fdPerfComp = new FormData();
+        fdPerfComp.left  = new FormAttachment(0, 0);
+        fdPerfComp.top   = new FormAttachment(0, 0);
+        fdPerfComp.right = new FormAttachment(100, 0);
+        fdPerfComp.bottom= new FormAttachment(100, 0);
+        wPerfComp.setLayoutData(fdPerfComp);
+    
+        wPerfComp.layout();
+        wPerfTab.setControl(wPerfComp);
+        
+        /////////////////////////////////////////////////////////////
+        /// END OF PERF TAB
+        /////////////////////////////////////////////////////////////
+
+    }
+
+    private void addPartTab()
+    {
+        //////////////////////////
+        // START OF PARTITION TAB///
+        ///
+        wPartTab=new CTabItem(wTabFolder, SWT.NONE);
+        wPartTab.setText(Messages.getString("TransDialog.PartitioningTab.Label")); //$NON-NLS-1$
+        
+        Composite wPartComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wPartComp);
+
+        FormLayout partLayout = new FormLayout();
+        partLayout.marginWidth  = Const.MARGIN;
+        partLayout.marginHeight = Const.MARGIN;
+        wPartComp.setLayout(partLayout);
+
+        // Buttons new / delete
+        Button wNew = new Button(wPartComp, SWT.PUSH);
+        wNew.setText(Messages.getString("System.Button.New"));
+        props.setLook(wNew);
+        wNew.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { newSchema(); } });
+
+        Button wDelete = new Button(wPartComp, SWT.PUSH);
+        wDelete.setText(Messages.getString("System.Button.Delete"));
+        props.setLook(wDelete);
+        wDelete.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { deleteSchema(); } });
+
+        wGetPartitions = new Button(wPartComp, SWT.PUSH);
+        wGetPartitions.setText(Messages.getString("TransDialog.GetPartitionsButton.Label"));
+        props.setLook(wGetPartitions);
+        wGetPartitions.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { getPartitions(); } });
+
+        // put the buttons centered at the bottom of the tab
+        BaseStepDialog.positionBottomButtons(wPartComp, new Button[] { wNew, wGetPartitions, wDelete, } , margin, null); 
+        
+        // Schema list:
+        Label wlSchemaList = new Label(wPartComp, SWT.LEFT);
+        wlSchemaList.setText(Messages.getString("TransDialog.SchemaList.Label")); //$NON-NLS-1$
+        props.setLook(wlSchemaList);
+        FormData fdlSchemaList=new FormData();
+        fdlSchemaList.left = new FormAttachment(0, 0);
+        fdlSchemaList.top  = new FormAttachment(0, margin);
+        wlSchemaList.setLayoutData(fdlSchemaList);
+        wSchemaList=new List(wPartComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
+        props.setLook(wSchemaList);
+        FormData fdSchemaList=new FormData();
+        fdSchemaList.left   = new FormAttachment(0, 0);
+        fdSchemaList.right  = new FormAttachment(middle, 0);
+        fdSchemaList.top    = new FormAttachment(wlSchemaList, margin);
+        fdSchemaList.bottom = new FormAttachment(wNew, -margin*2);
+        wSchemaList.setLayoutData(fdSchemaList);
+        wSchemaList.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent event) { applySchema(); refreshPartitions(); } });
+
+        // Partition name:
+        Label wlSchemaName = new Label(wPartComp, SWT.LEFT);
+        wlSchemaName.setText(Messages.getString("TransDialog.PartitionName.Label")); //$NON-NLS-1$
+        props.setLook(wlSchemaName);
+        FormData fdlSchemaName=new FormData();
+        fdlSchemaName.left = new FormAttachment(middle, margin*2);
+        fdlSchemaName.top  = new FormAttachment(0, margin);
+        wlSchemaName.setLayoutData(fdlSchemaName);
+        wSchemaName=new Text(wPartComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wSchemaName);
+        FormData fdSchemaName=new FormData();
+        fdSchemaName.left   = new FormAttachment(middle, margin*2);
+        fdSchemaName.right  = new FormAttachment(100, 0);
+        fdSchemaName.top    = new FormAttachment(wlSchemaName, margin);
+        wSchemaName.setLayoutData(fdSchemaName);
+
+        // Schema list:
+        Label wlPartitions = new Label(wPartComp, SWT.LEFT);
+        wlPartitions.setText(Messages.getString("TransDialog.Partitions.Label")); //$NON-NLS-1$
+        props.setLook(wlPartitions);
+        FormData fdlPartitions=new FormData();
+        fdlPartitions.left = new FormAttachment(middle, margin*2);
+        fdlPartitions.top  = new FormAttachment(wSchemaName, margin);
+        wlPartitions.setLayoutData(fdlPartitions);
+        
+        ColumnInfo[] partitionColumns=new ColumnInfo[] 
+            {
+                new ColumnInfo(Messages.getString("TransDialog.ColumnInfo.PartitionID.Label"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //$NON-NLS-1$
+            };
+        wPartitions=new TableView(wPartComp, 
+                              SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
+                              partitionColumns, 
+                              1,  
+                              lsMod,
+                              props
+                              );
+        props.setLook(wPartitions);
+        FormData fdPartitions=new FormData();
+        fdPartitions.left   = new FormAttachment(middle, margin*2);
+        fdPartitions.right  = new FormAttachment(100, 0);
+        fdPartitions.top    = new FormAttachment(wlPartitions, margin);
+        fdPartitions.bottom = new FormAttachment(wNew, -margin*2);
+        wPartitions.setLayoutData(fdPartitions);
+
+        // TransDialog.SchemaPartitions.Label
+
+        FormData fdPerfComp = new FormData();
+        fdPerfComp.left  = new FormAttachment(0, 0);
+        fdPerfComp.top   = new FormAttachment(0, 0);
+        fdPerfComp.right = new FormAttachment(100, 0);
+        fdPerfComp.bottom= new FormAttachment(100, 0);
+        wPartComp.setLayoutData(fdPerfComp);
+    
+        wPartComp.layout();
+        wPartTab.setControl(wPartComp);
+        
+        /////////////////////////////////////////////////////////////
+        /// END OF PARTITIONING TAB
+        /////////////////////////////////////////////////////////////
+
+    }
+
+
+    protected void getPartitions()
+    {
+        ArrayList partitionedDatabaseNames = new ArrayList();
+        
+        for (int i=0;i<transMeta.getDatabases().size();i++)
+        {
+            DatabaseMeta databaseMeta = transMeta.getDatabase(i); 
+            if (databaseMeta.isPartitioned())
+            {
+                partitionedDatabaseNames.add(databaseMeta.getName());
+            }
+        }
+        String dbNames[] = (String[]) partitionedDatabaseNames.toArray(new String[partitionedDatabaseNames.size()]);
+        
+        if (dbNames.length>0)
+        {
+            EnterSelectionDialog dialog = new EnterSelectionDialog(shell, props, dbNames, "Select the database", "Select the partitioned database to import from");
+            String dbName = dialog.open();
+            if (dbName!=null)
+            {
+                DatabaseMeta databaseMeta = transMeta.findDatabase(dbName);
+                PartitionDatabaseMeta[] partitioningInformation = databaseMeta.getPartitioningInformation();
+                if (partitioningInformation!=null)
+                {
+                    // Here we are...
+                    wPartitions.clearAll(false);
+                    
+                    for (int i = 0; i < partitioningInformation.length; i++)
+                    {
+                        PartitionDatabaseMeta meta = partitioningInformation[i];
+                        wPartitions.add(new String[] { meta.getPartitionId() } );
+                    }
+                    
+                    wPartitions.removeEmptyRows();
+                    wPartitions.setRowNums();
+                    wPartitions.optWidth(true);
+                }
+            }
+        }
+        
+    }
+
+
+    protected void deleteSchema()
+    {
+        if (previousSchemaIndex>=0)
+        {
+            int idx = wSchemaList.getSelectionIndex();
+            schemas.remove( idx );
+            wSchemaList.remove( idx );
+            idx--;
+            if (idx<0) idx=0;
+            if (idx<schemas.size())
+            {
+                wSchemaList.select(idx);
+                previousSchemaIndex=idx;
+            }
+            else
+            {
+                previousSchemaIndex=-1;
+            }
+            refreshPartitions();
+        }
+    }
+
+    protected void applySchema()
+    {
+        if (previousSchemaIndex>=0)
+        {
+            PartitionSchema partitionSchema = (PartitionSchema)schemas.get(previousSchemaIndex);
+            partitionSchema.setName(wSchemaName.getText());
+            String[] ids = new String[wPartitions.nrNonEmpty()];
+            for (int i=0;i<ids.length;i++)
+            {
+                ids[i] = wPartitions.getNonEmpty(i).getText(1);
+            }
+            partitionSchema.setPartitionIDs(ids);
+        }
+        previousSchemaIndex=wSchemaList.getSelectionIndex();
+    }
+
+
+    protected void newSchema()
+    {
+        String name = "Partition schema #"+(schemas.size()+1);
+        EnterStringDialog askName = new EnterStringDialog(shell, props, name, "New partition schema", "Enter a partition schema name:");
+        name = askName.open();
+        if (name!=null)
+        {
+            PartitionSchema schema = new PartitionSchema(name, new String[] {});
+            schemas.add(schema);
+            wSchemaList.add(name);
+            previousSchemaIndex = schemas.size()-1; 
+            wSchemaList.select( previousSchemaIndex );
+            refreshPartitions();
+        }
+    }
+
+
+    public void dispose()
 	{
 		shell.dispose();
 	}
@@ -952,6 +1163,18 @@ public class TransDialog extends Dialog
 		
 		wFields.setRowNums();
 		wFields.optWidth(true);
+        
+        // The partitions?
+        for (Iterator iter = schemas.iterator(); iter.hasNext();)
+        {
+            PartitionSchema schema = (PartitionSchema) iter.next();
+            wSchemaList.add(schema.getName());
+        }
+        if (schemas.size()>0)
+        {
+            wSchemaList.setSelection(0);
+        }
+        refreshPartitions();
 		
 		// Directory:
 		if (transMeta.getDirectory()!=null && transMeta.getDirectory().getPath()!=null) 
@@ -961,7 +1184,38 @@ public class TransDialog extends Dialog
 		wTransname.setFocus();
 	}
 	
-	private void cancel()
+	private void refreshPartitions()
+    {
+        wPartitions.clearAll(false);
+        if (wSchemaList.getSelectionCount()==1)
+        {
+            wSchemaName.setEnabled(true);
+            wPartitions.table.setEnabled(true);
+            wGetPartitions.setEnabled(true);
+
+            PartitionSchema partitionSchema = (PartitionSchema)schemas.get(wSchemaList.getSelectionIndex());
+            wSchemaName.setText(partitionSchema.getName());
+            String[] partitionIDs = partitionSchema.getPartitionIDs();
+            
+            for (int i=0;i<partitionIDs.length;i++)
+            {
+                TableItem tableItem = new TableItem(wPartitions.table, SWT.NONE);
+                tableItem.setText(1, partitionIDs[i]);
+            }
+            wPartitions.removeEmptyRows();
+            wPartitions.setRowNums();
+            wPartitions.optWidth(true);
+        }
+        else
+        {
+            wSchemaName.setEnabled(false);
+            wPartitions.table.setEnabled(false);
+            wGetPartitions.setEnabled(false);
+        }
+    }
+
+
+    private void cancel()
 	{
 		props.setScreen(new WindowProperty(shell));
 		transMeta.setChanged(changed);
@@ -1052,6 +1306,9 @@ public class TransDialog extends Dialog
 			}
 		}
 
+        // Also get the partition schemas...
+        applySchema(); // get last changes too...
+        transMeta.setPartitionSchemas(schemas);
 		
 		if (OK) dispose();
 	}

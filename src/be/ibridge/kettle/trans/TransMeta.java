@@ -59,6 +59,7 @@ import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
+import be.ibridge.kettle.trans.step.StepPartitioningMeta;
 
 /**
  * This class defines a transformation and offers methods to save and load it from XML or a Kettle database repository.
@@ -82,9 +83,6 @@ public class TransMeta implements XMLInterface
     private ArrayList           notes;
 
     private ArrayList           dependencies;
-
-    /**  variables set for the transformation */
-    private Hashtable           variables;
 
     private RepositoryDirectory directory;
 
@@ -152,9 +150,11 @@ public class TransMeta implements XMLInterface
 
 	private Result              previousResult;
     private ArrayList           resultRows;
-    private ArrayList           resultFiles;
-
-
+    private ArrayList           resultFiles;            
+    
+    
+    private List                partitionSchemas;
+    
     // //////////////////////////////////////////////////////////////////////////
 
     public static final int     TYPE_UNDO_CHANGE   = 1;
@@ -223,7 +223,8 @@ public class TransMeta implements XMLInterface
         hops = new ArrayList();
         notes = new ArrayList();
         dependencies = new ArrayList();
-        variables = new Hashtable();
+        partitionSchemas = new ArrayList();
+        
         name = null;
         filename = null;
         readStep = null;
@@ -591,29 +592,6 @@ public class TransMeta implements XMLInterface
     public int nrDependencies()
     {
         return dependencies.size();
-    }
-
-    /**
-     * Sets the variable with a certain name & content. This variable can be used in all the steps of the transformation
-     * by using %%VARIABLE%% in file-names etc.
-     *
-     * @param name The name of the variable
-     * @param content The value
-     */
-    public void setVariable(String name, String content)
-    {
-        variables.put(name, content);
-    }
-
-    /**
-     * Get the value of a transformation variable
-     *
-     * @param name The name of the variable
-     * @return The value or null if the variable wasn't set.
-     */
-    public String getVariable(String name)
-    {
-        return (String) variables.get(name);
     }
 
     /**
@@ -2003,6 +1981,14 @@ public class TransMeta implements XMLInterface
         }
         retval.append("      </dependencies>" + Const.CR); //$NON-NLS-1$
 
+        retval.append("    <partitionschemas>" + Const.CR); //$NON-NLS-1$
+        for (int i = 0; i < partitionSchemas.size(); i++)
+        {
+            PartitionSchema partitionSchema = (PartitionSchema) partitionSchemas.get(i);
+            retval.append(partitionSchema.getXML());
+        }
+        retval.append("      </partitionschemas>" + Const.CR); //$NON-NLS-1$
+
         retval.append("  "+XMLHandler.addTagValue("modified_user", modifiedUser));
         retval.append("  "+XMLHandler.addTagValue("modified_date", modifiedDate!=null?modifiedDate.getString():""));
 
@@ -2301,17 +2287,37 @@ public class TransMeta implements XMLInterface
             // We calculate BEFORE we run the MAX of these dates
             // If the date is larger then enddate, startdate is set to MIN_DATE
             //
-            Node depsnode = XMLHandler.getSubNode(infonode, "dependencies"); //$NON-NLS-1$
-            int deps = XMLHandler.countNodes(depsnode, "dependency"); //$NON-NLS-1$
+            Node depsNode = XMLHandler.getSubNode(infonode, "dependencies"); //$NON-NLS-1$
+            int nrDeps = XMLHandler.countNodes(depsNode, "dependency"); //$NON-NLS-1$
 
-            for (int i = 0; i < deps; i++)
+            for (int i = 0; i < nrDeps; i++)
             {
-                Node depnode = XMLHandler.getSubNodeByNr(depsnode, "dependency", i); //$NON-NLS-1$
+                Node depNode = XMLHandler.getSubNodeByNr(depsNode, "dependency", i); //$NON-NLS-1$
 
-                TransDependency td = new TransDependency(depnode, databases);
-                if (td.getDatabase() != null && td.getFieldname() != null)
+                TransDependency transDependency = new TransDependency(depNode, databases);
+                if (transDependency.getDatabase() != null && transDependency.getFieldname() != null)
                 {
-                    addDependency(td);
+                    addDependency(transDependency);
+                }
+            }
+
+            // Read the partitioning schemas
+            Node partSchemasNode = XMLHandler.getSubNode(infonode, "partitionschemas"); //$NON-NLS-1$
+            int nrPartSchemas = XMLHandler.countNodes(partSchemasNode, "partitionschema"); //$NON-NLS-1$
+            for (int i = 0 ; i < nrPartSchemas ; i++)
+            {
+                Node partSchemaNode = XMLHandler.getSubNodeByNr(partSchemasNode, "partitionschema", i);
+                PartitionSchema partitionSchema = new PartitionSchema(partSchemaNode);
+                partitionSchemas.add(partitionSchema);
+            }
+            
+            // Have all step partitioning meta-data reference the correct schemas that we just loaded
+            for (int i = 0; i < nrSteps(); i++)
+            {
+                StepPartitioningMeta stepPartitioningMeta = getStep(i).getStepPartitioningMeta();
+                if (stepPartitioningMeta!=null)
+                {
+                    stepPartitioningMeta.setPartitionSchemaAfterLoading(partitionSchemas);
                 }
             }
 
@@ -3967,22 +3973,6 @@ public class TransMeta implements XMLInterface
     }
 
     /**
-     * @return Returns the variables.
-     */
-    public Hashtable getVariables()
-    {
-        return variables;
-    }
-
-    /**
-     * @param variables The variables to set.
-     */
-    public void setVariables(Hashtable variables)
-    {
-        this.variables = variables;
-    }
-
-    /**
      * @return Returns the writeStep.
      */
     public StepMeta getWriteStep()
@@ -4412,5 +4402,35 @@ public class TransMeta implements XMLInterface
 
         // The name of the directory in the repository
         variables.setVariable(Const.INTERNAL_VARIABLE_TRANSFORMATION_REPOSITORY_DIRECTORY, directory!=null?directory.getPath():"");
+    }
+
+    /**
+     * @return the partitionSchemas
+     */
+    public List getPartitionSchemas()
+    {
+        return partitionSchemas;
+    }
+
+    /**
+     * @param partitionSchemas the partitionSchemas to set
+     */
+    public void setPartitionSchemas(List partitionSchemas)
+    {
+        this.partitionSchemas = partitionSchemas;
+    }
+
+    /**
+     * Get the available partition schema names.
+     * @return
+     */
+    public String[] getPartitionSchemasNames()
+    {
+        String names[] = new String[partitionSchemas.size()];
+        for (int i=0;i<names.length;i++)
+        {
+            names[i] = ((PartitionSchema)partitionSchemas.get(i)).getName();
+        }
+        return names;
     }
 }

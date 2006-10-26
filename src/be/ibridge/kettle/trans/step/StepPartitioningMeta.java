@@ -1,11 +1,14 @@
 package be.ibridge.kettle.trans.step;
 
+import java.util.List;
+
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.trans.PartitionSchema;
 
 public class StepPartitioningMeta implements XMLInterface
 {
@@ -18,6 +21,8 @@ public class StepPartitioningMeta implements XMLInterface
     private int             method;
     private String          fieldName;
 
+    private String          partitionSchemaName; // to allow delayed binding...
+    private PartitionSchema partitionSchema;
     
     public StepPartitioningMeta()
     {
@@ -28,11 +33,12 @@ public class StepPartitioningMeta implements XMLInterface
      * @param method
      * @param fieldName
      */
-    public StepPartitioningMeta(int method, String fieldName)
+    public StepPartitioningMeta(int method, String fieldName, PartitionSchema partitionSchema)
     {
         super();
         this.method = method;
         this.fieldName = fieldName;
+        this.partitionSchema = partitionSchema;
     }
 
     /**
@@ -74,6 +80,7 @@ public class StepPartitioningMeta implements XMLInterface
         xml.append("         <partitioning>"+Const.CR);
         xml.append("           "+XMLHandler.addTagValue("method",    getMethodCode()));
         xml.append("           "+XMLHandler.addTagValue("field_name", fieldName));
+        xml.append("           "+XMLHandler.addTagValue("schema_name", partitionSchema!=null?partitionSchema.getName():""));
         xml.append("           </partitioning>"+Const.CR);
         
         return xml.toString();
@@ -83,6 +90,7 @@ public class StepPartitioningMeta implements XMLInterface
     {
         method = getMethod( XMLHandler.getTagValue(partitioningMethodNode, "method") );
         fieldName = XMLHandler.getTagValue(partitioningMethodNode, "field_name");
+        partitionSchemaName = XMLHandler.getTagValue(partitioningMethodNode, "schema_name");
     }
     
     public String getMethodCode()
@@ -124,5 +132,39 @@ public class StepPartitioningMeta implements XMLInterface
             break;
         }
         return nr;
+    }
+
+    /**
+     * @return the partitionSchema
+     */
+    public PartitionSchema getPartitionSchema()
+    {
+        return partitionSchema;
+    }
+
+    /**
+     * @param partitionSchema the partitionSchema to set
+     */
+    public void setPartitionSchema(PartitionSchema partitionSchema)
+    {
+        this.partitionSchema = partitionSchema;
+    }
+    
+    /**
+     * Set the partitioning schema after loading from XML or repository
+     * @param partitionSchemas the list of partitioning schemas
+     */
+    public void setPartitionSchemaAfterLoading(List partitionSchemas)
+    {
+        partitionSchema=null; // sorry, not found!
+        
+        for (int i=0;i<partitionSchemas.size() && partitionSchema==null;i++)
+        {
+            PartitionSchema schema = (PartitionSchema) partitionSchemas.get(i);
+            if (schema.getName().equalsIgnoreCase(partitionSchemaName))
+            {
+                partitionSchema = schema; // found!
+            }
+        }
     }
 }

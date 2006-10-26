@@ -16,6 +16,7 @@ import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Rectangle;
+import be.ibridge.kettle.trans.PartitionSchema;
 import be.ibridge.kettle.trans.TransHopMeta;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.StepMeta;
@@ -337,13 +338,26 @@ public class TransPainter
         gc.setForeground(black);
         gc.drawText(name, namePosition.x, namePosition.y, SWT.DRAW_TRANSPARENT);
 
-        if (stepMeta.isPartitioned())
+        StepPartitioningMeta meta = stepMeta.getStepPartitioningMeta();
+        if (stepMeta.isPartitioned() && meta!=null)
         {
-            StepPartitioningMeta meta = stepMeta.getStepPartitioningMeta();
             String message = "P";
             if ( !Const.isEmpty(meta.getFieldName()) )
             {
-                message+="("+meta.getFieldName()+")";
+                PartitionSchema schema = meta.getPartitionSchema();
+                if (schema!=null)
+                {
+                    if (schema.getPartitionIDs()!=null && schema.getPartitionIDs().length>0)
+                    {
+                        message+="x"+schema.getPartitionIDs().length;
+                        message+="("+meta.getFieldName()+")";
+                    }
+                    else
+                    {
+                        message+="("+meta.getFieldName()+")";
+                    }
+                    message+=" : "+schema.getName();
+                }
             }
             
             gc.setBackground(background);
