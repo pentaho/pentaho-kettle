@@ -231,15 +231,4 @@ public class BaseStepMeta implements Cloneable
     {
         return new DatabaseMeta[] { };
     }
-    
-    /**
-     * @return Return the partitions to use, can come from the transformation metadata or from the database metadata
-     * <br>This depends obviously on the step and the use, flags etc.
-     * <p>Default: returns null
-     */
-    public String[] getPartitionIDs()
-    {
-        return null;
-    }
-
 }

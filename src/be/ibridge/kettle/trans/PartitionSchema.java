@@ -37,6 +37,17 @@ public class PartitionSchema implements Cloneable
         return new PartitionSchema(name, ids);
     }
     
+    public boolean equals(Object obj)
+    {
+        if (obj==null) return false;
+        return name.equals(((PartitionSchema)obj).name);
+    }
+
+    public int hashCode()
+    {
+        return name.hashCode();
+    }
+    
     /**
      * @return the name
      */

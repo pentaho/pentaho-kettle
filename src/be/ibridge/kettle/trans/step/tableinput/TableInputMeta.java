@@ -28,7 +28,6 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.database.DatabaseMeta;
-import be.ibridge.kettle.core.database.PartitionDatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
@@ -521,25 +520,5 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
     public void setVariableReplacementActive(boolean variableReplacementActive)
     {
         this.variableReplacementActive = variableReplacementActive;
-    }
-
-    
-    /**
-     * If the database is partitioned, then return the partitions.
-     * We want to same query to be launched in all partitions 
-     */
-    public String[] getPartitionIDs()
-    {
-        if (databaseMeta!=null)
-        {
-            PartitionDatabaseMeta[] metas = databaseMeta.getPartitioningInformation();
-            if (metas!=null)
-            {
-                String[] partitions = new String[metas.length];
-                for (int i=0;i<partitions.length;i++) partitions[i]=metas[i].getPartitionId();
-                return partitions;
-            }
-        }
-        return super.getPartitionIDs();
     }
 }

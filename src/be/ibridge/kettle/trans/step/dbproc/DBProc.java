@@ -128,7 +128,7 @@ public class DBProc extends BaseStep implements StepInterface
 			data.db=new Database(meta.getDatabase());
 			try
 			{
-				data.db.connect();
+				data.db.connect(getPartitionID());
 				if (!meta.isAutoCommit())
                 {
                     logBasic(Messages.getString("DBProc.Log.AutoCommit")); //$NON-NLS-1$

@@ -219,11 +219,4 @@ public interface StepMetaInterface
      *         Return an empty array if no connections are used.
      */
     public DatabaseMeta[] getUsedDatabaseConnections();
-    
-    
-    /**
-     * @return Return the partitions to use, can come from the transformation metadata or from the database metadata
-     * This depends obviously on the step and the use, flags etc.
-     */
-    public String[] getPartitionIDs();
 }

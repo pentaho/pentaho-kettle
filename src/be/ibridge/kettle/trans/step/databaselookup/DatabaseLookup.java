@@ -318,7 +318,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			data.db=new Database(meta.getDatabaseMeta());
 			try
 			{
-				data.db.connect();
+				data.db.connect(getPartitionID());
 				logBasic(Messages.getString("DatabaseLookup.Log.ConnectedToDatabase")); //$NON-NLS-1$
 
 				return true;

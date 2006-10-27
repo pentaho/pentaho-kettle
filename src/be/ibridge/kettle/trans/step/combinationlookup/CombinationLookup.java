@@ -326,7 +326,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			data.db=new Database(meta.getDatabase());
 			try
 			{
-				data.db.connect();
+				data.db.connect(getPartitionID());
 				logBasic(Messages.getString("CombinationLookup.Log.ConnectedToDB")); //$NON-NLS-1$
 				data.db.setCommit(meta.getCommitSize());
 

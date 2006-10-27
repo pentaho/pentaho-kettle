@@ -145,7 +145,7 @@ public class AddSequence extends BaseStep implements StepInterface
 				data.setDb( new Database(meta.getDatabase()) );
 				try
 				{
-					data.getDb().connect();
+					data.getDb().connect(getPartitionID());
 					logBasic(Messages.getString("AddSequence.Log.ConnectedDB")); //$NON-NLS-1$
 					return true;
 				}

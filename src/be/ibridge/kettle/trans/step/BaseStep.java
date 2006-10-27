@@ -796,7 +796,7 @@ public class BaseStep extends Thread
                 }
                 
                 // Cache the partition IDs as well... 
-                partitionIDs = nextSteps[0].getStepMetaInterface().getPartitionIDs();
+                partitionIDs = nextSteps[0].getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
                 
                 // OK, we also want to cache the target rowset
                 //
@@ -823,7 +823,7 @@ public class BaseStep extends Thread
                         StepMeta targetStep = transMeta.findStep(rowSet.getDestinationStepName());
                         
                         // What are the target partition ID's
-                        String targetPartitions[] = targetStep.getStepMetaInterface().getPartitionIDs();
+                        String targetPartitions[] = targetStep.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
                         
                         // The target partitionID:
                         String targetPartitionID = targetPartitions[rowSet.getDestinationStepCopy()];

@@ -1288,14 +1288,6 @@ public class DatabaseDialog extends Dialog
         
         // How about the clustering stuff?
         wCluster.table.setEnabled(wUseCluster.getSelection());
-        // the hostname, port and database name is of no use anymore...
-        wlHostName.setEnabled(!wUseCluster.getSelection());
-        wHostName.setEnabled(!wUseCluster.getSelection());
-        wlPort.setEnabled(!wUseCluster.getSelection());
-        wPort.setEnabled(!wUseCluster.getSelection());
-        wlDBName.setEnabled(!wUseCluster.getSelection());
-        wDBName.setEnabled(!wUseCluster.getSelection());
-
 	}
 	
 	public void setPortNumber()

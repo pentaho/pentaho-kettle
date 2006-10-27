@@ -222,7 +222,7 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
         // If the step is partitioned, that's going to determine the number of copies, nothing else...
         if (isPartitioned())
         {
-            String[] partitionIDs = getStepMetaInterface().getPartitionIDs();
+            String[] partitionIDs = getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
             if (partitionIDs!=null && partitionIDs.length>0) // these are the partitions the step can "reach"
             {
                 return partitionIDs.length;

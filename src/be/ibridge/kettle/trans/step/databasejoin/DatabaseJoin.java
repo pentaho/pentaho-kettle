@@ -171,7 +171,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			data.db=new Database(meta.getDatabaseMeta());
 			try
 			{
-				data.db.connect();
+				data.db.connect(getPartitionID());
 				
 				logBasic(Messages.getString("DatabaseJoin.Log.ConnectedToDB")); //$NON-NLS-1$
 	

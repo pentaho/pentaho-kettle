@@ -370,7 +370,7 @@ public class Trans
                     // If the step is partitioned, set the partitioning ID and some other things as well...
                     if (stepMeta.isPartitioned())
                     {
-                        String[] partitionIDs = stepMeta.getStepMetaInterface().getPartitionIDs();
+                        String[] partitionIDs = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
                         if (partitionIDs!=null && partitionIDs.length>0) 
                         {
                             step.setPartitionID(partitionIDs[c]); // Pass the partition ID to the step
@@ -437,26 +437,48 @@ public class Trans
             BaseStep baseStep = (BaseStep)sid.step;
 
             baseStep.setPartitioned(stepMeta.isPartitioned());
+            PartitionSchema thisSchema = stepMeta.getStepPartitioningMeta().getPartitionSchema();
+            String thisFieldName = stepMeta.getStepPartitioningMeta().getFieldName();
 
             // Now let's take a look at the source and target relation
             //
-            // If the source step is not partitioned, and the target step is: it means we need to re-partition the incoming data.
-            // If both steps are partitioned, we don't need to re-partition
+            // If this source step is not partitioned, and the target step is: it means we need to re-partition the incoming data.
+            // If both steps are partitioned on the same schema, we don't need to re-partition
+            // If both steps are partitioned on a different schema, we need to re-partition as well.
             // If both steps are not partitioned, we don't need to re-partition
             //
             boolean nextPartitioned = true;
+            boolean samePartitioned = thisSchema!=null;
+            boolean sameFieldName   = thisFieldName!=null;
             int nrNext = transMeta.findNrNextSteps(stepMeta);
             for (int p=0;p<nrNext;p++)
             {
                 StepMeta nextStep = transMeta.findNextStep(stepMeta, p);
-                if (!nextStep.isPartitioned()) nextPartitioned = false;
+                if (!nextStep.isPartitioned()) 
+                {
+                    nextPartitioned = false;
+                }
+                else
+                {
+                    if (thisSchema!=null && !thisSchema.equals( nextStep.getStepPartitioningMeta().getPartitionSchema() ) )
+                    {
+                        samePartitioned = false;
+                    }
+                    if (thisFieldName !=null && !thisFieldName.equalsIgnoreCase( nextStep.getStepPartitioningMeta().getFieldName() ) )
+                    {
+                        sameFieldName = false;
+                    }
+                }
             }
             
             baseStep.setRepartitioning(false);
             
-            if ( !stepMeta.isPartitioned() &&  nextPartitioned ) 
+            if ( ( !stepMeta.isPartitioned() &&  nextPartitioned ) || // This one is not partitioned & the next one is
+                 ( stepMeta.isPartitioned() && nextPartitioned && !samePartitioned) || // both partitioned, other schema
+                 ( stepMeta.isPartitioned() && nextPartitioned && !sameFieldName)  // both partitioned, other field partitioned on
+               )
             {
-                baseStep.setRepartitioning(true);
+                baseStep.setRepartitioning(true); // in those cases we need to re-partition.
             }
 
             // If the previous step is partitioned and this step is not we have to do a sorted merge
@@ -484,7 +506,7 @@ public class Trans
             //
             if (stepMeta.isPartitioned())
             {
-                String[] partitionIDs = stepMeta.getStepMetaInterface().getPartitionIDs();
+                String[] partitionIDs = stepMeta.getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
                 if (partitionIDs!=null && partitionIDs.length>0)
                 {
                     baseStep.setPartitionID(partitionIDs[sid.copy]);

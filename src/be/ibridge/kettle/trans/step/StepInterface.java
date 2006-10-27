@@ -199,7 +199,17 @@ public interface StepInterface
     public List getOutputRowSets();
 
     /**
+     * @return true if the step is running partitioned
+     */
+    public boolean isPartitioned();
+    
+    /**
      * @param partitionID the partitionID to set
      */
     public void setPartitionID(String partitionID);
+
+    /**
+     * @return the steps partition ID
+     */
+    public String getPartitionID();
 }

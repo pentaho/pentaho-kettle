@@ -36,6 +36,9 @@ public class StepInitThread implements Runnable
     {
         // Add a new KettleVariable for this new Thread so that init() code also has access to these variables...
         localVariables.createKettleVariables(Thread.currentThread().getName(), parentThread.getName(), true);
+
+        // Set the internal variables also on the init thread!
+        ((BaseStep)combi.step).setInternalVariables();
         
         try
         {

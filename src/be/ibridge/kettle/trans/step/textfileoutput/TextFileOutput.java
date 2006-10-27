@@ -572,7 +572,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		
 		try
 		{
-			File file = new File(buildFilename(true));
+            String filename = buildFilename(true);
+			File file = new File(filename);
 
 			// Add this to the result file names...
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
@@ -605,6 +606,8 @@ public class TextFileOutput extends BaseStep implements StepInterface
                 log.logBasic(toString(), "Opening output stream in default encoding");
                 data.writer = new OutputStreamWriter(outputStream);
             }
+            
+            logDetailed("Opened new file with name ["+filename+"]");
 						
 			retval=true;
 		}
