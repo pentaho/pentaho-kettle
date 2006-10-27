@@ -866,6 +866,8 @@ public class Chef implements AddUndoPositionInterface
         {
            TreeItem tiPlugin = new TreeItem(tiPluginEntries, SWT.NONE);
            tiPlugin.setText(pluginJobEntries[i].getDescription());
+           Image image = (Image)GUIResource.getInstance().getImagesJobentriesSmall().get(pluginJobEntries[i].getID());
+           tiPlugin.setImage(image);
         }
 		
 		props.setLook( tMain );
@@ -2172,6 +2174,7 @@ public class Chef implements AddUndoPositionInterface
 						jge.setEntry(jei);
 						jge.setLocation(50,50);
 						jge.setNr(0);
+                        jge.setJobPlugin(jobPlugin);
 						jobMeta.addJobEntry(jge);
 						addUndoNew(new JobEntryCopy[] { jge }, new int[] { jobMeta.indexOfJobEntry(jge) });
 						refreshGraph();
@@ -2189,6 +2192,7 @@ public class Chef implements AddUndoPositionInterface
 					jge.setEntry(jei);
 					jge.setLocation(50,50);
 					jge.setNr(0);
+                    jge.setJobPlugin(jobPlugin);
 					jobMeta.addJobEntry(jge);
 					addUndoNew(new JobEntryCopy[] { jge }, new int[] { jobMeta.indexOfJobEntry(jge) });
 					refreshGraph();
