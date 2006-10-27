@@ -460,6 +460,7 @@ public class Trans
             }
 
             // If the previous step is partitioned and this step is not we have to do a sorted merge
+            // 
             // The other condition is of-course that the previous step needs to be sorted on the partitioning column.
             // TODO: make this separate from the partitioning algorithm, keep sorted partitioned data sorted is nice though.
             // 

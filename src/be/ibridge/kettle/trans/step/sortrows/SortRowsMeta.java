@@ -276,7 +276,6 @@ public class SortRowsMeta extends BaseStepMeta implements StepMetaInterface
 	}
 	
 
-
 	public void check(ArrayList remarks, StepMeta stepMeta, Row prev, String input[], String output[], Row info)
 	{
 		CheckResult cr;

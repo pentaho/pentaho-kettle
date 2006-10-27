@@ -85,6 +85,7 @@ import be.ibridge.kettle.trans.step.rowstoresult.RowsToResultMeta;
 import be.ibridge.kettle.trans.step.scriptvalues.ScriptValuesMeta;
 import be.ibridge.kettle.trans.step.selectvalues.SelectValuesMeta;
 import be.ibridge.kettle.trans.step.setvariable.SetVariableMeta;
+import be.ibridge.kettle.trans.step.sortedmerge.SortedMergeMeta;
 import be.ibridge.kettle.trans.step.sortrows.SortRowsMeta;
 import be.ibridge.kettle.trans.step.sql.ExecSQLMeta;
 import be.ibridge.kettle.trans.step.streamlookup.StreamLookupMeta;
@@ -283,6 +284,9 @@ public class BaseStep extends Thread
         new StepPluginMeta(AccessOutputMeta.class, "AccessOutput", 
                             Messages.getString("BaseStep.TypeLongDesc.AccessOutput"), Messages.getString("BaseStep.TypeTooltipDesc.AccessOutput"), 
                             "ACO.png", CATEGORY_OUTPUT),
+        new StepPluginMeta(SortedMergeMeta.class, "SortedMerge", 
+                            Messages.getString("BaseStep.TypeLongDesc.SortedMerge"), Messages.getString("BaseStep.TypeTooltipDesc.SortedMerge"), 
+                            "SMG.png", CATEGORY_EXPERIMENTAL),
 
     };
     
@@ -1002,11 +1006,6 @@ public class BaseStep extends Thread
         {
             return null;
         }
-        
-        if (partitionMerging)
-        {
-            return getRowSorted();
-        }
 
 		// What's the current input stream?
 		RowSet in=currentInputStream();
@@ -1049,7 +1048,11 @@ public class BaseStep extends Thread
 		} 
 		
 		// Set the appropriate priority depending on the amount of data in the rowset:
-		in.setPriorityTo(calcGetPriority(in));
+        // Only do this every 100 rows...
+        if (linesRead>0 && (linesRead%100)==0)
+        {
+            in.setPriorityTo(calcGetPriority(in));
+        }
 		
 		// Get this row!
 		Row row=in.getRow();
@@ -1073,102 +1076,7 @@ public class BaseStep extends Thread
 		return row;
 	}
 
-    /**
-     * We read from all streams in the partition mergin mode
-     * For that we need at least one row on all input rowsets...
-     * If we don't have a row, we wait for one.
-     * 
-     * TODO: keep the inputRowSets() list sorted and go from there. That should dramatically improve speed as you only need half as many comparissons.
-     * 
-     * @return the next row
-     */
-	private synchronized Row getRowSorted() throws KettleException
-    {
-        int smallestId = 0;
-        Row smallestRow = null;
-        
-        for (int i=0;i<inputRowSets.size();i++)
-        {
-            RowSet rowSet = (RowSet)inputRowSets.get(i);
-            
-            // If it's empty : wait
-            int sleeptime=transMeta.getSleepTimeEmpty();
-            while (rowSet.isEmpty() && !stopped)
-            {
-                try { if (sleeptime>0) sleep(0, sleeptime); else super.notifyAll(); } 
-                catch(Exception e) 
-                { 
-                    logError(Messages.getString("BaseStep.Log.SleepInterupted")+e.toString()); //$NON-NLS-1$
-                    setErrors(1); 
-                    stopAll(); 
-                    return null; 
-                }
-                if (sleeptime<100) sleeptime = ((int)(sleeptime*1.2))+1; else sleeptime=100; 
-                nrGetSleeps+=sleeptime;
-            }
-            
-            if (stopped) return null;
-            
-            // OK, now get the row and compare with smallest
-            Row row = rowSet.lookAtFirst();
-            
-            if (smallestRow==null)
-            {
-                smallestRow = row;
-                smallestId = i;
-            }
-            else
-            {
-                // What field do we compare on?
-
-                // Better cache the location of the partitioning column
-                if (partitionColumnIndex<0)
-                {
-                    // The previous step is partitioned, this one is not.
-                    // So we need to grab the partitioning key from the previous step
-                    // We know we have at least one, otherwise we wouldn't be here.
-                    //
-                    StepMeta prevSteps[] = transMeta.getPrevSteps(stepMeta);
-                    
-                    String fieldName = prevSteps[0].getStepPartitioningMeta().getFieldName();
-                    partitionColumnIndex = row.searchValueIndex(fieldName);
-                    if (partitionColumnIndex<0)
-                    {
-                        throw new KettleStepException("Partition merge: unable to find partitioning fieldname ["+fieldName+"] in row : "+row);
-                    }
-                }
-
-                Value smallestValue = smallestRow.getValue(partitionColumnIndex);
-                Value compareValue = row.getValue(partitionColumnIndex);
-                
-                if (compareValue.compare(smallestValue)<0)
-                {
-                    smallestRow = row;
-                    smallestId = i;
-                }
-            }
-        }
-        
-        // OK then, take one row from the inputrow with the smallest record...
-        Row row = ((RowSet)inputRowSets.get(smallestId)).getRow();
-        
-        // Notify all rowlisteners...
-        for (int i=0;i<rowListeners.size();i++)
-        {
-            RowListener rowListener = (RowListener)rowListeners.get(i);
-            rowListener.rowReadEvent(row);
-        }
-        
-        // OK, before we return the row, let's see if we need to check on mixing row compositions...
-        if (safeModeEnabled)
-        {
-            safeModeChecking(row);
-        } // Extra checking
-        
-        return row;
-    }
-
-    private synchronized void safeModeChecking(Row row)
+    protected synchronized void safeModeChecking(Row row)
 	{
 		//String saveDebug=debug;
 		//debug="Safe mode checking";

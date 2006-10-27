@@ -323,21 +323,17 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		if (input.getDirectory() != null) wSortDir.setText(input.getDirectory());
 		wSortSize.setText(""+input.getSortSize());
         
-		int i;
 		Table table = wFields.table;
-		table.removeAll();
-		for (i=0;i<input.getFieldName().length;i++)
+		if (input.getFieldName().length>0) table.removeAll();
+		for (int i=0;i<input.getFieldName().length;i++)
 		{
 			TableItem ti = new TableItem(table, SWT.NONE);
 			ti.setText(0, ""+(i+1));
 			ti.setText(1, input.getFieldName()[i]);
 			ti.setText(2, input.getAscending()[i]?Messages.getString("System.Combo.Yes"):Messages.getString("System.Combo.No"));
 		}
-		if (table.getItemCount()==0) // at least 1!
-		{
-			new TableItem(table, SWT.NONE);
-		}
 
+        wFields.setRowNums();
 		wFields.optWidth(true);
 		wStepname.selectAll();
 	}
@@ -351,7 +347,6 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 	
 	private void ok()
 	{
-		int i;
 		stepname = wStepname.getText(); // return value
 
 		// copy info to SortRowsMeta class (input)
@@ -364,7 +359,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 
 		input.allocate(nrfields);
 		
-		for (i=0;i<nrfields;i++)
+		for (int i=0;i<nrfields;i++)
 		{
 			TableItem ti = wFields.getNonEmpty(i);
 			input.getFieldName()[i] = ti.getText(1);
