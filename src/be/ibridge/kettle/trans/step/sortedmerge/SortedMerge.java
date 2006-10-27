@@ -17,13 +17,13 @@ package be.ibridge.kettle.trans.step.sortedmerge;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.RowComparator;
 import be.ibridge.kettle.core.RowSet;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
-import be.ibridge.kettle.trans.step.Messages;
 import be.ibridge.kettle.trans.step.RowListener;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
@@ -64,6 +64,12 @@ public class SortedMerge extends BaseStep implements StepInterface
         Row smallestRow = null;
         
         if (inputRowSets.size()==0) return null;
+
+        // Sort & binary search...
+        /*
+        Collections.sort(inputRowSets, data.rowComparator);
+        int idx = Collections.binarySearch(inputRowSets, new Row(), data.rowComparator);
+        */
         
         for (int i=0;i<inputRowSets.size();i++)
         {
@@ -193,6 +199,8 @@ public class SortedMerge extends BaseStep implements StepInterface
 		
 		if (super.init(smi, sdi))
 		{
+            data.rowComparator = new RowComparator();
+            
 		    // Add init code here.
 		    return true;
 		}

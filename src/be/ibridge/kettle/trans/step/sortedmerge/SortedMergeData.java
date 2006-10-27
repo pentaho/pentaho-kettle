@@ -16,6 +16,7 @@
 
 package be.ibridge.kettle.trans.step.sortedmerge;
 
+import be.ibridge.kettle.core.RowComparator;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 
@@ -27,6 +28,7 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 public class SortedMergeData extends BaseStepData implements StepDataInterface
 {
 	public int[] fieldIndices;
+    public RowComparator rowComparator;
 
     /**
 	 * 
