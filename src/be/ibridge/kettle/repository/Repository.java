@@ -42,8 +42,9 @@ import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleDependencyException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobMeta;
-import be.ibridge.kettle.job.entry.JobEntryInterface;
+import be.ibridge.kettle.job.JobPlugin;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
 import be.ibridge.kettle.trans.TransMeta;
@@ -4653,27 +4654,32 @@ public class Repository
 	 */
 	public synchronized void updateJobEntryTypes() throws KettleDatabaseException
 	{
-		// We should only do an update if something has changed...
-		for (int i = 1; i < JobEntryInterface.typeCode.length; i++)
-		{
-			long id = getJobEntryTypeID(JobEntryInterface.typeCode[i]);
-			if (id < 0) // Not found, we need to add this one...
-			{
-				// We need to add this one ...
-				id = getNextJobEntryTypeID();
+        // We should only do an update if something has changed...
+        JobEntryLoader jobEntryLoader = JobEntryLoader.getInstance();
+        JobPlugin[] jobPlugins = jobEntryLoader.getJobEntriesWithType(JobPlugin.TYPE_ALL);
+        
+        for (int i = 1; i < jobPlugins.length; i++)
+        {
+            String type_desc = jobPlugins[i].getID();
+            String type_desc_long = jobPlugins[i].getDescription();
+            long id = getJobEntryTypeID(type_desc);
+            if (id < 0) // Not found, we need to add this one...
+            {
+                // We need to add this one ...
+                id = getNextJobEntryTypeID();
 
-				Row table = new Row();
-				table.addValue(new Value("ID_JOBENTRY_TYPE", id));
-				table.addValue(new Value("CODE", JobEntryInterface.typeCode[i]));
-				table.addValue(new Value("DESCRIPTION", JobEntryInterface.typeDesc[i]));
+                Row table = new Row();
+                table.addValue(new Value("ID_JOBENTRY_TYPE", id));
+                table.addValue(new Value("CODE", type_desc));
+                table.addValue(new Value("DESCRIPTION", type_desc_long));
 
-				database.prepareInsert(table, "R_JOBENTRY_TYPE");
+                database.prepareInsert(table, "R_JOBENTRY_TYPE");
 
-				database.setValuesInsert(table);
-				database.insertRow();
-				database.closeInsert();
-			}
-		}
+                database.setValuesInsert(table);
+                database.insertRow();
+                database.closeInsert();
+            }
+        }
 	}
 
 

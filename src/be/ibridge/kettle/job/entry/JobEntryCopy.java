@@ -55,11 +55,6 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	
 	private long id;
 		
-    /**
-     * Added so that getTypeDesc() can retrieve the plugin's ID 
-     */
-    private JobPlugin jobPlugin;
-
 	public JobEntryCopy(LogWriter log)
 	{
 		clear();
@@ -316,22 +311,14 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 		return entry.getType();
 	}
 	
-    /*
+    /**
+     * @return entry in JobEntryInterface.typeCode[] for native jobs, entry.getTypeCode() for plugins
+     */
 	public String getTypeDesc()
 	{
+        if (getTypeDesc(entry.getType()).equals(JobEntryInterface.typeCode[0])) return entry.getTypeCode();
 		return getTypeDesc( entry.getType() );
 	}
-    */
-    
-    /**
-     * @return entry in JobEntryInterface.typeCode for natives, jobPlugin.id for plugins
-     */
-    public String getTypeDesc()
-    {
-        if (getTypeDesc(entry.getType()).equals(JobEntryInterface.typeCode[0])) { return jobPlugin.getID(); }
-        return getTypeDesc(entry.getType());
-    }
-
 	
 	public void setLocation(int x, int y)
 	{
@@ -529,22 +516,4 @@ public class JobEntryCopy implements Cloneable, XMLInterface, GUIPositionInterfa
 	{
 	    return entry.resetErrorsBeforeExecution();
 	}
-
-    /**
-     * @return the jobPlugin
-     */
-    public JobPlugin getJobPlugin()
-    {
-        return jobPlugin;
-    }
-
-    /**
-     * @param jobPlugin the jobPlugin to set
-     */
-    public void setJobPlugin(JobPlugin jobPlugin)
-    {
-        this.jobPlugin = jobPlugin;
-    }
-    
-
 }

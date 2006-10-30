@@ -2174,7 +2174,6 @@ public class Chef implements AddUndoPositionInterface
 						jge.setEntry(jei);
 						jge.setLocation(50,50);
 						jge.setNr(0);
-                        jge.setJobPlugin(jobPlugin);
 						jobMeta.addJobEntry(jge);
 						addUndoNew(new JobEntryCopy[] { jge }, new int[] { jobMeta.indexOfJobEntry(jge) });
 						refreshGraph();
@@ -2192,7 +2191,6 @@ public class Chef implements AddUndoPositionInterface
 					jge.setEntry(jei);
 					jge.setLocation(50,50);
 					jge.setNr(0);
-                    jge.setJobPlugin(jobPlugin);
 					jobMeta.addJobEntry(jge);
 					addUndoNew(new JobEntryCopy[] { jge }, new int[] { jobMeta.indexOfJobEntry(jge) });
 					refreshGraph();
