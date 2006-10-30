@@ -643,6 +643,7 @@ public class XMLHandler
             case '<'  : value.append("&lt;"); break;
             case '>'  : value.append("&gt;"); break;
             case '"'  : value.append("&quot;"); break;
+            case '/'  : value.append("&#47;"); break;
             case 0x1A : value.append("{ILLEGAL XML CHARACTER 0x1A}"); break;
             default: 
                 value.append(c);
