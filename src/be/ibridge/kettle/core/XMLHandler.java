@@ -631,7 +631,7 @@ public class XMLHandler
      * @param value the stringbuffer to append to
      * @param string the string to "encode"
      */
-	private static void appendReplacedChars(StringBuffer value, String string)
+	public static void appendReplacedChars(StringBuffer value, String string)
     {
         for (int i=0;i<string.length();i++)
         {
