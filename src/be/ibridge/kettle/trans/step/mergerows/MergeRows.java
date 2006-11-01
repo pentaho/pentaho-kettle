@@ -155,8 +155,13 @@ public class MergeRows extends BaseStep implements StepInterface
                 }
                 else
                 {
-                    data.two.addValue(VALUE_CHANGED);
-                    putRow(data.two);
+                    if (compareValues > 0){
+                        data.one.addValue(VALUE_CHANGED);
+                        putRow(data.one);
+                    } else {
+                        data.two.addValue(VALUE_CHANGED);
+                        putRow(data.two);
+                    }
                 }
 
                 // Get a new row from both streams...

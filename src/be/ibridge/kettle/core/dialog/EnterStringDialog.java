@@ -50,7 +50,6 @@ public class EnterStringDialog extends Dialog
     private FormData     fdlString, fdString;
 		
 	private Button wOK, wCancel;
-	private FormData fdOK, fdCancel;
 	private Listener lsOK, lsCancel;
 
 	private Shell  shell;
@@ -109,16 +108,10 @@ public class EnterStringDialog extends Dialog
 		wOK.setText("  &OK  ");
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText("  &Cancel  ");
-		fdOK=new FormData();
-		fdOK.left       = new FormAttachment(33, 0);
-		fdOK.top        = new FormAttachment(wString, margin*2);
-		wOK.setLayoutData(fdOK);
-		fdCancel=new FormData();
-		fdCancel.left   = new FormAttachment(66, 0);
-		fdCancel.top    = new FormAttachment(wString, margin*2);
-		wCancel.setLayoutData(fdCancel);
 
-		// Add listeners
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, wString);
+        
+        // Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		
