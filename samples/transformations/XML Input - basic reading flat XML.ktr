@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>/</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>350</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <dependencies>
+      </dependencies>
+    </info>
+  <notepads>
+    <notepad>
+      <note>To see the result, do a preview on this Dummy step
+... or add an output step.</note>
+      <xloc>149</xloc>
+      <yloc>196</yloc>
+      <width>268</width>
+      <heigth>37</heigth>
+      </notepad>
+    <notepad>
+      <note>Load the (very simple) example XML file.</note>
+      <xloc>20</xloc>
+      <yloc>53</yloc>
+      <width>203</width>
+      <heigth>23</heigth>
+      </notepad>
+    <notepad>
+      <note>Revision notes:
+2006-11-02 Jens Bleuel: created
+</note>
+      <xloc>14</xloc>
+      <yloc>567</yloc>
+      <width>166</width>
+      <heigth>49</heigth>
+      </notepad>
+    </notepads>
+  <order>
+  <hop> <from>XML Input</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <GUI>
+      <xloc>262</xloc>
+      <yloc>108</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>XML Input</name>
+    <type>XMLInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+    <include>N</include>
+    <include_field/>
+    <rownum>N</rownum>
+    <rownum_field/>
+    <file>
+      <name>${Internal.Transformation.Filename.Directory}/files/XML - flat.xml</name>
+      <filemask/>
+      </file>
+    <fields>
+      <field>
+        <name>Objectid1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <positions><position>E=ObjectID/1</position>        </positions>
+        </field>
+      <field>
+        <name>Sapident1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <positions><position>E=SAPIDENT/1</position>        </positions>
+        </field>
+      <field>
+        <name>Quantity1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <positions><position>E=Quantity/1</position>        </positions>
+        </field>
+      <field>
+        <name>Merkmalname1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <positions><position>E=Merkmalname/1</position>        </positions>
+        </field>
+      <field>
+        <name>Merkmalswert1</name>
+        <type>String</type>
+        <format/>
+        <currency/>
+        <decimal/>
+        <group/>
+        <length>-1</length>
+        <precision>-1</precision>
+        <trim_type>none</trim_type>
+        <repeat>N</repeat>
+        <positions><position>E=Merkmalswert/1</position>        </positions>
+        </field>
+      </fields>
+    <positions>
+      <position>Level1</position>
+      <position>Level2</position>
+      <position>Props</position>
+      </positions>
+    <limit>0</limit>
+    <skip>0</skip>
+    <GUI>
+      <xloc>80</xloc>
+      <yloc>108</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>
