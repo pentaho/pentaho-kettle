@@ -223,7 +223,7 @@ public class DatabaseDialog extends Dialog
 		// The rest stays above the buttons...
 		
 		wTabFolder = new CTabFolder(shell, SWT.BORDER);
- 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TABLE);
+ 		props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
 
         addGeneralTab();
         addPoolTab();
