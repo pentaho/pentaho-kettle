@@ -262,6 +262,15 @@ public class Mapping extends BaseStep implements StepInterface
         }
         super.dispose(smi, sdi);
     }
+    
+    public void stopAll()
+    {
+        // Stop this step
+        super.stopAll();
+        
+        // Also stop the mapping step.
+        data.trans.stopAll();
+    }
 	
 	//
 	// Run is were the action happens!
