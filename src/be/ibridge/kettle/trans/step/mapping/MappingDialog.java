@@ -223,6 +223,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         fdFilename.right= new FormAttachment(wbvFilename, -margin);
         fdFilename.top  = new FormAttachment(wbvFilename, 0, SWT.CENTER);
         wFilename.setLayoutData(fdFilename);
+        wFilename.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent e) { wFileRadio.setSelection(true); wRepRadio.setSelection(false); }});
         
         // Listen to the Var button...
         wbvFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
