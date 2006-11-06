@@ -377,7 +377,7 @@ public class DatabaseDialog extends Dialog
         // What's the connection name?
         wlConn = new Label(wDbComp, SWT.RIGHT); 
         props.setLook(wlConn);
-        wlConn.setText("Connection name: ");
+        wlConn.setText("Connection name  ");
         fdlConn = new FormData();
         fdlConn.top   = new FormAttachment(0, 0);
         fdlConn.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -395,7 +395,7 @@ public class DatabaseDialog extends Dialog
 
         // What types are there?
         wlConnType = new Label(wDbComp, SWT.RIGHT); 
-        wlConnType.setText("Connection type: "); 
+        wlConnType.setText("Connection type  "); 
         props.setLook(wlConnType);
         fdlConnType = new FormData();
         fdlConnType.top    = new FormAttachment(wConn, margin);  // below the line above
@@ -420,7 +420,7 @@ public class DatabaseDialog extends Dialog
 
         // What access types are there?
         wlConnAcc = new Label(wDbComp, SWT.RIGHT); 
-        wlConnAcc.setText("Method of access: "); 
+        wlConnAcc.setText("Method of access  "); 
         props.setLook(wlConnAcc);
         fdlConnAcc = new FormData();
         fdlConnAcc.top  = new FormAttachment(wConnType, margin);  // below the line above
@@ -440,7 +440,7 @@ public class DatabaseDialog extends Dialog
 
         // Hostname
         wlHostName = new Label(wDbComp, SWT.RIGHT); 
-        wlHostName.setText("Server host name: "); 
+        wlHostName.setText("Server host name  "); 
         props.setLook(wlHostName);
 
         fdlHostName = new FormData();
@@ -460,7 +460,7 @@ public class DatabaseDialog extends Dialog
         
         // DBName
         wlDBName = new Label(wDbComp, SWT.RIGHT ); 
-        wlDBName.setText("Database name: "); 
+        wlDBName.setText("Database name  "); 
         props.setLook(wlDBName);
         fdlDBName = new FormData();
         fdlDBName.top  = new FormAttachment(wHostName, margin);
@@ -479,7 +479,7 @@ public class DatabaseDialog extends Dialog
                 
         // Port
         wlPort = new Label(wDbComp, SWT.RIGHT ); 
-        wlPort.setText("Port number: "); 
+        wlPort.setText("Port number  "); 
         props.setLook(wlPort);
         fdlPort = new FormData();
         fdlPort.top  = new FormAttachment(wDBName, margin);
@@ -495,10 +495,10 @@ public class DatabaseDialog extends Dialog
         fdPort.left = new FormAttachment(middle, 0); 
         fdPort.right= new FormAttachment(95, 0);
         wPort.setLayoutData(fdPort);
-        
+                
         // Username
         wlUsername = new Label(wDbComp, SWT.RIGHT ); 
-        wlUsername.setText("Username: "); 
+        wlUsername.setText("Username  "); 
         props.setLook(wlUsername);
         fdlUsername = new FormData();
         fdlUsername.top  = new FormAttachment(wPort, margin);
@@ -515,10 +515,9 @@ public class DatabaseDialog extends Dialog
         fdUsername.right= new FormAttachment(95, 0);
         wUsername.setLayoutData(fdUsername);
 
-        
         // Password
         wlPassword = new Label(wDbComp, SWT.RIGHT ); 
-        wlPassword.setText("Password: "); 
+        wlPassword.setText("Password  "); 
         props.setLook(wlPassword);
         fdlPassword = new FormData();
         fdlPassword.top  = new FormAttachment(wUsername, margin);
@@ -571,7 +570,7 @@ public class DatabaseDialog extends Dialog
         // What's the data tablespace name?
         wlUsePool = new Label(wPoolComp, SWT.RIGHT); 
         props.setLook(wlUsePool);
-        wlUsePool.setText("Use a connection pool"); 
+        wlUsePool.setText("Use a connection pool  "); 
         fdlUsePool = new FormData();
         fdlUsePool.top   = new FormAttachment(0, 0);
         fdlUsePool.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -590,7 +589,7 @@ public class DatabaseDialog extends Dialog
         // What's the initial pool size
         wlInitPool = new Label(wPoolComp, SWT.RIGHT); 
         props.setLook(wlInitPool);
-        wlInitPool.setText("The initial pool size "); 
+        wlInitPool.setText("The initial pool size  "); 
         fdlInitPool = new FormData();
         fdlInitPool.top   = new FormAttachment(wUsePool, margin);
         fdlInitPool.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -610,7 +609,7 @@ public class DatabaseDialog extends Dialog
         // What's the maximum pool size
         wlMaxPool = new Label(wPoolComp, SWT.RIGHT); 
         props.setLook(wlMaxPool);
-        wlMaxPool.setText("The maximum pool size "); 
+        wlMaxPool.setText("The maximum pool size  "); 
         fdlMaxPool = new FormData();
         fdlMaxPool.top   = new FormAttachment(wInitPool, margin);
         fdlMaxPool.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -659,7 +658,7 @@ public class DatabaseDialog extends Dialog
         // What's the data tablespace name?
         wlData = new Label(wOracleComp, SWT.RIGHT); 
         props.setLook(wlData);
-        wlData.setText("Tablespace for data: "); 
+        wlData.setText("Tablespace for data  "); 
         fdlData = new FormData();
         fdlData.top   = new FormAttachment(0, 0);
         fdlData.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -679,7 +678,7 @@ public class DatabaseDialog extends Dialog
         // What's the index tablespace name?
         wlIndex = new Label(wOracleComp, SWT.RIGHT); 
         props.setLook(wlIndex);
-        wlIndex.setText("Tablespace for indexes: "); 
+        wlIndex.setText("Tablespace for indexes  "); 
         fdlIndex = new FormData();
         fdlIndex.top   = new FormAttachment(wData, margin);
         fdlIndex.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -726,7 +725,7 @@ public class DatabaseDialog extends Dialog
 
         // Servername
         wlServername = new Label(wIfxComp, SWT.RIGHT ); 
-        wlServername.setText("Informix Servername: "); 
+        wlServername.setText("Informix Servername  "); 
         props.setLook(wlServername);
         fdlServername = new FormData();
         fdlServername.top  = new FormAttachment(0, margin);
@@ -774,7 +773,7 @@ public class DatabaseDialog extends Dialog
         
         // Language
         wlSAPLanguage = new Label(wSAPComp, SWT.RIGHT ); 
-        wlSAPLanguage.setText("Language "); 
+        wlSAPLanguage.setText("Language  "); 
         props.setLook(        wlSAPLanguage);
         fdlSAPLanguage = new FormData();
         fdlSAPLanguage.top  = new FormAttachment(0, margin);
@@ -794,7 +793,7 @@ public class DatabaseDialog extends Dialog
         
         // SystemNumber
         wlSAPSystemNumber = new Label(wSAPComp, SWT.RIGHT ); 
-        wlSAPSystemNumber.setText("System Number "); 
+        wlSAPSystemNumber.setText("System Number  "); 
         props.setLook(        wlSAPSystemNumber);
         fdlSAPSystemNumber = new FormData();
         fdlSAPSystemNumber.top  = new FormAttachment(wSAPLanguage, margin);
@@ -813,7 +812,7 @@ public class DatabaseDialog extends Dialog
 
         // SystemID
         wlSAPClient = new Label(wSAPComp, SWT.RIGHT ); 
-        wlSAPClient.setText("SAP Client"); 
+        wlSAPClient.setText("SAP Client  "); 
         props.setLook(        wlSAPClient);
         fdlSAPClient = new FormData();
         fdlSAPClient.top  = new FormAttachment(wSAPSystemNumber, margin);
@@ -861,7 +860,7 @@ public class DatabaseDialog extends Dialog
 
         // URL
         wlURL = new Label(wGenericComp, SWT.RIGHT ); 
-        wlURL.setText("URL "); 
+        wlURL.setText("URL  "); 
         props.setLook(wlURL);
         fdlURL = new FormData();
         fdlURL.top  = new FormAttachment(0, margin);
@@ -881,7 +880,7 @@ public class DatabaseDialog extends Dialog
         
         // Driver class
         wlDriverClass = new Label(wGenericComp, SWT.RIGHT ); 
-        wlDriverClass.setText("Driver class "); 
+        wlDriverClass.setText("Driver class  "); 
         props.setLook(        wlDriverClass);
         fdlDriverClass = new FormData();
         fdlDriverClass.top  = new FormAttachment(wURL, margin);
@@ -1034,7 +1033,7 @@ public class DatabaseDialog extends Dialog
         // The check box
         wlUseCluster = new Label(wClusterComp, SWT.RIGHT);
         props.setLook(wlUseCluster);
-        wlUseCluster.setText("Use clustering? EXPERIMENTAL!! ");
+        wlUseCluster.setText("Use clustering? EXPERIMENTAL!!  ");
         wlUseCluster.setToolTipText("Enable clustering to add all kinds of clustering information.");
         fdlUseCluster = new FormData();
         fdlUseCluster.left   = new FormAttachment(0, 0);
@@ -1240,15 +1239,17 @@ public class DatabaseDialog extends Dialog
         		return;
         }
         
-		// If the type is not Informix: disable the servername field!
+		
 		int idxDBType = wConnType.getSelectionIndex();
 		if (idxDBType>=0)
 		{
 			int dbtype = DatabaseMeta.getDatabaseType( wConnType.getItem(idxDBType) );
 
+			// If the type is not Informix: disable the servername field!
 			wlServername.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_INFORMIX );
 			wServername.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_INFORMIX );
             
+            // If this is an Oracle connection enable the Oracle tab
             wlData.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_ORACLE );
             wData.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_ORACLE );
             wlIndex.setEnabled( dbtype==DatabaseMeta.TYPE_DATABASE_ORACLE );
@@ -1357,7 +1358,7 @@ public class DatabaseDialog extends Dialog
 		
 		// Port number
 		databaseMeta.setDBPort( wPort.getText() );
-        		
+
 		// Username
 		databaseMeta.setUsername( wUsername.getText() );
 		
