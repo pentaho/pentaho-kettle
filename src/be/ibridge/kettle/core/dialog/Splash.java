@@ -29,7 +29,7 @@ public class Splash
 	
 	public Splash(Display display)
 	{
-		Rectangle displayBounds = display.getBounds();
+		Rectangle displayBounds = display.getPrimaryMonitor().getBounds();
 		
 		final Image kettle_image = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_splash.png"));
         final Image kettle_icon  = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoon32.png"));
