@@ -132,7 +132,7 @@ public class SetVariableDialog extends BaseStepDialog implements StepDialogInter
             {
 		        new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.FieldName"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
 		        new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableName"), ColumnInfo.COLUMN_TYPE_TEXT, false), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableType"), ColumnInfo.COLUMN_TYPE_CCOMBO, SetVariableMeta.getVariableTypeDescriptions(), true), //$NON-NLS-1$
+                new ColumnInfo(Messages.getString("SetVariableDialog.Fields.Column.VariableType"), ColumnInfo.COLUMN_TYPE_CCOMBO, SetVariableMeta.getVariableTypeDescriptions(), false), //$NON-NLS-1$
             };
 
 		wFields=new TableView(shell, 
