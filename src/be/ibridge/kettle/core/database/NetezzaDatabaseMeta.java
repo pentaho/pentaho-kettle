@@ -12,6 +12,8 @@ import be.ibridge.kettle.core.value.Value;
  */
 public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInterface
 {
+	public static final int MAX_CHAR_LEN = 32767;
+
 	/**
 	 * Construct a new database connection.
 	 * 
@@ -265,7 +267,10 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         	}
 			break;
 		case Value.VALUE_TYPE_STRING:
-			retval+="varchar("+length+")"; 
+			if (length > MAX_CHAR_LEN)
+				retval += "varchar(" + MAX_CHAR_LEN + ")";
+			else
+				retval+="varchar("+length+")"; 
 			break;
 		default:
 			retval+=" UNKNOWN";
