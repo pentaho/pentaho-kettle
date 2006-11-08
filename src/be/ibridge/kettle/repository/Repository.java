@@ -85,6 +85,8 @@ public class Repository
 
 	private PreparedStatement	psStepAttributesLookup;
 	private PreparedStatement	psStepAttributesInsert;
+    private PreparedStatement   psTransAttributesLookup;
+    private PreparedStatement   psTransAttributesInsert;
 	
 	private ArrayList           stepAttributesBuffer;
 	
@@ -115,6 +117,7 @@ public class Repository
             
 		psStepAttributesLookup = null;
 		psStepAttributesInsert = null;
+        psTransAttributesLookup = null;
 		pstmt_entry_attributes = null;
 
 		this.majorVersion = REQUIRED_MAJOR_VERSION;
@@ -219,6 +222,7 @@ public class Repository
 				try
 				{
 					setLookupStepAttribute();
+                    setLookupTransAttribute();
 					setLookupJobEntryAttribute();
 				}
 				catch (KettleDatabaseException dbe)
@@ -316,8 +320,12 @@ public class Repository
 		try
 		{
             currentRepository=null;
+            
 			closeStepAttributeLookupPreparedStatement();
-			if (!database.isAutoCommit()) commit();
+            closeTransAttributeLookupPreparedStatement();
+            closeLookupJobEntryAttribute();
+            
+            if (!database.isAutoCommit()) commit();
 			repinfo.setLock(false);
 			database.disconnect();
 		}
@@ -791,6 +799,11 @@ public class Repository
 	{
 		return getNextID("R_STEP_ATTRIBUTE", "ID_STEP_ATTRIBUTE");
 	}
+
+    public synchronized long getNextTransAttributeID() throws KettleDatabaseException
+    {
+        return getNextID("R_TRANS_ATTRIBUTE", "ID_TRANS_ATTRIBUTE");
+    }
     
     public synchronized long getNextDatabaseAttributeID() throws KettleDatabaseException
     {
@@ -900,45 +913,43 @@ public class Repository
 	// INSERT VALUES
 	/////////////////////////////////////////////////////////////////////////////////////
 
-	public synchronized void insertTransformation(long id_transformation, String name, long id_step_read, long id_step_write,
-			long id_step_input, long id_step_output, long id_step_update, long id_database_log, String table_name_log,
-			boolean use_batchid, boolean use_logfield, long id_database_maxdate, String table_name_maxdate,
-			String field_name_maxdate, double offset_maxdate, double diff_maxdate, String modified_user,
-			Value modified_date, int size_rowset, long id_directory) throws KettleDatabaseException
-	{
+	public synchronized void insertTransformation(TransMeta transMeta) throws KettleDatabaseException
+    {
 		Row table = new Row();
 
-		table.addValue(new Value("ID_TRANSFORMATION", id_transformation));
-		table.addValue(new Value("NAME", name));
-		table.addValue(new Value("ID_STEP_READ", id_step_read));
-		table.addValue(new Value("ID_STEP_WRITE", id_step_write));
-		table.addValue(new Value("ID_STEP_INPUT", id_step_input));
-		table.addValue(new Value("ID_STEP_OUTPUT", id_step_output));
-		table.addValue(new Value("ID_STEP_UPDATE", id_step_update));
-		table.addValue(new Value("ID_DATABASE_LOG", id_database_log));
-		table.addValue(new Value("TABLE_NAME_LOG", table_name_log));
-		table.addValue(new Value("USE_BATCHID", use_batchid));
-		table.addValue(new Value("USE_LOGFIELD", use_logfield));
-		table.addValue(new Value("ID_DATABASE_MAXDATE", id_database_maxdate));
-		table.addValue(new Value("TABLE_NAME_MAXDATE", table_name_maxdate));
-		table.addValue(new Value("FIELD_NAME_MAXDATE", field_name_maxdate));
-		table.addValue(new Value("OFFSET_MAXDATE", offset_maxdate));
-		table.addValue(new Value("DIFF_MAXDATE", diff_maxdate));
-		table.addValue(new Value("MODIFIED_USER", modified_user));
-		table.addValue(new Value("MODIFIED_DATE", modified_date));
-		table.addValue(new Value("SIZE_ROWSET", (long) size_rowset));
-		table.addValue(new Value("ID_DIRECTORY", id_directory));
+		table.addValue(new Value("ID_TRANSFORMATION",   transMeta.getId()));
+		table.addValue(new Value("NAME",                transMeta.getName()));
+		table.addValue(new Value("ID_STEP_READ",        transMeta.getReadStep()  ==null ? -1L : transMeta.getReadStep().getID()));
+		table.addValue(new Value("ID_STEP_WRITE",       transMeta.getWriteStep() ==null ? -1L : transMeta.getWriteStep().getID()));
+		table.addValue(new Value("ID_STEP_INPUT",       transMeta.getInputStep() ==null ? -1L : transMeta.getInputStep().getID()));
+		table.addValue(new Value("ID_STEP_OUTPUT",      transMeta.getOutputStep()==null ? -1L : transMeta.getOutputStep().getID()));
+		table.addValue(new Value("ID_STEP_UPDATE",      transMeta.getUpdateStep()==null ? -1L : transMeta.getUpdateStep().getID()));
+		table.addValue(new Value("ID_DATABASE_LOG",     transMeta.getLogConnection()==null ? -1L : transMeta.getLogConnection().getID()));
+		table.addValue(new Value("TABLE_NAME_LOG",      transMeta.getLogTable()));
+		table.addValue(new Value("USE_BATCHID",         transMeta.isBatchIdUsed()));
+		table.addValue(new Value("USE_LOGFIELD",        transMeta.isLogfieldUsed()));
+		table.addValue(new Value("ID_DATABASE_MAXDATE", transMeta.getMaxDateConnection()==null ? -1L : transMeta.getMaxDateConnection().getID()));
+		table.addValue(new Value("TABLE_NAME_MAXDATE",  transMeta.getMaxDateTable()));
+		table.addValue(new Value("FIELD_NAME_MAXDATE",  transMeta.getMaxDateField()));
+		table.addValue(new Value("OFFSET_MAXDATE",      transMeta.getMaxDateOffset()));
+		table.addValue(new Value("DIFF_MAXDATE",        transMeta.getMaxDateDifference()));
+		table.addValue(new Value("MODIFIED_USER",       transMeta.getModifiedUser()));
+		table.addValue(new Value("MODIFIED_DATE",       transMeta.getModifiedDate()));
+		table.addValue(new Value("SIZE_ROWSET",  (long) transMeta.getSizeRowset()));
+		table.addValue(new Value("ID_DIRECTORY",        transMeta.getDirectory().getID()));
 
 		database.prepareInsert(table, "R_TRANSFORMATION");
 		database.setValuesInsert(table);
 		database.insertRow();
 		database.closeInsert();
+        
+        insertTransAttribute(transMeta.getId(), 0, "CONNECTION_GROUP", 0, transMeta.getConnectionGroup());
 		
 		// Save the logging connection link...
-		if (id_database_log>0) insertStepDatabase(id_transformation, -1L, id_database_log);
+		if (transMeta.getLogConnection()!=null) insertStepDatabase(transMeta.getId(), -1L, transMeta.getLogConnection().getID());
 
 		// Save the maxdate connection link...
-		if (id_database_maxdate>0) insertStepDatabase(id_transformation, -1L, id_database_maxdate);
+		if (transMeta.getMaxDateConnection()!=null) insertStepDatabase(transMeta.getId(), -1L, transMeta.getMaxDateConnection().getID());
 	}
 
 	public synchronized void insertJob(long id_job, long id_directory, String name, long id_database_log, String table_name_log,
@@ -1133,6 +1144,37 @@ public class Repository
 		
 		return id;
 	}
+    
+    public synchronized long insertTransAttribute(long id_transformation, long nr, String code, double value_num, String value_str) throws KettleDatabaseException
+    {
+        long id = getNextTransAttributeID();
+
+        Row table = new Row();
+
+        table.addValue(new Value("ID_TRANS_ATTRIBUTE", id));
+        table.addValue(new Value("ID_TRANSFORMATION", id_transformation));
+        table.addValue(new Value("NR", nr));
+        table.addValue(new Value("CODE", code));
+        table.addValue(new Value("VALUE_NUM", value_num));
+        table.addValue(new Value("VALUE_STR", value_str));
+
+        /* If we have prepared the insert, we don't do it again.
+         * We asume that all the step insert statements come one after the other.
+         */
+        
+        if (psTransAttributesInsert == null)
+        {
+            String sql = database.getInsertStatement("R_TRANS_ATTRIBUTE", table);
+            psTransAttributesInsert = database.prepareSQL(sql);
+        }
+        database.setValues(table, psTransAttributesInsert);
+        database.insertRow(psTransAttributesInsert, true);
+        
+        log.logDebug(toString(), "saved transformation attribute ["+code+"]");
+        
+        return id;
+    }
+
 
 	public synchronized void insertStepDatabase(long id_transformation, long id_step, long id_database)
 			throws KettleDatabaseException
@@ -2524,33 +2566,28 @@ public class Repository
 		return saveStepAttribute(code, 0, id_transformation, id_step, value, null);
 	}
 
-	public synchronized long saveStepAttribute(long id_transformation, long id_step, String code, boolean value)
-			throws KettleDatabaseException
+	public synchronized long saveStepAttribute(long id_transformation, long id_step, String code, boolean value) throws KettleDatabaseException
 	{
 		return saveStepAttribute(code, 0, id_transformation, id_step, 0.0, value ? "Y" : "N");
 	}
 
-	public synchronized long saveStepAttribute(long id_transformation, long id_step, long nr, String code, String value)
-			throws KettleDatabaseException
+	public synchronized long saveStepAttribute(long id_transformation, long id_step, long nr, String code, String value) throws KettleDatabaseException
 	{
 	    if (value==null || value.length()==0) return -1L;
 		return saveStepAttribute(code, nr, id_transformation, id_step, 0.0, value);
 	}
 
-	public synchronized long saveStepAttribute(long id_transformation, long id_step, long nr, String code, double value)
-			throws KettleDatabaseException
+	public synchronized long saveStepAttribute(long id_transformation, long id_step, long nr, String code, double value) throws KettleDatabaseException
 	{
 		return saveStepAttribute(code, nr, id_transformation, id_step, value, null);
 	}
 
-	public synchronized long saveStepAttribute(long id_transformation, long id_step, long nr, String code, boolean value)
-			throws KettleDatabaseException
+	public synchronized long saveStepAttribute(long id_transformation, long id_step, long nr, String code, boolean value) throws KettleDatabaseException
 	{
 		return saveStepAttribute(code, nr, id_transformation, id_step, 0.0, value ? "Y" : "N");
 	}
 
-	private long saveStepAttribute(String code, long nr, long id_transformation, long id_step, double value_num,
-			String value_str) throws KettleDatabaseException
+	private long saveStepAttribute(String code, long nr, long id_transformation, long id_step, double value_num, String value_str) throws KettleDatabaseException
 	{
 		return insertStepAttribute(id_transformation, id_step, nr, code, value_num, value_str);
 	}
@@ -2563,6 +2600,20 @@ public class Repository
 
 		psStepAttributesLookup = database.prepareSQL(sql);
 	}
+    
+    public synchronized void setLookupTransAttribute() throws KettleDatabaseException
+    {
+        String sql = "SELECT VALUE_STR, VALUE_NUM FROM R_TRANS_ATTRIBUTE WHERE ID_TRANSFORMATION = ?  AND CODE = ?  AND NR = ? ";
+
+        psTransAttributesLookup = database.prepareSQL(sql);
+    }
+    
+    public synchronized void closeTransAttributeLookupPreparedStatement() throws KettleDatabaseException
+    {
+        database.closePreparedStatement(psTransAttributesLookup);
+        psTransAttributesLookup = null;
+    }
+
 
 	public synchronized void closeStepAttributeLookupPreparedStatement() throws KettleDatabaseException
 	{
@@ -2592,6 +2643,18 @@ public class Repository
 
 		return database.getLookup(psStepAttributesLookup);
 	}
+
+    private Row getTransAttributeRow(long id_transformation, int nr, String code) throws KettleDatabaseException
+    {
+        Row par = new Row();
+        par.addValue(new Value("ID_TRANSFORMATION", id_transformation));
+        par.addValue(new Value("CODE", code));
+        par.addValue(new Value("NR", (long) nr));
+
+        database.setValues(par, psTransAttributesLookup);
+
+        return database.getLookup(psStepAttributesLookup);
+    }
 
 	public synchronized long getStepAttributeInteger(long id_step, int nr, String code) throws KettleDatabaseException
 	{
@@ -2685,6 +2748,18 @@ public class Repository
 			return (int) r.getValue(0).getInteger();
 	    }
 	}
+    
+    // TRANS ATTRIBUTES: get
+    
+    public synchronized String getTransAttributeString(long id_transformation, int nr, String code) throws KettleDatabaseException
+    {
+        Row r = null;
+        r = getTransAttributeRow(id_transformation, nr, code);
+        if (r == null)
+            return null;
+        return r.searchValue("VALUE_STR").getString();
+    }
+
 
 	// JOBENTRY ATTRIBUTES: SAVE
 
@@ -2744,6 +2819,7 @@ public class Repository
 	public synchronized void closeLookupJobEntryAttribute() throws KettleDatabaseException
 	{
 		database.closePreparedStatement(pstmt_entry_attributes);
+        pstmt_entry_attributes = null;
 	}
 
 	private Row getJobEntryAttributeRow(long id_jobentry, int nr, String code) throws KettleDatabaseException
