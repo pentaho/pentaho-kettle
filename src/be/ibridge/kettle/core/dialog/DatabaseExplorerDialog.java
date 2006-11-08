@@ -609,26 +609,25 @@ public class DatabaseExplorerDialog extends Dialog
 		if (ti.length==1)
 		{
 			// Get the parent.
-			TreeItem parent = ti[0].getParentItem();
-			if (parent!=null)
+            String table = ti[0].getText();
+            String[] path = Const.getTreeStrings(ti[0]);
+			if (path.length==3)
 			{
-				String schemaName = parent.getText();
-				String tablePart  = ti[0].getText();
-
-				String tab = null;
- 				if (STRING_TABLES.equalsIgnoreCase(schemaName) ||
- 					STRING_VIEWS.equalsIgnoreCase(schemaName) ||
- 					STRING_SYNONYMS.equalsIgnoreCase(schemaName))
+ 				if (STRING_TABLES.equalsIgnoreCase(path[1]) ||
+ 					STRING_VIEWS.equalsIgnoreCase(path[1]) ||
+ 					STRING_SYNONYMS.equalsIgnoreCase(path[1]))
 				{
-					tab = tablePart;
+					tableName = table;
+                    dispose();
 				}
-				else
+            }
+            if (path.length==4)
+            {
+				if (STRING_SCHEMAS.equals(path[1]) || STRING_CATALOG.equals(path[1])) 
 				{
-					tab = dbMeta.getSchemaTableCombination(schemaName, tablePart);
+					tableName = dbMeta.getSchemaTableCombination(path[2], path[3]);
+                    dispose();
 				}
-				tableName = tab;
-								
-				dispose();
 			}
 		}
 	}
