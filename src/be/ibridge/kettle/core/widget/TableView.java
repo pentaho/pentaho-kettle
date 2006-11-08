@@ -1809,7 +1809,7 @@ public class TableView extends Composite
 		field_changed = false;
 		ColumnInfo colinfo = columns[colnr-1];
 
-        if (columns[colnr-1].isReadOnly()) 
+        if (columns[colnr-1].isReadOnly() && columns[colnr-1].getSelectionAdapter()!=null) 
         {
             return;
         }

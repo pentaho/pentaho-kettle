@@ -165,13 +165,23 @@ public class Database
     {
         connect(null);
     }
-    
+
+    /**
+     * Open the database connection.
+     * @param partitionId the partition ID in the cluster to connect to.
+     * @throws KettleDatabaseException if something went wrong.
+     */
+    public void connect(String partitionId) throws KettleDatabaseException
+    {
+        connect(null, partitionId);
+    }
+
 	/**
 	 * Open the database connection.
      * @param partitionId the partition ID in the cluster to connect to.
 	 * @throws KettleDatabaseException if something went wrong.
 	 */
-	public void connect(String partitionId) throws KettleDatabaseException
+	public void connect(String group, String partitionId) throws KettleDatabaseException
 	{
         if (databaseMeta==null)
         {
@@ -180,6 +190,23 @@ public class Database
         
         try
 		{
+            // Before anything else, let's see if we already have a connection defined for this group/partition!
+            // The group is called after the thread-name of the transformation or job that is running
+            // The name of that threadname is expected to be unique (it is in Kettle)
+            // So the deal is that if there is another thread using that, we go for it. 
+            // 
+            if (!Const.isEmpty(group))
+            {
+                String groupHash = group;
+                if (!Const.isEmpty(partitionId))
+                {
+                    groupHash+="-"+partitionId;
+                }
+                
+                // Try to find the conection for the group
+                
+            }
+            
             // First see if we use connection pooling...
             //
             if ( databaseMeta.isUsingConnectionPool() &&  // default = false for backward compatibility

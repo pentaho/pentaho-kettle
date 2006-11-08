@@ -963,12 +963,12 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		return getName().equals( ((DatabaseMeta)obj).getName() );
 	}
 
-    public String getURL()
+    public String getURL() throws KettleDatabaseException
     {
         return getURL(null);
     }
 
-	public String getURL(String partitionId)
+	public String getURL(String partitionId) throws KettleDatabaseException
 	{
         String baseUrl;
         if (isPartitioned() && !Const.isEmpty(partitionId))
@@ -1844,7 +1844,9 @@ public class DatabaseMeta implements Cloneable, XMLInterface
             // URL
             String pwd = getPassword();
             setPassword("password"); // Don't give away the password in the URL!
-            r = new Row(); r.addValue(new Value(par, "URL")); r.addValue(new Value(val, getURL())); list.add(r);
+            String url = "";
+            try { url = getURL(); } catch(KettleDatabaseException e) {}
+            r = new Row(); r.addValue(new Value(par, "URL")); r.addValue(new Value(val, url)); list.add(r);
             setPassword(pwd);
             // SQL: Next sequence value
             r = new Row(); r.addValue(new Value(par, "SQL: next sequence value")); r.addValue(new Value(val, getSeqNextvalSQL("SEQUENCE"))); list.add(r);

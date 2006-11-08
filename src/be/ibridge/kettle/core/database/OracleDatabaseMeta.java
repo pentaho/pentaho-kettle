@@ -2,6 +2,7 @@
 package be.ibridge.kettle.core.database;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.value.Value;
 
 /**
@@ -102,7 +103,7 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 
 
 	
-    public String getURL(String hostname, String port, String databaseName)
+    public String getURL(String hostname, String port, String databaseName) throws KettleDatabaseException
     {
 		if (getAccessType()==DatabaseMeta.TYPE_ACCESS_ODBC)
 		{
@@ -115,14 +116,22 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		}
 		else // OCI
 		{
-			if (getDatabaseName()!=null && getDatabaseName().length()>0)
-			{
-				return "jdbc:oracle:oci:@(description=(address=(host="+hostname+")(protocol=tcp)(port="+port+"))(connect_data=(sid="+databaseName+")))";
-			}
-			else
-			{
-				return "jdbc:oracle:oci:@"+databaseName;
-			}
+		    // Let's see if we have an database name
+            if (getDatabaseName()!=null && getDatabaseName().length()>0)
+            {
+                // Has the user specified hostname & port number?
+                if (getHostname()!=null && getHostname().length()>0 && getDatabasePortNumberString()!=null && getDatabasePortNumberString().length()>0) {
+                    // User wants the full url
+                    return "jdbc:oracle:oci:@(description=(address=(host="+getHostname()+")(protocol=tcp)(port="+getDatabasePortNumberString()+"))(connect_data=(sid="+getDatabaseName()+")))";
+                } else {
+                    // User wants the shortcut url
+                    return "jdbc:oracle:oci:@"+getDatabaseName();
+                }               
+            }
+            else
+            {
+                throw new KettleDatabaseException("Unable to construct a JDBC URL: at least the database name must be specified");
+            }
 		}
 	}
     

@@ -19,6 +19,7 @@ package be.ibridge.kettle.core.database;
 import java.util.Map;
 import java.util.Properties;
 
+import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.value.Value;
 
 /**
@@ -270,8 +271,9 @@ public interface DatabaseInterface extends Cloneable
      * @param port the port as a string
      * @param databaseName the database name
      * @return the URL to use for connecting to the database.
+     * @throws KettleDatabaseException in case a configuration error is detected.
      */
-	public String getURL(String hostname, String port, String databaseName);
+	public String getURL(String hostname, String port, String databaseName) throws KettleDatabaseException;
 
     /**
      * @return true if the database supports sequences
