@@ -134,7 +134,6 @@ import be.ibridge.kettle.spoon.dialog.ShowCreditsDialog;
 import be.ibridge.kettle.spoon.dialog.TipsDialog;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage1;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage2;
-import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage3;
 import be.ibridge.kettle.trans.DatabaseImpact;
 import be.ibridge.kettle.trans.PartitionSchema;
 import be.ibridge.kettle.trans.StepLoader;
@@ -245,6 +244,8 @@ public class Spoon implements AddUndoPositionInterface
     private Composite tabComp;
 
     private SashForm leftSash;
+
+    private MenuItem miWizardCopyTable;
 
         
     public Spoon(LogWriter l, Repository rep)
@@ -851,7 +852,7 @@ public class Spoon implements AddUndoPositionInterface
           Listener lsWizardNewConnection= new Listener() { public void handleEvent(Event e) { createDatabaseWizard();  } };
           miWizardNewConnection.addListener(SWT.Selection, lsWizardNewConnection);
 
-          MenuItem miWizardCopyTable = new MenuItem(msWizard, SWT.CASCADE); 
+          miWizardCopyTable = new MenuItem(msWizard, SWT.CASCADE); 
           miWizardCopyTable.setText(Messages.getString("Spoon.Menu.Wizard.CopyTableWizard"));//&Copy table wizard...\tF4
           Listener lsWizardCopyTable= new Listener() { public void handleEvent(Event e) { copyTableWizard();  } };
           miWizardCopyTable.addListener(SWT.Selection, lsWizardCopyTable);
@@ -1005,9 +1006,8 @@ public class Spoon implements AddUndoPositionInterface
                                 new ErrorDialog(shell, Messages.getString("Spoon.Dialog.LoadTransformationError.Title"), Messages.getString("Spoon.Dialog.LoadTransformationError.Message"), ke);
                             }
                         }
-                        setShellText();
                         addMenuLast();
-                        refreshTree();
+                        refreshTree(true);
                         refreshGraph();
                         refreshHistory();
                       }
@@ -3448,8 +3448,15 @@ public class Spoon implements AddUndoPositionInterface
             }
         }
         
+        enableMenus();
     }
     
+    public void enableMenus()
+    {
+        // Only enable the copy tables wizard if we have a repository
+        // miWizardCopyTable.setEnabled( rep !=null );
+    }
+
     public void setFilename(String fname)
     {
         if (fname!=null) transMeta.setFilename(fname);
@@ -4280,15 +4287,14 @@ public class Spoon implements AddUndoPositionInterface
             page1.createControl(shell);
             final CopyTableWizardPage2 page2 = new CopyTableWizardPage2("2");
             page2.createControl(shell);
-            final CopyTableWizardPage3 page3 = new CopyTableWizardPage3 ("3", rep);
-            page3.createControl(shell);
+            // final CopyTableWizardPage3 page3 = new CopyTableWizardPage3 ("3", rep);
+            // page3.createControl(shell);
     
             Wizard wizard = new Wizard() 
             {
                 public boolean performFinish() 
                 {
-                    return copyTable(page3.getTransformationName(), page3.getDirectory(),
-                          page1.getSourceDatabase(), page1.getTargetDatabase(),
+                    return copyTable(page1.getSourceDatabase(), page1.getTargetDatabase(),
                           page2.getSelection()
                           );
                 }
@@ -4298,13 +4304,12 @@ public class Spoon implements AddUndoPositionInterface
                  */
                 public boolean canFinish()
                 {
-                    return page3.canFinish();
+                    return page2.canFinish();
                 }
             };
                     
             wizard.addPage(page1);
             wizard.addPage(page2);
-            wizard.addPage(page3);
                     
             WizardDialog wd = new WizardDialog(shell, wizard);
             wd.setMinimumPageSize(700,400);
@@ -4312,8 +4317,7 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
 
-    public boolean copyTable( String transname, RepositoryDirectory repdir, 
-                              DatabaseMeta sourceDBInfo, DatabaseMeta targetDBInfo,
+    public boolean copyTable( DatabaseMeta sourceDBInfo, DatabaseMeta targetDBInfo,
                               String tablename
                             )
     {
@@ -4322,10 +4326,8 @@ public class Spoon implements AddUndoPositionInterface
             //
             // Create a new transformation...
             //
-            TransMeta ti = new TransMeta();
-            ti.setName(transname);
-            ti.setDirectory(repdir);
-            ti.setDatabases(transMeta.getDatabases());
+            TransMeta meta = new TransMeta();
+            meta.setDatabases(transMeta.getDatabases());
             
             //
             // Add a note
@@ -4333,7 +4335,7 @@ public class Spoon implements AddUndoPositionInterface
             String note = Messages.getString("Spoon.Message.Note.ReadInformationFromTableOnDB",tablename,sourceDBInfo.getDatabaseName() )+Const.CR;//"Reads information from table ["+tablename+"] on database ["+sourceDBInfo+"]"
             note+=Messages.getString("Spoon.Message.Note.WriteInformationToTableOnDB",tablename,targetDBInfo.getDatabaseName() );//"After that, it writes the information to table ["+tablename+"] on database ["+targetDBInfo+"]"
             NotePadMeta ni = new NotePadMeta(note, 150, 10, -1, -1);
-            ti.addNote(ni);
+            meta.addNote(ni);
     
             // 
             // create the source step...
@@ -4350,7 +4352,7 @@ public class Spoon implements AddUndoPositionInterface
             fromstep.setLocation(150,100);
             fromstep.setDraw(true);
             fromstep.setDescription(Messages.getString("Spoon.Message.Note.ReadInformationFromTableOnDB",tablename,sourceDBInfo.getDatabaseName() ));
-            ti.addStep(fromstep);
+            meta.addStep(fromstep);
             
             //
             // add logic to rename fields in case any of the field names contain reserved words...
@@ -4386,10 +4388,10 @@ public class Spoon implements AddUndoPositionInterface
                 selstep.setLocation(350,100);
                 selstep.setDraw(true);
                 selstep.setDescription(Messages.getString("Spoon.Message.Note.RenamesReservedWords",targetDBInfo.getDatabaseTypeDesc()) );//"Renames reserved words for "+targetDBInfo.getDatabaseTypeDesc()
-                ti.addStep(selstep);
+                meta.addStep(selstep);
                 
                 TransHopMeta shi = new TransHopMeta(fromstep, selstep);
-                ti.addTransHop(shi);
+                meta.addTransHop(shi);
                 fromstep = selstep;
             }
             
@@ -4411,16 +4413,16 @@ public class Spoon implements AddUndoPositionInterface
             tostep.setLocation(550,100);
             tostep.setDraw(true);
             tostep.setDescription(Messages.getString("Spoon.Message.Note.WriteInformationToTableOnDB2",tablename,targetDBInfo.getDatabaseName() ));//"Write information to table ["+tablename+"] on database ["+targetDBInfo+"]"
-            ti.addStep(tostep);
+            meta.addStep(tostep);
             
             //
             // Add a hop between the two steps...
             //
             TransHopMeta hi = new TransHopMeta(fromstep, tostep);
-            ti.addTransHop(hi);
+            meta.addTransHop(hi);
             
             // OK, if we're still here: overwrite the current transformation...
-            transMeta = ti;
+            transMeta = meta;
             refreshGraph();
             refreshTree(true);
         }

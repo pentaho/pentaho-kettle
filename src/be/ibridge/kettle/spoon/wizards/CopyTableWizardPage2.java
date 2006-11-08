@@ -103,7 +103,7 @@ public class CopyTableWizardPage2 extends WizardPage
 				setPageComplete(canFlipToNextPage());
 			}
 		});
- 		
+        
  		FormData fdListSource = new FormData();
 		fdListSource.left   = new FormAttachment(0, 0); 
 		fdListSource.top    = new FormAttachment(wlListSource, 0);
@@ -116,7 +116,11 @@ public class CopyTableWizardPage2 extends WizardPage
 			{
 				public void widgetDefaultSelected(SelectionEvent e)
 				{
-					// find out how to go to next page on double click!
+					if (canFinish())
+                    {
+					    getWizard().performFinish();
+                        shell.dispose();
+                    }
 				}
 			}
 		);
@@ -163,7 +167,7 @@ public class CopyTableWizardPage2 extends WizardPage
 		setPageComplete(canFlipToNextPage());
 	}
 	
-	public boolean canFlipToNextPage()
+	public boolean canFinish()
 	{
 		String sel[] = wListSource.getSelection();
 		boolean canFlip = sel.length>0;

@@ -79,7 +79,7 @@ public class CopyTableWizardPage1 extends WizardPage
 	    compLayout.marginWidth  = Const.FORM_MARGIN;
 		composite.setLayout(compLayout);
 
-		wSourceDB = new List(composite, SWT.SINGLE | SWT.BORDER);
+		wSourceDB = new List(composite, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
  		props.setLook(wSourceDB);
 		for (int i=0;i<databases.size();i++)
 		{
@@ -103,7 +103,7 @@ public class CopyTableWizardPage1 extends WizardPage
 				}
 			);
 		
-		wTargetDB = new List(composite, SWT.SINGLE | SWT.BORDER);
+		wTargetDB = new List(composite, SWT.SINGLE | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
  		props.setLook(wTargetDB);
 		for (int i=0;i<databases.size();i++)
 		{
