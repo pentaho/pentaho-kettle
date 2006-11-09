@@ -1512,9 +1512,13 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		return databaseInterface.getLimitClause(nrRows);
 	}
 	
+    /**
+     * @param tableName The table or schema-table combination.  We expect this to be quoted properly already!
+     * @return the SQL for to get the fields of this table.
+     */
 	public String getSQLQueryFields(String tableName)
 	{
-	    return databaseInterface.getSQLQueryFields(quoteField(tableName));
+	    return databaseInterface.getSQLQueryFields(tableName);
 	}
 	
 	public String getAddColumnStatement(String tablename, Value v, String tk, boolean use_autoinc, String pk, boolean semicolon)

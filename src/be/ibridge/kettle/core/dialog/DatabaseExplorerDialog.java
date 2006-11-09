@@ -95,6 +95,8 @@ public class DatabaseExplorerDialog extends Dialog
 	private boolean justLook;
 	private String  selectTable;
 	private List    databases;
+    private boolean splitSchemaAndTable;
+    private String schemaName;
 
     /** @deprecated */
     public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList databases)
@@ -108,18 +110,6 @@ public class DatabaseExplorerDialog extends Dialog
         this(par, style, conn, databases);
     }
 
-	public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List databases)
-	{
-		super(par, style);
-		props=Props.getInstance();
-		log=LogWriter.getInstance();
-		dbMeta=conn;
-		dbcache = DBCache.getInstance();
-		this.databases = databases;
-		justLook=false;
-		selectTable=null;
-	}
-
     /** @deprecated */
     public DatabaseExplorerDialog(Shell par, Props pr, int style, DatabaseMeta conn, ArrayList databases, boolean look)
     {
@@ -132,11 +122,31 @@ public class DatabaseExplorerDialog extends Dialog
         this(par, style, conn, databases, look);
     }
     
-	public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List databases, boolean look)
+	public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List databases)
 	{
-		this(par, style, conn, databases);
-		justLook=look;
+		this(par, style, conn, databases, false, false);
 	}
+
+    public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List databases, boolean look)
+    {
+        this(par, style, conn, databases, look, false);
+    }
+    
+    public DatabaseExplorerDialog(Shell par, int style, DatabaseMeta conn, List databases, boolean look, boolean splitSchemaAndTable)
+    {
+        super(par, style);
+        this.dbMeta=conn;
+        this.databases = databases;
+        this.justLook=look;
+        this.splitSchemaAndTable = splitSchemaAndTable;
+        
+        selectTable=null;
+    
+        props=Props.getInstance();
+        log=LogWriter.getInstance();
+        dbcache = DBCache.getInstance();
+        
+    }
 
 	public void setSelectedTable(String selectedTable)
 	{
@@ -419,7 +429,7 @@ public class DatabaseExplorerDialog extends Dialog
 					}
 					else
 					{
-						tab = dbMeta.getSchemaTableCombination(schemaName, tableName);
+						tab = dbMeta.getSchemaTableCombination(dbMeta.quoteField(schemaName), dbMeta.quoteField(tableName));
 					}
 					final String table = tab;
 					
@@ -617,6 +627,7 @@ public class DatabaseExplorerDialog extends Dialog
  					STRING_VIEWS.equalsIgnoreCase(path[1]) ||
  					STRING_SYNONYMS.equalsIgnoreCase(path[1]))
 				{
+                    schemaName = null;
 					tableName = table;
                     dispose();
 				}
@@ -625,7 +636,16 @@ public class DatabaseExplorerDialog extends Dialog
             {
 				if (STRING_SCHEMAS.equals(path[1]) || STRING_CATALOG.equals(path[1])) 
 				{
-					tableName = dbMeta.getSchemaTableCombination(path[2], path[3]);
+                    if (splitSchemaAndTable)
+                    {
+                        schemaName = path[2];
+                        tableName = path[3];
+                    }
+                    else
+                    {
+                        schemaName = null;
+                        tableName = dbMeta.getSchemaTableCombination(path[2], path[3]);
+                    }
                     dispose();
 				}
 			}
@@ -659,4 +679,36 @@ public class DatabaseExplorerDialog extends Dialog
 	{
 		return this.getClass().getName();
 	}
+
+    /**
+     * @return the schemaName
+     */
+    public String getSchemaName()
+    {
+        return schemaName;
+    }
+
+    /**
+     * @param schemaName the schemaName to set
+     */
+    public void setSchemaName(String schemaName)
+    {
+        this.schemaName = schemaName;
+    }
+
+    /**
+     * @return the tableName
+     */
+    public String getTableName()
+    {
+        return tableName;
+    }
+
+    /**
+     * @param tableName the tableName to set
+     */
+    public void setTableName(String tableName)
+    {
+        this.tableName = tableName;
+    }
 }

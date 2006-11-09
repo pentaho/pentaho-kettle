@@ -3496,11 +3496,21 @@ public class Database
 		return retval;
 	}
 	
+    /**
+     * Generates SQL
+     * @param tablename the table name or schema/table combination: this needs to be quoted properly in advance.
+     * @param fields the fields
+     * @param tk the name of the technical key field
+     * @param use_autoinc true if we need to use auto-increment fields for a primary key
+     * @param pk the name of the primary/technical key field
+     * @param semicolon append semicolon to the statement
+     * @return the SQL needed to create the specified table and fields.
+     */
 	public String getCreateTableStatement(String tablename, Row fields, String tk, boolean use_autoinc, String pk, boolean semicolon)
 	{
 		String retval;
 		
-		retval = "CREATE TABLE "+databaseMeta.quoteField(tablename)+Const.CR;
+		retval = "CREATE TABLE "+tablename+Const.CR;
 		retval+= "("+Const.CR;
 		for (int i=0;i<fields.size();i++)
 		{
@@ -4143,8 +4153,7 @@ public class Database
 		return row;
 	}
 	
-	public synchronized void getNextValue(Hashtable counters, String table, Value val_key)
-		throws KettleDatabaseException
+	public synchronized void getNextValue(Hashtable counters, String table, Value val_key) throws KettleDatabaseException
 	{
 		String lookup = databaseMeta.quoteField(table)+"."+databaseMeta.quoteField(val_key.getName());
 		
@@ -4272,9 +4281,17 @@ public class Database
 	}
 
 
+    /**
+     * Get the first rows from a table (for preview) 
+     * @param table_name The table name (or schema/table combination): this needs to be quoted properly
+     * @param limit limit <=0 means unlimited, otherwise this specifies the maximum number of rows read.
+     * @param monitor The progress monitor to update while getting the rows.
+     * @return An ArrayList of rows.
+     * @throws KettleDatabaseException in case something goes wrong
+     */
 	public ArrayList getFirstRows(String table_name, int limit, IProgressMonitor monitor) throws KettleDatabaseException
 	{
-		String sql = "SELECT * FROM "+databaseMeta.quoteField(table_name);
+		String sql = "SELECT * FROM "+table_name;
 		
         if (limit>0)
 		{
@@ -4289,8 +4306,7 @@ public class Database
 		return rowinfo;
 	}
 	
-	public String[] getTableTypes()
-		throws KettleDatabaseException
+	public String[] getTableTypes() throws KettleDatabaseException
 	{
 		try
 		{
