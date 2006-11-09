@@ -71,7 +71,7 @@ public class AccessOutput extends BaseStep implements StepInterface
 			writeToTable(r);
 			putRow(r);       // in case we want it go further...
 
-			if ((linesOutput>0) && (linesOutput%Const.ROWS_UPDATE)==0 && linesOutput>0) logBasic("linenr "+linesOutput);
+            if (checkFeedback(linesOutput)) logBasic("linenr "+linesOutput);
 		}
 		catch(KettleException e)
 		{

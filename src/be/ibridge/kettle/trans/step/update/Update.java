@@ -187,7 +187,7 @@ public class Update extends BaseStep implements StepInterface
 			lookupValues(r); // add new values to the row in rowset[0].
 			putRow(r);       // copy row to output rowset(s);
 			
-			if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("Update.Log.LineNumber")+linesRead); //$NON-NLS-1$
+            if (checkFeedback(linesRead)) logBasic(Messages.getString("Update.Log.LineNumber")+linesRead); //$NON-NLS-1$
 		}
 		catch(KettleException e)
 		{

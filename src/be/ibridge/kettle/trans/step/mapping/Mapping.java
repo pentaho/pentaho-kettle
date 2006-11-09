@@ -185,7 +185,7 @@ public class Mapping extends BaseStep implements StepInterface
 		
         data.mappingInput.putRow(r);     // copy row to possible alternate rowset(s) in the mapping.
         
-        if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("Mapping.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        if (checkFeedback(linesRead)) logBasic(Messages.getString("Mapping.Log.LineNumber")+linesRead); //$NON-NLS-1$
 
         //
         // The problem now is to get a row back from the mapping...

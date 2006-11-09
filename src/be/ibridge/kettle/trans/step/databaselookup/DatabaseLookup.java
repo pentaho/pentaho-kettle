@@ -283,7 +283,7 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 				// add new values to the row in rowset[0].
 				putRow(r);       // copy row to output rowset(s);
 				if (log.isRowLevel()) logRowlevel(Messages.getString("DatabaseLookup.Log.WroteRowToNextStep")+r); //$NON-NLS-1$
-				if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic("linenr "+linesRead); //$NON-NLS-1$
+                if (checkFeedback(linesRead)) logBasic("linenr "+linesRead); //$NON-NLS-1$
 			}
 		}
 		catch(KettleException e)

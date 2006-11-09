@@ -157,7 +157,7 @@ public class ExecSQL extends BaseStep implements StepInterface
         
 		putRow(row);  // send it out!    
 
-        if ((linesWritten>0) && (linesWritten%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("ExecSQL.Log.LineNumber")+linesWritten); //$NON-NLS-1$
+        if (checkFeedback(linesWritten)) logBasic(Messages.getString("ExecSQL.Log.LineNumber")+linesWritten); //$NON-NLS-1$
 
 		return true;
 	}

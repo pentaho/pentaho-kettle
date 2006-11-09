@@ -1850,7 +1850,8 @@ public class BaseStep extends Thread
         this.partitionMerging = partitionMerging;
     }
     
-    
-    
-
+    protected boolean checkFeedback(long lines)
+    {
+        return getTransMeta().isFeedbackShown() && (lines>0) && (getTransMeta().getFeedbackSize()>0) && (lines%getTransMeta().getFeedbackSize())==0;
+    }
 }

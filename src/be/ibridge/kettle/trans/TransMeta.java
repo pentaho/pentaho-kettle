@@ -155,6 +155,12 @@ public class TransMeta implements XMLInterface
     
     private List                partitionSchemas;
     
+    /** The group name that will cause all created database connections to use the first connection in that group */
+    private String              connectionGroup;
+    
+    private boolean             feedbackShown;
+    private int                 feedbackSize;
+    
     // //////////////////////////////////////////////////////////////////////////
 
     public static final int     TYPE_UNDO_CHANGE   = 1;
@@ -272,6 +278,9 @@ public class TransMeta implements XMLInterface
         
         resultRows = new ArrayList();
         resultFiles = new ArrayList();
+        
+        feedbackShown = true;
+        feedbackSize = Const.ROWS_UPDATE;
         
         // setInternalKettleVariables(); Don't clear the internal variables for ad-hoc transformations, it's ruines the previews
     }
@@ -1432,27 +1441,6 @@ public class TransMeta implements XMLInterface
     }
 
     /**
-     * Returns a string containing an XML representation of the transformation object.
-     *
-     * @return String containing an XML representation of the complete transformation.
-     */
-    /**
-     * Saves the transformation information to a repository.
-     *
-     * @param rep The repository to save to.
-     * @return True if everything went OK, false if an error occured.
-     */
-    private void saveRepTrans(Repository rep) throws KettleDatabaseException
-    {
-        // The ID has to be assigned, even when it's a new item...
-        rep.insertTransformation(getID(), getName(), readStep == null ? -1 : readStep.getID(), writeStep == null ? -1 : writeStep.getID(),
-                inputStep == null ? -1 : inputStep.getID(), outputStep == null ? -1 : outputStep.getID(), updateStep == null ? -1 : updateStep
-                        .getID(), logConnection == null ? -1 : logConnection.getID(), logTable, useBatchId, logfieldUsed,
-                maxDateConnection == null ? -1 : maxDateConnection.getID(), maxDateTable, maxDateField, maxDateOffset, maxDateDifference,
-                modifiedUser, modifiedDate, sizeRowset, directory.getID());
-    }
-
-    /**
      * Determine if we should put a replace warning or not for the transformation in a certain repository.
      *
      * @param rep The repository.
@@ -1595,7 +1583,9 @@ public class TransMeta implements XMLInterface
 
             if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.FinishingTask.Title")); //$NON-NLS-1$
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingTransformationInfo")); //$NON-NLS-1$
-            saveRepTrans(rep);
+            
+            rep.insertTransformation(this); // save the top level information for the transformation
+            rep.closeTransAttributeInsertPreparedStatement();
 
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingDependencies")); //$NON-NLS-1$
             for (int i = 0; i < nrDependencies(); i++)
@@ -1714,6 +1704,25 @@ public class TransMeta implements XMLInterface
                     log.logDetailed(toString(), "ID_DIRECTORY=" + id_directory); //$NON-NLS-1$
                     // Set right directory...
                     directory = directoryTree.findDirectory(id_directory);
+                }
+                
+                connectionGroup = rep.getTransAttributeString(getID(), 0, "CONNECTION_GROUP");
+                feedbackShown = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, "FEEDBACK_SHOWN") );
+                feedbackSize = (int) rep.getTransAttributeInteger(getID(), 0, "FEEDBACK_SIZE");
+                
+                // Also load the partitioning from the attributes...
+                int nrSchemas = rep.countNrTransAttributes(getID(), "SCHEMA_NAME");
+                for (int i=0;i<nrSchemas;i++)
+                {
+                    String schemaName =       rep.getTransAttributeString(getID(), i, "SCHEMA_NAME");
+                    int nrPartitions  = (int) rep.getTransAttributeInteger(getID(), i, "SCHEMA_NAME");
+                    String[] ids = new String[nrPartitions];
+                    for (int p=0;p<nrPartitions;p++)
+                    {
+                        ids[p] = rep.getTransAttributeString(getID(), i, "SCHEMA_PARTITION_"+p);
+                    }
+
+                    partitionSchemas.add( new PartitionSchema(schemaName, ids) );
                 }
             }
         }
@@ -1969,9 +1978,16 @@ public class TransMeta implements XMLInterface
         retval.append("      " + XMLHandler.addTagValue("offset", maxDateOffset)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      " + XMLHandler.addTagValue("maxdiff", maxDateDifference)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      </maxdate>" + Const.CR); //$NON-NLS-1$
+        
         retval.append("    " + XMLHandler.addTagValue("size_rowset", sizeRowset)); //$NON-NLS-1$ //$NON-NLS-2$
+        
         retval.append("    " + XMLHandler.addTagValue("sleep_time_empty", sleepTimeEmpty)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("sleep_time_full", sleepTimeFull)); //$NON-NLS-1$ //$NON-NLS-2$
+        
+        retval.append("    " + XMLHandler.addTagValue("connection_group", connectionGroup)); //$NON-NLS-1$ //$NON-NLS-2$
+        
+        retval.append("    " + XMLHandler.addTagValue("feedback_shown", feedbackShown)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("feedback_size", feedbackSize)); //$NON-NLS-1$ //$NON-NLS-2$
 
         retval.append("    <dependencies>" + Const.CR); //$NON-NLS-1$
         for (int i = 0; i < nrDependencies(); i++)
@@ -2325,6 +2341,10 @@ public class TransMeta implements XMLInterface
             sizeRowset = Const.toInt(srowset, Const.ROWS_IN_ROWSET);
             sleepTimeEmpty = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_empty"), Const.SLEEP_EMPTY_NANOS); //$NON-NLS-1$
             sleepTimeFull  = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_full"), Const.SLEEP_FULL_NANOS); //$NON-NLS-1$
+            connectionGroup = XMLHandler.getTagValue(infonode, "connection_group"); //$NON-NLS-1$
+
+            feedbackShown = !"N".equalsIgnoreCase( XMLHandler.getTagValue(infonode, "feedback_shown") ); //$NON-NLS-1$
+            feedbackSize = Const.toInt(XMLHandler.getTagValue(infonode, "feedback_size"), Const.ROWS_UPDATE); //$NON-NLS-1$
 
             // Changed user/date
             modifiedUser = XMLHandler.getTagValue(infonode, "modified_user");
@@ -4432,5 +4452,53 @@ public class TransMeta implements XMLInterface
             names[i] = ((PartitionSchema)partitionSchemas.get(i)).getName();
         }
         return names;
+    }
+
+    /**
+     * @return the connectionGroup
+     */
+    public String getConnectionGroup()
+    {
+        return connectionGroup;
+    }
+
+    /**
+     * @param connectionGroup the connectionGroup to set
+     */
+    public void setConnectionGroup(String connectionGroup)
+    {
+        this.connectionGroup = connectionGroup;
+    }
+
+    /**
+     * @return the feedbackShown
+     */
+    public boolean isFeedbackShown()
+    {
+        return feedbackShown;
+    }
+
+    /**
+     * @param feedbackShown the feedbackShown to set
+     */
+    public void setFeedbackShown(boolean feedbackShown)
+    {
+        this.feedbackShown = feedbackShown;
+    }
+
+    /**
+     * @return the feedbackSize
+     */
+    public int getFeedbackSize()
+    {
+        return feedbackSize;
+    }
+
+    /**
+     * @param feedbackSize the feedbackSize to set
+     */
+    public void setFeedbackSize(int feedbackSize)
+    {
+        this.feedbackSize = feedbackSize;
     }
 }

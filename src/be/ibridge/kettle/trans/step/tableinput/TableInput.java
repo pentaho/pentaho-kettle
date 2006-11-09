@@ -157,7 +157,7 @@ public class TableInput extends BaseStep implements StepInterface
             putRow(data.thisrow); // fill the rowset(s). (wait for empty)
             data.thisrow = data.nextrow;
 
-            if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic("linenr " + linesInput);
+            if (checkFeedback(linesInput)) logBasic("linenr " + linesInput);
         }
 		
 		return true;

@@ -166,7 +166,7 @@ public class Denormaliser extends BaseStep implements StepInterface
 
 		data.previous=new Row(r);
         
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("Denormaliser.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        if (checkFeedback(linesRead)) logBasic(Messages.getString("Denormaliser.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
 		return true;
 	}

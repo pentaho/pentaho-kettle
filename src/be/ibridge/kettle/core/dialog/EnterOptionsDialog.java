@@ -213,7 +213,11 @@ public class EnterOptionsDialog extends Dialog
 	private Shell  shell;
 	private SelectionAdapter lsDef;
 	private Props props;
-	
+
+    private int middle;
+
+    private int margin;
+
 	public EnterOptionsDialog(Shell parent, Props pr)
 	{
 		super(parent, SWT.NONE);
@@ -237,354 +241,98 @@ public class EnterOptionsDialog extends Dialog
 		shell.setLayout(formLayout);
 		shell.setText("Kettle options...");
 		
-		int middle = props.getMiddlePct();
-		int margin = Const.MARGIN;
+		middle = props.getMiddlePct();
+		margin = Const.MARGIN;
 		
-		int h = 40;
-
 		wTabFolder = new CTabFolder(shell, SWT.BORDER);
         props.setLook(wTabFolder, Props.WIDGET_STYLE_TAB);
 
-		//////////////////////////
-		// START OF GENERAL TAB///
-		///
-		wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
-		wGeneralTab.setText("General");
+        addGeneralTab();
+        addLookTab();
 
-		FormLayout generalLayout = new FormLayout ();
-		generalLayout.marginWidth  = 3;
-		generalLayout.marginHeight = 3;
+		// Some buttons
+		wOK=new Button(shell, SWT.PUSH );
+		wOK.setText("  &OK  ");
+		wCancel=new Button(shell, SWT.PUSH);
+		wCancel.setText("  &Cancel  ");
 		
-        sGeneralComp = new ScrolledComposite(wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
-        sGeneralComp.setLayout(new FillLayout());
-        
-		wGeneralComp = new Composite(sGeneralComp, SWT.NONE);
-		props.setLook(wGeneralComp);
-		wGeneralComp.setLayout(generalLayout);
-
-		// MaxUndo line
-		wlMaxUndo=new Label(wGeneralComp, SWT.RIGHT);
-		wlMaxUndo.setText("Maximum Undo Level ");
-        props.setLook(wlMaxUndo);
-		fdlMaxUndo=new FormData();
-		fdlMaxUndo.left = new FormAttachment(0, 0);
-		fdlMaxUndo.right= new FormAttachment(middle, -margin);
-		fdlMaxUndo.top  = new FormAttachment(0, 0);
-		wlMaxUndo.setLayoutData(fdlMaxUndo);
-		wMaxUndo=new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wMaxUndo.setText(""+props.getMaxUndo());
-        props.setLook(wMaxUndo);
-		fdMaxUndo=new FormData();
-		fdMaxUndo.left = new FormAttachment(middle, 0);
-		fdMaxUndo.right= new FormAttachment(100, -margin);
-		fdMaxUndo.top  = new FormAttachment(0, 0);
-		wMaxUndo.setLayoutData(fdMaxUndo);
-
-        // Default preview size
-        wlDefaultPreview=new Label(wGeneralComp, SWT.RIGHT);
-        wlDefaultPreview.setText("Default preview size");
-        props.setLook(wlDefaultPreview);
-        fdlDefaultPreview=new FormData();
-        fdlDefaultPreview.left = new FormAttachment(0, 0);
-        fdlDefaultPreview.right= new FormAttachment(middle, -margin);
-        fdlDefaultPreview.top  = new FormAttachment(wMaxUndo, margin);
-        wlDefaultPreview.setLayoutData(fdlDefaultPreview);
-        wDefaultPreview=new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        wDefaultPreview.setText(""+props.getDefaultPreviewSize());
-        props.setLook(wDefaultPreview);
-        fdDefaultPreview=new FormData();
-        fdDefaultPreview.left = new FormAttachment(middle, 0);
-        fdDefaultPreview.right= new FormAttachment(100, -margin);
-        fdDefaultPreview.top  = new FormAttachment(wMaxUndo, margin);
-        wDefaultPreview.setLayoutData(fdDefaultPreview);
-
-		// Show tips on startup?
-		wlShowTips=new Label(wGeneralComp, SWT.RIGHT);
-		wlShowTips.setText("Show tips at startup? ");
-        props.setLook(wlShowTips);
-		fdlShowTips=new FormData();
-		fdlShowTips.left = new FormAttachment(0, 0);
-		fdlShowTips.top  = new FormAttachment(wDefaultPreview, margin);
-		fdlShowTips.right= new FormAttachment(middle, -margin);
-		wlShowTips.setLayoutData(fdlShowTips);
-		wShowTips=new Button(wGeneralComp, SWT.CHECK);
-        props.setLook(wShowTips);
-		wShowTips.setSelection(props.showTips());
-		fdShowTips=new FormData();
-		fdShowTips.left = new FormAttachment(middle, 0);
-		fdShowTips.top  = new FormAttachment(wDefaultPreview, margin);
-		fdShowTips.right= new FormAttachment(100, 0);
-		wShowTips.setLayoutData(fdShowTips);
-
-		// Use DB Cache?
-		wlUseCache=new Label(wGeneralComp, SWT.RIGHT);
-		wlUseCache.setText("Use Database cache? ");
-        props.setLook(wlUseCache);
-		fdlUseCache=new FormData();
-		fdlUseCache.left = new FormAttachment(0, 0);
-		fdlUseCache.top  = new FormAttachment(wShowTips, margin);
-		fdlUseCache.right= new FormAttachment(middle, -margin);
-		wlUseCache.setLayoutData(fdlUseCache);
-		wUseCache=new Button(wGeneralComp, SWT.CHECK);
-        props.setLook(wUseCache);
-		wUseCache.setSelection(props.useDBCache());
-		fdUseCache=new FormData();
-		fdUseCache.left = new FormAttachment(middle, 0);
-		fdUseCache.top  = new FormAttachment(wShowTips, margin);
-		fdUseCache.right= new FormAttachment(100, 0);
-		wUseCache.setLayoutData(fdUseCache);
-
-
-		// Auto load last file at startup?
-		wlOpenLast=new Label(wGeneralComp, SWT.RIGHT);
-		wlOpenLast.setText("Open last file at startup? ");
-        props.setLook(wlOpenLast);
-		fdlOpenLast=new FormData();
-		fdlOpenLast.left = new FormAttachment(0, 0);
-		fdlOpenLast.top  = new FormAttachment(wUseCache, margin);
-		fdlOpenLast.right= new FormAttachment(middle, -margin);
-		wlOpenLast.setLayoutData(fdlOpenLast);
-		wOpenLast=new Button(wGeneralComp, SWT.CHECK);
-        props.setLook(wOpenLast);
-		wOpenLast.setSelection(props.openLastFile());
-		fdOpenLast=new FormData();
-		fdOpenLast.left = new FormAttachment(middle, 0);
-		fdOpenLast.top  = new FormAttachment(wUseCache, margin);
-		fdOpenLast.right= new FormAttachment(100, 0);
-		wOpenLast.setLayoutData(fdOpenLast);
-
-		// Auto save changed files?
-		wlAutoSave=new Label(wGeneralComp, SWT.RIGHT);
-		wlAutoSave.setText("Auto save changed file? ");
-        props.setLook(wlAutoSave);
-		fdlAutoSave=new FormData();
-		fdlAutoSave.left = new FormAttachment(0, 0);
-		fdlAutoSave.top  = new FormAttachment(wOpenLast, margin);
-		fdlAutoSave.right= new FormAttachment(middle, -margin);
-		wlAutoSave.setLayoutData(fdlAutoSave);
-		wAutoSave=new Button(wGeneralComp, SWT.CHECK);
-        props.setLook(wAutoSave);
-		wAutoSave.setSelection(props.getAutoSave());
-		fdAutoSave=new FormData();
-		fdAutoSave.left = new FormAttachment(middle, 0);
-		fdAutoSave.top  = new FormAttachment(wOpenLast, margin);
-		fdAutoSave.right= new FormAttachment(100, 0);
-		wAutoSave.setLayoutData(fdAutoSave);
-
-        // Only save used connections to XML?
-        wlDBConnXML=new Label(wGeneralComp, SWT.RIGHT);
-        wlDBConnXML.setText("Only save used connections to XML? ");
-        props.setLook(wlDBConnXML);
-        fdlDBConnXML=new FormData();
-        fdlDBConnXML.left = new FormAttachment(0, 0);
-        fdlDBConnXML.top  = new FormAttachment(wAutoSave, margin);
-        fdlDBConnXML.right= new FormAttachment(middle, -margin);
-        wlDBConnXML.setLayoutData(fdlDBConnXML);
-        wDBConnXML=new Button(wGeneralComp, SWT.CHECK);
-        props.setLook(wDBConnXML);
-        wDBConnXML.setSelection(props.areOnlyUsedConnectionsSavedToXML());
-        fdDBConnXML=new FormData();
-        fdDBConnXML.left = new FormAttachment(middle, 0);
-        fdDBConnXML.top  = new FormAttachment(wAutoSave, margin);
-        fdDBConnXML.right= new FormAttachment(100, 0);
-        wDBConnXML.setLayoutData(fdDBConnXML);
-
-        // Ask about replacing existing connections?
-        wlAskReplaceDB=new Label(wGeneralComp, SWT.RIGHT);
-        wlAskReplaceDB.setText("Ask about replacing existing connections on open/import? ");
-        props.setLook(wlAskReplaceDB);
-        fdlAskReplaceDB=new FormData();
-        fdlAskReplaceDB.left = new FormAttachment(0, 0);
-        fdlAskReplaceDB.top  = new FormAttachment(wDBConnXML, margin);
-        fdlAskReplaceDB.right= new FormAttachment(middle, -margin);
-        wlAskReplaceDB.setLayoutData(fdlAskReplaceDB);
-        wAskReplaceDB=new Button(wGeneralComp, SWT.CHECK);
-        props.setLook(wAskReplaceDB);
-        wAskReplaceDB.setSelection(props.askAboutReplacingDatabaseConnections());
-        fdAskReplaceDB=new FormData();
-        fdAskReplaceDB.left = new FormAttachment(middle, 0);
-        fdAskReplaceDB.top  = new FormAttachment(wDBConnXML, margin);
-        fdAskReplaceDB.right= new FormAttachment(100, 0);
-        wAskReplaceDB.setLayoutData(fdAskReplaceDB);
-
-        // Only save used connections to XML?
-        wlReplaceDB=new Label(wGeneralComp, SWT.RIGHT);
-        wlReplaceDB.setText("Replace existing database connections on open/import? ");
-        props.setLook(wlReplaceDB);
-        fdlReplaceDB=new FormData();
-        fdlReplaceDB.left = new FormAttachment(0, 0);
-        fdlReplaceDB.top  = new FormAttachment(wAskReplaceDB, margin);
-        fdlReplaceDB.right= new FormAttachment(middle, -margin);
-        wlReplaceDB.setLayoutData(fdlReplaceDB);
-        wReplaceDB=new Button(wGeneralComp, SWT.CHECK);
-        props.setLook(wReplaceDB);
-        wReplaceDB.setSelection(props.replaceExistingDatabaseConnections());
-        fdReplaceDB=new FormData();
-        fdReplaceDB.left = new FormAttachment(middle, 0);
-        fdReplaceDB.top  = new FormAttachment(wAskReplaceDB, margin);
-        fdReplaceDB.right= new FormAttachment(100, 0);
-        wReplaceDB.setLayoutData(fdReplaceDB);
-
-		// Show confirmation after save?
-		wlSaveConf=new Label(wGeneralComp, SWT.RIGHT);
-		wlSaveConf.setText("Show save confirmation? ");
-        props.setLook(wlSaveConf);
-		fdlSaveConf=new FormData();
-		fdlSaveConf.left = new FormAttachment(0, 0);
-		fdlSaveConf.top  = new FormAttachment(wReplaceDB, margin);
-		fdlSaveConf.right= new FormAttachment(middle, -margin);
-		wlSaveConf.setLayoutData(fdlSaveConf);
-		wSaveConf=new Button(wGeneralComp, SWT.CHECK);
-        props.setLook(wSaveConf);
-		wSaveConf.setSelection(props.getSaveConfirmation());
-		fdSaveConf=new FormData();
-		fdSaveConf.left = new FormAttachment(middle, 0);
-		fdSaveConf.top  = new FormAttachment(wReplaceDB, margin);
-		fdSaveConf.right= new FormAttachment(100, 0);
-		wSaveConf.setLayoutData(fdSaveConf);
-
-		// Automatically split hops?
-		wlAutoSplit=new Label(wGeneralComp, SWT.RIGHT);
-		wlAutoSplit.setText("Automatically split hops? ");
-        props.setLook(wlAutoSplit);
-		fdlAutoSplit=new FormData();
-		fdlAutoSplit.left = new FormAttachment(0, 0);
-		fdlAutoSplit.top  = new FormAttachment(wSaveConf, margin);
-		fdlAutoSplit.right= new FormAttachment(middle, -margin);
-		wlAutoSplit.setLayoutData(fdlAutoSplit);
-		wAutoSplit=new Button(wGeneralComp, SWT.CHECK);
-        props.setLook(wAutoSplit);
-		wAutoSplit.setSelection(props.getAutoSplit());
-		fdAutoSplit=new FormData();
-		fdAutoSplit.left = new FormAttachment(middle, 0);
-		fdAutoSplit.top  = new FormAttachment(wSaveConf, margin);
-		fdAutoSplit.right= new FormAttachment(100, 0);
-		wAutoSplit.setLayoutData(fdAutoSplit);
-
-        // Show repository dialog at startup?
-        wlShowRep=new Label(wGeneralComp, SWT.RIGHT);
-        wlShowRep.setText("Show the repository dialog at startup? ");
-        props.setLook(wlShowRep);
-        fdlShowRep=new FormData();
-        fdlShowRep.left = new FormAttachment(0, 0);
-        fdlShowRep.top  = new FormAttachment(wAutoSplit, margin);
-        fdlShowRep.right= new FormAttachment(middle, -margin);
-        wlShowRep.setLayoutData(fdlShowRep);
-        wShowRep=new Button(wGeneralComp, SWT.CHECK);
-        props.setLook(wShowRep);
-        wShowRep.setSelection(props.showRepositoriesDialogAtStartup());
-        fdShowRep=new FormData();
-        fdShowRep.left = new FormAttachment(middle, 0);
-        fdShowRep.top  = new FormAttachment(wAutoSplit, margin);
-        fdShowRep.right= new FormAttachment(100, 0);
-        wShowRep.setLayoutData(fdShowRep);
-
-        // Show exit warning?
-        wlExitWarning=new Label(wGeneralComp, SWT.RIGHT);
-        wlExitWarning.setText("Show a warning before exiting? ");
-        props.setLook(wlExitWarning);
-        fdlExitWarning=new FormData();
-        fdlExitWarning.left = new FormAttachment(0, 0);
-        fdlExitWarning.top  = new FormAttachment(wShowRep, margin);
-        fdlExitWarning.right= new FormAttachment(middle, -margin);
-        wlExitWarning.setLayoutData(fdlExitWarning);
-        wExitWarning=new Button(wGeneralComp, SWT.CHECK);
-        props.setLook(wExitWarning);
-        wExitWarning.setSelection(props.showExitWarning());
-        fdExitWarning=new FormData();
-        fdExitWarning.left = new FormAttachment(middle, 0);
-        fdExitWarning.top  = new FormAttachment(wShowRep, margin);
-        fdExitWarning.right= new FormAttachment(100, 0);
-        wExitWarning.setLayoutData(fdExitWarning);
-
-        // Clear custom parameters. (from step)
-        wlClearCustom=new Label(wGeneralComp, SWT.RIGHT);
-        wlClearCustom.setText("Clear custom parameters (steps/plugins)");
-        props.setLook(wlClearCustom);
-        fdlClearCustom=new FormData();
-        fdlClearCustom.left = new FormAttachment(0, 0);
-        fdlClearCustom.top  = new FormAttachment(wExitWarning, margin);
-        fdlClearCustom.right= new FormAttachment(middle, -margin);
-        wlClearCustom.setLayoutData(fdlClearCustom);
-        wClearCustom=new Button(wGeneralComp, SWT.PUSH);
-        props.setLook(wClearCustom);
-        wClearCustom.setText("Clear custom flags and parameters");
-        fdClearCustom=new FormData();
-        fdClearCustom.left = new FormAttachment(middle, 0);
-        fdClearCustom.top  = new FormAttachment(wExitWarning, margin);
-        fdClearCustom.right= new FormAttachment(100, 0);
-        wClearCustom.setLayoutData(fdClearCustom);
-        wClearCustom.setToolTipText("Clicking this button will erase all the custom flags and parameters"+Const.CR+"that are used in the dialogs of the steps and plugins. ");
-        wClearCustom.addSelectionListener(new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-                mb.setMessage("Are you sure you want to clear the custom step/plugin parameters and flags?");
-                mb.setText("Question");
-                int id = mb.open();
-                if (id==SWT.YES)
-                {
-                    props.clearCustomParameters();
-                    props.saveProps();
-                    MessageBox ok = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-                    ok.setMessage("The custom step/plugin parameters and flags were cleared");
-                    ok.open();
-                }
-            }
-        });
-
-		fdGeneralComp = new FormData();
-		fdGeneralComp.left  = new FormAttachment(0, 0);
-		fdGeneralComp.right = new FormAttachment(100, 0);
-		fdGeneralComp.top   = new FormAttachment(0, 0);
-		fdGeneralComp.bottom= new FormAttachment(100, 100);
-		wGeneralComp.setLayoutData(fdGeneralComp);
-
-		wGeneralComp.pack();
-        
-		Rectangle bounds = wGeneralComp.getBounds();
-        
-        sGeneralComp.setContent(wGeneralComp);
-        sGeneralComp.setExpandHorizontal(true);
-        sGeneralComp.setExpandVertical(true);
-        sGeneralComp.setMinWidth(bounds.width);
-        sGeneralComp.setMinHeight(bounds.height);
-        
-        wGeneralTab.setControl(sGeneralComp);
+		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
+		
+		fdTabFolder = new FormData();
+		fdTabFolder.left  = new FormAttachment(0, 0);
+		fdTabFolder.top   = new FormAttachment(0, 0);
+		fdTabFolder.right = new FormAttachment(100, 0);
+		fdTabFolder.bottom= new FormAttachment(wOK, -margin);
+		wTabFolder.setLayoutData(fdTabFolder);
 
 		/////////////////////////////////////////////////////////////
-		/// END OF GENERAL TAB
+		/// END OF TABS
 		/////////////////////////////////////////////////////////////
 
-		//////////////////////////
-		// START OF LOOK TAB///
-		///
-		wLookTab=new CTabItem(wTabFolder, SWT.NONE);
-		wLookTab.setText("Look && Feel");
+
 		
+		// Add listeners
+		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
+		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
+		
+		wOK.addListener    (SWT.Selection, lsOK     );
+		wCancel.addListener(SWT.Selection, lsCancel );
+		
+		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
+		wIconsize.addSelectionListener  (lsDef);
+		wLineWidth.addSelectionListener (lsDef);
+		wShadowSize.addSelectionListener(lsDef);
+		wMaxUndo.addSelectionListener   (lsDef);
+		wMiddlePct.addSelectionListener (lsDef);
+        wDefaultPreview.addSelectionListener (lsDef);
+		
+		// Detect [X] or ALT-F4 or something that kills this window...
+		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
+
+		wTabFolder.setSelection(0);
+		
+		BaseStepDialog.setSize(shell);
+
+		shell.open();
+		while (!shell.isDisposed())
+		{
+				if (!display.readAndDispatch()) display.sleep();
+		}
+		return props;
+	}
+
+	private void addLookTab()
+    {
+        int h = 40;
+
+        //////////////////////////
+        // START OF LOOK TAB///
+        ///
+        wLookTab=new CTabItem(wTabFolder, SWT.NONE);
+        wLookTab.setText("Look && Feel");
+        
         sLookComp = new ScrolledComposite(wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
         sLookComp.setLayout(new FillLayout());
         
-		wLookComp = new Composite(sLookComp, SWT.NONE);
+        wLookComp = new Composite(sLookComp, SWT.NONE);
         props.setLook(wLookComp);
-		
-		FormLayout lookLayout = new FormLayout();
-		lookLayout.marginWidth  = 3;
-		lookLayout.marginHeight = 3;
-		wLookComp.setLayout(lookLayout);
+        
+        FormLayout lookLayout = new FormLayout();
+        lookLayout.marginWidth  = 3;
+        lookLayout.marginHeight = 3;
+        wLookComp.setLayout(lookLayout);
 
         
-		// Fixed font
+        // Fixed font
         int nr = 0;
-		wlFFont=new Label(wLookComp, SWT.RIGHT);
-		wlFFont.setText("Fixed width font");
+        wlFFont=new Label(wLookComp, SWT.RIGHT);
+        wlFFont.setText("Fixed width font");
         props.setLook(wlFFont);
-		fdlFFont=new FormData();
-		fdlFFont.left  = new FormAttachment(0, 0);
-		fdlFFont.right = new FormAttachment(middle, -margin);
-		fdlFFont.top   = new FormAttachment(0, nr*h + margin+10);
-		wlFFont.setLayoutData(fdlFFont);
+        fdlFFont=new FormData();
+        fdlFFont.left  = new FormAttachment(0, 0);
+        fdlFFont.right = new FormAttachment(middle, -margin);
+        fdlFFont.top   = new FormAttachment(0, nr*h + margin+10);
+        wlFFont.setLayoutData(fdlFFont);
 
         wdFFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
         wdFFont.setText("default");
@@ -606,31 +354,31 @@ public class EnterOptionsDialog extends Dialog
             }
         );
 
-		wbFFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
-		wbFFont.setText("change");
+        wbFFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
+        wbFFont.setText("change");
         props.setLook(wbFFont);
         fdbFFont = new FormData();
-		fdbFFont.right= new FormAttachment(wdFFont, -margin);
-		fdbFFont.top  = new FormAttachment(0, nr*h + margin);
+        fdbFFont.right= new FormAttachment(wdFFont, -margin);
+        fdbFFont.top  = new FormAttachment(0, nr*h + margin);
         fdbFFont.bottom  = new FormAttachment(0, (nr+1)*h + margin);
-		wbFFont.setLayoutData(fdbFFont);
-		wbFFont.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent arg0) 
-				{
-					FontDialog fd = new FontDialog(shell);
+        wbFFont.setLayoutData(fdbFFont);
+        wbFFont.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent arg0) 
+                {
+                    FontDialog fd = new FontDialog(shell);
                     fd.setFontList(new FontData[] { fixedFontData });
-					FontData newfd = fd.open();
-					if (newfd!=null)
-					{
-						fixedFontData = newfd;
-						fixedFont.dispose();
-						fixedFont = new Font(display, fixedFontData);
-						wFFont.redraw();
-					}
-				}
-			}
-		);
+                    FontData newfd = fd.open();
+                    if (newfd!=null)
+                    {
+                        fixedFontData = newfd;
+                        fixedFont.dispose();
+                        fixedFont = new Font(display, fixedFontData);
+                        wFFont.redraw();
+                    }
+                }
+            }
+        );
 
         wFFont = new Canvas(wLookComp, SWT.BORDER );
         props.setLook(wFFont);
@@ -654,16 +402,16 @@ public class EnterOptionsDialog extends Dialog
             }
         );
 
-		// Graph font
+        // Graph font
         nr++;
-		wlGFont=new Label(wLookComp, SWT.RIGHT);
-		wlGFont.setText("Graph font");
+        wlGFont=new Label(wLookComp, SWT.RIGHT);
+        wlGFont.setText("Graph font");
         props.setLook(wlGFont);
-		fdlGFont=new FormData();
-		fdlGFont.left  = new FormAttachment(0, 0);
-		fdlGFont.right = new FormAttachment(middle, -margin);
-		fdlGFont.top   = new FormAttachment(0, nr*h+margin+10);
-		wlGFont.setLayoutData(fdlGFont);
+        fdlGFont=new FormData();
+        fdlGFont.left  = new FormAttachment(0, 0);
+        fdlGFont.right = new FormAttachment(middle, -margin);
+        fdlGFont.top   = new FormAttachment(0, nr*h+margin+10);
+        wlGFont.setLayoutData(fdlGFont);
 
         wdGFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
         wdGFont.setText("default");
@@ -686,31 +434,31 @@ public class EnterOptionsDialog extends Dialog
             }
         );
 
-		wbGFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
-		wbGFont.setText("change");
+        wbGFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
+        wbGFont.setText("change");
         props.setLook(wbGFont);
-		fdbGFont=new FormData();
-		fdbGFont.right= new FormAttachment(wdGFont, -margin);
-		fdbGFont.top  = new FormAttachment(0, nr*h+margin);
+        fdbGFont=new FormData();
+        fdbGFont.right= new FormAttachment(wdGFont, -margin);
+        fdbGFont.top  = new FormAttachment(0, nr*h+margin);
         fdbGFont.bottom = new FormAttachment(0, (nr+1)*h+margin);
-		wbGFont.setLayoutData(fdbGFont);
-		wbGFont.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent arg0) 
-				{
-					FontDialog fd = new FontDialog(shell);
+        wbGFont.setLayoutData(fdbGFont);
+        wbGFont.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent arg0) 
+                {
+                    FontDialog fd = new FontDialog(shell);
                     fd.setFontList(new FontData[] { graphFontData });
-					FontData newfd = fd.open();
-					if (newfd!=null)
-					{
-						graphFontData = newfd;
-						graphFont.dispose();
-						graphFont = new Font(display, graphFontData);
-						wGFont.redraw();
-					}
-				}
-			}
-		);
+                    FontData newfd = fd.open();
+                    if (newfd!=null)
+                    {
+                        graphFontData = newfd;
+                        graphFont.dispose();
+                        graphFont = new Font(display, graphFontData);
+                        wGFont.redraw();
+                    }
+                }
+            }
+        );
 
         wGFont = new Canvas(wLookComp, SWT.BORDER );
         props.setLook(wGFont);
@@ -736,36 +484,36 @@ public class EnterOptionsDialog extends Dialog
         
         
 
-		// Note font
+        // Note font
         nr++;
-		wlNFont = new Label(wLookComp, SWT.RIGHT);
-		wlNFont.setText("Note font");
+        wlNFont = new Label(wLookComp, SWT.RIGHT);
+        wlNFont.setText("Note font");
         props.setLook(wlNFont);
-		fdlNFont = new FormData();
-		fdlNFont.left  = new FormAttachment(0, 0);
-		fdlNFont.right = new FormAttachment(middle, -margin);
-		fdlNFont.top   = new FormAttachment(0, nr*h + margin + 10);
-		wlNFont.setLayoutData(fdlNFont);
+        fdlNFont = new FormData();
+        fdlNFont.left  = new FormAttachment(0, 0);
+        fdlNFont.right = new FormAttachment(middle, -margin);
+        fdlNFont.top   = new FormAttachment(0, nr*h + margin + 10);
+        wlNFont.setLayoutData(fdlNFont);
 
-		wdNFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
+        wdNFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
         wdNFont.setText("default");
         props.setLook(wdNFont);
-		fddNFont = new FormData();
+        fddNFont = new FormData();
         fddNFont.right = new FormAttachment(100, 0);
         fddNFont.top = new FormAttachment(0, nr*h + margin);
         fddNFont.bottom = new FormAttachment(0, (nr+1)*h + margin);
-		wdNFont.setLayoutData(fddNFont);
-		wdNFont.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent arg0) 
-				{
-				    noteFontData = props.getDefaultFontData();
-					noteFont.dispose();
-					noteFont = new Font(display, noteFontData);
-					wNFont.redraw();
-				}
-			}
-		);
+        wdNFont.setLayoutData(fddNFont);
+        wdNFont.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent arg0) 
+                {
+                    noteFontData = props.getDefaultFontData();
+                    noteFont.dispose();
+                    noteFont = new Font(display, noteFontData);
+                    wNFont.redraw();
+                }
+            }
+        );
 
         wbNFont = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
         wbNFont.setText("change");
@@ -819,16 +567,16 @@ public class EnterOptionsDialog extends Dialog
         );
 
 
-		// Background color
+        // Background color
         nr++;
-		wlBGColor = new Label(wLookComp, SWT.RIGHT);
-		wlBGColor.setText("Background color");
+        wlBGColor = new Label(wLookComp, SWT.RIGHT);
+        wlBGColor.setText("Background color");
         props.setLook(wlBGColor);
-		fdlBGColor = new FormData();
-		fdlBGColor.left = new FormAttachment(0, 0);
-		fdlBGColor.right = new FormAttachment(middle, -margin);
-		fdlBGColor.top = new FormAttachment(0, nr*h + margin + 10);
-		wlBGColor.setLayoutData(fdlBGColor);
+        fdlBGColor = new FormData();
+        fdlBGColor.left = new FormAttachment(0, 0);
+        fdlBGColor.right = new FormAttachment(middle, -margin);
+        fdlBGColor.top = new FormAttachment(0, nr*h + margin + 10);
+        wlBGColor.setLayoutData(fdlBGColor);
 
         wdBGcolor = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
         wdBGcolor.setText("default");
@@ -892,16 +640,16 @@ public class EnterOptionsDialog extends Dialog
 
         
         
-		// Graph background color
+        // Graph background color
         nr++;
-		wlGrColor = new Label(wLookComp, SWT.RIGHT);
-		wlGrColor.setText("Graph background color");
+        wlGrColor = new Label(wLookComp, SWT.RIGHT);
+        wlGrColor.setText("Graph background color");
         props.setLook(wlGrColor);
-		fdlGrColor = new FormData();
-		fdlGrColor.left = new FormAttachment(0, 0);
-		fdlGrColor.right = new FormAttachment(middle, -margin);
-		fdlGrColor.top = new FormAttachment(0, nr*h + margin + 10);
-		wlGrColor.setLayoutData(fdlGrColor);
+        fdlGrColor = new FormData();
+        fdlGrColor.left = new FormAttachment(0, 0);
+        fdlGrColor.right = new FormAttachment(middle, -margin);
+        fdlGrColor.top = new FormAttachment(0, nr*h + margin + 10);
+        wlGrColor.setLayoutData(fdlGrColor);
 
         wdGrColor = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
         wdGrColor.setText("default");
@@ -925,32 +673,32 @@ public class EnterOptionsDialog extends Dialog
             }
         );
 
-		wbGrColor = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
-		wbGrColor.setText("change");
+        wbGrColor = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
+        wbGrColor.setText("change");
         props.setLook(wbGrColor);
-		fdbGrColor = new FormData();
-		fdbGrColor.right = new FormAttachment(wdGrColor, -margin);
-		fdbGrColor.top = new FormAttachment(0, nr*h + margin);
+        fdbGrColor = new FormData();
+        fdbGrColor.right = new FormAttachment(wdGrColor, -margin);
+        fdbGrColor.top = new FormAttachment(0, nr*h + margin);
         fdbGrColor.bottom = new FormAttachment(0, (nr+1)*h + margin);
-		wbGrColor.setLayoutData(fdbGrColor);
-		wbGrColor.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent arg0) 
-				{
-					ColorDialog cd = new ColorDialog(shell);
-					cd.setRGB(props.getGraphColorRGB());
-					RGB newbg = cd.open();
-					if (newbg != null) 
-					{
-						graphColorRGB = newbg;
-						graphColor.dispose();
-						graphColor=new Color(display, graphColorRGB);
-						wGrColor.setBackground(graphColor);
-						wGrColor.redraw();
-					}
-				}
-			}
-		);
+        wbGrColor.setLayoutData(fdbGrColor);
+        wbGrColor.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent arg0) 
+                {
+                    ColorDialog cd = new ColorDialog(shell);
+                    cd.setRGB(props.getGraphColorRGB());
+                    RGB newbg = cd.open();
+                    if (newbg != null) 
+                    {
+                        graphColorRGB = newbg;
+                        graphColor.dispose();
+                        graphColor=new Color(display, graphColorRGB);
+                        wGrColor.setBackground(graphColor);
+                        wGrColor.redraw();
+                    }
+                }
+            }
+        );
 
         wGrColor = new Canvas(wLookComp, SWT.BORDER);
         props.setLook(wGrColor);
@@ -963,16 +711,16 @@ public class EnterOptionsDialog extends Dialog
         wGrColor.setLayoutData(fdGrColor);
 
 
-		// Tab selected color
+        // Tab selected color
         nr++;
-		wlTabColor = new Label(wLookComp, SWT.RIGHT);
-		wlTabColor.setText("Color of selected tabs");
+        wlTabColor = new Label(wLookComp, SWT.RIGHT);
+        wlTabColor.setText("Color of selected tabs");
         props.setLook(wlTabColor);
-		fdlTabColor = new FormData();
-		fdlTabColor.left = new FormAttachment(0, 0);
-		fdlTabColor.right = new FormAttachment(middle, -margin);
-		fdlTabColor.top = new FormAttachment(0, nr*h + margin + 10);
-		wlTabColor.setLayoutData(fdlTabColor);
+        fdlTabColor = new FormData();
+        fdlTabColor.left = new FormAttachment(0, 0);
+        fdlTabColor.right = new FormAttachment(middle, -margin);
+        fdlTabColor.top = new FormAttachment(0, nr*h + margin + 10);
+        wlTabColor.setLayoutData(fdlTabColor);
 
         wdTabColor = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
         wdTabColor.setText("default");
@@ -996,32 +744,32 @@ public class EnterOptionsDialog extends Dialog
             }
         );
 
-		wbTabColor = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
+        wbTabColor = new Button(wLookComp, SWT.PUSH | SWT.BORDER | SWT.CENTER);
         wbTabColor.setText("change");
         props.setLook(wbTabColor);
-		fdbTabColor = new FormData();
-		fdbTabColor.right = new FormAttachment(wdTabColor, -margin);
-		fdbTabColor.top = new FormAttachment(0, nr*h + margin);
+        fdbTabColor = new FormData();
+        fdbTabColor.right = new FormAttachment(wdTabColor, -margin);
+        fdbTabColor.top = new FormAttachment(0, nr*h + margin);
         fdbTabColor.bottom = new FormAttachment(0, (nr+1)*h + margin);
-		wbTabColor.setLayoutData(fdbTabColor);
-		wbTabColor.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent arg0) 
-				{
-					ColorDialog cd = new ColorDialog(shell);
-					cd.setRGB(props.getTabColorRGB());
-					RGB newbg = cd.open();
-					if (newbg != null) 
-					{
-						tabColorRGB = newbg;
-						tabColor.dispose();
-						tabColor=new Color(display, tabColorRGB);
-						wTabColor.setBackground(tabColor);
-						wTabColor.redraw();
-					}
-				}
-			}
-		);
+        wbTabColor.setLayoutData(fdbTabColor);
+        wbTabColor.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent arg0) 
+                {
+                    ColorDialog cd = new ColorDialog(shell);
+                    cd.setRGB(props.getTabColorRGB());
+                    RGB newbg = cd.open();
+                    if (newbg != null) 
+                    {
+                        tabColorRGB = newbg;
+                        tabColor.dispose();
+                        tabColor=new Color(display, tabColorRGB);
+                        wTabColor.setBackground(tabColor);
+                        wTabColor.redraw();
+                    }
+                }
+            }
+        );
 
         wTabColor = new Canvas(wLookComp, SWT.BORDER);
         props.setLook(wTabColor);
@@ -1034,78 +782,78 @@ public class EnterOptionsDialog extends Dialog
         wTabColor.setLayoutData(fdTabColor);
 
 
-		
-		// Iconsize line
-		wlIconsize=new Label(wLookComp, SWT.RIGHT);
-		wlIconsize.setText("Icon size ");
+        
+        // Iconsize line
+        wlIconsize=new Label(wLookComp, SWT.RIGHT);
+        wlIconsize.setText("Icon size ");
         props.setLook(wlIconsize);
-		fdlIconsize=new FormData();
-		fdlIconsize.left = new FormAttachment(0, 0);
-		fdlIconsize.right= new FormAttachment(middle, -margin);
-		fdlIconsize.top  = new FormAttachment(wTabColor, margin);
-		wlIconsize.setLayoutData(fdlIconsize);
-		wIconsize=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wIconsize.setText(""+props.getIconSize());
+        fdlIconsize=new FormData();
+        fdlIconsize.left = new FormAttachment(0, 0);
+        fdlIconsize.right= new FormAttachment(middle, -margin);
+        fdlIconsize.top  = new FormAttachment(wTabColor, margin);
+        wlIconsize.setLayoutData(fdlIconsize);
+        wIconsize=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wIconsize.setText(""+props.getIconSize());
         props.setLook(wIconsize);
-		fdIconsize=new FormData();
-		fdIconsize.left = new FormAttachment(middle, 0);
-		fdIconsize.right= new FormAttachment(100, -margin);
-		fdIconsize.top  = new FormAttachment(wTabColor, margin);
-		wIconsize.setLayoutData(fdIconsize);
+        fdIconsize=new FormData();
+        fdIconsize.left = new FormAttachment(middle, 0);
+        fdIconsize.right= new FormAttachment(100, -margin);
+        fdIconsize.top  = new FormAttachment(wTabColor, margin);
+        wIconsize.setLayoutData(fdIconsize);
 
-		// LineWidth line
-		wlLineWidth=new Label(wLookComp, SWT.RIGHT);
-		wlLineWidth.setText("Line width ");
+        // LineWidth line
+        wlLineWidth=new Label(wLookComp, SWT.RIGHT);
+        wlLineWidth.setText("Line width ");
         props.setLook(wlLineWidth);
-		fdlLineWidth=new FormData();
-		fdlLineWidth.left = new FormAttachment(0, 0);
-		fdlLineWidth.right= new FormAttachment(middle, -margin);
-		fdlLineWidth.top  = new FormAttachment(wIconsize, margin);
-		wlLineWidth.setLayoutData(fdlLineWidth);
-		wLineWidth=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wLineWidth.setText(""+props.getLineWidth());
+        fdlLineWidth=new FormData();
+        fdlLineWidth.left = new FormAttachment(0, 0);
+        fdlLineWidth.right= new FormAttachment(middle, -margin);
+        fdlLineWidth.top  = new FormAttachment(wIconsize, margin);
+        wlLineWidth.setLayoutData(fdlLineWidth);
+        wLineWidth=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wLineWidth.setText(""+props.getLineWidth());
         props.setLook(wLineWidth);
-		fdLineWidth=new FormData();
-		fdLineWidth.left = new FormAttachment(middle, 0);
-		fdLineWidth.right= new FormAttachment(100, -margin);
-		fdLineWidth.top  = new FormAttachment(wIconsize, margin);
-		wLineWidth.setLayoutData(fdLineWidth);
+        fdLineWidth=new FormData();
+        fdLineWidth.left = new FormAttachment(middle, 0);
+        fdLineWidth.right= new FormAttachment(100, -margin);
+        fdLineWidth.top  = new FormAttachment(wIconsize, margin);
+        wLineWidth.setLayoutData(fdLineWidth);
 
-		// ShadowSize line
-		wlShadowSize=new Label(wLookComp, SWT.RIGHT);
-		wlShadowSize.setText("Shadow size ");
+        // ShadowSize line
+        wlShadowSize=new Label(wLookComp, SWT.RIGHT);
+        wlShadowSize.setText("Shadow size ");
         props.setLook(wlShadowSize);
-		fdlShadowSize=new FormData();
-		fdlShadowSize.left = new FormAttachment(0, 0);
-		fdlShadowSize.right= new FormAttachment(middle, -margin);
-		fdlShadowSize.top  = new FormAttachment(wLineWidth, margin);
-		wlShadowSize.setLayoutData(fdlShadowSize);
-		wShadowSize=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wShadowSize.setText(""+props.getShadowSize());
+        fdlShadowSize=new FormData();
+        fdlShadowSize.left = new FormAttachment(0, 0);
+        fdlShadowSize.right= new FormAttachment(middle, -margin);
+        fdlShadowSize.top  = new FormAttachment(wLineWidth, margin);
+        wlShadowSize.setLayoutData(fdlShadowSize);
+        wShadowSize=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wShadowSize.setText(""+props.getShadowSize());
         props.setLook(wShadowSize);
-		fdShadowSize=new FormData();
-		fdShadowSize.left = new FormAttachment(middle, 0);
-		fdShadowSize.right= new FormAttachment(100, -margin);
-		fdShadowSize.top  = new FormAttachment(wLineWidth, margin);
-		wShadowSize.setLayoutData(fdShadowSize);
+        fdShadowSize=new FormData();
+        fdShadowSize.left = new FormAttachment(middle, 0);
+        fdShadowSize.right= new FormAttachment(100, -margin);
+        fdShadowSize.top  = new FormAttachment(wLineWidth, margin);
+        wShadowSize.setLayoutData(fdShadowSize);
 
-		// MiddlePct line
-		wlMiddlePct=new Label(wLookComp, SWT.RIGHT);
-		wlMiddlePct.setText("Dialog middle percentage ");
+        // MiddlePct line
+        wlMiddlePct=new Label(wLookComp, SWT.RIGHT);
+        wlMiddlePct.setText("Dialog middle percentage ");
         props.setLook(wlMiddlePct);
-		fdlMiddlePct=new FormData();
-		fdlMiddlePct.left = new FormAttachment(0, 0);
-		fdlMiddlePct.right= new FormAttachment(middle, -margin);
-		fdlMiddlePct.top  = new FormAttachment(wShadowSize, margin);
-		wlMiddlePct.setLayoutData(fdlMiddlePct);
-		wMiddlePct=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-		wMiddlePct.setText(""+props.getMiddlePct());
+        fdlMiddlePct=new FormData();
+        fdlMiddlePct.left = new FormAttachment(0, 0);
+        fdlMiddlePct.right= new FormAttachment(middle, -margin);
+        fdlMiddlePct.top  = new FormAttachment(wShadowSize, margin);
+        wlMiddlePct.setLayoutData(fdlMiddlePct);
+        wMiddlePct=new Text(wLookComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wMiddlePct.setText(""+props.getMiddlePct());
         props.setLook(wMiddlePct);
-		fdMiddlePct=new FormData();
-		fdMiddlePct.left = new FormAttachment(middle, 0);
-		fdMiddlePct.right= new FormAttachment(100, -margin);
-		fdMiddlePct.top  = new FormAttachment(wShadowSize, margin);
-		wMiddlePct.setLayoutData(fdMiddlePct);
+        fdMiddlePct=new FormData();
+        fdMiddlePct.left = new FormAttachment(middle, 0);
+        fdMiddlePct.right= new FormAttachment(100, -margin);
+        fdMiddlePct.top  = new FormAttachment(wShadowSize, margin);
+        wMiddlePct.setLayoutData(fdMiddlePct);
         
         
         // Enable anti-aliasing
@@ -1188,16 +936,16 @@ public class EnterOptionsDialog extends Dialog
         if (idxFailover>=0) wFailoverLocale.select(idxFailover);
 
 
-		fdLookComp=new FormData();
-		fdLookComp.left  = new FormAttachment(0, 0);
-		fdLookComp.right = new FormAttachment(100, 0);
-		fdLookComp.top   = new FormAttachment(0, 0);
-		fdLookComp.bottom= new FormAttachment(100, 100);
-		wLookComp.setLayoutData(fdLookComp);
-	
-		wLookComp.pack();
+        fdLookComp=new FormData();
+        fdLookComp.left  = new FormAttachment(0, 0);
+        fdLookComp.right = new FormAttachment(100, 0);
+        fdLookComp.top   = new FormAttachment(0, 0);
+        fdLookComp.bottom= new FormAttachment(100, 100);
+        wLookComp.setLayoutData(fdLookComp);
+    
+        wLookComp.pack();
         
-        bounds = wLookComp.getBounds();
+        Rectangle bounds = wLookComp.getBounds();
         sLookComp.setContent(wLookComp);
         sLookComp.setExpandHorizontal(true);
         sLookComp.setExpandVertical(true);
@@ -1206,63 +954,328 @@ public class EnterOptionsDialog extends Dialog
         
         wLookTab.setControl(sLookComp);
 
-		/////////////////////////////////////////////////////////////
-		/// END OF LOOK TAB
-		/////////////////////////////////////////////////////////////
+        /////////////////////////////////////////////////////////////
+        /// END OF LOOK TAB
+        /////////////////////////////////////////////////////////////
+    }
+
+    private void addGeneralTab()
+    {
+        //////////////////////////
+        // START OF GENERAL TAB///
+        ///
+        wGeneralTab=new CTabItem(wTabFolder, SWT.NONE);
+        wGeneralTab.setText("General");
+
+        FormLayout generalLayout = new FormLayout ();
+        generalLayout.marginWidth  = 3;
+        generalLayout.marginHeight = 3;
+        
+        sGeneralComp = new ScrolledComposite(wTabFolder, SWT.V_SCROLL | SWT.H_SCROLL );
+        sGeneralComp.setLayout(new FillLayout());
+        
+        wGeneralComp = new Composite(sGeneralComp, SWT.NONE);
+        props.setLook(wGeneralComp);
+        wGeneralComp.setLayout(generalLayout);
+
+        // MaxUndo line
+        wlMaxUndo=new Label(wGeneralComp, SWT.RIGHT);
+        wlMaxUndo.setText("Maximum Undo Level ");
+        props.setLook(wlMaxUndo);
+        fdlMaxUndo=new FormData();
+        fdlMaxUndo.left = new FormAttachment(0, 0);
+        fdlMaxUndo.right= new FormAttachment(middle, -margin);
+        fdlMaxUndo.top  = new FormAttachment(0, 0);
+        wlMaxUndo.setLayoutData(fdlMaxUndo);
+        wMaxUndo=new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wMaxUndo.setText(""+props.getMaxUndo());
+        props.setLook(wMaxUndo);
+        fdMaxUndo=new FormData();
+        fdMaxUndo.left = new FormAttachment(middle, 0);
+        fdMaxUndo.right= new FormAttachment(100, -margin);
+        fdMaxUndo.top  = new FormAttachment(0, 0);
+        wMaxUndo.setLayoutData(fdMaxUndo);
+
+        // Default preview size
+        wlDefaultPreview=new Label(wGeneralComp, SWT.RIGHT);
+        wlDefaultPreview.setText("Default preview size");
+        props.setLook(wlDefaultPreview);
+        fdlDefaultPreview=new FormData();
+        fdlDefaultPreview.left = new FormAttachment(0, 0);
+        fdlDefaultPreview.right= new FormAttachment(middle, -margin);
+        fdlDefaultPreview.top  = new FormAttachment(wMaxUndo, margin);
+        wlDefaultPreview.setLayoutData(fdlDefaultPreview);
+        wDefaultPreview=new Text(wGeneralComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wDefaultPreview.setText(""+props.getDefaultPreviewSize());
+        props.setLook(wDefaultPreview);
+        fdDefaultPreview=new FormData();
+        fdDefaultPreview.left = new FormAttachment(middle, 0);
+        fdDefaultPreview.right= new FormAttachment(100, -margin);
+        fdDefaultPreview.top  = new FormAttachment(wMaxUndo, margin);
+        wDefaultPreview.setLayoutData(fdDefaultPreview);
+
+        // Show tips on startup?
+        wlShowTips=new Label(wGeneralComp, SWT.RIGHT);
+        wlShowTips.setText("Show tips at startup? ");
+        props.setLook(wlShowTips);
+        fdlShowTips=new FormData();
+        fdlShowTips.left = new FormAttachment(0, 0);
+        fdlShowTips.top  = new FormAttachment(wDefaultPreview, margin);
+        fdlShowTips.right= new FormAttachment(middle, -margin);
+        wlShowTips.setLayoutData(fdlShowTips);
+        wShowTips=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wShowTips);
+        wShowTips.setSelection(props.showTips());
+        fdShowTips=new FormData();
+        fdShowTips.left = new FormAttachment(middle, 0);
+        fdShowTips.top  = new FormAttachment(wDefaultPreview, margin);
+        fdShowTips.right= new FormAttachment(100, 0);
+        wShowTips.setLayoutData(fdShowTips);
+
+        // Use DB Cache?
+        wlUseCache=new Label(wGeneralComp, SWT.RIGHT);
+        wlUseCache.setText("Use Database cache? ");
+        props.setLook(wlUseCache);
+        fdlUseCache=new FormData();
+        fdlUseCache.left = new FormAttachment(0, 0);
+        fdlUseCache.top  = new FormAttachment(wShowTips, margin);
+        fdlUseCache.right= new FormAttachment(middle, -margin);
+        wlUseCache.setLayoutData(fdlUseCache);
+        wUseCache=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wUseCache);
+        wUseCache.setSelection(props.useDBCache());
+        fdUseCache=new FormData();
+        fdUseCache.left = new FormAttachment(middle, 0);
+        fdUseCache.top  = new FormAttachment(wShowTips, margin);
+        fdUseCache.right= new FormAttachment(100, 0);
+        wUseCache.setLayoutData(fdUseCache);
 
 
-		// Some buttons
-		wOK=new Button(shell, SWT.PUSH );
-		wOK.setText("  &OK  ");
-		wCancel=new Button(shell, SWT.PUSH);
-		wCancel.setText("  &Cancel  ");
-		
-		BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel }, margin, null);
-		
-		fdTabFolder = new FormData();
-		fdTabFolder.left  = new FormAttachment(0, 0);
-		fdTabFolder.top   = new FormAttachment(0, 0);
-		fdTabFolder.right = new FormAttachment(100, 0);
-		fdTabFolder.bottom= new FormAttachment(wOK, -margin);
-		wTabFolder.setLayoutData(fdTabFolder);
+        // Auto load last file at startup?
+        wlOpenLast=new Label(wGeneralComp, SWT.RIGHT);
+        wlOpenLast.setText("Open last file at startup? ");
+        props.setLook(wlOpenLast);
+        fdlOpenLast=new FormData();
+        fdlOpenLast.left = new FormAttachment(0, 0);
+        fdlOpenLast.top  = new FormAttachment(wUseCache, margin);
+        fdlOpenLast.right= new FormAttachment(middle, -margin);
+        wlOpenLast.setLayoutData(fdlOpenLast);
+        wOpenLast=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wOpenLast);
+        wOpenLast.setSelection(props.openLastFile());
+        fdOpenLast=new FormData();
+        fdOpenLast.left = new FormAttachment(middle, 0);
+        fdOpenLast.top  = new FormAttachment(wUseCache, margin);
+        fdOpenLast.right= new FormAttachment(100, 0);
+        wOpenLast.setLayoutData(fdOpenLast);
 
-		/////////////////////////////////////////////////////////////
-		/// END OF TABS
-		/////////////////////////////////////////////////////////////
+        // Auto save changed files?
+        wlAutoSave=new Label(wGeneralComp, SWT.RIGHT);
+        wlAutoSave.setText("Auto save changed file? ");
+        props.setLook(wlAutoSave);
+        fdlAutoSave=new FormData();
+        fdlAutoSave.left = new FormAttachment(0, 0);
+        fdlAutoSave.top  = new FormAttachment(wOpenLast, margin);
+        fdlAutoSave.right= new FormAttachment(middle, -margin);
+        wlAutoSave.setLayoutData(fdlAutoSave);
+        wAutoSave=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wAutoSave);
+        wAutoSave.setSelection(props.getAutoSave());
+        fdAutoSave=new FormData();
+        fdAutoSave.left = new FormAttachment(middle, 0);
+        fdAutoSave.top  = new FormAttachment(wOpenLast, margin);
+        fdAutoSave.right= new FormAttachment(100, 0);
+        wAutoSave.setLayoutData(fdAutoSave);
 
+        // Only save used connections to XML?
+        wlDBConnXML=new Label(wGeneralComp, SWT.RIGHT);
+        wlDBConnXML.setText("Only save used connections to XML? ");
+        props.setLook(wlDBConnXML);
+        fdlDBConnXML=new FormData();
+        fdlDBConnXML.left = new FormAttachment(0, 0);
+        fdlDBConnXML.top  = new FormAttachment(wAutoSave, margin);
+        fdlDBConnXML.right= new FormAttachment(middle, -margin);
+        wlDBConnXML.setLayoutData(fdlDBConnXML);
+        wDBConnXML=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wDBConnXML);
+        wDBConnXML.setSelection(props.areOnlyUsedConnectionsSavedToXML());
+        fdDBConnXML=new FormData();
+        fdDBConnXML.left = new FormAttachment(middle, 0);
+        fdDBConnXML.top  = new FormAttachment(wAutoSave, margin);
+        fdDBConnXML.right= new FormAttachment(100, 0);
+        wDBConnXML.setLayoutData(fdDBConnXML);
 
-		
-		// Add listeners
-		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
-		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
-		
-		wOK.addListener    (SWT.Selection, lsOK     );
-		wCancel.addListener(SWT.Selection, lsCancel );
-		
-		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
-		wIconsize.addSelectionListener  (lsDef);
-		wLineWidth.addSelectionListener (lsDef);
-		wShadowSize.addSelectionListener(lsDef);
-		wMaxUndo.addSelectionListener   (lsDef);
-		wMiddlePct.addSelectionListener (lsDef);
-        wDefaultPreview.addSelectionListener (lsDef);
-		
-		// Detect [X] or ALT-F4 or something that kills this window...
-		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
+        // Ask about replacing existing connections?
+        wlAskReplaceDB=new Label(wGeneralComp, SWT.RIGHT);
+        wlAskReplaceDB.setText("Ask about replacing existing connections on open/import? ");
+        props.setLook(wlAskReplaceDB);
+        fdlAskReplaceDB=new FormData();
+        fdlAskReplaceDB.left = new FormAttachment(0, 0);
+        fdlAskReplaceDB.top  = new FormAttachment(wDBConnXML, margin);
+        fdlAskReplaceDB.right= new FormAttachment(middle, -margin);
+        wlAskReplaceDB.setLayoutData(fdlAskReplaceDB);
+        wAskReplaceDB=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wAskReplaceDB);
+        wAskReplaceDB.setSelection(props.askAboutReplacingDatabaseConnections());
+        fdAskReplaceDB=new FormData();
+        fdAskReplaceDB.left = new FormAttachment(middle, 0);
+        fdAskReplaceDB.top  = new FormAttachment(wDBConnXML, margin);
+        fdAskReplaceDB.right= new FormAttachment(100, 0);
+        wAskReplaceDB.setLayoutData(fdAskReplaceDB);
 
-		wTabFolder.setSelection(0);
-		
-		BaseStepDialog.setSize(shell);
+        // Only save used connections to XML?
+        wlReplaceDB=new Label(wGeneralComp, SWT.RIGHT);
+        wlReplaceDB.setText("Replace existing database connections on open/import? ");
+        props.setLook(wlReplaceDB);
+        fdlReplaceDB=new FormData();
+        fdlReplaceDB.left = new FormAttachment(0, 0);
+        fdlReplaceDB.top  = new FormAttachment(wAskReplaceDB, margin);
+        fdlReplaceDB.right= new FormAttachment(middle, -margin);
+        wlReplaceDB.setLayoutData(fdlReplaceDB);
+        wReplaceDB=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wReplaceDB);
+        wReplaceDB.setSelection(props.replaceExistingDatabaseConnections());
+        fdReplaceDB=new FormData();
+        fdReplaceDB.left = new FormAttachment(middle, 0);
+        fdReplaceDB.top  = new FormAttachment(wAskReplaceDB, margin);
+        fdReplaceDB.right= new FormAttachment(100, 0);
+        wReplaceDB.setLayoutData(fdReplaceDB);
 
-		shell.open();
-		while (!shell.isDisposed())
-		{
-				if (!display.readAndDispatch()) display.sleep();
-		}
-		return props;
-	}
+        // Show confirmation after save?
+        wlSaveConf=new Label(wGeneralComp, SWT.RIGHT);
+        wlSaveConf.setText("Show save confirmation? ");
+        props.setLook(wlSaveConf);
+        fdlSaveConf=new FormData();
+        fdlSaveConf.left = new FormAttachment(0, 0);
+        fdlSaveConf.top  = new FormAttachment(wReplaceDB, margin);
+        fdlSaveConf.right= new FormAttachment(middle, -margin);
+        wlSaveConf.setLayoutData(fdlSaveConf);
+        wSaveConf=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wSaveConf);
+        wSaveConf.setSelection(props.getSaveConfirmation());
+        fdSaveConf=new FormData();
+        fdSaveConf.left = new FormAttachment(middle, 0);
+        fdSaveConf.top  = new FormAttachment(wReplaceDB, margin);
+        fdSaveConf.right= new FormAttachment(100, 0);
+        wSaveConf.setLayoutData(fdSaveConf);
 
-	public void dispose()
+        // Automatically split hops?
+        wlAutoSplit=new Label(wGeneralComp, SWT.RIGHT);
+        wlAutoSplit.setText("Automatically split hops? ");
+        props.setLook(wlAutoSplit);
+        fdlAutoSplit=new FormData();
+        fdlAutoSplit.left = new FormAttachment(0, 0);
+        fdlAutoSplit.top  = new FormAttachment(wSaveConf, margin);
+        fdlAutoSplit.right= new FormAttachment(middle, -margin);
+        wlAutoSplit.setLayoutData(fdlAutoSplit);
+        wAutoSplit=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wAutoSplit);
+        wAutoSplit.setSelection(props.getAutoSplit());
+        fdAutoSplit=new FormData();
+        fdAutoSplit.left = new FormAttachment(middle, 0);
+        fdAutoSplit.top  = new FormAttachment(wSaveConf, margin);
+        fdAutoSplit.right= new FormAttachment(100, 0);
+        wAutoSplit.setLayoutData(fdAutoSplit);
+
+        // Show repository dialog at startup?
+        wlShowRep=new Label(wGeneralComp, SWT.RIGHT);
+        wlShowRep.setText("Show the repository dialog at startup? ");
+        props.setLook(wlShowRep);
+        fdlShowRep=new FormData();
+        fdlShowRep.left = new FormAttachment(0, 0);
+        fdlShowRep.top  = new FormAttachment(wAutoSplit, margin);
+        fdlShowRep.right= new FormAttachment(middle, -margin);
+        wlShowRep.setLayoutData(fdlShowRep);
+        wShowRep=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wShowRep);
+        wShowRep.setSelection(props.showRepositoriesDialogAtStartup());
+        fdShowRep=new FormData();
+        fdShowRep.left = new FormAttachment(middle, 0);
+        fdShowRep.top  = new FormAttachment(wAutoSplit, margin);
+        fdShowRep.right= new FormAttachment(100, 0);
+        wShowRep.setLayoutData(fdShowRep);
+
+        // Show exit warning?
+        wlExitWarning=new Label(wGeneralComp, SWT.RIGHT);
+        wlExitWarning.setText("Show a warning before exiting? ");
+        props.setLook(wlExitWarning);
+        fdlExitWarning=new FormData();
+        fdlExitWarning.left = new FormAttachment(0, 0);
+        fdlExitWarning.top  = new FormAttachment(wShowRep, margin);
+        fdlExitWarning.right= new FormAttachment(middle, -margin);
+        wlExitWarning.setLayoutData(fdlExitWarning);
+        wExitWarning=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wExitWarning);
+        wExitWarning.setSelection(props.showExitWarning());
+        fdExitWarning=new FormData();
+        fdExitWarning.left = new FormAttachment(middle, 0);
+        fdExitWarning.top  = new FormAttachment(wShowRep, margin);
+        fdExitWarning.right= new FormAttachment(100, 0);
+        wExitWarning.setLayoutData(fdExitWarning);
+        
+        // Clear custom parameters. (from step)
+        wlClearCustom=new Label(wGeneralComp, SWT.RIGHT);
+        wlClearCustom.setText("Clear custom parameters (steps/plugins)");
+        props.setLook(wlClearCustom);
+        fdlClearCustom=new FormData();
+        fdlClearCustom.left = new FormAttachment(0, 0);
+        fdlClearCustom.top  = new FormAttachment(wExitWarning, margin);
+        fdlClearCustom.right= new FormAttachment(middle, -margin);
+        wlClearCustom.setLayoutData(fdlClearCustom);
+        wClearCustom=new Button(wGeneralComp, SWT.PUSH);
+        props.setLook(wClearCustom);
+        wClearCustom.setText("Clear custom flags and parameters");
+        fdClearCustom=new FormData();
+        fdClearCustom.left = new FormAttachment(middle, 0);
+        fdClearCustom.top  = new FormAttachment(wExitWarning, margin);
+        fdClearCustom.right= new FormAttachment(100, 0);
+        wClearCustom.setLayoutData(fdClearCustom);
+        wClearCustom.setToolTipText("Clicking this button will erase all the custom flags and parameters"+Const.CR+"that are used in the dialogs of the steps and plugins. ");
+        wClearCustom.addSelectionListener(new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
+                mb.setMessage("Are you sure you want to clear the custom step/plugin parameters and flags?");
+                mb.setText("Question");
+                int id = mb.open();
+                if (id==SWT.YES)
+                {
+                    props.clearCustomParameters();
+                    props.saveProps();
+                    MessageBox ok = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+                    ok.setMessage("The custom step/plugin parameters and flags were cleared");
+                    ok.open();
+                }
+            }
+        });
+
+        fdGeneralComp = new FormData();
+        fdGeneralComp.left  = new FormAttachment(0, 0);
+        fdGeneralComp.right = new FormAttachment(100, 0);
+        fdGeneralComp.top   = new FormAttachment(0, 0);
+        fdGeneralComp.bottom= new FormAttachment(100, 100);
+        wGeneralComp.setLayoutData(fdGeneralComp);
+
+        wGeneralComp.pack();
+        
+        Rectangle bounds = wGeneralComp.getBounds();
+        
+        sGeneralComp.setContent(wGeneralComp);
+        sGeneralComp.setExpandHorizontal(true);
+        sGeneralComp.setExpandVertical(true);
+        sGeneralComp.setMinWidth(bounds.width);
+        sGeneralComp.setMinHeight(bounds.height);
+        
+        wGeneralTab.setControl(sGeneralComp);
+
+        /////////////////////////////////////////////////////////////
+        /// END OF GENERAL TAB
+        /////////////////////////////////////////////////////////////
+        
+    }
+
+    public void dispose()
 	{
         fixedFont.dispose();
         graphFont.dispose();

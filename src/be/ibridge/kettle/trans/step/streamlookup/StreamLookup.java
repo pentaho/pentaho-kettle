@@ -332,7 +332,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 		
 		putRow(r);       // copy row to output rowset(s);
 			
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0)  logBasic(Messages.getString("StreamLookup.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        if (checkFeedback(linesRead)) logBasic(Messages.getString("StreamLookup.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
 		return true;
 	}

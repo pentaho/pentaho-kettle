@@ -185,7 +185,7 @@ public class MergeRows extends BaseStep implements StepInterface
             }
         }
 
-        if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("MergeRows.LineNumber")+linesRead); //$NON-NLS-1$
+        if (checkFeedback(linesRead)) logBasic(Messages.getString("MergeRows.LineNumber")+linesRead); //$NON-NLS-1$
 
 		return true;
 	}

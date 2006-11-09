@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
@@ -45,6 +46,7 @@ import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.JobPlugin;
+import be.ibridge.kettle.trans.PartitionSchema;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
 import be.ibridge.kettle.trans.TransMeta;
@@ -894,12 +896,12 @@ public class Repository
 			// log.logBasic(toString(), "result row for "+idfield+" is : "+r.toString()+", id = "+id.toString()+" int="+id.getInteger()+" num="+id.getNumber());
 			if (id.isNull())
 			{
-				log.logDebug(toString(), "no max(" + idfield + ") found in table " + tablename);
+				if (log.isDebug()) log.logDebug(toString(), "no max(" + idfield + ") found in table " + tablename);
 				retval = 1;
 			}
 			else
 			{
-				log.logDebug(toString(), "max(" + idfield + ") found in table " + tablename + " --> " + id.getInteger()
+                if (log.isDebug()) log.logDebug(toString(), "max(" + idfield + ") found in table " + tablename + " --> " + id.getInteger()
 											+ " number: " + id.getNumber());
 				retval = id.getInteger() + 10000L;
 				
@@ -944,7 +946,23 @@ public class Repository
 		database.closeInsert();
         
         insertTransAttribute(transMeta.getId(), 0, "CONNECTION_GROUP", 0, transMeta.getConnectionGroup());
+        insertTransAttribute(transMeta.getId(), 0, "FEEDBACK_SHOWN", 0, transMeta.isFeedbackShown()?"Y":"N");
+        insertTransAttribute(transMeta.getId(), 0, "FEEDBACK_SIZE", transMeta.getFeedbackSize(), "");
 		
+        // Also save the partitioning stuff somewhere...
+        List schemas = transMeta.getPartitionSchemas();
+        for (int i=0;i<schemas.size();i++)
+        {
+            PartitionSchema schema = (PartitionSchema) schemas.get(i);
+            String ids[] = schema.getPartitionIDs();
+            
+            insertTransAttribute(transMeta.getId(), i, "SCHEMA_NAME", ids.length, schema.getName());
+            for (int p=0;p<ids.length;p++)
+            {
+                insertTransAttribute(transMeta.getId(), i, "SCHEMA_PARTITION_"+p, 0, ids[p]);
+            }
+        }
+        
 		// Save the logging connection link...
 		if (transMeta.getLogConnection()!=null) insertStepDatabase(transMeta.getId(), -1L, transMeta.getLogConnection().getID());
 
@@ -971,7 +989,7 @@ public class Repository
 		database.prepareInsert(table, "R_JOB");
 		database.setValuesInsert(table);
 		database.insertRow();
-		log.logDebug(toString(), "Inserted new record into table R_JOB with data : " + table);
+        if (log.isDebug()) log.logDebug(toString(), "Inserted new record into table R_JOB with data : " + table);
 		database.closeInsert();
 	}
 
@@ -1140,7 +1158,7 @@ public class Repository
 		database.closeInsert();
 		*/
 		
-		log.logDebug(toString(), "saved attribute ["+code+"]");
+        if (log.isDebug()) log.logDebug(toString(), "saved attribute ["+code+"]");
 		
 		return id;
 	}
@@ -1170,7 +1188,7 @@ public class Repository
         database.setValues(table, psTransAttributesInsert);
         database.insertRow(psTransAttributesInsert, true);
         
-        log.logDebug(toString(), "saved transformation attribute ["+code+"]");
+        if (log.isDebug()) log.logDebug(toString(), "saved transformation attribute ["+code+"]");
         
         return id;
     }
@@ -1213,7 +1231,7 @@ public class Repository
         database.insertRow();
         database.closeInsert();
         
-        log.logDebug(toString(), "saved database attribute ["+code+"]");
+        if (log.isDebug()) log.logDebug(toString(), "saved database attribute ["+code+"]");
         
         return id;
     }
@@ -2626,10 +2644,18 @@ public class Repository
 	    if (psStepAttributesInsert!=null)
 	    {
 		    database.insertFinished(psStepAttributesInsert, true); // batch mode!
-			// database.closePreparedStatement(psStepAttributesInsert);
 			psStepAttributesInsert = null;
 	    }
 	}
+
+    public synchronized void closeTransAttributeInsertPreparedStatement() throws KettleDatabaseException
+    {
+        if (psTransAttributesInsert!=null)
+        {
+            database.insertFinished(psTransAttributesInsert, true); // batch mode!
+            psTransAttributesInsert = null;
+        }
+    }
 
 
 	private Row getStepAttributeRow(long id_step, int nr, String code) throws KettleDatabaseException
@@ -2644,7 +2670,7 @@ public class Repository
 		return database.getLookup(psStepAttributesLookup);
 	}
 
-    private Row getTransAttributeRow(long id_transformation, int nr, String code) throws KettleDatabaseException
+    public Row getTransAttributeRow(long id_transformation, int nr, String code) throws KettleDatabaseException
     {
         Row par = new Row();
         par.addValue(new Value("ID_TRANSFORMATION", id_transformation));
@@ -2653,7 +2679,7 @@ public class Repository
 
         database.setValues(par, psTransAttributesLookup);
 
-        return database.getLookup(psStepAttributesLookup);
+        return database.getLookup(psTransAttributesLookup);
     }
 
 	public synchronized long getStepAttributeInteger(long id_step, int nr, String code) throws KettleDatabaseException
@@ -2759,7 +2785,48 @@ public class Repository
             return null;
         return r.searchValue("VALUE_STR").getString();
     }
+    
+    public synchronized double getTransAttributeNumber(long id_transformation, int nr, String code) throws KettleDatabaseException
+    {
+        Row r = null;
+        r = getTransAttributeRow(id_transformation, nr, code);
+        if (r == null)
+            return 0.0;
+        return r.searchValue("VALUE_NUM").getNumber();
+    }
 
+    public synchronized long getTransAttributeInteger(long id_transformation, int nr, String code) throws KettleDatabaseException
+    {
+        Row r = null;
+        r = getTransAttributeRow(id_transformation, nr, code);
+        if (r == null)
+            return 0;
+        return r.searchValue("VALUE_NUM").getInteger();
+    }
+    
+    public synchronized int countNrTransAttributes(long id_transformation, String code) throws KettleDatabaseException
+    {
+        String sql = "SELECT COUNT(*) FROM R_TRANS_ATTRIBUTE WHERE ID_TRANSFORMATION = ? AND CODE = ?";
+        Row table = new Row();
+        table.addValue(new Value("ID_STEP", id_transformation));
+        table.addValue(new Value("CODE", code));
+        Row r = database.getOneRow(sql, table);
+        if (r == null)
+            return 0;
+        
+        return (int) r.getValue(0).getInteger();
+    }
+
+    public synchronized List getTransAttributes(long id_transformation, String code, long nr) throws KettleDatabaseException
+    {
+        String sql = "SELECT * FROM R_TRANS_ATTRIBUTE WHERE ID_TRANSFORMATION = ? AND CODE = ? AND NR = ? ORDER BY VALUE_NUM";
+        Row table = new Row();
+        table.addValue(new Value("ID_STEP", id_transformation));
+        table.addValue(new Value("CODE", code));
+        table.addValue(new Value("NR", nr));
+        
+        return database.getRows(sql, 0);
+    }
 
 	// JOBENTRY ATTRIBUTES: SAVE
 
@@ -2986,6 +3053,12 @@ public class Repository
 		database.execStatement(sql);
 	}
 
+    public synchronized void delTransAttributes(long id_transformation) throws KettleDatabaseException
+    {
+        String sql = "DELETE FROM R_TRANS_ATTRIBUTE WHERE ID_TRANSFORMATION = " + id_transformation;
+        database.execStatement(sql);
+    }
+
 	public synchronized void delJobEntryAttributes(long id_job) throws KettleDatabaseException
 	{
 		String sql = "DELETE FROM R_JOBENTRY_ATTRIBUTE WHERE ID_JOB = " + id_job;
@@ -3116,6 +3189,7 @@ public class Repository
 		delStepDatabases(id_transformation);
 		delTransHops(id_transformation);
 		delDependencies(id_transformation);
+        delTransAttributes(id_transformation);
 		delTrans(id_transformation);
 	}
 
@@ -3235,9 +3309,9 @@ public class Repository
         {
             try
             {
-                log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+                if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
                 database.execStatements(sql);
-                log.logDetailed(toString(), "Created/altered table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Created/altered table " + tablename);
             }
             catch (KettleDatabaseException dbe)
             {
@@ -3246,7 +3320,7 @@ public class Repository
         }
         else
         {
-            log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
         }
 
         // Insert an extra record in R_VERSION every time we pass here...
@@ -3283,9 +3357,9 @@ public class Repository
 		{
 			try
 			{
-                log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+                if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 				database.execStatements(sql);
-                log.logDetailed(toString(), "Created/altered table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Created/altered table " + tablename);
 			}
 			catch (KettleDatabaseException dbe)
 			{
@@ -3294,7 +3368,7 @@ public class Repository
 		}
 		else
 		{
-            log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 
 		if (ok_database_type)
@@ -3329,7 +3403,7 @@ public class Repository
 			try
 			{
 				database.closeInsert();
-				log.logDetailed(toString(), "Populated table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
 			}
 			catch (KettleDatabaseException dbe)
 			{
@@ -3355,13 +3429,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0)
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 
 		if (ok_database_contype)
@@ -3396,7 +3470,7 @@ public class Repository
             try
             {
                 database.closeInsert();
-                log.logDetailed(toString(), "Populated table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
             }
             catch(KettleDatabaseException dbe)
             {
@@ -3422,13 +3496,13 @@ public class Repository
 		sql = database.getDDL(tablename, table, null, false, "ID_NOTE", false);
 		if (sql != null && sql.length() > 0)
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -3456,13 +3530,13 @@ public class Repository
 		sql = database.getDDL(tablename, table, null, false, "ID_DATABASE", false);
 		if (sql != null && sql.length() > 0)
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -3482,9 +3556,9 @@ public class Repository
         sql = database.getDDL(tablename, table, null, false, "ID_DATABASE_ATTRIBUTE", false);
         if (sql != null && sql.length() > 0)
         {
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
             database.execStatements(sql);
-            log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
             
             try
             {
@@ -3493,9 +3567,9 @@ public class Repository
                 if (!database.checkIndexExists(tablename, keyfield))
                 {
                     sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
-                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
                     database.execStatements(sql);
-                    log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
                 }
             }
             catch(KettleDatabaseException kdbe)
@@ -3506,7 +3580,7 @@ public class Repository
         }
         else
         {
-            log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
         }
         if (monitor!=null) monitor.worked(1);
 
@@ -3525,9 +3599,9 @@ public class Repository
 
 		if (sql != null && sql.length() > 0)
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 			
 			try
 			{
@@ -3536,9 +3610,9 @@ public class Repository
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
-                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-					log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
 				}
 			}
 			catch(KettleDatabaseException kdbe)
@@ -3549,7 +3623,7 @@ public class Repository
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -3585,13 +3659,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0)
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 
 		// In case of an update, the added column R_TRANSFORMATION.ID_DIRECTORY == NULL!!!
@@ -3617,9 +3691,9 @@ public class Repository
 
 		if (sql != null && sql.length() > 0)
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 
 			try
 			{
@@ -3630,9 +3704,9 @@ public class Repository
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
 	
-                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-					log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
 				}
 			}
 			catch(KettleDatabaseException kdbe)
@@ -3642,7 +3716,7 @@ public class Repository
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -3663,13 +3737,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0)
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -3689,13 +3763,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0)
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -3712,13 +3786,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -3740,13 +3814,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -3765,13 +3839,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -3792,19 +3866,19 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 
 		if (ok_step_type)
 		{
 			updateStepTypes();
-			log.logDetailed(toString(), "Populated table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -3830,13 +3904,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exists: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -3859,9 +3933,9 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 
 			try
 			{
@@ -3870,9 +3944,9 @@ public class Repository
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
-                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-					log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
 				}
 			}
 			catch(KettleDatabaseException kdbe)
@@ -3882,7 +3956,7 @@ public class Repository
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -3903,9 +3977,9 @@ public class Repository
 		sql = database.getDDL(tablename, table, null, false, null, false);
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 
 			try
 			{
@@ -3914,9 +3988,9 @@ public class Repository
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, false, false, false);
-                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-					log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
 				}
 			}
 			catch(KettleDatabaseException kdbe)
@@ -3931,9 +4005,9 @@ public class Repository
 				if (!database.checkIndexExists(tablename, keyfield))
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, false, false, false);
-                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-					log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
 				}
 			}
 			catch(KettleDatabaseException kdbe)
@@ -3943,7 +4017,7 @@ public class Repository
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -3961,13 +4035,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -3987,13 +4061,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 
 		if (ok_loglevel)
@@ -4028,7 +4102,7 @@ public class Repository
             try
             {
                 database.closeInsert();
-                log.logDetailed(toString(), "Populated table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
             }
             catch(KettleDatabaseException dbe)
             {
@@ -4059,13 +4133,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4091,13 +4165,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4117,13 +4191,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 
 		if (ok_jobentry_type)
@@ -4132,7 +4206,7 @@ public class Repository
 			// Populate with data...
 			//
 			updateJobEntryTypes();
-			log.logDetailed(toString(), "Populated table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4153,13 +4227,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4184,13 +4258,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4213,9 +4287,9 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 
 			try
 			{
@@ -4226,9 +4300,9 @@ public class Repository
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
 	
-                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-					log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
 				}
 			}
 			catch(KettleDatabaseException kdbe)
@@ -4238,7 +4312,7 @@ public class Repository
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4262,13 +4336,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4286,13 +4360,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 		if (monitor!=null) monitor.worked(1);
 
@@ -4320,13 +4394,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 
 		if (ok_profile)
@@ -4355,7 +4429,7 @@ public class Repository
 
 					database.setValuesInsert(table);
 					database.insertRow();
-                    log.logDetailed(toString(), "Inserted new row into table "+tablename+" : "+table);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Inserted new row into table "+tablename+" : "+table);
                     profiles.put(code[i], new Long(nextid));
 				}
 			}
@@ -4363,7 +4437,7 @@ public class Repository
             try
             {
                 database.closeInsert();
-                log.logDetailed(toString(), "Populated table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
             }
             catch(KettleDatabaseException dbe)
             {
@@ -4393,13 +4467,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 
 		if (ok_user)
@@ -4447,7 +4521,7 @@ public class Repository
             try
             {
                 database.closeInsert();
-                log.logDetailed(toString(), "Populated table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
             }
             catch(KettleDatabaseException dbe)
             {
@@ -4473,13 +4547,13 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 
 		if (ok_permission)
@@ -4508,7 +4582,7 @@ public class Repository
 
 					database.setValuesInsert(table);
 					database.insertRow();
-                    log.logDetailed(toString(), "Inserted new row into table "+tablename+" : "+table);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Inserted new row into table "+tablename+" : "+table);
                     permissions.put(code[i], new Long(nextid));
 				}
 			}
@@ -4516,7 +4590,7 @@ public class Repository
             try
             {
                 database.closeInsert();
-                log.logDetailed(toString(), "Populated table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
             }
             catch(KettleDatabaseException dbe)
             {
@@ -4540,9 +4614,9 @@ public class Repository
 
 		if (sql != null && sql.length() > 0) // Doesn't exist: create the table...
 		{
-            log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 			database.execStatements(sql);
-			log.logDetailed(toString(), "Created or altered table " + tablename);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
 
 			try
 			{
@@ -4552,9 +4626,9 @@ public class Repository
 				{
 					sql = database.getCreateIndexStatement(tablename, indexname, keyfield, false, true, false, false);
 	
-                    log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+                    if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
 					database.execStatements(sql);
-					log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Created lookup index " + indexname + " on " + tablename);
 				}
 			}
 			catch(KettleDatabaseException kdbe)
@@ -4564,7 +4638,7 @@ public class Repository
 		}
 		else
 		{
-			log.logDetailed(toString(), "Table " + tablename + " is OK.");
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
 		}
 
 		if (ok_profile_permission)
@@ -4576,7 +4650,7 @@ public class Repository
             long id_profile = -1L;
             if (profileID!=null) id_profile = profileID.longValue();
 			
-            log.logDetailed(toString(), "Administrator profile id = "+id_profile);
+            if (log.isDetailed()) log.logDetailed(toString(), "Administrator profile id = "+id_profile);
             String perms[] = new String[]
 				{ 
                     PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_ADMIN],
@@ -4591,24 +4665,24 @@ public class Repository
                 long id_permission = -1L;
                 if (permissionID!=null) id_permission = permissionID.longValue();
                 
-                log.logDetailed(toString(), "Permission id for '"+perms[i]+"' = "+id_permission);
+                if (log.isDetailed()) log.logDetailed(toString(), "Permission id for '"+perms[i]+"' = "+id_permission);
 
 				Row lookup = null;
                 if (upgrade) 
                 {
                     String lookupSQL = "SELECT ID_PROFILE FROM " + tablename + " WHERE ID_PROFILE=" + id_profile + " AND ID_PERMISSION=" + id_permission;
-                    log.logDetailed(toString(), "Executing SQL: "+lookupSQL);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Executing SQL: "+lookupSQL);
                     lookup = database.getOneRow(lookupSQL);
                 }
 				if (lookup == null) // if the combination is not yet there, insert...
 				{
                     String insertSQL="INSERT INTO "+tablename+"(ID_PROFILE, ID_PERMISSION) VALUES("+id_profile+","+id_permission+")";
 					database.execStatement(insertSQL);
-					log.logDetailed(toString(), "insertSQL = ["+insertSQL+"]");
+                    if (log.isDetailed()) log.logDetailed(toString(), "insertSQL = ["+insertSQL+"]");
 				}
 				else
 				{
-					log.logDetailed(toString(), "Found id_profile="+id_profile+", id_permission="+id_permission);
+                    if (log.isDetailed()) log.logDetailed(toString(), "Found id_profile="+id_profile+", id_permission="+id_permission);
 				}
 			}
 
@@ -4617,7 +4691,7 @@ public class Repository
             id_profile = -1L;
             if (profileID!=null) id_profile = profileID.longValue();
             
-            log.logDetailed(toString(), "User profile id = "+id_profile);
+            if (log.isDetailed()) log.logDetailed(toString(), "User profile id = "+id_profile);
             perms = new String[]
                 { 
                       PermissionMeta.permissionTypeCode[PermissionMeta.TYPE_PERMISSION_TRANSFORMATION],
@@ -4647,7 +4721,7 @@ public class Repository
             try
             {
                 database.closeInsert();
-                log.logDetailed(toString(), "Populated table " + tablename);
+                if (log.isDetailed()) log.logDetailed(toString(), "Populated table " + tablename);
             }
             catch(KettleDatabaseException dbe)
             {
@@ -4675,11 +4749,11 @@ public class Repository
 			try
 			{
 				database.execStatement("DROP TABLE " + repositoryTableNames[i]);
-                log.logDetailed(toString(), "dropped table "+repositoryTableNames[i]);
+                if (log.isDetailed()) log.logDetailed(toString(), "dropped table "+repositoryTableNames[i]);
 			}
 			catch (KettleDatabaseException dbe)
 			{
-				log.logDetailed(toString(), "Unable to drop table: " + repositoryTableNames[i]);
+                if (log.isDetailed()) log.logDetailed(toString(), "Unable to drop table: " + repositoryTableNames[i]);
 			}
 		}
         log.logBasic(toString(), "Dropped all "+repositoryTableNames.length+" repository tables.");

@@ -76,7 +76,7 @@ public class CubeOutput extends BaseStep implements StepInterface
 		
 		putRow(r);       // in case we want it to go further...
 		
-		if ((linesOutput>0) && (linesOutput%Const.ROWS_UPDATE)==0)logBasic(Messages.getString("CubeOutput.Log.LineNumber")+linesOutput); //$NON-NLS-1$
+        if (checkFeedback(linesOutput)) logBasic(Messages.getString("CubeOutput.Log.LineNumber")+linesOutput); //$NON-NLS-1$
 		
 		return result;
 	}

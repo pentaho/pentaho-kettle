@@ -117,6 +117,7 @@ public class TransDialog extends Dialog
 	private TableView    wFields;
 
 	private Text         wSizeRowset;
+    private Text         wConnectionGroup;
 
     // Partitions tab
     private List wSchemaList;
@@ -147,6 +148,10 @@ public class TransDialog extends Dialog
     private int      previousSchemaIndex;
 
     private Button wGetPartitions;
+
+    private Button wShowFeedback;
+
+    private Text wFeedbackSize;
 	
     /** @deprecated */
 	public TransDialog(Shell parent, int style, LogWriter log, Props props, TransMeta transMeta, Repository rep)
@@ -250,6 +255,8 @@ public class TransDialog extends Dialog
 		wMaxdatediff.addSelectionListener( lsDef );
 		wLogtable.addSelectionListener( lsDef );
 		wSizeRowset.addSelectionListener( lsDef );
+        wConnectionGroup.addSelectionListener( lsDef );
+        wFeedbackSize.addSelectionListener( lsDef );
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -879,6 +886,59 @@ public class TransDialog extends Dialog
         fdSizeRowset.right= new FormAttachment(100, 0);
         wSizeRowset.setLayoutData(fdSizeRowset);
 
+        // Show feedback in transformations steps?
+        Label wlShowFeedback = new Label(wPerfComp, SWT.RIGHT);
+        wlShowFeedback.setText("Show a feedback row in transformation steps? ");
+        props.setLook(wlShowFeedback);
+        FormData fdlShowFeedback = new FormData();
+        fdlShowFeedback.left = new FormAttachment(0, 0);
+        fdlShowFeedback.top  = new FormAttachment(wSizeRowset, margin);
+        fdlShowFeedback.right= new FormAttachment(middle, -margin);
+        wlShowFeedback.setLayoutData(fdlShowFeedback);
+        wShowFeedback=new Button(wPerfComp, SWT.CHECK);
+        props.setLook(wShowFeedback);
+        FormData fdShowFeedback = new FormData();
+        fdShowFeedback.left = new FormAttachment(middle, 0);
+        fdShowFeedback.top  = new FormAttachment(wSizeRowset, margin);
+        fdShowFeedback.right= new FormAttachment(100, 0);
+        wShowFeedback.setLayoutData(fdShowFeedback);
+
+        // Feedback size
+        Label wlFeedbackSize = new Label(wPerfComp, SWT.RIGHT);
+        wlFeedbackSize.setText("The feedback size ");
+        props.setLook(wlFeedbackSize);
+        FormData fdlFeedbackSize = new FormData();
+        fdlFeedbackSize.left = new FormAttachment(0, 0);
+        fdlFeedbackSize.right= new FormAttachment(middle, -margin);
+        fdlFeedbackSize.top  = new FormAttachment(wShowFeedback, margin);
+        wlFeedbackSize.setLayoutData(fdlFeedbackSize);
+        wFeedbackSize=new Text(wPerfComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wFeedbackSize);
+        FormData fdFeedbackSize = new FormData();
+        fdFeedbackSize.left = new FormAttachment(middle, 0);
+        fdFeedbackSize.right= new FormAttachment(100, -margin);
+        fdFeedbackSize.top  = new FormAttachment(wShowFeedback, margin);
+        wFeedbackSize.setLayoutData(fdFeedbackSize);
+        
+        // Rows in Rowset:
+        Label wlConnectionGroup = new Label(wPerfComp, SWT.RIGHT);
+        wlConnectionGroup.setText(Messages.getString("TransDialog.ConnectionGroup.Label")); //$NON-NLS-1$
+        props.setLook(wlConnectionGroup);
+        FormData fdlConnectionGroup = new FormData();
+        fdlConnectionGroup.left = new FormAttachment(0, 0);
+        fdlConnectionGroup.right= new FormAttachment(middle, -margin);
+        fdlConnectionGroup.top  = new FormAttachment(wFeedbackSize, margin);
+        wlConnectionGroup.setLayoutData(fdlConnectionGroup);
+        wConnectionGroup=new Text(wPerfComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        props.setLook(wConnectionGroup);
+        wConnectionGroup.addModifyListener(lsMod);
+        FormData fdConnectionGroup = new FormData();
+        fdConnectionGroup.left = new FormAttachment(middle, 0);
+        fdConnectionGroup.top  = new FormAttachment(wFeedbackSize, margin);
+        fdConnectionGroup.right= new FormAttachment(100, 0);
+        wConnectionGroup.setLayoutData(fdConnectionGroup);
+
+                
 
         FormData fdPerfComp = new FormData();
         fdPerfComp.left  = new FormAttachment(0, 0);
@@ -1160,7 +1220,10 @@ public class TransDialog extends Dialog
 		}
 		
 		wSizeRowset.setText(""+transMeta.getSizeRowset()); //$NON-NLS-1$
-		
+		if (transMeta.getConnectionGroup()!=null) wConnectionGroup.setText(transMeta.getConnectionGroup());
+		wShowFeedback.setSelection(transMeta.isFeedbackShown());
+        wFeedbackSize.setText(""+transMeta.getFeedbackSize());
+        
 		wFields.setRowNums();
 		wFields.optWidth(true);
         
@@ -1286,7 +1349,11 @@ public class TransDialog extends Dialog
 		}
 		
 		transMeta.setSizeRowset( Const.toInt( wSizeRowset.getText(), Const.ROWS_IN_ROWSET) );
-		
+		transMeta.setConnectionGroup( wConnectionGroup.getText() );
+        
+        transMeta.setFeedbackShown( wShowFeedback.getSelection() );
+        transMeta.setFeedbackSize( Const.toInt( wFeedbackSize.getText(), Const.ROWS_UPDATE ) );
+        
 		if (newDirectory!=null)
 		{
 		    RepositoryDirectory dirFrom = transMeta.getDirectory();

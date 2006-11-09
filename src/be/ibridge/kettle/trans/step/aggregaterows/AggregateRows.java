@@ -198,7 +198,7 @@ public class AggregateRows extends BaseStep implements StepInterface
 		
 		AddAggregate(r);
 		
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("AggregateRows.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        if (checkFeedback(linesRead)) logBasic(Messages.getString("AggregateRows.Log.LineNumber")+linesRead); //$NON-NLS-1$
 		
 		return true;
 	}

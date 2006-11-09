@@ -47,6 +47,7 @@ import be.ibridge.kettle.core.DBCacheEntry;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.database.map.DatabaseConnectionMap;
 import be.ibridge.kettle.core.exception.KettleDatabaseBatchException;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.util.StringUtil;
@@ -95,6 +96,16 @@ public class Database
 	 */
 	private int batchCounter;
 
+    /**
+     * Number of times a connection was opened using this object.
+     * Only used in the context of a database connection map
+     */
+    private int opened;
+
+    private String connectionGroup;
+
+    private String partitionId;
+    
 	/**
 	 * Construnct a new Database Connection
 	 * @param inf The Database Connection Info to construct the connection with.
@@ -115,6 +126,12 @@ public class Database
 				
 		log.logDetailed(toString(), "New database connection defined");
 	}
+    
+    public boolean equals(Object obj)
+    {
+        Database other = (Database) obj;
+        return other.databaseMeta.equals(other.databaseMeta);
+    }
 	
 	/**
      * @return Returns the connection.
@@ -176,12 +193,49 @@ public class Database
         connect(null, partitionId);
     }
 
+    public void connect(String group, String partitionId) throws KettleDatabaseException
+    {
+        // Before anything else, let's see if we already have a connection defined for this group/partition!
+        // The group is called after the thread-name of the transformation or job that is running
+        // The name of that threadname is expected to be unique (it is in Kettle)
+        // So the deal is that if there is another thread using that, we go for it. 
+        // 
+        if (!Const.isEmpty(group))
+        {
+            this.connectionGroup = group;
+            this.partitionId = partitionId;
+            
+            DatabaseConnectionMap map = DatabaseConnectionMap.getInstance();
+            
+            // Try to find the conection for the group
+            Database lookup = map.getDatabase(group, partitionId, this);
+            if (lookup==null) // We already opened this connection for the partition & database in this group
+            {
+                // Do a normal connect and then store this database object for later re-use.
+                normalConnect(partitionId);
+                opened++;
+                
+                map.storeDatabase(group, partitionId, this);
+            }
+            else
+            {
+                connection = lookup.getConnection();
+                lookup.setOpened(lookup.getOpened()+1); // if this counter hits 0 again, close the connection.
+            }
+        }
+        else
+        {
+            // Proceed with a normal connect
+            normalConnect(partitionId);
+        }
+    }
+    
 	/**
 	 * Open the database connection.
      * @param partitionId the partition ID in the cluster to connect to.
 	 * @throws KettleDatabaseException if something went wrong.
 	 */
-	public void connect(String group, String partitionId) throws KettleDatabaseException
+	public void normalConnect(String partitionId) throws KettleDatabaseException
 	{
         if (databaseMeta==null)
         {
@@ -190,23 +244,6 @@ public class Database
         
         try
 		{
-            // Before anything else, let's see if we already have a connection defined for this group/partition!
-            // The group is called after the thread-name of the transformation or job that is running
-            // The name of that threadname is expected to be unique (it is in Kettle)
-            // So the deal is that if there is another thread using that, we go for it. 
-            // 
-            if (!Const.isEmpty(group))
-            {
-                String groupHash = group;
-                if (!Const.isEmpty(partitionId))
-                {
-                    groupHash+="-"+partitionId;
-                }
-                
-                // Try to find the conection for the group
-                
-            }
-            
             // First see if we use connection pooling...
             //
             if ( databaseMeta.isUsingConnectionPool() &&  // default = false for backward compatibility
@@ -344,7 +381,7 @@ public class Database
 	/**
 	 * Disconnect from the database and close all open prepared statements.
 	 */
-	public void disconnect()
+	public synchronized void disconnect()
 	{	
 		try
 		{
@@ -357,11 +394,6 @@ public class Database
                 return ; // Nothing to do...
             }
 
-			if (!isAutoCommit())
-            {
-                commit();
-            }
-			
 			if (pstmt    !=null) 
             { 
                 pstmt.close(); 
@@ -388,6 +420,34 @@ public class Database
                 pstmt_seq=null; 
             } 
             
+            // See if there are other steps using this connection in a connection group.
+            // If so, we will hold commit & connection close until then.
+            // 
+            if (!Const.isEmpty(connectionGroup))
+            {
+                DatabaseConnectionMap map = DatabaseConnectionMap.getInstance();
+                Database lookup = map.getDatabase(connectionGroup, partitionId, this);
+                if (lookup!=null)
+                {
+                    lookup.opened--;
+                    
+                    if (lookup.opened>0)
+                    {
+                        return;
+                    }
+                    else
+                    {
+                        map.removeConnection(connectionGroup, partitionId, this); // remove the trace of it.
+                        // proceed to normal close
+                    }
+                }
+            }
+            
+            if (!isAutoCommit())
+            {
+                commit();
+            }
+
 			if (connection !=null) 
             { 
                 connection.close(); 
@@ -4454,5 +4514,53 @@ public class Database
         {
             execStatement(sql);
         }
+    }
+
+    /**
+     * @return the opened
+     */
+    public int getOpened()
+    {
+        return opened;
+    }
+
+    /**
+     * @param opened the opened to set
+     */
+    public void setOpened(int opened)
+    {
+        this.opened = opened;
+    }
+
+    /**
+     * @return the connectionGroup
+     */
+    public String getConnectionGroup()
+    {
+        return connectionGroup;
+    }
+
+    /**
+     * @param connectionGroup the connectionGroup to set
+     */
+    public void setConnectionGroup(String connectionGroup)
+    {
+        this.connectionGroup = connectionGroup;
+    }
+
+    /**
+     * @return the partitionId
+     */
+    public String getPartitionId()
+    {
+        return partitionId;
+    }
+
+    /**
+     * @param partitionId the partitionId to set
+     */
+    public void setPartitionId(String partitionId)
+    {
+        this.partitionId = partitionId;
     }
 }

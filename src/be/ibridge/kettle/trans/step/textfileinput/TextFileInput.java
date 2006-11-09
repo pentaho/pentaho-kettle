@@ -987,7 +987,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			}
 		}
 
-		if ((linesInput > 0) && (linesInput % Const.ROWS_UPDATE) == 0) logBasic("linenr " + linesInput);
+        if (checkFeedback(linesInput)) logBasic("linenr " + linesInput);
 
 		return retval;
 	}

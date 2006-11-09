@@ -328,7 +328,7 @@ public class SelectValues extends BaseStep implements StepInterface
 		putRow(r);      // copy row to possible alternate rowset(s).
 		if (log.isRowLevel()) logRowlevel(Messages.getString("SelectValues.Log.WroteRowToNextStep")+r); //$NON-NLS-1$
 
-		if ((linesRead>0) && (linesRead%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("SelectValues.Log.LineNumber")+linesRead); //$NON-NLS-1$
+        if (checkFeedback(linesRead)) logBasic(Messages.getString("SelectValues.Log.LineNumber")+linesRead); //$NON-NLS-1$
 			
 		return true;
 	}

@@ -1434,6 +1434,4 @@ public class Props implements Cloneable
     {
         properties.setProperty(STRING_REPLACE_DATABASES, replace?"Y":"N");
     }
-
-
 }

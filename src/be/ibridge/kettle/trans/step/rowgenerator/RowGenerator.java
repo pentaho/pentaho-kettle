@@ -185,10 +185,8 @@ public class RowGenerator extends BaseStep implements StepInterface
         {
             log.logRowlevel(toString(), Messages.getString("RowGenerator.Log.Wrote.Row", Long.toString(linesWritten), r.toString()) );
         }
-		if ((linesWritten>0) && (linesWritten%Const.ROWS_UPDATE)==0) 
-        {
-            logBasic( Messages.getString("RowGenerator.Log.LineNr", Long.toString(linesWritten) ) );
-        }
+        
+        if (checkFeedback(linesRead)) logBasic( Messages.getString("RowGenerator.Log.LineNr", Long.toString(linesWritten) ) );
 		
 		return retval;
 	}

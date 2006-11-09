@@ -123,7 +123,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		
 		putRow(r);       // in case we want it to go further...
 		
-		if ((linesOutput>0) && (linesOutput%Const.ROWS_UPDATE)==0)logBasic("linenr "+linesOutput);
+        if (checkFeedback(linesOutput)) logBasic("linenr "+linesOutput);
 		
 		return result;
 	}

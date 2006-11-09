@@ -135,7 +135,7 @@ public class XBaseInput extends BaseStep implements StepInterface
 
 		putRow(row);        // fill the rowset(s). (wait for empty)
 
-		if ((linesInput>0) && (linesInput%Const.ROWS_UPDATE)==0) logBasic(Messages.getString("XBaseInput.Log.LineNr")+linesInput); //$NON-NLS-1$
+        if (checkFeedback(linesInput)) logBasic(Messages.getString("XBaseInput.Log.LineNr")+linesInput); //$NON-NLS-1$
 
 		return true;
 	}
