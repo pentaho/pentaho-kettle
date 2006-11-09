@@ -13,16 +13,17 @@ export LD_LIBRARY_PATH=/usr/local/mozilla
 # ** Libraries used by Kettle:                    **
 # **************************************************
 
-CLASSPATH=.
-CLASSPATH=$CLASSPATH:lib/kettle.jar
-CLASSPATH=$CLASSPATH:libswt/jface.jar
-CLASSPATH=$CLASSPATH:libswt/runtime.jar
+BASEDIR=$(dirname $0)
+CLASSPATH=$BASEDIR
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/libswt/jface.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/libswt/runtime.jar
 
 # **************************************************
 # ** JDBC & other libraries used by Kettle:       **
 # **************************************************
 
-for f in `find libext`
+for f in `find $BASEDIR/libext -type f -name "*.jar"`
 do
   CLASSPATH=$CLASSPATH:$f
 done
@@ -36,16 +37,16 @@ LIBPATH="NONE"
 
 case `uname -s` in 
 	AIX)
-		LIBPATH=libswt/aix/
+		LIBPATH=$BASEDIR/libswt/aix/
 		;;
 
 	SunOS) 
-		LIBPATH=libswt/solaris/
+		LIBPATH=$BASEDIR/libswt/solaris/
 		;;
 
 	Darwin)
-		LIBPATH=libswt/osx/
-		JAVA_BIN=libswt/osx/java_swt
+		LIBPATH=$BASEDIR/libswt/osx/
+		JAVA_BIN=$BASEDIR/libswt/osx/java_swt
 		chmod +x $JAVA_BIN
 		;;
 
@@ -53,15 +54,15 @@ case `uname -s` in
 	    ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
-				LIBPATH=libswt/linux/x86_64/
+				LIBPATH=$BASEDIR/libswt/linux/x86_64/
 				;;
 
 			i[3-6]86)
-				LIBPATH=libswt/linux/x86/
+				LIBPATH=$BASEDIR/libswt/linux/x86/
 				;;
 
 			ppc)
-				LIBPATH=libswt/linux/ppc/
+				LIBPATH=$BASEDIR/libswt/linux/ppc/
 				;;
 
 			*)	
@@ -75,17 +76,17 @@ case `uname -s` in
 	    ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
-				LIBPATH=libswt/freebsd/x86_64/
+				LIBPATH=$BASEDIR/libswt/freebsd/x86_64/
 				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
 				exit
 				;;
 
 			i[3-6]86)
-				LIBPATH=libswt/freebsd/x86/
+				LIBPATH=$BASEDIR/libswt/freebsd/x86/
 				;;
 
 			ppc)
-				LIBPATH=libswt/freebsd/ppc/
+				LIBPATH=$BASEDIR/libswt/freebsd/ppc/
 				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
 				exit
 				;;
@@ -98,7 +99,7 @@ case `uname -s` in
 		;;
 
 	HP-UX) 
-		LIBPATH=libswt/hpux/
+		LIBPATH=$BASEDIR/libswt/hpux/
 		;;
 	CYGWIN*)
 		./Spoon.bat
