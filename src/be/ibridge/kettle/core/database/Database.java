@@ -102,9 +102,15 @@ public class Database
      */
     private int opened;
 
+    /**
+     * The copy is equal to opened at the time of creation.
+     */
+    private int copy; 
+
     private String connectionGroup;
 
     private String partitionId;
+    
     
 	/**
 	 * Construnct a new Database Connection
@@ -193,7 +199,7 @@ public class Database
         connect(null, partitionId);
     }
 
-    public void connect(String group, String partitionId) throws KettleDatabaseException
+    public synchronized void connect(String group, String partitionId) throws KettleDatabaseException
     {
         // Before anything else, let's see if we already have a connection defined for this group/partition!
         // The group is called after the thread-name of the transformation or job that is running
@@ -214,6 +220,7 @@ public class Database
                 // Do a normal connect and then store this database object for later re-use.
                 normalConnect(partitionId);
                 opened++;
+                copy = opened;
                 
                 map.storeDatabase(group, partitionId, this);
             }
@@ -221,6 +228,7 @@ public class Database
             {
                 connection = lookup.getConnection();
                 lookup.setOpened(lookup.getOpened()+1); // if this counter hits 0 again, close the connection.
+                copy = lookup.getOpened();
             }
         }
         else
@@ -4562,5 +4570,21 @@ public class Database
     public void setPartitionId(String partitionId)
     {
         this.partitionId = partitionId;
+    }
+
+    /**
+     * @return the copy
+     */
+    public int getCopy()
+    {
+        return copy;
+    }
+
+    /**
+     * @param copy the copy to set
+     */
+    public void setCopy(int copy)
+    {
+        this.copy = copy;
     }
 }

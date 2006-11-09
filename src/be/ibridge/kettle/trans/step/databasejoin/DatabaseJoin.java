@@ -173,7 +173,7 @@ public class DatabaseJoin extends BaseStep implements StepInterface
 			{
                 if (getTransMeta().isUsingUniqueConnections())
                 {
-                    data.db.connect(getTrans().getThreadName(), getPartitionID());
+                    synchronized (getTrans()) { data.db.connect(getTrans().getThreadName(), getPartitionID()); }
                 }
                 else
                 {

@@ -903,7 +903,7 @@ public class Repository
 			{
                 if (log.isDebug()) log.logDebug(toString(), "max(" + idfield + ") found in table " + tablename + " --> " + id.getInteger()
 											+ " number: " + id.getNumber());
-				retval = id.getInteger() + 10000L;
+				retval = id.getInteger() + 1L;
 				
 				// log.logBasic(toString(), "Got next id for "+tablename+"."+idfield+" from the database: "+retval);
 			}

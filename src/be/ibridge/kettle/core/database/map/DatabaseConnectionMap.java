@@ -58,7 +58,7 @@ public class DatabaseConnectionMap
         return (Database) map.get(key);
     }
     
-    private static final String createEntryKey(String connectionGroup, String partitionID, Database database)
+    public static final String createEntryKey(String connectionGroup, String partitionID, Database database)
     {
         StringBuffer key = new StringBuffer(connectionGroup);
         

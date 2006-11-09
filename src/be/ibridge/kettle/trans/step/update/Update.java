@@ -214,8 +214,11 @@ public class Update extends BaseStep implements StepInterface
 			{
                 if (getTransMeta().isUsingUniqueConnections())
                 {
-                    data.dblup.connect(getTrans().getThreadName(), getPartitionID());
-                    data.dbupd.connect(getTrans().getThreadName(), getPartitionID());
+                    synchronized (getTrans()) 
+                    { 
+                        data.dblup.connect(getTrans().getThreadName(), getPartitionID());
+                        data.dbupd.connect(getTrans().getThreadName(), getPartitionID());
+                    }
                 }
                 else
                 {

@@ -146,7 +146,7 @@ public class Delete extends BaseStep implements StepInterface
 			{
                 if (getTransMeta().isUsingUniqueConnections())
                 {
-                    data.dbupd.connect(getTrans().getThreadName(), getPartitionID());
+                    synchronized (getTrans()) { data.dbupd.connect(getTrans().getThreadName(), getPartitionID()); }
                 }
                 else
                 {

@@ -320,13 +320,15 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			{
                 if (getTransMeta().isUsingUniqueConnections())
                 {
-                    data.db.connect(getTrans().getThreadName(), getPartitionID());
+                    synchronized (getTrans()) { data.db.connect(getTrans().getThreadName(), getPartitionID()); }
                 }
                 else
                 {
                     data.db.connect(getPartitionID());
                 }
                 
+                data.db.setCommit(100); // we never get a commit, but it just turns off auto-commit.
+                                
                 logBasic(Messages.getString("DatabaseLookup.Log.ConnectedToDatabase")); //$NON-NLS-1$
 
 				return true;

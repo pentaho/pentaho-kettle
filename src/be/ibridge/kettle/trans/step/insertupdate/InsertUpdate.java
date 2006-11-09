@@ -256,7 +256,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
 				data.db=new Database(meta.getDatabase());
                 if (getTransMeta().isUsingUniqueConnections())
                 {
-                    data.db.connect(getTrans().getThreadName(), getPartitionID());
+                    synchronized (getTrans()) { data.db.connect(getTrans().getThreadName(), getPartitionID()); }
                 }
                 else
                 {
