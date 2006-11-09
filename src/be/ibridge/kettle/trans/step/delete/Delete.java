@@ -144,7 +144,14 @@ public class Delete extends BaseStep implements StepInterface
 			data.dbupd=new Database(meta.getDatabase());
 			try 
 			{
-				data.dbupd.connect();
+                if (getTransMeta().isUsingUniqueConnections())
+                {
+                    data.dbupd.connect(getTrans().getThreadName(), getPartitionID());
+                }
+                else
+                {
+                    data.dbupd.connect(getPartitionID());
+                }
 				
 				logBasic(Messages.getString("Delete.Log.ConnectedToDB")); //$NON-NLS-1$
 				

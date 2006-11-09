@@ -212,9 +212,17 @@ public class Update extends BaseStep implements StepInterface
 			data.dbupd=new Database(meta.getDatabase());
 			try 
 			{
-				data.dblup.connect();
-				data.dbupd.connect();
-				
+                if (getTransMeta().isUsingUniqueConnections())
+                {
+                    data.dblup.connect(getTrans().getThreadName(), getPartitionID());
+                    data.dbupd.connect(getTrans().getThreadName(), getPartitionID());
+                }
+                else
+                {
+                    data.dblup.connect(getPartitionID());
+                    data.dbupd.connect(getPartitionID());
+                }
+                
 				logBasic(Messages.getString("Update.Log.ConnectedToDB")); //$NON-NLS-1$
 				
 				data.dbupd.setCommit(meta.getCommitSize());

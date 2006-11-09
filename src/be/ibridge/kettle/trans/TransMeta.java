@@ -154,9 +154,8 @@ public class TransMeta implements XMLInterface
     
     
     private List                partitionSchemas;
-    
-    /** The group name that will cause all created database connections to use the first connection in that group */
-    private String              connectionGroup;
+
+    private boolean             usingUniqueConnections;
     
     private boolean             feedbackShown;
     private int                 feedbackSize;
@@ -1706,7 +1705,7 @@ public class TransMeta implements XMLInterface
                     directory = directoryTree.findDirectory(id_directory);
                 }
                 
-                connectionGroup = rep.getTransAttributeString(getID(), 0, "CONNECTION_GROUP");
+                usingUniqueConnections = rep.getTransAttributeBoolean(getID(), 0, "UNIQUE_CONNECTIONS");
                 feedbackShown = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, "FEEDBACK_SHOWN") );
                 feedbackSize = (int) rep.getTransAttributeInteger(getID(), 0, "FEEDBACK_SIZE");
                 
@@ -1984,7 +1983,7 @@ public class TransMeta implements XMLInterface
         retval.append("    " + XMLHandler.addTagValue("sleep_time_empty", sleepTimeEmpty)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("sleep_time_full", sleepTimeFull)); //$NON-NLS-1$ //$NON-NLS-2$
         
-        retval.append("    " + XMLHandler.addTagValue("connection_group", connectionGroup)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    " + XMLHandler.addTagValue("unique_connections", usingUniqueConnections)); //$NON-NLS-1$ //$NON-NLS-2$
         
         retval.append("    " + XMLHandler.addTagValue("feedback_shown", feedbackShown)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("feedback_size", feedbackSize)); //$NON-NLS-1$ //$NON-NLS-2$
@@ -2341,7 +2340,7 @@ public class TransMeta implements XMLInterface
             sizeRowset = Const.toInt(srowset, Const.ROWS_IN_ROWSET);
             sleepTimeEmpty = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_empty"), Const.SLEEP_EMPTY_NANOS); //$NON-NLS-1$
             sleepTimeFull  = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_full"), Const.SLEEP_FULL_NANOS); //$NON-NLS-1$
-            connectionGroup = XMLHandler.getTagValue(infonode, "connection_group"); //$NON-NLS-1$
+            usingUniqueConnections = "Y".equalsIgnoreCase( XMLHandler.getTagValue(infonode, "unique_connections") ); //$NON-NLS-1$
 
             feedbackShown = !"N".equalsIgnoreCase( XMLHandler.getTagValue(infonode, "feedback_shown") ); //$NON-NLS-1$
             feedbackSize = Const.toInt(XMLHandler.getTagValue(infonode, "feedback_size"), Const.ROWS_UPDATE); //$NON-NLS-1$
@@ -4455,22 +4454,6 @@ public class TransMeta implements XMLInterface
     }
 
     /**
-     * @return the connectionGroup
-     */
-    public String getConnectionGroup()
-    {
-        return connectionGroup;
-    }
-
-    /**
-     * @param connectionGroup the connectionGroup to set
-     */
-    public void setConnectionGroup(String connectionGroup)
-    {
-        this.connectionGroup = connectionGroup;
-    }
-
-    /**
      * @return the feedbackShown
      */
     public boolean isFeedbackShown()
@@ -4500,5 +4483,21 @@ public class TransMeta implements XMLInterface
     public void setFeedbackSize(int feedbackSize)
     {
         this.feedbackSize = feedbackSize;
+    }
+
+    /**
+     * @return the usingUniqueConnections
+     */
+    public boolean isUsingUniqueConnections()
+    {
+        return usingUniqueConnections;
+    }
+
+    /**
+     * @param usingUniqueConnections the usingUniqueConnections to set
+     */
+    public void setUsingUniqueConnections(boolean usingUniqueConnections)
+    {
+        this.usingUniqueConnections = usingUniqueConnections;
     }
 }

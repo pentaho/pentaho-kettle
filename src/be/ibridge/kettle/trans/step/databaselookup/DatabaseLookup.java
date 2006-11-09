@@ -318,8 +318,16 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 			data.db=new Database(meta.getDatabaseMeta());
 			try
 			{
-				data.db.connect(getPartitionID());
-				logBasic(Messages.getString("DatabaseLookup.Log.ConnectedToDatabase")); //$NON-NLS-1$
+                if (getTransMeta().isUsingUniqueConnections())
+                {
+                    data.db.connect(getTrans().getThreadName(), getPartitionID());
+                }
+                else
+                {
+                    data.db.connect(getPartitionID());
+                }
+                
+                logBasic(Messages.getString("DatabaseLookup.Log.ConnectedToDatabase")); //$NON-NLS-1$
 
 				return true;
 			}

@@ -128,8 +128,16 @@ public class DBProc extends BaseStep implements StepInterface
 			data.db=new Database(meta.getDatabase());
 			try
 			{
-				data.db.connect(getPartitionID());
-				if (!meta.isAutoCommit())
+                if (getTransMeta().isUsingUniqueConnections())
+                {
+                    data.db.connect(getTrans().getThreadName(), getPartitionID());
+                }
+                else
+                {
+                    data.db.connect(getPartitionID());
+                }
+
+                if (!meta.isAutoCommit())
                 {
                     logBasic(Messages.getString("DBProc.Log.AutoCommit")); //$NON-NLS-1$
                     data.db.setCommit(9999);

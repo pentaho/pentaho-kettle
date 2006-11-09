@@ -113,6 +113,8 @@ public class Trans
 	private boolean safeModeEnabled;
 
     private Log4jStringAppender stringAppender;
+    
+    private String threadName;
 
 	/*
 	 * Initialize new empty transformation...
@@ -123,6 +125,10 @@ public class Trans
 		class_nr = 1;
 		transMeta = new TransMeta(file, name, args);
 		preview=false;
+        
+        // The trans runs in the same thread as the parent.
+        // So we can save that name for reference purposes
+        threadName = Thread.currentThread().getName();
 	}
 
 	/*
@@ -1647,6 +1653,22 @@ public class Trans
     public void setBatchId(long batchId)
     {
         this.batchId = batchId;
+    }
+
+    /**
+     * @return the threadName
+     */
+    public String getThreadName()
+    {
+        return threadName;
+    }
+
+    /**
+     * @param threadName the threadName to set
+     */
+    public void setThreadName(String threadName)
+    {
+        this.threadName = threadName;
     }
 }
 

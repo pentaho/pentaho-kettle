@@ -465,7 +465,14 @@ public class DimensionLookup extends BaseStep implements StepInterface
 			data.db=new Database(meta.getDatabaseMeta());
 			try
 			{
-				data.db.connect(getPartitionID());
+                if (getTransMeta().isUsingUniqueConnections())
+                {
+                    data.db.connect(getTrans().getThreadName(), getPartitionID());
+                }
+                else
+                {
+                    data.db.connect(getPartitionID());
+                }
 				
 				logBasic(Messages.getString("DimensionLookup.Log.ConnectedToDB")); //$NON-NLS-1$
 				data.db.setCommit(meta.getCommitSize());

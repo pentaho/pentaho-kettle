@@ -945,7 +945,7 @@ public class Repository
 		database.insertRow();
 		database.closeInsert();
         
-        insertTransAttribute(transMeta.getId(), 0, "CONNECTION_GROUP", 0, transMeta.getConnectionGroup());
+        insertTransAttribute(transMeta.getId(), 0, "UNIQUE_CONNECTIONS", 0, transMeta.isUsingUniqueConnections()?"Y":"N");
         insertTransAttribute(transMeta.getId(), 0, "FEEDBACK_SHOWN", 0, transMeta.isFeedbackShown()?"Y":"N");
         insertTransAttribute(transMeta.getId(), 0, "FEEDBACK_SIZE", transMeta.getFeedbackSize(), "");
 		
@@ -2785,7 +2785,16 @@ public class Repository
             return null;
         return r.searchValue("VALUE_STR").getString();
     }
-    
+
+    public synchronized boolean getTransAttributeBoolean(long id_transformation, int nr, String code) throws KettleDatabaseException
+    {
+        Row r = null;
+        r = getTransAttributeRow(id_transformation, nr, code);
+        if (r == null)
+            return false;
+        return r.searchValue("VALUE_STR").getBoolean();
+    }
+
     public synchronized double getTransAttributeNumber(long id_transformation, int nr, String code) throws KettleDatabaseException
     {
         Row r = null;

@@ -239,8 +239,15 @@ public class TableOutput extends BaseStep implements StepInterface
                 
 				data.db=new Database(meta.getDatabase());
 				
-				data.db.connect(getPartitionID());  // Connect to the right partition (if any)
-
+                if (getTransMeta().isUsingUniqueConnections())
+                {
+                    data.db.connect(getTrans().getThreadName(), getPartitionID());
+                }
+                else
+                {
+                    data.db.connect(getPartitionID());
+                }
+                
 				logBasic("Connected to database ["+meta.getDatabase()+"] (commit="+meta.getCommitSize()+")");
 				data.db.setCommit(meta.getCommitSize());
 				

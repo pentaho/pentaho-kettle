@@ -117,7 +117,7 @@ public class TransDialog extends Dialog
 	private TableView    wFields;
 
 	private Text         wSizeRowset;
-    private Text         wConnectionGroup;
+    private Button       wUniqueConnections;
 
     // Partitions tab
     private List wSchemaList;
@@ -255,7 +255,7 @@ public class TransDialog extends Dialog
 		wMaxdatediff.addSelectionListener( lsDef );
 		wLogtable.addSelectionListener( lsDef );
 		wSizeRowset.addSelectionListener( lsDef );
-        wConnectionGroup.addSelectionListener( lsDef );
+        wUniqueConnections.addSelectionListener( lsDef );
         wFeedbackSize.addSelectionListener( lsDef );
 
 		// Detect X or ALT-F4 or something that kills this window...
@@ -921,22 +921,21 @@ public class TransDialog extends Dialog
         wFeedbackSize.setLayoutData(fdFeedbackSize);
         
         // Rows in Rowset:
-        Label wlConnectionGroup = new Label(wPerfComp, SWT.RIGHT);
-        wlConnectionGroup.setText(Messages.getString("TransDialog.ConnectionGroup.Label")); //$NON-NLS-1$
-        props.setLook(wlConnectionGroup);
-        FormData fdlConnectionGroup = new FormData();
-        fdlConnectionGroup.left = new FormAttachment(0, 0);
-        fdlConnectionGroup.right= new FormAttachment(middle, -margin);
-        fdlConnectionGroup.top  = new FormAttachment(wFeedbackSize, margin);
-        wlConnectionGroup.setLayoutData(fdlConnectionGroup);
-        wConnectionGroup=new Text(wPerfComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
-        props.setLook(wConnectionGroup);
-        wConnectionGroup.addModifyListener(lsMod);
-        FormData fdConnectionGroup = new FormData();
-        fdConnectionGroup.left = new FormAttachment(middle, 0);
-        fdConnectionGroup.top  = new FormAttachment(wFeedbackSize, margin);
-        fdConnectionGroup.right= new FormAttachment(100, 0);
-        wConnectionGroup.setLayoutData(fdConnectionGroup);
+        Label wlUniqueConnections = new Label(wPerfComp, SWT.RIGHT);
+        wlUniqueConnections.setText(Messages.getString("TransDialog.UniqueConnections.Label")); //$NON-NLS-1$
+        props.setLook(wlUniqueConnections);
+        FormData fdlUniqueConnections = new FormData();
+        fdlUniqueConnections.left = new FormAttachment(0, 0);
+        fdlUniqueConnections.right= new FormAttachment(middle, -margin);
+        fdlUniqueConnections.top  = new FormAttachment(wFeedbackSize, margin);
+        wlUniqueConnections.setLayoutData(fdlUniqueConnections);
+        wUniqueConnections=new Button(wPerfComp, SWT.CHECK);
+        props.setLook(wUniqueConnections);
+        FormData fdUniqueConnections = new FormData();
+        fdUniqueConnections.left = new FormAttachment(middle, 0);
+        fdUniqueConnections.top  = new FormAttachment(wFeedbackSize, margin);
+        fdUniqueConnections.right= new FormAttachment(100, 0);
+        wUniqueConnections.setLayoutData(fdUniqueConnections);
 
                 
 
@@ -1220,7 +1219,7 @@ public class TransDialog extends Dialog
 		}
 		
 		wSizeRowset.setText(""+transMeta.getSizeRowset()); //$NON-NLS-1$
-		if (transMeta.getConnectionGroup()!=null) wConnectionGroup.setText(transMeta.getConnectionGroup());
+		wUniqueConnections.setSelection(transMeta.isUsingUniqueConnections());
 		wShowFeedback.setSelection(transMeta.isFeedbackShown());
         wFeedbackSize.setText(""+transMeta.getFeedbackSize());
         
@@ -1349,7 +1348,7 @@ public class TransDialog extends Dialog
 		}
 		
 		transMeta.setSizeRowset( Const.toInt( wSizeRowset.getText(), Const.ROWS_IN_ROWSET) );
-		transMeta.setConnectionGroup( wConnectionGroup.getText() );
+		transMeta.setUsingUniqueConnections( wUniqueConnections.getSelection() );
         
         transMeta.setFeedbackShown( wShowFeedback.getSelection() );
         transMeta.setFeedbackSize( Const.toInt( wFeedbackSize.getText(), Const.ROWS_UPDATE ) );
