@@ -1587,7 +1587,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         }
         else
         {
-            if (hasSpacesInField(field) || hasSpecialCharInField(field))
+            if (hasSpacesInField(field) || hasSpecialCharInField(field) || hasDotInField(field))
             {
                 return getStartQuote()+field+getEndQuote();
             }
@@ -1655,7 +1655,6 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         if (fieldname.indexOf('/')>=0) return true; 
         if (fieldname.indexOf('-')>=0) return true; 
         if (fieldname.indexOf('+')>=0) return true; 
-        // if (fieldname.indexOf('.')>=0) return true; Don't quote the dot or we can't quote anymore. 
         if (fieldname.indexOf(',')>=0) return true; 
         if (fieldname.indexOf('*')>=0) return true; 
         if (fieldname.indexOf('(')>=0) return true; 
@@ -1666,6 +1665,12 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         if (fieldname.indexOf(']')>=0) return true; 
         if (fieldname.indexOf('%')>=0) return true; 
         if (fieldname.indexOf('@')>=0) return true; 
+        return false;
+    }
+    
+    public boolean hasDotInField(String fieldname)
+    {
+        if (fieldname.indexOf('.')>=0) return true;
         return false;
     }
     
