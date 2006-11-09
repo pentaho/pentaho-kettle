@@ -226,8 +226,6 @@ public class ExecSQLMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-            System.out.println("stepnode:"+Const.CR+stepnode); //$NON-NLS-1$
-            
 			String con            = XMLHandler.getTagValue(stepnode, "connection"); //$NON-NLS-1$
 			databaseMeta          = Const.findDatabase(databases, con);
             String eachRow        = XMLHandler.getTagValue(stepnode, "execute_each_row"); //$NON-NLS-1$
