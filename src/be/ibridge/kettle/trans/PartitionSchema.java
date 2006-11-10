@@ -88,9 +88,9 @@ public class PartitionSchema implements Cloneable
         xml.append("          "+XMLHandler.addTagValue("name", name));
         for (int i=0;i<partitionIDs.length;i++)
         {
-        xml.append("          <partition>"+XMLHandler.addTagValue("name", name));
+        xml.append("          <partition>");
         xml.append("            "+XMLHandler.addTagValue("id", partitionIDs[i]));
-        xml.append("            </partition>"+XMLHandler.addTagValue("name", name));
+        xml.append("            </partition>");
         }
         xml.append("          </partitionschema>"+Const.CR);
         return xml.toString();
