@@ -23,6 +23,7 @@ import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.zip.ZipOutputStream;
+import java.util.zip.GZIPOutputStream;
 
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.trans.step.BaseStepData;
@@ -48,6 +49,7 @@ public class TextFileOutputData extends BaseStepData implements StepDataInterfac
 	public DateFormatSymbols dafs;
 
 	public ZipOutputStream zip;
+	public GZIPOutputStream gzip;
     
     public OutputStreamWriter writer;
 

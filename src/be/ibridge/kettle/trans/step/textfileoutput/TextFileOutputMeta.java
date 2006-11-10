@@ -73,6 +73,9 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	/** The file format: DOS or Unix */
     private  String fileFormat;
 	
+	/** The file compression: None, Zip or Gzip */
+    private  String fileCompression;
+	
 	/** if this value is larger then 0, the text file is split up into parts of this number of lines */
     private  int    splitEvery;
 
@@ -87,9 +90,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 	
 	/** Flag: add the time in the filename */
     private  boolean timeInFilename;
-	
-	/** Flag: put the destination file in a zip archive */
-    private  boolean zipped;
 	
 	/** Flag: pad fields to their specified length */
     private  boolean padded;
@@ -226,13 +226,30 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     }
 
 
-
     /**
      * @param fileFormat The fileFormat to set.
      */
     public void setFileFormat(String fileFormat)
     {
         this.fileFormat = fileFormat;
+    }
+
+
+    /**
+     * @return Returns the fileCompression.
+     */
+    public String getFileCompression()
+    {
+        return fileCompression;
+    }
+
+
+    /**
+     * @param fileCompression The fileCompression to set.
+     */
+    public void setFileCompression(String fileCompression)
+    {
+        this.fileCompression = fileCompression;
     }
 
 
@@ -418,26 +435,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 
 
     /**
-     * @return Returns the zipped.
-     */
-    public boolean isZipped()
-    {
-        return zipped;
-    }
-
-
-
-    /**
-     * @param zipped The zipped to set.
-     */
-    public void setZipped(boolean zipped)
-    {
-        this.zipped = zipped;
-    }
-
-
-
-    /**
      * @return Returns the outputFields.
      */
     public TextFileField[] getOutputFields()
@@ -533,6 +530,13 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			headerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
 			footerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
 			fileFormat       = XMLHandler.getTagValue(stepnode, "format");
+			fileCompression       = XMLHandler.getTagValue(stepnode, "compression");
+			if (fileCompression == null) {
+			  if ("Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "zipped")))
+					  fileCompression = "Zip";
+			  else
+				  fileCompression = "None";
+			}
             encoding         = XMLHandler.getTagValue(stepnode, "encoding");
 
             endedLine  = XMLHandler.getTagValue(stepnode, "endedLine");
@@ -544,7 +548,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			stepNrInFilename     = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "split"));
 			dateInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
-			zipped    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "zipped"));
 			padded       = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "pad"));
 			splitEvery=Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
 			
@@ -607,12 +610,12 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		headerEnabled    = true;
 		footerEnabled    = false;
 		fileFormat       = "DOS";
+		fileCompression  = "None";
 		fileName         = "file";
 		extension        = "txt";
 		stepNrInFilename = false;
 		dateInFilename   = false;
 		timeInFilename   = false;
-		zipped           = false;
 		padded           = false;
 		splitEvery       = 0;
 
@@ -706,7 +709,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			retval+="_"+splitnr;
 		}
 		
-		if (zipped)
+		if (fileCompression.equals("Zip"))
 		{
 			if (ziparchive)
 			{
@@ -725,7 +728,11 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			if (extension!=null && extension.length()!=0) 
 			{
 				retval+="."+extension;
-			} 
+			}
+			if (fileCompression.equals("GZip"))
+			{
+				retval += ".gz";
+			}
 		}
 		return retval;
 	}
@@ -764,6 +771,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		retval.append("    "+XMLHandler.addTagValue("header",    headerEnabled));
 		retval.append("    "+XMLHandler.addTagValue("footer",    footerEnabled));
 		retval.append("    "+XMLHandler.addTagValue("format",    fileFormat));
+		retval.append("    "+XMLHandler.addTagValue("compression",    fileCompression));
         retval.append("    "+XMLHandler.addTagValue("encoding",  encoding));
         retval.append("    "+XMLHandler.addTagValue("endedLine",  endedLine));
 
@@ -774,7 +782,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		retval.append("      "+XMLHandler.addTagValue("split",      stepNrInFilename));
 		retval.append("      "+XMLHandler.addTagValue("add_date",   dateInFilename));
 		retval.append("      "+XMLHandler.addTagValue("add_time",   timeInFilename));
-		retval.append("      "+XMLHandler.addTagValue("zipped",     zipped));
 		retval.append("      "+XMLHandler.addTagValue("pad",        padded));
 		retval.append("      "+XMLHandler.addTagValue("splitevery", splitEvery));
 		retval.append("      </file>"+Const.CR);
@@ -815,6 +822,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			headerEnabled   =      rep.getStepAttributeBoolean(id_step, "header");
 			footerEnabled   =      rep.getStepAttributeBoolean(id_step, "footer");   
 			fileFormat      =      rep.getStepAttributeString (id_step, "format");  
+			fileCompression =      rep.getStepAttributeString (id_step, "compression");  
             encoding        =      rep.getStepAttributeString (id_step, "encoding");
             
 			fileName        =      rep.getStepAttributeString (id_step, "file_name");  
@@ -824,7 +832,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			stepNrInFilename      =      rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
 			dateInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_date");
 			timeInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_time");
-			zipped          =      rep.getStepAttributeBoolean(id_step, "file_zipped");
 			padded             =      rep.getStepAttributeBoolean(id_step, "file_pad");
 	
 			newline = getNewLine(fileFormat);
@@ -867,6 +874,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "header",           headerEnabled);
 			rep.saveStepAttribute(id_transformation, id_step, "footer",           footerEnabled);
 			rep.saveStepAttribute(id_transformation, id_step, "format",           fileFormat);
+			rep.saveStepAttribute(id_transformation, id_step, "compression",      fileCompression);
             rep.saveStepAttribute(id_transformation, id_step, "encoding",         encoding);
 			rep.saveStepAttribute(id_transformation, id_step, "file_name",        fileName);
 			rep.saveStepAttribute(id_transformation, id_step, "file_extention",   extension);
@@ -875,7 +883,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_stepnr",  stepNrInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
-			rep.saveStepAttribute(id_transformation, id_step, "file_zipped",      zipped);
 			rep.saveStepAttribute(id_transformation, id_step, "file_pad",         padded);
 			
 			for (int i=0;i<outputFields.length;i++)

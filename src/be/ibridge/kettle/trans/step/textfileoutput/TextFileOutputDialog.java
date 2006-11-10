@@ -133,13 +133,13 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	private Button       wFooter;
 	private FormData     fdlFooter, fdFooter;
 
-	private Label        wlZipped;
-	private Button       wZipped;
-	private FormData     fdlZipped, fdZipped;
-	
 	private Label        wlFormat;
 	private CCombo       wFormat;
 	private FormData     fdlFormat, fdFormat;
+
+	private Label        wlCompression;
+	private CCombo       wCompression;
+	private FormData     fdlCompression, fdCompression;
 
     private Label        wlEncoding;
     private CCombo       wEncoding;
@@ -581,36 +581,12 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			}
 		);
 
-		wlZipped=new Label(wContentComp, SWT.RIGHT);
-		wlZipped.setText(Messages.getString("TextFileOutputDialog.Zipped.Label"));
- 		props.setLook(wlZipped);
-		fdlZipped=new FormData();
-		fdlZipped.left = new FormAttachment(0, 0);
-		fdlZipped.top  = new FormAttachment(wFooter, margin);
-		fdlZipped.right= new FormAttachment(middle, -margin);
-		wlZipped.setLayoutData(fdlZipped);
-		wZipped=new Button(wContentComp, SWT.CHECK );
- 		props.setLook(wZipped);
-		fdZipped=new FormData();
-		fdZipped.left = new FormAttachment(middle, 0);
-		fdZipped.top  = new FormAttachment(wFooter, margin);
-		fdZipped.right= new FormAttachment(100, 0);
-		wZipped.setLayoutData(fdZipped);
-		wZipped.addSelectionListener(new SelectionAdapter() 
-			{
-				public void widgetSelected(SelectionEvent e) 
-				{
-					input.setChanged();
-				}
-			}
-		);
-
 		wlFormat=new Label(wContentComp, SWT.RIGHT);
 		wlFormat.setText(Messages.getString("TextFileOutputDialog.Format.Label"));
  		props.setLook(wlFormat);
 		fdlFormat=new FormData();
 		fdlFormat.left = new FormAttachment(0, 0);
-		fdlFormat.top  = new FormAttachment(wZipped, margin);
+		fdlFormat.top  = new FormAttachment(wFooter, margin);
 		fdlFormat.right= new FormAttachment(middle, -margin);
 		wlFormat.setLayoutData(fdlFormat);
 		wFormat=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
@@ -623,9 +599,32 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wFormat.addModifyListener(lsMod);
 		fdFormat=new FormData();
 		fdFormat.left = new FormAttachment(middle, 0);
-		fdFormat.top  = new FormAttachment(wZipped, margin);
+		fdFormat.top  = new FormAttachment(wFooter, margin);
 		fdFormat.right= new FormAttachment(100, 0);
 		wFormat.setLayoutData(fdFormat);
+
+		wlCompression=new Label(wContentComp, SWT.RIGHT);
+		wlCompression.setText(Messages.getString("TextFileOutputDialog.Compression.Label"));
+ 		props.setLook(wlCompression);
+		fdlCompression=new FormData();
+		fdlCompression.left = new FormAttachment(0, 0);
+		fdlCompression.top  = new FormAttachment(wFormat, margin);
+		fdlCompression.right= new FormAttachment(middle, -margin);
+		wlCompression.setLayoutData(fdlCompression);
+		wCompression=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
+		wCompression.setText(Messages.getString("TextFileOutputDialog.Compression.Label"));
+ 		props.setLook(wCompression);
+
+		wCompression.add("None");
+		wCompression.add("Zip");
+		wCompression.add("GZip");
+		wCompression.select(0);
+		wCompression.addModifyListener(lsMod);
+		fdCompression=new FormData();
+		fdCompression.left = new FormAttachment(middle, 0);
+		fdCompression.top  = new FormAttachment(wFormat, margin);
+		fdCompression.right= new FormAttachment(100, 0);
+		wCompression.setLayoutData(fdCompression);
 
         wlEncoding=new Label(wContentComp, SWT.RIGHT);
         wlEncoding.setText(Messages.getString("TextFileOutputDialog.Encoding.Label"));
@@ -641,7 +640,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         wEncoding.addModifyListener(lsMod);
         fdEncoding=new FormData();
         fdEncoding.left = new FormAttachment(middle, 0);
-        fdEncoding.top  = new FormAttachment(wFormat, margin);
+        fdEncoding.top  = new FormAttachment(wCompression, margin);
         fdEncoding.right= new FormAttachment(100, 0);
         wEncoding.setLayoutData(fdEncoding);
         wEncoding.addFocusListener(new FocusListener()
@@ -937,6 +936,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		if (input.getSeparator() !=null) wSeparator.setText(input.getSeparator());
 		if (input.getEnclosure() !=null) wEnclosure.setText(input.getEnclosure());
 		if (input.getFileFormat()!=null) wFormat.setText(input.getFileFormat());
+		if (input.getFileCompression()!=null) wCompression.setText(input.getFileCompression());
         if (input.getEncoding()  !=null) wEncoding.setText(input.getEncoding());
         if (input.getEndedLine() !=null) wEndedLine.setText(input.getEndedLine());
         
@@ -945,7 +945,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         wEnclForced.setSelection(input.isEnclosureForced());
 		wHeader.setSelection(input.isHeaderEnabled());
 		wFooter.setSelection(input.isFooterEnabled());
-		wZipped.setSelection(input.isZipped());
 		wAddDate.setSelection(input.isDateInFilename());
 		wAddTime.setSelection(input.isTimeInFilename());
 		wAppend.setSelection(input.isFileAppended());
@@ -987,6 +986,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	{
 		tfoi.setFileName(   wFilename.getText() );
 		tfoi.setFileFormat( wFormat.getText() );
+		tfoi.setFileCompression( wCompression.getText() );
         tfoi.setEncoding( wEncoding.getText() );
 		tfoi.setSeparator(  wSeparator.getText() );
 		tfoi.setEnclosure(  wEnclosure.getText() );
@@ -1001,7 +1001,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		tfoi.setStepNrInFilename( wAddStepnr.getSelection() );
 		tfoi.setDateInFilename( wAddDate.getSelection() );
 		tfoi.setTimeInFilename( wAddTime.getSelection() );
-		tfoi.setZipped( wZipped.getSelection() );
 		tfoi.setPadded( wPad.getSelection() );
 
 		int i;

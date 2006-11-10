@@ -23,6 +23,7 @@ import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
+import java.util.zip.GZIPOutputStream;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.ResultFile;
@@ -581,8 +582,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
             addResultFile(resultFile);
 
             OutputStream outputStream;
-			if (meta.isZipped())
+            log.logBasic(toString(), "Compression is |" + meta.getFileCompression() + "|");
+			if (meta.getFileCompression().equals("Zip"))
 			{
+	            log.logBasic(toString(), "Opening output stream in zipped mode");
 				FileOutputStream fos = new FileOutputStream(file, meta.isFileAppended());
 				data.zip = new ZipOutputStream(fos);
 				File entry = new File(buildFilename(false));
@@ -591,8 +594,17 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				data.zip.putNextEntry(zipentry);
 				outputStream=data.zip;
 			}
+			else if (meta.getFileCompression().equals("GZip"))
+			{
+	            log.logBasic(toString(), "Opening output stream in gzipped mode");
+				FileOutputStream fos = new FileOutputStream(file, meta.isFileAppended());
+				data.gzip = new GZIPOutputStream(fos);
+				outputStream=data.gzip;
+			}
 			else
 			{
+	            log.logBasic(toString(), "Compression is " + meta.getFileCompression());
+	            log.logBasic(toString(), "Opening output stream in nocompress mode");
 				FileOutputStream fos=new FileOutputStream(file, meta.isFileAppended());
 				outputStream=fos;
 			}
@@ -629,13 +641,17 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		try
 		{
 			data.writer.close();
-			if (meta.isZipped())
+			if (meta.getFileCompression() == "Zip")
 			{
 				//System.out.println("close zip entry ");
 				data.zip.closeEntry();
 				//System.out.println("finish file...");
 				data.zip.finish();
 				data.zip.close();
+			}
+			if (meta.getFileCompression() == "GZip")
+			{
+				data.gzip.finish();
 			}
 			//System.out.println("Closed file...");
 
