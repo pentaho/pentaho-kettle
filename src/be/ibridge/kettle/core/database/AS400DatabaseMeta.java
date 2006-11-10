@@ -243,6 +243,13 @@ public class AS400DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
         };
 	}
 
+    /**
+     * @return the required libraries (in libext) for this database connection.
+     */
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "jt400.jar" };
+    }
 	
     /**
      * Most databases round number(7,2) 17.29999999 to 17.30, but some don't.

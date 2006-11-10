@@ -117,6 +117,7 @@ import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.pan.CommandLineOption;
+import be.ibridge.kettle.pkg.JarfileGenerator;
 import be.ibridge.kettle.repository.PermissionMeta;
 import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
@@ -371,6 +372,9 @@ public class Spoon implements AddUndoPositionInterface
                     // CTRL-J --> Get variables
                     if ((int)e.character == 10 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { getVariables(); spoongraph.clearSettings(); };
 
+                    // CTRL-K --> Create Kettle archive
+                    if ((int)e.character == 11 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { createKettleArchive(); spoongraph.clearSettings(); };
+
                     // CTRL-L --> Show variables
                     if ((int)e.character == 12 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { showVariables(); spoongraph.clearSettings(); };
 
@@ -471,7 +475,7 @@ public class Spoon implements AddUndoPositionInterface
             shell.setMaximized(true); // Default = maximized!
         }
     }
-    
+
     /**
      * Search the transformation meta-data.
      *
@@ -4883,4 +4887,10 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
+    
+    public void createKettleArchive()
+    {
+        JarfileGenerator.generateJarFile(transMeta);
+    }
+
 }

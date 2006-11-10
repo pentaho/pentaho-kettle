@@ -311,5 +311,9 @@ public class MSSQLServerDatabaseMeta extends BaseDatabaseMeta implements Databas
 			"ZONE"				
         };
 	}
-	
+
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "jtds-1.2.jar" };
+    }
 }

@@ -678,4 +678,8 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		return new ExcelOutputData();
 	}
 
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "jxl.jar", };
+    }
 }

@@ -343,5 +343,11 @@ public class MSAccessDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	public String getEndQuote()
 	{
 		return "]";
-	}	
+	}
+    
+    public String[] getUsedLibraries()
+    {
+        return new String[] { };
+    }
+
 }

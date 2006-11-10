@@ -1836,7 +1836,7 @@ public class TransMeta implements XMLInterface
                 {
                     log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingStepWithID") + stepids[i]); //$NON-NLS-1$
                     if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingStepTask.Title") + (i + 1) + "/" + (stepids.length)); //$NON-NLS-1$ //$NON-NLS-2$
-                    StepMeta stepMeta = new StepMeta(log, rep, stepids[i], databases, counters);
+                    StepMeta stepMeta = new StepMeta(log, rep, stepids[i], databases, counters, partitionSchemas);
                     addStep(stepMeta);
                     if (monitor != null) monitor.worked(1);
                 }
@@ -1862,6 +1862,12 @@ public class TransMeta implements XMLInterface
                 loadRepTrans(rep);
                 if (monitor != null) monitor.worked(1);
 
+                // Have all partitioned step reference the correct partitioning schema
+                for (int i = 0; i < nrSteps(); i++)
+                {
+                    getStep(i).getStepPartitioningMeta().setPartitionSchemaAfterLoading(partitionSchemas);
+                }
+                
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTheDependenciesTask.Title")); //$NON-NLS-1$
                 long depids[] = rep.getTransDependencyIDs(getID());
                 for (int i = 0; i < depids.length; i++)

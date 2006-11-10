@@ -7,7 +7,9 @@ import org.w3c.dom.Node;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
+import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.trans.PartitionSchema;
 
 public class StepPartitioningMeta implements XMLInterface
@@ -166,5 +168,27 @@ public class StepPartitioningMeta implements XMLInterface
                 partitionSchema = schema; // found!
             }
         }
+    }
+
+    /**
+     * Saves partitioning properties in the repository for the given step.
+     * @param rep the repository to save in
+     * @param id_transformation the ID of the transformation
+     * @param id_step the ID of the step
+     * @throws KettleDatabaseException In case anything goes wrong
+     */
+    public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleDatabaseException
+    {
+        rep.saveStepAttribute(id_transformation, id_step, "PARTITIONING_SCHEMA",    partitionSchema!=null?partitionSchema.getName():""); // selected schema
+        rep.saveStepAttribute(id_transformation, id_step, "PARTITIONING_METHOD",    getMethodCode());          // method of partitioning  
+        rep.saveStepAttribute(id_transformation, id_step, "PARTITIONING_FIELDNAME", fieldName);               // The fieldname to partition on 
+    }
+    
+    public StepPartitioningMeta(Repository rep, long id_step) throws KettleDatabaseException
+    {
+        partitionSchemaName = rep.getStepAttributeString(id_step, "PARTITIONING_SCHEMA");
+        String methodCode   = rep.getStepAttributeString(id_step, "PARTITIONING_METHOD");
+        method = getMethod(methodCode);
+        fieldName           = rep.getStepAttributeString(id_step, "PARTITIONING_FIELDNAME");
     }
 }

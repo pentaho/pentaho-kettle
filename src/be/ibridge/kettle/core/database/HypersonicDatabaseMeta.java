@@ -216,4 +216,9 @@ public class HypersonicDatabaseMeta extends BaseDatabaseMeta implements Database
 		
 		return retval.toString();
 	}
+
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "hsqldb.jar" };
+    }
 }

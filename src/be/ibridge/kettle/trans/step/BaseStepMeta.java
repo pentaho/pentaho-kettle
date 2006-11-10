@@ -231,4 +231,12 @@ public class BaseStepMeta implements Cloneable
     {
         return new DatabaseMeta[] { };
     }
+    
+    /**
+     * @return the libraries that this step or plugin uses.
+     */
+    public String[] getUsedLibraries()
+    {
+        return new String[] {};
+    }
 }

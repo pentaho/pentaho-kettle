@@ -579,4 +579,16 @@ public class AccessOutputMeta extends BaseStepMeta implements StepMetaInterface
         this.commitSize = commitSize;
     }
 
+    public String[] getUsedLibraries()
+    {
+        return new String[] 
+        { 
+            "jackcess-1.1.5.jar", 
+            "commons-collections-3.1.jar", 
+            "commons-logging.jar", 
+            "commons-lang-2.2.jar", 
+            "commons-dbcp-1.2.1.jar", 
+            "commons-pool-1.3.jar", 
+        };
+    }
 }

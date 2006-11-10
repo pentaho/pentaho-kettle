@@ -655,4 +655,9 @@ public interface DatabaseInterface extends Cloneable
      * @param partitionInfo the available partition/host/databases/port combinations in the cluster
      */
     public void setPartitioningInformation(PartitionDatabaseMeta[] partitionInfo);
+    
+    /**
+     * @return the required libraries (in libext) for this database connection.
+     */
+    public String[] getUsedLibraries();
 }

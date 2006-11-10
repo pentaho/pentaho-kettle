@@ -454,4 +454,9 @@ public class NetezzaDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
     {
     	return false;
     }
+
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "nzjdbc.jar" };
+    }
 }

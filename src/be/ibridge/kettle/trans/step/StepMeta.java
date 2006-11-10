@@ -17,6 +17,7 @@ package be.ibridge.kettle.trans.step;
 
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.w3c.dom.Node;
 
@@ -390,7 +391,7 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 
 
 	// Load from repository
-	public StepMeta(LogWriter log, Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
+	public StepMeta(LogWriter log, Repository rep, long id_step, ArrayList databases, Hashtable counters, List partitionSchemas) throws KettleException
 	{
         this(log);
         StepLoader steploader = StepLoader.getInstance();
@@ -436,6 +437,9 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 					// Read the step info from the repository!
 					stepMetaInterface.readRep(rep, getID(), databases, counters);
 				}
+                
+                // Get the partitioning as well...
+                stepPartitioningMeta = new StepPartitioningMeta(rep, getID());
 			}
 			else
 			{
@@ -466,7 +470,10 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 									getLocation()==null?-1:getLocation().y,
 									isDrawn()
 								)
-					); 
+					);
+            
+            // Save partitioning selection for the step
+            stepPartitioningMeta.saveRep(rep, id_transformation, getID());
 	
 			// The id_step is known, as well as the id_transformation
 			// This means we can now save the attributes of the step...

@@ -79,7 +79,10 @@ public class StepLoader
 
     public boolean read()
     {
-        if (readNatives()) { return readPlugins(); }
+        if (readNatives()) 
+        {
+            return readPlugins(); 
+        }
         return false;
     }
 
@@ -100,12 +103,31 @@ public class StepLoader
             StepPlugin sp = new StepPlugin(StepPlugin.TYPE_NATIVE, id, long_desc, tooltip, directory, jarfiles, iconfile, classname, category, null);
             if (sp.handles("ScriptValues")) sp.setSeparateClassloaderNeeded(true);  //$NON-NLS-1$
 
+            /*
+            try
+            {
+                StepMetaInterface stepMetaInterface = getStepClass(sp);
+                String libs[] = stepMetaInterface.getUsedLibraries();
+                for (int u=0;u<libs.length;u++)
+                {
+                    libs[u] = "libext/"+libs[u];
+                }
+                sp.setJarfiles(libs);
+            }
+            catch(Exception e)
+            {
+                System.out.println("Severe error: we couldn't instantiate internal class/plugin with ID: "+id[0]);
+            }
+            */
+            
             pluginList.add(sp);
         }
 
         return true;
     }
 
+
+    
     public boolean readPlugins()
     {
         for (int dirNr = 0;dirNr<pluginDirectory.length;dirNr++)

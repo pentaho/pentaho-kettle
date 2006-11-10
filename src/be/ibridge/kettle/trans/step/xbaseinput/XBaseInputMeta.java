@@ -499,5 +499,9 @@ public class XBaseInputMeta extends BaseStepMeta implements StepMetaInterface
         return FileInputList.createFileList(new String[] { dbfFileName }, new String[] { null }, new String[] { "N" });
     }
 
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "javadbf.jar", };
+    }
 
 }

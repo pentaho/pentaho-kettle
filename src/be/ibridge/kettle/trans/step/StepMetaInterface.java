@@ -219,4 +219,9 @@ public interface StepMetaInterface
      *         Return an empty array if no connections are used.
      */
     public DatabaseMeta[] getUsedDatabaseConnections();
+    
+    /**
+     * @return the libraries that this step or plugin uses.
+     */
+    public String[] getUsedLibraries();
 }

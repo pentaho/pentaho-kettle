@@ -322,4 +322,9 @@ public class InterbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
     {
         return false;
     }
+
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "interclient.jar" };
+    }
 }

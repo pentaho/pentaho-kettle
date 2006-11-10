@@ -261,4 +261,9 @@ public class SAPDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		        "WEEKOFYEAR", "WHEN", "WHERE", "WITH", "YEAR", "ZONED"		
 		 };
 	}
+
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "sapdbc.jar" };
+    }
 }

@@ -253,7 +253,9 @@ public class TableOutput extends BaseStep implements StepInterface
 				
                 if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())
                 {
-                    if (meta.truncateTable() && getCopy()==0) // Only the first one truncates!!!
+                    // Only the first one truncates in a non-partitioned step copy
+                    //
+                    if (meta.truncateTable() && ( getCopy()==0 || !Const.isEmpty(getPartitionID())) )
     				{
     					data.db.truncateTable(StringUtil.environmentSubstitute( meta.getTablename() ));
     				}

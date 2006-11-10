@@ -245,5 +245,10 @@ public class IngresDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
         return "DELETE FROM "+tableName;
     }
 
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "edbc.jar" };
+    }
+
 
 }

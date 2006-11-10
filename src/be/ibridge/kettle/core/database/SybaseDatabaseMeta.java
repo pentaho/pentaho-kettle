@@ -224,4 +224,9 @@ public class SybaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
 		
 		return retval;
 	}
+    
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "jtds-1.2.jar" };
+    }
 }

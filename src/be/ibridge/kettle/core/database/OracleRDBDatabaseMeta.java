@@ -319,5 +319,10 @@ public class OracleRDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseI
     public String getSQLUnlockTables(String tableNames[])
     {
         return null; // commit handles the unlocking!
+    }
+
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "rdbthin.jar" };
     }    
 }

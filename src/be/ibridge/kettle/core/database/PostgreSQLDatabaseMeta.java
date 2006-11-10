@@ -438,4 +438,9 @@ public class PostgreSQLDatabaseMeta extends BaseDatabaseMeta implements Database
     {
         return false;
     }
+
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "postgresql-8.1-407.jdbc3.jar" };
+    }
 }

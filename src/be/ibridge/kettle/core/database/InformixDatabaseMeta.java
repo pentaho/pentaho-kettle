@@ -230,4 +230,9 @@ public class InformixDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
         return sql;
     }
 
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "ifxjdbc.jar" };
+    }
+
 }

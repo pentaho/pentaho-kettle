@@ -358,6 +358,11 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
     {
         return "Please see: http://dev.mysql.com/doc/refman/5.0/en/cj-configuration-properties.html"+Const.CR;
     }
+
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "mysql-connector-java-3.1.13-bin.jar" };
+    }
 }
 
 

@@ -129,4 +129,9 @@ public class SAPR3DatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 	{
 		return null;
 	}
+    
+    public String[] getUsedLibraries()
+    {
+        return new String[] { };
+    }
 }

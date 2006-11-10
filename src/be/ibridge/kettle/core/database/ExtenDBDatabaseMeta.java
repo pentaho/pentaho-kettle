@@ -268,4 +268,9 @@ public class ExtenDBDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
         return retval;
     }
 
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "xdbjdbc.jar" };
+    }
+
 }

@@ -232,4 +232,9 @@ public class DbaseDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		
 		return retval;
 	}
+
+    public String[] getUsedLibraries()
+    {
+        return new String[] { };
+    }
 }

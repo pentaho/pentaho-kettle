@@ -249,4 +249,9 @@ public class GenericDatabaseMeta extends BaseDatabaseMeta implements DatabaseInt
 		
 		return retval;
 	}
+
+    public String[] getUsedLibraries()
+    {
+        return new String[] {};
+    }
 }

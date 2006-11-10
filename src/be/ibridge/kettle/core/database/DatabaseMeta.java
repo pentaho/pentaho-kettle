@@ -1476,9 +1476,16 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 		return (String[])remarks.toArray(new String[remarks.size()]);
 	}
 	
-	public String getSchemaTableCombination(String schema_name, String table_part)
+    /**
+     * Calculate the schema-table combination, usually this is the schema and table separated with a dot. (schema.table)
+     * @param schemaName the schema-name or null if no schema is used.
+     * @param tableName the table name
+     * @return the schemaname-tablename combination
+     */
+	public String getSchemaTableCombination(String schemaName, String tableName)
 	{
-		return databaseInterface.getSchemaTableCombination(schema_name, table_part);
+        if (Const.isEmpty(schemaName)) return tableName; // no need to look further
+		return databaseInterface.getSchemaTableCombination(schemaName, tableName);
 	}
 
 

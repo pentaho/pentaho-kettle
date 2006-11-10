@@ -352,5 +352,10 @@ public class DB2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfa
     {
         return false;
     }
+
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "db2jcc.jar" , "db2jcc_license_cu.jar" };
+    }
 }
 

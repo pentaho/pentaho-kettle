@@ -189,4 +189,12 @@ public class StepPlugin
     {
         this.separateClassloaderNeeded = separateClassloaderNeeded;
     }
+
+    /**
+     * @param jarfiles the jarfiles to set
+     */
+    public void setJarfiles(String[] jarfiles)
+    {
+        this.jarfiles = jarfiles;
+    }
 }

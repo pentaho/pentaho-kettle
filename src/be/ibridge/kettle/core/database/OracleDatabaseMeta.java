@@ -397,4 +397,9 @@ public class OracleDatabaseMeta extends BaseDatabaseMeta implements DatabaseInte
             "SetBigStringTryClob            boolean     Setting this property to 'true' forces PreparedStatement.setString() method to use setStringForClob() if the data is larger than 32765 bytes. Please note that using this method with VARCHAR and LONG columns may cause large data to be truncated silently, or cause other errors differing from the normal behavior of setString()."+Const.CR
             ;
     }
+
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "ojdbc14.jar", "orai18n.jar" };
+    }
 }

@@ -261,4 +261,9 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 		
 		return retval;
 	}
+
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "h2.jar" };
+    }
 }

@@ -23,7 +23,6 @@
 	<classpathentry kind="lib" path="libext/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="libext/javadbf.jar"/>
 	<classpathentry kind="lib" path="libext/db2jcc_license_cu.jar"/>
-	<classpathentry kind="lib" path="libext/gis-shape.jar"/>
 	<classpathentry kind="lib" path="libext/sapdbc.jar"/>
 	<classpathentry kind="lib" path="libext/edbc.jar"/>
 	<classpathentry kind="src" path="extra"/>
@@ -55,5 +54,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry sourcepath="/Jackcess-1.1.5" kind="lib" path="libext/jackcess-1.1.5.jar"/>
+	<classpathentry kind="lib" path="libext/nzjdbc.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

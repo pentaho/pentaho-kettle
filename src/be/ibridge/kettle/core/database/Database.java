@@ -451,7 +451,7 @@ public class Database
                 }
             }
             
-            if (!isAutoCommit())
+            if (!isAutoCommit()) // Do we really still need this commit??
             {
                 commit();
             }
@@ -2144,8 +2144,7 @@ public class Database
 	 * @param tablename The name of the table to check.
 	 * @return true if the table exists, false if it doesn't.
 	 */
-	public boolean checkTableExists(String tablename)
-		throws KettleDatabaseException
+	public boolean checkTableExists(String tablename) throws KettleDatabaseException
 	{
 		try
 		{

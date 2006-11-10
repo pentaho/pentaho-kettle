@@ -338,5 +338,10 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
     public String getExtraOptionIndicator()
     {
         return "?";
+    }
+
+    public String[] getUsedLibraries()
+    {
+        return new String[] { "firebirdsql-full.jar" };
     }	
 }
