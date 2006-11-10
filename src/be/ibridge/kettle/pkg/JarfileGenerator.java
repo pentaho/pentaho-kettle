@@ -56,7 +56,7 @@ public class JarfileGenerator
                 String libFilename = deps.getLibraryFiles()[i];
                 classPath+=" "+libFilename;
                 File libFile = new File(libFilename);
-                File target  = new File(kar.getPath()+Const.FILE_SEPARATOR+libFilename);
+                File target  = new File(kar.getPath()+"/"+libFilename);
                 FileOutputStream fileOutputStream = new FileOutputStream(target);
 
                 // Now put the content of this file into this copy...
@@ -77,14 +77,14 @@ public class JarfileGenerator
             strManifest += Attributes.Name.CLASS_PATH.toString()+":" + classPath + Const.CR;
 
             // Create a new manifest file in the root.
-            File manifestFile = new File(kar.getPath()+Const.FILE_SEPARATOR+"manifest.mf");
+            File manifestFile = new File(kar.getPath()+"/"+"manifest.mf");
             FileOutputStream fos = new FileOutputStream(manifestFile);
             fos.write(strManifest.getBytes());
             fos.close();
             
             // The transformation, also in the kar directory...
             String strTrans = transMeta.getXML();
-            File transFile = new File(kar.getPath()+Const.FILE_SEPARATOR+TRANSFORMATION_FILENAME);
+            File transFile = new File(kar.getPath()+"/"+TRANSFORMATION_FILENAME);
             fos = new FileOutputStream(transFile);
             fos.write(strTrans.getBytes());
             fos.close();
@@ -94,7 +94,7 @@ public class JarfileGenerator
                 (
                     kar, 
                     karFile, 
-                    new File(manifestFile.getPath()), 
+                    new File("manifest.mf"), 
                     new File(TRANSFORMATION_FILENAME), 
                     new File[] { new File("lib"), new File("libext"), } 
                  );
@@ -117,7 +117,7 @@ public class JarfileGenerator
         commands.add(transFile.getPath());
         for (int i=0;i<directories.length;i++)
         {
-            commands.add(directories[i].getPath()+Const.FILE_SEPARATOR+"*.*");
+            commands.add(directories[i].getPath()+"/"+"*.*");
         }
         
         String[] cmd = (String[]) commands.toArray(new String[commands.size()]);
