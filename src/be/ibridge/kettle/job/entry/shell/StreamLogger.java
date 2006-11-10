@@ -14,7 +14,7 @@ public class StreamLogger implements Runnable
 
     private String      type;
 
-    StreamLogger(InputStream is, String type)
+    public StreamLogger(InputStream is, String type)
     {
         this.is = is;
         this.type = type;
