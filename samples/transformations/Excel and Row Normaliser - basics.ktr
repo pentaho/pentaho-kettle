@@ -2,7 +2,7 @@
 <transformation>
   <info>
     <name/>
-    <directory>/</directory>
+    <directory>&#47;</directory>
     <log>
       <read/>
       <write/>
@@ -26,38 +26,35 @@
     <sleep_time_full>1</sleep_time_full>
     <dependencies>
       </dependencies>
+    <partitionschemas>
+      </partitionschemas>
+  <modified_user/>
+  <modified_date>2006&#47;11&#47;10 21:10:48.078</modified_date>
     </info>
   <notepads>
     <notepad>
-      <note>Determine the directory of this transformation
-and add the filename.</note>
-      <xloc>38</xloc>
-      <yloc>126</yloc>
-      <width>240</width>
-      <heigth>37</heigth>
-      </notepad>
-    <notepad>
       <note>To see the result, do a preview on this Dummy step
 ... or add an output step.</note>
-      <xloc>369</xloc>
-      <yloc>407</yloc>
+      <xloc>176</xloc>
+      <yloc>399</yloc>
       <width>268</width>
       <heigth>37</heigth>
       </notepad>
     <notepad>
       <note>Load the Excel example.</note>
-      <xloc>299</xloc>
-      <yloc>127</yloc>
+      <xloc>106</xloc>
+      <yloc>119</yloc>
       <width>128</width>
       <heigth>23</heigth>
       </notepad>
     <notepad>
       <note>Revision notes:
-2006-08-22 Jens Bleuel: created</note>
+2006-08-22 Jens Bleuel: created
+2006-11-10 Jens Bleuel: set input file location using Internal variable</note>
       <xloc>16</xloc>
       <yloc>569</yloc>
-      <width>167</width>
-      <heigth>37</heigth>
+      <width>338</width>
+      <heigth>49</heigth>
       </notepad>
     <notepad>
       <note>This example reads an Excel file with planning data per material and month 
@@ -70,14 +67,14 @@ and uses the Row Normaliser.</note>
     <notepad>
       <note>Map the month columns to 
 one new column.</note>
-      <xloc>462</xloc>
-      <yloc>126</yloc>
+      <xloc>269</xloc>
+      <yloc>118</yloc>
       <width>150</width>
       <heigth>37</heigth>
       </notepad>
     </notepads>
   <order>
-  <hop> <from>GetFilenameKTR</from><to>Get example filename</to><enabled>Y</enabled> </hop>  <hop> <from>Get example filename</from><to>Excel Input</to><enabled>Y</enabled> </hop>  <hop> <from>Excel Input</from><to>Row Normaliser</to><enabled>Y</enabled> </hop>  <hop> <from>Row Normaliser</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Excel Input</from><to>Row Normaliser</to><enabled>Y</enabled> </hop>  <hop> <from>Row Normaliser</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
 
   <step>
     <name>Dummy (do nothing)</name>
@@ -85,9 +82,14 @@ one new column.</note>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
     <GUI>
-      <xloc>469</xloc>
-      <yloc>327</yloc>
+      <xloc>276</xloc>
+      <yloc>319</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -98,6 +100,11 @@ one new column.</note>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
     <header>Y</header>
     <noempty>Y</noempty>
     <stoponempty>Y</stoponempty>
@@ -108,10 +115,13 @@ one new column.</note>
     <sheetfield/>
     <filefield/>
     <limit>0</limit>
-    <accept_filenames>Y</accept_filenames>
-    <accept_field>filenameXLS</accept_field>
-    <accept_stepname>Get example filename</accept_stepname>
+    <accept_filenames>N</accept_filenames>
+    <accept_field/>
+    <accept_stepname/>
     <file>
+      <name>${Internal.Transformation.Filename.Directory}&#47;files&#47;Excel and Row Normaliser - sample data.xls</name>
+      <filemask/>
+      <file_required/>
       </file>
     <fields>
       <field>
@@ -300,51 +310,8 @@ one new column.</note>
     <line_number_files_destination_directory/>
     <line_number_files_extension>line</line_number_files_extension>
     <GUI>
-      <xloc>332</xloc>
-      <yloc>196</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Get example filename</name>
-    <type>ScriptValue</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <script>var fileSeparator = Packages.be.ibridge.kettle.core.Const.FILE_SEPARATOR;
-var subDirEndsAt = FilenameKTR.getString().lastIndexOf(fileSeparator);
-var subDir = FilenameKTR.getString().substr(0, subDirEndsAt+1);
-var filenameXLS = subDir + &quot;files/&quot; + &quot;Excel and Row Normaliser - sample data.xls&quot;
-
-</script>
-    <fields>      <field>        <name>filenameXLS</name>
-        <rename>filenameXLS</rename>
-        <type>String</type>
-        <length>-1</length>
-        <precision>-1</precision>
-        </field>      </fields>    <GUI>
-      <xloc>221</xloc>
-      <yloc>195</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>GetFilenameKTR</name>
-    <type>SystemInfo</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-    <fields>
-      <field>
-        <name>FilenameKTR</name>
-        <type>transformation file name</type>
-        </field>
-      </fields>
-    <GUI>
-      <xloc>72</xloc>
-      <yloc>195</yloc>
+      <xloc>139</xloc>
+      <yloc>188</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -355,6 +322,11 @@ var filenameXLS = subDir + &quot;files/&quot; + &quot;Excel and Row Normaliser -
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
    <typefield>Month</typefield>
     <fields>      <field>        <name>01</name>
         <value>01</value>
@@ -393,8 +365,8 @@ var filenameXLS = subDir + &quot;files/&quot; + &quot;Excel and Row Normaliser -
         <value>12</value>
         <norm>ValuePerMonth</norm>
         </field>      </fields>    <GUI>
-      <xloc>469</xloc>
-      <yloc>196</yloc>
+      <xloc>276</xloc>
+      <yloc>188</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

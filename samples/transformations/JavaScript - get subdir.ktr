@@ -2,7 +2,7 @@
 <transformation>
   <info>
     <name/>
-    <directory>/</directory>
+    <directory>&#47;</directory>
     <log>
       <read/>
       <write/>
@@ -26,15 +26,21 @@
     <sleep_time_full>1</sleep_time_full>
     <dependencies>
       </dependencies>
+    <partitionschemas>
+      </partitionschemas>
+  <modified_user/>
+  <modified_date>2006&#47;11&#47;10 21:23:08.484</modified_date>
     </info>
   <notepads>
     <notepad>
       <note>Determine the directory of this transformation.
-It is usefull for example when you want to share your transformation together with data stored in the same directory.</note>
+It is usefull for example when you want to share your transformation together with data stored in the same directory.
+
+ATTENTION: Since Kettle 2.3.1 the Internal variable ${Internal.Transformation.Filename.Directory} should be used instead.</note>
       <xloc>19</xloc>
       <yloc>20</yloc>
-      <width>576</width>
-      <heigth>36</heigth>
+      <width>605</width>
+      <heigth>62</heigth>
       </notepad>
     <notepad>
       <note>To see the result, do a preview on this Dummy step
@@ -62,6 +68,11 @@ It is usefull for example when you want to share your transformation together wi
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
     <GUI>
       <xloc>388</xloc>
       <yloc>105</yloc>
@@ -75,6 +86,11 @@ It is usefull for example when you want to share your transformation together wi
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
     <script>var fileSeparator = Packages.be.ibridge.kettle.core.Const.FILE_SEPARATOR;
 var subDirEndsAt = FilenameKTR.getString().lastIndexOf(fileSeparator);
 var subDir = FilenameKTR.getString().substr(0, subDirEndsAt+1);
@@ -98,6 +114,11 @@ var subDir = FilenameKTR.getString().substr(0, subDirEndsAt+1);
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
     <fields>
       <field>
         <name>FilenameKTR</name>
