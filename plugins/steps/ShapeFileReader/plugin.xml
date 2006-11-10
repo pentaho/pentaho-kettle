@@ -8,5 +8,6 @@
    classname="be.kettle.shapefilereader.ShapeFileReaderMeta">
    <libraries>
     <library name="shapefilereader.jar"/>
+    <library name="gis-shape.jar"/>
     </libraries>
 </plugin>
