@@ -143,7 +143,7 @@ public class DBCache
 			File file = new File(filename);
 			if (file.canRead())
 			{
-				log.logBasic("DBCache", "Loading database cache from file: ["+filename+"]");
+				log.logDetailed("DBCache", "Loading database cache from file: ["+filename+"]");
 				
 				FileInputStream fis = new FileInputStream(file);
 				DataInputStream dis = new DataInputStream(fis);

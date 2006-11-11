@@ -58,11 +58,17 @@ public class BuildVersion
                 try
                 {
                     inputStream = new FileInputStream(filename); // Retry from normal file system
+                    // System.out.println("BuildVersion: filename ["+filename+"] found!");
                 }
                 catch(FileNotFoundException e)
                 {
                     inputStream = new FileInputStream("./"+filename);
+                    // System.out.println("BuildVersion: filename [./"+filename+"] found!");
                 }
+            }
+            else
+            {
+                // System.out.println("BuildVersion: filename [/"+filename+"] found!");
             }
             
             // read the file into a String

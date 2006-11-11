@@ -19,6 +19,9 @@
  */
 
 package be.ibridge.kettle.pkg;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.pan.Pan;
 
@@ -30,10 +33,10 @@ import be.ibridge.kettle.pan.Pan;
  */
 public class JarPan
 {
-	public static void main(String[] a) throws KettleException
+	public static void main(String[] a) throws KettleException, UnsupportedEncodingException, IOException
 	{
 	    String args[] = new String[a.length+1];
-        args[0] = "-file:"+JarfileGenerator.TRANSFORMATION_FILENAME;
+        args[0] = "-jarfile:/"+JarfileGenerator.TRANSFORMATION_FILENAME;
         for (int i=0;i<a.length;i++) args[i+1] = a[i];
         
         try

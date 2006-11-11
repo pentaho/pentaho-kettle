@@ -19,13 +19,19 @@
  */
 
 package be.ibridge.kettle.pan;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.w3c.dom.Document;
+
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.repository.RepositoriesMeta;
@@ -41,7 +47,7 @@ import be.ibridge.kettle.version.BuildVersion;
 
 public class Pan
 {
-	public static void main(String[] a) throws KettleException
+	public static void main(String[] a) throws KettleException, UnsupportedEncodingException, IOException
 	{
 		EnvUtil.environmentInit();
 		
@@ -60,7 +66,7 @@ public class Pan
 
 		// The options: 
 		StringBuffer optionRepname, optionUsername, optionPassword, optionTransname, optionDirname, optionFilename, optionLoglevel;
-		StringBuffer optionLogfile, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode, optionVersion;
+		StringBuffer optionLogfile, optionListdir, optionListtrans, optionListrep, optionExprep, optionNorep, optionSafemode, optionVersion, optionJarFilename;
         
 		CommandLineOption options[] = new CommandLineOption[] 
             {
@@ -80,6 +86,7 @@ public class Pan
 		        new CommandLineOption("norep", "Do not log into the repository", optionNorep=new StringBuffer(), true, false),
 		        new CommandLineOption("safemode", "Run in safe mode: with extra checking enabled", optionSafemode=new StringBuffer(), true, false),
                 new CommandLineOption("version", "show the version, revision and build date", optionVersion=new StringBuffer(), true, false),
+                new CommandLineOption("jarfile", "specifies the jar filename", optionJarFilename=new StringBuffer(), true, true),
             };
 
 		if (args.size()==0 ) 
@@ -132,7 +139,8 @@ public class Pan
 		    System.out.println("Arguments:");
 		    for (int i=0;i<options.length;i++) 
 		    {
-		    	if (!options[i].isHiddenOption()) System.out.println(Const.rightPad(options[i].getOption(),12)+" : "+options[i].getArgument());
+		    	/*if (!options[i].isHiddenOption())*/
+                System.out.println(Const.rightPad(options[i].getOption(),12)+" : "+options[i].getArgument());
 		    }
 		    System.out.println("");
         }
@@ -162,7 +170,7 @@ public class Pan
 		{
 			log.logDebug("Pan", "Starting to look at options...");
 			// Read kettle transformation specified on command-line?
-			if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename))
+			if (!Const.isEmpty(optionRepname) || !Const.isEmpty(optionFilename) || !Const.isEmpty(optionJarFilename))
 			{			
 				log.logDebug("Pan", "Parsing command line options.");
 				if (!Const.isEmpty(optionRepname) && !"Y".equalsIgnoreCase(optionNorep.toString()))
@@ -277,6 +285,30 @@ public class Pan
 					transMeta = new TransMeta(optionFilename.toString());
 					trans = new Trans(log, transMeta);
 				}
+                
+                // Try to load the transformation from a jar file
+                // 
+                if (trans==null && !Const.isEmpty(optionJarFilename))
+                {
+                    try
+                    {
+                        log.logDetailed("Pan", "Loading transformation from jar file ["+optionJarFilename+"]");
+                        InputStream inputStream = Pan.class.getResourceAsStream(optionJarFilename.toString());
+                        StringBuffer xml = new StringBuffer();
+                        int c;
+                        while ((c=inputStream.read()) != -1) xml.append((char)c);
+                        inputStream.close();
+                        Document document = XMLHandler.loadXMLString(xml.toString());
+                        transMeta = new TransMeta(XMLHandler.getSubNode(document, "transformation"));
+                        trans = new Trans(log, transMeta);
+                    }
+                    catch(Exception e)
+                    {
+                        System.out.println("Error reading jarfile: "+e.toString());
+                        System.out.println(Const.getStackTracker(e));
+                        throw e;
+                    }
+                }
 			}
 			
 			if ("Y".equalsIgnoreCase(optionListrep.toString()))
@@ -299,7 +331,7 @@ public class Pan
 			}
 
 		}
-		catch(KettleException e)
+		catch(Exception e)
 		{
 			trans=null;
 			transMeta=null;
