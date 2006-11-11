@@ -25,6 +25,7 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.zip.ZipInputStream;
+import java.util.zip.GZIPInputStream;
 
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.trans.step.BaseStepData;
@@ -73,6 +74,8 @@ public class TextFileInputData extends BaseStepData implements
 	public FileInputStream fr;
 
 	public ZipInputStream zi;
+
+	public GZIPInputStream gzi;
 
 	public InputStreamReader isr;
 

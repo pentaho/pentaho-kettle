@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Vector;
 import java.util.zip.ZipInputStream;
+import java.util.zip.GZIPInputStream;
 
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -219,9 +220,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     private Text         wNrLinesDocHeader;
     private FormData     fdlNrLinesDocHeader, fdNrLinesDocHeader;
 
-	private Label        wlZipped;
-	private Button       wZipped;
-	private FormData     fdlZipped, fdZipped;
+	private Label        wlCompression;
+	private CCombo       wCompression;
+	private FormData     fdlCompression, fdCompression;
 	
 	private Label        wlNoempty;
 	private Button       wNoempty;
@@ -561,9 +562,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 					else
 					{
 						FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-						if (wZipped.getSelection())
+						if (! wCompression.getSelection().equals("None"))
 						{
-							dialog.setFilterExtensions(new String[] {"*.zip", "*.txt;*.csv", "*.csv", "*.txt", "*"});
+							dialog.setFilterExtensions(new String[] {"*.zip;*.gz", "*.txt;*.csv", "*.csv", "*.txt", "*"});
 						}
 						else
 						{
@@ -575,7 +576,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 							dialog.setFileName( fname );
 						}
 						
-						if (wZipped.getSelection())
+						if (! wCompression.getSelection().equals("None"))
 						{
 							dialog.setFilterNames(new String[] {Messages.getString("System.FileType.ZipFiles"), Messages.getString("TextFileInputDialog.FileType.TextAndCSVFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.AllFiles")});
 						}
@@ -1179,30 +1180,36 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdNrLinesDocHeader.right = new FormAttachment(100, 0);
         wNrLinesDocHeader.setLayoutData(fdNrLinesDocHeader);
 
-        // Zipped?
-        wlZipped=new Label(wContentComp, SWT.RIGHT);
-        wlZipped.setText(Messages.getString("TextFileInputDialog.Zipped.Label"));
-        props.setLook(wlZipped);
-        fdlZipped=new FormData();
-        fdlZipped.left = new FormAttachment(0, 0);
-        fdlZipped.top  = new FormAttachment(wNrLinesDocHeader, margin);
-        fdlZipped.right= new FormAttachment(middle, -margin);
-        wlZipped.setLayoutData(fdlZipped);
-        wZipped=new Button(wContentComp, SWT.CHECK );
-        props.setLook(wZipped);
-        wZipped.setToolTipText(Messages.getString("TextFileInputDialog.Zipped.Tooltip"));
-        fdZipped=new FormData();
-        fdZipped.left = new FormAttachment(middle, 0);
-        fdZipped.top  = new FormAttachment(wNrLinesDocHeader, margin);
-        fdZipped.right= new FormAttachment(100, 0);
-        wZipped.setLayoutData(fdZipped);
+        // Compression type (None, Zip or GZip
+        wlCompression=new Label(wContentComp, SWT.RIGHT);
+        wlCompression.setText(Messages.getString("TextFileInputDialog.Compression.Label"));
+        props.setLook(wlCompression);
+        fdlCompression=new FormData();
+        fdlCompression.left = new FormAttachment(0, 0);
+        fdlCompression.top  = new FormAttachment(wNrLinesDocHeader, margin);
+        fdlCompression.right= new FormAttachment(middle, -margin);
+        wlCompression.setLayoutData(fdlCompression);
+        wCompression=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
+        wCompression.setText(Messages.getString("TextFileInputDialog.Compression.Label"));
+        wCompression.setToolTipText(Messages.getString("TextFileInputDialog.Zipped.Tooltip"));
+        props.setLook(wCompression);
+        wCompression.add("None");
+        wCompression.add("Zip");
+        wCompression.add("GZip");
+        wCompression.select(0);
+        wCompression.addModifyListener(lsMod);
+        fdCompression=new FormData();
+        fdCompression.left = new FormAttachment(middle, 0);
+        fdCompression.top  = new FormAttachment(wNrLinesDocHeader, margin);
+        fdCompression.right= new FormAttachment(100, 0);
+        wCompression.setLayoutData(fdCompression);
 
         wlNoempty=new Label(wContentComp, SWT.RIGHT);
         wlNoempty.setText(Messages.getString("TextFileInputDialog.NoEmpty.Label"));
         props.setLook(wlNoempty);
         fdlNoempty=new FormData();
         fdlNoempty.left = new FormAttachment(0, 0);
-        fdlNoempty.top  = new FormAttachment(wZipped, margin);
+        fdlNoempty.top  = new FormAttachment(wCompression, margin);
         fdlNoempty.right= new FormAttachment(middle, -margin);
         wlNoempty.setLayoutData(fdlNoempty);
         wNoempty=new Button(wContentComp, SWT.CHECK );
@@ -1210,7 +1217,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wNoempty.setToolTipText(Messages.getString("TextFileInputDialog.NoEmpty.Tooltip"));
         fdNoempty=new FormData();
         fdNoempty.left = new FormAttachment(middle, 0);
-        fdNoempty.top  = new FormAttachment(wZipped, margin);
+        fdNoempty.top  = new FormAttachment(wCompression, margin);
         fdNoempty.right= new FormAttachment(100, 0);
         wNoempty.setLayoutData(fdNoempty);
 
@@ -2011,7 +2018,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wLayoutPaged.setSelection(in.isLayoutPaged());
         wNrLinesPerPage.setText( ""+in.getNrLinesPerPage() );
         wNrLinesDocHeader.setText( ""+in.getNrLinesDocHeader() );
-		wZipped.setSelection(in.isZipped());
+		wCompression.setText(in.getFileCompression());
 		wNoempty.setSelection(in.noEmptyLines());
 		wInclFilename.setSelection(in.includeFilename());
 		wInclRownum.setSelection(in.includeRowNumber());
@@ -2164,7 +2171,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         meta.setLayoutPaged( wLayoutPaged.getSelection() );
         meta.setNrLinesPerPage( Const.toInt( wNrLinesPerPage.getText(), 80) );
         meta.setNrLinesDocHeader( Const.toInt( wNrLinesDocHeader.getText(), 0) );
-		meta.setZipped( wZipped.getSelection() );
+		meta.setFileCompression(wCompression.getText() );
 		meta.setDateFormatLenient( wDateLenient.getSelection() );
 		meta.setNoEmptyLines( wNoempty.getSelection() );
 
@@ -2262,6 +2269,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		FileInputList    textFileList = meta.getTextFileList();
 		FileInputStream fileInputStream = null;
 		ZipInputStream  zipInputStream = null ;
+		GZIPInputStream  gzipInputStream = null ;
 		InputStream     inputStream  = null;
         String          fileFormat = wFormat.getText();
         
@@ -2288,11 +2296,16 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 				fileInputStream = new FileInputStream(textFileList.getFile(0));
 				Table table = wFields.table;
 				
-				if (meta.isZipped())
+				if (meta.getFileCompression().equals("Zip"))
 				{
 					zipInputStream = new ZipInputStream(fileInputStream);
 					zipInputStream.getNextEntry();
 					inputStream=zipInputStream;
+				}
+				else if (meta.getFileCompression().equals("GZip"))
+				{
+					gzipInputStream = new GZIPInputStream(fileInputStream);
+					inputStream=gzipInputStream;
 				}
 				else
 				{
@@ -2390,10 +2403,14 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			{
 				try
 				{
-					if (meta.isZipped() && zipInputStream!=null)
+					if (meta.getFileCompression().equals("Zip") && zipInputStream!=null)
 					{
 						zipInputStream.closeEntry();
 						zipInputStream.close();
+					}
+					else if (meta.getFileCompression().equals("GZip") && gzipInputStream!=null)
+					{
+						gzipInputStream.close();
 					}
 					inputStream.close();
 				}
@@ -2569,6 +2586,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		
         FileInputStream fi = null;
 		ZipInputStream  zi = null ;
+		GZIPInputStream gzi = null ;
 		InputStream     f  = null;
 		
 		ArrayList retval = new ArrayList();
@@ -2580,11 +2598,16 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			{
 				fi = new FileInputStream(file);
 				
-				if (info.isZipped())
+				if (info.getFileCompression().equals("Zip"))
 				{
 					zi = new ZipInputStream(fi);
 					zi.getNextEntry();
 					f=zi;
+				}
+				else if (info.getFileCompression().equals("GZip"))
+				{
+					gzi = new GZIPInputStream(fi);
+					f=gzi;
 				}
 				else
 				{
@@ -2650,10 +2673,14 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 			{
 				try
 				{
-					if (info.isZipped() && zi!=null)
+					if (info.getFileCompression().equals("Zip") && zi!=null)
 					{
 						zi.closeEntry();
 						zi.close();
+					}
+					else if (info.getFileCompression().equals("GZip") && gzi!=null)
+					{
+						gzi.close();
 					}
 					f.close();
 				}

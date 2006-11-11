@@ -119,8 +119,8 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	/** The number of lines to read per page */
 	private int nrLinesPerPage;
 
-	/** Flag indicating that the text file to be read is stored in a ZIP archive */
-	private boolean zipped;
+	/** Type of compression being used */
+	private String fileCompression;
 
 	/** Flag indicating that we should skip all empty lines */
 	private boolean noEmptyLines;
@@ -515,19 +515,19 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	}
 
 	/**
-	 * @return Returns the zipped.
+	 * @return Returns the type of compression used
 	 */
-	public boolean isZipped()
+	public String getFileCompression()
 	{
-		return zipped;
+		return fileCompression;
 	}
 
 	/**
-	 * @param zipped The zipped to set.
+	 * @param Set the compression type
 	 */
-	public void setZipped(boolean zipped)
+	public void setFileCompression(String fileCompression)
 	{
-		this.zipped = zipped;
+		this.fileCompression = fileCompression;
 	}
 
 	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
@@ -591,7 +591,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		layoutPaged = false;
 		nrLinesPerPage = 80;
 		nrLinesDocHeader = 0;
-		zipped = false;
+		fileCompression = "None";
 		noEmptyLines = true;
 		fileFormat = "DOS";
 		fileType = "CSV";
@@ -727,7 +727,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			retval.append("      " + XMLHandler.addTagValue("file_required", fileRequired[i]));
 		}
 		retval.append("      " + XMLHandler.addTagValue("type", fileType));
-		retval.append("      " + XMLHandler.addTagValue("zipped", zipped));
+		retval.append("      " + XMLHandler.addTagValue("compression", fileCompression));
 		retval.append("      </file>" + Const.CR);
 
 		retval.append("    <filters>" + Const.CR);
@@ -846,7 +846,14 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			}
 
 			fileType = XMLHandler.getTagValue(stepnode, "file", "type");
-			zipped = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "zipped"));
+			fileCompression = XMLHandler.getTagValue(stepnode, "file", "compression");
+			if (fileCompression == null)
+			{
+				if (YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "zipped")))
+				{
+					fileCompression = "Zip";
+				}
+			}
 
 			// Backward compatibility : just one filter
 			if (XMLHandler.getTagValue(stepnode, "filter") != null)
@@ -1007,7 +1014,12 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 				if (!YES.equalsIgnoreCase(fileRequired[i])) fileRequired[i] = NO;
 			}
 			fileType = rep.getStepAttributeString(id_step, "file_type");
-			zipped = rep.getStepAttributeBoolean(id_step, "file_zipped");
+			fileCompression = rep.getStepAttributeString(id_step, "compression");
+			if (fileCompression == null)
+			{
+				if (rep.getStepAttributeBoolean(id_step, "file_zipped"))
+					fileCompression = "Zip";
+			}
 
 			for (int i = 0; i < nrfilters; i++)
 			{
@@ -1110,7 +1122,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 				rep.saveStepAttribute(id_transformation, id_step, i, "file_required", fileRequired[i]);
 			}
 			rep.saveStepAttribute(id_transformation, id_step, "file_type", fileType);
-			rep.saveStepAttribute(id_transformation, id_step, "file_zipped", zipped);
+			rep.saveStepAttribute(id_transformation, id_step, "compression", fileCompression);
 
 			for (int i = 0; i < filter.length; i++)
 			{

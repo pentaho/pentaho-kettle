@@ -822,7 +822,14 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			headerEnabled   =      rep.getStepAttributeBoolean(id_step, "header");
 			footerEnabled   =      rep.getStepAttributeBoolean(id_step, "footer");   
 			fileFormat      =      rep.getStepAttributeString (id_step, "format");  
-			fileCompression =      rep.getStepAttributeString (id_step, "compression");  
+			fileCompression =      rep.getStepAttributeString (id_step, "compression");
+			if (fileCompression == null)
+			{
+				if (rep.getStepAttributeBoolean(id_step, "zipped"))
+				{
+					fileCompression = "Zip";
+				}
+			}
             encoding        =      rep.getStepAttributeString (id_step, "encoding");
             
 			fileName        =      rep.getStepAttributeString (id_step, "file_name");  
