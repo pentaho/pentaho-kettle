@@ -2018,7 +2018,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wLayoutPaged.setSelection(in.isLayoutPaged());
         wNrLinesPerPage.setText( ""+in.getNrLinesPerPage() );
         wNrLinesDocHeader.setText( ""+in.getNrLinesDocHeader() );
-		wCompression.setText(in.getFileCompression());
+		if (in.getFileCompression()!=null) wCompression.setText(in.getFileCompression());
 		wNoempty.setSelection(in.noEmptyLines());
 		wInclFilename.setSelection(in.includeFilename());
 		wInclRownum.setSelection(in.includeRowNumber());
