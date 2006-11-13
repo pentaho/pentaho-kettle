@@ -631,7 +631,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
         props.setLook(wlEncoding);
         fdlEncoding=new FormData();
         fdlEncoding.left = new FormAttachment(0, 0);
-        fdlEncoding.top  = new FormAttachment(wFormat, margin);
+        fdlEncoding.top  = new FormAttachment(wCompression, margin);
         fdlEncoding.right= new FormAttachment(middle, -margin);
         wlEncoding.setLayoutData(fdlEncoding);
         wEncoding=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
