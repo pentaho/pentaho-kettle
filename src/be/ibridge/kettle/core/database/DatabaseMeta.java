@@ -1652,7 +1652,8 @@ public class DatabaseMeta implements Cloneable, XMLInterface
      */
     public boolean hasSpacesInField(String fieldname)
     {
-        if (fieldname.indexOf(" ")>=0) return true; 
+    		if( fieldname == null ) return false;
+    		if (fieldname.indexOf(" ")>=0) return true; 
         return false;
     }
     
@@ -1663,6 +1664,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
      */
     public boolean hasSpecialCharInField(String fieldname)
     {
+    		if(fieldname==null) return false;
         if (fieldname.indexOf('/')>=0) return true; 
         if (fieldname.indexOf('-')>=0) return true; 
         if (fieldname.indexOf('+')>=0) return true; 
@@ -1681,6 +1683,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
     
     public boolean hasDotInField(String fieldname)
     {
+		if(fieldname==null) return false;
         if (fieldname.indexOf('.')>=0) return true;
         return false;
     }
