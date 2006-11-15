@@ -897,19 +897,30 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 		else
 		{
-			StringBuffer ret;
+            if (pad)
+            {
+                StringBuffer ret;
 
-			if (isNull() || value.getString()==null) ret=new StringBuffer(Const.NULL_STRING);
-			else          ret=new StringBuffer(value.getString());
+                if (isNull() || value.getString()==null) ret=new StringBuffer(Const.NULL_STRING);
+                else          ret=new StringBuffer(value.getString());
 
-			if (pad)
-			{
-				int length = value.getLength();
-				if (length>16384) length=16384; // otherwise we get OUT OF MEMORY errors for CLOBS.
-				Const.rightPad(ret, length);
-			}
+                int length = value.getLength();
+                if (length>16384) length=16384; // otherwise we get OUT OF MEMORY errors for CLOBS.
+                Const.rightPad(ret, length);
 
-			retval=ret.toString();
+                retval=ret.toString();
+            }
+            else
+            {
+                if (isNull() || value.getString()==null)
+                {
+                    retval=Const.NULL_STRING;
+                }
+                else
+                {
+                    retval = value.getString();
+                }
+            }
 		}
 		return retval;
 	}
