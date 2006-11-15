@@ -1191,7 +1191,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wlCompression.setLayoutData(fdlCompression);
         wCompression=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
         wCompression.setText(Messages.getString("TextFileInputDialog.Compression.Label"));
-        wCompression.setToolTipText(Messages.getString("TextFileInputDialog.Zipped.Tooltip"));
+        wCompression.setToolTipText(Messages.getString("TextFileInputDialog.Compression.Tooltip"));
         props.setLook(wCompression);
         wCompression.add("None");
         wCompression.add("Zip");
