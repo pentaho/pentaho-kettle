@@ -1592,6 +1592,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
      */
 	public String quoteField(String field)
 	{
+        if (field==null) return null;
 		if (isReservedWord(field) && quoteReservedWords())
         {
             return handleCase(getStartQuote()+field+getEndQuote());            
