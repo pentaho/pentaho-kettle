@@ -62,6 +62,7 @@ import be.ibridge.kettle.trans.step.dimensionlookup.DimensionLookupMeta;
 import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
 import be.ibridge.kettle.trans.step.excelinput.ExcelInputMeta;
 import be.ibridge.kettle.trans.step.exceloutput.ExcelOutputMeta;
+import be.ibridge.kettle.trans.step.fastfileoutput.FastFileOutputMeta;
 import be.ibridge.kettle.trans.step.fieldsplitter.FieldSplitterMeta;
 import be.ibridge.kettle.trans.step.filesfromresult.FilesFromResultMeta;
 import be.ibridge.kettle.trans.step.filestoresult.FilesToResultMeta;
@@ -287,7 +288,9 @@ public class BaseStep extends Thread
         new StepPluginMeta(SortedMergeMeta.class, "SortedMerge", 
                             Messages.getString("BaseStep.TypeLongDesc.SortedMerge"), Messages.getString("BaseStep.TypeTooltipDesc.SortedMerge"), 
                             "SMG.png", CATEGORY_EXPERIMENTAL),
-
+        new StepPluginMeta(FastFileOutputMeta.class, "FastFileOutput", 
+                            Messages.getString("BaseStep.TypeLongDesc.FastFileOutput"), Messages.getString("BaseStep.TypeTooltipDesc.FastFileOutput"), 
+                            "TFO.png", CATEGORY_EXPERIMENTAL),
     };
     
     public static final String category_order[] = { CATEGORY_INPUT, CATEGORY_OUTPUT, CATEGORY_LOOKUP, CATEGORY_TRANSFORM, CATEGORY_DATA_WAREHOUSE, CATEGORY_EXTRA, CATEGORY_MAPPING, CATEGORY_EXPERIMENTAL }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$

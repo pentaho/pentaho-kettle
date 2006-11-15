@@ -16,6 +16,7 @@
 
 package be.ibridge.kettle.trans.step.textfileoutput;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -236,26 +237,31 @@ public class TextFileOutput extends BaseStep implements StepInterface
             }
             else
             {
-       		    // Any separators in string?
-		    // example: 123.4;"a;b;c";Some name
-		    String value = v.toString();
-		    // do not output separator if it is null or when 
-		    // there is no separator in the value and enclosure
-		    // is not forced (i.e. optional enclosure).
-		    // N.B. be careful not to call indexOf with null string.
-		    
-		    String separator = meta.getSeparator();
-		    boolean enclosureIsOptional = !meta.isEnclosureForced();
-		    
-		    if(Const.isEmpty(separator) || (value.indexOf(separator) < 0 && enclosureIsOptional))
-		    {
-				retval = v.toString();
-		    }
-		    else 
-            {
-			    retval=meta.getEnclosure()+v.toString()+meta.getEnclosure();
-		    }
-	    }
+                boolean hashLength = idx>=0 && meta.getOutputFields()[idx].getLength()>0;
+                
+                // Any separators in string?
+                // example: 123.4;"a;b;c";Some name
+                String value = v.toString(hashLength);
+                
+                // do not output separator if it is null or when
+                // there is no separator in the value and enclosure
+                // is not forced (i.e. optional enclosure).
+                // N.B. be careful not to call indexOf with null string.
+
+                String separator = meta.getSeparator();
+                boolean enclosureIsOptional = !meta.isEnclosureForced();
+
+                // If we don't have an enclosure specified we don't care about adding them around the value either.
+                //
+                if (Const.isEmpty(meta.getEnclosure()) || Const.isEmpty(separator) || (value.indexOf(separator) < 0 && enclosureIsOptional))
+                {
+                    retval = v.toString();
+                }
+                else
+                {
+                    retval = meta.getEnclosure() + v.toString() + meta.getEnclosure();
+                }
+            }
 					    
         }
         else if (v.isNumeric())
@@ -611,7 +617,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
             if (meta.getEncoding()!=null && meta.getEncoding().length()>0)
             {
                 log.logBasic(toString(), "Opening output stream in encoding: "+meta.getEncoding());
-                data.writer = new OutputStreamWriter(outputStream, meta.getEncoding());
+                data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 100000), meta.getEncoding());
             }
             else
             {

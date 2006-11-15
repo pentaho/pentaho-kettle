@@ -115,6 +115,10 @@ public class Trans
     private Log4jStringAppender stringAppender;
     
     private String threadName;
+    
+    private boolean preparing;
+    private boolean initializing;
+    private boolean running;
 
 	/*
 	 * Initialize new empty transformation...
@@ -215,6 +219,7 @@ public class Trans
      */
     public boolean prepareExecution(String[] arguments)
     {
+        preparing=true;
 		startDate = null;
 
 		/*
@@ -519,7 +524,9 @@ public class Trans
                 }
             }
         }
-            
+
+        preparing=false;
+        initializing = true;
 
         log.logBasic(toString(), Messages.getString("Trans.Log.InitialisingSteps", String.valueOf(steps.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
 
@@ -551,6 +558,7 @@ public class Trans
             }
         }
         
+        initializing=false;
         boolean ok = true;
         
         // All step are initialized now: see if there was one that didn't do it correctly!
@@ -572,7 +580,7 @@ public class Trans
         
 		if (!ok)
 		{
-			log.logError(toString(), Messages.getString("Trans.Log.FailToInitializeAtLeastOneStep")); //$NON-NLS-1$
+            log.logError(toString(), Messages.getString("Trans.Log.FailToInitializeAtLeastOneStep")); //$NON-NLS-1$
 
             // Halt the other threads as well, signal end-of-the line to the outside world...
             //
@@ -584,7 +592,7 @@ public class Trans
                     combi.data.setStatus(StepDataInterface.STATUS_HALTED);
                 }
             }
-			return false;
+            return false;
 		}
 
         return true;
@@ -603,7 +611,9 @@ public class Trans
             sid.step.markStart();
             sid.step.start();
         }
-
+        
+        running=true;
+        
         log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationHasAllocated",String.valueOf(steps.size()),String.valueOf(rowsets.size()))); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
@@ -1669,6 +1679,88 @@ public class Trans
     public void setThreadName(String threadName)
     {
         this.threadName = threadName;
+    }
+    
+    public String getStatus()
+    {
+        String message;
+        
+        if (running)
+        {
+            if (isFinished())
+            {
+                message = "Finished";
+                if (getResult().getNrErrors()>0) message+=" (with errors)";
+            }
+            else
+            {
+                message = "Running";
+            }
+        }
+        else
+        if (preparing)
+        {
+            message = "Preparing executing";
+        }
+        else
+        if (initializing)
+        {
+            message = "Initializing";
+        }
+        else
+        {
+            message = "Waiting";
+        }
+        
+        return message;
+    }
+
+    /**
+     * @return the initializing
+     */
+    public boolean isInitializing()
+    {
+        return initializing;
+    }
+
+    /**
+     * @param initializing the initializing to set
+     */
+    public void setInitializing(boolean initializing)
+    {
+        this.initializing = initializing;
+    }
+
+    /**
+     * @return the preparing
+     */
+    public boolean isPreparing()
+    {
+        return preparing;
+    }
+
+    /**
+     * @param preparing the preparing to set
+     */
+    public void setPreparing(boolean preparing)
+    {
+        this.preparing = preparing;
+    }
+
+    /**
+     * @return the running
+     */
+    public boolean isRunning()
+    {
+        return running;
+    }
+
+    /**
+     * @param running the running to set
+     */
+    public void setRunning(boolean running)
+    {
+        this.running = running;
     }
 }
 
