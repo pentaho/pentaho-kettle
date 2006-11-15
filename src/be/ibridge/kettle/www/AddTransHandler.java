@@ -17,13 +17,13 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 
-public class AddStartTransHandler extends AbstractHttpHandler
+public class AddTransHandler extends AbstractHttpHandler
 {
     private static final long serialVersionUID = -6850701762586992604L;
     private static LogWriter log = LogWriter.getInstance();
     private TransformationMap transformationMap;
     
-    public AddStartTransHandler(TransformationMap transformationMap)
+    public AddTransHandler(TransformationMap transformationMap)
     {
         this.transformationMap = transformationMap;
     }
