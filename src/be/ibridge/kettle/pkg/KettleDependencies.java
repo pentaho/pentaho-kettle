@@ -15,6 +15,9 @@ public class KettleDependencies
             "js.jar",                      // JavaScript / Rhino
             "pentaho-1.2.0.jar",           // JNDI database connections
             "simple-jndi-0.11.1.jar",      // JNDI database connections
+            "commons-logging.jar",         // Apache commons: Logging
+            "commons-pool-1.3.jar",        // Apache commons: Object pooling
+            "commons-dbcp-1.2.1.jar",      // Apache commons: Database Connection Pooling
             "edtftpj-1.5.3.jar",           // EnterpriseDT FTP for JobEntryFTP
             "activation.jar",              // JobEntryMail
             "mail.jar",                    // JobEntryMail
