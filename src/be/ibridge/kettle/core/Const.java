@@ -624,6 +624,7 @@ public class Const
 	 */
 	public static final String ltrim(String str)
 	{
+        if (str==null) return null;
 		int from = 0;
 		while (from < str.length() && isSpace(str.charAt(from)))
 			from++;
