@@ -56,6 +56,7 @@ public interface DatabaseInterface extends Cloneable
             OracleRDBDatabaseMeta.class,
             H2DatabaseMeta.class,
             NetezzaDatabaseMeta.class,
+            UniVerseDatabaseMeta.class,
 		};
 	
 	/**

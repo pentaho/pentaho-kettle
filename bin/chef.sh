@@ -13,7 +13,7 @@ CLASSPATH=$CLASSPATH:libswt/runtime.jar
 # ** JDBC & other libraries used by Kettle:       **
 # **************************************************
 
-for f in `find libext`
+for f in `find $BASEDIR/libext -type f -name "*.jar"` `find $BASEDIR/libext -type f -name "*.zip"`
 do
   CLASSPATH=$CLASSPATH:$f
 done

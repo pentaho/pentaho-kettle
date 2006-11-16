@@ -179,7 +179,11 @@ public class DatabaseMeta implements Cloneable, XMLInterface
  	 */
  	public static final int TYPE_DATABASE_NETEZZA    =  24;
 
-    
+    /**
+     * Connection to an IBM UniVerse database
+     */
+    public static final int TYPE_DATABASE_UNIVERSE   =  25;
+
     
 
 
@@ -1423,7 +1427,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	}
 	
 	public String getFunctionSum()
-	{
+    {
 		return databaseInterface.getFunctionSum();
 	}
 

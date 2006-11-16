@@ -7,17 +7,16 @@
 BASEDIR=$(dirname $0)
 CLASSPATH=$BASEDIR
 CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/libswt/jface.jar
-CLASSPATH=$CLASSPATH:$BASEDIR/libswt/runtime.jar
 
 # **************************************************
 # ** JDBC & other libraries used by Kettle:       **
 # **************************************************
 
-for f in `find $BASEDIR/libext -type f -name "*.jar"`
+for f in `find $BASEDIR/libext -type f -name "*.jar"` `find $BASEDIR/libext -type f -name "*.zip"`
 do
   CLASSPATH=$CLASSPATH:$f
 done
+
 
 # **************************************************
 # ** Platform specific libraries ...              **

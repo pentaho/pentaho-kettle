@@ -53,6 +53,9 @@
   <jar href="libext/commons-dbcp-1.2.1.jar"/>
   <jar href="libext/commons-pool-1.3.jar"/>
   <jar href="libext/nzjdbc.jar"/>
+  <jar href="libext/jackcess-1.1.5.jar"/>
+  <jar href="libext/unijdbc.jar"/>
+  <jar href="libext/asjava_p.zip"/>
 
   <jar href="libswt/jface.jar"/>
   <jar href="libswt/runtime.jar"/>
