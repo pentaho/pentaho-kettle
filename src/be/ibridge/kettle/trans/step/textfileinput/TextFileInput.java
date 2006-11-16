@@ -29,8 +29,8 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.zip.ZipInputStream;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipInputStream;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
@@ -1081,12 +1081,13 @@ public class TextFileInput extends BaseStep implements StepInterface
 			// Close previous file!
 			if (data.filename != null)
 			{
-				if (meta.getFileCompression().equals("Zip"))
+                String sFileCompression = meta.getFileCompression();
+				if (sFileCompression != null && sFileCompression.equals("Zip"))
 				{
 					data.zi.closeEntry();
 					data.zi.close();
 				}
-				else if (meta.getFileCompression().equals("GZip"))
+				else if (sFileCompression != null && sFileCompression.equals("GZip"))
 				{
 					data.gzi.close();
 				}
@@ -1132,38 +1133,36 @@ public class TextFileInput extends BaseStep implements StepInterface
 			data.fr = new FileInputStream(data.file);
 			data.dataErrorLineHandler.handleFile(data.file);
 
-            if ( !Const.isEmpty(meta.getFileCompression()) )
-            {
-    			if (meta.getFileCompression().equals("Zip"))
-    			{
-    				logBasic("This is a zipped file");
-    				data.zi = new ZipInputStream(data.fr);
-    				data.zi.getNextEntry();
-    
-    				if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
-    				{
-    					data.isr = new InputStreamReader(new BufferedInputStream(data.zi), meta.getEncoding());
-    				}
-    				else
-    				{
-    					data.isr = new InputStreamReader(new BufferedInputStream(data.zi));
-    				}
-    			}
-    			else if (meta.getFileCompression().equals("GZip"))
-    			{
-    				logBasic("This is a gzipped file");
-    				data.gzi = new GZIPInputStream(data.fr);
-    
-    				if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
-    				{
-    					data.isr = new InputStreamReader(new BufferedInputStream(data.gzi), meta.getEncoding());
-    				}
-    				else
-    				{
-    					data.isr = new InputStreamReader(new BufferedInputStream(data.gzi));
-    				}
-    			}
-            }
+            String sFileCompression = meta.getFileCompression();
+			if (sFileCompression != null && sFileCompression.equals("Zip"))
+			{
+				logBasic("This is a zipped file");
+				data.zi = new ZipInputStream(data.fr);
+				data.zi.getNextEntry();
+
+				if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
+				{
+					data.isr = new InputStreamReader(new BufferedInputStream(data.zi), meta.getEncoding());
+				}
+				else
+				{
+					data.isr = new InputStreamReader(new BufferedInputStream(data.zi));
+				}
+			}
+			else if (sFileCompression != null && sFileCompression.equals("GZip"))
+			{
+				logBasic("This is a gzipped file");
+				data.gzi = new GZIPInputStream(data.fr);
+
+				if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
+				{
+					data.isr = new InputStreamReader(new BufferedInputStream(data.gzi), meta.getEncoding());
+				}
+				else
+				{
+					data.isr = new InputStreamReader(new BufferedInputStream(data.gzi));
+				}
+			}
 			else
 			{
 				if (meta.getEncoding() != null && meta.getEncoding().length() > 0)
