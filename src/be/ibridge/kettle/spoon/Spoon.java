@@ -73,6 +73,7 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.cluster.dialog.SlaveServerDialog;
 import be.ibridge.kettle.core.AddUndoPositionInterface;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
@@ -154,7 +155,6 @@ import be.ibridge.kettle.trans.step.selectvalues.SelectValuesMeta;
 import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
 import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
 import be.ibridge.kettle.version.BuildVersion;
-import be.ibridge.kettle.www.dialog.SlaveServerDialog;
 
 /**
  * This class handles the main window of the Spoon graphical transformation editor.

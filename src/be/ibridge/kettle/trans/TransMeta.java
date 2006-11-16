@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.CheckResult;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DBCache;
@@ -60,7 +61,6 @@ import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.StepPartitioningMeta;
-import be.ibridge.kettle.www.SlaveServer;
 
 /**
  * This class defines a transformation and offers methods to save and load it from XML or a Kettle database repository.

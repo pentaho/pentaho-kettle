@@ -1,4 +1,4 @@
-package be.ibridge.kettle.www.dialog;
+package be.ibridge.kettle.cluster.dialog;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CTabFolder;
@@ -22,13 +22,13 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
-import be.ibridge.kettle.www.SlaveServer;
 
 
 /**

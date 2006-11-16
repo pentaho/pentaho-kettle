@@ -1,4 +1,4 @@
-package be.ibridge.kettle.www;
+package be.ibridge.kettle.cluster;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
