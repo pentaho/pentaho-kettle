@@ -242,7 +242,8 @@ public class SystemDataMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public static final String getTypeDesc(int t)
 	{
-		if (t<0 || t>=functions.length) return null;
+        if (functions == null || functions.length == 0) return null;
+		if (t<0 || t>=functions.length || functions[t] == null) return null;
 		return functions[t].getDescription();
 	}
 
