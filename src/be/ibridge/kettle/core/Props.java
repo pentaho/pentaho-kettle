@@ -41,6 +41,7 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableItem;
 
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.spoon.Messages;
 
 
 /**
@@ -137,6 +138,7 @@ public class Props implements Cloneable
     public static final String STRING_ASK_ABOUT_REPLACING_DATABASES = "AskAboutReplacingDatabases";
     public static final String STRING_REPLACE_DATABASES             = "ReplaceDatabases";
 
+    private LogWriter log = LogWriter.getInstance();
 	private Properties properties;
 	
 	private String lastfiles[];
@@ -456,17 +458,33 @@ public class Props implements Cloneable
 	{
 		storeScreens();
 		
+        File spoonRc = new File(filename);
 		try
 		{
-			properties.store(new FileOutputStream(new File(filename)), "Kettle Properties file");
-			// System.out.println("properties saved");
+            FileOutputStream fos = new FileOutputStream(spoonRc);
+			properties.store(fos, "Kettle Properties file");
+            fos.close();
+            log.logBasic(toString(), Messages.getString("Spoon.Log.SaveProperties"));
 		}
 		catch(IOException e)
 		{
-			;
+            // If saving fails this could be a known Java bug: If running Spoon on windows the spoon
+            // config file gets created with the 'hidden' attribute set. Some Java JREs cannot open
+            // FileOutputStreams on files with that attribute set. The user has to unset that attribute
+            // manually.
+            if (spoonRc.isHidden() && filename.indexOf('\\') != -1)
+            {
+                // If filename contains a backslash we consider Spoon as running on Windows
+                log.logError(toString(), Messages.getString("Spoon.Log.SavePropertiesFailedWindowsBugAttr", filename));
+            }
+            else
+            {
+                // Another reason why the save failed
+                log.logError(toString(), Messages.getString("Spoon.Log.SavePropertiesFailed") + e.getMessage());
+            }
 		}
 	}
-	
+    
 	public void setLastFiles(String lf[], String ld[], boolean lt[], String lr[])
 	{
 		if (lf.length>Const.MAX_FILE_HIST)
