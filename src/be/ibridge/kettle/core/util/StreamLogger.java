@@ -1,4 +1,4 @@
-package be.ibridge.kettle.job.entry.shell;
+package be.ibridge.kettle.core.util;
 
 import java.io.BufferedReader;
 import java.io.IOException;

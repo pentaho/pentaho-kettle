@@ -60,6 +60,7 @@ import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.StepPartitioningMeta;
+import be.ibridge.kettle.www.SlaveServer;
 
 /**
  * This class defines a transformation and offers methods to save and load it from XML or a Kettle database repository.
@@ -124,6 +125,8 @@ public class TransMeta implements XMLInterface
 
     private ArrayList           sourceRows;
 
+    private SlaveServer         slaveServer; // TODO: remove this later, it's for testing purpose only!!
+    
     private boolean             changed, changed_steps, changed_databases, changed_hops, changed_notes;
 
     private ArrayList           undo;
@@ -281,7 +284,7 @@ public class TransMeta implements XMLInterface
         feedbackShown = true;
         feedbackSize = Const.ROWS_UPDATE;
         
-        // setInternalKettleVariables(); Don't clear the internal variables for ad-hoc transformations, it's ruines the previews
+        slaveServer = new SlaveServer("http://127.0.0.1/kettle/addTrans", null, null, null, null, null);
     }
 
     public void clearUndo()
@@ -4505,5 +4508,21 @@ public class TransMeta implements XMLInterface
     public void setUsingUniqueConnections(boolean usingUniqueConnections)
     {
         this.usingUniqueConnections = usingUniqueConnections;
+    }
+
+    /**
+     * @return the slaveServer
+     */
+    public SlaveServer getSlaveServer()
+    {
+        return slaveServer;
+    }
+
+    /**
+     * @param slaveServer the slaveServer to set
+     */
+    public void setSlaveServer(SlaveServer slaveServer)
+    {
+        this.slaveServer = slaveServer;
     }
 }

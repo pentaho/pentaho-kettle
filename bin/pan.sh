@@ -24,106 +24,23 @@ done
 # **************************************************
 
 JAVA_BIN=java
-LIBPATH="NONE"
-
-case `uname -s` in 
-	AIX)
-		LIBPATH=$BASEDIR/libswt/aix/
-		;;
-		
-	OS400)
-		LIBPATH=$BASEDIR/libswt/aix/
-		;;
-		 
-	SunOS) 
-		LIBPATH=$BASEDIR/libswt/solaris/
-		;;
-
-	Darwin)
-		LIBPATH=$BASEDIR/libswt/osx/
-		JAVA_BIN=$BASEDIR/libswt/osx/java_swt
-		chmod +x $JAVA_BIN
-		;;
-
-	Linux)
-    	ARCH=`uname -m`
-		case $ARCH in
-			x86_64)
-				LIBPATH=$BASEDIR/libswt/linux/x86_64/
-				;;
-
-			i[3-6]86)
-				LIBPATH=$BASEDIR/libswt/linux/x86/
-				;;
-
-			ppc)
-				LIBPATH=$BASEDIR/libswt/linux/ppc/
-				;;
-
-			*)	
-				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
-				exit
-				;;
-		esac
-		;;
-
-	FreeBSD)
-	    ARCH=`uname -m`
-		case $ARCH in
-			x86_64)
-				LIBPATH=$BASEDIR/libswt/freebsd/x86_64/
-				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
-				exit
-				;;
-
-			i[3-6]86)
-				LIBPATH=$BASEDIR/libswt/freebsd/x86/
-				;;
-
-			ppc)
-				LIBPATH=$BASEDIR/libswt/freebsd/ppc/
-				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
-				exit
-				;;
-
-			*)	
-				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
-				exit
-				;;
-		esac
-		;;
-		
-	HP-UX) 
-		LIBPATH=$BASEDIR/libswt/hpux/
-		;;
-	CYGWIN*)
-		./Pan.bat
-		# exit
-		;;
-
-	*) 
-		echo Pan is not supported on this hosttype : `uname -s`
-		exit
-		;;
-esac 
-
-export LIBPATH
-
-if [ "$LIBPATH" != "NONE" ]
-then
-  for f in `find $LIBPATH -name '*.jar'`
-  do
-    CLASSPATH=$CLASSPATH:$f
-  done
-fi
-
 
 # ******************************************************************
 # ** Set java runtime options                                     **
 # ** Change 128m to higher values in case you run out of memory.  **
 # ******************************************************************
 
-OPT="-Xmx256m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD"
+if [ -z "$JAVAMAXMEM" ]; then
+  JAVAMAXMEM="256"
+fi
+
+OPT="-Xmx${JAVAMAXMEM}m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD"
+
+if [ "$1" = "-x" ]; then
+  export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$BASEDIR/libext
+  OPT="-Xruntracer $OPT"
+  shift
+fi
 
 # ***************
 # ** Run...    **

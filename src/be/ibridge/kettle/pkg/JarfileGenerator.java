@@ -11,8 +11,8 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.util.EnvUtil;
+import be.ibridge.kettle.core.util.StreamLogger;
 import be.ibridge.kettle.core.value.Value;
-import be.ibridge.kettle.job.entry.shell.StreamLogger;
 import be.ibridge.kettle.trans.TransMeta;
 
 public class JarfileGenerator

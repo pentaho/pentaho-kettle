@@ -33,6 +33,7 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
 {
 	public  Database db;
 	public  int      warnings;
+	public String tableName;
     
     /**
      * Mapping between the SQL and the actual prepared statement.
@@ -55,6 +56,7 @@ public class TableOutputData extends BaseStepData implements StepDataInterface
 		
 		db=null;
 		warnings=0;
+		tableName=null;
         
         preparedStatements = new Hashtable(); 
         

@@ -154,6 +154,7 @@ import be.ibridge.kettle.trans.step.selectvalues.SelectValuesMeta;
 import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
 import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
 import be.ibridge.kettle.version.BuildVersion;
+import be.ibridge.kettle.www.dialog.SlaveServerDialog;
 
 /**
  * This class handles the main window of the Spoon graphical transformation editor.
@@ -324,6 +325,9 @@ public class Spoon implements AddUndoPositionInterface
             {
                 public void keyPressed(KeyEvent e) 
                 {
+                    boolean ctrl = (( e.stateMask&SWT.CONTROL)!=0);
+                    boolean alt  = (( e.stateMask&SWT.ALT)!=0);
+                    
                     // ESC --> Unselect All steps
                     if (e.keyCode == SWT.ESC)   { spoongraph.clearSettings(); transMeta.unselectAll(); refreshGraph(); };
 
@@ -355,62 +359,62 @@ public class Spoon implements AddUndoPositionInterface
                     if (e.keyCode == SWT.F11) { checkTrans(); spoongraph.clearSettings();  }
 
                     // CTRL-A --> Select All steps
-                    if ((int)e.character ==  1) { transMeta.selectAll(); };
+                    if ((int)e.character ==  1 && ctrl && !alt) { transMeta.selectAll(); };
                     
                     // CTRL-D --> Disconnect from repository
-                    if ((int)e.character ==  4) { closeRepository(); spoongraph.clearSettings();  };
+                    if ((int)e.character ==  4 && ctrl && !alt) { closeRepository(); spoongraph.clearSettings();  };
                     
                     // CTRL-E --> Explore the repository
-                    if ((int)e.character ==  5) { exploreRepository(); spoongraph.clearSettings();  };
+                    if ((int)e.character ==  5 && ctrl && !alt) { exploreRepository(); spoongraph.clearSettings();  };
 
                     // CTRL-F --> Java examination
-                    if ((int)e.character ==  6 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { searchMetaData(); spoongraph.clearSettings(); };
+                    if ((int)e.character ==  6 && ctrl && !alt ) { searchMetaData(); spoongraph.clearSettings(); };
 
                     // CTRL-I --> Import from XML file         && (e.keyCode&SWT.CONTROL)!=0
-                    if ((int)e.character ==  9 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { openFile(true); spoongraph.clearSettings(); };
+                    if ((int)e.character ==  9 && ctrl && !alt ) { openFile(true); spoongraph.clearSettings(); };
+
+                    // CTRL-ALT-I --> Copy Transformation Image to clipboard
+                    if ((int)e.character ==  9 && ctrl && alt) { copyTransformationImage(); spoongraph.clearSettings(); }
 
                     // CTRL-J --> Get variables
-                    if ((int)e.character == 10 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { getVariables(); spoongraph.clearSettings(); };
+                    if ((int)e.character == 10 && ctrl && !alt ) { getVariables(); spoongraph.clearSettings(); };
 
                     // CTRL-K --> Create Kettle archive
-                    if ((int)e.character == 11 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { createKettleArchive(); spoongraph.clearSettings(); };
+                    if ((int)e.character == 11 && ctrl && !alt ) { createKettleArchive(); spoongraph.clearSettings(); };
 
                     // CTRL-L --> Show variables
-                    if ((int)e.character == 12 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)==0) ) { showVariables(); spoongraph.clearSettings(); };
+                    if ((int)e.character == 12 && ctrl && !alt ) { showVariables(); spoongraph.clearSettings(); };
 
                     // CTRL-N --> new
-                    if ((int)e.character == 14) { newFile();     spoongraph.clearSettings(); }
+                    if ((int)e.character == 14 && ctrl && !alt) { newFile();     spoongraph.clearSettings(); }
                         
                     // CTRL-O --> open
-                    if ((int)e.character == 15) { openFile(false);  spoongraph.clearSettings();  }
+                    if ((int)e.character == 15 && ctrl && !alt) { openFile(false);  spoongraph.clearSettings();  }
                     
                     // CTRL-P --> print
-                    if ((int)e.character == 16) { printFile(); spoongraph.clearSettings(); }
+                    if ((int)e.character == 16 && ctrl && !alt) { printFile(); spoongraph.clearSettings(); }
                     
                     // CTRL-Q --> Impact analyses
-                    if ((int)e.character == 17) { analyseImpact(); spoongraph.clearSettings();  }
+                    if ((int)e.character == 17 && ctrl && !alt) { analyseImpact(); spoongraph.clearSettings();  }
                     
                     // CTRL-R --> Connect to repository
-                    if ((int)e.character == 18) { openRepository();  spoongraph.clearSettings(); };
+                    if ((int)e.character == 18 && ctrl && !alt) { openRepository();  spoongraph.clearSettings(); };
                     
                     // CTRL-S --> save
-                    if ((int)e.character == 19) { saveFile();  spoongraph.clearSettings();  }
+                    if ((int)e.character == 19 && ctrl && !alt) { saveFile();  spoongraph.clearSettings();  }
                     
+                    // CTRL-ALT-S --> send to slave server
+                    if ((int)e.character == 19 && ctrl && alt) { sendXMLToSlaveServer();  spoongraph.clearSettings();  }
+
                     // CTRL-T --> transformation
-                    if ((int)e.character == 20) { setTrans();  spoongraph.clearSettings();  }
+                    if ((int)e.character == 20 && ctrl && !alt) { setTrans();  spoongraph.clearSettings();  }
                     
                     // CTRL-Y --> redo action
-                    if ((int)e.character == 25) { redoAction(); spoongraph.clearSettings(); }
+                    if ((int)e.character == 25 && ctrl && !alt) { redoAction(); spoongraph.clearSettings(); }
                     
                     // CTRL-Z --> undo action
-                    if ((int)e.character == 26) { spoongraph.clearSettings(); undoAction();  }
-                    
-                    // CTRL-SHIFT-I --> Copy Transformation Image to clipboard
-                    if ((int)e.character ==  9 && (( e.stateMask&SWT.CONTROL)!=0) && (( e.stateMask&SWT.ALT)!=0))
-                    {
-                        copyTransformationImage();
-                    }
-                    
+                    if ((int)e.character == 26 && ctrl && !alt) { spoongraph.clearSettings(); undoAction();  }
+                                        
                     // System.out.println("(int)e.character = "+(int)e.character+", keycode = "+e.keyCode+", stateMask="+e.stateMask);
                 }
             };
@@ -475,6 +479,7 @@ public class Spoon implements AddUndoPositionInterface
             shell.setMaximized(true); // Default = maximized!
         }
     }
+
 
     /**
      * Search the transformation meta-data.
@@ -4891,6 +4896,25 @@ public class Spoon implements AddUndoPositionInterface
     public void createKettleArchive()
     {
         JarfileGenerator.generateJarFile(transMeta);
+    }
+    
+    public void sendXMLToSlaveServer()
+    {
+        SlaveServerDialog dialog = new SlaveServerDialog(shell, transMeta.getSlaveServer());
+        if (dialog.open())
+        {
+            try
+            {
+                String reply = transMeta.getSlaveServer().sendXML(transMeta.getXML());
+                
+                ShowBrowserDialog showBrowserDialog = new ShowBrowserDialog(shell, "Browser", reply);
+                showBrowserDialog.open();
+            }
+            catch (Exception e)
+            {
+                new ErrorDialog(shell, "Erro", "Error sending transformation to server", e);
+            }
+        }
     }
 
 }

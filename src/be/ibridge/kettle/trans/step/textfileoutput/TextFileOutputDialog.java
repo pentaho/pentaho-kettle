@@ -85,6 +85,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	private Text         wFilename;
 	private FormData     fdlFilename, fdbFilename, fdbcFilename, fdFilename;
 
+	private Label        wlFileIsCommand;
+	private Button       wFileIsCommand;
+	private FormData     fdlFileIsCommand, fdFileIsCommand;
+
 	private Label        wlExtension;
 	private Text         wExtension;
 	private FormData     fdlExtension, fdExtension;
@@ -92,6 +96,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	private Label        wlAddStepnr;
 	private Button       wAddStepnr;
 	private FormData     fdlAddStepnr, fdAddStepnr;
+
+	private Label        wlAddPartnr;
+	private Button       wAddPartnr;
+	private FormData     fdlAddPartnr, fdAddPartnr;
 
 	private Label        wlAddDate;
 	private Button       wAddDate;
@@ -148,6 +156,10 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	private Label        wlPad;
 	private Button       wPad;
 	private FormData     fdlPad, fdPad;
+
+	private Label        wlFastDump;
+	private Button       wFastDump;
+	private FormData     fdlFastDump, fdFastDump;
 
 	private Label        wlSplitEvery;
 	private Text         wSplitEvery;
@@ -276,13 +288,38 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			}
 		);
 
+		// Run this as a command instead?
+		wlFileIsCommand=new Label(wFileComp, SWT.RIGHT);
+		wlFileIsCommand.setText(Messages.getString("TextFileOutputDialog.FileIsCommand.Label"));
+ 		props.setLook(wlFileIsCommand);
+		fdlFileIsCommand=new FormData();
+		fdlFileIsCommand.left = new FormAttachment(0, 0);
+		fdlFileIsCommand.top  = new FormAttachment(wFilename, margin);
+		fdlFileIsCommand.right= new FormAttachment(middle, -margin);
+		wlFileIsCommand.setLayoutData(fdlFileIsCommand);
+		wFileIsCommand=new Button(wFileComp, SWT.CHECK);
+ 		props.setLook(wFileIsCommand);
+		fdFileIsCommand=new FormData();
+		fdFileIsCommand.left = new FormAttachment(middle, 0);
+		fdFileIsCommand.top  = new FormAttachment(wFilename, margin);
+		fdFileIsCommand.right= new FormAttachment(100, 0);
+		wFileIsCommand.setLayoutData(fdFileIsCommand);
+		wFileIsCommand.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+
 		// Extension line
 		wlExtension=new Label(wFileComp, SWT.RIGHT);
 		wlExtension.setText(Messages.getString("System.Label.Extension"));
  		props.setLook(wlExtension);
 		fdlExtension=new FormData();
 		fdlExtension.left = new FormAttachment(0, 0);
-		fdlExtension.top  = new FormAttachment(wFilename, margin);
+		fdlExtension.top  = new FormAttachment(wFileIsCommand, margin);
 		fdlExtension.right= new FormAttachment(middle, -margin);
 		wlExtension.setLayoutData(fdlExtension);
 		wExtension=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -291,8 +328,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wExtension.addModifyListener(lsMod);
 		fdExtension=new FormData();
 		fdExtension.left = new FormAttachment(middle, 0);
-		fdExtension.top  = new FormAttachment(wFilename, margin);
-		fdExtension.right= new FormAttachment(wbcFilename, -margin);
+		fdExtension.top  = new FormAttachment(wFileIsCommand, margin);
+		fdExtension.right= new FormAttachment(100, 0);
 		wExtension.setLayoutData(fdExtension);
 
 		// Create multi-part file?
@@ -321,19 +358,44 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		);
 
 		// Create multi-part file?
+		wlAddPartnr=new Label(wFileComp, SWT.RIGHT);
+		wlAddPartnr.setText(Messages.getString("TextFileOutputDialog.AddPartnr.Label"));
+ 		props.setLook(wlAddPartnr);
+		fdlAddPartnr=new FormData();
+		fdlAddPartnr.left = new FormAttachment(0, 0);
+		fdlAddPartnr.top  = new FormAttachment(wAddStepnr, margin);
+		fdlAddPartnr.right= new FormAttachment(middle, -margin);
+		wlAddPartnr.setLayoutData(fdlAddPartnr);
+		wAddPartnr=new Button(wFileComp, SWT.CHECK);
+ 		props.setLook(wAddPartnr);
+		fdAddPartnr=new FormData();
+		fdAddPartnr.left = new FormAttachment(middle, 0);
+		fdAddPartnr.top  = new FormAttachment(wAddStepnr, margin);
+		fdAddPartnr.right= new FormAttachment(100, 0);
+		wAddPartnr.setLayoutData(fdAddPartnr);
+		wAddPartnr.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+
+		// Create multi-part file?
 		wlAddDate=new Label(wFileComp, SWT.RIGHT);
 		wlAddDate.setText(Messages.getString("TextFileOutputDialog.AddDate.Label"));
  		props.setLook(wlAddDate);
 		fdlAddDate=new FormData();
 		fdlAddDate.left = new FormAttachment(0, 0);
-		fdlAddDate.top  = new FormAttachment(wAddStepnr, margin);
+		fdlAddDate.top  = new FormAttachment(wAddPartnr, margin);
 		fdlAddDate.right= new FormAttachment(middle, -margin);
 		wlAddDate.setLayoutData(fdlAddDate);
 		wAddDate=new Button(wFileComp, SWT.CHECK);
  		props.setLook(wAddDate);
 		fdAddDate=new FormData();
 		fdAddDate.left = new FormAttachment(middle, 0);
-		fdAddDate.top  = new FormAttachment(wAddStepnr, margin);
+		fdAddDate.top  = new FormAttachment(wAddPartnr, margin);
 		fdAddDate.right= new FormAttachment(100, 0);
 		wAddDate.setLayoutData(fdAddDate);
 		wAddDate.addSelectionListener(new SelectionAdapter() 
@@ -686,12 +748,37 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		);
 
 
+		wlFastDump=new Label(wContentComp, SWT.RIGHT);
+		wlFastDump.setText(Messages.getString("TextFileOutputDialog.FastDump.Label"));
+ 		props.setLook(wlFastDump);
+		fdlFastDump=new FormData();
+		fdlFastDump.left = new FormAttachment(0, 0);
+		fdlFastDump.top  = new FormAttachment(wPad, margin);
+		fdlFastDump.right= new FormAttachment(middle, -margin);
+		wlFastDump.setLayoutData(fdlFastDump);
+		wFastDump=new Button(wContentComp, SWT.CHECK );
+ 		props.setLook(wFastDump);
+		fdFastDump=new FormData();
+		fdFastDump.left = new FormAttachment(middle, 0);
+		fdFastDump.top  = new FormAttachment(wPad, margin);
+		fdFastDump.right= new FormAttachment(100, 0);
+		wFastDump.setLayoutData(fdFastDump);
+		wFastDump.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+
+
 		wlSplitEvery=new Label(wContentComp, SWT.RIGHT);
 		wlSplitEvery.setText(Messages.getString("TextFileOutputDialog.SplitEvery.Label"));
  		props.setLook(wlSplitEvery);
 		fdlSplitEvery=new FormData();
 		fdlSplitEvery.left = new FormAttachment(0, 0);
-		fdlSplitEvery.top  = new FormAttachment(wPad, margin);
+		fdlSplitEvery.top  = new FormAttachment(wFastDump, margin);
 		fdlSplitEvery.right= new FormAttachment(middle, -margin);
 		wlSplitEvery.setLayoutData(fdlSplitEvery);
 		wSplitEvery=new Text(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
@@ -699,7 +786,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wSplitEvery.addModifyListener(lsMod);
 		fdSplitEvery=new FormData();
 		fdSplitEvery.left = new FormAttachment(middle, 0);
-		fdSplitEvery.top  = new FormAttachment(wPad, margin);
+		fdSplitEvery.top  = new FormAttachment(wFastDump, margin);
 		fdSplitEvery.right= new FormAttachment(100, 0);
 		wSplitEvery.setLayoutData(fdSplitEvery);
 
@@ -932,6 +1019,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	public void getData()
 	{
 		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
+		wFileIsCommand.setSelection(input.isFileAsCommand());
 		if (input.getExtension() != null) wExtension.setText(input.getExtension());
 		if (input.getSeparator() !=null) wSeparator.setText(input.getSeparator());
 		if (input.getEnclosure() !=null) wEnclosure.setText(input.getEnclosure());
@@ -949,7 +1037,9 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wAddTime.setSelection(input.isTimeInFilename());
 		wAppend.setSelection(input.isFileAppended());
 		wAddStepnr.setSelection(input.isStepNrInFilename());
+		wAddPartnr.setSelection(input.isPartNrInFilename());
 		wPad.setSelection(input.isPadded());
+		wFastDump.setSelection(input.isFastDump());
 		
 		log.logDebug(toString(), "getting fields info...");
 		
@@ -985,6 +1075,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 	private void getInfo(TextFileOutputMeta tfoi)
 	{
 		tfoi.setFileName(   wFilename.getText() );
+		tfoi.setFileAsCommand( wFileIsCommand.getSelection() );
 		tfoi.setFileFormat( wFormat.getText() );
 		tfoi.setFileCompression( wCompression.getText() );
         tfoi.setEncoding( wEncoding.getText() );
@@ -999,9 +1090,11 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		tfoi.setFooterEnabled( wFooter.getSelection() );
 		tfoi.setFileAppended( wAppend.getSelection() );
 		tfoi.setStepNrInFilename( wAddStepnr.getSelection() );
+		tfoi.setPartNrInFilename( wAddPartnr.getSelection() );
 		tfoi.setDateInFilename( wAddDate.getSelection() );
 		tfoi.setTimeInFilename( wAddTime.getSelection() );
 		tfoi.setPadded( wPad.getSelection() );
+		tfoi.setFastDump( wFastDump.getSelection() );
 
 		int i;
 		//Table table = wFields.table;

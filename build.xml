@@ -30,6 +30,8 @@
 	  <property name="api"					location="${docs}/api/"/>
 	  <property name="tips"					location="${docs}/tips/"/>
 	  <property name="web"					location="web"/>
+	  <property name="pwd"					location="pwd"/>
+	  <property name="www"					location="www"/>
 	  <property name="extra"        		location="extra"/>
 	  <property name="webstart"				location="webstart"/>
 	  <property name="keystore"				location="keystore"/>
@@ -257,6 +259,22 @@
 	  			<fileset dir="${docs}" 
 	  				     includes="**/*.pdf **/*.htm **/*.html **/*.png **/*.PNG **/*.swf **/cn_ZN.zip"
 	  			         excludes="**/*.dot **/*.doc **/*.sxw **/*.odt **/*.vpn **/*feature list*" />
+	  			</copy>
+
+	        <!-- pwd -->
+	  		<mkdir dir="${distrib}/pwd"/>
+	  		<copy todir="${distrib}/pwd">
+	  			<fileset dir="${pwd}" 
+	  				     includes="**/*.pwd"
+	  			         excludes="**/*.vpn" />
+	  			</copy>
+
+	        <!-- www -->
+	  		<mkdir dir="${distrib}/www"/>
+	  		<copy todir="${distrib}/www">
+	  			<fileset dir="${www}" 
+	  				     includes="**/*.*"
+	  			         excludes="**/*.vpn" />
 	  			</copy>
 
 	        <!-- samples -->

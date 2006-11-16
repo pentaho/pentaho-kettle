@@ -155,7 +155,7 @@ public class TableOutput extends BaseStep implements StepInterface
         }
         else
         {
-            tableName = StringUtil.environmentSubstitute( meta.getTablename() );
+            tableName = data.tableName;
         }
         
         if (tableName==null || tableName.length()==0)
@@ -253,11 +253,12 @@ public class TableOutput extends BaseStep implements StepInterface
 				
                 if (!meta.isPartitioningEnabled() && !meta.isTableNameInField())
                 {
+                	data.tableName = StringUtil.environmentSubstitute( meta.getTablename());
                     // Only the first one truncates in a non-partitioned step copy
                     //
                     if (meta.truncateTable() && ( getCopy()==0 || !Const.isEmpty(getPartitionID())) )
     				{
-    					data.db.truncateTable(StringUtil.environmentSubstitute( meta.getTablename() ));
+    					data.db.truncateTable(data.tableName);
     				}
                 }
                 

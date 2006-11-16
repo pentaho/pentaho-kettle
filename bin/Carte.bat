@@ -56,6 +56,9 @@ set CLASSPATH=%CLASSPATH%;libext\commons-lang-2.2.jar
 set CLASSPATH=%CLASSPATH%;libext\commons-dbcp-1.2.1.jar
 set CLASSPATH=%CLASSPATH%;libext\commons-pool-1.3.jar
 set CLASSPATH=%CLASSPATH%;libext\nzjdbc.jar
+set CLASSPATH=%CLASSPATH%;libext\javax.servlet.jar
+set CLASSPATH=%CLASSPATH%;libext\org.mortbay.jetty.jar
+set CLASSPATH=%CLASSPATH%;libext\commons-fileupload-1.0.jar
 
 REM ******************************************************************
 REM ** Set java runtime options                                     **

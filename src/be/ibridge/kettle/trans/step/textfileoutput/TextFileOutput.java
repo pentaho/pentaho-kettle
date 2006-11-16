@@ -16,20 +16,23 @@
 
 package be.ibridge.kettle.trans.step.textfileoutput;
 
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.util.zip.GZIPOutputStream;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
-import java.util.zip.GZIPOutputStream;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.exception.KettleFileException;
+import be.ibridge.kettle.core.util.EnvUtil;
+import be.ibridge.kettle.core.util.StreamLogger;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -38,7 +41,6 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
-
 
 /**
  * Converts input rows to text and then writes this text to one or more files.
@@ -461,7 +463,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	{
 		try
 		{
-			String str = formatField(v, idx);
+			String str = meta.isFastDump() ? v.getString() : formatField(v, idx);
             if (str!=null) data.writer.write(str.toCharArray());
 		}
 		catch(Exception e)
@@ -569,7 +571,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
 
 	public String buildFilename(boolean ziparchive)
 	{
-		return meta.buildFilename(getCopy(), data.splitnr, ziparchive);
+		return meta.buildFilename(getCopy(), getPartitionID(), data.splitnr, ziparchive);
 	}
 	
 	public boolean openNewFile()
@@ -579,55 +581,97 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		
 		try
 		{
-            String filename = buildFilename(true);
-			File file = new File(filename);
-
-			// Add this to the result file names...
-			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
-			resultFile.setComment("This file was created with a text file output step");
-            addResultFile(resultFile);
-
-            OutputStream outputStream;
-            log.logBasic(toString(), "Compression is |" + meta.getFileCompression() + "|");
-			if (meta.getFileCompression().equals("Zip"))
-			{
-	            log.logBasic(toString(), "Opening output stream in zipped mode");
-				FileOutputStream fos = new FileOutputStream(file, meta.isFileAppended());
-				data.zip = new ZipOutputStream(fos);
-				File entry = new File(buildFilename(false));
-				ZipEntry zipentry = new ZipEntry(entry.getName());
-				zipentry.setComment("Compressed by Kettle");
-				data.zip.putNextEntry(zipentry);
-				outputStream=data.zip;
-			}
-			else if (meta.getFileCompression().equals("GZip"))
-			{
-	            log.logBasic(toString(), "Opening output stream in gzipped mode");
-				FileOutputStream fos = new FileOutputStream(file, meta.isFileAppended());
-				data.gzip = new GZIPOutputStream(fos);
-				outputStream=data.gzip;
-			}
-			else
-			{
-	            log.logBasic(toString(), "Compression is " + meta.getFileCompression());
-	            log.logBasic(toString(), "Opening output stream in nocompress mode");
-				FileOutputStream fos=new FileOutputStream(file, meta.isFileAppended());
-				outputStream=fos;
-			}
-            if (meta.getEncoding()!=null && meta.getEncoding().length()>0)
+            if (meta.isFileAsCommand())
             {
-                log.logBasic(toString(), "Opening output stream in encoding: "+meta.getEncoding());
-                data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 100000), meta.getEncoding());
+            	logDebug("Spawning external process");
+            	if (data.cmdProc != null)
+            	{
+            		logError("Previous command not correctly terminated");
+            		setErrors(1);
+            	}
+            	String cmdstr = StringUtil.environmentSubstitute(meta.getFileName());
+            	if (Const.getOS().equals("Windows 95"))
+                {
+            		cmdstr = "command.com /C " + cmdstr;
+                }
+            	else
+                {
+                    if (Const.getOS().startsWith("Windows"))
+                    {
+                        cmdstr = "cmd.exe /C " + cmdstr;
+                    }
+                }
+            	logDetailed("Starting: " + cmdstr);
+            	Runtime r = Runtime.getRuntime();
+            	data.cmdProc = r.exec(cmdstr, EnvUtil.getEnvironmentVariablesForRuntimeExec());
+            	data.writer = new OutputStreamWriter(data.cmdProc.getOutputStream());
+            	StreamLogger stdoutLogger = new StreamLogger(
+            			data.cmdProc.getInputStream(), "(stdout)");
+            	StreamLogger stderrLogger = new StreamLogger(
+            			data.cmdProc.getErrorStream(), "(stderr)");
+            	new Thread(stdoutLogger).start();
+            	new Thread(stderrLogger).start();
+            	retval = true;
             }
             else
             {
-                log.logBasic(toString(), "Opening output stream in default encoding");
-                data.writer = new OutputStreamWriter(outputStream);
+                String filename = buildFilename(true);
+                File file = new File(filename);
+
+				// Add this to the result file names...
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
+				resultFile.setComment("This file was created with a text file output step");
+	            addResultFile(resultFile);
+	
+	            OutputStream outputStream;
+                
+                if (!Const.isEmpty(meta.getFileCompression()))
+                {
+    				if (meta.getFileCompression().equals("Zip"))
+    				{
+    		            log.logDetailed(toString(), "Opening output stream in zipped mode");
+    					FileOutputStream fos = new FileOutputStream(file, meta.isFileAppended());
+    					data.zip = new ZipOutputStream(fos);
+    					File entry = new File(buildFilename(false));
+    					ZipEntry zipentry = new ZipEntry(entry.getName());
+    					zipentry.setComment("Compressed by Kettle");
+    					data.zip.putNextEntry(zipentry);
+    					outputStream=data.zip;
+    				}
+    				else if (meta.getFileCompression().equals("GZip"))
+    				{
+    		            log.logDetailed(toString(), "Opening output stream in gzipped mode");
+    					FileOutputStream fos = new FileOutputStream(file, meta.isFileAppended());
+    					data.gzip = new GZIPOutputStream(fos);
+    					outputStream=data.gzip;
+    				}
+                    else
+                    {
+                        throw new KettleFileException("No compression method specified!");
+                    }
+                }
+				else
+				{
+		            log.logDetailed(toString(), "Opening output stream in nocompress mode");
+					FileOutputStream fos=new FileOutputStream(file, meta.isFileAppended());
+					outputStream=fos;
+				}
+                
+	            if (!Const.isEmpty(meta.getEncoding()))
+	            {
+	                log.logBasic(toString(), "Opening output stream in encoding: "+meta.getEncoding());
+	                data.writer = new OutputStreamWriter(outputStream, meta.getEncoding());
+	            }
+	            else
+	            {
+	                log.logBasic(toString(), "Opening output stream in default encoding");
+	                data.writer = new OutputStreamWriter(outputStream);
+	            }
+	
+	            logDetailed("Opened new file with name ["+filename+"]");
+				
+				retval=true;
             }
-            
-            logDetailed("Opened new file with name ["+filename+"]");
-						
-			retval=true;
 		}
 		catch(Exception e)
 		{
@@ -646,18 +690,32 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		
 		try
 		{
+			logDebug("Closing output stream");
 			data.writer.close();
-			if (meta.getFileCompression() == "Zip")
+			logDebug("Closed output stream");
+			data.writer = null;
+			if (data.cmdProc != null)
 			{
-				//System.out.println("close zip entry ");
-				data.zip.closeEntry();
-				//System.out.println("finish file...");
-				data.zip.finish();
-				data.zip.close();
+				logDebug("Ending running external command");
+				int procStatus = data.cmdProc.waitFor();
+				data.cmdProc = null;
+				logBasic("Command exit status: " + procStatus);
 			}
-			if (meta.getFileCompression() == "GZip")
+			else
 			{
-				data.gzip.finish();
+				logDebug("Closing normal file ..");
+				if (meta.getFileCompression() == "Zip")
+				{
+					//System.out.println("close zip entry ");
+					data.zip.closeEntry();
+					//System.out.println("finish file...");
+					data.zip.finish();
+					data.zip.close();
+				}
+				if (meta.getFileCompression() == "GZip")
+				{
+					data.gzip.finish();
+				}
 			}
 			//System.out.println("Closed file...");
 
@@ -665,6 +723,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		}
 		catch(Exception e)
 		{
+			logError("Excpetion trying to close file: " + e.toString());
+			setErrors(1);
+			retval = false;
 		}
 
 		return retval;

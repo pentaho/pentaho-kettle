@@ -33,6 +33,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.core.logging.Log4jFileAppender;
 import be.ibridge.kettle.core.util.EnvUtil;
+import be.ibridge.kettle.core.util.StreamLogger;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;

@@ -512,12 +512,22 @@ public class XMLHandler
 		return retval;
 	}
 
+    /**
+     * Load a file into an XML document
+     * @param filename The filename to load into a document
+     * @return the Document if all went well, null if an error occured!
+     */
+    public static final Document loadXMLFile(String filename) throws KettleXMLException
+    {
+        return loadXMLFile(new File(filename));
+    }
+    
 	/**
 	 * Load a file into an XML document
-	 * @param filename The filename to load into a document
+	 * @param file The file to load into a document
 	 * @return the Document if all went well, null if an error occured!
 	 */
-	public static final Document loadXMLFile(String filename) throws KettleXMLException
+	public static final Document loadXMLFile(File file) throws KettleXMLException
 	{
 	    LogWriter log = LogWriter.getInstance();
 
@@ -532,11 +542,11 @@ public class XMLHandler
 			db   = dbf.newDocumentBuilder();
 			try
 			{
-				doc  = db.parse(new File(filename));
+				doc  = db.parse(file);
 			}
 			catch(FileNotFoundException ef)
 			{
-				log.logError(getString(), "Error opening file: "+filename+" : "+ef.toString());
+				log.logError(getString(), "Error opening file: "+file.getAbsolutePath()+" : "+ef.toString());
 				return null;
 			}
 				

@@ -424,6 +424,8 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
                 {
                     log.logDetailed(toString(), "Start sending content of file ["+uploadFilename+"] to server.");
                     
+                    connection.setDoOutput(true);
+                    
                     // Grab an output stream to upload data to web server
                     uploadStream = connection.getOutputStream();
                     
@@ -499,14 +501,14 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
                     result.setNrErrors(1);
                 }
 
+                // Set the proxy settings back as they were on the system!
+                System.setProperty("http.proxyHost", Const.NVL(beforeProxyHost, ""));
+                System.setProperty("http.proxyPort", Const.NVL(beforeProxyPort, ""));
+                System.setProperty("http.nonProxyHosts", Const.NVL(beforeNonProxyHosts, ""));
             }
 
         }
         
-        // Set the proxy settings back as they were on the system!
-        System.setProperty("http.proxyHost", Const.NVL(beforeProxyHost, ""));
-        System.setProperty("http.proxyPort", Const.NVL(beforeProxyPort, ""));
-        System.setProperty("http.nonProxyHosts", Const.NVL(beforeNonProxyHosts, ""));
 		
 		return result;
 	}    
