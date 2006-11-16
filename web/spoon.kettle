@@ -56,7 +56,7 @@
   <jar href="libext/nzjdbc.jar"/>
   <jar href="libext/jackcess-1.1.5.jar"/>
   <jar href="libext/unijdbc.jar"/>
-  <jar href="libext/asjava_p.zip"/>
+  <jar href="libext/asjava.zip"/>
 
   <jar href="libswt/jface.jar"/>
   <jar href="libswt/runtime.jar"/>

@@ -62,7 +62,7 @@ set CLASSPATH=%CLASSPATH%;libext\commons-fileupload-1.0.jar
 set CLASSPATH=%CLASSPATH%;libext\commons-httpclient-3.0.1.jar
 set CLASSPATH=%CLASSPATH%;libext\commons-codec-1.3.jar
 set CLASSPATH=%CLASSPATH%;libext\unijdbc.jar
-set CLASSPATH=%CLASSPATH%;libext\asjava_p.zip
+set CLASSPATH=%CLASSPATH%;libext\asjava.zip
 
 REM ******************************************************************
 REM ** Set java runtime options                                     **

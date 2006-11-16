@@ -252,6 +252,6 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
     public String[] getUsedLibraries()
     {
-        return new String[] { "unijdbc.jar", "asjava_p.zip" };
+        return new String[] { "unijdbc.jar", "asjava.zip" };
     }
 }

@@ -1388,7 +1388,8 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	{
 		// DB2 Can't handle \n in SQL Statements...
 		if (getDatabaseType() == DatabaseMeta.TYPE_DATABASE_DB2 ||
-			getDatabaseType() == DatabaseMeta.TYPE_DATABASE_CACHE
+			getDatabaseType() == DatabaseMeta.TYPE_DATABASE_CACHE ||
+            getDatabaseType() == DatabaseMeta.TYPE_DATABASE_UNIVERSE
 		   )
 		{
 			// Remove CR's

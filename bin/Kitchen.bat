@@ -63,7 +63,7 @@ set CLASSPATH=%CLASSPATH%;libext\commons-lang-2.2.jar
 set CLASSPATH=%CLASSPATH%;libext\commons-dbcp-1.2.1.jar
 set CLASSPATH=%CLASSPATH%;libext\nzjdbc.jar
 set CLASSPATH=%CLASSPATH%;libext\unijdbc.jar
-set CLASSPATH=%CLASSPATH%;libext\asjava_p.zip
+set CLASSPATH=%CLASSPATH%;libext\asjava.zip
 
 REM *****************
 REM   SWT Libraries
