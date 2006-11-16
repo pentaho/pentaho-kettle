@@ -3,6 +3,7 @@ package be.ibridge.kettle.www;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.TransPreviewFactory;
@@ -20,10 +21,16 @@ public class Carte
         new WebServer(map);
     }
 
-    private static void init()
+    private static void init() throws Exception
     {
         EnvUtil.environmentInit();
         LogWriter.getInstance( LogWriter.LOG_LEVEL_BASIC );
+        
+        StepLoader stepLoader = StepLoader.getInstance();
+        if (!stepLoader.read())
+        {
+            throw new Exception("Unable to load steps & plugins");
+        }
     }
     
     private static Trans generateTestTransformation()

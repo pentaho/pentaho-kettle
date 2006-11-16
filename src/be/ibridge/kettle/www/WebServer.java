@@ -1,29 +1,35 @@
 package be.ibridge.kettle.www;
 
+import interbase.interclient.UnknownHostException;
+
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 import java.net.SocketException;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.List;
 
-import org.mortbay.http.HashUserRealm;
-import org.mortbay.http.HttpContext;
-import org.mortbay.http.HttpListener;
-import org.mortbay.http.SecurityConstraint;
-import org.mortbay.http.SocketListener;
-import org.mortbay.http.handler.SecurityHandler;
+import org.mortbay.jetty.Connector;
+import org.mortbay.jetty.Handler;
 import org.mortbay.jetty.Server;
-import org.mortbay.util.InetAddrPort;
+import org.mortbay.jetty.bio.SocketConnector;
+import org.mortbay.jetty.handler.ContextHandler;
+import org.mortbay.jetty.security.Constraint;
+import org.mortbay.jetty.security.ConstraintMapping;
+import org.mortbay.jetty.security.HashUserRealm;
+import org.mortbay.jetty.security.SecurityHandler;
+import org.mortbay.jetty.servlet.ServletHandler;
+import org.mortbay.jetty.servlet.ServletHolder;
 
 import be.ibridge.kettle.core.LogWriter;
 
 public class WebServer
 {
     private static LogWriter log = LogWriter.getInstance();
+    
     public  static final int PORT = 80;
 
     private Server             server;
-    private SecurityConstraint securityConstraint;
     private HashUserRealm      userRealm;
     
     private TransformationMap  transformationMap;
@@ -31,7 +37,6 @@ public class WebServer
     public WebServer(TransformationMap transformationMap) throws Exception
     {
         this.transformationMap = transformationMap;
-        this.securityConstraint = new SecurityConstraint();
         userRealm = new HashUserRealm("Kettle", "pwd/kettle.pwd");
 
         startServer();
@@ -45,72 +50,117 @@ public class WebServer
     public void startServer() throws Exception
     {
         server = new Server();
-        createListeners();
 
-        addRootContext();
-        addStatusContext();
-        addTransStatusContext();
-        addStartTransContext();
-        addStopTransContext();
+        server.addUserRealm(userRealm);
+
+        Constraint constraint = new Constraint();
+        constraint.setName(Constraint.__BASIC_AUTH);;
+        constraint.setRoles(new String[] { Constraint.ANY_ROLE });
+        constraint.setAuthenticate(true);
+        
+        ConstraintMapping constraintMapping = new ConstraintMapping();
+        constraintMapping.setConstraint(constraint);
+        constraintMapping.setPathSpec("/*");
+
+        SecurityHandler securityHandler = new SecurityHandler();
+        securityHandler.setUserRealm(userRealm);
+        securityHandler.setConstraintMappings(new ConstraintMapping[]{constraintMapping});
+        
+
+        ServletHandler servletHandler = new ServletHandler();
+        servletHandler.addServletWithMapping(new ServletHolder(new AddTransServlet(transformationMap)), AddTransServlet.CONTEXT_PATH);
+        server.setHandlers(
+                new Handler[] 
+                { 
+                        getRootContext(securityHandler),
+                        getStatusContext(securityHandler),
+                        getTransStatusContext(securityHandler),
+                        getStartTransContext(securityHandler),
+                        getStopTransContext(securityHandler),
+                        getUploadTransPageContext(securityHandler),
+                        getUploadTransContext(securityHandler),
+                        
+                        getAddTransContext(securityHandler), 
+                }
+        );
+        
+        createListeners();
         
         server.start();
+        server.join();
     }
 
-    private void addRootContext()
+    private Handler getRootContext(SecurityHandler securityHandler)
     {
-        HttpContext rootContext = new HttpContext();
-        rootContext.setContextPath("/");
-        rootContext.addHandler(new RootHandler());
-        rootContext.setResourceBase("./www/");
-        server.addContext(rootContext);
+        ContextHandler handler = createContext(GetRootHandler.CONTEXT_PATH, securityHandler);
+        handler.setContextPath("/");
+        handler.addHandler(new GetRootHandler());
+        return handler;
     }
 
-    private void addStatusContext()
+    private Handler getStatusContext(SecurityHandler securityHandler)
     {
-        HttpContext getStatusContext = createContext("/kettle/status");
-        getStatusContext.addHandler(new GetStatusHandler(transformationMap));
-        server.addContext(getStatusContext);
+        ContextHandler handler = createContext(GetStatusHandler.CONTEXT_PATH, securityHandler);
+        handler.addHandler(new GetStatusHandler(transformationMap));
+        return handler;
     }
 
-    private void addTransStatusContext()
+    private Handler getTransStatusContext(SecurityHandler securityHandler)
     {
-        HttpContext getTransStatusContext = createContext("/kettle/transStatus");
-        getTransStatusContext.addHandler(new GetTransStatusHandler(transformationMap));
-        server.addContext(getTransStatusContext);
+        ContextHandler handler = createContext(GetTransStatusHandler.CONTEXT_PATH, securityHandler);
+        handler.addHandler(new GetTransStatusHandler(transformationMap));
+        return handler;
     }
     
-    private void addStartTransContext()
+    private Handler getStartTransContext(SecurityHandler securityHandler)
     {
-        HttpContext startTransContext = createContext("/kettle/startTrans");
-        startTransContext.addHandler(new StartTransHandler(transformationMap));
-        server.addContext(startTransContext);
+        ContextHandler handler = createContext(StartTransHandler.CONTEXT_PATH, securityHandler);
+        handler.addHandler(new StartTransHandler(transformationMap));
+        return handler;
     }
     
-    private void addStopTransContext()
+    private Handler getStopTransContext(SecurityHandler securityHandler)
     {
-        HttpContext stopTransContext = createContext("/kettle/stopTrans");
-        stopTransContext.addHandler(new StopTransHandler(transformationMap));
-        server.addContext(stopTransContext);
-    }
-
-    private HttpContext createContext(final String contextPath)
-    {
-        final HttpContext httpContext = new HttpContext(server, contextPath);
-        httpContext.setRealm(userRealm);
-        httpContext.addHandler(new SecurityHandler());
-        addSecurityConstraint(httpContext);
-        return httpContext;
-    }
-
-    private void addSecurityConstraint(final HttpContext httpContext)
-    {
-        securityConstraint.setAuthenticate(true);
-        securityConstraint.addRole(SecurityConstraint.ANY_ROLE);
-        httpContext.addSecurityConstraint("*", securityConstraint);
+        ContextHandler handler = createContext(StopTransHandler.CONTEXT_PATH, securityHandler);
+        handler.addHandler(new StopTransHandler(transformationMap));
+        return handler;
     }
     
-    private void createListeners() throws UnknownHostException {
-        try {
+    private Handler getAddTransContext(SecurityHandler securityHandler)
+    {
+        ServletHandler handler=new ServletHandler();
+        handler.addServletWithMapping(new ServletHolder(new AddTransServlet(transformationMap)), AddTransServlet.CONTEXT_PATH);
+        return handler;
+    }
+    
+    private Handler getUploadTransPageContext(SecurityHandler securityHandler) throws Exception
+    {
+        ContextHandler handler = createContext(UploadTransPageHandler.CONTEXT_PATH, securityHandler);
+        handler.addHandler(new UploadTransPageHandler(UploadTransHandler.CONTEXT_PATH));
+        return handler;
+    }
+        
+    private Handler getUploadTransContext(SecurityHandler securityHandler) throws Exception
+    {
+        ContextHandler handler = createContext(UploadTransHandler.CONTEXT_PATH, securityHandler);
+        handler.addHandler(new UploadTransHandler(transformationMap));
+        return handler;
+    }
+
+
+    private ContextHandler createContext(final String contextPath, SecurityHandler securityHandler)
+    {
+        ContextHandler contextHandler = new ContextHandler(server, contextPath);
+        // contextHandler.addHandler(securityHandler);
+        return contextHandler;
+    }
+    
+    private void createListeners() throws UnknownHostException 
+    {
+        try 
+        {
+            List connectors = new ArrayList();
+            
             Enumeration e = NetworkInterface.getNetworkInterfaces();
             while (e.hasMoreElements()) 
             {
@@ -121,25 +171,24 @@ public class WebServer
                 while (ip.hasMoreElements())
                 {
                     InetAddress inetAddress = (InetAddress) ip.nextElement();
-                    server.addListener(createListener(nwiName, inetAddress));
+            
+                    SocketConnector connector = new SocketConnector();
+                    connector.setPort(PORT);
+                    connector.setHost(inetAddress.getHostAddress());
+                    connector.setName("Kettle HTTP listener for ["+inetAddress.getHostAddress()+"]");
+                    log.logBasic(toString(), "Created listener for webserver @ address : " + inetAddress.getHostAddress() + " on " + nwiName);
+
+                    connectors.add(connector);
                 }
             }
+            
+            server.setConnectors( (Connector[])connectors.toArray(new Connector[connectors.size()]) );
         } 
         catch (SocketException e) 
         {
-            throw new RuntimeException("Unable to determine IP address of ppp0 network interface", e);
+            throw new RuntimeException("Unable to determine IP address of network interface", e);
         }
-    }
-    
-    private HttpListener createListener(String nwiName, InetAddress in) throws UnknownHostException {
-        SocketListener httpListener = new SocketListener(new InetAddrPort(in, PORT));
-        httpListener.setMinThreads(2);
-        httpListener.setMaxThreads(5);
-        httpListener.setMaxIdleTimeMs(0);
-        httpListener.setName("Kettle HTTP listeners");
-        log.logBasic(toString(), "Created listener for webserver @ address : " + in + " on " + nwiName);
-
-        return httpListener;
     }
 
 }
+

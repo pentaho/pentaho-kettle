@@ -5,10 +5,14 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import org.mortbay.http.HttpException;
-import org.mortbay.http.HttpRequest;
-import org.mortbay.http.HttpResponse;
-import org.mortbay.http.handler.AbstractHttpHandler;
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.mortbay.jetty.HttpConnection;
+import org.mortbay.jetty.Request;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -17,27 +21,40 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 
-public class AddTransHandler extends AbstractHttpHandler
+public class AddTransServlet extends HttpServlet
 {
     private static final long serialVersionUID = -6850701762586992604L;
     private static LogWriter log = LogWriter.getInstance();
+    
+    public static final String CONTEXT_PATH = "/kettle/addTrans";
+    
     private TransformationMap transformationMap;
     
-    public AddTransHandler(TransformationMap transformationMap)
+    public AddTransServlet(TransformationMap transformationMap)
     {
         this.transformationMap = transformationMap;
     }
-
-    public void handle(String pathInContext, String pathParams, HttpRequest request, HttpResponse response) throws HttpException, IOException
+    
+    public void init(ServletConfig servletConfig) throws ServletException
     {
-        if (!isStarted()) return;
+        super.init(servletConfig);
+    }
+    
+    public void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        doPost(request, response);
+    }
+    
+    public void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException
+    {
+        if (!request.getServletPath().equals(CONTEXT_PATH)) return;
 
         if (log.isDebug()) log.logDebug(toString(), "Addition of transformation requested");
 
         response.setContentType("text/html");
 
         OutputStream os = response.getOutputStream(); // to write to the browser/client
-        InputStream is = response.getInputStream(); // read from the client
+        InputStream is = request.getInputStream(); // read from the client
         
         PrintStream out = new PrintStream(os);
 
@@ -50,7 +67,10 @@ public class AddTransHandler extends AbstractHttpHandler
             // First read the complete transformation in memory from the inputStream
             int c;
             StringBuffer xml = new StringBuffer();
-            while ( (c=is.read())!=-1) xml.append((char)c);
+            while ( (c=is.read())!=-1)
+            {
+                xml.append((char)c);
+            }
             
             // Parse the XML, create a transformation
             //
@@ -80,11 +100,13 @@ public class AddTransHandler extends AbstractHttpHandler
 
         out.flush();
 
-        request.setHandled(true);
+        Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
+        baseRequest.setHandled(true);
     }
-
+    
     public String toString()
     {
-        return "Status Handler";
+        return "Add Transformation";
     }
+
 }

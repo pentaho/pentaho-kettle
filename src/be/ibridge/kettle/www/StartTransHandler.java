@@ -4,18 +4,22 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 
-import org.mortbay.http.HttpException;
-import org.mortbay.http.HttpRequest;
-import org.mortbay.http.HttpResponse;
-import org.mortbay.http.handler.AbstractHttpHandler;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.mortbay.jetty.HttpConnection;
+import org.mortbay.jetty.Request;
+import org.mortbay.jetty.handler.AbstractHandler;
 
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.trans.Trans;
 
-public class StartTransHandler extends AbstractHttpHandler
+public class StartTransHandler extends AbstractHandler
 {
     private static final long serialVersionUID = 3634806745372015720L;
+    public static final String CONTEXT_PATH = "/kettle/startTrans";
     private static LogWriter log = LogWriter.getInstance();
     private TransformationMap transformationMap;
     
@@ -24,8 +28,9 @@ public class StartTransHandler extends AbstractHttpHandler
         this.transformationMap = transformationMap;
     }
 
-    public void handle(String pathInContext, String pathParams, HttpRequest request, HttpResponse response) throws HttpException, IOException
+    public void handle(String target, HttpServletRequest request, HttpServletResponse response, int dispatch) throws IOException, ServletException
     {
+        if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         if (!isStarted()) return;
 
         if (log.isDebug()) log.logDebug(toString(), "Start of transformation requested");
@@ -74,11 +79,12 @@ public class StartTransHandler extends AbstractHttpHandler
 
         out.flush();
 
-        request.setHandled(true);
+        Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
+        baseRequest.setHandled(true);
     }
 
     public String toString()
     {
-        return "Status Handler";
+        return "Start transformation";
     }
 }
