@@ -16,7 +16,7 @@ import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Rectangle;
-import be.ibridge.kettle.trans.PartitionSchema;
+import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.trans.TransHopMeta;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.StepMeta;

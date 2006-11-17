@@ -247,6 +247,9 @@ public class DatabaseMeta implements Cloneable, XMLInterface
      */
     public static final String EMPTY_OPTIONS_STRING = "><EMPTY><";
     
+    /** The word that is put before a password to indicate an encrypted form.  If this word is not present, the password is considered to be NOT encrypted */
+    public  static final String PASSWORD_ENCRYPTED_PREFIX = "Encrypted ";
+    
 	/**
 	 * Construct a new database connections.  Note that not all these parameters are not allways mandatory.
 	 * 
@@ -923,7 +926,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         StringUtil.getUsedVariables(getPassword(), varList, true);
         if (varList.size()==0)
         {
-            encrPassword = "Encrypted "+Encr.encryptPassword(getPassword());
+            encrPassword = PASSWORD_ENCRYPTED_PREFIX+Encr.encryptPassword(getPassword());
         }
         else
         {

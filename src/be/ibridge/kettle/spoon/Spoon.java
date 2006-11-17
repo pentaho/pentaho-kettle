@@ -73,7 +73,9 @@ import org.eclipse.swt.widgets.TreeItem;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
-import be.ibridge.kettle.cluster.dialog.SlaveServerDialog;
+import be.ibridge.kettle.cluster.ClusterSchema;
+import be.ibridge.kettle.cluster.SlaveServer;
+import be.ibridge.kettle.cluster.dialog.ClusterSchemaDialog;
 import be.ibridge.kettle.core.AddUndoPositionInterface;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
@@ -118,6 +120,8 @@ import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.core.wizards.createdatabase.CreateDatabaseWizard;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.pan.CommandLineOption;
+import be.ibridge.kettle.partition.PartitionSchema;
+import be.ibridge.kettle.partition.dialog.PartitionSchemaDialog;
 import be.ibridge.kettle.pkg.JarfileGenerator;
 import be.ibridge.kettle.repository.PermissionMeta;
 import be.ibridge.kettle.repository.RepositoriesMeta;
@@ -137,7 +141,6 @@ import be.ibridge.kettle.spoon.dialog.TipsDialog;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage1;
 import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage2;
 import be.ibridge.kettle.trans.DatabaseImpact;
-import be.ibridge.kettle.trans.PartitionSchema;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
 import be.ibridge.kettle.trans.TransHopMeta;
@@ -155,6 +158,7 @@ import be.ibridge.kettle.trans.step.selectvalues.SelectValuesMeta;
 import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
 import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
 import be.ibridge.kettle.version.BuildVersion;
+import be.ibridge.kettle.www.AddTransServlet;
 
 /**
  * This class handles the main window of the Spoon graphical transformation editor.
@@ -230,6 +234,8 @@ public class Spoon implements AddUndoPositionInterface
     public static final String STRING_CONNECTIONS = Messages.getString("Spoon.STRING_CONNECTIONS"); //"Connections";
     public static final String STRING_STEPS       = Messages.getString("Spoon.STRING_STEPS"); //"Steps";
     public static final String STRING_HOPS        = Messages.getString("Spoon.STRING_HOPS"); //"Hops";
+    public static final String STRING_PARTITIONS  = Messages.getString("Spoon.STRING_PARTITIONS"); //"Database Partition schemas";
+    public static final String STRING_CLUSTERS    = Messages.getString("Spoon.STRING_CLUSTERS"); //"Cluster Schemas";
     public static final String STRING_BASE        = Messages.getString("Spoon.STRING_BASE"); //"Base step types";
     public static final String STRING_PLUGIN      = Messages.getString("Spoon.STRING_PLUGIN"); //"Plugin step types";
     public static final String STRING_HISTORY     = Messages.getString("Spoon.STRING_HISTORY"); //"Step creation history";
@@ -248,6 +254,10 @@ public class Spoon implements AddUndoPositionInterface
     private SashForm leftSash;
 
     private MenuItem miWizardCopyTable;
+
+    private TreeItem tiPart;
+
+    private TreeItem tiClus;
 
         
     public Spoon(LogWriter l, Repository rep)
@@ -1149,8 +1159,10 @@ public class Spoon implements AddUndoPositionInterface
         TreeMemory.addTreeListener(selectionTree, STRING_SPOON_MAIN_TREE);
         
         tiConn   = new TreeItem(selectionTree, SWT.NONE); tiConn.setText(STRING_CONNECTIONS);
+        tiPart   = new TreeItem(selectionTree, SWT.NONE); tiPart.setText(STRING_PARTITIONS);
         tiStep   = new TreeItem(selectionTree, SWT.NONE); tiStep.setText(STRING_STEPS);
         tiHops   = new TreeItem(selectionTree, SWT.NONE); tiHops.setText(STRING_HOPS);
+        tiClus   = new TreeItem(selectionTree, SWT.NONE); tiHops.setText(STRING_CLUSTERS);
         tiBase   = new TreeItem(selectionTree, SWT.NONE); tiBase.setText(STRING_BASE);
         tiPlug   = new TreeItem(selectionTree, SWT.NONE); tiPlug.setText(STRING_PLUGIN);
         
@@ -1378,60 +1390,57 @@ public class Spoon implements AddUndoPositionInterface
     
     private void setMenu(SelectionEvent e)
     {
-        TreeItem ti = (TreeItem)e.item;
-        String strti = ti.getText();
-        Tree root = ti.getParent();
+        TreeItem treeItem = (TreeItem)e.item;
+        String treeItemText = treeItem.getText();
+        Tree rootItem = treeItem.getParent();
         
-        log.logDebug(toString(), Messages.getString("Spoon.Log.ClickedOn") +ti.getText());//Clicked on  
-        TreeItem sel[] = root.getSelection();
+        log.logDebug(toString(), Messages.getString("Spoon.Log.ClickedOn") +treeItem.getText());//Clicked on  
+        TreeItem sel[] = rootItem.getSelection();
 
         Menu mCSH = new Menu(shell, SWT.POP_UP);
 
         // Find the level we clicked on: Top level (only NEW in the menu) or below (edit, insert, ...)
-        TreeItem parent = ti.getParentItem();
+        TreeItem parent = treeItem.getParentItem();
         if (parent==null) // Top level
         {
-            if (!strti.equalsIgnoreCase(STRING_BASE) && !strti.equalsIgnoreCase(STRING_PLUGIN))
+            if (!treeItemText.equalsIgnoreCase(STRING_BASE) && 
+                !treeItemText.equalsIgnoreCase(STRING_PLUGIN) && 
+                !treeItemText.equalsIgnoreCase(STRING_PARTITIONS) && 
+                !treeItemText.equalsIgnoreCase(STRING_CLUSTERS) 
+               )
             {
                 MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE.New"));//"New"
                 miNew.addListener( SWT.Selection, lsNew );
             }
-            if (strti.equalsIgnoreCase(STRING_STEPS))
+            if (treeItemText.equalsIgnoreCase(STRING_STEPS))
             {
                 MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.STEPS.SortSteps"));//Sort steps
-                miNew.addSelectionListener( new SelectionAdapter()
-                {
-                    public void widgetSelected(SelectionEvent arg0)
-                    {
-                        transMeta.sortSteps();
-                        refreshTree(true);
-                    }
-                });
+                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { transMeta.sortSteps(); refreshTree(true); } });
             }
-            if (strti.equalsIgnoreCase(STRING_HOPS))
+            if (treeItemText.equalsIgnoreCase(STRING_HOPS))
             {
                 MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.HOPS.SortHops"));//Sort hops
-                miNew.addSelectionListener( new SelectionAdapter()
-                {
-                    public void widgetSelected(SelectionEvent arg0)
-                    {
-                        transMeta.sortHops();
-                        refreshTree(true);
-                    }
-                });
+                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { transMeta.sortHops(); refreshTree(true); } });
             }
-            if (strti.equalsIgnoreCase(STRING_CONNECTIONS))
+            if (treeItemText.equalsIgnoreCase(STRING_CONNECTIONS))
             {
                 MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.NewConnectionWizard"));//New Connection Wizard
-                miNew.addSelectionListener( new SelectionAdapter()
-                {
-                    public void widgetSelected(SelectionEvent arg0)
-                    {
-                        createDatabaseWizard();
-                    }
-                } );
+                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { createDatabaseWizard(); } } );
+                
                 MenuItem miCache  = new MenuItem(mCSH, SWT.PUSH); miCache.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCacheComplete"));//Clear complete DB Cache
                 miCache.addListener( SWT.Selection, lsCache );
+            }
+            if (treeItemText.equalsIgnoreCase(STRING_PARTITIONS))
+            {
+                MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); 
+                miNew.setText(Messages.getString("Spoon.Menu.Popup.PARTITIONS.New"));//new database partitioning schema
+                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { newDatabasePartitioningSchema(); } });
+            }
+            if (treeItemText.equalsIgnoreCase(STRING_CLUSTERS))
+            {
+                MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); 
+                miNew.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.New"));//New clustering schema
+                miNew.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { newClusteringSchema(); } } );
             }
         }
         else
@@ -1446,11 +1455,11 @@ public class Spoon implements AddUndoPositionInterface
                 MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Delete"));//Delete
                 new MenuItem(mCSH, SWT.SEPARATOR);
                 MenuItem miSQL  = new MenuItem(mCSH, SWT.PUSH); miSQL.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.SQLEditor"));//SQL Editor
-                MenuItem miCache= new MenuItem(mCSH, SWT.PUSH); miCache.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCache")+ti.getText());//Clear DB Cache of 
+                MenuItem miCache= new MenuItem(mCSH, SWT.PUSH); miCache.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCache")+treeItem.getText());//Clear DB Cache of 
                 new MenuItem(mCSH, SWT.SEPARATOR);
                 MenuItem miExpl = new MenuItem(mCSH, SWT.PUSH); miExpl.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Explore"));//Explore
                 // disable for now if the connection is an SAP R/3 type of database...
-                DatabaseMeta dbMeta = transMeta.findDatabase(strti);
+                DatabaseMeta dbMeta = transMeta.findDatabase(treeItemText);
                 if (dbMeta==null || dbMeta.getDatabaseType()==DatabaseMeta.TYPE_DATABASE_SAPR3) miExpl.setEnabled(false);
                 
                 miNew.addListener( SWT.Selection, lsNew );   
@@ -1498,7 +1507,7 @@ public class Spoon implements AddUndoPositionInterface
         }
         selectionTree.setMenu(mCSH);
     }
-    
+
     private void addTabs()
     {
         if (tabComp!=null)
@@ -3019,7 +3028,7 @@ public class Spoon implements AddUndoPositionInterface
         if (!transMeta.hasChanged() && !complete) return;  // Nothing changed: nothing to do!
         
         int idx;
-        TreeItem ti[];
+        TreeItem treeItems[];
         
         // Refresh the connections...
         //
@@ -3027,24 +3036,24 @@ public class Spoon implements AddUndoPositionInterface
         {
             tiConn.setText(STRING_CONNECTIONS);
             // TreeItem tiConn= this.tiConn (TreeItem)widgets.getWidget(STRING_CONNECTIONS);
-            ti = tiConn.getItems();
+            treeItems = tiConn.getItems();
 
             // In complete refresh: delete all items first
             if (complete)
             {
-                for (int i=0;i<ti.length;i++) ti[i].dispose();
-                ti = tiConn.getItems();
+                for (int i=0;i<treeItems.length;i++) treeItems[i].dispose();
+                treeItems = tiConn.getItems();
             }
             
             // First delete no longer used items...
-            for (int i=0;i<ti.length;i++)
+            for (int i=0;i<treeItems.length;i++)
             {
-                String str = ti[i].getText();
+                String str = treeItems[i].getText();
                 DatabaseMeta inf = transMeta.findDatabase(str);
                 if (inf!=null) idx = transMeta.indexOfDatabase(inf); else idx=-1;
-                if (idx<0 || idx>i) ti[i].dispose();
+                if (idx<0 || idx>i) treeItems[i].dispose();
             }
-            ti = tiConn.getItems();
+            treeItems = tiConn.getItems();
             
             // Insert missing items in tree...
             int j=0;
@@ -3053,7 +3062,7 @@ public class Spoon implements AddUndoPositionInterface
                 DatabaseMeta inf = transMeta.getDatabase(i);
                 String con_name = inf.getName();
                 String ti_name = "";
-                if (j<ti.length) ti_name = ti[j].getText();
+                if (j<treeItems.length) ti_name = treeItems[j].getText();
                 if (!con_name.equalsIgnoreCase(ti_name))
                 {
                     // insert at position j in tree
@@ -3062,7 +3071,7 @@ public class Spoon implements AddUndoPositionInterface
                     newitem.setForeground(GUIResource.getInstance().getColorBlack());
                     newitem.setImage(GUIResource.getInstance().getImageConnection());
                     j++;
-                    ti = tiConn.getItems();
+                    treeItems = tiConn.getItems();
                 }
                 else
                 {
@@ -3079,30 +3088,30 @@ public class Spoon implements AddUndoPositionInterface
         if (transMeta.haveStepsChanged() || complete)
         {
             tiStep.setText(STRING_STEPS);
-            ti = tiStep.getItems();
+            treeItems = tiStep.getItems();
 
             // In complete refresh: delete all items first
             if (complete)
             {
-                for (int i=0;i<ti.length;i++) ti[i].dispose();
-                ti = tiStep.getItems();
+                for (int i=0;i<treeItems.length;i++) treeItems[i].dispose();
+                treeItems = tiStep.getItems();
             }
 
             // First delete no longer used items...
             log.logDebug(toString(), Messages.getString("Spoon.Log.CheckSteps"));//"check steps"
-            for (int i=0;i<ti.length;i++)
+            for (int i=0;i<treeItems.length;i++)
             {
-                String str = ti[i].getText();
+                String str = treeItems[i].getText();
                 log.logDebug(toString(), "  "+Messages.getString("Spoon.Log.CheckStepTreeItem")+i+" : ["+str+"]");
                 StepMeta inf = transMeta.findStep(str);
                 if (inf!=null) idx = transMeta.indexOfStep(inf); else idx=-1;
                 if (idx<0 || idx>i) 
                 {
                     log.logDebug(toString(), "     "+ Messages.getString("Spoon.Log.RemoveTreeItem")+ "["+str+"]");//remove tree item
-                    ti[i].dispose();
+                    treeItems[i].dispose();
                 }
             }
-            ti = tiStep.getItems();
+            treeItems = tiStep.getItems();
             
             // Insert missing items in tree...
             int j=0;
@@ -3112,7 +3121,7 @@ public class Spoon implements AddUndoPositionInterface
                 String step_name = inf.getName();
                 String step_id = inf.getStepID();
                 String ti_name = "";
-                if (j<ti.length) ti_name = ti[j].getText();
+                if (j<treeItems.length) ti_name = treeItems[j].getText();
                 if (!step_name.equalsIgnoreCase(ti_name))
                 {
                     // insert at position j in tree
@@ -3122,7 +3131,7 @@ public class Spoon implements AddUndoPositionInterface
                     Image img = (Image)GUIResource.getInstance().getImagesStepsSmall().get(step_id);
                     newitem.setImage(img);
                     j++;
-                    ti = tiStep.getItems();
+                    treeItems = tiStep.getItems();
                 }
                 else
                 {
@@ -3131,13 +3140,13 @@ public class Spoon implements AddUndoPositionInterface
             }
             
             // See if the colors are still OK!
-            for (int i=0;i<ti.length;i++)
+            for (int i=0;i<treeItems.length;i++)
             {
-                StepMeta inf = transMeta.findStep(ti[i].getText());
-                Color col = ti[i].getForeground();
+                StepMeta inf = transMeta.findStep(treeItems[i].getText());
+                Color col = treeItems[i].getForeground();
                 Color newcol;
                 if (transMeta.isStepUsedInTransHops(inf)) newcol=GUIResource.getInstance().getColorBlack(); else newcol=GUIResource.getInstance().getColorGray();
-                if (!newcol.equals(col)) ti[i].setForeground(newcol);
+                if (!newcol.equals(col)) treeItems[i].setForeground(newcol);
             }
         }
         
@@ -3146,24 +3155,24 @@ public class Spoon implements AddUndoPositionInterface
         if (transMeta.haveHopsChanged() || complete)
         {
             tiHops.setText(STRING_HOPS);
-            ti = tiHops.getItems();
+            treeItems = tiHops.getItems();
 
             // In complete refresh: delete all items first
             if (complete)
             {
-                for (int i=0;i<ti.length;i++) ti[i].dispose();
-                ti = tiHops.getItems();
+                for (int i=0;i<treeItems.length;i++) treeItems[i].dispose();
+                treeItems = tiHops.getItems();
             }
 
             // First delete no longer used items...
-            for (int i=0;i<ti.length;i++)
+            for (int i=0;i<treeItems.length;i++)
             {
-                String str = ti[i].getText();
+                String str = treeItems[i].getText();
                 TransHopMeta inf = transMeta.findTransHop(str);
                 if (inf!=null) idx = transMeta.indexOfTransHop(inf); else idx=-1;
-                if (idx<0 || idx>i) ti[i].dispose();
+                if (idx<0 || idx>i) treeItems[i].dispose();
             }
-            ti = tiHops.getItems();
+            treeItems = tiHops.getItems();
             
             // Insert missing items in tree...
             int j=0;
@@ -3172,7 +3181,7 @@ public class Spoon implements AddUndoPositionInterface
                 TransHopMeta inf = transMeta.getTransHop(i);
                 String trans_name = inf.toString();
                 String ti_name = "";
-                if (j<ti.length) ti_name = ti[j].getText();
+                if (j<treeItems.length) ti_name = treeItems[j].getText();
                 if (!trans_name.equalsIgnoreCase(ti_name))
                 {
                     // insert at position j in tree
@@ -3181,7 +3190,7 @@ public class Spoon implements AddUndoPositionInterface
                     newitem.setForeground(GUIResource.getInstance().getColorBlack());
                     newitem.setImage(GUIResource.getInstance().getImageHop());
                     j++;
-                    ti = tiHops.getItems();
+                    treeItems = tiHops.getItems();
                 }
                 else
                 {
@@ -3189,6 +3198,63 @@ public class Spoon implements AddUndoPositionInterface
                 }
             }
         }
+        
+        
+        // Refresh the database partitioning schemas...
+        //
+        if (transMeta.havePartitionSchemasChanged() || complete)
+        {
+            tiPart.setText(STRING_PARTITIONS);
+            
+            // Delete all items first
+            treeItems = tiPart.getItems();
+            for (int i=0;i<treeItems.length;i++) treeItems[i].dispose();
+            
+            // Insert missing items in tree...
+            for (int i=0;i<transMeta.getPartitionSchemas().size();i++)
+            {
+                PartitionSchema schema = (PartitionSchema) transMeta.getPartitionSchemas().get(i);
+                
+                TreeItem schemaitem = new TreeItem(tiPart, SWT.NONE);
+                schemaitem.setText(schema.toString());
+                schemaitem.setForeground(GUIResource.getInstance().getColorBlack());
+                schemaitem.setImage(GUIResource.getInstance().getImageConnection());
+            }
+        }
+        
+        // Refresh the clustering schemas...
+        //
+        if (transMeta.haveClusterSchemasChanged() || complete)
+        {
+            tiClus.setText(STRING_CLUSTERS);
+            
+            // Delete all items first
+            treeItems = tiClus.getItems();
+            for (int i=0;i<treeItems.length;i++) treeItems[i].dispose();
+            
+            // Insert missing items in tree...
+            for (int i=0;i<transMeta.getClusterSchemas().size();i++)
+            {
+                ClusterSchema schema = (ClusterSchema) transMeta.getClusterSchemas().get(i);
+                
+                TreeItem schemaItem = new TreeItem(tiPart, SWT.NONE);
+                schemaItem.setText(schema.toString());
+                schemaItem.setForeground(GUIResource.getInstance().getColorBlack());
+                schemaItem.setImage(GUIResource.getInstance().getImageBol());
+                
+                // Also show the hosts below...
+                for (int j=0;j<schema.getSlaveServers().size();j++)
+                {
+                    SlaveServer slaveServer = (SlaveServer) schema.getSlaveServers().get(j);
+                    
+                    TreeItem slaveItem = new TreeItem(schemaItem, SWT.NONE);
+                    slaveItem.setText(slaveServer.toString());
+                    slaveItem.setForeground(GUIResource.getInstance().getColorBlue());
+                    slaveItem.setImage(GUIResource.getInstance().getImageBol());
+                }
+            }
+        }
+
         
         // Set the expanded state of the complete tree.
         TreeMemory.setExpandedFromMemory(selectionTree, STRING_SPOON_MAIN_TREE);
@@ -3365,10 +3431,12 @@ public class Spoon implements AddUndoPositionInterface
     private void setTreeImages()
     {
         tiConn.setImage(GUIResource.getInstance().getImageConnection());
+        tiPart.setImage(GUIResource.getInstance().getImageConnection());
         tiHops.setImage(GUIResource.getInstance().getImageHop());
         tiStep.setImage(GUIResource.getInstance().getImageBol());
         tiBase.setImage(GUIResource.getInstance().getImageBol());
         tiPlug.setImage(GUIResource.getInstance().getImageBol());
+        tiClus.setImage(GUIResource.getInstance().getImageBol());
         
         TreeItem tiBaseCat[]=tiBase.getItems();
         for (int x=0;x<tiBaseCat.length;x++)
@@ -4898,23 +4966,69 @@ public class Spoon implements AddUndoPositionInterface
         JarfileGenerator.generateJarFile(transMeta);
     }
     
+    /**
+     * Sends transformation to slave server
+     */
     public void sendXMLToSlaveServer()
     {
-        SlaveServerDialog dialog = new SlaveServerDialog(shell, transMeta.getSlaveServer());
-        if (dialog.open())
+        // Select a cluster schema...
+        String[] schemas = transMeta.getClusterSchemaNames();
+        EnterSelectionDialog schemaDialog = new EnterSelectionDialog(shell, schemas, "Select a cluster schema", "Select the clustering schema to use: ");
+        if (schemaDialog.open()==null || schemaDialog.getSelectionNr()<0) return;
+        
+        ClusterSchema clusterSchema = (ClusterSchema) transMeta.getClusterSchemas().get(schemaDialog.getSelectionNr());
+        
+        // Now select the slave server...
+        String[] slaves = clusterSchema.getSlaveServerStrings();
+        EnterSelectionDialog slaveDialog = new EnterSelectionDialog(shell, slaves, "Select a slave server", "Select the desired slave server to send this transformation to: ");
+        if (slaveDialog.open()==null || slaveDialog.getSelectionNr()<0) return;
+        
+        SlaveServer slaveServer = (SlaveServer) clusterSchema.getSlaveServers().get(slaveDialog.getSelectionNr());
+        
+        try
         {
-            try
-            {
-                String reply = transMeta.getSlaveServer().sendXML(transMeta.getXML());
-                
-                ShowBrowserDialog showBrowserDialog = new ShowBrowserDialog(shell, "Browser", reply);
-                showBrowserDialog.open();
-            }
-            catch (Exception e)
-            {
-                new ErrorDialog(shell, "Erro", "Error sending transformation to server", e);
-            }
+            String reply = slaveServer.sendXML(transMeta.getXML(), AddTransServlet.CONTEXT_PATH);
+            
+            ShowBrowserDialog showBrowserDialog = new ShowBrowserDialog(shell, "Browser", reply);
+            showBrowserDialog.open();
+        }
+        catch (Exception e)
+        {
+            new ErrorDialog(shell, "Erro", "Error sending transformation to server", e);
         }
     }
+
+    /**
+     * This creates a new database partitioning schema, edits it and adds it to the transformation metadata
+     *
+     */
+    public void newDatabasePartitioningSchema()
+    {
+        PartitionSchema partitionSchema = new PartitionSchema();
+        
+        PartitionSchemaDialog dialog = new PartitionSchemaDialog(shell, partitionSchema, transMeta.getDatabases());
+        if (dialog.open())
+        {
+            transMeta.getPartitionSchemas().add(partitionSchema);
+            refreshTree(true);
+        }
+    }
+    
+    /**
+     * This creates a new clustering schema, edits it and adds it to the transformation metadata
+     *
+     */
+    public void newClusteringSchema()
+    {
+        ClusterSchema clusterSchema = new ClusterSchema();
+        
+        ClusterSchemaDialog dialog = new ClusterSchemaDialog(shell, clusterSchema);
+        if (dialog.open())
+        {
+            transMeta.getClusterSchemas().add(clusterSchema);
+            refreshTree(true);
+        }
+    }
+
 
 }

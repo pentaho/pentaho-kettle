@@ -58,7 +58,7 @@ public class EnterSelectionDialog extends Dialog
 	private Shell  shell;
 	private SelectionAdapter lsDef;
 	
-	private String list[];
+	private String choices[];
 	private String selection;
 	private int    selectionNr;
 	private String shellText;
@@ -78,21 +78,37 @@ public class EnterSelectionDialog extends Dialog
 	 * @param lst The list of options
 	 * @param st The shell text
 	 * @param lt the line text to display as information
+     * 
+     * @deprecated use the constructor version without Props
 	 */
 	public EnterSelectionDialog(Shell parent, Props pr, String lst[], String st, String lt)
 	{
-		super(parent, SWT.NONE);
-		props=pr;
-		list = lst;
-		shellText = st;
-		lineText = lt;
-		selection = null;
-		viewOnly = false;
-		modal = true;
-		selectedNrs = new int[] {};
+	    this(parent, lst, st, lt);
+	}
+    
+    /**
+     * Create a new dialog allow someone to pick one value out of a list of values
+     * @param parent the parent shell.
+     * @param choices The available list of options
+     * @param shellText The shell text
+     * @param message the message to display as extra information about the possible choices
+     */
+    public EnterSelectionDialog(Shell parent, String choices[], String shellText, String message)
+    {
+        super(parent, SWT.NONE);
+        
+        this.choices = choices;
+        this.shellText = shellText;
+        this.lineText = message;
+        
+        props=Props.getInstance();
+        selection = null;
+        viewOnly = false;
+        modal = true;
+        selectedNrs = new int[] {};
         multi=false;
         fixed=false;
-	}
+    }
 	
 	public void setViewOnly()
 	{
@@ -140,7 +156,7 @@ public class EnterSelectionDialog extends Dialog
         if (multi) options|=SWT.MULTI; else options|=SWT.SINGLE;  
         
 		wSelection=new List(shell, options );
-		for (int i=0;i<list.length;i++) wSelection.add(list[i]);
+		for (int i=0;i<choices.length;i++) wSelection.add(choices[i]);
 		if (selectedNrs!=null)
 		{
 			wSelection.select(selectedNrs);
@@ -252,9 +268,9 @@ public class EnterSelectionDialog extends Dialog
 	
 	public int getSelectionNr(String str)
 	{
-		for (int i=0;i<list.length;i++)
+		for (int i=0;i<choices.length;i++)
 		{
-			if (list[i].equalsIgnoreCase(str)) return i;
+			if (choices[i].equalsIgnoreCase(str)) return i;
 		}
 		return -1;
 	}

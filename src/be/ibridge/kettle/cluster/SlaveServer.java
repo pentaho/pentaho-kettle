@@ -1,29 +1,28 @@
 package be.ibridge.kettle.cluster;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.net.Authenticator;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.PasswordAuthentication;
-import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
+import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.ChangedFlag;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Encr;
 import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.util.StringUtil;
 
 public class SlaveServer extends ChangedFlag implements Cloneable
 {
     private static LogWriter log = LogWriter.getInstance();
+    public static final String PASSWORD_ENCRYPTED_PREFIX = "Encrypted ";
     
-    private String serviceUrl;
+    private String hostname;
+    private String port;
     private String username;
     private String password;
 
@@ -35,15 +34,61 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     {
     }
     
-    public SlaveServer(String urlString, String username, String password, String proxyHostname, String proxyPort, String nonProxyHosts)
+    public SlaveServer(String hostname, String port, String username, String password, String proxyHostname, String proxyPort, String nonProxyHosts)
     {
-        this.serviceUrl = urlString;
+        this.hostname = hostname;
+        this.port     = port;
         this.username = username;
         this.password = password;
 
         this.proxyHostname = proxyHostname;
         this.proxyPort = proxyPort;
         this.nonProxyHosts = nonProxyHosts;
+    }
+    
+    public SlaveServer(Node slaveNode)
+    {
+        this.hostname   = XMLHandler.getTagValue(slaveNode, "hostname");
+        this.port       = XMLHandler.getTagValue(slaveNode, "port");
+        this.username   = XMLHandler.getTagValue(slaveNode, "username");
+        this.password   = XMLHandler.getTagValue(slaveNode, "password");
+        if (!Const.isEmpty(password) && password.startsWith(PASSWORD_ENCRYPTED_PREFIX))
+        {
+            password = Encr.decryptPassword(password.substring(PASSWORD_ENCRYPTED_PREFIX.length()+1));
+        }
+        this.proxyHostname = XMLHandler.getTagValue(slaveNode, "proxy_hostname");
+        this.proxyPort     = XMLHandler.getTagValue(slaveNode, "proxy_port");
+        this.nonProxyHosts = XMLHandler.getTagValue(slaveNode, "non_proxy_hosts");
+    }
+
+    public String getXML()
+    {
+        StringBuffer xml = new StringBuffer();
+        
+        xml.append("<slaveserver>");
+        xml.append(XMLHandler.addTagValue("hostname", hostname, false));
+        xml.append(XMLHandler.addTagValue("port",     port, false));
+        xml.append(XMLHandler.addTagValue("username", username, false));
+        xml.append(XMLHandler.addTagValue("proxy_hostname", proxyHostname, false));
+        xml.append(XMLHandler.addTagValue("proxy_port", proxyPort, false));
+        xml.append(XMLHandler.addTagValue("non_proxy_hosts", nonProxyHosts, false));
+
+        String encrPassword = "";
+        List varList = new ArrayList();
+        StringUtil.getUsedVariables(password, varList, true);
+        if (varList.size()==0 && !Const.isEmpty(password))
+        {
+            encrPassword = PASSWORD_ENCRYPTED_PREFIX+Encr.encryptPassword(password);
+        }
+        else
+        {
+            encrPassword = getPassword();
+        }
+        xml.append(XMLHandler.addTagValue("password", encrPassword, false));
+
+        xml.append("</slaveserver>");
+
+        return xml.toString();
     }
     
     public Object clone()
@@ -58,14 +103,14 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         }
     }
     
-    public String getServiceUrl()
+    public String getHostname()
     {
-        return serviceUrl;
+        return hostname;
     }
     
-    public void setServiceUrl(String urlString)
+    public void setHostname(String urlString)
     {
-        this.serviceUrl = urlString;
+        this.hostname = urlString;
     }
     
     /**
@@ -149,8 +194,38 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         this.proxyPort = proxyPort;
     }
     
+    public String getPortSpecification()
+    {
+        String portSpec = ":"+port;
+        if (Const.isEmpty(port) || port.equals("80"))
+        {
+            portSpec="";
+        }
+        return portSpec;
+    }
     
-    public String sendXML(String xml) throws Exception
+    public String constructUrl(String serviceAndArguments)
+    {
+        return "http://"+hostname+getPortSpecification()+serviceAndArguments;
+    }
+    
+    /**
+     * @return the port
+     */
+    public String getPort()
+    {
+        return port;
+    }
+
+    /**
+     * @param port the port to set
+     */
+    public void setPort(String port)
+    {
+        this.port = port;
+    }
+
+    public String sendXML(String xml, String service) throws Exception
     {
         // The content
         // 
@@ -158,7 +233,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         
         // Prepare HTTP post
         // 
-        PostMethod post = new PostMethod(serviceUrl);
+        PostMethod post = new PostMethod(constructUrl(service));
         
         // GetMethod post = new GetMethod("http://127.0.0.1/kettle/status");
         
@@ -178,144 +253,29 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         try
         {
             int result = httpclient.executeMethod(post);
-            // Display status code
-            System.out.println("Response status code: " + result);
-            // Display response
-            System.out.println("Response body: ");
-            return post.getResponseBodyAsString();
+            
+            // The status code
+            log.logDebug(toString(), "Response status code: " + result);
+            
+            // the response
+            String body = post.getResponseBodyAsString(); 
+            log.logDebug(toString(), "Response body: "+body);
+            
+            return body;
         }
         finally
         {
             // Release current connection to the connection pool once you are done
             post.releaseConnection();
+            log.logDetailed(toString(), "Sent XML to service ["+service+"] on host ["+hostname+"]");
         }
-        
-    }
-    
-    /**
-     * Send the XML over to the specified HTTP server and get back the result
-     * @return the result from the webserver, error, OK messages, etc.
-     * @throws Exception in case there is an error during the post operation.
-     */
-    public String sendXMLOld(String xml) throws Exception
-    {
-        URL server = null;
-        OutputStream uploadStream = null;
-        BufferedInputStream fileStream = null;
-        BufferedReader input = null;
-
-        String beforeProxyHost     = System.getProperty("http.proxyHost"); 
-        String beforeProxyPort     = System.getProperty("http.proxyPort"); 
-        String beforeNonProxyHosts = System.getProperty("http.nonProxyHosts"); 
-
-        try
-        {
-            log.logBasic(toString(), "Connecting to URL: " + serviceUrl);
-
-            if (!Const.isEmpty(proxyHostname)) 
-            {
-                System.setProperty("http.proxyHost", proxyHostname);
-                System.setProperty("http.proxyPort", ""+proxyPort);
-                if (nonProxyHosts!=null) System.setProperty("http.nonProxyHosts", nonProxyHosts);
-            }
-            
-            if (username != null && username.length() > 0)
-            {
-                Authenticator.setDefault(new Authenticator()
-                {
-                    protected PasswordAuthentication getPasswordAuthentication()
-                    {
-                        return new PasswordAuthentication(username, password != null ? password.toCharArray() : new char[] {});
-                    }
-                });
-            }
-            
-            // The content to send?
-            byte[] content = xml.getBytes();
-
-            // Get a stream for the specified URL
-            server = new URL(serviceUrl);
-            HttpURLConnection connection = (HttpURLConnection)server.openConnection();
-
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
-            connection.setDoInput(true);
-            connection.setUseCaches(false);
-            connection.setRequestProperty("Content-Type", "text/xml");
-            connection.setRequestProperty("Transfer-Encoding", "chunked" );
-            
-            // Send the XML over to the server
-            log.logDetailed(toString(), "Start sending content of XML to server.");
-
-            // Grab an output stream to upload data to web server
-            uploadStream = connection.getOutputStream();
-
-            // send over the content
-            uploadStream.write(content);
-
-            // Close upload
-            uploadStream.flush();
-            uploadStream.close();
-            uploadStream = null;
-
-            log.logDetailed(toString(), "Finished sending XML to server.");
-
-            log.logDetailed(toString(), "Start reading reply from webserver.");
-
-            // Read the result from the server...
-            input = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-
-            StringBuffer result = new StringBuffer();
-
-            long bytesRead = 0L;
-            String line;
-            while ((line = input.readLine()) != null)
-            {
-                line += Const.CR;
-                result.append(line);
-                bytesRead += line.length();
-            }
-            input.close();
-
-            log.logBasic(toString(), "Finished reading " + bytesRead + " bytes from the webserver as a result.");
-
-            return result.toString();
-        }
-        catch (MalformedURLException e)
-        {
-            throw new Exception("The specified URL is not valid [" + serviceUrl + "] : ", e);
-        }
-        catch (Exception e)
-        {
-            throw new Exception("Error posting XML to server: ", e);
-        }
-        finally
-        {
-            // Close it all
-            try
-            {
-                if (uploadStream != null) uploadStream.close(); // just to make sure
-                if (fileStream != null) fileStream.close(); // just to make sure
-
-                if (input != null) input.close();
-            }
-            catch (Exception e)
-            {
-                throw new Exception("Unable to close streams", e);
-            }
-
-            // Set the proxy settings back as they were on the system!
-            System.setProperty("http.proxyHost", Const.NVL(beforeProxyHost, ""));
-            System.setProperty("http.proxyPort", Const.NVL(beforeProxyPort, ""));
-            System.setProperty("http.nonProxyHosts", Const.NVL(beforeNonProxyHosts, ""));
-        }
-
     }
     
     public String toString()
     {
-        if (!Const.isEmpty(serviceUrl)) return serviceUrl;
+        if (!Const.isEmpty(hostname)) return hostname+getPortSpecification();
         return "Slave Server";
     }
 
 }
+

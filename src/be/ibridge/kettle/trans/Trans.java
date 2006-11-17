@@ -34,6 +34,7 @@ import be.ibridge.kettle.core.exception.KettleTransException;
 import be.ibridge.kettle.core.logging.Log4jStringAppender;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.Job;
+import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.trans.step.BaseStep;

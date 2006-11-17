@@ -46,7 +46,7 @@ import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.JobPlugin;
-import be.ibridge.kettle.trans.PartitionSchema;
+import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
 import be.ibridge.kettle.trans.TransMeta;

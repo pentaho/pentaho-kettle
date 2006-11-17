@@ -9,8 +9,8 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.repository.Repository;
-import be.ibridge.kettle.trans.PartitionSchema;
 
 public class StepPartitioningMeta implements XMLInterface
 {

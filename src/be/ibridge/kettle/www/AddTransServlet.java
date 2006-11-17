@@ -16,6 +16,7 @@ import org.mortbay.jetty.Request;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.trans.Trans;
@@ -81,10 +82,27 @@ public class AddTransServlet extends HttpServlet
             // Create the transformation and store in the list...
             //
             Trans trans = new Trans(log, transMeta);
+            
+            Trans oldOne = transformationMap.getTransformation(trans.getName());
+            if ( oldOne!=null)
+            {
+                if ( oldOne.isRunning() || oldOne.isPreparing() || oldOne.isInitializing() )
+                {
+                    throw new Exception("A transformation with the same name exists and is not idle."+Const.CR+"Please stop the transformation first.");
+                }
+            }
+            
             transformationMap.addTransformation(transMeta.getName(), trans);
-                
-            out.println("<H1>Transformation '"+trans.getName()+"' was added to the list.</H1>");
-            out.println("<a href=\"/kettle/transStatus?name="+trans.getName()+"\">Go to the transformation status page</a><p>");
+
+            if (oldOne!=null)
+            {
+                out.println("<H1>Transformation '"+trans.getName()+"' was replaced in the list.</H1>");
+            }
+            else
+            {
+                out.println("<H1>Transformation '"+trans.getName()+"' was added to the list.</H1>");
+            }
+            out.println("<p><a href=\"/kettle/transStatus?name="+trans.getName()+"\">Go to the transformation status page</a><p>");
         }
         catch (Exception ex)
         {

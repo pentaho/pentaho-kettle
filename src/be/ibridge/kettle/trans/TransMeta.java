@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.cluster.ClusterSchema;
 import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.CheckResult;
 import be.ibridge.kettle.core.Const;
@@ -56,6 +57,7 @@ import be.ibridge.kettle.core.reflection.StringSearchResult;
 import be.ibridge.kettle.core.reflection.StringSearcher;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.trans.step.StepMeta;
@@ -84,6 +86,8 @@ public class TransMeta implements XMLInterface
     private ArrayList           notes;
 
     private ArrayList           dependencies;
+    
+    private ArrayList           clusterSchemas;
 
     private RepositoryDirectory directory;
 
@@ -125,8 +129,6 @@ public class TransMeta implements XMLInterface
 
     private ArrayList           sourceRows;
 
-    private SlaveServer         slaveServer; // TODO: remove this later, it's for testing purpose only!!
-    
     private boolean             changed, changed_steps, changed_databases, changed_hops, changed_notes;
 
     private ArrayList           undo;
@@ -232,6 +234,7 @@ public class TransMeta implements XMLInterface
         notes = new ArrayList();
         dependencies = new ArrayList();
         partitionSchemas = new ArrayList();
+        clusterSchemas = new ArrayList();
         
         name = null;
         filename = null;
@@ -284,7 +287,16 @@ public class TransMeta implements XMLInterface
         feedbackShown = true;
         feedbackSize = Const.ROWS_UPDATE;
         
-        slaveServer = new SlaveServer("http://127.0.0.1/kettle/addTrans", null, null, null, null, null);
+        
+        // For testing purposes only, we add a single cluster schema.
+        // TODO: remove this test-code later on.
+        // 
+        ClusterSchema clusterSchema = new ClusterSchema();
+        clusterSchema.setName("Local cluster");
+        SlaveServer localSlave = new SlaveServer("127.0.0.1", "80", null, null, null, null, null);
+        clusterSchema.getSlaveServers().add(localSlave);
+        clusterSchemas.add(clusterSchema);
+
     }
 
     public void clearUndo()
@@ -2005,6 +2017,8 @@ public class TransMeta implements XMLInterface
         }
         retval.append("      </dependencies>" + Const.CR); //$NON-NLS-1$
 
+        // The database partitioning schemas...
+        //
         retval.append("    <partitionschemas>" + Const.CR); //$NON-NLS-1$
         for (int i = 0; i < partitionSchemas.size(); i++)
         {
@@ -2013,6 +2027,17 @@ public class TransMeta implements XMLInterface
         }
         retval.append("      </partitionschemas>" + Const.CR); //$NON-NLS-1$
 
+        // The cluster schemas...
+        //
+        retval.append("    <clusterschemas>" + Const.CR); //$NON-NLS-1$
+        for (int i = 0; i < clusterSchemas.size(); i++)
+        {
+            ClusterSchema clusterSchema = (ClusterSchema) clusterSchemas.get(i);
+            retval.append(clusterSchema.getXML());
+        }
+        retval.append("      </clusterschemas>" + Const.CR); //$NON-NLS-1$
+
+        
         retval.append("  "+XMLHandler.addTagValue("modified_user", modifiedUser));
         retval.append("  "+XMLHandler.addTagValue("modified_date", modifiedDate!=null?modifiedDate.getString():""));
 
@@ -2326,16 +2351,18 @@ public class TransMeta implements XMLInterface
             }
 
             // Read the partitioning schemas
+            // 
             Node partSchemasNode = XMLHandler.getSubNode(infonode, "partitionschemas"); //$NON-NLS-1$
-            int nrPartSchemas = XMLHandler.countNodes(partSchemasNode, "partitionschema"); //$NON-NLS-1$
+            int nrPartSchemas = XMLHandler.countNodes(partSchemasNode, PartitionSchema.XML_TAG); //$NON-NLS-1$
             for (int i = 0 ; i < nrPartSchemas ; i++)
             {
-                Node partSchemaNode = XMLHandler.getSubNodeByNr(partSchemasNode, "partitionschema", i);
+                Node partSchemaNode = XMLHandler.getSubNodeByNr(partSchemasNode, PartitionSchema.XML_TAG, i);
                 PartitionSchema partitionSchema = new PartitionSchema(partSchemaNode);
                 partitionSchemas.add(partitionSchema);
             }
             
             // Have all step partitioning meta-data reference the correct schemas that we just loaded
+            // 
             for (int i = 0; i < nrSteps(); i++)
             {
                 StepPartitioningMeta stepPartitioningMeta = getStep(i).getStepPartitioningMeta();
@@ -2345,6 +2372,17 @@ public class TransMeta implements XMLInterface
                 }
             }
 
+            // Read the partitioning schemas
+            // 
+            Node clusterSchemasNode = XMLHandler.getSubNode(infonode, "clusterchemas"); //$NON-NLS-1$
+            int nrClusterSchemas = XMLHandler.countNodes(partSchemasNode, ClusterSchema.XML_TAG); //$NON-NLS-1$
+            for (int i = 0 ; i < nrClusterSchemas ; i++)
+            {
+                Node clusterSchemaNode = XMLHandler.getSubNodeByNr(clusterSchemasNode, ClusterSchema.XML_TAG, i);
+                ClusterSchema clusterSchema = new ClusterSchema(clusterSchemaNode);
+                clusterSchemas.add(clusterSchema);
+            }
+           
             String srowset = XMLHandler.getTagValue(infonode, "size_rowset"); //$NON-NLS-1$
             sizeRowset = Const.toInt(srowset, Const.ROWS_IN_ROWSET);
             sleepTimeEmpty = Const.toInt(XMLHandler.getTagValue(infonode, "sleep_time_empty"), Const.SLEEP_EMPTY_NANOS); //$NON-NLS-1$
@@ -2520,6 +2558,14 @@ public class TransMeta implements XMLInterface
         {
             getNote(i).setChanged(false);
         }
+        for (int i = 0; i < partitionSchemas.size(); i++)
+        {
+            ((PartitionSchema)partitionSchemas.get(i)).setChanged(false);
+        }
+        for (int i = 0; i < clusterSchemas.size(); i++)
+        {
+            ((ClusterSchema)clusterSchemas.get(i)).setChanged(false);
+        }
     }
 
     /**
@@ -2590,6 +2636,39 @@ public class TransMeta implements XMLInterface
 
         return false;
     }
+    
+    /**
+     * Checks whether or not any of the database partitioning schemas have been changed.
+     *
+     * @return True if the partitioning schemas have been changed.
+     */
+    public boolean havePartitionSchemasChanged()
+    {
+        for (int i = 0; i < partitionSchemas.size(); i++)
+        {
+            PartitionSchema ps = (PartitionSchema) partitionSchemas.get(i);
+            if (ps.hasChanged()) return true;
+        }
+
+        return false;
+    }
+    
+    /**
+     * Checks whether or not any of the clustering schemas have been changed.
+     *
+     * @return True if the clustering schemas have been changed.
+     */
+    public boolean haveClusterSchemasChanged()
+    {
+        for (int i = 0; i < clusterSchemas.size(); i++)
+        {
+            ClusterSchema cs = (ClusterSchema) clusterSchemas.get(i);
+            if (cs.hasChanged()) return true;
+        }
+
+        return false;
+    }
+
 
     /**
      * Checks whether or not the transformation has changed.
@@ -2604,6 +2683,8 @@ public class TransMeta implements XMLInterface
         if (haveStepsChanged()) return true;
         if (haveHopsChanged()) return true;
         if (haveNotesChanged()) return true;
+        if (havePartitionSchemasChanged()) return true;
+        if (haveClusterSchemasChanged()) return true;
 
         return false;
     }
@@ -4510,19 +4591,56 @@ public class TransMeta implements XMLInterface
         this.usingUniqueConnections = usingUniqueConnections;
     }
 
-    /**
-     * @return the slaveServer
-     */
-    public SlaveServer getSlaveServer()
+    public ArrayList getClusterSchemas()
     {
-        return slaveServer;
+        return clusterSchemas;
+    }
+
+    public void setClusterSchemas(ArrayList clusterSchemas)
+    {
+        this.clusterSchemas = clusterSchemas;
+    }
+    
+    /**
+     * @return The slave server strings from this cluster schema
+     */
+    public String[] getClusterSchemaNames()
+    {
+        String[] names = new String[clusterSchemas.size()];
+        for (int i=0;i<names.length;i++)
+        {
+            names[i] = ((ClusterSchema)clusterSchemas.get(i)).getName();
+        }
+        return names;
     }
 
     /**
-     * @param slaveServer the slaveServer to set
+     * Find a partition schema using its name.
+     * @param name The name of the partition schema to look for.
+     * @return the partition with the specified name of null if nothing was found 
      */
-    public void setSlaveServer(SlaveServer slaveServer)
+    public PartitionSchema findPartitionSchema(String name)
     {
-        this.slaveServer = slaveServer;
+        for (int i=0;i<partitionSchemas.size();i++)
+        {
+            PartitionSchema schema = (PartitionSchema)partitionSchemas.get(i);
+            if (schema.getName().equalsIgnoreCase(name)) return schema;
+        }
+        return null;
+    }
+    
+    /**
+     * Find a clustering schema using its name
+     * @param name The name of the clustering schema to look for.
+     * @return the cluster schema with the specified name of null if nothing was found 
+     */
+    public ClusterSchema findClusterSchema(String name)
+    {
+        for (int i=0;i<clusterSchemas.size();i++)
+        {
+            ClusterSchema schema = (ClusterSchema)clusterSchemas.get(i);
+            if (schema.getName().equalsIgnoreCase(name)) return schema;
+        }
+        return null;
     }
 }

@@ -1,7 +1,8 @@
-package be.ibridge.kettle.trans;
+package be.ibridge.kettle.partition;
 
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.core.ChangedFlag;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
 
@@ -12,19 +13,24 @@ import be.ibridge.kettle.core.XMLHandler;
  * @author Matt
  *
  */
-public class PartitionSchema implements Cloneable
+public class PartitionSchema extends ChangedFlag implements Cloneable
 {
+    public static final String XML_TAG = "partitionschema";
+
     private String   name;
 
     private String[] partitionIDs;
 
+    public PartitionSchema()
+    {
+    }
+    
     /**
      * @param name
      * @param partitionIDs
      */
     public PartitionSchema(String name, String[] partitionIDs)
     {
-        super();
         this.name = name;
         this.partitionIDs = partitionIDs;
     }
@@ -35,6 +41,11 @@ public class PartitionSchema implements Cloneable
         for (int i=0;i<ids.length;i++) ids[i] = partitionIDs[i];
         
         return new PartitionSchema(name, ids);
+    }
+    
+    public String toString()
+    {
+        return name;
     }
     
     public boolean equals(Object obj)
@@ -84,7 +95,7 @@ public class PartitionSchema implements Cloneable
     {
         StringBuffer xml = new StringBuffer();
         
-        xml.append("        <partitionschema>"+Const.CR);
+        xml.append("        <"+XML_TAG+">"+Const.CR);
         xml.append("          "+XMLHandler.addTagValue("name", name));
         for (int i=0;i<partitionIDs.length;i++)
         {
@@ -92,7 +103,7 @@ public class PartitionSchema implements Cloneable
         xml.append("            "+XMLHandler.addTagValue("id", partitionIDs[i]));
         xml.append("            </partition>");
         }
-        xml.append("          </partitionschema>"+Const.CR);
+        xml.append("          </"+XML_TAG+">"+Const.CR);
         return xml.toString();
     }
     

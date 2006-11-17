@@ -29,13 +29,14 @@ import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
+import be.ibridge.kettle.www.AddTransServlet;
 
 
 /**
  * 
  * Dialog that allows you to edit the settings of the security service connection
  * 
- * @see <code>SecurityService</code>
+ * @see SlaveServer
  * @author Matt
  * @since 31-10-2006
  *
@@ -56,8 +57,8 @@ public class SlaveServerDialog extends Dialog
 	private Shell     shell;
 
     // Service
-	private Label    wlServiceURL, wlUsername, wlPassword;
-	private Text     wServiceURL,  wUsername,  wPassword;
+	private Label    wlHostname, wlPort, wlUsername, wlPassword;
+	private Text     wHostname,  wPort, wUsername,  wPassword;
 
     // Proxy
     private Label    wlProxyHost, wlProxyPort, wlNonProxyHosts;
@@ -143,7 +144,7 @@ public class SlaveServerDialog extends Dialog
         SelectionAdapter selAdapter=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		wUsername.addSelectionListener(selAdapter);
 		wPassword.addSelectionListener(selAdapter);
-		wServiceURL.addSelectionListener(selAdapter);
+		wHostname.addSelectionListener(selAdapter);
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -179,30 +180,49 @@ public class SlaveServerDialog extends Dialog
         wServiceComp.setLayout(GenLayout);
 
         // What's the service URL?
-        wlServiceURL = new Label(wServiceComp, SWT.RIGHT); 
-        props.setLook(wlServiceURL);
-        wlServiceURL.setText("Service URL: ");
-        FormData fdlServiceURL = new FormData();
-        fdlServiceURL.top   = new FormAttachment(0, 0);
-        fdlServiceURL.left  = new FormAttachment(0, 0);  // First one in the left top corner
-        fdlServiceURL.right = new FormAttachment(middle, -margin);
-        wlServiceURL.setLayoutData(fdlServiceURL);
+        wlHostname = new Label(wServiceComp, SWT.RIGHT); 
+        props.setLook(wlHostname);
+        wlHostname.setText("Hostname or IP address  ");
+        FormData fdlHostname = new FormData();
+        fdlHostname.top   = new FormAttachment(0, 0);
+        fdlHostname.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlHostname.right = new FormAttachment(middle, -margin);
+        wlHostname.setLayoutData(fdlHostname);
 
-        wServiceURL = new Text(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
-        props.setLook(wServiceURL);
-        wServiceURL.addModifyListener(lsMod);
-        FormData fdServiceURL = new FormData();
-        fdServiceURL.top  = new FormAttachment(0, 0);
-        fdServiceURL.left = new FormAttachment(middle, 0); // To the right of the label
-        fdServiceURL.right= new FormAttachment(95, 0);
-        wServiceURL.setLayoutData(fdServiceURL);
+        wHostname = new Text(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wHostname);
+        wHostname.addModifyListener(lsMod);
+        FormData fdHostname = new FormData();
+        fdHostname.top  = new FormAttachment(0, 0);
+        fdHostname.left = new FormAttachment(middle, 0); // To the right of the label
+        fdHostname.right= new FormAttachment(95, 0);
+        wHostname.setLayoutData(fdHostname);
 
+        // What's the service URL?
+        wlPort = new Label(wServiceComp, SWT.RIGHT); 
+        props.setLook(wlPort);
+        wlPort.setText("Port (empty is port 80)");
+        FormData fdlPort = new FormData();
+        fdlPort.top   = new FormAttachment(wHostname, margin);
+        fdlPort.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlPort.right = new FormAttachment(middle, -margin);
+        wlPort.setLayoutData(fdlPort);
+
+        wPort = new Text(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wPort);
+        wPort.addModifyListener(lsMod);
+        FormData fdPort = new FormData();
+        fdPort.top  = new FormAttachment(wHostname, margin);
+        fdPort.left = new FormAttachment(middle, 0); // To the right of the label
+        fdPort.right= new FormAttachment(95, 0);
+        wPort.setLayoutData(fdPort);
+        
         // Username
         wlUsername = new Label(wServiceComp, SWT.RIGHT ); 
         wlUsername.setText("Username: "); 
         props.setLook(wlUsername);
         FormData fdlUsername = new FormData();
-        fdlUsername.top  = new FormAttachment(wServiceURL, margin);
+        fdlUsername.top  = new FormAttachment(wPort, margin);
         fdlUsername.left = new FormAttachment(0,0); 
         fdlUsername.right= new FormAttachment(middle, -margin);
         wlUsername.setLayoutData(fdlUsername);
@@ -211,7 +231,7 @@ public class SlaveServerDialog extends Dialog
         props.setLook(wUsername);
         wUsername.addModifyListener(lsMod);
         FormData fdUsername = new FormData();
-        fdUsername.top  = new FormAttachment(wServiceURL, margin);
+        fdUsername.top  = new FormAttachment(wPort, margin);
         fdUsername.left = new FormAttachment(middle, 0); 
         fdUsername.right= new FormAttachment(95, 0);
         wUsername.setLayoutData(fdUsername);
@@ -346,7 +366,8 @@ public class SlaveServerDialog extends Dialog
     
     public void getData()
 	{
-		wServiceURL.setText( Const.NVL(slaveServer.getServiceUrl(), "") );
+		wHostname.setText( Const.NVL(slaveServer.getHostname(), "") );
+        wPort    .setText( Const.NVL(slaveServer.getPort(),     "") );
         wUsername.setText( Const.NVL(slaveServer.getUsername(), "") );
 		wPassword.setText( Const.NVL(slaveServer.getPassword(), "") );
 
@@ -354,7 +375,7 @@ public class SlaveServerDialog extends Dialog
         wProxyPort.setText( Const.NVL(slaveServer.getProxyPort(), ""));
         wNonProxyHosts.setText( Const.NVL(slaveServer.getNonProxyHosts(), ""));
         
-		wServiceURL.setFocus();
+		wHostname.setFocus();
 	}
     
 	private void cancel()
@@ -366,7 +387,8 @@ public class SlaveServerDialog extends Dialog
 	public void ok()
 	{
         getInfo();
-        originalServer.setServiceUrl(slaveServer.getServiceUrl());
+        originalServer.setHostname(slaveServer.getHostname());
+        originalServer.setPort    (slaveServer.getPort());
         originalServer.setUsername(slaveServer.getUsername());
         originalServer.setPassword(slaveServer.getPassword());
 
@@ -384,7 +406,8 @@ public class SlaveServerDialog extends Dialog
     // Get dialog info in securityService
 	private void getInfo()
     {
-        slaveServer.setServiceUrl(wServiceURL.getText());
+        slaveServer.setHostname(wHostname.getText());
+        slaveServer.setPort    (wPort    .getText());
         slaveServer.setUsername(wUsername.getText());
         slaveServer.setPassword(wPassword.getText());
 
@@ -401,9 +424,9 @@ public class SlaveServerDialog extends Dialog
             
             String xml = "<sample/>";
             
-            String reply = slaveServer.sendXML(xml);
+            String reply = slaveServer.sendXML(xml, AddTransServlet.CONTEXT_PATH);
             
-            String message = "Testing reply from server URL: "+slaveServer.getServiceUrl()+"Using content: "+Const.CR+Const.CR;
+            String message = "Testing reply from server URL: "+slaveServer.constructUrl(AddTransServlet.CONTEXT_PATH)+Const.CR+"Using content: "+Const.CR+Const.CR;
             message+=xml;
             message+=Const.CR+Const.CR;
             message+="Reply was:"+Const.CR+Const.CR;
@@ -414,7 +437,7 @@ public class SlaveServerDialog extends Dialog
 		}
 		catch(Exception e)
 		{
-			new ErrorDialog(shell, "Error", "Unable to get a reply back from URL ["+slaveServer.getServiceUrl()+"]", e);
+			new ErrorDialog(shell, "Error", "Unable to get a reply back from URL ["+slaveServer.getHostname()+"]", e);
 		}		
 	}
 }
