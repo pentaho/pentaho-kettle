@@ -399,7 +399,7 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 					String files[] = tfii.getFilePaths();
 					if (files!=null && files.length>0)
 					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, "Files read", "Files read:");
+						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, "Files read", "Files read:");
 						esd.setViewOnly();
 						esd.open();
 					}

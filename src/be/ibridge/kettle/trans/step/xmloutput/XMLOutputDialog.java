@@ -356,7 +356,7 @@ public class XMLOutputDialog extends BaseStepDialog implements StepDialogInterfa
 					String files[] = tfoi.getFiles();
 					if (files!=null && files.length>0)
 					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, Messages.getString("XMLOutputDialog.OutputFiles.DialogTitle"), Messages.getString("XMLOutputDialog.OutputFiles.DialogMessage"));
+						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("XMLOutputDialog.OutputFiles.DialogTitle"), Messages.getString("XMLOutputDialog.OutputFiles.DialogMessage"));
 						esd.setViewOnly();
 						esd.open();
 					}

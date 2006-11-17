@@ -155,7 +155,7 @@ public class CalculatorDialog extends BaseStepDialog implements StepDialogInterf
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, CalculatorMetaFunction.calcLongDesc, Messages.getString("CalculatorDialog.SelectCalculationType.Title"), Messages.getString("CalculatorDialog.SelectCalculationType.Message"));
+                    EnterSelectionDialog esd = new EnterSelectionDialog(shell, CalculatorMetaFunction.calcLongDesc, Messages.getString("CalculatorDialog.SelectCalculationType.Title"), Messages.getString("CalculatorDialog.SelectCalculationType.Message"));
                     String string = esd.open();
                     if (string!=null)
                     {

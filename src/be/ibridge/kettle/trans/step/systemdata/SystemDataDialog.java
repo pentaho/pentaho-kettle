@@ -136,7 +136,7 @@ public class SystemDataDialog extends BaseStepDialog implements StepDialogInterf
 	        {
 	            public void widgetSelected(SelectionEvent e)
 	            {
-	                EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, functionDesc, Messages.getString("SystemDataDialog.SelectInfoType.DialogTitle"), Messages.getString("SystemDataDialog.SelectInfoType.DialogMessage"));
+	                EnterSelectionDialog esd = new EnterSelectionDialog(shell, functionDesc, Messages.getString("SystemDataDialog.SelectInfoType.DialogTitle"), Messages.getString("SystemDataDialog.SelectInfoType.DialogMessage"));
 	                String string = esd.open();
 	                if (string!=null)
 	                {

@@ -713,7 +713,7 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
     					String files[] = tfii.getFiles();
     					if (files!=null && files.length>0)
     					{
-    						EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, Messages.getString("XMLInputDialog.FilesReadSelection.DialogTitle"), Messages.getString("XMLInputDialog.FilesReadSelection.DialogMessage"));
+    						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("XMLInputDialog.FilesReadSelection.DialogTitle"), Messages.getString("XMLInputDialog.FilesReadSelection.DialogMessage"));
     						esd.setViewOnly();
     						esd.open();
     					}

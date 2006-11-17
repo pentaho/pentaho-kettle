@@ -675,7 +675,7 @@ public class ChefLog extends Composite
 			String err_lines[] = new String[err.size()];
 			for (i=0;i<err_lines.length;i++) err_lines[i] = (String)err.get(i);
 			
-			EnterSelectionDialog esd = new EnterSelectionDialog(shell, chef.props, err_lines, Messages.getString("ChefLog.Dialog.ErrorLines.Title"), Messages.getString("ChefLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+			EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines, Messages.getString("ChefLog.Dialog.ErrorLines.Title"), Messages.getString("ChefLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();
 			if (line!=null)
 			{

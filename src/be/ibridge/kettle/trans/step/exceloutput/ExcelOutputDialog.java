@@ -355,7 +355,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 					String files[] = tfoi.getFiles();
 					if (files!=null && files.length>0)
 					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, Messages.getString("ExcelOutputDialog.SelectOutputFiles.DialogTitle"), Messages.getString("ExcelOutputDialog.SelectOutputFiles.DialogMessage"));
+						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("ExcelOutputDialog.SelectOutputFiles.DialogTitle"), Messages.getString("ExcelOutputDialog.SelectOutputFiles.DialogMessage"));
 						esd.setViewOnly();
 						esd.open();
 					}

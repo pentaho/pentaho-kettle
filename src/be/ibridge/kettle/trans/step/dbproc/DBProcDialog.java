@@ -179,7 +179,7 @@ public class DBProcDialog extends BaseStepDialog implements StepDialogInterface
 						String[] procs = db.getProcedures();
 						if (procs!=null && procs.length>0)
 						{
-							EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, procs, Messages.getString("DBProcDialog.EnterSelection.DialogTitle"), Messages.getString("DBProcDialog.EnterSelection.DialogMessage")); //$NON-NLS-1$ //$NON-NLS-2$
+							EnterSelectionDialog esd = new EnterSelectionDialog(shell, procs, Messages.getString("DBProcDialog.EnterSelection.DialogTitle"), Messages.getString("DBProcDialog.EnterSelection.DialogMessage")); //$NON-NLS-1$ //$NON-NLS-2$
 							String proc = esd.open();
 							if (proc!=null)
 							{

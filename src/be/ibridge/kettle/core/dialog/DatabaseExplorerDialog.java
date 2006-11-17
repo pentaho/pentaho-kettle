@@ -565,7 +565,7 @@ public class DatabaseExplorerDialog extends Dialog
                 String conn[] = new String[dbs.size()];
     			for (int i=0;i<conn.length;i++) conn[i] = ((DatabaseMeta)dbs.get(i)).getName();
     			
-    			EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, conn, "Target database:", "Select the target database:");
+    			EnterSelectionDialog esd = new EnterSelectionDialog(shell, conn, "Target database:", "Select the target database:");
     			String target = esd.open();
     			if (target!=null)
     			{

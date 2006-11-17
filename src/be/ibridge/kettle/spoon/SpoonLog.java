@@ -1020,8 +1020,7 @@ public class SpoonLog extends Composite
 			for (i = 0; i < err_lines.length; i++)
 				err_lines[i] = (String) err.get(i);
 
-			EnterSelectionDialog esd = new EnterSelectionDialog(shell, spoon.props, err_lines,
-					Messages.getString("SpoonLog.Dialog.ErrorLines.Title"), Messages.getString("SpoonLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
+			EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines, Messages.getString("SpoonLog.Dialog.ErrorLines.Title"), Messages.getString("SpoonLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();
 			if (line != null)
 			{

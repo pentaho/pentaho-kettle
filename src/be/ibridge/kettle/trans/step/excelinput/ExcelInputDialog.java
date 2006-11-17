@@ -927,7 +927,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 					String[] files = eii.getFilePaths();
 					if (files.length > 0)
 					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, props, files, Messages.getString("ExcelInputDialog.FilesRead.DialogTitle"), Messages.getString("ExcelInputDialog.FilesRead.DialogMessage"));
+						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("ExcelInputDialog.FilesRead.DialogTitle"), Messages.getString("ExcelInputDialog.FilesRead.DialogMessage"));
 						esd.setViewOnly();
 						esd.open();
 					}
