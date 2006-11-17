@@ -49,6 +49,12 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterface
 {
+    public static final int FILE_COMPRESSION_TYPE_NONE = 0;
+    public static final int FILE_COMPRESSION_TYPE_ZIP  = 1;
+    public static final int FILE_COMPRESSION_TYPE_GZIP = 2;
+
+    public static final String fileCompressionTypeCodes[] = new String[] { "None", "Zip", "GZip", }; // $NON-NLS-1$
+    
     /** The base name of the output file */
 	private  String fileName;
 
@@ -119,21 +125,17 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     private  String newline;
 
 	public TextFileOutputMeta()
-	{
-		super(); // allocate BaseStepMeta
-	}
-    
-    
-	
-	/**
+    {
+        super(); // allocate BaseStepMeta
+    }
+
+    /**
      * @return FileAsCommand
      */
     public boolean isFileAsCommand()
     {
         return fileAsCommand;
     }
-
-
 
     /**
      * @param fileAsCommand The fileAsCommand to set
@@ -143,17 +145,13 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.fileAsCommand = fileAsCommand;
     }
 
-
-
-	/**
+    /**
      * @return Returns the dateInFilename.
      */
     public boolean isDateInFilename()
     {
         return dateInFilename;
     }
-
-
 
     /**
      * @param dateInFilename The dateInFilename to set.
@@ -163,8 +161,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.dateInFilename = dateInFilename;
     }
 
-
-
     /**
      * @return Returns the enclosure.
      */
@@ -172,8 +168,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return enclosure;
     }
-
-
 
     /**
      * @param enclosure The enclosure to set.
@@ -183,9 +177,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.enclosure = enclosure;
     }
 
-
-    
-
     /**
      * @return Returns the enclosureForced.
      */
@@ -193,8 +184,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return enclosureForced;
     }
-
-
 
     /**
      * @param enclosureForced The enclosureForced to set.
@@ -204,8 +193,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.enclosureForced = enclosureForced;
     }
 
-
-
     /**
      * @return Returns the extension.
      */
@@ -213,8 +200,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return extension;
     }
-
-
 
     /**
      * @param extension The extension to set.
@@ -224,8 +209,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.extension = extension;
     }
 
-
-
     /**
      * @return Returns the fileAppended.
      */
@@ -233,8 +216,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return fileAppended;
     }
-
-
 
     /**
      * @param fileAppended The fileAppended to set.
@@ -244,8 +225,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.fileAppended = fileAppended;
     }
 
-
-
     /**
      * @return Returns the fileFormat.
      */
@@ -253,7 +232,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return fileFormat;
     }
-
 
     /**
      * @param fileFormat The fileFormat to set.
@@ -263,7 +241,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.fileFormat = fileFormat;
     }
 
-
     /**
      * @return Returns the fileCompression.
      */
@@ -271,7 +248,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return fileCompression;
     }
-
 
     /**
      * @param fileCompression The fileCompression to set.
@@ -281,8 +257,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.fileCompression = fileCompression;
     }
 
-
-
     /**
      * @return Returns the fileName.
      */
@@ -290,8 +264,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return fileName;
     }
-
-
 
     /**
      * @param fileName The fileName to set.
@@ -301,8 +273,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.fileName = fileName;
     }
 
-
-
     /**
      * @return Returns the footer.
      */
@@ -310,8 +280,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return footerEnabled;
     }
-
-
 
     /**
      * @param footer The footer to set.
@@ -321,8 +289,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.footerEnabled = footer;
     }
 
-
-
     /**
      * @return Returns the header.
      */
@@ -330,8 +296,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return headerEnabled;
     }
-
-
 
     /**
      * @param header The header to set.
@@ -341,8 +305,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.headerEnabled = header;
     }
 
-
-
     /**
      * @return Returns the newline.
      */
@@ -350,8 +312,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return newline;
     }
-
-
 
     /**
      * @param newline The newline to set.
@@ -361,8 +321,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.newline = newline;
     }
 
-
-
     /**
      * @return Returns the padded.
      */
@@ -370,8 +328,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return padded;
     }
-
-
 
     /**
      * @param padded The padded to set.
@@ -381,8 +337,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.padded = padded;
     }
 
-
-
     /**
      * @return Returns the fastDump.
      */
@@ -390,8 +344,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return fastDump;
     }
-
-
 
     /**
      * @param fastDump The fastDump to set.
@@ -401,8 +353,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.fastDump = fastDump;
     }
 
-
-
     /**
      * @return Returns the separator.
      */
@@ -410,8 +360,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return separator;
     }
-
-
 
     /**
      * @param separator The separator to set.
@@ -421,8 +369,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.separator = separator;
     }
 
-
-
     /**
      * @return Returns the splitEvery.
      */
@@ -430,8 +376,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return splitEvery;
     }
-
-
 
     /**
      * @param splitEvery The splitEvery to set.
@@ -441,8 +385,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.splitEvery = splitEvery;
     }
 
-
-
     /**
      * @return Returns the stepNrInFilename.
      */
@@ -450,8 +392,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return stepNrInFilename;
     }
-
-
 
     /**
      * @param stepNrInFilename The stepNrInFilename to set.
@@ -461,8 +401,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.stepNrInFilename = stepNrInFilename;
     }
 
-
-
     /**
      * @return Returns the partNrInFilename.
      */
@@ -470,8 +408,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return partNrInFilename;
     }
-
-
 
     /**
      * @param partNrInFilename The partNrInFilename to set.
@@ -481,8 +417,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.partNrInFilename = partNrInFilename;
     }
 
-
-
     /**
      * @return Returns the timeInFilename.
      */
@@ -490,8 +424,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return timeInFilename;
     }
-
-
 
     /**
      * @param timeInFilename The timeInFilename to set.
@@ -501,8 +433,6 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.timeInFilename = timeInFilename;
     }
 
-
-
     /**
      * @return Returns the outputFields.
      */
@@ -510,7 +440,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
     {
         return outputFields;
     }
-    
+
     /**
      * @param outputFields The outputFields to set.
      */
@@ -519,43 +449,38 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
         this.outputFields = outputFields;
     }
 
-
     /**
-     * @return The desired encoding of output file, null or empty if the default system encoding needs to be used. 
+     * @return The desired encoding of output file, null or empty if the default system encoding needs to be used.
      */
     public String getEncoding()
     {
         return encoding;
     }
 
-
     /**
-     * @param encoding The desired encoding of output file, null or empty if the default system encoding needs to be used.
+     * @param encoding The desired encoding of output file, null or empty if the default system encoding needs to be
+     * used.
      */
     public void setEncoding(String encoding)
     {
         this.encoding = encoding;
     }
 
-    
     /**
-     * @return The desired last line in the output file, null or empty if nothing has to be added. 
+     * @return The desired last line in the output file, null or empty if nothing has to be added.
      */
     public String getEndedLine()
     {
         return endedLine;
     }
 
-
     /**
-     * @param endedLine The desired last line in the output file, null or empty if nothing has to be added. 
+     * @param endedLine The desired last line in the output file, null or empty if nothing has to be added.
      */
     public void setEndedLine(String endedLine)
     {
         this.endedLine = endedLine;
     }    
-    
-    
     
 	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
 		throws KettleXMLException
@@ -599,12 +524,17 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			headerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "header"));
 			footerEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "footer"));
 			fileFormat       = XMLHandler.getTagValue(stepnode, "format");
-			fileCompression       = XMLHandler.getTagValue(stepnode, "compression");
-			if (fileCompression == null) {
+			fileCompression  = XMLHandler.getTagValue(stepnode, "compression");
+			if (fileCompression == null) 
+            {
 			  if ("Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "zipped")))
-					  fileCompression = "Zip";
+              {
+			      fileCompression = fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_ZIP];
+              }
 			  else
-				  fileCompression = "None";
+              {
+				  fileCompression = fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE];
+              }
 			}
             encoding         = XMLHandler.getTagValue(stepnode, "encoding");
 
@@ -682,7 +612,7 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 		headerEnabled    = true;
 		footerEnabled    = false;
 		fileFormat       = "DOS";
-		fileCompression  = "None";
+		fileCompression  = fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE];
 		fileName         = "file";
 		fileAsCommand    = false;
 		extension        = "txt";
@@ -921,8 +851,12 @@ public class TextFileOutputMeta extends BaseStepMeta  implements StepMetaInterfa
 			{
 				if (rep.getStepAttributeBoolean(id_step, "zipped"))
 				{
-					fileCompression = "Zip";
+					fileCompression = fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_ZIP];
 				}
+                else
+                {
+                    fileCompression = fileCompressionTypeCodes[FILE_COMPRESSION_TYPE_NONE];
+                }
 			}
             encoding        =      rep.getStepAttributeString (id_step, "encoding");
             

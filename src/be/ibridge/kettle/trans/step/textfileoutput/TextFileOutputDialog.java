@@ -677,10 +677,7 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		wCompression.setText(Messages.getString("TextFileOutputDialog.Compression.Label"));
  		props.setLook(wCompression);
 
-		wCompression.add("None");
-		wCompression.add("Zip");
-		wCompression.add("GZip");
-		wCompression.select(0);
+		wCompression.setItems(TextFileOutputMeta.fileCompressionTypeCodes);
 		wCompression.addModifyListener(lsMod);
 		fdCompression=new FormData();
 		fdCompression.left = new FormAttachment(middle, 0);

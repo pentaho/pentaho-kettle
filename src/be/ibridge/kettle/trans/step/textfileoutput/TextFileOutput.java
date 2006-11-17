@@ -50,6 +50,10 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
  */
 public class TextFileOutput extends BaseStep implements StepInterface
 {
+    private static final String FILE_COMPRESSION_TYPE_NONE = TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_NONE];
+    private static final String FILE_COMPRESSION_TYPE_ZIP  = TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_ZIP];
+    private static final String FILE_COMPRESSION_TYPE_GZIP = TextFileOutputMeta.fileCompressionTypeCodes[TextFileOutputMeta.FILE_COMPRESSION_TYPE_GZIP];
+    
 	private TextFileOutputMeta meta;
 	private TextFileOutputData data;
 	 
@@ -625,9 +629,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	
 	            OutputStream outputStream;
                 
-                if (!Const.isEmpty(meta.getFileCompression()))
+                if (!Const.isEmpty(meta.getFileCompression()) && !meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_NONE))
                 {
-    				if (meta.getFileCompression().equals("Zip"))
+    				if (meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_ZIP))
     				{
     		            log.logDetailed(toString(), "Opening output stream in zipped mode");
     					FileOutputStream fos = new FileOutputStream(file, meta.isFileAppended());
@@ -638,7 +642,7 @@ public class TextFileOutput extends BaseStep implements StepInterface
     					data.zip.putNextEntry(zipentry);
     					outputStream=data.zip;
     				}
-    				else if (meta.getFileCompression().equals("GZip"))
+    				else if (meta.getFileCompression().equals(FILE_COMPRESSION_TYPE_GZIP))
     				{
     		            log.logDetailed(toString(), "Opening output stream in gzipped mode");
     					FileOutputStream fos = new FileOutputStream(file, meta.isFileAppended());
