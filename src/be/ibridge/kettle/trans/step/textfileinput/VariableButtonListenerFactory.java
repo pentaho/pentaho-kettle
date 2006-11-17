@@ -10,7 +10,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.KettleVariables;
-import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.util.StringUtil;
 
@@ -44,7 +43,6 @@ public class VariableButtonListenerFactory
                     str[i] = key[i]+"  ["+val[i]+"]";
                 }
                 
-                Props props = Props.getInstance();
                 EnterSelectionDialog esd = new EnterSelectionDialog(composite.getShell(), str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Message"));
                 if (esd.open()!=null)
                 {

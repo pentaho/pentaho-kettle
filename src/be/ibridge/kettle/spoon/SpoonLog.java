@@ -73,6 +73,7 @@ import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
 import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
+import be.ibridge.kettle.trans.step.StepStatus;
 
 /**
  * SpoonLog handles the display of the logging information in the Spoon logging window.
@@ -754,7 +755,6 @@ public class SpoonLog extends Composite
 	private void refreshView()
 	{
 		boolean insert = true;
-		float lapsed;
 
   		if (wFields.isDisposed()) return;
 		if (refresh_busy) return;
@@ -793,6 +793,7 @@ public class SpoonLog extends Composite
 				BaseStep baseStep = trans.getRunThread(i);
 				if ( (baseStep.isAlive() && wOnlyActive.getSelection()) || baseStep.getStatus()!=StepDataInterface.STATUS_EMPTY)
 				{
+                    StepStatus stepStatus = new StepStatus(baseStep);
                     TableItem ti;
                     if (insert)
                     {
@@ -803,35 +804,9 @@ public class SpoonLog extends Composite
 						ti = table.getItem(nr);
                     }
 
-					// Proc: nr of lines processed: input + output!
-					long in_proc = baseStep.linesInput + baseStep.linesRead;
-					long out_proc = baseStep.linesOutput + baseStep.linesWritten + baseStep.linesUpdated;
+					String fields[] = stepStatus.getSpoonLogFields();
 
-					lapsed = ((float) baseStep.getRuntime()) / 1000;
-					double in_speed = 0;
-					double out_speed = 0;
-
-					if (lapsed != 0)
-					{
-						in_speed = Math.floor(10 * (in_proc / lapsed)) / 10;
-						out_speed = Math.floor(10 * (out_proc / lapsed)) / 10;
-					}
-
-					String fields[] = new String[colinf.length + 1];
-					fields[1] = baseStep.getStepname();
-					fields[2] = "" + baseStep.getCopy(); //$NON-NLS-1$
-					fields[3] = "" + baseStep.linesRead; //$NON-NLS-1$
-					fields[4] = "" + baseStep.linesWritten; //$NON-NLS-1$
-					fields[5] = "" + baseStep.linesInput; //$NON-NLS-1$
-					fields[6] = "" + baseStep.linesOutput; //$NON-NLS-1$
-					fields[7] = "" + baseStep.linesUpdated; //$NON-NLS-1$
-					fields[8] = "" + baseStep.getErrors(); //$NON-NLS-1$
-					fields[9] = "" + baseStep.getStatusDescription(); //$NON-NLS-1$
-					fields[10] = "" + Math.floor((lapsed * 10) + 0.5) / 10; //$NON-NLS-1$
-					fields[11] = lapsed == 0 ? "-" : "" + (in_speed > out_speed ? in_speed : out_speed); //$NON-NLS-1$ //$NON-NLS-2$
-					fields[12] = baseStep.isAlive() ? "" + baseStep.getPriority() + "/" + baseStep.rowsetInputSize() + "/" + baseStep.rowsetOutputSize() : "-"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-					fields[13] = "" + baseStep.getNrGetSleeps() + "/" + baseStep.getNrPutSleeps();
-					// Anti-flicker: if nothing has changed, don't change it on the screen!
+                    // Anti-flicker: if nothing has changed, don't change it on the screen!
 					for (int f = 1; f < fields.length; f++)
 					{
 						if (!fields[f].equalsIgnoreCase(ti.getText(f)))

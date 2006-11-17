@@ -48,8 +48,8 @@ public class GetStatusHandler extends AbstractHandler
             response.setCharacterEncoding(Const.XML_ENCODING);
             
             
-            out.println(XMLHandler.getXMLHeader(Const.XML_ENCODING));
-            out.println("<"+XML_TAG+">"+Const.CR);
+            out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
+            out.println("<"+XML_TAG+">");
 
             String[] transNames = transformationMap.getTransformationNames();
             for (int i=0;i<transNames.length;i++)
@@ -58,13 +58,13 @@ public class GetStatusHandler extends AbstractHandler
                 Trans  trans  = transformationMap.getTransformation(name);
                 String status = trans.getStatus();
                 
-                out.println("  <transstatus>");
-                out.println(XMLHandler.addTagValue("trans", name, false));                
-                out.println(XMLHandler.addTagValue("status", status, false));                
-                out.println("  </transstatus>"+Const.CR);
+                out.print("  <transstatus>");
+                out.print(XMLHandler.addTagValue("trans", name, false));                
+                out.print(XMLHandler.addTagValue("status", status, false));                
+                out.println("  </transstatus>");
             }
             
-            out.println("</"+XML_TAG+">"+Const.CR);
+            out.println("</"+XML_TAG+">");
 
         }
         else

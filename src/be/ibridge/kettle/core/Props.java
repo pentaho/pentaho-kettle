@@ -271,6 +271,11 @@ public class Props implements Cloneable
         loadScreens();
         loadPluginHistory();
     }
+    
+    public String toString()
+    {
+        return "User preferences";
+    }
 
     public String getFilename()
 	{
