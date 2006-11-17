@@ -1,6 +1,5 @@
 package be.ibridge.kettle.www;
 
-import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
