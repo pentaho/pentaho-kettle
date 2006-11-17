@@ -91,7 +91,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable
         name = XMLHandler.getTagValue(clusterSchemaNode, "name");
         
         Node slavesNode = XMLHandler.getSubNode(clusterSchemaNode, "slaveservers");
-        int nrSlaves = XMLHandler.countNodes(clusterSchemaNode, "slaveserver");
+        int nrSlaves = XMLHandler.countNodes(slavesNode, "slaveserver");
         for (int i=0;i<nrSlaves;i++)
         {
             Node slaveNode = XMLHandler.getSubNodeByNr(slavesNode, "slaveserver", i);

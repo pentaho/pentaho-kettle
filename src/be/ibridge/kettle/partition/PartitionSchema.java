@@ -23,6 +23,7 @@ public class PartitionSchema extends ChangedFlag implements Cloneable
 
     public PartitionSchema()
     {
+        partitionIDs=new String[] {};
     }
     
     /**

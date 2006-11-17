@@ -3237,7 +3237,7 @@ public class Spoon implements AddUndoPositionInterface
             {
                 ClusterSchema schema = (ClusterSchema) transMeta.getClusterSchemas().get(i);
                 
-                TreeItem schemaItem = new TreeItem(tiPart, SWT.NONE);
+                TreeItem schemaItem = new TreeItem(tiClus, SWT.NONE);
                 schemaItem.setText(schema.toString());
                 schemaItem.setForeground(GUIResource.getInstance().getColorBlack());
                 schemaItem.setImage(GUIResource.getInstance().getImageBol());

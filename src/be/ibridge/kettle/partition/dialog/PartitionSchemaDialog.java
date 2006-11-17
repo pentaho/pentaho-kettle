@@ -33,7 +33,6 @@ import be.ibridge.kettle.core.database.PartitionDatabaseMeta;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.partition.PartitionSchema;
-import be.ibridge.kettle.trans.dialog.Messages;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -59,7 +58,7 @@ public class PartitionSchemaDialog extends Dialog
     // Partitions
     private TableView wPartitions;
     
-	private Button    wOK, wCancel;
+	private Button    wOK, wGet, wCancel;
 	
     private ModifyListener lsMod;
 
@@ -114,6 +113,9 @@ public class PartitionSchemaDialog extends Dialog
 		wOK     = new Button(shell, SWT.PUSH); 
 		wOK.setText(" &OK ");
 
+        wGet    = new Button(shell, SWT.PUSH); 
+        wGet.setText(" &Import partitions");
+
 		wCancel = new Button(shell, SWT.PUSH); 
 		wCancel.setText(" &Cancel ");
 
@@ -129,7 +131,7 @@ public class PartitionSchemaDialog extends Dialog
         FormData fdlServiceURL = new FormData();
         fdlServiceURL.top   = new FormAttachment(0, 0);
         fdlServiceURL.left  = new FormAttachment(0, 0);  // First one in the left top corner
-        fdlServiceURL.right = new FormAttachment(middle, -margin);
+        fdlServiceURL.right = new FormAttachment(middle, 0);
         wlName.setLayoutData(fdlServiceURL);
 
         wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
@@ -137,22 +139,23 @@ public class PartitionSchemaDialog extends Dialog
         wName.addModifyListener(lsMod);
         FormData fdServiceURL = new FormData();
         fdServiceURL.top  = new FormAttachment(0, 0);
-        fdServiceURL.left = new FormAttachment(middle, 0); // To the right of the label
+        fdServiceURL.left = new FormAttachment(middle, margin); // To the right of the label
         fdServiceURL.right= new FormAttachment(95, 0);
         wName.setLayoutData(fdServiceURL);
 
         // Schema list:
-        Label wlPartitions = new Label(shell, SWT.LEFT);
+        Label wlPartitions = new Label(shell, SWT.RIGHT);
         wlPartitions.setText("Partitions  ");
         props.setLook(wlPartitions);
         FormData fdlPartitions=new FormData();
-        fdlPartitions.left = new FormAttachment(middle, margin*2);
-        fdlPartitions.top  = new FormAttachment(shell, margin);
+        fdlPartitions.left  = new FormAttachment(0, 0);
+        fdlPartitions.right = new FormAttachment(middle, 0);
+        fdlPartitions.top   = new FormAttachment(wName, margin);
         wlPartitions.setLayoutData(fdlPartitions);
         
         ColumnInfo[] partitionColumns=new ColumnInfo[] 
             {
-                new ColumnInfo(Messages.getString("Partition ID"), ColumnInfo.COLUMN_TYPE_TEXT, false, false),
+                new ColumnInfo("Partition ID", ColumnInfo.COLUMN_TYPE_TEXT, false, false),
             };
         wPartitions=new TableView(shell, 
                               SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, 
@@ -163,14 +166,15 @@ public class PartitionSchemaDialog extends Dialog
                               );
         props.setLook(wPartitions);
         FormData fdPartitions=new FormData();
-        fdPartitions.left   = new FormAttachment(middle, margin*2);
+        fdPartitions.left   = new FormAttachment(middle, margin);
         fdPartitions.right  = new FormAttachment(100, 0);
-        fdPartitions.top    = new FormAttachment(wlPartitions, margin);
+        fdPartitions.top    = new FormAttachment(wName, margin);
         fdPartitions.bottom = new FormAttachment(wOK, -margin*2);
         wPartitions.setLayoutData(fdPartitions);
         
 		// Add listeners
 		wOK.addListener(SWT.Selection, new Listener () { public void handleEvent (Event e) { ok(); } } );
+        wGet.addListener(SWT.Selection, new Listener () { public void handleEvent (Event e) { importPartitions(); } } );
         wCancel.addListener(SWT.Selection, new Listener () { public void handleEvent (Event e) { cancel(); } } );
 		
         SelectionAdapter selAdapter=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
@@ -246,7 +250,7 @@ public class PartitionSchemaDialog extends Dialog
         // The cluster-schema is maneged by the buttons.
     }
     
-    protected void getPartitions()
+    protected void importPartitions()
     {
         ArrayList partitionedDatabaseNames = new ArrayList();
         

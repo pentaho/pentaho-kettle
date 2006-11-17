@@ -31,7 +31,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.cluster.ClusterSchema;
-import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.CheckResult;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DBCache;
@@ -289,13 +288,14 @@ public class TransMeta implements XMLInterface
         
         
         // For testing purposes only, we add a single cluster schema.
-        // TODO: remove this test-code later on.
-        // 
+        // T O D O: remove this test-code later on.
+        /*
         ClusterSchema clusterSchema = new ClusterSchema();
         clusterSchema.setName("Local cluster");
         SlaveServer localSlave = new SlaveServer("127.0.0.1", "80", null, null, null, null, null);
         clusterSchema.getSlaveServers().add(localSlave);
         clusterSchemas.add(clusterSchema);
+        */
 
     }
 
@@ -2372,10 +2372,10 @@ public class TransMeta implements XMLInterface
                 }
             }
 
-            // Read the partitioning schemas
+            // Read the cluster schemas
             // 
-            Node clusterSchemasNode = XMLHandler.getSubNode(infonode, "clusterchemas"); //$NON-NLS-1$
-            int nrClusterSchemas = XMLHandler.countNodes(partSchemasNode, ClusterSchema.XML_TAG); //$NON-NLS-1$
+            Node clusterSchemasNode = XMLHandler.getSubNode(infonode, "clusterschemas"); //$NON-NLS-1$
+            int nrClusterSchemas = XMLHandler.countNodes(clusterSchemasNode, ClusterSchema.XML_TAG); //$NON-NLS-1$
             for (int i = 0 ; i < nrClusterSchemas ; i++)
             {
                 Node clusterSchemaNode = XMLHandler.getSubNodeByNr(clusterSchemasNode, ClusterSchema.XML_TAG, i);
