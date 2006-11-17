@@ -34,11 +34,15 @@ public class WebServer
     
     private TransformationMap  transformationMap;
 
-    public WebServer(TransformationMap transformationMap) throws Exception
+    private int port;
+
+    public WebServer(TransformationMap transformationMap, int port) throws Exception
     {
         this.transformationMap = transformationMap;
+        this.port = port;
+        
         userRealm = new HashUserRealm("Kettle", "pwd/kettle.pwd");
-
+        
         startServer();
     }
 
@@ -173,7 +177,7 @@ public class WebServer
                     InetAddress inetAddress = (InetAddress) ip.nextElement();
             
                     SocketConnector connector = new SocketConnector();
-                    connector.setPort(PORT);
+                    connector.setPort(port);
                     connector.setHost(inetAddress.getHostAddress());
                     connector.setName("Kettle HTTP listener for ["+inetAddress.getHostAddress()+"]");
                     log.logBasic(toString(), "Created listener for webserver @ address : " + inetAddress.getHostAddress() + " on " + nwiName);

@@ -1,5 +1,6 @@
 package be.ibridge.kettle.www;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
@@ -18,7 +19,20 @@ public class Carte
         TransformationMap map = new TransformationMap(Thread.currentThread().getName());
         Trans trans = generateTestTransformation();
         map.addTransformation(trans.getName(), trans);
-        new WebServer(map);
+        
+        int port = WebServer.PORT;
+        if (args.length>=1)
+        {
+            try
+            {
+                port = Integer.parseInt(args[0]);
+            }
+            catch(Exception e)
+            {
+                System.out.println("Unable to parse port ["+args[0]+"], using port ["+port+"]");
+            }
+        }
+        new WebServer(map, port);
     }
 
     private static void init() throws Exception
