@@ -10,13 +10,18 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.mortbay.jetty.handler.AbstractHandler;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.trans.Trans;
 
 public class GetStatusHandler extends AbstractHandler
 {
     private static final long serialVersionUID = 3634806745372015720L;
+    
     public static final String CONTEXT_PATH = "/kettle/status";
+    public static final String XML_TAG = "serverstatus";
+    
     private static LogWriter log = LogWriter.getInstance();
     private TransformationMap transformationMap;
     
@@ -32,21 +37,20 @@ public class GetStatusHandler extends AbstractHandler
 
         if (log.isDebug()) log.logDebug(toString(), "Status requested");
 
-        response.setContentType("text/html");
-
         OutputStream os = response.getOutputStream();
         PrintStream out = new PrintStream(os);
 
-        out.println("<HTML>");
-        out.println("<HEAD><TITLE>Kettle slave server status</TITLE></HEAD>");
-        out.println("<BODY>");
-        out.println("<H1>Status</H1>");
+        boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
 
-        out.println("<table border=\"1\">");
-        out.print("<tr> <th>Transformation name</th> <th>Status</th> </tr>");
-
-        try
+        if (useXML)
         {
+            response.setContentType("text/xml");
+            response.setCharacterEncoding(Const.XML_ENCODING);
+            
+            
+            out.println(XMLHandler.getXMLHeader(Const.XML_ENCODING));
+            out.println("<"+XML_TAG+">"+Const.CR);
+
             String[] transNames = transformationMap.getTransformationNames();
             for (int i=0;i<transNames.length;i++)
             {
@@ -54,27 +58,58 @@ public class GetStatusHandler extends AbstractHandler
                 Trans  trans  = transformationMap.getTransformation(name);
                 String status = trans.getStatus();
                 
-                out.print("<tr>");
-                out.print("<td><a href=\"/kettle/transStatus?name="+name+"\">"+name+"</a></td>");
-                out.print("<td>"+status+"</td>");
-                out.print("</tr>");
+                out.println("  <transstatus>");
+                out.println(XMLHandler.addTagValue("trans", name, false));                
+                out.println(XMLHandler.addTagValue("status", status, false));                
+                out.println("  </transstatus>"+Const.CR);
             }
-            out.print("</table>");
-        }
-        catch (Exception ex)
-        {
-            out.println("<p>");
-            out.println("<pre>");
-            ex.printStackTrace(out);
-            out.println("</pre>");
-        }
+            
+            out.println("</"+XML_TAG+">"+Const.CR);
 
-        out.println("<p>");
-        out.println("</BODY>");
-        out.println("</HTML>");
+        }
+        else
+        {
+            response.setContentType("text/html");
+    
+            out.println("<HTML>");
+            out.println("<HEAD><TITLE>Kettle slave server status</TITLE></HEAD>");
+            out.println("<BODY>");
+            out.println("<H1>Status</H1>");
+    
+            out.println("<table border=\"1\">");
+            out.print("<tr> <th>Transformation name</th> <th>Status</th> </tr>");
+    
+            try
+            {
+                String[] transNames = transformationMap.getTransformationNames();
+                for (int i=0;i<transNames.length;i++)
+                {
+                    String name   = transNames[i]; 
+                    Trans  trans  = transformationMap.getTransformation(name);
+                    String status = trans.getStatus();
+                    
+                    out.print("<tr>");
+                    out.print("<td><a href=\"/kettle/transStatus?name="+name+"\">"+name+"</a></td>");
+                    out.print("<td>"+status+"</td>");
+                    out.print("</tr>");
+                }
+                out.print("</table>");
+            }
+            catch (Exception ex)
+            {
+                out.println("<p>");
+                out.println("<pre>");
+                ex.printStackTrace(out);
+                out.println("</pre>");
+            }
+    
+            out.println("<p>");
+            out.println("</BODY>");
+            out.println("</HTML>");
+        }
 
         out.flush();
-
+        
         // Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
         // baseRequest.setHandled(true);
     }
