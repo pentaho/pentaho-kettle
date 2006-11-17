@@ -365,7 +365,7 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
                 
 				switch(aggregateType[i])
 				{
-					case TYPE_GROUP_SUM            : 
+					case TYPE_GROUP_SUM            : value_type = subj.getType(); break;
 					case TYPE_GROUP_AVERAGE        :
 					case TYPE_GROUP_COUNT_ALL      : value_type = Value.VALUE_TYPE_NUMBER; break;
 					case TYPE_GROUP_MIN            : 
