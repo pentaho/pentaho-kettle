@@ -102,7 +102,7 @@ public class ClusterSchemaDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText("Slave Server dialog");
+		shell.setText("Clustering schema dialog");
 		shell.setLayout (formLayout);
  		
 		// First, add the buttons...
@@ -126,7 +126,7 @@ public class ClusterSchemaDialog extends Dialog
         FormData fdlServiceURL = new FormData();
         fdlServiceURL.top   = new FormAttachment(0, 0);
         fdlServiceURL.left  = new FormAttachment(0, 0);  // First one in the left top corner
-        fdlServiceURL.right = new FormAttachment(middle, -margin);
+        fdlServiceURL.right = new FormAttachment(middle, 0);
         wlName.setLayoutData(fdlServiceURL);
 
         wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
@@ -134,16 +134,17 @@ public class ClusterSchemaDialog extends Dialog
         wName.addModifyListener(lsMod);
         FormData fdServiceURL = new FormData();
         fdServiceURL.top  = new FormAttachment(0, 0);
-        fdServiceURL.left = new FormAttachment(middle, 0); // To the right of the label
+        fdServiceURL.left = new FormAttachment(middle, margin); // To the right of the label
         fdServiceURL.right= new FormAttachment(95, 0);
         wName.setLayoutData(fdServiceURL);
 
         // Schema servers:
-        Label wlServers = new Label(shell, SWT.LEFT);
+        Label wlServers = new Label(shell, SWT.RIGHT);
         wlServers.setText("Slave servers  ");
         props.setLook(wlServers);
         FormData fdlServers=new FormData();
-        fdlServers.left = new FormAttachment(middle, margin*2);
+        fdlServers.left = new FormAttachment(0, 0);
+        fdlServers.right = new FormAttachment(middle, 0);
         fdlServers.top  = new FormAttachment(wName, margin);
         wlServers.setLayoutData(fdlServers);
         
@@ -184,11 +185,12 @@ public class ClusterSchemaDialog extends Dialog
         wServers.setReadonly(true);
         props.setLook(wServers);
         FormData fdServers = new FormData();
-        fdServers.left = new FormAttachment(middle, margin * 2);
+        fdServers.left = new FormAttachment(middle, margin );
         fdServers.right = new FormAttachment(wDel, -2*margin);
-        fdServers.top = new FormAttachment(wlServers, margin);
+        fdServers.top = new FormAttachment(wName, margin);
         fdServers.bottom = new FormAttachment(wOK, -margin * 2);
         wServers.setLayoutData(fdServers);
+        wServers.table.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { editSlaveServer(); }});
 		
 		// Add listeners
 		wOK.addListener(SWT.Selection, new Listener () { public void handleEvent (Event e) { ok(); } } );

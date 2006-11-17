@@ -104,7 +104,7 @@ public class PartitionSchemaDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText("Slave Server dialog");
+		shell.setText("Database Partitioning schema dialog");
 		shell.setLayout (formLayout);
  		
 		// First, add the buttons...
@@ -119,7 +119,7 @@ public class PartitionSchemaDialog extends Dialog
 		wCancel = new Button(shell, SWT.PUSH); 
 		wCancel.setText(" &Cancel ");
 
-		Button[] buttons = new Button[] { wOK, wCancel };
+		Button[] buttons = new Button[] { wOK, wGet, wCancel };
 		BaseStepDialog.positionBottomButtons(shell, buttons, margin, null);
 		
 		// The rest stays above the buttons, so we added those first...

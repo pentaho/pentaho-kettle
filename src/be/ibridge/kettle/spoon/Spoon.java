@@ -1492,6 +1492,21 @@ public class Spoon implements AddUndoPositionInterface
                 miEdit.addListener( SWT.Selection, lsEdit );
                 miDel.addListener ( SWT.Selection, lsDel  );
             }
+            if (strparent.equalsIgnoreCase(STRING_PARTITIONS))
+            {
+                MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.PARTITIONS.Edit"));//Edit
+                MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.PARTITIONS.Delete"));//Delete
+                miEdit.addListener( SWT.Selection, lsEdit );
+                miDel.addListener ( SWT.Selection, lsDel  );
+            }
+            if (strparent.equalsIgnoreCase(STRING_CLUSTERS))
+            {
+                MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Edit"));//Edit
+                MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Delete"));//Delete
+                miEdit.addListener( SWT.Selection, lsEdit );
+                miDel.addListener ( SWT.Selection, lsDel  );
+            }
+            
             
             TreeItem grandparent = parent.getParentItem();
             if (grandparent!=null)
@@ -1647,6 +1662,8 @@ public class Spoon implements AddUndoPositionInterface
                 if (strparent.equalsIgnoreCase(STRING_CONNECTIONS)) editConnection(name);
                 if (strparent.equalsIgnoreCase(STRING_STEPS      )) editStep(name);
                 if (strparent.equalsIgnoreCase(STRING_HOPS       )) editHop(name);
+                if (strparent.equalsIgnoreCase(STRING_PARTITIONS )) editPartitionSchema(name);
+                if (strparent.equalsIgnoreCase(STRING_CLUSTERS   )) editClusterSchema(name);
                 
                 TreeItem grandparent = parent.getParentItem();
                 if (grandparent!=null)
@@ -1744,6 +1761,8 @@ public class Spoon implements AddUndoPositionInterface
                 if (type.equalsIgnoreCase(STRING_CONNECTIONS)) delConnection(name[i]);
                 if (type.equalsIgnoreCase(STRING_STEPS      )) delStep(name[i]);
                 if (type.equalsIgnoreCase(STRING_HOPS       )) delHop(name[i]);
+                if (type.equalsIgnoreCase(STRING_PARTITIONS )) delPartitionSchema(name[i]);
+                if (type.equalsIgnoreCase(STRING_CLUSTERS   )) delClusterSchema(name[i]);
             } 
         }
     }
@@ -5014,6 +5033,31 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
+    private void editPartitionSchema(String name)
+    {
+        PartitionSchema partitionSchema = transMeta.findPartitionSchema(name);
+        if (partitionSchema!=null)
+        {
+            PartitionSchemaDialog dialog = new PartitionSchemaDialog(shell, partitionSchema, transMeta.getDatabases());
+            if (dialog.open())
+            {
+                refreshTree(true);
+            }
+        }
+    }
+    
+
+    private void delPartitionSchema(String name)
+    {
+        PartitionSchema partitionSchema = transMeta.findPartitionSchema(name);
+        if (partitionSchema!=null)
+        {
+            int idx = transMeta.getPartitionSchemas().indexOf(partitionSchema);
+            transMeta.getPartitionSchemas().remove(idx);
+            refreshTree(true);
+        }
+    }
+
     /**
      * This creates a new clustering schema, edits it and adds it to the transformation metadata
      *
@@ -5029,6 +5073,32 @@ public class Spoon implements AddUndoPositionInterface
             refreshTree(true);
         }
     }
+
+    private void editClusterSchema(String name)
+    {
+        ClusterSchema clusterSchema = transMeta.findClusterSchema(name);
+        
+        if (clusterSchema!=null)
+        {
+            ClusterSchemaDialog dialog = new ClusterSchemaDialog(shell, clusterSchema);
+            if (dialog.open())
+            {
+                refreshTree(true);
+            }
+        }
+    }
+
+    private void delClusterSchema(String name)
+    {
+        ClusterSchema clusterSchema = transMeta.findClusterSchema(name);
+        if (clusterSchema!=null)
+        {
+            int idx = transMeta.getClusterSchemas().indexOf(clusterSchema);
+            transMeta.getClusterSchemas().remove(idx);
+            refreshTree(true);
+        }
+    }
+
 
 
 }
