@@ -576,9 +576,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 							dialog.setFileName( fname );
 						}
 						
-						if (! wCompression.getSelection().equals("None"))
+						if (! wCompression.getText().equals("None"))
 						{
-							dialog.setFilterNames(new String[] {Messages.getString("System.FileType.ZipFiles"), Messages.getString("TextFileInputDialog.FileType.TextAndCSVFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.AllFiles")});
+							dialog.setFilterNames(new String[] {Messages.getString("System.FileType.ZIPFiles"), Messages.getString("TextFileInputDialog.FileType.TextAndCSVFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.AllFiles")});
 						}
 						else
 						{
