@@ -1413,6 +1413,10 @@ public class Value implements Cloneable, XMLInterface, Serializable
                     String string = dis.readUTF();
                     setValue(string);
                 }
+                else
+                {
+                	setValue("");
+                }
                 if (theType==VALUE_TYPE_BIGNUMBER)
                 {
                     try
