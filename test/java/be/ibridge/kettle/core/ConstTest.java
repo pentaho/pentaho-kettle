@@ -121,13 +121,7 @@ public class ConstTest extends TestCase
 
 	public void testLtrim()
 	{
-		try  
-		{
-			Const.ltrim(null);
-			fail("Expected NullPointerException");
-		}
-		catch (NullPointerException ex)
-		{}
+		assertEquals(null, Const.ltrim(null));
 		assertEquals("", Const.ltrim(""));
 		assertEquals("", Const.ltrim("  "));
 		assertEquals("test ", Const.ltrim("test "));
@@ -136,13 +130,7 @@ public class ConstTest extends TestCase
 
 	public void testRtrim()
 	{
-		try  
-		{
-			Const.rtrim(null);
-			fail("Expected NullPointerException");
-		}
-		catch (NullPointerException ex)
-		{}
+		assertEquals(null, Const.rtrim(null));
 		assertEquals("", Const.rtrim(""));
 		assertEquals("", Const.rtrim("  "));
 		assertEquals("test", Const.rtrim("test "));
