@@ -4,6 +4,7 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.ChangedFlag;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.SharedObjectInterface;
 import be.ibridge.kettle.core.XMLHandler;
 
 /**
@@ -13,13 +14,14 @@ import be.ibridge.kettle.core.XMLHandler;
  * @author Matt
  *
  */
-public class PartitionSchema extends ChangedFlag implements Cloneable
+public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObjectInterface
 {
     public static final String XML_TAG = "partitionschema";
 
     private String   name;
 
     private String[] partitionIDs;
+    private boolean shared;
 
     public PartitionSchema()
     {
@@ -119,6 +121,22 @@ public class PartitionSchema extends ChangedFlag implements Cloneable
             Node partitionNode = XMLHandler.getSubNodeByNr(partitionSchemaNode, "partition", i);
             partitionIDs[i] = XMLHandler.getTagValue(partitionNode, "id");
         }
+    }
+
+    /**
+     * @return the shared
+     */
+    public boolean isShared()
+    {
+        return shared;
+    }
+
+    /**
+     * @param shared the shared to set
+     */
+    public void setShared(boolean shared)
+    {
+        this.shared = shared;
     }
 
 }

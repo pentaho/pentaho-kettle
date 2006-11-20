@@ -18,10 +18,13 @@ package be.ibridge.kettle.trans;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -43,6 +46,8 @@ import be.ibridge.kettle.core.Rectangle;
 import be.ibridge.kettle.core.Result;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.SQLStatement;
+import be.ibridge.kettle.core.SharedObjectInterface;
+import be.ibridge.kettle.core.SharedObjects;
 import be.ibridge.kettle.core.TransAction;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
@@ -163,6 +168,9 @@ public class TransMeta implements XMLInterface
     
     private boolean             feedbackShown;
     private int                 feedbackSize;
+    
+    /** If this is null, we load from the default shared objects file : $KETTLE_HOME/.kettle/shared.xml */
+    private String              sharedObjectsFile;
     
     // //////////////////////////////////////////////////////////////////////////
 
@@ -326,11 +334,24 @@ public class TransMeta implements XMLInterface
     /**
      * Add a database connection to the transformation.
      *
-     * @param ci The database connection information.
+     * @param databaseMeta The database connection information.
      */
-    public void addDatabase(DatabaseMeta ci)
+    public void addDatabase(DatabaseMeta databaseMeta)
     {
-        databases.add(ci);
+        databases.add(databaseMeta);
+    }
+    
+    /**
+     * Add a database connection to the transformation if that connection didn't exists yet.
+     * Otherwise, replace the connection in the transformation
+     *
+     * @param databaseMeta The database connection information.
+     */
+    public void addOrReplaceDatabase(DatabaseMeta databaseMeta)
+    {
+        int index = databases.indexOf(databaseMeta);
+        if (index<0) databases.add(databaseMeta); else databases.set(index, databaseMeta);
+        changed_databases = true;
     }
 
     /**
@@ -343,6 +364,20 @@ public class TransMeta implements XMLInterface
         steps.add(stepMeta);
         changed_steps = true;
     }
+    
+    /**
+     * Add a new step to the transformation if that step didn't exist yet.
+     * Otherwise, replace the step.
+     *
+     * @param stepMeta The step to be added.
+     */
+    public void addOrReplaceStep(StepMeta stepMeta)
+    {
+        int index = steps.indexOf(stepMeta);
+        if (index<0) steps.add(stepMeta); else steps.set(index, stepMeta);
+        changed_steps = true;
+    }
+
 
     /**
      * Add a new hop to the transformation.
@@ -1651,11 +1686,15 @@ public class TransMeta implements XMLInterface
             long dbids[] = rep.getDatabaseIDs();
             for (int i = 0; i < dbids.length; i++)
             {
-                DatabaseMeta ci = new DatabaseMeta(rep, dbids[i]);
-                if (ci.getName() != null && indexOfDatabase(ci) < 0)
+                DatabaseMeta databaseMeta = new DatabaseMeta(rep, dbids[i]);
+                DatabaseMeta check = findDatabase(databaseMeta.getName()); // Check if there already is one in the transformation
+                if (check==null) // We only add, never overwrite database connections. 
                 {
-                    addDatabase(ci);
-                    ci.setChanged(false);
+                    if (databaseMeta.getName() != null)
+                    {
+                        addDatabase(databaseMeta);
+                        databaseMeta.setChanged(false);
+                    }
                 }
             }
             changed_databases = false;
@@ -1805,7 +1844,10 @@ public class TransMeta implements XMLInterface
 
             // Clear everything...
             clear();
-
+            
+            // Also read objects from the shared XML file
+            readSharedObjects();
+            
             setName(transname);
             directory = repdir;
             directoryTree = directory.findRoot();
@@ -1851,8 +1893,25 @@ public class TransMeta implements XMLInterface
                 {
                     log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingStepWithID") + stepids[i]); //$NON-NLS-1$
                     if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingStepTask.Title") + (i + 1) + "/" + (stepids.length)); //$NON-NLS-1$ //$NON-NLS-2$
-                    StepMeta stepMeta = new StepMeta(log, rep, stepids[i], databases, counters, partitionSchemas);
-                    addStep(stepMeta);
+                    StepMeta stepMeta = new StepMeta(rep, stepids[i], databases, counters, partitionSchemas);
+                    StepMeta check = findStep(stepMeta.getName());
+                    if (check==null)
+                    {
+                        addStep(stepMeta);
+                    }
+                    else
+                    {
+                        if (check.isShared())
+                        {
+                            check.setDraw(stepMeta.isDrawn());
+                            check.setLocation(stepMeta.getLocation());
+                        }
+                        else
+                        {
+                            addOrReplaceStep(stepMeta);
+                        }
+                    }
+                    
                     if (monitor != null) monitor.worked(1);
                 }
                 if (monitor != null) monitor.worked(1);
@@ -1876,6 +1935,10 @@ public class TransMeta implements XMLInterface
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.LoadingTransformationDetailsTask.Title")); //$NON-NLS-1$
                 loadRepTrans(rep);
                 if (monitor != null) monitor.worked(1);
+                
+                // TODO: add support for storing and loading partition & cluster schemas from the repository.
+                // TODO: create tables R_CLUSTER_SCHEMA and R_PARTITION_SCHEMA in the repository
+                //
 
                 // Have all partitioned step reference the correct partitioning schema
                 for (int i = 0; i < nrSteps(); i++)
@@ -2201,6 +2264,9 @@ public class TransMeta implements XMLInterface
                 readDatabases(rep);
                 clearChanged();
             }
+            
+            // Now, also read objects from the shared XML file
+            readSharedObjects();
 
             // Handle connections
             int n = XMLHandler.countNodes(transnode, "connection"); //$NON-NLS-1$
@@ -2219,36 +2285,39 @@ public class TransMeta implements XMLInterface
                 }
                 else
                 {
-                    boolean askOverwrite = Props.isInitialized() ? props.askAboutReplacingDatabaseConnections() : false;
-                    boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
-                    if (askOverwrite)
+                    if (!exist.isShared()) // otherwise, we just keep the shared connection.
                     {
-                        // That means that we have a Display variable set in Props...
-                        if (props.getDisplay()!=null)
+                        boolean askOverwrite = Props.isInitialized() ? props.askAboutReplacingDatabaseConnections() : false;
+                        boolean overwrite = Props.isInitialized() ? props.replaceExistingDatabaseConnections() : true;
+                        if (askOverwrite)
                         {
-                            Shell shell = props.getDisplay().getActiveShell();
-                            
-                            MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
-                                "Warning",  
-                                null,
-                                "Connection ["+dbcon.getName()+"] already exists, do you want to overwrite this database connection?",
-                                MessageDialog.WARNING,
-                                new String[] { "Yes", "No" },//"Yes", "No" 
-                                1,
-                                "Please, don't show this warning anymore.",
-                                !props.askAboutReplacingDatabaseConnections()
-                           );
-                           int idx = md.open();
-                           props.setAskAboutReplacingDatabaseConnections(!md.getToggleState());
-                           overwrite = (idx==0); // Yes means: overwrite
+                            // That means that we have a Display variable set in Props...
+                            if (props.getDisplay()!=null)
+                            {
+                                Shell shell = props.getDisplay().getActiveShell();
+                                
+                                MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+                                    "Warning",  
+                                    null,
+                                    "Connection ["+dbcon.getName()+"] already exists, do you want to overwrite this database connection?",
+                                    MessageDialog.WARNING,
+                                    new String[] { "Yes", "No" },//"Yes", "No" 
+                                    1,
+                                    "Please, don't show this warning anymore.",
+                                    !props.askAboutReplacingDatabaseConnections()
+                               );
+                               int idx = md.open();
+                               props.setAskAboutReplacingDatabaseConnections(!md.getToggleState());
+                               overwrite = (idx==0); // Yes means: overwrite
+                            }
                         }
-                    }
-
-                    if (overwrite)
-                    {
-                        int idx = indexOfDatabase(exist);
-                        removeDatabase(idx);
-                        addDatabase(idx, dbcon);
+    
+                        if (overwrite)
+                        {
+                            int idx = indexOfDatabase(exist);
+                            removeDatabase(idx);
+                            addDatabase(idx, dbcon);
+                        }
                     }
                 }
             }
@@ -2272,8 +2341,27 @@ public class TransMeta implements XMLInterface
                 Node stepnode = XMLHandler.getSubNodeByNr(transnode, "step", i); //$NON-NLS-1$
 
                 log.logDebug(toString(), Messages.getString("TransMeta.Log.LookingAtStep") + i); //$NON-NLS-1$
-                StepMeta inf = new StepMeta(log, stepnode, databases, counters);
-                addStep(inf);
+                StepMeta stepMeta = new StepMeta(stepnode, databases, counters);
+                // Check if the step exists and if it's a shared step.
+                // If so, then we will keep the shared version, not this one.
+                // The stored XML is only for backup purposes.
+                StepMeta check = findStep(stepMeta.getName());
+                if (check!=null)
+                {
+                    if (!check.isShared()) // Don't overwrite shared objects
+                    {
+                        addOrReplaceStep(stepMeta);
+                    }
+                    else
+                    {
+                        check.setDraw(stepMeta.isDrawn()); // Just keep the drawn flag and location
+                        check.setLocation(stepMeta.getLocation());
+                    }
+                }
+                else
+                {
+                    addStep(stepMeta); // simply add it.
+                }
             }
 
             // Have all StreamValueLookups, etc. reference the correct source steps...
@@ -2358,7 +2446,23 @@ public class TransMeta implements XMLInterface
             {
                 Node partSchemaNode = XMLHandler.getSubNodeByNr(partSchemasNode, PartitionSchema.XML_TAG, i);
                 PartitionSchema partitionSchema = new PartitionSchema(partSchemaNode);
-                partitionSchemas.add(partitionSchema);
+                
+                // Check if the step exists and if it's a shared step.
+                // If so, then we will keep the shared version, not this one.
+                // The stored XML is only for backup purposes.
+                PartitionSchema check = findPartitionSchema(partitionSchema.getName());
+                if (check!=null)
+                {
+                    if (!check.isShared()) // we don't overwrite shared objects.
+                    {
+                        addOrReplacePartitionSchema(partitionSchema);
+                    }
+                }
+                else
+                {
+                    partitionSchemas.add(partitionSchema);
+                }
+                
             }
             
             // Have all step partitioning meta-data reference the correct schemas that we just loaded
@@ -2380,7 +2484,22 @@ public class TransMeta implements XMLInterface
             {
                 Node clusterSchemaNode = XMLHandler.getSubNodeByNr(clusterSchemasNode, ClusterSchema.XML_TAG, i);
                 ClusterSchema clusterSchema = new ClusterSchema(clusterSchemaNode);
-                clusterSchemas.add(clusterSchema);
+                
+                // Check if the object exists and if it's a shared object.
+                // If so, then we will keep the shared version, not this one.
+                // The stored XML is only for backup purposes.
+                ClusterSchema check = findClusterSchema(clusterSchema.getName());
+                if (check!=null)
+                {
+                    if (!check.isShared()) // we don't overwrite shared objects.
+                    {
+                        addOrReplaceClusterSchema(clusterSchema);
+                    }
+                }
+                else
+                {
+                    clusterSchemas.add(clusterSchema);
+                }
             }
            
             String srowset = XMLHandler.getTagValue(infonode, "size_rowset"); //$NON-NLS-1$
@@ -2415,6 +2534,40 @@ public class TransMeta implements XMLInterface
             if (setInternalVariables) setInternalKettleVariables();
         }
 
+    }
+
+    public void readSharedObjects() throws KettleXMLException
+    {
+        // Extract the shared steps, connections, etc. using the SharedObjects class
+        //
+        SharedObjects sharedObjects = new SharedObjects(sharedObjectsFile, databases, counters); 
+        Map objectsMap = sharedObjects.getObjectsMap();
+        Collection objects = objectsMap.values();
+        
+        for (Iterator iter = objects.iterator(); iter.hasNext();)
+        {
+            Object object = iter.next();
+            if (object instanceof DatabaseMeta)
+            {
+                DatabaseMeta databaseMeta = (DatabaseMeta) object;
+                addOrReplaceDatabase(databaseMeta);
+            }
+            else if (object instanceof StepMeta)
+            {
+                StepMeta stepMeta = (StepMeta) object;
+                addOrReplaceStep(stepMeta);
+            }
+            else if (object instanceof PartitionSchema)
+            {
+                PartitionSchema partitionSchema = (PartitionSchema) object;
+                addOrReplacePartitionSchema(partitionSchema);
+            }
+            else if (object instanceof ClusterSchema)
+            {
+                ClusterSchema clusterSchema = (ClusterSchema) object;
+                addOrReplaceClusterSchema(clusterSchema);
+            }
+        }
     }
 
     /**
@@ -4642,5 +4795,100 @@ public class TransMeta implements XMLInterface
             if (schema.getName().equalsIgnoreCase(name)) return schema;
         }
         return null;
+    }
+    
+    /**
+     * Add a new partition schema to the transformation if that didn't exist yet.
+     * Otherwise, replace it.
+     *
+     * @param partitionSchema The step to be added.
+     */
+    public void addOrReplacePartitionSchema(PartitionSchema partitionSchema)
+    {
+        int index = partitionSchemas.indexOf(partitionSchema);
+        if (index<0) partitionSchemas.add(partitionSchema); else partitionSchemas.set(index, partitionSchema);
+        setChanged();
+    }
+    
+    /**
+     * Add a new cluster schema to the transformation if that didn't exist yet.
+     * Otherwise, replace it.
+     *
+     * @param partitionSchema The step to be added.
+     */
+    public void addOrReplaceClusterSchema(ClusterSchema clusterSchema)
+    {
+        int index = clusterSchemas.indexOf(clusterSchema);
+        if (index<0) clusterSchemas.add(clusterSchema); else clusterSchemas.set(index, clusterSchema);
+        setChanged();
+    }
+
+
+    public String getSharedObjectsFile()
+    {
+        return sharedObjectsFile;
+    }
+
+    public void setSharedObjectsFile(String sharedObjectsFile)
+    {
+        this.sharedObjectsFile = sharedObjectsFile;
+    }
+
+    public void saveSharedObjects() throws KettleException
+    {
+        try
+        {
+            // First load all the shared objects...
+            SharedObjects sharedObjects = new SharedObjects(sharedObjectsFile, databases, counters);
+            
+            // Now overwrite the objects in there
+            
+            // The databases connections...
+            for (int i=0;i<nrDatabases();i++)
+            {
+                SharedObjectInterface sharedObject = getDatabase(i);
+                if (sharedObject.isShared()) 
+                {
+                    sharedObjects.storeObject(sharedObject);
+                }
+            }
+
+            // The steps...
+            for (int i=0;i<nrSteps();i++)
+            {
+                SharedObjectInterface sharedObject = getStep(i);
+                if (sharedObject.isShared()) 
+                {
+                    sharedObjects.storeObject(sharedObject);
+                }
+            }
+            
+            // The partition schemas
+            for (int i=0;i<partitionSchemas.size();i++)
+            {
+                SharedObjectInterface sharedObject = (SharedObjectInterface) partitionSchemas.get(i);
+                if (sharedObject.isShared()) 
+                {
+                    sharedObjects.storeObject(sharedObject);
+                }
+            }
+
+            // The cluster schemas
+            for (int i=0;i<clusterSchemas.size();i++)
+            {
+                SharedObjectInterface sharedObject = (SharedObjectInterface) clusterSchemas.get(i);
+                if (sharedObject.isShared()) 
+                {
+                    sharedObjects.storeObject(sharedObject);
+                }
+            }
+            
+            // Save the objects
+            sharedObjects.saveToFile();
+        }
+        catch(IOException e)
+        {
+            
+        }
     }
 }

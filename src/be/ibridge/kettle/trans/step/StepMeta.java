@@ -23,6 +23,8 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.GUIPositionInterface;
+import be.ibridge.kettle.core.SharedObjectBase;
+import be.ibridge.kettle.core.SharedObjectInterface;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Row;
@@ -43,9 +45,11 @@ import be.ibridge.kettle.trans.StepPlugin;
  * @author Matt
  *
  */
-public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
+public class StepMeta extends SharedObjectBase implements Cloneable, Comparable, GUIPositionInterface, SharedObjectInterface
 {
-	private String        stepid;   // --> StepPlugin.id
+	public static final String XML_TAG = "step";
+    
+    private String        stepid;   // --> StepPlugin.id
 	private String        stepname;
 	private StepMetaInterface stepMetaInterface;
 	private boolean       selected;
@@ -58,13 +62,17 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 	
     private StepPartitioningMeta stepPartitioningMeta;
     
-	private LogWriter log;
+	// private LogWriter log;
 		
 	private long id;
 
-	public StepMeta(LogWriter log, String stepid, String stepname, StepMetaInterface stepMetaInterface)
+    /**
+     * @param stepid
+     * @param stepname
+     * @param stepMetaInterface
+     */
+	public StepMeta(String stepid, String stepname, StepMetaInterface stepMetaInterface)
 	{
-		this.log               = log;
 		this.stepid            = stepid;
 		this.stepname          = stepname;
 		this.stepMetaInterface = stepMetaInterface;
@@ -77,17 +85,39 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 		description = null;
         stepPartitioningMeta = new StepPartitioningMeta();
 	}
-		
-	public StepMeta(LogWriter log)
+
+    /**
+     * @deprecated The logging is now a singlton, use the constructor without it.
+     * 
+     * @param log
+     * @param stepid
+     * @param stepname
+     * @param stepMetaInterface
+     */
+    public StepMeta(LogWriter log, String stepid, String stepname, StepMetaInterface stepMetaInterface)
+    {
+        this(stepid, stepname, stepMetaInterface);
+    }
+        
+	public StepMeta()
 	{
-		this(log, (String)null, (String)null, (StepMetaInterface)null);
+		this((String)null, (String)null, (StepMetaInterface)null);
 	}
+    
+    /**
+     * @deprecated The logging is now a singlton, use the constructor without it.
+     * @param log
+     */
+    public StepMeta(LogWriter log)
+    {
+        this();
+    }
 
 	public String getXML()
 	{
 		StringBuffer retval=new StringBuffer(); //$NON-NLS-1$
 		
-		retval.append("  <step>"+Const.CR); //$NON-NLS-1$
+		retval.append("  <"+XML_TAG+">"+Const.CR); //$NON-NLS-1$
 		retval.append("    "+XMLHandler.addTagValue("name",        getName()) ); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    "+XMLHandler.addTagValue("type",        getStepID()) ); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("    "+XMLHandler.addTagValue("description", description) ); //$NON-NLS-1$ //$NON-NLS-2$
@@ -102,11 +132,26 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 		retval.append("      <yloc>"+location.y+"</yloc>"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
 		retval.append("      <draw>"+(drawstep?"Y":"N")+"</draw>"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
 		retval.append("      </GUI>"+Const.CR); //$NON-NLS-1$
-		retval.append("    </step>"+Const.CR+Const.CR); //$NON-NLS-1$
+		retval.append("    </"+XML_TAG+">"+Const.CR+Const.CR); //$NON-NLS-1$
 		
 		return retval.toString();
 	}
 
+    /**
+     * @deprecated The logging is now a singlton, use the constructor without it.
+     * 
+     * Read the step data from XML
+     * 
+     * @param stepnode The XML step node.
+     * @param databases A list of databases
+     * @param counters A hashtable with all defined counters.
+     * 
+     */
+    public StepMeta(LogWriter log, Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+    {
+        this(stepnode, databases, counters);
+    }
+    
 	/**
 	 * Read the step data from XML
 	 * 
@@ -115,9 +160,10 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 	 * @param counters A hashtable with all defined counters.
 	 * 
 	 */
-	public StepMeta(LogWriter log, Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
+	public StepMeta(Node stepnode, ArrayList databases, Hashtable counters) throws KettleXMLException
 	{
-        this(log);
+        this();
+        LogWriter log = LogWriter.getInstance();
 		StepLoader steploader = StepLoader.getInstance();
 
 		try
@@ -383,17 +429,51 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 		return terminator;
 	}
 	
+    /**
+     * @deprecated The logging is now a singlton, use the constructor without it.
+     * @param log
+     * @param id_step
+     */
 	public StepMeta(LogWriter log, long id_step)
 	{
 		this(log, (String)null, (String)null, (StepMetaInterface)null);
 		setID(id_step);
 	}
+    
+    public StepMeta(long id_step)
+    {
+        this((String)null, (String)null, (StepMetaInterface)null);
+        setID(id_step);
+    }
 
+    /**
+     * @deprecated The logging is now a singlton, use the constructor without it.
+     * 
+     * @param log
+     * @param rep
+     * @param id_step
+     * @param databases
+     * @param counters
+     * @param partitionSchemas
+     * @throws KettleException
+     */
+    public StepMeta(LogWriter log, Repository rep, long id_step, ArrayList databases, Hashtable counters, List partitionSchemas) throws KettleException
+    {
+        this(rep, id_step, databases, counters, partitionSchemas);
+    }
 
-	// Load from repository
-	public StepMeta(LogWriter log, Repository rep, long id_step, ArrayList databases, Hashtable counters, List partitionSchemas) throws KettleException
+    /**
+     * Create a new step by loading the metadata from the specified repository.  
+     * @param rep
+     * @param id_step
+     * @param databases
+     * @param counters
+     * @param partitionSchemas
+     * @throws KettleException
+     */
+	public StepMeta(Repository rep, long id_step, ArrayList databases, Hashtable counters, List partitionSchemas) throws KettleException
 	{
-        this(log);
+        this();
         StepLoader steploader = StepLoader.getInstance();
 
 		try
@@ -456,6 +536,8 @@ public class StepMeta implements Cloneable, Comparable, GUIPositionInterface
 	public void saveRep(Repository rep, long id_transformation)
 		throws KettleException
 	{
+        LogWriter log = LogWriter.getInstance();
+        
 		try
 		{
 			log.logDebug(toString(), Messages.getString("StepMeta.Log.SaveNewStep")); //$NON-NLS-1$

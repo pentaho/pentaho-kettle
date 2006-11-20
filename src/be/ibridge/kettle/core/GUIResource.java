@@ -1,6 +1,8 @@
 package be.ibridge.kettle.core;
 
+import java.util.Collection;
 import java.util.Hashtable;
+import java.util.Iterator;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.Clipboard;
@@ -85,6 +87,8 @@ public class GUIResource
     
     private Image     imageSplash;
 
+    private ManagedFont fontBold;
+
     /**
      * GUIResource also contains the clipboard as it has to be allocated only once!
      * I don't want to put it in a seperate singleton just for this one member.
@@ -101,7 +105,7 @@ public class GUIResource
             {
                 public void handleEvent(Event event)
                 {
-                    dispose();
+                    dispose(false);
                 }
             }
         );
@@ -118,7 +122,7 @@ public class GUIResource
         
     public void reload()
     {
-        dispose();
+        dispose(true);
         getResources(true);
     }
     
@@ -146,25 +150,17 @@ public class GUIResource
 
         colorDirectory  = new ManagedColor(display,   0,   0, 255 );
         
-        fontGraph   = new ManagedFont(display, props.getGraphFont());
-        fontNote    = new ManagedFont(display, props.getNoteFont());
-        fontFixed   = new ManagedFont(display, props.getFixedFont());
-
-        // Create a large version of the graph font
-        FontData largeFontData = props.getGraphFont();
-        largeFontData.setHeight(largeFontData.getHeight()*3);
-        fontLarge   = new ManagedFont(display, largeFontData);
-        
         // Load all images from files...
         if (!reload)
         {
+            loadFonts();
             loadCommonImages();
             loadStepImages();
             loadJobEntryImages();
         }
     }
     
-    private void dispose()
+    private void dispose(boolean reload)
     {
         // Colors 
         colorBackground.dispose();
@@ -187,11 +183,44 @@ public class GUIResource
         
         colorDirectory.dispose();
         
-        // Fonts
-        fontGraph  .dispose();
-        fontNote   .dispose();
-        fontFixed  .dispose();
-        fontLarge  .dispose();
+        if (!reload) // display shutdown, clean up our mess
+        {
+            // Fonts
+            fontGraph  .dispose();
+            fontNote   .dispose();
+            fontFixed  .dispose();
+            fontLarge  .dispose();
+            fontBold   .dispose();
+            
+            // Common images
+            imageHop         .dispose();
+            imageConnection  .dispose();
+            imageBol         .dispose();
+            imageKettle      .dispose();
+            imageCredits     .dispose();
+            imageStart       .dispose();
+            imageDummy       .dispose();
+            imageSpoon       .dispose();
+            imageChef        .dispose();
+            imageSplash      .dispose();
+            imagePentaho     .dispose();
+     
+            // big images
+            Collection images = imagesSteps.values();
+            for (Iterator iter = images.iterator(); iter.hasNext();)
+            {
+                Image image = (Image) iter.next();
+                if (image!=null && !image.isDisposed()) image.dispose();
+            }
+            
+            // Small images
+            Collection smallImages = imagesStepsSmall.values();
+            for (Iterator iter = smallImages.iterator(); iter.hasNext();)
+            {
+                Image smallImage = (Image) iter.next();
+                if (smallImage!=null && !smallImage.isDisposed()) smallImage.dispose();
+            }
+        }
     }
     
     /**
@@ -266,6 +295,25 @@ public class GUIResource
             imagesSteps.put(steps[i].getID()[0], image);
             imagesStepsSmall.put(steps[i].getID()[0], small_image);
         }
+    }
+    
+    private void loadFonts()
+    {
+        Props props = Props.getInstance();
+        
+        fontGraph   = new ManagedFont(display, props.getGraphFont());
+        fontNote    = new ManagedFont(display, props.getNoteFont());
+        fontFixed   = new ManagedFont(display, props.getFixedFont());
+
+        // Create a large version of the graph font
+        FontData largeFontData = props.getGraphFont();
+        largeFontData.setHeight(largeFontData.getHeight()*3);
+        fontLarge   = new ManagedFont(display, largeFontData);
+
+        // Create a bold version of the default font to display shared objects in the trees 
+        FontData boldFontData = props.getDefaultFont();
+        boldFontData.setStyle(SWT.BOLD);
+        fontBold = new ManagedFont(display, boldFontData);
     }
     
     private void loadCommonImages()
@@ -712,5 +760,10 @@ public class GUIResource
         TextTransfer tran = TextTransfer.getInstance();
 
         return (String)clipboard.getContents(tran);
+    }
+
+    public ManagedFont getFontBold()
+    {
+        return fontBold;
     }
 }

@@ -7,6 +7,7 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.ChangedFlag;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.SharedObjectInterface;
 import be.ibridge.kettle.core.XMLHandler;
 
 /**
@@ -17,7 +18,7 @@ import be.ibridge.kettle.core.XMLHandler;
  * @author Matt
  * @since 17-nov-2006
  */
-public class ClusterSchema extends ChangedFlag implements Cloneable
+public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjectInterface
 {
     public static final String XML_TAG = "clusterschema";
     
@@ -27,6 +28,8 @@ public class ClusterSchema extends ChangedFlag implements Cloneable
     /** The list of slave servers we can address */
     private List slaveServers;
 
+    private boolean shared;
+    
     public ClusterSchema()
     {
         slaveServers = new ArrayList();
@@ -143,5 +146,21 @@ public class ClusterSchema extends ChangedFlag implements Cloneable
             strings[i] = ((SlaveServer)slaveServers.get(i)).toString();
         }
         return strings;
+    }
+
+    /**
+     * @return the shared
+     */
+    public boolean isShared()
+    {
+        return shared;
+    }
+
+    /**
+     * @param shared the shared to set
+     */
+    public void setShared(boolean shared)
+    {
+        this.shared = shared;
     }
 }

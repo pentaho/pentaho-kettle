@@ -1109,6 +1109,16 @@ public class Const
 	{
 		return USER_HOME_DIRECTORY + FILE_SEPARATOR + ".kettle";
 	}
+    
+    /**
+     * Determines the location of the shared objects file
+     * @return the name of the shared objects file
+     */
+    public static final String getSharedObjectsFile()
+    {
+        return getKettleDirectory() + FILE_SEPARATOR + "shared.xml";
+    }
+    
 
 	/**
 	 * Returns the path to the Kettle local (current directory) repositories XML file.

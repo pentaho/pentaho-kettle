@@ -15,6 +15,7 @@
  
 package be.ibridge.kettle.trans;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 import org.w3c.dom.Node;
 
@@ -125,7 +126,21 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable
 			enabled           = r.searchValue("ENABLED").getBoolean(); //$NON-NLS-1$
 			
 			from_step = TransMeta.findStep(steps, id_step_from);
+            if (from_step==null && id_step_from>0) // Links to a shared objects, try again by looking up the name...
+            {
+                // Simply load this, we only want the name, we don't care about the rest...
+                StepMeta stepMeta = new StepMeta(rep, id_step_from, new ArrayList(), new Hashtable(), new ArrayList()); 
+                from_step = TransMeta.findStep(steps, stepMeta.getName());
+            }
+            
 			to_step   = TransMeta.findStep(steps, id_step_to);
+            if (to_step==null  && id_step_to>0) // Links to a shared objects, try again by looking up the name...
+            {
+                // Simply load this, we only want the name, we don't care about the rest...
+                StepMeta stepMeta = new StepMeta(rep, id_step_to, new ArrayList(), new Hashtable(), new ArrayList()); 
+                to_step = TransMeta.findStep(steps, stepMeta.getName());
+
+            }
 		}
 		catch(KettleDatabaseException dbe)
 		{

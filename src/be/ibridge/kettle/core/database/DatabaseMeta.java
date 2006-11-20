@@ -29,6 +29,8 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Encr;
+import be.ibridge.kettle.core.SharedObjectBase;
+import be.ibridge.kettle.core.SharedObjectInterface;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.XMLInterface;
@@ -49,8 +51,10 @@ import be.ibridge.kettle.repository.Repository;
  * @since 18-05-2003
  *
  */
-public class DatabaseMeta implements Cloneable, XMLInterface
+public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInterface, SharedObjectInterface
 {
+    public static final String XML_TAG = "connection";
+    
 	private DatabaseInterface databaseInterface;
 	private static DatabaseInterface[] allDatabaseInterfaces;
 
@@ -912,7 +916,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
 	{
         StringBuffer retval = new StringBuffer();
 		
-		retval.append("  <connection>"+Const.CR);
+		retval.append("  <"+XML_TAG+">"+Const.CR);
 		retval.append("    "+XMLHandler.addTagValue("name",       getName()));
 		retval.append("    "+XMLHandler.addTagValue("server",     getHostname()));
 		retval.append("    "+XMLHandler.addTagValue("type",       getDatabaseTypeDesc()));
@@ -956,7 +960,7 @@ public class DatabaseMeta implements Cloneable, XMLInterface
         }
         retval.append("    </attributes>"+Const.CR);
         
-		retval.append("  </connection>"+Const.CR);
+		retval.append("  </"+XML_TAG+">"+Const.CR);
 		return retval.toString();
 	}
 	

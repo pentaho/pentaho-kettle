@@ -87,6 +87,7 @@ import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.PrintSpool;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.SharedObjectInterface;
 import be.ibridge.kettle.core.SourceToTargetMapping;
 import be.ibridge.kettle.core.TransAction;
 import be.ibridge.kettle.core.WindowProperty;
@@ -228,7 +229,7 @@ public class Spoon implements AddUndoPositionInterface
 
     private Tree pluginHistoryTree;
 
-    private Listener lsNew, lsEdit, lsDupe, lsCopy, lsDel, lsSQL, lsCache, lsExpl;
+    private Listener lsNew, lsEdit, lsDupe, lsCopy, lsDel, lsSQL, lsCache, lsShare, lsExpl;
     private SelectionAdapter lsEditDef, lsEditSel;
     
     public static final String STRING_CONNECTIONS = Messages.getString("Spoon.STRING_CONNECTIONS"); //"Connections";
@@ -615,6 +616,9 @@ public class Spoon implements AddUndoPositionInterface
         
         // Shared database entries to load from repository?
         loadRepositoryObjects();
+        
+        // Load shared objects from XML file.
+        loadSharedObjects();
         
         // What plugins did we use previously?
         refreshPluginHistory();
@@ -1221,6 +1225,7 @@ public class Spoon implements AddUndoPositionInterface
         lsDel    = new Listener() { public void handleEvent(Event e) { delSelected();  } };
         lsSQL    = new Listener() { public void handleEvent(Event e) { sqlSelected();  } };
         lsCache  = new Listener() { public void handleEvent(Event e) { clearDBCache(); } };
+        lsShare  = new Listener() { public void handleEvent(Event e) { shareObject();  } };
         lsExpl   = new Listener() { public void handleEvent(Event e) { exploreDB();    } };
         
         // Default selection (double-click, enter)
@@ -1254,6 +1259,61 @@ public class Spoon implements AddUndoPositionInterface
 
         leftSash.setWeights(new int[] { 70, 30 } );
 
+    }
+    
+    protected void shareObject()
+    {
+        Object[] objects = getTreeObjects();
+        if (objects!=null)
+        {
+            for (int i=0;i<objects.length;i++)
+            {
+                if (objects[i] instanceof SharedObjectInterface)
+                {
+                    SharedObjectInterface sharedObject = (SharedObjectInterface) objects[i];
+                    sharedObject.setShared(sharedObject.isShared());
+                }
+            }
+        }
+        refreshTree(true);
+    }
+
+    /**
+     * @return The object that is selected in the tree or null if we couldn't figure it out. (titles etc. == null)
+     */
+    public Object[] getTreeObjects()
+    {
+        List objects = new ArrayList();
+        
+        TreeItem[] selection = selectionTree.getSelection();
+        for (int s=0;s<selection.length;s++)
+        {
+            TreeItem treeItem = selection[s];
+            String[] path = Const.getTreeStrings(treeItem);
+            
+            Object object = null;
+            
+            switch(path.length)
+            {
+            case 0: break;
+            case 1: break; // Titles
+            case 2: 
+                // Connections, steps, hops
+                if (path[0].equals(STRING_CONNECTIONS)) object = transMeta.findDatabase(path[1]);
+                if (path[0].equals(STRING_STEPS)) object = transMeta.findStep(path[1]);
+                if (path[0].equals(STRING_HOPS)) object = transMeta.findTransHop(path[1]);
+                if (path[0].equals(STRING_PARTITIONS)) object = transMeta.findPartitionSchema(path[1]);
+                if (path[0].equals(STRING_CLUSTERS)) object = transMeta.findClusterSchema(path[1]);
+                break;
+            default: break;
+            }
+            if (object!=null)
+            {
+                objects.add(object);
+            }
+        }
+        
+        return (Object[]) objects.toArray(new Object[objects.size()]);
     }
     
     private void addToolTipsToTree(Tree tree)
@@ -1457,6 +1517,8 @@ public class Spoon implements AddUndoPositionInterface
                 MenuItem miSQL  = new MenuItem(mCSH, SWT.PUSH); miSQL.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.SQLEditor"));//SQL Editor
                 MenuItem miCache= new MenuItem(mCSH, SWT.PUSH); miCache.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.ClearDBCache")+treeItem.getText());//Clear DB Cache of 
                 new MenuItem(mCSH, SWT.SEPARATOR);
+                MenuItem miShare = new MenuItem(mCSH, SWT.PUSH); miShare.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Share"));
+                new MenuItem(mCSH, SWT.SEPARATOR);
                 MenuItem miExpl = new MenuItem(mCSH, SWT.PUSH); miExpl.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Explore"));//Explore
                 // disable for now if the connection is an SAP R/3 type of database...
                 DatabaseMeta dbMeta = transMeta.findDatabase(treeItemText);
@@ -1469,6 +1531,7 @@ public class Spoon implements AddUndoPositionInterface
                 miDel.addListener(SWT.Selection, lsDel );
                 miSQL.addListener(SWT.Selection, lsSQL );
                 miCache.addListener(SWT.Selection, lsCache);
+                miShare.addListener(SWT.Selection, lsShare);
                 miExpl.addListener(SWT.Selection, lsExpl);
             }
             if (strparent.equalsIgnoreCase(STRING_STEPS))
@@ -1481,6 +1544,8 @@ public class Spoon implements AddUndoPositionInterface
                 MenuItem miEdit   = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.STEPS.Edit"));//Edit
                 MenuItem miDupe   = new MenuItem(mCSH, SWT.PUSH); miDupe.setText(Messages.getString("Spoon.Menu.Popup.STEPS.Duplicate"));//Duplicate
                 MenuItem miDel    = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.STEPS.Delete"));//Delete
+                MenuItem miShare = new MenuItem(mCSH, SWT.PUSH); miShare.setText(Messages.getString("Spoon.Menu.Popup.STEPS.Share"));
+                miShare.addListener(SWT.Selection, lsShare);
                 miEdit.addListener(SWT.Selection, lsEdit );
                 miDupe.addListener(SWT.Selection, lsDupe );
                 miDel.addListener(SWT.Selection, lsDel );
@@ -1496,6 +1561,8 @@ public class Spoon implements AddUndoPositionInterface
             {
                 MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.PARTITIONS.Edit"));//Edit
                 MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.PARTITIONS.Delete"));//Delete
+                MenuItem miShare = new MenuItem(mCSH, SWT.PUSH); miShare.setText(Messages.getString("Spoon.Menu.Popup.PARTITIONS.Share"));
+                miShare.addListener(SWT.Selection, lsShare);
                 miEdit.addListener( SWT.Selection, lsEdit );
                 miDel.addListener ( SWT.Selection, lsDel  );
             }
@@ -1503,6 +1570,8 @@ public class Spoon implements AddUndoPositionInterface
             {
                 MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Edit"));//Edit
                 MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Delete"));//Delete
+                MenuItem miShare = new MenuItem(mCSH, SWT.PUSH); miShare.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Share"));
+                miShare.addListener(SWT.Selection, lsShare);
                 miEdit.addListener( SWT.Selection, lsEdit );
                 miDel.addListener ( SWT.Selection, lsDel  );
             }
@@ -2665,6 +2734,7 @@ public class Spoon implements AddUndoPositionInterface
         { 
             clear();
             loadRepositoryObjects();    // Add databases if connected to repository
+            loadSharedObjects();        // Load shared objects from XML file, optionally overwriting repository objects.
             setFilename(null);
             refreshTree(true);
             refreshGraph();
@@ -2760,6 +2830,11 @@ public class Spoon implements AddUndoPositionInterface
             {
                 saved=saveFileAs();
             }
+        }
+        
+        if (saved) // all was OK
+        {
+            saved=saveSharedObjects();
         }
         
         try
@@ -2892,6 +2967,32 @@ public class Spoon implements AddUndoPositionInterface
         return saved;
     }
     
+    private void loadSharedObjects()
+    {
+        try
+        {
+            transMeta.readSharedObjects();
+        }
+        catch(Exception e)
+        {
+            log.logError(toString(), "Unable to load shared ojects: "+e.toString());
+        }
+    }
+    
+    private boolean saveSharedObjects()
+    {
+        try
+        {
+            transMeta.saveSharedObjects();
+            return true;
+        }
+        catch(Exception e)
+        {
+            log.logError(toString(), "Unable to save shared ojects: "+e.toString());
+            return false;
+        }
+    }
+
     private boolean saveXMLFile()
     {
         boolean saved=false;
@@ -3054,48 +3155,20 @@ public class Spoon implements AddUndoPositionInterface
         if (transMeta.haveConnectionsChanged() || complete)
         {
             tiConn.setText(STRING_CONNECTIONS);
-            // TreeItem tiConn= this.tiConn (TreeItem)widgets.getWidget(STRING_CONNECTIONS);
-            treeItems = tiConn.getItems();
 
-            // In complete refresh: delete all items first
-            if (complete)
-            {
-                for (int i=0;i<treeItems.length;i++) treeItems[i].dispose();
-                treeItems = tiConn.getItems();
-            }
-            
-            // First delete no longer used items...
-            for (int i=0;i<treeItems.length;i++)
-            {
-                String str = treeItems[i].getText();
-                DatabaseMeta inf = transMeta.findDatabase(str);
-                if (inf!=null) idx = transMeta.indexOfDatabase(inf); else idx=-1;
-                if (idx<0 || idx>i) treeItems[i].dispose();
-            }
+            // Delete all items first
+            treeItems = tiConn.getItems();
+            for (int i=0;i<treeItems.length;i++) treeItems[i].dispose();
             treeItems = tiConn.getItems();
             
-            // Insert missing items in tree...
-            int j=0;
             for (int i=0;i<transMeta.nrDatabases();i++)
             {
                 DatabaseMeta inf = transMeta.getDatabase(i);
-                String con_name = inf.getName();
-                String ti_name = "";
-                if (j<treeItems.length) ti_name = treeItems[j].getText();
-                if (!con_name.equalsIgnoreCase(ti_name))
-                {
-                    // insert at position j in tree
-                    TreeItem newitem = new TreeItem(tiConn, j);
-                    newitem.setText(inf.getName());
-                    newitem.setForeground(GUIResource.getInstance().getColorBlack());
-                    newitem.setImage(GUIResource.getInstance().getImageConnection());
-                    j++;
-                    treeItems = tiConn.getItems();
-                }
-                else
-                {
-                    j++;
-                }
+                TreeItem newitem = new TreeItem(tiConn, SWT.NONE);
+                newitem.setText(inf.getName());
+                newitem.setForeground(GUIResource.getInstance().getColorBlack());
+                newitem.setImage(GUIResource.getInstance().getImageConnection());
+                if (inf.isShared()) newitem.setFont(GUIResource.getInstance().getFontBold().getFont());
             }
         }
 
@@ -3149,6 +3222,8 @@ public class Spoon implements AddUndoPositionInterface
                     // Set the small image...
                     Image img = (Image)GUIResource.getInstance().getImagesStepsSmall().get(step_id);
                     newitem.setImage(img);
+                    // Shared?
+                    if (inf.isShared()) newitem.setFont(GUIResource.getInstance().getFontBold().getFont());
                     j++;
                     treeItems = tiStep.getItems();
                 }
@@ -3234,10 +3309,12 @@ public class Spoon implements AddUndoPositionInterface
             {
                 PartitionSchema schema = (PartitionSchema) transMeta.getPartitionSchemas().get(i);
                 
-                TreeItem schemaitem = new TreeItem(tiPart, SWT.NONE);
-                schemaitem.setText(schema.toString());
-                schemaitem.setForeground(GUIResource.getInstance().getColorBlack());
-                schemaitem.setImage(GUIResource.getInstance().getImageConnection());
+                TreeItem schemaItem = new TreeItem(tiPart, SWT.NONE);
+                schemaItem.setText(schema.toString());
+                schemaItem.setForeground(GUIResource.getInstance().getColorBlack());
+                schemaItem.setImage(GUIResource.getInstance().getImageConnection());
+                // Shared?
+                if (schema.isShared()) schemaItem.setFont(GUIResource.getInstance().getFontBold().getFont());
             }
         }
         
@@ -3260,6 +3337,8 @@ public class Spoon implements AddUndoPositionInterface
                 schemaItem.setText(schema.toString());
                 schemaItem.setForeground(GUIResource.getInstance().getColorBlack());
                 schemaItem.setImage(GUIResource.getInstance().getImageBol());
+                // Shared?
+                if (schema.isShared()) schemaItem.setFont(GUIResource.getInstance().getFontBold().getFont());
                 
                 // Also show the hosts below...
                 for (int j=0;j<schema.getSlaveServers().size();j++)
