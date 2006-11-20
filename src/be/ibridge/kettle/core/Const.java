@@ -599,6 +599,8 @@ public class Const
 	 */
 	public static final String rtrim(String str)
 	{
+		if (str==null) return null;
+		
 		int max = str.length();
 		while (max > 0 && isSpace(str.charAt(max - 1)))
 			max--;
@@ -640,7 +642,7 @@ public class Const
 	public static final String trim(String str)
 	{
 		int max = str.length() - 1;
-		int min = 0;
+		int min = 0;	
 
 		while (min <= max && isSpace(str.charAt(min)))
 			min++;
