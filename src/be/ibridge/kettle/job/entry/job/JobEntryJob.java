@@ -464,6 +464,7 @@ public class JobEntryJob extends JobEntryBase implements Cloneable, JobEntryInte
                     {
                         // Keep it as it was...
                         job.setSourceRows(result.getRows());
+                        job.getJobMeta().setArguments(parentJob.getJobMeta().getArguments());
                     }
                 }
     

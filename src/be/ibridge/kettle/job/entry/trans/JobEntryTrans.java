@@ -486,6 +486,10 @@ public class JobEntryTrans extends JobEntryBase implements Cloneable, JobEntryIn
                             }
                         }
                     }
+                    else
+                    {
+                        args = parentJob.getJobMeta().getArguments();
+                    }
                 }
                 
     			// Execute!

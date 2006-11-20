@@ -3545,6 +3545,12 @@ public class Chef implements AddUndoPositionInterface
             log.logError(APP_NAME, Messages.getString("Chef.Log.Error.ErrorLoadingJob")+ke.getMessage()); //$NON-NLS-1$
 		}
 
+        // Set the arguments on the job metadata as well...
+        if (win.jobMeta!=null)
+        {
+            win.jobMeta.setArguments((String[]) args.toArray(new String[args.size()]));
+        }
+        
 		win.open ();
 		splash.dispose();
 		

@@ -375,8 +375,11 @@ public class ChefLog extends Composite
 				{
 					try
 					{
+                        // TODO: clean up this awfull mess...
+                        //
                         job = new Job(log, chef.jobMeta.getName(), chef.jobMeta.getFilename(), null);
 						job.open(chef.rep, chef.jobMeta.getFilename(), chef.jobMeta.getName(), chef.jobMeta.getDirectory().getPath());
+                        job.getJobMeta().setArguments(chef.jobMeta.getArguments());
 						
                         log.logMinimal(Chef.APP_NAME, Messages.getString("ChefLog.Log.StartingJob")); //$NON-NLS-1$
 						job.start();

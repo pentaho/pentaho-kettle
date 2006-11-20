@@ -155,7 +155,7 @@ public class Kitchen
 		start=cal.getTime();
 				
 		log.logDebug(STRING_KITCHEN, "Allocate new job.");
-		JobMeta jobinfo = new JobMeta(log);
+		JobMeta jobMeta = new JobMeta(log);
         
         // In case we use a repository...
         Repository repository = null;
@@ -200,9 +200,9 @@ public class Kitchen
 										if (!Const.isEmpty(optionJobname))
 										{
 											log.logDebug(STRING_KITCHEN, "Load the job info...");
-											jobinfo =  new JobMeta(log, repository, optionJobname.toString(), directory);
+											jobMeta =  new JobMeta(log, repository, optionJobname.toString(), directory);
 											log.logDebug(STRING_KITCHEN, "Allocate job...");
-											job = new Job(log, steploader, repository, jobinfo);
+											job = new Job(log, steploader, repository, jobMeta);
 										}
 										else
 										// List the jobs in the repository
@@ -259,8 +259,8 @@ public class Kitchen
                 // Try to load if from file anyway.
 				if (!Const.isEmpty(optionFilename) && job==null)
 				{
-					jobinfo = new JobMeta(log, optionFilename.toString(), null);
-					job = new Job(log, steploader, null, jobinfo);
+					jobMeta = new JobMeta(log, optionFilename.toString(), null);
+					job = new Job(log, steploader, null, jobMeta);
 				}
 			}
 			else
@@ -285,7 +285,7 @@ public class Kitchen
 		catch(KettleException e)
 		{
 			job=null;
-			jobinfo=null;
+			jobMeta=null;
 			System.out.println("Processing stopped because of an error: "+e.getMessage());
 		}
 
@@ -310,6 +310,9 @@ public class Kitchen
 		{
             // Add Kettle variables for the job thread...
             LocalVariables.getInstance().createKettleVariables(job.getName(), parentThread.getName(), true);
+            
+            // Set the arguments on the job metadata as well...
+            job.getJobMeta().setArguments((String[]) args.toArray(new String[args.size()]));
             
 			result = job.execute(); // Execute the selected job.
 			job.endProcessing("end", result);  // The bookkeeping...
