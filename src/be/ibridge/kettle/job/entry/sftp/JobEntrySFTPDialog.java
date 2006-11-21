@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
@@ -62,31 +63,31 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
     private FormData     fdlName, fdName;
 
 	private Label        wlServerName;
-	private Text         wServerName;
+	private TextVar      wServerName;
 	private FormData     fdlServerName, fdServerName;
 	
 	private Label        wlServerPort;
-	private Text         wServerPort;
+	private TextVar      wServerPort;
 	private FormData     fdlServerPort, fdServerPort;
 	
 	private Label        wlUserName;
-	private Text         wUserName;
+	private TextVar      wUserName;
 	private FormData     fdlUserName, fdUserName;
 	
 	private Label        wlPassword;
-	private Text         wPassword;
+	private TextVar      wPassword;
 	private FormData     fdlPassword, fdPassword;
 	
 	private Label        wlScpDirectory;
-	private Text         wScpDirectory;
+	private TextVar      wScpDirectory;
 	private FormData     fdlScpDirectory, fdScpDirectory;
 	
 	private Label        wlTargetDirectory;
-	private Text         wTargetDirectory;
+	private TextVar      wTargetDirectory;
 	private FormData     fdlTargetDirectory, fdTargetDirectory;
 	
 	private Label        wlWildcard;
-	private Text         wWildcard;
+	private TextVar      wWildcard;
 	private FormData     fdlWildcard, fdWildcard;
 	
 	private Label        wlRemove;
@@ -167,7 +168,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		fdlServerName.top  = new FormAttachment(wName, margin);
 		fdlServerName.right= new FormAttachment(middle, -margin);
 		wlServerName.setLayoutData(fdlServerName);
-		wServerName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wServerName=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wServerName);
 		wServerName.addModifyListener(lsMod);
 		fdServerName=new FormData();
@@ -185,7 +186,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		fdlServerPort.top  = new FormAttachment(wServerName, margin);
 		fdlServerPort.right= new FormAttachment(middle, -margin);
 		wlServerPort.setLayoutData(fdlServerPort);
-		wServerPort=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wServerPort=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wServerPort);
 		wServerPort.addModifyListener(lsMod);
 		fdServerPort=new FormData();
@@ -203,7 +204,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		fdlUserName.top  = new FormAttachment(wServerPort, margin);
 		fdlUserName.right= new FormAttachment(middle, -margin);
 		wlUserName.setLayoutData(fdlUserName);
-		wUserName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wUserName=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wUserName);
 		wUserName.addModifyListener(lsMod);
 		fdUserName=new FormData();
@@ -221,7 +222,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		fdlPassword.top  = new FormAttachment(wUserName, margin);
 		fdlPassword.right= new FormAttachment(middle, -margin);
 		wlPassword.setLayoutData(fdlPassword);
-		wPassword=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wPassword=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wPassword);
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
@@ -240,7 +241,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		fdlScpDirectory.top  = new FormAttachment(wPassword, margin);
 		fdlScpDirectory.right= new FormAttachment(middle, -margin);
 		wlScpDirectory.setLayoutData(fdlScpDirectory);
-		wScpDirectory=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wScpDirectory=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wScpDirectory);
 		wScpDirectory.addModifyListener(lsMod);
 		fdScpDirectory=new FormData();
@@ -258,7 +259,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		fdlTargetDirectory.top  = new FormAttachment(wScpDirectory, margin);
 		fdlTargetDirectory.right= new FormAttachment(middle, -margin);
 		wlTargetDirectory.setLayoutData(fdlTargetDirectory);
-		wTargetDirectory=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTargetDirectory=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTargetDirectory);
 		wTargetDirectory.addModifyListener(lsMod);
 		fdTargetDirectory=new FormData();
@@ -276,7 +277,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		fdlWildcard.top  = new FormAttachment(wTargetDirectory, margin);
 		fdlWildcard.right= new FormAttachment(middle, -margin);
 		wlWildcard.setLayoutData(fdlWildcard);
-		wWildcard=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wWildcard=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wWildcard);
 		wWildcard.addModifyListener(lsMod);
 		fdWildcard=new FormData();
@@ -336,7 +337,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		shell.open();
 		while (!shell.isDisposed())
 		{
-				if (!display.readAndDispatch()) display.sleep();
+		    if (!display.readAndDispatch()) display.sleep();
 		}
 		return jobentry;
 	}
@@ -357,7 +358,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 		wName.selectAll();
 
 		wServerName.setText(Const.NVL(jobentry.getServerName(), ""));
-		wServerPort.setText(""+jobentry.getServerPort());
+		wServerPort.setText(jobentry.getServerPort());
 		wUserName.setText(Const.NVL(jobentry.getUserName(), ""));
 		wPassword.setText(Const.NVL(jobentry.getPassword(), ""));
 		wScpDirectory.setText(Const.NVL(jobentry.getScpDirectory(), ""));
@@ -377,7 +378,7 @@ public class JobEntrySFTPDialog extends Dialog implements JobEntryDialogInterfac
 	{
 		jobentry.setName(wName.getText());
 		jobentry.setServerName(wServerName.getText());
-		jobentry.setServerPort(Const.toInt(wServerPort.getText(), 22));
+		jobentry.setServerPort(wServerPort.getText());
 		jobentry.setUserName(wUserName.getText());
 		jobentry.setPassword(wPassword.getText());
 		jobentry.setScpDirectory(wScpDirectory.getText());

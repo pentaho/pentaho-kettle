@@ -31,6 +31,7 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -49,7 +50,7 @@ import be.ibridge.kettle.repository.Repository;
 public class JobEntrySFTP extends JobEntryBase implements JobEntryInterface
 {
 	private String serverName;
-	private int 	serverPort;
+	private String serverPort;
 	private String userName;
 	private String password;
 	private String sftpDirectory;
@@ -61,6 +62,7 @@ public class JobEntrySFTP extends JobEntryBase implements JobEntryInterface
 	{
 		super(n, "");
 		serverName=null;
+        serverPort="22";
 		setID(-1L);
 		setType(JobEntryInterface.TYPE_JOBENTRY_SFTP);
 	}
@@ -99,7 +101,7 @@ public class JobEntrySFTP extends JobEntryBase implements JobEntryInterface
 		{
 			super.loadXML(entrynode, databases);
 			serverName      = XMLHandler.getTagValue(entrynode, "servername");
-			serverPort      = Const.toInt(XMLHandler.getTagValue(entrynode, "serverport"), 22);
+			serverPort      = XMLHandler.getTagValue(entrynode, "serverport");
 			userName        = XMLHandler.getTagValue(entrynode, "username");
 			password        = XMLHandler.getTagValue(entrynode, "password");
 			sftpDirectory    = XMLHandler.getTagValue(entrynode, "sftpdirectory");
@@ -120,7 +122,10 @@ public class JobEntrySFTP extends JobEntryBase implements JobEntryInterface
 		{
 			super.loadRep(rep, id_jobentry, databases);
 			serverName      = rep.getJobEntryAttributeString(id_jobentry, "servername");
-			serverPort      = (int)rep.getJobEntryAttributeInteger(id_jobentry, "serverport");
+			int intServerPort = (int)rep.getJobEntryAttributeInteger(id_jobentry, "serverport");
+            serverPort = rep.getJobEntryAttributeString(id_jobentry, "serverport"); // backward compatible.
+            if (intServerPort>0 && Const.isEmpty(serverPort)) serverPort = Integer.toString(intServerPort);
+
 			userName        = rep.getJobEntryAttributeString(id_jobentry, "username");
 			password        = rep.getJobEntryAttributeString(id_jobentry, "password");
 			sftpDirectory    = rep.getJobEntryAttributeString(id_jobentry, "sftpdirectory");
@@ -270,11 +275,11 @@ public class JobEntrySFTP extends JobEntryBase implements JobEntryInterface
 		return remove;
 	}
 	
-	public int getServerPort() {
+	public String getServerPort() {
 		return serverPort;
 	}
 
-	public void setServerPort(int serverPort) {
+	public void setServerPort(String serverPort) {
 		this.serverPort = serverPort;
 	}
 	
@@ -290,21 +295,31 @@ public class JobEntrySFTP extends JobEntryBase implements JobEntryInterface
 		log.logDetailed(toString(), "Start of SFTP job entry");
 		
 		SFTPClient sftpclient = null;
+        
+        // String substitution..
+        String realServerName      = StringUtil.environmentSubstitute(serverName);
+        String realServerPort      = StringUtil.environmentSubstitute(serverPort);
+        String realUsername        = StringUtil.environmentSubstitute(userName);
+        String realPassword        = StringUtil.environmentSubstitute(password);
+        String realSftpDirString   = StringUtil.environmentSubstitute(sftpDirectory);
+        String realWildcard        = StringUtil.environmentSubstitute(wildcard);
+        String realTargetDirectory = StringUtil.environmentSubstitute(targetDirectory);
+        
 		try
 		{
 			// Create sftp client to host ...
-			sftpclient = new SFTPClient(InetAddress.getByName(serverName), serverPort, userName);
-			log.logDetailed(toString(), "Opened SFTP connection to server ["+serverName+"] on port ["+serverPort+"] with username ["+userName+"]");
+			sftpclient = new SFTPClient(InetAddress.getByName(realServerName), Const.toInt(realServerPort, 22), realUsername);
+			log.logDetailed(toString(), "Opened SFTP connection to server ["+realServerName+"] on port ["+realServerPort+"] with username ["+realUsername+"]");
 	
 			// login to ftp host ...
-			sftpclient.login(password);
-			log.logDetailed(toString(), "logged in using password "+password);
+			sftpclient.login(realPassword);
+			log.logDetailed(toString(), "logged in using password "+realPassword); // Logging this seems a bad idea! Oh well.
 
 			// move to spool dir ...
-			if (sftpDirectory!=null && sftpDirectory.length()>0)
+			if (!Const.isEmpty(realSftpDirString))
 			{
-				sftpclient.chdir(sftpDirectory);
-				log.logDetailed(toString(), "Changed to directory ["+sftpDirectory+"]");
+				sftpclient.chdir(realSftpDirString);
+				log.logDetailed(toString(), "Changed to directory ["+realSftpDirString+"]");
 			}
 			
 			// Get all the files in the current directory...
@@ -312,9 +327,9 @@ public class JobEntrySFTP extends JobEntryBase implements JobEntryInterface
 			log.logDetailed(toString(), "Found "+filelist.length+" files in the remote scp directory");
 
 			Pattern pattern = null;
-			if (wildcard!=null && wildcard.length()>0) 
+			if (!Const.isEmpty(realWildcard)) 
 			{
-				pattern = Pattern.compile(wildcard);
+				pattern = Pattern.compile(realWildcard);
 				
 			}
 			
@@ -332,9 +347,9 @@ public class JobEntrySFTP extends JobEntryBase implements JobEntryInterface
 				
 				if (getIt)
 				{
-					log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+targetDirectory+"]");
+					log.logDebug(toString(), "Getting file ["+filelist[i]+"] to directory ["+realTargetDirectory+"]");
 
-					String targetFilename = targetDirectory+Const.FILE_SEPARATOR+filelist[i]; 
+					String targetFilename = realTargetDirectory+Const.FILE_SEPARATOR+filelist[i]; 
 					sftpclient.get(targetFilename, filelist[i]);
 					filesRetrieved++; 
 					
