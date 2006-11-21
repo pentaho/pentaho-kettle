@@ -110,7 +110,15 @@ public class SharedObjects
         String filename;
         if (Const.isEmpty(sharedObjectsFile))
         {
-            filename = Const.getSharedObjectsFile();
+            // First fallback is the environment/kettle variable ${KETTLE_SHARED_OBJECTS}
+            // This points to the file
+            filename = KettleVariables.getInstance().getVariable("KETTLE_SHARED_OBJECTS");
+            
+            // Last line of defence...
+            if (Const.isEmpty(filename))
+            {
+                filename = Const.getSharedObjectsFile();
+            }
         }
         else
         {

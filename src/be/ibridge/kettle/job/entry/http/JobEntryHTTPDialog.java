@@ -43,6 +43,7 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
@@ -62,7 +63,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
     private FormData     fdlName, fdName;
 
 	private Label        wlURL;
-	private Text         wURL;
+	private TextVar      wURL;
 	private FormData     fdlURL, fdURL;
 
     private Label        wlRunEveryRow;
@@ -70,11 +71,11 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
     private FormData     fdlRunEveryRow, fdRunEveryRow;
 
     private Label        wlFieldURL;
-    private Text         wFieldURL;
+    private TextVar      wFieldURL;
     private FormData     fdlFieldURL, fdFieldURL;
     
 	private Label        wlTargetFile;
-	private Text         wTargetFile;
+	private TextVar      wTargetFile;
 	private FormData     fdlTargetFile, fdTargetFile;
 
     private Label        wlAppend;
@@ -86,37 +87,37 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
     private FormData     fdlDateTimeAdded, fdDateTimeAdded;
     
     private Label        wlTargetExt;
-    private Text         wTargetExt;
+    private TextVar      wTargetExt;
     private FormData     fdlTargetExt, fdTargetExt;
     
     
     private Label        wlUploadFile;
-    private Text         wUploadFile;
+    private TextVar      wUploadFile;
     private FormData     fdlUploadFile, fdUploadFile;
 
     
     
     
     private Label        wlUserName;
-    private Text         wUserName;
+    private TextVar      wUserName;
     private FormData     fdlUserName, fdUserName;
     
     private Label        wlPassword;
-    private Text         wPassword;
+    private TextVar      wPassword;
     private FormData     fdlPassword, fdPassword;
 
     
     
     private Label        wlProxyServer;
-    private Text         wProxyServer;
+    private TextVar      wProxyServer;
     private FormData     fdlProxyServer, fdProxyServer;
 
     private Label        wlProxyPort;
-    private Text         wProxyPort;
+    private TextVar      wProxyPort;
     private FormData     fdlProxyPort, fdProxyPort;
     
     private Label        wlNonProxyHosts;
-    private Text         wNonProxyHosts;
+    private TextVar      wNonProxyHosts;
     private FormData     fdlNonProxyHosts, fdNonProxyHosts;
     
     
@@ -194,7 +195,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 		fdlURL.top  = new FormAttachment(wName, margin);
 		fdlURL.right= new FormAttachment(middle, -margin);
 		wlURL.setLayoutData(fdlURL);
-		wURL=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wURL=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wURL);
 		wURL.addModifyListener(lsMod);
 		fdURL=new FormData();
@@ -238,7 +239,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         fdlFieldURL.top  = new FormAttachment(wRunEveryRow, margin);
         fdlFieldURL.right= new FormAttachment(middle, -margin);
         wlFieldURL.setLayoutData(fdlFieldURL);
-        wFieldURL=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wFieldURL=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFieldURL);
         wFieldURL.addModifyListener(lsMod);
         fdFieldURL=new FormData();
@@ -256,7 +257,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
 		fdlTargetFile.top  = new FormAttachment(wFieldURL, margin);
 		fdlTargetFile.right= new FormAttachment(middle, -margin);
 		wlTargetFile.setLayoutData(fdlTargetFile);
-		wTargetFile=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTargetFile=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTargetFile);
 		wTargetFile.addModifyListener(lsMod);
 		fdTargetFile=new FormData();
@@ -317,7 +318,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         fdlTargetExt.top  = new FormAttachment(wDateTimeAdded, margin);
         fdlTargetExt.right= new FormAttachment(middle, -margin);
         wlTargetExt.setLayoutData(fdlTargetExt);
-        wTargetExt=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wTargetExt=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTargetExt);
         wTargetExt.addModifyListener(lsMod);
         fdTargetExt=new FormData();
@@ -337,7 +338,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         fdlUploadFile.top  = new FormAttachment(wTargetExt, margin*5);
         fdlUploadFile.right= new FormAttachment(middle, -margin);
         wlUploadFile.setLayoutData(fdlUploadFile);
-        wUploadFile=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wUploadFile=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wUploadFile);
         wUploadFile.addModifyListener(lsMod);
         fdUploadFile=new FormData();
@@ -356,7 +357,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         fdlUserName.top  = new FormAttachment(wUploadFile, margin*5);
         fdlUserName.right= new FormAttachment(middle, -margin);
         wlUserName.setLayoutData(fdlUserName);
-        wUserName=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wUserName=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wUserName);
         wUserName.addModifyListener(lsMod);
         fdUserName=new FormData();
@@ -374,7 +375,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         fdlPassword.top  = new FormAttachment(wUserName, margin);
         fdlPassword.right= new FormAttachment(middle, -margin);
         wlPassword.setLayoutData(fdlPassword);
-        wPassword=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wPassword=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wPassword);
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
@@ -394,7 +395,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         fdlProxyServer.top  = new FormAttachment(wPassword, margin*5);
         fdlProxyServer.right= new FormAttachment(middle, -margin);
         wlProxyServer.setLayoutData(fdlProxyServer);
-        wProxyServer=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wProxyServer=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wProxyServer);
         wProxyServer.addModifyListener(lsMod);
         fdProxyServer=new FormData();
@@ -412,7 +413,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         fdlProxyPort.top  = new FormAttachment(wProxyServer, margin);
         fdlProxyPort.right= new FormAttachment(middle, -margin);
         wlProxyPort.setLayoutData(fdlProxyPort);
-        wProxyPort=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wProxyPort=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wProxyPort);
         wProxyPort.addModifyListener(lsMod);
         fdProxyPort=new FormData();
@@ -430,7 +431,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         fdlNonProxyHosts.top  = new FormAttachment(wProxyPort, margin);
         fdlNonProxyHosts.right= new FormAttachment(middle, -margin);
         wlNonProxyHosts.setLayoutData(fdlNonProxyHosts);
-        wNonProxyHosts=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wNonProxyHosts=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wNonProxyHosts);
         wNonProxyHosts.addModifyListener(lsMod);
         fdNonProxyHosts=new FormData();
@@ -518,9 +519,9 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         wUserName.setText(Const.NVL(jobentry.getUsername(), ""));
         wPassword.setText(Const.NVL(jobentry.getPassword(), ""));
         
-        wProxyServer.setText(Const.NVL(jobentry.getProxyHostname(), ""));
-        wProxyPort.setText(""+jobentry.getProxyPort());
-        wNonProxyHosts.setText(Const.NVL(jobentry.getNonProxyHosts(), ""));
+        wProxyServer.setText( Const.NVL(jobentry.getProxyHostname(), "") );
+        wProxyPort.setText( Const.NVL(jobentry.getProxyPort(), "") );
+        wNonProxyHosts.setText( Const.NVL(jobentry.getNonProxyHosts(), "") );
         
         setFlags();
 	}
@@ -550,7 +551,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         jobentry.setPassword( wPassword.getText() );
         
         jobentry.setProxyHostname( wProxyServer.getText() );
-        jobentry.setProxyPort( Const.toInt(wProxyPort.getText(), 0) );
+        jobentry.setProxyPort( wProxyPort.getText() );
         jobentry.setNonProxyHosts( wNonProxyHosts.getText() );
         
 		dispose();

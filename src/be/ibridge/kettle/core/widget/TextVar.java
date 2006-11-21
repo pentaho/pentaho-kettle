@@ -1,5 +1,8 @@
 package be.ibridge.kettle.core.widget;
 
+import org.eclipse.jface.fieldassist.DecoratedField;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
+import org.eclipse.jface.fieldassist.TextControlCreator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
@@ -13,11 +16,11 @@ import org.eclipse.swt.events.TraverseListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
 
+import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
@@ -33,8 +36,7 @@ public class TextVar extends Composite
 {
     private static final Props props = Props.getInstance();
 
-    private Text wText;
-    private Button wVariable;
+    private DecoratedField decoratedField;
     
     public TextVar(Composite arg0, int flags)
     {
@@ -42,7 +44,6 @@ public class TextVar extends Composite
         props.setLook(this);
         
         // int margin = Const.MARGIN;
-        
         FormLayout formLayout = new FormLayout();
         formLayout.marginWidth  = 0;
         formLayout.marginHeight = 0;
@@ -52,31 +53,23 @@ public class TextVar extends Composite
         this.setLayout(formLayout);
 
         // add a text field on it...
-        wText = new Text(this, flags);
+        decoratedField = new DecoratedField(this, flags, new TextControlCreator());
+        Text wText = (Text) decoratedField.getControl();
         props.setLook(wText);
         wText.addModifyListener(getModifyListenerTooltipText(wText));
         SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(this, wText);
         wText.addKeyListener(getControlSpaceKeyListener(wText, lsVar));
         
-        // add a button...
-        wVariable = new Button(this, SWT.PUSH);
-        wVariable.setToolTipText("Insert variable (CTRL-SPACE)");
-        props.setLook(wVariable);
-
-        // wVariable.setText(Messages.getString("System.Button.Variable")); // $NON-NLS-1$
-        wVariable.setText("$"); // $NON-NLS-1$
-        wVariable.addSelectionListener(lsVar);
+        // Put some decorations on it...
+        FieldDecorationRegistry registry = FieldDecorationRegistry.getDefault();
+        registry.registerFieldDecoration("variable.field", "Enter CTRL-SPACE to insert a variable from a selection", GUIResource.getInstance().getImageVariable());
+        decoratedField.addFieldDecoration(registry.getFieldDecoration("variable.field"), SWT.TOP | SWT.RIGHT, false);
         
-        FormData fdVariable = new FormData();
-        fdVariable.top    = new FormAttachment(0,0);
-        fdVariable.right  = new FormAttachment(100,0);
-        wVariable.setLayoutData(fdVariable);
-
         FormData fdText = new FormData();
-        fdText.top   = new FormAttachment(wVariable, 0, SWT.CENTER);
-        fdText.left  = new FormAttachment(0,0);
-        fdText.right = new FormAttachment(wVariable, 0);
-        wText.setLayoutData(fdText);
+        fdText.top   = new FormAttachment(0, 0);
+        fdText.left  = new FormAttachment(0 ,0);
+        fdText.right = new FormAttachment(100, 0);
+        decoratedField.getLayoutControl().setLayoutData(fdText);
     }
     
     public static final ModifyListener getModifyListenerTooltipText(final Text textField)
@@ -116,7 +109,7 @@ public class TextVar extends Composite
      */
     public String getText()
     {
-        return wText.getText();
+        return ((Text) decoratedField.getControl()).getText();
     }
     
     /**
@@ -124,56 +117,45 @@ public class TextVar extends Composite
      */
     public void setText(String text)
     {
-        wText.setText(text);
+        ((Text) decoratedField.getControl()).setText(text);
     }
     
     public Text getTextWidget()
     {
-        return wText;
+        return (Text) decoratedField.getControl();
     }
  
-    public Button getVariableWidget()
-    {
-        return wVariable;
-    }
-    
     /**
      * Add a modify listener to the text widget
      * @param modifyListener
      */
     public void addModifyListener(ModifyListener modifyListener)
     {
-        wText.addModifyListener(modifyListener);
+        ((Text)decoratedField.getControl()).addModifyListener(modifyListener);
     }
 
     public void addSelectionListener(SelectionAdapter lsDef)
     {
-        wText.addSelectionListener(lsDef);
+        ((Text)decoratedField.getControl()).addSelectionListener(lsDef);
     }
 
     public void setEchoChar(char c)
     {
-        wText.setEchoChar(c);
+        ((Text)decoratedField.getControl()).setEchoChar(c);
     }
  
     public void setEnabled(boolean flag)
     {
-        wText.setEnabled(flag);
-        wVariable.setEnabled(flag);
+        ((Text)decoratedField.getControl()).setEnabled(flag);
     }
     
     public boolean setFocus()
     {
-        return wText.setFocus();
+        return ((Text)decoratedField.getControl()).setFocus();
     }
     
     public void addTraverseListener(TraverseListener tl)
     {
-        wText.addTraverseListener(tl);
-    }
-
-    public Button getButtonWidget()
-    {
-        return wVariable;
+        ((Text)decoratedField.getControl()).addTraverseListener(tl);
     }
 }

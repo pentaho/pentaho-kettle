@@ -2540,7 +2540,8 @@ public class TransMeta implements XMLInterface
     {
         // Extract the shared steps, connections, etc. using the SharedObjects class
         //
-        SharedObjects sharedObjects = new SharedObjects(sharedObjectsFile, databases, counters); 
+        String soFile = StringUtil.environmentSubstitute(sharedObjectsFile);
+        SharedObjects sharedObjects = new SharedObjects(soFile, databases, counters); 
         Map objectsMap = sharedObjects.getObjectsMap();
         Collection objects = objectsMap.values();
         
@@ -4839,7 +4840,8 @@ public class TransMeta implements XMLInterface
         try
         {
             // First load all the shared objects...
-            SharedObjects sharedObjects = new SharedObjects(sharedObjectsFile, databases, counters);
+            String soFile = StringUtil.environmentSubstitute(sharedObjectsFile);
+            SharedObjects sharedObjects = new SharedObjects(soFile, databases, counters);
             
             // Now overwrite the objects in there
             

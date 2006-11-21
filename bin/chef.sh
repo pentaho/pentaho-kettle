@@ -1,13 +1,25 @@
 #!/bin/sh
 
 # **************************************************
+# ** Set these to the location of your mozilla
+# ** installation directory.  Use a Mozilla with
+# ** Gtk2 and Fte enabled.
+# **************************************************
+
+export MOZILLA_FIVE_HOME=/usr/local/mozilla
+export LD_LIBRARY_PATH=/usr/local/mozilla
+
+# **************************************************
 # ** Libraries used by Kettle:                    **
 # **************************************************
 
-CLASSPATH=.
-CLASSPATH=$CLASSPATH:lib/kettle.jar
-CLASSPATH=$CLASSPATH:libswt/jface.jar
-CLASSPATH=$CLASSPATH:libswt/runtime.jar
+BASEDIR=$(dirname $0)
+CLASSPATH=$BASEDIR
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/libswt/jface.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/libswt/runtime.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/libswt/common.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/libswt/commands.jar
 
 # **************************************************
 # ** JDBC & other libraries used by Kettle:       **
@@ -18,6 +30,7 @@ do
   CLASSPATH=$CLASSPATH:$f
 done
 
+
 # **************************************************
 # ** Platform specific libraries ...              **
 # **************************************************
@@ -27,32 +40,32 @@ LIBPATH="NONE"
 
 case `uname -s` in 
 	AIX)
-		LIBPATH=libswt/aix/
+		LIBPATH=$BASEDIR/libswt/aix/
 		;;
 
 	SunOS) 
-		LIBPATH=libswt/solaris/
+		LIBPATH=$BASEDIR/libswt/solaris/
 		;;
 
 	Darwin)
-		LIBPATH=libswt/osx/
-		JAVA_BIN=libswt/osx/java_swt
+		LIBPATH=$BASEDIR/libswt/osx/
+		JAVA_BIN=$BASEDIR/libswt/osx/java_swt
 		chmod +x $JAVA_BIN
 		;;
 
 	Linux)
-    	ARCH=`uname -m`
+	    ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
-				LIBPATH=libswt/linux/x86_64/
+				LIBPATH=$BASEDIR/libswt/linux/x86_64/
 				;;
 
 			i[3-6]86)
-				LIBPATH=libswt/linux/x86/
+				LIBPATH=$BASEDIR/libswt/linux/x86/
 				;;
 
 			ppc)
-				LIBPATH=libswt/linux/ppc/
+				LIBPATH=$BASEDIR/libswt/linux/ppc/
 				;;
 
 			*)	
@@ -66,17 +79,17 @@ case `uname -s` in
 	    ARCH=`uname -m`
 		case $ARCH in
 			x86_64)
-				LIBPATH=libswt/freebsd/x86_64/
+				LIBPATH=$BASEDIR/libswt/freebsd/x86_64/
 				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
 				exit
 				;;
 
 			i[3-6]86)
-				LIBPATH=libswt/freebsd/x86/
+				LIBPATH=$BASEDIR/libswt/freebsd/x86/
 				;;
 
 			ppc)
-				LIBPATH=libswt/freebsd/ppc/
+				LIBPATH=$BASEDIR/libswt/freebsd/ppc/
 				echo "I'm sorry, this Linux platform [$ARCH] is not yet supported!"
 				exit
 				;;
@@ -87,17 +100,17 @@ case `uname -s` in
 				;;
 		esac
 		;;
-		
+
 	HP-UX) 
-		LIBPATH=libswt/hpux/
+		LIBPATH=$BASEDIR/libswt/hpux/
 		;;
 	CYGWIN*)
-		./Chef.bat
+		./Spoon.bat
 		# exit
 		;;
 
 	*) 
-		echo Chef is not supported on this hosttype : `uname -s`
+		echo Spoon is not supported on this hosttype : `uname -s`
 		exit
 		;;
 esac 
@@ -115,10 +128,10 @@ fi
 
 # ******************************************************************
 # ** Set java runtime options                                     **
-# ** Change 512m to higher values in case you run out of memory.  **
+# ** Change 256m to higher values in case you run out of memory.  **
 # ******************************************************************
 
-OPT="-Xmx512m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD"
+OPT="-Xmx256m -cp $CLASSPATH -Djava.library.path=$LIBPATH -DKETTLE_HOME=$KETTLE_HOME -DKETTLE_REPOSITORY=$KETTLE_REPOSITORY -DKETTLE_USER=$KETTLE_USER -DKETTLE_PASSWORD=$KETTLE_PASSWORD"
 
 # ***************
 # ** Run...    **

@@ -73,6 +73,8 @@ REM *****************
 set CLASSPATH=%CLASSPATH%;libswt\runtime.jar
 set CLASSPATH=%CLASSPATH%;libswt\jface.jar
 set CLASSPATH=%CLASSPATH%;libswt\win32\swt.jar
+set CLASSPATH=%CLASSPATH%;libswt\common.jar
+set CLASSPATH=%CLASSPATH%;libswt\commands.jar
 
 REM ******************************************************************
 REM ** Set java runtime options                                     **

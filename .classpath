@@ -17,8 +17,6 @@
 	<classpathentry kind="lib" path="libext/ojdbc14.jar"/>
 	<classpathentry kind="lib" path="libext/orai18n.jar"/>
 	<classpathentry kind="lib" path="libext/SQLBaseJDBC.jar"/>
-	<classpathentry kind="lib" path="libswt/jface.jar"/>
-	<classpathentry kind="lib" path="libswt/runtime.jar"/>
 	<classpathentry kind="lib" path="libext/db2jcc.jar"/>
 	<classpathentry kind="lib" path="libext/log4j-1.2.8.jar"/>
 	<classpathentry kind="lib" path="libext/javadbf.jar"/>
@@ -55,5 +53,9 @@
 	<classpathentry kind="lib" path="libext/commons-codec-1.3.jar"/>
 	<classpathentry kind="lib" path="libext/unijdbc.jar"/>
 	<classpathentry kind="lib" path="libext/asjava.zip"/>
+	<classpathentry kind="lib" path="libswt/jface.jar"/>
+	<classpathentry kind="lib" path="libswt/runtime.jar"/>
+	<classpathentry kind="lib" path="libswt/commands.jar"/>
+	<classpathentry kind="lib" path="libswt/common.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -84,6 +84,7 @@ public class GUIResource
     private Image     imageSpoon;
     private Image     imageChef;
     private Image     imagePentaho;
+    private Image     imageVariable;
     
     private Image     imageSplash;
 
@@ -204,6 +205,7 @@ public class GUIResource
             imageChef        .dispose();
             imageSplash      .dispose();
             imagePentaho     .dispose();
+            imageVariable    .dispose();
      
             // big images
             Collection images = imagesSteps.values();
@@ -329,6 +331,7 @@ public class GUIResource
         imageChef        = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "chef.png"));
         imageSplash      = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_splash.png"));
         imagePentaho     = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "PentahoLogo.png"));
+        imageVariable    = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "variable.png"));
     }
 
     /**
@@ -765,5 +768,13 @@ public class GUIResource
     public ManagedFont getFontBold()
     {
         return fontBold;
+    }
+
+    /**
+     * @return the imageVariable
+     */
+    public Image getImageVariable()
+    {
+        return imageVariable;
     }
 }

@@ -3658,6 +3658,15 @@ public class Spoon implements AddUndoPositionInterface
     {
         TransDialog tid = new TransDialog(shell, SWT.NONE, transMeta, rep);
         TransMeta ti = tid.open();
+        
+        // In this case, load shared objects
+        //
+        if (tid.isSharedObjectsFileChanged())
+        {
+            loadSharedObjects();
+            refreshTree(true);
+        }
+        
         setShellText();
         return ti!=null;
     }

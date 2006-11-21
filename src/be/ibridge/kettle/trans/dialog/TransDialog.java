@@ -87,7 +87,7 @@ public class TransDialog extends Dialog
 	private CTabFolder   wTabFolder;
 	private FormData     fdTabFolder;
 	
-	private CTabItem     wTransTab, wLogTab, wDateTab, wDepTab, wPerfTab, wPartTab;
+	private CTabItem     wTransTab, wLogTab, wDateTab, wDepTab, wMiscTab, wPartTab;
 
 	private Text         wTransname;
     
@@ -152,6 +152,10 @@ public class TransDialog extends Dialog
     private Button wShowFeedback;
 
     private Text wFeedbackSize;
+
+    private Text wSharedObjectsFile;
+    
+    private boolean sharedObjectsFileChanged;
 	
     /** @deprecated */
 	public TransDialog(Shell parent, int style, LogWriter log, Props props, TransMeta transMeta, Repository rep)
@@ -214,7 +218,7 @@ public class TransDialog extends Dialog
 		addLogTab();
 		addDateTab();
 		addDepTab();
-		addPerfTab();
+		addMiscTab();
         addPartTab();
 		
 		fdTabFolder = new FormData();
@@ -851,25 +855,25 @@ public class TransDialog extends Dialog
    }
 
 
-    private void addPerfTab()
+    private void addMiscTab()
     {
         //////////////////////////
         // START OF PERFORMANCE TAB///
         ///
-        wPerfTab=new CTabItem(wTabFolder, SWT.NONE);
-        wPerfTab.setText(Messages.getString("TransDialog.PerformanceTab.Label")); //$NON-NLS-1$
+        wMiscTab=new CTabItem(wTabFolder, SWT.NONE);
+        wMiscTab.setText(Messages.getString("TransDialog.MiscTab.Label")); //$NON-NLS-1$
         
-        Composite wPerfComp = new Composite(wTabFolder, SWT.NONE);
-        props.setLook(wPerfComp);
+        Composite wMiscComp = new Composite(wTabFolder, SWT.NONE);
+        props.setLook(wMiscComp);
 
         FormLayout perfLayout = new FormLayout();
         perfLayout.marginWidth  = Const.MARGIN;
         perfLayout.marginHeight = Const.MARGIN;
-        wPerfComp.setLayout(perfLayout);
+        wMiscComp.setLayout(perfLayout);
 
 
         // Rows in Rowset:
-        Label wlSizeRowset = new Label(wPerfComp, SWT.RIGHT);
+        Label wlSizeRowset = new Label(wMiscComp, SWT.RIGHT);
         wlSizeRowset.setText(Messages.getString("TransDialog.SizeRowset.Label")); //$NON-NLS-1$
         props.setLook(wlSizeRowset);
         FormData fdlSizeRowset = new FormData();
@@ -877,7 +881,7 @@ public class TransDialog extends Dialog
         fdlSizeRowset.right= new FormAttachment(middle, -margin);
         fdlSizeRowset.top  = new FormAttachment(0, margin);
         wlSizeRowset.setLayoutData(fdlSizeRowset);
-        wSizeRowset=new Text(wPerfComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSizeRowset=new Text(wMiscComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wSizeRowset);
         wSizeRowset.addModifyListener(lsMod);
         FormData fdSizeRowset = new FormData();
@@ -887,7 +891,7 @@ public class TransDialog extends Dialog
         wSizeRowset.setLayoutData(fdSizeRowset);
 
         // Show feedback in transformations steps?
-        Label wlShowFeedback = new Label(wPerfComp, SWT.RIGHT);
+        Label wlShowFeedback = new Label(wMiscComp, SWT.RIGHT);
         wlShowFeedback.setText("Show a feedback row in transformation steps? ");
         props.setLook(wlShowFeedback);
         FormData fdlShowFeedback = new FormData();
@@ -895,7 +899,7 @@ public class TransDialog extends Dialog
         fdlShowFeedback.top  = new FormAttachment(wSizeRowset, margin);
         fdlShowFeedback.right= new FormAttachment(middle, -margin);
         wlShowFeedback.setLayoutData(fdlShowFeedback);
-        wShowFeedback=new Button(wPerfComp, SWT.CHECK);
+        wShowFeedback=new Button(wMiscComp, SWT.CHECK);
         props.setLook(wShowFeedback);
         FormData fdShowFeedback = new FormData();
         fdShowFeedback.left = new FormAttachment(middle, 0);
@@ -904,7 +908,7 @@ public class TransDialog extends Dialog
         wShowFeedback.setLayoutData(fdShowFeedback);
 
         // Feedback size
-        Label wlFeedbackSize = new Label(wPerfComp, SWT.RIGHT);
+        Label wlFeedbackSize = new Label(wMiscComp, SWT.RIGHT);
         wlFeedbackSize.setText("The feedback size ");
         props.setLook(wlFeedbackSize);
         FormData fdlFeedbackSize = new FormData();
@@ -912,7 +916,7 @@ public class TransDialog extends Dialog
         fdlFeedbackSize.right= new FormAttachment(middle, -margin);
         fdlFeedbackSize.top  = new FormAttachment(wShowFeedback, margin);
         wlFeedbackSize.setLayoutData(fdlFeedbackSize);
-        wFeedbackSize=new Text(wPerfComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wFeedbackSize=new Text(wMiscComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFeedbackSize);
         FormData fdFeedbackSize = new FormData();
         fdFeedbackSize.left = new FormAttachment(middle, 0);
@@ -920,8 +924,8 @@ public class TransDialog extends Dialog
         fdFeedbackSize.top  = new FormAttachment(wShowFeedback, margin);
         wFeedbackSize.setLayoutData(fdFeedbackSize);
         
-        // Rows in Rowset:
-        Label wlUniqueConnections = new Label(wPerfComp, SWT.RIGHT);
+        // Unique connections
+        Label wlUniqueConnections = new Label(wMiscComp, SWT.RIGHT);
         wlUniqueConnections.setText(Messages.getString("TransDialog.UniqueConnections.Label")); //$NON-NLS-1$
         props.setLook(wlUniqueConnections);
         FormData fdlUniqueConnections = new FormData();
@@ -929,7 +933,7 @@ public class TransDialog extends Dialog
         fdlUniqueConnections.right= new FormAttachment(middle, -margin);
         fdlUniqueConnections.top  = new FormAttachment(wFeedbackSize, margin);
         wlUniqueConnections.setLayoutData(fdlUniqueConnections);
-        wUniqueConnections=new Button(wPerfComp, SWT.CHECK);
+        wUniqueConnections=new Button(wMiscComp, SWT.CHECK);
         props.setLook(wUniqueConnections);
         FormData fdUniqueConnections = new FormData();
         fdUniqueConnections.left = new FormAttachment(middle, 0);
@@ -937,17 +941,35 @@ public class TransDialog extends Dialog
         fdUniqueConnections.right= new FormAttachment(100, 0);
         wUniqueConnections.setLayoutData(fdUniqueConnections);
 
+        // Shared objects file
+        Label wlSharedObjectsFile = new Label(wMiscComp, SWT.RIGHT);
+        wlSharedObjectsFile.setText(Messages.getString("TransDialog.SharedObjectsFile.Label")); //$NON-NLS-1$
+        props.setLook(wlSharedObjectsFile);
+        FormData fdlSharedObjectsFile = new FormData();
+        fdlSharedObjectsFile.left = new FormAttachment(0, 0);
+        fdlSharedObjectsFile.right= new FormAttachment(middle, -margin);
+        fdlSharedObjectsFile.top  = new FormAttachment(wUniqueConnections, margin);
+        wlSharedObjectsFile.setLayoutData(fdlSharedObjectsFile);
+        wSharedObjectsFile=new Text(wMiscComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSharedObjectsFile.setToolTipText(Messages.getString("TransDialog.SharedObjectsFile.Tooltip")); //$NON-NLS-1$
+        props.setLook(wSharedObjectsFile);
+        FormData fdSharedObjectsFile = new FormData();
+        fdSharedObjectsFile.left = new FormAttachment(middle, 0);
+        fdSharedObjectsFile.top  = new FormAttachment(wUniqueConnections, margin);
+        fdSharedObjectsFile.right= new FormAttachment(100, 0);
+        wSharedObjectsFile.setLayoutData(fdSharedObjectsFile);
+
                 
 
-        FormData fdPerfComp = new FormData();
-        fdPerfComp.left  = new FormAttachment(0, 0);
-        fdPerfComp.top   = new FormAttachment(0, 0);
-        fdPerfComp.right = new FormAttachment(100, 0);
-        fdPerfComp.bottom= new FormAttachment(100, 0);
-        wPerfComp.setLayoutData(fdPerfComp);
+        FormData fdMiscComp = new FormData();
+        fdMiscComp.left  = new FormAttachment(0, 0);
+        fdMiscComp.top   = new FormAttachment(0, 0);
+        fdMiscComp.right = new FormAttachment(100, 0);
+        fdMiscComp.bottom= new FormAttachment(100, 0);
+        wMiscComp.setLayoutData(fdMiscComp);
     
-        wPerfComp.layout();
-        wPerfTab.setControl(wPerfComp);
+        wMiscComp.layout();
+        wMiscTab.setControl(wMiscComp);
         
         /////////////////////////////////////////////////////////////
         /// END OF PERF TAB
@@ -1054,12 +1076,12 @@ public class TransDialog extends Dialog
 
         // TransDialog.SchemaPartitions.Label
 
-        FormData fdPerfComp = new FormData();
-        fdPerfComp.left  = new FormAttachment(0, 0);
-        fdPerfComp.top   = new FormAttachment(0, 0);
-        fdPerfComp.right = new FormAttachment(100, 0);
-        fdPerfComp.bottom= new FormAttachment(100, 0);
-        wPartComp.setLayoutData(fdPerfComp);
+        FormData fdPartComp = new FormData();
+        fdPartComp.left  = new FormAttachment(0, 0);
+        fdPartComp.top   = new FormAttachment(0, 0);
+        fdPartComp.right = new FormAttachment(100, 0);
+        fdPartComp.bottom= new FormAttachment(100, 0);
+        wPartComp.setLayoutData(fdPartComp);
     
         wPartComp.layout();
         wPartTab.setControl(wPartComp);
@@ -1222,6 +1244,7 @@ public class TransDialog extends Dialog
 		wUniqueConnections.setSelection(transMeta.isUsingUniqueConnections());
 		wShowFeedback.setSelection(transMeta.isFeedbackShown());
         wFeedbackSize.setText(""+transMeta.getFeedbackSize());
+        wSharedObjectsFile.setText(Const.NVL(transMeta.getSharedObjectsFile(), ""));
         
 		wFields.setRowNums();
 		wFields.optWidth(true);
@@ -1352,7 +1375,8 @@ public class TransDialog extends Dialog
         
         transMeta.setFeedbackShown( wShowFeedback.getSelection() );
         transMeta.setFeedbackSize( Const.toInt( wFeedbackSize.getText(), Const.ROWS_UPDATE ) );
-        
+        transMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
+
 		if (newDirectory!=null)
 		{
 		    RepositoryDirectory dirFrom = transMeta.getDirectory();
@@ -1504,4 +1528,10 @@ public class TransDialog extends Dialog
 	{
 		return this.getClass().getName();
 	}
+
+
+    public boolean isSharedObjectsFileChanged()
+    {
+        return sharedObjectsFileChanged;
+    }
 }

@@ -59,6 +59,9 @@
 
   <jar href="libswt/jface.jar"/>
   <jar href="libswt/runtime.jar"/>
+  <jar href="libswt/common.jar"/>
+  <jar href="libswt/commands.jar"/>
+
  </resources>
 
  <resources os="Windows"> 

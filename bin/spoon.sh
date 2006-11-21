@@ -18,6 +18,8 @@ CLASSPATH=$BASEDIR
 CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle.jar
 CLASSPATH=$CLASSPATH:$BASEDIR/libswt/jface.jar
 CLASSPATH=$CLASSPATH:$BASEDIR/libswt/runtime.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/libswt/common.jar
+CLASSPATH=$CLASSPATH:$BASEDIR/libswt/commands.jar
 
 # **************************************************
 # ** JDBC & other libraries used by Kettle:       **

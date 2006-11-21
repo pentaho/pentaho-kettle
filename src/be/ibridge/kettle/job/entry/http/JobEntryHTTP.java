@@ -46,6 +46,7 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
@@ -83,7 +84,7 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
 
     // Proxy settings
     private String              proxyHostname;
-    private int                 proxyPort;
+    private String              proxyPort;
     private String              nonProxyHosts;
     private String              username;
     private String              password;
@@ -118,12 +119,12 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
         this.proxyHostname = proxyHostname;
     }
 
-    public int getProxyPort()
+    public String getProxyPort()
     {
         return proxyPort;
     }
 
-    public void setProxyPort(int proxyPort)
+    public void setProxyPort(String proxyPort)
     {
         this.proxyPort = proxyPort;
     }
@@ -209,7 +210,7 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
             }
 
             proxyHostname = XMLHandler.getTagValue(entrynode, "proxy_host");
-            proxyPort = Const.toInt(XMLHandler.getTagValue(entrynode, "proxy_port"), 0);
+            proxyPort = XMLHandler.getTagValue(entrynode, "proxy_port");
             nonProxyHosts = XMLHandler.getTagValue(entrynode, "non_proxy_hosts");
         }
         catch (KettleXMLException xe)
@@ -242,7 +243,10 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
             }
 
             proxyHostname = rep.getJobEntryAttributeString(id_jobentry, "proxy_host");
-            proxyPort = (int) rep.getJobEntryAttributeInteger(id_jobentry, "proxy_port");
+            int intPort = (int)rep.getJobEntryAttributeInteger(id_jobentry, "proxy_port");
+            proxyPort = rep.getJobEntryAttributeString(id_jobentry, "proxy_port"); // backward compatible.
+            if (intPort>0 && Const.isEmpty(proxyPort)) proxyPort = Integer.toString(intPort);
+            
             nonProxyHosts = rep.getJobEntryAttributeString(id_jobentry, "non_proxy_hosts");
         }
         catch (KettleException dbe)
@@ -349,7 +353,7 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
         {
             resultRows = new ArrayList();
             Row row = new Row();
-            row.addValue(new Value(urlFieldnameToUse, url));
+            row.addValue( new Value(urlFieldnameToUse, StringUtil.environmentSubstitute(url)) );
             resultRows.add(row);
             System.out.println("Added one row to rows: "+row);
         }
@@ -372,64 +376,66 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
             
             try
             {
-                String urlToUse = row.getString(urlFieldnameToUse, "");
+                String urlToUse = StringUtil.environmentSubstitute( row.getString(urlFieldnameToUse, "") );
                 
                 log.logBasic(toString(), "Connecting to URL: "+urlToUse);
 
-                if (proxyHostname!=null) 
+                if (!Const.isEmpty( proxyHostname )) 
                 {
-                    System.setProperty("http.proxyHost", proxyHostname);
-                    System.setProperty("http.proxyPort", ""+proxyPort);
-                    if (nonProxyHosts!=null) System.setProperty("http.nonProxyHosts", nonProxyHosts);
+                    System.setProperty("http.proxyHost", StringUtil.environmentSubstitute( proxyHostname ));
+                    System.setProperty("http.proxyPort", StringUtil.environmentSubstitute( proxyPort ));
+                    if (nonProxyHosts!=null) System.setProperty("http.nonProxyHosts", StringUtil.environmentSubstitute( nonProxyHosts ));
                 }
                 
-                if (username!=null && username.length()>0)
+                if (!Const.isEmpty(username) )
                 {
                     Authenticator.setDefault(new Authenticator()
                         {
                             protected PasswordAuthentication getPasswordAuthentication()
                             {
-                                return new PasswordAuthentication(username, password!=null ? password.toCharArray() : new char[] {} );
+                                String realPassword = StringUtil.environmentSubstitute( password );
+                                return new PasswordAuthentication(StringUtil.environmentSubstitute(username), realPassword!=null ? realPassword.toCharArray() : new char[] {} );
                             }
                         }
                     );
                 }
                 
-                String targetFile = targetFilename;
+                String realTargetFile = StringUtil.environmentSubstitute( targetFilename );
                 if (dateTimeAdded)
                 {
                     SimpleDateFormat daf = new SimpleDateFormat();
                     Date now = new Date();
                     
                     daf.applyPattern("yyyMMdd");
-                    targetFile+="_"+daf.format(now);
+                    realTargetFile+="_"+daf.format(now);
                     daf.applyPattern("HHmmss");
-                    targetFile+="_"+daf.format(now);
+                    realTargetFile+="_"+daf.format(now);
                     
-                    if (targetFilenameExtention!=null && targetFilenameExtention.length()>0)
+                    if (!Const.isEmpty(targetFilenameExtention) )
                     {
-                        targetFile+="."+targetFilenameExtention;
+                        realTargetFile+="."+StringUtil.environmentSubstitute(targetFilenameExtention);
                     }
                 }
                 
                 // Create the output File...
-                outputFile = new FileOutputStream(new File(targetFile), fileAppended);
+                outputFile = new FileOutputStream(new File(realTargetFile), fileAppended);
                 
                 // Get a stream for the specified URL
     		    server = new URL(urlToUse);
                 URLConnection connection = server.openConnection();
                 
                 // See if we need to send a file over?
-                if (uploadFilename!=null && uploadFilename.length()>0)
+                String realUploadFilename = StringUtil.environmentSubstitute( uploadFilename );
+                if (!Const.isEmpty(realUploadFilename))
                 {
-                    log.logDetailed(toString(), "Start sending content of file ["+uploadFilename+"] to server.");
+                    log.logDetailed(toString(), "Start sending content of file ["+realUploadFilename+"] to server.");
                     
                     connection.setDoOutput(true);
                     
                     // Grab an output stream to upload data to web server
                     uploadStream = connection.getOutputStream();
                     
-                    fileStream = new BufferedInputStream(new FileInputStream(new File(uploadFilename)));
+                    fileStream = new BufferedInputStream(new FileInputStream(new File(realUploadFilename)));
                     
                     int c;
                     while ( (c=fileStream.read())>=0)
@@ -458,10 +464,10 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
                     outputFile.write(line.getBytes());
                 }
                 
-                log.logBasic(toString(), "Finished writing "+bytesRead+" bytes to result file ["+targetFile+"]");
+                log.logBasic(toString(), "Finished writing "+bytesRead+" bytes to result file ["+realTargetFile+"]");
                 
 				// Add to the result files...
-				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(targetFile), parentJob.getJobname(), toString());
+				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(realTargetFile), parentJob.getJobname(), toString());
 				result.getResultFiles().add(resultFile);
 
                 result.setResult( true );
