@@ -89,12 +89,14 @@ public class TableInput extends BaseStep implements StepInterface
                 {
                 	if (log.isDetailed()) logDetailed("Reading single row from stream [" + meta.getLookupStepname() + "]");
                     parameters = getRowFrom(meta.getLookupStepname());
-                    if (log.isDetailed()) logDetailed("Query parameters found = " + parameters.toString());
                 }
                 else
                 {
                 	if (log.isDetailed()) logDetailed("Reading query parameters from stream [" + meta.getLookupStepname() + "]");
                     parameters = readStartDate(); // Read values in lookup table (look)
+                }
+                if (parameters!=null)
+                {
                     if (log.isDetailed()) logDetailed("Query parameters found = " + parameters.toString());
                 }
             }
@@ -102,6 +104,12 @@ public class TableInput extends BaseStep implements StepInterface
             {
                 parameters = new Row();
 			}
+            
+            if (meta.isExecuteEachInputRow() && ( parameters==null || parameters.size()==0) )
+            {
+                setOutputDone(); // signal end to receiver(s)
+                return false; // stop immediately, nothing to do here.
+            }
             
             boolean success = doQuery(parameters);
             if (!success) 
