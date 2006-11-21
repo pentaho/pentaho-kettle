@@ -129,6 +129,13 @@ public class UniVerseDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 	    return "DELETE FROM "+tableName;
 	}
 
+    /**
+     * UniVerse doesn't even support timestamps.
+     */
+    public boolean supportsTimeStampToDateConversion()
+    {
+        return false;
+    }
 
 	/**
 	 * Generates the SQL statement to add a column to the specified table
