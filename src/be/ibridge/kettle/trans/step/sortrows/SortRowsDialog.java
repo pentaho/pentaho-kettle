@@ -74,6 +74,10 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
     private Text         wSortSize;
     private FormData     fdlSortSize, fdSortSize;
 
+    private Label        wlCompress;
+    private Button       wCompress;
+    private FormData     fdlCompress, fdCompress;
+
 	private Label        wlFields;
 	private TableView    wFields;
 	private FormData     fdlFields, fdFields;
@@ -230,6 +234,31 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
         fdSortSize.right = new FormAttachment(100, 0);
         wSortSize.setLayoutData(fdSortSize);
 
+        wlCompress=new Label(shell, SWT.RIGHT);
+        wlCompress.setText(Messages.getString("SortRowsDialog.Compress.Label"));
+        props.setLook(wlCompress);
+        fdlCompress=new FormData();
+        fdlCompress.left = new FormAttachment(0, 0);
+        fdlCompress.right= new FormAttachment(middle, -margin);
+        fdlCompress.top  = new FormAttachment(wSortSize, margin*2);
+        wlCompress.setLayoutData(fdlCompress);
+        wCompress=new Button(shell, SWT.CHECK);
+        props.setLook(wCompress);
+        fdCompress=new FormData();
+        fdCompress.left  = new FormAttachment(middle, 0);
+        fdCompress.top   = new FormAttachment(wSortSize, margin*2);
+        fdCompress.right = new FormAttachment(100, 0);
+        wCompress.setLayoutData(fdCompress);
+        wCompress.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					log.logDetailed("SortRowsDialog", "Selection Listener for compress: " + wCompress.getSelection());
+					input.setChanged();
+				}
+			}
+        );
+
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK"));
 		wGet=new Button(shell, SWT.PUSH);
@@ -244,7 +273,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
  		props.setLook(wlFields);
 		fdlFields=new FormData();
 		fdlFields.left = new FormAttachment(0, 0);
-		fdlFields.top  = new FormAttachment(wSortSize, margin);
+		fdlFields.top  = new FormAttachment(wCompress, margin);
 		wlFields.setLayoutData(fdlFields);
 		
 		final int FieldsCols=2;
@@ -322,6 +351,7 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		if (input.getPrefix() != null) wPrefix.setText(input.getPrefix());
 		if (input.getDirectory() != null) wSortDir.setText(input.getDirectory());
 		wSortSize.setText(""+input.getSortSize());
+		wCompress.setSelection(input.getCompress());
         
 		Table table = wFields.table;
 		if (input.getFieldName().length>0) table.removeAll();
@@ -353,6 +383,8 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		input.setPrefix( wPrefix.getText() );
 		input.setDirectory( wSortDir.getText() );
         input.setSortSize( Const.toInt( wSortSize.getText(), Const.SORT_SIZE ) );
+        log.logDetailed("Sort rows", "Compression is set to " + wCompress.getSelection());
+        input.setCompress(wCompress.getSelection());
 
 		//Table table = wFields.table;
 		int nrfields = wFields.nrNonEmpty();
