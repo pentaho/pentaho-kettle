@@ -7,8 +7,11 @@ import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.ChangedFlag;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.SharedObjectInterface;
 import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.repository.Repository;
 
 /**
  * A cluster schema combines a list of slave servers so that they can be set altogether. 
@@ -99,6 +102,33 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         {
             Node slaveNode = XMLHandler.getSubNodeByNr(slavesNode, "slaveserver", i);
             SlaveServer slaveServer = new SlaveServer(slaveNode);
+            slaveServers.add(slaveServer);
+        }
+    }
+    
+    public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
+    {
+        long id_cluster_schema = rep.insertClusterSchema(id_transformation, name);
+        
+        for (int i=0;i<slaveServers.size();i++)
+        {
+            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            slaveServer.saveRep(rep, id_transformation, id_cluster_schema);
+        }
+    }
+    
+    public ClusterSchema(Repository rep, long id_cluster_schema) throws KettleDatabaseException
+    {
+        this();
+        
+        Row row = rep.getClusterSchema(id_cluster_schema);
+        
+        name = row.getString("SCHEMA_NAME", null);
+        
+        long[] pids = rep.getSlaveServerIDs(id_cluster_schema);
+        for (int i=0;i<pids.length;i++)
+        {
+            SlaveServer slaveServer = new SlaveServer(rep, pids[i]);
             slaveServers.add(slaveServer);
         }
     }

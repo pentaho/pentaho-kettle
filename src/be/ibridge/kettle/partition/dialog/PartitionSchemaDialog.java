@@ -247,7 +247,13 @@ public class PartitionSchemaDialog extends Dialog
 	private void getInfo()
     {
         partitionSchema.setName(wName.getText());
-        // The cluster-schema is maneged by the buttons.
+        
+        String parts[] = new String[wPartitions.nrNonEmpty()];
+        for (int i=0;i<parts.length;i++)
+        {
+            parts[i] = wPartitions.getNonEmpty(i).getText(1);
+        }
+        partitionSchema.setPartitionIDs(parts);
     }
     
     protected void importPartitions()

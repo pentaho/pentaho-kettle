@@ -13,8 +13,11 @@ import be.ibridge.kettle.core.ChangedFlag;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Encr;
 import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.repository.Repository;
 
 public class SlaveServer extends ChangedFlag implements Cloneable
 {
@@ -89,6 +92,26 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         xml.append("</slaveserver>");
 
         return xml.toString();
+    }
+    
+    public void saveRep(Repository rep, long id_transformation, long id_cluster_schema) throws KettleDatabaseException
+    {
+        rep.insertSlaveServer(id_transformation, id_cluster_schema, this);
+    }
+    
+    public SlaveServer(Repository rep, long id_slave_server) throws KettleDatabaseException
+    {
+        this();
+        
+        Row row = rep.getSlaveServer(id_slave_server);
+
+        hostname      = row.getString("HOST_NAME", null);
+        port          = row.getString("PORT", null);
+        username      = row.getString("USERNAME", null);
+        password      = row.getString("PASSWORD", null);
+        proxyHostname = row.getString("PROXY_HOST_NAME", null);
+        proxyPort     = row.getString("PROXY_PORT", null);
+        nonProxyHosts = row.getString("NON_PROXY_HOSTS", null);
     }
     
     public Object clone()

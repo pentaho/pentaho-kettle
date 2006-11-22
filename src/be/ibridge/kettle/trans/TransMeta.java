@@ -1636,6 +1636,21 @@ public class TransMeta implements XMLInterface
             rep.insertTransformation(this); // save the top level information for the transformation
             rep.closeTransAttributeInsertPreparedStatement();
 
+            // Save the partition schemas
+            for (int i=0;i<partitionSchemas.size();i++)
+            {
+                PartitionSchema schema = (PartitionSchema) partitionSchemas.get(i);
+                schema.saveRep(rep, getID());
+            }
+
+            // Save the clustering schemas
+            for (int i=0;i<clusterSchemas.size();i++)
+            {
+                ClusterSchema schema = (ClusterSchema) clusterSchemas.get(i);
+                schema.saveRep(rep, getID());
+            }
+
+            
             log.logDebug(toString(), Messages.getString("TransMeta.Log.SavingDependencies")); //$NON-NLS-1$
             for (int i = 0; i < nrDependencies(); i++)
             {
@@ -1931,14 +1946,27 @@ public class TransMeta implements XMLInterface
                     addTransHop(hi);
                     if (monitor != null) monitor.worked(1);
                 }
+                
+                long[] partitionSchemaIDs = rep.getPartitionSchemaIDs(getID());
+                for (int i = 0; i < partitionSchemaIDs.length; i++)
+                {
+                    PartitionSchema partitionSchema = new PartitionSchema(rep, partitionSchemaIDs[i]);
+                    partitionSchemas.add(partitionSchema);
+                }
+                
+                long[] clusterSchemaIDs = rep.getClusterSchemaIDs(getID());
+                for (int i = 0; i < clusterSchemaIDs.length; i++)
+                {
+                    ClusterSchema clusterSchema = new ClusterSchema(rep, clusterSchemaIDs[i]);
+                    clusterSchemas.add(clusterSchema);
+                }
+
 
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.LoadingTransformationDetailsTask.Title")); //$NON-NLS-1$
                 loadRepTrans(rep);
                 if (monitor != null) monitor.worked(1);
                 
-                // TODO: add support for storing and loading partition & cluster schemas from the repository.
-                // TODO: create tables R_CLUSTER_SCHEMA and R_PARTITION_SCHEMA in the repository
-                //
+                
 
                 // Have all partitioned step reference the correct partitioning schema
                 for (int i = 0; i < nrSteps(); i++)
