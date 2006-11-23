@@ -131,7 +131,75 @@
         </fields>
     <GUI>
       <xloc>356</xloc>
-      <yloc>129</yloc>
+      <yloc>130</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Row denormaliser</name>
+    <type>Denormaliser</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+      <key_field>Nr</key_field>
+      <group>
+        <field>
+          <name>ID</name>
+          </field>
+        </group>
+      <fields>
+        <field>
+          <field_name>Code</field_name>
+          <key_value>1</key_value>
+          <target_name>Code1</target_name>
+          <target_type>String</target_type>
+          <target_format/>
+          <target_length>10</target_length>
+          <target_precision>-1</target_precision>
+          <target_decimal_symbol/>
+          <target_grouping_symbol/>
+          <target_currency_symbol/>
+          <target_null_string/>
+          <target_aggregation_type>-</target_aggregation_type>
+          </field>
+        <field>
+          <field_name>Code</field_name>
+          <key_value>2</key_value>
+          <target_name>Code2</target_name>
+          <target_type>String</target_type>
+          <target_format/>
+          <target_length>10</target_length>
+          <target_precision>-1</target_precision>
+          <target_decimal_symbol/>
+          <target_grouping_symbol/>
+          <target_currency_symbol/>
+          <target_null_string/>
+          <target_aggregation_type>-</target_aggregation_type>
+          </field>
+        <field>
+          <field_name>Code</field_name>
+          <key_value>3</key_value>
+          <target_name>Code3</target_name>
+          <target_type>String</target_type>
+          <target_format/>
+          <target_length>10</target_length>
+          <target_precision>-1</target_precision>
+          <target_decimal_symbol/>
+          <target_grouping_symbol/>
+          <target_currency_symbol/>
+          <target_null_string/>
+          <target_aggregation_type>-</target_aggregation_type>
+          </field>
+        </fields>
+    <GUI>
+      <xloc>555</xloc>
+      <yloc>130</yloc>
       <draw>Y</draw>
       </GUI>
     </step>
@@ -227,74 +295,6 @@
     <date_format_locale>nl_nl</date_format_locale>
     <GUI>
       <xloc>157</xloc>
-      <yloc>129</yloc>
-      <draw>Y</draw>
-      </GUI>
-    </step>
-
-  <step>
-    <name>Row denormaliser</name>
-    <type>Denormaliser</type>
-    <description/>
-    <distribute>Y</distribute>
-    <copies>1</copies>
-         <partitioning>
-           <method>none</method>
-           <field_name/>
-           <schema_name/>
-           </partitioning>
-      <key_field>Nr</key_field>
-      <group>
-        <field>
-          <name>ID</name>
-          </field>
-        </group>
-      <fields>
-        <field>
-          <field_name>Code</field_name>
-          <key_value>1</key_value>
-          <target_name>Code1</target_name>
-          <target_type>String</target_type>
-          <target_format/>
-          <target_length>10</target_length>
-          <target_precision>-1</target_precision>
-          <target_decimal_symbol/>
-          <target_grouping_symbol/>
-          <target_currency_symbol/>
-          <target_null_string/>
-          <target_aggregation_type>-</target_aggregation_type>
-          </field>
-        <field>
-          <field_name>Code</field_name>
-          <key_value>2</key_value>
-          <target_name>Code2</target_name>
-          <target_type>String</target_type>
-          <target_format/>
-          <target_length>10</target_length>
-          <target_precision>-1</target_precision>
-          <target_decimal_symbol/>
-          <target_grouping_symbol/>
-          <target_currency_symbol/>
-          <target_null_string/>
-          <target_aggregation_type>-</target_aggregation_type>
-          </field>
-        <field>
-          <field_name>Code</field_name>
-          <key_value>3</key_value>
-          <target_name>Code3</target_name>
-          <target_type>String</target_type>
-          <target_format/>
-          <target_length>10</target_length>
-          <target_precision>-1</target_precision>
-          <target_decimal_symbol/>
-          <target_grouping_symbol/>
-          <target_currency_symbol/>
-          <target_null_string/>
-          <target_aggregation_type>-</target_aggregation_type>
-          </field>
-        </fields>
-    <GUI>
-      <xloc>555</xloc>
       <yloc>130</yloc>
       <draw>Y</draw>
       </GUI>
