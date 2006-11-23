@@ -294,9 +294,6 @@ public class PartitionSchemaDialog extends Dialog
                     wPartitions.optWidth(true);
                 }
             }
-        }
-        
-    }
-
-    
+        }   
+    }    
 }
