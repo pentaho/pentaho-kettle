@@ -112,7 +112,7 @@ public class TableView extends Composite
 	
 	private Props         props;
 
-	private Text          text;	
+	private Control       text;
 	private CCombo        combo;
 	private Button        button;
     
@@ -361,7 +361,7 @@ public class TableView extends Composite
 					if (row==null) return;
 					int colnr = activeTableColumn;
 					int rownr = table.indexOf(row);
-					if (!row.isDisposed()) row.setText(colnr, text.getText());
+					if (!row.isDisposed()) row.setText(colnr, getTextWidgetValue(colnr));
 					text.dispose();
 															
 					String after_edit[] = getItemText(row);
@@ -1003,7 +1003,20 @@ public class TableView extends Composite
 		pack();
 	}
 	
-	public void sortTable(int colnr)
+	protected String getTextWidgetValue(int colNr)
+    {
+        boolean b = columns[colNr-1].isUsingVariables();
+        if (b)
+        {
+            return ((TextVar)text).getText();
+        }
+        else
+        {
+            return ((Text)text).getText();
+        }
+    }
+
+    public void sortTable(int colnr)
     {
         if (!sortable) return;
         try
@@ -1120,7 +1133,7 @@ public class TableView extends Composite
 	
 	private void applyTextChange(TableItem row, int rownr, int colnr)
 	{
-		row.setText(colnr, text.getText());
+		row.setText(colnr, getTextWidgetValue(colnr));
 		text.dispose();
 						
 		String after_edit[] = getItemText(row);
@@ -1729,7 +1742,7 @@ public class TableView extends Composite
 		return retval;
 	}
 	
-	private void editText(TableItem row, int rownr, int colnr, boolean select_text, char extra)
+	private void editText(TableItem row, final int rownr, final int colnr, boolean select_text, char extra)
 	{
 		before_edit = getItemText(row);
 		field_changed = false;
@@ -1750,42 +1763,64 @@ public class TableView extends Composite
             columns[colnr-1].getSelectionAdapter().widgetSelected(new SelectionEvent(e));
             return;
         }
+
+        String content = row.getText(colnr) + (extra!=0?""+extra:"");
+        String tooltip = columns[colnr-1].getToolTip();
         
-        
-		text   = new Text(table, SWT.NONE);
+        ModifyListener modifyListener = new ModifyListener() 
+            {
+                public void modifyText(ModifyEvent me) 
+                {
+                    String str = getTextWidgetValue(colnr);
+                    int strmax = dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x+5;
+                    int colmax = tablecolumn[colnr].getWidth(); 
+                    if (strmax>colmax) 
+                    {
+                        tablecolumn[colnr].setWidth(strmax+40);
+                        // On linux, this causes the text to select everything...
+                        // This is because the focus is lost and re-gained.  Nothing we can do about it now.
+                    }
+                }
+            };
+
+
+        boolean useVariables = columns[colnr-1].isUsingVariables();
+        if (useVariables)
+        {
+            TextVar textWidget = new TextVar(table, SWT.NONE); 
+            text = textWidget;
+            textWidget.setText(content); 
+            if (lsMod!=null) textWidget.addModifyListener(lsMod);
+            textWidget.addModifyListener(lsUndo);
+            textWidget.setSelection(content.length());
+            // last_carret_position = content.length();
+            textWidget.addKeyListener(lsKeyText);
+            // Make the column larger so we can still see the string we're entering...
+            textWidget.addModifyListener( modifyListener );
+            if (select_text) textWidget.selectAll();
+            if (tooltip!=null) textWidget.setToolTipText(tooltip); else textWidget.setToolTipText("");      
+        }
+        else
+        {
+            Text textWidget = new Text(table, SWT.NONE); 
+            text = textWidget; 
+            textWidget.setText(content);
+            if (lsMod!=null) textWidget.addModifyListener(lsMod);
+            textWidget.addModifyListener(lsUndo);
+            textWidget.setSelection(content.length());
+            // last_carret_position = content.length();
+            textWidget.addKeyListener(lsKeyText);
+            // Make the column larger so we can still see the string we're entering...
+            textWidget.addModifyListener( modifyListener );
+            if (select_text) textWidget.selectAll();
+            if (tooltip!=null) textWidget.setToolTipText(tooltip); else textWidget.setToolTipText("");      
+        }
         props.setLook(text, Props.WIDGET_STYLE_TABLE);
-		text.addTraverseListener(lsTraverse);
+
+        text.addTraverseListener(lsTraverse);
 		text.addFocusListener(lsFocusText);
-		String content = row.getText(colnr) + (extra!=0?""+extra:"");
-		text.setText(content); 
-		if (lsMod!=null) text.addModifyListener(lsMod);
-		text.addModifyListener(lsUndo);
-		String tooltip = columns[colnr-1].getToolTip();
-		if (tooltip!=null) text.setToolTipText(tooltip); else text.setToolTipText("");			
-		text.setSelection(content.length());
-		// last_carret_position = content.length();
-		text.addKeyListener(lsKeyText);
 		
-		// Make the column larger so we can still see the string we're entering...
-		final int column_number = colnr;
-		text.addModifyListener
-		(
-		    new ModifyListener() 
-			{
-				public void modifyText(ModifyEvent me) 
-				{
-					String str = text.getText();
-					int strmax = dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x+5;
-					int colmax = tablecolumn[column_number].getWidth(); 
-					if (strmax>colmax) 
-					{
-						tablecolumn[column_number].setWidth(strmax+40);
-						// On linux, this causes the text to select everything...
-						// This is because the focus is lost and re-gained.  Nothing we can do about it now.
-					}
-				}
-			}
-		);
+		
         
         int width = tablecolumn[colnr].getWidth();
         int height = 30;
@@ -1793,8 +1828,6 @@ public class TableView extends Composite
 		editor.horizontalAlignment = SWT.LEFT;
         editor.grabHorizontal = true;
 		
-		if (select_text) text.selectAll();
-
         // Open the text editor in the correct column of the selected row.
         editor.setEditor (text, row, colnr );
         

@@ -188,4 +188,14 @@ public class TextVar extends Composite
     {
         ((Text)decoratedField.getControl()).setEditable(editable);
     }
+
+    public void setSelection(int i)
+    {
+        ((Text)decoratedField.getControl()).setSelection(i);
+    }
+
+    public void selectAll()
+    {
+        ((Text)decoratedField.getControl()).selectAll();
+    }
 }

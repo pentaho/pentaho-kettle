@@ -51,6 +51,9 @@ public class ColumnInfo
     private int      valueType;
 	
 	private SelectionAdapter selButton;
+    
+    private boolean usingVariables;
+    
 
 	// Simple String
     /** @deprecated */
@@ -319,5 +322,21 @@ public class ColumnInfo
     public void setValueType(int valueType)
     {
         this.valueType = valueType;
+    }
+
+    /**
+     * @return the usingVariables
+     */
+    public boolean isUsingVariables()
+    {
+        return usingVariables;
+    }
+
+    /**
+     * @param usingVariables the usingVariables to set
+     */
+    public void setUsingVariables(boolean usingVariables)
+    {
+        this.usingVariables = usingVariables;
     }
 }
