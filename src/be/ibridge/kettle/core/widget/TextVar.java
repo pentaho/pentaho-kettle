@@ -20,7 +20,6 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
-import org.pentaho.ui.servlet.GetContent;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.GUIResource;
@@ -50,6 +49,38 @@ public class TextVar extends Composite
     public TextVar(Composite composite, int flags)
     {
         this(composite, flags, null, null, null);
+    }
+
+    /**
+     * @return the getCaretPositionInterface
+     */
+    public GetCaretPositionInterface getGetCaretPositionInterface()
+    {
+        return getCaretPositionInterface;
+    }
+
+    /**
+     * @param getCaretPositionInterface the getCaretPositionInterface to set
+     */
+    public void setGetCaretPositionInterface(GetCaretPositionInterface getCaretPositionInterface)
+    {
+        this.getCaretPositionInterface = getCaretPositionInterface;
+    }
+
+    /**
+     * @return the insertTextInterface
+     */
+    public InsertTextInterface getInsertTextInterface()
+    {
+        return insertTextInterface;
+    }
+
+    /**
+     * @param insertTextInterface the insertTextInterface to set
+     */
+    public void setInsertTextInterface(InsertTextInterface insertTextInterface)
+    {
+        this.insertTextInterface = insertTextInterface;
     }
 
     public TextVar(Composite composite, int flags, String toolTipText)

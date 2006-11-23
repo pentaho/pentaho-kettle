@@ -1788,36 +1788,11 @@ public class TableView extends Composite
         
         final boolean useVariables = columns[colnr-1].isUsingVariables();
 
-        ModifyListener modifyListener = new ModifyListener() 
+        final ModifyListener modifyListener = new ModifyListener() 
             {
                 public void modifyText(ModifyEvent me) 
                 {
-                    String str = getTextWidgetValue(colnr);
-                    int strmax = dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x+20;
-                    int colmax = tablecolumn[colnr].getWidth(); 
-                    if (strmax>colmax) 
-                    {
-                        tablecolumn[colnr].setWidth(strmax+50);
-                        // On linux, this causes the text to select everything...
-                        // This is because the focus is lost and re-gained.  Nothing we can do about it now.
-                        
-                        if (useVariables)
-                        {
-                            TextVar widget = (TextVar)text;
-                            int idx = widget.getTextWidget().getCaretPosition();
-                            widget.selectAll();
-                            widget.showSelection();
-                            widget.getTextWidget().setSelection(idx);
-                        }
-                        else
-                        {
-                            Text widget = (Text)text;
-                            int idx = widget.getCaretPosition();
-                            widget.selectAll();
-                            widget.showSelection();
-                            widget.setSelection(idx);
-                        }
-                    }
+                    setColumnWidthBasedOnTextField(colnr, useVariables);
                 }
             };
 
@@ -1846,6 +1821,7 @@ public class TableView extends Composite
                         edit(rownr, colnr);
                         ((TextVar)text).setSelection(newPosition);
                         ((TextVar)text).showSelection();
+                        setColumnWidthBasedOnTextField(colnr, useVariables);
                     }
                 };
             
@@ -1900,7 +1876,41 @@ public class TableView extends Composite
         editor.layout();
 	}
 	
-	private void editCombo(TableItem row, int rownr, int colnr)
+	private void setColumnWidthBasedOnTextField(final int colnr, final boolean useVariables)
+    {
+        String str = getTextWidgetValue(colnr);
+        int strmax = dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x+20;
+        int colmax = tablecolumn[colnr].getWidth(); 
+        if (strmax>colmax) 
+        {
+            tablecolumn[colnr].setWidth(strmax+20);
+            // On linux, this causes the text to select everything...
+            // This is because the focus is lost and re-gained.  Nothing we can do about it now.
+            
+            if (useVariables)
+            {
+                TextVar widget = (TextVar)text;
+                int idx = widget.getTextWidget().getCaretPosition();
+                widget.selectAll();
+                widget.showSelection();
+                widget.setSelection(0);
+                widget.showSelection();
+                widget.setSelection(idx);
+            }
+            else
+            {
+                Text widget = (Text)text;
+                int idx = widget.getCaretPosition();
+                widget.selectAll();
+                widget.showSelection();
+                widget.setSelection(0);
+                widget.showSelection();
+                widget.setSelection(idx);
+            }
+        }
+    }
+
+    private void editCombo(TableItem row, int rownr, int colnr)
 	{
 		before_edit = getItemText(row);
 		field_changed = false;
