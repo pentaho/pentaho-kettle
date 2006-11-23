@@ -4,6 +4,7 @@ import org.eclipse.jface.fieldassist.DecoratedField;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.fieldassist.TextControlCreator;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -19,6 +20,7 @@ import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
+import org.pentaho.ui.servlet.GetContent;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.GUIResource;
@@ -41,15 +43,32 @@ public class TextVar extends Composite
 
     private DecoratedField decoratedField;
 
+    private GetCaretPositionInterface getCaretPositionInterface;
+
+    private InsertTextInterface insertTextInterface;
+    
     public TextVar(Composite composite, int flags)
     {
-        this(composite, flags, null);
+        this(composite, flags, null, null, null);
+    }
+
+    public TextVar(Composite composite, int flags, String toolTipText)
+    {
+        this(composite, flags, toolTipText, null, null);
     }
     
-    public TextVar(Composite composite, int flags, String toolTipText)
+
+    public TextVar(Composite composite, int flags, GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface)
+    {
+        this(composite, flags, null, getCaretPositionInterface, insertTextInterface);
+    }
+    
+    public TextVar(Composite composite, int flags, String toolTipText, GetCaretPositionInterface getCaretPositionInterface, InsertTextInterface insertTextInterface)
     {
         super(composite, SWT.NONE);
         this.toolTipText = toolTipText;
+        this.getCaretPositionInterface = getCaretPositionInterface;
+        this.insertTextInterface = insertTextInterface;
         
         props.setLook(this);
         
@@ -67,7 +86,7 @@ public class TextVar extends Composite
         Text wText = (Text) decoratedField.getControl();
         props.setLook(wText);
         wText.addModifyListener(getModifyListenerTooltipText(wText));
-        SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(this, wText);
+        SelectionAdapter lsVar = VariableButtonListenerFactory.getSelectionAdapter(this, wText, getCaretPositionInterface, insertTextInterface);
         wText.addKeyListener(getControlSpaceKeyListener(wText, lsVar));
         
         // Put some decorations on it...
@@ -118,6 +137,7 @@ public class TextVar extends Composite
                     event.widget = textField;
                     SelectionEvent selectionEvent = new SelectionEvent(event);
                     lsVar.widgetSelected(selectionEvent);
+                    e.doit=false;
                 };
             }
         };
@@ -156,6 +176,16 @@ public class TextVar extends Composite
     public void addSelectionListener(SelectionAdapter lsDef)
     {
         ((Text)decoratedField.getControl()).addSelectionListener(lsDef);
+    }
+    
+    public void addKeyListener(KeyListener lsKey)
+    {
+        ((Text)decoratedField.getControl()).addKeyListener(lsKey);
+    }
+    
+    public void addFocusListener(FocusListener lsFocus)
+    {
+        ((Text)decoratedField.getControl()).addFocusListener(lsFocus);
     }
 
     public void setEchoChar(char c)
@@ -197,5 +227,10 @@ public class TextVar extends Composite
     public void selectAll()
     {
         ((Text)decoratedField.getControl()).selectAll();
+    }
+
+    public void showSelection()
+    {
+        ((Text)decoratedField.getControl()).showSelection();
     }
 }

@@ -60,6 +60,7 @@ import be.ibridge.kettle.core.database.SAPR3DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -89,7 +90,9 @@ public class DatabaseDialog extends Dialog
 
     // DB
 	private Label    wlConn, wlConnType, wlConnAcc, wlHostName, wlDBName, wlPort, wlServername, wlUsername, wlPassword, wlData, wlIndex;
-	private Text     wConn,  wHostName,  wDBName,  wPort,  wServername,  wUsername,  wPassword, wData,  wIndex;
+	private Text     wConn;
+    private TextVar  wHostName,  wDBName,  wPort,  wUsername,  wPassword, wData,  wIndex;
+    private Text     wServername;
 	private List     wConnType,  wConnAcc;
 	
 	private FormData fdlConn, fdlConnType, fdlConnAcc, fdlPort, fdlHostName, fdlDBName, fdlServername, fdlUsername, fdlPassword, fdlData, fdlIndex;
@@ -98,7 +101,7 @@ public class DatabaseDialog extends Dialog
     // Pooling
     private Label    wlUsePool, wlInitPool, wlMaxPool;
     private Button   wUsePool;
-    private Text     wInitPool,  wMaxPool;
+    private TextVar  wInitPool,  wMaxPool;
 
     private FormData fdlUsePool,  fdlInitPool, fdlMaxPool;
     private FormData fdUsePool,  fdInitPool, fdMaxPool;
@@ -449,7 +452,7 @@ public class DatabaseDialog extends Dialog
         fdlHostName.right= new FormAttachment(middle, -margin);
         wlHostName.setLayoutData(fdlHostName);
 
-        wHostName = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wHostName = new TextVar(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wHostName);
         wHostName.addModifyListener(lsMod);
         fdHostName = new FormData();
@@ -468,7 +471,7 @@ public class DatabaseDialog extends Dialog
         fdlDBName.right= new FormAttachment(middle, -margin);
         wlDBName.setLayoutData(fdlDBName);
 
-        wDBName = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wDBName = new TextVar(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wDBName);
         wDBName.addModifyListener(lsMod);
         fdDBName = new FormData();
@@ -487,7 +490,7 @@ public class DatabaseDialog extends Dialog
         fdlPort.right= new FormAttachment(middle, -margin);
         wlPort.setLayoutData(fdlPort);
 
-        wPort = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wPort = new TextVar(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wPort);
         wPort.addModifyListener(lsMod);
         fdPort = new FormData();
@@ -506,7 +509,7 @@ public class DatabaseDialog extends Dialog
         fdlUsername.right= new FormAttachment(middle, -margin);
         wlUsername.setLayoutData(fdlUsername);
 
-        wUsername = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wUsername = new TextVar(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wUsername);
         wUsername.addModifyListener(lsMod);
         fdUsername = new FormData();
@@ -525,7 +528,7 @@ public class DatabaseDialog extends Dialog
         fdlPassword.right= new FormAttachment(middle, -margin);
         wlPassword.setLayoutData(fdlPassword);
 
-        wPassword = new Text(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wPassword = new TextVar(wDbComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wPassword);
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
@@ -596,7 +599,7 @@ public class DatabaseDialog extends Dialog
         fdlInitPool.right = new FormAttachment(middle, -margin);
         wlInitPool.setLayoutData(fdlInitPool);
 
-        wInitPool = new Text(wPoolComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wInitPool = new TextVar(wPoolComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         wInitPool.setText( Integer.toString( connection.getInitialPoolSize() ) );
         props.setLook(wInitPool);
         wInitPool.addModifyListener(lsMod);
@@ -616,7 +619,7 @@ public class DatabaseDialog extends Dialog
         fdlMaxPool.right = new FormAttachment(middle, -margin);
         wlMaxPool.setLayoutData(fdlMaxPool);
 
-        wMaxPool = new Text(wPoolComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wMaxPool = new TextVar(wPoolComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         wMaxPool.setText( Integer.toString( connection.getMaximumPoolSize() ) );
         props.setLook(wMaxPool);
         wMaxPool.addModifyListener(lsMod);
@@ -665,7 +668,7 @@ public class DatabaseDialog extends Dialog
         fdlData.right = new FormAttachment(middle, -margin);
         wlData.setLayoutData(fdlData);
 
-        wData = new Text(wOracleComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wData = new TextVar(wOracleComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         wData.setText( NVL(connection.getDataTablespace()==null?"":connection.getDataTablespace(), "") );
         props.setLook(wData);
         wData.addModifyListener(lsMod);
@@ -685,7 +688,7 @@ public class DatabaseDialog extends Dialog
         fdlIndex.right = new FormAttachment(middle, -margin);
         wlIndex.setLayoutData(fdlIndex);
 
-        wIndex = new Text(wOracleComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wIndex = new TextVar(wOracleComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         wIndex.setText( NVL(connection.getIndexTablespace()==null?"":connection.getIndexTablespace(), "") );
         props.setLook(wIndex);
         wIndex.addModifyListener(lsMod);
@@ -942,6 +945,7 @@ public class DatabaseDialog extends Dialog
 
         colinfo[0].setToolTip("The extra parameters to set in the URL to connectect to the database");
         colinfo[1].setToolTip("The values to set for the parameters");
+        colinfo[2].setUsingVariables(true);
 
         wOptions = new TableView(wOptionsComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props);
         props.setLook(wOptions);

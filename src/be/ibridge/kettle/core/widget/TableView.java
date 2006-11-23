@@ -107,7 +107,7 @@ public class TableView extends Composite
 	
 	public  Table         table;
 
-	private TableEditor editor;
+	private TableEditor   editor;
 	private TableColumn[] tablecolumn;
 	
 	private Props         props;
@@ -153,6 +153,7 @@ public class TableView extends Composite
     private Color defaultBackgroundColor;
     private Map usedColors;
     private ColumnInfo numberColumn;
+    protected int textWidgetCaretPosition;
 
 	public TableView(Composite par, int st, ColumnInfo[] c, int r, ModifyListener lsm, Props pr)
 	{
@@ -361,6 +362,11 @@ public class TableView extends Composite
 					if (row==null) return;
 					int colnr = activeTableColumn;
 					int rownr = table.indexOf(row);
+                    
+                    // Save the position of the caret for the focus-dropping popup-dialogs
+                    // The content is then in contentDestination
+                    textWidgetCaretPosition = getTextWidgetCaretPosition(colnr);
+                    
 					if (!row.isDisposed()) row.setText(colnr, getTextWidgetValue(colnr));
 					text.dispose();
 															
@@ -1013,6 +1019,19 @@ public class TableView extends Composite
         else
         {
             return ((Text)text).getText();
+        }
+    }
+    
+    protected int getTextWidgetCaretPosition(int colNr)
+    {
+        boolean b = columns[colNr-1].isUsingVariables();
+        if (b)
+        {
+            return ((TextVar)text).getTextWidget().getCaretPosition();
+        }
+        else
+        {
+            return ((Text)text).getCaretPosition();
         }
     }
 
@@ -1767,27 +1786,71 @@ public class TableView extends Composite
         String content = row.getText(colnr) + (extra!=0?""+extra:"");
         String tooltip = columns[colnr-1].getToolTip();
         
+        final boolean useVariables = columns[colnr-1].isUsingVariables();
+
         ModifyListener modifyListener = new ModifyListener() 
             {
                 public void modifyText(ModifyEvent me) 
                 {
                     String str = getTextWidgetValue(colnr);
-                    int strmax = dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x+5;
+                    int strmax = dummy_gc.textExtent(str, SWT.DRAW_TAB | SWT.DRAW_DELIMITER).x+20;
                     int colmax = tablecolumn[colnr].getWidth(); 
                     if (strmax>colmax) 
                     {
-                        tablecolumn[colnr].setWidth(strmax+40);
+                        tablecolumn[colnr].setWidth(strmax+50);
                         // On linux, this causes the text to select everything...
                         // This is because the focus is lost and re-gained.  Nothing we can do about it now.
+                        
+                        if (useVariables)
+                        {
+                            TextVar widget = (TextVar)text;
+                            int idx = widget.getTextWidget().getCaretPosition();
+                            widget.selectAll();
+                            widget.showSelection();
+                            widget.getTextWidget().setSelection(idx);
+                        }
+                        else
+                        {
+                            Text widget = (Text)text;
+                            int idx = widget.getCaretPosition();
+                            widget.selectAll();
+                            widget.showSelection();
+                            widget.setSelection(idx);
+                        }
                     }
                 }
             };
 
 
-        boolean useVariables = columns[colnr-1].isUsingVariables();
         if (useVariables)
         {
-            TextVar textWidget = new TextVar(table, SWT.NONE); 
+            GetCaretPositionInterface getCaretPositionInterface = new GetCaretPositionInterface()
+                {
+                    public int getCaretPosition()
+                    {
+                        return ((TextVar)text).getTextWidget().getCaretPosition();
+                    }
+                };
+
+            // The text widget will be disposed when we get here
+            // So we need to write to the table row
+            //
+            InsertTextInterface insertTextInterface = new InsertTextInterface()
+                {
+                    public void insertText(String string, int position)
+                    {
+                        StringBuffer buffer = new StringBuffer( table.getItem(rownr).getText(colnr) );
+                        buffer.insert(position, string);
+                        table.getItem(rownr).setText(colnr, buffer.toString());
+                        int newPosition = position+string.length();
+                        edit(rownr, colnr);
+                        ((TextVar)text).setSelection(newPosition);
+                        ((TextVar)text).showSelection();
+                    }
+                };
+            
+            TextVar textWidget = new TextVar(table, SWT.NONE, getCaretPositionInterface, insertTextInterface);
+
             text = textWidget;
             textWidget.setText(content); 
             if (lsMod!=null) textWidget.addModifyListener(lsMod);
@@ -1798,7 +1861,9 @@ public class TableView extends Composite
             // Make the column larger so we can still see the string we're entering...
             textWidget.addModifyListener( modifyListener );
             if (select_text) textWidget.selectAll();
-            if (tooltip!=null) textWidget.setToolTipText(tooltip); else textWidget.setToolTipText("");      
+            if (tooltip!=null) textWidget.setToolTipText(tooltip); else textWidget.setToolTipText("");   
+            textWidget.addTraverseListener(lsTraverse);
+            textWidget.addFocusListener(lsFocusText);
         }
         else
         {
@@ -1817,8 +1882,7 @@ public class TableView extends Composite
         }
         props.setLook(text, Props.WIDGET_STYLE_TABLE);
 
-        text.addTraverseListener(lsTraverse);
-		text.addFocusListener(lsFocusText);
+        
 		
 		
         

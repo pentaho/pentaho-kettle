@@ -12,6 +12,8 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.widget.GetCaretPositionInterface;
+import be.ibridge.kettle.core.widget.InsertTextInterface;
 
 public class VariableButtonListenerFactory
 {
@@ -19,6 +21,12 @@ public class VariableButtonListenerFactory
 
     // Listen to the Variable... button
     public static final SelectionAdapter getSelectionAdapter(final Composite composite, final Text destination)
+    {
+        return getSelectionAdapter(composite, destination, null, null);
+    }
+
+    // Listen to the Variable... button
+    public static final SelectionAdapter getSelectionAdapter(final Composite composite, final Text destination, final GetCaretPositionInterface getCaretPositionInterface, final InsertTextInterface insertTextInterface)
     {
         return new SelectionAdapter()
         {
@@ -43,12 +51,29 @@ public class VariableButtonListenerFactory
                     str[i] = key[i]+"  ["+val[i]+"]";
                 }
                 
+                // Before focus is lost, we get the position of where the selected variable needs to be inserted.
+                int position=0;
+                if (getCaretPositionInterface!=null)
+                {
+                    position = getCaretPositionInterface.getCaretPosition();
+                }
+                
                 EnterSelectionDialog esd = new EnterSelectionDialog(composite.getShell(), str, Messages.getString("System.Dialog.SelectEnvironmentVar.Title"), Messages.getString("System.Dialog.SelectEnvironmentVar.Message"));
                 if (esd.open()!=null)
                 {
                     int nr = esd.getSelectionNr();
-                    destination.insert("${"+key[nr]+"}");
-                    destination.setToolTipText(StringUtil.environmentSubstitute( destination.getText() ) );
+                    String var = "${"+key[nr]+"}";
+                    
+                    if (insertTextInterface==null)
+                    {
+                        destination.insert(var);
+                        destination.setToolTipText(StringUtil.environmentSubstitute( destination.getText() ) );
+                        e.doit=false;
+                    }
+                    else
+                    {
+                        insertTextInterface.insertText(var, position);
+                    }
                 }
             }
         };
