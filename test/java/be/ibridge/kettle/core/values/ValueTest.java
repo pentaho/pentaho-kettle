@@ -373,12 +373,12 @@ public class ValueTest extends TestCase
 	    vs8.setValue(100);
 	    vs8.setLength(5);	    
 	    vs8.setPrecision(3);
-	    assertEquals(" 00100", vs8.toString(false));	
+	    assertEquals("100", vs8.toString(false));	
 
 	    Value vs9 = new Value("Name", Value.VALUE_TYPE_INTEGER);
 	    vs9.setValue(100);
 	    vs9.setLength(6);	    
-	    assertEquals(" 000100", vs9.toString(false));
+	    assertEquals("100", vs9.toString(false));
 
 	    Value vs10 = new Value("Name", Value.VALUE_TYPE_INTEGER);
 	    vs10.setValue(100);
@@ -390,7 +390,7 @@ public class ValueTest extends TestCase
 	    vs11.setValue(100);
 	    vs11.setLength(8);	    
 	    vs11.setPrecision(-1);
-	    assertEquals(" 00000100", vs11.toString(false));	  
+	    assertEquals("100", vs11.toString(false));	  
 
 	    Value vs12 = new Value("Name", Value.VALUE_TYPE_INTEGER);
 	    vs12.setValue(100);
@@ -402,7 +402,7 @@ public class ValueTest extends TestCase
 	    vs13.setValue(100);
 	    vs13.setLength(5);	    
 	    vs13.setPrecision(3);
-	    assertEquals(" 00100", vs13.toString(false));
+	    assertEquals("100", vs13.toString(false));
 
 	    Value vs14 = new Value("Name", Value.VALUE_TYPE_INTEGER);
 	    vs14.setValue(100);
@@ -742,7 +742,7 @@ public class ValueTest extends TestCase
 	    vs3.setLength(4);
 	    vs3.setPrecision(2);
 	    result = vs3.getXML();
-	    assertEquals("<name>Name</name><type>Integer</type><text> 0010</text><length>4</length><precision>0</precision><isnull>N</isnull>", result);	       
+	    assertEquals("<name>Name</name><type>Integer</type><text>10</text><length>4</length><precision>0</precision><isnull>N</isnull>", result);	       
 	    
 	    Value vs4 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs4.setValue(10.0D);
