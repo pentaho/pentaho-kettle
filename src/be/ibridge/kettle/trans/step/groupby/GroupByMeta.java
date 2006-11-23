@@ -68,7 +68,8 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 	
 	/** All rows need to pass, adding an extra row at the end of each group/block. */
 	private boolean passAllRows;
-	/** name of the boolean field indicating that the row is an aggragate 
+	
+    /** name of the boolean field indicating that the row is an aggragate 
      *  @deprecated */
 	private String  passFlagField;
     
@@ -92,6 +93,12 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 	/** Type of aggregate */
 	private int     aggregateType[]; 
 	
+    /** Add a linenr in the group, resetting to 0 in a new group. */
+    private boolean addingLineNrInGroup;
+    
+    /** The fieldname that will contain the added integer field */
+    private String lineNrInGroupField;
+    
 	public GroupByMeta()
 	{
 		super(); // allocate BaseStepMeta
@@ -261,6 +268,9 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
             directory = XMLHandler.getTagValue(stepnode, "directory"); //$NON-NLS-1$
             prefix    = XMLHandler.getTagValue(stepnode, "prefix"); //$NON-NLS-1$
 
+            addingLineNrInGroup = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "add_linenr")); // $NON-NLS-1$
+            lineNrInGroupField = XMLHandler.getTagValue(stepnode, "linenr_fieldname");
+            
 			Node groupn = XMLHandler.getSubNode(stepnode, "group"); //$NON-NLS-1$
 			Node fields = XMLHandler.getSubNode(stepnode, "fields"); //$NON-NLS-1$
 			
@@ -349,6 +359,15 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
     			}
     			if (!found) r.removeValue(i);
     		}
+            
+    		// If we pass all rows, we can add a line nr in the group...
+            if (addingLineNrInGroup && !Const.isEmpty(lineNrInGroupField))
+            {
+                Value lineNr = new Value(lineNrInGroupField, Value.VALUE_TYPE_INTEGER);
+                lineNr.setLength(9);
+                lineNr.setOrigin(name);
+                r.addValue(lineNr);
+            }
         }
 		
 		// Re-add aggregates
@@ -402,7 +421,9 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("      "+XMLHandler.addTagValue("field_ignore", aggregateIgnoredField)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      "+XMLHandler.addTagValue("directory", directory)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("      "+XMLHandler.addTagValue("prefix",    prefix)); //$NON-NLS-1$ //$NON-NLS-2$
-
+        retval.append("      "+XMLHandler.addTagValue("add_linenr",  addingLineNrInGroup)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("      "+XMLHandler.addTagValue("linenr_fieldname", lineNrInGroupField)); //$NON-NLS-1$
+        
 		retval.append("      <group>"+Const.CR); //$NON-NLS-1$
 		for (int i=0;i<groupField.length;i++)
 		{
@@ -436,7 +457,9 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 			aggregateIgnoredField     = rep.getStepAttributeString (id_step, "field_ignore"); //$NON-NLS-1$
             directory        =      rep.getStepAttributeString (id_step, "directory"); //$NON-NLS-1$
             prefix           =      rep.getStepAttributeString (id_step, "prefix"); //$NON-NLS-1$
-
+            addingLineNrInGroup = rep.getStepAttributeBoolean(id_step, "add_linenr"); // $NON-NLS-1$
+            lineNrInGroupField = rep.getStepAttributeString(id_step, "linenr_fieldname"); // $NON-NLS-1$
+            
 			int groupsize = rep.countNrStepAttributes(id_step, "group_name"); //$NON-NLS-1$
 			int nrvalues  = rep.countNrStepAttributes(id_step, "aggregate_name"); //$NON-NLS-1$
 			
@@ -465,12 +488,14 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		try
 		{
-			rep.saveStepAttribute(id_transformation, id_step, "all_rows", passAllRows); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "ignore_aggregate",  aggregateIgnored); //$NON-NLS-1$
-			rep.saveStepAttribute(id_transformation, id_step, "field_ignore",  aggregateIgnoredField); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "directory",       directory); //$NON-NLS-1$
-            rep.saveStepAttribute(id_transformation, id_step, "prefix",          prefix); //$NON-NLS-1$
-
+			rep.saveStepAttribute(id_transformation, id_step, "all_rows",         passAllRows); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "ignore_aggregate", aggregateIgnored); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "field_ignore",     aggregateIgnoredField); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "directory",        directory); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "prefix",           prefix); //$NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "add_linenr",       addingLineNrInGroup); // $NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "linenr_fieldname", lineNrInGroupField); // $NON-NLS-1$
+            
 			for (int i=0;i<groupField.length;i++)
 			{
 				rep.saveStepAttribute(id_transformation, id_step, i, "group_name",       groupField[i]); //$NON-NLS-1$
@@ -551,6 +576,38 @@ public class GroupByMeta extends BaseStepMeta implements StepMetaInterface
     public void setPrefix(String prefix)
     {
         this.prefix = prefix;
+    }
+
+    /**
+     * @return the addingLineNrInGroup
+     */
+    public boolean isAddingLineNrInGroup()
+    {
+        return addingLineNrInGroup;
+    }
+
+    /**
+     * @param addingLineNrInGroup the addingLineNrInGroup to set
+     */
+    public void setAddingLineNrInGroup(boolean addingLineNrInGroup)
+    {
+        this.addingLineNrInGroup = addingLineNrInGroup;
+    }
+
+    /**
+     * @return the lineNrInGroupField
+     */
+    public String getLineNrInGroupField()
+    {
+        return lineNrInGroupField;
+    }
+
+    /**
+     * @param lineNrInGroupField the lineNrInGroupField to set
+     */
+    public void setLineNrInGroupField(String lineNrInGroupField)
+    {
+        this.lineNrInGroupField = lineNrInGroupField;
     }
 
 }

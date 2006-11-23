@@ -75,7 +75,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 
 	private Label        wlAllRows;
 	private Button       wAllRows;
-	private FormData     fdlAlllRows, fdAllRows;
+	private FormData     fdlAllRows, fdAllRows;
 
     private Label        wlSortDir;
     private Button       wbSortDir;
@@ -86,6 +86,14 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
     private Label        wlPrefix;
     private Text         wPrefix;
     private FormData     fdlPrefix, fdPrefix;
+
+    private Label        wlAddLineNr;
+    private Button       wAddLineNr;
+    private FormData     fdlAddLineNr, fdAddLineNr;
+    
+    private Label        wlLineNrField;
+    private Text         wLineNrField;
+    private FormData     fdlLineNrField, fdLineNrField;
 
 	private Button wGet, wGetAgg;
 	private FormData fdGet, fdGetAgg;
@@ -151,11 +159,11 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		wlAllRows=new Label(shell, SWT.RIGHT);
 		wlAllRows.setText(Messages.getString("GroupByDialog.AllRows.Label")); //$NON-NLS-1$
  		props.setLook(wlAllRows);
-		fdlAlllRows=new FormData();
-		fdlAlllRows.left = new FormAttachment(0, 0);
-		fdlAlllRows.top  = new FormAttachment(wStepname, margin);
-		fdlAlllRows.right= new FormAttachment(middle, -margin);
-		wlAllRows.setLayoutData(fdlAlllRows);
+		fdlAllRows=new FormData();
+		fdlAllRows.left = new FormAttachment(0, 0);
+		fdlAllRows.top  = new FormAttachment(wStepname, margin);
+		fdlAllRows.right= new FormAttachment(middle, -margin);
+		wlAllRows.setLayoutData(fdlAllRows);
 		wAllRows=new Button(shell, SWT.CHECK );
  		props.setLook(wAllRows);
 		fdAllRows=new FormData();
@@ -169,6 +177,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 				{
 					input.setPassAllRows( !input.passAllRows() );
 					input.setChanged();
+                    setFlags();
 				}
 			}
 		);
@@ -234,7 +243,7 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
         // Listen to the Variable... button
         wbcSortDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wSortDir));
 
-        // Table line...
+        // Prefix line...
         wlPrefix=new Label(shell, SWT.RIGHT);
         wlPrefix.setText(Messages.getString("GroupByDialog.FilePrefix.Label")); //$NON-NLS-1$
         props.setLook(wlPrefix);
@@ -252,12 +261,58 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
         fdPrefix.right = new FormAttachment(100, 0);
         wPrefix.setLayoutData(fdPrefix);
 
+        // Include all rows?
+        wlAddLineNr=new Label(shell, SWT.RIGHT);
+        wlAddLineNr.setText(Messages.getString("GroupByDialog.AddLineNr.Label")); //$NON-NLS-1$
+        props.setLook(wlAddLineNr);
+        fdlAddLineNr=new FormData();
+        fdlAddLineNr.left = new FormAttachment(0, 0);
+        fdlAddLineNr.top  = new FormAttachment(wPrefix, margin);
+        fdlAddLineNr.right= new FormAttachment(middle, -margin);
+        wlAddLineNr.setLayoutData(fdlAddLineNr);
+        wAddLineNr=new Button(shell, SWT.CHECK );
+        props.setLook(wAddLineNr);
+        fdAddLineNr=new FormData();
+        fdAddLineNr.left = new FormAttachment(middle, 0);
+        fdAddLineNr.top  = new FormAttachment(wPrefix, margin);
+        fdAddLineNr.right= new FormAttachment(100, 0);
+        wAddLineNr.setLayoutData(fdAddLineNr);
+        wAddLineNr.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    input.setAddingLineNrInGroup( !input.isAddingLineNrInGroup() );
+                    input.setChanged();
+                    setFlags();
+                }
+            }
+        );
+
+        // LineNrField line...
+        wlLineNrField=new Label(shell, SWT.RIGHT);
+        wlLineNrField.setText(Messages.getString("GroupByDialog.LineNrField.Label")); //$NON-NLS-1$
+        props.setLook(wlLineNrField);
+        fdlLineNrField=new FormData();
+        fdlLineNrField.left = new FormAttachment(0, 0);
+        fdlLineNrField.right= new FormAttachment(middle, -margin);
+        fdlLineNrField.top  = new FormAttachment(wAddLineNr, margin);
+        wlLineNrField.setLayoutData(fdlLineNrField);
+        wLineNrField=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wLineNrField);
+        wLineNrField.addModifyListener(lsMod);
+        fdLineNrField=new FormData();
+        fdLineNrField.left  = new FormAttachment(middle, 0);
+        fdLineNrField.top   = new FormAttachment(wAddLineNr, margin);
+        fdLineNrField.right = new FormAttachment(100, 0);
+        wLineNrField.setLayoutData(fdLineNrField);
+
+        
 		wlGroup=new Label(shell, SWT.NONE);
 		wlGroup.setText(Messages.getString("GroupByDialog.Group.Label")); //$NON-NLS-1$
  		props.setLook(wlGroup);
 		fdlGroup=new FormData();
 		fdlGroup.left  = new FormAttachment(0, 0);
-		fdlGroup.top   = new FormAttachment(wPrefix, margin);
+		fdlGroup.top   = new FormAttachment(wLineNrField, margin);
 		wlGroup.setLayoutData(fdlGroup);
 
 		int nrKeyCols=1;
@@ -368,6 +423,21 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		}
 		return stepname;
 	}
+    
+    public void setFlags()
+    {
+        wlSortDir.setEnabled( wAllRows.getSelection() );
+        wbSortDir.setEnabled( wAllRows.getSelection() );
+        wbcSortDir.setEnabled( wAllRows.getSelection() );
+        wSortDir.setEnabled( wAllRows.getSelection() );
+        wlPrefix.setEnabled( wAllRows.getSelection() );
+        wPrefix.setEnabled( wAllRows.getSelection() );
+        wlAddLineNr.setEnabled( wAllRows.getSelection() );
+        wAddLineNr.setEnabled( wAllRows.getSelection() );
+        
+        wlLineNrField.setEnabled( wAllRows.getSelection() && wAddLineNr.getSelection() );
+        wLineNrField.setEnabled( wAllRows.getSelection() && wAddLineNr.getSelection() );
+    }
 
 	/**
 	 * Copy information from the meta-data input to the dialog fields.
@@ -381,7 +451,9 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 		
         if (input.getPrefix() != null) wPrefix.setText(input.getPrefix());
         if (input.getDirectory() != null) wSortDir.setText(input.getDirectory());
-
+        wAddLineNr.setSelection( input.isAddingLineNrInGroup() );
+        if (input.getLineNrInGroupField()!=null) wLineNrField.setText( input.getLineNrInGroupField() );
+        
 		if (input.getGroupField()!=null)
 		for (i=0;i<input.getGroupField().length;i++)
 		{
@@ -397,12 +469,14 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
 			if (input.getSubjectField()[i]!=null       ) item.setText(2, input.getSubjectField()[i]);
 			item.setText(3, GroupByMeta.getTypeDescLong(input.getAggregateType()[i]));
 		}
-		
+        
 		wStepname.selectAll();
 		wGroup.setRowNums();
 		wGroup.optWidth(true);
 		wAgg.setRowNums();
 		wAgg.optWidth(true);
+        
+        setFlags();
 	}
 	
 	private void cancel()
@@ -420,6 +494,8 @@ public class GroupByDialog extends BaseStepDialog implements StepDialogInterface
         input.setPrefix( wPrefix.getText() );
         input.setDirectory( wSortDir.getText() );
 
+        input.setLineNrInGroupField( wLineNrField.getText() );
+        
 		input.allocate(sizegroup, nrfields);
 				
 		for (int i=0;i<sizegroup;i++)

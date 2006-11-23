@@ -61,6 +61,9 @@ public class GroupBy extends BaseStep implements StepInterface
 	
 	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
+        meta=(GroupByMeta)smi;
+        data=(GroupByData)sdi;
+        
 		Row r=getRow();    // get row!
 		if (r==null)  // no more input to be expected...
 		{
@@ -74,9 +77,19 @@ public class GroupBy extends BaseStep implements StepInterface
                 data.groupResult = getAggregateResult();
 
                 Row row = getRowFromBuffer();
+                long lineNr=0;
                 while (row!=null)
                 {
                     row.addRow(data.groupResult);
+                    lineNr++;
+                    
+                    if (meta.isAddingLineNrInGroup() && !Const.isEmpty(meta.getLineNrInGroupField()))
+                    {
+                        Value lineNrValue = new Value(meta.getLineNrInGroupField(), lineNr);
+                        lineNrValue.setLength(9);
+                        row.addValue(lineNrValue);
+                    }
+                    
                     putRow(row);
                     row = getRowFromBuffer();
                 }
@@ -166,9 +179,18 @@ public class GroupBy extends BaseStep implements StepInterface
                 // System.out.println("dump rows from the buffer");
 
                 Row row = getRowFromBuffer();
+                long lineNr=0;
                 while (row!=null)
                 {
                     row.addRow(data.groupResult);
+                    lineNr++;
+                    
+                    if (meta.isAddingLineNrInGroup() && !Const.isEmpty(meta.getLineNrInGroupField()))
+                    {
+                        Value lineNrValue = new Value(meta.getLineNrInGroupField(), lineNr);
+                        lineNrValue.setLength(9);
+                        row.addValue(lineNrValue);
+                    }
                     putRow(row);
                     row = getRowFromBuffer();
                 }
