@@ -45,11 +45,11 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
-import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 
 /**
@@ -66,9 +66,8 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 
 	private Label        wlFilename;
 	private Button       wbFilename;
-	private Button       wbcFilename;
-	private Text         wFilename;
-	private FormData     fdlFilename, fdbFilename, fdbcFilename, fdFilename;
+	private TextVar      wFilename;
+	private FormData     fdlFilename, fdbFilename, fdFilename;
 	
 	private Button wOK, wCancel;
 	private Listener lsOK, lsCancel;
@@ -153,21 +152,13 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 		fdbFilename.top  = new FormAttachment(wName, 0);
 		wbFilename.setLayoutData(fdbFilename);
 
-		wbcFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
- 		props.setLook(wbcFilename);
-		wbcFilename.setText("&Variable...");
-		fdbcFilename=new FormData();
-		fdbcFilename.right= new FormAttachment(wbFilename, -margin);
-		fdbcFilename.top  = new FormAttachment(wName, 0);
-		wbcFilename.setLayoutData(fdbcFilename);
-
-		wFilename=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();
 		fdFilename.left = new FormAttachment(middle, 0);
 		fdFilename.top  = new FormAttachment(wName, margin);
-		fdFilename.right= new FormAttachment(wbcFilename, -margin);
+		fdFilename.right= new FormAttachment(wbFilename, -margin);
 		wFilename.setLayoutData(fdFilename);
 		
 		// Whenever something changes, set the tooltip to the expanded version:
@@ -179,9 +170,6 @@ public class JobEntryFileExistsDialog extends Dialog implements JobEntryDialogIn
 				}
 			}
 		);		
-
-		// Listen to the Variable... button
-		wbcFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
 
 		wbFilename.addSelectionListener
 		(

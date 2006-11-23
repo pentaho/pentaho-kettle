@@ -54,6 +54,7 @@ import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.repository.RepositoryDirectory;
 import be.ibridge.kettle.repository.dialog.SelectObjectDialog;
 import be.ibridge.kettle.spoon.Spoon;
@@ -64,7 +65,6 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.mappinginput.MappingInputMeta;
 import be.ibridge.kettle.trans.step.mappingoutput.MappingOutputMeta;
-import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 
 public class MappingDialog extends BaseStepDialog implements StepDialogInterface
@@ -79,18 +79,17 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
     private FormData    fdFileRadio;
     
     private Button       wbbFilename; // Browse: add file or directory
-    private Button       wbvFilename; // Variable
-    private Text         wFilename;
-    private FormData     fdbFilename, fdbvFilename, fdFilename;
+    private TextVar      wFilename;
+    private FormData     fdbFilename, fdFilename;
     
     // Repository
     private Button      wRepRadio;
     private FormData    fdRepRadio;
     
-    private Text        wTransName, wTransDir;
+    private TextVar     wTransName, wTransDir;
     private FormData    fdTransName, fdTransDir;
-    private Button      wvTrans, wbTrans;
-    private FormData    fdvTrans, fdbTrans;
+    private Button      wbTrans;
+    private FormData    fdbTrans;
     
     private Button      wEditTrans;
     private FormData    fdEditTrans;
@@ -206,28 +205,15 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wbbFilename.setLayoutData(fdbFilename);
         wbbFilename.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { selectFileTrans(); }});
 
-        wbvFilename=new Button(gTransGroup, SWT.PUSH| SWT.CENTER); // Variable
-        props.setLook(wbvFilename);
-        wbvFilename.setText(Messages.getString("System.Button.Variable"));
-        wbvFilename.setToolTipText(Messages.getString("System.Tooltip.VariableToFileOrDir"));
-        fdbvFilename=new FormData();
-        fdbvFilename.right= new FormAttachment(wbbFilename, -margin);
-        fdbvFilename.top  = new FormAttachment(wFileRadio, margin);
-        wbvFilename.setLayoutData(fdbvFilename);
-
-        wFilename=new Text(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wFilename=new TextVar(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFilename);
         wFilename.addModifyListener(lsMod);
         fdFilename=new FormData();
         fdFilename.left = new FormAttachment(0, 25);
-        fdFilename.right= new FormAttachment(wbvFilename, -margin);
-        fdFilename.top  = new FormAttachment(wbvFilename, 0, SWT.CENTER);
+        fdFilename.right= new FormAttachment(wbbFilename, -margin);
+        fdFilename.top  = new FormAttachment(wbbFilename, 0, SWT.CENTER);
         wFilename.setLayoutData(fdFilename);
         wFilename.addModifyListener(new ModifyListener() { public void modifyText(ModifyEvent e) { wFileRadio.setSelection(true); wRepRadio.setSelection(false); }});
-        
-        // Listen to the Var button...
-        wbvFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
-        wFilename.addModifyListener(getModifyListenerTooltipText(wFilename));
         
         // Radio button: The mapping is in the repository
         // 
@@ -239,7 +225,7 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         fdRepRadio=new FormData();
         fdRepRadio.left   = new FormAttachment(0, 0);
         fdRepRadio.right  = new FormAttachment(100, 0);
-        fdRepRadio.top    = new FormAttachment(wbvFilename, 2*margin); 
+        fdRepRadio.top    = new FormAttachment(wbbFilename, 2*margin); 
         wRepRadio.setLayoutData(fdRepRadio);
 
         wbTrans=new Button(gTransGroup, SWT.PUSH| SWT.CENTER); // Browse
@@ -252,37 +238,23 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         wbTrans.setLayoutData(fdbTrans);
         wbTrans.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { selectRepositoryTrans(); }});
         
-        wvTrans=new Button(gTransGroup, SWT.PUSH| SWT.CENTER); // Variable
-        props.setLook(wvTrans);
-        wvTrans.setText(Messages.getString("System.Button.Variable"));
-        wvTrans.setToolTipText(Messages.getString("System.Tooltip.VariableToFileOrDir"));
-        fdvTrans=new FormData();
-        fdvTrans.right= new FormAttachment(wbTrans, -margin);
-        fdvTrans.top  = new FormAttachment(wRepRadio, 2*margin);
-        wvTrans.setLayoutData(fdvTrans);
-
-        wTransDir=new Text(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wTransDir=new TextVar(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTransDir);
         wTransDir.addModifyListener(lsMod);
         fdTransDir=new FormData();
         fdTransDir.left = new FormAttachment(middle+(100-middle)/2, 0);
-        fdTransDir.right= new FormAttachment(wvTrans, -margin);
-        fdTransDir.top  = new FormAttachment(wvTrans, 0, SWT.CENTER);
+        fdTransDir.right= new FormAttachment(wbTrans, -margin);
+        fdTransDir.top  = new FormAttachment(wbTrans, 0, SWT.CENTER);
         wTransDir.setLayoutData(fdTransDir);
 
-        wTransName=new Text(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wTransName=new TextVar(gTransGroup, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wTransName);
         wTransName.addModifyListener(lsMod);
         fdTransName=new FormData();
         fdTransName.left = new FormAttachment(0, 25);
         fdTransName.right= new FormAttachment(wTransDir, -margin);
-        fdTransName.top  = new FormAttachment(wvTrans, 0, SWT.CENTER);
+        fdTransName.top  = new FormAttachment(wbTrans, 0, SWT.CENTER);
         wTransName.setLayoutData(fdTransName);
-        
-        // Listen to the Var button...
-        wvTrans.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wTransName));
-        wTransName.addModifyListener(getModifyListenerTooltipText(wTransName));
-        wTransDir.addModifyListener(getModifyListenerTooltipText(wTransDir));
         
         wEditTrans=new Button(gTransGroup, SWT.PUSH| SWT.CENTER); // Browse
         props.setLook(wEditTrans);
@@ -718,7 +690,6 @@ public class MappingDialog extends BaseStepDialog implements StepDialogInterface
         {
             wRepRadio.setEnabled(false);
             wbTrans.setEnabled(false);
-            wvTrans.setEnabled(false);
             wTransName.setEnabled(false);
             wTransDir.setEnabled(false);
         }

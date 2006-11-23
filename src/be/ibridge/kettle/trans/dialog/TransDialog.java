@@ -67,6 +67,7 @@ import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -153,7 +154,7 @@ public class TransDialog extends Dialog
 
     private Text wFeedbackSize;
 
-    private Text wSharedObjectsFile;
+    private TextVar wSharedObjectsFile;
     
     private boolean sharedObjectsFileChanged;
 	
@@ -950,7 +951,8 @@ public class TransDialog extends Dialog
         fdlSharedObjectsFile.right= new FormAttachment(middle, -margin);
         fdlSharedObjectsFile.top  = new FormAttachment(wUniqueConnections, margin);
         wlSharedObjectsFile.setLayoutData(fdlSharedObjectsFile);
-        wSharedObjectsFile=new Text(wMiscComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wSharedObjectsFile=new TextVar(wMiscComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wlSharedObjectsFile.setToolTipText(Messages.getString("TransDialog.SharedObjectsFile.Tooltip")); //$NON-NLS-1$
         wSharedObjectsFile.setToolTipText(Messages.getString("TransDialog.SharedObjectsFile.Tooltip")); //$NON-NLS-1$
         props.setLook(wSharedObjectsFile);
         FormData fdSharedObjectsFile = new FormData();

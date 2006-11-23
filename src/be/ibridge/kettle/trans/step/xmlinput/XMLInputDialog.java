@@ -63,6 +63,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.TransPreviewFactory;
@@ -70,7 +71,6 @@ import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
-import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 
 public class XMLInputDialog extends BaseStepDialog implements StepDialogInterface
@@ -85,12 +85,11 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 
 	private Label        wlFilename;
 	private Button       wbbFilename; // Browse: add file or directory
-	private Button       wbvFilename; // Variable
 	private Button       wbdFilename; // Delete
 	private Button       wbeFilename; // Edit
 	private Button       wbaFilename; // Add or change
-	private Text         wFilename;
-	private FormData     fdlFilename, fdbFilename, fdbvFilename, fdbdFilename, fdbeFilename, fdbaFilename, fdFilename;
+	private TextVar      wFilename;
+	private FormData     fdlFilename, fdbFilename, fdbdFilename, fdbeFilename, fdbaFilename, fdFilename;
 
 	private Label        wlFilenameList;
 	private TableView    wFilenameList;
@@ -231,25 +230,16 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 		fdbFilename.top  = new FormAttachment(0, 0);
 		wbbFilename.setLayoutData(fdbFilename);
 
-		wbvFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
- 		props.setLook(wbvFilename);
-		wbvFilename.setText(Messages.getString("XMLInputDialog.FilenameVar.Button"));
-		wbvFilename.setToolTipText(Messages.getString("XMLInputDialog.FilenameVar.Tooltip"));
-		fdbvFilename=new FormData();
-		fdbvFilename.right= new FormAttachment(wbbFilename, -margin);
-		fdbvFilename.top  = new FormAttachment(0, 0);
-		wbvFilename.setLayoutData(fdbvFilename);
-
 		wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbaFilename);
 		wbaFilename.setText(Messages.getString("XMLInputDialog.FilenameAdd.Button"));
 		wbaFilename.setToolTipText(Messages.getString("XMLInputDialog.FilenameAdd.Tooltip"));
 		fdbaFilename=new FormData();
-		fdbaFilename.right= new FormAttachment(wbvFilename, -margin);
+		fdbaFilename.right= new FormAttachment(wbbFilename, -margin);
 		fdbaFilename.top  = new FormAttachment(0, 0);
 		wbaFilename.setLayoutData(fdbaFilename);
 
-		wFilename=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();
@@ -762,9 +752,6 @@ public class XMLInputDialog extends BaseStepDialog implements StepDialogInterfac
 			}
 		);
 		
-		// Listen to the Variable... button
-		wbvFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
-
 		// Listen to the Browse... button
 		wbbFilename.addSelectionListener
 		(

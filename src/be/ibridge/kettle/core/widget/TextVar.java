@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Text;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.util.StringUtil;
@@ -34,13 +35,22 @@ import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
  */
 public class TextVar extends Composite
 {
+    private String toolTipText;
+    
     private static final Props props = Props.getInstance();
 
     private DecoratedField decoratedField;
-    
-    public TextVar(Composite arg0, int flags)
+
+    public TextVar(Composite composite, int flags)
     {
-        super(arg0, SWT.NONE);
+        this(composite, flags, null);
+    }
+    
+    public TextVar(Composite composite, int flags, String toolTipText)
+    {
+        super(composite, SWT.NONE);
+        this.toolTipText = toolTipText;
+        
         props.setLook(this);
         
         // int margin = Const.MARGIN;
@@ -72,7 +82,7 @@ public class TextVar extends Composite
         decoratedField.getLayoutControl().setLayoutData(fdText);
     }
     
-    public static final ModifyListener getModifyListenerTooltipText(final Text textField)
+    private ModifyListener getModifyListenerTooltipText(final Text textField)
     {
         return new ModifyListener()
         {
@@ -80,7 +90,16 @@ public class TextVar extends Composite
             {
                 if (textField.getEchoChar()=='\0') // Can't show passwords ;-)
                 {
-                    textField.setToolTipText(StringUtil.environmentSubstitute( textField.getText() ) );
+                    String tip = textField.getText();
+                    if (!Const.isEmpty(tip))
+                    {
+                        tip+=Const.CR+Const.CR+toolTipText;
+                    }
+                    else
+                    {
+                        tip=toolTipText;
+                    }
+                    textField.setToolTipText(StringUtil.environmentSubstitute( tip ) );
                 }
             }
         };
@@ -157,5 +176,16 @@ public class TextVar extends Composite
     public void addTraverseListener(TraverseListener tl)
     {
         ((Text)decoratedField.getControl()).addTraverseListener(tl);
+    }
+    
+    public void setToolTipText(String toolTipText)
+    {
+        this.toolTipText = toolTipText;
+        ((Text)decoratedField.getControl()).setToolTipText(toolTipText);
+    }
+
+    public void setEditable(boolean editable)
+    {
+        ((Text)decoratedField.getControl()).setEditable(editable);
     }
 }

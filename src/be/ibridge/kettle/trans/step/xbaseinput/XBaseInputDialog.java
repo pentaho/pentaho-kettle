@@ -50,6 +50,7 @@ import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.exception.KettleStepException;
 import be.ibridge.kettle.core.util.StringUtil;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.TransPreviewFactory;
@@ -58,15 +59,13 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
-import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private Label        wlFilename;
 	private Button       wbFilename;
-	private Button       wbcFilename;
-	private Text         wFilename;
-	private FormData     fdlFilename, fdbFilename, fdbcFilename, fdFilename;
+	private TextVar      wFilename;
+	private FormData     fdlFilename, fdbFilename, fdFilename;
 
     private Group        gAccepting;
     private FormData     fdAccepting;
@@ -179,20 +178,12 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdbFilename.top  = new FormAttachment(wStepname, margin);
 		wbFilename.setLayoutData(fdbFilename);
 
-		wbcFilename=new Button(shell, SWT.PUSH| SWT.CENTER);
- 		props.setLook(wbcFilename);
-		wbcFilename.setText(Messages.getString("System.Button.Variable")); //$NON-NLS-1$
-		fdbcFilename=new FormData();
-		fdbcFilename.right= new FormAttachment(wbFilename, -margin);
-		fdbcFilename.top  = new FormAttachment(wStepname, margin);
-		wbcFilename.setLayoutData(fdbcFilename);
-
-		wFilename=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();
 		fdFilename.left = new FormAttachment(middle, 0);
-		fdFilename.right= new FormAttachment(wbcFilename, -margin);
+		fdFilename.right= new FormAttachment(wbFilename, -margin);
 		fdFilename.top  = new FormAttachment(wStepname, margin);
 		wFilename.setLayoutData(fdFilename);
 		
@@ -431,9 +422,6 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
 			}
 		);
 
-		// Listen to the Variable... button
-		wbcFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
-		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 		
@@ -462,7 +450,6 @@ public class XBaseInputDialog extends BaseStepDialog implements StepDialogInterf
         wlFilename.setEnabled( !wAccFilenames.getSelection() );
         wFilename.setEnabled( !wAccFilenames.getSelection() );
         wbFilename.setEnabled( !wAccFilenames.getSelection() );
-        wbcFilename.setEnabled( !wAccFilenames.getSelection() );
     }
 	
 	/**

@@ -51,20 +51,19 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
-import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 
 public class SortRowsDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private Label        wlSortDir;
 	private Button       wbSortDir;
-	private Button       wbcSortDir;
-	private Text         wSortDir;
-	private FormData     fdlSortDir, fdbSortDir, fdbcSortDir, fdSortDir;
+	private TextVar      wSortDir;
+	private FormData     fdlSortDir, fdbSortDir, fdSortDir;
 
 	private Label        wlPrefix;
 	private Text         wPrefix;
@@ -154,22 +153,14 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 		fdbSortDir.top  = new FormAttachment(wStepname, margin);
 		wbSortDir.setLayoutData(fdbSortDir);
 
-		wbcSortDir=new Button(shell, SWT.PUSH| SWT.CENTER);
- 		props.setLook(wbcSortDir);
-		wbcSortDir.setText(Messages.getString("System.Button.Variable"));
-		fdbcSortDir=new FormData();
-		fdbcSortDir.right= new FormAttachment(wbSortDir, -margin);
-		fdbcSortDir.top  = new FormAttachment(wStepname, margin);
-		wbcSortDir.setLayoutData(fdbcSortDir);
-
-		wSortDir=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wSortDir=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wSortDir.setText("temp");
  		props.setLook(wSortDir);
 		wSortDir.addModifyListener(lsMod);
 		fdSortDir=new FormData();
 		fdSortDir.left = new FormAttachment(middle, 0);
 		fdSortDir.top  = new FormAttachment(wStepname, margin);
-		fdSortDir.right= new FormAttachment(wbcSortDir, -margin);
+		fdSortDir.right= new FormAttachment(wbSortDir, -margin);
 		wSortDir.setLayoutData(fdSortDir);
 		
 		wbSortDir.addSelectionListener(new SelectionAdapter()
@@ -195,9 +186,6 @@ public class SortRowsDialog extends BaseStepDialog implements StepDialogInterfac
 				}
 			}
 		);
-
-		// Listen to the Variable... button
-		wbcSortDir.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wSortDir));
 
 		wlPrefix=new Label(shell, SWT.RIGHT);
 		wlPrefix.setText("TMP-file prefix ");

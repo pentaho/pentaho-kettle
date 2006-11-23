@@ -52,7 +52,7 @@ public class LabelTextVar extends Composite
         int textFlags = SWT.SINGLE | SWT.LEFT | SWT.BORDER;
         if (flags!=SWT.NONE) textFlags = flags;
         
-        wText = new TextVar(this, textFlags);
+        wText = new TextVar(this, textFlags, toolTipText);
         FormData fdText = new FormData();
         fdText.left = new FormAttachment(middle, margin);
         fdText.right= new FormAttachment(100, 0);

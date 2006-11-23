@@ -49,12 +49,12 @@ import be.ibridge.kettle.core.dialog.DatabaseExplorerDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
-import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 
 public class TableOutputDialog extends BaseStepDialog implements StepDialogInterface
@@ -62,9 +62,9 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 	private CCombo       wConnection;
 
 	private Label        wlTable;
-	private Button       wbTable, wbcTable;
-	private Text         wTable;
-	private FormData     fdlTable, fdbTable, fdbcTable, fdTable;
+	private Button       wbTable;
+	private TextVar      wTable;
+	private FormData     fdlTable, fdbTable, fdTable;
 
 	private Label        wlCommit;
 	private Text         wCommit;
@@ -195,21 +195,13 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdbTable.top  = new FormAttachment(wConnection, margin);
 		wbTable.setLayoutData(fdbTable);
 
-        wbcTable=new Button(shell, SWT.PUSH| SWT.CENTER);
-        props.setLook(wbcTable);
-        wbcTable.setText(Messages.getString("System.Button.Variable"));
-        fdbcTable=new FormData();
-        fdbcTable.right= new FormAttachment(wbTable, 0);
-        fdbcTable.top  = new FormAttachment(wConnection, margin);
-        wbcTable.setLayoutData(fdbcTable);
-
-		wTable=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTable=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTable);
 		wTable.addModifyListener(lsMod);
 		fdTable=new FormData();
 		fdTable.top  = new FormAttachment(wConnection, margin*2);
 		fdTable.left = new FormAttachment(middle, 0);
-		fdTable.right= new FormAttachment(wbcTable, -margin);
+		fdTable.right= new FormAttachment(wbTable, -margin);
 		wTable.setLayoutData(fdTable);
 
 		// Commit size ...
@@ -570,9 +562,6 @@ public class TableOutputDialog extends BaseStepDialog implements StepDialogInter
 			}
 		);
         
-        // Listen to the Variable... button
-        wbcTable.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wTable));
-		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
 

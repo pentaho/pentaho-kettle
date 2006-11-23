@@ -215,6 +215,7 @@ public class MappingMeta extends BaseStepMeta implements StepMetaInterface
 
 	public void setDefault()
 	{
+        allocate(0,0);
 	}
     
     public Row getFields(Row r, String name, Row info) throws KettleStepException

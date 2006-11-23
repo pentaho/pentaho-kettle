@@ -69,6 +69,7 @@ import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.TransPreviewFactory;
@@ -97,12 +98,11 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
 	private Label        wlFilename;
 	private Button       wbbFilename; // Browse: add file or directory
-	private Button       wbvFilename; // Variable
 	private Button       wbdFilename; // Delete
 	private Button       wbeFilename; // Edit
 	private Button       wbaFilename; // Add or change
-	private Text         wFilename;
-	private FormData     fdlFilename, fdbFilename, fdbvFilename, fdbdFilename, fdbeFilename, fdbaFilename, fdFilename;
+	private TextVar         wFilename;
+	private FormData     fdlFilename, fdbFilename, fdbdFilename, fdbeFilename, fdbaFilename, fdFilename;
 
 	private Label        wlFilenameList;
 	private TableView    wFilenameList;
@@ -312,25 +312,16 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		fdbFilename.top  = new FormAttachment(0, 0);
 		wbbFilename.setLayoutData(fdbFilename);
 
-		wbvFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
- 		props.setLook(wbvFilename);
-		wbvFilename.setText(Messages.getString("System.Button.Variable"));
-		wbvFilename.setToolTipText("Insert a variable in the filename or directory");
-		fdbvFilename=new FormData();
-		fdbvFilename.right= new FormAttachment(wbbFilename, -margin);
-		fdbvFilename.top  = new FormAttachment(0, 0);
-		wbvFilename.setLayoutData(fdbvFilename);
-
 		wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbaFilename);
 		wbaFilename.setText(Messages.getString("ExcelInputDialog.FilenameAdd.Button"));
 		wbaFilename.setToolTipText(Messages.getString("ExcelInputDialog.FilenameAdd.Tooltip"));
 		fdbaFilename=new FormData();
-		fdbaFilename.right= new FormAttachment(wbvFilename, -margin);
+		fdbaFilename.right= new FormAttachment(wbbFilename, -margin);
 		fdbaFilename.top  = new FormAttachment(0, 0);
 		wbaFilename.setLayoutData(fdbaFilename);
 
-		wFilename=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();
@@ -922,22 +913,7 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			{
 				public void widgetSelected(SelectionEvent e) 
 				{
-					ExcelInputMeta eii = new ExcelInputMeta();
-					getInfo(eii);
-					String[] files = eii.getFilePaths();
-					if (files.length > 0)
-					{
-						EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("ExcelInputDialog.FilesRead.DialogTitle"), Messages.getString("ExcelInputDialog.FilesRead.DialogMessage"));
-						esd.setViewOnly();
-						esd.open();
-					}
-					else
-					{
-						MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-						mb.setMessage(Messages.getString("ExcelInputDialog.NoFilesFound.DialogMessage"));
-						mb.setText(Messages.getString("System.Dialog.Error.Title"));
-						mb.open(); 
-					}
+                    showFiles();
 				}
 			}
 		);
@@ -952,9 +928,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			}
 		);
 		
-		// Listen to the Variable... button
-		wbvFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
-
 		// Listen to the Browse... button
 		wbbFilename.addSelectionListener
 		(
@@ -1034,8 +1007,8 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 		}
 		return stepname;
 	}
-	
-	public void setFlags()
+
+    public void setFlags()
 	{
 		wbGetFields.setEnabled( wHeader.getSelection());
 
@@ -1047,7 +1020,6 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 
         wlFilename.setEnabled(!accept);
         wbbFilename.setEnabled(!accept); // Browse: add file or directory
-        wbvFilename.setEnabled(!accept); // Variable
         wbdFilename.setEnabled(!accept); // Delete
         wbeFilename.setEnabled(!accept); // Edit
         wbaFilename.setEnabled(!accept); // Add or change
@@ -1782,6 +1754,28 @@ public class ExcelInputDialog extends BaseStepDialog implements StepDialogInterf
 			mb.open(); 
 		}
 	}
+    
+    
+    private void showFiles()
+    {
+        ExcelInputMeta eii = new ExcelInputMeta();
+        getInfo(eii);
+        String[] files = eii.getFilePaths();
+        if (files.length > 0)
+        {
+            EnterSelectionDialog esd = new EnterSelectionDialog(shell, files, Messages.getString("ExcelInputDialog.FilesRead.DialogTitle"), Messages.getString("ExcelInputDialog.FilesRead.DialogMessage"));
+            esd.setViewOnly();
+            esd.open();
+        }
+        else
+        {
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
+            mb.setMessage(Messages.getString("ExcelInputDialog.NoFilesFound.DialogMessage"));
+            mb.setText(Messages.getString("System.Dialog.Error.Title"));
+            mb.open(); 
+        }
+    }
+
 
 	public String toString()
 	{

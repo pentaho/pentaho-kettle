@@ -47,6 +47,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.dialog.DatabaseDialog;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
@@ -74,7 +75,7 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 	private FormData     fdlConnection, fdbConnection, fdConnection;
 
 	private Label        wlTablename;
-	private Text         wTablename;
+	private TextVar      wTablename;
 	private FormData     fdlTablename, fdTablename;
 	
 	private Button wOK, wCancel;
@@ -201,7 +202,7 @@ public class JobEntryTableExistsDialog extends Dialog implements JobEntryDialogI
 		fdlTablename.top  = new FormAttachment(wConnection, margin);
 		wlTablename.setLayoutData(fdlTablename);
 		
-		wTablename=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+		wTablename=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
  		props.setLook(wTablename);
 		wTablename.addModifyListener(lsMod);
 		fdTablename=new FormData();

@@ -643,6 +643,10 @@ public class XMLHandler
      */
 	public static void appendReplacedChars(StringBuffer value, String string)
     {
+        // If it's a CDATA content block, leave those parts alone.
+        //
+        boolean isCDATA = string.startsWith("<![CDATA[") && string.endsWith("]]>");
+        
         for (int i=0;i<string.length();i++)
         {
             char c = string.charAt(i);
@@ -650,10 +654,37 @@ public class XMLHandler
             {
             case '&'  : value.append("&amp;"); break;
             case '\'' : value.append("&apos;"); break;
-            case '<'  : value.append("&lt;"); break;
-            case '>'  : value.append("&gt;"); break;
+            case '<'  :
+                if (i!=0 || !isCDATA)
+                {
+                    value.append("&lt;"); 
+                }
+                else
+                {
+                    value.append(c);
+                }
+                break;
+            case '>'  :
+                if (i!=string.length()-1 || !isCDATA)
+                {
+                    value.append("&gt;"); 
+                }
+                else
+                {
+                    value.append(c);
+                }
+                break;
             case '"'  : value.append("&quot;"); break;
-            case '/'  : value.append("&#47;"); break;
+            case '/'  :
+                if (isCDATA) // Don't replace slashes in a CDATA block, it's just not right.
+                {
+                    value.append(c);
+                }
+                else
+                {
+                    value.append("&#47;"); 
+                }
+                break;
             case 0x1A : value.append("{ILLEGAL XML CHARACTER 0x1A}"); break;
             default: 
                 value.append(c);

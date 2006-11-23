@@ -29,8 +29,8 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Vector;
-import java.util.zip.ZipInputStream;
 import java.util.zip.GZIPInputStream;
+import java.util.zip.ZipInputStream;
 
 import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.jface.wizard.WizardDialog;
@@ -80,6 +80,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.TransPreviewFactory;
@@ -137,12 +138,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     
 	private Label        wlFilename;
 	private Button       wbbFilename; // Browse: add file or directory
-	private Button       wbvFilename; // Variable
 	private Button       wbdFilename; // Delete
 	private Button       wbeFilename; // Edit
 	private Button       wbaFilename; // Add or change
-	private Text         wFilename;
-	private FormData     fdlFilename, fdbFilename, fdbvFilename, fdbdFilename, fdbeFilename, fdbaFilename, fdFilename;
+	private TextVar      wFilename;
+	private FormData     fdlFilename, fdbFilename, fdbdFilename, fdbeFilename, fdbaFilename, fdFilename;
 
 	private Label        wlFilenameList;
 	private TableView    wFilenameList;
@@ -672,25 +672,16 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdbFilename.top  = new FormAttachment(0, 0);
         wbbFilename.setLayoutData(fdbFilename);
 
-        wbvFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
-        props.setLook(wbvFilename);
-        wbvFilename.setText(Messages.getString("System.Button.Variable"));
-        wbvFilename.setToolTipText(Messages.getString("System.Tooltip.VariableToFileOrDir"));
-        fdbvFilename=new FormData();
-        fdbvFilename.right= new FormAttachment(wbbFilename, -margin);
-        fdbvFilename.top  = new FormAttachment(0, 0);
-        wbvFilename.setLayoutData(fdbvFilename);
-
         wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
         props.setLook(wbaFilename);
         wbaFilename.setText(Messages.getString("TextFileInputDialog.FilenameAdd.Button"));
         wbaFilename.setToolTipText(Messages.getString("TextFileInputDialog.FilenameAdd.Tooltip"));
         fdbaFilename=new FormData();
-        fdbaFilename.right= new FormAttachment(wbvFilename, -margin);
+        fdbaFilename.right= new FormAttachment(wbbFilename, -margin);
         fdbaFilename.top  = new FormAttachment(0, 0);
         wbaFilename.setLayoutData(fdbaFilename);
 
-        wFilename=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wFilename=new TextVar(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
         props.setLook(wFilename);
         wFilename.addModifyListener(lsMod);
         fdFilename=new FormData();
@@ -715,12 +706,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdFilemask.top  = new FormAttachment(wFilename, margin);
         fdFilemask.right= new FormAttachment(wbaFilename, -margin);
         wFilemask.setLayoutData(fdFilemask);
-
-        // Whenever something changes, set the tooltip to the expanded version of the filename:
-        wFilename.addModifyListener(getModifyListenerTooltipText(wFilename));
-
-        // Listen to the Variable... button
-        wbvFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
 
         // Filename list line
         wlFilenameList=new Label(wFileComp, SWT.RIGHT);
@@ -1912,7 +1897,6 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
     	wlFilename.setEnabled(!accept);
     	wbbFilename.setEnabled(!accept); // Browse: add file or directory
-    	wbvFilename.setEnabled(!accept); // Variable
     	wbdFilename.setEnabled(!accept); // Delete
     	wbeFilename.setEnabled(!accept); // Edit
     	wbaFilename.setEnabled(!accept); // Add or change

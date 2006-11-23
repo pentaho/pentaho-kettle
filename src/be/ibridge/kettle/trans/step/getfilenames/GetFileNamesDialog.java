@@ -53,6 +53,7 @@ import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.TransPreviewFactory;
@@ -60,7 +61,6 @@ import be.ibridge.kettle.trans.dialog.TransPreviewProgressDialog;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
-import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 
 public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInterface
@@ -76,12 +76,11 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 
 	private Label        wlFilename;
 	private Button       wbbFilename; // Browse: add file or directory
-	private Button       wbvFilename; // Variable
 	private Button       wbdFilename; // Delete
 	private Button       wbeFilename; // Edit
 	private Button       wbaFilename; // Add or change
-	private Text         wFilename;
-	private FormData     fdlFilename, fdbFilename, fdbvFilename, fdbdFilename, fdbeFilename, fdbaFilename, fdFilename;
+	private TextVar      wFilename;
+	private FormData     fdlFilename, fdbFilename, fdbdFilename, fdbeFilename, fdbaFilename, fdFilename;
 
 	private Label        wlFilenameList;
 	private TableView    wFilenameList;
@@ -187,25 +186,16 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		fdbFilename.top  = new FormAttachment(0, 0);
 		wbbFilename.setLayoutData(fdbFilename);
 
-		wbvFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
- 		props.setLook(wbvFilename);
-		wbvFilename.setText(Messages.getString("System.Button.Variable"));
-		wbvFilename.setToolTipText(Messages.getString("System.Tooltip.VariableToFileOrDir"));
-		fdbvFilename=new FormData();
-		fdbvFilename.right= new FormAttachment(wbbFilename, -margin);
-		fdbvFilename.top  = new FormAttachment(0, 0);
-		wbvFilename.setLayoutData(fdbvFilename);
-
 		wbaFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
  		props.setLook(wbaFilename);
 		wbaFilename.setText(Messages.getString("GetFileNamesDialog.FilenameAdd.Button"));
 		wbaFilename.setToolTipText(Messages.getString("GetFileNamesDialog.FilenameAdd.Tooltip"));
 		fdbaFilename=new FormData();
-		fdbaFilename.right= new FormAttachment(wbvFilename, -margin);
+		fdbaFilename.right= new FormAttachment(wbbFilename, -margin);
 		fdbaFilename.top  = new FormAttachment(0, 0);
 		wbaFilename.setLayoutData(fdbaFilename);
 
-		wFilename=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();
@@ -230,12 +220,6 @@ public class GetFileNamesDialog extends BaseStepDialog implements StepDialogInte
 		fdFilemask.top  = new FormAttachment(wFilename, margin);
 		fdFilemask.right= new FormAttachment(wFilename, 0, SWT.RIGHT);
 		wFilemask.setLayoutData(fdFilemask);
-
-        // Whenever something changes, set the tooltip to the expanded version of the filename:
-        wFilename.addModifyListener(getModifyListenerTooltipText(wFilename));
-
-        // Listen to the Variable... button
-        wbvFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
 
 		// Filename list line
 		wlFilenameList=new Label(wFileComp, SWT.RIGHT);

@@ -51,6 +51,7 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.TransPreviewFactory;
@@ -63,7 +64,7 @@ import be.ibridge.kettle.trans.step.StepDialogInterface;
 public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInterface
 {
 	private Label        wlLimit;
-	private Text         wLimit;
+	private TextVar      wLimit;
 	private FormData     fdlLimit, fdLimit;
 	
 	private Label        wlFields;
@@ -132,7 +133,7 @@ public class RowGeneratorDialog extends BaseStepDialog implements StepDialogInte
 		fdlLimit.right= new FormAttachment(middle, -margin);
 		fdlLimit.top  = new FormAttachment(wStepname, margin);
 		wlLimit.setLayoutData(fdlLimit);
-		wLimit=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wLimit=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wLimit);
 		wLimit.addModifyListener(lsMod);
 		fdLimit=new FormData();

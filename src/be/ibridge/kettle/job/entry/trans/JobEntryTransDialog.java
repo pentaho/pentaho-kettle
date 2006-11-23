@@ -52,6 +52,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.job.entry.JobEntryDialogInterface;
 import be.ibridge.kettle.job.entry.JobEntryInterface;
 import be.ibridge.kettle.repository.Repository;
@@ -74,16 +75,16 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 
 	private Label        wlTransname;
 	private Button       wbTransname;
-	private Text         wTransname;
+	private TextVar      wTransname;
 	private FormData     fdlTransname, fdbTransname, fdTransname;
 
 	private Label        wlDirectory;
-	private Text         wDirectory;
+	private TextVar      wDirectory;
 	private FormData     fdlDirectory, fdDirectory;
 
 	private Label        wlFilename;
 	private Button       wbFilename;
-	private Text         wFilename;
+	private TextVar      wFilename;
 	private FormData     fdlFilename, fdbFilename, fdFilename;
 
 	private Group        wLogging;
@@ -94,11 +95,11 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 	private FormData     fdlSetLogfile, fdSetLogfile;
 
 	private Label        wlLogfile;
-	private Text         wLogfile;
+	private TextVar      wLogfile;
 	private FormData     fdlLogfile, fdLogfile;
 
 	private Label        wlLogext;
-	private Text         wLogext;
+	private TextVar      wLogext;
 	private FormData     fdlLogext, fdLogext;
 
 	private Label        wlAddDate;
@@ -222,7 +223,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		wbTransname.setLayoutData(fdbTransname);
 		wbTransname.setEnabled(rep!=null);
 
-		wTransname=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wTransname=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wTransname);
 		wTransname.addModifyListener(lsMod);
 		fdTransname=new FormData();
@@ -241,7 +242,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		fdlDirectory.right= new FormAttachment(middle, 0);
 		wlDirectory.setLayoutData(fdlDirectory);
 
-		wDirectory=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wDirectory=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wDirectory);
 		wDirectory.addModifyListener(lsMod);
 		fdDirectory=new FormData();
@@ -269,7 +270,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		fdbFilename.right = new FormAttachment(100, 0);
 		wbFilename.setLayoutData(fdbFilename);
 
-		wFilename=new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();
@@ -328,7 +329,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		fdlLogfile.top  = new FormAttachment(wlSetLogfile, margin);
 		fdlLogfile.right= new FormAttachment(middle, 0);
 		wlLogfile.setLayoutData(fdlLogfile);
-		wLogfile=new Text(wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wLogfile=new TextVar(wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wLogfile.setText("");
  		props.setLook(wLogfile);
 		fdLogfile=new FormData();
@@ -346,7 +347,7 @@ public class JobEntryTransDialog extends Dialog implements JobEntryDialogInterfa
 		fdlLogext.top  = new FormAttachment(wLogfile, margin);
 		fdlLogext.right= new FormAttachment(middle, 0);
 		wlLogext.setLayoutData(fdlLogext);
-		wLogext=new Text(wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wLogext=new TextVar(wLogging, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
 		wLogext.setText("");
  		props.setLook(wLogext);
 		fdLogext=new FormData();

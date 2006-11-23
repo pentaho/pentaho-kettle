@@ -63,11 +63,11 @@ import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.BaseStepMeta;
 import be.ibridge.kettle.trans.step.StepDialogInterface;
-import be.ibridge.kettle.trans.step.textfileinput.VariableButtonListenerFactory;
 
 
 public class TextFileOutputDialog extends BaseStepDialog implements StepDialogInterface
@@ -81,9 +81,8 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 
 	private Label        wlFilename;
 	private Button       wbFilename;
-	private Button       wbcFilename;
-	private Text         wFilename;
-	private FormData     fdlFilename, fdbFilename, fdbcFilename, fdFilename;
+	private TextVar      wFilename;
+	private FormData     fdlFilename, fdbFilename, fdFilename;
 
 	private Label        wlFileIsCommand;
 	private Button       wFileIsCommand;
@@ -261,32 +260,14 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 		fdbFilename.top  = new FormAttachment(0, 0);
 		wbFilename.setLayoutData(fdbFilename);
 
-		wbcFilename=new Button(wFileComp, SWT.PUSH| SWT.CENTER);
- 		props.setLook(wbcFilename);
-		wbcFilename.setText(Messages.getString("System.Button.Variable"));
-		fdbcFilename=new FormData();
-		fdbcFilename.right= new FormAttachment(wbFilename, -margin);
-		fdbcFilename.top  = new FormAttachment(0, 0);
-		wbcFilename.setLayoutData(fdbcFilename);
-
-		wFilename=new Text(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+		wFilename=new TextVar(wFileComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
  		props.setLook(wFilename);
 		wFilename.addModifyListener(lsMod);
 		fdFilename=new FormData();
 		fdFilename.left = new FormAttachment(middle, 0);
 		fdFilename.top  = new FormAttachment(0, margin);
-		fdFilename.right= new FormAttachment(wbcFilename, -margin);
+		fdFilename.right= new FormAttachment(wbFilename, -margin);
 		wFilename.setLayoutData(fdFilename);
-		
-		// Whenever something changes, set the tooltip to the expanded version:
-		wFilename.addModifyListener(new ModifyListener()
-			{
-				public void modifyText(ModifyEvent e)
-				{
-					wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
-				}
-			}
-		);
 
 		// Run this as a command instead?
 		wlFileIsCommand=new Label(wFileComp, SWT.RIGHT);
@@ -931,10 +912,6 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 			}
 		);
 		
-
-		// Listen to the Variable... button
-		wbcFilename.addSelectionListener(VariableButtonListenerFactory.getSelectionAdapter(shell, wFilename));
-
 		wbFilename.addSelectionListener
 		(
 			new SelectionAdapter()
