@@ -272,7 +272,9 @@ public class AddXML extends BaseStep implements StepInterface
             setSerializer(TransformerFactory.newInstance().newTransformer());
             setDomImplentation(DocumentBuilderFactory.newInstance().newDocumentBuilder().getDOMImplementation());
 
-            //TODO - implement XML content type declaration
+            if(meta.getEncoding()!=null) {
+            	getSerializer().setOutputProperty(OutputKeys.ENCODING, meta.getEncoding());
+            }
             
             if(meta.isOmitXMLheader()) {
                 getSerializer().setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
