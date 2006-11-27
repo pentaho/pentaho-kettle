@@ -583,7 +583,7 @@ public class JobMeta implements Cloneable, XMLInterface
                            );
                            int idx = md.open();
                            props.setAskAboutReplacingDatabaseConnections(!md.getToggleState());
-                           overwrite = (idx==0); // Yes means: overwrite
+                           overwrite = ( (idx&0xFF)==0); // Yes means: overwrite
                         }
                     }
 

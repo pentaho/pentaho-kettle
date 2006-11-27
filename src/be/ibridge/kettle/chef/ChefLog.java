@@ -358,7 +358,7 @@ public class ChefLog extends Composite
 																			 chef.props.getAutoSave()
 																			 );
 					int answer = md.open();
-					if (answer == 0)
+					if ( (answer&0xFF) == 0)
 					{
 						chef.saveFile();
 					}

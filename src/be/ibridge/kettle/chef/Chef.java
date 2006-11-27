@@ -1671,7 +1671,7 @@ public class Chef implements AddUndoPositionInterface
                props.setExitWarningShown(!md.getToggleState());
                props.saveProps();
                
-               if (idx==1) exit=false; // No selected: don't exit!
+               if ( (idx&0xFF)==1) exit=false; // No selected: don't exit!
                else exit=true;
         }            
 

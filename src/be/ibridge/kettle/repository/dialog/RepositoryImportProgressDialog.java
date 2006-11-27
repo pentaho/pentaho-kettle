@@ -260,7 +260,7 @@ public class RepositoryImportProgressDialog extends Dialog
 								askDirectory = !mb.getToggleState();
 								
 								// Cancel?
-								if (answer==2) return;
+								if ( (answer&0xFF)==2) return;
 						    }
 
 						    if (makeDirectory)
@@ -290,7 +290,7 @@ public class RepositoryImportProgressDialog extends Dialog
 																					 !askOverwrite
 																					 );
 							int answer = md.open();
-							overwrite = answer==0;
+							overwrite = (answer&0xFF)==0;
 							askOverwrite = !md.getToggleState();
 						}
 						
@@ -360,7 +360,7 @@ public class RepositoryImportProgressDialog extends Dialog
 								askDirectory = !mb.getToggleState();
 								
 								// Cancel?
-								if (answer==2) return;
+								if ( (answer&0xFF)==2) return;
 						    }
 
 						    if (makeDirectory)
@@ -390,7 +390,7 @@ public class RepositoryImportProgressDialog extends Dialog
 																					 !askOverwrite
 																					 );
 							int answer = md.open();
-							overwrite = answer==0;
+							overwrite = (answer&0xFF)==0;
 							askOverwrite = !md.getToggleState();
 						}
 						

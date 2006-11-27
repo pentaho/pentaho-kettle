@@ -486,7 +486,7 @@ public class SpoonLog extends Composite
 							0, Messages.getString("SpoonLog.Dialog.Option.AutoSaveTransformation"), //$NON-NLS-1$
 							spoon.props.getAutoSave());
 					int answer = md.open();
-					if (answer == 0)
+					if ( (answer & 0xFF) == 0)
 					{
 						spoon.saveFile();
 					}

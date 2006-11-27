@@ -388,7 +388,7 @@ public class ChefGraph extends Canvas implements Redrawable
 								chef.props.setAutoSplit(md.getToggleState());
 							}
 							
-							if (id == 0)
+							if ( (id&0xFF) == 0)
 							{
 								JobHopMeta newhop1 = new JobHopMeta(hi.from_entry, selected_icon);
 								chef.jobMeta.addJobHop(newhop1);

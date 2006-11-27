@@ -402,7 +402,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                                         spoon.props.setAutoSplit(md.getToggleState());
                                     }
 
-                                    if (id == 0) // Means: "Yes" button clicked!
+                                    if ( (id&0xFF) == 0) // Means: "Yes" button clicked!
                                     {
                                         TransHopMeta newhop1 = new TransHopMeta(hi.getFromStep(), selected_step);
                                         spoon.getTransMeta().addTransHop(newhop1);
