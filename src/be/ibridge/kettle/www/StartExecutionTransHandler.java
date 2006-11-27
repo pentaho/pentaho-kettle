@@ -18,14 +18,14 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.trans.Trans;
 
-public class StartTransHandler extends AbstractHandler
+public class StartExecutionTransHandler extends AbstractHandler
 {
     private static final long serialVersionUID = 3634806745372015720L;
-    public static final String CONTEXT_PATH = "/kettle/startTrans";
+    public static final String CONTEXT_PATH = "/kettle/startExec";
     private static LogWriter log = LogWriter.getInstance();
     private TransformationMap transformationMap;
     
-    public StartTransHandler(TransformationMap transformationMap)
+    public StartExecutionTransHandler(TransformationMap transformationMap)
     {
         this.transformationMap = transformationMap;
     }
@@ -35,7 +35,7 @@ public class StartTransHandler extends AbstractHandler
         if (!request.getContextPath().equals(CONTEXT_PATH)) return;
         if (!isStarted()) return;
 
-        if (log.isDebug()) log.logDebug(toString(), "Start of transformation requested");
+        if (log.isDebug()) log.logDebug(toString(), "Prepare execution of transformation requested");
 
         response.setContentType("text/html");
 
@@ -52,7 +52,7 @@ public class StartTransHandler extends AbstractHandler
         else
         {
             out.println("<HTML>");
-            out.println("<HEAD><TITLE>Start transformation</TITLE></HEAD>");
+            out.println("<HEAD><TITLE>Prepare execution of transformation</TITLE></HEAD>");
             out.println("<BODY>");
         }
     
@@ -64,15 +64,15 @@ public class StartTransHandler extends AbstractHandler
             Trans trans = transformationMap.getTransformation(transName);
             if (trans!=null)
             {
-                trans.execute(null);
-
+                trans.startThreads();
+                
                 if (useXML)
                 {
                     out.println(WebResult.OK.getXML());
                 }
                 else
                 {
-                    out.println("<H1>Transformation '"+transName+"' was started.</H1>");
+                    out.println("<H1>Transformation '"+transName+"' has been executed.</H1>");
                     out.println("<a href=\"/kettle/transStatus?name="+transName+"\">Back to the transformation status page</a><p>");
                 }
             }
@@ -93,7 +93,7 @@ public class StartTransHandler extends AbstractHandler
         {
             if (useXML)
             {
-                out.println(new WebResult(WebResult.STRING_ERROR, "Unexpected error during transformations start:"+Const.CR+Const.getStackTracker(ex)));
+                out.println(new WebResult(WebResult.STRING_ERROR, "Unexpected error during transformation execution preparation:"+Const.CR+Const.getStackTracker(ex)));
             }
             else
             {
@@ -110,7 +110,7 @@ public class StartTransHandler extends AbstractHandler
             out.println("</BODY>");
             out.println("</HTML>");
         }
-        
+
         out.flush();
 
         Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();

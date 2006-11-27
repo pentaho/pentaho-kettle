@@ -377,7 +377,7 @@ public class LogWriter
         
         Log4jMessage message = new Log4jMessage(msg, subject, lvl);
         
-        switch(level)
+        switch(lvl)
         {
         case LOG_LEVEL_ERROR:    logger.error(message); break;
         case LOG_LEVEL_ROWLEVEL: 

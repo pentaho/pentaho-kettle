@@ -45,98 +45,121 @@ public class GetTransStatusHandler extends AbstractHandler
         OutputStream os = response.getOutputStream();
         PrintStream out = new PrintStream(os);
 
-        String name = request.getParameter("name");
+        String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
-        Trans  trans  = transformationMap.getTransformation(name);
-        String status = trans.getStatus();
-
+        
         if (useXML)
         {
             response.setContentType("text/xml");
             response.setCharacterEncoding(Const.XML_ENCODING);
-            
             out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
-            out.println("<"+XML_TAG+">");
-
-            out.print(XMLHandler.addTagValue("trans", name, false));                
-            out.print(XMLHandler.addTagValue("status", status));                
-
-            out.println("<stepstatuses>");
-            for (int i = 0; i < trans.nrSteps(); i++)
-            {
-                BaseStep baseStep = trans.getRunThread(i);
-                if ( (baseStep.isAlive()) || baseStep.getStatus()!=StepDataInterface.STATUS_EMPTY)
-                {
-                    StepStatus stepStatus = new StepStatus(baseStep);
-                    out.print(stepStatus.getXML());
-                }
-            }
-            out.println("</stepstatuses>");
-
-            out.println("</"+XML_TAG+">");
         }
-        else
+        
+        Trans  trans  = transformationMap.getTransformation(transName);
+        
+        if (trans!=null)
         {
-            out.println("<HTML>");
-            out.println("<HEAD><TITLE>Kettle transformation status</TITLE></HEAD>");
-            out.println("<BODY>");
-            out.println("<H1>Transformation status</H1>");
-            
+            String status = trans.getStatus();
     
-            try
+            if (useXML)
             {
-                out.println("<table border=\"1\">");
-                out.print("<tr> <th>Transformation name</th> <th>Status</th> </tr>");
+                out.println("<"+XML_TAG+">");
     
-                out.print("<tr>");
-                out.print("<td>"+name+"</td>");
-                out.print("<td>"+status+"</td>");
-                out.print("</tr>");
-                out.print("</table>");
-                
-                out.print("<p>");
-                
-                if ( (trans.isFinished() && trans.isRunning()) || ( !trans.isRunning() && !trans.isPreparing() && !trans.isInitializing() ))
-                {
-                    out.print("<a href=\"/kettle/startTrans?name="+name+"\">Start this transformation</a>");
-                    out.print("<p>");
-                }
-                else
-                if (trans.isRunning())
-                {
-                    out.print("<a href=\"/kettle/stopTrans?name="+name+"\">Stop this transformation</a>");
-                    out.print("<p>");
-                }
-                
-                out.println("<table border=\"1\">");
-                out.print("<tr> <th>Step name</th> <th>Copy Nr</th> <th>Read</th> <th>Written</th> <th>Input</th> <th>Output</th> <th>Updated</th> " +
-                        "<th>Errors</th> <th>Active</th> <th>Time</th> <th>Speed</th> <th>pr/in/out</th> <th>Sleeps</th> </tr>");
+                out.print(XMLHandler.addTagValue("trans", transName, false));                
+                out.print(XMLHandler.addTagValue("status", status));                
     
+                out.println("<stepstatuses>");
                 for (int i = 0; i < trans.nrSteps(); i++)
                 {
                     BaseStep baseStep = trans.getRunThread(i);
                     if ( (baseStep.isAlive()) || baseStep.getStatus()!=StepDataInterface.STATUS_EMPTY)
                     {
                         StepStatus stepStatus = new StepStatus(baseStep);
-                        out.print(stepStatus.getHTMLTableRow());
+                        out.print(stepStatus.getXML());
                     }
                 }
-                out.println("</table>");
-                out.println("<p>");
-                
-                out.print("<a href=\"/kettle/transStatus?name="+name+"\">Refresh</a>");
+                out.println("</stepstatuses>");
+    
+                out.println("</"+XML_TAG+">");
             }
-            catch (Exception ex)
+            else
             {
+                out.println("<HTML>");
+                out.println("<HEAD><TITLE>Kettle transformation status</TITLE></HEAD>");
+                out.println("<BODY>");
+                out.println("<H1>Transformation status</H1>");
+                
+        
+                try
+                {
+                    out.println("<table border=\"1\">");
+                    out.print("<tr> <th>Transformation name</th> <th>Status</th> </tr>");
+        
+                    out.print("<tr>");
+                    out.print("<td>"+transName+"</td>");
+                    out.print("<td>"+status+"</td>");
+                    out.print("</tr>");
+                    out.print("</table>");
+                    
+                    out.print("<p>");
+                    
+                    if ( (trans.isFinished() && trans.isRunning()) || ( !trans.isRunning() && !trans.isPreparing() && !trans.isInitializing() ))
+                    {
+                        out.print("<a href=\"/kettle/startTrans?name="+transName+"\">Start this transformation</a>");
+                        out.print("<p>");
+                        out.print("<a href=\"/kettle/prepareExec?name="+transName+"\">Prepare the execution</a><br>");
+                        out.print("<a href=\"/kettle/startExec?name="+transName+"\">Start the execution</a><p>");
+                    }
+                    else
+                    if (trans.isRunning())
+                    {
+                        out.print("<a href=\"/kettle/stopTrans?name="+transName+"\">Stop this transformation</a>");
+                        out.print("<p>");
+                    }
+                    
+                    out.println("<table border=\"1\">");
+                    out.print("<tr> <th>Step name</th> <th>Copy Nr</th> <th>Read</th> <th>Written</th> <th>Input</th> <th>Output</th> <th>Updated</th> " +
+                            "<th>Errors</th> <th>Active</th> <th>Time</th> <th>Speed</th> <th>pr/in/out</th> <th>Sleeps</th> </tr>");
+        
+                    for (int i = 0; i < trans.nrSteps(); i++)
+                    {
+                        BaseStep baseStep = trans.getRunThread(i);
+                        if ( (baseStep.isAlive()) || baseStep.getStatus()!=StepDataInterface.STATUS_EMPTY)
+                        {
+                            StepStatus stepStatus = new StepStatus(baseStep);
+                            out.print(stepStatus.getHTMLTableRow());
+                        }
+                    }
+                    out.println("</table>");
+                    out.println("<p>");
+                    
+                    out.print("<a href=\"/kettle/transStatus?name="+transName+"&xml=y\">show as XML</a><p>");
+                    out.print("<a href=\"/kettle/transStatus?name="+transName+"\">Refresh</a>");
+                }
+                catch (Exception ex)
+                {
+                    out.println("<p>");
+                    out.println("<pre>");
+                    ex.printStackTrace(out);
+                    out.println("</pre>");
+                }
+                
                 out.println("<p>");
-                out.println("<pre>");
-                ex.printStackTrace(out);
-                out.println("</pre>");
+                out.println("</BODY>");
+                out.println("</HTML>");
             }
-            
-            out.println("<p>");
-            out.println("</BODY>");
-            out.println("</HTML>");
+        }
+        else
+        {
+            if (useXML)
+            {
+                out.println(new WebResult(WebResult.STRING_ERROR, "The specified transformation ["+transName+"] could not be found"));
+            }
+            else
+            {
+                out.println("<H1>Transformation '"+transName+"' could not be found.</H1>");
+                out.println("<a href=\"/kettle/status\">Back to the status page</a><p>");
+            }
         }
 
         out.flush();

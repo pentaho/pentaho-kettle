@@ -80,6 +80,8 @@ public class WebServer
                         getStatusContext(securityHandler),
                         getTransStatusContext(securityHandler),
                         getStartTransContext(securityHandler),
+                        getPrepareExecutionTransContext(securityHandler),
+                        getStartExecutionTransContext(securityHandler),
                         getStopTransContext(securityHandler),
                         getUploadTransPageContext(securityHandler),
                         getUploadTransContext(securityHandler),
@@ -122,7 +124,21 @@ public class WebServer
         handler.addHandler(new StartTransHandler(transformationMap));
         return handler;
     }
-    
+
+    private Handler getPrepareExecutionTransContext(SecurityHandler securityHandler)
+    {
+        ContextHandler handler = createContext(PrepareExecutionTransHandler.CONTEXT_PATH, securityHandler);
+        handler.addHandler(new PrepareExecutionTransHandler(transformationMap));
+        return handler;
+    }
+
+    private Handler getStartExecutionTransContext(SecurityHandler securityHandler)
+    {
+        ContextHandler handler = createContext(StartExecutionTransHandler.CONTEXT_PATH, securityHandler);
+        handler.addHandler(new StartExecutionTransHandler(transformationMap));
+        return handler;
+    }
+
     private Handler getStopTransContext(SecurityHandler securityHandler)
     {
         ContextHandler handler = createContext(StopTransHandler.CONTEXT_PATH, securityHandler);
