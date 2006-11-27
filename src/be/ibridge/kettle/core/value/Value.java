@@ -3637,6 +3637,11 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 	}
 
+	public boolean equalValueType(Value v)
+	{
+		return equalValueType(v, false);
+	}
+
 	/**
 	 * Returns whether "types" of the values are exactly the same: type, 
 	 * name, length, precision.
@@ -3646,20 +3651,22 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 * @return == true when types are the same
 	 *         == false when the types differ
 	 */
-	public boolean equalValueType(Value v)
+	public boolean equalValueType(Value v, boolean checkTypeOnly)
 	{
 	    if (v == null)
 	    	return false;
 	    if (getType() != v.getType())
 	    	return false;
-	    if ((getName() == null && v.getName() != null) || 
-	    	(getName() != null && v.getName() == null) ||
-	    	!(getName().equals(v.getName())))
-	    	return false;	    
-	    if (getLength() != v.getLength())
-	    	return false;
-	    if (getPrecision() != v.getPrecision())
-	    	return false;
+	    if (!checkTypeOnly) {
+		    if ((getName() == null && v.getName() != null) || 
+		    	(getName() != null && v.getName() == null) ||
+		    	!(getName().equals(v.getName())))
+		    	return false;	    
+		    if (getLength() != v.getLength())
+		    	return false;
+		    if (getPrecision() != v.getPrecision())
+		    	return false;
+	    }
 	    
 	    return true;
 	}

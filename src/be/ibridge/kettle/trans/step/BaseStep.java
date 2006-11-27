@@ -76,6 +76,7 @@ import be.ibridge.kettle.trans.step.joinrows.JoinRowsMeta;
 import be.ibridge.kettle.trans.step.mapping.MappingMeta;
 import be.ibridge.kettle.trans.step.mappinginput.MappingInputMeta;
 import be.ibridge.kettle.trans.step.mappingoutput.MappingOutputMeta;
+import be.ibridge.kettle.trans.step.mergejoin.MergeJoinMeta;
 import be.ibridge.kettle.trans.step.mergerows.MergeRowsMeta;
 import be.ibridge.kettle.trans.step.normaliser.NormaliserMeta;
 import be.ibridge.kettle.trans.step.nullif.NullIfMeta;
@@ -287,6 +288,9 @@ public class BaseStep extends Thread
         new StepPluginMeta(SortedMergeMeta.class, "SortedMerge", 
                             Messages.getString("BaseStep.TypeLongDesc.SortedMerge"), Messages.getString("BaseStep.TypeTooltipDesc.SortedMerge"), 
                             "SMG.png", CATEGORY_EXPERIMENTAL),
+        new StepPluginMeta(MergeJoinMeta.class, "MergeJoin", 
+        					Messages.getString("BaseStep.TypeLongDesc.MergeJoin"), Messages.getString("BaseStep.TypeTooltipDesc.MergeJoin"), 
+                            "MJOIN.png", CATEGORY_EXPERIMENTAL),
     };
     
     public static final String category_order[] = { CATEGORY_INPUT, CATEGORY_OUTPUT, CATEGORY_LOOKUP, CATEGORY_TRANSFORM, CATEGORY_DATA_WAREHOUSE, CATEGORY_EXTRA, CATEGORY_MAPPING, CATEGORY_EXPERIMENTAL }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$

@@ -527,34 +527,44 @@ public class Row implements XMLInterface, Comparable, Serializable
     {
         return compare(r, fieldnrs, ascending, null);
     }
+    
+    public int compare(Row r, int fieldnrs[], boolean ascending[], boolean caseInsensitive[])
+    {
+        return compare(r, fieldnrs, fieldnrs, ascending, caseInsensitive);
+    }
 
 	/**
 	 * Compare 2 rows with each other using certain values in the rows and
 	 * also considering an ascending clause.
 	 *
 	 * @param r The row to compare with
-	 * @param fieldnrs The indexes of the values to compare
+	 * @param fieldnrs The indexes of the values to compare in the source row (this)
+     * @param fieldnrs2 The indexes of the values to compare with.
 	 * @param ascending an entry for each value to compare where true means and normal compare, false the reverse.
 	 * @return -1 if the row is smaller, 0 if they are equal and 1 if the row is larger.
 	 */
-	public int compare(Row r, int fieldnrs[], boolean ascending[], boolean caseInsensitive[])
+	public int compare(Row r, int fieldnrs1[], int fieldnrs2[], boolean ascending[], boolean caseInsensitive[])
 	{
 		int retval=0;
 		int i;
-		int len=fieldnrs.length;
+        int len = (fieldnrs1.length < fieldnrs2.length) ? fieldnrs1.length : fieldnrs2.length;
 		Value v1, v2;
 
 		for (i=0;i<len;i++)
 		{
-			v1=  getValue(fieldnrs[i]);
-			v2=r.getValue(fieldnrs[i]);
+			v1=  getValue(fieldnrs1[i]);
+			v2=r.getValue(fieldnrs2[i]);
 
             if (caseInsensitive!=null)
+            {
                 retval=v1.compare(v2, caseInsensitive[i]);
+            }
             else
+            {
                 retval=v1.compare(v2);
+            }
 
-			if (!ascending[i])
+            if (ascending != null && !ascending[i])
 			{
 				retval=-retval;
 			}
