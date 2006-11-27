@@ -86,6 +86,8 @@ import be.ibridge.kettle.trans.step.rowstoresult.RowsToResultMeta;
 import be.ibridge.kettle.trans.step.scriptvalues.ScriptValuesMeta;
 import be.ibridge.kettle.trans.step.selectvalues.SelectValuesMeta;
 import be.ibridge.kettle.trans.step.setvariable.SetVariableMeta;
+import be.ibridge.kettle.trans.step.socketreader.SocketReaderMeta;
+import be.ibridge.kettle.trans.step.socketwriter.SocketWriterMeta;
 import be.ibridge.kettle.trans.step.sortedmerge.SortedMergeMeta;
 import be.ibridge.kettle.trans.step.sortrows.SortRowsMeta;
 import be.ibridge.kettle.trans.step.sql.ExecSQLMeta;
@@ -291,6 +293,12 @@ public class BaseStep extends Thread
         new StepPluginMeta(MergeJoinMeta.class, "MergeJoin", 
         					Messages.getString("BaseStep.TypeLongDesc.MergeJoin"), Messages.getString("BaseStep.TypeTooltipDesc.MergeJoin"), 
                             "MJOIN.png", CATEGORY_EXPERIMENTAL),
+        new StepPluginMeta(SocketReaderMeta.class, "SocketReader", 
+                            Messages.getString("BaseStep.TypeLongDesc.SocketReader"), Messages.getString("BaseStep.TypeTooltipDesc.SocketReader"), 
+                            "SKR.png", CATEGORY_EXPERIMENTAL),
+        new StepPluginMeta(SocketWriterMeta.class, "SocketWriter", 
+                            Messages.getString("BaseStep.TypeLongDesc.SocketWriter"), Messages.getString("BaseStep.TypeTooltipDesc.SocketWriter"), 
+                            "SKW.png", CATEGORY_EXPERIMENTAL),
     };
     
     public static final String category_order[] = { CATEGORY_INPUT, CATEGORY_OUTPUT, CATEGORY_LOOKUP, CATEGORY_TRANSFORM, CATEGORY_DATA_WAREHOUSE, CATEGORY_EXTRA, CATEGORY_MAPPING, CATEGORY_EXPERIMENTAL }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
