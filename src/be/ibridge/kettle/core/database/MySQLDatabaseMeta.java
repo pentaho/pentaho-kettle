@@ -99,7 +99,14 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 		}
 		else
 		{
-			return "jdbc:mysql://"+hostname+":"+port+"/"+databaseName;
+            if (Const.isEmpty(port))
+            {
+                return "jdbc:mysql://"+hostname+"/"+databaseName;
+            }
+            else
+            {
+                return "jdbc:mysql://"+hostname+":"+port+"/"+databaseName;
+            }
 		}
 	}
     
