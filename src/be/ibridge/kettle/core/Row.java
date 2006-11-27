@@ -484,6 +484,10 @@ public class Row implements XMLInterface, Comparable, Serializable
 			// get all values in the row
 			for (int i=0;i<size;i++) addValue(new Value(meta.getValue(i), dis));
 		}
+		catch(KettleEOFException e)
+        {
+            throw new KettleEOFException("EOF reached while reading row", e);
+        }
 		catch(Exception e)
 		{
 			throw new KettleFileException("ROW Error reading row info",e);

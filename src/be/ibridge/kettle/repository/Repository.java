@@ -1088,7 +1088,7 @@ public class Repository
 		table.addValue(new Value("DATABASE_NAME", dbname));
 		table.addValue(new Value("PORT", (long)Const.toInt(port, -1)));
 		table.addValue(new Value("USERNAME", user));
-		table.addValue(new Value("PASSWORD", "Encrypted " + Encr.encryptPassword(pass)));
+		table.addValue(new Value("PASSWORD", Encr.encryptPasswordIfNotUsingVariables(pass)));
 		table.addValue(new Value("SERVERNAME", servername));
 		table.addValue(new Value("DATA_TBS", data_tablespace));
 		table.addValue(new Value("INDEX_TBS", index_tablespace));
@@ -1625,7 +1625,7 @@ public class Repository
 		table.addValue(new Value("DATABASE_NAME", dbname));
 		table.addValue(new Value("PORT", (long)Const.toInt(port, -1)));
 		table.addValue(new Value("USERNAME", user));
-		table.addValue(new Value("PASSWORD", "Encrypted " + Encr.encryptPassword(pass)));
+		table.addValue(new Value("PASSWORD", Encr.encryptPasswordIfNotUsingVariables(pass)));
 		table.addValue(new Value("SERVERNAME", servername));
 		table.addValue(new Value("DATA_TBS", data_tablespace));
 		table.addValue(new Value("INDEX_TBS", index_tablespace));

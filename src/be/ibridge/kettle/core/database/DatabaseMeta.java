@@ -250,10 +250,7 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
      * The value to store in the attributes so that an empty value doesn't get lost...
      */
     public static final String EMPTY_OPTIONS_STRING = "><EMPTY><";
-    
-    /** The word that is put before a password to indicate an encrypted form.  If this word is not present, the password is considered to be NOT encrypted */
-    public  static final String PASSWORD_ENCRYPTED_PREFIX = "Encrypted ";
-    
+        
 	/**
 	 * Construct a new database connections.  Note that not all these parameters are not allways mandatory.
 	 * 
@@ -389,19 +386,10 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 				setDBName( r.getString("DATABASE_NAME", "") );
 				setDBPort( r.getString("PORT", "") );
 				setUsername( r.getString("USERNAME", "") );
-				setPassword( r.getString("PASSWORD", "") );
+				setPassword( Encr.decryptPasswordOptionallyEncrypted( r.getString("PASSWORD", "") ) );
 				setServername( r.getString("SERVERNAME", "") );
 				setDataTablespace( r.getString("DATA_TBS", "") );
 				setIndexTablespace( r.getString("INDEX_TBS", "") );
-				
-				if (getPassword()!=null && getPassword().startsWith("Encrypted ")) 
-				{
-					setPassword( Encr.decryptPassword(getPassword().substring(10)) );
-				}
-				else
-				{ 
-					setPassword( Encr.decryptPassword(getPassword()) );
-				}
                 
                 // Also, load all the properties we can find...
 				long ids[] = rep.getDatabaseAttributeIDs(id_database);
@@ -882,16 +870,11 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 			setDBName( XMLHandler.getTagValue(con, "database") );
 			setDBPort( XMLHandler.getTagValue(con, "port") );
 			setUsername( XMLHandler.getTagValue(con, "username") );
-			setPassword( XMLHandler.getTagValue(con, "password") );
+			setPassword( Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(con, "password") ) );
 			setServername( XMLHandler.getTagValue(con, "servername") );
 			setDataTablespace( XMLHandler.getTagValue(con, "data_tablespace") );
 			setIndexTablespace( XMLHandler.getTagValue(con, "index_tablespace") );
 				
-			if (getPassword()!=null && getPassword().startsWith("Encrypted ")) 
-			{
-				setPassword( Encr.decryptPassword(getPassword().substring(10)) );
-			} 
-            
             // Also, read the database attributes...
             Node attrsnode = XMLHandler.getSubNode(con, "attributes");
             if (attrsnode!=null)
@@ -925,21 +908,9 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 		retval.append("    "+XMLHandler.addTagValue("port",       getDatabasePortNumberString()));
 		retval.append("    "+XMLHandler.addTagValue("username",   getUsername()));
         
-        String encrPassword = "";
-        List varList = new ArrayList();
-        StringUtil.getUsedVariables(getPassword(), varList, true);
-        if (varList.size()==0)
-        {
-            encrPassword = PASSWORD_ENCRYPTED_PREFIX+Encr.encryptPassword(getPassword());
-        }
-        else
-        {
-            encrPassword = getPassword();
-        }
-        
-        retval.append("    "+XMLHandler.addTagValue("password",  encrPassword));	
-		retval.append("    "+XMLHandler.addTagValue("servername", getServername()));
-		retval.append("    "+XMLHandler.addTagValue("data_tablespace", getDataTablespace()));
+        retval.append("    "+XMLHandler.addTagValue("password",         Encr.encryptPasswordIfNotUsingVariables(getPassword())));	
+		retval.append("    "+XMLHandler.addTagValue("servername",       getServername()));
+		retval.append("    "+XMLHandler.addTagValue("data_tablespace",  getDataTablespace()));
 		retval.append("    "+XMLHandler.addTagValue("index_tablespace", getIndexTablespace()));
         
         retval.append("    <attributes>"+Const.CR);
@@ -2156,7 +2127,12 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         databaseInterface.setPartitioningInformation(partitionInfo);
     }
     
-    private PartitionDatabaseMeta getPartitionMeta(String partitionId)
+    /**
+     * Finds the partition metadata for the given partition iD
+     * @param partitionId The partition ID to look for
+     * @return the partition database metadata or null if nothing was found.
+     */
+    public PartitionDatabaseMeta getPartitionMeta(String partitionId)
     {
         PartitionDatabaseMeta[] partitionInfo = getPartitioningInformation();
         for (int i=0;i<partitionInfo.length;i++)

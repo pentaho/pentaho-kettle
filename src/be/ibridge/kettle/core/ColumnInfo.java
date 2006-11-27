@@ -53,6 +53,7 @@ public class ColumnInfo
 	private SelectionAdapter selButton;
     
     private boolean usingVariables;
+    private boolean passwordField;
     
 
 	// Simple String
@@ -338,5 +339,21 @@ public class ColumnInfo
     public void setUsingVariables(boolean usingVariables)
     {
         this.usingVariables = usingVariables;
+    }
+
+    /**
+     * @return the password
+     */
+    public boolean isPasswordField()
+    {
+        return passwordField;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPasswordField(boolean password)
+    {
+        this.passwordField = password;
     }
 }

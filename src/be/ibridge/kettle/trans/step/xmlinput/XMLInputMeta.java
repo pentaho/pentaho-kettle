@@ -558,8 +558,13 @@ public class XMLInputMeta extends BaseStepMeta implements StepMetaInterface
 		{
 			final String onefile = realfile[i];
 			final String onemask = realmask[i];
+            
+            if (onefile==null)
+            {
+                System.out.println("empty file???");
+            }
 			
-			if (onemask!=null && onemask.length()>0) // A directory & a wildcard
+			if (!Const.isEmpty(onemask)) // A directory & a wildcard
 			{
 				File file = new File(onefile);
 				try

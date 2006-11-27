@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.Encr;
 import be.ibridge.kettle.core.value.Value;
 
 
@@ -93,7 +94,15 @@ public abstract class BaseDatabaseMeta implements Cloneable
      */
     public static final String ATTRIBUTE_CLUSTER_DBNAME_PREFIX = "CLUSTER_DBNAME_";
 
+    /**
+     * The clustering database username prefix
+     */
+    public static final String ATTRIBUTE_CLUSTER_USERNAME_PREFIX = "CLUSTER_USERNAME_";
     
+    /**
+     * The clustering database password prefix
+     */
+    public static final String ATTRIBUTE_CLUSTER_PASSWORD_PREFIX = "CLUSTER_PASSWORD_";
     
 
 	private String name;
@@ -1004,7 +1013,11 @@ public abstract class BaseDatabaseMeta implements Cloneable
             String hostname    = attributes.getProperty(ATTRIBUTE_CLUSTER_HOSTNAME_PREFIX+nr);
             String port        = attributes.getProperty(ATTRIBUTE_CLUSTER_PORT_PREFIX+nr);
             String dbName      = attributes.getProperty(ATTRIBUTE_CLUSTER_DBNAME_PREFIX+nr);
+            String username    = attributes.getProperty(ATTRIBUTE_CLUSTER_USERNAME_PREFIX+nr);
+            String password    = attributes.getProperty(ATTRIBUTE_CLUSTER_PASSWORD_PREFIX+nr);
             clusterInfo[nr] = new PartitionDatabaseMeta(partitionId, hostname, port, dbName);
+            clusterInfo[nr].setUsername(username);
+            clusterInfo[nr].setPassword( Encr.decryptPasswordOptionallyEncrypted(password) );
         }
         
         return clusterInfo;
@@ -1023,6 +1036,8 @@ public abstract class BaseDatabaseMeta implements Cloneable
             attributes.put(ATTRIBUTE_CLUSTER_HOSTNAME_PREFIX+nr, Const.NVL(meta.getHostname(), ""));
             attributes.put(ATTRIBUTE_CLUSTER_PORT_PREFIX+nr, Const.NVL(meta.getPort(), ""));
             attributes.put(ATTRIBUTE_CLUSTER_DBNAME_PREFIX+nr, Const.NVL(meta.getDatabaseName(), ""));
+            attributes.put(ATTRIBUTE_CLUSTER_USERNAME_PREFIX+nr, Const.NVL(meta.getUsername(), ""));
+            attributes.put(ATTRIBUTE_CLUSTER_PASSWORD_PREFIX+nr, Const.NVL( Encr.encryptPasswordIfNotUsingVariables(meta.getPassword()), ""));
         }
     } 
 }

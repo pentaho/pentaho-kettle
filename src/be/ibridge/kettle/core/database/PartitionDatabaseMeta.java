@@ -13,6 +13,8 @@ public class PartitionDatabaseMeta
     String hostname;
     String port;
     String databaseName;
+    String username;
+    String password;
     
     public PartitionDatabaseMeta()
     {
@@ -96,6 +98,38 @@ public class PartitionDatabaseMeta
     public void setPort(String port)
     {
         this.port = port;
+    }
+
+    /**
+     * @return the password
+     */
+    public String getPassword()
+    {
+        return password;
+    }
+
+    /**
+     * @param password the password to set
+     */
+    public void setPassword(String password)
+    {
+        this.password = password;
+    }
+
+    /**
+     * @return the username
+     */
+    public String getUsername()
+    {
+        return username;
+    }
+
+    /**
+     * @param username the username to set
+     */
+    public void setUsername(String username)
+    {
+        this.username = username;
     }
     
     

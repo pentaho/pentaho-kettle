@@ -1579,7 +1579,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 		}
 		catch(EOFException e)
 		{
-			throw new KettleEOFException("End of file reached", e);
+			throw new KettleEOFException("End of file reached while reading value", e);
 		}
 		catch(Exception e)
 		{

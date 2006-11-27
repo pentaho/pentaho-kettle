@@ -75,6 +75,18 @@ public class SetVariable extends BaseStep implements StepInterface
                 
                 String varname = meta.getVariableName()[i];
                 
+                if (Const.isEmpty(varname))
+                {
+                    if (Const.isEmpty(value))
+                    {
+                        throw new KettleException("Variable name nor value was specified on line #"+(i+1));
+                    }
+                    else
+                    {
+                        throw new KettleException("There was no variable name specified for value ["+value+"]");
+                    }
+                }
+                
                 // OK, where do we set this value...
                 switch(meta.getVariableType()[i])
                 {

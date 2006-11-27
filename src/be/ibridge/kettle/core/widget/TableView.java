@@ -80,6 +80,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.TransAction;
+import be.ibridge.kettle.core.dialog.DatabaseDialog;
 import be.ibridge.kettle.core.dialog.EnterConditionDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.value.Value;
@@ -1786,7 +1787,8 @@ public class TableView extends Composite
         String content = row.getText(colnr) + (extra!=0?""+extra:"");
         String tooltip = columns[colnr-1].getToolTip();
         
-        final boolean useVariables = columns[colnr-1].isUsingVariables();
+        final boolean useVariables  = columns[colnr-1].isUsingVariables();
+        final boolean passwordField = columns[colnr-1].isPasswordField();
 
         final ModifyListener modifyListener = new ModifyListener() 
             {
@@ -1825,7 +1827,7 @@ public class TableView extends Composite
                     }
                 };
             
-            TextVar textWidget = new TextVar(table, SWT.NONE, getCaretPositionInterface, insertTextInterface);
+            final TextVar textWidget = new TextVar(table, SWT.NONE, getCaretPositionInterface, insertTextInterface);
 
             text = textWidget;
             textWidget.setText(content); 
@@ -1840,6 +1842,19 @@ public class TableView extends Composite
             if (tooltip!=null) textWidget.setToolTipText(tooltip); else textWidget.setToolTipText("");   
             textWidget.addTraverseListener(lsTraverse);
             textWidget.addFocusListener(lsFocusText);
+            
+            if (passwordField)
+            {
+                textWidget.setEchoChar('*');
+                textWidget.addModifyListener(new ModifyListener()
+                    {
+                        public void modifyText(ModifyEvent arg0)
+                        {
+                            DatabaseDialog.checkPasswordVisible(textWidget.getTextWidget());
+                        }
+                    }
+                );
+            }
         }
         else
         {
@@ -1854,7 +1869,14 @@ public class TableView extends Composite
             // Make the column larger so we can still see the string we're entering...
             textWidget.addModifyListener( modifyListener );
             if (select_text) textWidget.selectAll();
-            if (tooltip!=null) textWidget.setToolTipText(tooltip); else textWidget.setToolTipText("");      
+            if (tooltip!=null) textWidget.setToolTipText(tooltip); else textWidget.setToolTipText("");    
+            textWidget.addTraverseListener(lsTraverse);
+            textWidget.addFocusListener(lsFocusText);
+            if (passwordField)
+            {
+                textWidget.setEchoChar('*');
+
+            }
         }
         props.setLook(text, Props.WIDGET_STYLE_TABLE);
 

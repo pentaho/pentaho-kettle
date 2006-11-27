@@ -16,6 +16,10 @@
  
 package be.ibridge.kettle.core;
 import java.math.BigInteger;
+import java.util.ArrayList;
+import java.util.List;
+
+import be.ibridge.kettle.core.util.StringUtil;
 
 /**
  * This class handles basic encryption of passwords in Kettle.
@@ -111,5 +115,43 @@ public class Encr
 			return "";
 		}
 	}
+    
+    /** The word that is put before a password to indicate an encrypted form.  If this word is not present, the password is considered to be NOT encrypted */
+    public  static final String PASSWORD_ENCRYPTED_PREFIX = "Encrypted ";
+    
+    /**
+     * Encrypt the password, but only if the password doesn't contain any variables.
+     * @param password The password to encrypt
+     * @return The encrypted password or the  
+     */
+    public static final String encryptPasswordIfNotUsingVariables(String password)
+    {
+        String encrPassword = "";
+        List varList = new ArrayList();
+        StringUtil.getUsedVariables(password, varList, true);
+        if (varList.size()==0)
+        {
+            encrPassword = PASSWORD_ENCRYPTED_PREFIX+Encr.encryptPassword(password);
+        }
+        else
+        {
+            encrPassword = password;
+        }
+        
+        return encrPassword;
+    }
 
+    /**
+     * Decrypts a password if it contains the prefix "Encrypted "
+     * @param password The encrypted password
+     * @return The decrypted password or the original value if the password doesn't start with "Encrypted "
+     */
+    public static final String decryptPasswordOptionallyEncrypted(String password)
+    {
+        if (!Const.isEmpty(password) && password.startsWith(PASSWORD_ENCRYPTED_PREFIX)) 
+        {
+            return Encr.decryptPassword( password.substring(PASSWORD_ENCRYPTED_PREFIX.length()) );
+        } 
+        return password;
+    }
 }

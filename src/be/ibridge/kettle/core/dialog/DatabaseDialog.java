@@ -309,7 +309,7 @@ public class DatabaseDialog extends Dialog
             {
                 public void modifyText(ModifyEvent e)
                 {
-                    checkPasswordVisible();
+                    checkPasswordVisible(wPassword.getTextWidget());
                 }
             }
         );
@@ -346,18 +346,31 @@ public class DatabaseDialog extends Dialog
 		return connectionName;
 	}
 	
-    public void checkPasswordVisible()
+    public static final void checkPasswordVisible(Text wPassword)
     {
         String password = wPassword.getText();
         java.util.List list = new ArrayList();
         StringUtil.getUsedVariables(password, list, true);
-        if (list.size()==0)
+        // ONLY show the variable in clear text if there is ONE variable used
+        // Also, it has to be the only string in the field.
+        //
+        
+        if (list.size()!=1)
         {
             wPassword.setEchoChar('*');
         }
         else
         {
-            wPassword.setEchoChar('\0'); // Show it all...
+            if ( (password.startsWith(StringUtil.UNIX_OPEN) && password.endsWith(StringUtil.UNIX_CLOSE)) ||
+                 (password.startsWith(StringUtil.WINDOWS_OPEN) && password.endsWith(StringUtil.WINDOWS_CLOSE) )
+               )
+            {
+                wPassword.setEchoChar('\0'); // Show it all...
+            }
+            else
+            {
+                wPassword.setEchoChar('*');
+            }
         }
     }
 
@@ -1061,10 +1074,15 @@ public class DatabaseDialog extends Dialog
                 new ColumnInfo("Hostname",      ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
                 new ColumnInfo("Port",          ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
                 new ColumnInfo("Database name", ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
+                new ColumnInfo("Username",      ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
+                new ColumnInfo("Password",      ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
             };
 
         colinfo[0].setToolTip("The extra parameters to set in the URL to connectect to the database");
         colinfo[1].setToolTip("The values to set for the parameters");
+        
+        colinfo[5].setPasswordField(true);
+        colinfo[5].setUsingVariables(true);
 
         wCluster = new TableView(wClusterComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props);
         props.setLook(wCluster);
@@ -1148,7 +1166,7 @@ public class DatabaseDialog extends Dialog
         wDriverClass.setText( connection.getAttributes().getProperty(GenericDatabaseMeta.ATRRIBUTE_CUSTOM_DRIVER_CLASS, ""));
         
         getOptionsData();
-        checkPasswordVisible();
+        checkPasswordVisible(wPassword.getTextWidget());
         
         wSQL.setText( NVL(connection.getConnectSQL(),"") );
         
@@ -1171,6 +1189,8 @@ public class DatabaseDialog extends Dialog
             tableItem.setText(2, Const.NVL(meta.getHostname(), ""));
             tableItem.setText(3, Const.NVL(meta.getPort(), ""));
             tableItem.setText(4, Const.NVL(meta.getDatabaseName(), ""));
+            tableItem.setText(5, Const.NVL(meta.getUsername(), ""));
+            tableItem.setText(5, Const.NVL(meta.getPassword(), ""));
         }
         wCluster.removeEmptyRows();
         wCluster.setRowNums();
@@ -1433,7 +1453,11 @@ public class DatabaseDialog extends Dialog
             String hostname    = tableItem.getText(2);
             String port        = tableItem.getText(3);
             String dbName      = tableItem.getText(4);
+            String username    = tableItem.getText(5);
+            String password    = tableItem.getText(6);
             clusterInfo[i] = new PartitionDatabaseMeta(partitionId, hostname, port, dbName);
+            clusterInfo[i].setUsername(username);
+            clusterInfo[i].setPassword(password);
         }
         databaseMeta.setPartitioningInformation(clusterInfo);
 	}

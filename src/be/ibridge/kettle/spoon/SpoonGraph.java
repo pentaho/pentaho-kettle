@@ -1352,6 +1352,19 @@ public class SpoonGraph extends Canvas implements Redrawable
                     spoon.editPartitioning(stepMeta);
                 }
             });
+            
+            /*
+             * Clustering
+             */
+            MenuItem miCluster = new MenuItem(mPop, SWT.NONE);
+            miCluster.setText(Messages.getString("SpoonGraph.PopupMenu.Clustering")); //$NON-NLS-1$
+            miCluster.addSelectionListener(new SelectionAdapter()
+            {
+                public void widgetSelected(SelectionEvent e)
+                {
+                    spoon.editClustering(stepMeta);
+                }
+            });
 
             if (sels == 2)
             {

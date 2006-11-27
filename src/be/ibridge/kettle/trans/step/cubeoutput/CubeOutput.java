@@ -91,11 +91,9 @@ public class CubeOutput extends BaseStep implements StepInterface
 				r.write(data.dos);
 				first=false;
 			}
-			else
-			{
-				// Write data to the cube file...
-				r.writeData(data.dos);
-			}
+            
+			// Write data to the cube file...
+			r.writeData(data.dos);
 		}
 		catch(Exception e)
 		{

@@ -18,7 +18,7 @@ public class StepPartitioningMeta implements XMLInterface
     public static final int PARTITIONING_METHOD_MOD  = 1;
     
     public static final String[] methodCodes        = new String[] { "none", "Mod" };
-    public static final String[] methodDescriptions = new String[] { "none", "Rest of division" };
+    public static final String[] methodDescriptions = new String[] { "None", "Remainder of division" };
 
     private int             method;
     private String          fieldName;

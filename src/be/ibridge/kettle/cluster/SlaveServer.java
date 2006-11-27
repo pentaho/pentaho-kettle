@@ -1,8 +1,5 @@
 package be.ibridge.kettle.cluster;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
 import org.apache.commons.httpclient.methods.PostMethod;
@@ -16,13 +13,11 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
-import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.repository.Repository;
 
 public class SlaveServer extends ChangedFlag implements Cloneable
 {
     private static LogWriter log = LogWriter.getInstance();
-    public static final String PASSWORD_ENCRYPTED_PREFIX = "Encrypted ";
     
     private String hostname;
     private String port;
@@ -54,11 +49,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         this.hostname   = XMLHandler.getTagValue(slaveNode, "hostname");
         this.port       = XMLHandler.getTagValue(slaveNode, "port");
         this.username   = XMLHandler.getTagValue(slaveNode, "username");
-        this.password   = XMLHandler.getTagValue(slaveNode, "password");
-        if (!Const.isEmpty(password) && password.startsWith(PASSWORD_ENCRYPTED_PREFIX))
-        {
-            password = Encr.decryptPassword(password.substring(PASSWORD_ENCRYPTED_PREFIX.length()+1));
-        }
+        this.password   = Encr.decryptPasswordOptionallyEncrypted( XMLHandler.getTagValue(slaveNode, "password") );
         this.proxyHostname = XMLHandler.getTagValue(slaveNode, "proxy_hostname");
         this.proxyPort     = XMLHandler.getTagValue(slaveNode, "proxy_port");
         this.nonProxyHosts = XMLHandler.getTagValue(slaveNode, "non_proxy_hosts");
@@ -72,22 +63,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         xml.append(XMLHandler.addTagValue("hostname", hostname, false));
         xml.append(XMLHandler.addTagValue("port",     port, false));
         xml.append(XMLHandler.addTagValue("username", username, false));
+        xml.append(XMLHandler.addTagValue("password", Encr.encryptPasswordIfNotUsingVariables(password), false));
         xml.append(XMLHandler.addTagValue("proxy_hostname", proxyHostname, false));
         xml.append(XMLHandler.addTagValue("proxy_port", proxyPort, false));
         xml.append(XMLHandler.addTagValue("non_proxy_hosts", nonProxyHosts, false));
-
-        String encrPassword = "";
-        List varList = new ArrayList();
-        StringUtil.getUsedVariables(password, varList, true);
-        if (varList.size()==0 && !Const.isEmpty(password))
-        {
-            encrPassword = PASSWORD_ENCRYPTED_PREFIX+Encr.encryptPassword(password);
-        }
-        else
-        {
-            encrPassword = getPassword();
-        }
-        xml.append(XMLHandler.addTagValue("password", encrPassword, false));
 
         xml.append("</slaveserver>");
 

@@ -1271,7 +1271,7 @@ public class Spoon implements AddUndoPositionInterface
                 if (objects[i] instanceof SharedObjectInterface)
                 {
                     SharedObjectInterface sharedObject = (SharedObjectInterface) objects[i];
-                    sharedObject.setShared(sharedObject.isShared());
+                    sharedObject.setShared(true);
                 }
             }
         }
@@ -2523,7 +2523,7 @@ public class Spoon implements AddUndoPositionInterface
             transMeta.setDatabases(new ArrayList());
 
             // Read them from the new repository.
-            readDatabases(); 
+            readDatabases(true); 
             
             /*
             for (int i=0;i<transMeta.nrDatabases();i++)
@@ -2653,9 +2653,9 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
-    public void readDatabases()
+    public void readDatabases(boolean overWriteShared)
     {
-        transMeta.readDatabases(rep);
+        transMeta.readDatabases(rep, overWriteShared);
     }
 
     public void closeRepository()
@@ -2746,7 +2746,7 @@ public class Spoon implements AddUndoPositionInterface
         // Load common database info from active repository...
         if (rep!=null)
         {
-            transMeta.readDatabases(rep);
+            transMeta.readDatabases(rep, true);
         }
     }
     
@@ -5067,6 +5067,35 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
     
+    /**
+     * Select a clustering schema for this step.
+     * 
+     * @param stepMeta The step to set the clustering schema for.
+     */
+    public void editClustering(StepMeta stepMeta)
+    {
+        int idx = -1;
+        if (stepMeta.getClusterSchema()!=null)
+        {
+            idx = transMeta.getClusterSchemas().indexOf( stepMeta.getClusterSchema() );
+        }
+        String[] clusterSchemaNames = transMeta.getClusterSchemaNames();
+        EnterSelectionDialog dialog = new EnterSelectionDialog(shell, clusterSchemaNames, "Cluster schema", "Select the cluster schema to use (cancel=clear)");
+        String schemaName = dialog.open(idx);
+        if (schemaName==null)
+        {
+            stepMeta.setClusterSchema(null);
+        }
+        else
+        {
+            ClusterSchema clusterSchema = transMeta.findClusterSchema(schemaName);
+            stepMeta.setClusterSchema( clusterSchema );
+        }
+        
+        refreshTree(true);
+        refreshGraph();
+    }
+
     
     public void createKettleArchive()
     {

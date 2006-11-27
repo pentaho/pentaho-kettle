@@ -1694,7 +1694,7 @@ public class TransMeta implements XMLInterface
      *
      * @param rep The repository to load the database connections from.
      */
-    public void readDatabases(Repository rep)
+    public void readDatabases(Repository rep, boolean overWriteShared)
     {
         try
         {
@@ -1703,12 +1703,12 @@ public class TransMeta implements XMLInterface
             {
                 DatabaseMeta databaseMeta = new DatabaseMeta(rep, dbids[i]);
                 DatabaseMeta check = findDatabase(databaseMeta.getName()); // Check if there already is one in the transformation
-                if (check==null) // We only add, never overwrite database connections. 
+                if (check==null || overWriteShared) // We only add, never overwrite database connections. 
                 {
                     if (databaseMeta.getName() != null)
                     {
-                        addDatabase(databaseMeta);
-                        databaseMeta.setChanged(false);
+                        addOrReplaceDatabase(databaseMeta);
+                        if (!overWriteShared) databaseMeta.setChanged(false);
                     }
                 }
             }
@@ -1779,6 +1779,9 @@ public class TransMeta implements XMLInterface
                 feedbackSize = (int) rep.getTransAttributeInteger(getID(), 0, "FEEDBACK_SIZE");
                 
                 // Also load the partitioning from the attributes...
+                // Backward compatibility.
+                // TODO: remove in 2.4.0 final.
+                // 
                 int nrSchemas = rep.countNrTransAttributes(getID(), "SCHEMA_NAME");
                 for (int i=0;i<nrSchemas;i++)
                 {
@@ -1890,7 +1893,7 @@ public class TransMeta implements XMLInterface
                 // Load the common database connections
 
                 if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTheAvailableDatabaseTask.Title")); //$NON-NLS-1$
-                readDatabases(rep);
+                readDatabases(rep, true);
                 if (monitor != null) monitor.worked(1);
 
                 // Load the notes...
@@ -1909,23 +1912,9 @@ public class TransMeta implements XMLInterface
                     log.logDetailed(toString(), Messages.getString("TransMeta.Log.LoadingStepWithID") + stepids[i]); //$NON-NLS-1$
                     if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingStepTask.Title") + (i + 1) + "/" + (stepids.length)); //$NON-NLS-1$ //$NON-NLS-2$
                     StepMeta stepMeta = new StepMeta(rep, stepids[i], databases, counters, partitionSchemas);
-                    StepMeta check = findStep(stepMeta.getName());
-                    if (check==null)
-                    {
-                        addStep(stepMeta);
-                    }
-                    else
-                    {
-                        if (check.isShared())
-                        {
-                            check.setDraw(stepMeta.isDrawn());
-                            check.setLocation(stepMeta.getLocation());
-                        }
-                        else
-                        {
-                            addOrReplaceStep(stepMeta);
-                        }
-                    }
+                    // In this case, we just add or replace the shared steps.
+                    // The repository is considered "more central"
+                    addOrReplaceStep(stepMeta);
                     
                     if (monitor != null) monitor.worked(1);
                 }
@@ -1951,14 +1940,36 @@ public class TransMeta implements XMLInterface
                 for (int i = 0; i < partitionSchemaIDs.length; i++)
                 {
                     PartitionSchema partitionSchema = new PartitionSchema(rep, partitionSchemaIDs[i]);
-                    partitionSchemas.add(partitionSchema);
+                    // In this case, we just add or replace the shared schemas.
+                    // The repository is considered "more central"
+                    addOrReplacePartitionSchema(partitionSchema);
+                }
+                
+                // Have all step partitioning meta-data reference the correct schemas that we just loaded
+                // 
+                for (int i = 0; i < nrSteps(); i++)
+                {
+                    StepPartitioningMeta stepPartitioningMeta = getStep(i).getStepPartitioningMeta();
+                    if (stepPartitioningMeta!=null)
+                    {
+                        stepPartitioningMeta.setPartitionSchemaAfterLoading(partitionSchemas);
+                    }
                 }
                 
                 long[] clusterSchemaIDs = rep.getClusterSchemaIDs(getID());
                 for (int i = 0; i < clusterSchemaIDs.length; i++)
                 {
                     ClusterSchema clusterSchema = new ClusterSchema(rep, clusterSchemaIDs[i]);
-                    clusterSchemas.add(clusterSchema);
+                    // In this case, we just add or replace the shared schemas.
+                    // The repository is considered "more central"
+                    addOrReplaceClusterSchema(clusterSchema);
+                }
+                
+                // Have all step clustering schema meta-data reference the correct cluster schemas that we just loaded
+                // 
+                for (int i = 0; i < nrSteps(); i++)
+                {
+                    getStep(i).setClusterSchemaAfterLoading(clusterSchemas);
                 }
 
 
@@ -2289,7 +2300,7 @@ public class TransMeta implements XMLInterface
             // Read all the database connections from the repository to make sure that we don't overwrite any there by loading from XML.
             if (rep!=null)
             {
-                readDatabases(rep);
+                readDatabases(rep, true);
                 clearChanged();
             }
             
@@ -2528,6 +2539,13 @@ public class TransMeta implements XMLInterface
                 {
                     clusterSchemas.add(clusterSchema);
                 }
+            }
+            
+            // Have all step clustering schema meta-data reference the correct cluster schemas that we just loaded
+            // 
+            for (int i = 0; i < nrSteps(); i++)
+            {
+                getStep(i).setClusterSchemaAfterLoading(clusterSchemas);
             }
            
             String srowset = XMLHandler.getTagValue(infonode, "size_rowset"); //$NON-NLS-1$

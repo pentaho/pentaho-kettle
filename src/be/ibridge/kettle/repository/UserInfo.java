@@ -73,21 +73,11 @@ public class UserInfo
 				if (r!=null)
 				{
 					this.login  = r.searchValue("LOGIN").getString();
-					password    = r.searchValue("PASSWORD").getString();
+					password    = Encr.decryptPasswordOptionallyEncrypted( r.searchValue("PASSWORD").getString() );
 					name        = r.searchValue("NAME").getString();
 					description = r.searchValue("DESCRIPTION").getString();
 					enabled     = r.searchValue("ENABLED").getBoolean();
 					id_profile  = r.searchValue("ID_PROFILE").getInteger();
-					
-					if (password!=null && password.startsWith("Encrypted ")) 
-					{
-						password = Encr.decryptPassword(password.substring(10));
-					}
-					else
-					{ 
-						password = Encr.decryptPassword(password);
-					}
-					
 					profile = new ProfileMeta(rep, id_profile);
 				}
 				else

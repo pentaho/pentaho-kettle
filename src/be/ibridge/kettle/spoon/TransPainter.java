@@ -325,7 +325,6 @@ public class TransPainter
         }
         gc.setBackground(background);
         gc.drawRectangle(screen.x - 1, screen.y - 1, iconsize + 1, iconsize + 1);
-        //gc.setXORMode(true);
 
         Point namePosition = getNamePosition(gc, name, screen, iconsize );
         
@@ -338,9 +337,13 @@ public class TransPainter
         gc.setForeground(black);
         gc.drawText(name, namePosition.x, namePosition.y, SWT.DRAW_TRANSPARENT);
 
+        boolean clustered=false;
+        boolean partitioned=false;
+        
         StepPartitioningMeta meta = stepMeta.getStepPartitioningMeta();
         if (stepMeta.isPartitioned() && meta!=null)
         {
+            partitioned=true;
             String message = "P";
             if ( !Const.isEmpty(meta.getFieldName()) )
             {
@@ -350,22 +353,25 @@ public class TransPainter
                     if (schema.getPartitionIDs()!=null && schema.getPartitionIDs().length>0)
                     {
                         message+="x"+schema.getPartitionIDs().length;
-                        message+="("+meta.getFieldName()+")";
                     }
-                    else
-                    {
-                        message+="("+meta.getFieldName()+")";
-                    }
-                    message+=" : "+schema.getName();
                 }
             }
             
             gc.setBackground(background);
             gc.setForeground(black);
-            gc.drawText(message, screen.x - 12, screen.y - 12);
+            gc.drawText(message, screen.x - 5, screen.y - 5);
         }
-        else
-        if (stepMeta.getCopies() > 1)
+        if (stepMeta.getClusterSchema()!=null)
+        {
+            clustered=true;
+            String message = "C";
+            message+="x"+stepMeta.getClusterSchema().getSlaveServers().size();
+            
+            gc.setBackground(background);
+            gc.setForeground(black);
+            gc.drawText(message, screen.x - 5 + iconsize, screen.y - 5);
+        }
+        if (stepMeta.getCopies() > 1  && !partitioned && !clustered)
         {
             gc.setBackground(background);
             gc.setForeground(black);

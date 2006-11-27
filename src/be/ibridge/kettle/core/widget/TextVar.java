@@ -122,7 +122,7 @@ public class TextVar extends Composite
         
         // Put some decorations on it...
         FieldDecorationRegistry registry = FieldDecorationRegistry.getDefault();
-        registry.registerFieldDecoration("variable.field", "Enter CTRL-SPACE to insert a variable from a selection", GUIResource.getInstance().getImageVariable());
+        registry.registerFieldDecoration("variable.field", "Enter CTRL-SPACE to select a variable to insert", GUIResource.getInstance().getImageVariable());
         decoratedField.addFieldDecoration(registry.getFieldDecoration("variable.field"), SWT.TOP | SWT.RIGHT, false);
         
         FormData fdText = new FormData();
@@ -141,11 +141,12 @@ public class TextVar extends Composite
                 if (textField.getEchoChar()=='\0') // Can't show passwords ;-)
                 {
                     String tip = textField.getText();
-                    if (!Const.isEmpty(tip))
+                    if (!Const.isEmpty(tip) && !Const.isEmpty(toolTipText))
                     {
                         tip+=Const.CR+Const.CR+toolTipText;
                     }
-                    else
+                    
+                    if (Const.isEmpty(tip))
                     {
                         tip=toolTipText;
                     }

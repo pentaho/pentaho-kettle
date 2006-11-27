@@ -352,14 +352,38 @@ public class Database
             {
                 url = StringUtil.environmentSubstitute(databaseMeta.getURL()); 
             }
-			String userName = StringUtil.environmentSubstitute(databaseMeta.getUsername());
-			String password = StringUtil.environmentSubstitute(databaseMeta.getPassword());
+            
+            String clusterUsername=null;
+            String clusterPassword=null;
+            if (databaseMeta.isPartitioned() && !Const.isEmpty(partitionId))
+            {
+                // Get the cluster information...
+                PartitionDatabaseMeta partition = databaseMeta.getPartitionMeta(partitionId);
+                if (partition!=null)
+                {
+                    clusterUsername = partition.getUsername();
+                    clusterPassword = partition.getPassword();
+                }
+            }
+            
+			String username;
+            String password;
+            if (!Const.isEmpty(clusterUsername))
+            {
+                username = clusterUsername;
+                password = clusterPassword; 
+            }
+            else
+            {
+                username = StringUtil.environmentSubstitute(databaseMeta.getUsername());
+                password = StringUtil.environmentSubstitute(databaseMeta.getPassword());
+            }
 
             if (databaseMeta.supportsOptionsInURL())
             {
-                if (!Const.isEmpty(userName))
+                if (!Const.isEmpty(username))
                 {
-                    connection = DriverManager.getConnection(url, userName, password);
+                    connection = DriverManager.getConnection(url, username, password);
                 }
                 else
                 {
@@ -370,7 +394,7 @@ public class Database
             else
             {
                 Properties properties = databaseMeta.getConnectionProperties();
-                if (!Const.isEmpty(userName)) properties.put("user", userName);
+                if (!Const.isEmpty(username)) properties.put("user", username);
                 if (!Const.isEmpty(password)) properties.put("password", password);
                 
                 connection = DriverManager.getConnection(url, properties);

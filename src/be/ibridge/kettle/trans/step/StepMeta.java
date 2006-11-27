@@ -21,13 +21,14 @@ import java.util.List;
 
 import org.w3c.dom.Node;
 
+import be.ibridge.kettle.cluster.ClusterSchema;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.GUIPositionInterface;
-import be.ibridge.kettle.core.SharedObjectBase;
-import be.ibridge.kettle.core.SharedObjectInterface;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Point;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.SharedObjectBase;
+import be.ibridge.kettle.core.SharedObjectInterface;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -61,6 +62,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
 	private boolean       terminator;
 	
     private StepPartitioningMeta stepPartitioningMeta;
+    private ClusterSchema        clusterSchema;
+    private String               clusterSchemaName; // temporary to resolve later.
     
 	// private LogWriter log;
 		
@@ -84,6 +87,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
 		drawstep    = false;
 		description = null;
         stepPartitioningMeta = new StepPartitioningMeta();
+        clusterSchema = null; // non selected by default.
 	}
 
     /**
@@ -126,6 +130,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
         
         retval.append( stepPartitioningMeta.getXML() );
 		retval.append( stepMetaInterface.getXML() );
+        retval.append("     "+XMLHandler.addTagValue("cluster_schema", clusterSchema==null?"":clusterSchema.getName()));
 			
 		retval.append("    <GUI>"+Const.CR); //$NON-NLS-1$
 		retval.append("      <xloc>"+location.x+"</xloc>"+Const.CR); //$NON-NLS-1$ //$NON-NLS-2$
@@ -213,7 +218,8 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
             Node partNode = XMLHandler.getSubNode(stepnode, "partitioning");
             stepPartitioningMeta = new StepPartitioningMeta(partNode);
             
-	
+            clusterSchemaName = XMLHandler.getTagValue(stepnode, "cluster_schema"); // resolve to clusterSchema later
+
 			log.logDebug("StepMeta()", Messages.getString("StepMeta.Log.EndOfReadXML")); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 		catch(Exception e)
@@ -221,6 +227,20 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
 			throw new KettleXMLException(Messages.getString("StepMeta.Exception.UnableToLoadStepInfo"), e); //$NON-NLS-1$
 		}
 	}
+    
+    /**
+     * Resolves the name of the cluster loaded from XML/Repository to the correct clusterSchema object
+     * @param clusterSchemas The list of clusterSchemas to reference.
+     */
+    public void setClusterSchemaAfterLoading(List clusterSchemas)
+    {
+        if (clusterSchemaName==null) return;
+        for (int i=0;i<clusterSchemas.size();i++)
+        {
+            ClusterSchema look = (ClusterSchema) clusterSchemas.get(i);
+            if (look.getName().equals(clusterSchemaName)) clusterSchema=look;
+        }
+    }
 
 	public long getID()
 	{
@@ -267,7 +287,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
 	public int getCopies()
 	{
         // If the step is partitioned, that's going to determine the number of copies, nothing else...
-        if (isPartitioned())
+        if (isPartitioned() && getStepPartitioningMeta().getPartitionSchema()!=null)
         {
             String[] partitionIDs = getStepPartitioningMeta().getPartitionSchema().getPartitionIDs();
             if (partitionIDs!=null && partitionIDs.length>0) // these are the partitions the step can "reach"
@@ -520,6 +540,9 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
                 
                 // Get the partitioning as well...
                 stepPartitioningMeta = new StepPartitioningMeta(rep, getID());
+                
+                // Get the cluster schema name
+                clusterSchemaName = rep.getStepAttributeString(id_step, "cluster_schema");
 			}
 			else
 			{
@@ -561,6 +584,9 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
 			// This means we can now save the attributes of the step...
 			log.logDebug(toString(), Messages.getString("StepMeta.Log.SaveStepDetails")); //$NON-NLS-1$
 			stepMetaInterface.saveRep(rep, id_transformation, getID());
+            
+            // Save the clustering schema that was chosen.
+            rep.saveStepAttribute(id_transformation, getID(), "cluster_schema", clusterSchema==null?"":clusterSchema.getName());
 		}
 		catch(KettleException e)
 		{
@@ -623,5 +649,21 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
     public void setStepPartitioningMeta(StepPartitioningMeta stepPartitioningMeta)
     {
         this.stepPartitioningMeta = stepPartitioningMeta;
+    }
+
+    /**
+     * @return the clusterSchema
+     */
+    public ClusterSchema getClusterSchema()
+    {
+        return clusterSchema;
+    }
+
+    /**
+     * @param clusterSchema the clusterSchema to set
+     */
+    public void setClusterSchema(ClusterSchema clusterSchema)
+    {
+        this.clusterSchema = clusterSchema;
     }
 }
