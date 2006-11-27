@@ -754,7 +754,7 @@ public class SpoonGraph extends Canvas implements Redrawable
     	                        String stepID = steploader.getStepPluginID(tii);
     	                        StepPlugin stepPlugin = steploader.findStepPluginWithID(stepID);
     	                        String stepName = spoon.getTransMeta().getAlternativeStepname(stepPlugin.getDescription());
-    	                        stepMeta = new StepMeta(log, stepID, stepName, tii);
+    	                        stepMeta = new StepMeta(stepID, stepName, tii);
     	                        if (spoon.editStepInfo(stepMeta) != null)
     	                        {
     	                            spoon.getTransMeta().addStep(stepMeta);
