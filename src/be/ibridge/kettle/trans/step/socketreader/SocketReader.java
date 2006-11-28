@@ -24,6 +24,7 @@ import java.util.zip.GZIPOutputStream;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.exception.KettleEOFException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.Trans;
@@ -86,35 +87,16 @@ public class SocketReader extends BaseStep implements StepInterface
             }
             r = new Row(data.inputStream, data.row.size(), data.row);
             
-            // The ignored flag makes it through the pipe...
-            // It indicates the fact that we are done processing 
-            // All rows are read.
-            //
-            if (r.isIgnored())  
-            {
-                try
-                {
-                    // Now we want to signal back to the writer that we have finished here too.
-                    //
-                    logBasic("Sending finished string to writer (we have read all the data)");
-                    data.outputStream.writeUTF(STRING_FINISHED);
-                    logBasic("Finished string was sent.");
-                    
-                    setOutputDone(); // finished reading.
-                    return false;
-                }
-                catch(IOException ioe)
-                {
-                    logError("Unable to send 'finished' message back to server: "+ioe.toString());
-                    setErrors(1);
-                }
-            }
-            
             linesInput++;
             
             if (checkFeedback(linesInput)) logBasic(Messages.getString("SocketReader.Log.LineNumber")+linesInput); //$NON-NLS-1$
             
             putRow(r);
+        }
+        catch(KettleEOFException e)
+        {
+            setOutputDone(); // finished reading.
+            return false;
         }
         catch (Exception e)
         {
@@ -142,12 +124,8 @@ public class SocketReader extends BaseStep implements StepInterface
         // If we are here, it means all work is done
         // It's a lot of work to keep it all in sync for now we don't need to do that.
         // 
-        try { Thread.sleep(5000); } catch(InterruptedException e) {} // wait a bit before closing down everything.
-        logBasic("Closing input stream.");
         try { data.inputStream.close(); } catch(IOException e) {}
-        logBasic("Closing output stream.");
         try { data.outputStream.close(); } catch(IOException e) {}
-        logBasic("Closing socket.");
         try { data.socket.close(); } catch(IOException e) {}
     }
 	

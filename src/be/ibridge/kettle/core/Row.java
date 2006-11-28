@@ -481,8 +481,6 @@ public class Row implements XMLInterface, Comparable, Serializable
 	{
 		try
 		{
-            ignore = dis.readBoolean();
-
             // get all values in the row
 			for (int i=0;i<size;i++) 
             {
@@ -507,15 +505,6 @@ public class Row implements XMLInterface, Comparable, Serializable
 	 */
 	public boolean writeData(DataOutputStream dos) throws KettleFileException
 	{
-        try
-        {
-            dos.writeBoolean(ignore);
-        }
-        catch(IOException e)
-        {
-            throw new KettleFileException("Unable to write ignored flag to output stream", e);
-        }
-        
         // get all values in the row
 		for (int i=0;i<size();i++)
 		{

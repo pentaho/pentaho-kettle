@@ -33,7 +33,6 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 import be.ibridge.kettle.trans.step.StepInterface;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
-import be.ibridge.kettle.trans.step.socketreader.SocketReader;
 
 
 /**
@@ -61,24 +60,16 @@ public class SocketWriter extends BaseStep implements StepInterface
 		Row r=getRow();    // get row, set busy!
 		if (r==null)  // no more input to be expected...
 		{
-            // Send an ingored row to the output stream to indicate that we are done on this end.
-            //
-            data.lastRow.setIgnore();
-            data.lastRow.writeData(data.outputStream);
-            
 			setOutputDone();
 			return false;
 		}
         
-        data.lastRow = r;
-		
         try
         {
             if (first)
             {
                 data.clientSocket = data.serverSocket.accept(); 
-                data.socketOutputStream = data.clientSocket.getOutputStream();
-                data.outputStream = new DataOutputStream(new GZIPOutputStream(data.socketOutputStream));
+                data.outputStream = new DataOutputStream(new GZIPOutputStream(data.clientSocket.getOutputStream()));
                 data.inputStream = new DataInputStream(new GZIPInputStream(data.clientSocket.getInputStream()));
                 
                 r.write(data.outputStream);
@@ -130,46 +121,14 @@ public class SocketWriter extends BaseStep implements StepInterface
     
     public void dispose(StepMetaInterface smi, StepDataInterface sdi)
     {
-        try
-        {
-            // Make sure it all arrives at the reader before we do anything else.
-            data.outputStream.flush();
-
-            // Before closing the socket, read back the response "FINISHED" from the reader.
-            // This is sent upon getting EOF at the client
-            // That way we know that after this, we can close streams and sockets at will, all is done.
-            //
-            if (!stopped)
-            {
-                logBasic("Reading finished message from server.");
-                String response = data.inputStream.readUTF();
-                if (!response.equals(SocketReader.STRING_FINISHED))
-                {
-                    throw new IOException("Response ["+response+"] from client was not expected!");
-                }
-                logBasic("Finished message was read from server.");
-            }
-        }
-        catch(IOException e)
-        {
-            logError("Unable to read finished message from reader: "+e.toString());
-            logError(Const.getStackTracker(e));
-        }
-        finally
-        {
-            // Ignore errors, we don't care
-            // If we are here, it means all work is done
-            // It's a lot of work to keep it all in sync for now we don't need to do that.
-            // 
-            logBasic("Closing output stream.");
-            try { data.outputStream.close(); } catch(IOException e) {}
-            logBasic("Closing input stream.");
-            try { data.inputStream.close(); } catch(IOException e) {}
-            logBasic("Closing client socket.");
-            try { data.clientSocket.close(); } catch(IOException e) {}
-            logBasic("Closing server socket.");
-            try { data.serverSocket.close(); } catch(IOException e) {}
-        }
+        // Ignore errors, we don't care
+        // If we are here, it means all work is done
+        // It's a lot of work to keep it all in sync for now we don't need to do that.
+        // 
+        try { data.outputStream.close(); } catch(IOException e) {}
+        try { data.inputStream.close(); } catch(IOException e) {}
+        try { data.clientSocket.close(); } catch(IOException e) {}
+        try { data.serverSocket.close(); } catch(IOException e) {}
     }
 	
 	//
