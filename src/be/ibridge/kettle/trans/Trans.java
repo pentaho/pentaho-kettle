@@ -584,13 +584,22 @@ public class Trans
             log.logError(toString(), Messages.getString("Trans.Log.FailToInitializeAtLeastOneStep")); //$NON-NLS-1$
 
             // Halt the other threads as well, signal end-of-the line to the outside world...
+            // Also explicitely call dispose() to clean up resources opened during init();
             //
             for (int i=0;i<initThreads.length;i++)
             {
                 StepMetaDataCombi combi = initThreads[i].getCombi();
+                
+                // Dispose will overwrite the status, but we set it back right after this.
+                combi.step.dispose(combi.meta, combi.data);
+                
                 if (initThreads[i].isOk()) 
                 {
                     combi.data.setStatus(StepDataInterface.STATUS_HALTED);
+                }
+                else
+                {
+                    combi.data.setStatus(StepDataInterface.STATUS_STOPPED);
                 }
             }
             return false;
