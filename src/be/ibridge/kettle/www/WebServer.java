@@ -99,7 +99,8 @@ public class WebServer
     private Handler getRootContext(SecurityHandler securityHandler)
     {
         ContextHandler handler = createContext(GetRootHandler.CONTEXT_PATH, securityHandler);
-        handler.setContextPath("/");
+        handler.setContextPath(GetRootHandler.CONTEXT_PATH);
+        handler.setResourceBase(".");
         handler.addHandler(new GetRootHandler());
         return handler;
     }

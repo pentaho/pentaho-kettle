@@ -61,16 +61,24 @@ public class SocketWriter extends BaseStep implements StepInterface
 		Row r=getRow();    // get row, set busy!
 		if (r==null)  // no more input to be expected...
 		{
+            // Send an ingored row to the output stream to indicate that we are done on this end.
+            //
+            data.lastRow.setIgnore();
+            r.writeData(data.outputStream);
+            
 			setOutputDone();
 			return false;
 		}
+        
+        data.lastRow = r;
 		
         try
         {
             if (first)
             {
                 data.clientSocket = data.serverSocket.accept(); 
-                data.outputStream = new DataOutputStream(new GZIPOutputStream(data.clientSocket.getOutputStream()));
+                data.socketOutputStream = data.clientSocket.getOutputStream();
+                data.outputStream = new DataOutputStream(new GZIPOutputStream(data.socketOutputStream));
                 data.inputStream = new DataInputStream(new GZIPInputStream(data.clientSocket.getInputStream()));
                 
                 r.write(data.outputStream);
@@ -124,10 +132,6 @@ public class SocketWriter extends BaseStep implements StepInterface
     {
         try
         {
-            // Closing the output streams causes an EOF exception to be given when all data is read by the client.
-            //
-            data.outputStream.close();
-
             // Before closing the socket, read back the response "FINISHED" from the reader.
             // This is sent upon getting EOF at the client
             // That way we know that after this, we can close streams and sockets at will, all is done.
@@ -145,7 +149,7 @@ public class SocketWriter extends BaseStep implements StepInterface
         }
         catch(IOException e)
         {
-            logError("Unable to close streams : "+e.toString());
+            logError("Unable to read finished message from reader: "+e.toString());
             logError(Const.getStackTracker(e));
         }
         finally
@@ -154,6 +158,8 @@ public class SocketWriter extends BaseStep implements StepInterface
             // If we are here, it means all work is done
             // It's a lot of work to keep it all in sync for now we don't need to do that.
             // 
+            logBasic("Closing output stream.");
+            try { data.outputStream.close(); } catch(IOException e) {}
             logBasic("Closing input stream.");
             try { data.inputStream.close(); } catch(IOException e) {}
             logBasic("Closing client socket.");

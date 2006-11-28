@@ -1,13 +1,14 @@
 package be.ibridge.kettle.www;
 
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintStream;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.mortbay.jetty.HttpConnection;
+import org.mortbay.jetty.Request;
 import org.mortbay.jetty.handler.AbstractHandler;
 
 import be.ibridge.kettle.core.LogWriter;
@@ -30,11 +31,14 @@ public class GetRootHandler extends AbstractHandler
 
         if (log.isDebug()) log.logDebug(toString(), "Root requested");
 
+        Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
+        baseRequest.setHandled(true);
+
         response.setContentType("text/html");
-
-        OutputStream os = response.getOutputStream();
-        PrintStream out = new PrintStream(os);
-
+        response.setStatus(HttpServletResponse.SC_OK);
+        
+        PrintWriter out = response.getWriter();
+        
         out.println("<HTML>");
         out.println("<HEAD><TITLE>Kettle slave server</TITLE></HEAD>");
         out.println("<BODY>");
@@ -47,11 +51,8 @@ public class GetRootHandler extends AbstractHandler
         out.println("<p>");
         out.println("</BODY>");
         out.println("</HTML>");
-
+        
         out.flush();
-
-        // Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
-        // baseRequest.setHandled(true);
     }
 
     public String toString()

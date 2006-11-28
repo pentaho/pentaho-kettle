@@ -481,8 +481,13 @@ public class Row implements XMLInterface, Comparable, Serializable
 	{
 		try
 		{
-			// get all values in the row
-			for (int i=0;i<size;i++) addValue(new Value(meta.getValue(i), dis));
+            ignore = dis.readBoolean();
+
+            // get all values in the row
+			for (int i=0;i<size;i++) 
+            {
+                addValue(new Value(meta.getValue(i), dis));
+            }
 		}
 		catch(KettleEOFException e)
         {
@@ -502,12 +507,19 @@ public class Row implements XMLInterface, Comparable, Serializable
 	 */
 	public boolean writeData(DataOutputStream dos) throws KettleFileException
 	{
-		Value v;
-
-		// get all values in the row
+        try
+        {
+            dos.writeBoolean(ignore);
+        }
+        catch(IOException e)
+        {
+            throw new KettleFileException("Unable to write ignored flag to output stream", e);
+        }
+        
+        // get all values in the row
 		for (int i=0;i<size();i++)
 		{
-			v=getValue(i);
+			Value v=getValue(i);
 			v.writeData(dos);
 		}
 

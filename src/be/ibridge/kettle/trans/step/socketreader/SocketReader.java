@@ -24,7 +24,6 @@ import java.util.zip.GZIPOutputStream;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
-import be.ibridge.kettle.core.exception.KettleEOFException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.trans.Trans;
@@ -86,44 +85,36 @@ public class SocketReader extends BaseStep implements StepInterface
                 first=false;
             }
             r = new Row(data.inputStream, data.row.size(), data.row);
+            
+            // The ignored flag makes it through the pipe...
+            // It indicates the fact that we are done processing 
+            // All rows are read.
+            //
+            if (r.isIgnored())  
+            {
+                try
+                {
+                    // Now we want to signal back to the writer that we have finished here too.
+                    //
+                    logBasic("Sending finished string to writer (we have read all the data)");
+                    data.outputStream.writeUTF(STRING_FINISHED);
+                    logBasic("Finished string was sent.");
+                    
+                    setOutputDone(); // finished reading.
+                    return false;
+                }
+                catch(IOException ioe)
+                {
+                    logError("Unable to send 'finished' message back to server: "+ioe.toString());
+                    setErrors(1);
+                }
+            }
+            
             linesInput++;
             
             if (checkFeedback(linesInput)) logBasic(Messages.getString("SocketReader.Log.LineNumber")+linesInput); //$NON-NLS-1$
             
             putRow(r);
-        }
-        catch(KettleEOFException e)
-        {
-            // Send "Finished" message back to server.
-            try
-            {
-                logBasic("Sending finished string to writer (we have read all the data)");
-                data.outputStream.writeUTF(STRING_FINISHED);
-                logBasic("Finished string was sent.");
-                
-                logBasic("Waiting a few seconds before finishing this step.");
-                try
-                {
-                    // Allow a few seconds for the server to read this message and draw it's own conclusions.
-                    // If we don't sleep, this will fall through to the dispose() method and 
-                    // kill all connections, including the output stream.  
-                    // I'm sure there is a more ellegant way of doing this, but for now we wait a bit :-)
-                    //
-                    Thread.sleep(20000); 
-                }
-                catch(InterruptedException ie)
-                {
-                    
-                }
-            }
-            catch(IOException ioe)
-            {
-                logError("Unable to send 'finished' message back to server: "+ioe.toString());
-                setErrors(1);
-            }
-            
-            setOutputDone(); // finished reading.
-            return false;
         }
         catch (Exception e)
         {
@@ -151,6 +142,7 @@ public class SocketReader extends BaseStep implements StepInterface
         // If we are here, it means all work is done
         // It's a lot of work to keep it all in sync for now we don't need to do that.
         // 
+        try { Thread.sleep(5000); } catch(InterruptedException e) {} // wait a bit before closing down everything.
         logBasic("Closing input stream.");
         try { data.inputStream.close(); } catch(IOException e) {}
         logBasic("Closing output stream.");
