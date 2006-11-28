@@ -106,7 +106,7 @@ public class SocketReader extends BaseStep implements StepInterface
                     // kill all connections, including the output stream.  
                     // I'm sure there is a more ellegant way of doing this, but for now we wait a bit :-)
                     //
-                    Thread.sleep(3000); 
+                    Thread.sleep(20000); 
                 }
                 catch(InterruptedException ie)
                 {
