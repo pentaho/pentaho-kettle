@@ -21,6 +21,7 @@ import java.util.Locale;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
+import jxl.format.CellFormat;
 import jxl.write.DateFormat;
 import jxl.write.DateFormats;
 import jxl.write.DateTime;
@@ -32,6 +33,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.ResultFile;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -161,7 +163,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 				for (int i=0;i<r.size();i++)
 				{
 					v=r.getValue(i);
-					if(!writeField(v, null)) return false;
+					if(!writeField(v, null, i)) return false;
 				}
                 // go to the next line
                 data.positionX = 0;
@@ -176,7 +178,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 				{
 					v=r.getValue(data.fieldnrs[i]);
 					
-					if(!writeField(v, meta.getOutputFields()[i])) return false;
+					if(!writeField(v, meta.getOutputFields()[i], i)) return false;
 				}
 
                 // go to the next line
@@ -199,22 +201,23 @@ public class ExcelOutput extends BaseStep implements StepInterface
      * Write a value to Excel, increasing data.positionX with one afterwards.
      * @param v The value to write
      * @param excelField the field information (if any, otherwise : null)
-     * @param isHeader true if this is part of the header/footer
+     * @param column the excel column for getting the template format
      * @return
      */
-    private boolean writeField(Value v, ExcelField excelField)
+    private boolean writeField(Value v, ExcelField excelField, int column)
     {
-        return writeField(v, excelField, false);
+        return writeField(v, excelField, column, false);
     }
 
     /**
      * Write a value to Excel, increasing data.positionX with one afterwards.
      * @param v The value to write
      * @param excelField the field information (if any, otherwise : null)
+     * @param column the excel column for getting the template format
      * @param isHeader true if this is part of the header/footer
      * @return
      */
-	private boolean writeField(Value v, ExcelField excelField, boolean isHeader)
+	private boolean writeField(Value v, ExcelField excelField, int column, boolean isHeader)
 	{
 		try
 		{
@@ -222,6 +225,20 @@ public class ExcelOutput extends BaseStep implements StepInterface
             if (isHeader) hashName = "____header_field____"; // all strings, can map to the same format.
             
             WritableCellFormat cellFormat=(WritableCellFormat) data.formats.get(hashName);
+
+            // when template is used, take over the column format
+            if (cellFormat==null && meta.isTemplateEnabled() && !isHeader)
+            {
+            	try {
+            		if (column<data.templateColumns)
+            		{
+            			cellFormat=new WritableCellFormat(data.sheet.getColumnView(column).getFormat());
+            			data.formats.put(hashName, cellFormat); // save for next time around...
+            		}
+				} catch (RuntimeException e) {
+					//ignore if the column is not found, format as usual
+				}
+            }
             
             switch(v.getType())
             {
@@ -332,7 +349,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
                     String fieldName = meta.getOutputFields()[i].getName();
 
                     Value headerValue = new Value(fieldName, fieldName);
-                    writeField(headerValue, null, true);
+                    writeField(headerValue, null, i, true);
 				}
 			}
 			else
@@ -343,7 +360,7 @@ public class ExcelOutput extends BaseStep implements StepInterface
 					String fieldName = r.getValue(i).getName();
 
                     Value headerValue = new Value(fieldName, fieldName);
-                    writeField(headerValue, null, true);
+                    writeField(headerValue, null, i, true);
 				}
 			}
 		}
@@ -381,24 +398,43 @@ public class ExcelOutput extends BaseStep implements StepInterface
                 ws.setEncoding(meta.getEncoding());
             }
             
+            
             File file = new File(buildFilename());
 
 			// Add this to the result file names...
 			ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, file, getTransMeta().getName(), getStepname());
-			resultFile.setComment("This file was created with a text file output step");
+			resultFile.setComment("This file was created with an Excel output step");
             addResultFile(resultFile);
 
             // Create the workboook
-            data.workbook = Workbook.createWorkbook(file, ws);
-
-            // Create a sheet?
-            data.sheet = data.workbook.createSheet("Sheet1", 0);
-            data.sheet.setName("Sheet1");
+            if (!meta.isTemplateEnabled())
+            {
+            	data.workbook = Workbook.createWorkbook(file, ws);
+                // Create a sheet?
+                data.sheet = data.workbook.createSheet("Sheet1", 0);            	
+            } else {
+            	// create the workbook from the template
+            	Workbook tmpWorkbook=Workbook.getWorkbook(
+            			new File(StringUtil.environmentSubstitute(meta.getTemplateFileName())));
+            	data.workbook = Workbook.createWorkbook(file, tmpWorkbook);
+            	tmpWorkbook.close();
+            	// use only the first sheet as template
+            	data.sheet = data.workbook.getSheet(0);
+            	// save inital number of columns
+            	data.templateColumns = data.sheet.getColumns();
+            }
+            
+            data.sheet.setName("Sheet1"); //TODO: let the user modify the Sheetname
 
             // Set the initial position...
             
             data.positionX = 0;
-            data.positionY = 0;
+            if (meta.isTemplateEnabled() && meta.isTemplateAppend())
+            {
+            	data.positionY = data.sheet.getRows();
+            } else {
+            	data.positionY = 0;
+            }
 
 			retval=true;
 		}

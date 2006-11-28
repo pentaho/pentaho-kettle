@@ -121,6 +121,19 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 	private Text         wSplitEvery;
 	private FormData     fdlSplitEvery, fdSplitEvery;
 
+	private Label        wlTemplate;
+	private Button       wTemplate;
+	private FormData     fdlTemplate, fdTemplate;
+
+	private Label        wlTemplateAppend;
+	private Button       wTemplateAppend;
+	private FormData     fdlTemplateAppend, fdTemplateAppend;
+	
+	private Label        wlTemplateFilename;
+	private Button       wbTemplateFilename;
+	private TextVar      wTemplateFilename;
+	private FormData     fdlTemplateFilename, fdbTemplateFilename, fdTemplateFilename;
+
 	private TableView    wFields;
 	private FormData     fdFields;
 
@@ -481,6 +494,83 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		fdSplitEvery.right= new FormAttachment(100, 0);
 		wSplitEvery.setLayoutData(fdSplitEvery);
 		
+		//TODO: add listener and disable/enable possible user entries
+		wlTemplate=new Label(wContentComp, SWT.RIGHT);
+		wlTemplate.setText(Messages.getString("ExcelOutputDialog.Template.Label"));
+ 		props.setLook(wlTemplate);
+		fdlTemplate=new FormData();
+		fdlTemplate.left = new FormAttachment(0, 0);
+		fdlTemplate.top  = new FormAttachment(wSplitEvery, margin);
+		fdlTemplate.right= new FormAttachment(middle, -margin);
+		wlTemplate.setLayoutData(fdlTemplate);
+		wTemplate=new Button(wContentComp, SWT.CHECK );
+ 		props.setLook(wTemplate);
+		fdTemplate=new FormData();
+		fdTemplate.left = new FormAttachment(middle, 0);
+		fdTemplate.top  = new FormAttachment(wSplitEvery, margin);
+		fdTemplate.right= new FormAttachment(100, 0);
+		wTemplate.setLayoutData(fdTemplate);
+		wTemplate.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+
+		// TemplateFilename line
+		wlTemplateFilename=new Label(wContentComp, SWT.RIGHT);
+		wlTemplateFilename.setText(Messages.getString("ExcelOutputDialog.TemplateFilename.Label"));
+ 		props.setLook(wlTemplateFilename);
+		fdlTemplateFilename=new FormData();
+		fdlTemplateFilename.left = new FormAttachment(0, 0);
+		fdlTemplateFilename.top  = new FormAttachment(wTemplate, margin);
+		fdlTemplateFilename.right= new FormAttachment(middle, -margin);
+		wlTemplateFilename.setLayoutData(fdlTemplateFilename);
+
+		wbTemplateFilename=new Button(wContentComp, SWT.PUSH| SWT.CENTER);
+ 		props.setLook(wbTemplateFilename);
+		wbTemplateFilename.setText(Messages.getString("System.Button.Browse"));
+		fdbTemplateFilename=new FormData();
+		fdbTemplateFilename.right= new FormAttachment(100, 0);
+		fdbTemplateFilename.top  = new FormAttachment(wTemplate, 0);
+		wbTemplateFilename.setLayoutData(fdbTemplateFilename);
+
+		wTemplateFilename=new TextVar(wContentComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+ 		props.setLook(wTemplateFilename);
+		wTemplateFilename.addModifyListener(lsMod);
+		fdTemplateFilename=new FormData();
+		fdTemplateFilename.left = new FormAttachment(middle, 0);
+		fdTemplateFilename.top  = new FormAttachment(wTemplate, margin);
+		fdTemplateFilename.right= new FormAttachment(wbTemplateFilename, -margin);
+		wTemplateFilename.setLayoutData(fdTemplateFilename);
+
+		// Template Append
+		wlTemplateAppend=new Label(wContentComp, SWT.RIGHT);
+		wlTemplateAppend.setText(Messages.getString("ExcelOutputDialog.TemplateAppend.Label"));
+ 		props.setLook(wlTemplateAppend);
+		fdlTemplateAppend=new FormData();
+		fdlTemplateAppend.left = new FormAttachment(0, 0);
+		fdlTemplateAppend.top  = new FormAttachment(wTemplateFilename, margin);
+		fdlTemplateAppend.right= new FormAttachment(middle, -margin);
+		wlTemplateAppend.setLayoutData(fdlTemplateAppend);
+		wTemplateAppend=new Button(wContentComp, SWT.CHECK );
+ 		props.setLook(wTemplateAppend);
+		fdTemplateAppend=new FormData();
+		fdTemplateAppend.left = new FormAttachment(middle, 0);
+		fdTemplateAppend.top  = new FormAttachment(wTemplateFilename, margin);
+		fdTemplateAppend.right= new FormAttachment(100, 0);
+		wTemplateAppend.setLayoutData(fdTemplateAppend);
+		wTemplateAppend.addSelectionListener(new SelectionAdapter() 
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					input.setChanged();
+				}
+			}
+		);
+		
 		fdContentComp = new FormData();
 		fdContentComp.left  = new FormAttachment(0, 0);
 		fdContentComp.top   = new FormAttachment(0, 0);
@@ -627,6 +717,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 
 		wStepname.addSelectionListener( lsDef );
 		wFilename.addSelectionListener( lsDef );
+		wTemplateFilename.addSelectionListener( lsDef );
 
 		// Whenever something changes, set the tooltip to the expanded version:
 		wFilename.addModifyListener(new ModifyListener()
@@ -634,6 +725,14 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 				public void modifyText(ModifyEvent e)
 				{
 					wFilename.setToolTipText(StringUtil.environmentSubstitute( wFilename.getText() ) );
+				}
+			}
+		);
+		wTemplateFilename.addModifyListener(new ModifyListener()
+			{
+				public void modifyText(ModifyEvent e)
+				{
+					wTemplateFilename.setToolTipText(StringUtil.environmentSubstitute( wTemplateFilename.getText() ) );
 				}
 			}
 		);
@@ -655,6 +754,27 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 					if (dialog.open()!=null)
 					{
 						wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
+					}
+				}
+			}
+		);
+
+		wbTemplateFilename.addSelectionListener
+		(
+			new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e) 
+				{
+					FileDialog dialog = new FileDialog(shell, SWT.OPEN);
+					dialog.setFilterExtensions(new String[] {"*.xls", "*.*"});
+					if (wTemplateFilename.getText()!=null)
+					{
+						dialog.setFileName(StringUtil.environmentSubstitute(wTemplateFilename.getText()));
+					}
+					dialog.setFilterNames(new String[] {Messages.getString("System.FileType.ExcelFiles"), Messages.getString("System.FileType.AllFiles")});
+					if (dialog.open()!=null)
+					{
+						wTemplateFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
 					}
 				}
 			}
@@ -722,7 +842,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		if (input.getFileName()  != null) wFilename.setText(input.getFileName());
 		if (input.getExtension() != null) wExtension.setText(input.getExtension());
         if (input.getEncoding()  !=null) wEncoding.setText(input.getEncoding());
-        
+		if (input.getTemplateFileName()  != null) wTemplateFilename.setText(input.getTemplateFileName());
+		
 		wSplitEvery.setText(""+input.getSplitEvery());
 
 		wHeader.setSelection(input.isHeaderEnabled());
@@ -730,6 +851,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		wAddDate.setSelection(input.isDateInFilename());
 		wAddTime.setSelection(input.isTimeInFilename());
 		wAddStepnr.setSelection(input.isStepNrInFilename());
+		wTemplate.setSelection(input.isTemplateEnabled());
+		wTemplateAppend.setSelection(input.isTemplateAppend());
 		
 		log.logDebug(toString(), "getting fields info...");
 		
@@ -761,6 +884,7 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		tfoi.setFileName(   wFilename.getText() );
         tfoi.setEncoding( wEncoding.getText() );
 		tfoi.setExtension(  wExtension.getText() );
+		tfoi.setTemplateFileName(  wTemplateFilename.getText() );
 		tfoi.setSplitEvery( Const.toInt(wSplitEvery.getText(), 0) );
 
 		tfoi.setHeaderEnabled( wHeader.getSelection() ); 
@@ -768,6 +892,8 @@ public class ExcelOutputDialog extends BaseStepDialog implements StepDialogInter
 		tfoi.setStepNrInFilename( wAddStepnr.getSelection() );
 		tfoi.setDateInFilename( wAddDate.getSelection() );
 		tfoi.setTimeInFilename( wAddTime.getSelection() );
+		tfoi.setTemplateEnabled( wTemplate.getSelection() );
+		tfoi.setTemplateAppend( wTemplateAppend.getSelection() );
 
 		int i;
 		//Table table = wFields.table;

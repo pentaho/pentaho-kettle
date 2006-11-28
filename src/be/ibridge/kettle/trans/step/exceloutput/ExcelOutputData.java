@@ -42,6 +42,8 @@ public class ExcelOutputData extends BaseStepData implements StepDataInterface
     public WritableWorkbook workbook;
 
     public WritableSheet sheet;
+    
+    public int templateColumns; // inital number of columns in the template
 
     public WritableFont writableFont;
 

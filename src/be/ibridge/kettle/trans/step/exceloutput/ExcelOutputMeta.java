@@ -72,7 +72,17 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 	
 	/** Flag: add the time in the filename */
     private  boolean timeInFilename;
-		
+    
+	/** Flag: use a template */
+    private  boolean templateEnabled;
+    
+    /** the excel template */
+    private  String templateFileName;
+
+	/** Flag: append when template */
+    private  boolean templateAppend;
+
+    
 	/* THE FIELD SPECIFICATIONS ... */
 	
 	/** The output fields */
@@ -309,8 +319,56 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         this.encoding = encoding;
     }
+
     
+	/**
+	 * @return Returns the template.
+	 */
+	public boolean isTemplateEnabled() {
+		return templateEnabled;
+	}
+
+	
+	/**
+	 * @param template The template to set.
+	 */
+	public void setTemplateEnabled(boolean template) {
+		this.templateEnabled = template;
+	}
+
+	
+	/**
+	 * @return Returns the templateAppend.
+	 */
+	public boolean isTemplateAppend() {
+		return templateAppend;
+	}
+
+	
+	/**
+	 * @param templateAppend The templateAppend to set.
+	 */
+	public void setTemplateAppend(boolean templateAppend) {
+		this.templateAppend = templateAppend;
+	}
+
+	
+	/**
+	 * @return Returns the templateFileName.
+	 */
+	public String getTemplateFileName() {
+		return templateFileName;
+	}
+
+	
+	/**
+	 * @param templateFileName The templateFileName to set.
+	 */
+	public void setTemplateFileName(String templateFileName) {
+		this.templateFileName = templateFileName;
+	}
     
+	
 	public void loadXML(Node stepnode, ArrayList databases, Hashtable counters)
 		throws KettleXMLException
 	{
@@ -353,6 +411,10 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			dateInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_date"));
 			timeInFilename  = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "file", "add_time"));
 			splitEvery=Const.toInt(XMLHandler.getTagValue(stepnode, "file", "splitevery"), 0);
+
+			templateEnabled    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "template", "enabled"));
+			templateAppend    = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "template", "append"));
+			templateFileName  = XMLHandler.getTagValue(stepnode, "template", "filename");
 			
 			Node fields = XMLHandler.getSubNode(stepnode, "fields");
 			int nrfields= XMLHandler.countNodes(fields, "field");
@@ -406,6 +468,9 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		dateInFilename   = false;
 		timeInFilename   = false;
 		splitEvery       = 0;
+		templateEnabled  = false;
+		templateAppend   = false;
+		templateFileName = "template.xls";
 			
 		int i, nrfields=0;
 		
@@ -524,7 +589,13 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 		retval.append("      "+XMLHandler.addTagValue("add_time",   timeInFilename));
 		retval.append("      "+XMLHandler.addTagValue("splitevery", splitEvery));
 		retval.append("      </file>"+Const.CR);
-        
+		
+		retval.append("    <template>"+Const.CR);
+		retval.append("      "+XMLHandler.addTagValue("enabled",  templateEnabled));
+		retval.append("      "+XMLHandler.addTagValue("append",   templateAppend));
+		retval.append("      "+XMLHandler.addTagValue("filename", templateFileName));
+		retval.append("      </template>"+Const.CR);
+		
 		retval.append("    <fields>"+Const.CR);
 		for (int i=0;i<outputFields.length;i++)
 		{
@@ -559,6 +630,10 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			stepNrInFilename      =      rep.getStepAttributeBoolean(id_step, "file_add_stepnr");
 			dateInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_date");
 			timeInFilename        =      rep.getStepAttributeBoolean(id_step, "file_add_time");
+
+			templateEnabled       =      rep.getStepAttributeBoolean(id_step, "template_enabled");
+			templateAppend        =      rep.getStepAttributeBoolean(id_step, "template_append");
+			templateFileName      =      rep.getStepAttributeString (id_step, "template_filename");
 			
 			int nrfields = rep.countNrStepAttributes(id_step, "field_name");
 			
@@ -595,6 +670,10 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_date",    dateInFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "file_add_time",    timeInFilename);
 			
+			rep.saveStepAttribute(id_transformation, id_step, "template_enabled",  templateEnabled);
+			rep.saveStepAttribute(id_transformation, id_step, "template_append",   templateAppend);
+			rep.saveStepAttribute(id_transformation, id_step, "template_filename", templateFileName);
+
 			for (int i=0;i<outputFields.length;i++)
 			{
 			    ExcelField field = outputFields[i];
@@ -682,4 +761,5 @@ public class ExcelOutputMeta extends BaseStepMeta  implements StepMetaInterface
     {
         return new String[] { "jxl.jar", };
     }
+
 }
