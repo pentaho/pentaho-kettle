@@ -1035,7 +1035,7 @@ public class SpoonGraph extends Canvas implements Redrawable
 
     public Point screen2real(int x, int y)
     {
-        getOffset();
+        offset = getOffset();
         Point real;
         if (offset != null)
         {
@@ -1051,7 +1051,7 @@ public class SpoonGraph extends Canvas implements Redrawable
 
     public Point real2screen(int x, int y)
     {
-        getOffset();
+        offset = getOffset();
         Point screen = new Point(x + offset.x, y + offset.y);
 
         return screen;
