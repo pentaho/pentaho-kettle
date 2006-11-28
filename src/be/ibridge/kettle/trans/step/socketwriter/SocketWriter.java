@@ -64,7 +64,7 @@ public class SocketWriter extends BaseStep implements StepInterface
             // Send an ingored row to the output stream to indicate that we are done on this end.
             //
             data.lastRow.setIgnore();
-            r.writeData(data.outputStream);
+            data.lastRow.writeData(data.outputStream);
             
 			setOutputDone();
 			return false;
