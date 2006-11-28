@@ -98,6 +98,19 @@ public class SocketReader extends BaseStep implements StepInterface
             try
             {
                 data.outputStream.writeUTF(STRING_FINISHED+Const.CR);
+                try
+                {
+                    // Allow a few seconds for the server to read this message and draw it's own conclusions.
+                    // If we don't sleep, this will fall through to the dispose() method and 
+                    // kill all connections, including the output stream.  
+                    // I'm sure there is a more ellegant way of doing this, but for now we wait a bit :-)
+                    //
+                    Thread.sleep(3000); 
+                }
+                catch(InterruptedException ie)
+                {
+                    
+                }
             }
             catch(IOException ioe)
             {
