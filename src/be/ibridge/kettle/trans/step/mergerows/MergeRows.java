@@ -127,7 +127,7 @@ public class MergeRows extends BaseStep implements StepInterface
 
         if (data.one==null && data.two!=null) // Record 2 is flagged as new!
         {
-            data.two.addValue(VALUE_NEW);
+            data.two.addValue(VALUE_NEW.Clone());
             putRow(data.two);
 
             // Also get a next row from compare rowset...
@@ -136,7 +136,7 @@ public class MergeRows extends BaseStep implements StepInterface
         else
         if (data.one!=null && data.two==null) // Record 1 is flagged as deleted!
         {
-            data.one.addValue(VALUE_DELETED);
+            data.one.addValue(VALUE_DELETED.Clone());
             putRow(data.one);
 
             // Also get a next row from reference rowset...
@@ -150,16 +150,16 @@ public class MergeRows extends BaseStep implements StepInterface
                 int compareValues = data.one.compare(data.two, data.valueNrs, data.valueAsc);
                 if (compareValues==0)
                 {
-                    data.one.addValue(VALUE_IDENTICAL);
+                    data.one.addValue(VALUE_IDENTICAL.Clone());
                     putRow(data.one);
                 }
                 else
                 {
                     if (compareValues > 0){
-                        data.one.addValue(VALUE_CHANGED);
+                        data.one.addValue(VALUE_CHANGED.Clone());
                         putRow(data.one);
                     } else {
-                        data.two.addValue(VALUE_CHANGED);
+                        data.two.addValue(VALUE_CHANGED.Clone());
                         putRow(data.two);
                     }
                 }
@@ -172,13 +172,13 @@ public class MergeRows extends BaseStep implements StepInterface
             {
                 if (compare<0) // one < two
                 {
-                    data.one.addValue(VALUE_DELETED);
+                    data.one.addValue(VALUE_DELETED.Clone());
                     putRow(data.one);
                     data.one=getRowFrom(meta.getReferenceStepName());
                 }
                 else
                 {
-                    data.two.addValue(VALUE_NEW);
+                    data.two.addValue(VALUE_NEW.Clone());
                     putRow(data.two);
                     data.two=getRowFrom(meta.getCompareStepName());
                 }
