@@ -1,9 +1,11 @@
 package be.ibridge.kettle.www;
 
+import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class WebResult
 {
@@ -71,5 +73,20 @@ public class WebResult
     public void setMessage(String message)
     {
         this.message = message;
+    }
+
+    public static WebResult fromXMLString(String xml) throws KettleXMLException
+    {
+        try
+        {
+            Document doc = XMLHandler.loadXMLString(xml);
+            Node node = XMLHandler.getSubNode(doc, XML_TAG);
+            
+            return new WebResult(node);
+        }
+        catch(Exception e)
+        {
+            throw new KettleXMLException("Unable to create webresult from XML", e);
+        }
     }
 }

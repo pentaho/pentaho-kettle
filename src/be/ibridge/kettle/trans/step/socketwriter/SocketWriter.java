@@ -131,7 +131,7 @@ public class SocketWriter extends BaseStep implements StepInterface
             // Before closing the socket, read back the response "FINISHED" from the reader.
             // This is sent upon getting EOF at the client
             // That way we know that after this, we can close streams and sockets at will, all is done.
-            // 
+            //
             if (!stopped)
             {
                 String response = data.inputStream.readUTF();
@@ -145,7 +145,6 @@ public class SocketWriter extends BaseStep implements StepInterface
         {
             logError("Unable to close streams : "+e.toString());
             logError(Const.getStackTracker(e));
-            setErrors(1);
         }
         finally
         {

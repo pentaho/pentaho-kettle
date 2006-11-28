@@ -52,16 +52,32 @@ public class AddTransServlet extends HttpServlet
 
         if (log.isDebug()) log.logDebug(toString(), "Addition of transformation requested");
 
-        response.setContentType("text/html");
-
+        boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
+        
+        if (useXML)
+        {
+            response.setContentType("text/xml");
+        }
+        else
+        {
+            response.setContentType("text/html");
+        }
+        
         OutputStream os = response.getOutputStream(); // to write to the browser/client
         InputStream is = request.getInputStream(); // read from the client
         
         PrintStream out = new PrintStream(os);
 
-        out.println("<HTML>");
-        out.println("<HEAD><TITLE>Add transformation</TITLE></HEAD>");
-        out.println("<BODY>");
+        if (useXML)
+        {
+            out.print(XMLHandler.getXMLHeader());
+        }
+        else
+        {
+            out.println("<HTML>");
+            out.println("<HEAD><TITLE>Add transformation</TITLE></HEAD>");
+            out.println("<BODY>");
+        }
 
         try
         {
@@ -94,27 +110,46 @@ public class AddTransServlet extends HttpServlet
             
             transformationMap.addTransformation(transMeta.getName(), trans);
 
+            String message;
             if (oldOne!=null)
             {
-                out.println("<H1>Transformation '"+trans.getName()+"' was replaced in the list.</H1>");
+                message = "Transformation '"+trans.getName()+"' was replaced in the list.";
             }
             else
             {
-                out.println("<H1>Transformation '"+trans.getName()+"' was added to the list.</H1>");
+                message = "Transformation '"+trans.getName()+"' was added to the list.";
             }
-            out.println("<p><a href=\"/kettle/transStatus?name="+trans.getName()+"\">Go to the transformation status page</a><p>");
+            if (useXML)
+            {
+                out.println(new WebResult(WebResult.STRING_OK, message));
+            }
+            else
+            {
+                out.println("<H1>"+message+"</H1>");
+                out.println("<p><a href=\"/kettle/transStatus?name="+trans.getName()+"\">Go to the transformation status page</a><p>");
+            }
         }
         catch (Exception ex)
         {
-            out.println("<p>");
-            out.println("<pre>");
-            ex.printStackTrace(out);
-            out.println("</pre>");
+            if (useXML)
+            {
+                out.println(new WebResult(WebResult.STRING_ERROR, Const.getStackTracker(ex)));
+            }
+            else
+            {
+                out.println("<p>");
+                out.println("<pre>");
+                ex.printStackTrace(out);
+                out.println("</pre>");
+            }
         }
 
-        out.println("<p>");
-        out.println("</BODY>");
-        out.println("</HTML>");
+        if (!useXML)
+        {
+            out.println("<p>");
+            out.println("</BODY>");
+            out.println("</HTML>");
+        }
 
         out.flush();
 
