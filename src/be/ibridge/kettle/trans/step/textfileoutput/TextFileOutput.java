@@ -763,9 +763,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
 		meta=(TextFileOutputMeta)smi;
 		data=(TextFileOutputData)sdi;
 		
-		super.dispose(smi, sdi);
-		
 		closeFile();
+
+        super.dispose(smi, sdi);
 	}
 	
 	//

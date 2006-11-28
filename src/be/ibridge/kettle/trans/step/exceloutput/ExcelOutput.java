@@ -509,9 +509,9 @@ public class ExcelOutput extends BaseStep implements StepInterface
 		meta=(ExcelOutputMeta)smi;
 		data=(ExcelOutputData)sdi;
 		
-		super.dispose(smi, sdi);
-		
 		closeFile();
+        
+        super.dispose(smi, sdi);
 	}
 	
 	//

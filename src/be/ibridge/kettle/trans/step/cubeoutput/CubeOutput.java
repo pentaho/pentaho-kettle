@@ -133,7 +133,6 @@ public class CubeOutput extends BaseStep implements StepInterface
     {
         try
         {
-            super.dispose(smi, sdi);
             if (data.dos!=null) data.dos.close();
             if (data.fos!=null) data.fos.close();
         }
@@ -144,6 +143,7 @@ public class CubeOutput extends BaseStep implements StepInterface
             stopAll();
         }
 
+        super.dispose(smi, sdi);
     }
 	
 	//

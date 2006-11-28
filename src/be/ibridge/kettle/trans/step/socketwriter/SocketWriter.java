@@ -129,6 +129,8 @@ public class SocketWriter extends BaseStep implements StepInterface
         try { data.inputStream.close(); } catch(IOException e) {}
         try { data.clientSocket.close(); } catch(IOException e) {}
         try { data.serverSocket.close(); } catch(IOException e) {}
+        
+        super.dispose(smi, sdi);
     }
 	
 	//

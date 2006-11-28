@@ -127,6 +127,8 @@ public class SocketReader extends BaseStep implements StepInterface
         try { data.inputStream.close(); } catch(IOException e) {}
         try { data.outputStream.close(); } catch(IOException e) {}
         try { data.socket.close(); } catch(IOException e) {}
+        
+        super.dispose(smi, sdi);
     }
 	
 	//

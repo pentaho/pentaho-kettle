@@ -525,9 +525,9 @@ public class XMLOutput extends BaseStep implements StepInterface
 		meta=(XMLOutputMeta)smi;
 		data=(XMLOutputData)sdi;
 		
-		super.dispose(smi, sdi);
-		
 		closeFile();
+        
+        super.dispose(smi, sdi);
 	}
 	
 	//
