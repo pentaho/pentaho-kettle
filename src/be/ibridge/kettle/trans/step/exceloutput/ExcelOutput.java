@@ -21,7 +21,6 @@ import java.util.Locale;
 
 import jxl.Workbook;
 import jxl.WorkbookSettings;
-import jxl.format.CellFormat;
 import jxl.write.DateFormat;
 import jxl.write.DateFormats;
 import jxl.write.DateTime;
