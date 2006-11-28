@@ -100,7 +100,7 @@ public class AddTransServlet extends HttpServlet
             Trans trans = new Trans(log, transMeta);
             
             Trans oldOne = transformationMap.getTransformation(trans.getName());
-            if ( oldOne!=null)
+            if ( oldOne!=null && !oldOne.isFinished())
             {
                 if ( oldOne.isRunning() || oldOne.isPreparing() || oldOne.isInitializing() )
                 {
