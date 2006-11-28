@@ -69,6 +69,7 @@ public class Carte
 
         TransMeta transMeta = TransPreviewFactory.generatePreviewTransformation(A, "A");
         transMeta.setName("Row generator test");
+        transMeta.setSizeRowset(50000);
 
         return new Trans(LogWriter.getInstance(), transMeta);
         
