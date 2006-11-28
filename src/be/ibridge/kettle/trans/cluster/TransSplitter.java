@@ -115,7 +115,23 @@ public class TransSplitter
                         {
                             // No clustering involved here: just add the original step to the master
                             //
-                            if (master.findStep(copy.getName())==null) master.addStep(copy);
+                            StepMeta target = master.findStep(copy.getName());
+                            if (target==null)
+                            {
+                                target = copy;
+                                master.addStep(copy);
+                            }
+                            
+                            StepMeta source = master.findStep(previousStep.getName());
+                            if (source==null)
+                            {
+                                source = (StepMeta)previousStep.clone();
+                                master.addStep(source);
+                            }
+                            
+                            // Add a hop too...
+                            TransHopMeta masterHop = new TransHopMeta(source, target);
+                            master.addTransHop(masterHop);
                         }
                         else
                         {

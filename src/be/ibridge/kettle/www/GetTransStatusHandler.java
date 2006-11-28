@@ -134,9 +134,9 @@ public class GetTransStatusHandler extends AbstractHandler
                     out.println("</table>");
                     out.println("<p>");
                     
-                    out.print("<a href=\"/kettle/transStatus?name="+transName+"&xml=y\">show as XML</a><p>");
-                    out.print("<a href=\"/kettle/transStatus?name="+transName+"\">Refresh</a>");
-                    
+                    out.print("<a href=\"/kettle/transStatus?name="+transName+"&xml=y\">show as XML</a><br>");
+                    out.print("<a href=\"/kettle/status\">Back to the status page</a><br>");
+                    out.print("<p><a href=\"/kettle/transStatus?name="+transName+"\">Refresh</a>");
                     
                     // Put the logging below that.
                     Log4jStringAppender appender = (Log4jStringAppender) transformationMap.getAppender(transName);
