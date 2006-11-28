@@ -13,6 +13,7 @@ import org.mortbay.jetty.handler.AbstractHandler;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.logging.Log4jStringAppender;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.step.BaseStep;
 import be.ibridge.kettle.trans.step.StepDataInterface;
@@ -135,6 +136,17 @@ public class GetTransStatusHandler extends AbstractHandler
                     
                     out.print("<a href=\"/kettle/transStatus?name="+transName+"&xml=y\">show as XML</a><p>");
                     out.print("<a href=\"/kettle/transStatus?name="+transName+"\">Refresh</a>");
+                    
+                    
+                    // Put the logging below that.
+                    Log4jStringAppender appender = (Log4jStringAppender) transformationMap.getAppender(transName);
+                    if (appender!=null)
+                    {
+                        out.println("<p>");
+                        out.println("<pre>");
+                        out.println(appender.getBuffer().toString());
+                        out.println("</pre>");
+                    }
                 }
                 catch (Exception ex)
                 {

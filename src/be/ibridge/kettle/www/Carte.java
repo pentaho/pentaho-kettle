@@ -16,6 +16,7 @@ public class Carte
         init();
         
         TransformationMap map = new TransformationMap(Thread.currentThread().getName());
+        
         Trans trans = generateTestTransformation();
         map.addTransformation(trans.getName(), trans);
         

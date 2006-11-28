@@ -223,6 +223,7 @@ public class ClusterSchemaDialog extends Dialog
 		
         SelectionAdapter selAdapter=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
 		wName.addSelectionListener(selAdapter);
+        wPort.addSelectionListener(selAdapter);
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );

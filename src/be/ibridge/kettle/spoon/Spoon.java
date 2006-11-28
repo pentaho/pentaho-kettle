@@ -106,6 +106,7 @@ import be.ibridge.kettle.core.dialog.EnterSearchDialog;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.EnterStringDialog;
 import be.ibridge.kettle.core.dialog.EnterStringsDialog;
+import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.dialog.PreviewRowsDialog;
 import be.ibridge.kettle.core.dialog.SQLEditor;
@@ -161,6 +162,7 @@ import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
 import be.ibridge.kettle.trans.step.tableoutput.TableOutputMeta;
 import be.ibridge.kettle.version.BuildVersion;
 import be.ibridge.kettle.www.AddTransServlet;
+import be.ibridge.kettle.www.PrepareExecutionTransHandler;
 
 /**
  * This class handles the main window of the Spoon graphical transformation editor.
@@ -5249,6 +5251,19 @@ public class Spoon implements AddUndoPositionInterface
                 String slaveReply = slaves[i].sendXML(slaveTrans.getXML(), AddTransServlet.CONTEXT_PATH);
                 new ShowBrowserDialog(shell, "Slave: "+slaveTrans.getName(), slaveReply).open();
             }
+            
+            // Prepare the master...
+            masterReply = masterServer.getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName());
+            new EnterTextDialog(shell, "prepare master", "Result of prepare master", masterReply).open();
+            
+            // Prepare the slaves
+            for (int i=0;i<slaves.length;i++)
+            {
+                TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+                String slaveReply = slaves[i].getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName());
+                new EnterTextDialog(shell, "prepare slave", "Result of prepare slave", slaveReply).open();
+            }
+            
         }
         catch(Exception e)
         {

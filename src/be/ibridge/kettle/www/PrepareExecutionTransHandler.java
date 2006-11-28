@@ -16,6 +16,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.logging.Log4jStringAppender;
 import be.ibridge.kettle.trans.Trans;
 
 public class PrepareExecutionTransHandler extends AbstractHandler
@@ -64,6 +65,11 @@ public class PrepareExecutionTransHandler extends AbstractHandler
             Trans trans = transformationMap.getTransformation(transName);
             if (trans!=null)
             {
+                // Log to a String
+                Log4jStringAppender appender = LogWriter.createStringAppender();
+                log.addAppender(appender);
+                transformationMap.addAppender(transName, appender);
+                
                 if (trans.prepareExecution(null))
                 {
                     if (useXML)

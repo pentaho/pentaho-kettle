@@ -1,7 +1,18 @@
 package be.ibridge.kettle.cluster;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Authenticator;
+import java.net.MalformedURLException;
+import java.net.PasswordAuthentication;
+import java.net.URL;
+import java.net.URLConnection;
+
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.ByteArrayRequestEntity;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.httpclient.methods.PostMethod;
 import org.apache.commons.httpclient.methods.RequestEntity;
 import org.w3c.dom.Node;
@@ -215,7 +226,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     
     public String constructUrl(String serviceAndArguments)
     {
-        return "http://"+hostname+getPortSpecification()+serviceAndArguments;
+        String retval =  "http://"+hostname+getPortSpecification()+serviceAndArguments;
+        retval = Const.replace(retval, " ", "%20");
+        return retval;
     }
     
     /**
@@ -302,5 +315,142 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         this.master = master;
     }
 
+    public String execService(String service) throws Exception
+    {
+        // Prepare HTTP get
+        // 
+        HttpClient httpclient = new HttpClient();
+        HttpMethod method = new GetMethod(constructUrl(service));
+        
+        // Execute request
+        // 
+        try
+        {
+            int result = httpclient.executeMethod(method);
+            
+            // The status code
+            log.logDebug(toString(), "Response status code: " + result);
+            
+            // the response
+            String body = new String(method.getResponseBody()); 
+            log.logDebug(toString(), "Response body: "+body);
+            
+            return body;
+        }
+        finally
+        {
+            // Release current connection to the connection pool once you are done
+            method.releaseConnection();
+            log.logDetailed(toString(), "Sent XML to service ["+service+"] on host ["+hostname+"]");
+        }
+
+    }
+
+    /**
+     * Contact the server and get back the reply as a string
+     * @return the requested information
+     * @throws Exception in case something goes awry 
+     */
+    public String getContentFromServer(String service) throws Exception
+    {
+        LogWriter log = LogWriter.getInstance();
+        
+        String urlToUse = constructUrl(service);
+        URL server;
+        StringBuffer result = new StringBuffer();
+        
+        try
+        {
+            String beforeProxyHost     = System.getProperty("http.proxyHost"); 
+            String beforeProxyPort     = System.getProperty("http.proxyPort"); 
+            String beforeNonProxyHosts = System.getProperty("http.nonProxyHosts"); 
+
+            BufferedReader      input        = null;
+            
+            try
+            {
+                log.logBasic(toString(), "Connecting to URL: "+urlToUse);
+
+                if (proxyHostname!=null) 
+                {
+                    System.setProperty("http.proxyHost", proxyHostname);
+                    System.setProperty("http.proxyPort", proxyPort);
+                    if (nonProxyHosts!=null) System.setProperty("http.nonProxyHosts", nonProxyHosts);
+                }
+                
+                if (username!=null && username.length()>0)
+                {
+                    Authenticator.setDefault(new Authenticator()
+                        {
+                            protected PasswordAuthentication getPasswordAuthentication()
+                            {
+                                return new PasswordAuthentication(username, password!=null ? password.toCharArray() : new char[] {} );
+                            }
+                        }
+                    );
+                }
+
+                // Get a stream for the specified URL
+                server = new URL(urlToUse);
+                URLConnection connection = server.openConnection();
+                
+                log.logDetailed(toString(), "Start reading reply from webserver.");
+    
+                // Read the result from the server...
+                input = new BufferedReader(new InputStreamReader( connection.getInputStream() ));
+                
+                long bytesRead = 0L;
+                String line;
+                while ( (line=input.readLine())!=null )
+                {
+                    result.append(line).append(Const.CR);
+                    bytesRead+=line.length();
+                }
+                
+                log.logBasic(toString(), "Finished reading "+bytesRead+" bytes as a response from the webserver");
+            }
+            catch(MalformedURLException e)
+            {
+                log.logError(toString(), "The specified URL is not valid ["+urlToUse+"] : "+e.getMessage());
+                log.logError(toString(), Const.getStackTracker(e));
+            }
+            catch(IOException e)
+            {
+                log.logError(toString(), "I was unable to save the HTTP result to file because of a I/O error: "+e.getMessage());
+                log.logError(toString(), Const.getStackTracker(e));
+            }
+            catch(Exception e)
+            {
+                log.logError(toString(), "Error getting file from HTTP : "+e.getMessage());
+                log.logError(toString(), Const.getStackTracker(e));
+            }
+            finally
+            {
+                // Close it all
+                try
+                {
+                    if (input!=null) input.close();
+                }
+                catch(Exception e)
+                {
+                    log.logError(toString(), "Unable to close streams : "+e.getMessage());
+                    log.logError(toString(), Const.getStackTracker(e));
+                }
+
+            }
+
+            // Set the proxy settings back as they were on the system!
+            System.setProperty("http.proxyHost", Const.NVL(beforeProxyHost, ""));
+            System.setProperty("http.proxyPort", Const.NVL(beforeProxyPort, ""));
+            System.setProperty("http.nonProxyHosts", Const.NVL(beforeNonProxyHosts, ""));
+            
+            // Get the result back...
+            return result.toString();
+        }
+        catch(Exception e)
+        {
+            throw new Exception("Unable to contact URL ["+urlToUse+"] to get the security reference information.", e);
+        }
+    }
 }
 
