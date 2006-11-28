@@ -44,6 +44,12 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 {
+	public static final String [] join_types = {"INNER", "LEFT OUTER", "RIGHT OUTER", "FULL OUTER"}; //$NON-NLS-1$
+	public static final boolean [] one_optionals = {false, false, true, true};
+	public static final boolean [] two_optionals = {false, true, false, true};
+
+	private String joinType;
+
 	private String stepName1;
 	private StepMeta stepMeta1;
 
@@ -53,7 +59,25 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
     private String   keyFields1[];
     private String   keyFields2[];
 
-	/**
+    /**
+     * The supported join types are INNER, LEFT OUTER, RIGHT OUTER and FULL OUTER
+     * @return The type of join
+     */
+    public String getJoinType()
+    {
+    	return joinType;
+    }
+
+    /**
+     * Sets the type of join
+     * @param joinType The type of join, e.g. INNER/FULL OUTER
+     */
+    public void setJoinType(String joinType)
+    {
+    	this.joinType = joinType;
+    }
+
+    /**
      * @return Returns the keyFields1.
      */
     public String[] getKeyFields1()
@@ -187,6 +211,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 	{
         StringBuffer retval = new StringBuffer();
 
+		retval.append(XMLHandler.addTagValue("join_type", getJoinType())); //$NON-NLS-1$
 		retval.append(XMLHandler.addTagValue("step1", getStepName1())); //$NON-NLS-1$
 		retval.append(XMLHandler.addTagValue("step2", getStepName2())); //$NON-NLS-1$
 
@@ -235,6 +260,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
             
 			stepName1 = XMLHandler.getTagValue(stepnode, "step1"); //$NON-NLS-1$
 			stepName2 = XMLHandler.getTagValue(stepnode, "step2"); //$NON-NLS-1$
+			joinType = XMLHandler.getTagValue(stepnode, "join_type"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -244,16 +270,10 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 	
 	public void setDefault()
 	{
+		joinType = join_types[0];
         allocate(0,0);
 	}
     
-/*
-    public String[] getInfoSteps()
-    {
-        return new String[] { stepName1, stepName2 }; 
-    }
-*/
-
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
 		throws KettleException
 	{
@@ -275,6 +295,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 
 			stepName1 = rep.getStepAttributeString (id_step, "step1");  //$NON-NLS-1$
 			stepName2 = rep.getStepAttributeString (id_step, "step2");  //$NON-NLS-1$
+			joinType = rep.getStepAttributeString(id_step, "join_type"); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -299,6 +320,7 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 
 			rep.saveStepAttribute(id_transformation, id_step, "step1", getStepName1()); //$NON-NLS-1$
 			rep.saveStepAttribute(id_transformation, id_step, "step2", getStepName2()); //$NON-NLS-1$
+			rep.saveStepAttribute(id_transformation, id_step, "join_type", getJoinType()); //$NON-NLS-1$
 		}
 		catch(Exception e)
 		{
@@ -312,21 +334,14 @@ public class MergeJoinMeta extends BaseStepMeta implements StepMetaInterface
 		stepMeta2 = TransMeta.findStep(steps, stepName2);
 	}
 
-	/*
-	public boolean chosesTargetSteps()
-	{
-	    return false;
-	}
-
-	public String[] getTargetSteps()
-	{
-	    return null;
-	}
-    */
-
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
 	{
-        // @todo Check for correct number of input/output streams and match keys 
+        /*
+         * @todo Need to check for the following:
+         *   1) Join type must be one of INNER / LEFT OUTER / RIGHT OUTER / FULL OUTER
+         *   2) Number of input streams must be two (for now at least)
+         *   3) The field names of input streams must be unique
+         */ 
         CheckResult cr = new CheckResult(CheckResult.TYPE_RESULT_WARNING, Messages.getString("MergeJoinMeta.CheckResult.StepNotVerified"), stepinfo); //$NON-NLS-1$
         remarks.add(cr);
 

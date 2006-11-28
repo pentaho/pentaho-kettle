@@ -24,17 +24,51 @@
     <size_rowset>1000</size_rowset>
     <sleep_time_empty>1</sleep_time_empty>
     <sleep_time_full>1</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>5000</feedback_size>
     <dependencies>
       </dependencies>
     <partitionschemas>
       </partitionschemas>
+    <clusterschemas>
+      </clusterschemas>
   <modified_user>-</modified_user>
   <modified_date>2006&#47;11&#47;02 16:09:55.093</modified_date>
     </info>
   <notepads>
     </notepads>
   <order>
-  <hop> <from>Text file input</from><to>Merge Rows</to><enabled>Y</enabled> </hop>  <hop> <from>Text file input 2</from><to>Merge Rows</to><enabled>Y</enabled> </hop>  </order>
+  <hop> <from>Text file input</from><to>Merge Rows</to><enabled>Y</enabled> </hop>  <hop> <from>Text file input 2</from><to>Merge Rows</to><enabled>Y</enabled> </hop>  <hop> <from>Merge Rows</from><to>Text file output</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Merge Rows</name>
+    <type>MergeRows</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <keys>
+      <key>pid</key>
+    </keys>
+    <values>
+      <value>value</value>
+    </values>
+<flag_field>flagfield</flag_field>
+<reference>Text file input</reference>
+<compare>Text file input 2</compare>
+    <compare>
+    </compare>
+    <GUI>
+      <xloc>420</xloc>
+      <yloc>206</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
 
   <step>
     <name>Text file input</name>
@@ -75,7 +109,7 @@
       <filemask/>
       <file_required/>
       <type>CSV</type>
-      <zipped>N</zipped>
+      <compression>None</compression>
       </file>
     <filters>
       </filters>
@@ -171,7 +205,7 @@
       <filemask/>
       <file_required/>
       <type>CSV</type>
-      <zipped>N</zipped>
+      <compression>None</compression>
       </file>
     <filters>
       </filters>
@@ -229,8 +263,8 @@
     </step>
 
   <step>
-    <name>Merge Rows</name>
-    <type>MergeRows</type>
+    <name>Text file output</name>
+    <type>TextFileOutput</type>
     <description/>
     <distribute>Y</distribute>
     <copies>1</copies>
@@ -239,20 +273,33 @@
            <field_name/>
            <schema_name/>
            </partitioning>
-    <keys>
-      <key>pid</key>
-    </keys>
-    <values>
-      <value>value</value>
-    </values>
-<flag_field>flagfield</flag_field>
-<reference>Text file input</reference>
-<compare>Text file input 2</compare>
-    <compare>
-    </compare>
+    <separator>;</separator>
+    <enclosure>&quot;</enclosure>
+    <enclosure_forced>N</enclosure_forced>
+    <header>Y</header>
+    <footer>N</footer>
+    <format>DOS</format>
+    <compression>None</compression>
+    <encoding/>
+    <endedLine/>
+    <file>
+      <name>C:\file</name>
+      <is_command>N</is_command>
+      <extention>txt</extention>
+      <append>N</append>
+      <split>N</split>
+      <haspartno>N</haspartno>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <pad>N</pad>
+      <fast_dump>N</fast_dump>
+      <splitevery>0</splitevery>
+      </file>
+    <fields>
+      </fields>
     <GUI>
-      <xloc>420</xloc>
-      <yloc>206</yloc>
+      <xloc>560</xloc>
+      <yloc>207</yloc>
       <draw>Y</draw>
       </GUI>
     </step>

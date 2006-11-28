@@ -64,6 +64,10 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 	private CCombo       wStep2;
 	private FormData     fdlStep2, fdStep2;
     
+	private Label        wlType;
+	private CCombo       wType;
+	private FormData     fdlType, fdType;
+    
     private Label        wlKeys1;
     private TableView    wKeys1;
     private Button       wbKeys1;
@@ -132,7 +136,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         // Get the previous steps...
         String previousSteps[] = transMeta.getPrevStepNames(stepname);
         
-		// Send 'True' data to...
+		// First step
 		wlStep1=new Label(shell, SWT.RIGHT);
 		wlStep1.setText(Messages.getString("MergeJoinDialog.Step1.Label")); //$NON-NLS-1$
  		props.setLook(wlStep1);
@@ -156,7 +160,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 		fdStep1.right= new FormAttachment(100, 0);
 		wStep1.setLayoutData(fdStep1);
 
-		// Send 'False' data to...
+		// Second step
 		wlStep2=new Label(shell, SWT.RIGHT);
 		wlStep2.setText(Messages.getString("MergeJoinDialog.Step2.Label")); //$NON-NLS-1$
  		props.setLook(wlStep2);
@@ -180,14 +184,36 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 		fdStep2.right= new FormAttachment(100, 0);
 		wStep2.setLayoutData(fdStep2);
 
+
+		// Join type
+		wlType=new Label(shell, SWT.RIGHT);
+		wlType.setText(Messages.getString("MergeJoinDialog.Type.Label")); //$NON-NLS-1$
+ 		props.setLook(wlType);
+		fdlType=new FormData();
+		fdlType.left = new FormAttachment(0, 0);
+		fdlType.right= new FormAttachment(middle, -margin);
+		fdlType.top  = new FormAttachment(wStep2, margin);
+		wlType.setLayoutData(fdlType);
+		wType=new CCombo(shell, SWT.BORDER );
+ 		props.setLook(wType);
+
+        wType.setItems(MergeJoinMeta.join_types);
         
+		wType.addModifyListener(lsMod);
+		fdType=new FormData();
+        fdType.top  = new FormAttachment(wStep2, margin);
+		fdType.left = new FormAttachment(middle, 0);
+		fdType.right= new FormAttachment(100, 0);
+		wType.setLayoutData(fdType);
+
+
         // THE KEYS TO MATCH for first step...
         wlKeys1=new Label(shell, SWT.NONE);
         wlKeys1.setText(Messages.getString("MergeJoinDialog.Keys1.Label")); //$NON-NLS-1$
         props.setLook(wlKeys1);
         fdlKeys1=new FormData();
         fdlKeys1.left  = new FormAttachment(0, 0);
-        fdlKeys1.top   = new FormAttachment(wStep2, margin);
+        fdlKeys1.top   = new FormAttachment(wType, margin);
         wlKeys1.setLayoutData(fdlKeys1);
         
         int nrKeyRows1 = (input.getKeyFields1()!=null?input.getKeyFields1().length:1);
@@ -235,7 +261,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
         props.setLook(wlKeys2);
         fdlKeys2=new FormData();
         fdlKeys2.left  = new FormAttachment(50, 0);
-        fdlKeys2.top   = new FormAttachment(wStep2, margin);
+        fdlKeys2.top   = new FormAttachment(wType, margin);
         wlKeys2.setLayoutData(fdlKeys2);
         
         int nrKeyRows2 = (input.getKeyFields2()!=null?input.getKeyFields2().length:1);
@@ -320,6 +346,11 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 	{
 		if (input.getStepName1() != null) wStep1.setText(input.getStepName1());
 		if (input.getStepName2() != null) wStep2.setText(input.getStepName2());
+		String joinType = input.getJoinType();
+		if (joinType != null && joinType.length() > 0)
+			wType.setText(joinType);
+		else
+			wType.setText(MergeJoinMeta.join_types[0]);
         
         for (int i=0;i<input.getKeyFields1().length;i++)
         {
@@ -346,6 +377,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 	{		
 		input.setStepMeta1( transMeta.findStep( wStep1.getText() ) );
 		input.setStepMeta2( transMeta.findStep( wStep2.getText() ) );
+		input.setJoinType(wType.getText());
 
         int nrKeys1   = wKeys1.nrNonEmpty();
         int nrKeys2 = wKeys2.nrNonEmpty();

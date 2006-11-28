@@ -15,6 +15,9 @@
 
 package be.ibridge.kettle.trans.step.mergejoin;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -62,6 +65,7 @@ public class MergeJoin extends BaseStep implements StepInterface
 	{
 		meta=(MergeJoinMeta)smi;
 		data=(MergeJoinData)sdi;
+		int compare;
 
         if (first)
         {
@@ -73,7 +77,7 @@ public class MergeJoin extends BaseStep implements StepInterface
             if (!isInputLayoutValid(data.one, data.two))
             {
             	throw new KettleException(Messages.getString("MergeJoin.Exception.InvalidLayoutDetected"));
-            }            
+            }        
 
             if (data.one!=null)
             {
@@ -107,48 +111,249 @@ public class MergeJoin extends BaseStep implements StepInterface
                 }
             }
 
+            Value v;
+            data.one_dummy = new Row(data.one);
+            for (int i=0; i < data.one_dummy.size(); ++i)
+            {
+            	v = data.one_dummy.getValue(i);
+            	v.setNull();
+            	data.one_dummy.setValue(i, v);
+            }
+            data.two_dummy = new Row(data.two);
+            for (int i=0; i < data.two_dummy.size(); ++i)
+            {
+            	v = data.two_dummy.getValue(i);
+            	v.setNull();
+            	data.two_dummy.setValue(i, v);
+            }
         }
 
         if (log.isRowLevel()) logRowlevel(Messages.getString("MergeJoin.Log.DataInfo",data.one+"")+data.two); //$NON-NLS-1$ //$NON-NLS-2$
 
         /*
-         * For the time being, implement simple inner join. So, if any input stream is
-         * finished, we can stop processing the remaining rows from the other streams
-         * @todo Add options for left, right and full outer joins
+         * We can stop processing if any of the following is true:
+         *   a) Both streams are empty
+         *   b) First stream is empty and join type is INNER or LEFT OUTER
+         *   c) Second stream is empty and join type is INNER or RIGHT OUTER
          */
-        if (data.one==null || data.two==null)
+        if ((data.one==null && data.two==null) ||
+        	(data.one == null && data.one_optional == false) ||
+        	(data.two == null && data.two_optional == false))
         {
             setOutputDone();
             return false;
         }
 
-        int compare = data.one.compare(data.two, data.keyNrs1, data.keyNrs2, null, null);
+        if (data.one == null)
+        	compare = -1;
+        else if (data.two == null)
+        	compare = 1;
+        else
+        	compare = data.one.compare(data.two, data.keyNrs1, data.keyNrs2, null, null);
+
         switch (compare)
         {
         case 0:
-        	// Got a match - so put the result to the output stream
-        	data.one.addRow(data.two);
-        	putRow(data.one);
         	/*
-        	 * @todo This actually is more complex than this. For cases when there are
-        	 * dupicate keys, we need to output N1 * N2 rows where:
-        	 *    N1 = number of rows with identical keys in stream 1
-        	 *    N2 = number of rows with identical keys in stream 2
-        	 */
-        	data.one = getRowFrom(meta.getStepName1());
-        	data.two = getRowFrom(meta.getStepName2());
+        	 * We've got a match. This is what we do next (to handle duplicate keys correctly):
+        	 *   Read the next record from both streams
+        	 *   If any of the keys match, this means we have duplicates. We therefore
+        	 *     Create an array of all rows that have the same keys
+        	 *     Push a cartesian product of the two arrays to output
+        	 *   Else
+        	 *     Just push the combined rowset to output
+        	 */ 
+        	data.one_next = getRowFrom(meta.getStepName1());
+        	data.two_next = getRowFrom(meta.getStepName2());
+        	int compare1 = (data.one_next == null) ? -1 : data.one.compare(data.one_next, data.keyNrs1, data.keyNrs1, null, null);
+        	int compare2 = (data.two_next == null) ? -1 : data.two.compare(data.two_next, data.keyNrs2, data.keyNrs2, null, null);
+        	if (compare1 == 0 || compare2 == 0) // Duplicate keys
+        	{
+            	if (data.ones == null)
+            		data.ones = new ArrayList();
+            	else
+            		data.ones.clear();
+            	if (data.twos == null)
+            		data.twos = new ArrayList();
+            	else
+            		data.twos.clear();
+            	data.ones.add(data.one);
+            	if (compare1 == 0) // First stream has duplicates
+            	{
+            		data.ones.add(data.one_next);
+	            	for (;;)
+	            	{
+	                	data.one_next = getRowFrom(meta.getStepName1());
+	                	if (0 != ((data.one_next == null) ? -1 : data.one.compare(data.one_next, data.keyNrs1, data.keyNrs1, null, null)))
+	                		break;
+	                	data.ones.add(data.one_next);
+	            	}
+            	}
+            	data.twos.add(data.two);
+            	if (compare2 == 0) // Second stream has duplicates
+            	{
+            		data.twos.add(data.two_next);
+	            	for (;;)
+	            	{
+	                	data.two_next = getRowFrom(meta.getStepName2());
+	                	if (0 != ((data.two_next == null) ? -1 : data.two.compare(data.two_next, data.keyNrs2, data.keyNrs2, null, null)))
+	                		break;
+	                	data.twos.add(data.two_next);
+	            	}
+            	}
+            	Iterator one_iter = data.ones.iterator();
+            	while (one_iter.hasNext())
+            	{
+            		Row one = (Row) one_iter.next();
+            		Iterator two_iter = data.twos.iterator();
+            		while (two_iter.hasNext())
+            		{
+            			Row combi = new Row(one);
+            			combi.addRow((Row) two_iter.next());
+            			putRow(combi);
+            		}
+            	}
+            	data.ones.clear();
+            	data.twos.clear();
+        	}
+        	else // No duplicates
+        	{
+	        	data.one.addRow(data.two);
+	        	putRow(data.one);
+        	}
+        	data.one = data.one_next;
+        	data.two = data.two_next;
         	break;
         case 1:
-        	// First stream is greater. So read next row from second stream
-        	data.two = getRowFrom(meta.getStepName2());
+        	logDebug("First stream has missing key");
+        	/*
+        	 * First stream is greater than the second stream. This means:
+        	 *   a) This key is missing in the first stream
+        	 *   b) Second stream may have finished
+        	 *  So, if full/right outer join is set and 2nd stream is not null,
+        	 *  we push a record to output with only the values for the second
+        	 *  row populated. Next, if 2nd stream is not finished, we get a row
+        	 *  from it; otherwise signal that we are done
+        	 */
+        	if (data.one_optional == true)
+        	{
+        		if (data.two != null)
+        		{
+	        		Row combi = new Row(data.one_dummy);
+	        		combi.addRow(data.two);
+	        		putRow(combi);
+	        		data.two = getRowFrom(meta.getStepName2());
+        		}
+        		else if (data.two_optional == false)
+        		{
+        			/*
+        			 * If we are doing right outer join then we are done since
+        			 * there are no more rows in the second set
+        			 */
+        			setOutputDone();
+        			return false;
+        		}
+        		else
+        		{
+        			/*
+        			 * We are doing full outer join so print the 1st stream and
+        			 * get the next row from 1st stream
+        			 */
+	        		Row combi = new Row(data.one);
+	        		combi.addRow(data.two_dummy);
+	        		putRow(combi);
+	        		data.one = getRowFrom(meta.getStepName1());
+        		}
+        	}
+        	else if (data.two == null && data.two_optional == true)
+        	{
+        		/**
+        		 * We have reached the end of stream 2 and there are records
+        		 * present in the first stream. Also, join is left or full outer.
+        		 * So, create a row with just the values in the first stream
+        		 * and push it forward
+        		 */
+        		Row combi = new Row(data.one);
+        		combi.addRow(data.two_dummy);
+        		putRow(combi);
+        		data.one = getRowFrom(meta.getStepName1());
+        	}
+        	else if (data.two != null)
+        	{
+        		/*
+        		 * We are doing an inner or left outer join, so throw this row away
+        		 * from the 2nd stream
+        		 */
+        		data.two = getRowFrom(meta.getStepName2());
+        	}
         	break;
         case -1:
-        	// Second stream is greater. So read next row from first stream
-        	data.one = getRowFrom(meta.getStepName1());
+        	logDebug("Second stream has missing key");
+        	/*
+        	 * Second stream is greater than the first stream. This means:
+        	 *   a) This key is missing in the second stream
+        	 *   b) First stream may have finished
+        	 *  So, if full/left outer join is set and 1st stream is not null,
+        	 *  we push a record to output with only the values for the first
+        	 *  row populated. Next, if 1st stream is not finished, we get a row
+        	 *  from it; otherwise signal that we are done
+        	 */
+        	if (data.two_optional == true)
+        	{
+        		if (data.one != null)
+        		{
+	        		Row combi = new Row(data.one);
+	        		combi.addRow(data.two_dummy);
+	        		putRow(combi);
+	        		data.one = getRowFrom(meta.getStepName1());
+        		}
+        		else if (data.one_optional == false)
+        		{
+        			/*
+        			 * We are doing a left outer join and there are no more rows
+        			 * in the first stream; so we are done
+        			 */
+        			setOutputDone();
+        			return false;
+        		}
+        		else
+        		{
+        			/*
+        			 * We are doing a full outer join so print the 2nd stream and
+        			 * get the next row from the 2nd stream
+        			 */
+	        		Row combi = new Row(data.one_dummy);
+	        		combi.addRow(data.two);
+	        		putRow(combi);
+	        		data.two = getRowFrom(meta.getStepName2());
+        		}
+        	}
+        	else if (data.one == null && data.one_optional == true)
+        	{
+        		/*
+        		 * We have reached the end of stream 1 and there are records
+        		 * present in the second stream. Also, join is right or full outer.
+        		 * So, create a row with just the values in the 2nd stream
+        		 * and push it forward
+        		 */
+        		Row combi = new Row(data.one_dummy);
+        		combi.addRow(data.two);
+        		putRow(combi);
+        		data.two = getRowFrom(meta.getStepName2());
+        	}
+        	else if (data.one != null)
+        	{
+        		/*
+        		 * We are doing an inner or right outer join so a non-matching row
+        		 * in the first stream is of no use to us - throw it away and get the
+        		 * next row
+        		 */
+        		data.one = getRowFrom(meta.getStepName1());
+        	}
         	break;
         default:
-        	// How on earth did we get here? Make sure we do not go into an infinite
-        	// loop by continuing to read data
+        	logDebug("We shouldn't be here!!");
+        	// Make sure we do not go into an infinite loop by continuing to read data
         	data.one = getRowFrom(meta.getStepName1());
     	    data.two = getRowFrom(meta.getStepName2());
     	    break;
@@ -167,16 +372,25 @@ public class MergeJoin extends BaseStep implements StepInterface
 
         if (super.init(smi, sdi))
         {
-            if (meta.getStepName1()!=null ^ meta.getStepName2()!=null)
+            if (meta.getStepName1()==null || meta.getStepName2()==null)
             {
                 logError(Messages.getString("MergeJoin.Log.BothTrueAndFalseNeeded")); //$NON-NLS-1$
+                return false;
             }
-            else
+            String joinType = meta.getJoinType();
+            for (int i = 0; i < MergeJoinMeta.join_types.length; ++i)
             {
-                return true;
+            	if (joinType.equalsIgnoreCase(MergeJoinMeta.join_types[i]))
+            	{
+            		data.one_optional = MergeJoinMeta.one_optionals[i];
+            		data.two_optional = MergeJoinMeta.two_optionals[i];
+            		return true;
+            	}
             }
+           	logError(Messages.getString("MergeJoin.Log.InvalidJoinType", meta.getJoinType())); //$NON-NLS-1$
+               return false;
         }
-        return false;
+        return true;
     }
 
     /**
