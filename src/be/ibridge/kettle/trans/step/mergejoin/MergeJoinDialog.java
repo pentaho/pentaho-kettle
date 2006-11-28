@@ -197,7 +197,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 		wType=new CCombo(shell, SWT.BORDER );
  		props.setLook(wType);
 
-        wType.setItems(MergeJoinMeta.join_types);
+        wType.setItems(input.join_types);
         
 		wType.addModifyListener(lsMod);
 		fdType=new FormData();
@@ -350,7 +350,7 @@ public class MergeJoinDialog extends BaseStepDialog implements StepDialogInterfa
 		if (joinType != null && joinType.length() > 0)
 			wType.setText(joinType);
 		else
-			wType.setText(MergeJoinMeta.join_types[0]);
+			wType.setText(input.join_types[0]);
         
         for (int i=0;i<input.getKeyFields1().length;i++)
         {

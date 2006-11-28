@@ -17,7 +17,6 @@ package be.ibridge.kettle.trans.step.mergejoin;
 
 import java.util.ArrayList;
 import java.util.Iterator;
-
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -378,12 +377,12 @@ public class MergeJoin extends BaseStep implements StepInterface
                 return false;
             }
             String joinType = meta.getJoinType();
-            for (int i = 0; i < MergeJoinMeta.join_types.length; ++i)
+            for (int i = 0; i < meta.join_types.length; ++i)
             {
-            	if (joinType.equalsIgnoreCase(MergeJoinMeta.join_types[i]))
+            	if (joinType.equalsIgnoreCase(meta.join_types[i]))
             	{
-            		data.one_optional = MergeJoinMeta.one_optionals[i];
-            		data.two_optional = MergeJoinMeta.two_optionals[i];
+            		data.one_optional = meta.one_optionals[i];
+            		data.two_optional = meta.two_optionals[i];
             		return true;
             	}
             }
