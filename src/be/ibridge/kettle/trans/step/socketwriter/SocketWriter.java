@@ -132,6 +132,9 @@ public class SocketWriter extends BaseStep implements StepInterface
     {
         try
         {
+            // Make sure it all arrives at the reader before we do anything else.
+            data.outputStream.flush();
+
             // Before closing the socket, read back the response "FINISHED" from the reader.
             // This is sent upon getting EOF at the client
             // That way we know that after this, we can close streams and sockets at will, all is done.
