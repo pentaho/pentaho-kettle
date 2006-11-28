@@ -303,13 +303,11 @@ public class BaseStep extends Thread
     
     public static final String category_order[] = { CATEGORY_INPUT, CATEGORY_OUTPUT, CATEGORY_LOOKUP, CATEGORY_TRANSFORM, CATEGORY_DATA_WAREHOUSE, CATEGORY_EXTRA, CATEGORY_MAPPING, CATEGORY_EXPERIMENTAL }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$
     
-    /*
 	private static final int MIN_PRIORITY    =  1;
 	private static final int LOW_PRIORITY    =  3;
 	private static final int NORMAL_PRIORITY =  5;
 	private static final int HIGH_PRIORITY   =  7;
 	private static final int MAX_PRIORITY    = 10;
-    */
     
     public static final String[] statusDesc =
     { 
@@ -329,13 +327,6 @@ public class BaseStep extends Thread
 	protected  LogWriter log;
 	private    Trans     trans;
     
-    /**
-     * Deprecated: not needed anymore as we're showing stack traces when an unexpected error was encountered.
-     * This is enough for the developers to find the problem.
-     * This Variable has caused some performance problems in the passed and should be avoided!
-     * @deprecated
-     */
-	public     String    debug;
 	public     ArrayList previewBuffer;
 	public     int       previewSize;
 	
@@ -740,21 +731,12 @@ public class BaseStep extends Thread
 			int sleeptime=transMeta.getSleepTimeFull();
 			RowSet rs=(RowSet)outputRowSets.get(i);
 
-            /*
-             * Let's leave the priority setting out for now...
-             *  
-			try
-			{
-				rs.setPriorityFrom(calcPutPriority(rs));
-			}
-			catch(Exception e)
-			{
-				logError(Messages.getString("BaseStep.Log.ErrorSettingPriority")); //$NON-NLS-1$
-				setErrors(1);
-				stopAll();
-				return;
-			}
-             */
+            // Set the priority every 4096 rows only
+            //
+			if (linesWritten>0 && (linesWritten&0xFFF)==0) 
+            {
+                rs.setPriorityFrom(calcPutPriority(rs));
+            }
 			
 			while(rs.isFull() && !stopped) 
 			{			
@@ -1065,14 +1047,12 @@ public class BaseStep extends Thread
 		} 
 		
 		// Set the appropriate priority depending on the amount of data in the rowset:
-        // Only do this every 100 rows...
+        // Only do this every 4096 rows...
         // Mmm, the less we do it, the faster the tests run, let's leave this out for now ;-)
-        /*
-        if (linesRead>0 && (linesRead%100)==0)
+        if (linesRead>0 && (linesRead&0xFFF)==0)
         {
             in.setPriorityTo(calcGetPriority(in));
         }
-        */
 		
 		// Get this row!
 		Row row=in.getRow();
@@ -1537,7 +1517,6 @@ public class BaseStep extends Thread
         return this;
     }
 	
-    /*
 	private int calcPutPriority(RowSet rs)
 	{
 		if (rs.size() > transMeta.getSizeRowset() * 0.95) return MIN_PRIORITY;
@@ -1555,7 +1534,6 @@ public class BaseStep extends Thread
 		if (rs.size() > transMeta.getSizeRowset() * 0.25) return LOW_PRIORITY;
 		return MIN_PRIORITY;
 	}
-    */
 
 	public int rowsetOutputSize()
 	{
