@@ -146,6 +146,7 @@ import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
 import be.ibridge.kettle.trans.TransHopMeta;
 import be.ibridge.kettle.trans.TransMeta;
+import be.ibridge.kettle.trans.cluster.TransSplitter;
 import be.ibridge.kettle.trans.dialog.TransDialog;
 import be.ibridge.kettle.trans.dialog.TransHopDialog;
 import be.ibridge.kettle.trans.dialog.TransLoadProgressDialog;
@@ -419,7 +420,10 @@ public class Spoon implements AddUndoPositionInterface
 
                     // CTRL-T --> transformation
                     if ((int)e.character == 20 && ctrl && !alt) { setTrans();  spoongraph.clearSettings();  }
-                    
+
+                    // CTRL-U --> transformation
+                    if ((int)e.character == 21 && ctrl && !alt) { splitTrans();  spoongraph.clearSettings();  }
+
                     // CTRL-Y --> redo action
                     if ((int)e.character == 25 && ctrl && !alt) { redoAction(); spoongraph.clearSettings(); }
                     
@@ -5216,6 +5220,39 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
 
-
+    private void splitTrans()
+    {
+        try
+        {
+            TransSplitter transSplitter = new TransSplitter(transMeta);
+            transSplitter.generateMasterTransformation();
+            
+            // Send the transformations to the servers...
+            //
+            // First the master...
+            //
+            TransMeta master = transSplitter.getMaster();
+            SlaveServer masterServer = transSplitter.getMasterServer();
+            new Spoon(log, shell.getDisplay(), master, rep).open();
+            String masterReply = masterServer.sendXML(master.getXML(), AddTransServlet.CONTEXT_PATH);
+            new ShowBrowserDialog(shell, "Master", masterReply);
+            
+            // Then the slaves...
+            //
+            SlaveServer slaves[] = transSplitter.getSlaveTargets();
+            for (int i=0;i<slaves.length;i++)
+            {
+                TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+                new Spoon(log, shell.getDisplay(), slaveTrans, rep).open();
+                String slaveReply = slaves[i].sendXML(slaveTrans.getXML(), AddTransServlet.CONTEXT_PATH);
+                new ShowBrowserDialog(shell, "Slave: "+slaveTrans.getName(), slaveReply);
+            }
+        }
+        catch(Exception e)
+        {
+            new ErrorDialog(shell, "Split transformation", "There was an error during transformation split", e);
+        }
+    }
 
 }
+

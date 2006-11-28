@@ -69,14 +69,28 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
 		
 	private long id;
 
+    
     /**
-     * @param stepid
-     * @param stepname
-     * @param stepMetaInterface
+     * @param stepid The ID of the step: this is derived information, you can also use the constructor without stepid.
+     *               This constructor will be deprecated soon.
+     * @param stepname The name of the new step
+     * @param stepMetaInterface The step metadata interface to use (TextFileInputMeta, etc)
      */
-	public StepMeta(String stepid, String stepname, StepMetaInterface stepMetaInterface)
+    public StepMeta(String stepid, String stepname, StepMetaInterface stepMetaInterface)
+    {
+        this(stepname, stepMetaInterface);
+    }
+    
+    /**
+     * @param stepname The name of the new step
+     * @param stepMetaInterface The step metadata interface to use (TextFileInputMeta, etc)
+     */
+	public StepMeta(String stepname, StepMetaInterface stepMetaInterface)
 	{
-		this.stepid            = stepid;
+        if (stepMetaInterface!=null)
+        {
+            this.stepid = StepLoader.getInstance().getStepPluginID(stepMetaInterface);
+        }
 		this.stepname          = stepname;
 		this.stepMetaInterface = stepMetaInterface;
         

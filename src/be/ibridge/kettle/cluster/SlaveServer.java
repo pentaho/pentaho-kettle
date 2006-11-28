@@ -28,11 +28,13 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     private String proxyPort;
     private String nonProxyHosts;
     
+    private boolean master;
+    
     public SlaveServer()
     {
     }
     
-    public SlaveServer(String hostname, String port, String username, String password, String proxyHostname, String proxyPort, String nonProxyHosts)
+    public SlaveServer(String hostname, String port, String username, String password, String proxyHostname, String proxyPort, String nonProxyHosts, boolean master)
     {
         this.hostname = hostname;
         this.port     = port;
@@ -42,6 +44,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         this.proxyHostname = proxyHostname;
         this.proxyPort = proxyPort;
         this.nonProxyHosts = nonProxyHosts;
+        
+        this.master = master;
     }
     
     public SlaveServer(Node slaveNode)
@@ -53,6 +57,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         this.proxyHostname = XMLHandler.getTagValue(slaveNode, "proxy_hostname");
         this.proxyPort     = XMLHandler.getTagValue(slaveNode, "proxy_port");
         this.nonProxyHosts = XMLHandler.getTagValue(slaveNode, "non_proxy_hosts");
+        this.master = "Y".equalsIgnoreCase( XMLHandler.getTagValue(slaveNode, "master") );
     }
 
     public String getXML()
@@ -67,6 +72,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         xml.append(XMLHandler.addTagValue("proxy_hostname", proxyHostname, false));
         xml.append(XMLHandler.addTagValue("proxy_port", proxyPort, false));
         xml.append(XMLHandler.addTagValue("non_proxy_hosts", nonProxyHosts, false));
+        xml.append(XMLHandler.addTagValue("master", master, false));
 
         xml.append("</slaveserver>");
 
@@ -91,6 +97,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         proxyHostname = row.getString("PROXY_HOST_NAME", null);
         proxyPort     = row.getString("PROXY_PORT", null);
         nonProxyHosts = row.getString("NON_PROXY_HOSTS", null);
+        master        = row.getBoolean("MASTER", false);
     }
     
     public Object clone()
@@ -277,6 +284,22 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     {
         if (!Const.isEmpty(hostname)) return hostname+getPortSpecification();
         return "Slave Server";
+    }
+
+    /**
+     * @return the master
+     */
+    public boolean isMaster()
+    {
+        return master;
+    }
+
+    /**
+     * @param master the master to set
+     */
+    public void setMaster(boolean master)
+    {
+        this.master = master;
     }
 
 }

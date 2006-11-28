@@ -20,7 +20,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
-import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.Const;
@@ -28,6 +27,7 @@ import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.www.AddTransServlet;
 
@@ -57,12 +57,11 @@ public class SlaveServerDialog extends Dialog
 	private Shell     shell;
 
     // Service
-	private Label    wlHostname, wlPort, wlUsername, wlPassword;
-	private Text     wHostname,  wPort, wUsername,  wPassword;
+	private TextVar  wHostname,  wPort, wUsername,  wPassword;
+    private Button   wMaster;
 
     // Proxy
-    private Label    wlProxyHost, wlProxyPort, wlNonProxyHosts;
-    private Text     wProxyHost, wProxyPort,  wNonProxyHosts;
+    private TextVar   wProxyHost, wProxyPort,  wNonProxyHosts;
 
 	private Button    wOK, wCancel;
 	
@@ -145,6 +144,10 @@ public class SlaveServerDialog extends Dialog
 		wUsername.addSelectionListener(selAdapter);
 		wPassword.addSelectionListener(selAdapter);
 		wHostname.addSelectionListener(selAdapter);
+        wPort.addSelectionListener(selAdapter);
+        wProxyHost.addSelectionListener(selAdapter);
+        wProxyPort.addSelectionListener(selAdapter);
+        wNonProxyHosts.addSelectionListener(selAdapter);
 
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
@@ -180,7 +183,7 @@ public class SlaveServerDialog extends Dialog
         wServiceComp.setLayout(GenLayout);
 
         // What's the service URL?
-        wlHostname = new Label(wServiceComp, SWT.RIGHT); 
+        Label wlHostname = new Label(wServiceComp, SWT.RIGHT); 
         props.setLook(wlHostname);
         wlHostname.setText("Hostname or IP address  ");
         FormData fdlHostname = new FormData();
@@ -189,7 +192,7 @@ public class SlaveServerDialog extends Dialog
         fdlHostname.right = new FormAttachment(middle, -margin);
         wlHostname.setLayoutData(fdlHostname);
 
-        wHostname = new Text(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wHostname = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wHostname);
         wHostname.addModifyListener(lsMod);
         FormData fdHostname = new FormData();
@@ -199,16 +202,16 @@ public class SlaveServerDialog extends Dialog
         wHostname.setLayoutData(fdHostname);
 
         // What's the service URL?
-        wlPort = new Label(wServiceComp, SWT.RIGHT); 
+        Label wlPort = new Label(wServiceComp, SWT.RIGHT); 
         props.setLook(wlPort);
-        wlPort.setText("Port (empty is port 80)");
+        wlPort.setText("Port (empty is port 80)  ");
         FormData fdlPort = new FormData();
         fdlPort.top   = new FormAttachment(wHostname, margin);
         fdlPort.left  = new FormAttachment(0, 0);  // First one in the left top corner
         fdlPort.right = new FormAttachment(middle, -margin);
         wlPort.setLayoutData(fdlPort);
 
-        wPort = new Text(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wPort = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wPort);
         wPort.addModifyListener(lsMod);
         FormData fdPort = new FormData();
@@ -218,8 +221,8 @@ public class SlaveServerDialog extends Dialog
         wPort.setLayoutData(fdPort);
         
         // Username
-        wlUsername = new Label(wServiceComp, SWT.RIGHT ); 
-        wlUsername.setText("Username: "); 
+        Label wlUsername = new Label(wServiceComp, SWT.RIGHT ); 
+        wlUsername.setText("Username  "); 
         props.setLook(wlUsername);
         FormData fdlUsername = new FormData();
         fdlUsername.top  = new FormAttachment(wPort, margin);
@@ -227,7 +230,7 @@ public class SlaveServerDialog extends Dialog
         fdlUsername.right= new FormAttachment(middle, -margin);
         wlUsername.setLayoutData(fdlUsername);
 
-        wUsername = new Text(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wUsername = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wUsername);
         wUsername.addModifyListener(lsMod);
         FormData fdUsername = new FormData();
@@ -238,8 +241,8 @@ public class SlaveServerDialog extends Dialog
 
         
         // Password
-        wlPassword = new Label(wServiceComp, SWT.RIGHT ); 
-        wlPassword.setText("Password: "); 
+        Label wlPassword = new Label(wServiceComp, SWT.RIGHT ); 
+        wlPassword.setText("Password  "); 
         props.setLook(wlPassword);
         FormData fdlPassword = new FormData();
         fdlPassword.top  = new FormAttachment(wUsername, margin);
@@ -247,7 +250,7 @@ public class SlaveServerDialog extends Dialog
         fdlPassword.right= new FormAttachment(middle, -margin);
         wlPassword.setLayoutData(fdlPassword);
 
-        wPassword = new Text(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wPassword = new TextVar(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wPassword);
         wPassword.setEchoChar('*');
         wPassword.addModifyListener(lsMod);
@@ -256,6 +259,24 @@ public class SlaveServerDialog extends Dialog
         fdPassword.left = new FormAttachment(middle, 0); 
         fdPassword.right= new FormAttachment(95, 0);
         wPassword.setLayoutData(fdPassword);
+
+        // Master
+        Label wlMaster = new Label(wServiceComp, SWT.RIGHT ); 
+        wlMaster.setText("Is the master  "); 
+        props.setLook(wlMaster);
+        FormData fdlMaster = new FormData();
+        fdlMaster.top  = new FormAttachment(wPassword, margin);
+        fdlMaster.left = new FormAttachment(0,0);
+        fdlMaster.right= new FormAttachment(middle, -margin);
+        wlMaster.setLayoutData(fdlMaster);
+
+        wMaster = new Button(wServiceComp, SWT.CHECK );
+        props.setLook(wMaster);
+        FormData fdMaster = new FormData();
+        fdMaster.top  = new FormAttachment(wPassword, margin);
+        fdMaster.left = new FormAttachment(middle, 0); 
+        fdMaster.right= new FormAttachment(95, 0);
+        wMaster.setLayoutData(fdMaster);
 
         
         fdServiceComp=new FormData();
@@ -290,7 +311,7 @@ public class SlaveServerDialog extends Dialog
         wProxyComp.setLayout(poolLayout);
 
         // What's the data tablespace name?
-        wlProxyHost = new Label(wProxyComp, SWT.RIGHT); 
+        Label wlProxyHost = new Label(wProxyComp, SWT.RIGHT); 
         props.setLook(wlProxyHost);
         wlProxyHost.setText("Proxy server hostname: "); 
         FormData fdlProxyHost = new FormData();
@@ -299,7 +320,7 @@ public class SlaveServerDialog extends Dialog
         fdlProxyHost.right = new FormAttachment(middle, -margin);
         wlProxyHost.setLayoutData(fdlProxyHost);
 
-        wProxyHost = new Text(wProxyComp, SWT.BORDER | SWT.LEFT | SWT.SINGLE );
+        wProxyHost = new TextVar(wProxyComp, SWT.BORDER | SWT.LEFT | SWT.SINGLE );
         props.setLook(wProxyHost);
         wProxyHost.addModifyListener(lsMod);
         FormData fdProxyHost = new FormData();
@@ -309,7 +330,7 @@ public class SlaveServerDialog extends Dialog
         wProxyHost.setLayoutData(fdProxyHost);
 
         // What's the initial pool size
-        wlProxyPort = new Label(wProxyComp, SWT.RIGHT); 
+        Label wlProxyPort = new Label(wProxyComp, SWT.RIGHT); 
         props.setLook(wlProxyPort);
         wlProxyPort.setText("The proxy server port: "); 
         FormData fdlProxyPort = new FormData();
@@ -318,7 +339,7 @@ public class SlaveServerDialog extends Dialog
         fdlProxyPort.right = new FormAttachment(middle, -margin);
         wlProxyPort.setLayoutData(fdlProxyPort);
 
-        wProxyPort = new Text(wProxyComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wProxyPort = new TextVar(wProxyComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wProxyPort);
         wProxyPort.addModifyListener(lsMod);
         FormData fdProxyPort = new FormData();
@@ -328,7 +349,7 @@ public class SlaveServerDialog extends Dialog
         wProxyPort.setLayoutData(fdProxyPort);
 
         // What's the maximum pool size
-        wlNonProxyHosts = new Label(wProxyComp, SWT.RIGHT); 
+        Label wlNonProxyHosts = new Label(wProxyComp, SWT.RIGHT); 
         props.setLook(wlNonProxyHosts);
         wlNonProxyHosts.setText("Ignore proxy for hosts: regexp | separated: "); 
         FormData fdlNonProxyHosts = new FormData();
@@ -337,7 +358,7 @@ public class SlaveServerDialog extends Dialog
         fdlNonProxyHosts.right = new FormAttachment(middle, -margin);
         wlNonProxyHosts.setLayoutData(fdlNonProxyHosts);
 
-        wNonProxyHosts = new Text(wProxyComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        wNonProxyHosts = new TextVar(wProxyComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wNonProxyHosts);
         wNonProxyHosts.addModifyListener(lsMod);
         FormData fdNonProxyHosts = new FormData();
@@ -375,6 +396,8 @@ public class SlaveServerDialog extends Dialog
         wProxyPort.setText( Const.NVL(slaveServer.getProxyPort(), ""));
         wNonProxyHosts.setText( Const.NVL(slaveServer.getNonProxyHosts(), ""));
         
+        wMaster.setSelection( slaveServer.isMaster() );
+        
 		wHostname.setFocus();
 	}
     
@@ -395,7 +418,9 @@ public class SlaveServerDialog extends Dialog
         originalServer.setProxyHostname(slaveServer.getProxyHostname());
         originalServer.setProxyPort(slaveServer.getProxyPort());
         originalServer.setNonProxyHosts(slaveServer.getNonProxyHosts());
-        
+
+        originalServer.setMaster( slaveServer.isMaster() );
+
         originalServer.setChanged();
 
         ok=true;
@@ -414,6 +439,8 @@ public class SlaveServerDialog extends Dialog
         slaveServer.setProxyHostname(wProxyHost.getText());
         slaveServer.setProxyPort(wProxyPort.getText());
         slaveServer.setNonProxyHosts(wNonProxyHosts.getText());
+
+        slaveServer.setMaster(wMaster.getSelection());
     }
 
 	public void test()

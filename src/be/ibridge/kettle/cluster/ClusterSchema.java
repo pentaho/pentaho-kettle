@@ -11,6 +11,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.SharedObjectInterface;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.repository.Repository;
 
 /**
@@ -30,6 +31,9 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     
     /** The list of slave servers we can address */
     private List slaveServers;
+    
+    /** The data socket port where we start numbering.  The upper limit is the number of remote socket connections. */
+    private String basePort;
 
     private boolean shared;
     
@@ -52,6 +56,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     {
         ClusterSchema clusterSchema = new ClusterSchema();
         clusterSchema.setName(name);
+        clusterSchema.setBasePort(basePort);
         
         for (int i=0;i<slaveServers.size();i++)
         {
@@ -73,12 +78,18 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         return name.equals(((ClusterSchema)obj).name);
     }
     
+    public int hashCode()
+    {
+        return name.hashCode();
+    }
+    
     public String getXML()
     {
         StringBuffer xml = new StringBuffer();
         
         xml.append("        <"+XML_TAG+">"+Const.CR);
         xml.append("          "+XMLHandler.addTagValue("name", name));
+        xml.append("          "+XMLHandler.addTagValue("base_port", basePort));
         xml.append("          <slaveservers>"+Const.CR);
         for (int i=0;i<slaveServers.size();i++)
         {
@@ -95,7 +106,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         this();
         
         name = XMLHandler.getTagValue(clusterSchemaNode, "name");
-        
+        basePort = XMLHandler.getTagValue(clusterSchemaNode, "base_port");
         Node slavesNode = XMLHandler.getSubNode(clusterSchemaNode, "slaveservers");
         int nrSlaves = XMLHandler.countNodes(slavesNode, "slaveserver");
         for (int i=0;i<nrSlaves;i++)
@@ -108,7 +119,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     
     public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
     {
-        long id_cluster_schema = rep.insertClusterSchema(id_transformation, name);
+        long id_cluster_schema = rep.insertClusterSchema(id_transformation, name, basePort);
         
         for (int i=0;i<slaveServers.size();i++)
         {
@@ -124,6 +135,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         Row row = rep.getClusterSchema(id_cluster_schema);
         
         name = row.getString("SCHEMA_NAME", null);
+        basePort = row.getString("BASE_PORT", null);
         
         long[] pids = rep.getSlaveServerIDs(id_cluster_schema);
         for (int i=0;i<pids.length;i++)
@@ -192,5 +204,35 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     public void setShared(boolean shared)
     {
         this.shared = shared;
+    }
+
+    /**
+     * @return the basePort
+     */
+    public String getBasePort()
+    {
+        return basePort;
+    }
+
+    /**
+     * @param basePort the basePort to set
+     */
+    public void setBasePort(String basePort)
+    {
+        this.basePort = basePort;
+    }
+    
+    public SlaveServer findMaster() throws KettleException
+    {
+        for (int i=0;i<slaveServers.size();i++)
+        {
+            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            if (slaveServer.isMaster()) return slaveServer;
+        }
+        if (slaveServers.size()>0)
+        {
+            throw new KettleException("No master server defined in cluster schema ["+name+"]");
+        }
+        throw new KettleException("No slave server(s) defined in cluster schema ["+name+"]");
     }
 }

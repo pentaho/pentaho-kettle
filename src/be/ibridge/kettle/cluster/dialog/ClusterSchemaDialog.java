@@ -29,6 +29,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
 import be.ibridge.kettle.core.widget.TableView;
+import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 
@@ -71,6 +72,8 @@ public class ClusterSchemaDialog extends Dialog
     private Button wDel;
 
     private Button wEdit;
+
+    private TextVar wPort;
     
 	public ClusterSchemaDialog(Shell par, ClusterSchema clusterSchema)
 	{
@@ -123,20 +126,40 @@ public class ClusterSchemaDialog extends Dialog
         Label wlName = new Label(shell, SWT.RIGHT); 
         props.setLook(wlName);
         wlName.setText("Schema name  ");
-        FormData fdlServiceURL = new FormData();
-        fdlServiceURL.top   = new FormAttachment(0, 0);
-        fdlServiceURL.left  = new FormAttachment(0, 0);  // First one in the left top corner
-        fdlServiceURL.right = new FormAttachment(middle, 0);
-        wlName.setLayoutData(fdlServiceURL);
+        FormData fdlName = new FormData();
+        fdlName.top   = new FormAttachment(0, 0);
+        fdlName.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlName.right = new FormAttachment(middle, 0);
+        wlName.setLayoutData(fdlName);
 
         wName = new Text(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
         props.setLook(wName);
         wName.addModifyListener(lsMod);
-        FormData fdServiceURL = new FormData();
-        fdServiceURL.top  = new FormAttachment(0, 0);
-        fdServiceURL.left = new FormAttachment(middle, margin); // To the right of the label
-        fdServiceURL.right= new FormAttachment(95, 0);
-        wName.setLayoutData(fdServiceURL);
+        FormData fdName = new FormData();
+        fdName.top  = new FormAttachment(0, 0);
+        fdName.left = new FormAttachment(middle, margin); // To the right of the label
+        fdName.right= new FormAttachment(95, 0);
+        wName.setLayoutData(fdName);
+        
+        // What's the base port??
+        Label wlPort = new Label(shell, SWT.RIGHT); 
+        props.setLook(wlPort);
+        wlPort.setText("Base socket port  ");
+        FormData fdlPort = new FormData();
+        fdlPort.top   = new FormAttachment(wName, margin);
+        fdlPort.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlPort.right = new FormAttachment(middle, 0);
+        wlPort.setLayoutData(fdlPort);
+
+        wPort = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wPort);
+        wPort.addModifyListener(lsMod);
+        FormData fdPort = new FormData();
+        fdPort.top  = new FormAttachment(wName, margin);
+        fdPort.left = new FormAttachment(middle, margin); // To the right of the label
+        fdPort.right= new FormAttachment(95, 0);
+        wPort.setLayoutData(fdPort);
+
 
         // Schema servers:
         Label wlServers = new Label(shell, SWT.RIGHT);
@@ -145,7 +168,7 @@ public class ClusterSchemaDialog extends Dialog
         FormData fdlServers=new FormData();
         fdlServers.left = new FormAttachment(0, 0);
         fdlServers.right = new FormAttachment(middle, 0);
-        fdlServers.top  = new FormAttachment(wName, margin);
+        fdlServers.top  = new FormAttachment(wPort, margin);
         wlServers.setLayoutData(fdlServers);
         
         // Some buttons to manage...
@@ -180,14 +203,16 @@ public class ClusterSchemaDialog extends Dialog
 
         ColumnInfo[] partitionColumns = new ColumnInfo[] { 
                 new ColumnInfo( "Service URL", ColumnInfo.COLUMN_TYPE_TEXT, true, true), //$NON-NLS-1$
+                new ColumnInfo( "Master?", ColumnInfo.COLUMN_TYPE_TEXT, true, true), //$NON-NLS-1$
         };
         wServers = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, partitionColumns, 1, lsMod, props);
         wServers.setReadonly(true);
+        wServers.setSortable(false);
         props.setLook(wServers);
         FormData fdServers = new FormData();
         fdServers.left = new FormAttachment(middle, margin );
         fdServers.right = new FormAttachment(wDel, -2*margin);
-        fdServers.top = new FormAttachment(wName, margin);
+        fdServers.top = new FormAttachment(wPort, margin);
         fdServers.bottom = new FormAttachment(wOK, -margin * 2);
         wServers.setLayoutData(fdServers);
         wServers.table.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { editSlaveServer(); }});
@@ -258,7 +283,8 @@ public class ClusterSchemaDialog extends Dialog
     public void getData()
 	{
 		wName.setText( Const.NVL(clusterSchema.getName(), "") );
-
+		wPort.setText( Const.NVL(clusterSchema.getBasePort(), ""));
+        
         refreshSlaveServers();
         
 		wName.setFocus();
@@ -273,6 +299,7 @@ public class ClusterSchemaDialog extends Dialog
             TableItem item = new TableItem(wServers.table, SWT.NONE);
             SlaveServer slaveServer = (SlaveServer)slaveServers.get(i);
             if (slaveServer.getHostname()!=null) item.setText(1, slaveServer.getHostname());
+            item.setText(2, slaveServer.isMaster()?"Y":"N");
         }
         wServers.removeEmptyRows();
         wServers.setRowNums();
@@ -289,6 +316,7 @@ public class ClusterSchemaDialog extends Dialog
 	{
         getInfo();
         originalSchema.setName(clusterSchema.getName());
+        originalSchema.setBasePort(clusterSchema.getBasePort());
         originalSchema.setSlaveServers(clusterSchema.getSlaveServers());
         originalSchema.setChanged();
 
@@ -297,10 +325,10 @@ public class ClusterSchemaDialog extends Dialog
         dispose();
 	}
     
-    // Get dialog info in securityService
 	private void getInfo()
     {
         clusterSchema.setName(wName.getText());
-        // The cluster-schema is maneged by the buttons.
+        clusterSchema.setBasePort(wPort.getText());
+        // The slave servers are managed by the buttons.
     }
 }

@@ -1368,7 +1368,7 @@ public class Repository
         return id;
     }
     
-    public synchronized long insertClusterSchema(long id_transformation, String schemaName) throws KettleDatabaseException
+    public synchronized long insertClusterSchema(long id_transformation, String schemaName, String basePort) throws KettleDatabaseException
     {
         long id = getNextClusterSchemaID();
 
@@ -1377,6 +1377,7 @@ public class Repository
         table.addValue(new Value("ID_CLUSTER_SCHEMA", id));
         table.addValue(new Value("ID_TRANSFORMATION", id_transformation));
         table.addValue(new Value("SCHEMA_NAME", schemaName));
+        table.addValue(new Value("BASE_PORT", basePort));
 
         database.prepareInsert(table, "R_CLUSTER_SCHEMA");
         database.setValuesInsert(table);
@@ -1402,6 +1403,7 @@ public class Repository
         table.addValue(new Value("PROXY_HOST_NAME", slaveServer.getProxyHostname()));
         table.addValue(new Value("PROXY_PORT", slaveServer.getProxyPort()));
         table.addValue(new Value("NON_PROXY_HOSTS", slaveServer.getNonProxyHosts()));
+        table.addValue(new Value("MASTER", slaveServer.isMaster()));
 
         database.prepareInsert(table, "R_SLAVE_SERVER");
         database.setValuesInsert(table);
@@ -4042,6 +4044,7 @@ public class Repository
         table.addValue(new Value("ID_CLUSTER_SCHEMA", Value.VALUE_TYPE_INTEGER, KEY, 0));
         table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
         table.addValue(new Value("SCHEMA_NAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("BASE_PORT", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         sql = database.getDDL(tablename, table, null, false, "ID_CLUSTER_SCHEMA", false);
 
         if (sql != null && sql.length() > 0)
@@ -4074,6 +4077,7 @@ public class Repository
         table.addValue(new Value("PROXY_HOST_NAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("PROXY_PORT", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("NON_PROXY_HOSTS", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("MASTER", Value.VALUE_TYPE_BOOLEAN));
         sql = database.getDDL(tablename, table, null, false, "ID_SLAVE_SERVER", false);
 
         if (sql != null && sql.length() > 0)

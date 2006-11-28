@@ -55,6 +55,11 @@ public class TransPainter
     private int          linewidth;
     private Hashtable    images;
 
+    public TransPainter(TransMeta transMeta)
+    {
+        this(transMeta, transMeta.getMaximum(), null, null, null, null, null);
+    }
+
     public TransPainter(TransMeta transMeta, Point area)
     {
         this(transMeta, area, null, null, null, null, null);
