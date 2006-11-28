@@ -314,17 +314,17 @@ public class TransSplitter
 
     public static final String getWriterName(String stepname, SlaveServer slaveServer)
     {
-        return stepname+" <writer:"+slaveServer+">";
+        return stepname+" (writer)";
     }
     
     public static final String getReaderName(String stepname, SlaveServer slaveServer)
     {
-        return stepname+" <reader:"+slaveServer+">";
+        return stepname+" (reader)";
     }
 
     public static final String getSlaveTransName(String transName, ClusterSchema clusterSchema, SlaveServer slaveServer)
     {
-        return transName + " <"+clusterSchema+":"+slaveServer+">";
+        return transName + " ("+clusterSchema+":"+slaveServer.getHostname()+")";
     }
     
     /**
@@ -384,13 +384,12 @@ public class TransSplitter
      */
     private TransMeta getSlaveTransformation(ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
     {
-        String key = clusterSchema.getName()+" - "+slaveServer;
-        TransMeta slave = (TransMeta) slaveTransMap.get(key);
+        TransMeta slave = (TransMeta) slaveTransMap.get(slaveServer);
         
         if (slave==null)
         {
             slave = getOriginalCopy(true, clusterSchema, slaveServer);
-            slaveTransMap.put(key, slave);
+            slaveTransMap.put(slaveServer, slave);
         }
         return slave;
     }
@@ -428,13 +427,15 @@ public class TransSplitter
     }
 
     /**
-     * @return the slaveTransMap
+     * @return the slaveTransMap : the mapping between a slaveServer and the transformation
+     *
      */
     public Map getSlaveTransMap()
     {
         return slaveTransMap;
     }
 
+    
     public TransMeta[] getSlaves()
     {
         Collection collection = slaveTransMap.values();
@@ -445,6 +446,16 @@ public class TransSplitter
     {
         Set set = slaveTransMap.keySet();
         return (SlaveServer[]) set.toArray(new SlaveServer[set.size()]);
+        /*
+        SlaveServer slaves[] = new SlaveServer[set.size()];
+        int i=0;
+        for (Iterator iter = set.iterator(); iter.hasNext(); i++)
+        {
+            ClusterSchemaSlaveServer key = (ClusterSchemaSlaveServer) iter.next();
+            slaves[i] = key.getSlaveServer();
+        }
+        return slaves;
+        */
     }
     
     public SlaveServer getMasterServer() throws KettleException

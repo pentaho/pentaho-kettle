@@ -298,7 +298,7 @@ public class ClusterSchemaDialog extends Dialog
         {
             TableItem item = new TableItem(wServers.table, SWT.NONE);
             SlaveServer slaveServer = (SlaveServer)slaveServers.get(i);
-            if (slaveServer.getHostname()!=null) item.setText(1, slaveServer.getHostname());
+            if (slaveServer.getHostname()!=null) item.setText(1, slaveServer.toString());
             item.setText(2, slaveServer.isMaster()?"Y":"N");
         }
         wServers.removeEmptyRows();

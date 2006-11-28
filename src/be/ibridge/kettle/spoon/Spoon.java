@@ -5106,37 +5106,7 @@ public class Spoon implements AddUndoPositionInterface
         JarfileGenerator.generateJarFile(transMeta);
     }
     
-    /**
-     * Sends transformation to slave server
-     */
-    public void sendXMLToSlaveServer()
-    {
-        // Select a cluster schema...
-        String[] schemas = transMeta.getClusterSchemaNames();
-        EnterSelectionDialog schemaDialog = new EnterSelectionDialog(shell, schemas, "Select a cluster schema", "Select the clustering schema to use: ");
-        if (schemaDialog.open()==null || schemaDialog.getSelectionNr()<0) return;
-        
-        ClusterSchema clusterSchema = (ClusterSchema) transMeta.getClusterSchemas().get(schemaDialog.getSelectionNr());
-        
-        // Now select the slave server...
-        String[] slaves = clusterSchema.getSlaveServerStrings();
-        EnterSelectionDialog slaveDialog = new EnterSelectionDialog(shell, slaves, "Select a slave server", "Select the desired slave server to send this transformation to: ");
-        if (slaveDialog.open()==null || slaveDialog.getSelectionNr()<0) return;
-        
-        SlaveServer slaveServer = (SlaveServer) clusterSchema.getSlaveServers().get(slaveDialog.getSelectionNr());
-        
-        try
-        {
-            String reply = slaveServer.sendXML(transMeta.getXML(), AddTransServlet.CONTEXT_PATH);
-            
-            ShowBrowserDialog showBrowserDialog = new ShowBrowserDialog(shell, "Browser", reply);
-            showBrowserDialog.open();
-        }
-        catch (Exception e)
-        {
-            new ErrorDialog(shell, "Erro", "Error sending transformation to server", e);
-        }
-    }
+
 
     /**
      * This creates a new database partitioning schema, edits it and adds it to the transformation metadata
@@ -5219,6 +5189,38 @@ public class Spoon implements AddUndoPositionInterface
             refreshTree(true);
         }
     }
+    
+    /**
+     * Sends transformation to slave server
+     */
+    public void sendXMLToSlaveServer()
+    {
+        // Select a cluster schema...
+        String[] schemas = transMeta.getClusterSchemaNames();
+        EnterSelectionDialog schemaDialog = new EnterSelectionDialog(shell, schemas, "Select a cluster schema", "Select the clustering schema to use: ");
+        if (schemaDialog.open()==null || schemaDialog.getSelectionNr()<0) return;
+        
+        ClusterSchema clusterSchema = (ClusterSchema) transMeta.getClusterSchemas().get(schemaDialog.getSelectionNr());
+        
+        // Now select the slave server...
+        String[] slaves = clusterSchema.getSlaveServerStrings();
+        EnterSelectionDialog slaveDialog = new EnterSelectionDialog(shell, slaves, "Select a slave server", "Select the desired slave server to send this transformation to: ");
+        if (slaveDialog.open()==null || slaveDialog.getSelectionNr()<0) return;
+        
+        SlaveServer slaveServer = (SlaveServer) clusterSchema.getSlaveServers().get(slaveDialog.getSelectionNr());
+        
+        try
+        {
+            String reply = slaveServer.sendXML(transMeta.getXML(), AddTransServlet.CONTEXT_PATH);
+            
+            ShowBrowserDialog showBrowserDialog = new ShowBrowserDialog(shell, "Browser", reply);
+            showBrowserDialog.open();
+        }
+        catch (Exception e)
+        {
+            new ErrorDialog(shell, "Erro", "Error sending transformation to server", e);
+        }
+    }
 
     private void splitTrans()
     {
@@ -5235,7 +5237,7 @@ public class Spoon implements AddUndoPositionInterface
             SlaveServer masterServer = transSplitter.getMasterServer();
             new Spoon(log, shell.getDisplay(), master, rep).open();
             String masterReply = masterServer.sendXML(master.getXML(), AddTransServlet.CONTEXT_PATH);
-            new ShowBrowserDialog(shell, "Master", masterReply);
+            new ShowBrowserDialog(shell, "Master", masterReply).open();
             
             // Then the slaves...
             //
@@ -5245,7 +5247,7 @@ public class Spoon implements AddUndoPositionInterface
                 TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
                 new Spoon(log, shell.getDisplay(), slaveTrans, rep).open();
                 String slaveReply = slaves[i].sendXML(slaveTrans.getXML(), AddTransServlet.CONTEXT_PATH);
-                new ShowBrowserDialog(shell, "Slave: "+slaveTrans.getName(), slaveReply);
+                new ShowBrowserDialog(shell, "Slave: "+slaveTrans.getName(), slaveReply).open();
             }
         }
         catch(Exception e)
