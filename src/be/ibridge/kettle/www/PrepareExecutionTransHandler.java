@@ -87,11 +87,14 @@ public class PrepareExecutionTransHandler extends AbstractHandler
                 {
                     if (useXML)
                     {
-                        out.println(new WebResult(WebResult.STRING_ERROR, "Initialisation of transformation failed."));
+                        out.println(new WebResult(WebResult.STRING_ERROR, "Initialisation of transformation failed: "+Const.CR+appender.getBuffer().toString()));
                     }
                     else
                     {
                         out.println("<H1>Transformation '"+transName+"' was not initialised correctly.</H1>");
+                        out.println("<pre>");
+                        out.println(appender.getBuffer().toString());
+                        out.println("</pre>");
                         out.println("<a href=\"/kettle/transStatus?name="+transName+"\">Back to the transformation status page</a><p>");
                     }
                 }
