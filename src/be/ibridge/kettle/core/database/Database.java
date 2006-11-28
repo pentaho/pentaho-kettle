@@ -383,7 +383,7 @@ public class Database
             {
                 if (!Const.isEmpty(username))
                 {
-                    connection = DriverManager.getConnection(url, username, password);
+                    connection = DriverManager.getConnection(url, username, Const.NVL(password, ""));
                 }
                 else
                 {
