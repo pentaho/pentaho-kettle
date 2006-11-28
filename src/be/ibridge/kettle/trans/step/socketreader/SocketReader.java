@@ -79,7 +79,7 @@ public class SocketReader extends BaseStep implements StepInterface
                 {
                     logError("Error initialising step: "+e.toString());
                     logError(Const.getStackTracker(e));
-                    throw new KettleException("Unable to open socket to server", e);
+                    throw new KettleException("Unable to open socket to server "+StringUtil.environmentSubstitute(meta.getHostname())+" port "+StringUtil.environmentSubstitute(meta.getPort()), e);
                 }
                 
                 data.row = new Row(data.inputStream); // This is the metadata
