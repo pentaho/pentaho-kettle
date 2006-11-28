@@ -45,7 +45,7 @@ import be.ibridge.kettle.trans.step.StepMetaInterface;
 
 public class SocketReader extends BaseStep implements StepInterface
 {
-	public static final Object STRING_FINISHED = "Finished";
+	public static final String STRING_FINISHED = "Finished";
     private SocketReaderMeta meta;
 	private SocketReaderData data;
 	
@@ -97,7 +97,7 @@ public class SocketReader extends BaseStep implements StepInterface
             // Send "Finished" message back to server.
             try
             {
-                data.outputStream.writeUTF(STRING_FINISHED+Const.CR);
+                data.outputStream.writeUTF(STRING_FINISHED);
                 logBasic("Waiting a few seconds before finishing this step.");
                 try
                 {
