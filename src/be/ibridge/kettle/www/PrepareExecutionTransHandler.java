@@ -38,7 +38,6 @@ public class PrepareExecutionTransHandler extends AbstractHandler
 
         if (log.isDebug()) log.logDebug(toString(), "Prepare execution of transformation requested");
 
-        response.setContentType("text/html");
 
         OutputStream os = response.getOutputStream();
         PrintStream out = new PrintStream(os);
@@ -48,10 +47,12 @@ public class PrepareExecutionTransHandler extends AbstractHandler
         
         if (useXML)
         {
+            response.setContentType("text/xml");
             out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
         }
         else
         {
+            response.setContentType("text/html");
             out.println("<HTML>");
             out.println("<HEAD><TITLE>Prepare execution of transformation</TITLE></HEAD>");
             out.println("<BODY>");

@@ -314,12 +314,12 @@ public class TransSplitter
 
     public static final String getWriterName(String stepname, SlaveServer slaveServer)
     {
-        return stepname+" (writer)";
+        return stepname+" (writer to "+slaveServer+")";
     }
     
     public static final String getReaderName(String stepname, SlaveServer slaveServer)
     {
-        return stepname+" (reader)";
+        return stepname+" (reader from "+slaveServer+")";
     }
 
     public static final String getSlaveTransName(String transName, ClusterSchema clusterSchema, SlaveServer slaveServer)
