@@ -97,7 +97,10 @@ public class SocketReader extends BaseStep implements StepInterface
             // Send "Finished" message back to server.
             try
             {
+                logBasic("Sending finished string to writer (we have read all the data)");
                 data.outputStream.writeUTF(STRING_FINISHED);
+                logBasic("Finished string was sent.");
+                
                 logBasic("Waiting a few seconds before finishing this step.");
                 try
                 {
