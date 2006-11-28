@@ -134,11 +134,13 @@ public class SocketWriter extends BaseStep implements StepInterface
             //
             if (!stopped)
             {
+                logBasic("Reading finished message from server.");
                 String response = data.inputStream.readUTF();
                 if (!response.equals(SocketReader.STRING_FINISHED))
                 {
                     throw new IOException("Response ["+response+"] from client was not expected!");
                 }
+                logBasic("Finished message was read from server.");
             }
         }
         catch(IOException e)
@@ -152,8 +154,11 @@ public class SocketWriter extends BaseStep implements StepInterface
             // If we are here, it means all work is done
             // It's a lot of work to keep it all in sync for now we don't need to do that.
             // 
+            logBasic("Closing input stream.");
             try { data.inputStream.close(); } catch(IOException e) {}
+            logBasic("Closing client socket.");
             try { data.clientSocket.close(); } catch(IOException e) {}
+            logBasic("Closing server socket.");
             try { data.serverSocket.close(); } catch(IOException e) {}
         }
     }

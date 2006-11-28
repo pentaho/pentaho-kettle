@@ -98,6 +98,7 @@ public class SocketReader extends BaseStep implements StepInterface
             try
             {
                 data.outputStream.writeUTF(STRING_FINISHED+Const.CR);
+                logBasic("Waiting a few seconds before finishing this step.");
                 try
                 {
                     // Allow a few seconds for the server to read this message and draw it's own conclusions.
@@ -147,8 +148,11 @@ public class SocketReader extends BaseStep implements StepInterface
         // If we are here, it means all work is done
         // It's a lot of work to keep it all in sync for now we don't need to do that.
         // 
+        logBasic("Closing input stream.");
         try { data.inputStream.close(); } catch(IOException e) {}
+        logBasic("Closing output stream.");
         try { data.outputStream.close(); } catch(IOException e) {}
+        logBasic("Closing socket.");
         try { data.socket.close(); } catch(IOException e) {}
     }
 	
