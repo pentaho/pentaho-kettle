@@ -73,7 +73,7 @@ public class UserInfo
 				if (r!=null)
 				{
 					this.login  = r.searchValue("LOGIN").getString();
-					password    = Encr.decryptPasswordOptionallyEncrypted( r.searchValue("PASSWORD").getString() );
+					password    = Encr.decryptPassword( r.searchValue("PASSWORD").getString() );
 					name        = r.searchValue("NAME").getString();
 					description = r.searchValue("DESCRIPTION").getString();
 					enabled     = r.searchValue("ENABLED").getBoolean();
