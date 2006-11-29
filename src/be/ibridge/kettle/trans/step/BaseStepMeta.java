@@ -109,6 +109,20 @@ public class BaseStepMeta implements Cloneable
 	{
 	    return null;
 	}
+    
+    /**
+     * @param infoSteps The infostep(s) to set
+     */
+    public void setInfoSteps(StepMeta[] infoSteps)
+    {
+    }
+    
+    /**
+     * @param targetSteps The target step(s) to set
+     */
+    public void setTargetSteps(StepMeta[] targetSteps)
+    {
+    }
 
 	/**
 	 * Produces the XML string that describes this step's information.

@@ -127,6 +127,16 @@ public interface StepMetaInterface
 	 */
 	public String[] getTargetSteps();
 
+    /**
+     * @param infoSteps The infostep(s) to set
+     */
+    public void setInfoSteps(StepMeta[] infoSteps);
+    
+    /**
+     * @param targetSteps The target step(s) to set
+     */
+    public void setTargetSteps(StepMeta[] targetSteps);
+
 	/**
 	 * @param steps optionally search the info step in a list of steps
 	 */

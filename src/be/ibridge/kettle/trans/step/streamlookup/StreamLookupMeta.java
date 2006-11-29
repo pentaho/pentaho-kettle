@@ -259,6 +259,17 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 	    if (getLookupStepname()!=null) return new String[] { getLookupStepname() };
 	    return null;
 	}
+    
+    /**
+     * @param infoSteps The info-step(s) to set
+     */
+    public void setInfoSteps(StepMeta[] infoSteps)
+    {
+        if (infoSteps!=null && infoSteps.length>0)
+        {
+            lookupFromStep = infoSteps[0];
+        }
+    }
 
 	private void readData(Node stepnode)
 		throws KettleXMLException

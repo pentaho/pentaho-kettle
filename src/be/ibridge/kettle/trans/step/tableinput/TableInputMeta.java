@@ -198,6 +198,17 @@ public class TableInputMeta extends BaseStepMeta implements StepMetaInterface
 	    if (getLookupStepname()==null) return null;
 	    return new String[] { getLookupStepname() };
 	}
+    
+    /**
+     * @param infoSteps The info-step(s) to set
+     */
+    public void setInfoSteps(StepMeta[] infoSteps)
+    {
+        if (infoSteps!=null && infoSteps.length>0)
+        {
+            lookupFromStep = infoSteps[0];
+        }
+    }
 
 	public Row getFields(Row r, String name, Row info) throws KettleStepException
 	{

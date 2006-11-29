@@ -15,7 +15,6 @@ import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.socketreader.SocketReaderMeta;
 import be.ibridge.kettle.trans.step.socketwriter.SocketWriterMeta;
-import be.ibridge.kettle.trans.step.streamlookup.StreamLookupMeta;
 
 /**
  * This class takes care of the separation of the original transformation into pieces that run on the different slave servers in the clusters used.
@@ -458,12 +457,22 @@ public class TransSplitter
                                 TransHopMeta slaveHop = new TransHopMeta(readerStep, slaveStep);
                                 slave.addTransHop(slaveHop);
                                 
+                                // 
                                 // Now we have to explain to the slaveStep that it has to source from previous
-                                // TODO: build an interface to do this generically into the sourcing steps. 
-                                //
-                                if (slaveStep.getStepMetaInterface() instanceof StreamLookupMeta)
+                                // 
+                                String infoStepNames[] = slaveStep.getStepMetaInterface().getInfoSteps();
+                                if (infoStepNames!=null)
                                 {
-                                    ((StreamLookupMeta)slaveStep.getStepMetaInterface()).setLookupFromStep(readerStep);
+                                    StepMeta is[] = new StepMeta[infoStepNames.length];
+                                    for (int n=0;n<infoStepNames.length;n++)
+                                    {
+                                        is[n] = slave.findStep(infoStepNames[n]); // OK, info steps moved to the slave steps
+                                        if (infoStepNames[n].equals(infoStep.getName()))  
+                                        {
+                                            // We want to replace this one with the reader step: that's where we source from now
+                                            infoSteps[n] = readerStep;
+                                        }
+                                    }
                                 }
                             }
                         }

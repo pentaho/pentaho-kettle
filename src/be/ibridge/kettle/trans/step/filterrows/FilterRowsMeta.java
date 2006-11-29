@@ -370,6 +370,18 @@ public class FilterRowsMeta extends BaseStepMeta implements StepMetaInterface
 	    }
 	    return null;
 	}
+    
+    /**
+     * @param targetSteps The target step(s) to set
+     */
+    public void setTargetSteps(StepMeta[] targetSteps)
+    {
+        if (targetSteps!=null && targetSteps.length>0)
+        {
+            sendTrueStep  = targetSteps[0];
+            sendFalseStep = targetSteps[1];
+        }
+    }
 
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
 	{

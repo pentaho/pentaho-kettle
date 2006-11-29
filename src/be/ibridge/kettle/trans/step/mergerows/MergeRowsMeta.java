@@ -281,6 +281,17 @@ public class MergeRowsMeta extends BaseStepMeta implements StepMetaInterface
         return new String[] { referenceStepName, compareStepName }; 
     }
 
+    /**
+     * @param infoSteps The info-step(s) to set
+     */
+    public void setInfoSteps(StepMeta[] infoSteps)
+    {
+        if (infoSteps!=null && infoSteps.length==2)
+        {
+            referenceStepMeta = infoSteps[0];
+            compareStepMeta = infoSteps[1];
+        }
+    }
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters)
 		throws KettleException
