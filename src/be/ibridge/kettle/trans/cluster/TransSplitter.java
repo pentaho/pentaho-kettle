@@ -540,12 +540,12 @@ public class TransSplitter
 
     private String getWriterName(String stepname, ClusterSchema clusterSchema, SlaveServer slaveServer)
     {
-        return stepname+" (writer:"+getPort(clusterSchema, slaveServer, stepname)+")";
+        return "Writer : "+getPort(clusterSchema, slaveServer, stepname)+")";
     }
     
     private String getReaderName(String stepname, ClusterSchema clusterSchema, SlaveServer slaveServer)
     {
-        return stepname+" (reader:"+getPort(clusterSchema, slaveServer, stepname)+")";
+        return "Reader : "+getPort(clusterSchema, slaveServer, stepname)+")";
     }
 
     private String getSlaveTransName(String transName, ClusterSchema clusterSchema, SlaveServer slaveServer)
