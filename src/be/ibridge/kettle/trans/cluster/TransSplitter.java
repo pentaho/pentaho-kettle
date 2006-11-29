@@ -101,31 +101,29 @@ public class TransSplitter
                 StepMeta originalStep = originalSteps[i];
                 ClusterSchema originalClusterSchema = originalStep.getClusterSchema(); 
 
-                StepMeta copy = (StepMeta) originalStep.clone();
-                
                 int nrPreviousSteps = originalTransformation.findNrPrevSteps(originalStep);
                 for (int p=0;p<nrPreviousSteps;p++)
                 {
                     StepMeta previousStep = originalTransformation.findPrevStep(originalStep, p);
+
                     ClusterSchema previousClusterSchema = previousStep.getClusterSchema();
-                    
                     if (originalClusterSchema==null)
                     {
                         if (previousClusterSchema==null)
                         {
                             // No clustering involved here: just add the original step to the master
                             //
-                            StepMeta target = master.findStep(copy.getName());
+                            StepMeta target = master.findStep(originalStep.getName());
                             if (target==null)
                             {
-                                target = copy;
-                                master.addStep(copy);
+                                target = (StepMeta) originalStep.clone();
+                                master.addStep(target);
                             }
                             
                             StepMeta source = master.findStep(previousStep.getName());
                             if (source==null)
                             {
-                                source = (StepMeta)previousStep.clone();
+                                source = (StepMeta) previousStep.clone();
                                 master.addStep(source);
                             }
                             
@@ -142,8 +140,14 @@ public class TransSplitter
                             //
                             
                             // Also add the original step
-                            copy.setLocation(copy.getLocation().x+(SPLIT/2), copy.getLocation().y);
-                            master.addStep(copy);
+                            //
+                            StepMeta target = master.findStep(originalStep.getName());
+                            if (target==null)
+                            {
+                                target = (StepMeta) originalStep.clone();
+                                target.setLocation(target.getLocation().x+(SPLIT/2), target.getLocation().y);
+                                master.addStep(target);
+                            }
 
                             // Then add the readers
                             int nrSlaves = previousClusterSchema.getSlaveServers().size();
@@ -161,7 +165,7 @@ public class TransSplitter
                                 readerStep.setDraw(originalStep.isDrawn());
                                 master.addStep(readerStep);
                                 
-                                TransHopMeta masterHop = new TransHopMeta(readerStep, copy);
+                                TransHopMeta masterHop = new TransHopMeta(readerStep, target);
                                 master.addTransHop(masterHop);
                                 
                                 // SLAVE
@@ -185,7 +189,6 @@ public class TransSplitter
                                 }
                                 TransHopMeta slaveHop = new TransHopMeta(previous, writerStep);
                                 slave.addTransHop(slaveHop);
-                                    
                             }
                         }
                     }
@@ -244,8 +247,8 @@ public class TransSplitter
                                 StepMeta slaveStep = slave.findStep(originalStep.getName());
                                 if (slaveStep==null)
                                 {
-                                    copy.setLocation(originalStep.getLocation().x+(SPLIT/2), originalStep.getLocation().y);
-                                    slaveStep = copy;
+                                    slaveStep = (StepMeta) originalStep.clone();
+                                    slaveStep.setLocation(originalStep.getLocation().x+(SPLIT/2), originalStep.getLocation().y);
                                     slave.addStep(slaveStep);
                                 }
                                 
@@ -267,17 +270,17 @@ public class TransSplitter
                                 
                                 // SLAVE
                                 TransMeta slave = getSlaveTransformation(originalClusterSchema, slaveServer);
-                                StepMeta target = slave.findStep(copy.getName());
+                                StepMeta target = slave.findStep(originalStep.getName());
                                 if (target==null)
                                 {
-                                    target = copy;
+                                    target = (StepMeta) originalStep.clone();
                                     slave.addStep(target);
                                 }
                                 
                                 StepMeta source = slave.findStep(previousStep.getName());
                                 if (source==null)
                                 {
-                                    source = (StepMeta)previousStep.clone();
+                                    source = (StepMeta) previousStep.clone();
                                     slave.addStep(source);
                                 }
                                 
@@ -293,7 +296,7 @@ public class TransSplitter
                     if (originalClusterSchema==null)
                     {
                         // Not clustered, simply add the step.
-                        if (master.findStep(copy.getName())==null) master.addStep(copy);
+                        if (master.findStep(originalStep.getName())==null) master.addStep(originalStep);
                     }
                     else
                     {
@@ -304,8 +307,194 @@ public class TransSplitter
                          
                             // SLAVE
                             TransMeta slave = getSlaveTransformation(originalClusterSchema, slaveServer);
-                            slave.addStep(copy);
+                            slave.addStep(originalStep);
                         }
+                    }
+                }
+                
+                // Also take care of the info steps...
+                // For example: StreamLookup, Table Input, etc.
+                //
+                StepMeta infoSteps[] = originalTransformation.getInfoStep(originalStep);
+                for (int p=0;infoSteps!=null && p<infoSteps.length;p++)
+                {
+                    StepMeta infoStep = infoSteps[p];
+                    
+                    ClusterSchema infoClusterSchema = infoStep.getClusterSchema();
+                    if (originalClusterSchema==null)
+                    {
+                        if (infoClusterSchema==null)
+                        {
+                            // No clustering involved here: just add a link between the original step and the infostep
+                            //
+                            StepMeta target = master.findStep(originalStep.getName());
+                            StepMeta source = master.findStep(infoStep.getName());
+                            
+                            // Add a hop too...
+                            TransHopMeta masterHop = new TransHopMeta(source, target);
+                            master.addTransHop(masterHop);
+                        }
+                        else
+                        {
+                            /*
+                            // original step is NOT clustered
+                            // Previous step is clustered
+                            // --> We read from the slave server using socket readers.
+                            //     We need a reader for each slave server in the cluster
+                            //
+                            
+                            // Also add the original step
+                            StepMeta copy = (StepMeta) originalStep.clone();
+                            copy.setLocation(copy.getLocation().x+(SPLIT/2), copy.getLocation().y);
+                            master.addStep(copy);
+
+                            // Then add the readers
+                            int nrSlaves = infoClusterSchema.getSlaveServers().size();
+                            for (int s=0;s<nrSlaves;s++)
+                            {
+                                SlaveServer slaveServer = (SlaveServer) infoClusterSchema.getSlaveServers().get(s);
+                                
+                                // MASTER
+                                SocketReaderMeta socketReaderMeta = new SocketReaderMeta();
+                                socketReaderMeta.setHostname(slaveServer.getHostname());
+                                socketReaderMeta.setPort(""+getPort(infoClusterSchema, slaveServer, originalStep.getName()));
+                                
+                                StepMeta readerStep = new StepMeta(getReaderName(originalStep.getName(), infoClusterSchema, slaveServer), socketReaderMeta);
+                                readerStep.setLocation(originalStep.getLocation().x-(SPLIT/2), originalStep.getLocation().y + (s*FANOUT*2)-(nrSlaves*FANOUT/2));
+                                readerStep.setDraw(originalStep.isDrawn());
+                                master.addStep(readerStep);
+                                
+                                TransHopMeta masterHop = new TransHopMeta(readerStep, copy);
+                                master.addTransHop(masterHop);
+                                
+                                // SLAVE
+                                TransMeta slave = getSlaveTransformation(infoClusterSchema, slaveServer);
+                                SocketWriterMeta socketWriterMeta = new SocketWriterMeta();
+                                socketWriterMeta.setPort(""+getPort(infoClusterSchema, slaveServer, originalStep.getName()));
+                                
+                                StepMeta writerStep = new StepMeta(getWriterName(originalStep.getName(), infoClusterSchema, slaveServer), socketWriterMeta);
+                                writerStep.setLocation(originalStep.getLocation().x, originalStep.getLocation().y);
+                                writerStep.setDraw(originalStep.isDrawn());
+                                slave.addStep(writerStep);
+                                
+                                // See if we can add a hop to the previous
+                                StepMeta previous = slave.findStep(infoStep.getName());
+                                if (previous==null)
+                                {
+                                    previous = (StepMeta) infoStep.clone();
+                                    previous.setLocation(infoStep.getLocation().x+(SPLIT/2), infoStep.getLocation().y);
+
+                                    slave.addStep(previous);
+                                }
+                                TransHopMeta slaveHop = new TransHopMeta(previous, writerStep);
+                                slave.addTransHop(slaveHop);
+                                    
+                            }
+                            */
+                        }
+                    }
+                    else
+                    {
+                        if (infoClusterSchema==null)
+                        {
+                            /*
+                            // originalStep is clustered
+                            // previousStep is not clustered
+                            // --> Add a socket writer for each slave server
+                            //
+                            int nrSlaves = originalClusterSchema.getSlaveServers().size();
+                            for (int s=0;s<nrSlaves;s++)
+                            {
+                                SlaveServer slaveServer = (SlaveServer) originalClusterSchema.getSlaveServers().get(s);
+                                
+                                // MASTER
+                                SocketWriterMeta socketWriterMeta = new SocketWriterMeta();
+                                socketWriterMeta.setPort(""+getPort(originalClusterSchema, slaveServer, originalStep.getName()));
+                                
+                                StepMeta writerStep = new StepMeta(getWriterName( originalStep.getName(), originalClusterSchema, slaveServer ), socketWriterMeta);
+                                writerStep.setLocation(originalStep.getLocation().x, originalStep.getLocation().y + (s*FANOUT*2)-(nrSlaves*FANOUT/2));
+                                writerStep.setDraw(originalStep.isDrawn());
+        
+                                master.addStep(writerStep);
+                                
+                                // The previous step: add a hop to it.
+                                // It still has the original name as it is not clustered.
+                                // 
+                                StepMeta previous = master.findStep(infoStep.getName());
+                                if (previous==null)
+                                {
+                                    previous = (StepMeta) infoStep.clone();
+                                    master.addStep(previous); 
+                                }
+                                TransHopMeta masterHop = new TransHopMeta(previous, writerStep);
+                                master.addTransHop(masterHop);
+                                
+                                // SLAVE
+                                TransMeta slave = getSlaveTransformation(originalClusterSchema, slaveServer);
+                                
+                                SocketReaderMeta socketReaderMeta = new SocketReaderMeta();
+                                SlaveServer masterServer = originalClusterSchema.findMaster();
+                                if (masterServer==null)
+                                {
+                                    throw new KettleException("No master server set for cluster schema ["+originalClusterSchema.getName()+"]");
+                                }
+                                socketReaderMeta.setHostname(masterServer.getHostname());
+                                socketReaderMeta.setPort(""+getPort(originalClusterSchema, slaveServer, originalStep.getName()));
+                                StepMeta readerStep = new StepMeta(getReaderName(originalStep.getName(), originalClusterSchema, slaveServer ), socketReaderMeta);
+                                readerStep.setLocation(originalStep.getLocation().x-(SPLIT/2), originalStep.getLocation().y);
+                                readerStep.setDraw(originalStep.isDrawn());
+                                slave.addStep(readerStep);
+                                
+                                // also add the step itself.
+                                StepMeta slaveStep = slave.findStep(originalStep.getName());
+                                if (slaveStep==null)
+                                {
+                                    StepMeta copy = (StepMeta) originalStep.clone();
+                                    copy.setLocation(originalStep.getLocation().x+(SPLIT/2), originalStep.getLocation().y);
+                                    slaveStep = copy;
+                                    slave.addStep(slaveStep);
+                                }
+                                
+                                // And a hop from the 
+                                TransHopMeta slaveHop = new TransHopMeta(readerStep, slaveStep);
+                                slave.addTransHop(slaveHop);
+                            }
+                            */
+                        }
+                        else
+                        {
+                            /*
+                            // originalStep is clustered
+                            // previousStep is clustered
+                            // --> Add original step to the slave transformation(s)
+                            //
+                            int nrSlaves = originalClusterSchema.getSlaveServers().size();
+                            for (int s=0;s<nrSlaves;s++)
+                            {
+                                SlaveServer slaveServer = (SlaveServer) originalClusterSchema.getSlaveServers().get(s);
+                                
+                                // SLAVE
+                                TransMeta slave = getSlaveTransformation(originalClusterSchema, slaveServer);
+                                StepMeta target = slave.findStep(originalStep.getName());
+                                if (target==null)
+                                {
+                                    target = originalStep;
+                                    slave.addStep(target);
+                                }
+                                
+                                StepMeta source = slave.findStep(infoStep.getName());
+                                if (source==null)
+                                {
+                                    source = infoStep;
+                                    slave.addStep(source);
+                                }
+                                
+                                TransHopMeta slaveHop = new TransHopMeta(source, target);
+                                slave.addTransHop(slaveHop);
+                            }
+                            */
+                        }
+                        
                     }
                 }
             }
