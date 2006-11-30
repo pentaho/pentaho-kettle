@@ -79,6 +79,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
     public StepMeta(String stepid, String stepname, StepMetaInterface stepMetaInterface)
     {
         this(stepname, stepMetaInterface);
+        if (this.stepid==null) this.stepid = stepid;
     }
     
     /**
