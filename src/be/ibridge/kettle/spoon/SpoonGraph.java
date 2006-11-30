@@ -29,6 +29,8 @@ import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.FocusAdapter;
+import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -929,7 +931,7 @@ public class SpoonGraph extends Canvas implements Redrawable
     public void renameStep()
     {
         StepMeta[] selection = spoon.getTransMeta().getSelectedSteps();
-        if (selection.length==1)
+        if (selection!=null && selection.length==1)
         {
             final StepMeta stepMeta = selection[0];
             
@@ -963,31 +965,9 @@ public class SpoonGraph extends Canvas implements Redrawable
                         // "ENTER": close the text editor and copy the data over 
                         if (   e.character == SWT.CR ) 
                         {
-                            TransMeta transMeta = spoon.getTransMeta();
-                            String stepname = text.getText();
-                            String newname = stepname;
-                            
-                            StepMeta smeta = transMeta.findStep(newname, stepMeta);
-                            int nr = 2;
-                            while (smeta != null)
-                            {
-                                newname = stepname + " " + nr;
-                                smeta = transMeta.findStep(newname);
-                                nr++;
-                            }
-                            if (nr > 2)
-                            {
-                                stepname = newname;
-                                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
-                                mb.setMessage(Messages.getString("Spoon.Dialog.StepnameExists.Message", stepname)); // $NON-NLS-1$
-                                mb.setText(Messages.getString("Spoon.Dialog.StepnameExists.Title")); // $NON-NLS-1$
-                                mb.open();
-                            }
-                            stepMeta.setName(stepname);
-                            stepMeta.setChanged();
+                            String newName = text.getText();
                             text.dispose();
-                            spoon.refreshTree(true); // to reflect the new name
-                            spoon.refreshGraph();
+                            renameStep(stepMeta, newName);
                         }
                             
                         if (e.keyCode   == SWT.ESC)
@@ -998,12 +978,49 @@ public class SpoonGraph extends Canvas implements Redrawable
                 };
 
             text.addKeyListener(lsKeyText);
+            text.addFocusListener(new FocusAdapter()
+                {
+                    public void focusLost(FocusEvent e)
+                    {
+                        String newName = text.getText();
+                        text.dispose();
+                        renameStep(stepMeta, newName);
+                    }
+                }
+            );
             
             this.layout(true, true);
             
             text.setFocus();
             text.setSelection(0, name.length());
         }
+    }
+
+    public void renameStep(StepMeta stepMeta, String stepname)
+    {
+        TransMeta transMeta = spoon.getTransMeta();
+        String newname = stepname;
+        
+        StepMeta smeta = transMeta.findStep(newname, stepMeta);
+        int nr = 2;
+        while (smeta != null)
+        {
+            newname = stepname + " " + nr;
+            smeta = transMeta.findStep(newname);
+            nr++;
+        }
+        if (nr > 2)
+        {
+            stepname = newname;
+            MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+            mb.setMessage(Messages.getString("Spoon.Dialog.StepnameExists.Message", stepname)); // $NON-NLS-1$
+            mb.setText(Messages.getString("Spoon.Dialog.StepnameExists.Title")); // $NON-NLS-1$
+            mb.open();
+        }
+        stepMeta.setName(stepname);
+        stepMeta.setChanged();
+        spoon.refreshTree(true); // to reflect the new name
+        spoon.refreshGraph();
     }
 
     public void clearSettings()
