@@ -151,7 +151,7 @@ public class Encr
         if (!Const.isEmpty(password) && password.startsWith(PASSWORD_ENCRYPTED_PREFIX)) 
         {
             return Encr.decryptPassword( password.substring(PASSWORD_ENCRYPTED_PREFIX.length()) );
-        } 
+        }
         return password;
     }
 }

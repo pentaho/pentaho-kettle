@@ -21,6 +21,7 @@ import java.util.Set;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.TimedRow;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
@@ -97,8 +98,9 @@ public class CombinationLookup extends BaseStep implements StepInterface
 	private Value lookupInCache(Row row)
 	{
 		// try to find the row in the cache...
-		// It looks using Row.hashcode() & Row.equals()
-		Value tk = (Value) data.cache.get(row);
+		// It is using TimedRow.hashcode() & TimedRow.equals()
+        //
+		Value tk = (Value) data.cache.get(new TimedRow(row));
 		return tk;
 	}
 
@@ -113,10 +115,10 @@ public class CombinationLookup extends BaseStep implements StepInterface
 				 long last_date=-1L;
 				 Set set = data.cache.keySet();
 				 Iterator it = set.iterator();
-				 Row smallest=null;
+				 TimedRow smallest=null;
 				 while (it.hasNext())
 				 {
-				 	Row r=(Row)it.next();
+				 	TimedRow r=(TimedRow)it.next();
 				 	long time = r.getLogtime();
 				 	if (last_date<0 || time<last_date)
 				 	{
@@ -128,8 +130,7 @@ public class CombinationLookup extends BaseStep implements StepInterface
 			}
 		}
 
-		row.setLogdate();
-		data.cache.put(row, tk);
+		data.cache.put(new TimedRow(row), tk);
 	}
 
 	private void lookupValues(Row row) throws KettleException

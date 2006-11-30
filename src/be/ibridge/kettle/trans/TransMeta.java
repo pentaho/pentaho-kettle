@@ -169,6 +169,8 @@ public class TransMeta implements XMLInterface
     private boolean             feedbackShown;
     private int                 feedbackSize;
     
+    private boolean             usingThreadPriorityManagment;
+    
     /** If this is null, we load from the default shared objects file : $KETTLE_HOME/.kettle/shared.xml */
     private String              sharedObjectsFile;
     
@@ -293,6 +295,8 @@ public class TransMeta implements XMLInterface
         
         feedbackShown = true;
         feedbackSize = Const.ROWS_UPDATE;
+        
+        usingThreadPriorityManagment = true;
         
         
         // For testing purposes only, we add a single cluster schema.
@@ -1777,6 +1781,7 @@ public class TransMeta implements XMLInterface
                 usingUniqueConnections = rep.getTransAttributeBoolean(getID(), 0, "UNIQUE_CONNECTIONS");
                 feedbackShown = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, "FEEDBACK_SHOWN") );
                 feedbackSize = (int) rep.getTransAttributeInteger(getID(), 0, "FEEDBACK_SIZE");
+                usingThreadPriorityManagment = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, "USING_THREAD_PRIORITIES") );
                 
                 // Also load the partitioning from the attributes...
                 // Backward compatibility.
@@ -2110,7 +2115,8 @@ public class TransMeta implements XMLInterface
         
         retval.append("    " + XMLHandler.addTagValue("feedback_shown", feedbackShown)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    " + XMLHandler.addTagValue("feedback_size", feedbackSize)); //$NON-NLS-1$ //$NON-NLS-2$
-
+        retval.append("    " + XMLHandler.addTagValue("using_thread_priorities", usingThreadPriorityManagment)); // $NON-NLS-1$
+        
         retval.append("    <dependencies>" + Const.CR); //$NON-NLS-1$
         for (int i = 0; i < nrDependencies(); i++)
         {
@@ -2556,7 +2562,8 @@ public class TransMeta implements XMLInterface
 
             feedbackShown = !"N".equalsIgnoreCase( XMLHandler.getTagValue(infonode, "feedback_shown") ); //$NON-NLS-1$
             feedbackSize = Const.toInt(XMLHandler.getTagValue(infonode, "feedback_size"), Const.ROWS_UPDATE); //$NON-NLS-1$
-
+            usingThreadPriorityManagment = !"N".equalsIgnoreCase( XMLHandler.getTagValue(infonode, "using_thread_priorities") ); //$NON-NLS-1$ 
+            
             // Changed user/date
             modifiedUser = XMLHandler.getTagValue(infonode, "modified_user");
             String modDate = XMLHandler.getTagValue(infonode, "modified_date");
@@ -4938,5 +4945,21 @@ public class TransMeta implements XMLInterface
         {
             
         }
+    }
+
+    /**
+     * @return the usingThreadPriorityManagment
+     */
+    public boolean isUsingThreadPriorityManagment()
+    {
+        return usingThreadPriorityManagment;
+    }
+
+    /**
+     * @param usingThreadPriorityManagment the usingThreadPriorityManagment to set
+     */
+    public void setUsingThreadPriorityManagment(boolean usingThreadPriorityManagment)
+    {
+        this.usingThreadPriorityManagment = usingThreadPriorityManagment;
     }
 }

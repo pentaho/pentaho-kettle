@@ -50,8 +50,10 @@ public class Row implements XMLInterface, Comparable, Serializable
 
     /** Ignore this row? */
 	private boolean ignore;
-	/** Logging date */
+	
+    /* Logging date 
 	private Date    logdate;
+    */
 
 	/**
 	 * Create a new empty row (with 0 values)
@@ -59,7 +61,7 @@ public class Row implements XMLInterface, Comparable, Serializable
 	public Row()
 	{
 		ignore=false;
-		logdate=null;
+		// logdate=null;
 	}
 
 	/**
@@ -71,9 +73,8 @@ public class Row implements XMLInterface, Comparable, Serializable
 	public Row(Row r)  // Copy values in row!
 	{
 		this();
-		int i;
 
-		for (i=0;i<r.size();i++)
+		for (int i=0;i<r.size();i++)
 		{
 			addValue(new Value(r.getValue(i)));
 		}
@@ -678,32 +679,33 @@ public class Row implements XMLInterface, Comparable, Serializable
 		return new Row(this);
 	}
 
-	/**
+	/*
 	 * Sets the logging date to "now" for this row.
-	 */
+	 *
 	public void setLogdate()
 	{
 		logdate=new Date();
 	}
+    */
 
-	/**
+	/*
 	 * Get the logging date of this row.
 	 * @return the logging date of this row.
-	 */
 	public Date getLogdate()
 	{
 		return logdate;
 	}
+     */
 
-	/**
+	/*
 	 * Get the logging time for this row.
 	 * @return the logging time for this row.
-	 */
 	public long getLogtime()
 	{
 		if (logdate==null) return 0L;
 		return logdate.getTime();
 	}
+     */
 
 	/**
 	 * Checks whether or not the row is empty
@@ -854,7 +856,7 @@ public class Row implements XMLInterface, Comparable, Serializable
 	public String getXML()
 	{
 		StringBuffer retval= new StringBuffer("<row>");
-		retval.append(XMLHandler.addTagValue("logdate", logdate));
+		// retval.append(XMLHandler.addTagValue("logdate", logdate));
 		for (int i=0;i<size();i++)
 		{
 			retval.append(getValue(i).getXML());

@@ -160,7 +160,7 @@ public class Trans
 		preview=false;
 		preview_steps=null;
 		preview_sizes=null;
-		log.logMinimal(toString(), Messages.getString("Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
+		log.logDetailed(toString(), Messages.getString("Trans.Log.TransformationIsPreloaded")); //$NON-NLS-1$
 		log.logDebug(toString(), Messages.getString("Trans.Log.NumberOfStepsToRun",String.valueOf(transMeta.nrSteps()) ,String.valueOf(transMeta.nrTransHops()))); //$NON-NLS-1$ //$NON-NLS-2$
 	}
 
@@ -646,7 +646,7 @@ public class Trans
 			{
 				ended=getEnded();
 				errors=getErrors();
-				Thread.sleep(100); // sleep 1/10th of a second
+				Thread.sleep(50); // sleep 1/20th of a second
 			}
 			if (errors==0)
 			{

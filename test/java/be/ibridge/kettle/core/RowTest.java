@@ -34,9 +34,8 @@ import be.ibridge.kettle.core.value.Value;
  */
 public class RowTest extends TestCase
 {
-	/**
+	/*
 	 * Constructor test 1. No params.
-	 */
 	public void testConstructor1()
 	{
 	    Row r = new Row();
@@ -47,6 +46,7 @@ public class RowTest extends TestCase
 	    r.setLogdate();
 		assertTrue(r.getLogtime() != 0L);    
 	}
+     */
 
 	/**
 	 * Constructor test 2. Several cases.

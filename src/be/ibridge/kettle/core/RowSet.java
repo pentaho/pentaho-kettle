@@ -16,7 +16,9 @@
  
 
 package be.ibridge.kettle.core;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 
 import be.ibridge.kettle.trans.step.BaseStep;
 
@@ -32,15 +34,15 @@ public class RowSet
 	public final static int ERR_NO_ERROR        = 0;
 	public final static int ERR_ROW_IS_BUSY     = 1;
 	
-	private LinkedList set;
+	private List list;
 	private boolean done;
 	public int read_pointer;
 	public int write_pointer;
 	
-	public int size_rowset;
+	// public int size_rowset;
 	
-	public int empty_calls;
-	public int full_calls;
+	// public int empty_calls;
+	// public int full_calls;
 	
 	private  String    originStepName;
 	private  int       originStepCopy;
@@ -54,52 +56,49 @@ public class RowSet
 	
 	public RowSet(int maxsize)
 	{
-		set = new LinkedList(); // create new linked list with 0 elements.
-		
+        this.maxsize = maxsize;
+        
+        // create new linked list with 0 elements.
+        list = Collections.synchronizedList( new LinkedList() ); 
 		done=false;
-		
-		size_rowset=0;
-		empty_calls=0;
-		full_calls=0;
-		
-		this.maxsize = maxsize;
 	}
 	
 	//
 	// We always add rows to the end of the linked list
 	// 
-	public synchronized void putRow(Row r)
+	public void putRow(Row r)
 	{
-		set.addLast(r);
-		size_rowset++;
+		list.add(r);
 	}
 	
 	//
 	// We always read rows from the beginning of the linked list
 	// Once we read the row, we remove it from the list
 	// 
-	public synchronized Row getRow()
+	public Row getRow()
 	{
-		Row r = (Row)set.getFirst();
-		set.removeFirst();
-		size_rowset--;
+		Row r = (Row)list.get(0);
+		list.remove(0);
 		
 		return r;
 	}
-	
-	public synchronized boolean isEmpty()
+
+    public Row lookAtFirst()
+    {
+        return (Row) list.get(0);
+    }
+
+	public boolean isEmpty()
 	{
-		empty_calls++;
-		return (size_rowset==0);
+		return (list.size()==0);
 	}
 	
-	// Don't let the buffer get too big, we might run out of memory
-	// If the following steps are working slower!
+	// Don't let the buffer get too big, we might run out 
+    // of memory if the following steps are working slower
 	//
-	public synchronized boolean isFull()
+	public boolean isFull()
 	{
-		full_calls++;
-		return (size_rowset>=maxsize);
+		return (list.size()>=maxsize);
 	}
 	
 	public synchronized void setDone()
@@ -162,16 +161,16 @@ public class RowSet
 		return toString();
 	}
 	
-	public synchronized int size()
+	public int size()
 	{
-		return set.size();
+		return list.size();
 	}
 
 	public void setThreadNameFromToCopy(String from, int from_copy, String to, int to_copy)
 	{
-		originStepName      = from;
-		originStepCopy = from_copy;
-		destinationStepName        = to;
+		originStepName        = from;
+		originStepCopy        = from_copy;
+		destinationStepName   = to;
 		destinationStepCopy   = to_copy;
 	}
 	
@@ -180,68 +179,8 @@ public class RowSet
 		thread_from = from;
 		thread_to   = to;
 	}
-	
-    /** @deprecated */
-	public boolean waitFrom()
-	{
-		try
-		{
-			thread_from.waiting = true;
-			thread_from.wait();
-		}
-		catch(Exception e)
-		{
-			return false;
-		}
-		return true;
-	}
-
-    /** @deprecated */
-	public boolean waitTo()
-	{
-		try
-		{
-			thread_to.waiting=true;
-			thread_to.wait();
-		}
-		catch(Exception e)
-		{
-			return false;
-		}
-		return true;
-	}
-
-    /** @deprecated */
-	public boolean notifyFrom()
-	{
-		if (!thread_from.waiting) return true;
-		try
-		{
-			thread_from.notifyAll();
-		}
-		catch(Exception e)
-		{
-			return false;
-		}
-		return true;
-	}
-
-    /** @deprecated */
-	public boolean notifyTo()
-	{
-		if (!thread_to.waiting) return true;
-		try
-		{
-			thread_to.notifyAll();
-		}
-		catch(Exception e)
-		{
-			return false;
-		}
-		return true;
-	}
-
-	public synchronized boolean setPriorityFrom(int prior)
+	    
+	public boolean setPriorityFrom(int prior)
 	{
 		if ( thread_from == null ||
 		     thread_from.getPriority()==prior ||
@@ -259,7 +198,7 @@ public class RowSet
 		return true;
 	}
 
-	public synchronized boolean setPriorityTo(int prior)
+	public boolean setPriorityTo(int prior)
 	{
 		if ( thread_to == null ||
 			 thread_to.getPriority()==prior ||
@@ -276,19 +215,7 @@ public class RowSet
 		}
 		return true;
 	}
-	
-    /** @deprecated */
-	public boolean waitingThreadFrom()
-	{
-		return thread_from.waiting;
-	}
-
-    /** @deprecated */
-	public boolean waitingThreadTo()
-	{
-		return thread_to.waiting;
-	}
-	
+		
 	public String toString()
 	{
 		return originStepName + "." + originStepCopy + 
@@ -296,10 +223,5 @@ public class RowSet
 		       destinationStepName + "." + destinationStepCopy
 		       ; 
 	}
-
-    public synchronized Row lookAtFirst()
-    {
-        return (Row) set.get(0);
-    }
 	
 }

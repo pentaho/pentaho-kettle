@@ -324,8 +324,7 @@ public class RepositoryDialog
 		if (idx>=0)
 		{
 			DatabaseMeta dbinfo = repositories.getDatabase(idx);
-            System.out.println("Port for ["+dbinfo.getName()+"] : "+dbinfo.getDatabasePortNumberString());
-			info.setConnection(dbinfo);
+            info.setConnection(dbinfo);
 		}
 		else
 		{

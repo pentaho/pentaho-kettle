@@ -20,6 +20,7 @@ import java.util.Hashtable;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.TimedRow;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
@@ -230,18 +231,17 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		// Store in cache if we need to!
 		if (meta.isCached() && cache_now)
 		{
-			add.setLogdate();
-			data.look.put(lu, add);
+			data.look.put(lu, new TimedRow(add));
 
 			// See if we have to limit the cache_size.
 			if (meta.getCacheSize()>0 && data.look.size()>meta.getCacheSize())
 			{
 				 long last_date=-1L;
 				 Enumeration elem = data.look.elements();
-				 Row smallest=null;
+				 TimedRow smallest=null;
 				 while (elem.hasMoreElements())
 				 {
-				 	Row r=(Row)elem.nextElement();
+				 	TimedRow r=(TimedRow)elem.nextElement();
 				 	long time = r.getLogtime();
 				 	if (last_date<0 || time<last_date) 
 				 	{

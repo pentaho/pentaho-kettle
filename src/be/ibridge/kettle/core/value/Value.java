@@ -117,7 +117,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public Value()
 	{
-		clearValue();
+		// clearValue();
 	}
 
 	/**
@@ -127,7 +127,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public Value(String name)
 	{
-		clearValue();
+		// clearValue();
 		setName(name);
 	}
 
@@ -139,7 +139,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public Value(String name, int val_type)
 	{
-		clearValue();
+		// clearValue();
 		newValue(val_type);
 		setName(name);
 	}
@@ -209,7 +209,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
      */
     public Value(String name, BigDecimal bignum)
     {
-        clearValue();
+        // clearValue();
         setValue(bignum);
         setName(name);
     }
@@ -223,7 +223,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public Value(String name, double num)
 	{
-		clearValue();
+		// clearValue();
 		setValue(num);
 		setName(name);
 	}
@@ -247,7 +247,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public Value(String name, String str)
 	{
-		clearValue();
+		// clearValue();
 		setValue(str);
 		setName(name);
 	}
@@ -260,7 +260,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public Value(String name, Date dat)
 	{
-		clearValue();
+		// clearValue();
 		setValue(dat);
 		setName(name);
 	}
@@ -273,7 +273,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public Value(String name, boolean bool)
 	{
-		clearValue();
+		// clearValue();
 		setValue(bool);
 		setName(name);
 	}
@@ -286,7 +286,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	 */
 	public Value(String name, long l)
 	{
-		clearValue();
+		// clearValue();
 		setValue(l);
 		setName(name);
 	}
@@ -325,7 +325,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	{
 		if (v!=null)
 		{
-			setType(v.getType());
+			// setType(v.getType()); // Is this really needed???
 			value = v.getValueCopy();
 			setName(v.getName());
 			setLength(v.getLength(), v.getPrecision());
@@ -3670,4 +3670,14 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	    
 	    return true;
 	}
+    
+    public ValueInterface getValueInterface()
+    {
+        return value;
+    }
+    
+    public void setValueInterface(ValueInterface valueInterface)
+    {
+        this.value = valueInterface;
+    }
 }

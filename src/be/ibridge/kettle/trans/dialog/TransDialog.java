@@ -157,6 +157,8 @@ public class TransDialog extends Dialog
     private TextVar wSharedObjectsFile;
     
     private boolean sharedObjectsFileChanged;
+
+    private Button wManageThreads;
 	
     /** @deprecated */
 	public TransDialog(Shell parent, int style, LogWriter log, Props props, TransMeta transMeta, Repository rep)
@@ -961,7 +963,24 @@ public class TransDialog extends Dialog
         fdSharedObjectsFile.right= new FormAttachment(100, 0);
         wSharedObjectsFile.setLayoutData(fdSharedObjectsFile);
 
-                
+        // Show feedback in transformations steps?
+        Label wlManageThreads = new Label(wMiscComp, SWT.RIGHT);
+        wlManageThreads.setText("Manage thread priorities? ");
+        props.setLook(wlManageThreads);
+        FormData fdlManageThreads = new FormData();
+        fdlManageThreads.left = new FormAttachment(0, 0);
+        fdlManageThreads.top  = new FormAttachment(wSharedObjectsFile, margin);
+        fdlManageThreads.right= new FormAttachment(middle, -margin);
+        wlManageThreads.setLayoutData(fdlManageThreads);
+        wManageThreads=new Button(wMiscComp, SWT.CHECK);
+        props.setLook(wManageThreads);
+        FormData fdManageThreads = new FormData();
+        fdManageThreads.left = new FormAttachment(middle, 0);
+        fdManageThreads.top  = new FormAttachment(wSharedObjectsFile, margin);
+        fdManageThreads.right= new FormAttachment(100, 0);
+        wManageThreads.setLayoutData(fdManageThreads);
+
+        
 
         FormData fdMiscComp = new FormData();
         fdMiscComp.left  = new FormAttachment(0, 0);
@@ -1247,6 +1266,7 @@ public class TransDialog extends Dialog
 		wShowFeedback.setSelection(transMeta.isFeedbackShown());
         wFeedbackSize.setText(""+transMeta.getFeedbackSize());
         wSharedObjectsFile.setText(Const.NVL(transMeta.getSharedObjectsFile(), ""));
+        wManageThreads.setSelection(transMeta.isUsingThreadPriorityManagment());
         
 		wFields.setRowNums();
 		wFields.optWidth(true);
@@ -1378,6 +1398,7 @@ public class TransDialog extends Dialog
         transMeta.setFeedbackShown( wShowFeedback.getSelection() );
         transMeta.setFeedbackSize( Const.toInt( wFeedbackSize.getText(), Const.ROWS_UPDATE ) );
         transMeta.setSharedObjectsFile( wSharedObjectsFile.getText() );
+        transMeta.setUsingThreadPriorityManagment( wManageThreads.getSelection() );
 
 		if (newDirectory!=null)
 		{

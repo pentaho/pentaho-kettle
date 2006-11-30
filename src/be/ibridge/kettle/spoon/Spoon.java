@@ -425,7 +425,7 @@ public class Spoon implements AddUndoPositionInterface
                     if ((int)e.character == 20 && ctrl && !alt) { setTrans();  spoongraph.clearSettings();  }
 
                     // CTRL-U --> transformation
-                    if ((int)e.character == 21 && ctrl && !alt) { splitTrans();  spoongraph.clearSettings();  }
+                    if ((int)e.character == 21 && ctrl && !alt) { splitTrans(true, false, false);  spoongraph.clearSettings();  }
 
                     // CTRL-Y --> redo action
                     if ((int)e.character == 25 && ctrl && !alt) { redoAction(); spoongraph.clearSettings(); }
@@ -5225,7 +5225,7 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
 
-    private void splitTrans()
+    private void splitTrans(boolean show, boolean send, boolean start)
     {
         try
         {
@@ -5238,12 +5238,15 @@ public class Spoon implements AddUndoPositionInterface
             //
             TransMeta master = transSplitter.getMaster();
             SlaveServer masterServer = transSplitter.getMasterServer();
-            new Spoon(log, shell.getDisplay(), master, rep).open();
-            String masterReply = masterServer.sendXML(master.getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
-            WebResult webResult = WebResult.fromXMLString(masterReply);
-            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+            if (show) new Spoon(log, shell.getDisplay(), master, rep).open();
+            if (send)
             {
-                throw new KettleException("An error occurred sending the master transformation: "+webResult.getMessage());
+                String masterReply = masterServer.sendXML(master.getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
+                WebResult webResult = WebResult.fromXMLString(masterReply);
+                if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                {
+                    throw new KettleException("An error occurred sending the master transformation: "+webResult.getMessage());
+                }
             }
             
             // Then the slaves...
@@ -5252,52 +5255,58 @@ public class Spoon implements AddUndoPositionInterface
             for (int i=0;i<slaves.length;i++)
             {
                 TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                new Spoon(log, shell.getDisplay(), slaveTrans, rep).open();
-                String slaveReply = slaves[i].sendXML(slaveTrans.getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
-                webResult = WebResult.fromXMLString(slaveReply);
-                if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                if (show) new Spoon(log, shell.getDisplay(), slaveTrans, rep).open();
+                if (send)
                 {
-                    throw new KettleException("An error occurred sending a slave transformation: "+webResult.getMessage());
+                    String slaveReply = slaves[i].sendXML(slaveTrans.getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
+                    WebResult webResult = WebResult.fromXMLString(slaveReply);
+                    if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                    {
+                        throw new KettleException("An error occurred sending a slave transformation: "+webResult.getMessage());
+                    }
                 }
             }
             
-            // Prepare the master...
-            masterReply = masterServer.getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
-            webResult = WebResult.fromXMLString(masterReply);
-            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+            if (send && start)
             {
-                throw new KettleException("An error occurred while preparing the execution of the master transformation: "+webResult.getMessage());
-            }
-            
-            // Prepare the slaves
-            for (int i=0;i<slaves.length;i++)
-            {
-                TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                String slaveReply = slaves[i].getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
-                webResult = WebResult.fromXMLString(slaveReply);
+                // Prepare the master...
+                String masterReply = masterServer.getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
+                WebResult webResult = WebResult.fromXMLString(masterReply);
                 if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                 {
-                    throw new KettleException("An error occurred while preparing the execution of a slave transformation: "+webResult.getMessage());
+                    throw new KettleException("An error occurred while preparing the execution of the master transformation: "+webResult.getMessage());
                 }
-            }
-            
-            // Start the master...
-            masterReply = masterServer.getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
-            webResult = WebResult.fromXMLString(masterReply);
-            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
-            {
-                throw new KettleException("An error occurred while starting the execution of the master transformation: "+webResult.getMessage());
-            }
-            
-            // Start the slaves
-            for (int i=0;i<slaves.length;i++)
-            {
-                TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                String slaveReply = slaves[i].getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
-                webResult = WebResult.fromXMLString(slaveReply);
+                
+                // Prepare the slaves
+                for (int i=0;i<slaves.length;i++)
+                {
+                    TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+                    String slaveReply = slaves[i].getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
+                    webResult = WebResult.fromXMLString(slaveReply);
+                    if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                    {
+                        throw new KettleException("An error occurred while preparing the execution of a slave transformation: "+webResult.getMessage());
+                    }
+                }
+                
+                // Start the master...
+                masterReply = masterServer.getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
+                webResult = WebResult.fromXMLString(masterReply);
                 if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                 {
-                    throw new KettleException("An error occurred while starting the execution of a slave transformation: "+webResult.getMessage());
+                    throw new KettleException("An error occurred while starting the execution of the master transformation: "+webResult.getMessage());
+                }
+                
+                // Start the slaves
+                for (int i=0;i<slaves.length;i++)
+                {
+                    TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+                    String slaveReply = slaves[i].getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
+                    webResult = WebResult.fromXMLString(slaveReply);
+                    if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                    {
+                        throw new KettleException("An error occurred while starting the execution of a slave transformation: "+webResult.getMessage());
+                    }
                 }
             }
             

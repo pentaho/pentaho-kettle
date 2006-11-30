@@ -34,6 +34,9 @@ import be.ibridge.kettle.trans.step.StepMeta;
  *
  */
 
+/**
+ * Defines a link between 2 steps in a transformation
+ */
 public class TransHopMeta implements Cloneable, XMLInterface, Comparable
 {
 	private StepMeta from_step;

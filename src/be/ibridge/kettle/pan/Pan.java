@@ -329,7 +329,6 @@ public class Pan
 					System.out.println("ERROR: Unable to read/parse the repositories XML file.");
 				}
 			}
-
 		}
 		catch(Exception e)
 		{

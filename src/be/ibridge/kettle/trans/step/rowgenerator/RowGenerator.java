@@ -24,6 +24,7 @@ import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.value.ValueInterface;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
@@ -171,7 +172,18 @@ public class RowGenerator extends BaseStep implements StepInterface
 		
 		if (linesWritten<data.rowLimit)
 		{
-			r=new Row(data.constants); // Copy the data, otherwise it gets manipulated aferwards.
+			r=new Row(); // Copy the data, otherwise it gets manipulated aferwards.
+            for (int i=0;i<data.constants.size();i++)
+            {
+                Value value = data.constants.getValue(i);
+
+                Value copy = new Value(value.getName());
+                copy.setLength(value.getLength(), value.getPrecision());
+                copy.setNull(value.isNull());
+                copy.setValueInterface( (ValueInterface) value.getValueInterface().clone() );
+                
+                r.addValue(copy);
+            }
 		}
 		else
 		{
