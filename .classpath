@@ -53,9 +53,9 @@
 	<classpathentry kind="lib" path="libswt/runtime.jar"/>
 	<classpathentry kind="lib" path="libswt/commands.jar"/>
 	<classpathentry kind="lib" path="libswt/common.jar"/>
-	<classpathentry kind="lib" path="libext/mysql-connector-java-5.0.4-bin.jar"/>
 	<classpathentry kind="lib" path="libext/jetty-6.0.2.jar"/>
 	<classpathentry kind="lib" path="libext/jetty-util-6.0.2.jar"/>
 	<classpathentry kind="lib" path="libext/servlet-api-2.5-6.0.2.jar"/>
+	<classpathentry kind="lib" path="libext/mysql-connector-java-3.1.14-bin.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

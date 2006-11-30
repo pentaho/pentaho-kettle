@@ -59,6 +59,7 @@ import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 import org.w3c.dom.Document;
 
@@ -139,7 +140,13 @@ public class RepositoryExplorerDialog extends Dialog
 	private Color dircolor;
 	
 	private String debug;
-
+    
+    private int sortColumn;
+    private boolean ascending;
+    private TreeColumn nameColumn;
+    private TreeColumn userColumn;
+    private TreeColumn changedColumn;
+    
     /** @deprecated */
     public RepositoryExplorerDialog(Shell par, Props pr, int style, LogWriter l, Repository rep, UserInfo ui)
     {
@@ -155,6 +162,8 @@ public class RepositoryExplorerDialog extends Dialog
 		this.userinfo=ui;
 
 		objectName = null;
+        sortColumn = 1;
+        ascending = true;
 	}
     
     private static final String STRING_REPOSITORY_EXPLORER_TREE_NAME = "Repository Exporer Tree Name";
@@ -213,8 +222,25 @@ public class RepositoryExplorerDialog extends Dialog
             
      		// Tree
      		wTree = new Tree(shell, SWT.MULTI | SWT.BORDER /*| (multiple?SWT.CHECK:SWT.NONE)*/);
+            wTree.setHeaderVisible(true);
      		props.setLook(wTree);
     
+            // Add some columns to it as well...
+            nameColumn = new TreeColumn(wTree, SWT.LEFT);
+            nameColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Name")); //$NON-NLS-1$
+            nameColumn.setWidth(350);
+            nameColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(1); } });
+            
+            userColumn = new TreeColumn(wTree, SWT.LEFT);
+            userColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.User")); //$NON-NLS-1$
+            userColumn.setWidth(100);
+            userColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(2); } });
+
+            changedColumn = new TreeColumn(wTree, SWT.LEFT);
+            changedColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Changed")); //$NON-NLS-1$
+            changedColumn.setWidth(100);
+            changedColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(3); } });
+            
             // Add a memory to the tree.
             TreeMemory.addTreeListener(wTree,STRING_REPOSITORY_EXPLORER_TREE_NAME);
             
@@ -482,7 +508,7 @@ public class RepositoryExplorerDialog extends Dialog
     
     		BaseStepDialog.setSize(shell, 400, 480, true);
     
-    		refreshTree();
+    		setSort(1); // refreshes too.
     
     		shell.open();
     		Display display = parent.getDisplay();
@@ -499,7 +525,28 @@ public class RepositoryExplorerDialog extends Dialog
 
 	}
 	
-	public RepositoryDirectory getDirectory(TreeItem ti)
+	protected void setSort(int i)
+    {
+        if (sortColumn==i)
+        {
+            ascending=!ascending;
+        }
+        else
+        {
+            sortColumn=i;
+            ascending=true;
+        }
+        
+        if (sortColumn>0 && sortColumn<4)
+        {
+            TreeColumn column = wTree.getColumn(sortColumn-1);
+            wTree.setSortColumn(column);
+            wTree.setSortDirection(ascending?SWT.UP:SWT.DOWN);
+        }
+        refreshTree();
+    }
+
+    public RepositoryDirectory getDirectory(TreeItem ti)
 	{
 		RepositoryDirectory repdir = null;
 		
@@ -988,7 +1035,8 @@ public class RepositoryExplorerDialog extends Dialog
 				tiCat.setText(STRING_TRANSFORMATIONS);
 				
 				TreeItem newCat = new TreeItem(tiCat, SWT.NONE);
-				rep.getDirectoryTree().getTreeWithNames(newCat, rep, dircolor, true, false, false);
+                
+				rep.getDirectoryTree().getTreeWithNames(newCat, rep, dircolor, true, false, false, sortColumn, ascending);
 			}
 			
 			// The Jobs...				
@@ -998,7 +1046,7 @@ public class RepositoryExplorerDialog extends Dialog
 				tiJob.setText(STRING_JOBS);
 	
 				TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
-				rep.getDirectoryTree().getTreeWithNames(newJob, rep, dircolor, false, true, false);
+				rep.getDirectoryTree().getTreeWithNames(newJob, rep, dircolor, false, true, false, sortColumn, ascending);
 			}
 	
 			//
@@ -1537,6 +1585,7 @@ public class RepositoryExplorerDialog extends Dialog
 		
 		return retval;
 	}
+    
 	public void editUser(String login)
 	{
 		try

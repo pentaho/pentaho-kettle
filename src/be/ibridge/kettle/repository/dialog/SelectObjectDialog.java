@@ -28,7 +28,6 @@ import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Dialog;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
@@ -36,6 +35,7 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 
 import be.ibridge.kettle.core.Const;
@@ -79,6 +79,11 @@ public class SelectObjectDialog extends Dialog
 
 	private String 			    objectName;
 	private RepositoryDirectory objectDirectory;
+    private TreeColumn nameColumn;
+    private TreeColumn userColumn;
+    private TreeColumn changedColumn;
+    private int sortColumn;
+    private boolean ascending;
 		
 	public SelectObjectDialog(Shell parent, Props props, Repository rep, boolean trans, boolean job, boolean schema)
 	{
@@ -100,6 +105,9 @@ public class SelectObjectDialog extends Dialog
 					);
 		objectName = null;
 		objectDirectory = null;
+        
+        sortColumn = 0;
+        ascending = true;
 	}
 	
 	public String open()
@@ -128,8 +136,27 @@ public class SelectObjectDialog extends Dialog
 		fdlTree.top  = new FormAttachment(0, margin);
 		wlTree.setLayoutData(fdlTree);
 		wTree=new Tree(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER | SWT.V_SCROLL | SWT.H_SCROLL);
-		
- 		props.setLook(wTree);
+        wTree.setHeaderVisible(true);
+        props.setLook(wTree);
+
+        // Add some columns to it as well...
+        nameColumn = new TreeColumn(wTree, SWT.LEFT);
+        nameColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Name")); //$NON-NLS-1$
+        nameColumn.setWidth(350);
+        nameColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(1); } });
+        
+        userColumn = new TreeColumn(wTree, SWT.LEFT);
+        userColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.User")); //$NON-NLS-1$
+        userColumn.setWidth(100);
+        userColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(2); } });
+
+        changedColumn = new TreeColumn(wTree, SWT.LEFT);
+        changedColumn.setText(Messages.getString("RepositoryExplorerDialog.Column.Changed")); //$NON-NLS-1$
+        changedColumn.setWidth(100);
+        changedColumn.addListener(SWT.Selection, new Listener() { public void handleEvent(Event e) { setSort(3); } });
+        
+        
+        props.setLook(wTree);
 		fdTree=new FormData();
 		fdTree.left = new FormAttachment(0, 0);
 		fdTree.right= new FormAttachment(100, 0);
@@ -182,7 +209,7 @@ public class SelectObjectDialog extends Dialog
                     Messages.getString("SelectObjectDialog.Dialog.ErrorRefreshingDirectoryTree.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
         }
         
-		getData();
+        getData();
 		
 		BaseStepDialog.setSize(shell);
 
@@ -193,8 +220,47 @@ public class SelectObjectDialog extends Dialog
 		}
 		return objectName;
 	}
+    
+    protected void setSort(int i)
+    {
+        if (sortColumn==i)
+        {
+            ascending=!ascending;
+        }
+        else
+        {
+            sortColumn=i;
+            ascending=true;
+        }
+        
+        if (sortColumn>0 && sortColumn<4)
+        {
+            TreeColumn column = wTree.getColumn(sortColumn-1);
+            wTree.setSortColumn(column);
+            wTree.setSortDirection(ascending?SWT.UP:SWT.DOWN);
+        }
+        refreshTree();
+    }
 
-	public void dispose()
+    
+    private void refreshTree()
+    {
+        try
+        {
+            wTree.removeAll();
+            
+            TreeItem ti = new TreeItem(wTree, SWT.NONE);
+            ti.setExpanded(true);
+            
+            rep.getDirectoryTree().getTreeWithNames(ti, rep, dircolor, trans, job, schema, sortColumn, ascending);
+        }
+        catch(KettleDatabaseException e)
+        {
+            new ErrorDialog(shell, Messages.getString("SelectObjectDialog.Dialog.UnexpectedError.Title"), Messages.getString("SelectObjectDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+    }
+
+    public void dispose()
 	{
 		props.setScreen(new WindowProperty(shell));
 		shell.dispose();
@@ -202,20 +268,7 @@ public class SelectObjectDialog extends Dialog
 	
 	public void getData()
 	{
-		Control children[] = wTree.getChildren();
-		for (int i=0;i<children.length;i++) children[i].dispose();
-		
-		TreeItem ti = new TreeItem(wTree, SWT.NONE);
-		ti.setExpanded(true);
-		
-        try
-        {
-            rep.getDirectoryTree().getTreeWithNames(ti, rep, dircolor, trans, job, schema);
-        }
-        catch(KettleDatabaseException e)
-        {
-            new ErrorDialog(shell, Messages.getString("SelectObjectDialog.Dialog.UnexpectedError.Title"), Messages.getString("SelectObjectDialog.Dialog.UnexpectedError.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-        }
+		setSort(1);
 	}
 	
 	private void cancel()

@@ -141,10 +141,7 @@ public class Props implements Cloneable
     private LogWriter log = LogWriter.getInstance();
 	private Properties properties;
 	
-	private String lastfiles[];
-	private String lastdirs[];
-	private boolean lasttypes[];
-	private String lastrepos[];
+    List lastUsedFiles;
     
     private ArrayList pluginHistory;
 	
@@ -244,10 +241,7 @@ public class Props implements Cloneable
 
         loadProps();
         
-        lastfiles = getLastFiles();
-        lastdirs  = getLastDirs();
-        lasttypes = getLastTypes();
-        lastrepos = getLastRepositories();
+        loadLastUsedFiles();
         loadScreens();
         loadPluginHistory();
 	}
@@ -264,10 +258,7 @@ public class Props implements Cloneable
 
         loadProps();
         
-        lastfiles = getLastFiles();
-        lastdirs  = getLastDirs();
-        lasttypes = getLastTypes();
-        lastrepos = getLastRepositories();
+        loadLastUsedFiles();
         loadScreens();
         loadPluginHistory();
     }
@@ -344,10 +335,8 @@ public class Props implements Cloneable
 	{
 		FontData fd;
 		RGB col;
-		
-		lastfiles=new String[0];
-		lasttypes=new boolean[0];
-		lastrepos=new String[0];
+
+        lastUsedFiles = new ArrayList();
 		screens = new Hashtable();
 
 		properties.setProperty(STRING_LOG_LEVEL,  getLogLevel());
@@ -490,175 +479,116 @@ public class Props implements Cloneable
 		}
 	}
     
-	public void setLastFiles(String lf[], String ld[], boolean lt[], String lr[])
+	public void setLastFiles()
 	{
-		if (lf.length>Const.MAX_FILE_HIST)
+		properties.setProperty("lastfiles", ""+lastUsedFiles.size());
+		for (int i=0;i<lastUsedFiles.size();i++)
 		{
-			lastfiles=new String [Const.MAX_FILE_HIST];
-			lastdirs =new String [Const.MAX_FILE_HIST];
-			lasttypes=new boolean[Const.MAX_FILE_HIST];
-			lastrepos=new String [Const.MAX_FILE_HIST];
-			
-			for (int i=0;i<Const.MAX_FILE_HIST;i++)
-			{
-				lastfiles[i]=lf[i];
-				lastdirs [i]=ld[i];
-				lasttypes[i]=lt[i];
-				lastrepos[i]=lr[i];
-			}
-		}
-		else
-		{
-			lastfiles=lf;
-			lastdirs =ld;
-			lasttypes=lt;
-			lastrepos=lr;
-		}
-		// Cap it off at Const.MAX_FILE_HIST
-		 
-		properties.setProperty("lastfiles", ""+lf.length);
-		for (int i=0;i<lf.length;i++)
-		{
-			properties.setProperty("lastfile"+(i+1), lf[i]==null?"":lf[i]);
-			properties.setProperty("lastdir"+(i+1),  ld[i]==null?"":ld[i]);
-			properties.setProperty("lasttype"+(i+1), lt[i]?"Y":"N");
-			properties.setProperty("lastrepo"+(i+1), lr[i]==null?"":lr[i]);
+            LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(i);
+            
+			properties.setProperty("lastfile"+(i+1), Const.NVL(lastUsedFile.getFilename(), ""));
+			properties.setProperty("lastdir"+(i+1),  Const.NVL(lastUsedFile.getDirectory(), ""));
+			properties.setProperty("lasttype"+(i+1), lastUsedFile.isSourceRepository()?"Y":"N");
+			properties.setProperty("lastrepo"+(i+1), Const.NVL(lastUsedFile.getRepositoryName(), ""));
 		}
 	}
 	
 	/**
 	 * Add a last opened file to the top of the recently used list.
-	 * @param lf The name of the file or transformation
-	 * @param ld The repository directory path, null in case lf is an XML file  
-	 * @param lt True if the file was loaded from repository, false if ld is an XML file.
-	 * @param lr The name of the repository the file was loaded from or save to.
+	 * @param filename The name of the file or transformation
+	 * @param directory The repository directory path, null in case lf is an XML file  
+	 * @param sourceRepository True if the file was loaded from repository, false if ld is an XML file.
+	 * @param repositoryName The name of the repository the file was loaded from or save to.
 	 */
-	public void addLastFile(int propType, String lf, String ld, boolean lt, String lr)
+	public void addLastFile(int propType, String filename, String directory, boolean sourceRepository, String repositoryName)
 	{
 		if (propType!=getType()) return;
 		
-		// System.out.println("Add last file ("+lf+", "+ld+", "+lt+", "+lr+")");
-		
-		boolean exists=false;
-		int idx=-1;
-		for (int i=0;i<lastfiles.length;i++)
-		{
-			if ( lf.equalsIgnoreCase(lastfiles[i]) && 
-			     lasttypes[i]==lt &&
-				 (ld==null || ld.equalsIgnoreCase(lastdirs[i]))
-			    )
-			{
-				exists=true;
-				idx=i;
-			}
-		}
-		// System.out.println("exists = "+exists+" idx="+idx);
-		if (!exists)
-		{
-			String  newlf[] = new String [lastfiles.length+1];
-			String  newld[] = new String [lastfiles.length+1];
-			boolean newlt[] = new boolean[lastfiles.length+1];
-			String  newlr[] = new String [lastfiles.length+1];
-			
-			for (int i=0;i<newlf.length;i++)
-			{
-				if (i==0) 
-				{
-					newlf[i] = lf;
-					newld[i] = ld;
-					newlt[i] = lt;
-					newlr[i] = lt?lr:"";
-				} 
-				else
-				{
-					newlf[i] = lastfiles[i-1];
-					newld[i] = lastdirs [i-1];
-					newlt[i] = lasttypes[i-1];
-					newlr[i] = lastrepos[i-1];
-				} 
-			}
-			setLastFiles(newlf, newld, newlt, newlr);
-		}
-		else
-		{
-			// put the last used item on top!
-			// This is item idx
-			String newlf[]  = new String[lastfiles.length];
-			String newld[]  = new String[lastfiles.length];
-			boolean newlt[] = new boolean[lastfiles.length];
-			String newlr[]  = new String[lastfiles.length];
-			
-			newlf[0] = lf; // At least one because one exists...
-			newld[0] = ld; 
-			newlt[0] = lt; 
-			newlr[0] = lt?lr:"";			
-			
-			// Move items down unless i>idx 
-			for (int i=1;i<lastfiles.length;i++)
-			{
-				if (i<=idx)
-				{
-					newlf[i]=lastfiles[i-1];
-					newld[i]=lastdirs [i-1];
-					newlt[i]=lasttypes[i-1]; 
-					newlr[i]=lastrepos[i-1];
-				}
-				else
-				{
-					newlf[i]=lastfiles[i];
-					newld[i]=lastdirs [i];
-					newlt[i]=lasttypes[i];
-					newlr[i]=lastrepos[i];
-				} 
-			}
-			setLastFiles(newlf, newld, newlt, newlr);
-		}
+		LastUsedFile lastUsedFile = new LastUsedFile(filename, directory, sourceRepository, repositoryName);
+        
+        int idx = lastUsedFiles.indexOf(lastUsedFile);
+        if (idx>=0)
+        {
+            lastUsedFiles.remove(idx);
+        }
+        // Add it to position 0
+        lastUsedFiles.add(0, lastUsedFile);
+        
+        // If we have more than Const.MAX_FILE_HIST, top it off
+        while (lastUsedFiles.size()>Const.MAX_FILE_HIST)
+        {
+            lastUsedFiles.remove(lastUsedFiles.size()-1);
+        }
 	}
 	
+    public void loadLastUsedFiles()
+    {
+        lastUsedFiles = new ArrayList();
+        int nr = Const.toInt(properties.getProperty("lastfiles"), 0);
+        for (int i=0;i<nr;i++)
+        {
+            String filename = properties.getProperty("lastfile"+(i+1), "");
+            String directory = properties.getProperty("lastdir"+(i+1), "");
+            boolean sourceRepository = "Y".equalsIgnoreCase(properties.getProperty("lasttype"+(i+1), "N"));
+            String repositoryName = properties.getProperty("lastrepo"+(i+1));
+            
+            addLastFile(type, filename, directory, sourceRepository, repositoryName);
+        }
+    }
+    
+    public List getLastUsedFiles()
+    {
+        return lastUsedFiles;
+    }
+    
+    public void setLastUsedFiles(List lastUsedFiles)
+    {
+        this.lastUsedFiles = lastUsedFiles;
+    }
+    
 	public String[] getLastFiles()
 	{
-		int nr = Const.toInt(properties.getProperty("lastfiles"), 0);
-		String lf[] = new String[nr];
-		for (int i=0;i<nr;i++)
-		{
-			lf[i] = properties.getProperty("lastfile"+(i+1), "");
-		}
-		return lf;
+        String retval[] = new String[lastUsedFiles.size()];
+        for (int i=0;i<retval.length;i++)
+        {
+            LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(i);
+            retval[i]=lastUsedFile.getFilename();
+        }
+		return retval;
 	}
 	
 	public String[] getLastDirs()
 	{
-		int nr = Const.toInt(properties.getProperty("lastfiles"), 0);
-		String ld[] = new String[nr];
-		for (int i=0;i<nr;i++)
-		{
-			ld[i] = properties.getProperty("lastdir"+(i+1), "");
-		}
-		return ld;
+        String retval[] = new String[lastUsedFiles.size()];
+        for (int i=0;i<retval.length;i++)
+        {
+            LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(i);
+            retval[i]=lastUsedFile.getDirectory();
+        }
+        return retval;
 	}
 
 
 	public boolean[] getLastTypes()
 	{
-		int nr = Const.toInt(properties.getProperty("lastfiles"), 0);
-		boolean lt[] = new boolean[nr];
-		for (int i=0;i<nr;i++)
-		{
-			lt[i] = "Y".equalsIgnoreCase(properties.getProperty("lasttype"+(i+1), "N"));
-		}
-		return lt;
+        boolean retval[] = new boolean[lastUsedFiles.size()];
+        for (int i=0;i<retval.length;i++)
+        {
+            LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(i);
+            retval[i]=lastUsedFile.isSourceRepository();
+        }
+        return retval;
 	}
 
 	public String[] getLastRepositories()
 	{
-		String snr = properties.getProperty("lastfiles");
-		int nr = Const.toInt(snr, 0);
-		String lr[] = new String[nr];
-		for (int i=0;i<nr;i++)
-		{
-			lr[i] = properties.getProperty("lastrepo"+(i+1));
-		}
-		return lr;
+        String retval[] = new String[lastUsedFiles.size()];
+        for (int i=0;i<retval.length;i++)
+        {
+            LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(i);
+            retval[i]=lastUsedFile.getRepositoryName();
+        }
+        return retval;
 	}
 	
 	public void setLogLevel(String level)

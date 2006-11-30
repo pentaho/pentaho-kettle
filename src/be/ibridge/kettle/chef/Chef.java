@@ -83,6 +83,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
 import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.KettleVariables;
+import be.ibridge.kettle.core.LastUsedFile;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
@@ -587,39 +588,26 @@ public class Chef implements AddUndoPositionInterface
 		}
 		
 		// Previously loaded files...
-		String  lf[] = props.getLastFiles();
-		String  ld[] = props.getLastDirs();
-		boolean lt[] = props.getLastTypes();
-		String  lr[] = props.getLastRepositories();
-		
-		for (int i=0;i<lf.length;i++)
-		{
-		  MenuItem miFileLast = new MenuItem(msFile, SWT.CASCADE);
-		  char chr  = (char)('1'+i );
-		  int accel =  SWT.CTRL | chr;
-		  String repository = ( lr[i]!=null && lr[i].length()>0 ) ? ( "["+lr[i]+"] " ) : ""; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		  String filename = RepositoryDirectory.DIRECTORY_SEPARATOR + lf[i];
-		  if (!lt[i]) filename = lf[i];
-		  
-		  if (!ld[i].equals(RepositoryDirectory.DIRECTORY_SEPARATOR))
-		  {
-		  	filename=ld[i]+filename;
-		  }
-		  if (i<9)
-		  {
-		  	miFileLast.setAccelerator(accel);
-			miFileLast.setText("&"+chr+"  "+repository+filename+ "\tCTRL-"+chr); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
-		  }
-		  else
-		  {
-		  	miFileLast.setText("   "+repository+filename); //$NON-NLS-1$
-		  }
-		  
-		  final String  fn = lf[i];   // filename
-		  final String  fd = ld[i];   // Repository directory ...
-		  final boolean ft = lt[i];   // type: true=repository, false=file
-		  final String  fr = lr[i];   // repository name
-		  
+        // Previously loaded files...
+        List lastUsedFiles = props.getLastUsedFiles();
+        for (int i = 0; i < lastUsedFiles.size(); i++)
+        {
+            final LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(i);
+            MenuItem miFileLast = new MenuItem(msFile, SWT.CASCADE);
+
+            char chr = (char) ('1' + i);
+            int accel = SWT.CTRL | chr;
+
+            if (i < 9)
+            {
+                miFileLast.setAccelerator(accel);
+                miFileLast.setText("&" + chr + "  " + lastUsedFile + "\tCTRL-" + chr);
+            }
+            else
+            {
+                miFileLast.setText("   " + lastUsedFile);
+            }
+            
 		  Listener lsFileLast = new Listener() 
 			  { 
 				  public void handleEvent(Event e) 
@@ -630,11 +618,11 @@ public class Chef implements AddUndoPositionInterface
 				      	// the one we're connected to, ask for a username/password!
 				      	// 
 				      	boolean noRepository=false;
-				      	if (ft && (rep==null || !rep.getRepositoryInfo().getName().equalsIgnoreCase(fr) ))
+				      	if (lastUsedFile.isSourceRepository() && (rep==null || !rep.getRepositoryInfo().getName().equalsIgnoreCase(lastUsedFile.getRepositoryName()) ))
 				      	{
 				      		int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_JOB };
 				      		RepositoriesDialog rd = new RepositoriesDialog(disp, SWT.NONE, perms, APP_NAME);
-				      		rd.setRepositoryName(fr);
+				      		rd.setRepositoryName(lastUsedFile.getRepositoryName());
 				      		if (rd.open())
 				      		{
 				      			//	Close the previous connection...
@@ -656,23 +644,23 @@ public class Chef implements AddUndoPositionInterface
 				      		}
 				      	}
 
-				      	if (ft)
+				      	if (lastUsedFile.isSourceRepository())
 				      	{
-				      		if (!noRepository && rep!=null && rep.getRepositoryInfo().getName().equalsIgnoreCase(fr))
+				      		if (!noRepository && rep!=null && rep.getRepositoryInfo().getName().equalsIgnoreCase(lastUsedFile.getRepositoryName()))
 				      		{
 			      				// OK, we're connected to the new repository...
 			      				// Load the job...
-				      			RepositoryDirectory fdRepdir = rep.getDirectoryTree().findDirectory(fd);
+				      			RepositoryDirectory fdRepdir = rep.getDirectoryTree().findDirectory(lastUsedFile.getDirectory());
 			      				try
 								{
 			      					if (fdRepdir!=null)
 			      					{
-			      						jobMeta = new JobMeta(log, rep, fn, fdRepdir);
-                                        props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fn, fdRepdir.getPath(), true, rep.getName());
+			      						jobMeta = new JobMeta(log, rep, lastUsedFile.getFilename(), fdRepdir);
+                                        props.addLastFile(Props.TYPE_PROPERTIES_CHEF, lastUsedFile.getFilename(), fdRepdir.getPath(), true, rep.getName());
 			      					}
 			      					else
 			      					{
-			      						throw new KettleException(Messages.getString("Chef.Exception.RepositoryDirectoryDoesNotExist")+fd); //$NON-NLS-1$
+			      						throw new KettleException(Messages.getString("Chef.Exception.RepositoryDirectoryDoesNotExist")+lastUsedFile.getDirectory()); //$NON-NLS-1$
 			      					}
 								}
 			      				catch(KettleException ke)
@@ -695,8 +683,8 @@ public class Chef implements AddUndoPositionInterface
 				      	{
 				      		try
 							{
-				      			jobMeta = new JobMeta(log, fn, rep);
-                                props.addLastFile(Props.TYPE_PROPERTIES_CHEF, fn, null, false, null);
+				      			jobMeta = new JobMeta(log, lastUsedFile.getFilename(), rep);
+                                props.addLastFile(Props.TYPE_PROPERTIES_CHEF, lastUsedFile.getFilename(), null, false, null);
 							}
 				      		catch(KettleException ke)
 							{
@@ -2407,31 +2395,49 @@ public class Chef implements AddUndoPositionInterface
 	    return GUIResource.getInstance().fromClipboard();
 	}
 	
-	public void setShellText()
-	{
-		String fname = jobMeta.getFilename();
-		if (shell.isDisposed()) return;
+    public void setShellText()
+    {
+        String fname = jobMeta.getFilename();
+        if (shell.isDisposed()) return;
 
-		if (rep!=null)
-		{
-			String repository = "["+getRepositoryName()+"]"; //$NON-NLS-1$ //$NON-NLS-2$
-			String transname  = jobMeta.getName();
-			if (transname==null) transname=Messages.getString("Chef.ShellText.NoJobName"); //$NON-NLS-1$
-			shell.setText(APPL_TITLE+" - "+repository+"   "+transname+(jobMeta.hasChanged()?Messages.getString("Chef.ShellText.Changed"):"")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-		}
-		else
-		{
-			String repository = Messages.getString("Chef.ShellText.NoRepository"); //$NON-NLS-1$
-			if (fname!=null)
-			{
-				shell.setText(APPL_TITLE+" - "+repository+Messages.getString("Chef.ShellText.File")+fname+(jobMeta.hasChanged()?Messages.getString("Chef.ShellText.Changed2"):"")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			}
-			else
-			{
-				shell.setText(APPL_TITLE+" - "+repository+"   "+(jobMeta.hasChanged()?Messages.getString("Chef.ShellText.Changed3"):"")); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-			}
-		}
-	}
+        String text = "";
+        
+        if (rep!=null)
+        {
+            text+= APPL_TITLE+" - ["+getRepositoryName()+"] ";
+        }
+        else
+        {
+            text+= APPL_TITLE+" - ";
+        }
+        
+        if (rep!=null && jobMeta.getID()>0)
+        {
+            String jobname  = jobMeta.getName();
+            if (jobname==null)
+            {
+                jobname=Messages.getString("Chef.ShellText.NoJobName");
+            }
+            else
+            {
+                text+="  "+jobname;
+            }
+        }
+        else
+        {
+            if (fname!=null)
+            {
+                text+=fname;
+            }
+        }
+        
+        if (jobMeta.hasChanged())
+        {
+            text+=" "+Messages.getString("Chef.ShellText.Changed");
+        }
+        
+        shell.setText(text);
+    }
 
 	private void setFilename(String fname)
 	{

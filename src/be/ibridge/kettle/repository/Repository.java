@@ -2022,6 +2022,56 @@ public class Repository
 
 		return Const.sortStrings(retval);
 	}
+    
+    public List getJobObjects(long id_directory, int sortPosition, boolean ascending) throws KettleDatabaseException
+    {
+        return getRepositoryObjects("R_JOB", id_directory, sortPosition, ascending);
+    }
+
+    public List getTransformationObjects(long id_directory, int sortPosition, boolean ascending) throws KettleDatabaseException
+    {
+        return getRepositoryObjects("R_TRANSFORMATION", id_directory, sortPosition, ascending);
+    }
+
+    /**
+     * @param id_directory
+     * @return A list of RepositoryObjects
+     * 
+     * @throws KettleDatabaseException
+     */
+    private synchronized List getRepositoryObjects(String tableName, long id_directory, int sortPosition, boolean ascending) throws KettleDatabaseException
+    {
+        String nameField = databaseMeta.quoteField("NAME");
+        
+        String sortField = nameField;
+        switch(sortPosition)
+        {
+        case 2: sortField = "MODIFIED_USER"; break;
+        case 3: sortField = "MODIFIED_DATE"; break;
+        }
+        
+        String sql = "SELECT "+nameField+", MODIFIED_USER, MODIFIED_DATE " +
+                "FROM "+tableName+" " +
+                "WHERE ID_DIRECTORY = " + id_directory + " " +
+                "ORDER BY "+sortField+" "+(ascending?"ASC":"DESC");
+
+        List repositoryObjects = new ArrayList();
+        
+        ResultSet rs = database.openQuery(sql);
+        if (rs != null)
+        {
+            Row r = database.getRow(rs);
+            while (r != null)
+            {
+                repositoryObjects.add(new RepositoryObject( r.getValue(0).getString(), r.getValue(1).getString(), r.getValue(2).getDate()));
+                r = database.getRow(rs);
+            }
+            database.closeQuery(rs);
+        }
+
+        return repositoryObjects;
+    }
+    
 
 	public synchronized String[] getJobNames(long id_directory) throws KettleDatabaseException
 	{
@@ -5361,5 +5411,4 @@ public class Repository
     {
         Repository.currentRepository = currentRepository;
     }
-
 }

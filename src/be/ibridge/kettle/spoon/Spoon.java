@@ -81,6 +81,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
 import be.ibridge.kettle.core.GUIResource;
 import be.ibridge.kettle.core.KettleVariables;
+import be.ibridge.kettle.core.LastUsedFile;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.NotePadMeta;
 import be.ibridge.kettle.core.Point;
@@ -925,125 +926,129 @@ public class Spoon implements AddUndoPositionInterface
         }
         
         // Previously loaded files...
-        String  lf[] = props.getLastFiles();
-        String  ld[] = props.getLastDirs();
-        boolean lt[] = props.getLastTypes();
-        String  lr[] = props.getLastRepositories();
-        
-        for (int i=0;i<lf.length;i++)
+        List lastUsedFiles = props.getLastUsedFiles();
+        for (int i = 0; i < lastUsedFiles.size(); i++)
         {
-          MenuItem miFileLast = new MenuItem(msFile, SWT.CASCADE);
-          char chr  = (char)('1'+i );
-          int accel =  SWT.CTRL | chr;
-          String repository = ( lr[i]!=null && lr[i].length()>0 ) ? ( "["+lr[i]+"] " ) : ""; 
-          String filename = RepositoryDirectory.DIRECTORY_SEPARATOR + lf[i];
-          if (!lt[i]) filename = lf[i];
-          if (!ld[i].equals(RepositoryDirectory.DIRECTORY_SEPARATOR))
-          {
-            filename=ld[i]+filename;
-          }
-          
-          if (i<9)
-          {
-            miFileLast.setAccelerator(accel);
-            miFileLast.setText("&"+chr+"  "+repository+filename+ "\tCTRL-"+chr);
-          }
-          else
-          {
-            miFileLast.setText("   "+repository+filename);
-          }
+            final LastUsedFile lastUsedFile = (LastUsedFile) lastUsedFiles.get(i);
+            MenuItem miFileLast = new MenuItem(msFile, SWT.CASCADE);
 
-          final String  fn = lf[i];   // filename
-          final String  fd = ld[i];   // Repository directory ...
-          final boolean ft = lt[i];   // type: true=repository, false=file
-          final String  fr = lr[i];   // repository name
-          
-          Listener lsFileLast = new Listener() 
-              { 
-                  public void handleEvent(Event e) 
-                  {
-                      if (showChangedWarning())
-                      {
-                        // If the file comes from a repository and it's not the same as 
+            char chr = (char) ('1' + i);
+            int accel = SWT.CTRL | chr;
+
+            if (i < 9)
+            {
+                miFileLast.setAccelerator(accel);
+                miFileLast.setText("&" + chr + "  " + lastUsedFile + "\tCTRL-" + chr);
+            }
+            else
+            {
+                miFileLast.setText("   " + lastUsedFile);
+            }
+
+            Listener lsFileLast = new Listener()
+            {
+                public void handleEvent(Event e)
+                {
+                    if (showChangedWarning())
+                    {
+                        // If the file comes from a repository and it's not the same as
                         // the one we're connected to, ask for a username/password!
                         //
-                        boolean noRepository=false;
-                        if (ft && (rep==null || !rep.getRepositoryInfo().getName().equalsIgnoreCase(fr) ))
+                        boolean noRepository = false;
+                        if (lastUsedFile.isSourceRepository()
+                                && (rep == null || !rep.getRepositoryInfo().getName().equalsIgnoreCase(lastUsedFile.getRepositoryName())))
                         {
+                            // Ask for a username password to get the required repository access
+                            //
                             int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION };
-                            RepositoriesDialog rd = new RepositoriesDialog(disp, SWT.NONE, perms, Messages.getString("Spoon.Application.Name")); //RepositoriesDialog.ToolName="Spoon"
-                            rd.setRepositoryName(fr);
+                            RepositoriesDialog rd = new RepositoriesDialog(disp, SWT.NONE, perms, Messages.getString("Spoon.Application.Name")); // RepositoriesDialog.ToolName="Spoon"
+                            rd.setRepositoryName(lastUsedFile.getRepositoryName());
                             if (rd.open())
                             {
-                                //  Close the previous connection...
-                                if (rep!=null) rep.disconnect();
+                                // Close the previous connection...
+                                if (rep != null) rep.disconnect();
                                 rep = new Repository(log, rd.getRepository(), rd.getUser());
                                 try
                                 {
                                     rep.connect(APP_NAME);
                                 }
-                                catch(KettleException ke)
+                                catch (KettleException ke)
                                 {
-                                    rep=null;
-                                    new ErrorDialog(shell, Messages.getString("Spoon.Dialog.UnableConnectRepository.Title"), Messages.getString("Spoon.Dialog.UnableConnectRepository.Message"), ke);  //$NON-NLS-1$ //$NON-NLS-2$
+                                    rep = null;
+                                    new ErrorDialog(
+                                            shell,
+                                            Messages.getString("Spoon.Dialog.UnableConnectRepository.Title"), Messages.getString("Spoon.Dialog.UnableConnectRepository.Message"), ke); //$NON-NLS-1$ //$NON-NLS-2$
                                 }
                             }
                             else
                             {
-                                noRepository=true;
+                                noRepository = true;
                             }
                         }
-                        
-                        if (ft)
+
+                        if (lastUsedFile.isSourceRepository())
                         {
-                            if (!noRepository && rep!=null && rep.getRepositoryInfo().getName().equalsIgnoreCase(fr))
+                            if (!noRepository && rep != null && rep.getRepositoryInfo().getName().equalsIgnoreCase(lastUsedFile.getRepositoryName()))
                             {
                                 // OK, we're connected to the new repository...
                                 // Load the transformation...
-                            	RepositoryDirectory fdRepdir = rep.getDirectoryTree().findDirectory(fd);
-                                TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, fn, fdRepdir);
+                                RepositoryDirectory fdRepdir = rep.getDirectoryTree().findDirectory(lastUsedFile.getDirectory());
+                                TransLoadProgressDialog tlpd = new TransLoadProgressDialog(shell, rep, lastUsedFile.getFilename(), fdRepdir);
                                 TransMeta transInfo = tlpd.open();
-                                if (transInfo!=null)
+                                if (transInfo != null)
                                 {
                                     transMeta = transInfo;
                                     transMeta.clearChanged();
-                                    props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fn, fdRepdir.getPath(), true, rep.getName());
+                                    props.addLastFile(Props.TYPE_PROPERTIES_SPOON, lastUsedFile.getFilename(), fdRepdir.getPath(), true, rep
+                                            .getName());
                                 }
                             }
                             else
                             {
                                 clear();
-                                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR );
-                                mb.setMessage(Messages.getString("Spoon.Dialog.UnableLoadTransformation.Message"));//Can't load this transformation.  Please connect to the correct repository first.
-                                mb.setText(Messages.getString("Spoon.Dialog.UnableLoadTransformation.Title"));//Error!
+                                MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
+                                mb.setMessage(Messages.getString("Spoon.Dialog.UnableLoadTransformation.Message"));// Can't
+                                                                                                                    // load
+                                                                                                                    // this
+                                                                                                                    // transformation.
+                                                                                                                    // Please
+                                                                                                                    // connect
+                                                                                                                    // to
+                                                                                                                    // the
+                                                                                                                    // correct
+                                                                                                                    // repository
+                                                                                                                    // first.
+                                mb.setText(Messages.getString("Spoon.Dialog.UnableLoadTransformation.Title"));// Error!
                                 mb.open();
                             }
                         }
                         else
-                            // Load from XML!
+                        // Load from XML!
                         {
                             try
                             {
-                                transMeta = new TransMeta(fn);
+                                transMeta = new TransMeta(lastUsedFile.getFilename());
                                 transMeta.clearChanged();
-                                transMeta.setFilename(fn);
-                                props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fn, null, false, null);
+                                transMeta.setFilename(lastUsedFile.getFilename());
+                                props.addLastFile(Props.TYPE_PROPERTIES_SPOON, lastUsedFile.getFilename(), null, false, null);
                             }
-                            catch(KettleException ke)
+                            catch (KettleException ke)
                             {
                                 clear();
-                                //"Error loading transformation", "I was unable to load this transformation from the XML file because of an error"
-                                new ErrorDialog(shell, Messages.getString("Spoon.Dialog.LoadTransformationError.Title"), Messages.getString("Spoon.Dialog.LoadTransformationError.Message"), ke);
+                                // "Error loading transformation", "I was unable to load this transformation from the
+                                // XML file because of an error"
+                                new ErrorDialog(shell, Messages.getString("Spoon.Dialog.LoadTransformationError.Title"), Messages
+                                        .getString("Spoon.Dialog.LoadTransformationError.Message"), ke);
                             }
                         }
                         addMenuLast();
                         refreshTree(true);
                         refreshGraph();
                         refreshHistory();
-                      }
-                  } 
-              };
-          miFileLast.addListener(SWT.Selection, lsFileLast);
+                    }
+                }
+            };
+            miFileLast.addListener(SWT.Selection, lsFileLast);
         }
     }
     
@@ -2688,7 +2693,7 @@ public class Spoon implements AddUndoPositionInterface
                     try
                     {
                         transMeta = new TransMeta(fname, rep);
-                        props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fname, Const.FILE_SEPARATOR, false, "");
+                        props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fname, null, false, null);
                         addMenuLast();
                         if (!importfile) transMeta.clearChanged();
                         setFilename(fname);
@@ -3057,7 +3062,7 @@ public class Spoon implements AddUndoPositionInterface
             saved=true;
 
             // Handle last opened files...
-            props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fname, Const.FILE_SEPARATOR, false, "");
+            props.addLastFile(Props.TYPE_PROPERTIES_SPOON, fname, null, false, null);
             saveSettings();
             addMenuLast();
             
@@ -3610,25 +3615,37 @@ public class Spoon implements AddUndoPositionInterface
         String fname = transMeta.getFilename();
         if (shell.isDisposed()) return;
 
+        String text = "";
+        
         if (rep!=null)
         {
-            String repository = "["+getRepositoryName()+"]";
-            String transname  = transMeta.getName();
-            if (transname==null) transname=Messages.getString("Spoon.Various.NoName");//"[no name]"
-            shell.setText(APPL_TITLE+" - "+repository+"   "+transname+(transMeta.hasChanged()?(" "+Messages.getString("Spoon.Various.Changed")):""));//(changed)
+            text+= APPL_TITLE+" - ["+getRepositoryName()+"] ";
         }
         else
         {
-            String repository = Messages.getString("Spoon.Various.NoRepository");//"[no repository]"
+            text+= APPL_TITLE+" - ";
+        }
+        
+        if (rep!=null && transMeta.getId()>0)
+        {
+            String transname  = transMeta.getName();
+            if (transname==null) transname=Messages.getString("Spoon.Various.NoName");//"[no name]"
+            text+="  "+transname+(transMeta.hasChanged()?(" "+Messages.getString("Spoon.Various.Changed")):""); //(changed)
+        }
+        else
+        {
             if (fname!=null)
             {
-                shell.setText(APPL_TITLE+" - "+repository+"   File: "+fname+(transMeta.hasChanged()?(" "+Messages.getString("Spoon.Various.Changed")):""));
-            }
-            else
-            {
-                shell.setText(APPL_TITLE+" - "+repository+"   "+(transMeta.hasChanged()?(" "+Messages.getString("Spoon.Various.Changed")):""));
+                text+=fname;
             }
         }
+        
+        if (transMeta.hasChanged())
+        {
+            text+=" "+Messages.getString("Spoon.Various.Changed");
+        }
+        
+        shell.setText(text);
         
         enableMenus();
     }

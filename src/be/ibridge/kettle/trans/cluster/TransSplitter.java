@@ -84,6 +84,194 @@ public class TransSplitter
         this.serverTransMetaMap = serverTransMetaMap;
     }
     
+    private void checkClusterConfiguration() throws KettleException
+    {
+        Map map = new Hashtable();
+        StepMeta[] steps = originalTransformation.getStepsArray();
+        for (int i=0;i<steps.length;i++)
+        {
+            ClusterSchema clusterSchema = steps[i].getClusterSchema(); 
+            if (clusterSchema!=null)
+            {
+                map.put(steps[i].getClusterSchema().getName(), steps[i].getClusterSchema());
+                
+                if (clusterSchema.findMaster()==null)
+                {
+                    throw new KettleException("No master server was specified in cluster schema ["+clusterSchema+"]");
+                }
+            }
+        }
+        if (map.size()==0)
+        {
+            throw new KettleException("No cluster schemas are being used.  As such it is not possible to split and cluster this. transformation.");
+        }
+        if (map.size()>1)
+        {
+            throw new KettleException("At this time we don't support the use of multiple cluster schemas in one and the same transformation.");
+        }
+    }
+
+    private String getWriterName(String stepname, ClusterSchema clusterSchema, SlaveServer slaveServer)
+    {
+        return "Writer : "+getPort(clusterSchema, slaveServer, stepname);
+    }
+    
+    private String getReaderName(String stepname, ClusterSchema clusterSchema, SlaveServer slaveServer)
+    {
+        return "Reader : "+getPort(clusterSchema, slaveServer, stepname);
+    }
+
+    private String getSlaveTransName(String transName, ClusterSchema clusterSchema, SlaveServer slaveServer)
+    {
+        return transName + " ("+clusterSchema+":"+slaveServer.getHostname()+")";
+    }
+    
+    /**
+     * Get the port for the given cluster schema, slave server and step
+     * If a port was allocated, that is returned, otherwise a new one is allocated.
+     * 
+     * @param clusterSchema The cluster schema 
+     * @param slaveServer The slave server
+     * @param stepname the step name without reader/writer denotion.
+     * 
+     * @return the port to use for that step/slaveserver/cluster combination
+     */
+    private int getPort(ClusterSchema clusterSchema, SlaveServer slaveServer, String stepname)
+    {
+        String key = clusterSchema.getName()+" - "+slaveServer + " - " + stepname;
+        int p;
+        Integer port = (Integer) clusterStepPortMap.get(key);
+        if (port==null)
+        {
+            p = getNextPort(clusterSchema);
+            clusterStepPortMap.put(key, new Integer(p));
+        }
+        else
+        {
+            p = port.intValue();
+        }
+        
+        return p;
+    }
+    
+    /**
+     * Allocates a new port for the cluster.  This port has to be unique in the master, so it has to increase with each call.
+     * @param clusterSchema the cluster schema to allocate for.  Each clusterSchema should have it's own range.
+     * @return the next port number
+     */
+    private int getNextPort(ClusterSchema clusterSchema)
+    {
+        int p;
+        Integer port = (Integer) clusterPortMap.get(clusterSchema);
+        if (port==null)
+        {
+            p = Integer.parseInt( StringUtil.environmentSubstitute(clusterSchema.getBasePort())  );
+        }
+        else
+        {
+            p = port.intValue()+1;
+        }
+        clusterPortMap.put(clusterSchema, new Integer(p));
+        return p;
+    }
+    
+    /**
+     * Create or get a slave transformation for the specified cluster & slave server
+     * @param clusterSchema the cluster schema to reference
+     * @param slaveServer the slave server to reference
+     * @return
+     */
+    private TransMeta getSlaveTransformation(ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
+    {
+        TransMeta slave = (TransMeta) slaveTransMap.get(slaveServer);
+        
+        if (slave==null)
+        {
+            slave = getOriginalCopy(true, clusterSchema, slaveServer);
+            slaveTransMap.put(slaveServer, slave);
+        }
+        return slave;
+    }
+
+    private TransMeta getOriginalCopy(boolean isSlaveTrans, ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
+    {
+        TransMeta transMeta = new TransMeta();
+        if (isSlaveTrans)
+        {
+            transMeta.setName(getSlaveTransName(originalTransformation.getName(), clusterSchema, slaveServer));
+            
+            NotePadMeta slaveNote = new NotePadMeta("This is a generated slave transformation.\nIt will be run on slave server: "+slaveServer, 0, 0, -1, -1);
+            transMeta.addNote(slaveNote);
+        }
+        else
+        {
+            transMeta.setName(originalTransformation.getName());
+
+            NotePadMeta masterNote = new NotePadMeta("This is a generated master transformation.\nIt will be run on server: "+getMasterServer(), 0, 0, -1, -1);
+            transMeta.addNote(masterNote);
+        }
+        transMeta.setClusterSchemas(originalTransformation.getClusterSchemas());
+        transMeta.setPartitionSchemas(originalTransformation.getPartitionSchemas());
+        transMeta.setDatabases(originalTransformation.getDatabases());
+
+        return transMeta;
+    }
+
+    /**
+     * @return the master
+     */
+    public TransMeta getMaster()
+    {
+        return master;
+    }
+
+    /**
+     * @return the slaveTransMap : the mapping between a slaveServer and the transformation
+     *
+     */
+    public Map getSlaveTransMap()
+    {
+        return slaveTransMap;
+    }
+
+    
+    public TransMeta[] getSlaves()
+    {
+        Collection collection = slaveTransMap.values();
+        return (TransMeta[]) collection.toArray(new TransMeta[collection.size()]);
+    }
+    
+    public SlaveServer[] getSlaveTargets()
+    {
+        Set set = slaveTransMap.keySet();
+        return (SlaveServer[]) set.toArray(new SlaveServer[set.size()]);
+        /*
+        SlaveServer slaves[] = new SlaveServer[set.size()];
+        int i=0;
+        for (Iterator iter = set.iterator(); iter.hasNext(); i++)
+        {
+            ClusterSchemaSlaveServer key = (ClusterSchemaSlaveServer) iter.next();
+            slaves[i] = key.getSlaveServer();
+        }
+        return slaves;
+        */
+    }
+    
+    public SlaveServer getMasterServer() throws KettleException
+    {
+        StepMeta[] steps = originalTransformation.getStepsArray();
+        for (int i=0;i<steps.length;i++)
+        {
+            ClusterSchema clusterSchema = steps[i].getClusterSchema(); 
+            if (clusterSchema!=null)
+            {
+                return clusterSchema.findMaster();
+            }
+        }
+        throw new KettleException("No master server could be found in the original transformation");
+    }
+    
+    
     public void generateMasterTransformation() throws KettleException
     {
         // Mixing clusters is not supported at the moment
@@ -311,7 +499,13 @@ public class TransSplitter
                         }
                     }
                 }
-                
+            }
+             
+            for (int i=0;i<originalSteps.length;i++)
+            {
+                StepMeta originalStep = originalSteps[i];
+                ClusterSchema originalClusterSchema = originalStep.getClusterSchema(); 
+
                 // Also take care of the info steps...
                 // For example: StreamLookup, Table Input, etc.
                 //
@@ -518,192 +712,5 @@ public class TransSplitter
         {
             throw new KettleException("Unexpected problem while generating master transformation", e);
         }
-    }
-    
-    private void checkClusterConfiguration() throws KettleException
-    {
-        Map map = new Hashtable();
-        StepMeta[] steps = originalTransformation.getStepsArray();
-        for (int i=0;i<steps.length;i++)
-        {
-            ClusterSchema clusterSchema = steps[i].getClusterSchema(); 
-            if (clusterSchema!=null)
-            {
-                map.put(steps[i].getClusterSchema().getName(), steps[i].getClusterSchema());
-                
-                if (clusterSchema.findMaster()==null)
-                {
-                    throw new KettleException("No master server was specified in cluster schema ["+clusterSchema+"]");
-                }
-            }
-        }
-        if (map.size()==0)
-        {
-            throw new KettleException("No cluster schemas are being used.  As such it is not possible to split and cluster this. transformation.");
-        }
-        if (map.size()>1)
-        {
-            throw new KettleException("At this time we don't support the use of multiple cluster schemas in one and the same transformation.");
-        }
-    }
-
-    private String getWriterName(String stepname, ClusterSchema clusterSchema, SlaveServer slaveServer)
-    {
-        return "Writer : "+getPort(clusterSchema, slaveServer, stepname);
-    }
-    
-    private String getReaderName(String stepname, ClusterSchema clusterSchema, SlaveServer slaveServer)
-    {
-        return "Reader : "+getPort(clusterSchema, slaveServer, stepname);
-    }
-
-    private String getSlaveTransName(String transName, ClusterSchema clusterSchema, SlaveServer slaveServer)
-    {
-        return transName + " ("+clusterSchema+":"+slaveServer.getHostname()+")";
-    }
-    
-    /**
-     * Get the port for the given cluster schema, slave server and step
-     * If a port was allocated, that is returned, otherwise a new one is allocated.
-     * 
-     * @param clusterSchema The cluster schema 
-     * @param slaveServer The slave server
-     * @param stepname the step name without reader/writer denotion.
-     * 
-     * @return the port to use for that step/slaveserver/cluster combination
-     */
-    private int getPort(ClusterSchema clusterSchema, SlaveServer slaveServer, String stepname)
-    {
-        String key = clusterSchema.getName()+" - "+slaveServer + " - " + stepname;
-        int p;
-        Integer port = (Integer) clusterStepPortMap.get(key);
-        if (port==null)
-        {
-            p = getNextPort(clusterSchema);
-            clusterStepPortMap.put(key, new Integer(p));
-        }
-        else
-        {
-            p = port.intValue();
-        }
-        
-        return p;
-    }
-    
-    /**
-     * Allocates a new port for the cluster.  This port has to be unique in the master, so it has to increase with each call.
-     * @param clusterSchema the cluster schema to allocate for.  Each clusterSchema should have it's own range.
-     * @return the next port number
-     */
-    private int getNextPort(ClusterSchema clusterSchema)
-    {
-        int p;
-        Integer port = (Integer) clusterPortMap.get(clusterSchema);
-        if (port==null)
-        {
-            p = Integer.parseInt( StringUtil.environmentSubstitute(clusterSchema.getBasePort())  );
-        }
-        else
-        {
-            p = port.intValue()+1;
-        }
-        clusterPortMap.put(clusterSchema, new Integer(p));
-        return p;
-    }
-    
-    /**
-     * Create or get a slave transformation for the specified cluster & slave server
-     * @param clusterSchema the cluster schema to reference
-     * @param slaveServer the slave server to reference
-     * @return
-     */
-    private TransMeta getSlaveTransformation(ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
-    {
-        TransMeta slave = (TransMeta) slaveTransMap.get(slaveServer);
-        
-        if (slave==null)
-        {
-            slave = getOriginalCopy(true, clusterSchema, slaveServer);
-            slaveTransMap.put(slaveServer, slave);
-        }
-        return slave;
-    }
-
-    private TransMeta getOriginalCopy(boolean isSlaveTrans, ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
-    {
-        TransMeta transMeta = new TransMeta();
-        if (isSlaveTrans)
-        {
-            transMeta.setName(getSlaveTransName(originalTransformation.getName(), clusterSchema, slaveServer));
-            
-            NotePadMeta slaveNote = new NotePadMeta("This is a generated slave transformation.\nIt will be run on slave server: "+slaveServer, 0, 0, -1, -1);
-            transMeta.addNote(slaveNote);
-        }
-        else
-        {
-            transMeta.setName(originalTransformation.getName());
-
-            NotePadMeta masterNote = new NotePadMeta("This is a generated master transformation.\nIt will be run on server: "+getMasterServer(), 0, 0, -1, -1);
-            transMeta.addNote(masterNote);
-        }
-        transMeta.setClusterSchemas(originalTransformation.getClusterSchemas());
-        transMeta.setPartitionSchemas(originalTransformation.getPartitionSchemas());
-        transMeta.setDatabases(originalTransformation.getDatabases());
-
-        return transMeta;
-    }
-
-    /**
-     * @return the master
-     */
-    public TransMeta getMaster()
-    {
-        return master;
-    }
-
-    /**
-     * @return the slaveTransMap : the mapping between a slaveServer and the transformation
-     *
-     */
-    public Map getSlaveTransMap()
-    {
-        return slaveTransMap;
-    }
-
-    
-    public TransMeta[] getSlaves()
-    {
-        Collection collection = slaveTransMap.values();
-        return (TransMeta[]) collection.toArray(new TransMeta[collection.size()]);
-    }
-    
-    public SlaveServer[] getSlaveTargets()
-    {
-        Set set = slaveTransMap.keySet();
-        return (SlaveServer[]) set.toArray(new SlaveServer[set.size()]);
-        /*
-        SlaveServer slaves[] = new SlaveServer[set.size()];
-        int i=0;
-        for (Iterator iter = set.iterator(); iter.hasNext(); i++)
-        {
-            ClusterSchemaSlaveServer key = (ClusterSchemaSlaveServer) iter.next();
-            slaves[i] = key.getSlaveServer();
-        }
-        return slaves;
-        */
-    }
-    
-    public SlaveServer getMasterServer() throws KettleException
-    {
-        StepMeta[] steps = originalTransformation.getStepsArray();
-        for (int i=0;i<steps.length;i++)
-        {
-            ClusterSchema clusterSchema = steps[i].getClusterSchema(); 
-            if (clusterSchema!=null)
-            {
-                return clusterSchema.findMaster();
-            }
-        }
-        throw new KettleException("No master server could be found in the original transformation");
     }
 }

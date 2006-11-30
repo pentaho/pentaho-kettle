@@ -16,6 +16,7 @@
 package be.ibridge.kettle.repository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
@@ -423,8 +424,7 @@ public class RepositoryDirectory
 	 * Load the complete directory tree from the repository.
 	 * @param rep Repository
 	 */
-	public RepositoryDirectory(Repository rep)
-		throws KettleException
+	public RepositoryDirectory(Repository rep) throws KettleException
 	{
         loadDirectoryTreeFromRepository(rep);
 	}
@@ -555,7 +555,7 @@ public class RepositoryDirectory
 	 * @param schema Include the schemas in the tree or not
 	 * @throws KettleDatabaseException if something goes wrong.
 	 */
-	public void getTreeWithNames(TreeItem ti, Repository rep, Color dircolor, boolean trans, boolean job, boolean schema) throws KettleDatabaseException
+	public void getTreeWithNames(TreeItem ti, Repository rep, Color dircolor, boolean trans, boolean job, boolean schema, int sortPosition, boolean ascending) throws KettleDatabaseException
 	{
 		ti.setText(getDirectoryName());
 		ti.setForeground(dircolor);
@@ -565,23 +565,24 @@ public class RepositoryDirectory
 		{
 			RepositoryDirectory subdir = getSubdirectory(i);
 			TreeItem subti = new TreeItem(ti, SWT.NONE);
-			subdir.getTreeWithNames(subti, rep, dircolor, trans, job, schema);
+			subdir.getTreeWithNames(subti, rep, dircolor, trans, job, schema, sortPosition, ascending);
 		}
 		
 		try
 		{
 			// Then the transformations, jobs or schemas...
-			String names[] = null;
-			if (trans) names = rep.getTransformationNames(getID());
-			if (job) names   = rep.getJobNames(getID());
-			if (names!=null)
-			{
-				for (int i=0;i<names.length;i++)
-				{
-					TreeItem titrans = new TreeItem(ti, SWT.NONE);
-					titrans.setText(names[i]);
-				}
-			}
+            List repositoryObjects = null;
+			if (trans) repositoryObjects = rep.getTransformationObjects(getID(), sortPosition, ascending);
+			if (job) repositoryObjects = rep.getJobObjects(getID(), sortPosition, ascending);
+            if (repositoryObjects!=null)
+            {
+                for (int i=0;i<repositoryObjects.size();i++)
+                {
+                    TreeItem tiObject = new TreeItem(ti, SWT.NONE);
+                    RepositoryObject repositoryObject = (RepositoryObject) repositoryObjects.get(i);
+                    repositoryObject.setTreeItem(tiObject);
+                }
+            }
 		}
 		catch(KettleDatabaseException dbe)
 		{

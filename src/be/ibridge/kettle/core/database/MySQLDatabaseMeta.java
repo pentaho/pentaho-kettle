@@ -368,7 +368,7 @@ public class MySQLDatabaseMeta extends BaseDatabaseMeta implements DatabaseInter
 
     public String[] getUsedLibraries()
     {
-        return new String[] { "mysql-connector-java-5.0.4-bin.jar" };
+        return new String[] { "mysql-connector-java-3.1.14-bin.jar" };
     }
 }
 
