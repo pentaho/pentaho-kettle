@@ -19,7 +19,6 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
-import java.io.IOException;
 import java.net.ServerSocket;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
@@ -127,10 +126,10 @@ public class SocketWriter extends BaseStep implements StepInterface
         // If we are here, it means all work is done
         // It's a lot of work to keep it all in sync for now we don't need to do that.
         // 
-        try { data.outputStream.close(); } catch(IOException e) {}
-        try { data.inputStream.close(); } catch(IOException e) {}
-        try { data.clientSocket.close(); } catch(IOException e) {}
-        try { data.serverSocket.close(); } catch(IOException e) {}
+        try { data.outputStream.close(); } catch(Exception e) {}
+        try { data.inputStream.close(); } catch(Exception e) {}
+        try { data.clientSocket.close(); } catch(Exception e) {}
+        try { data.serverSocket.close(); } catch(Exception e) {}
         
         super.dispose(smi, sdi);
     }
