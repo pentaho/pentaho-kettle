@@ -426,7 +426,7 @@ public class Spoon implements AddUndoPositionInterface
                     if ((int)e.character == 20 && ctrl && !alt) { setTrans();  spoongraph.clearSettings();  }
 
                     // CTRL-U --> transformation
-                    if ((int)e.character == 21 && ctrl && !alt) { splitTrans(true, false, false);  spoongraph.clearSettings();  }
+                    if ((int)e.character == 21 && ctrl && !alt) { splitTrans(true, true, true);  spoongraph.clearSettings();  }
 
                     // CTRL-Y --> redo action
                     if ((int)e.character == 25 && ctrl && !alt) { redoAction(); spoongraph.clearSettings(); }
@@ -3224,6 +3224,10 @@ public class Spoon implements AddUndoPositionInterface
                 StepMeta inf = transMeta.getStep(i);
                 String step_name = inf.getName();
                 String step_id = inf.getStepID();
+                if (step_id==null)
+                {
+                    System.out.println("Oups!");
+                }
                 String ti_name = "";
                 if (j<treeItems.length) ti_name = treeItems[j].getText();
                 if (!step_name.equalsIgnoreCase(ti_name))
@@ -3628,13 +3632,18 @@ public class Spoon implements AddUndoPositionInterface
         
         if (rep!=null && transMeta.getId()>0)
         {
-            String transname  = transMeta.getName();
-            if (transname==null) transname=Messages.getString("Spoon.Various.NoName");//"[no name]"
-            text+="  "+transname+(transMeta.hasChanged()?(" "+Messages.getString("Spoon.Various.Changed")):""); //(changed)
+            if (Const.isEmpty(transMeta.getName()))
+            {
+                text+=Messages.getString("Spoon.Various.NoName");//"[no name]"
+            }
+            else
+            {
+                text+=transMeta.getName();
+            }
         }
         else
         {
-            if (fname!=null)
+            if (!Const.isEmpty(fname))
             {
                 text+=fname;
             }
@@ -5247,7 +5256,7 @@ public class Spoon implements AddUndoPositionInterface
         try
         {
             TransSplitter transSplitter = new TransSplitter(transMeta);
-            transSplitter.generateMasterTransformation();
+            transSplitter.splitOriginalTransformation(shell);
             
             // Send the transformations to the servers...
             //

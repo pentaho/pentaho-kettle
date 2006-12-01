@@ -757,9 +757,13 @@ public class BaseStep extends Thread
                 try
                 {
                     if (sleeptime > 0)
+                    {
                         sleep(0, sleeptime);
+                    }
                     else
+                    {
                         super.notifyAll();
+                    }
                 }
                 catch (Exception e)
                 {
@@ -954,9 +958,13 @@ public class BaseStep extends Thread
             try
             {
                 if (sleeptime > 0)
+                {
                     sleep(0, sleeptime);
+                }
                 else
+                {
                     super.notifyAll();
+                }
             }
             catch (Exception e)
             {
@@ -1038,9 +1046,13 @@ public class BaseStep extends Thread
                 try
                 {
                     if (sleeptime > 0)
+                    {
                         sleep(0, sleeptime);
+                    }
                     else
+                    {
                         super.notifyAll();
+                    }
                 }
                 catch (Exception e)
                 {
@@ -1156,9 +1168,13 @@ public class BaseStep extends Thread
             try
             {
                 if (sleeptime > 0)
+                {
                     sleep(0, sleeptime);
+                }
                 else
+                {
                     super.notifyAll();
+                }
             }
             catch (Exception e)
             {

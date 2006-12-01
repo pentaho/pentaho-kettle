@@ -233,6 +233,8 @@ public class TableInput extends BaseStep implements StepInterface
         meta=(TableInputMeta)smi;
         data=(TableInputData)sdi;
 
+        stopped=true;
+        
         if (data.db!=null) data.db.cancelQuery();
 	}
 	

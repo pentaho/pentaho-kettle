@@ -79,8 +79,8 @@ public class ValueMapper extends BaseStep implements StepInterface
         Value value = r.getValue(data.keynr);
         String source = value.getString();
         
-        String target = (String) data.hashtable.get(source);
-        if (target!=null)
+        String target;
+        if (source!=null && (target=(String)data.hashtable.get(source))!=null )
         {
             if (meta.getTargetField()!=null && meta.getTargetField().length()>0)
             {
