@@ -70,13 +70,16 @@ public class SocketWriter extends BaseStep implements StepInterface
             if (first)
             {
                 data.clientSocket = data.serverSocket.accept(); 
-                data.outputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(data.clientSocket.getOutputStream()), 10000));
-                data.inputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(data.clientSocket.getInputStream()), 10000));
+                // new GZIPOutputStream(
+                data.outputStream = new DataOutputStream(new BufferedOutputStream(data.clientSocket.getOutputStream(), 10000));
+                // new GZIPInputStream(
+                data.inputStream = new DataInputStream(new BufferedInputStream(data.clientSocket.getInputStream(), 10000));
                 
                 r.write(data.outputStream);
                 first=false;
             }
             r.writeData(data.outputStream);
+            linesOutput++;
         }
         catch (Exception e)
         {
@@ -103,6 +106,7 @@ public class SocketWriter extends BaseStep implements StepInterface
 		if (super.init(smi, sdi))
 		{
             try
+            
             {
                 int port = Integer.parseInt( StringUtil.environmentSubstitute(meta.getPort()) );
                 
