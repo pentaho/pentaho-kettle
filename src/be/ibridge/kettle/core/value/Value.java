@@ -1360,6 +1360,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
             default: break; // nothing
             }
         }
+        
+        dos.flush();
     }
 
 	/**
@@ -1407,16 +1409,16 @@ public class Value implements Cloneable, XMLInterface, Serializable
             case VALUE_TYPE_STRING:
             case VALUE_TYPE_BIGNUMBER:
                 // Handle lengths
-                int dataLength=dis.readInt();
-                if (dataLength>0)
-                {
+                //int dataLength=dis.readInt();
+                //if (dataLength>0)
+                //{
                     String string = dis.readUTF();
                     setValue(string);
-                }
-                else
-                {
-                	setValue("");
-                }
+                //}
+                //else
+                //{
+                // 	setValue("");
+                //}
                 if (theType==VALUE_TYPE_BIGNUMBER)
                 {
                     try
@@ -1489,15 +1491,15 @@ public class Value implements Cloneable, XMLInterface, Serializable
 				{
 				case VALUE_TYPE_STRING :
                 case VALUE_TYPE_BIGNUMBER:
-					if (getString()!=null && getString().getBytes().length>0)
+					//if (getString()!=null && getString().getBytes().length>0)
 					{
-						dos.writeInt(getString().getBytes().length);
+						// dos.writeInt(getString().getBytes().length);
 						dos.writeUTF(getString());
 					}
-					else
-					{
-						dos.writeInt(0);
-					}
+					// else
+					// {
+					//	dos.writeInt(0);
+					// }
 					break;
 				case VALUE_TYPE_DATE   :
 					dos.writeBoolean(getDate()!=null);
@@ -1518,11 +1520,14 @@ public class Value implements Cloneable, XMLInterface, Serializable
 				default: break; // nothing
 				}
 			}
+            
+            dos.flush();
 		}
 		catch(IOException e)
 		{
 			throw new KettleFileException("Unable to write value data to output stream", e);
 		}
+        
 
 		return true;
 	}
@@ -1550,8 +1555,8 @@ public class Value implements Cloneable, XMLInterface, Serializable
 				case VALUE_TYPE_STRING:
                 case VALUE_TYPE_BIGNUMBER:
 					// Handle lengths
-					int dataLength=dis.readInt();
-					if (dataLength>0)
+					// int dataLength=dis.readInt();
+					// if (dataLength>0)
 					{
                         String string = dis.readUTF();
 						setValue(string);
