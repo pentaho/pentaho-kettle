@@ -451,6 +451,7 @@ public class Props implements Cloneable
 	public void saveProps()
 	{
 		storeScreens();
+        setLastFiles();
 		
         File spoonRc = new File(filename);
 		try
@@ -532,7 +533,7 @@ public class Props implements Cloneable
             boolean sourceRepository = "Y".equalsIgnoreCase(properties.getProperty("lasttype"+(i+1), "N"));
             String repositoryName = properties.getProperty("lastrepo"+(i+1));
             
-            addLastFile(type, filename, directory, sourceRepository, repositoryName);
+            lastUsedFiles.add(new LastUsedFile(filename, directory, sourceRepository, repositoryName));
         }
     }
     
