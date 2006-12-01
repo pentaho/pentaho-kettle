@@ -80,7 +80,7 @@ public class SocketWriter extends BaseStep implements StepInterface
             linesOutput++;
             
             // flush every 4k lines
-            if (linesOutput>0 && (linesOutput&0xFFF)==0) data.outputStream.flush();
+            if (linesOutput>0 && (linesOutput&0x7FF)==0) data.outputStream.flush();
 
         }
         catch (Exception e)
