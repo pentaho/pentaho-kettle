@@ -73,10 +73,8 @@ public class SocketReader extends BaseStep implements StepInterface
                     int port = Integer.parseInt( StringUtil.environmentSubstitute(meta.getPort()) );
                     
                     data.socket       = new Socket(StringUtil.environmentSubstitute(meta.getHostname()), port);
-                    // data.outputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(data.socket.getOutputStream()), 100000));
-                    // data.inputStream  = new DataInputStream(new BufferedInputStream(new GZIPInputStream(data.socket.getInputStream()), 100000));
-                    data.outputStream = new DataOutputStream(new BufferedOutputStream( data.socket.getOutputStream(), 100000));
-                    data.inputStream  = new DataInputStream(new BufferedInputStream( data.socket.getInputStream(), 100000));
+                    data.outputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(data.socket.getOutputStream()), 10000));
+                    data.inputStream  = new DataInputStream(new BufferedInputStream(new GZIPInputStream(data.socket.getInputStream()), 10000));
                 }
                 catch(Exception e)
                 {

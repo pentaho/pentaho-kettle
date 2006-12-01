@@ -70,10 +70,8 @@ public class SocketWriter extends BaseStep implements StepInterface
             if (first)
             {
                 data.clientSocket = data.serverSocket.accept(); 
-                // data.outputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(data.clientSocket.getOutputStream()), 100000));
-                // data.inputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(data.clientSocket.getInputStream()), 1000000));
-                data.outputStream = new DataOutputStream(new BufferedOutputStream( data.clientSocket.getOutputStream(), 100000));
-                data.inputStream = new DataInputStream(new BufferedInputStream( data.clientSocket.getInputStream(), 1000000));
+                data.outputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(data.clientSocket.getOutputStream()), 10000));
+                data.inputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(data.clientSocket.getInputStream()), 10000));
                 
                 r.write(data.outputStream);
                 first=false;
