@@ -79,7 +79,7 @@ public class SocketWriter extends BaseStep implements StepInterface
             r.writeData(data.outputStream);
             linesOutput++;
             
-            // flush every 2k lines
+            // flush every 8k lines
             if (linesOutput>0 && (linesOutput&0x1FFF)==0) data.outputStream.flush();
 
         }
