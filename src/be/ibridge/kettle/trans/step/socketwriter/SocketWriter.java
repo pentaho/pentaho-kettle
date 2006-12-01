@@ -70,8 +70,8 @@ public class SocketWriter extends BaseStep implements StepInterface
             if (first)
             {
                 data.clientSocket = data.serverSocket.accept(); 
-                data.outputStream = new DataOutputStream(new GZIPOutputStream(new BufferedOutputStream(data.clientSocket.getOutputStream(), 10000)));
-                data.inputStream = new DataInputStream(new GZIPInputStream(new BufferedInputStream(data.clientSocket.getInputStream(), 10000)));
+                data.outputStream = new DataOutputStream(new GZIPOutputStream(data.clientSocket.getOutputStream()));
+                data.inputStream = new DataInputStream(new GZIPInputStream(data.clientSocket.getInputStream()));
                 
                 r.write(data.outputStream);
                 first=false;
@@ -80,7 +80,7 @@ public class SocketWriter extends BaseStep implements StepInterface
             linesOutput++;
             
             // flush every 255 lines
-            if ((linesOutput&0xFF)==0) data.outputStream.flush();
+            if (linesOutput>0 && (linesOutput&0xFF)==0) data.outputStream.flush();
 
         }
         catch (Exception e)
