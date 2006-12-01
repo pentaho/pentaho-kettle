@@ -202,6 +202,10 @@ public class TextFileOutput extends BaseStep implements StepInterface
 				}
                 data.writer.write(meta.getNewline().toCharArray());
 			}
+
+            linesOutput++;
+            // flush every 255 lines
+            if (linesOutput>0 && (linesOutput&0xFF)==0) data.writer.flush();
 		}
 		catch(Exception e)
 		{
@@ -209,7 +213,6 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			return false;
 		}
 
-		linesOutput++;
 		
 		return true;
 	}
