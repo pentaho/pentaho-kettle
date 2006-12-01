@@ -20,6 +20,8 @@ import java.io.BufferedOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.ServerSocket;
+import java.util.zip.GZIPInputStream;
+import java.util.zip.GZIPOutputStream;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
@@ -68,17 +70,18 @@ public class SocketWriter extends BaseStep implements StepInterface
             if (first)
             {
                 data.clientSocket = data.serverSocket.accept(); 
-                // new GZIPOutputStream(
-                data.outputStream = new DataOutputStream(new BufferedOutputStream(data.clientSocket.getOutputStream(), 10000));
-                // new GZIPInputStream(
-                data.inputStream = new DataInputStream(new BufferedInputStream(data.clientSocket.getInputStream(), 10000));
+                data.outputStream = new DataOutputStream(new GZIPOutputStream(new BufferedOutputStream(data.clientSocket.getOutputStream(), 10000)));
+                data.inputStream = new DataInputStream(new GZIPInputStream(new BufferedInputStream(data.clientSocket.getInputStream(), 10000)));
                 
                 r.write(data.outputStream);
                 first=false;
             }
             r.writeData(data.outputStream);
-            data.outputStream.flush();
             linesOutput++;
+            
+            // flush every 255 lines
+            if ((linesOutput&0xFF)==0) data.outputStream.flush();
+
         }
         catch (Exception e)
         {
