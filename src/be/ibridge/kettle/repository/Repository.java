@@ -1369,7 +1369,7 @@ public class Repository
         return id;
     }
     
-    public synchronized long insertClusterSchema(long id_transformation, String schemaName, String basePort) throws KettleDatabaseException
+    public synchronized long insertClusterSchema(long id_transformation, String schemaName, String basePort, String socketsBufferSize, String socketsFlushInterval, boolean socketsCompressed) throws KettleDatabaseException
     {
         long id = getNextClusterSchemaID();
 
@@ -1379,6 +1379,9 @@ public class Repository
         table.addValue(new Value("ID_TRANSFORMATION", id_transformation));
         table.addValue(new Value("SCHEMA_NAME", schemaName));
         table.addValue(new Value("BASE_PORT", basePort));
+        table.addValue(new Value("SOCKETS_BUFFER_SIZE", socketsBufferSize));
+        table.addValue(new Value("SOCKETS_FLUSH_INTERVAL", socketsFlushInterval));
+        table.addValue(new Value("SOCKETS_COMPRESSED", socketsCompressed));
 
         database.prepareInsert(table, "R_CLUSTER_SCHEMA");
         database.setValuesInsert(table);
@@ -4096,6 +4099,9 @@ public class Repository
         table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
         table.addValue(new Value("SCHEMA_NAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("BASE_PORT", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("SOCKETS_BUFFER_SIZE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("SOCKETS_FLUSH_INTERVAL", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("SOCKETS_COMPRESSED", Value.VALUE_TYPE_BOOLEAN, 0, 0));
         sql = database.getDDL(tablename, table, null, false, "ID_CLUSTER_SCHEMA", false);
 
         if (sql != null && sql.length() > 0)

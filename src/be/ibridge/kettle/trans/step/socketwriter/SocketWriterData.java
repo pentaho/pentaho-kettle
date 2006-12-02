@@ -36,6 +36,7 @@ public class SocketWriterData extends BaseStepData implements StepDataInterface
     public DataOutputStream outputStream;
     public Socket clientSocket;
     public DataInputStream inputStream;
+    public int flushInterval;
     
     /**
 	 * 

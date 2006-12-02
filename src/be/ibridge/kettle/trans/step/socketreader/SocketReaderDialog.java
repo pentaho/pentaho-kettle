@@ -51,7 +51,9 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
 	private SocketReaderMeta input;
     private TextVar wHostname;
     private TextVar wPort;
-
+    private TextVar wBufferSize;
+    private Button wCompressed;
+    
 	public SocketReaderDialog(Shell parent, Object in, TransMeta tr, String sname)
 	{
 		super(parent, (BaseStepMeta)in, tr, sname);
@@ -141,14 +143,51 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
         fdPort.top  = new FormAttachment(wHostname, margin);
         fdPort.right= new FormAttachment(100, 0);
         wPort.setLayoutData(fdPort);
-		
-		// Some buttons
+
+        // BufferSize line
+        Label wlBufferSize = new Label(shell, SWT.RIGHT);
+        wlBufferSize.setText(Messages.getString("SocketReaderDialog.BufferSize.Label")); //$NON-NLS-1$
+        props.setLook(wlBufferSize);
+        FormData fdlBufferSize = new FormData();
+        fdlBufferSize.left = new FormAttachment(0, 0);
+        fdlBufferSize.right= new FormAttachment(middle, -margin);
+        fdlBufferSize.top  = new FormAttachment(wPort, margin);
+        wlBufferSize.setLayoutData(fdlBufferSize);
+        wBufferSize=new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER);
+        wBufferSize.setText(stepname);
+        props.setLook(wBufferSize);
+        wBufferSize.addModifyListener(lsMod);
+        FormData fdBufferSize = new FormData();
+        fdBufferSize.left = new FormAttachment(middle, 0);
+        fdBufferSize.top  = new FormAttachment(wPort, margin);
+        fdBufferSize.right= new FormAttachment(100, 0);
+        wBufferSize.setLayoutData(fdBufferSize);
+        
+        // Compress socket data?
+        Label wlCompressed = new Label(shell, SWT.RIGHT); 
+        props.setLook(wlCompressed);
+        wlCompressed.setText(Messages.getString("SocketReaderDialog.Compressed.Label"));
+        FormData fdlCompressed = new FormData();
+        fdlCompressed.top   = new FormAttachment(wBufferSize, margin);
+        fdlCompressed.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlCompressed.right = new FormAttachment(middle, 0);
+        wlCompressed.setLayoutData(fdlCompressed);
+        wCompressed = new Button(shell, SWT.CHECK );
+        props.setLook(wCompressed);
+        FormData fdCompressed = new FormData();
+        fdCompressed.top  = new FormAttachment(wBufferSize, margin);
+        fdCompressed.left = new FormAttachment(middle, margin); // To the right of the label
+        fdCompressed.right= new FormAttachment(95, 0);
+        wCompressed.setLayoutData(fdCompressed);
+        
+
+        // Some buttons
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wCancel }, margin, wPort);
+		setButtonPositions(new Button[] { wOK, wCancel }, margin, wCompressed);
 
 		// Add listeners
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
@@ -185,8 +224,10 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
 	 */ 
 	public void getData()
 	{
-        wPort.setText(Const.NVL(input.getPort(), ""));
         wHostname.setText(Const.NVL(input.getHostname(), ""));
+        wPort.setText(Const.NVL(input.getPort(), ""));
+        wBufferSize.setText(Const.NVL(input.getBufferSize(), ""));
+        wCompressed.setSelection(input.isCompressed());
         
         wStepname.selectAll();
 	}
@@ -202,6 +243,8 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
 	{
         input.setHostname(wHostname.getText());
         input.setPort(wPort.getText());
+        input.setBufferSize(wBufferSize.getText());
+        input.setCompressed(wCompressed.getSelection());
         
 		stepname = wStepname.getText(); // return value
 		

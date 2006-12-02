@@ -329,19 +329,22 @@ public class GroupBy extends BaseStep implements StepInterface
     {
         Row result = new Row();
 
-        for (int i=0;i<data.subjectnrs.length;i++)
+        if (data.subjectnrs!=null)
         {
-            Value ag = data.agg.getValue(i);
-            switch(meta.getAggregateType()[i])
+            for (int i=0;i<data.subjectnrs.length;i++)
             {
-                case GroupByMeta.TYPE_GROUP_SUM            : break; 
-                case GroupByMeta.TYPE_GROUP_AVERAGE        : ag.divide(new Value("c", data.counts[i])); break;  //$NON-NLS-1$
-                case GroupByMeta.TYPE_GROUP_COUNT_ALL      : ag.setValue(data.counts[i]); break;
-                case GroupByMeta.TYPE_GROUP_MIN            : break; 
-                case GroupByMeta.TYPE_GROUP_MAX            : break; 
-                default: break;
+                Value ag = data.agg.getValue(i);
+                switch(meta.getAggregateType()[i])
+                {
+                    case GroupByMeta.TYPE_GROUP_SUM            : break; 
+                    case GroupByMeta.TYPE_GROUP_AVERAGE        : ag.divide(new Value("c", data.counts[i])); break;  //$NON-NLS-1$
+                    case GroupByMeta.TYPE_GROUP_COUNT_ALL      : ag.setValue(data.counts[i]); break;
+                    case GroupByMeta.TYPE_GROUP_MIN            : break; 
+                    case GroupByMeta.TYPE_GROUP_MAX            : break; 
+                    default: break;
+                }
+                result.addValue(ag);
             }
-            result.addValue(ag);
         }
 
         return result;

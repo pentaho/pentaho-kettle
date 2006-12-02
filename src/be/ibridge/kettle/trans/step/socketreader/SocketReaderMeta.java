@@ -46,6 +46,8 @@ public class SocketReaderMeta extends BaseStepMeta implements StepMetaInterface
 {
     private String hostname;
     private String port;
+    private String bufferSize;
+    private boolean compressed;
     
 	public SocketReaderMeta()
 	{
@@ -70,30 +72,40 @@ public class SocketReaderMeta extends BaseStepMeta implements StepMetaInterface
         
         xml.append("     "+XMLHandler.addTagValue("hostname", hostname));
         xml.append("     "+XMLHandler.addTagValue("port", port));
-        
+        xml.append("     "+XMLHandler.addTagValue("buffer_size", bufferSize));
+        xml.append("     "+XMLHandler.addTagValue("compressed", compressed));
+
         return xml.toString();
     }
     
 	private void readData(Node stepnode)
 	{
-        hostname = XMLHandler.getTagValue(stepnode, "hostname");
-        port     = XMLHandler.getTagValue(stepnode, "port");
+        hostname      = XMLHandler.getTagValue(stepnode, "hostname");
+        port          = XMLHandler.getTagValue(stepnode, "port");
+        bufferSize    = XMLHandler.getTagValue(stepnode, "buffer_size");
+        compressed    = "Y".equalsIgnoreCase( XMLHandler.getTagValue(stepnode, "compressed") );
 	}
 
 	public void setDefault()
 	{
+        bufferSize = "3000";
+        compressed = true;
 	}
 
 	public void readRep(Repository rep, long id_step, ArrayList databases, Hashtable counters) throws KettleException
 	{
-        hostname = rep.getStepAttributeString(id_step, "hostname");
-        port     = rep.getStepAttributeString(id_step, "port");
+        hostname      = rep.getStepAttributeString(id_step, "hostname");
+        port          = rep.getStepAttributeString(id_step, "port");
+        bufferSize    = rep.getStepAttributeString(id_step, "buffer_size");
+        compressed    = rep.getStepAttributeBoolean(id_step, "compressed");
 	}
 	
 	public void saveRep(Repository rep, long id_transformation, long id_step) throws KettleException
 	{
         rep.saveStepAttribute(id_transformation, id_step, "hostname", hostname);
         rep.saveStepAttribute(id_transformation, id_step, "port", port);
+        rep.saveStepAttribute(id_transformation, id_step, "buffer_size", bufferSize);
+        rep.saveStepAttribute(id_transformation, id_step, "compressed", compressed);
 	}
 	
 	public void check(ArrayList remarks, StepMeta stepinfo, Row prev, String input[], String output[], Row info)
@@ -170,5 +182,29 @@ public class SocketReaderMeta extends BaseStepMeta implements StepMetaInterface
         this.port = port;
     }
 
+    public String getBufferSize()
+    {
+        return bufferSize;
+    }
+    
+    public void setBufferSize(String bufferSize)
+    {
+        this.bufferSize = bufferSize;
+    }
 
+    /**
+     * @return the compressed
+     */
+    public boolean isCompressed()
+    {
+        return compressed;
+    }
+
+    /**
+     * @param compressed the compressed to set
+     */
+    public void setCompressed(boolean compressed)
+    {
+        this.compressed = compressed;
+    }
 }

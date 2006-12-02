@@ -69,9 +69,22 @@ public class SocketWriter extends BaseStep implements StepInterface
         {
             if (first)
             {
+                int bufferSize = Integer.parseInt( StringUtil.environmentSubstitute(meta.getBufferSize()));
+                
                 data.clientSocket = data.serverSocket.accept(); 
-                data.outputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(data.clientSocket.getOutputStream()), 5000));
-                data.inputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(data.clientSocket.getInputStream()), 5000));
+                
+                if (meta.isCompressed())
+                {
+                    data.outputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(data.clientSocket.getOutputStream()), bufferSize));
+                    data.inputStream = new DataInputStream(new BufferedInputStream(new GZIPInputStream(data.clientSocket.getInputStream()), bufferSize));
+                }
+                else
+                {
+                    data.outputStream = new DataOutputStream(new BufferedOutputStream(data.clientSocket.getOutputStream(), bufferSize));
+                    data.inputStream = new DataInputStream(new BufferedInputStream(data.clientSocket.getInputStream(), bufferSize));
+                }
+                
+                data.flushInterval = Integer.parseInt( StringUtil.environmentSubstitute(meta.getFlushInterval()));
                 
                 r.write(data.outputStream);
                 first=false;
@@ -80,7 +93,7 @@ public class SocketWriter extends BaseStep implements StepInterface
             linesOutput++;
             
             // flush every 12k lines
-            if (linesOutput>0 && (linesOutput&0x2FFF)==0) data.outputStream.flush();
+            if (linesOutput>0 && (linesOutput%data.flushInterval)==0) data.outputStream.flush();
 
         }
         catch (Exception e)

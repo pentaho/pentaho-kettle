@@ -36,10 +36,24 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     private String basePort;
 
     private boolean shared;
+
+    /** Size of the buffer for the created socket reader/writers */
+    private String socketsBufferSize;
+    
+    /** Flush outputstreams every X rows */
+    private String socketsFlushInterval;
+    
+    /** flag to compress data over the sockets or not */
+    private boolean socketsCompressed;
+    
+    
     
     public ClusterSchema()
     {
         slaveServers = new ArrayList();
+        socketsBufferSize = "2000";
+        socketsFlushInterval = "5000";
+        socketsCompressed = true;
     }
     
     /**
@@ -57,6 +71,9 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         ClusterSchema clusterSchema = new ClusterSchema();
         clusterSchema.setName(name);
         clusterSchema.setBasePort(basePort);
+        clusterSchema.setSocketsBufferSize(socketsBufferSize);
+        clusterSchema.setSocketsCompressed(socketsCompressed);
+        clusterSchema.setSocketsFlushInterval(socketsFlushInterval);
         
         for (int i=0;i<slaveServers.size();i++)
         {
@@ -88,8 +105,13 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         StringBuffer xml = new StringBuffer();
         
         xml.append("        <"+XML_TAG+">"+Const.CR);
+        
         xml.append("          "+XMLHandler.addTagValue("name", name));
         xml.append("          "+XMLHandler.addTagValue("base_port", basePort));
+        xml.append("          "+XMLHandler.addTagValue("sockets_buffer_size", socketsBufferSize));
+        xml.append("          "+XMLHandler.addTagValue("sockets_flush_interval", socketsFlushInterval));
+        xml.append("          "+XMLHandler.addTagValue("sockets_compressed", socketsCompressed));
+        
         xml.append("          <slaveservers>"+Const.CR);
         for (int i=0;i<slaveServers.size();i++)
         {
@@ -107,6 +129,10 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         
         name = XMLHandler.getTagValue(clusterSchemaNode, "name");
         basePort = XMLHandler.getTagValue(clusterSchemaNode, "base_port");
+        socketsBufferSize = XMLHandler.getTagValue(clusterSchemaNode, "sockets_buffer_size");
+        socketsFlushInterval = XMLHandler.getTagValue(clusterSchemaNode, "sockets_flush_interval");
+        socketsCompressed = "Y".equalsIgnoreCase(  XMLHandler.getTagValue(clusterSchemaNode, "sockets_compressed") );
+        
         Node slavesNode = XMLHandler.getSubNode(clusterSchemaNode, "slaveservers");
         int nrSlaves = XMLHandler.countNodes(slavesNode, "slaveserver");
         for (int i=0;i<nrSlaves;i++)
@@ -119,7 +145,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     
     public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
     {
-        long id_cluster_schema = rep.insertClusterSchema(id_transformation, name, basePort);
+        long id_cluster_schema = rep.insertClusterSchema(id_transformation, name, basePort, socketsBufferSize, socketsFlushInterval, socketsCompressed);
         
         for (int i=0;i<slaveServers.size();i++)
         {
@@ -136,6 +162,9 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         
         name = row.getString("SCHEMA_NAME", null);
         basePort = row.getString("BASE_PORT", null);
+        socketsBufferSize = row.getString("SOCKETS_BUFFER_SIZE", null);
+        socketsFlushInterval = row.getString("SOCKETS_FLUSH_INTERVAL", null);
+        socketsCompressed = row.getBoolean("SOCKETS_COMPRESSED", true);
         
         long[] pids = rep.getSlaveServerIDs(id_cluster_schema);
         for (int i=0;i<pids.length;i++)
@@ -234,5 +263,67 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
             throw new KettleException("No master server defined in cluster schema ["+name+"]");
         }
         throw new KettleException("No slave server(s) defined in cluster schema ["+name+"]");
+    }
+    
+    /**
+     * @return The number of slave servers, excluding the master server
+     */
+    public int getNrSlaves()
+    {
+        int nr=0;
+        for (int i=0;i<slaveServers.size();i++)
+        {
+            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            if (!slaveServer.isMaster()) nr++;
+        }
+        return nr;
+    }
+
+    /**
+     * @return the socketFlushInterval
+     */
+    public String getSocketsFlushInterval()
+    {
+        return socketsFlushInterval;
+    }
+
+    /**
+     * @param socketFlushInterval the socketFlushInterval to set
+     */
+    public void setSocketsFlushInterval(String socketFlushInterval)
+    {
+        this.socketsFlushInterval = socketFlushInterval;
+    }
+
+    /**
+     * @return the socketsBufferSize
+     */
+    public String getSocketsBufferSize()
+    {
+        return socketsBufferSize;
+    }
+
+    /**
+     * @param socketsBufferSize the socketsBufferSize to set
+     */
+    public void setSocketsBufferSize(String socketsBufferSize)
+    {
+        this.socketsBufferSize = socketsBufferSize;
+    }
+
+    /**
+     * @return the socketsCompressed
+     */
+    public boolean isSocketsCompressed()
+    {
+        return socketsCompressed;
+    }
+
+    /**
+     * @param socketsCompressed the socketsCompressed to set
+     */
+    public void setSocketsCompressed(boolean socketsCompressed)
+    {
+        this.socketsCompressed = socketsCompressed;
     }
 }

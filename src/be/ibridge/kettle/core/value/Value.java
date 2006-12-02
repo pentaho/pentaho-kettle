@@ -1360,8 +1360,6 @@ public class Value implements Cloneable, XMLInterface, Serializable
             default: break; // nothing
             }
         }
-        
-        dos.flush();
     }
 
 	/**
@@ -1520,8 +1518,6 @@ public class Value implements Cloneable, XMLInterface, Serializable
 				default: break; // nothing
 				}
 			}
-            
-            dos.flush();
 		}
 		catch(IOException e)
 		{

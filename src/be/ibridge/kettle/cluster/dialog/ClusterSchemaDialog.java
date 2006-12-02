@@ -74,6 +74,12 @@ public class ClusterSchemaDialog extends Dialog
     private Button wEdit;
 
     private TextVar wPort;
+
+    private TextVar wBufferSize;
+
+    private TextVar wFlushInterval;
+
+    private Button wCompressed;
     
 	public ClusterSchemaDialog(Shell par, ClusterSchema clusterSchema)
 	{
@@ -160,7 +166,64 @@ public class ClusterSchemaDialog extends Dialog
         fdPort.right= new FormAttachment(95, 0);
         wPort.setLayoutData(fdPort);
 
+        
+        // What are the sockets buffer sizes??
+        Label wlBufferSize = new Label(shell, SWT.RIGHT); 
+        props.setLook(wlBufferSize);
+        wlBufferSize.setText("Sockets buffer size  ");
+        FormData fdlBufferSize = new FormData();
+        fdlBufferSize.top   = new FormAttachment(wPort, margin);
+        fdlBufferSize.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlBufferSize.right = new FormAttachment(middle, 0);
+        wlBufferSize.setLayoutData(fdlBufferSize);
 
+        wBufferSize = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wBufferSize);
+        wBufferSize.addModifyListener(lsMod);
+        FormData fdBufferSize = new FormData();
+        fdBufferSize.top  = new FormAttachment(wPort, margin);
+        fdBufferSize.left = new FormAttachment(middle, margin); // To the right of the label
+        fdBufferSize.right= new FormAttachment(95, 0);
+        wBufferSize.setLayoutData(fdBufferSize);
+
+        // What are the sockets buffer sizes??
+        Label wlFlushInterval = new Label(shell, SWT.RIGHT); 
+        props.setLook(wlFlushInterval);
+        wlFlushInterval.setText("Sockets flush interval (rows)  ");
+        FormData fdlFlushInterval = new FormData();
+        fdlFlushInterval.top   = new FormAttachment(wBufferSize, margin);
+        fdlFlushInterval.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlFlushInterval.right = new FormAttachment(middle, 0);
+        wlFlushInterval.setLayoutData(fdlFlushInterval);
+
+        wFlushInterval = new TextVar(shell, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wFlushInterval);
+        wFlushInterval.addModifyListener(lsMod);
+        FormData fdFlushInterval = new FormData();
+        fdFlushInterval.top  = new FormAttachment(wBufferSize, margin);
+        fdFlushInterval.left = new FormAttachment(middle, margin); // To the right of the label
+        fdFlushInterval.right= new FormAttachment(95, 0);
+        wFlushInterval.setLayoutData(fdFlushInterval);
+
+        // What are the sockets buffer sizes??
+        Label wlCompressed = new Label(shell, SWT.RIGHT); 
+        props.setLook(wlCompressed);
+        wlCompressed.setText("Sockets data compressed?  ");
+        FormData fdlCompressed = new FormData();
+        fdlCompressed.top   = new FormAttachment(wFlushInterval, margin);
+        fdlCompressed.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlCompressed.right = new FormAttachment(middle, 0);
+        wlCompressed.setLayoutData(fdlCompressed);
+
+        wCompressed = new Button(shell, SWT.CHECK );
+        props.setLook(wCompressed);
+        FormData fdCompressed = new FormData();
+        fdCompressed.top  = new FormAttachment(wFlushInterval, margin);
+        fdCompressed.left = new FormAttachment(middle, margin); // To the right of the label
+        fdCompressed.right= new FormAttachment(95, 0);
+        wCompressed.setLayoutData(fdCompressed);
+
+        
         // Schema servers:
         Label wlServers = new Label(shell, SWT.RIGHT);
         wlServers.setText("Slave servers  ");
@@ -168,7 +231,7 @@ public class ClusterSchemaDialog extends Dialog
         FormData fdlServers=new FormData();
         fdlServers.left = new FormAttachment(0, 0);
         fdlServers.right = new FormAttachment(middle, 0);
-        fdlServers.top  = new FormAttachment(wPort, margin);
+        fdlServers.top  = new FormAttachment(wCompressed, margin);
         wlServers.setLayoutData(fdlServers);
         
         // Some buttons to manage...
@@ -212,7 +275,7 @@ public class ClusterSchemaDialog extends Dialog
         FormData fdServers = new FormData();
         fdServers.left = new FormAttachment(middle, margin );
         fdServers.right = new FormAttachment(wDel, -2*margin);
-        fdServers.top = new FormAttachment(wPort, margin);
+        fdServers.top = new FormAttachment(wCompressed, margin);
         fdServers.bottom = new FormAttachment(wOK, -margin * 2);
         wServers.setLayoutData(fdServers);
         wServers.table.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { editSlaveServer(); }});
@@ -285,6 +348,9 @@ public class ClusterSchemaDialog extends Dialog
 	{
 		wName.setText( Const.NVL(clusterSchema.getName(), "") );
 		wPort.setText( Const.NVL(clusterSchema.getBasePort(), ""));
+        wBufferSize.setText( Const.NVL(clusterSchema.getSocketsBufferSize(), ""));
+        wFlushInterval.setText( Const.NVL(clusterSchema.getSocketsFlushInterval(), ""));
+        wCompressed.setSelection( clusterSchema.isSocketsCompressed());
         
         refreshSlaveServers();
         
@@ -318,6 +384,10 @@ public class ClusterSchemaDialog extends Dialog
         getInfo();
         originalSchema.setName(clusterSchema.getName());
         originalSchema.setBasePort(clusterSchema.getBasePort());
+        originalSchema.setSocketsBufferSize(clusterSchema.getSocketsBufferSize());
+        originalSchema.setSocketsFlushInterval(clusterSchema.getSocketsFlushInterval());
+        originalSchema.setSocketsCompressed(clusterSchema.isSocketsCompressed());
+
         originalSchema.setSlaveServers(clusterSchema.getSlaveServers());
         originalSchema.setChanged();
 
@@ -330,6 +400,10 @@ public class ClusterSchemaDialog extends Dialog
     {
         clusterSchema.setName(wName.getText());
         clusterSchema.setBasePort(wPort.getText());
+        clusterSchema.setSocketsBufferSize(wBufferSize.getText());
+        clusterSchema.setSocketsFlushInterval(wFlushInterval.getText());
+        clusterSchema.setSocketsCompressed(wCompressed.getSelection());
+
         // The slave servers are managed by the buttons.
     }
 }
