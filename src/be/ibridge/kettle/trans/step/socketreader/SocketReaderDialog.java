@@ -201,6 +201,7 @@ public class SocketReaderDialog extends BaseStepDialog implements StepDialogInte
 		wStepname.addSelectionListener( lsDef );
         wHostname.addSelectionListener( lsDef );
         wPort.addSelectionListener( lsDef );
+        wBufferSize.addSelectionListener( lsDef );
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );

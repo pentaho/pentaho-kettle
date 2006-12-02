@@ -69,7 +69,7 @@ public class SocketWriter extends BaseStep implements StepInterface
         {
             if (first)
             {
-                int bufferSize = Integer.parseInt( StringUtil.environmentSubstitute(meta.getBufferSize()));
+                int bufferSize = Const.toInt( StringUtil.environmentSubstitute(meta.getBufferSize()), 1000);
                 
                 data.clientSocket = data.serverSocket.accept(); 
                 
@@ -84,7 +84,7 @@ public class SocketWriter extends BaseStep implements StepInterface
                     data.inputStream = new DataInputStream(new BufferedInputStream(data.clientSocket.getInputStream(), bufferSize));
                 }
                 
-                data.flushInterval = Integer.parseInt( StringUtil.environmentSubstitute(meta.getFlushInterval()));
+                data.flushInterval = Const.toInt( StringUtil.environmentSubstitute(meta.getFlushInterval()), 4000);
                 
                 r.write(data.outputStream);
                 first=false;

@@ -200,6 +200,8 @@ public class SocketWriterDialog extends BaseStepDialog implements StepDialogInte
 		
 		wStepname.addSelectionListener( lsDef );
         wPort.addSelectionListener( lsDef );
+        wBufferSize.addSelectionListener( lsDef );
+        wFlushInterval.addSelectionListener( lsDef );
 		
 		// Detect X or ALT-F4 or something that kills this window...
 		shell.addShellListener(	new ShellAdapter() { public void shellClosed(ShellEvent e) { cancel(); } } );
