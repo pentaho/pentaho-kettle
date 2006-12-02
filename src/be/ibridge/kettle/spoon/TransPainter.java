@@ -438,14 +438,14 @@ public class TransPainter
                     // color...
                     if (Const.indexOfString(fs.getName(), infoSteps) >= 0)
                     {
-                        if (fs.distributes)
+                        if (fs.isDistributes())
                             col = yellow;
                         else
                             col = magenta;
                     }
                     else
                     {
-                        if (fs.distributes)
+                        if (fs.isDistributes())
                             col = green;
                         else
                             col = red;

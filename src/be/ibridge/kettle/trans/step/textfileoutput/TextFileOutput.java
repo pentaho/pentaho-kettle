@@ -16,6 +16,7 @@
 
 package be.ibridge.kettle.trans.step.textfileoutput;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -204,8 +205,9 @@ public class TextFileOutput extends BaseStep implements StepInterface
 			}
 
             linesOutput++;
-            // flush every 255 lines
-            if (linesOutput>0 && (linesOutput&0xFF)==0) data.writer.flush();
+            
+            // flush every 4k lines
+            // if (linesOutput>0 && (linesOutput&0xFFF)==0) data.writer.flush();
 		}
 		catch(Exception e)
 		{
@@ -667,12 +669,12 @@ public class TextFileOutput extends BaseStep implements StepInterface
 	            if (!Const.isEmpty(meta.getEncoding()))
 	            {
 	                log.logBasic(toString(), "Opening output stream in encoding: "+meta.getEncoding());
-	                data.writer = new OutputStreamWriter(outputStream, meta.getEncoding());
+	                data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 5000), meta.getEncoding());
 	            }
 	            else
 	            {
 	                log.logBasic(toString(), "Opening output stream in default encoding");
-	                data.writer = new OutputStreamWriter(outputStream);
+	                data.writer = new OutputStreamWriter(new BufferedOutputStream(outputStream, 5000));
 	            }
 	
 	            logDetailed("Opened new file with name ["+filename+"]");

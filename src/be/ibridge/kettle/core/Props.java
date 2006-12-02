@@ -138,6 +138,8 @@ public class Props implements Cloneable
     public static final String STRING_ASK_ABOUT_REPLACING_DATABASES = "AskAboutReplacingDatabases";
     public static final String STRING_REPLACE_DATABASES             = "ReplaceDatabases";
 
+    private static final String STRING_SHOW_COPY_OR_DISTRIBUTE_WARNING = "ShowCopyOrDistributeWarning";
+
     private LogWriter log = LogWriter.getInstance();
 	private Properties properties;
 	
@@ -168,6 +170,7 @@ public class Props implements Cloneable
     public static final int WIDGET_STYLE_NOTEPAD = 3;
     public static final int WIDGET_STYLE_GRAPH   = 4;
     public static final int WIDGET_STYLE_TAB     = 5;
+
 
 
  
@@ -1388,4 +1391,16 @@ public class Props implements Cloneable
     {
         properties.setProperty(STRING_REPLACE_DATABASES, replace?"Y":"N");
     }
+
+    public boolean showCopyOrDistributeWarning()
+    {
+        String show = properties.getProperty(STRING_SHOW_COPY_OR_DISTRIBUTE_WARNING, "Y");
+        return "Y".equalsIgnoreCase(show);
+    }
+    
+    public void setShowCopyOrDistributeWarning(boolean show)
+    {
+        properties.setProperty(STRING_SHOW_COPY_OR_DISTRIBUTE_WARNING, show?"Y":"N");
+    }
+
 }

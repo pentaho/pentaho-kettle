@@ -426,7 +426,7 @@ public class Spoon implements AddUndoPositionInterface
                     if ((int)e.character == 20 && ctrl && !alt) { setTrans();  spoongraph.clearSettings();  }
 
                     // CTRL-U --> transformation
-                    if ((int)e.character == 21 && ctrl && !alt) { splitTrans(true, true, true);  spoongraph.clearSettings();  }
+                    if ((int)e.character == 21 && ctrl && !alt) { splitTrans(true, false, false);  spoongraph.clearSettings();  }
 
                     // CTRL-Y --> redo action
                     if ((int)e.character == 25 && ctrl && !alt) { redoAction(); spoongraph.clearSettings(); }
@@ -2405,7 +2405,52 @@ public class Spoon implements AddUndoPositionInterface
                 hi.getToStep().drawStep();
                 refreshTree();
                 refreshGraph();
+                
+                // Check if there are 2 hops coming out of the "From" step.
+                verifyCopyDistribute(fr);
             }
+        }
+    }
+
+    public void verifyCopyDistribute(StepMeta fr)
+    {
+        int nrNextSteps = transMeta.findNrNextSteps(fr);
+        
+        // don't show it for 3 or more hops, by then you should have had the message
+        if (nrNextSteps==2) 
+        {
+            boolean distributes = false;
+            
+            if (props.showCopyOrDistributeWarning())
+            {
+                MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
+                        Messages.getString("System.Warning"),//"Warning!" 
+                        null,
+                        Messages.getString("Spoon.Dialog.CopyOrDistribute.Message", fr.getName(), Integer.toString(nrNextSteps)),
+                        MessageDialog.WARNING,
+                        new String[] { Messages.getString("Spoon.Dialog.CopyOrDistribute.Copy"), Messages.getString("Spoon.Dialog.CopyOrDistribute.Distribute") },//"Copy Distribute 
+                        0,
+                        Messages.getString("Spoon.Message.Warning.NotShowWarning"),//"Please, don't show this warning anymore."
+                        !props.showCopyOrDistributeWarning()
+                    );
+                int idx = md.open();
+                props.setShowCopyOrDistributeWarning(!md.getToggleState());
+                props.saveProps();
+                
+                distributes = (idx&0xFF)==1;
+            }
+               
+            if (distributes)
+            {
+                fr.setDistributes(true);
+            }
+            else
+            {
+                fr.setDistributes(false);
+            }
+            
+            refreshTree();
+            refreshGraph();
         }
     }
 

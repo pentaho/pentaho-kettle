@@ -321,6 +321,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                         {
                             spoon.addUndoNew(new TransHopMeta[] { candidate }, new int[] { spoon.getTransMeta().indexOfTransHop(candidate) });
                         }
+                        spoon.verifyCopyDistribute(candidate.getFromStep());
                     }
                     candidate = null;
                     selected_steps = null;
@@ -408,14 +409,10 @@ public class SpoonGraph extends Canvas implements Redrawable
                                     {
                                         TransHopMeta newhop1 = new TransHopMeta(hi.getFromStep(), selected_step);
                                         spoon.getTransMeta().addTransHop(newhop1);
-                                        spoon
-                                                .addUndoNew(new TransHopMeta[] { newhop1 }, new int[] { spoon.getTransMeta().indexOfTransHop(newhop1) },
-                                                        true);
+                                        spoon.addUndoNew(new TransHopMeta[] { newhop1 }, new int[] { spoon.getTransMeta().indexOfTransHop(newhop1) }, true);
                                         TransHopMeta newhop2 = new TransHopMeta(selected_step, hi.getToStep());
                                         spoon.getTransMeta().addTransHop(newhop2);
-                                        spoon
-                                                .addUndoNew(new TransHopMeta[] { newhop2 }, new int[] { spoon.getTransMeta().indexOfTransHop(newhop2) },
-                                                        true);
+                                        spoon.addUndoNew(new TransHopMeta[] { newhop2 }, new int[] { spoon.getTransMeta().indexOfTransHop(newhop2) }, true);
                                         int idx = spoon.getTransMeta().indexOfTransHop(hi);
                                         spoon.addUndoDelete(new TransHopMeta[] { hi }, new int[] { idx }, true);
                                         spoon.getTransMeta().removeTransHop(idx);
@@ -1182,7 +1179,7 @@ public class SpoonGraph extends Canvas implements Redrawable
             miStepCopy.setText(Messages.getString("SpoonGraph.PopupMenu.CopyData")); //$NON-NLS-1$
             miPopDC.setMenu(mPopDC);
 
-            if (stepMeta.distributes)
+            if (stepMeta.isDistributes())
                 miStepDist.setSelection(true);
             else
                 miStepCopy.setSelection(true);
@@ -1414,7 +1411,7 @@ public class SpoonGraph extends Canvas implements Redrawable
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    stepMeta.distributes = true;
+                    stepMeta.setDistributes(true);
                     spoon.refreshGraph();
                     spoon.refreshTree();
                 }
@@ -1423,7 +1420,7 @@ public class SpoonGraph extends Canvas implements Redrawable
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    stepMeta.distributes = false;
+                    stepMeta.setDistributes(false);
                     spoon.refreshGraph();
                     spoon.refreshTree();
                 }

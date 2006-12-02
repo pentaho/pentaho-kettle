@@ -513,7 +513,7 @@ public class BaseStep extends Thread
         start_time = null;
         stop_time = null;
 
-        distributed = stepMeta.distributes;
+        distributed = stepMeta.isDistributes();
 
         if (distributed) if (log.isDetailed())
             logDetailed(Messages.getString("BaseStep.Log.DistributionActivated")); //$NON-NLS-1$

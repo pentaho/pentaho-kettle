@@ -186,6 +186,10 @@ public class EnterOptionsDialog extends Dialog
 	private Label        wlAutoSplit;
 	private Button       wAutoSplit;
 	private FormData     fdlAutoSplit, fdAutoSplit;
+    
+    private Label        wlCopyDistrib;
+    private Button       wCopyDistrib;
+    private FormData     fdlCopyDistrib, fdCopyDistrib;
 
     private Label        wlShowRep;
     private Button       wShowRep;
@@ -1177,13 +1181,31 @@ public class EnterOptionsDialog extends Dialog
         fdAutoSplit.right= new FormAttachment(100, 0);
         wAutoSplit.setLayoutData(fdAutoSplit);
 
+        // Show warning for copy / distribute...
+        wlCopyDistrib=new Label(wGeneralComp, SWT.RIGHT);
+        wlCopyDistrib.setText("Show copy or distribute rows warning?  ");
+        props.setLook(wlCopyDistrib);
+        fdlCopyDistrib=new FormData();
+        fdlCopyDistrib.left = new FormAttachment(0, 0);
+        fdlCopyDistrib.top  = new FormAttachment(wAutoSplit, margin);
+        fdlCopyDistrib.right= new FormAttachment(middle, -margin);
+        wlCopyDistrib.setLayoutData(fdlCopyDistrib);
+        wCopyDistrib=new Button(wGeneralComp, SWT.CHECK);
+        props.setLook(wCopyDistrib);
+        wCopyDistrib.setSelection(props.showCopyOrDistributeWarning());
+        fdCopyDistrib=new FormData();
+        fdCopyDistrib.left = new FormAttachment(middle, 0);
+        fdCopyDistrib.top  = new FormAttachment(wAutoSplit, margin);
+        fdCopyDistrib.right= new FormAttachment(100, 0);
+        wCopyDistrib.setLayoutData(fdCopyDistrib);
+
         // Show repository dialog at startup?
         wlShowRep=new Label(wGeneralComp, SWT.RIGHT);
         wlShowRep.setText("Show the repository dialog at startup? ");
         props.setLook(wlShowRep);
         fdlShowRep=new FormData();
         fdlShowRep.left = new FormAttachment(0, 0);
-        fdlShowRep.top  = new FormAttachment(wAutoSplit, margin);
+        fdlShowRep.top  = new FormAttachment(wCopyDistrib, margin);
         fdlShowRep.right= new FormAttachment(middle, -margin);
         wlShowRep.setLayoutData(fdlShowRep);
         wShowRep=new Button(wGeneralComp, SWT.CHECK);
@@ -1191,7 +1213,7 @@ public class EnterOptionsDialog extends Dialog
         wShowRep.setSelection(props.showRepositoriesDialogAtStartup());
         fdShowRep=new FormData();
         fdShowRep.left = new FormAttachment(middle, 0);
-        fdShowRep.top  = new FormAttachment(wAutoSplit, margin);
+        fdShowRep.top  = new FormAttachment(wCopyDistrib, margin);
         fdShowRep.right= new FormAttachment(100, 0);
         wShowRep.setLayoutData(fdShowRep);
 
@@ -1342,6 +1364,7 @@ public class EnterOptionsDialog extends Dialog
         props.setReplaceDatabaseConnections          ( wReplaceDB.getSelection()   );
 		props.setSaveConfirmation                    ( wSaveConf.getSelection()    );
 		props.setAutoSplit                           ( wAutoSplit.getSelection()   );
+        props.setShowCopyOrDistributeWarning         ( wCopyDistrib.getSelection() );
         props.setRepositoriesDialogAtStartupShown    ( wShowRep.getSelection()     );
         props.setAntiAliasingEnabled                 ( wAntiAlias.getSelection()   );
         props.setExitWarningShown                    ( wExitWarning.getSelection() );

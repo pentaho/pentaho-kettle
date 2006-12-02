@@ -54,7 +54,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
 	private String        stepname;
 	private StepMetaInterface stepMetaInterface;
 	private boolean       selected;
-	public  boolean       distributes;
+	private boolean       distributes;
 	private int           copies;
 	private Point         location;
 	private boolean       drawstep;
@@ -680,5 +680,21 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
     public void setClusterSchema(ClusterSchema clusterSchema)
     {
         this.clusterSchema = clusterSchema;
+    }
+
+    /**
+     * @return the distributes
+     */
+    public boolean isDistributes()
+    {
+        return distributes;
+    }
+
+    /**
+     * @param distributes the distributes to set
+     */
+    public void setDistributes(boolean distributes)
+    {
+        this.distributes = distributes;
     }
 }
