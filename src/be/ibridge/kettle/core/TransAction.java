@@ -84,25 +84,22 @@ public class TransAction
 	public static final String desc_action[] = new String[]
 		{
 			"",
-			"change step", "change connection", "change hop", "change note",
-			"new step", "new connection", "new hop", "new note",
-			"delete step", "delete connection", "delete hop", "delete note",
-			"position step", "position note",
-			
-			"change job-entry", "change job-hop",
-			"new job-entry", "new job-hop",
-			"delete job-entry", "delete job-hop",
-			"position job-entry",
-			
-			"change table row",
-			"new table row",
-			"delete table row",
-			"position table row",
-			
-			"change table", "change relationship",
-			"new table", "new relationship",
-			"delete table", "delete relationship",
-			"position table"
+      Messages.getString("TransAction.label.ChangeStep"), Messages.getString("TransAction.label.ChangeConnection"), Messages.getString("TransAction.label.ChangeHop"), Messages.getString("TransAction.label.ChangeNote"),
+      Messages.getString("TransAction.label.NewStep"), Messages.getString("TransAction.label.NewConnection"), Messages.getString("TransAction.label.NewHop"), Messages.getString("TransAction.label.NewNote"),
+      Messages.getString("TransAction.label.DeleteStep"), Messages.getString("TransAction.label.DeleteConnection"), Messages.getString("TransAction.label.DeleteHop"), Messages.getString("TransAction.label.DeleteNote"),
+      Messages.getString("TransAction.label.PositionStep"), Messages.getString("TransAction.label.PositionNote"),
+      Messages.getString("TransAction.label.ChangeJobEntry"), Messages.getString("TransAction.label.ChangeJobHop"),
+      Messages.getString("TransAction.label.NewJobEntry"), Messages.getString("TransAction.label.NewJobHop"),
+      Messages.getString("TransAction.label.DeleteJobEntry"), Messages.getString("TransAction.label.DeleteJobHop"),
+      Messages.getString("TransAction.label.PositionJobEntry"),
+      Messages.getString("TransAction.label.ChangeTableRow"),
+      Messages.getString("TransAction.label.NewTableRow"),
+      Messages.getString("TransAction.label.DeleteTableRow"),
+      Messages.getString("TransAction.label.PositionTableRow"),
+      Messages.getString("TransAction.label.ChangeTable"), Messages.getString("TransAction.label.ChangeRelationship"),
+      Messages.getString("TransAction.label.NewTable"), Messages.getString("TransAction.label.NewRelationship"),
+			Messages.getString("TransAction.label.DeleteTable"), Messages.getString("TransAction.label.DeleteRelationship"),
+      Messages.getString("TransAction.label.PositionTable")
 		};
 		
 	private int type;

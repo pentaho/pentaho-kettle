@@ -273,28 +273,28 @@ public class TableView extends Composite
         editor.grabVertical = true;
 		
 		mRow = new Menu(table);
-		MenuItem miRowInsBef = new MenuItem(mRow, SWT.NONE); miRowInsBef.setText("Insert before this row");
-		MenuItem miRowInsAft = new MenuItem(mRow, SWT.NONE); miRowInsAft.setText("Insert after this row");
+		MenuItem miRowInsBef = new MenuItem(mRow, SWT.NONE); miRowInsBef.setText(Messages.getString("TableView.menu.InsertBeforeRow"));
+		MenuItem miRowInsAft = new MenuItem(mRow, SWT.NONE); miRowInsAft.setText(Messages.getString("TableView.menu.InsertAfterRow"));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miRowUp     = new MenuItem(mRow, SWT.NONE); miRowUp    .setText("Move up\tCTRL-UP");
-		MenuItem miRowDown   = new MenuItem(mRow, SWT.NONE); miRowDown  .setText("Move down\tCTRL-DOWN");
+		MenuItem miRowUp     = new MenuItem(mRow, SWT.NONE); miRowUp    .setText(Messages.getString("TableView.menu.MoveUp"));
+		MenuItem miRowDown   = new MenuItem(mRow, SWT.NONE); miRowDown  .setText(Messages.getString("TableView.menu.MoveDown"));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miCol1      = new MenuItem(mRow, SWT.NONE); miCol1     .setText("Optimal Column size incl. header\tF3");
-		MenuItem miCol2      = new MenuItem(mRow, SWT.NONE); miCol2     .setText("Optimal Column size excl. header\tF4");
+		MenuItem miCol1      = new MenuItem(mRow, SWT.NONE); miCol1     .setText(Messages.getString("TableView.menu.OptimalSizeWithHeader"));
+		MenuItem miCol2      = new MenuItem(mRow, SWT.NONE); miCol2     .setText(Messages.getString("TableView.menu.OptimalSizeWithoutHeader"));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miClear     = new MenuItem(mRow, SWT.NONE); miClear    .setText("Clear all");
+		MenuItem miClear     = new MenuItem(mRow, SWT.NONE); miClear    .setText(Messages.getString("TableView.menu.ClearAll"));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miSelAll    = new MenuItem(mRow, SWT.NONE); miSelAll   .setText("Select all rows\tCTRL-A");
-		MenuItem miUnselAll  = new MenuItem(mRow, SWT.NONE); miUnselAll .setText("Clear selection\tESC");
-		MenuItem miFilter    = new MenuItem(mRow, SWT.NONE); miFilter   .setText("Filtered selection\tCTRL-F");
+		MenuItem miSelAll    = new MenuItem(mRow, SWT.NONE); miSelAll   .setText(Messages.getString("TableView.menu.SelectAll"));
+		MenuItem miUnselAll  = new MenuItem(mRow, SWT.NONE); miUnselAll .setText(Messages.getString("TableView.menu.ClearSelection"));
+		MenuItem miFilter    = new MenuItem(mRow, SWT.NONE); miFilter   .setText(Messages.getString("TableView.menu.FilteredSelection"));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miClipAll   = new MenuItem(mRow, SWT.NONE); miClipAll  .setText("Copy selected lines to clipboard\tCTRL-C");
-		MenuItem miPasteAll  = new MenuItem(mRow, SWT.NONE); miPasteAll .setText("Paste clipboard to table\tCTRL-V");
-		MenuItem miCutAll    = new MenuItem(mRow, SWT.NONE); miCutAll   .setText("Cut selected lines\tCTRL-X");
-		MenuItem miDelAll    = new MenuItem(mRow, SWT.NONE); miDelAll   .setText("Delete selected lines\tDEL");
-		MenuItem miKeep      = new MenuItem(mRow, SWT.NONE); miKeep     .setText("Keep only selected lines\tCTRL-K");
+		MenuItem miClipAll   = new MenuItem(mRow, SWT.NONE); miClipAll  .setText(Messages.getString("TableView.menu.CopyToClipboard"));
+		MenuItem miPasteAll  = new MenuItem(mRow, SWT.NONE); miPasteAll .setText(Messages.getString("TableView.menu.PasteFromClipboard"));
+		MenuItem miCutAll    = new MenuItem(mRow, SWT.NONE); miCutAll   .setText(Messages.getString("TableView.menu.CutSelected"));
+		MenuItem miDelAll    = new MenuItem(mRow, SWT.NONE); miDelAll   .setText(Messages.getString("TableView.menu.DeleteSelected"));
+		MenuItem miKeep      = new MenuItem(mRow, SWT.NONE); miKeep     .setText(Messages.getString("TableView.menu.KeepSelected"));
 		new MenuItem(mRow, SWT.SEPARATOR);
-		MenuItem miCopyToAll = new MenuItem(mRow, SWT.NONE); miCopyToAll.setText("Copy field value to all rows");
+		MenuItem miCopyToAll = new MenuItem(mRow, SWT.NONE); miCopyToAll.setText(Messages.getString("TableView.menu.CopyFieldToAllRows"));
 		new MenuItem(mRow, SWT.SEPARATOR);
 		miEditUndo           = new MenuItem(mRow, SWT.NONE);
 		miEditRedo           = new MenuItem(mRow, SWT.NONE);
@@ -1126,7 +1126,7 @@ public class TableView extends Composite
         }
         catch(Exception e)
         {
-            new ErrorDialog(this.getShell(), "Unexpected error", "There was an unexpected error sorting the table view column", e);
+            new ErrorDialog(this.getShell(), Messages.getString("TableView.ErrorDialog.title"), Messages.getString("TableView.ErrorDialog.description"), e);
         }
     }
 
@@ -1278,8 +1278,8 @@ public class TableView extends Composite
 		if (ask)
 		{
 			MessageBox mb = new MessageBox(parent.getShell(), SWT.YES | SWT.NO | SWT.ICON_QUESTION);
-			mb.setMessage("Are you sure you want to clear this table?  No undo is possible!");
-			mb.setText("Question");
+			mb.setMessage(Messages.getString("TableView.MessageBox.ClearTable.message"));
+			mb.setText(Messages.getString("TableView.MessageBox.ClearTable.title"));
 			id = mb.open();
 		}
 		
@@ -2562,23 +2562,23 @@ public class TableView extends Composite
 		if (prev!=null) 
 		{
 			miEditUndo.setEnabled(true);
-			miEditUndo.setText("Undo : "+prev.toString()+" \tCTRL-Z");
+			miEditUndo.setText(Messages.getString("TableView.menu.Undo", prev.toString()));
 		} 
 		else            
 		{
 			miEditUndo.setEnabled(false);
-			miEditUndo.setText("Undo : not available \tCTRL-Z");
+			miEditUndo.setText(Messages.getString("TableView.menu.UndoNotAvailable"));
 		} 
 
 		if (next!=null) 
 		{
 			miEditRedo.setEnabled(true);
-			miEditRedo.setText("Redo : "+next.toString()+" \tCTRL-Y");
+			miEditRedo.setText(Messages.getString("TableView.menu.Redo",next.toString()));
 		} 
 		else            
 		{
 			miEditRedo.setEnabled(false);
-			miEditRedo.setText("Redo : not available \tCTRL-Y");
+			miEditRedo.setText(Messages.getString("TableView.menu.RedoNotAvailable"));
 		} 
 
 	}

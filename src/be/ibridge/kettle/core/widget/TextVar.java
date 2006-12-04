@@ -122,7 +122,7 @@ public class TextVar extends Composite
         
         // Put some decorations on it...
         FieldDecorationRegistry registry = FieldDecorationRegistry.getDefault();
-        registry.registerFieldDecoration("variable.field", "Enter CTRL-SPACE to select a variable to insert", GUIResource.getInstance().getImageVariable());
+        registry.registerFieldDecoration("variable.field", Messages.getString("TextVar.tooltip.InsertVariable"), GUIResource.getInstance().getImageVariable());
         decoratedField.addFieldDecoration(registry.getFieldDecoration("variable.field"), SWT.TOP | SWT.RIGHT, false);
         
         FormData fdText = new FormData();

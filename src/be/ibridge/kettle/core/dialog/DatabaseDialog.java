@@ -199,26 +199,26 @@ public class DatabaseDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText("Connection information");
+		shell.setText(Messages.getString("DatabaseDialog.dialog.title"));
 		shell.setLayout (formLayout);
  		
 		// First, add the buttons...
 		
 		// Buttons
 		wOK     = new Button(shell, SWT.PUSH); 
-		wOK.setText(" &OK ");
+		wOK.setText(Messages.getString("System.Button.OK"));
 
 		wTest    = new Button(shell, SWT.PUSH); 
-		wTest.setText(" &Test ");
+		wTest.setText(Messages.getString("DatabaseDialog.button.Test"));
 
 		wExp    = new Button(shell, SWT.PUSH); 
-		wExp.setText(" &Explore ");
+		wExp.setText(Messages.getString("DatabaseDialog.button.Explore"));
 
         wList   = new Button(shell, SWT.PUSH); 
-        wList.setText(" Feature &List ");
+        wList.setText(Messages.getString("DatabaseDialog.button.FeatureList"));
 
 		wCancel = new Button(shell, SWT.PUSH); 
-		wCancel.setText(" &Cancel ");
+		wCancel.setText(Messages.getString("System.Button.Cancel"));
 
 		Button[] buttons = new Button[] { wOK, wTest, wExp, wList, wCancel };
 		BaseStepDialog.positionBottomButtons(shell, buttons, margin, null);
@@ -380,7 +380,7 @@ public class DatabaseDialog extends Dialog
         // START OF DB TAB   ///
         //////////////////////////
         wDbTab=new CTabItem(wTabFolder, SWT.NONE);
-        wDbTab.setText("General");
+        wDbTab.setText(Messages.getString("DatabaseDialog.DbTab.title"));
         
         wDbComp = new Composite(wTabFolder, SWT.NONE);
         props.setLook(wDbComp);
@@ -393,7 +393,7 @@ public class DatabaseDialog extends Dialog
         // What's the connection name?
         wlConn = new Label(wDbComp, SWT.RIGHT); 
         props.setLook(wlConn);
-        wlConn.setText("Connection name  ");
+        wlConn.setText(Messages.getString("DatabaseDialog.label.ConnectionName"));
         fdlConn = new FormData();
         fdlConn.top   = new FormAttachment(0, 0);
         fdlConn.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -411,7 +411,7 @@ public class DatabaseDialog extends Dialog
 
         // What types are there?
         wlConnType = new Label(wDbComp, SWT.RIGHT); 
-        wlConnType.setText("Connection type  "); 
+        wlConnType.setText(Messages.getString("DatabaseDialog.label.ConnectionType")); 
         props.setLook(wlConnType);
         fdlConnType = new FormData();
         fdlConnType.top    = new FormAttachment(wConn, margin);  // below the line above
@@ -436,7 +436,7 @@ public class DatabaseDialog extends Dialog
 
         // What access types are there?
         wlConnAcc = new Label(wDbComp, SWT.RIGHT); 
-        wlConnAcc.setText("Method of access  "); 
+        wlConnAcc.setText(Messages.getString("DatabaseDialog.label.AccessMethod")); 
         props.setLook(wlConnAcc);
         fdlConnAcc = new FormData();
         fdlConnAcc.top  = new FormAttachment(wConnType, margin);  // below the line above
@@ -456,7 +456,7 @@ public class DatabaseDialog extends Dialog
 
         // Hostname
         wlHostName = new Label(wDbComp, SWT.RIGHT); 
-        wlHostName.setText("Server host name  "); 
+        wlHostName.setText(Messages.getString("DatabaseDialog.label.ServerHostname")); 
         props.setLook(wlHostName);
 
         fdlHostName = new FormData();
@@ -476,7 +476,7 @@ public class DatabaseDialog extends Dialog
         
         // DBName
         wlDBName = new Label(wDbComp, SWT.RIGHT ); 
-        wlDBName.setText("Database name  "); 
+        wlDBName.setText(Messages.getString("DatabaseDialog.label.DatabaseName")); 
         props.setLook(wlDBName);
         fdlDBName = new FormData();
         fdlDBName.top  = new FormAttachment(wHostName, margin);
@@ -495,7 +495,7 @@ public class DatabaseDialog extends Dialog
                 
         // Port
         wlPort = new Label(wDbComp, SWT.RIGHT ); 
-        wlPort.setText("Port number  "); 
+        wlPort.setText(Messages.getString("DatabaseDialog.label.PortNumber")); 
         props.setLook(wlPort);
         fdlPort = new FormData();
         fdlPort.top  = new FormAttachment(wDBName, margin);
@@ -514,7 +514,7 @@ public class DatabaseDialog extends Dialog
                 
         // Username
         wlUsername = new Label(wDbComp, SWT.RIGHT ); 
-        wlUsername.setText("Username  "); 
+        wlUsername.setText(Messages.getString("DatabaseDialog.label.Username")); 
         props.setLook(wlUsername);
         fdlUsername = new FormData();
         fdlUsername.top  = new FormAttachment(wPort, margin);
@@ -533,7 +533,7 @@ public class DatabaseDialog extends Dialog
 
         // Password
         wlPassword = new Label(wDbComp, SWT.RIGHT ); 
-        wlPassword.setText("Password  "); 
+        wlPassword.setText(Messages.getString("DatabaseDialog.label.Password")); 
         props.setLook(wlPassword);
         fdlPassword = new FormData();
         fdlPassword.top  = new FormAttachment(wUsername, margin);
@@ -573,7 +573,7 @@ public class DatabaseDialog extends Dialog
         // START OF POOL TAB///
         ///
         wPoolTab=new CTabItem(wTabFolder, SWT.NONE);
-        wPoolTab.setText("Pooling");
+        wPoolTab.setText(Messages.getString("DatabaseDialog.PoolTab.title"));
 
         FormLayout poolLayout = new FormLayout ();
         poolLayout.marginWidth  = Const.FORM_MARGIN;
@@ -586,7 +586,7 @@ public class DatabaseDialog extends Dialog
         // What's the data tablespace name?
         wlUsePool = new Label(wPoolComp, SWT.RIGHT); 
         props.setLook(wlUsePool);
-        wlUsePool.setText("Use a connection pool  "); 
+        wlUsePool.setText(Messages.getString("DatabaseDialog.label.UseConnectionPool"));
         fdlUsePool = new FormData();
         fdlUsePool.top   = new FormAttachment(0, 0);
         fdlUsePool.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -605,7 +605,7 @@ public class DatabaseDialog extends Dialog
         // What's the initial pool size
         wlInitPool = new Label(wPoolComp, SWT.RIGHT); 
         props.setLook(wlInitPool);
-        wlInitPool.setText("The initial pool size  "); 
+        wlInitPool.setText(Messages.getString("DatabaseDialog.label.InitialPoolSize")); 
         fdlInitPool = new FormData();
         fdlInitPool.top   = new FormAttachment(wUsePool, margin);
         fdlInitPool.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -625,7 +625,7 @@ public class DatabaseDialog extends Dialog
         // What's the maximum pool size
         wlMaxPool = new Label(wPoolComp, SWT.RIGHT); 
         props.setLook(wlMaxPool);
-        wlMaxPool.setText("The maximum pool size  "); 
+        wlMaxPool.setText(Messages.getString("DatabaseDialog.label.MaximumPoolSize")); 
         fdlMaxPool = new FormData();
         fdlMaxPool.top   = new FormAttachment(wInitPool, margin);
         fdlMaxPool.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -661,7 +661,7 @@ public class DatabaseDialog extends Dialog
         // START OF ORACLE TAB///
         ///
         wOracleTab=new CTabItem(wTabFolder, SWT.NONE);
-        wOracleTab.setText("Oracle");
+        wOracleTab.setText(Messages.getString("DatabaseDialog.OracleTab.title"));
 
         FormLayout oracleLayout = new FormLayout ();
         oracleLayout.marginWidth  = Const.FORM_MARGIN;
@@ -674,7 +674,7 @@ public class DatabaseDialog extends Dialog
         // What's the data tablespace name?
         wlData = new Label(wOracleComp, SWT.RIGHT); 
         props.setLook(wlData);
-        wlData.setText("Tablespace for data  "); 
+        wlData.setText(Messages.getString("DatabaseDialog.label.TablespaceForData")); 
         fdlData = new FormData();
         fdlData.top   = new FormAttachment(0, 0);
         fdlData.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -694,7 +694,7 @@ public class DatabaseDialog extends Dialog
         // What's the index tablespace name?
         wlIndex = new Label(wOracleComp, SWT.RIGHT); 
         props.setLook(wlIndex);
-        wlIndex.setText("Tablespace for indexes  "); 
+        wlIndex.setText(Messages.getString("DatabaseDialog.label.TablespaceForIndexes")); 
         fdlIndex = new FormData();
         fdlIndex.top   = new FormAttachment(wData, margin);
         fdlIndex.left  = new FormAttachment(0, 0);  // First one in the left top corner
@@ -729,7 +729,7 @@ public class DatabaseDialog extends Dialog
         // START OF INFORMIX TAB///
         ///
         wIfxTab=new CTabItem(wTabFolder, SWT.NONE);
-        wIfxTab.setText("Informix");
+        wIfxTab.setText(Messages.getString("DatabaseDialog.IfxTab.title"));
 
         FormLayout ifxLayout = new FormLayout ();
         ifxLayout.marginWidth  = Const.FORM_MARGIN;
@@ -741,7 +741,7 @@ public class DatabaseDialog extends Dialog
 
         // Servername
         wlServername = new Label(wIfxComp, SWT.RIGHT ); 
-        wlServername.setText("Informix Servername  "); 
+        wlServername.setText(Messages.getString("DatabaseDialog.label.InformixServername")); 
         props.setLook(wlServername);
         fdlServername = new FormData();
         fdlServername.top  = new FormAttachment(0, margin);
@@ -775,7 +775,7 @@ public class DatabaseDialog extends Dialog
         // START OF SAP TAB///
         ///
         wSAPTab=new CTabItem(wTabFolder, SWT.NONE);
-        wSAPTab.setText("SAP R/3");
+        wSAPTab.setText(Messages.getString("DatabaseDialog.label.Sap"));
 
         FormLayout sapLayout = new FormLayout ();
         sapLayout.marginWidth  = Const.FORM_MARGIN;
@@ -789,7 +789,7 @@ public class DatabaseDialog extends Dialog
         
         // Language
         wlSAPLanguage = new Label(wSAPComp, SWT.RIGHT ); 
-        wlSAPLanguage.setText("Language  "); 
+        wlSAPLanguage.setText(Messages.getString("DatabaseDialog.label.Language")); 
         props.setLook(        wlSAPLanguage);
         fdlSAPLanguage = new FormData();
         fdlSAPLanguage.top  = new FormAttachment(0, margin);
@@ -809,7 +809,7 @@ public class DatabaseDialog extends Dialog
         
         // SystemNumber
         wlSAPSystemNumber = new Label(wSAPComp, SWT.RIGHT ); 
-        wlSAPSystemNumber.setText("System Number  "); 
+        wlSAPSystemNumber.setText(Messages.getString("DatabaseDialog.label.SystemNumber"));
         props.setLook(        wlSAPSystemNumber);
         fdlSAPSystemNumber = new FormData();
         fdlSAPSystemNumber.top  = new FormAttachment(wSAPLanguage, margin);
@@ -828,7 +828,7 @@ public class DatabaseDialog extends Dialog
 
         // SystemID
         wlSAPClient = new Label(wSAPComp, SWT.RIGHT ); 
-        wlSAPClient.setText("SAP Client  "); 
+        wlSAPClient.setText(Messages.getString("DatabaseDialog.label.SapClient")); 
         props.setLook(        wlSAPClient);
         fdlSAPClient = new FormData();
         fdlSAPClient.top  = new FormAttachment(wSAPSystemNumber, margin);
@@ -863,8 +863,8 @@ public class DatabaseDialog extends Dialog
         // START OF DB TAB///
         ///
         wGenericTab=new CTabItem(wTabFolder, SWT.NONE);
-        wGenericTab.setText("Generic");
-        wGenericTab.setToolTipText("Settings in case you want to use a generic database with a non-supported JDBC driver");
+        wGenericTab.setText(Messages.getString("DatabaseDialog.GenericTab.title"));
+        wGenericTab.setToolTipText(Messages.getString("DatabaseDialog.GenericTab.tooltip"));
 
         FormLayout genericLayout = new FormLayout ();
         genericLayout.marginWidth  = Const.FORM_MARGIN;
@@ -876,7 +876,7 @@ public class DatabaseDialog extends Dialog
 
         // URL
         wlURL = new Label(wGenericComp, SWT.RIGHT ); 
-        wlURL.setText("URL  "); 
+        wlURL.setText(Messages.getString("DatabaseDialog.label.Url")); 
         props.setLook(wlURL);
         fdlURL = new FormData();
         fdlURL.top  = new FormAttachment(0, margin);
@@ -896,7 +896,7 @@ public class DatabaseDialog extends Dialog
         
         // Driver class
         wlDriverClass = new Label(wGenericComp, SWT.RIGHT ); 
-        wlDriverClass.setText("Driver class  "); 
+        wlDriverClass.setText(Messages.getString("DatabaseDialog.label.DriverClass")); 
         props.setLook(        wlDriverClass);
         fdlDriverClass = new FormData();
         fdlDriverClass.top  = new FormAttachment(wURL, margin);
@@ -931,8 +931,8 @@ public class DatabaseDialog extends Dialog
         // START OF OPTIONS TAB///
         ///
         wOptionsTab=new CTabItem(wTabFolder, SWT.NONE);
-        wOptionsTab.setText("Options");
-        wOptionsTab.setToolTipText("Extra options to set in the URL");
+        wOptionsTab.setText(Messages.getString("DatabaseDialog.label.Options"));
+        wOptionsTab.setToolTipText(Messages.getString("DatabaseDialog.tooltip.Options"));
 
         FormLayout optionsLayout = new FormLayout ();
         optionsLayout.marginWidth  = margin;
@@ -943,7 +943,7 @@ public class DatabaseDialog extends Dialog
         wOptionsComp.setLayout(optionsLayout);
 
         wOptionsHelp = new Button(wOptionsComp, SWT.PUSH);
-        wOptionsHelp.setText("Show help text on option usage");
+        wOptionsHelp.setText(Messages.getString("DatabaseDialog.button.ShowHelp"));
         wOptionsHelp.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent arg0) { showOptionsHelpText(); } });
         
         BaseStepDialog.positionBottomButtons(wOptionsComp, new Button[] {wOptionsHelp }, margin, null );
@@ -951,13 +951,13 @@ public class DatabaseDialog extends Dialog
         // options list
         ColumnInfo[] colinfo=new ColumnInfo[]
             {
-                new ColumnInfo("Database Type", ColumnInfo.COLUMN_TYPE_CCOMBO, DatabaseMeta.getDBTypeDescLongList(), true),
-                new ColumnInfo("Parameter",     ColumnInfo.COLUMN_TYPE_TEXT,   false ),
-                new ColumnInfo("Value",         ColumnInfo.COLUMN_TYPE_TEXT,   false ),
+                new ColumnInfo(Messages.getString("DatabaseDialog.column.DbType"), ColumnInfo.COLUMN_TYPE_CCOMBO, DatabaseMeta.getDBTypeDescLongList(), true),
+                new ColumnInfo(Messages.getString("DatabaseDialog.column.Parameter"),     ColumnInfo.COLUMN_TYPE_TEXT,   false ),
+                new ColumnInfo(Messages.getString("DatabaseDialog.column.Value"),         ColumnInfo.COLUMN_TYPE_TEXT,   false ),
             };
 
-        colinfo[0].setToolTip("The extra parameters to set in the URL to connectect to the database");
-        colinfo[1].setToolTip("The values to set for the parameters");
+        colinfo[0].setToolTip(Messages.getString("DatabaseDialog.tooltip.DbType"));
+        colinfo[1].setToolTip(Messages.getString("DatabaseDialog.tooltip.Parameter"));
         colinfo[2].setUsingVariables(true);
 
         wOptions = new TableView(wOptionsComp, SWT.FULL_SELECTION | SWT.SINGLE | SWT.BORDER, colinfo, 1, lsMod, props);
@@ -986,8 +986,8 @@ public class DatabaseDialog extends Dialog
         // START OF SQL TAB///
         ///
         wSQLTab=new CTabItem(wTabFolder, SWT.NONE);
-        wSQLTab.setText("SQL");
-        wSQLTab.setToolTipText("Specify the SQL to execute after connecting");
+        wSQLTab.setText(Messages.getString("DatabaseDialog.SQLTab.title"));
+        wSQLTab.setToolTipText(Messages.getString("DatabaseDialog.SQLTab.tooltip"));
 
         FormLayout sqlLayout = new FormLayout ();
         sqlLayout.marginWidth  = margin;
@@ -999,7 +999,7 @@ public class DatabaseDialog extends Dialog
 
         wlSQL = new Label(wSQLComp, SWT.LEFT);
         props.setLook(wlSQL);
-        wlSQL.setText("The statements to execute right after connecting (separated by ;)");
+        wlSQL.setText(Messages.getString("DatabaseDialog.label.Statements"));
 
         fdlSQL = new FormData();
         fdlSQL.left = new FormAttachment(0, 0);
@@ -1035,8 +1035,8 @@ public class DatabaseDialog extends Dialog
         
         // The tab
         wClusterTab=new CTabItem(wTabFolder, SWT.NONE);
-        wClusterTab.setText("Cluster");
-        wClusterTab.setToolTipText("Optional clustering information");
+        wClusterTab.setText(Messages.getString("DatabaseDialog.ClusterTab.title"));
+        wClusterTab.setToolTipText(Messages.getString("DatabaseDialog.ClusterTab.tooltip"));
 
         FormLayout clusterLayout = new FormLayout();
         clusterLayout.marginWidth  = margin;
@@ -1050,8 +1050,8 @@ public class DatabaseDialog extends Dialog
         // The check box
         wlUseCluster = new Label(wClusterComp, SWT.RIGHT);
         props.setLook(wlUseCluster);
-        wlUseCluster.setText("Use clustering? EXPERIMENTAL!!  ");
-        wlUseCluster.setToolTipText("Enable clustering to add all kinds of clustering information.");
+        wlUseCluster.setText(Messages.getString("DatabaseDialog.label.UseClustering"));
+        wlUseCluster.setToolTipText(Messages.getString("DatabaseDialog.tooltip.UseClustering"));
         fdlUseCluster = new FormData();
         fdlUseCluster.left   = new FormAttachment(0, 0);
         fdlUseCluster.right  = new FormAttachment(middle, 0);
@@ -1070,16 +1070,16 @@ public class DatabaseDialog extends Dialog
         // Cluster list
         ColumnInfo[] colinfo=new ColumnInfo[]
             {
-                new ColumnInfo("Partition ID",  ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
-                new ColumnInfo("Hostname",      ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
-                new ColumnInfo("Port",          ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
-                new ColumnInfo("Database name", ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
-                new ColumnInfo("Username",      ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
-                new ColumnInfo("Password",      ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
+                new ColumnInfo(Messages.getString("DatabaseDialog.column.PartitionId"),  ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
+                new ColumnInfo(Messages.getString("DatabaseDialog.column.Hostname"),      ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
+                new ColumnInfo(Messages.getString("DatabaseDialog.column.Port"),          ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
+                new ColumnInfo(Messages.getString("DatabaseDialog.column.DatabaseName"), ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
+                new ColumnInfo(Messages.getString("DatabaseDialog.column.Username"),      ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
+                new ColumnInfo(Messages.getString("DatabaseDialog.column.Password"),      ColumnInfo.COLUMN_TYPE_TEXT,   false, false ),
             };
 
-        colinfo[0].setToolTip("The extra parameters to set in the URL to connectect to the database");
-        colinfo[1].setToolTip("The values to set for the parameters");
+        colinfo[0].setToolTip(Messages.getString("DatabaseDialog.tooltip.PartitionId"));
+        colinfo[1].setToolTip(Messages.getString("DatabaseDialog.tooltip.Hostname"));
         
         colinfo[5].setPasswordField(true);
         colinfo[5].setUsingVariables(true);
@@ -1113,14 +1113,14 @@ public class DatabaseDialog extends Dialog
             String helpText = meta.getExtraOptionsHelpText();
             if (helpText!=null)
             {
-                EnterTextDialog dialog = new EnterTextDialog(shell, "Options help text", "This is the help text for ["+meta.getDatabaseTypeDesc()+"] :", helpText, true);
+                EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("DatabaseDialog.Helptext.title"), Messages.getString("DatabaseDialog.HelpText.description", meta.getDatabaseTypeDesc()), helpText, true);
                 dialog.setReadOnly();
                 dialog.open();
             }
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, "Error!", "Unable to get the help text.  Please make sure all required parameters are entered correctly!", e);
+            new ErrorDialog(shell, Messages.getString("DatabaseDialog.ErrorHelpText.title"), Messages.getString("DatabaseDialog.ErrorHelpText.description"), e);
         }
     }
 
@@ -1481,7 +1481,7 @@ public class DatabaseDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, "Error!", "Please make sure all required parameters are entered correctly!", e);
+			new ErrorDialog(shell, Messages.getString("DatabaseDialog.ErrorParameters.title"), Messages.getString("DatabaseDialog.ErrorParameters.description"), e);
 		}
 	}
 	
@@ -1501,7 +1501,7 @@ public class DatabaseDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, "Error", "Unable to get the connection information", e);
+			new ErrorDialog(shell, Messages.getString("DatabaseDialog.ErrorParameters.title"), Messages.getString("DatabaseDialog.ErrorConnectionInfo.description"), e);
 		}		
 	}
 	/**
@@ -1523,20 +1523,20 @@ public class DatabaseDialog extends Dialog
                     try
                     {
                         db.connect(partitioningInformation[i].getPartitionId());
-                        report.append("Connection to database ["+dbinfo.getName()+"] with partition id ["+partitioningInformation[i].getPartitionId()+"] is OK."+Const.CR);
+                        report.append(Messages.getString("DatabaseDialog.report.ConnectionWithPartOk",  dbinfo.getName(),partitioningInformation[i].getPartitionId())+Const.CR);
                     }
                     catch (KettleException e)
                     {
-                        report.append("Error connecting to database ["+dbinfo.getName()+"] with partition id ["+partitioningInformation[i].getPartitionId()+"] : "+e.toString()+Const.CR);
+                        report.append(Messages.getString("DatabaseDialog.report.ConnectionWithPartError", dbinfo.getName(), partitioningInformation[i].getPartitionId(), e.toString())+Const.CR);
                         report.append(Const.getStackTracker(e)+Const.CR);
                     }
                     finally
                     {
                         db.disconnect();
                     }
-                    report.append("   Hostname       : "+partitioningInformation[i].getHostname()+Const.CR);
-                    report.append("   Port           : "+partitioningInformation[i].getPort()+Const.CR);
-                    report.append("   Database name  : "+partitioningInformation[i].getDatabaseName()+Const.CR);
+                    report.append(Messages.getString("DatabaseDialog.report.Hostname")+partitioningInformation[i].getHostname()+Const.CR);
+                    report.append(Messages.getString("DatabaseDialog.report.Port")+partitioningInformation[i].getPort()+Const.CR);
+                    report.append(Messages.getString("DatabaseDialog.report.DatabaseName")+partitioningInformation[i].getDatabaseName()+Const.CR);
                     report.append(Const.CR);
                 }
             }
@@ -1545,24 +1545,24 @@ public class DatabaseDialog extends Dialog
                 try
                 {
                     db.connect();
-                    report.append("Connection to database ["+dbinfo.getName()+"] is OK."+Const.CR);
+                    report.append(Messages.getString("DatabaseDialog.report.ConnectionOk", dbinfo.getName())+Const.CR);
                 }
                 catch (KettleException e)
                 {
-                    report.append("Error connecting to database ["+dbinfo.getName()+"] : "+e.toString()+Const.CR);
+                    report.append(Messages.getString("DatabaseDialog.report.ConnectionError", dbinfo.getName())+e.toString()+Const.CR);
                     report.append(Const.getStackTracker(e)+Const.CR);
                 }
                 finally
                 {
                     db.disconnect();
                 }
-                report.append("   Hostname       : "+dbinfo.getHostname()+Const.CR);
-                report.append("   Port           : "+dbinfo.getDatabasePortNumberString()+Const.CR);
-                report.append("   Database name  : "+dbinfo.getDatabaseName()+Const.CR);
+                report.append(Messages.getString("DatabaseDialog.report.Hostname")+dbinfo.getHostname()+Const.CR);
+                report.append(Messages.getString("DatabaseDialog.report.Port")+dbinfo.getDatabasePortNumberString()+Const.CR);
+                report.append(Messages.getString("DatabaseDialog.report.DatabaseName")+dbinfo.getDatabaseName()+Const.CR);
                 report.append(Const.CR);
             }
 
-            EnterTextDialog dialog = new EnterTextDialog(shell, "Connection report", "Here is the connection report", report.toString());
+            EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("DatabaseDialog.ConnectionReport.title"), Messages.getString("DatabaseDialog.ConnectionReport.description"), report.toString());
             dialog.setReadOnly();
             dialog.setFixed(true);
             dialog.open();
@@ -1573,8 +1573,8 @@ public class DatabaseDialog extends Dialog
             for (int i=0;i<remarks.length;i++) message+="    * "+remarks[i]+Const.CR;
 
 			MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_ERROR);
-			mb.setText("Error!");
-			mb.setMessage("Please make sure all required parameters are entered correctly: " + Const.CR+remarks);
+			mb.setText(Messages.getString("DatabaseDialog.ErrorParameters2.title"));
+			mb.setMessage(Messages.getString("DatabaseDialog.ErrorParameters2.description", message));
 			mb.open();
 		}
 	}
@@ -1590,7 +1590,7 @@ public class DatabaseDialog extends Dialog
 		}
 		catch(KettleException e)
 		{
-			new ErrorDialog(shell, "Error!", "Please make sure all required parameters are entered correctly!", e);
+			new ErrorDialog(shell, Messages.getString("DatabaseDialog.ErrorParameters,title"), Messages.getString("DatabaseDialog.ErrorParameters.description"), e);
 		}
 	}
     
@@ -1601,13 +1601,13 @@ public class DatabaseDialog extends Dialog
         {
             getInfo(dbinfo);
             ArrayList buffer = (ArrayList) dbinfo.getFeatureSummary();
-            PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, "Feature list", buffer);
-            prd.setTitleMessage("Feature list", "The list of features:");
+            PreviewRowsDialog prd = new PreviewRowsDialog(shell, SWT.NONE, Messages.getString("DatabaseDialog.FeatureList.title"), buffer);
+            prd.setTitleMessage(Messages.getString("DatabaseDialog.FeatureList.title"), Messages.getString("DatabaseDialog.FeatureList.title2"));
             prd.open();
         }
         catch(KettleException e)
         {
-            new ErrorDialog(shell, "Error!", "Unable to get feature list.  Please make sure all required parameters are entered correctly!", e);
+            new ErrorDialog(shell, Messages.getString("DatabaseDialog.FeatureListError.title"), Messages.getString("DatabaseDialog.FeatureListError.description"), e);
         }
 
     }
