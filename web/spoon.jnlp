@@ -25,7 +25,7 @@
   <jar href="libext/db2jcc_license_cu.jar"/>
   <jar href="libext/edbc.jar"/>
   <jar href="libext/edtftpj-1.5.3.jar"/>
-  <jar href="libext/firebirdsql-full.jar"/>
+  <jar href="libext/jaybird-full-2.1.0.jar"/>
   <jar href="libext/hsqldb.jar"/>
   <jar href="libext/ifxjdbc.jar"/>
   <jar href="libext/interclient.jar"/>

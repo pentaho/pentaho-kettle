@@ -6,7 +6,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="libext/activation.jar"/>
 	<classpathentry kind="lib" path="libext/CacheDB.jar"/>
-	<classpathentry kind="lib" path="libext/firebirdsql-full.jar"/>
 	<classpathentry kind="lib" path="libext/hsqldb.jar"/>
 	<classpathentry kind="lib" path="libext/ifxjdbc.jar"/>
 	<classpathentry kind="lib" path="libext/jconn2.jar"/>
@@ -57,5 +56,6 @@
 	<classpathentry kind="lib" path="libext/jetty-util-6.0.2.jar"/>
 	<classpathentry kind="lib" path="libext/servlet-api-2.5-6.0.2.jar"/>
 	<classpathentry kind="lib" path="libext/mysql-connector-java-3.1.14-bin.jar"/>
+	<classpathentry kind="lib" path="libext/jaybird-full-2.1.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

@@ -342,6 +342,6 @@ public class FirebirdDatabaseMeta extends BaseDatabaseMeta implements DatabaseIn
 
     public String[] getUsedLibraries()
     {
-        return new String[] { "firebirdsql-full.jar" };
+        return new String[] { "jaybird-full-2.1.0.jar" };
     }	
 }
