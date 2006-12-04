@@ -24,6 +24,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.repository.Repository;
 
 public class SlaveServer extends ChangedFlag implements Cloneable
@@ -216,8 +217,9 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     
     public String getPortSpecification()
     {
-        String portSpec = ":"+port;
-        if (Const.isEmpty(port) || port.equals("80"))
+        String realPort = StringUtil.environmentSubstitute(port);
+        String portSpec = ":"+realPort;
+        if (Const.isEmpty(realPort) || port.equals("80"))
         {
             portSpec="";
         }
@@ -226,7 +228,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     
     public String constructUrl(String serviceAndArguments)
     {
-        String retval =  "http://"+hostname+getPortSpecification()+serviceAndArguments;
+        String realHostname = StringUtil.environmentSubstitute(hostname);
+        String retval =  "http://"+realHostname+getPortSpecification()+serviceAndArguments;
         retval = Const.replace(retval, " ", "%20");
         return retval;
     }
@@ -295,7 +298,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     
     public String toString()
     {
-        if (!Const.isEmpty(hostname)) return hostname+getPortSpecification();
+        String realHostname = StringUtil.environmentSubstitute(hostname);
+        if (!Const.isEmpty(realHostname)) return realHostname+getPortSpecification();
         return "Slave Server";
     }
 
