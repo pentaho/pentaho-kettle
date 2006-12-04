@@ -73,7 +73,7 @@ public class SocketReader extends BaseStep implements StepInterface
                     int port = Integer.parseInt( StringUtil.environmentSubstitute(meta.getPort()) );
                     int bufferSize = Integer.parseInt( StringUtil.environmentSubstitute(meta.getBufferSize()));
                     
-                    data.socket       = new Socket(StringUtil.environmentSubstitute(meta.getHostname()), port);
+                    data.socket = new Socket(StringUtil.environmentSubstitute(meta.getHostname()), port);
                     if (meta.isCompressed())
                     {
                         data.outputStream = new DataOutputStream(new BufferedOutputStream(new GZIPOutputStream(data.socket.getOutputStream()), bufferSize));
