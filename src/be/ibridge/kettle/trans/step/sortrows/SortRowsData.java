@@ -34,6 +34,7 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
 	public Vector    buffer;
 	public ArrayList fis, gzis, dis;
 	public ArrayList rowbuffer;
+    public ArrayList rowMeta;
 
 	public int     fieldnrs[];      // the corresponding field numbers;
 
@@ -50,7 +51,7 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
 		dis  =new ArrayList();
 		gzis = new ArrayList();
 		rowbuffer=new ArrayList();
-		
+        rowMeta = new ArrayList();
 	}
 
 }

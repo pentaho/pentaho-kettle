@@ -105,15 +105,23 @@ public class SortRows extends BaseStep implements StepInterface
 			
 				// How many records do we have?
 				dos.writeInt(data.buffer.size());
-			
-				for (p=0;p<data.buffer.size();p++)
+                
+                for (p=0;p<data.buffer.size();p++)
 				{
-					((Row)data.buffer.get(p)).write(dos);
+					if (p==0)
+                    {
+                        // Save the metadata, keep it in memory
+                        data.rowMeta.add( new Row(((Row)data.buffer.get(p))) );
+                    }
+                    // Just write the data, nothing else
+                    ((Row)data.buffer.get(p)).writeData(dos);
 				}
 				// Close temp-file
 				dos.close();  // close data stream
 				if (gzos != null)
+                {
 					gzos.close(); // close gzip stream
+                }
 				fos.close();  // close file stream
 			}
 			catch(Exception e)
@@ -156,7 +164,8 @@ public class SortRows extends BaseStep implements StepInterface
 						GZIPInputStream gzfi = new GZIPInputStream(fi);
 						di =new DataInputStream(gzfi);
 						data.gzis.add(gzfi);
-					} else
+					}
+                    else
 					{
 						di=new DataInputStream(fi);
 					}
@@ -170,7 +179,8 @@ public class SortRows extends BaseStep implements StepInterface
 					if (buffersize>0)
 					{
 						// Read a row from each temp-file
-						data.rowbuffer.add(new Row(di));    // new row
+                        Row metadata = (Row) data.rowMeta.get(f);
+						data.rowbuffer.add(new Row(di, metadata.size(), metadata));    // new row
 					}
 				}
 			}
@@ -195,7 +205,10 @@ public class SortRows extends BaseStep implements StepInterface
 		}
 		else
 		{
-			if (data.rowbuffer.size()==0) retval=null;
+			if (data.rowbuffer.size()==0)
+            {
+                retval=null;
+            }
 			else
 			{
 				// We now have "filenr" rows waiting: which one is the smallest?
@@ -229,12 +242,12 @@ public class SortRows extends BaseStep implements StepInterface
 				File          file = (File)data.files.get(smallest);
 				DataInputStream di = (DataInputStream)data.dis.get(smallest); 
 				FileInputStream fi = (FileInputStream)data.fis.get(smallest);
-				GZIPInputStream gzfi = (meta.getCompress()) ?
-						(GZIPInputStream)data.gzis.get(smallest) : null;
+				GZIPInputStream gzfi = (meta.getCompress()) ? (GZIPInputStream)data.gzis.get(smallest) : null;
 
 				try
 				{
-					data.rowbuffer.add(smallest, new Row(di));
+                    Row metadata = (Row) data.rowMeta.get(smallest);
+					data.rowbuffer.add(smallest, new Row(di, metadata.size(), metadata));
 				}
 				catch(KettleFileException fe) // empty file or EOF mostly
 				{
@@ -242,8 +255,7 @@ public class SortRows extends BaseStep implements StepInterface
 					{
 						di.close();
 						fi.close();
-						if (gzfi != null)
-							gzfi.close();
+						if (gzfi != null) gzfi.close();
 						file.delete();
 					}
 					catch(IOException e)
@@ -257,8 +269,8 @@ public class SortRows extends BaseStep implements StepInterface
 					data.files.remove(smallest);
 					data.dis.remove(smallest);
 					data.fis.remove(smallest);
-					if (gzfi != null)
-						data.gzis.remove(smallest);
+					if (gzfi != null) data.gzis.remove(smallest);
+                    data.rowMeta.remove(smallest);
 				}
 			}
 		}
