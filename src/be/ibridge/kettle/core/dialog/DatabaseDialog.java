@@ -199,7 +199,7 @@ public class DatabaseDialog extends Dialog
 		formLayout.marginWidth  = Const.FORM_MARGIN;
 		formLayout.marginHeight = Const.FORM_MARGIN;
 		
-		shell.setText(Messages.getString("DatabaseDialog.dialog.title"));
+		shell.setText(Messages.getString("DatabaseDialog.Shell.title"));
 		shell.setLayout (formLayout);
  		
 		// First, add the buttons...
