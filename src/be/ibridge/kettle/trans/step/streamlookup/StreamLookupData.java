@@ -47,6 +47,10 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
 
     /** Stores the first row of the lookup-values to later determine if the types are the same as the input row lookup values.*/
     public Row keyTypes;
+
+    public Row keyMeta;
+
+    public Row valueMeta;
 	
 	public StreamLookupData()
 	{

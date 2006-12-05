@@ -71,9 +71,15 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 	private TableView    wReturn;
 	private FormData     fdlReturn, fdReturn;
 	
+    /*
 	private Label        wlSortedInput;
 	private Button       wSortedInput;
 	private FormData     fdlSortedInput, fdSortedInput;
+    */
+    
+    private Label        wlPreserveMemory;
+    private Button       wPreserveMemory;
+    private FormData     fdlPreserveMemory, fdPreserveMemory;
 
 	private StreamLookupMeta input;
 
@@ -222,6 +228,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		fdReturn.bottom= new FormAttachment(100, -75);
 		wReturn.setLayoutData(fdReturn);
 
+        /*
 		wlSortedInput=new Label(shell, SWT.RIGHT);
 		wlSortedInput.setText(Messages.getString("StreamLookupDialog.SortedInput.Label")); //$NON-NLS-1$
  		props.setLook(wlSortedInput);
@@ -245,6 +252,33 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 				}
 			}
 		);
+        */
+        
+        wlPreserveMemory=new Label(shell, SWT.RIGHT);
+        wlPreserveMemory.setText(Messages.getString("StreamLookupDialog.PreserveMemory.Label")); //$NON-NLS-1$
+        props.setLook(wlPreserveMemory);
+        fdlPreserveMemory=new FormData();
+        fdlPreserveMemory.left = new FormAttachment(0, 0);
+        fdlPreserveMemory.top  = new FormAttachment(wReturn, margin);
+        fdlPreserveMemory.right= new FormAttachment(middle, -margin);
+        wlPreserveMemory.setLayoutData(fdlPreserveMemory);
+        wPreserveMemory=new Button(shell, SWT.CHECK );
+        props.setLook(wPreserveMemory);
+        fdPreserveMemory=new FormData();
+        fdPreserveMemory.left = new FormAttachment(middle, 0);
+        fdPreserveMemory.top  = new FormAttachment(wReturn, margin);
+        fdPreserveMemory.right= new FormAttachment(100, 0);
+        wPreserveMemory.setLayoutData(fdPreserveMemory);
+        wPreserveMemory.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    input.setChanged();
+                }
+            }
+        );
+
+        
 		// THE BUTTONS
 		wOK=new Button(shell, SWT.PUSH);
 		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
@@ -255,7 +289,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wGet, wGetLU, wCancel }, margin, wSortedInput);
+		setButtonPositions(new Button[] { wOK, wGet, wGetLU, wCancel }, margin, wPreserveMemory);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();        } };
@@ -318,7 +352,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		}
 		
 		if (input.getLookupFromStep()!=null && input.getLookupFromStep().getName()!=null) wStep.setText( input.getLookupFromStep().getName() );
-		wSortedInput.setSelection(input.isInputSorted());
+		wPreserveMemory.setSelection(input.isMemoryPreservationActive());
 		
 		wStepname.selectAll();
 		wKey.setRowNums();
@@ -342,7 +376,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		nrkeys             = wKey.nrNonEmpty();
 		nrvalues           = wReturn.nrNonEmpty();
 		input.allocate(nrkeys, nrvalues);
-		input.setInputSorted(wSortedInput.getSelection());
+		input.setMemoryPreservationActive(wPreserveMemory.getSelection());
 
 		log.logDebug(toString(), Messages.getString("StreamLookupDialog.Log.FoundKeys",nrkeys+"")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (i=0;i<nrkeys;i++)

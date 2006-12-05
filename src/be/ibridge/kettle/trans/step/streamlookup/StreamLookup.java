@@ -100,8 +100,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 		}
 	}
 
-	
-	private boolean readLookupValues() throws KettleStepException
+	private boolean readLookupValues() throws KettleException
 	{
 		Row r, value_part, key_part;
 		
@@ -150,7 +149,7 @@ public class StreamLookup extends BaseStep implements StepInterface
                 value_part.addValue(returnValue);
 			}
 		
-            data.look.put(key_part, value_part);
+            addToCache(key_part, value_part);
 			
 			if (data.firstrow==null) data.firstrow=new Row(value_part);
 			
@@ -159,8 +158,9 @@ public class StreamLookup extends BaseStep implements StepInterface
 		
 		return true;
 	}
-	
-	private boolean lookupValues(Row row)
+
+
+    private boolean lookupValues(Row row)
 	{
 		Row lu=new Row();
 		Row add=null;		
@@ -196,7 +196,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 			{
 				if (meta.getKeystream().length>0)
 				{
-					add=(Row)data.look.get(lu);
+					add=getFromCache(lu);
 				}
 				else
 				{
@@ -243,7 +243,7 @@ public class StreamLookup extends BaseStep implements StepInterface
 		{
 			if (meta.getKeystream().length>0)
 			{
-				add=(Row)data.look.get(lu);
+				add=getFromCache(lu);
 			}
 			else
 			{
@@ -292,7 +292,39 @@ public class StreamLookup extends BaseStep implements StepInterface
 		return true;
 	}
 	
-	public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
+    private void addToCache(Row keyPart, Row valuePart) throws KettleException
+    {
+        if (meta.isMemoryPreservationActive())
+        {
+            if (data.keyMeta == null) data.keyMeta = new Row(keyPart);
+            if (data.valueMeta == null) data.valueMeta = new Row(valuePart);
+            
+            RowData key = new RowData(data.keyMeta, keyPart);
+            RowData value = new RowData(data.valueMeta, valuePart);
+            data.look.put(key, value);
+        }
+        else
+        {
+            data.look.put(keyPart, valuePart);
+        }
+    }
+    
+	private Row getFromCache(Row keyValue) throws KettleException
+    {
+        if (meta.isMemoryPreservationActive())
+        {
+            RowData key = new RowData(data.keyMeta, keyValue);
+            RowData value = (RowData)data.look.get(key);
+            if (value==null) return null;
+            return value.getRow();
+        }
+        else
+        {
+            return (Row) data.look.get(keyValue);
+        }
+    }
+
+    public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 	    meta = (StreamLookupMeta)smi;
 	    data = (StreamLookupData)sdi;
