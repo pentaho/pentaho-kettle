@@ -41,7 +41,7 @@ public class GenerateClusterSchema
         SharedObjects sharedObjects = new SharedObjects(args[1], new ArrayList(), new Hashtable());
         
         ClusterSchema clusterSchema = new ClusterSchema();
-        clusterSchema.setName("EC2");
+        clusterSchema.setName(args[2]);
         clusterSchema.setBasePort("40000");
         clusterSchema.setSocketsBufferSize("100000");
         clusterSchema.setSocketsFlushInterval("0");
