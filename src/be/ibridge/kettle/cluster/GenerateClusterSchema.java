@@ -9,6 +9,8 @@ import java.util.Hashtable;
 import java.util.Properties;
 
 import be.ibridge.kettle.core.SharedObjects;
+import be.ibridge.kettle.core.database.DatabaseMeta;
+import be.ibridge.kettle.core.database.PartitionDatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 
 /**
@@ -40,6 +42,8 @@ public class GenerateClusterSchema
 
         SharedObjects sharedObjects = new SharedObjects(args[1], new ArrayList(), new Hashtable());
         
+        DatabaseMeta mysql = new DatabaseMeta("MySQL EC2", "MySQL", "JDBC", null, "test", "3306", "matt", "abcd");
+        
         ClusterSchema clusterSchema = new ClusterSchema();
         clusterSchema.setName(args[2]);
         clusterSchema.setBasePort("40000");
@@ -51,6 +55,9 @@ public class GenerateClusterSchema
         while (properties.getProperty(PREFIX+max+IP)!=null) max++;
         max--;
         
+        mysql.setPartitioned(true);
+        PartitionDatabaseMeta[] partDbMeta = new PartitionDatabaseMeta[max];
+        
         for (int i=1;i<=max;i++)
         {
             String serverIp   = properties.getProperty(PREFIX+i+IP);
@@ -60,6 +67,8 @@ public class GenerateClusterSchema
             {
                 // add the master
                 clusterSchema.getSlaveServers().add(new SlaveServer(serverIp, serverPort, "cluster", "cluster", null, null, null, true));
+                mysql.setHostname(serverIp);
+                partDbMeta[i-1] = new PartitionDatabaseMeta("P"+i, serverIp, "3306", "test");
                 
                 if (max==1) // if there is just one server here, so we add a slave too besides the master 
                 {
@@ -74,6 +83,10 @@ public class GenerateClusterSchema
         }
        
         sharedObjects.storeObject(clusterSchema);
+        
+        mysql.setPartitioningInformation(partDbMeta);
+        sharedObjects.storeObject(mysql);
+        
         sharedObjects.saveToFile();
     }
 }
