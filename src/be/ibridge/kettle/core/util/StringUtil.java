@@ -40,6 +40,29 @@ public class StringUtil
 	 */
 	public static String substitute(String aString, Map variablesValues, String open, String close)
 	{
+		return substitute(aString, variablesValues, open, close, 0);
+	}
+
+	/**
+	 * Substitutes variables in <code>aString</code>. Variable names are
+	 * delimited by open and close strings. The values are retrieved from the
+	 * given map.
+	 * 
+	 * @param aString
+	 *            the string on which to apply the substitution.
+	 * @param variablesValues
+	 *            a map containg the variable values. The keys are the variable
+	 *            names, the values are the variable values.
+	 * @param open
+	 *            the open delimiter for variables.
+	 * @param close
+	 *            the close delimiter for variables.
+	 * @param recursion
+	 *            the number of recursion (internal counter to avoid endless loops)
+	 * @return the string with the substitution applied.
+	 */
+	public static String substitute(String aString, Map variablesValues, String open, String close, int recursion)
+	{
 		if (aString==null) return null;
 
 		StringBuffer buffer = new StringBuffer();
@@ -59,6 +82,19 @@ public class StringUtil
 				if (value == null)
 				{
 					value = open + varName + close;
+				}
+				else
+				{
+					// check for another variable inside this value
+					int another = ((String)value).indexOf(open); //check here first for speed
+					if (another> -1)
+					{
+						if (recursion>50) //for safety: avoid recursive endless loops with stack overflow 
+						{
+							throw new RuntimeException("Endless loop detected for substitution of variable: "+(String)value);
+						}
+						value=substitute((String)value, variablesValues, open, close, ++recursion);
+					}
 				}
 				buffer.append(rest.substring(0, i));
 				buffer.append(value);
