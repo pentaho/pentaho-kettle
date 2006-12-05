@@ -133,6 +133,9 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 
 	/** Flag indicating that a row number field should be included in the output */
 	private boolean includeRowNumber;
+	
+	/** Flag indicating row number is per file */
+	private boolean rowNumberByFile;
 
 	/** The name of the field in the output containing the row number */
 	private String rowNumberField;
@@ -449,6 +452,22 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 	{
 		this.includeRowNumber = includeRowNumber;
 	}
+	
+	/**
+	 * true if row number reset for each file
+	 * @return rowNumberByFile
+	 */
+	public boolean isRowNumberByFile()
+	{
+		return rowNumberByFile;
+	}
+	/** 
+	 * @param rowNumberByFile. True if row number field is reset for each file
+	 */
+	public void setRowNumberByFile(boolean rowNumberByFile)
+	{
+		this.rowNumberByFile = rowNumberByFile;
+	}
 
 	/**
 	 * @return Returns the noEmptyLines.
@@ -608,6 +627,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		lineNumberFilesDestinationDirectory = null;
 		lineNumberFilesExtension = "line";
 		dateFormatLenient = true;
+		rowNumberByFile = false;
 
 		int nrfiles = 0;
 		int nrfields = 0;
@@ -715,6 +735,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 		retval.append("    " + XMLHandler.addTagValue("include", includeFilename));
 		retval.append("    " + XMLHandler.addTagValue("include_field", filenameField));
 		retval.append("    " + XMLHandler.addTagValue("rownum", includeRowNumber));
+		retval.append("    " + XMLHandler.addTagValue("rownumByFile", rowNumberByFile));
 		retval.append("    " + XMLHandler.addTagValue("rownum_field", rowNumberField));
 		retval.append("    " + XMLHandler.addTagValue("format", fileFormat));
 		retval.append("    " + XMLHandler.addTagValue("encoding", encoding));
@@ -822,6 +843,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			includeFilename = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "include"));
 			filenameField = XMLHandler.getTagValue(stepnode, "include_field");
 			includeRowNumber = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownum"));
+			rowNumberByFile = YES.equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "rownumByFile"));
 			rowNumberField = XMLHandler.getTagValue(stepnode, "rownum_field");
 			fileFormat = XMLHandler.getTagValue(stepnode, "format");
 			encoding = XMLHandler.getTagValue(stepnode, "encoding");
@@ -993,6 +1015,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
             includeFilename = rep.getStepAttributeBoolean(id_step, "include");
 			filenameField = rep.getStepAttributeString(id_step, "include_field");
 			includeRowNumber = rep.getStepAttributeBoolean(id_step, "rownum");
+			rowNumberByFile = rep.getStepAttributeBoolean(id_step, "rownumByFile");
 			rowNumberField = rep.getStepAttributeString(id_step, "rownum_field");
             
 			fileFormat = rep.getStepAttributeString(id_step, "format");
@@ -1108,6 +1131,7 @@ public class TextFileInputMeta extends BaseStepMeta implements StepMetaInterface
 			rep.saveStepAttribute(id_transformation, id_step, "include", includeFilename);
 			rep.saveStepAttribute(id_transformation, id_step, "include_field", filenameField);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum", includeRowNumber);
+			rep.saveStepAttribute(id_transformation, id_step, "rownumByFile", rowNumberByFile);
 			rep.saveStepAttribute(id_transformation, id_step, "rownum_field", rowNumberField);
             
 			rep.saveStepAttribute(id_transformation, id_step, "format", fileFormat);

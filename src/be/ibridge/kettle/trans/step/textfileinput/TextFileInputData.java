@@ -67,6 +67,8 @@ public class TextFileInputData extends BaseStepData implements
 
 	public String filename;
 	
+	public int lineInFile;
+	
 	public File file;
 
 	public int filenr;

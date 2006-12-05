@@ -850,7 +850,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 					if (log.isRowLevel()) logRowlevel("P-DATA: " + textLine.line);
 					// Read a normal line on a page of data.
 					data.pageLinesRead++;
-					r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten + 1,
+					data.lineInFile ++;
+					long useNumber = meta.isRowNumberByFile() ? data.lineInFile : linesWritten + 1;
+					r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, useNumber,
 							data.dataErrorLineHandler);
 					if (r != null) putrow = true;
 				}
@@ -917,7 +919,9 @@ public class TextFileInput extends BaseStep implements StepInterface
 					}
 					if (data.filePlayList.isProcessingNeeded(textLine.file, textLine.lineNumber, AbstractFileErrorHandler.NO_PARTS))
 					{
-						r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, linesWritten + 1,
+						data.lineInFile ++;
+						long useNumber = meta.isRowNumberByFile() ? data.lineInFile : linesWritten + 1;
+						r = convertLineToRow(log, textLine, meta, data.df, data.dfs, data.daf, data.dafs, data.filename, useNumber,
 								data.dataErrorLineHandler);
 						if (r != null)
 						{
@@ -1122,6 +1126,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 			data.isLastFile = (data.filenr == data.files.nrOfFiles() - 1);
 			data.file = data.files.getFile(data.filenr);
 			data.filename = data.file.getPath();
+			data.lineInFile = 0;
 			
             // Add this files to the result of this transformation.
             //

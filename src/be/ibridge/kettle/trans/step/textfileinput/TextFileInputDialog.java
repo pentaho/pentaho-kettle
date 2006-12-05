@@ -1,4 +1,4 @@
- /**********************************************************************
+/**********************************************************************
  **                                                                   **
  **               This code belongs to the KETTLE project.            **
  **                                                                   **
@@ -240,6 +240,10 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 	private Button       wInclRownum;
 	private FormData     fdlInclRownum, fdRownum;
 
+	private Label        wlRownumByFileField;
+	private Button       wRownumByFile;
+	private FormData     fdlRownumByFile, fdRownumByFile;
+
 	private Label        wlInclRownumField;
 	private Text         wInclRownumField;
 	private FormData     fdlInclRownumField, fdInclRownumField;
@@ -340,10 +344,13 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
     
     private boolean gotEncodings = false;
 
+    protected boolean firstClickOnDateLocale;
+
 	public TextFileInputDialog(Shell parent, Object in, TransMeta transMeta, String sname)
 	{
 		super(parent, (BaseStepMeta)in, transMeta, sname);
 		input=(TextFileInputMeta)in;
+        firstClickOnDateLocale=true;
 	}
 
 	public String open()
@@ -530,6 +537,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		// Enable/disable the right fields...
         wInclFilename.addSelectionListener( lsFlags );
         wInclRownum.addSelectionListener( lsFlags );
+        wRownumByFile.addSelectionListener( lsFlags );
         wErrorIgnored.addSelectionListener(lsFlags);
         wHeader.addSelectionListener(lsFlags);
         wFooter.addSelectionListener(lsFlags);
@@ -1270,12 +1278,27 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdInclRownumField.right= new FormAttachment(100, 0);
         wInclRownumField.setLayoutData(fdInclRownumField);
 
+        wlRownumByFileField=new Label(wContentComp, SWT.RIGHT);
+        wlRownumByFileField.setText(Messages.getString("TextFileInputDialog.RownumByFile.Label"));
+        props.setLook(wlRownumByFileField);
+        fdlRownumByFile=new FormData();
+        fdlRownumByFile.left = new FormAttachment(wInclRownum, margin);
+        fdlRownumByFile.top  = new FormAttachment(wInclRownumField, margin);
+        wlRownumByFileField.setLayoutData(fdlRownumByFile);
+        wRownumByFile=new Button(wContentComp, SWT.CHECK );
+        props.setLook(wRownumByFile);
+        wRownumByFile.setToolTipText(Messages.getString("TextFileInputDialog.RownumByFile.Tooltip"));
+        fdRownumByFile=new FormData();
+        fdRownumByFile.left = new FormAttachment(wlRownumByFileField, margin);
+        fdRownumByFile.top  = new FormAttachment(wInclRownumField, margin);
+        wRownumByFile.setLayoutData(fdRownumByFile);
+
         wlFormat=new Label(wContentComp, SWT.RIGHT);
         wlFormat.setText(Messages.getString("TextFileInputDialog.Format.Label"));
         props.setLook(wlFormat);
         fdlFormat=new FormData();
         fdlFormat.left = new FormAttachment(0, 0);
-        fdlFormat.top  = new FormAttachment(wInclRownumField, margin);
+        fdlFormat.top  = new FormAttachment(wRownumByFile, margin*2);
         fdlFormat.right= new FormAttachment(middle, -margin);
         wlFormat.setLayoutData(fdlFormat);
         wFormat=new CCombo(wContentComp, SWT.BORDER | SWT.READ_ONLY);
@@ -1288,7 +1311,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         wFormat.addModifyListener(lsMod);
         fdFormat=new FormData();
         fdFormat.left = new FormAttachment(middle, 0);
-        fdFormat.top  = new FormAttachment(wInclRownumField, margin);
+        fdFormat.top  = new FormAttachment(wRownumByFile, margin*2);
         fdFormat.right= new FormAttachment(100, 0);
         wFormat.setLayoutData(fdFormat);
 
@@ -1377,34 +1400,23 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         fdDateLocale.top  = new FormAttachment(wDateLenient, margin);
         fdDateLocale.right= new FormAttachment(100, 0);
         wDateLocale.setLayoutData(fdDateLocale);
-
-        Runnable runnable = new Runnable()
-		{
-			public void run()
-			{
-                Thread thread = new Thread(new Runnable()
-                    {
-                        public void run()
-                        {
-                            Locale locale[] =  Locale.getAvailableLocales();
-                            dateLocale = new String[locale.length];
-                            for (int i=0;i<locale.length;i++)
-                            {
-                                dateLocale[i] =  locale[i].toString();
-                            }
-                        }
-                    }
-                );
-                thread.start();
-                try { thread.join(); } catch(InterruptedException e) {}
-                if (dateLocale!=null)
+        wDateLocale.addFocusListener(new FocusListener()
+            {
+                public void focusLost(org.eclipse.swt.events.FocusEvent e)
                 {
-                    wDateLocale.setItems(dateLocale);
                 }
-                
-			}
-		};
-        shell.getDisplay().asyncExec(runnable);
+            
+                public void focusGained(org.eclipse.swt.events.FocusEvent e)
+                {
+                    Cursor busy = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+                    shell.setCursor(busy);
+                    setLocales();
+                    shell.setCursor(null);
+                    busy.dispose();
+                }
+            }
+        );
+
 
         wContentComp.pack();
         // What's the size: 
@@ -1429,6 +1441,20 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
         /// END OF CONTENT TAB
         /////////////////////////////////////////////////////////////
 
+    }
+
+    protected void setLocales()
+    {
+        Locale locale[] =  Locale.getAvailableLocales();
+        dateLocale = new String[locale.length];
+        for (int i=0;i<locale.length;i++)
+        {
+            dateLocale[i] =  locale[i].toString();
+        }
+        if (dateLocale!=null)
+        {
+            wDateLocale.setItems(dateLocale);
+        }
     }
 
     private void addErrorTab()
@@ -1918,7 +1944,9 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 
         wlInclRownumField.setEnabled(wInclRownum.getSelection());
         wInclRownumField.setEnabled(wInclRownum.getSelection());
-
+        wlRownumByFileField.setEnabled(wInclRownum.getSelection());
+        wRownumByFile.setEnabled(wInclRownum.getSelection());
+        
         // Error handling tab...
         wlSkipErrorLines.setEnabled( wErrorIgnored.getSelection() );
         wSkipErrorLines.setEnabled( wErrorIgnored.getSelection() );
@@ -2006,6 +2034,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		wNoempty.setSelection(in.noEmptyLines());
 		wInclFilename.setSelection(in.includeFilename());
 		wInclRownum.setSelection(in.includeRowNumber());
+		wRownumByFile.setSelection(in.isRowNumberByFile());
         wDateLenient.setSelection(in.isDateFormatLenient());
 		
         if (in.getFilenameField()!=null) wInclFilenameField.setText(in.getFilenameField());
@@ -2143,9 +2172,11 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 		meta.setRowLimit( Const.toLong(wLimit.getText(), 0L) );
 		meta.setFilenameField( wInclFilenameField.getText() );
 		meta.setRowNumberField( wInclRownumField.getText() );
+		
 				
 		meta.setIncludeFilename( wInclFilename.getSelection() );
 		meta.setIncludeRowNumber( wInclRownum.getSelection() );
+		meta.setRowNumberByFile( wRownumByFile.getSelection());
 		meta.setHeader( wHeader.getSelection() );
         meta.setNrHeaderLines( Const.toInt( wNrHeader.getText(), 1) );
 		meta.setFooter( wFooter.getSelection() );
