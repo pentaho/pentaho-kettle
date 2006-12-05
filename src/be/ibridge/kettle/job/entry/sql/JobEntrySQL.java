@@ -28,6 +28,7 @@ import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.job.Job;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.entry.JobEntryBase;
@@ -48,6 +49,7 @@ public class JobEntrySQL extends JobEntryBase implements JobEntryInterface
 {
 	private String sql;
 	private DatabaseMeta connection;
+	private boolean useVariableSubstitution = false;
 
 	public JobEntrySQL(String n)
 	{
@@ -75,6 +77,7 @@ public class JobEntrySQL extends JobEntryBase implements JobEntryInterface
 		retval.append(super.getXML());
 		
 		retval.append("      "+XMLHandler.addTagValue("sql",      sql));
+		retval.append("      "+XMLHandler.addTagValue("useVariableSubstitution", useVariableSubstitution ? "T" : "F"));
 		retval.append("      "+XMLHandler.addTagValue("connection", connection==null?null:connection.getName()));
 		
 		return retval.toString();
@@ -87,6 +90,9 @@ public class JobEntrySQL extends JobEntryBase implements JobEntryInterface
 			super.loadXML(entrynode, databases);
 			sql           = XMLHandler.getTagValue(entrynode, "sql");
 			String dbname = XMLHandler.getTagValue(entrynode, "connection");
+			String sSubs = XMLHandler.getTagValue(entrynode, "useVariableSubstitution");
+			if (sSubs != null && sSubs.equalsIgnoreCase("T"))
+				useVariableSubstitution = true;
 			connection    = Const.findDatabase(databases, dbname);
 		}
 		catch(KettleException e)
@@ -103,6 +109,9 @@ public class JobEntrySQL extends JobEntryBase implements JobEntryInterface
 			super.loadRep(rep, id_jobentry, databases);
 
 			sql = rep.getJobEntryAttributeString(id_jobentry, "sql");
+			String sSubs = rep.getJobEntryAttributeString(id_jobentry, "useVariableSubstitution");
+			if (sSubs != null && sSubs.equalsIgnoreCase("T"))
+				useVariableSubstitution = true;
 			long id_db = rep.getJobEntryAttributeInteger(id_jobentry, "id_database");
 			if (id_db>0)
 			{
@@ -131,6 +140,7 @@ public class JobEntrySQL extends JobEntryBase implements JobEntryInterface
 
 			if (connection!=null) rep.saveJobEntryAttribute(id_job, getID(), "connection", connection.getName());
 			rep.saveJobEntryAttribute(id_job, getID(), "sql", sql);
+			rep.saveJobEntryAttribute(id_job, getID(), "useVariableSubstitution", useVariableSubstitution ? "T" : "F" );
 		}
 		catch(KettleDatabaseException dbe)
 		{
@@ -146,6 +156,16 @@ public class JobEntrySQL extends JobEntryBase implements JobEntryInterface
 	public String getSQL()
 	{
 		return sql;
+	}
+	
+	public boolean getUseVariableSubstitution()
+	{
+		return useVariableSubstitution;
+	}
+	
+	public void setUseVariableSubstitution(boolean subs)
+	{
+		useVariableSubstitution = subs;
 	}
 	
 	public void setDatabase(DatabaseMeta database)
@@ -170,7 +190,12 @@ public class JobEntrySQL extends JobEntryBase implements JobEntryInterface
 			try
 			{
 				db.connect();
-				db.execStatements(sql);
+				String mySQL = null;
+				if (useVariableSubstitution)
+					mySQL = StringUtil.environmentSubstitute(sql);
+				else
+					mySQL = sql;
+				db.execStatements(mySQL);
 			}
 			catch(KettleDatabaseException je)
 			{

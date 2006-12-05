@@ -73,6 +73,10 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 	private CCombo       wConnection;
 	private Button		 wbConnection;
 	private FormData     fdlConnection, fdbConnection, fdConnection;
+	
+    private Label        wlUseSubs;
+    private Button       wUseSubs;
+    private FormData     fdlUseSubs, fdUseSubs;
 
 	private Label        wlSQL;
 	private Text         wSQL;
@@ -201,7 +205,32 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 		fdConnection.right= new FormAttachment(wbConnection, -margin);
 		wConnection.setLayoutData(fdConnection);
 
-
+        // Include Files?
+        wlUseSubs=new Label(shell, SWT.RIGHT);
+        wlUseSubs.setText("Use variable substitution?");
+        props.setLook(wlUseSubs);
+        fdlUseSubs=new FormData();
+        fdlUseSubs.left = new FormAttachment(0, 0);
+        fdlUseSubs.top  = new FormAttachment(wConnection, margin);
+        fdlUseSubs.right= new FormAttachment(middle, -margin);
+        wlUseSubs.setLayoutData(fdlUseSubs);
+        wUseSubs=new Button(shell, SWT.CHECK);
+        props.setLook(wUseSubs);
+        fdUseSubs=new FormData();
+        fdUseSubs.left = new FormAttachment(middle, margin);
+        fdUseSubs.top  = new FormAttachment(wConnection, margin);
+        fdUseSubs.right= new FormAttachment(100, 0);
+        wUseSubs.setLayoutData(fdUseSubs);
+        wUseSubs.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                	jobentry.setUseVariableSubstitution(!jobentry.getUseVariableSubstitution());
+                	jobentry.setChanged();
+                }
+            }
+        );
+		
 		wlPosition=new Label(shell, SWT.NONE);
 		wlPosition.setText("Linenr: 0        ");
  		props.setLook(wlPosition);
@@ -283,7 +312,8 @@ public class JobEntrySQLDialog extends Dialog implements JobEntryDialogInterface
 		DatabaseMeta dbinfo = jobentry.getDatabase(); 
 		if (dbinfo!=null && dbinfo.getName()!=null) wConnection.setText(dbinfo.getName());
 		else wConnection.setText("");
-		
+
+        wUseSubs.setSelection(jobentry.getUseVariableSubstitution());		
 		wName.selectAll();
 	}
 	
