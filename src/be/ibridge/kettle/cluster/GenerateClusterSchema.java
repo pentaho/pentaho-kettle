@@ -4,7 +4,12 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Hashtable;
 import java.util.Properties;
+
+import be.ibridge.kettle.core.SharedObjects;
+import be.ibridge.kettle.core.exception.KettleXMLException;
 
 /**
  * The program generates a piece of XML that defines a (shared) Cluster Schema
@@ -21,16 +26,20 @@ public class GenerateClusterSchema
     /**
      * @param args <br> 
      *    - the properties file to read
+     *    - the shared file to write to
      *    - the name of the cluster schema
      *    - 
      * @throws IOException 
      * @throws FileNotFoundException 
+     * @throws KettleXMLException 
      */
-    public static void main(String[] args) throws FileNotFoundException, IOException
+    public static void main(String[] args) throws FileNotFoundException, IOException, KettleXMLException
     {
         Properties properties = new Properties();
         properties.load(new FileInputStream(new File(args[0])));
 
+        SharedObjects sharedObjects = new SharedObjects(args[1], new ArrayList(), new Hashtable());
+        
         ClusterSchema clusterSchema = new ClusterSchema();
         clusterSchema.setName("EC2");
         clusterSchema.setBasePort("40000");
@@ -63,6 +72,8 @@ public class GenerateClusterSchema
                 clusterSchema.getSlaveServers().add(new SlaveServer(serverIp, serverPort, "cluster", "cluster"));
             }
         }
-        System.out.println(clusterSchema.getXML());
+       
+        sharedObjects.storeObject(clusterSchema);
+        sharedObjects.saveToFile();
     }
 }
