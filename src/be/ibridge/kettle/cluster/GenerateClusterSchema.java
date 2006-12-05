@@ -33,6 +33,10 @@ public class GenerateClusterSchema
 
         ClusterSchema clusterSchema = new ClusterSchema();
         clusterSchema.setName("EC2");
+        clusterSchema.setBasePort("40000");
+        clusterSchema.setSocketsBufferSize("100000");
+        clusterSchema.setSocketsFlushInterval("0");
+        clusterSchema.setSocketsCompressed(true);
         
         int max = 1;
         while (properties.getProperty(PREFIX+max+IP)!=null) max++;
