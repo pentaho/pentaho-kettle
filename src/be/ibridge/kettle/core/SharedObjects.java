@@ -73,36 +73,41 @@ public class SharedObjects
         this.objectsMap = new Hashtable();
 
         // Extra information
-        Document document = XMLHandler.loadXMLFile(new File(filename));
-        Node sharedObjectsNode = XMLHandler.getSubNode(document, XML_TAG);
-        if (sharedObjectsNode!=null)
+        File file = new File(filename);
+        
+        // If we have a shared file, load the content, otherwise, just keep this one empty
+        if (file.exists()) 
         {
-            NodeList childNodes = sharedObjectsNode.getChildNodes();
-            for (int i=0;i<childNodes.getLength();i++)
+            Document document = XMLHandler.loadXMLFile(file);
+            Node sharedObjectsNode = XMLHandler.getSubNode(document, XML_TAG);
+            if (sharedObjectsNode!=null)
             {
-                Node node = childNodes.item(i);
-                String nodeName = node.getNodeName();
-                
-                SharedObjectInterface isShared = null;
-
-                if      (nodeName.equals(DatabaseMeta.XML_TAG))    isShared = new DatabaseMeta(node);
-                else if (nodeName.equals(StepMeta.XML_TAG))        
-                { 
-                    StepMeta stepMeta = new StepMeta(node, databases, counters);
-                    stepMeta.setDraw(false); // don't draw it, keep it in the tree.
-                    isShared = stepMeta;
-                }
-                else if (nodeName.equals(PartitionSchema.XML_TAG)) isShared = new PartitionSchema(node);
-                else if (nodeName.equals(ClusterSchema.XML_TAG))   isShared = new ClusterSchema(node);
-                
-                if (isShared!=null)
+                NodeList childNodes = sharedObjectsNode.getChildNodes();
+                for (int i=0;i<childNodes.getLength();i++)
                 {
-                    isShared.setShared(true);
-                    storeObject(isShared);
+                    Node node = childNodes.item(i);
+                    String nodeName = node.getNodeName();
+                    
+                    SharedObjectInterface isShared = null;
+    
+                    if      (nodeName.equals(DatabaseMeta.XML_TAG))    isShared = new DatabaseMeta(node);
+                    else if (nodeName.equals(StepMeta.XML_TAG))        
+                    { 
+                        StepMeta stepMeta = new StepMeta(node, databases, counters);
+                        stepMeta.setDraw(false); // don't draw it, keep it in the tree.
+                        isShared = stepMeta;
+                    }
+                    else if (nodeName.equals(PartitionSchema.XML_TAG)) isShared = new PartitionSchema(node);
+                    else if (nodeName.equals(ClusterSchema.XML_TAG))   isShared = new ClusterSchema(node);
+                    
+                    if (isShared!=null)
+                    {
+                        isShared.setShared(true);
+                        storeObject(isShared);
+                    }
                 }
             }
         }
-
     }
     
     public static final String createFilename(String sharedObjectsFile)
