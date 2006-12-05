@@ -46,6 +46,11 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     {
     }
     
+    public SlaveServer(String hostname, String port, String username, String password)
+    {
+        this(hostname, port, username, password, null, null, null, false);
+    }
+    
     public SlaveServer(String hostname, String port, String username, String password, String proxyHostname, String proxyPort, String nonProxyHosts, boolean master)
     {
         this.hostname = hostname;
