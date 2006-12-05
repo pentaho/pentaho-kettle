@@ -62,13 +62,13 @@ public class GenerateClusterSchema
         {
             String serverIp   = properties.getProperty(PREFIX+i+IP);
             String serverPort = properties.getProperty(PREFIX+i+PORT);
+            partDbMeta[i-1] = new PartitionDatabaseMeta("P"+i, serverIp, "3306", "test");
             
             if (i==1) // use the first as the master
             {
                 // add the master
                 clusterSchema.getSlaveServers().add(new SlaveServer(serverIp, serverPort, "cluster", "cluster", null, null, null, true));
                 mysql.setHostname(serverIp);
-                partDbMeta[i-1] = new PartitionDatabaseMeta("P"+i, serverIp, "3306", "test");
                 
                 if (max==1) // if there is just one server here, so we add a slave too besides the master 
                 {
