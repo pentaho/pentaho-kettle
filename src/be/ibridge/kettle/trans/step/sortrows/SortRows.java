@@ -20,11 +20,13 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
@@ -94,7 +96,7 @@ public class SortRows extends BaseStep implements StepInterface
 				fos=new FileOutputStream(fil);
 				if (meta.getCompress())
 				{
-					gzos = new GZIPOutputStream(fos);
+					gzos = new GZIPOutputStream(new BufferedOutputStream(fos));
 					dos=new DataOutputStream(gzos);
 				}
 				else
@@ -130,7 +132,7 @@ public class SortRows extends BaseStep implements StepInterface
 				return false;
 			}
 			
-			data.buffer.removeAllElements();
+			data.buffer.clear();
 		}
 		
 		
@@ -161,7 +163,7 @@ public class SortRows extends BaseStep implements StepInterface
 					data.fis.add(fi);
 					if (meta.getCompress())
 					{
-						GZIPInputStream gzfi = new GZIPInputStream(fi);
+						GZIPInputStream gzfi = new GZIPInputStream(new BufferedInputStream(fi));
 						di =new DataInputStream(gzfi);
 						data.gzis.add(gzfi);
 					}
@@ -373,7 +375,7 @@ public class SortRows extends BaseStep implements StepInterface
 	
 	/** Sort the entire vector, if it is not empty
 	 */
-	public synchronized void quickSort(Vector elements)
+	public void quickSort(ArrayList elements)
 	{
 		if (log.isDetailed()) logDetailed("Starting quickSort algorithm..."); 
 		if (! elements.isEmpty())
@@ -409,7 +411,7 @@ public class SortRows extends BaseStep implements StepInterface
 	 * without fee is hereby granted.
 	 * See http://www.sum-it.nl/security/index.html for copyright laws.
 	 */
-	  private synchronized void quickSort(Vector elements, int lowIndex, int highIndex)
+	  private void quickSort(ArrayList elements, int lowIndex, int highIndex)
 	  { 
 	  	int lowToHighIndex;
 		int highToLowIndex;
@@ -429,7 +431,7 @@ public class SortRows extends BaseStep implements StepInterface
 		 *  It will be treated just like any other element.
 		 */
 		pivotIndex = (lowToHighIndex + highToLowIndex) / 2;
-		pivotValue = (Row)elements.elementAt(pivotIndex);
+		pivotValue = (Row)elements.get(pivotIndex);
 
 		/** Split the Vector in two parts.
 		 *
@@ -445,24 +447,24 @@ public class SortRows extends BaseStep implements StepInterface
 		// loop until low meets high
 		while ((newHighIndex + 1) < newLowIndex) // loop until partition complete
 		{ // loop from low to high to find a candidate for swapping
-		  lowToHighValue = (Row)elements.elementAt(lowToHighIndex);
+		  lowToHighValue = (Row)elements.get(lowToHighIndex);
 		  while (lowToHighIndex < newLowIndex
 			& lowToHighValue.compare(pivotValue, data.fieldnrs, meta.getAscending())<0 )
 		  { 
 		  	newHighIndex = lowToHighIndex; // add element to lower part
 			lowToHighIndex ++;
-			lowToHighValue = (Row)elements.elementAt(lowToHighIndex);
+			lowToHighValue = (Row)elements.get(lowToHighIndex);
 		  }
 
 		  // loop from high to low find other candidate for swapping
-		  highToLowValue = (Row)elements.elementAt(highToLowIndex);
+		  highToLowValue = (Row)elements.get(highToLowIndex);
 		  while (newHighIndex <= highToLowIndex
 			& (highToLowValue.compare(pivotValue, data.fieldnrs, meta.getAscending())>0)
 			)
 		  { 
 		  	newLowIndex = highToLowIndex; // add element to higher part
 			highToLowIndex --;
-			highToLowValue = (Row)elements.elementAt(highToLowIndex);
+			highToLowValue = (Row)elements.get(highToLowIndex);
 		  }
 
 		  // swap if needed
@@ -476,8 +478,8 @@ public class SortRows extends BaseStep implements StepInterface
 			if (compareResult >= 0) // low >= high, swap, even if equal
 			{ 
 			  parking = lowToHighValue;
-			  elements.setElementAt(highToLowValue, lowToHighIndex);
-			  elements.setElementAt(parking, highToLowIndex);
+			  elements.set(lowToHighIndex, highToLowValue);
+			  elements.set(highToLowIndex, parking);
 
 			  newLowIndex = highToLowIndex;
 			  newHighIndex = lowToHighIndex;

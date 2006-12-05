@@ -17,7 +17,6 @@
 package be.ibridge.kettle.trans.step.sortrows;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.trans.step.BaseStepData;
@@ -31,7 +30,7 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 public class SortRowsData extends BaseStepData implements StepDataInterface
 {
 	public ArrayList files;
-	public Vector    buffer;
+	public ArrayList    buffer;
 	public ArrayList fis, gzis, dis;
 	public ArrayList rowbuffer;
     public ArrayList rowMeta;
@@ -45,7 +44,7 @@ public class SortRowsData extends BaseStepData implements StepDataInterface
 	{
 		super();
 		
-		buffer=new Vector(Const.SORT_SIZE);
+		buffer=new ArrayList(Const.SORT_SIZE);
 		files=new ArrayList();
 		fis  =new ArrayList();
 		dis  =new ArrayList();
