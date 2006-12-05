@@ -20,7 +20,6 @@ package be.ibridge.kettle.core;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -40,6 +39,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.TableItem;
 
+import be.ibridge.kettle.core.util.SortedFileOutputStream;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.spoon.Messages;
 
@@ -459,7 +459,10 @@ public class Props implements Cloneable
         File spoonRc = new File(filename);
 		try
 		{
-            FileOutputStream fos = new FileOutputStream(spoonRc);
+            // FileOutputStream fos = new FileOutputStream(spoonRc);
+
+            SortedFileOutputStream fos = new SortedFileOutputStream(spoonRc);
+            fos.setLogger(log);
 			properties.store(fos, "Kettle Properties file");
             fos.close();
             log.logBasic(toString(), Messages.getString("Spoon.Log.SaveProperties"));
