@@ -55,14 +55,13 @@ public class GenerateClusterSchema
         while (properties.getProperty(PREFIX+max+IP)!=null) max++;
         max--;
         
-        mysql.setPartitioned(true);
-        PartitionDatabaseMeta[] partDbMeta = new PartitionDatabaseMeta[max];
+        mysql.setPartitioned(max>1);
+        PartitionDatabaseMeta[] partDbMeta = new PartitionDatabaseMeta[max-1];
         
         for (int i=1;i<=max;i++)
         {
             String serverIp   = properties.getProperty(PREFIX+i+IP);
             String serverPort = properties.getProperty(PREFIX+i+PORT);
-            partDbMeta[i-1] = new PartitionDatabaseMeta("P"+i, serverIp, "3306", "test");
             
             if (i==1) // use the first as the master
             {
@@ -79,6 +78,8 @@ public class GenerateClusterSchema
             {
                 // Add a slave server
                 clusterSchema.getSlaveServers().add(new SlaveServer(serverIp, serverPort, "cluster", "cluster"));
+                // Add a db partition
+                partDbMeta[i-2] = new PartitionDatabaseMeta("P"+i, serverIp, "3306", "test");
             }
         }
        
