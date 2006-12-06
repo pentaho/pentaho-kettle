@@ -28,7 +28,7 @@ public class RowData2
         
         // just do the last 4 bytes for performance reasons. 
         // for (int i=data.length-1;i>data.length-5 && i>=0;i--) hashCode^=new Byte(data[i]).hashCode();
-        for (int i=0;i<data.length;i++) hashCode^=(data[i]*(1<<i));
+        for (int i=0;i<data.length;i++) hashCode^=Math.round( (Math.pow(10, i)*data[i]) );
      
         // LogWriter.getInstance().logBasic("RowData2", "hashcode = "+hashCode);
         return hashCode;
