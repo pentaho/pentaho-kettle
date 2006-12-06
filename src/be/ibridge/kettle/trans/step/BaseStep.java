@@ -1133,18 +1133,15 @@ public class BaseStep extends Thread
                 {
                     Value referenceValue = referenceRow.getValue(i);
                     Value compareValue = row.getValue(i);
-                    String referenceName = referenceValue.getName();
-                    String compareName = compareValue.getName();
-                    if (!referenceName.equalsIgnoreCase(compareName)) 
+
+                    if (!referenceValue.getName().equalsIgnoreCase(compareValue.getName())) 
                     { 
-                        throw new RuntimeException("The name of field #" + i + " is not the same as in the first row received: you're mixing rows with different layout! (" + referenceName + "!=" + compareName + ")"); 
+                        throw new RuntimeException("The name of field #" + i + " is not the same as in the first row received: you're mixing rows with different layout! (" + referenceValue.toStringMeta() + "!=" + compareValue.toStringMeta() + ")"); 
                     }
-                    int referenceType = referenceValue.getType();
-                    int compareType = compareValue.getType();
                     
-                    if (referenceType!=compareType) 
+                    if (referenceValue.getType()!=compareValue.getType()) 
                     { 
-                        throw new RuntimeException("The data type of field #" + i + " is not the same as the first row received: you're mixing rows with different layout! (" + referenceValue.getTypeDesc() + "!=" + compareValue.getTypeDesc() + ")"); 
+                        throw new RuntimeException("The data type of field #" + i + " is not the same as the first row received: you're mixing rows with different layout! (" + referenceValue.toStringMeta() + "!=" + compareValue.toStringMeta() + ")"); 
                     }
                 }
             }
