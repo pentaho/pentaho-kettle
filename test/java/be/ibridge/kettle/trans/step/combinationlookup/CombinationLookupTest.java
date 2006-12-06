@@ -49,7 +49,7 @@ public class CombinationLookupTest extends TestCase
         "<connection>" +
             "<name>lookup</name>" +
             "<server>127.0.0.1</server>" +
-            "<type>HYPERSONIC</type>" +
+            "<type>H2</type>" +
             "<access>Native</access>" +
             "<database>mem:db</database>" +
             "<port></port>" +

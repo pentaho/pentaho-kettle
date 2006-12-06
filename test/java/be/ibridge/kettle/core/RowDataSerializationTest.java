@@ -36,7 +36,7 @@ import be.ibridge.kettle.core.value.Value;
  *
  * @author Sven Boden
  */
-public class RowSerializationTest extends TestCase
+public class RowDataSerializationTest extends TestCase
 {
 	/**
 	 * Test serialization().
@@ -70,12 +70,11 @@ public class RowSerializationTest extends TestCase
 			new Value("field6", (BigDecimal)null)     // BigDecimal
 		};
 		
-		
-        Row r1 = new Row();
-        for (int i=0; i < values1.length; i++ )
-        {
-            r1.addValue(values1[i]);
-        }
+	    Row r1 = new Row();
+		for (int i=0; i < values1.length; i++ )
+		{
+			r1.addValue(values1[i]);
+		}
         
         Row r1null = new Row();
         for (int i=0; i < values1.length; i++ )
@@ -85,11 +84,11 @@ public class RowSerializationTest extends TestCase
             r1null.addValue(nullValue);
         }
 
-        Row r2 = new Row();
-        for (int i=0; i < values2.length; i++ )
-        {
-            r2.addValue(values2[i]);
-        }
+	    Row r2 = new Row();
+		for (int i=0; i < values2.length; i++ )
+		{
+			r2.addValue(values2[i]);
+		}
 
         Row r2null = new Row();
         for (int i=0; i < values2.length; i++ )
@@ -99,11 +98,11 @@ public class RowSerializationTest extends TestCase
             r2null.addValue(nullValue);
         }
 
-        Row r3 = new Row();
-        for (int i=0; i < values3.length; i++ )
-        {
-            r3.addValue(values3[i]);
-        }
+	    Row r3 = new Row();
+		for (int i=0; i < values3.length; i++ )
+		{
+			r3.addValue(values3[i]);
+		}
 
         Row r3null = new Row();
         for (int i=0; i < values3.length; i++ )
@@ -113,12 +112,12 @@ public class RowSerializationTest extends TestCase
             r3null.addValue(nullValue);
         }
 
-        Vector out = new Vector();
-        out.add(r1);
+		Vector out = new Vector();
+		out.add(r1);
         out.add(r1null);
-        out.add(r2);
+		out.add(r2);
         out.add(r2null);
-        out.add(r3);
+		out.add(r3);
         out.add(r3null);
 
 		// Then write them to disk...
@@ -137,7 +136,7 @@ public class RowSerializationTest extends TestCase
 		
 			for (p=0;p<out.size();p++)
 			{
-				((Row)out.get(p)).write(dos);
+				((Row)out.get(p)).writeData(dos); // Just write the data, NOT the metadata
 			}
 			// Close temp-file
 			dos.close();  // close data stream
@@ -145,7 +144,7 @@ public class RowSerializationTest extends TestCase
 		}
 		catch(Exception e)
 		{
-			fail("raised an unpected error: "+e.toString()+Const.CR+Const.getStackTracker(e));
+			fail("raised an unpected error");
 		}
 		
 		FileInputStream fi = null;
@@ -156,38 +155,38 @@ public class RowSerializationTest extends TestCase
 			
 			// Read rows from temp-file
 			try {
-				Row r1i = new Row(di);
-                Row r1nulli = new Row(di);
-                Row r2i = new Row(di);
-                Row r2nulli = new Row(di);
-		     	Row r3i = new Row(di);
-                Row r3nulli = new Row(di);
-		     	
+				Row r1i = new Row(di, r1);
+                Row r1nulli = new Row(di, r1null);
+       			Row r2i = new Row(di, r1);
+                Row r2nulli = new Row(di, r2null);
+                Row r3i = new Row(di, r3);
+                Row r3nulli = new Row(di, r3null);
+                
 		     	// We can't use Row.compare() here as the compare function
 		     	// regards "" and null to be equal as string values.
-                if ( ! r1i.toString().equals(r1.toString()) )
-                    fail("r1 is load wrongly");
+				if ( ! r1i.toString().equals(r1.toString()) )
+					fail("r1 is load wrongly");
 
                 if ( ! r1nulli.toString().equals(r1null.toString()) )
                     fail("r1null is load wrongly");
 
-                if ( ! r2i.toString().equals(r2.toString()) )
-                    fail("r2 is loaded wrongly");
+				if ( ! r2i.toString().equals(r2.toString()) )
+					fail("r2 is loaded wrongly");
 
                 if ( ! r2nulli.toString().equals(r2null.toString()) )
                     fail("r2null is loaded wrongly");
 
-                if ( ! r3i.toString().equals(r3.toString()) )
-                    fail("r3 is loaded wrongly");           
+				if ( ! r3i.toString().equals(r3.toString()) )
+					fail("r3 is loaded wrongly");			
 
                 if ( ! r3nulli.toString().equals(r3null.toString()) )
-                    fail("r3null is loaded wrongly"); 		
-		     	
+                    fail("r3null is loaded wrongly");           
+
 			} catch (KettleFileException e) {
-				fail("raised an unpected error: "+e.getMessage()+Const.CR+Const.getStackTracker(e));
+				fail("raised an unpected error: "+e.toString()+Const.CR+Const.getStackTracker(e));
 			}								
 		} catch (FileNotFoundException e) {
-			fail("raised an unpected error");
+			fail("raised an unpected error: "+e.toString()+Const.CR+Const.getStackTracker(e));
 		}		
 
 	}

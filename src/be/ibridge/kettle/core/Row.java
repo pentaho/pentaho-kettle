@@ -470,6 +470,18 @@ public class Row implements XMLInterface, Comparable, Serializable
 		}
 	}
 
+    /**
+     * Read a number of Values without meta-data into a row.
+     *
+     * @param dis The DataInputStream to read from
+     * @param meta The description (name, type, length, precision) of the values to be read (the same number of values are read)
+     * @throws KettleFileException if the row couldn't be created by reading from the data input stream.
+     */
+    public Row(DataInputStream dis, Row meta) throws KettleFileException
+    {
+        this(dis, meta.size(), meta);
+    }
+    
 	/**
 	 * Read a number of Values without meta-data into a row.
 	 *

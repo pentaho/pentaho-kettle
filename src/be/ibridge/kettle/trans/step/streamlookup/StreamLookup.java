@@ -16,8 +16,8 @@
 package be.ibridge.kettle.trans.step.streamlookup;
 
 import java.text.DateFormat;
+import java.util.Collections;
 import java.util.Date;
-import java.util.Hashtable;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
@@ -104,7 +104,6 @@ public class StreamLookup extends BaseStep implements StepInterface
 	{
 		Row r, value_part, key_part;
 		
-		data.look=new Hashtable();
 		data.firstrow=null;
 			
 		if (meta.getLookupFromStep()==null)
@@ -191,24 +190,6 @@ public class StreamLookup extends BaseStep implements StepInterface
 			
 			// Handle the NULL values (not found...)
 			handleNullIf();
-            
-			try
-			{
-				if (meta.getKeystream().length>0)
-				{
-					add=getFromCache(lu);
-				}
-				else
-				{
-					// Just take the first element in the hashtable...
-					add=data.firstrow;
-					if (log.isRowLevel()) logRowlevel(Messages.getString("StreamLookup.Log.GotRowWithoutKeys")+add); //$NON-NLS-1$
-				}
-			}
-			catch(Exception e)
-			{
-				add=null;
-			}
 		}
 
 		// See if we need to stop.
@@ -299,9 +280,23 @@ public class StreamLookup extends BaseStep implements StepInterface
             if (data.keyMeta == null) data.keyMeta = new Row(keyPart);
             if (data.valueMeta == null) data.valueMeta = new Row(valuePart);
             
-            RowData key = new RowData(data.keyMeta, keyPart);
-            RowData value = new RowData(data.valueMeta, valuePart);
+            RowData2 key = new RowData2(data.keyMeta, keyPart);
+            RowData2 value = new RowData2(data.valueMeta, valuePart);
+            
+            /*
             data.look.put(key, value);
+            */
+            KeyValue keyValue = new KeyValue(key, value);
+            int idx = Collections.binarySearch(data.list, keyValue, data.comparator);
+            if (idx<0)
+            {
+                int index = -idx-1; // this is the insertion point
+                data.list.add(index, keyValue); // insert to keep sorted.
+            }
+            else
+            {
+                data.list.set(idx, keyValue); // Overwrite to simulate Hashtable behaviour
+            }
         }
         else
         {
@@ -309,18 +304,20 @@ public class StreamLookup extends BaseStep implements StepInterface
         }
     }
     
-	private Row getFromCache(Row keyValue) throws KettleException
+	private Row getFromCache(Row keyRow) throws KettleException
     {
         if (meta.isMemoryPreservationActive())
         {
-            RowData key = new RowData(data.keyMeta, keyValue);
-            RowData value = (RowData)data.look.get(key);
-            if (value==null) return null;
-            return value.getRow();
+            KeyValue keyValue = new KeyValue(new RowData2(data.keyMeta, keyRow), null);
+            int idx = Collections.binarySearch(data.list, keyValue, data.comparator);
+            if (idx<0) return null; // nothing found
+            
+            keyValue = (KeyValue)data.list.get(idx);
+            return keyValue.getValue().getRow(data.keyMeta);
         }
         else
         {
-            return (Row) data.look.get(keyValue);
+            return (Row) data.look.get(keyRow);
         }
     }
 

@@ -15,8 +15,6 @@
  
 package be.ibridge.kettle.core;
 
-import java.util.NoSuchElementException;
-
 import junit.framework.TestCase;
 import be.ibridge.kettle.core.value.Value;
 
@@ -137,7 +135,7 @@ public class RowSetTest extends TestCase
             r = set.getRow();
             fail("expected NoSuchElementException");
         }
-        catch ( NoSuchElementException ex ) 
+        catch ( IndexOutOfBoundsException ex ) 
         { }
         assertTrue(set.isEmpty());
         assertTrue(!set.isFull());

@@ -13,27 +13,41 @@ import be.ibridge.kettle.core.Row;
  * @author Matt
  *
  */
-public class RowData
+public class RowData2 
 {
-    private Row metadata;
     private byte[] data;
     
-    public RowData(Row metadata, Row row)
+    public RowData2(Row metadata, Row row)
     {
-        this.metadata = metadata;
         data = extractData(row);
     }
     
     public int hashCode()
     {
-        return data.hashCode();
+        int hashCode = 0;
+        
+        // just do the last 4 bytes for performance reasons. 
+        // for (int i=data.length-1;i>data.length-5 && i>=0;i--) hashCode^=new Byte(data[i]).hashCode();
+        for (int i=0;i<data.length;i++) hashCode^=(data[i]*(1<<i));
+     
+        // LogWriter.getInstance().logBasic("RowData2", "hashcode = "+hashCode);
+        return hashCode;
     }
     
+    /**
+     * The row is the same if the value is the same
+     * The data types are the same so no error is made here.
+     */
     public boolean equals(Object obj)
     {
-        RowData rowData = (RowData) obj;
-        
-        return rowData.getRow().equals(getRow());
+        RowData2 rowData = (RowData2) obj;
+
+        if (data.length != rowData.data.length) return false;
+        for (int i=data.length-1;i>=0;i--)
+        {
+            if (data[i] != rowData.data[i]) return false;
+        }
+        return true;
     } 
 
     public static final byte[] extractData(Row row)
@@ -53,7 +67,7 @@ public class RowData
         }
     }
     
-    public Row getRow()
+    public Row getRow(Row metadata)
     {
         try
         {

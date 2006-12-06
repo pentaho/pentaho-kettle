@@ -16,7 +16,11 @@
 
 package be.ibridge.kettle.trans.step.streamlookup;
 
-import java.util.Hashtable;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.value.Value;
@@ -31,7 +35,9 @@ import be.ibridge.kettle.trans.step.StepDataInterface;
 public class StreamLookupData extends BaseStepData implements StepDataInterface
 {
     /** used to store values in used to look up things */
-	public Hashtable look;
+	public Map look;
+    
+    public List list;
 	
 	/** nrs of keys-values in row. */
 	public int    keynrs[];
@@ -51,10 +57,24 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
     public Row keyMeta;
 
     public Row valueMeta;
+
+    public Comparator comparator;
 	
 	public StreamLookupData()
 	{
-		super();
+        super();
+        look = new HashMap(100000);
+        list = new ArrayList();
+        comparator = new Comparator()
+        {
+            public int compare(Object o1, Object o2)
+            {
+                KeyValue k1 = (KeyValue) o1;
+                KeyValue k2 = (KeyValue) o2;
+                
+                return k1.getKey().getRow(keyMeta).compare(k2.getKey().getRow(keyMeta));
+            }
+        };
 	}
 
 }

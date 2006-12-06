@@ -60,7 +60,7 @@ public class SortRowsTest extends TestCase
         "<connection>" +
             "<name>db</name>" +
             "<server>127.0.0.1</server>" +
-            "<type>HYPERSONIC</type>" +
+            "<type>H2</type>" +
             "<access>Native</access>" +
             "<database>mem:db</database>" +
             "<port></port>" +
@@ -223,7 +223,7 @@ public class SortRowsTest extends TestCase
             tii.setSQL(selectSQL);
 
             String fromstepid = steploader.getStepPluginID(tii);
-            StepMeta fromstep = new StepMeta(log, fromstepid, fromstepname, (StepMetaInterface) tii);
+            StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
             fromstep.setLocation(150, 100);
             fromstep.setDraw(true);
             fromstep.setDescription("Reads information from table [" + source_table + "] on database [" + dbInfo + "]");
@@ -243,7 +243,7 @@ public class SortRowsTest extends TestCase
             srm.setDirectory(".");
 
             String sortstepid = steploader.getStepPluginID(srm);
-            StepMeta sortstep = new StepMeta(log, sortstepid, sortstepname, (StepMetaInterface) srm);
+            StepMeta sortstep = new StepMeta(sortstepid, sortstepname, (StepMetaInterface) srm);
             sortstep.setLocation(250, 100);
             sortstep.setDraw(true);
             sortstep.setDescription("sort the table");
@@ -266,7 +266,7 @@ public class SortRowsTest extends TestCase
             clm.setDatabase(dbInfo);
 
             String savestepid = steploader.getStepPluginID(clm);
-            StepMeta savestep = new StepMeta(log, savestepid, savestepname, (StepMetaInterface) clm);
+            StepMeta savestep = new StepMeta(savestepid, savestepname, (StepMetaInterface) clm);
             savestep.setDescription("saves information in database [" + dbInfo + "]");
             transMeta.addStep(savestep);                              
 
