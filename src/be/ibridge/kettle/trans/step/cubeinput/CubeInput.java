@@ -60,9 +60,19 @@ public class CubeInput extends BaseStep implements StepInterface
 
 		try
 		{
-			Row r = new Row(data.dis, data.meta.size(), data.meta);
-			linesInput++;
-			putRow(r);        // fill the rowset(s). (wait for empty)
+            Row r;
+            if (first)
+            {
+                first=false;
+                r= data.meta;
+            }
+            else
+            {
+    			r = new Row(data.dis, data.meta.size(), data.meta);
+    			
+            }
+            putRow(r);  // fill the rowset(s). (sleeps if full)
+            linesInput++;
 			
 			if (meta.getRowLimit()>0 && linesInput>=meta.getRowLimit()) // finished!
 			{
