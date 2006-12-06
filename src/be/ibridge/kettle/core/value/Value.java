@@ -1105,7 +1105,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	}
 
     /**
-     * Converts a BigNumber value to a String, optionally padding the result to the specified length. // TODO: BigNumber padding
+     * Converts a BigNumber value to a String, optionally padding the result to the specified length. 
      * @param pad true if you want to pad the resulting string to length.
      * @return a String optionally padded to the specified length.
      */
@@ -1392,7 +1392,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 {
                     if (getInteger()>Integer.MAX_VALUE || getInteger()<Integer.MIN_VALUE)
                     {
-                        throw new IOException("Length of "+len+" doesn't correspond with actual serialized value "+getInteger());
+                        throw new IOException("The specified length of "+len+" digits for value "+getName()+" doesn't correspond with actual serialized value "+getInteger());
                     }
                     dos.writeInt((int)getInteger());
                 }
@@ -1400,7 +1400,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 {
                     if (getInteger()>Short.MAX_VALUE || getInteger()<Short.MIN_VALUE)
                     {
-                        throw new IOException("Length of "+len+" doesn't correspond with actual serialized value "+getInteger());
+                        throw new IOException("The specified length of "+len+" digits for value "+getName()+" doesn't correspond with actual serialized value "+getInteger());
                     }
                     dos.writeShort((short)getInteger());
                 }
@@ -1408,7 +1408,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 {
                     if (getInteger()>Byte.MAX_VALUE || getInteger()<Byte.MIN_VALUE)
                     {
-                        throw new IOException("Length of "+len+" doesn't correspond with actual serialized value "+getInteger());
+                        throw new IOException("The specified length of "+len+" digits for value "+getName()+" doesn't correspond with actual serialized value "+getInteger());
                     }
                     dos.writeByte((byte)getInteger());
                 }
@@ -1617,7 +1617,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
                     {
                         if (getInteger()>Integer.MAX_VALUE || getInteger()<Integer.MIN_VALUE)
                         {
-                            throw new IOException("Length of "+len+" doesn't correspond with actual serialized value "+getInteger());
+                            throw new IOException("The specified length of "+len+" digits for value "+getName()+" doesn't correspond with the actual serialized value "+getInteger());
                         }
                         dos.writeInt((int)getInteger());
                     }
@@ -1625,7 +1625,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
                     {
                         if (getInteger()>Short.MAX_VALUE || getInteger()<Short.MIN_VALUE)
                         {
-                            throw new IOException("Length of "+len+" doesn't correspond with actual serialized value "+getInteger());
+                            throw new IOException("The specified length of "+len+" digits for value "+getName()+" doesn't correspond with the actual serialized value "+getInteger());
                         }
                         dos.writeShort((short)getInteger());
                     }
@@ -1633,7 +1633,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
                     {
                         if (getInteger()>Byte.MAX_VALUE || getInteger()<Byte.MIN_VALUE)
                         {
-                            throw new IOException("Length of "+len+" doesn't correspond with actual serialized value "+getInteger());
+                            throw new IOException("The specified length of "+len+" digits for value "+getName()+" doesn't correspond with actual serialized value "+getInteger());
                         }
                         dos.writeByte((byte)getInteger());
                     }
