@@ -1131,11 +1131,21 @@ public class BaseStep extends Thread
                 // Check field by field for the position of the names...
                 for (int i = 0; i < referenceRow.size(); i++)
                 {
-                    String referenceName = referenceRow.getValue(i).getName();
-                    String compareName = row.getValue(i).getName();
-                    if (!referenceName.equalsIgnoreCase(compareName)) { throw new RuntimeException("Field #" + i
-                            + " is not the same as the first row received: you're mixing rows with different layout! (" + referenceName + "!="
-                            + compareName + ")"); }
+                    Value referenceValue = referenceRow.getValue(i);
+                    Value compareValue = row.getValue(i);
+                    String referenceName = referenceValue.getName();
+                    String compareName = compareValue.getName();
+                    if (!referenceName.equalsIgnoreCase(compareName)) 
+                    { 
+                        throw new RuntimeException("The name of field #" + i + " is not the same as in the first row received: you're mixing rows with different layout! (" + referenceName + "!=" + compareName + ")"); 
+                    }
+                    int referenceType = referenceValue.getType();
+                    int compareType = compareValue.getType();
+                    
+                    if (referenceType!=compareType) 
+                    { 
+                        throw new RuntimeException("The data type of field #" + i + " is not the same as the first row received: you're mixing rows with different layout! (" + referenceValue.getTypeDesc() + "!=" + compareValue.getTypeDesc() + ")"); 
+                    }
                 }
             }
         }
