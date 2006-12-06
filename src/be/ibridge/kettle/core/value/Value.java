@@ -1352,9 +1352,9 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 }
                 else
                 {
-                    byte buffer[] = getString().getBytes("UTF-8");
-                    dos.writeInt(buffer.length);
-                    dos.write(buffer);
+                    String string = getString();
+                    dos.writeInt(string.length());
+                    dos.writeChars(string);                
                 }
                 break;
             case VALUE_TYPE_BIGNUMBER:
@@ -1364,9 +1364,9 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 }
                 else
                 {
-                    byte buffer[] = getBigNumber().toString().getBytes("UTF-8");
-                    dos.writeInt(buffer.length);
-                    dos.write(buffer);
+                    String string = getBigNumber().toString();
+                    dos.writeInt(string.length());
+                    dos.writeChars(string);
                 }
                 break;
             case VALUE_TYPE_DATE   :
@@ -1467,15 +1467,11 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 {
                     setValue((String)null);
                 }
-                else if (stringLength==0)
-                {
-                    setValue("");
-                }
                 else
                 {
-                    byte buffer[] = new byte[stringLength];
-                    dis.read(buffer);
-                    setValue( new String(buffer, "UTF-8") );
+                    StringBuffer buffer = new StringBuffer();
+                    for (int i=0;i<stringLength;i++) buffer.append( dis.readChar() );
+                    setValue(buffer.toString());
                 }
                 break;
             case VALUE_TYPE_BIGNUMBER:
@@ -1487,9 +1483,9 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 }
                 else
                 {
-                    byte buffer[] = new byte[bnLength];
-                    dis.read(buffer);
-                    setValue( new String(buffer, "UTF-8") );
+                    StringBuffer buffer = new StringBuffer();
+                    for (int i=0;i<bnLength;i++) buffer.append( dis.readChar() );
+                    setValue(buffer.toString());
                     try
                     {
                         convertString(VALUE_TYPE_BIGNUMBER);
@@ -1581,9 +1577,9 @@ public class Value implements Cloneable, XMLInterface, Serializable
                     }
                     else
                     {
-                        byte buffer[] = getString().getBytes("UTF-8");
-                        dos.writeInt(buffer.length);
-                        dos.write(buffer);
+                        String string = getString();
+                        dos.writeInt(string.length());
+                        dos.writeChars(string);
                     }
                     break;
                 case VALUE_TYPE_BIGNUMBER:
@@ -1593,9 +1589,9 @@ public class Value implements Cloneable, XMLInterface, Serializable
                     }
                     else
                     {
-                        byte buffer[] = getBigNumber().toString().getBytes("UTF-8");
-                        dos.writeInt(buffer.length);
-                        dos.write(buffer);
+                        String string = getBigNumber().toString();
+                        dos.writeInt(string.length());
+                        dos.writeChars(string);
                     }
                     break;
 				case VALUE_TYPE_DATE   :
@@ -1682,15 +1678,11 @@ public class Value implements Cloneable, XMLInterface, Serializable
                     {
                         setValue((String)null);
                     }
-                    else if (stringLength==0)
-                    {
-                        setValue("");
-                    }
                     else
                     {
-                        byte buffer[] = new byte[stringLength];
-                        dis.read(buffer);
-                        setValue( new String(buffer, "UTF-8") );
+                        StringBuffer buffer = new StringBuffer();
+                        for (int i=0;i<stringLength;i++) buffer.append( dis.readChar() );
+                        setValue(buffer.toString());
                     }
                     break;
                 case VALUE_TYPE_BIGNUMBER:
@@ -1702,9 +1694,9 @@ public class Value implements Cloneable, XMLInterface, Serializable
                     }
                     else
                     {
-                        byte buffer[] = new byte[bnLength];
-                        dis.read(buffer);
-                        setValue( new String(buffer, "UTF-8") );
+                        StringBuffer buffer = new StringBuffer();
+                        for (int i=0;i<bnLength;i++) buffer.append( dis.readChar() );
+                        setValue(buffer.toString());
                         try
                         {
                             convertString(VALUE_TYPE_BIGNUMBER);
