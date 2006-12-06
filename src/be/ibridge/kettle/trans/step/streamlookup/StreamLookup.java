@@ -280,22 +280,29 @@ public class StreamLookup extends BaseStep implements StepInterface
             if (data.keyMeta == null) data.keyMeta = new Row(keyPart);
             if (data.valueMeta == null) data.valueMeta = new Row(valuePart);
             
-            RowData2 key = new RowData2(data.keyMeta, keyPart);
-            RowData2 value = new RowData2(data.valueMeta, valuePart);
-            
-            /*
-            data.look.put(key, value);
-            */
-            KeyValue keyValue = new KeyValue(key, value);
-            int idx = Collections.binarySearch(data.list, keyValue, data.comparator);
-            if (idx<0)
+            if (meta.isUsingSortedList())
             {
-                int index = -idx-1; // this is the insertion point
-                data.list.add(index, keyValue); // insert to keep sorted.
+                RowData2 key = new RowData2(data.keyMeta, keyPart);
+                RowData2 value = new RowData2(data.valueMeta, valuePart);
+                
+                KeyValue keyValue = new KeyValue(key, value);
+                int idx = Collections.binarySearch(data.list, keyValue, data.comparator);
+                if (idx<0)
+                {
+                    int index = -idx-1; // this is the insertion point
+                    data.list.add(index, keyValue); // insert to keep sorted.
+                }
+                else
+                {
+                    data.list.set(idx, keyValue); // Overwrite to simulate Hashtable behaviour
+                }
             }
             else
             {
-                data.list.set(idx, keyValue); // Overwrite to simulate Hashtable behaviour
+                RowData2 key = new RowData2(data.keyMeta, keyPart);
+                RowData2 value = new RowData2(data.valueMeta, valuePart);
+
+                data.look.put(key, value);
             }
         }
         else
@@ -308,12 +315,22 @@ public class StreamLookup extends BaseStep implements StepInterface
     {
         if (meta.isMemoryPreservationActive())
         {
-            KeyValue keyValue = new KeyValue(new RowData2(data.keyMeta, keyRow), null);
-            int idx = Collections.binarySearch(data.list, keyValue, data.comparator);
-            if (idx<0) return null; // nothing found
-            
-            keyValue = (KeyValue)data.list.get(idx);
-            return keyValue.getValue().getRow(data.keyMeta);
+            if (meta.isUsingSortedList())
+            {
+                KeyValue keyValue = new KeyValue(new RowData2(data.keyMeta, keyRow), null);
+                int idx = Collections.binarySearch(data.list, keyValue, data.comparator);
+                if (idx<0) return null; // nothing found
+                
+                keyValue = (KeyValue)data.list.get(idx);
+                return keyValue.getValue().getRow(data.keyMeta);
+            }
+            else
+            {
+                RowData2 key = new RowData2(data.keyMeta, keyRow);
+                RowData2 value = (RowData2) data.look.get(key);
+                if (value==null) return null;
+                return value.getRow(data.keyMeta);
+            }
         }
         else
         {
