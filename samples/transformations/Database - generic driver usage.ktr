@@ -1,0 +1,146 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<transformation>
+  <info>
+    <name/>
+    <directory>&#47;</directory>
+    <log>
+      <read/>
+      <write/>
+      <input/>
+      <output/>
+      <update/>
+      <connection/>
+      <table/>
+      <use_batchid>Y</use_batchid>
+      <use_logfield>N</use_logfield>
+      </log>
+    <maxdate>
+      <connection/>
+      <table/>
+      <field/>
+      <offset>0.0</offset>
+      <maxdiff>0.0</maxdiff>
+      </maxdate>
+    <size_rowset>1000</size_rowset>
+    <sleep_time_empty>1</sleep_time_empty>
+    <sleep_time_full>1</sleep_time_full>
+    <unique_connections>N</unique_connections>
+    <feedback_shown>Y</feedback_shown>
+    <feedback_size>5000</feedback_size>
+    <dependencies>
+      </dependencies>
+    <partitionschemas>
+      </partitionschemas>
+    <clusterschemas>
+      </clusterschemas>
+  <modified_user>-</modified_user>
+  <modified_date>2006&#47;12&#47;07 15:55:09.236</modified_date>
+    </info>
+  <notepads>
+    <notepad>
+      <note>A sample for a generic database driver usage.
+
+See the Connections on the left for the example of using a MySQL driver (normally in standard, just for this example).
+Look at the &quot;Generic&quot; tab on the connection and change the URL and Driver class according to your driver.
+Don&apos;t forget to change your username &amp; password on the &quot;General&quot; tab ;-)
+
+ATTENTION: Remember to add the supplied database driver JAR to the classpath in your Spoon.bat &#47; Pan.bat &#47; Kitchen.bat &#47; Chef.bat
+like &quot;set CLASSPATH=%CLASSPATH%;libext\mysql-connector-java-3.1.13-bin.jar&quot;
+
+If you need a special DLL or something like this, it must be placed in the directory &quot;libswt\win32&quot; instead of &quot;windows\system32&quot;.
+
+For Unix&#47;Linus users the jars will be automatically addded to the classpath.
+</note>
+      <xloc>14</xloc>
+      <yloc>27</yloc>
+      <width>656</width>
+      <heigth>179</heigth>
+      </notepad>
+    <notepad>
+      <note>Press &quot;Test&quot; in your Connection or run a simple test like this below (remember to change the table name) by previewing one of the steps.</note>
+      <xloc>14</xloc>
+      <yloc>289</yloc>
+      <width>666</width>
+      <heigth>23</heigth>
+      </notepad>
+    <notepad>
+      <note>Revision notes:
+2006-12-07 Jens Bleuel: created</note>
+      <xloc>30</xloc>
+      <yloc>589</yloc>
+      <width>166</width>
+      <heigth>36</heigth>
+      </notepad>
+    </notepads>
+  <connection>
+    <name>Generic sample</name>
+    <server/>
+    <type>GENERIC</type>
+    <access>Native</access>
+    <database/>
+    <port>-1</port>
+    <username>username</username>
+    <password>Encrypted 2be98afc86aa7f2e4bb18bd63c99dbdde</password>
+    <servername/>
+    <data_tablespace/>
+    <index_tablespace/>
+    <attributes>
+      <attribute><code>CUSTOM_DRIVER_CLASS</code><attribute>org.gjt.mm.mysql.Driver</attribute></attribute>
+      <attribute><code>CUSTOM_URL</code><attribute>jdbc:mysql:&#47;&#47;localhost&#47;database</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.defaultFetchSize</code><attribute>500</attribute></attribute>
+      <attribute><code>EXTRA_OPTION_MYSQL.useCursorFetch</code><attribute>true</attribute></attribute>
+      <attribute><code>IS_CLUSTERED</code><attribute>N</attribute></attribute>
+      <attribute><code>MAXIMUM_POOL_SIZE</code><attribute>10</attribute></attribute>
+      <attribute><code>PORT_NUMBER</code><attribute>-1</attribute></attribute>
+      <attribute><code>USE_POOLING</code><attribute>N</attribute></attribute>
+    </attributes>
+  </connection>
+  <order>
+  <hop> <from>Table input</from><to>Dummy (do nothing)</to><enabled>Y</enabled> </hop>  </order>
+
+  <step>
+    <name>Dummy (do nothing)</name>
+    <type>Dummy</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+     <cluster_schema/>
+    <GUI>
+      <xloc>253</xloc>
+      <yloc>357</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+  <step>
+    <name>Table input</name>
+    <type>TableInput</type>
+    <description/>
+    <distribute>Y</distribute>
+    <copies>1</copies>
+         <partitioning>
+           <method>none</method>
+           <field_name/>
+           <schema_name/>
+           </partitioning>
+    <connection>Generic sample</connection>
+    <sql>SELECT * FROM Table
+</sql>
+    <limit>0</limit>
+    <lookup/>
+    <execute_each_row>N</execute_each_row>
+    <variables_active>N</variables_active>
+     <cluster_schema/>
+    <GUI>
+      <xloc>83</xloc>
+      <yloc>357</yloc>
+      <draw>Y</draw>
+      </GUI>
+    </step>
+
+</transformation>
