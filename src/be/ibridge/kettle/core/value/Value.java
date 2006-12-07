@@ -1383,35 +1383,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 dos.writeBoolean(getBoolean());
                 break;
             case VALUE_TYPE_INTEGER:
-                int len = getLength(); 
-                if (len>9 || len<=0)
-                {
-                    dos.writeLong(getInteger());
-                }
-                else if (len>4)
-                {
-                    if (getInteger()>Integer.MAX_VALUE || getInteger()<Integer.MIN_VALUE)
-                    {
-                        throw new IOException("The specified length of "+len+" digits for value "+getName()+" doesn't correspond with actual serialized value "+getInteger());
-                    }
-                    dos.writeInt((int)getInteger());
-                }
-                else if (len>2)
-                {
-                    if (getInteger()>Short.MAX_VALUE || getInteger()<Short.MIN_VALUE)
-                    {
-                        throw new IOException("The specified length of "+len+" digits for value "+getName()+" doesn't correspond with actual serialized value "+getInteger());
-                    }
-                    dos.writeShort((short)getInteger());
-                }
-                else
-                {
-                    if (getInteger()>Byte.MAX_VALUE || getInteger()<Byte.MIN_VALUE)
-                    {
-                        throw new IOException("The specified length of "+len+" digits for value "+getName()+" doesn't correspond with actual serialized value "+getInteger());
-                    }
-                    dos.writeByte((byte)getInteger());
-                }
+                dos.writeLong(getInteger());
                 break;
             default: break; // nothing
             }
@@ -1506,23 +1478,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
                 setValue(dis.readDouble());
                 break;
             case VALUE_TYPE_INTEGER:
-                int len = getLength();
-                if (len>9 || len<=0)
-                {
-                    setValue(dis.readLong());
-                }
-                else if (len>4)
-                {
-                    setValue(dis.readInt());
-                }
-                else if (len>2)
-                {
-                    setValue(dis.readShort());
-                }
-                else
-                {
-                    setValue(dis.readByte());
-                }
+                setValue(dis.readLong());
                 break;
             case VALUE_TYPE_BOOLEAN:
                 setValue(dis.readBoolean());
@@ -1608,35 +1564,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 					dos.writeBoolean(getBoolean());
 					break;
 				case VALUE_TYPE_INTEGER:
-                    int len = getLength(); 
-                    if (len>9 || len<=0)
-                    {
-                        dos.writeLong(getInteger());
-                    }
-                    else if (len>4)
-                    {
-                        if (getInteger()>Integer.MAX_VALUE || getInteger()<Integer.MIN_VALUE)
-                        {
-                            throw new IOException("The specified length of "+len+" digits for value "+getName()+" doesn't correspond with the actual serialized value "+getInteger());
-                        }
-                        dos.writeInt((int)getInteger());
-                    }
-                    else if (len>2)
-                    {
-                        if (getInteger()>Short.MAX_VALUE || getInteger()<Short.MIN_VALUE)
-                        {
-                            throw new IOException("The specified length of "+len+" digits for value "+getName()+" doesn't correspond with the actual serialized value "+getInteger());
-                        }
-                        dos.writeShort((short)getInteger());
-                    }
-                    else
-                    {
-                        if (getInteger()>Byte.MAX_VALUE || getInteger()<Byte.MIN_VALUE)
-                        {
-                            throw new IOException("The specified length of "+len+" digits for value "+getName()+" doesn't correspond with actual serialized value "+getInteger());
-                        }
-                        dos.writeByte((byte)getInteger());
-                    }
+                    dos.writeLong(getInteger());
 					break;
 				default: break; // nothing
 				}
@@ -1717,23 +1645,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 					setValue(dis.readDouble());
 					break;
 				case VALUE_TYPE_INTEGER:
-                    int len = metaData.getLength();
-                    if (len>9 || len<=0)
-                    {
-                        setValue(dis.readLong());
-                    }
-                    else if (len>4)
-                    {
-                        setValue(dis.readInt());
-                    }
-                    else if (len>2)
-                    {
-                        setValue(dis.readShort());
-                    }
-                    else
-                    {
-                        setValue(dis.readByte());
-                    }
+                    setValue(dis.readLong());
 					break;
 				case VALUE_TYPE_BOOLEAN:
 					setValue(dis.readBoolean());
