@@ -299,7 +299,16 @@ public class StreamLookup extends BaseStep implements StepInterface
             }
             else
             {
-                data.hashIndex.putAgain(Row.extractData(keyPart), Row.extractData(valuePart));
+                if (meta.isUsingIntegerPair())
+                {
+                    long key = keyPart.getValue(0).getInteger();
+                    long value = valuePart.getValue(0).getInteger();
+                    data.longIndex.putAgain(key, value);
+                }
+                else
+                {
+                    data.hashIndex.putAgain(Row.extractData(keyPart), Row.extractData(valuePart));
+                }
             }
         }
         else
@@ -323,9 +332,22 @@ public class StreamLookup extends BaseStep implements StepInterface
             }
             else
             {
-                byte[] value = data.hashIndex.get(Row.extractData(keyRow));
-                if (value==null) return null;
-                return Row.getRow(value, data.valueMeta);
+                if (meta.isUsingIntegerPair())
+                {
+                    Long value = data.longIndex.get(keyRow.getValue(0).getInteger());
+                    if (value==null) return null;
+                    Row valueRow = new Row();
+                    Value v = (Value) data.valueMeta.getValue(0).clone();
+                    v.setValue(value.longValue());
+                    valueRow.addValue(v);
+                    return valueRow;
+                }
+                else
+                {
+                    byte[] value = data.hashIndex.get(Row.extractData(keyRow));
+                    if (value==null) return null;
+                    return Row.getRow(value, data.valueMeta);
+                }
             }
         }
         else

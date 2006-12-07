@@ -85,6 +85,10 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
     private Button       wSortedList;
     private FormData     fdlSortedList, fdSortedList;
 
+    private Label        wlIntegerPair;
+    private Button       wIntegerPair;
+    private FormData     fdlIntegerPair, fdIntegerPair;
+
 	private StreamLookupMeta input;
 
     private Button       wGetLU;
@@ -229,7 +233,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		fdReturn.left  = new FormAttachment(0, 0);
 		fdReturn.top   = new FormAttachment(wlReturn, margin);
 		fdReturn.right = new FormAttachment(100, 0);
-		fdReturn.bottom= new FormAttachment(100, -75);
+		fdReturn.bottom= new FormAttachment(100, -95);
 		wReturn.setLayoutData(fdReturn);
 
         /*
@@ -282,19 +286,43 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
             }
         );
 
+        wlIntegerPair=new Label(shell, SWT.RIGHT);
+        wlIntegerPair.setText(Messages.getString("StreamLookupDialog.IntegerPair.Label")); //$NON-NLS-1$
+        props.setLook(wlIntegerPair);
+        fdlIntegerPair=new FormData();
+        fdlIntegerPair.left = new FormAttachment(0, 0);
+        fdlIntegerPair.top  = new FormAttachment(wPreserveMemory, margin);
+        fdlIntegerPair.right= new FormAttachment(middle, -margin);
+        wlIntegerPair.setLayoutData(fdlIntegerPair);
+        wIntegerPair=new Button(shell, SWT.CHECK );
+        props.setLook(wIntegerPair);
+        fdIntegerPair=new FormData();
+        fdIntegerPair.left = new FormAttachment(middle, 0);
+        fdIntegerPair.top  = new FormAttachment(wPreserveMemory, margin);
+        fdIntegerPair.right= new FormAttachment(100, 0);
+        wIntegerPair.setLayoutData(fdIntegerPair);
+        wIntegerPair.addSelectionListener(new SelectionAdapter() 
+            {
+                public void widgetSelected(SelectionEvent e) 
+                {
+                    input.setChanged();
+                }
+            }
+        );
+        
         wlSortedList=new Label(shell, SWT.RIGHT);
         wlSortedList.setText(Messages.getString("StreamLookupDialog.SortedList.Label")); //$NON-NLS-1$
         props.setLook(wlSortedList);
         fdlSortedList=new FormData();
         fdlSortedList.left = new FormAttachment(0, 0);
-        fdlSortedList.top  = new FormAttachment(wPreserveMemory, margin);
+        fdlSortedList.top  = new FormAttachment(wIntegerPair, margin);
         fdlSortedList.right= new FormAttachment(middle, -margin);
         wlSortedList.setLayoutData(fdlSortedList);
         wSortedList=new Button(shell, SWT.CHECK );
         props.setLook(wSortedList);
         fdSortedList=new FormData();
         fdSortedList.left = new FormAttachment(middle, 0);
-        fdSortedList.top  = new FormAttachment(wPreserveMemory, margin);
+        fdSortedList.top  = new FormAttachment(wIntegerPair, margin);
         fdSortedList.right= new FormAttachment(100, 0);
         wSortedList.setLayoutData(fdSortedList);
         wSortedList.addSelectionListener(new SelectionAdapter() 
@@ -317,7 +345,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
 
-		setButtonPositions(new Button[] { wOK, wGet, wGetLU, wCancel }, margin, wSortedList);
+		setButtonPositions(new Button[] { wOK, wGet, wGetLU, wCancel }, margin, null);
 
 		// Add listeners
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();        } };
@@ -382,6 +410,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		if (input.getLookupFromStep()!=null && input.getLookupFromStep().getName()!=null) wStep.setText( input.getLookupFromStep().getName() );
 		wPreserveMemory.setSelection(input.isMemoryPreservationActive());
         wSortedList.setSelection(input.isUsingSortedList());
+        wIntegerPair.setSelection(input.isUsingIntegerPair());
 		
 		wStepname.selectAll();
 		wKey.setRowNums();
@@ -407,6 +436,7 @@ public class StreamLookupDialog extends BaseStepDialog implements StepDialogInte
 		input.allocate(nrkeys, nrvalues);
 		input.setMemoryPreservationActive(wPreserveMemory.getSelection());
 		input.setUsingSortedList(wSortedList.getSelection());
+        input.setUsingIntegerPair(wIntegerPair.getSelection());
         
 		log.logDebug(toString(), Messages.getString("StreamLookupDialog.Log.FoundKeys",nrkeys+"")); //$NON-NLS-1$ //$NON-NLS-2$
 		for (i=0;i<nrkeys;i++)

@@ -104,44 +104,45 @@ import java.util.Iterator;
  * 
  * @author Peter Van Weert
  */
-public final class ByteArrayHashIndex {
+public final class LongHashIndex
+{
 
     /**
      * The default initial capacity - MUST be a power of two.
      */
-    final static int DEFAULT_INITIAL_CAPACITY = 16;
+    final static int   DEFAULT_INITIAL_CAPACITY = 16;
 
     /**
      * The maximum capacity, used if a higher value is implicitly specified
      * by either of the constructors with arguments.
      * MUST be a power of two <= 1<<30.
      */
-    final static int MAXIMUM_CAPACITY = 1 << 30;
+    final static int   MAXIMUM_CAPACITY         = 1 << 30;
 
     /**
      * The load factor used when none specified in constructor.
      */
-    final static float DEFAULT_LOAD_FACTOR = 0.75f;
+    final static float DEFAULT_LOAD_FACTOR      = 0.75f;
 
     /**
      * The table, resized as necessary. Length MUST Always be a power of two.
      */
-    Entry[] table;
+    Entry[]            table;
 
     /**
      * The number of key-value mappings contained in this map.
      */
-    int size;
+    int                size;
 
     /**
      * The next size value at which to resize (capacity * load factor).
      */
-    int threshold;
+    int                threshold;
 
     /**
      * The load factor for the hash table.
      */
-    final float loadFactor;
+    final float        loadFactor;
 
     /**
      * Constructs an empty <tt>HashIndex</tt> with the specified initial
@@ -152,23 +153,19 @@ public final class ByteArrayHashIndex {
      * @throws IllegalArgumentException if the initial capacity is negative
      *         or the load factor is nonpositive
      */
-    public ByteArrayHashIndex(int initialCapacity, float loadFactor) {
-        if (initialCapacity < 0)
-            throw new IllegalArgumentException(
-                "Illegal initial capacity: " + initialCapacity);
-        if (initialCapacity > MAXIMUM_CAPACITY)
-            initialCapacity = MAXIMUM_CAPACITY;
-        if (loadFactor <= 0 || Float.isNaN(loadFactor))
-            throw new IllegalArgumentException(
-                    "Illegal load factor: " + loadFactor);
-        
+    public LongHashIndex(int initialCapacity, float loadFactor)
+    {
+        if (initialCapacity < 0) throw new IllegalArgumentException("Illegal initial capacity: " + initialCapacity);
+        if (initialCapacity > MAXIMUM_CAPACITY) initialCapacity = MAXIMUM_CAPACITY;
+        if (loadFactor <= 0 || Float.isNaN(loadFactor)) throw new IllegalArgumentException("Illegal load factor: " + loadFactor);
+
         // Find a power of 2 >= initialCapacity
         int capacity = 1;
         while (capacity < initialCapacity)
             capacity <<= 1;
 
         this.loadFactor = loadFactor;
-        threshold = (int)(capacity * loadFactor);
+        threshold = (int) (capacity * loadFactor);
         table = new Entry[capacity];
     }
 
@@ -179,7 +176,8 @@ public final class ByteArrayHashIndex {
      * @param  initialCapacity the initial capacity.
      * @throws IllegalArgumentException if the initial capacity is negative.
      */
-    public ByteArrayHashIndex(int initialCapacity) {
+    public LongHashIndex(int initialCapacity)
+    {
         this(initialCapacity, DEFAULT_LOAD_FACTOR);
     }
 
@@ -187,9 +185,10 @@ public final class ByteArrayHashIndex {
      * Constructs an empty <tt>HashMap</tt> with the default initial capacity
      * (16) and the default load factor (0.75).
      */
-    public ByteArrayHashIndex() {
+    public LongHashIndex()
+    {
         this.loadFactor = DEFAULT_LOAD_FACTOR;
-        threshold = (int)(DEFAULT_INITIAL_CAPACITY * DEFAULT_LOAD_FACTOR);
+        threshold = (int) (DEFAULT_INITIAL_CAPACITY * DEFAULT_LOAD_FACTOR);
         table = new Entry[DEFAULT_INITIAL_CAPACITY];
     }
 
@@ -198,7 +197,8 @@ public final class ByteArrayHashIndex {
      *
      * @return the number of entries in this index.
      */
-    public int size() {
+    public int size()
+    {
         return size;
     }
 
@@ -207,7 +207,8 @@ public final class ByteArrayHashIndex {
      *
      * @return <tt>true</tt> if this index contains no entries
      */
-    public boolean isEmpty() {
+    public boolean isEmpty()
+    {
         return size == 0;
     }
 
@@ -227,20 +228,17 @@ public final class ByteArrayHashIndex {
      * @see #put(Object)
      * @see #insert(Object)
      */
-    public byte[] get(byte[] key) 
+    public Long get(long key)
     {
         int hash = generateHashCode(key);
-        
-        for (Entry e = table[(hash & (table.length-1))]; e != null; e = e.next) 
+
+        for (Entry e = table[(hash & (table.length - 1))]; e != null; e = e.next)
         {
-            if (e.hash == hash && e.equalsKey(key))
-            {
-                return e.value;
-            }
+            if (e.hash == hash && e.key == key) { return new Long(e.value); }
         }
         return null;
     }
-    
+
     /**
      * If an equal entry was already present, the latter entry is returned,
      * and the method behaves as a {@link #get(Object)} operation.
@@ -253,20 +251,21 @@ public final class ByteArrayHashIndex {
      * @return If an equal entry was already present, the latter entry 
      *  is returned; else the result will be <code>null</code>.
      */
-    public byte[] insert(byte[] key, byte[] value) {
+    public Long insert(long key, long value)
+    {
         int hash = generateHashCode(key);
-        int i = hash & (table.length-1);
-        
-        for (Entry e = table[i]; e != null; e = e.next) {
+        int i = hash & (table.length - 1);
 
-            if (e.hash == hash && e.equalsKey(key))
-                return e.value;
+        for (Entry e = table[i]; e != null; e = e.next)
+        {
+
+            if (e.hash == hash && e.key == key) return new Long(e.value);
         }
-        
+
         // before returning null, we do a put!
         table[i] = new Entry(hash, key, value, table[i]);
         resize();
-        
+
         return null;
     }
 
@@ -281,14 +280,15 @@ public final class ByteArrayHashIndex {
      *  
      * @see #putAgain(Object)
      */
-    public void put(byte[] key, byte[] value) {
+    public void put(long key, long value)
+    {
         int hash = generateHashCode(key);
-        int i = hash & (table.length-1);
-        
+        int i = hash & (table.length - 1);
+
         table[i] = new Entry(hash, key, value, table[i]);
         resize();
     }
-    
+
     /**
      * Adds the given entry to the index, or replaces an equal entry 
      * already stored in the index. If you are sure no equal entry is
@@ -300,25 +300,27 @@ public final class ByteArrayHashIndex {
      * @return The replaced, equal entry if such an entry was present,
      *  or <code>null</code> otherwise.
      */
-    public byte[] putAgain(byte[] key, byte[] value) {
+    public Long putAgain(long key, long value)
+    {
         int hash = generateHashCode(key);
-        int i = hash & (table.length-1);
-        
-        for (Entry e = table[i]; e != null; e = e.next) {
+        int i = hash & (table.length - 1);
 
-            if (e.hash == hash && e.equalsKey(key)) {
-                byte[] old = e.value;
+        for (Entry e = table[i]; e != null; e = e.next)
+        {
+
+            if (e.hash == hash && e.key == key)
+            {
+                long old = e.value;
                 e.value = value;
-                return old;
+                return new Long(old);
             }
         }
 
         table[i] = new Entry(hash, key, value, table[i]);
         resize();
-        
+
         return null;
     }
-    
 
     /**
      * Rehashes the contents of this map into a new array with a
@@ -327,27 +329,33 @@ public final class ByteArrayHashIndex {
      * If current capacity is MAXIMUM_CAPACITY, this method does not
      * resize the map, but sets threshold to Integer.MAX_VALUE.
      */
-    private final void resize() {
-        if (size++ >= threshold) {
+    private final void resize()
+    {
+        if (size++ >= threshold)
+        {
             Entry[] oldTable = table;
             int oldCapacity = oldTable.length;
-            
-            if (oldCapacity == MAXIMUM_CAPACITY) {
+
+            if (oldCapacity == MAXIMUM_CAPACITY)
+            {
                 threshold = Integer.MAX_VALUE;
                 return;
             }
-            
+
             int newCapacity = 2 * table.length;
-    
+
             Entry[] newTable = new Entry[newCapacity];
-            
-            for (int j = 0; j < oldTable.length; j++) {
+
+            for (int j = 0; j < oldTable.length; j++)
+            {
                 Entry e = oldTable[j];
-                if (e != null) {
+                if (e != null)
+                {
                     oldTable[j] = null;
-                    do {
+                    do
+                    {
                         Entry next = e.next;
-                        int i = e.hash & (newCapacity-1);
+                        int i = e.hash & (newCapacity - 1);
                         e.next = newTable[i];
                         newTable[i] = e;
                         e = next;
@@ -355,7 +363,7 @@ public final class ByteArrayHashIndex {
                 }
             }
             table = newTable;
-            threshold = (int)(newCapacity * loadFactor);
+            threshold = (int) (newCapacity * loadFactor);
         }
     }
 
@@ -369,15 +377,18 @@ public final class ByteArrayHashIndex {
      * @param  entry 
      *  the entry that is to be removed from the index
      */
-    public void remove(byte[] key) {
+    public void remove(long key)
+    {
         int hash = generateHashCode(key);
-        int i = hash & (table.length-1);
-        
+        int i = hash & (table.length - 1);
+
         Entry prev = table[i], e = prev;
 
-        while (e != null) {
+        while (e != null)
+        {
             Entry next = e.next;
-            if (e.equalsKey(key)) {
+            if (e.key == key)
+            {
                 size--;
                 if (prev == e)
                     table[i] = next;
@@ -394,104 +405,55 @@ public final class ByteArrayHashIndex {
      * Removes all entries from this index.
      * The index will be empty after this call returns.
      */
-    public void clear() {
+    public void clear()
+    {
         Entry[] tab = table;
         for (int i = 0; i < tab.length; i++)
             tab[i] = null;
         size = 0;
     }
 
-    private final static class Entry {
-        byte[] key;
-        byte[] value;
-        Entry next;
+    private final static class Entry
+    {
         final int hash;
+
+        long      key;
+
+        long      value;
+
+        Entry     next;
 
         /**
          * Creates new entry.
          */
-        Entry(int h, byte[] key, byte[] value, Entry next) {
+        Entry(int h, long key, long value, Entry next)
+        {
             this.key = key;
             this.value = value;
             this.next = next;
             hash = h;
         }
-        
+
         public int hashCode()
         {
-            return ByteArrayHashIndex.generateHashCode(key);
+            return LongHashIndex.generateHashCode(key);
         }
-        
+
         /**
          * The row is the same if the value is the same
          * The data types are the same so no error is made here.
          */
         public boolean equals(Object obj)
         {
-            Entry e = (Entry)obj;
+            Entry e = (Entry) obj;
 
-            return equalsValue(e.value);
-        } 
-        
-        public boolean equalsKey(byte[] cmpKey)
-        {
-            return equalsByteArray(key, cmpKey);
-        }
-
-        public boolean equalsValue(byte[] cmpValue)
-        {
-            return equalsByteArray(value, cmpValue);
-        }
-
-        public static final boolean equalsByteArray(byte[] value, byte[] cmpValue)
-        {
-            if (value.length != cmpValue.length) return false;
-            for (int i=value.length-1;i>=0;i--)
-            {
-                if (value[i] != cmpValue[i]) return false;
-            }
-            return true;
+            return key == e.key;
         }
     }
 
-    public static int generateHashCode(byte[] key)
+    public static int generateHashCode(long key)
     {
-        // boolean up=true;
-        // int idx=0;
-        
-        int hashCode = 0;
-        for (int i=0;i<key.length;i++)
-        {
-            hashCode ^= (int)Math.pow(10, i) * key[i];
-
-            /*
-            hashCode^=Math.round( (0xFF<<idx)*key[i] );
-            if (up)
-            {
-                idx++;
-                if (idx==8)
-                {
-                    idx=6;
-                    up=false;
-                }
-            }
-            else
-            {
-                idx--;
-                if (idx<0)
-                {
-                    idx=1;
-                    up=true;
-                }
-            }
-            */
-        }
-        
-        // hashCode ^= (hashCode >>> 20) ^ (hashCode >>> 12);
-        // hashCode ^= (hashCode >>> 7) ^ (hashCode >>> 4);
-
-        return hashCode;
+        return new Long(key).hashCode();
     }
-    
-    
+
 }

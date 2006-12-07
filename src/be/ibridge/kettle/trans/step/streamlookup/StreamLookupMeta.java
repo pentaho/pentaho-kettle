@@ -74,6 +74,9 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
     /**Indicate that we want to use a sorted list vs. a hashtable */
     private boolean usingSortedList;          
 
+    /** The content of the key and lookup is a single Integer (long) */
+    private boolean usingIntegerPair;          
+
 	/**Which step is providing the lookup data?*/
 	private StepMeta lookupFromStep;
 	
@@ -291,6 +294,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
             inputSorted = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "input_sorted")); //$NON-NLS-1$ //$NON-NLS-2$
             memoryPreservationActive = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "preserve_memory")); //$NON-NLS-1$ //$NON-NLS-2$
             usingSortedList = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "sorted_list")); //$NON-NLS-1$ //$NON-NLS-2$
+            usingIntegerPair = "Y".equalsIgnoreCase(XMLHandler.getTagValue(stepnode, "integer_pair")); //$NON-NLS-1$ //$NON-NLS-2$
 			
 			Node lookup = XMLHandler.getSubNode(stepnode, "lookup"); //$NON-NLS-1$
 			nrkeys   = XMLHandler.countNodes(lookup, "key"); //$NON-NLS-1$
@@ -336,7 +340,8 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
 		lookupFromStep = null;
         
         memoryPreservationActive = true;
-        usingSortedList = true;
+        usingSortedList = false;
+        usingIntegerPair = false;
 		
 		nrkeys   = 0;
 		nrvalues = 0;
@@ -403,6 +408,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
         retval.append("    "+XMLHandler.addTagValue("input_sorted", inputSorted)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    "+XMLHandler.addTagValue("preserve_memory", memoryPreservationActive)); //$NON-NLS-1$ //$NON-NLS-2$
         retval.append("    "+XMLHandler.addTagValue("sorted_list", usingSortedList)); //$NON-NLS-1$ //$NON-NLS-2$
+        retval.append("    "+XMLHandler.addTagValue("integer_pair", usingIntegerPair)); //$NON-NLS-1$ //$NON-NLS-2$
 
 		retval.append("    <lookup>"+Const.CR); //$NON-NLS-1$
 		for (int i=0;i<keystream.length;i++)
@@ -437,6 +443,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
             inputSorted = rep.getStepAttributeBoolean(id_step, "input_sorted"); //$NON-NLS-1$
 			memoryPreservationActive = rep.getStepAttributeBoolean(id_step, "preserve_memory"); // $NON-NLS-1$
             usingSortedList = rep.getStepAttributeBoolean(id_step, "sorted_list"); // $NON-NLS-1$
+            usingIntegerPair = rep.getStepAttributeBoolean(id_step, "integer_pair"); // $NON-NLS-1$
             
 			int nrkeys   = rep.countNrStepAttributes(id_step, "lookup_key_name"); //$NON-NLS-1$
 			int nrvalues = rep.countNrStepAttributes(id_step, "return_value_name"); //$NON-NLS-1$
@@ -472,6 +479,7 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
             rep.saveStepAttribute(id_transformation, id_step, "input_sorted", inputSorted); //$NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "preserve_memory", memoryPreservationActive); // $NON-NLS-1$
             rep.saveStepAttribute(id_transformation, id_step, "sorted_list", usingSortedList); // $NON-NLS-1$
+            rep.saveStepAttribute(id_transformation, id_step, "integer_pair", usingIntegerPair); // $NON-NLS-1$
             
             for (int i=0;i<keystream.length;i++)
 			{
@@ -688,5 +696,23 @@ public class StreamLookupMeta extends BaseStepMeta implements StepMetaInterface
     {
         this.usingSortedList = usingSortedList;
     }
+
+    /**
+     * @return the usingIntegerPair
+     */
+    public boolean isUsingIntegerPair()
+    {
+        return usingIntegerPair;
+    }
+
+    /**
+     * @param usingIntegerPair the usingIntegerPair to set
+     */
+    public void setUsingIntegerPair(boolean usingIntegerPair)
+    {
+        this.usingIntegerPair = usingIntegerPair;
+    }
+    
+    
 
 }
