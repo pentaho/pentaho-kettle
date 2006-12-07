@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.hash.HashIndex;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.step.BaseStepData;
 import be.ibridge.kettle.trans.step.StepDataInterface;
@@ -59,11 +60,14 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
     public Row valueMeta;
 
     public Comparator comparator;
+
+    public HashIndex hashIndex;
 	
 	public StreamLookupData()
 	{
         super();
-        look = new HashMap(100000);
+        look = new HashMap(10000);
+        hashIndex = new HashIndex(10000);
         list = new ArrayList();
         comparator = new Comparator()
         {

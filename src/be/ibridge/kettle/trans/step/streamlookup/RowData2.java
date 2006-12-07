@@ -80,4 +80,14 @@ public class RowData2
             throw new RuntimeException("Error de-serializing row from byte array", e);
         }
     }
+
+    public byte[] getData()
+    {
+        return data;
+    }
+
+    public void setData(byte[] data)
+    {
+        this.data = data;
+    }
 }
