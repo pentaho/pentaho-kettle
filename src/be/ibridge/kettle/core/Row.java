@@ -15,6 +15,8 @@
 
 package be.ibridge.kettle.core;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.EOFException;
@@ -895,5 +897,36 @@ public class Row implements XMLInterface, Comparable, Serializable
         };
 
         Collections.sort(rows, comparator);
+    }
+    
+    public static final byte[] extractData(Row row)
+    {
+        try
+        {
+            ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+            DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
+            row.writeData( dataOutputStream );
+            dataOutputStream.close();
+            byteArrayOutputStream.close();
+            return byteArrayOutputStream.toByteArray();
+        }
+        catch(Exception e)
+        {
+            throw new RuntimeException("Error serializing row to byte array: "+row, e);
+        }
+    }
+    
+    public static final Row getRow(byte[] data, Row metadata)
+    {
+        try
+        {
+            ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(data);
+            DataInputStream dataInputStream = new DataInputStream(byteArrayInputStream);
+            return new Row(dataInputStream, metadata.size(), metadata);
+        }
+        catch(Exception e)
+        {
+            throw new RuntimeException("Error de-serializing row from byte array", e);
+        }
     }
 }

@@ -23,7 +23,6 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
-import be.ibridge.kettle.core.hash.E;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -300,7 +299,7 @@ public class StreamLookup extends BaseStep implements StepInterface
             }
             else
             {
-                data.hashIndex.put(new E(keyPart, valuePart));
+                data.hashIndex.putAgain(Row.extractData(keyPart), Row.extractData(valuePart));
             }
         }
         else
@@ -324,9 +323,9 @@ public class StreamLookup extends BaseStep implements StepInterface
             }
             else
             {
-                E e = data.hashIndex.get(new E(keyRow, null));
-                if (e==null) return null;
-                return e.getValueRow(data.valueMeta);
+                byte[] value = data.hashIndex.get(Row.extractData(keyRow));
+                if (value==null) return null;
+                return Row.getRow(value, data.valueMeta);
             }
         }
         else
@@ -334,7 +333,7 @@ public class StreamLookup extends BaseStep implements StepInterface
             return (Row) data.look.get(keyRow);
         }
     }
-
+    
     public boolean processRow(StepMetaInterface smi, StepDataInterface sdi) throws KettleException
 	{
 	    meta = (StreamLookupMeta)smi;
