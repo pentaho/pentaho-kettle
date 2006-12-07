@@ -214,7 +214,7 @@ public class CombinationLookupTest extends TestCase
             tii.setSQL(selectSQL);
 
             String fromstepid = steploader.getStepPluginID(tii);
-            StepMeta fromstep = new StepMeta(log, fromstepid, fromstepname, (StepMetaInterface) tii);
+            StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
             fromstep.setLocation(150, 100);
             fromstep.setDraw(true);
             fromstep.setDescription("Reads information from table [" + source_table + "] on database [" + lookupDBInfo + "]");
@@ -234,7 +234,7 @@ public class CombinationLookupTest extends TestCase
             clm.setDatabase(lookupDBInfo);
 
             String lookupstepid = steploader.getStepPluginID(clm);
-            StepMeta lookupstep = new StepMeta(log, lookupstepid, lookupstepname, (StepMetaInterface) clm);
+            StepMeta lookupstep = new StepMeta(lookupstepid, lookupstepname, (StepMetaInterface) clm);
             lookupstep.setDescription("Looks up information from table [lookup] on database [" + lookupDBInfo + "]");
             transMeta.addStep(lookupstep);                              
 

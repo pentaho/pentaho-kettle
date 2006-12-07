@@ -784,7 +784,7 @@ public class CombinationLookupDialog extends BaseStepDialog implements StepDialo
 			CombinationLookupMeta info = new CombinationLookupMeta();
 			getInfo(info);
 			String name = stepname;  // new name might not yet be linked to other steps!
-			StepMeta stepMeta = new StepMeta(log, Messages.getString("CombinationLookupDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
+			StepMeta stepMeta = new StepMeta(Messages.getString("CombinationLookupDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
 			Row prev = transMeta.getPrevStepFields(stepname);
 
 			SQLStatement sql = info.getSQLStatements(transMeta, stepMeta, prev);

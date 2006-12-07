@@ -471,7 +471,7 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
      */
 	public StepMeta(LogWriter log, long id_step)
 	{
-		this(log, (String)null, (String)null, (StepMetaInterface)null);
+		this((String)null, (String)null, (StepMetaInterface)null);
 		setID(id_step);
 	}
     

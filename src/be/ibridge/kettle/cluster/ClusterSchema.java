@@ -268,7 +268,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     /**
      * @return The number of slave servers, excluding the master server
      */
-    public int getNrSlaves()
+    public int findNrSlaves()
     {
         int nr=0;
         for (int i=0;i<slaveServers.size();i++)

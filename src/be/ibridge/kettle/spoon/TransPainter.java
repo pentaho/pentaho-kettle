@@ -370,7 +370,7 @@ public class TransPainter
         {
             clustered=true;
             String message = "C";
-            message+="x"+stepMeta.getClusterSchema().getNrSlaves();
+            message+="x"+stepMeta.getClusterSchema().findNrSlaves();
             
             gc.setBackground(background);
             gc.setForeground(black);

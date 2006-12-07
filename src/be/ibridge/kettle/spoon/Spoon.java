@@ -426,7 +426,7 @@ public class Spoon implements AddUndoPositionInterface
                     if ((int)e.character == 20 && ctrl && !alt) { setTrans();  spoongraph.clearSettings();  }
 
                     // CTRL-U --> transformation
-                    if ((int)e.character == 21 && ctrl && !alt) { splitTrans(true, true, true);  spoongraph.clearSettings();  }
+                    if ((int)e.character == 21 && ctrl && !alt) { splitTrans(true, false, false);  spoongraph.clearSettings();  }
 
                     // CTRL-Y --> redo action
                     if ((int)e.character == 25 && ctrl && !alt) { redoAction(); spoongraph.clearSettings(); }

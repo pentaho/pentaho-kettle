@@ -1192,7 +1192,7 @@ public class DimensionLookupDialog extends BaseStepDialog implements StepDialogI
 			getInfo(info);
 
 			String name = stepname;  // new name might not yet be linked to other steps!
-			StepMeta stepinfo = new StepMeta(log, Messages.getString("DimensionLookupDialog.Stepinfo.Title"), name, info); //$NON-NLS-1$
+			StepMeta stepinfo = new StepMeta(Messages.getString("DimensionLookupDialog.Stepinfo.Title"), name, info); //$NON-NLS-1$
 			Row prev = transMeta.getPrevStepFields(stepname);
 
 			SQLStatement sql = info.getSQLStatements(transMeta, stepinfo, prev);

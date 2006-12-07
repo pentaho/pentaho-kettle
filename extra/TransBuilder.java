@@ -115,7 +115,7 @@ public class TransBuilder
             StepLoader steploader = StepLoader.getInstance();
 
             String fromstepid = steploader.getStepPluginID(tii);
-            StepMeta fromstep = new StepMeta(log, fromstepid, fromstepname, (StepMetaInterface) tii);
+            StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface) tii);
             fromstep.setLocation(150, 100);
             fromstep.setDraw(true);
             fromstep.setDescription("Reads information from table [" + sourceTableName + "] on database [" + sourceDBInfo + "]");
@@ -135,7 +135,7 @@ public class TransBuilder
 
             String selstepname = "Rename field names";
             String selstepid = steploader.getStepPluginID(svi);
-            StepMeta selstep = new StepMeta(log, selstepid, selstepname, (StepMetaInterface) svi);
+            StepMeta selstep = new StepMeta(selstepid, selstepname, (StepMetaInterface) svi);
             selstep.setLocation(350, 100);
             selstep.setDraw(true);
             selstep.setDescription("Rename field names");
@@ -159,7 +159,7 @@ public class TransBuilder
             toi.setTruncateTable(true);
 
             String tostepid = steploader.getStepPluginID(toi);
-            StepMeta tostep = new StepMeta(log, tostepid, tostepname, (StepMetaInterface) toi);
+            StepMeta tostep = new StepMeta(tostepid, tostepname, (StepMetaInterface) toi);
             tostep.setLocation(550, 100);
             tostep.setDraw(true);
             tostep.setDescription("Write information to table [" + targetTableName + "] on database [" + targetDBInfo + "]");

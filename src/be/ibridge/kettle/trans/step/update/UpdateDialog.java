@@ -593,7 +593,7 @@ public class UpdateDialog extends BaseStepDialog implements StepDialogInterface
 			getInfo(info);
 	
 			String name = stepname;  // new name might not yet be linked to other steps! 
-			StepMeta stepinfo = new StepMeta(log, Messages.getString("UpdateDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
+			StepMeta stepinfo = new StepMeta(Messages.getString("UpdateDialog.StepMeta.Title"), name, info); //$NON-NLS-1$
 			Row prev = transMeta.getPrevStepFields(stepname);
 			
 			SQLStatement sql = info.getSQLStatements(transMeta, stepinfo, prev);

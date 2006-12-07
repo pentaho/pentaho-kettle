@@ -2563,7 +2563,7 @@ public class Chef implements AddUndoPositionInterface
 					tii.setSQL( "SELECT * FROM "+srcDbInfo.quoteField(tables[i]) ); //$NON-NLS-1$
 					
 					String fromstepid = StepLoader.getInstance().getStepPluginID(tii);
-					StepMeta fromstep = new StepMeta(log, fromstepid, fromstepname, (StepMetaInterface)tii );
+					StepMeta fromstep = new StepMeta(fromstepid, fromstepname, (StepMetaInterface)tii );
 					fromstep.setLocation(150,100);
 					fromstep.setDraw(true);
 					fromstep.setDescription(Messages.getString("Chef.RipDB.Monitor.FromStep.Description")+tables[i]+Messages.getString("Chef.RipDB.Monitor.FromStep.Description2")+sourceDbInfo+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
@@ -2580,7 +2580,7 @@ public class Chef implements AddUndoPositionInterface
 					toi.setTruncateTable( true );
 					
 					String tostepid = StepLoader.getInstance().getStepPluginID(toi);
-					StepMeta tostep = new StepMeta(log, tostepid, tostepname, (StepMetaInterface)toi );
+					StepMeta tostep = new StepMeta(tostepid, tostepname, (StepMetaInterface)toi );
 					tostep.setLocation(500,100);
 					tostep.setDraw(true);
 					tostep.setDescription(Messages.getString("Chef.RipDB.Monitor.ToStep.Description1")+tables[i]+Messages.getString("Chef.RipDB.Monitor.ToStep.Description2")+targetDbInfo+"]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
