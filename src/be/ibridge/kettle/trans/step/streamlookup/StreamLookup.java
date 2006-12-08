@@ -23,6 +23,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.exception.KettleStepException;
+import be.ibridge.kettle.core.hash.ByteArrayHashIndex;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.TransMeta;
@@ -307,6 +308,10 @@ public class StreamLookup extends BaseStep implements StepInterface
                 }
                 else
                 {
+                    if (data.hashIndex==null) 
+                    { 
+                        data.hashIndex = new ByteArrayHashIndex(data.keyMeta);
+                    }
                     data.hashIndex.putAgain(Row.extractData(keyPart), Row.extractData(valuePart));
                 }
             }

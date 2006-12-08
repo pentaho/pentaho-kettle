@@ -1846,7 +1846,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			{
 			case VALUE_TYPE_BOOLEAN   :                           hash^=Boolean.valueOf(getBoolean()).hashCode(); break;
 			case VALUE_TYPE_DATE      : if (getDate()!=null)      hash^=getDate().hashCode(); break;
-			case VALUE_TYPE_INTEGER   :
+			case VALUE_TYPE_INTEGER   :                           hash^=new Long(getInteger()).hashCode(); break;
 			case VALUE_TYPE_NUMBER    :                           hash^=(new Double(getNumber())).hashCode(); break;
 			case VALUE_TYPE_STRING    : if (getString()!=null)    hash^=getString().hashCode(); break;
 			case VALUE_TYPE_BIGNUMBER : if (getBigNumber()!=null) hash^=getBigNumber().hashCode(); break;

@@ -69,7 +69,7 @@ public class StreamLookupData extends BaseStepData implements StepDataInterface
 	{
         super();
         look = new HashMap();
-        hashIndex = new ByteArrayHashIndex();
+        hashIndex = null;
         longIndex = new LongHashIndex();
         list = new ArrayList();
         comparator = new Comparator()

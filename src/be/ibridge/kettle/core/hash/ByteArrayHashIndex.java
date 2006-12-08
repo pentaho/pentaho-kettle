@@ -3,6 +3,8 @@ package be.ibridge.kettle.core.hash;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import be.ibridge.kettle.core.Row;
+
 /*
  * IDEAS
  *  - maybe we could use double linked entry lists and have keys 
@@ -106,6 +108,8 @@ import java.util.Iterator;
  */
 public final class ByteArrayHashIndex {
 
+    private Row keyMeta;
+    
     /**
      * The default initial capacity - MUST be a power of two.
      */
@@ -152,7 +156,7 @@ public final class ByteArrayHashIndex {
      * @throws IllegalArgumentException if the initial capacity is negative
      *         or the load factor is nonpositive
      */
-    public ByteArrayHashIndex(int initialCapacity, float loadFactor) {
+    public ByteArrayHashIndex(int initialCapacity, float loadFactor, Row keyMeta) {
         if (initialCapacity < 0)
             throw new IllegalArgumentException(
                 "Illegal initial capacity: " + initialCapacity);
@@ -170,6 +174,8 @@ public final class ByteArrayHashIndex {
         this.loadFactor = loadFactor;
         threshold = (int)(capacity * loadFactor);
         table = new Entry[capacity];
+        
+        this.keyMeta = keyMeta;
     }
 
     /**
@@ -179,15 +185,16 @@ public final class ByteArrayHashIndex {
      * @param  initialCapacity the initial capacity.
      * @throws IllegalArgumentException if the initial capacity is negative.
      */
-    public ByteArrayHashIndex(int initialCapacity) {
-        this(initialCapacity, DEFAULT_LOAD_FACTOR);
+    public ByteArrayHashIndex(int initialCapacity, Row keyMeta) {
+        this(initialCapacity, DEFAULT_LOAD_FACTOR, keyMeta);
     }
 
     /**
      * Constructs an empty <tt>HashMap</tt> with the default initial capacity
      * (16) and the default load factor (0.75).
      */
-    public ByteArrayHashIndex() {
+    public ByteArrayHashIndex(Row keyMeta) {
+        this.keyMeta = keyMeta;
         this.loadFactor = DEFAULT_LOAD_FACTOR;
         threshold = (int)(DEFAULT_INITIAL_CAPACITY * DEFAULT_LOAD_FACTOR);
         table = new Entry[DEFAULT_INITIAL_CAPACITY];
@@ -229,7 +236,7 @@ public final class ByteArrayHashIndex {
      */
     public byte[] get(byte[] key) 
     {
-        int hash = generateHashCode(key);
+        int hash = generateHashCode(key, keyMeta);
         
         for (Entry e = table[(hash & (table.length-1))]; e != null; e = e.next) 
         {
@@ -254,7 +261,7 @@ public final class ByteArrayHashIndex {
      *  is returned; else the result will be <code>null</code>.
      */
     public byte[] insert(byte[] key, byte[] value) {
-        int hash = generateHashCode(key);
+        int hash = generateHashCode(key, keyMeta);
         int i = hash & (table.length-1);
         
         for (Entry e = table[i]; e != null; e = e.next) {
@@ -282,7 +289,7 @@ public final class ByteArrayHashIndex {
      * @see #putAgain(Object)
      */
     public void put(byte[] key, byte[] value) {
-        int hash = generateHashCode(key);
+        int hash = generateHashCode(key, keyMeta);
         int i = hash & (table.length-1);
         
         table[i] = new Entry(hash, key, value, table[i]);
@@ -301,7 +308,7 @@ public final class ByteArrayHashIndex {
      *  or <code>null</code> otherwise.
      */
     public byte[] putAgain(byte[] key, byte[] value) {
-        int hash = generateHashCode(key);
+        int hash = generateHashCode(key, keyMeta);
         int i = hash & (table.length-1);
         
         for (Entry e = table[i]; e != null; e = e.next) {
@@ -370,7 +377,7 @@ public final class ByteArrayHashIndex {
      *  the entry that is to be removed from the index
      */
     public void remove(byte[] key) {
-        int hash = generateHashCode(key);
+        int hash = generateHashCode(key, keyMeta);
         int i = hash & (table.length-1);
         
         Entry prev = table[i], e = prev;
@@ -419,7 +426,7 @@ public final class ByteArrayHashIndex {
         
         public int hashCode()
         {
-            return ByteArrayHashIndex.generateHashCode(key);
+            throw new RuntimeException("Not interested in using this one.");
         }
         
         /**
@@ -454,43 +461,9 @@ public final class ByteArrayHashIndex {
         }
     }
 
-    public static int generateHashCode(byte[] key)
+    public static int generateHashCode(byte[] key, Row metadata)
     {
-        // boolean up=true;
-        // int idx=0;
-        
-        int hashCode = 0;
-        for (int i=0;i<key.length;i++)
-        {
-            hashCode ^= (int)Math.pow(10, i) * key[i];
-
-            /*
-            hashCode^=Math.round( (0xFF<<idx)*key[i] );
-            if (up)
-            {
-                idx++;
-                if (idx==8)
-                {
-                    idx=6;
-                    up=false;
-                }
-            }
-            else
-            {
-                idx--;
-                if (idx<0)
-                {
-                    idx=1;
-                    up=true;
-                }
-            }
-            */
-        }
-        
-        // hashCode ^= (hashCode >>> 20) ^ (hashCode >>> 12);
-        // hashCode ^= (hashCode >>> 7) ^ (hashCode >>> 4);
-
-        return hashCode;
+        return Row.getRow(key, metadata).hashCode();
     }
     
     

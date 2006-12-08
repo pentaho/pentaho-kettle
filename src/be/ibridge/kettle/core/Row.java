@@ -53,10 +53,6 @@ public class Row implements XMLInterface, Comparable, Serializable
     /** Ignore this row? */
 	private boolean ignore;
 	
-    /* Logging date 
-	private Date    logdate;
-    */
-
 	/**
 	 * Create a new empty row (with 0 values)
 	 */
