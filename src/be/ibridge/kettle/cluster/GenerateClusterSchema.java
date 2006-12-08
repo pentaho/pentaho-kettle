@@ -12,6 +12,7 @@ import be.ibridge.kettle.core.SharedObjects;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.database.PartitionDatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.partition.PartitionSchema;
 
 /**
  * The program generates a piece of XML that defines a (shared) Cluster Schema
@@ -87,6 +88,11 @@ public class GenerateClusterSchema
         
         mysql.setPartitioningInformation(partDbMeta);
         sharedObjects.storeObject(mysql);
+        
+        String[] partitionIds= new String[mysql.getPartitioningInformation().length];
+        for (int i=0;i<partitionIds.length;i++) partitionIds[i] = mysql.getPartitioningInformation()[i].getPartitionId();
+        PartitionSchema partitionSchema = new PartitionSchema("MySQL EC2 Schema", partitionIds);
+        sharedObjects.storeObject(partitionSchema);
         
         sharedObjects.saveToFile();
     }
