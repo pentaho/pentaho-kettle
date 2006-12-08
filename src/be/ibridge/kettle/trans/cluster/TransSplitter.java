@@ -41,7 +41,8 @@ public class TransSplitter
     private Map        slaveTransMap;
     private TransMeta  master;
     private StepMeta[] originalSteps;
-    private HashMap    slaveServerPartitionsMap;
+    private Map        slaveServerPartitionsMap;
+    private Map        slaveStepPartitionFlag;
 
     public TransSplitter()
     {
@@ -50,6 +51,7 @@ public class TransSplitter
         clusterStepPortMap = new Hashtable();
         
         slaveTransMap = new Hashtable();
+        slaveStepPartitionFlag = new Hashtable();
     }
     
     /**
@@ -193,7 +195,6 @@ public class TransSplitter
     private TransMeta getSlaveTransformation(ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
     {
         TransMeta slave = (TransMeta) slaveTransMap.get(slaveServer);
-        
         if (slave==null)
         {
             slave = getOriginalCopy(true, clusterSchema, slaveServer);
@@ -211,6 +212,13 @@ public class TransSplitter
             
             NotePadMeta slaveNote = new NotePadMeta("This is a generated slave transformation.\nIt will be run on slave server: "+slaveServer, 0, 0, -1, -1);
             transMeta.addNote(slaveNote);
+            
+            // add the slave database partitioning schema's here.
+            for (int i=0;i<originalSteps.length;i++)
+            {
+                StepMeta stepMeta = originalSteps[i];
+                verifySlavePartitioningConfiguration(transMeta, stepMeta, clusterSchema, slaveServer);
+            }
         }
         else
         {
@@ -218,18 +226,24 @@ public class TransSplitter
 
             NotePadMeta masterNote = new NotePadMeta("This is a generated master transformation.\nIt will be run on server: "+getMasterServer(), 0, 0, -1, -1);
             transMeta.addNote(masterNote);
+
+            transMeta.setPartitionSchemas(originalTransformation.getPartitionSchemas());
         }
         transMeta.setClusterSchemas(originalTransformation.getClusterSchemas());
-        transMeta.setPartitionSchemas(originalTransformation.getPartitionSchemas());
         transMeta.setDatabases(originalTransformation.getDatabases());
 
         return transMeta;
     }
     
-    private void verifySlavePartitioningConfiguration(StepMeta stepMeta, ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
+    private void verifySlavePartitioningConfiguration(TransMeta slave, StepMeta stepMeta, ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
     {
-        // What's the slave transformation
-        TransMeta slave = getSlaveTransformation(clusterSchema, slaveServer);
+        Map stepPartitionFlag = (Map) slaveStepPartitionFlag.get(slave); 
+        if (stepPartitionFlag==null)
+        {
+            stepPartitionFlag = new Hashtable();
+            slaveStepPartitionFlag.put(slave, stepPartitionFlag);
+        }
+        if (stepPartitionFlag.get(stepMeta)!=null) return; // already done;
         
         StepPartitioningMeta partitioningMeta = stepMeta.getStepPartitioningMeta();
         if (partitioningMeta!=null && partitioningMeta.getMethod()!=StepPartitioningMeta.PARTITIONING_METHOD_NONE && partitioningMeta.getPartitionSchema()!=null)
@@ -239,7 +253,7 @@ public class TransSplitter
             if (schemaPartitionsMap!=null)
             {
                 PartitionSchema partitionSchema = partitioningMeta.getPartitionSchema();
-                List partitionsList = (List) schemaPartitionsMap.get(partitionSchema.getName());
+                List partitionsList = (List) schemaPartitionsMap.get(partitionSchema);
                 if (partitionsList!=null) 
                 {
                     // We found a list of partitions, now let's create a new partition schema with this data.
@@ -251,15 +265,11 @@ public class TransSplitter
                         targetSchema = new PartitionSchema(targetSchemaName, partIds);
                         slave.getPartitionSchemas().add(targetSchema); // add it to the slave if it doesn't exist.
                     }
-                    StepPartitioningMeta targetPartitioningMeta = new StepPartitioningMeta(
-                            partitioningMeta.getMethod(), 
-                            partitioningMeta.getFieldName(), 
-                            targetSchema);
-                    
-                    stepMeta.setStepPartitioningMeta(targetPartitioningMeta);
                 }
             }
         }
+        
+        stepPartitionFlag.put(stepMeta, "Y"); // is done.
     }
 
     /**
@@ -433,7 +443,7 @@ public class TransSplitter
                                     slave.addTransHop(slaveHop);
                                     
                                     // Verify the database partitioning for this step.
-                                    verifySlavePartitioningConfiguration(target, previousClusterSchema, slaveServer);
+                                    // verifySlavePartitioningConfiguration(target, previousClusterSchema, slaveServer);
                                 }
                             }
                         }
@@ -511,7 +521,7 @@ public class TransSplitter
                                     slave.addTransHop(slaveHop);
                                     
                                     // Verify the database partitioning for this slave step.
-                                    verifySlavePartitioningConfiguration(slaveStep, originalClusterSchema, slaveServer);
+                                    // verifySlavePartitioningConfiguration(slaveStep, originalClusterSchema, slaveServer);
                                 }
                             }
                         }
@@ -548,8 +558,7 @@ public class TransSplitter
                                     slave.addTransHop(slaveHop);
                                     
                                     // Verify the database partitioning 
-                                    verifySlavePartitioningConfiguration(source, originalClusterSchema, slaveServer);
-                                    verifySlavePartitioningConfiguration(target, originalClusterSchema, slaveServer);
+                                    verifyStepPartitioning(slave, target, originalClusterSchema, slaveServer);
                                 }
                             }
                         }
@@ -734,6 +743,32 @@ public class TransSplitter
         }
     }
 
+    private void verifyStepPartitioning(TransMeta slave, StepMeta stepMeta, ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
+    {
+        StepPartitioningMeta partitioningMeta = stepMeta.getStepPartitioningMeta();
+        if (partitioningMeta!=null && partitioningMeta.getMethod()!=StepPartitioningMeta.PARTITIONING_METHOD_NONE)
+        {
+            // Point this partitioning method to the target schema called schemaName + " (slave)"
+            //
+            String schemaName = partitioningMeta.getPartitionSchema().getName()+" (slave)";
+            PartitionSchema targetSchema = slave.findPartitionSchema(schemaName);
+            
+            if (targetSchema==null)
+            {
+                throw new KettleException("Internal error: unable to find required Partitioning schema ["+schemaName+"]");
+            }
+            
+            StepPartitioningMeta targetPartitioningMeta = new StepPartitioningMeta(
+                    partitioningMeta.getMethod(), 
+                    partitioningMeta.getFieldName(), 
+                    targetSchema);
+            
+            stepMeta.setStepPartitioningMeta(targetPartitioningMeta);
+        }
+
+        
+    }
+
     private void findUsedOriginalSteps()
     {
         ArrayList transHopSteps = originalTransformation.getTransHopSteps(false);
@@ -749,7 +784,7 @@ public class TransSplitter
      */
     private void generateSlaveDatabasePartitions() throws KettleException
     {
-        slaveServerPartitionsMap = new HashMap();
+        slaveServerPartitionsMap = new Hashtable();
         
         for (int i=0;i<originalSteps.length;i++)
         {
@@ -782,33 +817,41 @@ public class TransSplitter
                 if (slaveServer.isMaster())
                 {
                     s++;
-                    if (s>=nrSlaves) s=0; // re-start
+                    if (s>=clusterSchema.getSlaveServers().size()) s=0; // re-start
                     slaveServer = (SlaveServer) clusterSchema.getSlaveServers().get(s);
                 }
-                
+
+                // System.out.println("Step ["+stepMeta.getName()+"] : selected slave server ["+slaveServer+"]");
+
                 Map schemaPartitionsMap = (Map) slaveServerPartitionsMap.get(slaveServer);
                 if (schemaPartitionsMap==null)
                 {
                     // Add this map
                     schemaPartitionsMap = new HashMap();
                     slaveServerPartitionsMap.put(slaveServer, schemaPartitionsMap);
+                    // System.out.println("Added new schemaPartitions map for slave server ["+slaveServer+"]");
                 }
                 
                 // See if we find a list of partitions
-                List partitions = (List) schemaPartitionsMap.get(partitionSchema.getName());
+                List partitions = (List) schemaPartitionsMap.get(partitionSchema);
                 if (partitions==null)
                 {
                     partitions = new ArrayList();
-                    schemaPartitionsMap.put(partitionSchema.getName(), partitions);
+                    schemaPartitionsMap.put(partitionSchema, partitions);
                 }
                 
                 // Add the partitionId to the appropriate list
-                partitions.add(partitionId);
+                if (partitions.indexOf(partitionId)<0)
+                {
+                    partitions.add(partitionId);
+                    // System.out.println("Added partition ["+partitionId+"] to slave server ["+slaveServer+"] for db part schema ["+partitionSchema+"]");
+                }
 
                 // Switch to next slave.
                 s++;
-                if (s>=nrSlaves) s=0; // re-start
+                if (s>=clusterSchema.getSlaveServers().size()) s=0; // re-start
             }
         }
+        // System.out.println("We have "+(slaveServerPartitionsMap.size())+" entries in the slave server partitions map");
     }
 }

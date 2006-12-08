@@ -132,7 +132,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     public String toString()
     {
         String realHostname = StringUtil.environmentSubstitute(hostname);
-        if (!Const.isEmpty(realHostname)) return realHostname+getPortSpecification();
+        if (!Const.isEmpty(realHostname)) return realHostname+getPortSpecification()+(master?"(Master)":"");
         return "Slave Server";
     }
     
@@ -140,6 +140,11 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     {
         SlaveServer slave = (SlaveServer) obj;
         return toString().equalsIgnoreCase(slave.toString());
+    }
+    
+    public int hashCode()
+    {
+        return toString().hashCode();
     }
     
     public String getHostname()
