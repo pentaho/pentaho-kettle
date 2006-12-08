@@ -129,6 +129,19 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         }
     }
     
+    public String toString()
+    {
+        String realHostname = StringUtil.environmentSubstitute(hostname);
+        if (!Const.isEmpty(realHostname)) return realHostname+getPortSpecification();
+        return "Slave Server";
+    }
+    
+    public boolean equals(Object obj)
+    {
+        SlaveServer slave = (SlaveServer) obj;
+        return toString().equalsIgnoreCase(slave.toString());
+    }
+    
     public String getHostname()
     {
         return hostname;
@@ -300,13 +313,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
             log.logDetailed(toString(), "Sent XML to service ["+service+"] on host ["+hostname+"]");
         }
     }
-    
-    public String toString()
-    {
-        String realHostname = StringUtil.environmentSubstitute(hostname);
-        if (!Const.isEmpty(realHostname)) return realHostname+getPortSpecification();
-        return "Slave Server";
-    }
+
 
     /**
      * @return the master

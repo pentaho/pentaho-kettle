@@ -2,6 +2,7 @@ package be.ibridge.kettle.trans.cluster;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
@@ -33,13 +34,14 @@ public class TransSplitter
     private static final int FANOUT = 30;
     private static final int SPLIT  = 120;
     
-    private TransMeta originalTransformation;
-    private Map       serverTransMetaMap;
-    private Map       clusterPortMap;
-    private Map       clusterStepPortMap;
-    private Map       slaveTransMap;
-    private TransMeta master;
+    private TransMeta  originalTransformation;
+    private Map        serverTransMetaMap;
+    private Map        clusterPortMap;
+    private Map        clusterStepPortMap;
+    private Map        slaveTransMap;
+    private TransMeta  master;
     private StepMeta[] originalSteps;
+    private HashMap    slaveServerPartitionsMap;
 
     public TransSplitter()
     {
@@ -223,6 +225,42 @@ public class TransSplitter
 
         return transMeta;
     }
+    
+    private void verifySlavePartitioningConfiguration(StepMeta stepMeta, ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleException
+    {
+        // What's the slave transformation
+        TransMeta slave = getSlaveTransformation(clusterSchema, slaveServer);
+        
+        StepPartitioningMeta partitioningMeta = stepMeta.getStepPartitioningMeta();
+        if (partitioningMeta!=null && partitioningMeta.getMethod()!=StepPartitioningMeta.PARTITIONING_METHOD_NONE && partitioningMeta.getPartitionSchema()!=null)
+        {
+            // Find the schemaPartitions map to use
+            Map schemaPartitionsMap = (Map) slaveServerPartitionsMap.get(slaveServer);
+            if (schemaPartitionsMap!=null)
+            {
+                PartitionSchema partitionSchema = partitioningMeta.getPartitionSchema();
+                List partitionsList = (List) schemaPartitionsMap.get(partitionSchema.getName());
+                if (partitionsList!=null) 
+                {
+                    // We found a list of partitions, now let's create a new partition schema with this data.
+                    String partIds[] =  (String[]) partitionsList.toArray(new String[partitionsList.size()]);
+                    String targetSchemaName = partitionSchema.getName()+" (slave)";
+                    PartitionSchema targetSchema = slave.findPartitionSchema(targetSchemaName);
+                    if (targetSchema==null)
+                    {
+                        targetSchema = new PartitionSchema(targetSchemaName, partIds);
+                        slave.getPartitionSchemas().add(targetSchema); // add it to the slave if it doesn't exist.
+                    }
+                    StepPartitioningMeta targetPartitioningMeta = new StepPartitioningMeta(
+                            partitioningMeta.getMethod(), 
+                            partitioningMeta.getFieldName(), 
+                            targetSchema);
+                    
+                    stepMeta.setStepPartitioningMeta(targetPartitioningMeta);
+                }
+            }
+        }
+    }
 
     /**
      * @return the master
@@ -370,6 +408,7 @@ public class TransSplitter
                                     
                                     // SLAVE
                                     TransMeta slave = getSlaveTransformation(previousClusterSchema, slaveServer);
+                                    
                                     SocketWriterMeta socketWriterMeta = new SocketWriterMeta();
                                     socketWriterMeta.setPort(""+getPort(previousClusterSchema, slaveServer, originalStep.getName()));
                                     socketWriterMeta.setBufferSize(previousClusterSchema.getSocketsBufferSize());
@@ -392,6 +431,9 @@ public class TransSplitter
                                     }
                                     TransHopMeta slaveHop = new TransHopMeta(previous, writerStep);
                                     slave.addTransHop(slaveHop);
+                                    
+                                    // Verify the database partitioning for this step.
+                                    verifySlavePartitioningConfiguration(target, previousClusterSchema, slaveServer);
                                 }
                             }
                         }
@@ -467,6 +509,9 @@ public class TransSplitter
                                     // And a hop from the 
                                     TransHopMeta slaveHop = new TransHopMeta(readerStep, slaveStep);
                                     slave.addTransHop(slaveHop);
+                                    
+                                    // Verify the database partitioning for this slave step.
+                                    verifySlavePartitioningConfiguration(slaveStep, originalClusterSchema, slaveServer);
                                 }
                             }
                         }
@@ -501,6 +546,10 @@ public class TransSplitter
                                     
                                     TransHopMeta slaveHop = new TransHopMeta(source, target);
                                     slave.addTransHop(slaveHop);
+                                    
+                                    // Verify the database partitioning 
+                                    verifySlavePartitioningConfiguration(source, originalClusterSchema, slaveServer);
+                                    verifySlavePartitioningConfiguration(target, originalClusterSchema, slaveServer);
                                 }
                             }
                         }
@@ -691,42 +740,75 @@ public class TransSplitter
         originalSteps = (StepMeta[]) transHopSteps.toArray(new StepMeta[transHopSteps.size()]);
     }
     
+    /**
+     * We want to devide the available database partitions over the slaves.
+     * Let's create a hashtable that contains the partition schema's
+     * Since we can only use a single cluster, we can divide them all over a single set of slave servers. 
+     * 
+     * @throws KettleException
+     */
     private void generateSlaveDatabasePartitions() throws KettleException
     {
-        ArrayList transHopSteps = originalTransformation.getTransHopSteps(false);
-        StepMeta[] originalSteps = (StepMeta[]) transHopSteps.toArray(new StepMeta[transHopSteps.size()]);
-
+        slaveServerPartitionsMap = new HashMap();
+        
         for (int i=0;i<originalSteps.length;i++)
         {
             StepMeta stepMeta = originalSteps[i];
-            StepPartitioningMeta source = stepMeta.getStepPartitioningMeta();
-            StepPartitioningMeta target = new StepPartitioningMeta();
+            StepPartitioningMeta stepPartitioningMeta = stepMeta.getStepPartitioningMeta();
             
-            if (source==null) break;
-            if (source.getMethod()==StepPartitioningMeta.PARTITIONING_METHOD_NONE) break;
+            if (stepPartitioningMeta==null) continue;
+            if (stepPartitioningMeta.getMethod()==StepPartitioningMeta.PARTITIONING_METHOD_NONE) continue;
             
             ClusterSchema clusterSchema = stepMeta.getClusterSchema();
-            if (clusterSchema==null) break;
+            if (clusterSchema==null) continue;
             
-            PartitionSchema partitionSchema = source.getPartitionSchema();
+            PartitionSchema partitionSchema = stepPartitioningMeta.getPartitionSchema();
             int nrPartitions = partitionSchema.getPartitionIDs().length;
             int nrSlaves = clusterSchema.getSlaveServers().size();
+            
+            if (nrSlaves==0) continue; // no slaves: ignore this situation too
             
             if (nrPartitions<nrSlaves)
             {
                 throw new KettleException("It doesn't make sense to have a database partitioned, clustered step with less partitions ("+nrPartitions+") than that there are slave servers ("+nrSlaves+")");
             }
-            List partitions = new ArrayList();
-            for (int s=0;s<clusterSchema.getSlaveServers().size();s++)
+
+            int s=0;
+            for (int p=0;p<nrPartitions;p++)
             {
-                SlaveServer server = (SlaveServer) clusterSchema.getSlaveServers().get(s);
-                if (!server.isMaster())
+                String partitionId = partitionSchema.getPartitionIDs()[p];
+                
+                SlaveServer slaveServer = (SlaveServer) clusterSchema.getSlaveServers().get(s);
+                if (slaveServer.isMaster())
                 {
-                    
+                    s++;
+                    if (s>=nrSlaves) s=0; // re-start
+                    slaveServer = (SlaveServer) clusterSchema.getSlaveServers().get(s);
                 }
+                
+                Map schemaPartitionsMap = (Map) slaveServerPartitionsMap.get(slaveServer);
+                if (schemaPartitionsMap==null)
+                {
+                    // Add this map
+                    schemaPartitionsMap = new HashMap();
+                    slaveServerPartitionsMap.put(slaveServer, schemaPartitionsMap);
+                }
+                
+                // See if we find a list of partitions
+                List partitions = (List) schemaPartitionsMap.get(partitionSchema.getName());
+                if (partitions==null)
+                {
+                    partitions = new ArrayList();
+                    schemaPartitionsMap.put(partitionSchema.getName(), partitions);
+                }
+                
+                // Add the partitionId to the appropriate list
+                partitions.add(partitionId);
+
+                // Switch to next slave.
+                s++;
+                if (s>=nrSlaves) s=0; // re-start
             }
-            PartitionSchema targetSchema = new PartitionSchema(partitionSchema.getName(), (String[]) partitions.toArray(new String[partitions.size()]));
-            
         }
     }
 }

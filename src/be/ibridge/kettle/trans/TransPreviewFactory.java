@@ -1,6 +1,5 @@
 package be.ibridge.kettle.trans;
 
-import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepMetaInterface;
 import be.ibridge.kettle.trans.step.dummytrans.DummyTransMeta;
@@ -9,7 +8,6 @@ public class TransPreviewFactory
 {
     public static final TransMeta generatePreviewTransformation(StepMetaInterface oneMeta, String oneStepname)
     {
-        LogWriter log = LogWriter.getInstance();
         StepLoader stepLoader = StepLoader.getInstance();
 
         TransMeta previewMeta = new TransMeta();

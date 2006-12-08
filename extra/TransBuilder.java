@@ -68,7 +68,6 @@ public class TransBuilder
      */
     public static final TransMeta buildCopyTable(String transformationName, String sourceDatabaseName, String sourceTableName, String[] sourceFields, String targetDatabaseName, String targetTableName, String[] targetFields) throws KettleException
     {
-        LogWriter log = LogWriter.getInstance();
         EnvUtil.environmentInit();
         try
         {
