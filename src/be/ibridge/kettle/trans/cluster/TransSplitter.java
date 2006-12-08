@@ -764,7 +764,7 @@ public class TransSplitter
             
             PartitionSchema partitionSchema = stepPartitioningMeta.getPartitionSchema();
             int nrPartitions = partitionSchema.getPartitionIDs().length;
-            int nrSlaves = clusterSchema.getSlaveServers().size();
+            int nrSlaves = clusterSchema.findNrSlaves();
             
             if (nrSlaves==0) continue; // no slaves: ignore this situation too
             
