@@ -70,6 +70,7 @@ import be.ibridge.kettle.trans.step.flattener.FlattenerMeta;
 import be.ibridge.kettle.trans.step.getfilenames.GetFileNamesMeta;
 import be.ibridge.kettle.trans.step.getvariable.GetVariableMeta;
 import be.ibridge.kettle.trans.step.groupby.GroupByMeta;
+import be.ibridge.kettle.trans.step.http.HTTPMeta;
 import be.ibridge.kettle.trans.step.injector.InjectorMeta;
 import be.ibridge.kettle.trans.step.insertupdate.InsertUpdateMeta;
 import be.ibridge.kettle.trans.step.joinrows.JoinRowsMeta;
@@ -124,7 +125,8 @@ public class BaseStep extends Thread
 
     protected static LocalVariables      localVariables          = LocalVariables.getInstance();
 
-    public static final StepPluginMeta[] steps                   = {
+    public static final StepPluginMeta[] steps                   = 
+        {
             new StepPluginMeta(TextFileInputMeta.class, "TextFileInput", Messages.getString("BaseStep.TypeLongDesc.TextFileInput"), Messages
                     .getString("BaseStep.TypeTooltipDesc.TextInputFile", Const.CR), "TFI.png", CATEGORY_INPUT),
             new StepPluginMeta(TextFileOutputMeta.class, "TextFileOutput", Messages.getString("BaseStep.TypeLongDesc.TextFileOutput"), Messages
@@ -245,7 +247,10 @@ public class BaseStep extends Thread
             new StepPluginMeta(SocketReaderMeta.class, "SocketReader", Messages.getString("BaseStep.TypeLongDesc.SocketReader"), Messages
                     .getString("BaseStep.TypeTooltipDesc.SocketReader"), "SKR.png", CATEGORY_EXPERIMENTAL),
             new StepPluginMeta(SocketWriterMeta.class, "SocketWriter", Messages.getString("BaseStep.TypeLongDesc.SocketWriter"), Messages
-                    .getString("BaseStep.TypeTooltipDesc.SocketWriter"), "SKW.png", CATEGORY_EXPERIMENTAL), };
+                    .getString("BaseStep.TypeTooltipDesc.SocketWriter"), "SKW.png", CATEGORY_EXPERIMENTAL),
+            new StepPluginMeta(HTTPMeta.class, "HTTP", Messages.getString("BaseStep.TypeLongDesc.HTTP"), Messages
+                    .getString("BaseStep.TypeTooltipDesc.HTTP"), "WEB.png", CATEGORY_EXPERIMENTAL), 
+        };
 
     public static final String           category_order[]        = { CATEGORY_INPUT, CATEGORY_OUTPUT, CATEGORY_LOOKUP, CATEGORY_TRANSFORM,
             CATEGORY_DATA_WAREHOUSE, CATEGORY_EXTRA, CATEGORY_MAPPING, CATEGORY_EXPERIMENTAL };               //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$ //$NON-NLS-8$

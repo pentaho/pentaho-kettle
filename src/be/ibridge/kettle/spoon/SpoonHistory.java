@@ -32,7 +32,6 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.MessageBox;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TableItem;
 import org.eclipse.swt.widgets.Text;
@@ -74,7 +73,7 @@ public class SpoonHistory extends Composite
 
     private ArrayList rowList;
 
-	private final SpoonLog spoonLog;
+	// private final SpoonLog spoonLog;
 
 	private final Shell shell;
 
@@ -86,7 +85,7 @@ public class SpoonHistory extends Composite
 	{
 		super(parent, style);
 		spoon = sp;
-		this.spoonLog = spoonLog;
+		// this.spoonLog = spoonLog;
 		this.shell = shell;
 		
 		FormLayout formLayout = new FormLayout ();
@@ -210,28 +209,18 @@ public class SpoonHistory extends Composite
 	private void setupReplayListener() {
 		SelectionAdapter lsReplay = new SelectionAdapter()
         {
-			final SimpleDateFormat df = new SimpleDateFormat(
-					ValueDate.DATE_FORMAT);
+			final SimpleDateFormat df = new SimpleDateFormat(ValueDate.DATE_FORMAT);
 
 			public void widgetSelected(SelectionEvent e) {
 				int idx = wFields.getSelectionIndex();
 				if (idx >= 0) {
 					String fields[] = wFields.getItem(idx);
 					String dateString = fields[12];
-					if (dateString == null
-							|| dateString.equals(Const.NULL_STRING)) {
-						MessageBox mb = new MessageBox(shell, SWT.OK
-								| SWT.ICON_ERROR);
-						mb.setMessage(Messages.getString("SpoonHistory.Error.ReplayingTransformation") //$NON-NLS-1$
-								+ Const.CR + Messages.getString("SpoonHistory.Error.ReplayDateCannotBeNull")); //$NON-NLS-1$
-						mb.setText(Messages.getString("SpoonHistory.ERROR")); //$NON-NLS-1$
-						mb.open();
-						return;
-					}
 					try {
-						Date date = df.parse(dateString);
-						spoon.tabfolder.setSelection(1);
-						spoonLog.startstop(date);
+						Date replayDate;
+                        if (Const.isEmpty(dateString)) replayDate = new Date();
+                        else replayDate = df.parse(dateString);
+						spoon.executeTransformation(true, false, false, false, replayDate);
 					} catch (ParseException e1) {
 						new ErrorDialog(shell, 
 								Messages.getString("SpoonHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$

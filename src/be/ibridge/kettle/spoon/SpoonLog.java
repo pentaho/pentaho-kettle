@@ -22,13 +22,11 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.eclipse.jface.dialogs.IInputValidator;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -67,8 +65,8 @@ import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.spoon.dialog.EnterPreviewRowsDialog;
 import be.ibridge.kettle.spoon.dialog.LogSettingsDialog;
-import be.ibridge.kettle.spoon.dialog.PreviewSelectDialog;
 import be.ibridge.kettle.trans.Trans;
+import be.ibridge.kettle.trans.TransExecutionConfiguration;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.step.BaseStep;
 import be.ibridge.kettle.trans.step.StepDataInterface;
@@ -342,7 +340,7 @@ public class SpoonLog extends Composite
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				startstop();
+				spoon.executeTransformation(true, false, false, false, null);
 			}
 		};
 
@@ -350,7 +348,7 @@ public class SpoonLog extends Composite
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				preview();
+				spoon.executeTransformation(true, false, false, true, null);
 			}
 		};
 
@@ -420,11 +418,6 @@ public class SpoonLog extends Composite
         }
     }
 
-	public void startstop()
-	{
-		startstop(null);
-	}
-
 	final class DateValidator implements IInputValidator
 	{
 		final SimpleDateFormat df = new SimpleDateFormat(Trans.REPLAY_DATE_FORMAT);
@@ -446,6 +439,7 @@ public class SpoonLog extends Composite
 		}
 	}
 
+    /*
 	public void startstopReplay()
 	{
 		DateValidator dateValidator = new DateValidator();
@@ -466,8 +460,9 @@ public class SpoonLog extends Composite
 		}
 		startstop(dateValidator.date);
 	}
+    */
 
-	public synchronized void startstop(Date replayDate)
+	public synchronized void startstop(TransExecutionConfiguration executionConfiguration)
 	{
 		if (!running) // Not running, start the transformation...
 		{
@@ -504,7 +499,7 @@ public class SpoonLog extends Composite
 					try
 					{
 						trans = new Trans(log, spoon.getTransMeta().getFilename(), spoon.getTransMeta().getName(), new String[] { spoon.getTransMeta().getFilename() });
-						trans.setReplayDate(replayDate);
+						trans.setReplayDate(executionConfiguration.getReplayDate());
 						trans.open(spoon.rep, spoon.getTransMeta().getName(), spoon.getTransMeta().getDirectory().getPath(), spoon.getTransMeta().getFilename());
 
 						trans.setMonitored(true);
@@ -520,7 +515,7 @@ public class SpoonLog extends Composite
 					if (trans != null)
 					{
                         final String args[];
-						Row arguments = getArguments(trans.getTransMeta());
+						Row arguments = executionConfiguration.getArguments();
 						if (arguments != null)
 						{
 							args = convertArguments(arguments);
@@ -529,7 +524,7 @@ public class SpoonLog extends Composite
                         {
                             args = null;
                         }
-                        getVariables(trans.getTransMeta());
+                        setVariables(executionConfiguration);
                         
 						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
 						trans.setSafeModeEnabled(wSafeMode.getSelection());
@@ -636,40 +631,19 @@ public class SpoonLog extends Composite
         trans.startThreads();
     }
 
-    private void getVariables(TransMeta transMeta)
+    private void setVariables(TransExecutionConfiguration executionConfiguration)
     {
         Properties sp = new Properties();
         KettleVariables kettleVariables = KettleVariables.getInstance();
         sp.putAll(kettleVariables.getProperties());
         sp.putAll(System.getProperties());
- 
-        List vars = transMeta.getUsedVariables();
-        if (vars!=null && vars.size()>0)
+
+        Row variables = executionConfiguration.getVariables();
+        for (int i=0;i<variables.size();i++)
         {
-            Row variables = new Row();
-            for (int i=0;i<vars.size();i++) 
-            {
-                String varname = (String)vars.get(i);
-                if (!varname.startsWith(Const.INTERNAL_VARIABLE_PREFIX))
-                {
-                    Value varval = new Value(varname, sp.getProperty(varname, ""));
-                    variables.addValue( varval );
-                }
-            }
-            
-            if (variables.size()>0)
-            {
-                EnterStringsDialog esd = new EnterStringsDialog(shell, SWT.NONE, variables);
-                if (esd.open()!=null)
-                {
-                    for (int i=0;i<variables.size();i++)
-                    {
-                        Value varval = variables.getValue(i);
-                        kettleVariables.setVariable(varval.getName(), varval.getString());
-                        System.out.println("Variable ${"+varval.getName()+"} set to ["+varval.getString()+"]");
-                    }
-                }
-            }
+            Value varval = variables.getValue(i);
+            kettleVariables.setVariable(varval.getName(), varval.getString());
+            LogWriter.getInstance().logBasic(Spoon.APP_NAME, "Variable ${"+varval.getName()+"} set to ["+varval.getString()+"]");
         }
     }
 
@@ -847,33 +821,28 @@ public class SpoonLog extends Composite
 		refresh_busy = false;
 	}
 
-	public synchronized void preview()
+	public synchronized void preview(TransExecutionConfiguration executionConfiguration)
 	{
         if (!running)
         {
     		try
     		{
     			log.logDetailed(toString(), Messages.getString("SpoonLog.Log.DoPreview")); //$NON-NLS-1$
-    			PreviewSelectDialog psd = new PreviewSelectDialog(shell, SWT.NONE, log, spoon.props, spoon.getTransMeta());
-    			psd.open();
-    			if (psd.previewSteps != null)
-    			{
-                    String[] args=null;
-    				Row arguments = getArguments(spoon.getTransMeta());
-    				if (arguments != null)
-    				{
-    					args = convertArguments(arguments);
-                    }
-                    getVariables(spoon.getTransMeta());
-    
-    				spoon.tabfolder.setSelection(1);
-    				trans = new Trans(log, spoon.getTransMeta(), psd.previewSteps, psd.previewSizes);
-    				trans.execute(args);
-    				preview = true;
-    				readLog();
-    				running = !running;
-    				wStart.setText(STOP_TEXT);
-    			}
+                String[] args=null;
+				Row arguments = executionConfiguration.getArguments();
+				if (arguments != null)
+				{
+					args = convertArguments(arguments);
+                }
+                setVariables(executionConfiguration);
+
+				spoon.tabfolder.setSelection(1);
+				trans = new Trans(log, spoon.getTransMeta(), executionConfiguration.getPreviewSteps(), executionConfiguration.getPreviewSizes());
+				trans.execute(args);
+				preview = true;
+				readLog();
+				running = !running;
+				wStart.setText(STOP_TEXT);
     		}
     		catch (Exception e)
     		{

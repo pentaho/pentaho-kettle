@@ -180,7 +180,7 @@ public class Const
 	/**
 	 * The horizontal and vertical margin of a dialog box.
 	 */
-	public static final int FORM_MARGIN = 3;
+	public static final int FORM_MARGIN = 5;
 
 	/**
 	 * The default shadow size on the graphical view.

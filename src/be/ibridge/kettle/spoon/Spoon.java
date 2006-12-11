@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Locale;
@@ -145,10 +146,12 @@ import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage2;
 import be.ibridge.kettle.trans.DatabaseImpact;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
+import be.ibridge.kettle.trans.TransExecutionConfiguration;
 import be.ibridge.kettle.trans.TransHopMeta;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.cluster.TransSplitter;
 import be.ibridge.kettle.trans.dialog.TransDialog;
+import be.ibridge.kettle.trans.dialog.TransExecutionConfigurationDialog;
 import be.ibridge.kettle.trans.dialog.TransHopDialog;
 import be.ibridge.kettle.trans.dialog.TransLoadProgressDialog;
 import be.ibridge.kettle.trans.dialog.TransSaveProgressDialog;
@@ -265,6 +268,8 @@ public class Spoon implements AddUndoPositionInterface
 
     private TreeItem tiClus;
 
+    private TransExecutionConfiguration executionConfiguration;
+
         
     public Spoon(LogWriter l, Repository rep)
     {
@@ -323,6 +328,8 @@ public class Spoon implements AddUndoPositionInterface
         impact  = new ArrayList();
         impactHasRun = false;
         
+        executionConfiguration = new TransExecutionConfiguration();
+        
         // Clean out every time we start, auto-loading etc, is not a good idea
         // If they are needed that often, set them in the kettle.properties file
         //
@@ -366,10 +373,10 @@ public class Spoon implements AddUndoPositionInterface
                     if (e.keyCode == SWT.F8)    { spoonlog.showPreview(); }
                     
                     // F9 --> run
-                    if (e.keyCode == SWT.F9)    { tabfolder.setSelection(1); spoonlog.startstop(); }
+                    if (e.keyCode == SWT.F9)    { executeTransformation(true, false, false, false, null); spoongraph.clearSettings(); }
                     
                     // F10 --> preview
-                    if (e.keyCode == SWT.F10)   { spoonlog.preview(); }
+                    if (e.keyCode == SWT.F10)   { executeTransformation(true, false, false, true, null); spoongraph.clearSettings();  }
 
                     // F11 --> Verify
                     if (e.keyCode == SWT.F11) { checkTrans(); spoongraph.clearSettings();  }
@@ -415,7 +422,10 @@ public class Spoon implements AddUndoPositionInterface
                     
                     // CTRL-R --> Connect to repository
                     if ((int)e.character == 18 && ctrl && !alt) { openRepository();  spoongraph.clearSettings(); };
-                    
+
+                    // CTRL-ALT-R --> Run transformation : new execute dialog
+                    if ((int)e.character == 18 && ctrl && alt) { executeTransformation(true, false, false, false, null); spoongraph.clearSettings();  };
+
                     // CTRL-S --> save
                     if ((int)e.character == 19 && ctrl && !alt) { saveFile();  spoongraph.clearSettings();  }
                     
@@ -426,7 +436,7 @@ public class Spoon implements AddUndoPositionInterface
                     if ((int)e.character == 20 && ctrl && !alt) { setTrans();  spoongraph.clearSettings();  }
 
                     // CTRL-U --> transformation
-                    if ((int)e.character == 21 && ctrl && !alt) { splitTrans(true, true, true);  spoongraph.clearSettings();  }
+                    if ((int)e.character == 21 && ctrl && !alt) { splitTrans(true, true, true, true);  spoongraph.clearSettings();  }
 
                     // CTRL-Y --> redo action
                     if ((int)e.character == 25 && ctrl && !alt) { redoAction(); spoongraph.clearSettings(); }
@@ -847,8 +857,8 @@ public class Spoon implements AddUndoPositionInterface
           MenuItem miTransDetails   = new MenuItem(msTrans, SWT.CASCADE); miTransDetails.setText(Messages.getString("Spoon.Menu.Transformation.Settings"));//&Settings... \tCTRL-T
 
         Listener lsTransDetails   = new Listener() { public void handleEvent(Event e) { setTrans();   } };
-        Listener lsTransRun       = new Listener() { public void handleEvent(Event e) { tabfolder.setSelection(1); spoonlog.startstop(); } };
-        Listener lsTransPreview   = new Listener() { public void handleEvent(Event e) { spoonlog.preview(); } };
+        Listener lsTransRun       = new Listener() { public void handleEvent(Event e) { executeTransformation(true, false, false, false, null); } };
+        Listener lsTransPreview   = new Listener() { public void handleEvent(Event e) { executeTransformation(true, false, false, true, null); } };
         Listener lsTransCheck     = new Listener() { public void handleEvent(Event e) { checkTrans();       } };
         Listener lsTransImpact    = new Listener() { public void handleEvent(Event e) { analyseImpact();    } };
         Listener lsTransSQL       = new Listener() { public void handleEvent(Event e) { getSQL();           } };
@@ -1092,19 +1102,19 @@ public class Spoon implements AddUndoPositionInterface
         final ToolItem tiFileRun = new ToolItem(tBar, SWT.PUSH);
         final Image imFileRun = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"run.png")); 
         tiFileRun.setImage(imFileRun);
-        tiFileRun.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { tabfolder.setSelection(1); spoonlog.startstop(); }});
+        tiFileRun.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeTransformation(true, false, false, false, null); }});
         tiFileRun.setToolTipText(Messages.getString("Spoon.Tooltip.RunTranformation"));//Run this transformation
 
         final ToolItem tiFilePreview = new ToolItem(tBar, SWT.PUSH);
         final Image imFilePreview = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"preview.png")); 
         tiFilePreview.setImage(imFilePreview);
-        tiFilePreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { spoonlog.preview(); }});
+        tiFilePreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeTransformation(true, false, false, true, null); }});
         tiFilePreview.setToolTipText(Messages.getString("Spoon.Tooltip.PreviewTranformation"));//Preview this transformation
 
         final ToolItem tiFileReplay = new ToolItem(tBar, SWT.PUSH);
         final Image imFileReplay = new Image(disp, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY+"replay.png")); 
         tiFileReplay.setImage(imFileReplay);
-        tiFileReplay.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { tabfolder.setSelection(1); spoonlog.startstopReplay(); }});
+        tiFileReplay.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { executeTransformation(true, false, false, true, null); }});
         tiFileReplay.setToolTipText("Replay this transformation");
 
         new ToolItem(tBar, SWT.SEPARATOR);
@@ -5296,7 +5306,7 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
 
-    private void splitTrans(boolean show, boolean send, boolean start)
+    private void splitTrans(boolean show, boolean post, boolean prepare, boolean start)
     {
         try
         {
@@ -5310,7 +5320,7 @@ public class Spoon implements AddUndoPositionInterface
             TransMeta master = transSplitter.getMaster();
             SlaveServer masterServer = transSplitter.getMasterServer();
             if (show) new Spoon(log, shell.getDisplay(), master, rep).open();
-            if (send)
+            if (post)
             {
                 String masterReply = masterServer.sendXML(master.getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
                 WebResult webResult = WebResult.fromXMLString(masterReply);
@@ -5327,7 +5337,7 @@ public class Spoon implements AddUndoPositionInterface
             {
                 TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
                 if (show) new Spoon(log, shell.getDisplay(), slaveTrans, rep).open();
-                if (send)
+                if (post)
                 {
                     String slaveReply = slaves[i].sendXML(slaveTrans.getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
                     WebResult webResult = WebResult.fromXMLString(slaveReply);
@@ -5338,45 +5348,51 @@ public class Spoon implements AddUndoPositionInterface
                 }
             }
             
-            if (send && start)
+            if (post)
             {
-                // Prepare the master...
-                String masterReply = masterServer.getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
-                WebResult webResult = WebResult.fromXMLString(masterReply);
-                if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                if (prepare)
                 {
-                    throw new KettleException("An error occurred while preparing the execution of the master transformation: "+webResult.getMessage());
-                }
-                
-                // Prepare the slaves
-                for (int i=0;i<slaves.length;i++)
-                {
-                    TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                    String slaveReply = slaves[i].getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
-                    webResult = WebResult.fromXMLString(slaveReply);
+                    // Prepare the master...
+                    String masterReply = masterServer.getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
+                    WebResult webResult = WebResult.fromXMLString(masterReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                     {
-                        throw new KettleException("An error occurred while preparing the execution of a slave transformation: "+webResult.getMessage());
+                        throw new KettleException("An error occurred while preparing the execution of the master transformation: "+webResult.getMessage());
+                    }
+                    
+                    // Prepare the slaves
+                    for (int i=0;i<slaves.length;i++)
+                    {
+                        TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+                        String slaveReply = slaves[i].getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
+                        webResult = WebResult.fromXMLString(slaveReply);
+                        if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                        {
+                            throw new KettleException("An error occurred while preparing the execution of a slave transformation: "+webResult.getMessage());
+                        }
                     }
                 }
                 
-                // Start the master...
-                masterReply = masterServer.getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
-                webResult = WebResult.fromXMLString(masterReply);
-                if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                if (start)
                 {
-                    throw new KettleException("An error occurred while starting the execution of the master transformation: "+webResult.getMessage());
-                }
-                
-                // Start the slaves
-                for (int i=0;i<slaves.length;i++)
-                {
-                    TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                    String slaveReply = slaves[i].getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
-                    webResult = WebResult.fromXMLString(slaveReply);
+                    // Start the master...
+                    String masterReply = masterServer.getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
+                    WebResult webResult = WebResult.fromXMLString(masterReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                     {
-                        throw new KettleException("An error occurred while starting the execution of a slave transformation: "+webResult.getMessage());
+                        throw new KettleException("An error occurred while starting the execution of the master transformation: "+webResult.getMessage());
+                    }
+                    
+                    // Start the slaves
+                    for (int i=0;i<slaves.length;i++)
+                    {
+                        TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
+                        String slaveReply = slaves[i].getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
+                        webResult = WebResult.fromXMLString(slaveReply);
+                        if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                        {
+                            throw new KettleException("An error occurred while starting the execution of a slave transformation: "+webResult.getMessage());
+                        }
                     }
                 }
             }
@@ -5392,5 +5408,47 @@ public class Spoon implements AddUndoPositionInterface
         }
     }
 
+    public void executeTransformation(boolean local, boolean remote, boolean cluster, boolean preview, Date replayDate)
+    {
+        executionConfiguration.setExecutingLocally(local);
+        executionConfiguration.setExecutingRemotely(remote);
+        executionConfiguration.setExecutingClustered(cluster);
+        
+        executionConfiguration.getUsedVariables(transMeta);
+        executionConfiguration.getUsedArguments(transMeta, arguments);
+        executionConfiguration.setReplayDate(replayDate);
+        executionConfiguration.setLocalPreviewing(preview);
+        
+        TransExecutionConfigurationDialog dialog = new TransExecutionConfigurationDialog(shell, executionConfiguration, transMeta);
+        if (dialog.open())
+        {
+            if (executionConfiguration.isExecutingLocally())
+            {
+                if (executionConfiguration.isLocalPreviewing())
+                {
+                    tabfolder.setSelection(1); 
+                    spoonlog.preview(executionConfiguration);
+                }
+                else
+                {
+                    tabfolder.setSelection(1); 
+                    spoonlog.startstop(executionConfiguration);
+                }
+            }
+            else if(executionConfiguration.isExecutingRemotely())
+            {
+                sendXMLToSlaveServer();
+            }
+            else if(executionConfiguration.isExecutingClustered())
+            {
+                splitTrans(
+                        executionConfiguration.isClusterShowingTransformation(), 
+                        executionConfiguration.isClusterPosting(),
+                        executionConfiguration.isClusterPreparing(),
+                        executionConfiguration.isClusterStarting()
+                        );
+            }
+        }
+    }
 }
 

@@ -142,6 +142,10 @@ public class LogWriter
         // Set the logging level for the Jackcess stuff to INFO...
         // TODO: make some kind of general configuation possible for this, load from file, etc.
         Logger.getLogger("com.healthmarketscience.jackcess").setLevel(Level.INFO);
+
+        System.setProperty("org.apache.commons.logging.Log", "org.apache.commons.logging.impl.SimpleLog");
+        System.setProperty("org.apache.commons.logging.simplelog.showdatetime", "true");
+        System.setProperty("org.apache.commons.logging.simplelog.log.org.apache.commons.httpclient", "info");
         
         while(appenders.hasMoreElements())
         {

@@ -173,7 +173,18 @@ public class DatabaseLookup extends BaseStep implements StepInterface
 		}
 
 		// First, check if we looked up before
-		if (meta.isCached()) add=(Row)data.look.get(lu);
+		if (meta.isCached())
+        {
+            TimedRow timedRow = (TimedRow) data.look.get(lu);
+            if (timedRow==null)
+            {
+                add=null;
+            }
+            else
+            {
+                add=timedRow.getRow();
+            }
+        }
 		else add=null; 
 
 		if (add==null)

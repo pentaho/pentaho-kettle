@@ -34,6 +34,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
 import be.ibridge.kettle.cluster.ClusterSchema;
+import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.CheckResult;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DBCache;
@@ -4961,5 +4962,42 @@ public class TransMeta implements XMLInterface
     public void setUsingThreadPriorityManagment(boolean usingThreadPriorityManagment)
     {
         this.usingThreadPriorityManagment = usingThreadPriorityManagment;
+    }
+
+    /**
+     * @return a unique list of slave-servers, used in the cluster schemas of this transformations
+     */
+    public List findAllSlaveServers()
+    {
+        List list = new ArrayList();
+        
+        for (int i=0;i<clusterSchemas.size();i++)
+        {
+            ClusterSchema clusterSchema = (ClusterSchema) clusterSchemas.get(i);
+            List slaveServers = clusterSchema.getSlaveServers();
+            for (int s=0;s<slaveServers.size();s++)
+            {
+                SlaveServer slaveServer = (SlaveServer)slaveServers.get(s);
+                if (list.indexOf(slaveServer)<0) list.add(slaveServer);
+            }
+        }
+        
+        return list;
+    }
+
+    public SlaveServer findSlaveServer(String serverName)
+    {
+        for (int i=0;i<clusterSchemas.size();i++)
+        {
+            ClusterSchema clusterSchema = (ClusterSchema) clusterSchemas.get(i);
+            List slaveServers = clusterSchema.getSlaveServers();
+            for (int s=0;s<slaveServers.size();s++)
+            {
+                SlaveServer slaveServer = (SlaveServer)slaveServers.get(i);
+                if (slaveServer.toString().equalsIgnoreCase(serverName)) return slaveServer;
+            }
+        }
+        
+        return null;
     }
 }

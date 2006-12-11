@@ -85,7 +85,7 @@ public class InsertUpdate extends BaseStep implements StepInterface
             }
 			
 			// lookup the values!
-			if (log.isDetailed()) logDetailed(Messages.getString("InsertUpdate.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
+			if (log.isDebug()) logDebug(Messages.getString("InsertUpdate.Log.CheckingRow")+row.toString()); //$NON-NLS-1$
 			data.keynrs  = new int[meta.getKeyStream().length];
 			data.keynrs2 = new int[meta.getKeyStream().length];
 			for (int i=0;i<meta.getKeyStream().length;i++)

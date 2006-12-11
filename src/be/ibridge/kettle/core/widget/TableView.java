@@ -127,7 +127,7 @@ public class TableView extends Composite
 	private TraverseListener  lsTraverse;
 	
 	private int sortfield;
-	private boolean sort_desc;
+	private boolean sortingDescending;
     private boolean sortable;
 	
 	private boolean field_changed; 
@@ -173,7 +173,7 @@ public class TableView extends Composite
 		clipboard=null;
 				
 		sortfield = 0;
-		sort_desc = false;
+		sortingDescending = false;
         sortable  = true;
         		
 		selectionStart = -1;
@@ -265,7 +265,7 @@ public class TableView extends Composite
 
         // Set the sort sign on the first column. (0)
         table.setSortColumn(table.getColumn(sortfield));
-        table.setSortDirection( sort_desc ? SWT.DOWN : SWT.UP );
+        table.setSortDirection( sortingDescending ? SWT.DOWN : SWT.UP );
 		
 		// create a ControlEditor field to edit the contents of a cell
 		editor = new TableEditor(table);
@@ -1039,20 +1039,29 @@ public class TableView extends Composite
     public void sortTable(int colnr)
     {
         if (!sortable) return;
+        
+        if (sortfield==colnr)
+        {
+            sortingDescending = (!sortingDescending);
+        }
+        else
+        {
+            sortfield=colnr;
+            sortingDescending = false;
+        }
+        
+        sortTable(sortfield, sortingDescending);
+    }
+    
+    public void sortTable(int sortField, boolean sortingDescending)
+    {
+        this.sortfield = sortField;
+        this.sortingDescending = sortingDescending;
+        
         try
         {
-            if (sortfield==colnr)
-            {
-                sort_desc = (!sort_desc);
-            }
-            else
-            {
-                sortfield=colnr;
-                sort_desc = false;
-            }
-
-            table.setSortColumn(table.getColumn(colnr));
-            table.setSortDirection( sort_desc ? SWT.DOWN : SWT.UP );
+            table.setSortColumn(table.getColumn(sortfield));
+            table.setSortDirection( sortingDescending ? SWT.DOWN : SWT.UP );
 
             // First, get all info and put it in a Vector of Rows...
             TableItem[] items = table.getItems();
@@ -2301,7 +2310,7 @@ public class TableView extends Composite
 		{ // loop from low to high to find a candidate for swapping
 		  lowToHighValue = (Row)elements.elementAt(lowToHighIndex);
 		  while (lowToHighIndex < newLowIndex
-			& lowToHighValue.compare(pivotValue, sortfield+1, sort_desc)<0 )
+			& lowToHighValue.compare(pivotValue, sortfield+1, sortingDescending)<0 )
 		  { 
 			newHighIndex = lowToHighIndex; // add element to lower part
 			lowToHighIndex ++;
@@ -2311,7 +2320,7 @@ public class TableView extends Composite
 		  // loop from high to low find other candidate for swapping
 		  highToLowValue = (Row)elements.elementAt(highToLowIndex);
 		  while (newHighIndex <= highToLowIndex
-			& (highToLowValue.compare(pivotValue, sortfield+1, sort_desc)>0)
+			& (highToLowValue.compare(pivotValue, sortfield+1, sortingDescending)>0)
 			)
 		  { 
 			newLowIndex = highToLowIndex; // add element to higher part
@@ -2326,7 +2335,7 @@ public class TableView extends Composite
 		  }
 		  else if (lowToHighIndex < highToLowIndex) // not last element yet
 		  { 
-			compareResult = lowToHighValue.compare(highToLowValue, sortfield+1, sort_desc);
+			compareResult = lowToHighValue.compare(highToLowValue, sortfield+1, sortingDescending);
 			if (compareResult >= 0) // low >= high, swap, even if equal
 			{ 
 			  parking = lowToHighValue;
@@ -2868,6 +2877,22 @@ public class TableView extends Composite
                 edit(rownr, colnr+1);
             }
         }
+    }
+
+    /**
+     * @return the sortingDescending
+     */
+    public boolean isSortingDescending()
+    {
+        return sortingDescending;
+    }
+
+    /**
+     * @param sortingDescending the sortingDescending to set
+     */
+    public void setSortingDescending(boolean sortingDescending)
+    {
+        this.sortingDescending = sortingDescending;
     }
 	
 };

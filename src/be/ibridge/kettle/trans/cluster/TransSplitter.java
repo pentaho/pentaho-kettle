@@ -114,7 +114,7 @@ public class TransSplitter
         }
         if (map.size()==0)
         {
-            throw new KettleException("No cluster schemas are being used.  As such it is not possible to split and cluster this. transformation.");
+            throw new KettleException("No cluster schemas are being used.  As such it is not possible to split and cluster this transformation.");
         }
         if (map.size()>1)
         {

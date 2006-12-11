@@ -63,7 +63,6 @@ public class SelectObjectDialog extends Dialog
     private FormData     fdlTree, fdTree;
 		
 	private Button wOK, wCancel;
-	private FormData fdOK, fdCancel;
 	private Listener lsOK, lsCancel;
 
 	private Shell  shell;
@@ -166,24 +165,15 @@ public class SelectObjectDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
-		fdOK=new FormData();
-		wOK.setText(Messages.getString("System.Button.OK")); //$NON-NLS-1$
-		fdOK.left       = new FormAttachment(33, 0);
-		fdOK.bottom     = new FormAttachment(100, 0);
-
-		wOK.setLayoutData(fdOK);
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		wOK.addListener    (SWT.Selection, lsOK     );
 		
 		wCancel=new Button(shell, SWT.PUSH);
 		wCancel.setText(Messages.getString("System.Button.Cancel")); //$NON-NLS-1$
-		fdCancel=new FormData();
-		fdCancel.left   = new FormAttachment(66, 0);
-		fdCancel.bottom = new FormAttachment(100, 0);
-		wCancel.setLayoutData(fdCancel);
 		lsCancel   = new Listener() { public void handleEvent(Event e) { cancel(); } };
 		wCancel.addListener(SWT.Selection, lsCancel );
 
+        BaseStepDialog.positionBottomButtons(shell, new Button[] { wOK, wCancel}, margin, null);
 		// Add listeners
 		
 		lsDef=new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e) { ok(); } };
