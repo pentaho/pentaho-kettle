@@ -2,6 +2,7 @@ package be.ibridge.kettle.cluster;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
@@ -306,7 +307,15 @@ public class SlaveServer extends ChangedFlag implements Cloneable
             log.logDebug(toString(), "Response status code: " + result);
             
             // the response
-            String body = post.getResponseBodyAsString(); 
+            InputStream inputStream = post.getResponseBodyAsStream();
+            StringBuffer bodyBuffer = new StringBuffer();
+            int c;
+            while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
+            inputStream.close();
+            
+            String body = bodyBuffer.toString();
+
+            // String body = post.getResponseBodyAsString(); 
             log.logDebug(toString(), "Response body: "+body);
             
             return body;
@@ -353,7 +362,14 @@ public class SlaveServer extends ChangedFlag implements Cloneable
             log.logDebug(toString(), "Response status code: " + result);
             
             // the response
-            String body = new String(method.getResponseBody()); 
+            InputStream inputStream = method.getResponseBodyAsStream();
+            StringBuffer bodyBuffer = new StringBuffer();
+            int c;
+            while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
+            inputStream.close();
+            
+            String body = bodyBuffer.toString();
+            
             log.logDebug(toString(), "Response body: "+body);
             
             return body;

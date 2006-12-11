@@ -15,6 +15,8 @@
  
 package be.ibridge.kettle.trans.step.http;
 
+import java.io.InputStream;
+
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
 import org.apache.commons.httpclient.methods.GetMethod;
@@ -95,7 +97,13 @@ public class HTTP extends BaseStep implements StepInterface
                 log.logDebug(toString(), "Response status code: " + result);
                 
                 // the response
-                String body = new String(method.getResponseBody()); 
+                InputStream inputStream = method.getResponseBodyAsStream();
+                StringBuffer bodyBuffer = new StringBuffer();
+                int c;
+                while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
+                inputStream.close();
+                
+                String body = bodyBuffer.toString();
                 log.logDebug(toString(), "Response body: "+body);
                 
                 return new Value(meta.getFieldName(), body);

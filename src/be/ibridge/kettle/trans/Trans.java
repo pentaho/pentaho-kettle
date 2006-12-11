@@ -1141,6 +1141,12 @@ public class Trans
                     if ( endDate.compareTo( maxdesired )>0) endDate = maxdesired;
                 }
 
+                if (Const.isEmpty(transMeta.getName()) && logcon!=null && transMeta.getLogTable()!=null)
+                {
+                    throw new KettleException(Messages.getString("Trans.Exception.NoTransnameAvailableForLogging"));
+                }
+
+                
                 if (logcon!=null && transMeta.getLogTable()!=null && transMeta.getName()!=null)
                 {
                     ldb.writeLogRecord(transMeta.getLogTable(),

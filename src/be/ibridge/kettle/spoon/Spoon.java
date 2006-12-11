@@ -423,20 +423,17 @@ public class Spoon implements AddUndoPositionInterface
                     // CTRL-R --> Connect to repository
                     if ((int)e.character == 18 && ctrl && !alt) { openRepository();  spoongraph.clearSettings(); };
 
-                    // CTRL-ALT-R --> Run transformation : new execute dialog
-                    if ((int)e.character == 18 && ctrl && alt) { executeTransformation(true, false, false, false, null); spoongraph.clearSettings();  };
-
                     // CTRL-S --> save
                     if ((int)e.character == 19 && ctrl && !alt) { saveFile();  spoongraph.clearSettings();  }
                     
                     // CTRL-ALT-S --> send to slave server
-                    if ((int)e.character == 19 && ctrl && alt) { sendXMLToSlaveServer();  spoongraph.clearSettings();  }
+                    if ((int)e.character == 19 && ctrl && alt) { executeTransformation(false, true, false, false, null);  spoongraph.clearSettings();  }
 
                     // CTRL-T --> transformation
                     if ((int)e.character == 20 && ctrl && !alt) { setTrans();  spoongraph.clearSettings();  }
 
                     // CTRL-U --> transformation
-                    if ((int)e.character == 21 && ctrl && !alt) { splitTrans(true, true, true, true);  spoongraph.clearSettings();  }
+                    if ((int)e.character == 21 && ctrl && !alt) { executeTransformation(false, false, true, false, null);  spoongraph.clearSettings();  }
 
                     // CTRL-Y --> redo action
                     if ((int)e.character == 25 && ctrl && !alt) { redoAction(); spoongraph.clearSettings(); }
@@ -5276,29 +5273,42 @@ public class Spoon implements AddUndoPositionInterface
     
     /**
      * Sends transformation to slave server
+     * @param executionConfiguration 
      */
-    public void sendXMLToSlaveServer()
+    public void sendXMLToSlaveServer(TransExecutionConfiguration executionConfiguration)
     {
-        // Select a cluster schema...
-        String[] schemas = transMeta.getClusterSchemaNames();
-        EnterSelectionDialog schemaDialog = new EnterSelectionDialog(shell, schemas, "Select a cluster schema", "Select the clustering schema to use: ");
-        if (schemaDialog.open()==null || schemaDialog.getSelectionNr()<0) return;
-        
-        ClusterSchema clusterSchema = (ClusterSchema) transMeta.getClusterSchemas().get(schemaDialog.getSelectionNr());
-        
-        // Now select the slave server...
-        String[] slaves = clusterSchema.getSlaveServerStrings();
-        EnterSelectionDialog slaveDialog = new EnterSelectionDialog(shell, slaves, "Select a slave server", "Select the desired slave server to send this transformation to: ");
-        if (slaveDialog.open()==null || slaveDialog.getSelectionNr()<0) return;
-        
-        SlaveServer slaveServer = (SlaveServer) clusterSchema.getSlaveServers().get(slaveDialog.getSelectionNr());
+        SlaveServer slaveServer = executionConfiguration.getRemoteServer();
         
         try
         {
-            String reply = slaveServer.sendXML(transMeta.getXML(), AddTransServlet.CONTEXT_PATH);
+            if (slaveServer==null) throw new KettleException("No slave server specified");
+            if (Const.isEmpty(transMeta.getName())) throw new KettleException("The transformation needs a name to uniquely identify it by on the remote server.");
             
-            ShowBrowserDialog showBrowserDialog = new ShowBrowserDialog(shell, "Browser", reply);
-            showBrowserDialog.open();
+            String reply = slaveServer.sendXML(transMeta.getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
+            WebResult webResult = WebResult.fromXMLString(reply);
+            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+            {
+                throw new KettleException("There was an error posting the transformation on the remote server: "+Const.CR+webResult.getMessage());
+            }
+            
+            reply = slaveServer.getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+transMeta.getName()+"&xml=Y");
+            webResult = WebResult.fromXMLString(reply);
+            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+            {
+                throw new KettleException("There was an error preparing the transformation for excution on the remote server: "+Const.CR+webResult.getMessage());
+            }
+            
+            reply = slaveServer.getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+transMeta.getName()+"&xml=Y");
+            webResult = WebResult.fromXMLString(reply);
+            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+            {
+                throw new KettleException("There was an error starting the transformation on the remote server: "+Const.CR+webResult.getMessage());
+            }
+            
+            MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
+            box.setText("OK");
+            box.setMessage("The transformation was started succesfully on the remote server ["+slaveServer+"]");
+            box.open();
         }
         catch (Exception e)
         {
@@ -5310,6 +5320,8 @@ public class Spoon implements AddUndoPositionInterface
     {
         try
         {
+            if (Const.isEmpty(transMeta.getName())) throw new KettleException("The transformation needs a name to uniquely identify it by on the remote server.");
+
             TransSplitter transSplitter = new TransSplitter(transMeta);
             transSplitter.splitOriginalTransformation(shell);
             
@@ -5437,7 +5449,7 @@ public class Spoon implements AddUndoPositionInterface
             }
             else if(executionConfiguration.isExecutingRemotely())
             {
-                sendXMLToSlaveServer();
+                sendXMLToSlaveServer(executionConfiguration);
             }
             else if(executionConfiguration.isExecutingClustered())
             {

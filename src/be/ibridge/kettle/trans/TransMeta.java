@@ -4993,7 +4993,7 @@ public class TransMeta implements XMLInterface
             List slaveServers = clusterSchema.getSlaveServers();
             for (int s=0;s<slaveServers.size();s++)
             {
-                SlaveServer slaveServer = (SlaveServer)slaveServers.get(i);
+                SlaveServer slaveServer = (SlaveServer)slaveServers.get(s);
                 if (slaveServer.toString().equalsIgnoreCase(serverName)) return slaveServer;
             }
         }

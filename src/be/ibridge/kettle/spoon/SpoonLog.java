@@ -18,15 +18,12 @@ package be.ibridge.kettle.spoon;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.dialogs.MessageDialogWithToggle;
 import org.eclipse.swt.SWT;
@@ -109,6 +106,7 @@ public class SpoonLog extends Composite
 	private Text wText;
 
 	private Button wStart;
+    private Button wStop;
 
 	private Button wPreview;
 
@@ -130,7 +128,7 @@ public class SpoonLog extends Composite
 
 	public boolean preview_shown = false;
 
-	private SelectionListener lsStart, lsPreview, lsError, lsClear, lsLog;
+	private SelectionListener lsStart, lsStop, lsPreview, lsError, lsClear, lsLog;
 
 	private StringBuffer message;
 
@@ -141,6 +139,8 @@ public class SpoonLog extends Composite
 	private Spoon spoon;
 
     private boolean halted;
+
+    private FormData fdStop;
 
 
 	public SpoonLog(Composite parent, int style, Spoon sp, LogWriter l, String fname)
@@ -209,50 +209,64 @@ public class SpoonLog extends Composite
 
 		wStart = new Button(this, SWT.PUSH);
 		wStart.setText(START_TEXT);
+        wStart.setEnabled(true);
+        
+        wStop= new Button(this, SWT.PUSH);
+        wStop.setText(STOP_TEXT);
+        wStop.setEnabled(false);
+        
 		wPreview = new Button(this, SWT.PUSH);
 		wPreview.setText(Messages.getString("SpoonLog.Button.Preview")); //$NON-NLS-1$
+        
 		wError = new Button(this, SWT.PUSH);
 		wError.setText(Messages.getString("SpoonLog.Button.ShowErrorLines")); //$NON-NLS-1$
+        
 		wClear = new Button(this, SWT.PUSH);
 		wClear.setText(Messages.getString("SpoonLog.Button.ClearLog")); //$NON-NLS-1$
+        
 		wLog = new Button(this, SWT.PUSH);
 		wLog.setText(Messages.getString("SpoonLog.Button.LogSettings")); //$NON-NLS-1$
+        
 		wOnlyActive = new Button(this, SWT.CHECK);
 		wOnlyActive.setText(Messages.getString("SpoonLog.Button.ShowOnlyActiveSteps")); //$NON-NLS-1$
         spoon.props.setLook(wOnlyActive);
+        
 		wSafeMode = new Button(this, SWT.CHECK);
 		wSafeMode.setText(Messages.getString("SpoonLog.Button.SafeMode")); //$NON-NLS-1$
         spoon.props.setLook(wSafeMode);
 
 		fdStart = new FormData();
-		fdPreview = new FormData();
-		fdError = new FormData();
-		fdClear = new FormData();
-		fdLog = new FormData();
-		fdOnlyActive = new FormData();
-		fdSafeMode = new FormData();
-
-		fdStart.left = new FormAttachment(0, 10);
+        fdStart.left = new FormAttachment(0, 10);
 		fdStart.bottom = new FormAttachment(100, 0);
 		wStart.setLayoutData(fdStart);
 
-		fdPreview.left = new FormAttachment(wStart, 10);
+        fdStop = new FormData();
+        fdStop.left = new FormAttachment(wStart, 10);
+        fdStop.bottom = new FormAttachment(100, 0);
+        wStop.setLayoutData(fdStop);
+
+        fdPreview = new FormData();
+        fdPreview.left = new FormAttachment(wStop, 10);
 		fdPreview.bottom = new FormAttachment(100, 0);
 		wPreview.setLayoutData(fdPreview);
 
-		fdError.left = new FormAttachment(wPreview, 10);
+        fdError = new FormData();
+        fdError.left = new FormAttachment(wPreview, 10);
 		fdError.bottom = new FormAttachment(100, 0);
 		wError.setLayoutData(fdError);
 
-		fdClear.left = new FormAttachment(wError, 10);
+        fdClear = new FormData();
+        fdClear.left = new FormAttachment(wError, 10);
 		fdClear.bottom = new FormAttachment(100, 0);
 		wClear.setLayoutData(fdClear);
 
-		fdLog.left = new FormAttachment(wClear, 10);
+        fdLog = new FormData();
+        fdLog.left = new FormAttachment(wClear, 10);
 		fdLog.bottom = new FormAttachment(100, 0);
 		wLog.setLayoutData(fdLog);
 
-		fdOnlyActive.left = new FormAttachment(wLog, Const.MARGIN);
+        fdOnlyActive = new FormData();
+        fdOnlyActive.left = new FormAttachment(wLog, Const.MARGIN);
 		fdOnlyActive.bottom = new FormAttachment(100, 0);
 		wOnlyActive.setLayoutData(fdOnlyActive);
 		wOnlyActive.addSelectionListener(new SelectionAdapter()
@@ -264,7 +278,8 @@ public class SpoonLog extends Composite
 		});
 		wOnlyActive.setSelection(spoon.props.getOnlyActiveSteps());
 
-		fdSafeMode.left = new FormAttachment(wOnlyActive, Const.MARGIN);
+        fdSafeMode = new FormData();
+        fdSafeMode.left = new FormAttachment(wOnlyActive, Const.MARGIN);
 		fdSafeMode.bottom = new FormAttachment(100, 0);
 		wSafeMode.setLayoutData(fdSafeMode);
 		
@@ -344,6 +359,14 @@ public class SpoonLog extends Composite
 			}
 		};
 
+        lsStop = new SelectionAdapter()
+        {
+            public void widgetSelected(SelectionEvent e)
+            {
+                stop();
+            }
+        };
+
 		lsPreview = new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
@@ -370,6 +393,7 @@ public class SpoonLog extends Composite
 
 		wError.addSelectionListener(lsError);
 		wStart.addSelectionListener(lsStart);
+        wStop.addSelectionListener(lsStop);
 		wPreview.addSelectionListener(lsPreview);
 		wClear.addSelectionListener(lsClear);
 		wLog.addSelectionListener(lsLog);
@@ -413,54 +437,11 @@ public class SpoonLog extends Composite
                     new ErrorDialog(shell, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
                 }
                 
-                wStart.setText(START_TEXT);
+                wStart.setEnabled(true);
+                wStop.setEnabled(false);
             }
         }
     }
-
-	final class DateValidator implements IInputValidator
-	{
-		final SimpleDateFormat df = new SimpleDateFormat(Trans.REPLAY_DATE_FORMAT);
-
-		Date date = null;
-
-		public String isValid(String dateString)
-		{
-			try
-			{
-				date = df.parse(dateString);
-				return null;
-			}
-			catch (ParseException e)
-			{
-				return Messages.getString("SpoonLog.Error.InvalidReplayDateFormat") //$NON-NLS-1$
-						+ Trans.REPLAY_DATE_FORMAT;
-			}
-		}
-	}
-
-    /*
-	public void startstopReplay()
-	{
-		DateValidator dateValidator = new DateValidator();
-		InputDialog id = new InputDialog(shell, Messages.getString("SpoonLog.Dialog.EnterReplayDate.Title"), //$NON-NLS-1$
-				Messages.getString("SpoonLog.Dialog.WhatIsTheExecutionDate1.Message") + Const.CR //$NON-NLS-1$
-						+ Messages.getString("SpoonLog.Dialog.WhatIsTheExecutionDate2.Message"), dateValidator.df.format(new Date()), //$NON-NLS-1$
-				dateValidator);
-		int answer = id.open();
-		if (answer == 1)
-		{
-			log.logDebug(toString(), Messages.getString("SpoonLog.Log.CancelReplay1")); //$NON-NLS-1$
-			return;
-		}
-		if (dateValidator.date == null)
-		{
-			log.logDebug(toString(), Messages.getString("SpoonLog.Log.CancelReplay1")); //$NON-NLS-1$
-			return;
-		}
-		startstop(dateValidator.date);
-	}
-    */
 
 	public synchronized void startstop(TransExecutionConfiguration executionConfiguration)
 	{
@@ -546,7 +527,8 @@ public class SpoonLog extends Composite
                             );
                         
 						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.StartedExecutionOfTransformation")); //$NON-NLS-1$
-						wStart.setText(STOP_TEXT);
+						wStart.setEnabled(false);
+                        wStop.setEnabled(true);
 						readLog();
 					}
 				}
@@ -583,30 +565,36 @@ public class SpoonLog extends Composite
 				}
 			}
 		}
-		else
-		{
-			trans.stopAll();
-			try
-			{
-				trans.endProcessing("stop"); //$NON-NLS-1$
-				log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.ProcessingOfTransformationStopped")); //$NON-NLS-1$
-			}
-			catch (KettleException e)
-			{
-				new ErrorDialog(shell, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
-			}
-			wStart.setText(START_TEXT);
+	}
+    
+    public void stop()
+    {
+        if (running)
+        {
+            trans.stopAll();
+            try
+            {
+                trans.endProcessing("stop"); //$NON-NLS-1$
+                log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.ProcessingOfTransformationStopped")); //$NON-NLS-1$
+            }
+            catch (KettleException e)
+            {
+                new ErrorDialog(shell, Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Title"), Messages.getString("SpoonLog.Dialog.ErrorWritingLogRecord.Message"), e); //$NON-NLS-1$ //$NON-NLS-2$
+            }
+            wStart.setEnabled(true);
+            wStop.setEnabled(false);
             running = false;
             initialized = false;
             halted = false;
-			if (preview)
-			{
-				preview = false;
-				showPreview();
-			}
-            spoon.getTransMeta().setInternalKettleVariables(); // set the original vars back as they may be changed by a mapping 
-		}
-	}
+            if (preview)
+            {
+                preview = false;
+                showPreview();
+            }
+            spoon.getTransMeta().setInternalKettleVariables(); // set the original vars back as they may be changed by a mapping
+        }
+    }
+    
 
 	private synchronized void prepareTrans(final Thread parentThread, final String[] args)
     {
@@ -842,7 +830,8 @@ public class SpoonLog extends Composite
 				preview = true;
 				readLog();
 				running = !running;
-				wStart.setText(STOP_TEXT);
+                wStart.setEnabled(false);
+                wStop.setEnabled(true);
     		}
     		catch (Exception e)
     		{
