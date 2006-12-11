@@ -5431,6 +5431,9 @@ public class Spoon implements AddUndoPositionInterface
         executionConfiguration.setReplayDate(replayDate);
         executionConfiguration.setLocalPreviewing(preview);
         
+        executionConfiguration.setLogLevel(log.getLogLevel());
+        executionConfiguration.setSafeModeEnabled(spoonlog.isSafeModeChecked());
+        
         TransExecutionConfigurationDialog dialog = new TransExecutionConfigurationDialog(shell, executionConfiguration, transMeta);
         if (dialog.open())
         {

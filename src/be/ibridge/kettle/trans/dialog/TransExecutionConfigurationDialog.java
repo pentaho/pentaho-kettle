@@ -23,6 +23,7 @@ import org.eclipse.swt.widgets.Text;
 import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.WindowProperty;
@@ -54,6 +55,7 @@ public class TransExecutionConfigurationDialog extends Dialog
     private Button wExecRemote;
     private Button wExecCluster;
     private Button wPreview;
+    private Button wSafeMode;
     private Button wPrepareExecution;
     private Button wPostTransformation;
     private Button wStartExecution;
@@ -68,6 +70,8 @@ public class TransExecutionConfigurationDialog extends Dialog
     private TableView wVariables;
     private SimpleDateFormat simpleDateFormat;
     private Label wlReplayDate;
+    private Label wlLogLevel;
+    private CCombo wLogLevel;
     
     
     public TransExecutionConfigurationDialog(Shell parent, TransExecutionConfiguration configuration, TransMeta transMeta)
@@ -99,6 +103,7 @@ public class TransExecutionConfigurationDialog extends Dialog
 
         int margin = Const.MARGIN;
         int tabsize = 5*margin;
+        int rightMiddle = 2*props.getMiddlePct()/3;
         
         wOK = new Button(shell, SWT.PUSH);
         wOK.setText(Messages.getString("TransExecutionConfigurationDialog.Button.Launch"));
@@ -136,34 +141,6 @@ public class TransExecutionConfigurationDialog extends Dialog
         fdExecLocal.right = new FormAttachment(33, 0);
         wExecLocal.setLayoutData(fdExecLocal);
         wExecLocal.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
-
-        wPreview = new Button(gLocal, SWT.CHECK);
-        wPreview.setText(Messages.getString("TransExecutionConfigurationDialog.Preview.Label")); //$NON-NLS-1$
-        wPreview.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.Preview.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
-        props.setLook(wPreview);
-        FormData fdPreview = new FormData();
-        fdPreview.left  = new FormAttachment(0, tabsize);
-        fdPreview.right = new FormAttachment(33, 0);
-        fdPreview.top   = new FormAttachment(wExecLocal, margin*2);
-        wPreview.setLayoutData(fdPreview);
-        wPreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
-        
-        ColumnInfo[] cPreviewSteps = {
-              new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.PreviewColumn.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
-              new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.PreviewColumn.PreviewSize"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
-            };
-        cPreviewSteps[1].setValueType(Value.VALUE_TYPE_INTEGER);
-                
-        wPreviewSteps = new TableView(gLocal, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cPreviewSteps, executedSteps.size(), true, null, props);
-        FormData fdPreviewSteps = new FormData();
-        fdPreviewSteps.left   = new FormAttachment(0, tabsize);
-        fdPreviewSteps.top    = new FormAttachment(wPreview, margin);
-        fdPreviewSteps.right  = new FormAttachment(33, 0);
-        fdPreviewSteps.bottom = new FormAttachment(wPreview, margin+300);
-        wPreviewSteps.setLayoutData(fdPreviewSteps);
-        
-        getPreviewStepsData();
-
         
         /////////////////////////////////////////////////////////////////////////////////////////////////
         // remote execution
@@ -259,25 +236,84 @@ public class TransExecutionConfigurationDialog extends Dialog
         // Replay date, arguments & variables
         //
 
+        wPreview = new Button(shell, SWT.CHECK);
+        wPreview.setText(Messages.getString("TransExecutionConfigurationDialog.Preview.Label")); //$NON-NLS-1$
+        wPreview.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.Preview.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        props.setLook(wPreview);
+        FormData fdPreview = new FormData();
+        fdPreview.left  = new FormAttachment(  0, 0);
+        fdPreview.right = new FormAttachment( 50, 0);
+        fdPreview.top   = new FormAttachment(gLocal, margin*2);
+        wPreview.setLayoutData(fdPreview);
+        wPreview.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
+        
+        ColumnInfo[] cPreviewSteps = {
+              new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.PreviewColumn.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true ), //Stepname
+              new ColumnInfo( Messages.getString("TransExecutionConfigurationDialog.PreviewColumn.PreviewSize"), ColumnInfo.COLUMN_TYPE_TEXT, false, false), //Preview size
+            };
+        cPreviewSteps[1].setValueType(Value.VALUE_TYPE_INTEGER);
+                
+        wPreviewSteps = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cPreviewSteps, executedSteps.size(), true, null, props);
+        FormData fdPreviewSteps = new FormData();
+        fdPreviewSteps.left   = new FormAttachment(  0, 0);
+        fdPreviewSteps.top    = new FormAttachment(wPreview, margin);
+        fdPreviewSteps.right  = new FormAttachment( 50, -margin);
+        fdPreviewSteps.bottom = new FormAttachment( 60, 0);
+        wPreviewSteps.setLayoutData(fdPreviewSteps);
+        
+        wSafeMode = new Button(shell, SWT.CHECK);
+        wSafeMode.setText(Messages.getString("TransExecutionConfigurationDialog.SafeMode.Label")); //$NON-NLS-1$
+        wSafeMode.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.SafeMode.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        props.setLook(wSafeMode);
+        FormData fdSafeMode = new FormData();
+        fdSafeMode.left  = new FormAttachment( 50, margin);
+        fdSafeMode.right = new FormAttachment(100, 0);
+        fdSafeMode.top   = new FormAttachment(wPreview, margin);
+        wSafeMode.setLayoutData(fdSafeMode);
+        wSafeMode.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { enableFields(); }});
+
+        wlLogLevel = new Label(shell, SWT.LEFT);
+        props.setLook(wlLogLevel);
+        wlLogLevel.setText(Messages.getString("TransExecutionConfigurationDialog.LogLevel.Label")); //$NON-NLS-1$
+        wlLogLevel.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.LogLevel.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        FormData fdlLogLevel = new FormData();
+        fdlLogLevel.left  = new FormAttachment(50, margin);
+        fdlLogLevel.right = new FormAttachment(50+rightMiddle, 0);
+        fdlLogLevel.top   = new FormAttachment(wSafeMode, margin*2);
+        wlLogLevel.setLayoutData(fdlLogLevel);
+
+        wLogLevel = new CCombo(shell, SWT.READ_ONLY | SWT.BORDER);
+        wLogLevel.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.LogLevel.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
+        props.setLook(wLogLevel);
+        FormData fdLogLevel = new FormData();
+        fdLogLevel.left  = new FormAttachment(50+rightMiddle, margin);
+        fdLogLevel.right = new FormAttachment(100, 0);
+        fdLogLevel.top   = new FormAttachment(wSafeMode, margin*2);
+        wLogLevel.setLayoutData(fdLogLevel);
+        wLogLevel.setItems( LogWriter.log_level_desc_long );
+
         // ReplayDate
         wlReplayDate = new Label(shell, SWT.LEFT);
         props.setLook(wlReplayDate);
         wlReplayDate.setText(Messages.getString("TransExecutionConfigurationDialog.ReplayDate.Label")); //$NON-NLS-1$
         wlReplayDate.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.ReplayDate.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
         FormData fdlReplayDate = new FormData();
-        fdlReplayDate.left   = new FormAttachment(0, 0);
-        fdlReplayDate.top    = new FormAttachment(gLocal, margin*2);
+        fdlReplayDate.left   = new FormAttachment(50, margin);
+        fdlReplayDate.right  = new FormAttachment(50+rightMiddle, 0);
+        fdlReplayDate.top    = new FormAttachment(wLogLevel, margin*2);
         wlReplayDate.setLayoutData(fdlReplayDate);
 
         wReplayDate = new Text(shell, SWT.LEFT | SWT.BORDER | SWT.SINGLE);
         props.setLook(wReplayDate);
         wReplayDate.setToolTipText(Messages.getString("TransExecutionConfigurationDialog.ReplayDate.Tooltip")); //$NON-NLS-1$ //$NON-NLS-2$
         FormData fdReplayDate = new FormData();
-        fdReplayDate.left   = new FormAttachment(wlReplayDate, margin);
-        fdReplayDate.right  = new FormAttachment(50, 0);
-        fdReplayDate.top    = new FormAttachment(gLocal, margin*2);
+        fdReplayDate.left   = new FormAttachment(50+rightMiddle, margin);
+        fdReplayDate.right  = new FormAttachment(100, 0);
+        fdReplayDate.top    = new FormAttachment(wLogLevel, margin*2);
         wReplayDate.setLayoutData(fdReplayDate);
 
+
+        
         // Arguments
         wlArguments = new Label(shell, SWT.LEFT);
         props.setLook(wlArguments);
@@ -286,7 +322,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         FormData fdlArguments = new FormData();
         fdlArguments.left   = new FormAttachment(0, 0);
         fdlArguments.right  = new FormAttachment(50, 0);
-        fdlArguments.top    = new FormAttachment(wReplayDate, margin*2);
+        fdlArguments.top    = new FormAttachment(wPreviewSteps, margin*2);
         wlArguments.setLayoutData(fdlArguments);
 
         ColumnInfo[] cArguments = {
@@ -298,7 +334,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         wArguments = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.MULTI, cArguments, nrArguments, true, null, props);
         FormData fdArguments = new FormData();
         fdArguments.left   = new FormAttachment(0, 0);
-        fdArguments.right  = new FormAttachment(50, 0);
+        fdArguments.right  = new FormAttachment(50, -margin);
         fdArguments.top    = new FormAttachment(wlArguments, margin);
         fdArguments.bottom = new FormAttachment(wOK, -margin*2);
         wArguments.setLayoutData(fdArguments);
@@ -311,7 +347,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         FormData fdlVariables = new FormData();
         fdlVariables.left   = new FormAttachment(50, margin);
         fdlVariables.right  = new FormAttachment(100, 0);
-        fdlVariables.top    = new FormAttachment(wReplayDate, margin*2);
+        fdlVariables.top    = new FormAttachment(wPreviewSteps, margin*2);
         wlVariables.setLayoutData(fdlVariables);
 
         ColumnInfo[] cVariables = {
@@ -463,12 +499,13 @@ public class TransExecutionConfigurationDialog extends Dialog
         wExecRemote.setSelection(configuration.isExecutingRemotely());
         wExecCluster.setSelection(configuration.isExecutingClustered());
         wPreview.setSelection(configuration.isLocalPreviewing());
+        wSafeMode.setSelection(configuration.isSafeModeEnabled());
         wPrepareExecution.setSelection(configuration.isClusterPreparing());
         wPostTransformation.setSelection(configuration.isClusterPosting());
         wStartExecution.setSelection(configuration.isClusterStarting());
         wShowTransformations.setSelection(configuration.isClusterShowingTransformation());
         wRemoteHost.setText( configuration.getRemoteServer()==null ? "" : configuration.getRemoteServer().toString() );
-        
+        wLogLevel.setText( LogWriter.getInstance().getLogLevelDesc() );
         if (configuration.getReplayDate()!=null) wReplayDate.setText(simpleDateFormat.format(configuration.getReplayDate()));
         getPreviewStepsData();
         getArgumentsData();
@@ -512,6 +549,9 @@ public class TransExecutionConfigurationDialog extends Dialog
             configuration.setClusterPreparing(wPrepareExecution.getSelection());
             configuration.setClusterStarting(wStartExecution.getSelection());
             configuration.setClusterShowingTransformation(wShowTransformations.getSelection());
+            
+            configuration.setSafeModeEnabled(wSafeMode.getSelection() );
+            configuration.setLogLevel( LogWriter.getLogLevel(wLogLevel.getText()) );
             
             // The lower part of the dialog...
             getInfoVariables();
@@ -613,6 +653,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         wlVariables.setEnabled(enableLocal);
         wVariables.setEnabled(enableLocal);
         wVariables.table.setEnabled(enableLocal);
+        wSafeMode.setEnabled(enableLocal);
         
         wRemoteHost.setEnabled(enableRemote);
         wlRemoteHost.setEnabled(enableRemote);

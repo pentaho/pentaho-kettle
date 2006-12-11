@@ -479,6 +479,9 @@ public class SpoonLog extends Composite
 				{
 					try
 					{
+                        // Set the requested logging level.
+                        log.setLogLevel(executionConfiguration.getLogLevel());
+
 						trans = new Trans(log, spoon.getTransMeta().getFilename(), spoon.getTransMeta().getName(), new String[] { spoon.getTransMeta().getFilename() });
 						trans.setReplayDate(executionConfiguration.getReplayDate());
 						trans.open(spoon.rep, spoon.getTransMeta().getName(), spoon.getTransMeta().getDirectory().getPath(), spoon.getTransMeta().getFilename());
@@ -508,7 +511,7 @@ public class SpoonLog extends Composite
                         setVariables(executionConfiguration);
                         
 						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
-						trans.setSafeModeEnabled(wSafeMode.getSelection());
+						trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
                         
                         // Launch the step preparation in a different thread. 
                         // That way Spoon doesn't block anymore and that way we can follow the progress of the initialisation
@@ -815,6 +818,7 @@ public class SpoonLog extends Composite
         {
     		try
     		{
+                log.setLogLevel(executionConfiguration.getLogLevel());
     			log.logDetailed(toString(), Messages.getString("SpoonLog.Log.DoPreview")); //$NON-NLS-1$
                 String[] args=null;
 				Row arguments = executionConfiguration.getArguments();
@@ -826,6 +830,7 @@ public class SpoonLog extends Composite
 
 				spoon.tabfolder.setSelection(1);
 				trans = new Trans(log, spoon.getTransMeta(), executionConfiguration.getPreviewSteps(), executionConfiguration.getPreviewSizes());
+                trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
 				trans.execute(args);
 				preview = true;
 				readLog();
@@ -988,4 +993,8 @@ public class SpoonLog extends Composite
 		this.spoonHistoryRefresher = spoonHistoryRefresher;
 	}
 
+    public boolean isSafeModeChecked()
+    {
+        return wSafeMode.getSelection();
+    }
 }

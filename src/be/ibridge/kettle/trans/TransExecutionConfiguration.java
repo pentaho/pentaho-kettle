@@ -30,7 +30,9 @@ public class TransExecutionConfiguration implements Cloneable
     private String[] previewSteps;
     private int[]    previewSizes;
     private Date     replayDate;
-    
+    private boolean  safeModeEnabled;
+    private int      logLevel;
+
     public TransExecutionConfiguration()
     {
         clusterPosting = true;
@@ -315,5 +317,37 @@ public class TransExecutionConfiguration implements Cloneable
     public void setReplayDate(Date replayDate)
     {
         this.replayDate = replayDate;
+    }
+
+    /**
+     * @return the usingSafeMode
+     */
+    public boolean isSafeModeEnabled()
+    {
+        return safeModeEnabled;
+    }
+
+    /**
+     * @param usingSafeMode the usingSafeMode to set
+     */
+    public void setSafeModeEnabled(boolean usingSafeMode)
+    {
+        this.safeModeEnabled = usingSafeMode;
+    }
+
+    /**
+     * @return the logLevel
+     */
+    public int getLogLevel()
+    {
+        return logLevel;
+    }
+
+    /**
+     * @param logLevel the logLevel to set
+     */
+    public void setLogLevel(int logLevel)
+    {
+        this.logLevel = logLevel;
     }
 }
