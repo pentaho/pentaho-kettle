@@ -44,7 +44,7 @@ public class TransExecutionConfiguration implements Cloneable
         clusterPosting = true;
         clusterPreparing = true;
         clusterStarting = true;
-        clusterShowingTransformation = true;
+        clusterShowingTransformation = false;
         
         arguments = new Row();
         variables = new Row();

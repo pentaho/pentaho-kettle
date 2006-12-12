@@ -392,7 +392,6 @@ public class SpoonSlave extends Composite
 		if (refresh_busy) return;
 		refresh_busy = true;
 
-
         long time = new Date().getTime();
 		long msSinceLastUpdate = time - lastUpdateView;
 		if (msSinceLastUpdate > UPDATE_TIME_VIEW)
@@ -401,7 +400,6 @@ public class SpoonSlave extends Composite
             wTree.removeAll();
             
             // Determine the transformations on the slave servers
-            
             try
             {
                 slaveServerStatus = slaveServer.getStatus();

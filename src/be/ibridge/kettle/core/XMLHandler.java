@@ -590,7 +590,7 @@ public class XMLHandler
 		}
 		catch(Exception e)
 		{
-			throw new KettleXMLException("Error reading information from XML string : ", e);
+			throw new KettleXMLException("Error reading information from XML string : "+Const.CR+string, e);
 		}
 	}
 

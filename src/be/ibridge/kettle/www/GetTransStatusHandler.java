@@ -39,8 +39,6 @@ public class GetTransStatusHandler extends AbstractHandler
 
         if (log.isDebug()) log.logDebug(toString(), "Transformation status requested");
 
-        response.setContentType("text/html");
-
         OutputStream os = response.getOutputStream();
         PrintStream out = new PrintStream(os);
 
