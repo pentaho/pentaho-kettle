@@ -171,7 +171,7 @@ public class SpoonSlave extends Composite
 		wRefresh = new Button(this, SWT.PUSH);
 		wRefresh.setText(Messages.getString("SpoonSlave.Button.Refresh"));
         wRefresh.setEnabled(true);
-        wRefresh.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showErrors(); } });
+        wRefresh.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { refreshView(); } });
         
 		wError = new Button(this, SWT.PUSH);
 		wError.setText(Messages.getString("SpoonSlave.Button.ShowErrorLines")); //$NON-NLS-1$

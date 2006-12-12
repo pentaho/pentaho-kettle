@@ -1,12 +1,15 @@
 package be.ibridge.kettle.www;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.binary.Base64;
 import org.mortbay.jetty.handler.AbstractHandler;
 
 import be.ibridge.kettle.core.Const;
@@ -70,7 +73,15 @@ public class GetTransStatusHandler extends AbstractHandler
                 Log4jStringAppender appender = (Log4jStringAppender) transformationMap.getAppender(transName);
                 if (appender!=null)
                 {
-                    transStatus.setLoggingString(appender.getBuffer().toString());
+                    // The log can be quite large at times, we are going to put a base64 encoding around a compressed stream
+                    // of bytes to handle this one.
+                    
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    GZIPOutputStream gzos = new GZIPOutputStream(baos);
+                    gzos.write( appender.getBuffer().toString().getBytes() );
+                    gzos.close();
+                    
+                    transStatus.setLoggingString( new String(Base64.decodeBase64(baos.toByteArray())) );
                 }
                 
                 out.println(transStatus.getXML());

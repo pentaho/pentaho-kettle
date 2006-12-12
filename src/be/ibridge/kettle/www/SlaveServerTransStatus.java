@@ -1,8 +1,12 @@
 package be.ibridge.kettle.www;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.GZIPInputStream;
 
+import org.apache.commons.codec.binary.Base64;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 
@@ -86,7 +90,23 @@ public class SlaveServerTransStatus
         }
         
         LogWriter.getInstance().logBasic("SlaveServerTransStatus", "8");
-        loggingString = XMLHandler.getTagValue(transStatusNode, "logging_string");
+        String loggingString64 = XMLHandler.getTagValue(transStatusNode, "logging_string");
+        // This is a Base64 encoded GZIP compressed stream of data.
+        try
+        {
+            ByteArrayInputStream bais = new ByteArrayInputStream(Base64.decodeBase64(loggingString64.getBytes()));
+            GZIPInputStream gzip = new GZIPInputStream(bais);
+            int c;
+            StringBuffer buffer = new StringBuffer();
+            while ( (c=gzip.read())!=-1) buffer.append((char)c);
+            gzip.close();
+            loggingString = buffer.toString();
+        }
+        catch(IOException e)
+        {
+            loggingString = "Unable to decode logging from remote server : "+e.toString()+Const.CR+Const.getStackTracker(e);
+        }
+        
         LogWriter.getInstance().logBasic("SlaveServerTransStatus", "9-end");
     }
     
