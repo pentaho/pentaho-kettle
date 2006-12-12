@@ -27,6 +27,10 @@ import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.util.StringUtil;
 import be.ibridge.kettle.repository.Repository;
+import be.ibridge.kettle.www.GetStatusHandler;
+import be.ibridge.kettle.www.GetTransStatusHandler;
+import be.ibridge.kettle.www.SlaveServerStatus;
+import be.ibridge.kettle.www.SlaveServerTransStatus;
 
 public class SlaveServer extends ChangedFlag implements Cloneable
 {
@@ -491,6 +495,18 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         {
             throw new Exception("Unable to contact URL ["+urlToUse+"] to get the security reference information.", e);
         }
+    }
+    
+    public SlaveServerStatus getStatus() throws Exception
+    {
+        String xml = execService(GetStatusHandler.CONTEXT_PATH+"?xml=Y");
+        return SlaveServerStatus.fromXML(xml);
+    }
+
+    public SlaveServerTransStatus getTransStatus(String transName) throws Exception
+    {
+        String xml = execService(GetTransStatusHandler.CONTEXT_PATH+"?name="+transName+"&xml=Y");
+        return SlaveServerTransStatus.fromXML(xml);
     }
 }
 

@@ -28,6 +28,7 @@ import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
@@ -49,8 +50,6 @@ import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepStatus;
-import be.ibridge.kettle.www.GetStatusHandler;
-import be.ibridge.kettle.www.GetTransStatusHandler;
 import be.ibridge.kettle.www.SlaveServerStatus;
 import be.ibridge.kettle.www.SlaveServerTransStatus;
 
@@ -82,7 +81,7 @@ public class SpoonSlave extends Composite
 	private Button wError;
     private Button wRefresh;
 
-    private FormData fdText, fdSash;
+    private FormData fdTree, fdText, fdSash;
     private SelectionListener lsRefresh, lsError;
 
 	private long lastUpdateView;
@@ -116,7 +115,6 @@ public class SpoonSlave extends Composite
 
 		colinf = new ColumnInfo[] { 
                 new ColumnInfo(Messages.getString("SpoonSlave.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
-                new ColumnInfo(Messages.getString("SpoonSlave.Column.Status"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Copynr"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Read"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonSlave.Column.Written"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
@@ -132,8 +130,8 @@ public class SpoonSlave extends Composite
 		};
 
 		colinf[1].setAllignement(SWT.RIGHT);
-        colinf[2].setAllignement(SWT.LEFT);
-		colinf[3].setAllignement(SWT.RIGHT);
+        colinf[1].setAllignement(SWT.RIGHT);
+		colinf[2].setAllignement(SWT.RIGHT);
 		colinf[4].setAllignement(SWT.RIGHT);
 		colinf[5].setAllignement(SWT.RIGHT);
 		colinf[6].setAllignement(SWT.RIGHT);
@@ -143,16 +141,17 @@ public class SpoonSlave extends Composite
 		colinf[10].setAllignement(SWT.RIGHT);
 		colinf[11].setAllignement(SWT.RIGHT);
 		colinf[12].setAllignement(SWT.RIGHT);
-		colinf[13].setAllignement(SWT.RIGHT);
 
 		wTree = new Tree(sash, SWT.SINGLE | SWT.V_SCROLL | SWT.H_SCROLL);
         wTree.setHeaderVisible(true);
         TreeMemory.addTreeListener(wTree, STRING_SLAVE_LOG_TREE_NAME+slaveServer.toString());
+        Rectangle bounds = spoon.tabfolder.getBounds();
         for (int i=0;i<colinf.length;i++)
         {
             ColumnInfo columnInfo = colinf[i];
             TreeColumn treeColumn = new TreeColumn(wTree, columnInfo.getAllignement());
             treeColumn.setText(columnInfo.getName());
+            treeColumn.setWidth(bounds.width/colinf.length);
         }
         wTree.addSelectionListener(new SelectionAdapter()
             {
@@ -175,6 +174,15 @@ public class SpoonSlave extends Composite
 		wError.setText(Messages.getString("SpoonSlave.Button.ShowErrorLines")); //$NON-NLS-1$
         
         BaseStepDialog.positionBottomButtons(this, new Button[] { wRefresh, wError }, Const.MARGIN, null);
+        
+        // Put tree on top
+        fdTree = new FormData();
+        fdTree.left = new FormAttachment(0, 0);
+        fdTree.top = new FormAttachment(0, 0);
+        fdTree.right = new FormAttachment(100, 0);
+        fdTree.bottom = new FormAttachment(100, 0);
+        wTree.setLayoutData(fdTree);
+
         
 		// Put text in the middle
 		fdText = new FormData();
@@ -258,10 +266,13 @@ public class SpoonSlave extends Composite
                     String errorDescription = transStatus.getErrorDescription();
                     if (!Const.isEmpty(errorDescription))
                     {
-                        message.append(errorDescription).append(Const.CR);
+                        message.append(errorDescription).append(Const.CR).append(Const.CR);
                     }
                     
-                    
+                    if (!Const.isEmpty(transStatus.getLoggingString()))
+                    {
+                        message.append(transStatus.getLoggingString()).append(Const.CR);
+                    }
                         
                     wText.setText(message.toString());
                 }
@@ -297,8 +308,7 @@ public class SpoonSlave extends Composite
             
             try
             {
-                String xml = slaveServer.execService(GetStatusHandler.CONTEXT_PATH+"?xml=Y");
-                slaveServerStatus = SlaveServerStatus.fromXML(xml);
+                slaveServerStatus = slaveServer.getStatus();
             }
             catch(Exception e)
             {
@@ -315,14 +325,14 @@ public class SpoonSlave extends Composite
                 
                 try
                 {
-                    String xml = slaveServer.execService(GetTransStatusHandler.CONTEXT_PATH+"?xml=Y");
-                    SlaveServerTransStatus ts = SlaveServerTransStatus.fromXML(xml);
+                    SlaveServerTransStatus ts = slaveServer.getTransStatus(transStatus.getTransName());
                     List stepStatusList = ts.getStepStatusList();
                     transStatus.setStepStatusList(stepStatusList);
+                    transStatus.setLoggingString(ts.getLoggingString());
                     
                     for (int s=0;s<stepStatusList.size();s++)
                     {
-                        StepStatus stepStatus = (StepStatus) stepStatusList.get(i);
+                        StepStatus stepStatus = (StepStatus) stepStatusList.get(s);
                         TreeItem stepItem = new TreeItem(transItem, SWT.NONE);
                         stepItem.setText(stepStatus.getSpoonSlaveLogFields());
                     }
@@ -332,7 +342,10 @@ public class SpoonSlave extends Composite
                     transStatus.setErrorDescription("Unable to access transformation details : "+Const.CR+Const.getStackTracker(e));
                 } 
 			}
+            
+            TreeMemory.setExpandedFromMemory(wTree, STRING_SLAVE_LOG_TREE_NAME+slaveServer.toString());
 		}
+        
 
 		refresh_busy = false;
 	}

@@ -68,7 +68,7 @@ public class SlaveServerTransStatus
         statusDescription = XMLHandler.getTagValue(transStatusNode, "status_desc");
         errorDescription = XMLHandler.getTagValue(transStatusNode, "error_desc");
         
-        Node statusListNode = XMLHandler.getSubNode(transStatusNode, "stepstatusnode");
+        Node statusListNode = XMLHandler.getSubNode(transStatusNode, "stepstatuslist");
         int nr = XMLHandler.countNodes(statusListNode, StepStatus.XML_TAG);
         for (int i=0;i<nr;i++)
         {

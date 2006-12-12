@@ -1325,6 +1325,8 @@ public class Spoon implements AddUndoPositionInterface
                 if (path[0].equals(STRING_PARTITIONS)) object = transMeta.findPartitionSchema(path[1]);
                 if (path[0].equals(STRING_CLUSTERS)) object = transMeta.findClusterSchema(path[1]);
                 break;
+            case 3:
+                if (path[0].equals(STRING_CLUSTERS)) object = transMeta.findSlaveServer(path[2]);
             default: break;
             }
             if (object!=null)
@@ -5305,15 +5307,10 @@ public class Spoon implements AddUndoPositionInterface
             {
                 throw new KettleException("There was an error starting the transformation on the remote server: "+Const.CR+webResult.getMessage());
             }
-            
-            MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-            box.setText("OK");
-            box.setMessage("The transformation was started succesfully on the remote server ["+slaveServer+"]");
-            box.open();
         }
         catch (Exception e)
         {
-            new ErrorDialog(shell, "Erro", "Error sending transformation to server", e);
+            new ErrorDialog(shell, "Error", "Error sending transformation to server", e);
         }
     }
 
@@ -5409,11 +5406,6 @@ public class Spoon implements AddUndoPositionInterface
                     }
                 }
             }
-            
-            MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION | SWT.OK);
-            box.setText("OK");
-            box.setMessage("The transformation was posted succesfully on the cluster\nRefer to the web-interfaces to follow the results.");
-            box.open();
         }
         catch(Exception e)
         {
