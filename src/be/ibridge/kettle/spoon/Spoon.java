@@ -5452,6 +5452,13 @@ public class Spoon implements AddUndoPositionInterface
                         }
                     }
                 }
+                
+                // Now add monitors for the master and all the slave servers
+                addSpoonSlave(masterServer);
+                for (int i=0;i<slaves.length;i++)
+                {
+                    addSpoonSlave(slaves[i]);
+                }
             }
         }
         catch(Exception e)
