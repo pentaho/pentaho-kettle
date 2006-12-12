@@ -51,7 +51,13 @@ public class AddTransServlet extends HttpServlet
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
         
         PrintStream out;
-        if (useXML) out = new PrintStream(new GZIPOutputStream(response.getOutputStream()));
+        GZIPOutputStream gzout=null;
+        
+        if (useXML)
+        {
+            gzout = new GZIPOutputStream(response.getOutputStream());
+            out = new PrintStream(gzout);
+        }
         else out = new PrintStream(response.getOutputStream());
 
         InputStream is = request.getInputStream(); // read from the client
@@ -141,7 +147,7 @@ public class AddTransServlet extends HttpServlet
         }
 
         out.flush();
-        out.close();
+        if (useXML) gzout.flush();
 
         // Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
         // baseRequest.setHandled(true);
