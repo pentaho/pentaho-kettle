@@ -5356,21 +5356,21 @@ public class Spoon implements AddUndoPositionInterface
             if (slaveServer==null) throw new KettleException("No slave server specified");
             if (Const.isEmpty(transMeta.getName())) throw new KettleException("The transformation needs a name to uniquely identify it by on the remote server.");
             
-            String reply = slaveServer.sendXML(new TransConfiguration(transMeta, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y", true);
+            String reply = slaveServer.sendXML(new TransConfiguration(transMeta, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
             WebResult webResult = WebResult.fromXMLString(reply);
             if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
             {
                 throw new KettleException("There was an error posting the transformation on the remote server: "+Const.CR+webResult.getMessage());
             }
             
-            reply = slaveServer.getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+transMeta.getName()+"&xml=Y", true);
+            reply = slaveServer.getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+transMeta.getName()+"&xml=Y");
             webResult = WebResult.fromXMLString(reply);
             if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
             {
                 throw new KettleException("There was an error preparing the transformation for excution on the remote server: "+Const.CR+webResult.getMessage());
             }
             
-            reply = slaveServer.getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+transMeta.getName()+"&xml=Y", true);
+            reply = slaveServer.getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+transMeta.getName()+"&xml=Y");
             webResult = WebResult.fromXMLString(reply);
             if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
             {
@@ -5401,7 +5401,7 @@ public class Spoon implements AddUndoPositionInterface
             if (show) new Spoon(log, shell.getDisplay(), master, rep).open();
             if (post)
             {
-                String masterReply = masterServer.sendXML(new TransConfiguration(master, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y", true);
+                String masterReply = masterServer.sendXML(new TransConfiguration(master, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
                 WebResult webResult = WebResult.fromXMLString(masterReply);
                 if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                 {
@@ -5418,7 +5418,7 @@ public class Spoon implements AddUndoPositionInterface
                 if (show) new Spoon(log, shell.getDisplay(), slaveTrans, rep).open();
                 if (post)
                 {
-                    String slaveReply = slaves[i].sendXML(new TransConfiguration(slaveTrans, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y", true);
+                    String slaveReply = slaves[i].sendXML(new TransConfiguration(slaveTrans, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
                     WebResult webResult = WebResult.fromXMLString(slaveReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                     {
@@ -5432,7 +5432,7 @@ public class Spoon implements AddUndoPositionInterface
                 if (prepare)
                 {
                     // Prepare the master...
-                    String masterReply = masterServer.getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y", true);
+                    String masterReply = masterServer.getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
                     WebResult webResult = WebResult.fromXMLString(masterReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                     {
@@ -5443,7 +5443,7 @@ public class Spoon implements AddUndoPositionInterface
                     for (int i=0;i<slaves.length;i++)
                     {
                         TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                        String slaveReply = slaves[i].getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y", true);
+                        String slaveReply = slaves[i].getContentFromServer(PrepareExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
                         webResult = WebResult.fromXMLString(slaveReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {
@@ -5455,7 +5455,7 @@ public class Spoon implements AddUndoPositionInterface
                 if (start)
                 {
                     // Start the master...
-                    String masterReply = masterServer.getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y", true);
+                    String masterReply = masterServer.getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+master.getName()+"&xml=Y");
                     WebResult webResult = WebResult.fromXMLString(masterReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                     {
@@ -5466,7 +5466,7 @@ public class Spoon implements AddUndoPositionInterface
                     for (int i=0;i<slaves.length;i++)
                     {
                         TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                        String slaveReply = slaves[i].getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y", true);
+                        String slaveReply = slaves[i].getContentFromServer(StartExecutionTransHandler.CONTEXT_PATH+"?name="+slaveTrans.getName()+"&xml=Y");
                         webResult = WebResult.fromXMLString(slaveReply);
                         if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                         {

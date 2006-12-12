@@ -3,13 +3,15 @@ package be.ibridge.kettle.www;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintStream;
-import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+
+import org.mortbay.jetty.HttpConnection;
+import org.mortbay.jetty.Request;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
@@ -50,16 +52,7 @@ public class AddTransServlet extends HttpServlet
 
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
         
-        PrintStream out;
-        GZIPOutputStream gzout=null;
-        
-        if (useXML)
-        {
-            gzout = new GZIPOutputStream(response.getOutputStream());
-            out = new PrintStream(gzout);
-        }
-        else out = new PrintStream(response.getOutputStream());
-
+        PrintStream out = new PrintStream(response.getOutputStream());
         InputStream is = request.getInputStream(); // read from the client
 
         if (useXML)
@@ -147,10 +140,9 @@ public class AddTransServlet extends HttpServlet
         }
 
         out.flush();
-        if (useXML) gzout.flush();
 
-        // Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
-        // baseRequest.setHandled(true);
+        Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
+        baseRequest.setHandled(true);
     }
     
     public String toString()

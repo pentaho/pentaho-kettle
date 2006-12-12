@@ -451,7 +451,7 @@ public class SlaveServerDialog extends Dialog
             
             String xml = "<sample/>";
             
-            String reply = slaveServer.sendXML(xml, AddTransServlet.CONTEXT_PATH, false);
+            String reply = slaveServer.sendXML(xml, AddTransServlet.CONTEXT_PATH);
             
             String message = "Testing reply from server URL: "+slaveServer.constructUrl(AddTransServlet.CONTEXT_PATH)+Const.CR+"Using content: "+Const.CR+Const.CR;
             message+=xml;
