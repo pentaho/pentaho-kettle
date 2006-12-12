@@ -2,8 +2,8 @@ package be.ibridge.kettle.www;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -53,26 +53,20 @@ public class AddTransServlet extends HttpServlet
 
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
         
-        if (useXML)
-        {
-            response.setContentType("text/xml");
-        }
-        else
-        {
-            response.setContentType("text/html");
-        }
-        
-        OutputStream os = response.getOutputStream(); // to write to the browser/client
+        PrintStream out;
+        if (useXML) out = new PrintStream(new GZIPOutputStream(response.getOutputStream()));
+        else out = new PrintStream(response.getOutputStream());
+
         InputStream is = request.getInputStream(); // read from the client
-        
-        PrintStream out = new PrintStream(os);
 
         if (useXML)
         {
+            response.setContentType("text/xml");
             out.print(XMLHandler.getXMLHeader());
         }
         else
         {
+            response.setContentType("text/html");
             out.println("<HTML>");
             out.println("<HEAD><TITLE>Add transformation</TITLE></HEAD>");
             out.println("<BODY>");

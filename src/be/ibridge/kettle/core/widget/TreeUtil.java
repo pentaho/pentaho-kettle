@@ -4,6 +4,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
 import org.eclipse.swt.widgets.TreeItem;
 
 public class TreeUtil
@@ -15,6 +16,13 @@ public class TreeUtil
         Image image = new Image(tree.getDisplay(), 10, 10);
         GC gc = new GC(image);
         
+        for (int i=0;i<max.length;i++)
+        {
+            TreeColumn treeColumn = tree.getColumn(i); 
+            Point point = gc.textExtent(treeColumn.getText());
+            max[i] = point.x;
+        }
+        
         getMaxWidths(tree.getItems(), max, gc);
         
         gc.dispose();
@@ -22,7 +30,8 @@ public class TreeUtil
         
         for (int i=0;i<max.length;i++)
         {
-            tree.getColumn(i).setWidth(max[i]+20);
+            TreeColumn treeColumn = tree.getColumn(i); 
+            treeColumn.setWidth(max[i]+20);
         }
     }
 

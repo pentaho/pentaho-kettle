@@ -1,8 +1,8 @@
 package be.ibridge.kettle.www;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -41,13 +41,13 @@ public class PrepareExecutionTransHandler extends AbstractHandler
 
         if (log.isDebug()) log.logDebug(toString(), "Prepare execution of transformation requested");
 
-
-        OutputStream os = response.getOutputStream();
-        PrintStream out = new PrintStream(os);
-
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
-        
+
+        PrintStream out;
+        if (useXML) out = new PrintStream(new GZIPOutputStream(response.getOutputStream()));
+        else out = new PrintStream(response.getOutputStream());
+
         if (useXML)
         {
             response.setContentType("text/xml");

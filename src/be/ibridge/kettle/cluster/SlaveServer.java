@@ -1,6 +1,5 @@
 package be.ibridge.kettle.cluster;
 
-import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,6 +9,7 @@ import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.zip.GZIPInputStream;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -291,7 +291,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         this.port = port;
     }
 
-    public String sendXML(String xml, String service) throws Exception
+    public String sendXML(String xml, String service, boolean repliesIsCompressed) throws Exception
     {
         // The content
         // 
@@ -324,7 +324,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable
             log.logDebug(toString(), "Response status code: " + result);
             
             // the response
-            InputStream inputStream = post.getResponseBodyAsStream();
+            InputStream inputStream;
+            if (repliesIsCompressed) inputStream = new GZIPInputStream(post.getResponseBodyAsStream());
+            else inputStream = post.getResponseBodyAsStream();
+            
             StringBuffer bodyBuffer = new StringBuffer();
             int c;
             while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
@@ -362,7 +365,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         this.master = master;
     }
 
-    public String execService(String service) throws Exception
+    public String execService(String service, boolean repliesIsCompressed) throws Exception
     {
         // Prepare HTTP get
         // 
@@ -379,7 +382,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable
             log.logDebug(toString(), "Response status code: " + result);
             
             // the response
-            InputStream inputStream = new BufferedInputStream(method.getResponseBodyAsStream(), 1000);
+            InputStream inputStream;
+            if (repliesIsCompressed) inputStream = new GZIPInputStream(method.getResponseBodyAsStream());
+            else inputStream = method.getResponseBodyAsStream();
+            
             StringBuffer bodyBuffer = new StringBuffer();
             int c;
             while ( (c=inputStream.read())!=-1) 
@@ -410,7 +416,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
      * @return the requested information
      * @throws Exception in case something goes awry 
      */
-    public String getContentFromServer(String service) throws Exception
+    public String getContentFromServer(String service, boolean repliesIsCompressed) throws Exception
     {
         LogWriter log = LogWriter.getInstance();
         
@@ -456,7 +462,11 @@ public class SlaveServer extends ChangedFlag implements Cloneable
                 log.logDetailed(toString(), "Start reading reply from webserver.");
     
                 // Read the result from the server...
-                input = new BufferedReader(new InputStreamReader( connection.getInputStream() ));
+                InputStream inputStream;
+                if (repliesIsCompressed) inputStream = new GZIPInputStream(connection.getInputStream());
+                else inputStream = connection.getInputStream();
+                
+                input = new BufferedReader(new InputStreamReader( inputStream ));
                 
                 long bytesRead = 0L;
                 String line;
@@ -514,25 +524,25 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     
     public SlaveServerStatus getStatus() throws Exception
     {
-        String xml = execService(GetStatusHandler.CONTEXT_PATH+"?xml=Y");
+        String xml = execService(GetStatusHandler.CONTEXT_PATH+"?xml=Y", true);
         return SlaveServerStatus.fromXML(xml);
     }
 
     public SlaveServerTransStatus getTransStatus(String transName) throws Exception
     {
-        String xml = execService(GetTransStatusHandler.CONTEXT_PATH+"?name="+transName+"&xml=Y");
+        String xml = execService(GetTransStatusHandler.CONTEXT_PATH+"?name="+transName+"&xml=Y", true);
         return SlaveServerTransStatus.fromXML(xml);
     }
     
     public WebResult stopTransformation(String transName) throws Exception
     {
-        String xml = execService(StopTransHandler.CONTEXT_PATH+"?name="+transName+"&xml=Y");
+        String xml = execService(StopTransHandler.CONTEXT_PATH+"?name="+transName+"&xml=Y", true);
         return WebResult.fromXMLString(xml);
     }
     
     public WebResult startTransformation(String transName) throws Exception
     {
-        String xml = execService(StartTransHandler.CONTEXT_PATH+"?name="+transName+"&xml=Y");
+        String xml = execService(StartTransHandler.CONTEXT_PATH+"?name="+transName+"&xml=Y", true);
         return WebResult.fromXMLString(xml);
     }
 }
