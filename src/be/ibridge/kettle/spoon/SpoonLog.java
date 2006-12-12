@@ -20,7 +20,6 @@ import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Properties;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -443,7 +442,7 @@ public class SpoonLog extends Composite
         }
     }
 
-	public synchronized void startstop(TransExecutionConfiguration executionConfiguration)
+	public synchronized void start(TransExecutionConfiguration executionConfiguration)
 	{
 		if (!running) // Not running, start the transformation...
 		{
@@ -498,16 +497,9 @@ public class SpoonLog extends Composite
 					readLog();
 					if (trans != null)
 					{
-                        final String args[];
 						Row arguments = executionConfiguration.getArguments();
-						if (arguments != null)
-						{
-							args = convertArguments(arguments);
-                        }
-                        else
-                        {
-                            args = null;
-                        }
+                        final String args[];
+						if (arguments != null) args = convertArguments(arguments); else args = null;
                         setVariables(executionConfiguration);
                         
 						log.logMinimal(Spoon.APP_NAME, Messages.getString("SpoonLog.Log.LaunchingTransformation") + trans.getTransMeta().getName() + "]..."); //$NON-NLS-1$ //$NON-NLS-2$
@@ -624,18 +616,8 @@ public class SpoonLog extends Composite
 
     private void setVariables(TransExecutionConfiguration executionConfiguration)
     {
-        Properties sp = new Properties();
-        KettleVariables kettleVariables = KettleVariables.getInstance();
-        sp.putAll(kettleVariables.getProperties());
-        sp.putAll(System.getProperties());
-
         Row variables = executionConfiguration.getVariables();
-        for (int i=0;i<variables.size();i++)
-        {
-            Value varval = variables.getValue(i);
-            kettleVariables.setVariable(varval.getName(), varval.getString());
-            LogWriter.getInstance().logBasic(Spoon.APP_NAME, "Variable ${"+varval.getName()+"} set to ["+varval.getString()+"]");
-        }
+        KettleVariables.getInstance().setVariables(variables);
     }
 
     public Row getArguments(TransMeta transMeta)

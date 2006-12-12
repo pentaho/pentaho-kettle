@@ -56,6 +56,8 @@ import be.ibridge.kettle.repository.Repository;
  */
 public class Value implements Cloneable, XMLInterface, Serializable
 {
+    public static final String XML_TAG = "value";
+
     private static final long serialVersionUID = -6310073485210258622L;
 
     /**
@@ -104,6 +106,7 @@ public class Value implements Cloneable, XMLInterface, Serializable
 			"-",                                                          // $NON-NLS-1$
 			"Number", "String", "Date", "Boolean", "Integer", "BigNumber", "Serializable", "Binary" // $NON-NLS-1$ $NON-NLS-2$ $NON-NLS-3$ $NON-NLS-4$ $NON-NLS-5$ $NON-NLS-6$ $NON-NLS-7$
 		};
+
 
 	private ValueInterface value;
 
@@ -3615,13 +3618,14 @@ public class Value implements Cloneable, XMLInterface, Serializable
 	public String getXML()
 	{
 		StringBuffer retval = new StringBuffer(128);
-
+		retval.append("<"+XML_TAG+">");
 		retval.append(XMLHandler.addTagValue("name", getName(), false));
 		retval.append(XMLHandler.addTagValue("type", getTypeDesc(), false));
 		retval.append(XMLHandler.addTagValue("text", toString(false), false));
 		retval.append(XMLHandler.addTagValue("length", getLength(), false));
 		retval.append(XMLHandler.addTagValue("precision", getPrecision(), false));
 		retval.append(XMLHandler.addTagValue("isnull", isNull(), false));
+        retval.append("</"+XML_TAG+">");
 
 		return retval.toString();
 	}

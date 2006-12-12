@@ -30,6 +30,8 @@ import be.ibridge.kettle.repository.Repository;
 
 public class SlaveServer extends ChangedFlag implements Cloneable
 {
+    public static final String XML_TAG = "slaveserver";
+
     private static LogWriter log = LogWriter.getInstance();
     
     private String hostname;
@@ -82,7 +84,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     {
         StringBuffer xml = new StringBuffer();
         
-        xml.append("<slaveserver>");
+        xml.append("<"+XML_TAG+">");
+        
         xml.append(XMLHandler.addTagValue("hostname", hostname, false));
         xml.append(XMLHandler.addTagValue("port",     port, false));
         xml.append(XMLHandler.addTagValue("username", username, false));
@@ -92,8 +95,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         xml.append(XMLHandler.addTagValue("non_proxy_hosts", nonProxyHosts, false));
         xml.append(XMLHandler.addTagValue("master", master, false));
 
-        xml.append("</slaveserver>");
-
+        xml.append("</"+XML_TAG+">");
+        
         return xml.toString();
     }
     

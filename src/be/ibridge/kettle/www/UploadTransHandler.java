@@ -25,6 +25,8 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.trans.Trans;
+import be.ibridge.kettle.trans.TransConfiguration;
+import be.ibridge.kettle.trans.TransExecutionConfiguration;
 import be.ibridge.kettle.trans.TransMeta;
 
 public class UploadTransHandler extends AbstractHandler
@@ -64,7 +66,7 @@ public class UploadTransHandler extends AbstractHandler
             Node transNode = XMLHandler.getSubNode(doc, "transformation");
             TransMeta transMeta = new TransMeta(transNode);
             Trans trans = new Trans(log, transMeta);
-            transformationMap.addTransformation(trans.getName(), trans);
+            transformationMap.addTransformation(trans.getName(), trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
 
             response.setContentType("text/html");
             writer.write("<html><title>Uploaded a Kettle transformation</title>");

@@ -728,35 +728,35 @@ public class ValueTest extends TestCase
 	    vs1.setLength(4);
 	    vs1.setPrecision(2);
 	    result = vs1.getXML();
-	    assertEquals("<name>Name</name><type>String</type><text>test</text><length>4</length><precision>-1</precision><isnull>N</isnull>", result);	    
+	    assertEquals("<value><name>Name</name><type>String</type><text>test</text><length>4</length><precision>-1</precision><isnull>N</isnull></value>", result);	    
 
 	    Value vs2= new Value("Name", Value.VALUE_TYPE_BOOLEAN);
 	    vs2.setValue(false);
 	    vs2.setLength(4);
 	    vs2.setPrecision(2);
 	    result = vs2.getXML();
-	    assertEquals("<name>Name</name><type>Boolean</type><text>false</text><length>-1</length><precision>-1</precision><isnull>N</isnull>", result);	  	   	 
+	    assertEquals("<value><name>Name</name><type>Boolean</type><text>false</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value>", result);	  	   	 
 
 	    Value vs3= new Value("Name", Value.VALUE_TYPE_INTEGER);
 	    vs3.setValue(10);
 	    vs3.setLength(4);
 	    vs3.setPrecision(2);
 	    result = vs3.getXML();
-	    assertEquals("<name>Name</name><type>Integer</type><text>10</text><length>4</length><precision>0</precision><isnull>N</isnull>", result);	       
+	    assertEquals("<value><name>Name</name><type>Integer</type><text>10</text><length>4</length><precision>0</precision><isnull>N</isnull></value>", result);	       
 	    
 	    Value vs4 = new Value("Name", Value.VALUE_TYPE_NUMBER);
 	    vs4.setValue(10.0D);
 	    vs4.setLength(4);
 	    vs4.setPrecision(2);
 	    result = vs4.getXML();
-	    assertEquals("<name>Name</name><type>Number</type><text>10.0</text><length>4</length><precision>2</precision><isnull>N</isnull>", result);
+	    assertEquals("<value><name>Name</name><type>Number</type><text>10.0</text><length>4</length><precision>2</precision><isnull>N</isnull></value>", result);
 	    	    
 	    Value vs5 = new Value("Name", Value.VALUE_TYPE_BIGNUMBER);
 	    vs5.setValue(new BigDecimal(10));
 	    vs5.setLength(4);
 	    vs5.setPrecision(2);
 	    result = vs5.getXML();
-	    assertEquals("<name>Name</name><type>BigNumber</type><text>10</text><length>4</length><precision>2</precision><isnull>N</isnull>", result);
+	    assertEquals("<value><name>Name</name><type>BigNumber</type><text>10</text><length>4</length><precision>2</precision><isnull>N</isnull></value>", result);
 
 	    SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");
 	    Date dt = df.parse("2006/03/01 17:01:02.005", new ParsePosition(0));
@@ -765,7 +765,7 @@ public class ValueTest extends TestCase
 	    vs6.setLength(4);
 	    vs6.setPrecision(2);
 	    result = vs6.getXML();
-	    assertEquals("<name>Name</name><type>Date</type><text>2006&#47;03&#47;01 17:01:02.005</text><length>-1</length><precision>2</precision><isnull>N</isnull>", result);	   	    		
+	    assertEquals("<value><name>Name</name><type>Date</type><text>2006&#47;03&#47;01 17:01:02.005</text><length>-1</length><precision>2</precision><isnull>N</isnull></value>", result);	   	    		
 	}
 
 	/**

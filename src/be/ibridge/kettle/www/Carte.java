@@ -5,6 +5,8 @@ import be.ibridge.kettle.core.util.EnvUtil;
 import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.Trans;
+import be.ibridge.kettle.trans.TransConfiguration;
+import be.ibridge.kettle.trans.TransExecutionConfiguration;
 import be.ibridge.kettle.trans.TransMeta;
 import be.ibridge.kettle.trans.TransPreviewFactory;
 import be.ibridge.kettle.trans.step.rowgenerator.RowGeneratorMeta;
@@ -18,7 +20,7 @@ public class Carte
         TransformationMap map = new TransformationMap(Thread.currentThread().getName());
         
         Trans trans = generateTestTransformation();
-        map.addTransformation(trans.getName(), trans);
+        map.addTransformation(trans.getName(), trans, new TransConfiguration(trans.getTransMeta(), new TransExecutionConfiguration()));
         
         int port = WebServer.PORT;
         if (args.length>=1)

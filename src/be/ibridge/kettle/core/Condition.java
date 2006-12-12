@@ -679,9 +679,7 @@ public class Condition implements Cloneable, XMLInterface
 			retval+=indent2+XMLHandler.addTagValue("rightvalue", getRightValuename());
 			if (getRightExact()!=null) 
 			{
-				retval+="<value>  ";
 				retval+=indent2+getRightExact().getXML();
-				retval+="  </value>";
 			}
 		}
 		else
@@ -725,7 +723,7 @@ public class Condition implements Cloneable, XMLInterface
 				setLeftValuename( XMLHandler.getTagValue(condnode, "leftvalue") );
 				setFunction( getFunction(XMLHandler.getTagValue(condnode, "function") ) );
 				setRightValuename( XMLHandler.getTagValue(condnode, "rightvalue") );
-				Node exactnode = XMLHandler.getSubNode(condnode, "value");
+				Node exactnode = XMLHandler.getSubNode(condnode, Value.XML_TAG);
 				if (exactnode!=null)
 				{
 					Value exact = new Value(exactnode);

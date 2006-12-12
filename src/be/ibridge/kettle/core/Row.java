@@ -28,6 +28,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
+import org.w3c.dom.Node;
+
 import be.ibridge.kettle.core.exception.KettleEOFException;
 import be.ibridge.kettle.core.exception.KettleFileException;
 import be.ibridge.kettle.core.value.Value;
@@ -46,8 +48,9 @@ import be.ibridge.kettle.core.value.Value;
  */
 public class Row implements XMLInterface, Comparable, Serializable
 {
+    public static final String XML_TAG = "row";
+    
     private final List list = new ArrayList();
-
     public static final long serialVersionUID = 0x8D8EA0264F7A1C30L;
 
     /** Ignore this row? */
@@ -865,16 +868,29 @@ public class Row implements XMLInterface, Comparable, Serializable
 	 */
 	public String getXML()
 	{
-		StringBuffer retval= new StringBuffer("<row>");
-		// retval.append(XMLHandler.addTagValue("logdate", logdate));
-		for (int i=0;i<size();i++)
+		StringBuffer xml= new StringBuffer();
+		
+        xml.append("<"+XML_TAG+">");
+        
+        for (int i=0;i<size();i++)
 		{
-			retval.append(getValue(i).getXML());
+			xml.append(getValue(i).getXML());
 		}
-		retval.append("</row>").append(Const.CR);
+        
+		xml.append("</"+XML_TAG+">");
 
-		return retval.toString();
+		return xml.toString();
 	}
+    
+    public Row(Node rowNode)
+    {
+        int nrValues = XMLHandler.countNodes(rowNode, Value.XML_TAG);
+        for (int i=0;i<nrValues;i++)
+        {
+            Node valueNode = XMLHandler.getSubNodeByNr(rowNode, Value.XML_TAG, i);
+            addValue(new Value(valueNode));
+        }
+    }
 
     public static final void sortRows(List rows, int fieldNrs[], boolean ascDesc[])
     {

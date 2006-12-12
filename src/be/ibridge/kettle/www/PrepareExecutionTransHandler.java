@@ -13,11 +13,14 @@ import org.mortbay.jetty.Request;
 import org.mortbay.jetty.handler.AbstractHandler;
 
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.KettleVariables;
 import be.ibridge.kettle.core.LocalVariables;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.logging.Log4jStringAppender;
 import be.ibridge.kettle.trans.Trans;
+import be.ibridge.kettle.trans.TransConfiguration;
+import be.ibridge.kettle.trans.TransExecutionConfiguration;
 
 public class PrepareExecutionTransHandler extends AbstractHandler
 {
@@ -61,11 +64,20 @@ public class PrepareExecutionTransHandler extends AbstractHandler
         try
         {
             // Create a variables space to work in, separate from the other transformations running.
-            LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), transformationMap.getParentThreadName(), false);
+            KettleVariables kettleVariables = LocalVariables.getInstance().createKettleVariables(Thread.currentThread().getName(), transformationMap.getParentThreadName(), false);
             
             Trans trans = transformationMap.getTransformation(transName);
-            if (trans!=null)
+            TransConfiguration transConfiguration = transformationMap.getConfiguration(transName);
+            if (trans!=null && transConfiguration!=null)
             {
+                TransExecutionConfiguration executionConfiguration = transConfiguration.getTransExecutionConfiguration();
+                // Set the appropriate logging, variables, arguments, replaydate, ...
+                // etc.
+                log.setLogLevel(executionConfiguration.getLogLevel());
+                kettleVariables.setVariables(executionConfiguration.getVariables());
+                trans.getTransMeta().setArguments(executionConfiguration.getArgumentStrings());
+                trans.setReplayDate(executionConfiguration.getReplayDate());
+                
                 // Log to a String
                 Log4jStringAppender appender = LogWriter.createStringAppender();
                 log.addAppender(appender);

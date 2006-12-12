@@ -13,13 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.mortbay.jetty.HttpConnection;
 import org.mortbay.jetty.Request;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.trans.Trans;
+import be.ibridge.kettle.trans.TransConfiguration;
 import be.ibridge.kettle.trans.TransMeta;
 
 public class AddTransServlet extends HttpServlet
@@ -89,11 +88,10 @@ public class AddTransServlet extends HttpServlet
                 xml.append((char)c);
             }
             
-            // Parse the XML, create a transformation
+            // Parse the XML, create a transformation configuration
             //
-            Document doc = XMLHandler.loadXMLString(xml.toString());
-            Node transNode = XMLHandler.getSubNode(doc, "transformation");
-            TransMeta transMeta = new TransMeta(transNode);
+            TransConfiguration transConfiguration = TransConfiguration.fromXML(xml.toString());
+            TransMeta transMeta = transConfiguration.getTransMeta();
             
             // Create the transformation and store in the list...
             //
@@ -108,7 +106,7 @@ public class AddTransServlet extends HttpServlet
                 }
             }
             
-            transformationMap.addTransformation(transMeta.getName(), trans);
+            transformationMap.addTransformation(transMeta.getName(), trans, transConfiguration);
 
             String message;
             if (oldOne!=null)

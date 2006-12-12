@@ -78,6 +78,8 @@ import be.ibridge.kettle.trans.step.StepPartitioningMeta;
  */
 public class TransMeta implements XMLInterface
 {
+    public static final String XML_TAG = "transformation";
+
     private static LogWriter    log                = LogWriter.getInstance();
 
     private List                inputFiles;
@@ -188,6 +190,7 @@ public class TransMeta implements XMLInterface
     public static final String  desc_type_undo[]   = { "", Messages.getString("TransMeta.UndoTypeDesc.UndoChange"), Messages.getString("TransMeta.UndoTypeDesc.UndoNew"), Messages.getString("TransMeta.UndoTypeDesc.UndoDelete"), Messages.getString("TransMeta.UndoTypeDesc.UndoPosition") }; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
 
     private static final String STRING_MODIFIED_DATE = "modified_date";
+
 
     /**
      * Builds a new empty transformation.
@@ -2082,7 +2085,7 @@ public class TransMeta implements XMLInterface
 
         StringBuffer retval = new StringBuffer();
 
-        retval.append("<transformation>" + Const.CR); //$NON-NLS-1$
+        retval.append("<"+XML_TAG+">" + Const.CR); //$NON-NLS-1$
 
         retval.append("  <info>" + Const.CR); //$NON-NLS-1$
 
@@ -2188,7 +2191,7 @@ public class TransMeta implements XMLInterface
             retval.append(stepMeta.getXML());
         }
 
-        retval.append("</transformation>" + Const.CR); //$NON-NLS-1$
+        retval.append("</"+XML_TAG+">" + Const.CR); //$NON-NLS-1$
 
         return retval.toString();
     }

@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import be.ibridge.kettle.core.util.EnvUtil;
+import be.ibridge.kettle.core.value.Value;
 
 /**
  * This class is a container for "Local" enrvironment variables.
@@ -167,5 +168,18 @@ public class KettleVariables
     public void setParentThread(String parentThread)
     {
         this.parentThread = parentThread;
+    }
+
+    /**
+     * Set the variables defined in the row values
+     * @param variables row of values with the name containing the name of the variable and the string the variable value.
+     */
+    public void setVariables(Row variables)
+    {
+        for (int i=0;i<variables.size();i++)
+        {
+            Value value = variables.getValue(i);
+            setVariable(value.getName(), value.getString());
+        }
     }
 }

@@ -146,6 +146,7 @@ import be.ibridge.kettle.spoon.wizards.CopyTableWizardPage2;
 import be.ibridge.kettle.trans.DatabaseImpact;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
+import be.ibridge.kettle.trans.TransConfiguration;
 import be.ibridge.kettle.trans.TransExecutionConfiguration;
 import be.ibridge.kettle.trans.TransHopMeta;
 import be.ibridge.kettle.trans.TransMeta;
@@ -5284,7 +5285,7 @@ public class Spoon implements AddUndoPositionInterface
             if (slaveServer==null) throw new KettleException("No slave server specified");
             if (Const.isEmpty(transMeta.getName())) throw new KettleException("The transformation needs a name to uniquely identify it by on the remote server.");
             
-            String reply = slaveServer.sendXML(transMeta.getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
+            String reply = slaveServer.sendXML(new TransConfiguration(transMeta, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
             WebResult webResult = WebResult.fromXMLString(reply);
             if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
             {
@@ -5334,7 +5335,7 @@ public class Spoon implements AddUndoPositionInterface
             if (show) new Spoon(log, shell.getDisplay(), master, rep).open();
             if (post)
             {
-                String masterReply = masterServer.sendXML(master.getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
+                String masterReply = masterServer.sendXML(new TransConfiguration(master, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
                 WebResult webResult = WebResult.fromXMLString(masterReply);
                 if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                 {
@@ -5351,7 +5352,7 @@ public class Spoon implements AddUndoPositionInterface
                 if (show) new Spoon(log, shell.getDisplay(), slaveTrans, rep).open();
                 if (post)
                 {
-                    String slaveReply = slaves[i].sendXML(slaveTrans.getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
+                    String slaveReply = slaves[i].sendXML(new TransConfiguration(slaveTrans, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
                     WebResult webResult = WebResult.fromXMLString(slaveReply);
                     if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
                     {
@@ -5437,6 +5438,8 @@ public class Spoon implements AddUndoPositionInterface
         TransExecutionConfigurationDialog dialog = new TransExecutionConfigurationDialog(shell, executionConfiguration, transMeta);
         if (dialog.open())
         {
+            System.out.println(executionConfiguration.getXML()); // TODO: remove println
+            
             if (executionConfiguration.isExecutingLocally())
             {
                 if (executionConfiguration.isLocalPreviewing())
@@ -5447,7 +5450,7 @@ public class Spoon implements AddUndoPositionInterface
                 else
                 {
                     tabfolder.setSelection(1); 
-                    spoonlog.startstop(executionConfiguration);
+                    spoonlog.start(executionConfiguration);
                 }
             }
             else if(executionConfiguration.isExecutingRemotely())

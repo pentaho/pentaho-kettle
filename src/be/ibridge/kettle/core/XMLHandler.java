@@ -18,6 +18,8 @@
 package be.ibridge.kettle.core;
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -31,7 +33,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
 import be.ibridge.kettle.core.exception.KettleXMLException;
-import be.ibridge.kettle.core.value.Value;
+import be.ibridge.kettle.core.value.ValueDate;
 
 /**
  * This class contains a number of (static final) methods to facilitate 
@@ -43,6 +45,7 @@ import be.ibridge.kettle.core.value.Value;
 public class XMLHandler
 {
     private static XMLHandlerCache cache = XMLHandlerCache.getInstance();
+    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat(ValueDate.DATE_FORMAT); 
     
 	/**
 	 * The header string to specify encoding in UTF-8 for XML files
@@ -817,9 +820,7 @@ public class XMLHandler
 	 */
 	public static final String addTagValue(String tag, Date date, boolean cr)
 	{
-		if (date==null) addTagValue(tag, (String)null, cr);
-		Value v = new Value("date", date);
-		return addTagValue(tag, v.getString(), cr);
+		return addTagValue(tag, date2string(date), cr);
 	}
 
     /**
@@ -861,5 +862,32 @@ public class XMLHandler
         
         return (String[])elements.toArray(new String[elements.size()]);
     }
+
+    public static Date stringToDate(String dateString)
+    {
+        if (Const.isEmpty(dateString)) return null;
+        
+        try
+        {
+            synchronized(simpleDateFormat)
+            {
+                return simpleDateFormat.parse(dateString);
+            } 
+        }
+        catch (ParseException e)
+        {
+            return null;
+        }
+    }
+    
+    public static String date2string(Date date)
+    {
+        if (date==null) return null;
+        synchronized(simpleDateFormat)
+        {
+            return simpleDateFormat.format(date);
+        }
+    }
+
 }
 	

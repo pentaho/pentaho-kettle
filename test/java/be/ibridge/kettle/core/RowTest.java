@@ -640,7 +640,7 @@ public class RowTest extends TestCase
 			r1.addValue(values[i]);
 		}
 		
-		assertEquals("<row><name>field1</name><type>String</type><text>KETTLE</text><length>-1</length><precision>-1</precision><isnull>N</isnull><name>field2</name><type>Integer</type><text> 123</text><length>-1</length><precision>0</precision><isnull>N</isnull><name>field3</name><type>Number</type><text>10.5</text><length>-1</length><precision>-1</precision><isnull>N</isnull><name>field4</name><type>Boolean</type><text>true</text><length>-1</length><precision>-1</precision><isnull>N</isnull><name>field5</name><type>BigNumber</type><text>123</text><length>-1</length><precision>-1</precision><isnull>N</isnull><name>field6</name><type>String</type><text/><length>-1</length><precision>-1</precision><isnull>Y</isnull></row>" + Const.CR, r1.getXML());		
+		assertEquals("<row><value><name>field1</name><type>String</type><text>KETTLE</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value><value><name>field2</name><type>Integer</type><text> 123</text><length>-1</length><precision>0</precision><isnull>N</isnull></value><value><name>field3</name><type>Number</type><text>10.5</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value><value><name>field4</name><type>Boolean</type><text>true</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value><value><name>field5</name><type>BigNumber</type><text>123</text><length>-1</length><precision>-1</precision><isnull>N</isnull></value><value><name>field6</name><type>String</type><text/><length>-1</length><precision>-1</precision><isnull>Y</isnull></row></value>", r1.getXML());		
 	}
 
 	/**

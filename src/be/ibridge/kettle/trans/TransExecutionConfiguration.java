@@ -4,14 +4,20 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
+import org.w3c.dom.Node;
+
 import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.KettleVariables;
+import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.value.Value;
 
 public class TransExecutionConfiguration implements Cloneable
 {
+    public static final String XML_TAG = "transformation_execution_configuration";
+    
     private boolean executingLocally;
     private boolean     localPreviewing;
     
@@ -45,6 +51,8 @@ public class TransExecutionConfiguration implements Cloneable
         
         previewSteps = new String[0];
         previewSizes = new int[0];
+        
+        logLevel = LogWriter.LOG_LEVEL_BASIC;
     }
     
     public Object clone()
@@ -350,4 +358,124 @@ public class TransExecutionConfiguration implements Cloneable
     {
         this.logLevel = logLevel;
     }
+    
+    public String getXML()
+    {
+        StringBuffer xml = new StringBuffer();
+        
+        xml.append("  <"+XML_TAG+">").append(Const.CR);
+        
+        xml.append("    ").append(XMLHandler.addTagValue("exec_local", executingLocally));
+        xml.append("    ").append(XMLHandler.addTagValue("local_preview", localPreviewing));
+        
+        xml.append("    ").append(XMLHandler.addTagValue("exec_remote", executingRemotely));
+        if (remoteServer!=null)
+        {
+            xml.append("    ").append(remoteServer.getXML()).append(Const.CR);
+        }
+        
+        xml.append("    ").append(XMLHandler.addTagValue("exec_cluster", executingClustered));
+        xml.append("    ").append(XMLHandler.addTagValue("cluster_post", clusterPosting));
+        xml.append("    ").append(XMLHandler.addTagValue("cluster_prepare", clusterPreparing));
+        xml.append("    ").append(XMLHandler.addTagValue("cluster_start", clusterStarting));
+        xml.append("    ").append(XMLHandler.addTagValue("cluster_show_trans", clusterShowingTransformation));
+        
+        xml.append("    <arguments>").append(arguments.getXML()).append("</arguments>").append(Const.CR);
+        xml.append("    <variables>").append(variables.getXML()).append("</variables>").append(Const.CR);
+
+        xml.append("    <preview>").append(Const.CR);
+        if (previewSteps!=null && previewSizes!=null)
+        {
+            for (int i=0;i<previewSteps.length;i++)
+            {
+                xml.append("      <step> ");
+                xml.append(XMLHandler.addTagValue("name", previewSteps[i], false));
+                xml.append(XMLHandler.addTagValue("size", previewSizes[i], false));
+                xml.append(" </step>").append(Const.CR);
+            }
+        }
+        xml.append("    </preview>").append(Const.CR);
+        
+        xml.append("    ").append(XMLHandler.addTagValue("replay_date", replayDate));
+        xml.append("    ").append(XMLHandler.addTagValue("safe_mode", safeModeEnabled));
+        xml.append("    ").append(XMLHandler.addTagValue("log_level", LogWriter.getLogLevelDesc(logLevel)));
+        
+        xml.append("</"+XML_TAG+">").append(Const.CR);
+        return xml.toString();
+    }
+    
+    public TransExecutionConfiguration(Node trecNode)
+    {
+        executingLocally = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "exec_local"));
+        localPreviewing = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "local_preview"));
+
+        executingRemotely = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "exec_remote"));
+        Node remoteHostNode = XMLHandler.getSubNode(trecNode, SlaveServer.XML_TAG);
+        if (remoteHostNode!=null)
+        {
+            remoteServer = new SlaveServer(remoteHostNode);
+        }
+
+        executingClustered = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "exec_cluster"));
+        clusterPosting = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "cluster_post"));
+        clusterPreparing = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "cluster_prepare"));
+        clusterStarting = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "cluster_start"));
+        clusterShowingTransformation = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "cluster_show_trans"));
+
+        Node argsNode = XMLHandler.getSubNode(trecNode, "arguments");
+        Node argsRowNode = XMLHandler.getSubNode(argsNode, Row.XML_TAG);
+        if (argsRowNode!=null)
+        {
+            arguments = new Row(argsRowNode);
+        }
+        
+        Node varsNode = XMLHandler.getSubNode(trecNode, "variables");
+        Node varsRowNode = XMLHandler.getSubNode(varsNode, Row.XML_TAG);
+        if (varsRowNode!=null)
+        {
+            variables = new Row(varsRowNode);
+        }
+
+        Node previewNode = XMLHandler.getSubNode(trecNode, "preview");
+        if (previewSteps!=null && previewSizes!=null)
+        {
+            int nr = XMLHandler.countNodes(previewNode, "step");
+            previewSteps = new String[nr];
+            previewSizes = new int[nr];
+            
+            for (int i=0;i<nr;i++)
+            {
+                Node stepNode = XMLHandler.getSubNodeByNr(previewNode, "step", i);
+            
+                previewSteps[i] = XMLHandler.getTagValue(stepNode, "name");
+                previewSizes[i] = Const.toInt(XMLHandler.getTagValue(stepNode, "size"), 0);
+            }
+        }
+
+
+        replayDate = XMLHandler.stringToDate( XMLHandler.getTagValue(trecNode, "replay_date") );
+        safeModeEnabled = "Y".equalsIgnoreCase(XMLHandler.getTagValue(trecNode, "safe_mode"));
+        logLevel = LogWriter.getLogLevel( XMLHandler.getTagValue(trecNode, "log_level") );
+    }
+
+    
+    public String[] getArgumentStrings()
+    {
+        if (arguments==null || arguments.size()==0) return null;
+        
+        String args[] = new String[10];
+        for (int i = 0; i < args.length; i++)
+        {
+            for (int v = 0; v < arguments.size(); v++)
+            {
+                Value value = arguments.getValue(v);
+                if (value.getName().equalsIgnoreCase("Argument " + (i + 1))) //$NON-NLS-1$
+                {
+                    args[i] = value.getString();
+                }
+            }
+        }
+        return args;
+    }
+
 }
