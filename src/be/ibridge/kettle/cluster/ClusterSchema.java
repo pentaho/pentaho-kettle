@@ -326,4 +326,14 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     {
         this.socketsCompressed = socketsCompressed;
     }
+
+    public SlaveServer findSlaveServer(String slaveServerString)
+    {
+        for (int i=0;i<slaveServers.size();i++)
+        {
+            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            if (slaveServer.toString().equalsIgnoreCase(slaveServerString)) return slaveServer;
+        }
+        return null;
+    }
 }

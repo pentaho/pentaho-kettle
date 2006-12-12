@@ -9,6 +9,7 @@ import org.w3c.dom.Node;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleXMLException;
+import be.ibridge.kettle.trans.Trans;
 import be.ibridge.kettle.trans.step.StepStatus;
 
 public class SlaveServerTransStatus
@@ -160,6 +161,11 @@ public class SlaveServerTransStatus
     public void setLoggingString(String loggingString)
     {
         this.loggingString = loggingString;
+    }
+
+    public boolean isRunning()
+    {
+        return getStatusDescription().equalsIgnoreCase(Trans.STRING_RUNNING) || getStatusDescription().equalsIgnoreCase(Trans.STRING_INITIALIZING);
     }
 
 }

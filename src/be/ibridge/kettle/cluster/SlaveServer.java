@@ -31,6 +31,9 @@ import be.ibridge.kettle.www.GetStatusHandler;
 import be.ibridge.kettle.www.GetTransStatusHandler;
 import be.ibridge.kettle.www.SlaveServerStatus;
 import be.ibridge.kettle.www.SlaveServerTransStatus;
+import be.ibridge.kettle.www.StartTransHandler;
+import be.ibridge.kettle.www.StopTransHandler;
+import be.ibridge.kettle.www.WebResult;
 
 public class SlaveServer extends ChangedFlag implements Cloneable
 {
@@ -139,8 +142,14 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     
     public String toString()
     {
+        return getServerAndPort()+(master?"(Master)":"");
+    }
+    
+    
+    public String getServerAndPort()
+    {
         String realHostname = StringUtil.environmentSubstitute(hostname);
-        if (!Const.isEmpty(realHostname)) return realHostname+getPortSpecification()+(master?"(Master)":"");
+        if (!Const.isEmpty(realHostname)) return realHostname+getPortSpecification();
         return "Slave Server";
     }
     
@@ -507,6 +516,18 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     {
         String xml = execService(GetTransStatusHandler.CONTEXT_PATH+"?name="+transName+"&xml=Y");
         return SlaveServerTransStatus.fromXML(xml);
+    }
+    
+    public WebResult stopTransformation(String transName) throws Exception
+    {
+        String xml = execService(StopTransHandler.CONTEXT_PATH+"?name="+transName+"&xml=Y");
+        return WebResult.fromXMLString(xml);
+    }
+    
+    public WebResult startTransformation(String transName) throws Exception
+    {
+        String xml = execService(StartTransHandler.CONTEXT_PATH+"?name="+transName+"&xml=Y");
+        return WebResult.fromXMLString(xml);
     }
 }
 

@@ -10,7 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.mortbay.jetty.handler.AbstractHandler;
 
+import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.LogWriter;
+import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.trans.Trans;
 
 public class StopTransHandler extends AbstractHandler
@@ -38,39 +40,77 @@ public class StopTransHandler extends AbstractHandler
         PrintStream out = new PrintStream(os);
 
         String transName = request.getParameter("name");
-
-        out.println("<HTML>");
-        out.println("<HEAD><TITLE>Stop transformation</TITLE></HEAD>");
-        out.println("<BODY>");
+        boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
+        
 
         try
         {
+            if (useXML)
+            {
+                response.setContentType("text/xml");
+                response.setCharacterEncoding(Const.XML_ENCODING);
+                out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
+            }
+            else
+            {
+                response.setContentType("text/html");
+                out.println("<HTML>");
+                out.println("<HEAD><TITLE>Stop transformation</TITLE></HEAD>");
+                out.println("<BODY>");
+            }
+
             Trans trans = transformationMap.getTransformation(transName);
 
             if (trans!=null)
             {
                 trans.stopAll();
                 
-                out.println("<H1>Transformation '"+transName+"' stop requested.</H1>");
-                out.println("<a href=\"/kettle/transStatus?name="+transName+"\">Back to the transformation status page</a><p>");
+                String message = "Transformation '"+transName+"' stop requested.";
+                if (useXML)
+                {
+                    out.println(new WebResult(WebResult.STRING_OK, message).getXML());
+                }
+                else
+                {
+                    out.println("<H1>"+message+"</H1>");
+                    out.println("<a href=\"/kettle/transStatus?name="+transName+"\">Back to the transformation status page</a><p>");
+                }
             }
             else
             {
-                out.println("<H1>Transformation '"+transName+"' could not be found.</H1>");
-                out.println("<a href=\"/kettle/status\">Back to the status page</a><p>");
+                String message = "Transformation '"+transName+"' could not be found.";
+                if (useXML)
+                {
+                    out.println(new WebResult(WebResult.STRING_ERROR, message).getXML());
+                }
+                else
+                {
+                    out.println("<H1>"+message+"</H1>");
+                    out.println("<a href=\"/kettle/status\">Back to the status page</a><p>");
+                }
             }
         }
         catch (Exception ex)
         {
-            out.println("<p>");
-            out.println("<pre>");
-            ex.printStackTrace(out);
-            out.println("</pre>");
+            if (useXML)
+            {
+                out.println(new WebResult(WebResult.STRING_ERROR, Const.getStackTracker(ex)).getXML());
+            }
+            else
+            {
+                out.println("<p>");
+                out.println("<pre>");
+                ex.printStackTrace(out);
+                out.println("</pre>");
+            }
         }
 
-        out.println("<p>");
-        out.println("</BODY>");
-        out.println("</HTML>");
+        if (!useXML)
+        {
+            out.println("<p>");
+            out.println("</BODY>");
+            out.println("</HTML>");
+        }
 
         out.flush();
 

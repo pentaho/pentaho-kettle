@@ -22,12 +22,12 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
@@ -46,12 +46,15 @@ import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
+import be.ibridge.kettle.core.dialog.EnterTextDialog;
+import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepStatus;
 import be.ibridge.kettle.www.SlaveServerStatus;
 import be.ibridge.kettle.www.SlaveServerTransStatus;
+import be.ibridge.kettle.www.WebResult;
 
 /**
  * SpoonLog handles the display of the logging information in the Spoon logging window.
@@ -79,15 +82,19 @@ public class SpoonSlave extends Composite
 	private Text wText;
 
 	private Button wError;
+    private Button wStart;
+    private Button wStop;
     private Button wRefresh;
+    private Button wClose;
 
     private FormData fdTree, fdText, fdSash;
-    private SelectionListener lsRefresh, lsError;
-
+    
 	private long lastUpdateView;
     private StringBuffer busy;
     private boolean refresh_busy;
     private SlaveServerStatus slaveServerStatus;
+    private Timer timer;
+    private TimerTask timerTask;
 
 	public SpoonSlave(Composite parent, int style, final Spoon spoon, SlaveServer slaveServer)
 	{
@@ -169,11 +176,28 @@ public class SpoonSlave extends Composite
 		wRefresh = new Button(this, SWT.PUSH);
 		wRefresh.setText(Messages.getString("SpoonSlave.Button.Refresh"));
         wRefresh.setEnabled(true);
+        wRefresh.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showErrors(); } });
         
 		wError = new Button(this, SWT.PUSH);
 		wError.setText(Messages.getString("SpoonSlave.Button.ShowErrorLines")); //$NON-NLS-1$
-        
-        BaseStepDialog.positionBottomButtons(this, new Button[] { wRefresh, wError }, Const.MARGIN, null);
+        wError.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showErrors(); } } );
+
+        wClose= new Button(this, SWT.PUSH);
+        wClose.setText(Messages.getString("SpoonSlave.Button.Close"));
+        wClose.setEnabled(true);
+        wClose.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { close(); } });
+
+        wStart= new Button(this, SWT.PUSH);
+        wStart.setText(Messages.getString("SpoonSlave.Button.Start"));
+        wStart.setEnabled(false);
+        wStart.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { start(); } });
+
+        wStop= new Button(this, SWT.PUSH);
+        wStop.setText(Messages.getString("SpoonSlave.Button.Stop"));
+        wStop.setEnabled(false);
+        wStop.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { stop(); } });
+
+        BaseStepDialog.positionBottomButtons(this, new Button[] { wRefresh, wStart, wStop, wError, wClose }, Const.MARGIN, null);
         
         // Put tree on top
         fdTree = new FormData();
@@ -201,26 +225,11 @@ public class SpoonSlave extends Composite
 
 		pack();
 
-		lsError = new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				showErrors();
-			}
-		};
-        
-        lsRefresh = new SelectionAdapter()
-        {
-            public void widgetSelected(SelectionEvent e)
-            {
-                showErrors();
-            }
-        };
 
-		final Timer tim = new Timer();
+		timer = new Timer();
         busy = new StringBuffer("N");
 
-        TimerTask timtask = new TimerTask()
+        timerTask = new TimerTask()
         {
             public void run()
             {
@@ -239,18 +248,29 @@ public class SpoonSlave extends Composite
             }
         };
 
-        tim.schedule(timtask, 0L, REFRESH_TIME); // schedule to repeat a couple of times per second to get fast feedback 
+        timer.schedule(timerTask, 0L, REFRESH_TIME); // schedule to repeat a couple of times per second to get fast feedback 
 
-		wError.addSelectionListener(lsError);
-		wRefresh.addSelectionListener(lsRefresh);
-		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { tim.cancel(); } } );
+		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { timer.cancel(); } } );
 	}
     
+    protected void close()
+    {
+        CTabItem tabItem = spoon.findCTabItem(slaveServer.getServerAndPort());
+        if (tabItem!=null)
+        {
+            timerTask.cancel();
+            timer.cancel();
+            spoon.tabfolder.setSelection(0);
+            tabItem.dispose();
+        }
+    }
+
     /**
      * Someone clicks on a line: show the log or error message associated with that in the text-box
      */
     public void showLog()
     {
+        boolean stopEnabled=false;
         TreeItem ti[] = wTree.getSelection();
         if (ti.length==1)
         {
@@ -262,6 +282,8 @@ public class SpoonSlave extends Composite
                 SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(transName);
                 if (transStatus!=null)
                 {
+                    stopEnabled = transStatus.isRunning();
+                    
                     StringBuffer message = new StringBuffer();
                     String errorDescription = transStatus.getErrorDescription();
                     if (!Const.isEmpty(errorDescription))
@@ -278,7 +300,81 @@ public class SpoonSlave extends Composite
                 }
             }
         }
+        wStop.setEnabled(stopEnabled);
+        wStart.setEnabled(!stopEnabled);
     }
+    
+    protected void start()
+    {
+        TreeItem ti[] = wTree.getSelection();
+        if (ti.length==1)
+        {
+            TreeItem treeItem = ti[0];
+            String[] path = Const.getTreeStrings(treeItem);
+            if (path.length==1) // transformation name
+            {
+                String transName = path[0];
+                SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(transName);
+                if (transStatus!=null)
+                {
+                    if (!transStatus.isRunning())
+                    {
+                        try
+                        {
+                            WebResult webResult = slaveServer.startTransformation(transName);
+                            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                            {
+                                EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("SpoonSlave.ErrorStartingTrans.Title"), Messages.getString("SpoonSlave.ErrorStartingTrans.Message"), webResult.getMessage());
+                                dialog.setReadOnly();
+                                dialog.open();
+                            }
+                        }
+                        catch(Exception e)
+                        {
+                            new ErrorDialog(shell, Messages.getString("SpoonSlave.ErrorStartingTrans.Title"), Messages.getString("SpoonSlave.ErrorStartingTrans.Message"), e);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    protected void stop()
+    {
+        TreeItem ti[] = wTree.getSelection();
+        if (ti.length==1)
+        {
+            TreeItem treeItem = ti[0];
+            String[] path = Const.getTreeStrings(treeItem);
+            if (path.length==1) // transformation name
+            {
+                String transName = path[0];
+                SlaveServerTransStatus transStatus = slaveServerStatus.findTransStatus(transName);
+                if (transStatus!=null)
+                {
+                    if (transStatus.isRunning())
+                    {
+                        try
+                        {
+                            WebResult webResult = slaveServer.stopTransformation(transName);
+                            if (!webResult.getResult().equalsIgnoreCase(WebResult.STRING_OK))
+                            {
+                                EnterTextDialog dialog = new EnterTextDialog(shell, Messages.getString("SpoonSlave.ErrorStoppingTrans.Title"), Messages.getString("SpoonSlave.ErrorStoppingTrans.Message"), webResult.getMessage());
+                                dialog.setReadOnly();
+                                dialog.open();
+                            }
+                        }
+                        catch(Exception e)
+                        {
+                            new ErrorDialog(shell, Messages.getString("SpoonSlave.ErrorStoppingTrans.Title"), Messages.getString("SpoonSlave.ErrorStoppingTrans.Message"), e);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
 
     private void refresh()
     {

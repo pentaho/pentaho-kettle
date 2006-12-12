@@ -37,8 +37,7 @@ public class StartTransHandler extends AbstractHandler
 
         if (log.isDebug()) log.logDebug(toString(), "Start of transformation requested");
 
-        response.setContentType("text/html");
-
+        
         OutputStream os = response.getOutputStream();
         PrintStream out = new PrintStream(os);
 
@@ -47,10 +46,13 @@ public class StartTransHandler extends AbstractHandler
         
         if (useXML)
         {
+            response.setContentType("text/xml");
+            response.setCharacterEncoding(Const.XML_ENCODING);
             out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
         }
         else
         {
+            response.setContentType("text/html");
             out.println("<HTML>");
             out.println("<HEAD><TITLE>Start transformation</TITLE></HEAD>");
             out.println("<BODY>");
@@ -66,26 +68,28 @@ public class StartTransHandler extends AbstractHandler
             {
                 trans.execute(null);
 
+                String message = "Transformation '"+transName+"' was started.";
                 if (useXML)
                 {
-                    out.println(WebResult.OK.getXML());
+                    out.println(new WebResult(WebResult.STRING_OK, message).getXML());
                 }
                 else
                 {
                     
-                    out.println("<H1>Transformation '"+transName+"' was started.</H1>");
+                    out.println("<H1>"+message+"</H1>");
                     out.println("<a href=\"/kettle/transStatus?name="+transName+"\">Back to the transformation status page</a><p>");
                 }
             }
             else
             {
+                String message = "The specified transformation ["+transName+"] could not be found";
                 if (useXML)
                 {
-                    out.println(new WebResult(WebResult.STRING_ERROR, "The specified transformation ["+transName+"] could not be found"));
+                    out.println(new WebResult(WebResult.STRING_ERROR, message));
                 }
                 else
                 {
-                    out.println("<H1>Transformation '"+transName+"' could not be found.</H1>");
+                    out.println("<H1>"+message+"</H1>");
                     out.println("<a href=\"/kettle/status\">Back to the status page</a><p>");
                 }
             }

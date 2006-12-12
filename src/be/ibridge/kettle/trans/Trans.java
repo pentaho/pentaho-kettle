@@ -108,6 +108,12 @@ public class Trans
 	public final static int TYPE_DISP_N_N    = 4;
     public final static int TYPE_DISP_N_M    = 5;
 
+    public static final String STRING_FINISHED     = "Finished";
+    public static final String STRING_RUNNING      = "Running";
+    public static final String STRING_PREPARING    = "Preparing executing";
+    public static final String STRING_INITIALIZING = "Initializing";
+    public static final String STRING_WAITING      = "Waiting";
+
 	private String preview_steps[];
 	private int    preview_sizes[];
 
@@ -1705,27 +1711,27 @@ public class Trans
         {
             if (isFinished())
             {
-                message = "Finished";
+                message = STRING_FINISHED;
                 if (getResult().getNrErrors()>0) message+=" (with errors)";
             }
             else
             {
-                message = "Running";
+                message = STRING_RUNNING;
             }
         }
         else
         if (preparing)
         {
-            message = "Preparing executing";
+            message = STRING_PREPARING;
         }
         else
         if (initializing)
         {
-            message = "Initializing";
+            message = STRING_INITIALIZING;
         }
         else
         {
-            message = "Waiting";
+            message = STRING_WAITING;
         }
         
         return message;

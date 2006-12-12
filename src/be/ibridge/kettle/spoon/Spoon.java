@@ -77,6 +77,7 @@ import org.w3c.dom.Node;
 import be.ibridge.kettle.cluster.ClusterSchema;
 import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.cluster.dialog.ClusterSchemaDialog;
+import be.ibridge.kettle.cluster.dialog.SlaveServerDialog;
 import be.ibridge.kettle.core.AddUndoPositionInterface;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
@@ -1473,7 +1474,7 @@ public class Spoon implements AddUndoPositionInterface
     private void setMenu(SelectionEvent e)
     {
         TreeItem treeItem = (TreeItem)e.item;
-        String treeItemText = treeItem.getText();
+        final String treeItemText = treeItem.getText();
         Tree rootItem = treeItem.getParent();
         
         log.logDebug(toString(), Messages.getString("Spoon.Log.ClickedOn") +treeItem.getText());//Clicked on  
@@ -1527,7 +1528,7 @@ public class Spoon implements AddUndoPositionInterface
         }
         else
         {
-            String strparent = parent.getText();
+            final String strparent = parent.getText();
             if (strparent.equalsIgnoreCase(STRING_CONNECTIONS))
             {
                 MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.New"));//New
@@ -1603,16 +1604,62 @@ public class Spoon implements AddUndoPositionInterface
             if (grandparent!=null)
             {
                 String strgrandparent = grandparent.getText();
-                if (strgrandparent.equalsIgnoreCase(STRING_BASE) ||
-                    strgrandparent.equalsIgnoreCase(STRING_PLUGIN))
+                
+                // Right click on a base step or plugin
+                if (strgrandparent.equalsIgnoreCase(STRING_BASE) || strgrandparent.equalsIgnoreCase(STRING_PLUGIN))
                 {
                     MenuItem miNew  = new MenuItem(mCSH, SWT.PUSH); miNew.setText(Messages.getString("Spoon.Menu.Popup.BASE_PLUGIN.New"));//New
                     miNew.addListener( SWT.Selection, lsNew );   
+                }
+                
+                // Right click on a slave server
+                if (strgrandparent.equalsIgnoreCase(STRING_CLUSTERS))
+                {
+                    MenuItem miEdit  = new MenuItem(mCSH, SWT.PUSH); 
+                    miEdit.setText(Messages.getString("Spoon.Menu.Popup.SLAVE_SERVER.Edit"));//New
+                    miEdit.addListener( SWT.Selection, new Listener() { public void handleEvent(Event e) { editSlaveServer(strparent, treeItemText); } } );   
+
+                    MenuItem miMonitor  = new MenuItem(mCSH, SWT.PUSH); 
+                    miMonitor.setText(Messages.getString("Spoon.Menu.Popup.SLAVE_SERVER.Monitor"));//New
+                    miMonitor.addListener( SWT.Selection, new Listener() { public void handleEvent(Event e) { monitorSlaveServer(strparent, treeItemText); } } );   
+
                 }
             }
         }
         selectionTree.setMenu(mCSH);
     }
+
+    protected void monitorSlaveServer(String clusterSchemaName, String slaveServerString)
+    {
+        ClusterSchema clusterSchema = transMeta.findClusterSchema(clusterSchemaName);
+        if (clusterSchema!=null)
+        {
+            SlaveServer slaveServer = clusterSchema.findSlaveServer(slaveServerString);
+            if (slaveServer!=null)
+            {
+                addSpoonSlave(slaveServer);
+            }
+        }
+    }
+    
+    protected void editSlaveServer(String clusterSchemaName, String slaveServerString)
+    {
+        ClusterSchema clusterSchema = transMeta.findClusterSchema(clusterSchemaName);
+        if (clusterSchema!=null)
+        {
+            SlaveServer slaveServer = clusterSchema.findSlaveServer(slaveServerString);
+            if (slaveServer!=null)
+            {
+                SlaveServerDialog dialog = new SlaveServerDialog(shell, slaveServer);
+                if (dialog.open())
+                {
+                    refreshTree(true);
+                    refreshGraph();
+                }
+            }
+        }
+    }
+    
 
     private void addTabs()
     {
@@ -5452,10 +5499,13 @@ public class Spoon implements AddUndoPositionInterface
                 }
                 else
                 {
-                    // TODO: complain about missing slave server
+                    MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_INFORMATION);
+                    mb.setMessage(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Message")); 
+                    mb.setText(Messages.getString("Spoon.Dialog.NoRemoteServerSpecified.Title"));
+                    mb.open();
                 }
             }
-            else if(executionConfiguration.isExecutingClustered())
+            else if (executionConfiguration.isExecutingClustered())
             {
                 splitTrans(
                         executionConfiguration.isClusterShowingTransformation(), 
@@ -5466,22 +5516,27 @@ public class Spoon implements AddUndoPositionInterface
             }
         }
     }
+    
+    public CTabItem findCTabItem(String text)
+    {
+        CTabItem[] items = tabfolder.getItems();
+        for (int i=0;i<items.length;i++)
+        {
+            if (items[i].getText().equalsIgnoreCase(text)) return items[i];
+        }
+        return null;
+    }
 
     private void addSpoonSlave(SlaveServer slaveServer)
     {
         // See if there is a SpoonSlave for this slaveServer...
-        CTabItem[] items = tabfolder.getItems();
-        CTabItem tabItem=null;
-        for (int i=0;i<items.length && tabItem==null;i++)
-        {
-            if (items[i].getText().equalsIgnoreCase(slaveServer.toString())) tabItem = items[i];
-        }
+        CTabItem tabItem=findCTabItem(slaveServer.getServerAndPort());
         if (tabItem==null)
         {
             SpoonSlave spoonSlave = new SpoonSlave(tabfolder, SWT.NONE, this, slaveServer);
             tabItem = new CTabItem(tabfolder, SWT.NONE);
-            tabItem.setText(slaveServer.toString());
-            tabItem.setToolTipText("Status of slave server : "+slaveServer.toString());
+            tabItem.setText(slaveServer.getServerAndPort());
+            tabItem.setToolTipText("Status of slave server : "+slaveServer.getServerAndPort());
             tabItem.setControl(spoonSlave);
         }
         int idx = tabfolder.indexOf(tabItem);
