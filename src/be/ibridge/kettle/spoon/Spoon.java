@@ -1591,12 +1591,21 @@ public class Spoon implements AddUndoPositionInterface
             }
             if (strparent.equalsIgnoreCase(STRING_CLUSTERS))
             {
-                MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); miEdit.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Edit"));//Edit
-                MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); miDel.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Delete"));//Delete
-                MenuItem miShare = new MenuItem(mCSH, SWT.PUSH); miShare.setText(Messages.getString("Spoon.Menu.Popup.CONNECTIONS.Share"));
-                miShare.addListener(SWT.Selection, lsShare);
+                MenuItem miEdit = new MenuItem(mCSH, SWT.PUSH); 
+                miEdit.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Edit"));//Edit
                 miEdit.addListener( SWT.Selection, lsEdit );
+
+                MenuItem miDel  = new MenuItem(mCSH, SWT.PUSH); 
+                miDel.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Delete"));//Delete
                 miDel.addListener ( SWT.Selection, lsDel  );
+                
+                MenuItem miShare = new MenuItem(mCSH, SWT.PUSH); 
+                miShare.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Share"));
+                miShare.addListener(SWT.Selection, lsShare);
+                
+                MenuItem miMonitor  = new MenuItem(mCSH, SWT.PUSH); 
+                miMonitor.setText(Messages.getString("Spoon.Menu.Popup.CLUSTERS.Monitor"));//New
+                miMonitor.addListener( SWT.Selection, new Listener() { public void handleEvent(Event e) { monitorClusterSchema(treeItemText); } } );   
             }
             
             
@@ -1637,6 +1646,19 @@ public class Spoon implements AddUndoPositionInterface
             SlaveServer slaveServer = clusterSchema.findSlaveServer(slaveServerString);
             if (slaveServer!=null)
             {
+                addSpoonSlave(slaveServer);
+            }
+        }
+    }
+    
+    protected void monitorClusterSchema(String clusterSchemaName)
+    {
+        ClusterSchema clusterSchema = transMeta.findClusterSchema(clusterSchemaName);
+        if (clusterSchema!=null)
+        {
+            for (int i=0;i<clusterSchema.getSlaveServers().size();i++)
+            {
+                SlaveServer slaveServer = (SlaveServer) clusterSchema.getSlaveServers().get(i);
                 addSpoonSlave(slaveServer);
             }
         }

@@ -16,7 +16,6 @@
 package be.ibridge.kettle.spoon;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -45,10 +44,12 @@ import org.eclipse.swt.widgets.TreeItem;
 import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
+import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.dialog.EnterTextDialog;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.widget.TreeMemory;
+import be.ibridge.kettle.core.widget.TreeUtil;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
 import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepStatus;
@@ -65,9 +66,7 @@ import be.ibridge.kettle.www.WebResult;
  */
 public class SpoonSlave extends Composite
 {
-	public static final long UPDATE_TIME_VIEW = 15000L; // 15s
-	public static final long UPDATE_TIME_LOG = 30000L; // 30s
-	public static final long REFRESH_TIME = 100L;
+	public static final long UPDATE_TIME_VIEW = 30000L; // 30s
     
     public static final String STRING_SLAVE_LOG_TREE_NAME = "SLAVE_LOG : ";
 
@@ -89,9 +88,7 @@ public class SpoonSlave extends Composite
 
     private FormData fdTree, fdText, fdSash;
     
-	private long lastUpdateView;
-    private StringBuffer busy;
-    private boolean refresh_busy;
+    private boolean refreshBusy;
     private SlaveServerStatus slaveServerStatus;
     private Timer timer;
     private TimerTask timerTask;
@@ -103,8 +100,6 @@ public class SpoonSlave extends Composite
         this.display = shell.getDisplay();
 		this.spoon = spoon;
 		this.slaveServer = slaveServer;
-
-		lastUpdateView = 0L;
 
 		FormLayout formLayout = new FormLayout();
 		formLayout.marginWidth = Const.FORM_MARGIN;
@@ -227,8 +222,7 @@ public class SpoonSlave extends Composite
 
 
 		timer = new Timer();
-        busy = new StringBuffer("N");
-
+        
         timerTask = new TimerTask()
         {
             public void run()
@@ -240,7 +234,7 @@ public class SpoonSlave extends Composite
                         {
                             public void run()
                             {
-                                refresh();
+                                refreshView();
                             }
                         }
                     );
@@ -248,7 +242,7 @@ public class SpoonSlave extends Composite
             }
         };
 
-        timer.schedule(timerTask, 0L, REFRESH_TIME); // schedule to repeat a couple of times per second to get fast feedback 
+        timer.schedule(timerTask, 0L, UPDATE_TIME_VIEW); // schedule to repeat a couple of times per second to get fast feedback 
 
 		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { timer.cancel(); } } );
 	}
@@ -374,74 +368,59 @@ public class SpoonSlave extends Composite
         }
     }
 
-
-
-    private void refresh()
-    {
-        if (busy.toString().equals("N"))
-        {
-            busy.setCharAt(0, 'Y');
-            refreshView();
-            busy.setCharAt(0, 'N');
-        }
-    }
-
-	private void refreshView()
+	private synchronized void refreshView()
 	{
   		if (wTree.isDisposed()) return;
-		if (refresh_busy) return;
-		refresh_busy = true;
+		if (refreshBusy) return;
+		refreshBusy = true;
+        
+        LogWriter.getInstance().logBasic(Spoon.APP_NAME, "Refresh");
 
-        long time = new Date().getTime();
-		long msSinceLastUpdate = time - lastUpdateView;
-		if (msSinceLastUpdate > UPDATE_TIME_VIEW)
+        wTree.removeAll();
+        
+        // Determine the transformations on the slave servers
+        try
+        {
+            slaveServerStatus = slaveServer.getStatus();
+        }
+        catch(Exception e)
+        {
+            slaveServerStatus = new SlaveServerStatus("Error contacting server");
+            slaveServerStatus.setErrorDescription(Const.getStackTracker(e));
+        }
+        
+        for (int i = 0; i < slaveServerStatus.getTransStatusList().size(); i++)
 		{
-            lastUpdateView = time;
-            wTree.removeAll();
+            SlaveServerTransStatus transStatus = (SlaveServerTransStatus) slaveServerStatus.getTransStatusList().get(i);
+            TreeItem transItem = new TreeItem(wTree, SWT.NONE);
+            transItem.setText(0, transStatus.getTransName());
+            transItem.setText(8, transStatus.getStatusDescription());
             
-            // Determine the transformations on the slave servers
             try
             {
-                slaveServerStatus = slaveServer.getStatus();
-            }
-            catch(Exception e)
-            {
-                slaveServerStatus = new SlaveServerStatus("Error contacting server");
-                slaveServerStatus.setErrorDescription(Const.getStackTracker(e));
-            }
-            
-            for (int i = 0; i < slaveServerStatus.getTransStatusList().size(); i++)
-			{
-                SlaveServerTransStatus transStatus = (SlaveServerTransStatus) slaveServerStatus.getTransStatusList().get(i);
-                TreeItem transItem = new TreeItem(wTree, SWT.NONE);
-                transItem.setText(0, transStatus.getTransName());
-                transItem.setText(8, transStatus.getStatusDescription());
+                LogWriter.getInstance().logBasic(toString(), "Getting transformation status for ["+transStatus.getTransName()+"] on server ["+slaveServer+"]");
+                SlaveServerTransStatus ts = slaveServer.getTransStatus(transStatus.getTransName());
+                LogWriter.getInstance().logBasic(toString(), "Finished receiving transformation status for ["+transStatus.getTransName()+"] fropm server ["+slaveServer+"]");
+                List stepStatusList = ts.getStepStatusList();
+                transStatus.setStepStatusList(stepStatusList);
+                transStatus.setLoggingString(ts.getLoggingString());
                 
-                try
+                for (int s=0;s<stepStatusList.size();s++)
                 {
-                    SlaveServerTransStatus ts = slaveServer.getTransStatus(transStatus.getTransName());
-                    List stepStatusList = ts.getStepStatusList();
-                    transStatus.setStepStatusList(stepStatusList);
-                    transStatus.setLoggingString(ts.getLoggingString());
-                    
-                    for (int s=0;s<stepStatusList.size();s++)
-                    {
-                        StepStatus stepStatus = (StepStatus) stepStatusList.get(s);
-                        TreeItem stepItem = new TreeItem(transItem, SWT.NONE);
-                        stepItem.setText(stepStatus.getSpoonSlaveLogFields());
-                    }
+                    StepStatus stepStatus = (StepStatus) stepStatusList.get(s);
+                    TreeItem stepItem = new TreeItem(transItem, SWT.NONE);
+                    stepItem.setText(stepStatus.getSpoonSlaveLogFields());
                 }
-                catch (Exception e)
-                {
-                    transStatus.setErrorDescription("Unable to access transformation details : "+Const.CR+Const.getStackTracker(e));
-                } 
-			}
-            
-            TreeMemory.setExpandedFromMemory(wTree, STRING_SLAVE_LOG_TREE_NAME+slaveServer.toString());
+            }
+            catch (Exception e)
+            {
+                transStatus.setErrorDescription("Unable to access transformation details : "+Const.CR+Const.getStackTracker(e));
+            } 
 		}
         
-
-		refresh_busy = false;
+        TreeMemory.setExpandedFromMemory(wTree, STRING_SLAVE_LOG_TREE_NAME+slaveServer.toString());
+        TreeUtil.setOptimalWidthOnColumns(wTree);
+		refreshBusy = false;
 	}
 
 

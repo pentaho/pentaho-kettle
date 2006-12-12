@@ -1,5 +1,6 @@
 package be.ibridge.kettle.cluster;
 
+import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -378,14 +379,19 @@ public class SlaveServer extends ChangedFlag implements Cloneable
             log.logDebug(toString(), "Response status code: " + result);
             
             // the response
-            InputStream inputStream = method.getResponseBodyAsStream();
+            InputStream inputStream = new BufferedInputStream(method.getResponseBodyAsStream(), 1000);
             StringBuffer bodyBuffer = new StringBuffer();
             int c;
-            while ( (c=inputStream.read())!=-1) bodyBuffer.append((char)c);
+            while ( (c=inputStream.read())!=-1) 
+            {
+                bodyBuffer.append((char)c);
+                if ((bodyBuffer.length()%10000)==0) log.logBasic(toString(), "Read "+bodyBuffer.length()+" bytes from server...");
+            }
             inputStream.close();
             
             String body = bodyBuffer.toString();
-            
+
+            log.logBasic(toString(), "Finished reading "+bodyBuffer.length()+" bytes from server.");
             log.logDebug(toString(), "Response body: "+body);
             
             return body;
@@ -394,7 +400,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         {
             // Release current connection to the connection pool once you are done
             method.releaseConnection();
-            log.logDetailed(toString(), "Sent XML to service ["+service+"] on host ["+hostname+"]");
+            log.logBasic(toString(), "Executed service ["+service+"] on host ["+hostname+"]");
         }
 
     }
