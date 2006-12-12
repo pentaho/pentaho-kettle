@@ -77,6 +77,7 @@ public class PrepareExecutionTransHandler extends AbstractHandler
                 kettleVariables.setVariables(executionConfiguration.getVariables());
                 trans.getTransMeta().setArguments(executionConfiguration.getArgumentStrings());
                 trans.setReplayDate(executionConfiguration.getReplayDate());
+                trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
                 
                 // Log to a String
                 Log4jStringAppender appender = LogWriter.createStringAppender();

@@ -645,14 +645,15 @@ public class TransExecutionConfigurationDialog extends Dialog
         wPreview.setEnabled(enableLocal);
         wPreviewSteps.setEnabled(enablePreview);
         wPreviewSteps.table.setEnabled(enablePreview);
-        wlReplayDate.setEnabled(enableLocal);
-        wReplayDate.setEnabled(enableLocal);
-        wlArguments.setEnabled(enableLocal);
-        wArguments.setEnabled(enableLocal);
-        wArguments.table.setEnabled(enableLocal);
-        wlVariables.setEnabled(enableLocal);
-        wVariables.setEnabled(enableLocal);
-        wVariables.table.setEnabled(enableLocal);
+        
+        // wlReplayDate.setEnabled(enableLocal);
+        // wReplayDate.setEnabled(enableLocal);
+        // wlArguments.setEnabled(enableLocal);
+        // wArguments.setEnabled(enableLocal);
+        // wArguments.table.setEnabled(enableLocal);
+        // wlVariables.setEnabled(enableLocal);
+        // wVariables.setEnabled(enableLocal);
+        // wVariables.table.setEnabled(enableLocal);
         wSafeMode.setEnabled(enableLocal);
         
         wRemoteHost.setEnabled(enableRemote);
