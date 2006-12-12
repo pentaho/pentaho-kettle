@@ -79,7 +79,14 @@ public class TreeMemory
 
     public void storeExpanded(String treeName, String[] path, boolean expanded)
     {
-        map.put(new TreeMemoryEntry(treeName, path), new Boolean(expanded));
+        if (expanded)
+        {
+            map.put(new TreeMemoryEntry(treeName, path), new Boolean(expanded));
+        }
+        else
+        {
+            map.remove(new TreeMemoryEntry(treeName, path));
+        }
     }
     
     public boolean isExpanded(String treeName, String[] path)

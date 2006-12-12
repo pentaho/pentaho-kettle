@@ -171,7 +171,7 @@ public class SpoonSlave extends Composite
 		wRefresh = new Button(this, SWT.PUSH);
 		wRefresh.setText(Messages.getString("SpoonSlave.Button.Refresh"));
         wRefresh.setEnabled(true);
-        wRefresh.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { refreshView(); } });
+        wRefresh.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { refreshViewAndLog(); } });
         
 		wError = new Button(this, SWT.PUSH);
 		wError.setText(Messages.getString("SpoonSlave.Button.ShowErrorLines")); //$NON-NLS-1$
@@ -234,7 +234,7 @@ public class SpoonSlave extends Composite
                         {
                             public void run()
                             {
-                                refreshView();
+                                refreshViewAndLog();
                             }
                         }
                     );
@@ -247,6 +247,25 @@ public class SpoonSlave extends Composite
 		addDisposeListener(new DisposeListener() { public void widgetDisposed(DisposeEvent e) { timer.cancel(); } } );
 	}
     
+    protected void refreshViewAndLog()
+    {
+        String[] selectionPath = null;
+        if (wTree.getSelectionCount()==1)
+        {
+            selectionPath = Const.getTreeStrings( wTree.getSelection()[0] );
+        }
+
+        refreshView(); 
+
+        if (selectionPath!=null) // Select the same one again
+        {
+            TreeItem treeItem = TreeUtil.findTreeItem(wTree, selectionPath);
+            if (treeItem!=null) wTree.setSelection(treeItem);
+        }
+        
+        showLog();
+    }
+
     protected void close()
     {
         CTabItem tabItem = spoon.findCTabItem(slaveServer.getServerAndPort());
@@ -291,6 +310,8 @@ public class SpoonSlave extends Composite
                     }
                         
                     wText.setText(message.toString());
+                    wText.setSelection(message.length()); // scroll to the back
+                    wText.showSelection();
                 }
             }
         }
@@ -375,7 +396,7 @@ public class SpoonSlave extends Composite
 		refreshBusy = true;
         
         LogWriter.getInstance().logBasic(Spoon.APP_NAME, "Refresh");
-
+        
         wTree.removeAll();
         
         // Determine the transformations on the slave servers
@@ -420,6 +441,7 @@ public class SpoonSlave extends Composite
         
         TreeMemory.setExpandedFromMemory(wTree, STRING_SLAVE_LOG_TREE_NAME+slaveServer.toString());
         TreeUtil.setOptimalWidthOnColumns(wTree);
+                
 		refreshBusy = false;
 	}
 

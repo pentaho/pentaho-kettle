@@ -31,7 +31,7 @@ public class TreeUtil
         for (int i=0;i<max.length;i++)
         {
             TreeColumn treeColumn = tree.getColumn(i); 
-            treeColumn.setWidth(max[i]+20);
+            treeColumn.setWidth(max[i]+30);
         }
     }
 
@@ -47,5 +47,32 @@ public class TreeUtil
             }
             getMaxWidths(items[i].getItems(), max, gc);
         }
+    }
+    
+    public static final TreeItem findTreeItem(Tree tree, String[] path)
+    {
+        TreeItem[] items = tree.getItems();
+        for (int i=0;i<items.length;i++)
+        {
+            TreeItem treeItem = findTreeItem(items[i], path, 0);
+            if (treeItem!=null) return treeItem;
+        }
+        return null;
+    }
+    
+    private static final TreeItem findTreeItem(TreeItem treeItem, String[] path, int level)
+    {
+        if (treeItem.getText().equals(path[level]))
+        {
+            if (level==path.length-1) return treeItem;
+            
+            TreeItem[] items = treeItem.getItems();
+            for (int i=0;i<items.length;i++)
+            {
+                TreeItem found = findTreeItem(items[i], path, level+1);
+                if (found!=null) return found;
+            }
+        }
+        return null;
     }
 }

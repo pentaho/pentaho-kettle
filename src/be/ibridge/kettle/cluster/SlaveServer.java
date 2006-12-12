@@ -387,13 +387,12 @@ public class SlaveServer extends ChangedFlag implements Cloneable
             while ( (c=inputStream.read())!=-1) 
             {
                 bodyBuffer.append((char)c);
-                if ((bodyBuffer.length()%10000)==0) log.logBasic(toString(), "Read "+bodyBuffer.length()+" bytes from server...");
             }
             inputStream.close();
             
             String body = bodyBuffer.toString();
 
-            log.logBasic(toString(), "Finished reading "+bodyBuffer.length()+" bytes from server.");
+            log.logDetailed(toString(), "Finished reading "+bodyBuffer.length()+" bytes from server.");
             log.logDebug(toString(), "Response body: "+body);
             
             return body;
@@ -402,7 +401,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         {
             // Release current connection to the connection pool once you are done
             method.releaseConnection();
-            log.logBasic(toString(), "Executed service ["+service+"] on host ["+hostname+"]");
+            log.logDetailed(toString(), "Executed service ["+service+"] on host ["+hostname+"]");
         }
 
     }
