@@ -654,7 +654,7 @@ public class TransExecutionConfigurationDialog extends Dialog
         // wlVariables.setEnabled(enableLocal);
         // wVariables.setEnabled(enableLocal);
         // wVariables.table.setEnabled(enableLocal);
-        wSafeMode.setEnabled(enableLocal);
+        // wSafeMode.setEnabled(enableLocal);
         
         wRemoteHost.setEnabled(enableRemote);
         wlRemoteHost.setEnabled(enableRemote);
