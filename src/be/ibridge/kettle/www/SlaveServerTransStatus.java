@@ -70,18 +70,12 @@ public class SlaveServerTransStatus
     public SlaveServerTransStatus(Node transStatusNode)
     {
         this();
-        LogWriter.getInstance().logBasic("SlaveServerTransStatus", "1-start");
         transName = XMLHandler.getTagValue(transStatusNode, "transname");
-        LogWriter.getInstance().logBasic("SlaveServerTransStatus", "2");
         statusDescription = XMLHandler.getTagValue(transStatusNode, "status_desc");
-        LogWriter.getInstance().logBasic("SlaveServerTransStatus", "3");
         errorDescription = XMLHandler.getTagValue(transStatusNode, "error_desc");
         
-        LogWriter.getInstance().logBasic("SlaveServerTransStatus", "4");
         Node statusListNode = XMLHandler.getSubNode(transStatusNode, "stepstatuslist");
-        LogWriter.getInstance().logBasic("SlaveServerTransStatus", "5");
         int nr = XMLHandler.countNodes(statusListNode, StepStatus.XML_TAG);
-        LogWriter.getInstance().logBasic("SlaveServerTransStatus", "6");
         for (int i=0;i<nr;i++)
         {
             Node stepStatusNode = XMLHandler.getSubNodeByNr(statusListNode, StepStatus.XML_TAG, i);
@@ -94,20 +88,20 @@ public class SlaveServerTransStatus
         // This is a Base64 encoded GZIP compressed stream of data.
         try
         {
-            ByteArrayInputStream bais = new ByteArrayInputStream(Base64.decodeBase64(loggingString64.getBytes()));
+            byte[] bytes = Base64.decodeBase64(loggingString64.getBytes());
+            ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
             GZIPInputStream gzip = new GZIPInputStream(bais);
             int c;
             StringBuffer buffer = new StringBuffer();
             while ( (c=gzip.read())!=-1) buffer.append((char)c);
             gzip.close();
             loggingString = buffer.toString();
+            System.out.println("Found logging: "+Const.CR+loggingString);
         }
         catch(IOException e)
         {
             loggingString = "Unable to decode logging from remote server : "+e.toString()+Const.CR+Const.getStackTracker(e);
         }
-        
-        LogWriter.getInstance().logBasic("SlaveServerTransStatus", "9-end");
     }
     
     public static SlaveServerTransStatus fromXML(String xml) throws KettleXMLException
