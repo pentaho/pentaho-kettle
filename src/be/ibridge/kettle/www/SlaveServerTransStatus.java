@@ -60,7 +60,7 @@ public class SlaveServerTransStatus
         }
         xml.append("  </stepstatuslist>").append(Const.CR);
 
-        xml.append(XMLHandler.addTagValue("logging_string", loggingString));          
+        xml.append(XMLHandler.addTagValue("logging_string", XMLHandler.buildCDATA(loggingString)));          
 
         xml.append("</"+XML_TAG+">");
         

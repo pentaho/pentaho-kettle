@@ -889,5 +889,12 @@ public class XMLHandler
         }
     }
 
+    public static String buildCDATA(String string)
+    {
+        StringBuffer cdata = new StringBuffer("<![CDATA[");
+        cdata.append(string).append("]]>");
+        return cdata.toString();
+    }
+
 }
 	

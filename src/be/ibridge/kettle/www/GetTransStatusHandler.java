@@ -81,7 +81,8 @@ public class GetTransStatusHandler extends AbstractHandler
                     gzos.write( appender.getBuffer().toString().getBytes() );
                     gzos.close();
                     
-                    transStatus.setLoggingString( new String(Base64.decodeBase64(baos.toByteArray())) );
+                    String loggingString = new String(Base64.encodeBase64(baos.toByteArray()));
+                    transStatus.setLoggingString( loggingString );
                 }
                 
                 out.println(transStatus.getXML());
