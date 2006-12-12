@@ -1641,11 +1641,11 @@ public class Spoon implements AddUndoPositionInterface
         tiTabsGraph.setText(Messages.getString("Spoon.Title.GraphicalView"));//"Graphical view"
         tiTabsGraph.setToolTipText(Messages.getString("Spoon.Tooltip.DisplaysTransformationGraphical"));//Displays the transformation graphically.
         
-        CTabItem   tiTabsList  = new CTabItem(tabfolder, SWT.NULL); 
+        CTabItem   tiTabsList  = new CTabItem(tabfolder, SWT.NONE); 
         tiTabsList.setText(Messages.getString("Spoon.Title.LogView"));//Log view
         tiTabsList.setToolTipText(Messages.getString("Spoon.Tooltip.DisplaysTransformationLog"));//Displays the log of the running transformation.
 
-        CTabItem   tiTabsHist = new CTabItem(tabfolder, SWT.NULL); 
+        CTabItem   tiTabsHist = new CTabItem(tabfolder, SWT.NONE); 
         tiTabsHist.setText(Messages.getString("Spoon.Title.LogHistory"));//Log view
         tiTabsHist.setToolTipText(Messages.getString("Spoon.Tooltip.DisplaysHistoryLogging"));//Displays the history of previous transformation runs.
 
@@ -5438,8 +5438,6 @@ public class Spoon implements AddUndoPositionInterface
         TransExecutionConfigurationDialog dialog = new TransExecutionConfigurationDialog(shell, executionConfiguration, transMeta);
         if (dialog.open())
         {
-            System.out.println(executionConfiguration.getXML()); // TODO: remove println
-            
             if (executionConfiguration.isExecutingLocally())
             {
                 if (executionConfiguration.isLocalPreviewing())
@@ -5455,7 +5453,15 @@ public class Spoon implements AddUndoPositionInterface
             }
             else if(executionConfiguration.isExecutingRemotely())
             {
-                sendXMLToSlaveServer(executionConfiguration);
+                if (executionConfiguration.getRemoteServer()!=null)
+                {
+                    sendXMLToSlaveServer(executionConfiguration);
+                    addSpoonSlave(executionConfiguration.getRemoteServer());
+                }
+                else
+                {
+                    // TODO: complain about missing slave server
+                }
             }
             else if(executionConfiguration.isExecutingClustered())
             {
@@ -5467,6 +5473,27 @@ public class Spoon implements AddUndoPositionInterface
                         );
             }
         }
+    }
+
+    private void addSpoonSlave(SlaveServer slaveServer)
+    {
+        // See if there is a SpoonSlave for this slaveServer...
+        CTabItem[] items = tabfolder.getItems();
+        CTabItem tabItem=null;
+        for (int i=0;i<items.length && tabItem==null;i++)
+        {
+            if (items[i].getText().equalsIgnoreCase(slaveServer.toString())) tabItem = items[i];
+        }
+        if (tabItem==null)
+        {
+            SpoonSlave spoonSlave = new SpoonSlave(tabfolder, SWT.NONE, this, slaveServer);
+            tabItem = new CTabItem(tabfolder, SWT.NONE);
+            tabItem.setText(slaveServer.toString());
+            tabItem.setToolTipText("Status of slave server : "+slaveServer.toString());
+            tabItem.setControl(spoonSlave);
+        }
+        int idx = tabfolder.indexOf(tabItem);
+        tabfolder.setSelection(idx);        
     }
 }
 

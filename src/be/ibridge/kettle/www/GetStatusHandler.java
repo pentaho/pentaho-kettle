@@ -20,7 +20,7 @@ public class GetStatusHandler extends AbstractHandler
     private static final long serialVersionUID = 3634806745372015720L;
     
     public static final String CONTEXT_PATH = "/kettle/status";
-    public static final String XML_TAG = "serverstatus";
+    
     
     private static LogWriter log = LogWriter.getInstance();
     private TransformationMap transformationMap;
@@ -46,11 +46,10 @@ public class GetStatusHandler extends AbstractHandler
         {
             response.setContentType("text/xml");
             response.setCharacterEncoding(Const.XML_ENCODING);
-            
-            
             out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
-            out.println("<"+XML_TAG+">");
-
+            SlaveServerStatus serverStatus = new SlaveServerStatus();
+            serverStatus.setStatusDescription("Online");
+            
             String[] transNames = transformationMap.getTransformationNames();
             for (int i=0;i<transNames.length;i++)
             {
@@ -58,14 +57,10 @@ public class GetStatusHandler extends AbstractHandler
                 Trans  trans  = transformationMap.getTransformation(name);
                 String status = trans.getStatus();
                 
-                out.print("  <transstatus>");
-                out.print(XMLHandler.addTagValue("trans", name, false));                
-                out.print(XMLHandler.addTagValue("status", status, false));                
-                out.println("  </transstatus>");
+                serverStatus.getTransStatusList().add( new SlaveServerTransStatus(name, status) );
             }
             
-            out.println("</"+XML_TAG+">");
-
+            out.println(serverStatus.getXML());
         }
         else
         {

@@ -24,8 +24,6 @@ public class GetTransStatusHandler extends AbstractHandler
     private static final long serialVersionUID = 3634806745372015720L;
     public static final String CONTEXT_PATH = "/kettle/transStatus";
     
-    private static final String XML_TAG = "transstatus";
-    
     private static LogWriter log = LogWriter.getInstance();
     private TransformationMap transformationMap;
     
@@ -49,13 +47,6 @@ public class GetTransStatusHandler extends AbstractHandler
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
         
-        if (useXML)
-        {
-            response.setContentType("text/xml");
-            response.setCharacterEncoding(Const.XML_ENCODING);
-            out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
-        }
-        
         Trans  trans  = transformationMap.getTransformation(transName);
         
         if (trans!=null)
@@ -64,27 +55,34 @@ public class GetTransStatusHandler extends AbstractHandler
     
             if (useXML)
             {
-                out.println("<"+XML_TAG+">");
+                response.setContentType("text/xml");
+                response.setCharacterEncoding(Const.XML_ENCODING);
+                out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
+                
+                SlaveServerTransStatus transStatus = new SlaveServerTransStatus(transName, status);
     
-                out.print(XMLHandler.addTagValue("trans", transName, false));                
-                out.print(XMLHandler.addTagValue("status", status));                
-    
-                out.println("<stepstatuses>");
                 for (int i = 0; i < trans.nrSteps(); i++)
                 {
                     BaseStep baseStep = trans.getRunThread(i);
                     if ( (baseStep.isAlive()) || baseStep.getStatus()!=StepDataInterface.STATUS_EMPTY)
                     {
                         StepStatus stepStatus = new StepStatus(baseStep);
-                        out.print(stepStatus.getXML());
+                        transStatus.getStepStatusList().add(stepStatus);
                     }
                 }
-                out.println("</stepstatuses>");
-    
-                out.println("</"+XML_TAG+">");
+                
+                Log4jStringAppender appender = (Log4jStringAppender) transformationMap.getAppender(transName);
+                if (appender!=null)
+                {
+                    transStatus.setLoggingString(appender.getBuffer().toString());
+                }
+                
+                out.println(transStatus.getXML());
             }
             else
             {
+                response.setContentType("text/html");
+
                 out.println("<HTML>");
                 out.println("<HEAD><TITLE>Kettle transformation status</TITLE></HEAD>");
                 out.println("<BODY>");

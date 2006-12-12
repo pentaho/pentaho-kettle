@@ -1,6 +1,10 @@
 package be.ibridge.kettle.trans.step;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+
 import be.ibridge.kettle.core.XMLHandler;
+import be.ibridge.kettle.core.exception.KettleXMLException;
 
 public class StepStatus
 {
@@ -89,6 +93,29 @@ public class StepStatus
                 "</"+XML_TAG+">";
     }
     
+    public StepStatus(Node node)
+    {
+        stepname = XMLHandler.getTagValue(node, "stepname");
+        copy = Integer.parseInt( XMLHandler.getTagValue(node, "copy") );
+        linesRead = Long.parseLong( XMLHandler.getTagValue(node, "linesRead") );
+        linesWritten = Long.parseLong( XMLHandler.getTagValue(node, "linesWritten") );
+        linesInput = Long.parseLong( XMLHandler.getTagValue(node, "linesInput") );
+        linesOutput = Long.parseLong( XMLHandler.getTagValue(node, "linesOutput") );
+        linesUpdated = Long.parseLong( XMLHandler.getTagValue(node, "linesUpdated") );
+        errors = Long.parseLong( XMLHandler.getTagValue(node, "errors") );
+        statusDescription = XMLHandler.getTagValue(node, "statusDescription");
+        seconds = Double.parseDouble( XMLHandler.getTagValue(node, "seconds") );
+        speed = XMLHandler.getTagValue(node, "speed");
+        priority = XMLHandler.getTagValue(node, "priority");
+        sleeps = XMLHandler.getTagValue(node, "sleeps");
+    }
+    
+    public StepStatus fromXML(String xml) throws KettleXMLException
+    {
+        Document document = XMLHandler.loadXMLString(xml);
+        return new StepStatus(XMLHandler.getSubNode(document, XML_TAG));
+    }
+    
     public String[] getSpoonLogFields()
     {
         String fields[] = new String[14];
@@ -107,6 +134,17 @@ public class StepStatus
         fields[13] = sleeps;
         
         return fields;
+    }
+    
+    public String[] getSpoonSlaveLogFields()
+    {
+        String fields[] = getSpoonLogFields();
+        String retval[] = new String[fields.length-1];
+        for (int i=0;i<retval.length;i++)
+        {
+            retval[i] = fields[i+1];
+        }
+        return retval;
     }
     
     /**
