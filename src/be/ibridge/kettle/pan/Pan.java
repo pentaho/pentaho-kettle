@@ -34,6 +34,7 @@ import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleException;
 import be.ibridge.kettle.core.util.EnvUtil;
+import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.repository.RepositoriesMeta;
 import be.ibridge.kettle.repository.Repository;
 import be.ibridge.kettle.repository.RepositoryDirectory;
@@ -153,10 +154,18 @@ public class Pan
 		StepLoader steploader = StepLoader.getInstance();
 		if (!steploader.read())
 		{
-			log.logError("Spoon", "Error loading steps... halting Pan!");
+			log.logError("Pan", "Error loading steps... halting Pan!");
             System.exit(8);
 		}
 		
+        /* Load the plugins etc.*/
+        JobEntryLoader jeloader = JobEntryLoader.getInstance();
+        if (!jeloader.read())
+        {
+            log.logError("Pan", "Error loading job entries & plugins... halting Kitchen!");
+            return;
+        }
+        
 		Date start, stop;
 		Calendar cal;
 		SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss.SSS");

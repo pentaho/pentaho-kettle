@@ -136,7 +136,7 @@ public class Kitchen
 		StepLoader steploader = StepLoader.getInstance();
 		if (!steploader.read())
 		{
-			log.logError("Spoon", "Error loading steps... halting Kitchen!");
+			log.logError(STRING_KITCHEN, "Error loading steps... halting Kitchen!");
 			System.exit(8);
 		}
         
@@ -144,7 +144,7 @@ public class Kitchen
         JobEntryLoader jeloader = JobEntryLoader.getInstance();
         if (!jeloader.read())
         {
-            log.logError("Spoon", "Error loading job entries & plugins... halting Kitchen!");
+            log.logError(STRING_KITCHEN, "Error loading job entries & plugins... halting Kitchen!");
             return;
         }
 
