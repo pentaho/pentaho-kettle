@@ -253,7 +253,7 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		wbTable.setText(Messages.getString("TableInputDialog.GetSQLAndSelectStatement")); //$NON-NLS-1$
 		fdbTable=new FormData();
 		fdbTable.right = new FormAttachment(100, 0);
-		fdbTable.top   = new FormAttachment(wConnection, margin);
+		fdbTable.top   = new FormAttachment(wConnection, margin*2);
 		wbTable.setLayoutData(fdbTable);
 
 		wSQL=new Text(shell, SWT.MULTI | SWT.LEFT | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL);
@@ -261,9 +261,9 @@ public class TableInputDialog extends BaseStepDialog implements StepDialogInterf
 		wSQL.addModifyListener(lsMod);
 		fdSQL=new FormData();
 		fdSQL.left  = new FormAttachment(0, 0);
-		fdSQL.top   = new FormAttachment(wlSQL, margin  );
+		fdSQL.top   = new FormAttachment(wbTable, margin );
 		fdSQL.right = new FormAttachment(100, 0);
-		fdSQL.bottom= new FormAttachment(wVariables, -margin );
+		fdSQL.bottom= new FormAttachment(wVariables, 0 );
 		wSQL.setLayoutData(fdSQL);
 		wSQL.addModifyListener(new ModifyListener()
             {
