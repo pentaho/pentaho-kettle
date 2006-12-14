@@ -438,7 +438,7 @@ public class Spoon
                     if ((int)e.character == 19 && ctrl && alt) { executeTransformation(transMeta, false, true, false, false, null);  }
 
                     // CTRL-T --> transformation
-                    if ((int)e.character == 20 && ctrl && !alt) { setTrans(transMeta);  }
+                    if ((int)e.character == 20 && ctrl && !alt) { editTransformationProperties(transMeta);  }
 
                     // CTRL-U --> transformation
                     if ((int)e.character == 21 && ctrl && !alt) { executeTransformation(transMeta, false, false, true, false, null);  }
@@ -897,7 +897,7 @@ public class Spoon
           new MenuItem(msTrans, SWT.SEPARATOR);
           MenuItem miTransDetails   = new MenuItem(msTrans, SWT.CASCADE); miTransDetails.setText(Messages.getString("Spoon.Menu.Transformation.Settings"));//&Settings... \tCTRL-T
 
-        Listener lsTransDetails   = new Listener() { public void handleEvent(Event e) { setTrans(getActiveTransformation());   } };
+        Listener lsTransDetails   = new Listener() { public void handleEvent(Event e) { editTransformationProperties(getActiveTransformation());   } };
         Listener lsTransRun       = new Listener() { public void handleEvent(Event e) { executeTransformation(getActiveTransformation(), true, false, false, false, null); } };
         Listener lsTransPreview   = new Listener() { public void handleEvent(Event e) { executeTransformation(getActiveTransformation(), true, false, false, true, null); } };
         Listener lsTransCheck     = new Listener() { public void handleEvent(Event e) { checkTrans(getActiveTransformation());       } };
@@ -1318,91 +1318,128 @@ public class Spoon
     /**
      * @return The object that is selected in the tree or null if we couldn't figure it out. (titles etc. == null)
      */
-    public TreeSelection[] getTreeObjects()
+    public TreeSelection[] getTreeObjects(final Tree tree)
     {
         List objects = new ArrayList();
         
-        TreeItem[] selection = selectionTree.getSelection();
-        for (int s=0;s<selection.length;s++)
+        if (tree.equals(selectionTree))
         {
-            TreeItem treeItem = selection[s];
-            String[] path = Const.getTreeStrings(treeItem);
-            
-            TreeSelection object = null;
-            
-            switch(path.length)
+            TreeItem[] selection = selectionTree.getSelection();
+            for (int s=0;s<selection.length;s++)
             {
-            case 0: break;
-            case 1: // ------complete-----
-                if (path[0].equals(STRING_TRANSFORMATIONS)) // the top level Transformations entry
-                {
-                    object = new TreeSelection(TransMeta.class);
-                }
-                break;
+                TreeItem treeItem = selection[s];
+                String[] path = Const.getTreeStrings(treeItem);
                 
-            case 2: // ------complete-----
-                if (path[0].equals(STRING_BUILDING_BLOCKS)) // the top level Transformations entry
+                TreeSelection object = null;
+                
+                switch(path.length)
                 {
-                    if (path[1].equals(STRING_BASE) || path[1].equals(STRING_PLUGIN))
+                case 0: break;
+                case 1: // ------complete-----
+                    if (path[0].equals(STRING_TRANSFORMATIONS)) // the top level Transformations entry
                     {
-                        object = new TreeSelection(StepPlugin.class);
+                        object = new TreeSelection(TransMeta.class);
                     }
-                }
-                if (path[0].equals(STRING_TRANSFORMATIONS)) // Transformation title
-                {
-                    object = new TreeSelection(findTransformation(path[1]));
-                }
-                break;
+                    break;
                     
-            case 3:  // ------complete-----
-                if (path[0].equals(STRING_TRANSFORMATIONS)) // Transformations title
-                {
-                    TransMeta transMeta = findTransformation(path[1]);
-                    if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(DatabaseMeta.class, transMeta);
-                    if (path[2].equals(STRING_STEPS)) object = new TreeSelection(StepMeta.class, transMeta);
-                    if (path[2].equals(STRING_HOPS)) object = new TreeSelection(TransHopMeta.class, transMeta);
-                    if (path[2].equals(STRING_PARTITIONS)) object = new TreeSelection(PartitionSchema.class, transMeta);
-                    if (path[2].equals(STRING_SLAVES)) object = new TreeSelection(SlaveServer.class, transMeta);
-                    if (path[2].equals(STRING_CLUSTERS)) object = new TreeSelection(ClusterSchema.class, transMeta);
-                }
-                break;
-                
-            case 4:  // ------complete-----
-                if (path[0].equals(STRING_TRANSFORMATIONS)) // The name of a transformation
-                {
-                    TransMeta transMeta = findTransformation(path[1]);
-                    if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(transMeta.findDatabase(path[3]), transMeta);
-                    if (path[2].equals(STRING_STEPS)) object = new TreeSelection(transMeta.findStep(path[3]), transMeta);
-                    if (path[2].equals(STRING_HOPS)) object = new TreeSelection(transMeta.findTransHop(path[3]), transMeta);
-                    if (path[2].equals(STRING_PARTITIONS)) object = new TreeSelection(transMeta.findPartitionSchema(path[3]), transMeta);
-                    if (path[2].equals(STRING_SLAVES)) object = new TreeSelection(transMeta.findSlaveServer(path[3]), transMeta);
-                    if (path[2].equals(STRING_CLUSTERS)) object = new TreeSelection(transMeta.findClusterSchema(path[3]), transMeta);
-                }
-                if (path[0].equals(STRING_BUILDING_BLOCKS)) // building blocks top
-                {
-                    if (path[1].equals(STRING_BASE) || path[1].equals(STRING_PLUGIN))
+                case 2: // ------complete-----
+                    if (path[0].equals(STRING_BUILDING_BLOCKS)) // the top level Transformations entry
                     {
-                        object = new TreeSelection(StepLoader.getInstance().findStepPluginWithDescription(path[3]));
+                        if (path[1].equals(STRING_BASE) || path[1].equals(STRING_PLUGIN))
+                        {
+                            object = new TreeSelection(StepPlugin.class);
+                        }
                     }
-                }
-                break;
-                
-            case 5:
-                if (path[0].equals(STRING_TRANSFORMATIONS)) // The name of a transformation
-                {
-                    TransMeta transMeta = findTransformation(path[1]);
-                    if (path[2].equals(STRING_CLUSTERS))
+                    if (path[0].equals(STRING_TRANSFORMATIONS)) // Transformation title
                     {
-                        ClusterSchema clusterSchema = transMeta.findClusterSchema(path[3]);
-                        object = new TreeSelection(clusterSchema.findSlaveServer(path[4]), clusterSchema, transMeta);
+                        object = new TreeSelection(findTransformation(path[1]));
                     }
+                    break;
+                        
+                case 3:  // ------complete-----
+                    if (path[0].equals(STRING_TRANSFORMATIONS)) // Transformations title
+                    {
+                        TransMeta transMeta = findTransformation(path[1]);
+                        if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(DatabaseMeta.class, transMeta);
+                        if (path[2].equals(STRING_STEPS)) object = new TreeSelection(StepMeta.class, transMeta);
+                        if (path[2].equals(STRING_HOPS)) object = new TreeSelection(TransHopMeta.class, transMeta);
+                        if (path[2].equals(STRING_PARTITIONS)) object = new TreeSelection(PartitionSchema.class, transMeta);
+                        if (path[2].equals(STRING_SLAVES)) object = new TreeSelection(SlaveServer.class, transMeta);
+                        if (path[2].equals(STRING_CLUSTERS)) object = new TreeSelection(ClusterSchema.class, transMeta);
+                    }
+                    break;
+                    
+                case 4:  // ------complete-----
+                    if (path[0].equals(STRING_TRANSFORMATIONS)) // The name of a transformation
+                    {
+                        TransMeta transMeta = findTransformation(path[1]);
+                        if (path[2].equals(STRING_CONNECTIONS)) object = new TreeSelection(transMeta.findDatabase(path[3]), transMeta);
+                        if (path[2].equals(STRING_STEPS)) object = new TreeSelection(transMeta.findStep(path[3]), transMeta);
+                        if (path[2].equals(STRING_HOPS)) object = new TreeSelection(transMeta.findTransHop(path[3]), transMeta);
+                        if (path[2].equals(STRING_PARTITIONS)) object = new TreeSelection(transMeta.findPartitionSchema(path[3]), transMeta);
+                        if (path[2].equals(STRING_SLAVES)) object = new TreeSelection(transMeta.findSlaveServer(path[3]), transMeta);
+                        if (path[2].equals(STRING_CLUSTERS)) object = new TreeSelection(transMeta.findClusterSchema(path[3]), transMeta);
+                    }
+                    if (path[0].equals(STRING_BUILDING_BLOCKS)) // building blocks top
+                    {
+                        if (path[1].equals(STRING_BASE) || path[1].equals(STRING_PLUGIN))
+                        {
+                            object = new TreeSelection(StepLoader.getInstance().findStepPluginWithDescription(path[3]));
+                        }
+                    }
+                    break;
+                    
+                case 5:
+                    if (path[0].equals(STRING_TRANSFORMATIONS)) // The name of a transformation
+                    {
+                        TransMeta transMeta = findTransformation(path[1]);
+                        if (path[2].equals(STRING_CLUSTERS))
+                        {
+                            ClusterSchema clusterSchema = transMeta.findClusterSchema(path[3]);
+                            object = new TreeSelection(clusterSchema.findSlaveServer(path[4]), clusterSchema, transMeta);
+                        }
+                    }
+                    break;
+                default: break;
                 }
-                break;
-            default: break;
+                
+                if (object!=null)
+                {
+                    objects.add(object);
+                }
             }
-            if (object!=null)
+        }
+        if (tree.equals(pluginHistoryTree))
+        {
+            TreeItem[] selection = pluginHistoryTree.getSelection();
+            for (int s=0;s<selection.length;s++)
             {
-                objects.add(object);
+                TreeItem treeItem = selection[s];
+                String[] path = Const.getTreeStrings(treeItem);
+                
+                TreeSelection object = null;
+                
+                switch(path.length)
+                {
+                case 0: break;
+                case 1: break; // ------complete-----
+                case 2: // ------complete-----
+                    if (path[0].equals(STRING_HISTORY))
+                    {
+                        StepPlugin stepPlugin = StepLoader.getInstance().findStepPluginWithDescription(path[1]);
+                        if (stepPlugin!=null)
+                        {
+                            object = new TreeSelection(stepPlugin);
+                        }
+                    }
+                    break;
+                default: break;
+                }
+                
+                if (object!=null)
+                {
+                    objects.add(object);
+                }
             }
         }
         
@@ -1442,14 +1479,12 @@ public class Spoon
     }
     
     
-    private void addDragSourceToTree(Tree tree)
+    private void addDragSourceToTree(final Tree tree)
     {
-        final Tree fTree = tree;
-        
         // Drag & Drop for steps
         Transfer[] ttypes = new Transfer[] { XMLTransfer.getInstance() };
         
-        DragSource ddSource = new DragSource(fTree, DND.DROP_MOVE);
+        DragSource ddSource = new DragSource(tree, DND.DROP_MOVE);
         ddSource.setTransfer(ttypes);
         ddSource.addDragListener(new DragSourceListener() 
             {
@@ -1457,7 +1492,7 @@ public class Spoon
     
                 public void dragSetData(DragSourceEvent event) 
                 {
-                    TreeSelection[] treeObjects = getTreeObjects();
+                    TreeSelection[] treeObjects = getTreeObjects(tree);
                     if (treeObjects.length==0)
                     {
                         event.doit=false;
@@ -1519,6 +1554,7 @@ public class Spoon
         
         TreeItem tiMain = new TreeItem(pluginHistoryTree, SWT.NONE);
         tiMain.setText(STRING_HISTORY);
+        tiMain.setImage(GUIResource.getInstance().getImageSpoon());
         
         List pluginHistory = props.getPluginHistory();
         for (int i=0;i<pluginHistory.size();i++)
@@ -1543,7 +1579,7 @@ public class Spoon
      */
     private void showSelection()
     {
-        TreeSelection[] objects = getTreeObjects();
+        TreeSelection[] objects = getTreeObjects(selectionTree);
         if (objects.length!=1) return; // not yet supported, we can do this later when the OSX bug goes away
 
         TreeSelection object = objects[0];
@@ -1559,7 +1595,7 @@ public class Spoon
         {
             // Search the corresponding SpoonGraph tab
             CTabItem tabItem = findCTabItem(makeGraphTabName(transMeta));
-            if (tabItem!=null) 
+            if (tabItem!=null)
             {
                 int current = tabfolder.getSelectionIndex();
                 int desired = tabfolder.indexOf(tabItem); 
@@ -1580,7 +1616,7 @@ public class Spoon
             for (int i=0;i<items.length;i++) items[i].dispose();
         }
         
-        TreeSelection[] objects = getTreeObjects();
+        TreeSelection[] objects = getTreeObjects(selectionTree);
         if (objects.length!=1) return; // not yet supported, we can do this later when the OSX bug goes away
 
         TreeSelection object = objects[0];
@@ -1784,7 +1820,7 @@ public class Spoon
     private void editSelected()
     {
         
-        TreeSelection[] objects = getTreeObjects();
+        TreeSelection[] objects = getTreeObjects(selectionTree);
         if (objects.length!=1) return; // not yet supported, we can do this later when the OSX bug goes away
 
         TreeSelection object = objects[0];
@@ -2782,9 +2818,7 @@ public class Spoon
         // Show warning on exit when a warning needs to be displayed, but only if we didn't ask to save before. (could have pressed cancel then!)
         //
         SpoonLog spoonLog = getActiveSpoonLog();
-        if ( (exit && spoonLog!=null && spoonLog.isRunning() ) ||
-             (exit && showWarning && props.showExitWarning() )
-           )
+        if ( (exit && spoonLog!=null && spoonLog.isRunning() ) || (exit && showWarning && props.showExitWarning() ) )
         {
             String message = Messages.getString("Spoon.Message.Warning.PromptExit"); //"Are you sure you want to exit?"
             if (spoonLog!=null && spoonLog.isRunning()) message = Messages.getString("Spoon.Message.Warning.PromptExitWhenRunTransformation");//There is a running transformation.  Are you sure you want to exit?
@@ -2850,6 +2884,8 @@ public class Spoon
             new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorSavingDatabaseCache.Title"), Messages.getString("Spoon.Dialog.ErrorSavingDatabaseCache.Message"), e);//"An error occured saving the database cache to disk"
         }
         
+        renameTabs(); // filename or name of transformation might have changed.
+
         return saved;
     }
     
@@ -2875,7 +2911,7 @@ public class Spoon
                     mb.open();
                 }
                 ask=false;
-                answer = setTrans(transMeta);
+                answer = editTransformationProperties(transMeta);
                 // System.out.println("answer="+answer+", ask="+ask+", transMeta.getName()="+transMeta.getName());
             }
             
@@ -2962,10 +2998,12 @@ public class Spoon
         {
             transMeta.setID(-1L);
             saved=saveRepository(transMeta, true);
+            renameTabs();
         }
         else
         {
             saved=saveXMLFile(transMeta);
+            renameTabs();
         }
         
         return saved;
@@ -3705,7 +3743,7 @@ public class Spoon
         return null;
     }
 
-    private boolean setTrans(TransMeta transMeta)
+    private boolean editTransformationProperties(TransMeta transMeta)
     {
         TransDialog tid = new TransDialog(shell, SWT.NONE, transMeta, rep);
         TransMeta ti = tid.open();
@@ -3715,7 +3753,12 @@ public class Spoon
         if (tid.isSharedObjectsFileChanged())
         {
             loadSharedObjects(transMeta);
+        }
+        
+        if (tid.isSharedObjectsFileChanged() || ti!=null)
+        {
             refreshTree();
+            renameTabs(); // cheap operation, might as will do it anyway
         }
         
         setShellText();
@@ -5427,7 +5470,7 @@ public class Spoon
             tabItem.setToolTipText("Status of slave server : "+slaveServer.getName()+" : "+slaveServer.getServerAndPort());
             tabItem.setControl(spoonSlave);
             
-            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, SpoonSlave.class.getName(), spoonSlave));
+            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, spoonSlave));
         }
         int idx = tabfolder.indexOf(tabItem);
         tabfolder.setSelection(idx);        
@@ -5452,7 +5495,7 @@ public class Spoon
                 tabItem.setToolTipText("Graphical view of Transformation : "+tabName);
                 tabItem.setControl(spoonGraph);
                 
-                tabMap.put(tabName, new TabMapEntry(tabItem, tabName, SpoonGraph.class.getName(), spoonGraph));
+                tabMap.put(tabName, new TabMapEntry(tabItem, tabName, spoonGraph));
             }
             int idx = tabfolder.indexOf(tabItem);
             
@@ -5524,7 +5567,7 @@ public class Spoon
             }
 
             
-            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, SpoonLog.class.getName(), spoonLog));
+            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, spoonLog));
         }
         int idx = tabfolder.indexOf(tabItem);
         tabfolder.setSelection(idx);
@@ -5556,12 +5599,51 @@ public class Spoon
             }
             spoonHistory.markRefreshNeeded(); // will refresh when first selected
                         
-            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, SpoonHistory.class.getName(), spoonHistory));
+            tabMap.put(tabName, new TabMapEntry(tabItem, tabName, spoonHistory));
         }
         if (select)
         {
             int idx = tabfolder.indexOf(tabItem);
             tabfolder.setSelection(idx);
+        }
+    }
+
+    /**
+     * Rename the tabs
+     */
+    public void renameTabs()
+    {
+        Collection collection = tabMap.values();
+        List list = new ArrayList();
+        list.addAll(collection);
+        
+        for (Iterator iter = list.iterator(); iter.hasNext();)
+        {
+            TabMapEntry entry = (TabMapEntry) iter.next();
+            String before = entry.getTabItem().getText();
+            if (entry.getObject() instanceof SpoonGraph)
+            {
+                entry.getTabItem().setText( makeGraphTabName( (TransMeta) entry.getObject().getManagedObject() ) );
+            }
+            if (entry.getObject() instanceof SpoonLog) entry.getTabItem().setText( makeLogTabName( (TransMeta) entry.getObject().getManagedObject() ) );
+            if (entry.getObject() instanceof SpoonHistory) entry.getTabItem().setText( makeHistoryTabName( (TransMeta) entry.getObject().getManagedObject() ) );
+            String after = entry.getTabItem().getText();
+
+            if (!before.equals(after))
+            {
+                entry.setObjectName(after);
+                tabMap.remove(before);
+                tabMap.put(after, entry);
+                
+                // Also change the transformation map
+                if (entry.getObject() instanceof SpoonGraph)
+                {
+                    transformationMap.remove(before);
+                    transformationMap.put(after, entry.getObject().getManagedObject());
+                }
+                
+                System.out.println("Renamed tab ["+before+"] to ["+after+"]");
+            }
         }
     }
     

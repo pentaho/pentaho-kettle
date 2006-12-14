@@ -8,8 +8,6 @@ public class TabMapEntry
     
     private String objectName;
 
-    private String objectType;
-
     private TabItemInterface object;
 
     /**
@@ -18,11 +16,10 @@ public class TabMapEntry
      * @param objectType
      * @param object
      */
-    public TabMapEntry(CTabItem tabItem, String objectName, String objectType, TabItemInterface object)
+    public TabMapEntry(CTabItem tabItem, String objectName, TabItemInterface object)
     {
         this.tabItem = tabItem;
         this.objectName = objectName;
-        this.objectType = objectType;
         this.object = object;
     }
 
@@ -40,22 +37,6 @@ public class TabMapEntry
     public void setObjectName(String objectName)
     {
         this.objectName = objectName;
-    }
-
-    /**
-     * @return the objectType
-     */
-    public String getObjectType()
-    {
-        return objectType;
-    }
-
-    /**
-     * @param objectType the objectType to set
-     */
-    public void setObjectType(String objectType)
-    {
-        this.objectType = objectType;
     }
 
     /**
