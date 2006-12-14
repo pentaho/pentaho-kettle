@@ -1276,7 +1276,6 @@ public class Spoon
         addToolTipsToTree(selectionTree);
 
         // Default selection (double-click, enter)
-        // lsEditDef = new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ editSelected(); } };
         // lsNewDef  = new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ newSelected();  } };
         
         // Add all the listeners... 
@@ -1285,6 +1284,7 @@ public class Spoon
         
         selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { setMenu(); } });
         selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showSelection(); } });
+        selectionTree.addSelectionListener(new SelectionAdapter() { public void widgetDefaultSelected(SelectionEvent e){ editSelected(); } });
         
         // Keyboard shortcuts!
         selectionTree.addKeyListener(defKeys);
@@ -1775,6 +1775,41 @@ public class Spoon
             }
         }
         selectionTree.setMenu(mCSH);
+    }
+    
+    /**
+     * Reaction to double click
+     *
+     */
+    private void editSelected()
+    {
+        
+        TreeSelection[] objects = getTreeObjects();
+        if (objects.length!=1) return; // not yet supported, we can do this later when the OSX bug goes away
+
+        TreeSelection object = objects[0];
+        
+        final Object selection   = object.getSelection();
+        final Object parent      = object.getParent();
+                
+        if (selection instanceof Class)
+        {
+            if (selection.equals(TransHopMeta.class)) newHop((TransMeta)parent);
+            if (selection.equals(DatabaseMeta.class)) newConnection((TransMeta)parent);
+            if (selection.equals(PartitionSchema.class)) newDatabasePartitioningSchema((TransMeta)parent);
+            if (selection.equals(ClusterSchema.class)) newClusteringSchema((TransMeta)parent);
+            if (selection.equals(SlaveServer.class)) newSlaveServer((TransMeta)parent);
+        }
+        else
+        {
+            if (selection instanceof StepPlugin) newStep(getActiveTransformation());
+            if (selection instanceof DatabaseMeta) editConnection((TransMeta) parent, (DatabaseMeta) selection);
+            if (selection instanceof StepMeta) editStep((TransMeta)parent, (StepMeta)selection);
+            if (selection instanceof TransHopMeta) editHop((TransMeta)parent, (TransHopMeta)selection);
+            if (selection instanceof PartitionSchema) editPartitionSchema((TransMeta)parent, (PartitionSchema)selection);
+            if (selection instanceof ClusterSchema) editClusterSchema((TransMeta)parent, (ClusterSchema)selection);
+            if (selection instanceof SlaveServer) editSlaveServer((TransMeta)parent, (SlaveServer)selection);
+        }
     }
     
     protected void monitorClusterSchema(TransMeta transMeta, ClusterSchema clusterSchema)
