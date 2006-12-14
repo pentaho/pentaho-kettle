@@ -1426,15 +1426,17 @@ public class ChefGraph extends Canvas implements Redrawable
 				// New transformation?
 				//
 				long id = sp.rep.getTransformationID(exactTransname, entry.getDirectory().getID());
+                TransMeta newTrans;
 				if (id<0) // New
 				{
-					sp.setTransMeta( new TransMeta(null, exactTransname, entry.arguments) );
+                    newTrans = new TransMeta(null, exactTransname, entry.arguments);
 				}
 				else
 				{
-					sp.setTransMeta( new TransMeta(sp.rep, exactTransname, entry.getDirectory()) );
+                    newTrans = new TransMeta(sp.rep, exactTransname, entry.getDirectory());
 				}
-				sp.getTransMeta().clearChanged();
+                sp.addTransformation( newTrans );
+				newTrans.clearChanged();
 				sp.open();
 			}
 			catch(Throwable ke)
@@ -1450,7 +1452,7 @@ public class ChefGraph extends Canvas implements Redrawable
 			try
 			{
 				// Read from file...
-				Spoon sp = new Spoon(log, chef.disp, null);
+				Spoon spoon = new Spoon(log, chef.disp, null);
 
                 // only try to load if the file exists...
                 
@@ -1465,10 +1467,10 @@ public class ChefGraph extends Canvas implements Redrawable
                     launchTransMeta = new TransMeta();
                 }
                 
-				sp.setTransMeta( launchTransMeta );
-				sp.getTransMeta().clearChanged();
-				sp.setFilename( exactFilename );
-				sp.open();
+				launchTransMeta.clearChanged();
+                launchTransMeta.setFilename( exactFilename );
+                spoon.addTransformation( launchTransMeta );
+				spoon.open();
 			}
 			catch(Throwable xe)
 			{

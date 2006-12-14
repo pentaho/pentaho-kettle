@@ -38,7 +38,6 @@ import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
-import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
 import be.ibridge.kettle.core.database.Database;
 import be.ibridge.kettle.core.dialog.ErrorDialog;
@@ -59,9 +58,14 @@ import be.ibridge.kettle.trans.TransMeta;
  * @author Matt
  * @since  16-mar-2006
  */
-public class SpoonHistory extends Composite 
+public class SpoonHistory extends Composite implements TabItemInterface
 {
-	private ColumnInfo[] colinf;	
+    // private static final LogWriter log = LogWriter.getInstance();
+    
+    private Spoon spoon;
+    private TransMeta transMeta;
+
+    private ColumnInfo[] colinf;	
 	
 	private Text   wText;
 	private Button wRefresh, wReplay;
@@ -69,7 +73,6 @@ public class SpoonHistory extends Composite
     
 	private FormData fdText, fdSash, fdRefresh, fdReplay; 
 	
-	private Spoon spoon;
 
     private ArrayList rowList;
 
@@ -81,12 +84,12 @@ public class SpoonHistory extends Composite
 	
 	private Object refreshNeededLock = new Object();
 	
-	public SpoonHistory(Composite parent, int style, Spoon sp, LogWriter l, String fname, SpoonLog spoonLog, Shell shell)
+	public SpoonHistory(Composite parent, final Spoon spoon, final TransMeta transMeta)
 	{
-		super(parent, style);
-		spoon = sp;
-		// this.spoonLog = spoonLog;
-		this.shell = shell;
+		super(parent, SWT.NONE);
+		this.spoon = spoon;
+		this.shell = parent.getShell();
+        this.transMeta = transMeta;
 		
 		FormLayout formLayout = new FormLayout ();
 		formLayout.marginWidth  = Const.FORM_MARGIN;
@@ -134,6 +137,7 @@ public class SpoonHistory extends Composite
 		wText = new Text(sash, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL | SWT.READ_ONLY );
 		spoon.props.setLook(wText);
 		wText.setVisible(true);
+        wText.setText(Messages.getString("SpoonHistory.PleaseRefresh.Message"));
 		
 		wRefresh = new Button(this, SWT.PUSH);
 		wRefresh.setText(Messages.getString("SpoonHistory.Button.Refresh")); //$NON-NLS-1$
@@ -220,7 +224,7 @@ public class SpoonHistory extends Composite
 						Date replayDate;
                         if (Const.isEmpty(dateString)) replayDate = new Date();
                         else replayDate = df.parse(dateString);
-						spoon.executeTransformation(true, false, false, false, replayDate);
+						spoon.executeTransformation(transMeta, true, false, false, false, replayDate);
 					} catch (ParseException e1) {
 						new ErrorDialog(shell, 
 								Messages.getString("SpoonHistory.Error.ReplayingTransformation2"), //$NON-NLS-1$
@@ -236,10 +240,22 @@ public class SpoonHistory extends Composite
     /**
      * Refreshes the history window in Spoon: reads entries from the specified log table in the Transformation Settings dialog.
      */
-	public void refreshHistory()
+	private void refreshHistory()
 	{
+        shell.getDisplay().asyncExec(
+            new Runnable()
+            {
+                public void run()
+                {
+                    getHistoryData();                
+                }
+            }
+        );
+    }
+    
+    public void getHistoryData()
+    {
         // See if there is a transformation loaded that has a connection table specified.
-        TransMeta transMeta = spoon.getTransMeta();
         if (transMeta!=null && transMeta.getName()!=null && transMeta.getName().length()>0)
         {
             if (transMeta.getLogConnection()!=null)
@@ -305,7 +321,11 @@ public class SpoonHistory extends Composite
                     }
                     catch(KettleException e)
                     {
-                        new ErrorDialog(this.getShell(), Messages.getString("SpoonHistory.Error.GettingLoggingInfo"), Messages.getString("SpoonHistory.Error.GettingInfoFromLoggingTable"), e); //$NON-NLS-1$ //$NON-NLS-2$
+                        StringBuffer message = new StringBuffer();
+                        message.append(Messages.getString("SpoonHistory.Error.GettingInfoFromLoggingTable")).append(Const.CR).append(Const.CR);
+                        message.append(e.toString()).append(Const.CR).append(Const.CR);
+                        message.append(Const.getStackTracker(e)).append(Const.CR);
+                        wText.setText(message.toString());
                         wFields.clearAll(false);
                     }
                     finally
@@ -379,4 +399,29 @@ public class SpoonHistory extends Composite
 		}
 	}
 
+    /**
+     * @return the transMeta
+     */
+    public TransMeta getTransMeta()
+    {
+        return transMeta;
+    }
+
+    /**
+     * @param transMeta the transMeta to set
+     */
+    public void setTransMeta(TransMeta transMeta)
+    {
+        this.transMeta = transMeta;
+    }
+
+    public boolean close()
+    {
+        return true; // You can close this one at any time.
+    }
+
+    public Object getManagedObject()
+    {
+        return transMeta;
+    }
 }

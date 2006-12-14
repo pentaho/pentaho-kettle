@@ -39,7 +39,7 @@ public class TestTransExecConfigDialog
     {
         TransMeta transMeta = new TransMeta();
         
-        SlaveServer slaveServer = new SlaveServer("sam", "8080", "cluster", "cluster");
+        SlaveServer slaveServer = new SlaveServer("Sam Laptop", "sam", "8080", "cluster", "cluster");
         List slaveServers = new ArrayList();
         slaveServers.add(slaveServer);
         ClusterSchema clusterSchema = new ClusterSchema("Local cluster", slaveServers);

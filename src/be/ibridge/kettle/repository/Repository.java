@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 
+import be.ibridge.kettle.cluster.ClusterSchema;
 import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.Condition;
 import be.ibridge.kettle.core.Const;
@@ -71,7 +72,7 @@ public class Repository
             "R_JOB", "R_LOGLEVEL", "R_LOG", "R_JOBENTRY", "R_JOBENTRY_COPY", "R_JOBENTRY_TYPE",
             "R_JOBENTRY_ATTRIBUTE", "R_JOB_HOP", "R_JOB_NOTE", "R_PROFILE", "R_USER",
             "R_PERMISSION", "R_PROFILE_PERMISSION", "R_STEP_DATABASE",
-            "R_PARTITION_SCHEMA", "R_PARTITION", "R_CLUSTER_SCHEMA", "R_SLAVE_SERVER"
+            "R_PARTITION_SCHEMA", "R_PARTITION", "R_CLUSTER", "R_SLAVE", "R_CLUSTER_SLAVE"
          };
     
     public static final int REQUIRED_MAJOR_VERSION = 2;
@@ -839,12 +840,22 @@ public class Repository
 
     public synchronized long getNextClusterSchemaID() throws KettleDatabaseException
     {
-        return getNextID("R_CLUSTER_SCHEMA", "ID_CLUSTER_SCHEMA");
+        return getNextID("R_CLUSTER", "ID_CLUSTER");
     }
 
     public synchronized long getNextSlaveServerID() throws KettleDatabaseException
     {
-        return getNextID("R_SLAVE_SERVER", "ID_SLAVE_SERVER");
+        return getNextID("R_SLAVE", "ID_SLAVE");
+    }
+    
+    public synchronized long getNextClusterSlaveID() throws KettleDatabaseException
+    {
+        return getNextID("R_CLUSTER_SLAVE", "ID_CLUSTER_SLAVE");
+    }
+    
+    public synchronized long getNextTransformationSlaveID() throws KettleDatabaseException
+    {
+        return getNextID("R_TRANSFORMATION_SLAVE", "ID_TRANSFORMATION_SLAVE");
     }
     
 	public synchronized long getNextConditionID() throws KettleDatabaseException
@@ -1369,21 +1380,20 @@ public class Repository
         return id;
     }
     
-    public synchronized long insertClusterSchema(long id_transformation, String schemaName, String basePort, String socketsBufferSize, String socketsFlushInterval, boolean socketsCompressed) throws KettleDatabaseException
+    public synchronized long insertClusterSchema(ClusterSchema clusterSchema) throws KettleDatabaseException
     {
         long id = getNextClusterSchemaID();
 
         Row table = new Row();
 
-        table.addValue(new Value("ID_CLUSTER_SCHEMA", id));
-        table.addValue(new Value("ID_TRANSFORMATION", id_transformation));
-        table.addValue(new Value("SCHEMA_NAME", schemaName));
-        table.addValue(new Value("BASE_PORT", basePort));
-        table.addValue(new Value("SOCKETS_BUFFER_SIZE", socketsBufferSize));
-        table.addValue(new Value("SOCKETS_FLUSH_INTERVAL", socketsFlushInterval));
-        table.addValue(new Value("SOCKETS_COMPRESSED", socketsCompressed));
+        table.addValue(new Value("ID_CLUSTER", id));
+        table.addValue(new Value("NAME", clusterSchema.getName()));
+        table.addValue(new Value("BASE_PORT", clusterSchema.getBasePort()));
+        table.addValue(new Value("SOCKETS_BUFFER_SIZE", clusterSchema.getSocketsBufferSize()));
+        table.addValue(new Value("SOCKETS_FLUSH_INTERVAL", clusterSchema.getSocketsFlushInterval()));
+        table.addValue(new Value("SOCKETS_COMPRESSED", clusterSchema.isSocketsCompressed()));
 
-        database.prepareInsert(table, "R_CLUSTER_SCHEMA");
+        database.prepareInsert(table, "R_CLUSTER");
         database.setValuesInsert(table);
         database.insertRow();
         database.closeInsert();
@@ -1391,15 +1401,14 @@ public class Repository
         return id;
     }
 
-    public synchronized long insertSlaveServer(long id_transformation, long id_cluster_schema, SlaveServer slaveServer) throws KettleDatabaseException
+    public synchronized long insertSlaveServer(SlaveServer slaveServer) throws KettleDatabaseException
     {
         long id = getNextSlaveServerID();
 
         Row table = new Row();
 
-        table.addValue(new Value("ID_SLAVE_SERVER", id));
-        table.addValue(new Value("ID_CLUSTER_SCHEMA", id_cluster_schema));
-        table.addValue(new Value("ID_TRANSFORMATION", id_transformation));
+        table.addValue(new Value("ID_SLAVE", id));
+        table.addValue(new Value("NAME", slaveServer.getName()));
         table.addValue(new Value("HOST_NAME", slaveServer.getHostname()));
         table.addValue(new Value("PORT", slaveServer.getPort()));
         table.addValue(new Value("USERNAME", slaveServer.getUsername()));
@@ -1409,7 +1418,43 @@ public class Repository
         table.addValue(new Value("NON_PROXY_HOSTS", slaveServer.getNonProxyHosts()));
         table.addValue(new Value("MASTER", slaveServer.isMaster()));
 
-        database.prepareInsert(table, "R_SLAVE_SERVER");
+        database.prepareInsert(table, "R_SLAVE");
+        database.setValuesInsert(table);
+        database.insertRow();
+        database.closeInsert();
+
+        return id;
+    }
+    
+    public synchronized long insertClusterSlave(ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleDatabaseException
+    {
+        long id = getNextClusterSchemaID();
+
+        Row table = new Row();
+
+        table.addValue(new Value("ID_CLUSTER_SLAVE", id));
+        table.addValue(new Value("ID_CLUSTER", id));
+        table.addValue(new Value("ID_SLAVE", id));
+
+        database.prepareInsert(table, "R_CLUSTER");
+        database.setValuesInsert(table);
+        database.insertRow();
+        database.closeInsert();
+
+        return id;
+    }
+    
+    public synchronized long insertTransformationSlave(long id_transformation, long id_slave_server) throws KettleDatabaseException
+    {
+        long id = getNextTransformationSlaveID();
+
+        Row table = new Row();
+
+        table.addValue(new Value("ID_TRANSFORMATION_SLAVE", id));
+        table.addValue(new Value("ID_TRANSFORMATION", id_transformation));
+        table.addValue(new Value("ID_SLAVE", id_slave_server));
+
+        database.prepareInsert(table, "R_TRANSFORMATION_SLAVE");
         database.setValuesInsert(table);
         database.insertRow();
         database.closeInsert();
@@ -2345,7 +2390,7 @@ public class Repository
     {
         List ids = new ArrayList();
         
-        String sql = "SELECT ID_CLUSTER_SCHEMA FROM R_CLUSTER_SCHEMA WHERE ID_TRANSFORMATION = " + id_transformation;
+        String sql = "SELECT ID_TRANSFORMATION_CLUSTER FROM R_TRANSFORMATION_CLUSTER WHERE ID_TRANSFORMATION = " + id_transformation;
 
         ResultSet rs = database.openQuery(sql);
         Row r = database.getRow(rs);
@@ -2365,7 +2410,7 @@ public class Repository
     {
         List ids = new ArrayList();
         
-        String sql = "SELECT ID_SLAVE_SERVER FROM R_SLAVE_SERVER WHERE ID_CLUSTER_SCHEMA = " + id_cluster_schema;
+        String sql = "SELECT ID_SLAVE FROM R_CLUSTER_SLAVE WHERE ID_CLUSTER = " + id_cluster_schema;
 
         ResultSet rs = database.openQuery(sql);
         Row r = database.getRow(rs);
@@ -2804,12 +2849,12 @@ public class Repository
 
     public Row getClusterSchema(long id_cluster_schema) throws KettleDatabaseException
     {
-        return getOneRow("R_CLUSTER_SCHEMA", "ID_CLUSTER_SCHEMA", id_cluster_schema);
+        return getOneRow("R_CLUSTER", "ID_CLUSTER", id_cluster_schema);
     }
 
     public Row getSlaveServer(long id_slave_server) throws KettleDatabaseException
     {
-        return getOneRow("R_SLAVE_SERVER", "ID_SLAVE_SERVER", id_slave_server);
+        return getOneRow("R_SLAVE", "ID_SLAVE", id_slave_server);
     }
 
 	private Row getOneRow(String tablename, String keyfield, long id) throws KettleDatabaseException
@@ -3332,13 +3377,13 @@ public class Repository
     
     public synchronized void delClusterSchemas(long id_transformation) throws KettleDatabaseException
     {
-        String sql = "DELETE FROM R_CLUSTER_SCHEMA WHERE ID_TRANSFORMATION = " + id_transformation;
+        String sql = "DELETE FROM R_TRANSFORMATION_CLUSTER WHERE ID_TRANSFORMATION = " + id_transformation;
         database.execStatement(sql);
     }
 
     public synchronized void delSlaveServers(long id_transformation) throws KettleDatabaseException
     {
-        String sql = "DELETE FROM R_SLAVE_SERVER WHERE ID_TRANSFORMATION = " + id_transformation;
+        String sql = "DELETE FROM R_TRANS_SLAVE WHERE ID_TRANSFORMATION = " + id_transformation;
         database.execStatement(sql);
     }
 
@@ -4089,20 +4134,19 @@ public class Repository
 
         //////////////////////////////////////////////////////////////////////////////////
         //
-        // R_CLUSTER_SCHEMA
+        // R_CLUSTER
         //
         // Create table...
         table = new Row();
-        tablename = "R_CLUSTER_SCHEMA";
+        tablename = "R_CLUSTER";
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValue(new Value("ID_CLUSTER_SCHEMA", Value.VALUE_TYPE_INTEGER, KEY, 0));
-        table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_CLUSTER", Value.VALUE_TYPE_INTEGER, KEY, 0));
         table.addValue(new Value("SCHEMA_NAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("BASE_PORT", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("SOCKETS_BUFFER_SIZE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("SOCKETS_FLUSH_INTERVAL", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("SOCKETS_COMPRESSED", Value.VALUE_TYPE_BOOLEAN, 0, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_CLUSTER_SCHEMA", false);
+        sql = database.getDDL(tablename, table, null, false, "ID_CLUSTER", false);
 
         if (sql != null && sql.length() > 0)
         {
@@ -4118,15 +4162,14 @@ public class Repository
         
         //////////////////////////////////////////////////////////////////////////////////
         //
-        // R_SLAVE_SERVER
+        // R_SLAVE
         //
         // Create table...
         table = new Row();
-        tablename = "R_SLAVE_SERVER";
+        tablename = "R_SLAVE";
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValue(new Value("ID_SLAVE_SERVER", Value.VALUE_TYPE_INTEGER, KEY, 0));
-        table.addValue(new Value("ID_CLUSTER_SCHEMA", Value.VALUE_TYPE_INTEGER, KEY, 0));
-        table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_SLAVE", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("HOST_NAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("PORT", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("USERNAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -4135,7 +4178,82 @@ public class Repository
         table.addValue(new Value("PROXY_PORT", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("NON_PROXY_HOSTS", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("MASTER", Value.VALUE_TYPE_BOOLEAN));
-        sql = database.getDDL(tablename, table, null, false, "ID_SLAVE_SERVER", false);
+        sql = database.getDDL(tablename, table, null, false, "ID_SLAVE", false);
+
+        if (sql != null && sql.length() > 0)
+        {
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            database.execStatements(sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+        }
+        else
+        {
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+        }
+        if (monitor!=null) monitor.worked(1);
+
+        //////////////////////////////////////////////////////////////////////////////////
+        //
+        // R_TRANSFORMATION_SLAVE
+        //
+        // Create table...
+        table = new Row();
+        tablename = "R_TRANSFORMATION_SLAVE";
+        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        table.addValue(new Value("ID_TRANSFORMATION_SLAVE", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_SLAVE", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        sql = database.getDDL(tablename, table, null, false, "ID_TRANSFORMATION_SLAVE", false);
+
+        if (sql != null && sql.length() > 0)
+        {
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            database.execStatements(sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+        }
+        else
+        {
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+        }
+        if (monitor!=null) monitor.worked(1);
+
+        //////////////////////////////////////////////////////////////////////////////////
+        //
+        // R_CLUSTER_SLAVE
+        //
+        // Create table...
+        table = new Row();
+        tablename = "R_CLUSTER_SLAVE";
+        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        table.addValue(new Value("ID_CLUSTER_SLAVE", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_CLUSTER", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_SLAVE", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        sql = database.getDDL(tablename, table, null, false, "ID_CLUSTER_SLAVE", false);
+
+        if (sql != null && sql.length() > 0)
+        {
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            database.execStatements(sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+        }
+        else
+        {
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+        }
+        if (monitor!=null) monitor.worked(1);
+
+        //////////////////////////////////////////////////////////////////////////////////
+        //
+        // R_TRANSFORMATION_CLUSTER
+        //
+        // Create table...
+        table = new Row();
+        tablename = "R_TRANSFORMATION_CLUSTER";
+        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        table.addValue(new Value("ID_TRANSFORMATION_CLUSTER", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_CLUSTER", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        sql = database.getDDL(tablename, table, null, false, "ID_TRANSFORMATION_CLUSTER", false);
 
         if (sql != null && sql.length() > 0)
         {

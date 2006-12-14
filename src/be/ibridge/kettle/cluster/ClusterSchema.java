@@ -48,8 +48,11 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     
     
     
+    private long id;
+    
     public ClusterSchema()
     {
+        id=-1L;
         slaveServers = new ArrayList();
         socketsBufferSize = "2000";
         socketsFlushInterval = "5000";
@@ -74,12 +77,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         clusterSchema.setSocketsBufferSize(socketsBufferSize);
         clusterSchema.setSocketsCompressed(socketsCompressed);
         clusterSchema.setSocketsFlushInterval(socketsFlushInterval);
-        
-        for (int i=0;i<slaveServers.size();i++)
-        {
-            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
-            clusterSchema.getSlaveServers().add(slaveServer.clone());
-        }
+        clusterSchema.getSlaveServers().addAll(slaveServers); // no clone() of the slave server please!
         
         return clusterSchema;
     }
@@ -116,14 +114,14 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         for (int i=0;i<slaveServers.size();i++)
         {
             SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
-            xml.append("            "+slaveServer.getXML()).append(Const.CR);
+            xml.append("            "+XMLHandler.addTagValue("name", slaveServer.getName()));
         }
         xml.append("          </slaveservers>"+Const.CR);
         xml.append("        </"+XML_TAG+">"+Const.CR);
         return xml.toString();
     }
     
-    public ClusterSchema(Node clusterSchemaNode)
+    public ClusterSchema(Node clusterSchemaNode, List referenceSlaveServers)
     {
         this();
         
@@ -134,23 +132,31 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         socketsCompressed = "Y".equalsIgnoreCase(  XMLHandler.getTagValue(clusterSchemaNode, "sockets_compressed") );
         
         Node slavesNode = XMLHandler.getSubNode(clusterSchemaNode, "slaveservers");
-        int nrSlaves = XMLHandler.countNodes(slavesNode, "slaveserver");
+        int nrSlaves = XMLHandler.countNodes(slavesNode, "name");
         for (int i=0;i<nrSlaves;i++)
         {
-            Node slaveNode = XMLHandler.getSubNodeByNr(slavesNode, "slaveserver", i);
-            SlaveServer slaveServer = new SlaveServer(slaveNode);
-            slaveServers.add(slaveServer);
+            Node serverNode = XMLHandler.getSubNodeByNr(slavesNode, "name", i);
+            String serverName = XMLHandler.getNodeValue(serverNode);
+            // System.out.println("Found name #"+i+" : "+name);
+            SlaveServer slaveServer = SlaveServer.findSlaveServer(referenceSlaveServers, serverName);
+            if (slaveServer!=null) 
+            {
+                System.out.println("adding server #"+i+" : "+slaveServer.toString()+" to cluster "+name);
+                slaveServers.add(slaveServer);
+            }
         }
     }
     
     public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
     {
-        long id_cluster_schema = rep.insertClusterSchema(id_transformation, name, basePort, socketsBufferSize, socketsFlushInterval, socketsCompressed);
+        // Save the cluster
+        setId(rep.insertClusterSchema(this));
         
+        // Also save the used slave server references.
         for (int i=0;i<slaveServers.size();i++)
         {
             SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
-            slaveServer.saveRep(rep, id_transformation, id_cluster_schema);
+            rep.insertClusterSlave(this, slaveServer);
         }
     }
     
@@ -327,13 +333,23 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         this.socketsCompressed = socketsCompressed;
     }
 
-    public SlaveServer findSlaveServer(String slaveServerString)
+    public SlaveServer findSlaveServer(String slaveServerName)
     {
         for (int i=0;i<slaveServers.size();i++)
         {
             SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
-            if (slaveServer.toString().equalsIgnoreCase(slaveServerString)) return slaveServer;
+            if (slaveServer.getName().equalsIgnoreCase(slaveServerName)) return slaveServer;
         }
         return null;
+    }
+
+    public long getId()
+    {
+        return id;
+    }
+
+    public void setId(long id)
+    {
+        this.id = id;
     }
 }

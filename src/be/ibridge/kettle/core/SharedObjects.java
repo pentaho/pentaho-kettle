@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import org.w3c.dom.Document;
@@ -15,6 +16,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import be.ibridge.kettle.cluster.ClusterSchema;
+import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.database.DatabaseMeta;
 import be.ibridge.kettle.core.exception.KettleXMLException;
 import be.ibridge.kettle.partition.PartitionSchema;
@@ -65,7 +67,7 @@ public class SharedObjects
     private ArrayList databases;
     private Hashtable counters;
     
-    public SharedObjects(String sharedObjectsFile, ArrayList databases, Hashtable counters) throws KettleXMLException
+    public SharedObjects(String sharedObjectsFile, ArrayList databases, Hashtable counters, List slaveServers) throws KettleXMLException
     {
         this.filename = createFilename(sharedObjectsFile);
         this.databases = databases;
@@ -90,15 +92,28 @@ public class SharedObjects
                     
                     SharedObjectInterface isShared = null;
     
-                    if      (nodeName.equals(DatabaseMeta.XML_TAG))    isShared = new DatabaseMeta(node);
+                    if (nodeName.equals(DatabaseMeta.XML_TAG))
+                    {    
+                        isShared = new DatabaseMeta(node);
+                    }
                     else if (nodeName.equals(StepMeta.XML_TAG))        
                     { 
                         StepMeta stepMeta = new StepMeta(node, databases, counters);
                         stepMeta.setDraw(false); // don't draw it, keep it in the tree.
                         isShared = stepMeta;
                     }
-                    else if (nodeName.equals(PartitionSchema.XML_TAG)) isShared = new PartitionSchema(node);
-                    else if (nodeName.equals(ClusterSchema.XML_TAG))   isShared = new ClusterSchema(node);
+                    else if (nodeName.equals(PartitionSchema.XML_TAG)) 
+                    {
+                        isShared = new PartitionSchema(node);
+                    }
+                    else if (nodeName.equals(SlaveServer.XML_TAG)) 
+                    {
+                        isShared = new SlaveServer(node);
+                    }
+                    else if (nodeName.equals(ClusterSchema.XML_TAG)) 
+                    {   
+                        isShared = new ClusterSchema(node, slaveServers);
+                    }
                     
                     if (isShared!=null)
                     {
@@ -132,9 +147,9 @@ public class SharedObjects
         return filename;
     }
 
-    public SharedObjects(ArrayList databases, Hashtable counters) throws KettleXMLException
+    public SharedObjects(ArrayList databases, Hashtable counters, List slaveServers) throws KettleXMLException
     {
-        this(null, databases, counters);
+        this(null, databases, counters, slaveServers);
     }
 
     public Map getObjectsMap()

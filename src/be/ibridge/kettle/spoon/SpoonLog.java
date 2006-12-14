@@ -76,47 +76,34 @@ import be.ibridge.kettle.trans.step.StepStatus;
  * @author Matt
  * @since  17 may 2003
  */
-public class SpoonLog extends Composite
+public class SpoonLog extends Composite implements TabItemInterface
 {
-	public static final long UPDATE_TIME_VIEW = 1000L;
-
+    private static final LogWriter log = LogWriter.getInstance();
+    
+    public static final long UPDATE_TIME_VIEW = 1000L;
 	public static final long UPDATE_TIME_LOG = 2000L;
-
 	public static final long REFRESH_TIME = 100L;
 
 	public final static String START_TEXT = Messages.getString("SpoonLog.Button.StartTransformation"); //$NON-NLS-1$
-
 	public final static String STOP_TEXT = Messages.getString("SpoonLog.Button.StopTransformation"); //$NON-NLS-1$
 
-	private Shell shell;
-
 	private Display display;
-
-	private LogWriter log;
+    private Shell shell;
+    private TransMeta transMeta;
+    
 
 	private ColumnInfo[] colinf;
-
 	private TableView wFields;
-
 	private Button wOnlyActive;
-
 	private Button wSafeMode;
-
 	private Text wText;
-
 	private Button wStart;
     private Button wStop;
-
 	private Button wPreview;
-
 	private Button wError;
-
 	private Button wClear;
-
 	private Button wLog;
-
 	private long lastUpdateView;
-
 	private long lastUpdateLog;
 
 	private FormData fdText, fdSash, fdStart, fdPreview, fdError, fdClear, fdLog, fdOnlyActive, fdSafeMode;
@@ -139,15 +126,14 @@ public class SpoonLog extends Composite
 
     private boolean halted;
 
-    private FormData fdStop;
+    private FormData fdStop;    
 
-
-	public SpoonLog(Composite parent, int style, Spoon sp, LogWriter l, String fname)
+	public SpoonLog(Composite parent, final Spoon spoon, final TransMeta transMeta)
 	{
-		super(parent, style);
+		super(parent, SWT.NONE);
 		shell = parent.getShell();
-		spoon = sp;
-		log = l;
+		this.spoon = spoon;
+        this.transMeta = transMeta;
 		trans = null;
 		display = shell.getDisplay();
 
@@ -170,7 +156,8 @@ public class SpoonLog extends Composite
 
 		sash.setLayout(new FillLayout());
 
-		colinf = new ColumnInfo[] { new ColumnInfo(Messages.getString("SpoonLog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
+		colinf = new ColumnInfo[] { 
+                new ColumnInfo(Messages.getString("SpoonLog.Column.Stepname"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonLog.Column.Copynr"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonLog.Column.Read"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
 				new ColumnInfo(Messages.getString("SpoonLog.Column.Written"), ColumnInfo.COLUMN_TYPE_TEXT, false, true), //$NON-NLS-1$
@@ -316,6 +303,7 @@ public class SpoonLog extends Composite
 			}
 		};
 
+        
 		final Timer tim = new Timer();
         final StringBuffer busy = new StringBuffer("N");
 
@@ -354,7 +342,7 @@ public class SpoonLog extends Composite
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				spoon.executeTransformation(true, false, false, false, null);
+				spoon.executeTransformation(transMeta, true, false, false, false, null);
 			}
 		};
 
@@ -370,7 +358,7 @@ public class SpoonLog extends Composite
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				spoon.executeTransformation(true, false, false, true, null);
+				spoon.executeTransformation(transMeta, true, false, false, true, null);
 			}
 		};
 
@@ -429,7 +417,7 @@ public class SpoonLog extends Composite
                 try
                 {
                     trans.endProcessing("end"); //$NON-NLS-1$
-                    spoonHistoryRefresher.markRefreshNeeded();
+                    if (spoonHistoryRefresher!=null) spoonHistoryRefresher.markRefreshNeeded();
                 }
                 catch (KettleException e)
                 {
@@ -447,11 +435,11 @@ public class SpoonLog extends Composite
 		if (!running) // Not running, start the transformation...
 		{
 			// Auto save feature...
-			if (spoon.getTransMeta().hasChanged())
+			if (transMeta.hasChanged())
 			{
 				if (spoon.props.getAutoSave())
 				{
-					spoon.saveFile();
+					spoon.saveFile(transMeta);
 				}
 				else
 				{
@@ -463,15 +451,15 @@ public class SpoonLog extends Composite
 					int answer = md.open();
 					if ( (answer & 0xFF) == 0)
 					{
-						spoon.saveFile();
+						spoon.saveFile(transMeta);
 					}
 					spoon.props.setAutoSave(md.getToggleState());
 				}
 			}
 
-			if (((spoon.getTransMeta().getName() != null && spoon.rep != null) || // Repository available & name set
-					(spoon.getTransMeta().getFilename() != null && spoon.rep == null) // No repository & filename set
-					) && !spoon.getTransMeta().hasChanged() // Didn't change
+			if (((transMeta.getName() != null && spoon.rep != null) || // Repository available & name set
+					(transMeta.getFilename() != null && spoon.rep == null) // No repository & filename set
+					) && !transMeta.hasChanged() // Didn't change
 			)
 			{
 				if (trans == null || (trans != null && trans.isFinished()))
@@ -481,9 +469,9 @@ public class SpoonLog extends Composite
                         // Set the requested logging level.
                         log.setLogLevel(executionConfiguration.getLogLevel());
 
-						trans = new Trans(log, spoon.getTransMeta().getFilename(), spoon.getTransMeta().getName(), new String[] { spoon.getTransMeta().getFilename() });
+						trans = new Trans(log, transMeta.getFilename(), transMeta.getName(), new String[] { transMeta.getFilename() });
 						trans.setReplayDate(executionConfiguration.getReplayDate());
-						trans.open(spoon.rep, spoon.getTransMeta().getName(), spoon.getTransMeta().getDirectory().getPath(), spoon.getTransMeta().getFilename());
+						trans.open(spoon.rep, transMeta.getName(), transMeta.getDirectory().getPath(), transMeta.getFilename());
 
 						trans.setMonitored(true);
 						log.logBasic(toString(), Messages.getString("SpoonLog.Log.TransformationOpened")); //$NON-NLS-1$
@@ -537,14 +525,14 @@ public class SpoonLog extends Composite
 			}
 			else
 			{
-				if (spoon.getTransMeta().hasChanged())
+				if (transMeta.hasChanged())
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
 					m.setText(Messages.getString("SpoonLog.Dialog.SaveTransformationBeforeRunning.Title")); //$NON-NLS-1$
 					m.setMessage(Messages.getString("SpoonLog.Dialog.SaveTransformationBeforeRunning.Message")); //$NON-NLS-1$
 					m.open();
 				}
-				else if (spoon.rep != null && spoon.getTransMeta().getName() == null)
+				else if (spoon.rep != null && transMeta.getName() == null)
 				{
 					MessageBox m = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
 					m.setText(Messages.getString("SpoonLog.Dialog.GiveTransformationANameBeforeRunning.Title")); //$NON-NLS-1$
@@ -586,7 +574,7 @@ public class SpoonLog extends Composite
                 preview = false;
                 showPreview();
             }
-            spoon.getTransMeta().setInternalKettleVariables(); // set the original vars back as they may be changed by a mapping
+            transMeta.setInternalKettleVariables(); // set the original vars back as they may be changed by a mapping
         }
     }
     
@@ -811,7 +799,7 @@ public class SpoonLog extends Composite
                 setVariables(executionConfiguration);
 
 				spoon.tabfolder.setSelection(1);
-				trans = new Trans(log, spoon.getTransMeta(), executionConfiguration.getPreviewSteps(), executionConfiguration.getPreviewSizes());
+				trans = new Trans(log, transMeta, executionConfiguration.getPreviewSteps(), executionConfiguration.getPreviewSizes());
                 trans.setSafeModeEnabled(executionConfiguration.isSafeModeEnabled());
 				trans.execute(args);
 				preview = true;
@@ -944,12 +932,12 @@ public class SpoonLog extends Composite
 			line = esd.open();
 			if (line != null)
 			{
-				for (i = 0; i < spoon.getTransMeta().nrSteps(); i++)
+				for (i = 0; i < transMeta.nrSteps(); i++)
 				{
-					StepMeta stepMeta = spoon.getTransMeta().getStep(i);
+					StepMeta stepMeta = transMeta.getStep(i);
 					if (line.indexOf(stepMeta.getName()) >= 0)
 					{
-						spoon.editStep(stepMeta.getName());
+						spoon.editStep(transMeta, stepMeta);
 					}
 				}
 				// System.out.println("Error line selected: "+line);
@@ -978,5 +966,31 @@ public class SpoonLog extends Composite
     public boolean isSafeModeChecked()
     {
         return wSafeMode.getSelection();
+    }
+
+    /**
+     * @return the transMeta
+     */
+    public TransMeta getTransMeta()
+    {
+        return transMeta;
+    }
+
+    /**
+     * @param transMeta the transMeta to set
+     */
+    public void setTransMeta(TransMeta transMeta)
+    {
+        this.transMeta = transMeta;
+    }
+
+    public boolean close()
+    {
+        return !running && !preview;
+    }
+    
+    public Object getManagedObject()
+    {
+        return transMeta;
     }
 }

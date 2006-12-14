@@ -41,7 +41,7 @@ public class GenerateClusterSchema
         Properties properties = new Properties();
         properties.load(new FileInputStream(new File(args[0])));
 
-        SharedObjects sharedObjects = new SharedObjects(args[1], new ArrayList(), new Hashtable());
+        SharedObjects sharedObjects = new SharedObjects(args[1], new ArrayList(), new Hashtable(), new ArrayList());
         
         DatabaseMeta mysql = new DatabaseMeta("MySQL EC2", "MySQL", "JDBC", null, "test", "3306", "matt", "abcd");
         
@@ -67,18 +67,24 @@ public class GenerateClusterSchema
             if (i==1) // use the first as the master
             {
                 // add the master
-                clusterSchema.getSlaveServers().add(new SlaveServer(serverIp, serverPort, "cluster", "cluster", null, null, null, true));
+                SlaveServer master = new SlaveServer("EC_MASTER_"+i, serverIp, serverPort, "cluster", "cluster", null, null, null, true);
+                sharedObjects.storeObject(master);
+                clusterSchema.getSlaveServers().add(master);
                 mysql.setHostname(serverIp);
                 
                 if (max==1) // if there is just one server here, so we add a slave too besides the master 
                 {
-                    clusterSchema.getSlaveServers().add(new SlaveServer(serverIp, serverPort, "cluster", "cluster"));
+                    SlaveServer slaveServer = new SlaveServer("EC_SLAVE_"+i, serverIp, serverPort, "cluster", "cluster");
+                    sharedObjects.storeObject(slaveServer);
+                    clusterSchema.getSlaveServers().add(slaveServer);
                 }
             }
             else
             {
                 // Add a slave server
-                clusterSchema.getSlaveServers().add(new SlaveServer(serverIp, serverPort, "cluster", "cluster"));
+                SlaveServer slaveServer = new SlaveServer("EC_SLAVE_"+i, serverIp, serverPort, "cluster", "cluster");
+                sharedObjects.storeObject(slaveServer);
+                clusterSchema.getSlaveServers().add(slaveServer);
                 // Add a db partition
                 partDbMeta[i-2] = new PartitionDatabaseMeta("P"+i, serverIp, "3306", "test");
             }

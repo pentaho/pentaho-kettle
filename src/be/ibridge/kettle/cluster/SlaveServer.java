@@ -10,6 +10,7 @@ import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.List;
 
 import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpMethod;
@@ -24,6 +25,7 @@ import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Encr;
 import be.ibridge.kettle.core.LogWriter;
 import be.ibridge.kettle.core.Row;
+import be.ibridge.kettle.core.SharedObjectInterface;
 import be.ibridge.kettle.core.XMLHandler;
 import be.ibridge.kettle.core.exception.KettleDatabaseException;
 import be.ibridge.kettle.core.util.StringUtil;
@@ -36,12 +38,13 @@ import be.ibridge.kettle.www.StartTransHandler;
 import be.ibridge.kettle.www.StopTransHandler;
 import be.ibridge.kettle.www.WebResult;
 
-public class SlaveServer extends ChangedFlag implements Cloneable
+public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectInterface
 {
     public static final String XML_TAG = "slaveserver";
 
     private static LogWriter log = LogWriter.getInstance();
     
+    private String name;
     private String hostname;
     private String port;
     private String username;
@@ -53,17 +56,23 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     
     private boolean master;
     
+    private boolean shared;
+    private long id;
+    
     public SlaveServer()
     {
+        id=-1L;
     }
     
-    public SlaveServer(String hostname, String port, String username, String password)
+    public SlaveServer(String name, String hostname, String port, String username, String password)
     {
-        this(hostname, port, username, password, null, null, null, false);
+        this(name, hostname, port, username, password, null, null, null, false);
     }
     
-    public SlaveServer(String hostname, String port, String username, String password, String proxyHostname, String proxyPort, String nonProxyHosts, boolean master)
+    public SlaveServer(String name, String hostname, String port, String username, String password, String proxyHostname, String proxyPort, String nonProxyHosts, boolean master)
     {
+        this();
+        this.name     = name;
         this.hostname = hostname;
         this.port     = port;
         this.username = username;
@@ -78,6 +87,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     
     public SlaveServer(Node slaveNode)
     {
+        this.name       = XMLHandler.getTagValue(slaveNode, "name");
         this.hostname   = XMLHandler.getTagValue(slaveNode, "hostname");
         this.port       = XMLHandler.getTagValue(slaveNode, "port");
         this.username   = XMLHandler.getTagValue(slaveNode, "username");
@@ -94,6 +104,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         
         xml.append("<"+XML_TAG+">");
         
+        xml.append(XMLHandler.addTagValue("name", name, false));
         xml.append(XMLHandler.addTagValue("hostname", hostname, false));
         xml.append(XMLHandler.addTagValue("port",     port, false));
         xml.append(XMLHandler.addTagValue("username", username, false));
@@ -108,9 +119,10 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         return xml.toString();
     }
     
-    public void saveRep(Repository rep, long id_transformation, long id_cluster_schema) throws KettleDatabaseException
+    public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
     {
-        rep.insertSlaveServer(id_transformation, id_cluster_schema, this);
+        setId(rep.insertSlaveServer(this));
+        rep.insertTransformationSlave(id_transformation, getId());
     }
     
     public SlaveServer(Repository rep, long id_slave_server) throws KettleDatabaseException
@@ -119,6 +131,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         
         Row row = rep.getSlaveServer(id_slave_server);
 
+        name          = row.getString("NAME", null);
         hostname      = row.getString("HOST_NAME", null);
         port          = row.getString("PORT", null);
         username      = row.getString("USERNAME", null);
@@ -143,7 +156,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     
     public String toString()
     {
-        return getServerAndPort()+(master?"(Master)":"");
+        return name;
     }
     
     
@@ -157,12 +170,12 @@ public class SlaveServer extends ChangedFlag implements Cloneable
     public boolean equals(Object obj)
     {
         SlaveServer slave = (SlaveServer) obj;
-        return toString().equalsIgnoreCase(slave.toString());
+        return name.equalsIgnoreCase(slave.getName());
     }
     
     public int hashCode()
     {
-        return toString().hashCode();
+        return name.hashCode();
     }
     
     public String getHostname()
@@ -538,5 +551,57 @@ public class SlaveServer extends ChangedFlag implements Cloneable
         String xml = execService(StartTransHandler.CONTEXT_PATH+"?name="+transName+"&xml=Y");
         return WebResult.fromXMLString(xml);
     }
+
+    public static SlaveServer findSlaveServer(List slaveServers, String name)
+    {
+        for (int i=0;i<slaveServers.size();i++)
+        {
+            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            if (slaveServer.getName().equalsIgnoreCase(name)) return slaveServer;
+        }
+        return null;
+    }
+    
+    public static String[] getSlaveServerNames(List slaveServers)
+    {
+        String[] names = new String[slaveServers.size()];
+        for (int i=0;i<slaveServers.size();i++)
+        {
+            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            names[i] = slaveServer.getName();
+        }
+        return names;
+    }
+
+    public String getName()
+    {
+        return name;
+    }
+    
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
+    public boolean isShared()
+    {
+        return shared;
+    }
+
+    public void setShared(boolean shared)
+    {
+        this.shared = shared;
+    }
+
+    public long getId()
+    {
+        return id;
+    }
+
+    public void setId(long id)
+    {
+        this.id = id;
+    }
+    
 }
 

@@ -28,6 +28,7 @@ import be.ibridge.kettle.core.ColumnInfo;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.Props;
 import be.ibridge.kettle.core.WindowProperty;
+import be.ibridge.kettle.core.dialog.EnterSelectionDialog;
 import be.ibridge.kettle.core.widget.TableView;
 import be.ibridge.kettle.core.widget.TextVar;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
@@ -67,11 +68,7 @@ public class ClusterSchemaDialog extends Dialog
     private ClusterSchema originalSchema;
     private boolean ok;
 
-    private Button wAdd;
-
-    private Button wDel;
-
-    private Button wEdit;
+    private Button wSelect;
 
     private TextVar wPort;
 
@@ -80,12 +77,20 @@ public class ClusterSchemaDialog extends Dialog
     private TextVar wFlushInterval;
 
     private Button wCompressed;
+
+    private List slaveServers;
     
-	public ClusterSchemaDialog(Shell par, ClusterSchema clusterSchema)
+	public ClusterSchemaDialog(Shell par, ClusterSchema clusterSchema, List slaveServers)
 	{
 		super(par, SWT.NONE);
 		this.clusterSchema=(ClusterSchema) clusterSchema.clone();
         this.originalSchema=clusterSchema;
+        this.slaveServers = slaveServers;
+        
+        System.out.println("# shared slave servers: "+slaveServers.size());
+        System.out.println("# used slave servers: "+clusterSchema.getSlaveServers().size());
+        
+        
 		props=Props.getInstance();
         ok=false;
 	}
@@ -235,46 +240,26 @@ public class ClusterSchemaDialog extends Dialog
         wlServers.setLayoutData(fdlServers);
         
         // Some buttons to manage...
-        wAdd = new Button(shell, SWT.PUSH);
-        wAdd.setText("Add slave server");
-        props.setLook(wAdd);
-        FormData fdAdd=new FormData();
-        fdAdd.right= new FormAttachment(100, 0);
-        fdAdd.top  = new FormAttachment(wlServers, 5*margin);
-        wAdd.setLayoutData(fdAdd);
-        wAdd.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { addSlaveServer(); }});
-
-        // Some buttons to manage...
-        wEdit = new Button(shell, SWT.PUSH);
-        wEdit.setText("Edit slave server");
-        props.setLook(wEdit);
-        FormData fdEdit=new FormData();
-        fdEdit.right= new FormAttachment(100, 0);
-        fdEdit.top  = new FormAttachment(wAdd, 2*margin);
-        wEdit.setLayoutData(fdEdit);
-        wEdit.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { editSlaveServer(); }});
-
-        // Some buttons to manage...
-        wDel = new Button(shell, SWT.PUSH);
-        wDel.setText("Delete slave server");
-        props.setLook(wDel);
-        FormData fdDel=new FormData();
-        fdDel.right= new FormAttachment(100, 0);
-        fdDel.top  = new FormAttachment(wEdit, 2*margin);
-        wDel.setLayoutData(fdDel);
-        wDel.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { removeSlaveServer(); }});
+        wSelect = new Button(shell, SWT.PUSH);
+        wSelect.setText("Select slave servers");
+        props.setLook(wSelect);
+        FormData fdSelect=new FormData();
+        fdSelect.right= new FormAttachment(100, 0);
+        fdSelect.top  = new FormAttachment(wlServers, 5*margin);
+        wSelect.setLayoutData(fdSelect);
+        wSelect.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { selectSlaveServers(); }});
 
         ColumnInfo[] partitionColumns = new ColumnInfo[] { 
+                new ColumnInfo( "Name", ColumnInfo.COLUMN_TYPE_TEXT, true, false), //$NON-NLS-1$
                 new ColumnInfo( "Service URL", ColumnInfo.COLUMN_TYPE_TEXT, true, true), //$NON-NLS-1$
                 new ColumnInfo( "Master?", ColumnInfo.COLUMN_TYPE_TEXT, true, true), //$NON-NLS-1$
         };
         wServers = new TableView(shell, SWT.BORDER | SWT.FULL_SELECTION | SWT.SINGLE, partitionColumns, 1, lsMod, props);
-        wServers.setReadonly(true);
-        wServers.setSortable(false);
+        wServers.setReadonly(false);
         props.setLook(wServers);
         FormData fdServers = new FormData();
         fdServers.left = new FormAttachment(middle, margin );
-        fdServers.right = new FormAttachment(wDel, -2*margin);
+        fdServers.right = new FormAttachment(wSelect, -2*margin);
         fdServers.top = new FormAttachment(wCompressed, margin);
         fdServers.bottom = new FormAttachment(wOK, -margin * 2);
         wServers.setLayoutData(fdServers);
@@ -310,32 +295,36 @@ public class ClusterSchemaDialog extends Dialog
         int idx = wServers.getSelectionIndex();
         if (idx>=0)
         {
-            SlaveServer slaveServer = (SlaveServer) clusterSchema.getSlaveServers().get(idx);
-            SlaveServerDialog dialog = new SlaveServerDialog(shell, slaveServer);
-            if (dialog.open())
+            SlaveServer slaveServer = clusterSchema.findSlaveServer(wServers.getItems(0)[idx]);
+            if (slaveServer!=null)
             {
-                refreshSlaveServers();
+                SlaveServerDialog dialog = new SlaveServerDialog(shell, slaveServer);
+                if (dialog.open())
+                {
+                    refreshSlaveServers();
+                }
             }
         }
     }
 
-    private void removeSlaveServer()
+    private void selectSlaveServers()
     {
-        int idx = wServers.getSelectionIndex();
-        if (idx>=0)
+        String[] names = SlaveServer.getSlaveServerNames(slaveServers);
+        int idx[] = Const.indexsOfFoundStrings(wServers.getItems(0), names);
+        
+        EnterSelectionDialog dialog = new EnterSelectionDialog(shell, names, "Select the servers", "Select the servers for this cluster");
+        dialog.setSelectedNrs(idx);
+        dialog.setMulti(true);
+        if (dialog.open()!=null)
         {
-            clusterSchema.getSlaveServers().remove(idx);
-            refreshSlaveServers();
-        }
-    }
-
-    private void addSlaveServer()
-    {
-        SlaveServer slaveServer = new SlaveServer();
-        SlaveServerDialog dialog = new SlaveServerDialog(shell, slaveServer);
-        if (dialog.open())
-        {
-            clusterSchema.getSlaveServers().add(slaveServer);
+            clusterSchema.getSlaveServers().clear();
+            int[] indeces = dialog.getSelectionIndeces();
+            for (int i=0;i<indeces.length;i++)
+            {
+                SlaveServer slaveServer = SlaveServer.findSlaveServer(slaveServers, names[indeces[i]]);
+                clusterSchema.getSlaveServers().add(slaveServer);
+            }
+            
             refreshSlaveServers();
         }
     }
@@ -367,8 +356,9 @@ public class ClusterSchemaDialog extends Dialog
         {
             TableItem item = new TableItem(wServers.table, SWT.NONE);
             SlaveServer slaveServer = (SlaveServer)slaveServers.get(i);
-            if (slaveServer.getHostname()!=null) item.setText(1, slaveServer.toString());
-            item.setText(2, slaveServer.isMaster()?"Y":"N");
+            item.setText(1, Const.NVL(slaveServer.getName(), ""));
+            item.setText(2, Const.NVL(slaveServer.toString(), ""));
+            item.setText(3, slaveServer.isMaster()?"Y":"N");
         }
         wServers.removeEmptyRows();
         wServers.setRowNums();
@@ -406,6 +396,15 @@ public class ClusterSchemaDialog extends Dialog
         clusterSchema.setSocketsFlushInterval(wFlushInterval.getText());
         clusterSchema.setSocketsCompressed(wCompressed.getSelection());
 
-        // The slave servers are managed by the buttons.
+        String[] names = SlaveServer.getSlaveServerNames(slaveServers);
+        int idx[] = Const.indexsOfFoundStrings(wServers.getItems(0), names);
+        
+        clusterSchema.getSlaveServers().clear();
+        for (int i=0;i<idx.length;i++)
+        {
+            SlaveServer slaveServer = SlaveServer.findSlaveServer(slaveServers, names[idx[i]]);
+            clusterSchema.getSlaveServers().add(slaveServer);
+        }
+            
     }
 }

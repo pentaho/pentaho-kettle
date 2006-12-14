@@ -2,7 +2,6 @@ package be.ibridge.kettle.trans.dialog;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.CCombo;
@@ -172,10 +171,9 @@ public class TransExecutionConfigurationDialog extends Dialog
         fdRemoteHost.right = new FormAttachment(66, 0);
         fdRemoteHost.top   = new FormAttachment(wExecRemote, margin*2);
         wRemoteHost.setLayoutData(fdRemoteHost);
-        List slaveServers = transMeta.findAllSlaveServers();
-        for (int i=0;i<slaveServers.size();i++)
+        for (int i=0;i<transMeta.getSlaveServers().size();i++)
         {
-            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            SlaveServer slaveServer = (SlaveServer)transMeta.getSlaveServers().get(i);
             wRemoteHost.add(slaveServer.toString());
         }
         

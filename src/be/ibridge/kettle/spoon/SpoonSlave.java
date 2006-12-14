@@ -21,7 +21,6 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabItem;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
@@ -51,7 +50,6 @@ import be.ibridge.kettle.core.dialog.ErrorDialog;
 import be.ibridge.kettle.core.widget.TreeMemory;
 import be.ibridge.kettle.core.widget.TreeUtil;
 import be.ibridge.kettle.trans.step.BaseStepDialog;
-import be.ibridge.kettle.trans.step.StepMeta;
 import be.ibridge.kettle.trans.step.StepStatus;
 import be.ibridge.kettle.www.SlaveServerStatus;
 import be.ibridge.kettle.www.SlaveServerTransStatus;
@@ -64,7 +62,7 @@ import be.ibridge.kettle.www.WebResult;
  * @author Matt
  * @since  17 may 2003
  */
-public class SpoonSlave extends Composite
+public class SpoonSlave extends Composite implements TabItemInterface
 {
 	public static final long UPDATE_TIME_VIEW = 30000L; // 30s
     
@@ -84,7 +82,6 @@ public class SpoonSlave extends Composite
     private Button wStart;
     private Button wStop;
     private Button wRefresh;
-    private Button wClose;
 
     private FormData fdTree, fdText, fdSash;
     
@@ -177,11 +174,6 @@ public class SpoonSlave extends Composite
 		wError.setText(Messages.getString("SpoonSlave.Button.ShowErrorLines")); //$NON-NLS-1$
         wError.addSelectionListener( new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { showErrors(); } } );
 
-        wClose= new Button(this, SWT.PUSH);
-        wClose.setText(Messages.getString("SpoonSlave.Button.Close"));
-        wClose.setEnabled(true);
-        wClose.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { close(); } });
-
         wStart= new Button(this, SWT.PUSH);
         wStart.setText(Messages.getString("SpoonSlave.Button.Start"));
         wStart.setEnabled(false);
@@ -192,7 +184,7 @@ public class SpoonSlave extends Composite
         wStop.setEnabled(false);
         wStop.addSelectionListener(new SelectionAdapter() { public void widgetSelected(SelectionEvent e) { stop(); } });
 
-        BaseStepDialog.positionBottomButtons(this, new Button[] { wRefresh, wStart, wStop, wError, wClose }, Const.MARGIN, null);
+        BaseStepDialog.positionBottomButtons(this, new Button[] { wRefresh, wStart, wStop, wError }, Const.MARGIN, null);
         
         // Put tree on top
         fdTree = new FormData();
@@ -266,16 +258,13 @@ public class SpoonSlave extends Composite
         showLog();
     }
 
-    protected void close()
+    public boolean close()
     {
-        CTabItem tabItem = spoon.findCTabItem(slaveServer.getServerAndPort());
-        if (tabItem!=null)
-        {
-            timerTask.cancel();
-            timer.cancel();
-            spoon.tabfolder.setSelection(0);
-            tabItem.dispose();
-        }
+        // It's OK to close this at any time too.
+        timerTask.cancel();
+        timer.cancel();
+        spoon.tabfolder.setSelection(0);
+        return true; 
     }
 
     /**
@@ -494,6 +483,8 @@ public class SpoonSlave extends Composite
 
 			EnterSelectionDialog esd = new EnterSelectionDialog(shell, err_lines, Messages.getString("SpoonLog.Dialog.ErrorLines.Title"), Messages.getString("SpoonLog.Dialog.ErrorLines.Message")); //$NON-NLS-1$ //$NON-NLS-2$
 			line = esd.open();
+            /*
+             * TODO: we have multiple transformation we can go to: which one should we pick?
 			if (line != null)
 			{
 				for (i = 0; i < spoon.getTransMeta().nrSteps(); i++)
@@ -506,6 +497,7 @@ public class SpoonSlave extends Composite
 				}
 				// System.out.println("Error line selected: "+line);
 			}
+            */
 		}
 	}
 
@@ -513,4 +505,9 @@ public class SpoonSlave extends Composite
 	{
 		return Spoon.APP_NAME;
 	}
+        
+    public Object getManagedObject()
+    {
+        return slaveServer;
+    }
 }

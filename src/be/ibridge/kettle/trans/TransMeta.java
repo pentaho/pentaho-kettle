@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -76,7 +77,7 @@ import be.ibridge.kettle.trans.step.StepPartitioningMeta;
  * @author Matt
  *
  */
-public class TransMeta implements XMLInterface
+public class TransMeta implements XMLInterface, Comparator
 {
     public static final String XML_TAG = "transformation";
 
@@ -93,6 +94,8 @@ public class TransMeta implements XMLInterface
     private ArrayList           notes;
 
     private ArrayList           dependencies;
+    
+    private ArrayList           slaveServers;
     
     private ArrayList           clusterSchemas;
 
@@ -216,6 +219,34 @@ public class TransMeta implements XMLInterface
     }
 
     /**
+     * Compares two transformation on name, filename
+     */
+    public int compare(Object o1, Object o2) 
+    {
+        TransMeta t1 = (TransMeta) o1;
+        TransMeta t2 = (TransMeta) o2;
+        
+        if (Const.isEmpty(t1.getName()) && !Const.isEmpty(t2.getName())) return -1;
+        if (!Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName())) return  1;
+        if (Const.isEmpty(t1.getName()) && Const.isEmpty(t2.getName()))
+        {
+            if (Const.isEmpty(t1.getFilename()) && !Const.isEmpty(t2.getFilename())) return -1;
+            if (Const.isEmpty(t1.getFilename()) && Const.isEmpty(t2.getFilename())) return  1;
+            if (Const.isEmpty(t1.getFilename()) && Const.isEmpty(t2.getFilename()))
+            {
+                return 0;
+            }
+            return t1.getFilename().compareTo(t2.getFilename());
+        }
+        return t1.getName().compareTo(t2.getName()); 
+    } 
+    
+    public boolean equals(Object obj)
+    {
+        return compare(this, obj)==0;
+    }
+
+    /**
      * Get the database ID in the repository for this object.
      *
      * @return the database ID in the repository for this object.
@@ -247,6 +278,7 @@ public class TransMeta implements XMLInterface
         notes = new ArrayList();
         dependencies = new ArrayList();
         partitionSchemas = new ArrayList();
+        slaveServers = new ArrayList();
         clusterSchemas = new ArrayList();
         
         name = null;
@@ -2139,6 +2171,16 @@ public class TransMeta implements XMLInterface
         }
         retval.append("      </partitionschemas>" + Const.CR); //$NON-NLS-1$
 
+        // The slave servers...
+        //
+        retval.append("    <slaveservers>" + Const.CR); //$NON-NLS-1$
+        for (int i = 0; i < slaveServers.size(); i++)
+        {
+            SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+            retval.append("         ").append(slaveServer.getXML()).append(Const.CR);
+        }
+        retval.append("      </slaveservers>" + Const.CR); //$NON-NLS-1$
+
         // The cluster schemas...
         //
         retval.append("    <clusterschemas>" + Const.CR); //$NON-NLS-1$
@@ -2525,6 +2567,32 @@ public class TransMeta implements XMLInterface
                 }
             }
 
+            // Read the slave servers...
+            // 
+            Node slaveServersNode = XMLHandler.getSubNode(infonode, "slaveservers"); //$NON-NLS-1$
+            int nrSlaveServers = XMLHandler.countNodes(slaveServersNode, SlaveServer.XML_TAG); //$NON-NLS-1$
+            for (int i = 0 ; i < nrSlaveServers ; i++)
+            {
+                Node slaveServerNode = XMLHandler.getSubNodeByNr(slaveServersNode, SlaveServer.XML_TAG, i);
+                SlaveServer slaveServer = new SlaveServer(slaveServerNode);
+                
+                // Check if the object exists and if it's a shared object.
+                // If so, then we will keep the shared version, not this one.
+                // The stored XML is only for backup purposes.
+                SlaveServer check = findSlaveServer(slaveServer.getName());
+                if (check!=null)
+                {
+                    if (!check.isShared()) // we don't overwrite shared objects.
+                    {
+                        addOrReplaceSlaveServer(slaveServer);
+                    }
+                }
+                else
+                {
+                    slaveServers.add(slaveServer);
+                }
+            }
+
             // Read the cluster schemas
             // 
             Node clusterSchemasNode = XMLHandler.getSubNode(infonode, "clusterschemas"); //$NON-NLS-1$
@@ -2532,7 +2600,8 @@ public class TransMeta implements XMLInterface
             for (int i = 0 ; i < nrClusterSchemas ; i++)
             {
                 Node clusterSchemaNode = XMLHandler.getSubNodeByNr(clusterSchemasNode, ClusterSchema.XML_TAG, i);
-                ClusterSchema clusterSchema = new ClusterSchema(clusterSchemaNode);
+                ClusterSchema clusterSchema = new ClusterSchema(clusterSchemaNode, slaveServers);
+                System.out.println("Loaded "+clusterSchema.getSlaveServers().size()+" servers in cluster "+clusterSchema.getName());
                 
                 // Check if the object exists and if it's a shared object.
                 // If so, then we will keep the shared version, not this one.
@@ -2598,7 +2667,7 @@ public class TransMeta implements XMLInterface
         // Extract the shared steps, connections, etc. using the SharedObjects class
         //
         String soFile = StringUtil.environmentSubstitute(sharedObjectsFile);
-        SharedObjects sharedObjects = new SharedObjects(soFile, databases, counters); 
+        SharedObjects sharedObjects = new SharedObjects(soFile, databases, counters, slaveServers); 
         Map objectsMap = sharedObjects.getObjectsMap();
         Collection objects = objectsMap.values();
         
@@ -4859,7 +4928,7 @@ public class TransMeta implements XMLInterface
      * Add a new partition schema to the transformation if that didn't exist yet.
      * Otherwise, replace it.
      *
-     * @param partitionSchema The step to be added.
+     * @param partitionSchema The partition schema to be added.
      */
     public void addOrReplacePartitionSchema(PartitionSchema partitionSchema)
     {
@@ -4869,10 +4938,23 @@ public class TransMeta implements XMLInterface
     }
     
     /**
+     * Add a new slave server to the transformation if that didn't exist yet.
+     * Otherwise, replace it.
+     *
+     * @param slaveServer The slave server to be added.
+     */
+    public void addOrReplaceSlaveServer(SlaveServer slaveServer)
+    {
+        int index = slaveServers.indexOf(slaveServer);
+        if (index<0) slaveServers.add(slaveServer); else slaveServers.set(index, slaveServer);
+        setChanged();
+    }
+    
+    /**
      * Add a new cluster schema to the transformation if that didn't exist yet.
      * Otherwise, replace it.
      *
-     * @param partitionSchema The step to be added.
+     * @param clusterSchema The cluster schema to be added.
      */
     public void addOrReplaceClusterSchema(ClusterSchema clusterSchema)
     {
@@ -4898,44 +4980,20 @@ public class TransMeta implements XMLInterface
         {
             // First load all the shared objects...
             String soFile = StringUtil.environmentSubstitute(sharedObjectsFile);
-            SharedObjects sharedObjects = new SharedObjects(soFile, databases, counters);
+            SharedObjects sharedObjects = new SharedObjects(soFile, databases, counters, slaveServers);
             
             // Now overwrite the objects in there
+            List shared = new ArrayList();
+            shared.addAll(databases);
+            shared.addAll(steps);
+            shared.addAll(partitionSchemas);
+            shared.addAll(slaveServers);
+            shared.addAll(clusterSchemas);
             
             // The databases connections...
-            for (int i=0;i<nrDatabases();i++)
+            for (int i=0;i<shared.size();i++)
             {
-                SharedObjectInterface sharedObject = getDatabase(i);
-                if (sharedObject.isShared()) 
-                {
-                    sharedObjects.storeObject(sharedObject);
-                }
-            }
-
-            // The steps...
-            for (int i=0;i<nrSteps();i++)
-            {
-                SharedObjectInterface sharedObject = getStep(i);
-                if (sharedObject.isShared()) 
-                {
-                    sharedObjects.storeObject(sharedObject);
-                }
-            }
-            
-            // The partition schemas
-            for (int i=0;i<partitionSchemas.size();i++)
-            {
-                SharedObjectInterface sharedObject = (SharedObjectInterface) partitionSchemas.get(i);
-                if (sharedObject.isShared()) 
-                {
-                    sharedObjects.storeObject(sharedObject);
-                }
-            }
-
-            // The cluster schemas
-            for (int i=0;i<clusterSchemas.size();i++)
-            {
-                SharedObjectInterface sharedObject = (SharedObjectInterface) clusterSchemas.get(i);
+                SharedObjectInterface sharedObject = (SharedObjectInterface) shared.get(i);
                 if (sharedObject.isShared()) 
                 {
                     sharedObjects.storeObject(sharedObject);
@@ -4967,40 +5025,29 @@ public class TransMeta implements XMLInterface
         this.usingThreadPriorityManagment = usingThreadPriorityManagment;
     }
 
-    /**
-     * @return a unique list of slave-servers, used in the cluster schemas of this transformations
-     */
-    public List findAllSlaveServers()
+    public SlaveServer findSlaveServer(String serverString)
     {
-        List list = new ArrayList();
-        
-        for (int i=0;i<clusterSchemas.size();i++)
-        {
-            ClusterSchema clusterSchema = (ClusterSchema) clusterSchemas.get(i);
-            List slaveServers = clusterSchema.getSlaveServers();
-            for (int s=0;s<slaveServers.size();s++)
-            {
-                SlaveServer slaveServer = (SlaveServer)slaveServers.get(s);
-                if (list.indexOf(slaveServer)<0) list.add(slaveServer);
-            }
-        }
-        
-        return list;
+        return SlaveServer.findSlaveServer(slaveServers, serverString);
+    }
+    
+    public String[] getSlaveServerNames()
+    {
+        return SlaveServer.getSlaveServerNames(slaveServers);
     }
 
-    public SlaveServer findSlaveServer(String serverName)
+    /**
+     * @return the slaveServers
+     */
+    public ArrayList getSlaveServers()
     {
-        for (int i=0;i<clusterSchemas.size();i++)
-        {
-            ClusterSchema clusterSchema = (ClusterSchema) clusterSchemas.get(i);
-            List slaveServers = clusterSchema.getSlaveServers();
-            for (int s=0;s<slaveServers.size();s++)
-            {
-                SlaveServer slaveServer = (SlaveServer)slaveServers.get(s);
-                if (slaveServer.toString().equalsIgnoreCase(serverName)) return slaveServer;
-            }
-        }
-        
-        return null;
+        return slaveServers;
+    }
+
+    /**
+     * @param slaveServers the slaveServers to set
+     */
+    public void setSlaveServers(ArrayList slaveServers)
+    {
+        this.slaveServers = slaveServers;
     }
 }

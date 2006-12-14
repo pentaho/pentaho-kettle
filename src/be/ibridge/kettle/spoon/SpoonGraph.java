@@ -16,6 +16,7 @@
 package be.ibridge.kettle.spoon;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -58,6 +59,7 @@ import org.eclipse.swt.widgets.ScrollBar;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import be.ibridge.kettle.core.AddUndoPositionInterface;
 import be.ibridge.kettle.core.Const;
 import be.ibridge.kettle.core.DragAndDropContainer;
 import be.ibridge.kettle.core.GUIResource;
@@ -84,21 +86,24 @@ import be.ibridge.kettle.trans.step.tableinput.TableInputMeta;
 
 /**
  * This class handles the display of the transformations in a graphical way using icons, arrows, etc.
+ * One transformation is handled per SpoonGraph
  * 
  * @author Matt
  * @since 17-mei-2003
  * 
  */
 
-public class SpoonGraph extends Canvas implements Redrawable
+public class SpoonGraph extends Canvas implements Redrawable, AddUndoPositionInterface, TabItemInterface
 {
+    private static final LogWriter log = LogWriter.getInstance();
     private static final int HOP_SEL_MARGIN = 9;
+
+    private TransMeta        transMeta;
 
     private Shell            shell;
 
     private SpoonGraph       canvas;
 
-    private LogWriter        log;
 
     private int              iconsize;
 
@@ -141,18 +146,40 @@ public class SpoonGraph extends Canvas implements Redrawable
     private Rectangle        selrect;
 
 	private Menu mPop;
+    
+    /**
+     * A list of remarks on the current Transformation...
+     */
+    private ArrayList remarks;
+    
+    /**
+     * A list of impacts of the current transformation on the used databases.
+     */
+    private ArrayList impact;
 
-    public SpoonGraph(Composite par, int style, LogWriter l, Spoon sp)
+    /**
+     * Indicates whether or not an impact analyses has already run.
+     */
+    private boolean impactFinished;
+
+
+    public SpoonGraph(Composite parent, final Spoon spoon, final TransMeta transMeta)
     {
-        super(par, style);
-        shell = par.getShell();
-        log = l;
-        spoon = sp;
+        super(parent, SWT.V_SCROLL | SWT.H_SCROLL | SWT.NO_BACKGROUND);
+        this.shell = parent.getShell();
+        this.spoon = spoon;
+        this.transMeta = transMeta;
+        
         canvas = this;
 
         iconsize = spoon.props.getIconSize();
 
         clearSettings();
+        
+        
+        remarks = new ArrayList();
+        impact  = new ArrayList();
+        impactFinished = false;
 
         hori = getHorizontalBar();
         vert = getVerticalBar();
@@ -209,7 +236,7 @@ public class SpoonGraph extends Canvas implements Redrawable
 
                 Point real = screen2real(e.x, e.y);
 
-                StepMeta stepMeta = spoon.getTransMeta().getStep(real.x, real.y, iconsize);
+                StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
                 if (stepMeta != null)
                 {
                     if (e.button == 1)
@@ -227,7 +254,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                     }
                     else
                     {
-                        NotePadMeta ni = spoon.getTransMeta().getNote(real.x, real.y);
+                        NotePadMeta ni = transMeta.getNote(real.x, real.y);
                         if (ni != null)
                         {
                             selected_note = null;
@@ -253,16 +280,16 @@ public class SpoonGraph extends Canvas implements Redrawable
                 setMenu(real.x, real.y);
 
                 // Did we click on a step?
-                StepMeta stepMeta = spoon.getTransMeta().getStep(real.x, real.y, iconsize);
+                StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
                 if (stepMeta != null)
                 {
-                    selected_steps = spoon.getTransMeta().getSelectedSteps();
+                    selected_steps = transMeta.getSelectedSteps();
                     selected_step = stepMeta;
                     // 
                     // When an icon is moved that is not selected, it gets
                     // selected too late.
                     // It is not captured here, but in the mouseMoveListener...
-                    previous_step_locations = spoon.getTransMeta().getSelectedStepLocations();
+                    previous_step_locations = transMeta.getSelectedStepLocations();
 
                     Point p = stepMeta.getLocation();
                     iconoffset = new Point(real.x - p.x, real.y - p.y);
@@ -270,14 +297,14 @@ public class SpoonGraph extends Canvas implements Redrawable
                 else
                 {
                     // Dit we hit a note?
-                    NotePadMeta ni = spoon.getTransMeta().getNote(real.x, real.y);
+                    NotePadMeta ni = transMeta.getNote(real.x, real.y);
                     if (ni != null && last_button == 1)
                     {
-                        selected_notes = spoon.getTransMeta().getSelectedNotes();
+                        selected_notes = transMeta.getSelectedNotes();
                         selected_note = ni;
                         Point loc = ni.getLocation();
 
-                        previous_note_locations = spoon.getTransMeta().getSelectedNoteLocations();
+                        previous_note_locations = transMeta.getSelectedNoteLocations();
 
                         noteoffset = new Point(real.x - loc.x, real.y - loc.y);
                     }
@@ -303,25 +330,25 @@ public class SpoonGraph extends Canvas implements Redrawable
                 //
                 if (candidate != null)
                 {
-                    if (spoon.getTransMeta().findTransHop(candidate) == null)
+                    if (transMeta.findTransHop(candidate) == null)
                     {
-                        spoon.getTransMeta().addTransHop(candidate);
+                        transMeta.addTransHop(candidate);
                         spoon.refreshTree();
-                        if (spoon.getTransMeta().hasLoop(candidate.getFromStep()))
+                        if (transMeta.hasLoop(candidate.getFromStep()))
                         {
                             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
                             mb.setMessage(Messages.getString("SpoonGraph.Dialog.HopCausesLoop.Message")); //$NON-NLS-1$
                             mb.setText(Messages.getString("SpoonGraph.Dialog.HopCausesLoop.Title")); //$NON-NLS-1$
                             mb.open();
-                            int idx = spoon.getTransMeta().indexOfTransHop(candidate);
-                            spoon.getTransMeta().removeTransHop(idx);
+                            int idx = transMeta.indexOfTransHop(candidate);
+                            transMeta.removeTransHop(idx);
                             spoon.refreshTree();
                         }
                         else
                         {
-                            spoon.addUndoNew(new TransHopMeta[] { candidate }, new int[] { spoon.getTransMeta().indexOfTransHop(candidate) });
+                            spoon.addUndoNew(transMeta, new TransHopMeta[] { candidate }, new int[] { transMeta.indexOfTransHop(candidate) });
                         }
-                        spoon.verifyCopyDistribute(candidate.getFromStep());
+                        spoon.verifyCopyDistribute(transMeta, candidate.getFromStep());
                     }
                     candidate = null;
                     selected_steps = null;
@@ -337,8 +364,8 @@ public class SpoonGraph extends Canvas implements Redrawable
                         selrect.width = real.x - selrect.x;
                         selrect.height = real.y - selrect.y;
 
-                        spoon.getTransMeta().unselectAll();
-                        spoon.getTransMeta().selectInRect(selrect);
+                        transMeta.unselectAll();
+                        transMeta.selectInRect(selrect);
                         selrect = null;
                         redraw();
                     }
@@ -360,30 +387,28 @@ public class SpoonGraph extends Canvas implements Redrawable
                                     else
                                     {
                                         // Otherwise, select only the icon clicked on!
-                                        spoon.getTransMeta().unselectAll();
+                                        transMeta.unselectAll();
                                         selected_step.setSelected(true);
                                     }
                                 }
                                 else
                                 {
                                     // Find out which Steps & Notes are selected
-                                    selected_steps = spoon.getTransMeta().getSelectedSteps();
-                                    selected_notes = spoon.getTransMeta().getSelectedNotes();
+                                    selected_steps = transMeta.getSelectedSteps();
+                                    selected_notes = transMeta.getSelectedNotes();
 
                                     // We moved around some items: store undo info...
                                     boolean also = false;
                                     if (selected_notes != null && previous_note_locations != null)
                                     {
-                                        int indexes[] = spoon.getTransMeta().getNoteIndexes(selected_notes);
-                                        spoon.addUndoPosition(selected_notes, indexes, previous_note_locations, spoon.getTransMeta()
-                                                .getSelectedNoteLocations(), also);
+                                        int indexes[] = transMeta.getNoteIndexes(selected_notes);
+                                        addUndoPosition(selected_notes, indexes, previous_note_locations, transMeta.getSelectedNoteLocations(), also);
                                         also = selected_steps != null && selected_steps.length > 0;
                                     }
                                     if (selected_steps != null && previous_step_locations != null)
                                     {
-                                        int indexes[] = spoon.getTransMeta().getStepIndexes(selected_steps);
-                                        spoon.addUndoPosition(selected_steps, indexes, previous_step_locations, spoon.getTransMeta()
-                                                .getSelectedStepLocations(), also);
+                                        int indexes[] = transMeta.getStepIndexes(selected_steps);
+                                        addUndoPosition(selected_steps, indexes, previous_step_locations, transMeta.getSelectedStepLocations(), also);
                                     }
                                 }
                             }
@@ -408,14 +433,14 @@ public class SpoonGraph extends Canvas implements Redrawable
                                     if ( (id&0xFF) == 0) // Means: "Yes" button clicked!
                                     {
                                         TransHopMeta newhop1 = new TransHopMeta(hi.getFromStep(), selected_step);
-                                        spoon.getTransMeta().addTransHop(newhop1);
-                                        spoon.addUndoNew(new TransHopMeta[] { newhop1 }, new int[] { spoon.getTransMeta().indexOfTransHop(newhop1) }, true);
+                                        transMeta.addTransHop(newhop1);
+                                        spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop1 }, new int[] { transMeta.indexOfTransHop(newhop1) }, true);
                                         TransHopMeta newhop2 = new TransHopMeta(selected_step, hi.getToStep());
-                                        spoon.getTransMeta().addTransHop(newhop2);
-                                        spoon.addUndoNew(new TransHopMeta[] { newhop2 }, new int[] { spoon.getTransMeta().indexOfTransHop(newhop2) }, true);
-                                        int idx = spoon.getTransMeta().indexOfTransHop(hi);
-                                        spoon.addUndoDelete(new TransHopMeta[] { hi }, new int[] { idx }, true);
-                                        spoon.getTransMeta().removeTransHop(idx);
+                                        transMeta.addTransHop(newhop2);
+                                        spoon.addUndoNew(transMeta, new TransHopMeta[] { newhop2 }, new int[] { transMeta.indexOfTransHop(newhop2) }, true);
+                                        int idx = transMeta.indexOfTransHop(hi);
+                                        spoon.addUndoDelete(transMeta, new TransHopMeta[] { hi }, new int[] { idx }, true);
+                                        transMeta.removeTransHop(idx);
                                         spoon.refreshTree();
                                     }
                                 }
@@ -445,30 +470,28 @@ public class SpoonGraph extends Canvas implements Redrawable
                                         else
                                         {
                                             // Otherwise, select only the note clicked on!
-                                            spoon.getTransMeta().unselectAll();
+                                            transMeta.unselectAll();
                                             selected_note.setSelected(true);
                                         }
                                     }
                                     else
                                     {
                                         // Find out which Steps & Notes are selected
-                                        selected_steps = spoon.getTransMeta().getSelectedSteps();
-                                        selected_notes = spoon.getTransMeta().getSelectedNotes();
+                                        selected_steps = transMeta.getSelectedSteps();
+                                        selected_notes = transMeta.getSelectedNotes();
 
                                         // We moved around some items: store undo info...
                                         boolean also = false;
                                         if (selected_notes != null && previous_note_locations != null)
                                         {
-                                            int indexes[] = spoon.getTransMeta().getNoteIndexes(selected_notes);
-                                            spoon.addUndoPosition(selected_notes, indexes, previous_note_locations, spoon.getTransMeta()
-                                                    .getSelectedNoteLocations(), also);
+                                            int indexes[] = transMeta.getNoteIndexes(selected_notes);
+                                            addUndoPosition(selected_notes, indexes, previous_note_locations, transMeta.getSelectedNoteLocations(), also);
                                             also = selected_steps != null && selected_steps.length > 0;
                                         }
                                         if (selected_steps != null && previous_step_locations != null)
                                         {
-                                            int indexes[] = spoon.getTransMeta().getStepIndexes(selected_steps);
-                                            spoon.addUndoPosition(selected_steps, indexes, previous_step_locations, spoon.getTransMeta()
-                                                    .getSelectedStepLocations(), also);
+                                            int indexes[] = transMeta.getStepIndexes(selected_steps);
+                                            addUndoPosition(selected_steps, indexes, previous_step_locations, transMeta.getSelectedStepLocations(), also);
                                         }
                                     }
                                 }
@@ -505,7 +528,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                 if (selected_step != null && !selected_step.isSelected())
                 {
                     // System.out.println("STEPS: Unselected all");
-                    spoon.getTransMeta().unselectAll();
+                    transMeta.unselectAll();
                     selected_step.setSelected(true);
                     selected_steps = new StepMeta[] { selected_step };
                     previous_step_locations = new Point[] { selected_step.getLocation() };
@@ -513,7 +536,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                 if (selected_note != null && !selected_note.isSelected())
                 {
                     // System.out.println("NOTES: Unselected all");
-                    spoon.getTransMeta().unselectAll();
+                    transMeta.unselectAll();
                     selected_note.setSelected(true);
                     selected_notes = new NotePadMeta[] { selected_note };
                     previous_note_locations = new Point[] { selected_note.getLocation() };
@@ -564,8 +587,8 @@ public class SpoonGraph extends Canvas implements Redrawable
                                 }
                             }
 
-                            selected_notes = spoon.getTransMeta().getSelectedNotes();
-                            selected_steps = spoon.getTransMeta().getSelectedSteps();
+                            selected_notes = transMeta.getSelectedNotes();
+                            selected_steps = transMeta.getSelectedSteps();
 
                             // Adjust location of selected steps...
                             if (selected_steps != null) for (int i = 0; i < selected_steps.length; i++)
@@ -586,7 +609,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                         else
                             if (last_button == 2 || (last_button == 1 && shift))
                             {
-                                StepMeta stepMeta = spoon.getTransMeta().getStep(real.x, real.y, iconsize);
+                                StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
                                 if (stepMeta != null && !selected_step.equals(stepMeta))
                                 {
                                     if (candidate == null)
@@ -620,8 +643,8 @@ public class SpoonGraph extends Canvas implements Redrawable
                                 int dx = note.x - selected_note.getLocation().x;
                                 int dy = note.y - selected_note.getLocation().y;
 
-                                selected_notes = spoon.getTransMeta().getSelectedNotes();
-                                selected_steps = spoon.getTransMeta().getSelectedSteps();
+                                selected_notes = transMeta.getSelectedNotes();
+                                selected_steps = transMeta.getSelectedSteps();
 
                                 // Adjust location of selected steps...
                                 if (selected_steps != null) for (int i = 0; i < selected_steps.length; i++)
@@ -703,10 +726,10 @@ public class SpoonGraph extends Canvas implements Redrawable
     	                case DragAndDropContainer.TYPE_STEP:
     		                {
     	                		// Drop hidden step onto canvas....		                
-    		                	stepMeta = spoon.getTransMeta().findStep(container.getData());
+    		                	stepMeta = transMeta.findStep(container.getData());
     		                	if (stepMeta!=null)
     		                	{
-    	    	                    if (stepMeta.isDrawn() || spoon.getTransMeta().isStepUsedInTransHops(stepMeta))
+    	    	                    if (stepMeta.isDrawn() || transMeta.isStepUsedInTransHops(stepMeta))
     	    	                    {
     	    	                        MessageBox mb = new MessageBox(shell, SWT.OK);
     	    	                        mb.setMessage(Messages.getString("SpoonGraph.Dialog.StepIsAlreadyOnCanvas.Message")); //$NON-NLS-1$
@@ -729,7 +752,7 @@ public class SpoonGraph extends Canvas implements Redrawable
     						{
                     			// Not an existing step: data refers to the type of step to create
                     			String steptype = container.getData();
-                    			stepMeta = spoon.newStep(steptype, steptype, false, true);
+                    			stepMeta = spoon.newStep(transMeta, steptype, steptype, false, true);
                     			if (stepMeta!=null)
                     			{
                     				newstep=true;
@@ -747,17 +770,17 @@ public class SpoonGraph extends Canvas implements Redrawable
     	                        newstep = true;
     	                        String connectionName = container.getData();
     	                        TableInputMeta tii = new TableInputMeta();
-    	                        tii.setDatabaseMeta(spoon.getTransMeta().findDatabase(connectionName));
+    	                        tii.setDatabaseMeta(transMeta.findDatabase(connectionName));
     	
     	                        StepLoader steploader = StepLoader.getInstance();
     	                        String stepID = steploader.getStepPluginID(tii);
     	                        StepPlugin stepPlugin = steploader.findStepPluginWithID(stepID);
-    	                        String stepName = spoon.getTransMeta().getAlternativeStepname(stepPlugin.getDescription());
+    	                        String stepName = transMeta.getAlternativeStepname(stepPlugin.getDescription());
     	                        stepMeta = new StepMeta(stepID, stepName, tii);
-    	                        if (spoon.editStepInfo(stepMeta) != null)
+    	                        if (spoon.editStep(transMeta, stepMeta) != null)
     	                        {
-    	                            spoon.getTransMeta().addStep(stepMeta);
-    	                            spoon.refreshTree(true);
+                                    transMeta.addStep(stepMeta);
+    	                            spoon.refreshTree();
     	                            spoon.refreshGraph();
     	                        }            
     	                        else
@@ -785,7 +808,7 @@ public class SpoonGraph extends Canvas implements Redrawable
     	                    }
     	                }
     
-                        spoon.getTransMeta().unselectAll();
+                        transMeta.unselectAll();
     
                         StepMeta before = (StepMeta) stepMeta.clone();
     
@@ -795,12 +818,11 @@ public class SpoonGraph extends Canvas implements Redrawable
     
                         if (newstep)
                         {
-                            spoon.addUndoNew(new StepMeta[] { stepMeta }, new int[] { spoon.getTransMeta().indexOfStep(stepMeta) });
+                            spoon.addUndoNew(transMeta, new StepMeta[] { stepMeta }, new int[] { transMeta.indexOfStep(stepMeta) });
                         }
                         else
                         {
-                            spoon.addUndoChange(new StepMeta[] { before }, new StepMeta[] { (StepMeta) stepMeta.clone() }, new int[] { spoon.getTransMeta()
-                                    .indexOfStep(stepMeta) });
+                            spoon.addUndoChange(transMeta, new StepMeta[] { before }, new StepMeta[] { (StepMeta) stepMeta.clone() }, new int[] { transMeta.indexOfStep(stepMeta) });
                         }
     
                         canvas.forceFocus();
@@ -828,12 +850,12 @@ public class SpoonGraph extends Canvas implements Redrawable
 
                 if ((int) e.character == 1) // CTRL-A
                 {
-                    spoon.getTransMeta().selectAll();
+                    transMeta.selectAll();
                     redraw();
                 }
                 if ((int) e.character == 3) // CTRL-C
                 {
-                    spoon.copySelected(spoon.getTransMeta().getSelectedSteps(), spoon.getTransMeta().getSelectedNotes());
+                    spoon.copySelected(transMeta, transMeta.getSelectedSteps(), transMeta.getSelectedNotes());
                 }
                 if ((int) e.character == 22) // CTRL-V
                 {
@@ -842,7 +864,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                     {
                         if (lastMove != null)
                         {
-                            spoon.pasteXML(clipcontent, lastMove);
+                            spoon.pasteXML(transMeta, clipcontent, lastMove);
                         }
                     }
 
@@ -850,13 +872,13 @@ public class SpoonGraph extends Canvas implements Redrawable
                 }
                 if (e.keyCode == SWT.ESC)
                 {
-                    spoon.getTransMeta().unselectAll();
+                    transMeta.unselectAll();
                     clearSettings();
                     redraw();
                 }
                 if (e.keyCode == SWT.DEL)
                 {
-                    StepMeta stepMeta[] = spoon.getTransMeta().getSelectedSteps();
+                    StepMeta stepMeta[] = transMeta.getSelectedSteps();
                     if (stepMeta != null && stepMeta.length > 0)
                     {
                         delSelected(null);
@@ -908,7 +930,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                     setToolTipText(null);
 
                     // Set the pop-up menu
-                    StepMeta stepMeta = spoon.getTransMeta().getStep(real.x, real.y, iconsize);
+                    StepMeta stepMeta = transMeta.getStep(real.x, real.y, iconsize);
                     if (stepMeta != null)
                     {
                         // OK, we found a step, show the output fields...
@@ -927,7 +949,7 @@ public class SpoonGraph extends Canvas implements Redrawable
 
     public void renameStep()
     {
-        StepMeta[] selection = spoon.getTransMeta().getSelectedSteps();
+        StepMeta[] selection = transMeta.getSelectedSteps();
         if (selection!=null && selection.length==1)
         {
             final StepMeta stepMeta = selection[0];
@@ -995,7 +1017,6 @@ public class SpoonGraph extends Canvas implements Redrawable
 
     public void renameStep(StepMeta stepMeta, String stepname)
     {
-        TransMeta transMeta = spoon.getTransMeta();
         String newname = stepname;
         
         StepMeta smeta = transMeta.findStep(newname, stepMeta);
@@ -1016,7 +1037,7 @@ public class SpoonGraph extends Canvas implements Redrawable
         }
         stepMeta.setName(stepname);
         stepMeta.setChanged();
-        spoon.refreshTree(true); // to reflect the new name
+        spoon.refreshTree(); // to reflect the new name
         spoon.refreshGraph();
     }
 
@@ -1030,8 +1051,8 @@ public class SpoonGraph extends Canvas implements Redrawable
         last_hop_split = null;
         last_button = 0;
         iconoffset = null;
-        for (int i = 0; i < spoon.getTransMeta().nrTransHops(); i++)
-            spoon.getTransMeta().getTransHop(i).split = false;
+        for (int i = 0; i < transMeta.nrTransHops(); i++)
+            transMeta.getTransHop(i).split = false;
     }
 
     public String[] getDropStrings(String str, String sep)
@@ -1096,9 +1117,9 @@ public class SpoonGraph extends Canvas implements Redrawable
     {
         int i;
         TransHopMeta online = null;
-        for (i = 0; i < spoon.getTransMeta().nrTransHops(); i++)
+        for (i = 0; i < transMeta.nrTransHops(); i++)
         {
-            TransHopMeta hi = spoon.getTransMeta().getTransHop(i);
+            TransHopMeta hi = transMeta.getTransHop(i);
             StepMeta fs = hi.getFromStep();
             StepMeta ts = hi.getToStep();
 
@@ -1149,13 +1170,13 @@ public class SpoonGraph extends Canvas implements Redrawable
         	for (int i=0;i<children.length;i++) children[i].dispose();
         }
 
-        final StepMeta stepMeta = spoon.getTransMeta().getStep(x, y, iconsize);
+        final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
         if (stepMeta != null) // We clicked on a Step!
         {
             MenuItem miNewHop = null;
             MenuItem miHideStep = null;
 
-            int sels = spoon.getTransMeta().nrSelectedSteps();
+            int sels = transMeta.nrSelectedSteps();
             if (sels == 2)
             {
                 miNewHop = new MenuItem(mPop, SWT.NONE);
@@ -1200,7 +1221,7 @@ public class SpoonGraph extends Canvas implements Redrawable
             MenuItem miDelStep = new MenuItem(mPop, SWT.NONE);
             miDelStep.setText(Messages.getString("SpoonGraph.PopupMenu.DeleteStep")); //$NON-NLS-1$
 
-            if (stepMeta.isDrawn() && !spoon.getTransMeta().isStepUsedInTransHops(stepMeta))
+            if (stepMeta.isDrawn() && !transMeta.isStepUsedInTransHops(stepMeta))
             {
                 miHideStep = new MenuItem(mPop, SWT.NONE);
                 miHideStep.setText(Messages.getString("SpoonGraph.PopupMenu.HideStep")); //$NON-NLS-1$
@@ -1208,9 +1229,9 @@ public class SpoonGraph extends Canvas implements Redrawable
                 {
                     public void widgetSelected(SelectionEvent e)
                     {
-                        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
+                        for (int i = 0; i < transMeta.nrSteps(); i++)
                         {
-                            StepMeta sti = spoon.getTransMeta().getStep(i);
+                            StepMeta sti = transMeta.getStep(i);
                             if (sti.isDrawn() && sti.isSelected())
                             {
                                 sti.hideStep();
@@ -1224,7 +1245,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                 });
             }
 
-            if (spoon.getTransMeta().isStepUsedInTransHops(stepMeta))
+            if (transMeta.isStepUsedInTransHops(stepMeta))
             {
                 MenuItem miDetach = new MenuItem(mPop, SWT.NONE);
                 miDetach.setText(Messages.getString("SpoonGraph.PopupMenu.DetachStep")); //$NON-NLS-1$
@@ -1336,7 +1357,7 @@ public class SpoonGraph extends Canvas implements Redrawable
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    spoon.checkTrans(true);
+                    spoon.checkTrans(transMeta, true);
                 }
             });
 
@@ -1350,7 +1371,7 @@ public class SpoonGraph extends Canvas implements Redrawable
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    spoon.generateMapping(stepMeta);
+                    spoon.generateMapping(transMeta, stepMeta);
                 }
             });
 
@@ -1363,7 +1384,7 @@ public class SpoonGraph extends Canvas implements Redrawable
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    spoon.editPartitioning(stepMeta);
+                    spoon.editPartitioning(transMeta, stepMeta);
                 }
             });
             
@@ -1376,7 +1397,7 @@ public class SpoonGraph extends Canvas implements Redrawable
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    spoon.editClustering(stepMeta);
+                    spoon.editClustering(transMeta, stepMeta);
                 }
             });
 
@@ -1451,18 +1472,18 @@ public class SpoonGraph extends Canvas implements Redrawable
                 {
                     try
                     {
-                        if (spoon.getTransMeta().nrSelectedSteps() <= 1)
+                        if (transMeta.nrSelectedSteps() <= 1)
                         {
-                            spoon.dupeStep(stepMeta.getName());
+                            spoon.dupeStep(transMeta, stepMeta);
                         }
                         else
                         {
-                            for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
+                            for (int i = 0; i < transMeta.nrSteps(); i++)
                             {
-                                StepMeta stepMeta = spoon.getTransMeta().getStep(i);
+                                StepMeta stepMeta = transMeta.getStep(i);
                                 if (stepMeta.isSelected())
                                 {
-                                    spoon.dupeStep(stepMeta.getName());
+                                    spoon.dupeStep(transMeta, stepMeta);
                                 }
                             }
                         }
@@ -1479,7 +1500,7 @@ public class SpoonGraph extends Canvas implements Redrawable
             {
                 public void widgetSelected(SelectionEvent e)
                 {
-                    spoon.copySelected(spoon.getTransMeta().getSelectedSteps(), spoon.getTransMeta().getSelectedNotes());
+                    spoon.copySelected(transMeta, transMeta.getSelectedSteps(), transMeta.getSelectedNotes());
                 }
             });
 
@@ -1542,7 +1563,7 @@ public class SpoonGraph extends Canvas implements Redrawable
 
                         hi.flip();
 
-                        if (spoon.getTransMeta().hasLoop(hi.getFromStep()))
+                        if (transMeta.hasLoop(hi.getFromStep()))
                         {
                             spoon.refreshGraph();
                             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.ICON_WARNING);
@@ -1569,7 +1590,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                         selrect = null;
                         TransHopMeta before = (TransHopMeta) hi.clone();
                         hi.setEnabled(!hi.isEnabled());
-                        if (spoon.getTransMeta().hasLoop(hi.getToStep()))
+                        if (transMeta.hasLoop(hi.getToStep()))
                         {
                             hi.setEnabled(!hi.isEnabled());
                             MessageBox mb = new MessageBox(shell, SWT.OK | SWT.ICON_WARNING);
@@ -1580,8 +1601,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                         else
                         {
                             TransHopMeta after = (TransHopMeta) hi.clone();
-                            spoon.addUndoChange(new TransHopMeta[] { before }, new TransHopMeta[] { after }, new int[] { spoon.getTransMeta()
-                                    .indexOfTransHop(hi) });
+                            spoon.addUndoChange(transMeta, new TransHopMeta[] { before }, new TransHopMeta[] { after }, new int[] { transMeta.indexOfTransHop(hi) });
                             spoon.refreshGraph();
                             spoon.refreshTree();
                         }
@@ -1592,9 +1612,9 @@ public class SpoonGraph extends Canvas implements Redrawable
                     public void widgetSelected(SelectionEvent e)
                     {
                         selrect = null;
-                        int idx = spoon.getTransMeta().indexOfTransHop(hi);
-                        spoon.addUndoDelete(new TransHopMeta[] { (TransHopMeta) hi.clone() }, new int[] { idx });
-                        spoon.getTransMeta().removeTransHop(idx);
+                        int idx = transMeta.indexOfTransHop(hi);
+                        spoon.addUndoDelete(transMeta, new TransHopMeta[] { (TransHopMeta) hi.clone() }, new int[] { idx });
+                        transMeta.removeTransHop(idx);
                         spoon.refreshTree();
                         spoon.refreshGraph();
                     }
@@ -1604,7 +1624,7 @@ public class SpoonGraph extends Canvas implements Redrawable
             else
             {
                 // Clicked on the background: maybe we hit a note?
-                final NotePadMeta ni = spoon.getTransMeta().getNote(x, y);
+                final NotePadMeta ni = transMeta.getNote(x, y);
                 if (ni != null) // A note
                 {
                     // Delete note
@@ -1627,11 +1647,11 @@ public class SpoonGraph extends Canvas implements Redrawable
                         public void widgetSelected(SelectionEvent e)
                         {
                             selrect = null;
-                            int idx = spoon.getTransMeta().indexOfNote(ni);
+                            int idx = transMeta.indexOfNote(ni);
                             if (idx >= 0)
                             {
-                                spoon.getTransMeta().removeNote(idx);
-                                spoon.addUndoDelete(new NotePadMeta[] { (NotePadMeta) ni.clone() }, new int[] { idx });
+                                transMeta.removeNote(idx);
+                                spoon.addUndoDelete(transMeta, new NotePadMeta[] { (NotePadMeta) ni.clone() }, new int[] { idx });
                                 redraw();
                             }
                         }
@@ -1656,8 +1676,8 @@ public class SpoonGraph extends Canvas implements Redrawable
                             if (n != null)
                             {
                                 NotePadMeta npi = new NotePadMeta(n, lastclick.x, lastclick.y, Const.NOTE_MIN_SIZE, Const.NOTE_MIN_SIZE);
-                                spoon.getTransMeta().addNote(npi);
-                                spoon.addUndoNew(new NotePadMeta[] { npi }, new int[] { spoon.getTransMeta().indexOfNote(npi) });
+                                transMeta.addNote(npi);
+                                spoon.addUndoNew(transMeta, new NotePadMeta[] { npi }, new int[] { transMeta.indexOfNote(npi) });
                                 redraw();
                             }
                         }
@@ -1682,7 +1702,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                         {
                             public void widgetSelected(SelectionEvent e)
                             {
-                                StepMeta stepMeta = spoon.newStep(description, description, false, true);
+                                StepMeta stepMeta = spoon.newStep(transMeta, description, description, false, true);
                                 stepMeta.setLocation(mousex, mousey);
                                 stepMeta.setDraw(true);
                                 redraw();
@@ -1701,7 +1721,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                         public void widgetSelected(SelectionEvent e)
                         {
                             Point loc = new Point(mousex, mousey);
-                            spoon.pasteXML(clipcontent, loc);
+                            spoon.pasteXML(transMeta, clipcontent, loc);
                         }
                     });
 
@@ -1717,7 +1737,7 @@ public class SpoonGraph extends Canvas implements Redrawable
     {
         String newTip=null;
         
-        final StepMeta stepMeta = spoon.getTransMeta().getStep(x, y, iconsize);
+        final StepMeta stepMeta = transMeta.getStep(x, y, iconsize);
         if (stepMeta != null) // We clicked on a Step!
         {
             
@@ -1755,10 +1775,10 @@ public class SpoonGraph extends Canvas implements Redrawable
 
     public void delSelected(StepMeta stMeta)
     {
-        int nrsels = spoon.getTransMeta().nrSelectedSteps();
+        int nrsels = transMeta.nrSelectedSteps();
         if (nrsels == 0)
         {
-            spoon.delStep(stMeta.getName());
+            spoon.delStep(transMeta, stMeta);
         }
         else
         {
@@ -1767,9 +1787,9 @@ public class SpoonGraph extends Canvas implements Redrawable
             MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_WARNING);
             mb.setText(Messages.getString("SpoonGraph.Dialog.Warning.DeleteSteps.Title")); //$NON-NLS-1$
             String message = Messages.getString("SpoonGraph.Dialog.Warning.DeleteSteps.Message") + nrsels + Messages.getString("SpoonGraph.Dialog.Warning.DeleteSteps2.Message") + Const.CR; //$NON-NLS-1$ //$NON-NLS-2$
-            for (int i = spoon.getTransMeta().nrSteps() - 1; i >= 0; i--)
+            for (int i = transMeta.nrSteps() - 1; i >= 0; i--)
             {
-                StepMeta stepMeta = spoon.getTransMeta().getStep(i);
+                StepMeta stepMeta = transMeta.getStep(i);
                 if (stepMeta.isSelected() || (stMeta != null && stMeta.equals(stepMeta)))
                 {
                     message += "  --> " + stepMeta.getName() + Const.CR; //$NON-NLS-1$
@@ -1780,12 +1800,12 @@ public class SpoonGraph extends Canvas implements Redrawable
             int result = mb.open();
             if (result == SWT.YES)
             {
-                for (int i = spoon.getTransMeta().nrSteps() - 1; i >= 0; i--)
+                for (int i = transMeta.nrSteps() - 1; i >= 0; i--)
                 {
-                    StepMeta stepMeta = spoon.getTransMeta().getStep(i);
+                    StepMeta stepMeta = transMeta.getStep(i);
                     if (stepMeta.isSelected() || (stMeta != null && stMeta.equals(stepMeta)))
                     {
-                        spoon.delStep(stepMeta.getName());
+                        spoon.delStep(transMeta, stepMeta);
                     }
                 }
             }
@@ -1812,7 +1832,7 @@ public class SpoonGraph extends Canvas implements Redrawable
     {
         spoon.refreshGraph();
 
-        SearchFieldsProgressDialog op = new SearchFieldsProgressDialog(spoon.getTransMeta(), stepMeta, before);
+        SearchFieldsProgressDialog op = new SearchFieldsProgressDialog(transMeta, stepMeta, before);
         try
         {
             final Thread parentThread = Thread.currentThread();
@@ -1834,7 +1854,7 @@ public class SpoonGraph extends Canvas implements Redrawable
                     
                     if (monitor.isCanceled()) // Disconnect and see what happens!
                     {
-                        try { spoon.getTransMeta().cancelQueries(); } catch(Exception e) {};
+                        try { transMeta.cancelQueries(); } catch(Exception e) {};
                     }
                 }
             };
@@ -1861,7 +1881,7 @@ public class SpoonGraph extends Canvas implements Redrawable
             String sn = (String) sfd.open();
             if (sn != null)
             {
-                StepMeta esi = spoon.getTransMeta().findStep(sn);
+                StepMeta esi = transMeta.findStep(sn);
                 if (esi != null)
                 {
                     editStep(esi);
@@ -1894,7 +1914,7 @@ public class SpoonGraph extends Canvas implements Redrawable
 
     public Image getTransformationImage(Device device, int x, int y)
     {
-        TransPainter transPainter = new TransPainter(spoon.getTransMeta(), new Point(x, y), hori, vert, candidate, drop_candidate, selrect);
+        TransPainter transPainter = new TransPainter(transMeta, new Point(x, y), hori, vert, candidate, drop_candidate, selrect);
         Image img = transPainter.getTransformationImage(device);
 
         return img;
@@ -1928,7 +1948,7 @@ public class SpoonGraph extends Canvas implements Redrawable
     private Point getOffset()
     {
         Point area = getArea();
-        Point max = spoon.getTransMeta().getMaximum();
+        Point max = transMeta.getMaximum();
         Point thumb = getThumb(area, max);
         Point offset = getOffset(thumb, area);
 
@@ -1955,7 +1975,7 @@ public class SpoonGraph extends Canvas implements Redrawable
 
     private void editStep(StepMeta stepMeta)
     {
-        spoon.editStepInfo(stepMeta);
+        spoon.editStep(transMeta, stepMeta);
     }
 
     private void editNote(NotePadMeta ni)
@@ -1974,23 +1994,23 @@ public class SpoonGraph extends Canvas implements Redrawable
             ni.height = Const.NOTE_MIN_SIZE;
 
             NotePadMeta after = (NotePadMeta) ni.clone();
-            spoon.addUndoChange(new NotePadMeta[] { before }, new NotePadMeta[] { after }, new int[] { spoon.getTransMeta().indexOfNote(ni) });
+            spoon.addUndoChange(transMeta, new NotePadMeta[] { before }, new NotePadMeta[] { after }, new int[] { transMeta.indexOfNote(ni) });
             spoon.refreshGraph();
         }
     }
 
-    private void editHop(TransHopMeta hopinfo)
+    private void editHop(TransHopMeta transHopMeta)
     {
-        String name = hopinfo.toString();
+        String name = transHopMeta.toString();
         log.logDebug(toString(), Messages.getString("SpoonGraph.Logging.EditingHop") + name); //$NON-NLS-1$
-        spoon.editHop(name);
+        spoon.editHop(transMeta, transHopMeta);
     }
 
     private void newHop()
     {
-        StepMeta fr = spoon.getTransMeta().getSelectedStep(0);
-        StepMeta to = spoon.getTransMeta().getSelectedStep(1);
-        spoon.newHop(fr, to);
+        StepMeta fr = transMeta.getSelectedStep(0);
+        StepMeta to = transMeta.getSelectedStep(1);
+        spoon.newHop(transMeta, fr, to);
     }
 
     private boolean pointOnLine(int x, int y, int line[])
@@ -2031,10 +2051,10 @@ public class SpoonGraph extends Canvas implements Redrawable
 
     private SnapAllignDistribute createSnapAllignDistribute()
     {
-        List elements = spoon.getTransMeta().getSelectedDrawnStepsList();
-        int[] indices = spoon.getTransMeta().getStepIndexes((StepMeta[])elements.toArray(new StepMeta[elements.size()]));
+        List elements = transMeta.getSelectedDrawnStepsList();
+        int[] indices = transMeta.getStepIndexes((StepMeta[])elements.toArray(new StepMeta[elements.size()]));
 
-        return new SnapAllignDistribute(elements, indices, spoon, this);
+        return new SnapAllignDistribute(elements, indices, this, this);
     }
     
     private void snaptogrid(int size)
@@ -2074,34 +2094,34 @@ public class SpoonGraph extends Canvas implements Redrawable
 
     private void detach(StepMeta stepMeta)
     {
-        TransHopMeta hfrom = spoon.getTransMeta().findTransHopTo(stepMeta);
-        TransHopMeta hto = spoon.getTransMeta().findTransHopFrom(stepMeta);
+        TransHopMeta hfrom = transMeta.findTransHopTo(stepMeta);
+        TransHopMeta hto = transMeta.findTransHopFrom(stepMeta);
 
         if (hfrom != null && hto != null)
         {
-            if (spoon.getTransMeta().findTransHop(hfrom.getFromStep(), hto.getToStep()) == null)
+            if (transMeta.findTransHop(hfrom.getFromStep(), hto.getToStep()) == null)
             {
                 TransHopMeta hnew = new TransHopMeta(hfrom.getFromStep(), hto.getToStep());
-                spoon.getTransMeta().addTransHop(hnew);
-                spoon.addUndoNew(new TransHopMeta[] { hnew }, new int[] { spoon.getTransMeta().indexOfTransHop(hnew) });
+                transMeta.addTransHop(hnew);
+                spoon.addUndoNew(transMeta, new TransHopMeta[] { hnew }, new int[] { transMeta.indexOfTransHop(hnew) });
                 spoon.refreshTree();
             }
         }
         if (hfrom != null)
         {
-            int fromidx = spoon.getTransMeta().indexOfTransHop(hfrom);
+            int fromidx = transMeta.indexOfTransHop(hfrom);
             if (fromidx >= 0)
             {
-                spoon.getTransMeta().removeTransHop(fromidx);
+                transMeta.removeTransHop(fromidx);
                 spoon.refreshTree();
             }
         }
         if (hto != null)
         {
-            int toidx = spoon.getTransMeta().indexOfTransHop(hto);
+            int toidx = transMeta.indexOfTransHop(hto);
             if (toidx >= 0)
             {
-                spoon.getTransMeta().removeTransHop(toidx);
+                transMeta.removeTransHop(toidx);
                 spoon.refreshTree();
             }
         }
@@ -2116,9 +2136,9 @@ public class SpoonGraph extends Canvas implements Redrawable
         TransMeta preview = new TransMeta();
 
         // Copy the selected steps into it...
-        for (int i = 0; i < spoon.getTransMeta().nrSteps(); i++)
+        for (int i = 0; i < transMeta.nrSteps(); i++)
         {
-            StepMeta stepMeta = spoon.getTransMeta().getStep(i);
+            StepMeta stepMeta = transMeta.getStep(i);
             if (stepMeta.isSelected())
             {
                 preview.addStep(stepMeta);
@@ -2126,9 +2146,9 @@ public class SpoonGraph extends Canvas implements Redrawable
         }
 
         // Copy the relevant TransHops into it...
-        for (int i = 0; i < spoon.getTransMeta().nrTransHops(); i++)
+        for (int i = 0; i < transMeta.nrTransHops(); i++)
         {
-            TransHopMeta hi = spoon.getTransMeta().getTransHop(i);
+            TransHopMeta hi = transMeta.getTransHop(i);
             if (hi.isEnabled())
             {
                 StepMeta fr = hi.getFromStep();
@@ -2151,5 +2171,107 @@ public class SpoonGraph extends Canvas implements Redrawable
     public String toString()
     {
         return this.getClass().getName();
+    }
+
+    /**
+     * @return the transMeta
+     */
+    public TransMeta getTransMeta()
+    {
+        return transMeta;
+    }
+
+    /**
+     * @param transMeta the transMeta to set
+     */
+    public void setTransMeta(TransMeta transMeta)
+    {
+        this.transMeta = transMeta;
+    }
+    
+    // Change of step, connection, hop or note...
+    public void addUndoPosition(Object obj[], int pos[], Point prev[], Point curr[])
+    {
+        addUndoPosition(obj, pos, prev, curr, false);
+    }
+
+    // Change of step, connection, hop or note...
+    public void addUndoPosition(Object obj[], int pos[], Point prev[], Point curr[], boolean nextAlso)
+    {
+        // It's better to store the indexes of the objects, not the objects itself!
+        transMeta.addUndo(obj, null, pos, prev, curr, TransMeta.TYPE_UNDO_POSITION, nextAlso);
+        spoon.setUndoMenu(transMeta);
+    }
+
+    /**
+     * Shows a 'model has changed' warning if required
+     * @return true if nothing has changed or the changes are rejected by the user.
+     */
+    public boolean showChangedWarning(TransMeta transMeta)
+    {
+        boolean answer = true;
+        if (transMeta.hasChanged())
+        {
+            MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
+            mb.setMessage(Messages.getString("Spoon.Dialog.PromptSave.Message"));//"This model has changed.  Do you want to save it?"
+            mb.setText(Messages.getString("Spoon.Dialog.PromptSave.Title"));
+            int reply = mb.open();
+            if (reply==SWT.YES)
+            {
+                answer=spoon.saveFile(transMeta);
+            }
+            else
+            {
+                if (reply==SWT.CANCEL)
+                {
+                    answer = false;
+                }
+                else
+                {
+                    answer = true;
+                }
+            }
+        }
+        return answer;
+    }
+
+    public boolean close()
+    {
+        return showChangedWarning(transMeta);
+    }
+    
+    public Object getManagedObject()
+    {
+        return transMeta;
+    }
+
+    public ArrayList getRemarks()
+    {
+        return remarks;
+    }
+
+    public void setRemarks(ArrayList remarks)
+    {
+        this.remarks = remarks;
+    }
+
+    public ArrayList getImpact()
+    {
+        return impact;
+    }
+
+    public void setImpact(ArrayList impact)
+    {
+        this.impact = impact;
+    }
+
+    public boolean isImpactFinished()
+    {
+        return impactFinished;
+    }
+
+    public void setImpactFinished(boolean impactHasRun)
+    {
+        this.impactFinished = impactHasRun;
     }
 }

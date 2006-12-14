@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.widgets.Text;
 
 import be.ibridge.kettle.cluster.SlaveServer;
 import be.ibridge.kettle.core.Const;
@@ -57,6 +58,7 @@ public class SlaveServerDialog extends Dialog
 	private Shell     shell;
 
     // Service
+    private Text     wName;
 	private TextVar  wHostname,  wPort, wUsername,  wPassword;
     private Button   wMaster;
 
@@ -182,12 +184,31 @@ public class SlaveServerDialog extends Dialog
         GenLayout.marginHeight = Const.FORM_MARGIN;
         wServiceComp.setLayout(GenLayout);
 
-        // What's the service URL?
+        // What's the name
+        Label wlName = new Label(wServiceComp, SWT.RIGHT); 
+        props.setLook(wlName);
+        wlName.setText("Slave server name  ");
+        FormData fdlName = new FormData();
+        fdlName.top   = new FormAttachment(0, 0);
+        fdlName.left  = new FormAttachment(0, 0);  // First one in the left top corner
+        fdlName.right = new FormAttachment(middle, -margin);
+        wlName.setLayoutData(fdlName);
+
+        wName = new Text(wServiceComp, SWT.SINGLE | SWT.LEFT | SWT.BORDER );
+        props.setLook(wName);
+        wName.addModifyListener(lsMod);
+        FormData fdName = new FormData();
+        fdName.top  = new FormAttachment(0, 0);
+        fdName.left = new FormAttachment(middle, 0); // To the right of the label
+        fdName.right= new FormAttachment(95, 0);
+        wName.setLayoutData(fdName);
+
+        // What's the hostname
         Label wlHostname = new Label(wServiceComp, SWT.RIGHT); 
         props.setLook(wlHostname);
         wlHostname.setText("Hostname or IP address  ");
         FormData fdlHostname = new FormData();
-        fdlHostname.top   = new FormAttachment(0, 0);
+        fdlHostname.top   = new FormAttachment(wName, margin*2);
         fdlHostname.left  = new FormAttachment(0, 0);  // First one in the left top corner
         fdlHostname.right = new FormAttachment(middle, -margin);
         wlHostname.setLayoutData(fdlHostname);
@@ -196,7 +217,7 @@ public class SlaveServerDialog extends Dialog
         props.setLook(wHostname);
         wHostname.addModifyListener(lsMod);
         FormData fdHostname = new FormData();
-        fdHostname.top  = new FormAttachment(0, 0);
+        fdHostname.top  = new FormAttachment(wName, margin*2);
         fdHostname.left = new FormAttachment(middle, 0); // To the right of the label
         fdHostname.right= new FormAttachment(95, 0);
         wHostname.setLayoutData(fdHostname);
@@ -387,7 +408,8 @@ public class SlaveServerDialog extends Dialog
     
     public void getData()
 	{
-		wHostname.setText( Const.NVL(slaveServer.getHostname(), "") );
+        wName    .setText( Const.NVL(slaveServer.getName(),     "") );
+        wHostname.setText( Const.NVL(slaveServer.getHostname(), "") );
         wPort    .setText( Const.NVL(slaveServer.getPort(),     "") );
         wUsername.setText( Const.NVL(slaveServer.getUsername(), "") );
 		wPassword.setText( Const.NVL(slaveServer.getPassword(), "") );
@@ -398,7 +420,7 @@ public class SlaveServerDialog extends Dialog
         
         wMaster.setSelection( slaveServer.isMaster() );
         
-		wHostname.setFocus();
+		wName.setFocus();
 	}
     
 	private void cancel()
@@ -410,6 +432,7 @@ public class SlaveServerDialog extends Dialog
 	public void ok()
 	{
         getInfo();
+        originalServer.setName    (slaveServer.getName());
         originalServer.setHostname(slaveServer.getHostname());
         originalServer.setPort    (slaveServer.getPort());
         originalServer.setUsername(slaveServer.getUsername());
@@ -431,6 +454,7 @@ public class SlaveServerDialog extends Dialog
     // Get dialog info in securityService
 	private void getInfo()
     {
+        slaveServer.setName    (wName    .getText());
         slaveServer.setHostname(wHostname.getText());
         slaveServer.setPort    (wPort    .getText());
         slaveServer.setUsername(wUsername.getText());

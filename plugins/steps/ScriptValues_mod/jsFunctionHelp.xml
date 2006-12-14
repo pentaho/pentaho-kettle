@@ -1017,4 +1017,76 @@ Alert(getFiscalDate(d1, str2));</sample>
          <argument id="1">var,var</argument>
       </Arguments>
    </jsFunction>
+   
+   	<jsFunction name="writeToLog">
+	<help>Write a String to the defined Kettle Log.</help>
+      <sample>// Writes a string to the defined Kettle Log.
+//
+// Usage:
+// writeToLog(var);
+// 1: String - The Message which should be written to
+// the Kettle Debug Log
+//
+// writeToLog(var,var);
+// 1: String - The Type of the Log
+// d - Debug
+// l - Detailed
+// e - Error
+// m - Minimal
+// r - RowLevel
+//
+// 2: String - The Message which should be written to
+// the Kettle Log
+//
+// 2006-11-21
+//
+writeToLog("Hello World!");
+writeToLog("r", "Hello World!");</sample>
+       <type>4</type>
+      <Arguments>
+         <argument id="1">var</argument>
+         <argument id="2">var,var</argument>
+      </Arguments>
+   </jsFunction>
+   	
+   	<jsFunction name="getTransformationName">
+	<help>Returns the name of this Step.</help>
+      <sample>// Returns the name of this JS_Step.
+// In running mode, the Copy- and Threadnumber
+// are added, too.
+//
+// Usage:
+// getTransformationName();
+//
+// 2006-12-04
+//
+var xTranName = getTransformationName();
+Alert(xTranName);</sample>
+       <type>4</type>
+      <Arguments>
+      </Arguments>
+   </jsFunction>
+      	
+    <jsFunction name="appendToFile">
+	<help>Adds Data to a File</help>
+      <sample>// Appends data to the given file.
+// If the file doesnt exists, it would be
+// created.
+// 
+// Usage:
+// appendToFile(var,var);
+// 1: String - The Filename with Path.
+// 2: String - The content to put.
+//
+// 2006-12-04
+//
+var strFile = "Your File, with Path.";
+var strContent = "Hello World!";
+appendToFile(strFile, strContent);</sample>
+       <type>4</type>
+      <Arguments>
+      <argument id="1">var,var</argument>
+      </Arguments>
+   </jsFunction>     
+  
 </jsFunctions>

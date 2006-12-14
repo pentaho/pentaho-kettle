@@ -1444,6 +1444,40 @@ public class Const
 		}
 		return -1;
 	}
+    
+    /**
+     * Search for strings in an array of strings and return the indexes.
+     * @param lookup The strings to search for
+     * @param array The array of strings to look in
+     * @return The indexes of strings in an array of strings. -1 if not found.
+     */
+    public static final int[] indexsOfStrings(String lookup[], String array[])
+    {
+        int[] indexes = new int[lookup.length];
+        for (int i=0;i<indexes.length;i++) indexes[i] = indexOfString(lookup[i], array);
+        return indexes;
+    }
+    
+    /**
+     * Search for strings in an array of strings and return the indexes.
+     * If a string is not found, the index is not returned.
+     * 
+     * @param lookup The strings to search for
+     * @param array The array of strings to look in
+     * @return The indexes of strings in an array of strings.  Only existing indexes are returned (no -1)
+     */
+    public static final int[] indexsOfFoundStrings(String lookup[], String array[])
+    {
+        List indexesList = new ArrayList();
+        for (int i=0;i<lookup.length;i++)
+        {
+            int idx = indexOfString(lookup[i], array);
+            if (idx>=0) indexesList.add(new Integer(idx));
+        }
+        int[] indexes = new int[indexesList.size()];
+        for (int i=0;i<indexesList.size();i++) indexes[i] = ((Integer)indexesList.get(i)).intValue();
+        return indexes;
+    }
 
 	/**
 	 * Search for a string in a list of strings and return the index.
