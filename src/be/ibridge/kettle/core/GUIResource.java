@@ -85,6 +85,7 @@ public class GUIResource
     private Image     imageChef;
     private Image     imagePentaho;
     private Image     imageVariable;
+    private Image     imageSpoonGraph;
     
     private Image     imageSplash;
 
@@ -206,6 +207,7 @@ public class GUIResource
             imageSplash      .dispose();
             imagePentaho     .dispose();
             imageVariable    .dispose();
+            imageSpoonGraph  .dispose();
      
             // big images
             Collection images = imagesSteps.values();
@@ -332,6 +334,7 @@ public class GUIResource
         imageSplash      = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "kettle_splash.png"));
         imagePentaho     = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "PentahoLogo.png"));
         imageVariable    = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "variable.png"));
+        imageSpoonGraph  = new Image(display, getClass().getResourceAsStream(Const.IMAGE_DIRECTORY + "spoongraph.png"));
     }
 
     /**
@@ -776,5 +779,10 @@ public class GUIResource
     public Image getImageVariable()
     {
         return imageVariable;
+    }
+
+    public Image getImageSpoonGraph()
+    {
+        return imageSpoonGraph;
     }
 }

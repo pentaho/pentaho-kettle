@@ -1886,7 +1886,7 @@ public class Spoon
         props.setLook(tabfolder, Props.WIDGET_STYLE_TAB);
         
         tabfolder.setSimple(false);
-        tabfolder.setUnselectedImageVisible(false);
+        tabfolder.setUnselectedImageVisible(true);
         tabfolder.setUnselectedCloseVisible(true);
         
         tabfolder.addKeyListener(defKeys);
@@ -5493,6 +5493,7 @@ public class Spoon
                 tabItem = new CTabItem(tabfolder, SWT.CLOSE);
                 tabItem.setText(tabName);
                 tabItem.setToolTipText("Graphical view of Transformation : "+tabName);
+                tabItem.setImage(GUIResource.getInstance().getImageSpoonGraph());
                 tabItem.setControl(spoonGraph);
                 
                 tabMap.put(tabName, new TabMapEntry(tabItem, tabName, spoonGraph));
@@ -5620,6 +5621,13 @@ public class Spoon
         for (Iterator iter = list.iterator(); iter.hasNext();)
         {
             TabMapEntry entry = (TabMapEntry) iter.next();
+            if (entry.getTabItem().isDisposed())
+            {
+                // this should not be in the map, get rid of it.
+                tabMap.remove(entry.getObjectName());
+                continue;
+            }
+            
             String before = entry.getTabItem().getText();
             if (entry.getObject() instanceof SpoonGraph)
             {
