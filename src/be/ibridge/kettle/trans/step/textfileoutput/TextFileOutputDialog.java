@@ -927,7 +927,20 @@ public class TextFileOutputDialog extends BaseStepDialog implements StepDialogIn
 					dialog.setFilterNames(new String[] {Messages.getString("System.FileType.TextFiles"), Messages.getString("System.FileType.CSVFiles"), Messages.getString("System.FileType.AllFiles")});
 					if (dialog.open()!=null)
 					{
-						wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
+						String extension = wExtension.getText();
+						if ( extension != null && dialog.getFileName() != null &&
+								dialog.getFileName().endsWith("." + extension) )
+						{
+							// The extension is filled in and matches the end 
+							// of the selected file => Strip off the extension.
+							String fileName = dialog.getFileName();
+						    wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+
+						    		          fileName.substring(0, fileName.length() - (extension.length()+1)));
+						}
+						else
+						{
+						    wFilename.setText(dialog.getFilterPath()+System.getProperty("file.separator")+dialog.getFileName());
+						}
 					}
 				}
 			}
