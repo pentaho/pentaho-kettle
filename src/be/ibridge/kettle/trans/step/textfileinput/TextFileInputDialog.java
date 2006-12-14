@@ -570,7 +570,7 @@ public class TextFileInputDialog extends BaseStepDialog implements StepDialogInt
 					else
 					{
 						FileDialog dialog = new FileDialog(shell, SWT.OPEN);
-						if (! wCompression.getSelection().equals("None"))
+						if (! wCompression.getText().equals("None"))
 						{
 							dialog.setFilterExtensions(new String[] {"*.zip;*.gz", "*.txt;*.csv", "*.csv", "*.txt", "*"});
 						}
