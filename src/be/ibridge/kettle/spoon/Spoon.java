@@ -4871,7 +4871,7 @@ public class Spoon
                         // Perhaps we need to connect to the repository?
                         if (lasttypes[0])
                         {
-                            if (lastrepos[0]!=null && lastrepos[0].length()>0)
+                            if (!Const.isEmpty(lastrepos[0]))
                             {
                                 if (use_repository && !lastrepos[0].equalsIgnoreCase(repinfo.getName()))
                                 {
@@ -4881,9 +4881,9 @@ public class Spoon
                             }
                         }
                         
-                        if (use_repository || !lasttypes[0])
+                        if (use_repository && lasttypes[0])
                         {
-                            if (win.rep!=null) // load from repository...
+                            if (win.rep!=null) // load from this repository...
                             {
                                 if (win.rep.getName().equalsIgnoreCase(lastrepos[0]))
                                 {
@@ -4902,15 +4902,15 @@ public class Spoon
                                     }
                                 }
                             }
-                            else // Load from XML?
-                            {
-                                TransMeta transMeta = new TransMeta(lastfiles[0]);
-                                transMeta.setFilename(lastfiles[0]);
-                                transMeta.clearChanged();
-                                win.addSpoonGraph(transMeta);
-                            }
                         }
-                        
+
+                        if (!lasttypes[0] && !Const.isEmpty(lastfiles[0]))
+                        {
+                            TransMeta transMeta = new TransMeta(lastfiles[0]);
+                            transMeta.setFilename(lastfiles[0]);
+                            transMeta.clearChanged();
+                            win.addSpoonGraph(transMeta);
+                        }                       
                     }
                 }
             }
