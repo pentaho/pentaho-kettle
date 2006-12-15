@@ -96,7 +96,7 @@ public class SlaveServerTransStatus
             while ( (c=gzip.read())!=-1) buffer.append((char)c);
             gzip.close();
             loggingString = buffer.toString();
-            System.out.println("Found logging: "+Const.CR+loggingString);
+            // System.out.println("Found logging: "+Const.CR+loggingString);
         }
         catch(IOException e)
         {
