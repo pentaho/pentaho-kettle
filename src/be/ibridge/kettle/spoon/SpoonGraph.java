@@ -2235,7 +2235,7 @@ public class SpoonGraph extends Canvas implements Redrawable, AddUndoPositionInt
         return answer;
     }
 
-    public boolean close()
+    public boolean canBeClosed()
     {
         return showChangedWarning(transMeta);
     }

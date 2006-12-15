@@ -7,7 +7,7 @@ public interface TabItemInterface
      * 
      * @return true if the tab was closed, false if it was prevented by the user. (are you sure dialog)
      */
-    public boolean close();
+    public boolean canBeClosed();
     
     public Object getManagedObject();
 }

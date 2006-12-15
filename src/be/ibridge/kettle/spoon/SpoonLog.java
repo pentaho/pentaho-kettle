@@ -984,7 +984,7 @@ public class SpoonLog extends Composite implements TabItemInterface
         this.transMeta = transMeta;
     }
 
-    public boolean close()
+    public boolean canBeClosed()
     {
         return !running && !preview;
     }

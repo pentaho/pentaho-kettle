@@ -415,7 +415,7 @@ public class SpoonHistory extends Composite implements TabItemInterface
         this.transMeta = transMeta;
     }
 
-    public boolean close()
+    public boolean canBeClosed()
     {
         return true; // You can close this one at any time.
     }

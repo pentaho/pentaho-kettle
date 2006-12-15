@@ -258,7 +258,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
         showLog();
     }
 
-    public boolean close()
+    public boolean canBeClosed()
     {
         // It's OK to close this at any time too.
         timerTask.cancel();
@@ -299,8 +299,7 @@ public class SpoonSlave extends Composite implements TabItemInterface
                     }
                         
                     wText.setText(message.toString());
-                    wText.setSelection(message.length()); // scroll to the back
-                    wText.showSelection();
+                    wText.setTopIndex(wText.getLineCount());
                 }
             }
         }

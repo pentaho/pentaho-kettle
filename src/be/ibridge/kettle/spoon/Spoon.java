@@ -1913,7 +1913,7 @@ public class Spoon
                         if (event.item.equals(entry.getTabItem())) 
                         {
                             // Can we close this tab?
-                            event.doit = entry.getObject().close();
+                            event.doit = entry.getObject().canBeClosed();
                             
                             // Also clean up the log/history associated with this transformation
                             //
@@ -2778,68 +2778,120 @@ public class Spoon
     
     public boolean quitFile()
     {
-        boolean exit        = true;
-        boolean showWarning = true;
-        
         log.logDetailed(toString(), Messages.getString("Spoon.Log.QuitApplication"));//"Quit application."
-        saveSettings();
-        //
-        // TODO: check all transformation in memory if they have changed.
-        //
-        showWarning= false;
-        exit=true;
-        //
-        //
 
-        /*
-        if (transMeta.hasChanged())
+        boolean exit        = true;
+        
+        saveSettings();
+
+        if (props.showExitWarning())
         {
-            MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
-            mb.setMessage(Messages.getString("Spoon.Dialog.SaveChangedFile.Message"));//"File has changed!  Do you want to save first?"
-            mb.setText(Messages.getString("Spoon.Dialog.SaveChangedFile.Title"));//"Warning!"
-            int answer = mb.open();
-        
-            switch(answer)
-            {
-            case SWT.YES: exit=saveFile(); showWarning=false; break;
-            case SWT.NO:  exit=true; showWarning=false; break;
-            case SWT.CANCEL: 
-                exit=false;
-                showWarning=false;
-                break;
-            }
-        }
-        */
-        
-        
-        // System.out.println("exit="+exit+", showWarning="+showWarning+", running="+spoonlog.isRunning()+", showExitWarning="+props.showExitWarning());
-        
-        // Show warning on exit when spoon is still running
-        // Show warning on exit when a warning needs to be displayed, but only if we didn't ask to save before. (could have pressed cancel then!)
-        //
-        SpoonLog spoonLog = getActiveSpoonLog();
-        if ( (exit && spoonLog!=null && spoonLog.isRunning() ) || (exit && showWarning && props.showExitWarning() ) )
-        {
-            String message = Messages.getString("Spoon.Message.Warning.PromptExit"); //"Are you sure you want to exit?"
-            if (spoonLog!=null && spoonLog.isRunning()) message = Messages.getString("Spoon.Message.Warning.PromptExitWhenRunTransformation");//There is a running transformation.  Are you sure you want to exit?
-            
             MessageDialogWithToggle md = new MessageDialogWithToggle(shell, 
                     Messages.getString("System.Warning"),//"Warning!" 
                     null,
-                    message,
+                    Messages.getString("Spoon.Message.Warning.PromptExit"), // Are you sure you want to exit?
                     MessageDialog.WARNING,
                     new String[] { Messages.getString("Spoon.Message.Warning.Yes"), Messages.getString("Spoon.Message.Warning.No") },//"Yes", "No" 
                     1,
                     Messages.getString("Spoon.Message.Warning.NotShowWarning"),//"Please, don't show this warning anymore."
                     !props.showExitWarning()
-               );
-               int idx = md.open();
-               props.setExitWarningShown(!md.getToggleState());
-               props.saveProps();
-               
-               if ((idx&0xFF)==1) exit=false; // No selected: don't exit!
-               else exit=true;
-        }            
+              );
+            int idx = md.open();
+            props.setExitWarningShown(!md.getToggleState());
+            props.saveProps();
+            if ((idx&0xFF)==1) return false; // No selected: don't exit!
+        }
+           
+        
+        
+        // Check all tabs to see if we can close them...
+        List list = new ArrayList();
+        list.addAll(tabMap.values());
+        
+        for (Iterator iter = list.iterator(); iter.hasNext() && exit;)
+        {
+            TabMapEntry mapEntry = (TabMapEntry) iter.next();
+            
+            if (!mapEntry.getObject().canBeClosed())
+            {
+                // Unsaved transformation?
+                //
+                if (mapEntry.getObject() instanceof SpoonGraph)
+                {
+                    TransMeta transMeta = (TransMeta) mapEntry.getObject().getManagedObject();
+                    if (transMeta.hasChanged())
+                    {
+                        // Show the transformation in question
+                        //
+                        tabfolder.setSelection( mapEntry.getTabItem() );
+                        
+                        // Ask if we should save it before closing...
+                        MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.CANCEL | SWT.ICON_WARNING );
+                        mb.setMessage(Messages.getString("Spoon.Dialog.SaveChangedFile.Message"));//"File has changed!  Do you want to save first?"
+                        mb.setText(Messages.getString("Spoon.Dialog.SaveChangedFile.Title"));//"Warning!"
+                        int answer = mb.open();
+                    
+                        switch(answer)
+                        {
+                        case SWT.YES: exit=saveFile(transMeta); break;
+                        case SWT.NO:  exit=true; break;
+                        case SWT.CANCEL: 
+                            exit=false;
+                            break;
+                        }
+                    }
+                }
+                // A running transformation?
+                //
+                if (mapEntry.getObject() instanceof SpoonLog)
+                {
+                    SpoonLog spoonLog = (SpoonLog) mapEntry.getObject();
+                    if (spoonLog.isRunning())
+                    {
+                        MessageBox mb = new MessageBox(shell, SWT.YES | SWT.NO | SWT.ICON_QUESTION);
+                        mb.setMessage(Messages.getString("Spoon.Message.Warning.PromptExitWhenRunTransformation"));// There is a running transformation.  Do you want to stop it and quit Spoon?
+                        mb.setText(Messages.getString("System.Warning")); //Warning
+                        int reply = mb.open();
+                        
+                        if (reply==SWT.NO) exit=false; // No selected: don't exit!
+                    }
+                }
+            }
+        }
+        
+        if (exit) // we have asked about it all and we're still here.  Now close all the tabs, stop the running transformations
+        {
+            for (Iterator iter = list.iterator(); iter.hasNext() && exit;)
+            {
+                TabMapEntry mapEntry = (TabMapEntry) iter.next();
+                
+                if (!mapEntry.getObject().canBeClosed())
+                {
+                    // Unsaved transformation?
+                    //
+                    if (mapEntry.getObject() instanceof SpoonGraph)
+                    {
+                        TransMeta transMeta = (TransMeta) mapEntry.getObject().getManagedObject();
+                        if (transMeta.hasChanged())
+                        {
+                            mapEntry.getTabItem().dispose();
+                        }
+                    }
+                    // A running transformation?
+                    //
+                    if (mapEntry.getObject() instanceof SpoonLog)
+                    {
+                        SpoonLog spoonLog = (SpoonLog) mapEntry.getObject();
+                        if (spoonLog.isRunning())
+                        {
+                            spoonLog.stop();
+                            mapEntry.getTabItem().dispose();
+                        }
+                    }
+                }
+            }
+        }
+          
 
         if (exit) dispose();
             
@@ -5298,7 +5350,7 @@ public class Spoon
             //
             TransMeta master = transSplitter.getMaster();
             SlaveServer masterServer = transSplitter.getMasterServer();
-            if (show) new Spoon(log, shell.getDisplay(), master, rep).open();
+            if (show) addSpoonGraph(master);
             if (post)
             {
                 String masterReply = masterServer.sendXML(new TransConfiguration(master, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
@@ -5315,7 +5367,7 @@ public class Spoon
             for (int i=0;i<slaves.length;i++)
             {
                 TransMeta slaveTrans = (TransMeta) transSplitter.getSlaveTransMap().get(slaves[i]);
-                if (show) new Spoon(log, shell.getDisplay(), slaveTrans, rep).open();
+                if (show) addSpoonGraph(slaveTrans);
                 if (post)
                 {
                     String slaveReply = slaves[i].sendXML(new TransConfiguration(slaveTrans, executionConfiguration).getXML(), AddTransServlet.CONTEXT_PATH+"?xml=Y");
@@ -5391,6 +5443,8 @@ public class Spoon
 
     public void executeTransformation(TransMeta transMeta, boolean local, boolean remote, boolean cluster, boolean preview, Date replayDate)
     {
+        if (transMeta==null) return;
+        
         executionConfiguration.setExecutingLocally(local);
         executionConfiguration.setExecutingRemotely(remote);
         executionConfiguration.setExecutingClustered(cluster);
