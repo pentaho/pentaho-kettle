@@ -60,6 +60,7 @@ set CLASSPATH=%CLASSPATH%;libext\commons-logging.jar
 set CLASSPATH=%CLASSPATH%;libext\commons-lang-2.2.jar
 set CLASSPATH=%CLASSPATH%;libext\commons-dbcp-1.2.1.jar
 set CLASSPATH=%CLASSPATH%;libext\commons-pool-1.3.jar
+set CLASSPATH=%CLASSPATH%;libext\commons-httpclient-3.0.1.jar
 set CLASSPATH=%CLASSPATH%;libext\nzjdbc.jar
 set CLASSPATH=%CLASSPATH%;libext\unijdbc.jar
 set CLASSPATH=%CLASSPATH%;libext\asjava.zip
@@ -84,4 +85,4 @@ REM ***************
 REM ** Run...    **
 REM ***************
 
-start javaw %OPT% be.ibridge.kettle.spoon.Spoon %1 %2 %3 %4 %5 %6 %7 %8 %9
+java %OPT% be.ibridge.kettle.spoon.Spoon %1 %2 %3 %4 %5 %6 %7 %8 %9
