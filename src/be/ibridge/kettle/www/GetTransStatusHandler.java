@@ -44,6 +44,16 @@ public class GetTransStatusHandler extends AbstractHandler
         String transName = request.getParameter("name");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
 
+        if (useXML)
+        {
+            response.setContentType("text/xml");
+            response.setCharacterEncoding(Const.XML_ENCODING);
+        }
+        else
+        {
+            response.setContentType("text/html");
+        }
+        
         PrintStream out = new PrintStream(response.getOutputStream());
 
         Trans  trans  = transformationMap.getTransformation(transName);

@@ -37,11 +37,19 @@ public class GetStatusHandler extends AbstractHandler
         if (log.isDebug()) log.logDebug(toString(), "Status requested");
         boolean useXML = "Y".equalsIgnoreCase( request.getParameter("xml") );
 
-        PrintStream out = new PrintStream(response.getOutputStream());
         if (useXML)
         {
             response.setContentType("text/xml");
             response.setCharacterEncoding(Const.XML_ENCODING);
+        }
+        else
+        {
+            response.setContentType("text/html");
+        }
+        
+        PrintStream out = new PrintStream(response.getOutputStream());
+        if (useXML)
+        {
             out.print(XMLHandler.getXMLHeader(Const.XML_ENCODING));
             SlaveServerStatus serverStatus = new SlaveServerStatus();
             serverStatus.setStatusDescription("Online");
@@ -59,9 +67,7 @@ public class GetStatusHandler extends AbstractHandler
             out.println(serverStatus.getXML());
         }
         else
-        {
-            response.setContentType("text/html");
-    
+        {    
             out.println("<HTML>");
             out.println("<HEAD><TITLE>Kettle slave server status</TITLE></HEAD>");
             out.println("<BODY>");
