@@ -190,7 +190,8 @@ public class GetTransStatusHandler extends AbstractHandler
             }
         }
 
-        out.flush();
+        response.flushBuffer();
+        // out.flush();
     }
 
     public String toString()

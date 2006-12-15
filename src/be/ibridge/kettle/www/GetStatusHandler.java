@@ -105,7 +105,8 @@ public class GetStatusHandler extends AbstractHandler
             out.println("</HTML>");
         }
 
-        out.flush();
+        // out.flush();
+        response.flushBuffer();
         
         // Request baseRequest = (request instanceof Request) ? (Request)request:HttpConnection.getCurrentConnection().getRequest();
         // baseRequest.setHandled(true);
