@@ -311,7 +311,7 @@ public class JobEntryHTTPDialog extends Dialog implements JobEntryDialogInterfac
         
         // TargetExt line
         wlTargetExt=new Label(shell, SWT.RIGHT);
-        wlTargetExt.setText("Target filename extention");
+        wlTargetExt.setText("Target filename extension");
         props.setLook(wlTargetExt);
         fdlTargetExt=new FormData();
         fdlTargetExt.left = new FormAttachment(0, 0);

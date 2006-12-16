@@ -330,7 +330,7 @@ public class JobEntryJobDialog extends Dialog implements JobEntryDialogInterface
 
 		// Set the logfile filename extention
 		wlLogext=new Label(wLogging, SWT.RIGHT);
-		wlLogext.setText("Extention of logfile ");
+		wlLogext.setText("Extension of logfile ");
  		props.setLook(wlLogext);
 		fdlLogext=new FormData();
 		fdlLogext.left = new FormAttachment(0, 0);
