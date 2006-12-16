@@ -165,6 +165,7 @@ public class SelectObjectDialog extends Dialog
 
 		// Some buttons
 		wOK=new Button(shell, SWT.PUSH);
+		wOK.setText(Messages.getString("System.Button.OK"));
 		lsOK       = new Listener() { public void handleEvent(Event e) { ok();     } };
 		wOK.addListener    (SWT.Selection, lsOK     );
 		
