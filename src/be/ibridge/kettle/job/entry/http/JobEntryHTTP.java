@@ -16,12 +16,11 @@
 package be.ibridge.kettle.job.entry.http;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
@@ -62,7 +61,6 @@ import be.ibridge.kettle.repository.Repository;
  * @since 05-11-2003
  * 
  */
-
 public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
 {
     private static final String URL_FIELDNAME = "URL";
@@ -372,7 +370,7 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
             FileOutputStream    outputFile   = null;
             OutputStream        uploadStream = null;
             BufferedInputStream fileStream   = null;
-            BufferedReader      input        = null;
+            InputStream         input        = null;
             
             try
             {
@@ -453,18 +451,20 @@ public class JobEntryHTTP extends JobEntryBase implements JobEntryInterface
                 log.logDetailed(toString(), "Start reading reply from webserver.");
     
                 // Read the result from the server...
-                input = new BufferedReader(new InputStreamReader( connection.getInputStream() ));
+                input = server.openStream();
+                Date date=new Date(connection.getLastModified());
+                log.logBasic(toString(), "Resource type: \"" + connection.getContentType() +
+                		                 "\", last modified on: \"" + date + "\".");
                 
+                int oneChar;
                 long bytesRead = 0L;
-                String line;
-                while ( (line=input.readLine())!=null )
+                while ((oneChar=input.read()) != -1)
                 {
-                    line+=Const.CR;
-                    bytesRead+=line.length();
-                    outputFile.write(line.getBytes());
-                }
+                   outputFile.write(oneChar);
+                   bytesRead++;
+                }                
                 
-                log.logBasic(toString(), "Finished writing "+bytesRead+" bytes to result file ["+realTargetFile+"]");
+                log.logBasic(toString(), "Finished writing " + bytesRead + " bytes to result file ["+realTargetFile+"]");
                 
 				// Add to the result files...
 				ResultFile resultFile = new ResultFile(ResultFile.FILE_TYPE_GENERAL, new File(realTargetFile), parentJob.getJobname(), toString());
