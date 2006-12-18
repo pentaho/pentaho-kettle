@@ -261,6 +261,16 @@ public class H2DatabaseMeta extends BaseDatabaseMeta implements DatabaseInterfac
 		
 		return retval;
 	}
+    
+    public String[] getReservedWords()
+    {
+        return new String[]
+          {
+             "CURRENT_TIMESTAMP", "CURRENT_TIME", "CURRENT_DATE", "CROSS", "DISTINCT", "EXCEPT", "EXISTS", "FROM", "FOR", "FALSE", 
+             "FULL", "GROUP", "HAVING", "INNER", "INTERSECT", "IS", "JOIN", "LIKE", "MINUS", "NATURAL", "NOT", "NULL", "ON", 
+             "ORDER", "PRIMARY", "ROWNUM", "SELECT", "SYSDATE", "SYSTIME", "SYSTIMESTAMP", "TODAY", "TRUE", "UNION", "WHERE",    
+          };
+    }
 
     public String[] getUsedLibraries()
     {
