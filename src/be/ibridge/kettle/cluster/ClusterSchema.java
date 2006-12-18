@@ -150,7 +150,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
     {
         // Save the cluster
-        setId(rep.insertClusterSchema(this));
+        setId(rep.insertCluster(this));
         
         // Also save the used slave server references.
         for (int i=0;i<slaveServers.size();i++)
@@ -158,6 +158,9 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
             SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
             rep.insertClusterSlave(this, slaveServer);
         }
+        
+        // Save a link to the transformation to keep track of the use of this partition schema
+        rep.insertTransformationCluster(id_transformation, getId());
     }
     
     public ClusterSchema(Repository rep, long id_cluster_schema) throws KettleDatabaseException
@@ -166,7 +169,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         
         Row row = rep.getClusterSchema(id_cluster_schema);
         
-        name = row.getString("SCHEMA_NAME", null);
+        name = row.getString("NAME", null);
         basePort = row.getString("BASE_PORT", null);
         socketsBufferSize = row.getString("SOCKETS_BUFFER_SIZE", null);
         socketsFlushInterval = row.getString("SOCKETS_FLUSH_INTERVAL", null);

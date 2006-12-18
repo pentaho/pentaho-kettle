@@ -1765,6 +1765,36 @@ public class TransMeta implements XMLInterface, Comparator
     }
 
     /**
+     * Read the database connections in the repository and add them to this transformation if they are not yet present.
+     *
+     * @param rep The repository to load the database connections from.
+     */
+    public void readPartitionSchemas(Repository rep, boolean overWriteShared)
+    {
+        try
+        {
+            long dbids[] = rep.getPartitionSchemaIDs();
+            for (int i = 0; i < dbids.length; i++)
+            {
+                PartitionSchema partitionSchema = new PartitionSchema(rep, dbids[i]);
+                PartitionSchema check = findPartitionSchema(partitionSchema.getName()); // Check if there already is one in the transformation
+                if (check==null || overWriteShared) 
+                {
+                    if (!Const.isEmpty(partitionSchema.getName()))
+                    {
+                        addOrReplacePartitionSchema(partitionSchema);
+                        if (!overWriteShared) partitionSchema.setChanged(false);
+                    }
+                }
+            }
+        }
+        catch (KettleDatabaseException dbe)
+        {
+            log.logError(toString(), Messages.getString("TransMeta.Log.UnableToReadPartitionSchemaIDSFromRepository") + dbe.getMessage()); //$NON-NLS-1$
+        }
+    }
+
+    /**
      * Load the transformation name & other details from a repository.
      *
      * @param rep The repository to load the details from.
@@ -1818,24 +1848,6 @@ public class TransMeta implements XMLInterface, Comparator
                 feedbackShown = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, "FEEDBACK_SHOWN") );
                 feedbackSize = (int) rep.getTransAttributeInteger(getID(), 0, "FEEDBACK_SIZE");
                 usingThreadPriorityManagment = !"N".equalsIgnoreCase( rep.getTransAttributeString(getID(), 0, "USING_THREAD_PRIORITIES") );
-                
-                // Also load the partitioning from the attributes...
-                // Backward compatibility.
-                // TODO: remove in 2.4.0 final.
-                // 
-                int nrSchemas = rep.countNrTransAttributes(getID(), "SCHEMA_NAME");
-                for (int i=0;i<nrSchemas;i++)
-                {
-                    String schemaName =       rep.getTransAttributeString(getID(), i, "SCHEMA_NAME");
-                    int nrPartitions  = (int) rep.getTransAttributeInteger(getID(), i, "SCHEMA_NAME");
-                    String[] ids = new String[nrPartitions];
-                    for (int p=0;p<nrPartitions;p++)
-                    {
-                        ids[p] = rep.getTransAttributeString(getID(), i, "SCHEMA_PARTITION_"+p);
-                    }
-
-                    partitionSchemas.add( new PartitionSchema(schemaName, ids) );
-                }
             }
         }
         catch (KettleDatabaseException dbe)
@@ -1977,7 +1989,7 @@ public class TransMeta implements XMLInterface, Comparator
                     if (monitor != null) monitor.worked(1);
                 }
                 
-                long[] partitionSchemaIDs = rep.getPartitionSchemaIDs(getID());
+                long[] partitionSchemaIDs = rep.getTransformationPartitionSchemaIDs(getID());
                 for (int i = 0; i < partitionSchemaIDs.length; i++)
                 {
                     PartitionSchema partitionSchema = new PartitionSchema(rep, partitionSchemaIDs[i]);
@@ -1997,7 +2009,7 @@ public class TransMeta implements XMLInterface, Comparator
                     }
                 }
                 
-                long[] clusterSchemaIDs = rep.getClusterSchemaIDs(getID());
+                long[] clusterSchemaIDs = rep.getClusterSchemaIDs();
                 for (int i = 0; i < clusterSchemaIDs.length; i++)
                 {
                     ClusterSchema clusterSchema = new ClusterSchema(rep, clusterSchemaIDs[i]);

@@ -429,7 +429,7 @@ public class Spoon
                     if ((int)e.character == 17 && ctrl && !alt) { analyseImpact(transMeta);}
                     
                     // CTRL-R --> Connect to repository
-                    if ((int)e.character == 18 && ctrl && !alt) { openRepository(transMeta); };
+                    if ((int)e.character == 18 && ctrl && !alt) { openRepository(); };
 
                     // CTRL-S --> save
                     if ((int)e.character == 19 && ctrl && !alt) { saveFile(transMeta);  }
@@ -867,7 +867,7 @@ public class Spoon
           new MenuItem(msRep, SWT.SEPARATOR);
           MenuItem miRepUser       = new MenuItem(msRep, SWT.CASCADE); miRepUser.setText(Messages.getString("Spoon.Menu.Repository.EditCurrentUser")); //&Edit current user\tCTRL-U
         
-        Listener lsRepConnect     = new Listener() { public void handleEvent(Event e) { openRepository(getActiveTransformation());    } };
+        Listener lsRepConnect     = new Listener() { public void handleEvent(Event e) { openRepository();    } };
         Listener lsRepDisconnect  = new Listener() { public void handleEvent(Event e) { closeRepository();   } };
         Listener lsRepExplore     = new Listener() { public void handleEvent(Event e) { exploreRepository(); } };
         Listener lsRepUser        = new Listener() { public void handleEvent(Event e) { editRepositoryUser();} };
@@ -2502,7 +2502,7 @@ public class Spoon
         }
     }
     
-    public void openRepository(TransMeta transMeta)
+    public void openRepository()
     {
         int perms[] = new int[] { PermissionMeta.TYPE_PERMISSION_TRANSFORMATION };
         RepositoriesDialog rd = new RepositoriesDialog(disp, SWT.NONE, perms, APP_NAME);
@@ -2527,67 +2527,65 @@ public class Spoon
                 new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorConnectingRepository.Title"), Messages.getString("Spoon.Dialog.ErrorConnectingRepository.Message",Const.CR), ke); //$NON-NLS-1$ //$NON-NLS-2$
             }
             
-            // Set for the existing databases, the ID's at -1!
-            for (int i=0;i<transMeta.nrDatabases();i++) 
+            TransMeta transMetas[] = getLoadedTransformations();
+            for (int t=0;t<transMetas.length;t++)
             {
-                transMeta.getDatabase(i).setID(-1L);
-            }
-            
-            // Set for the existing transformation the ID at -1!
-            transMeta.setID(-1L);
-
-            // Keep track of the old databases for now.
-            ArrayList oldDatabases = transMeta.getDatabases();
-            
-            // In order to re-match the databases on name (not content), we need to load the databases from the new repository.
-            // NOTE: for purposes such as DEVELOP - TEST - PRODUCTION sycles.
-            
-            // first clear the list of databases.
-            transMeta.setDatabases(new ArrayList());
-
-            // Read them from the new repository.
-            readDatabases(transMeta, true); 
-            
-            /*
-            for (int i=0;i<transMeta.nrDatabases();i++)
-            {
-                System.out.println("NEW REP: ["+transMeta.getDatabase(i).getName()+"]");
-            }
-            */
-            
-            // Then we need to re-match the databases at save time...
-            for (int i=0;i<oldDatabases.size();i++)
-            {
-                DatabaseMeta oldDatabase = (DatabaseMeta) oldDatabases.get(i);
-                DatabaseMeta newDatabase = Const.findDatabase(transMeta.getDatabases(), oldDatabase.getName());
+                TransMeta transMeta = transMetas[t];
                 
-                // If it exists, change the settings...
-                if (newDatabase!=null)
+                for (int i=0;i<transMeta.nrDatabases();i++) 
                 {
-                    // System.out.println("Found the new database in the repository ["+oldDatabase.getName()+"]");
-                    // A database connection with the same name exists in the new repository.
-                    // Change the old connections to reflect the settings in the new repository 
-                    oldDatabase.setDatabaseInterface(newDatabase.getDatabaseInterface());
+                    transMeta.getDatabase(i).setID(-1L);
+                }
+            
+                // Set for the existing transformation the ID at -1!
+                transMeta.setID(-1L);
+
+                // Keep track of the old databases for now.
+                ArrayList oldDatabases = transMeta.getDatabases();
+            
+                // In order to re-match the databases on name (not content), we need to load the databases from the new repository.
+                // NOTE: for purposes such as DEVELOP - TEST - PRODUCTION sycles.
+                
+                // first clear the list of databases.
+                transMeta.setDatabases(new ArrayList());
+    
+                // Read them from the new repository.
+                readDatabases(transMeta, true); 
+            
+                // Then we need to re-match the databases at save time...
+                for (int i=0;i<oldDatabases.size();i++)
+                {
+                    DatabaseMeta oldDatabase = (DatabaseMeta) oldDatabases.get(i);
+                    DatabaseMeta newDatabase = Const.findDatabase(transMeta.getDatabases(), oldDatabase.getName());
+                    
+                    // If it exists, change the settings...
+                    if (newDatabase!=null)
+                    {
+                        // System.out.println("Found the new database in the repository ["+oldDatabase.getName()+"]");
+                        // A database connection with the same name exists in the new repository.
+                        // Change the old connections to reflect the settings in the new repository 
+                        oldDatabase.setDatabaseInterface(newDatabase.getDatabaseInterface());
+                    }
+                    else
+                    {
+                        // System.out.println("Couldn't find the new database in the repository ["+oldDatabase.getName()+"]");
+                        // The old database is not present in the new repository: simply add it to the list.
+                        // When the transformation gets saved, it will be added to the repository.
+                        transMeta.addDatabase(oldDatabase);
+                    }
+                }
+                
+                // For the existing transformation, change the directory too:
+                // Try to find the same directory in the new repository...
+                RepositoryDirectory redi = rep.getDirectoryTree().findDirectory(transMeta.getDirectory().getPath());
+                if (redi!=null)
+                {
+                    transMeta.setDirectory(redi);
                 }
                 else
                 {
-                    // System.out.println("Couldn't find the new database in the repository ["+oldDatabase.getName()+"]");
-                    // The old database is not present in the new repository: simply add it to the list.
-                    // When the transformation gets saved, it will be added to the repository.
-                    transMeta.addDatabase(oldDatabase);
+                    transMeta.setDirectory(rep.getDirectoryTree()); // the root is the default!
                 }
-            }
-            
-            // For the existing transformation, change the directory too:
-            // Try to find the same directory in the new repository...
-            RepositoryDirectory redi = rep.getDirectoryTree().findDirectory(transMeta.getDirectory().getPath());
-            if (redi!=null)
-            {
-                transMeta.setDirectory(redi);
-            }
-            else
-            {
-                transMeta.setDirectory(rep.getDirectoryTree()); // the root is the default!
             }
             
             refreshTree();
@@ -2748,33 +2746,31 @@ public class Spoon
     
     public void newFile()
     {
-        addSpoonGraph(new TransMeta());
-        refreshTree();
+        TransMeta transMeta = new TransMeta();
         
-        /*
-        if (showChangedWarning())
-        { 
-            clear();
-            loadRepositoryObjects();    // Add databases if connected to repository
-            loadSharedObjects();        // Load shared objects from XML file, optionally overwriting repository objects.
-            setFilename(null);
-            refreshTree();
-            refreshGraph();
-            refreshHistory();       
-         }
-         */
+        loadRepositoryObjects(transMeta);
+        
+        addSpoonGraph(transMeta);
+        refreshTree();
     }
     
-    /*
-    public void loadRepositoryObjects()
+    public void loadRepositoryObjects(TransMeta transMeta)
     {
         // Load common database info from active repository...
         if (rep!=null)
         {
+            try
+            {
+                transMeta.readSharedObjects();
+            }
+            catch(Exception e)
+            {
+                new ErrorDialog(shell, Messages.getString("Spoon.Error.UnableToLoadSharedObjects.Title"), Messages.getString("Spoon.Error.UnableToLoadSharedObjects.Message"), e);
+            }
             transMeta.readDatabases(rep, true);
+            transMeta.readPartitionSchemas(rep, true);
         }
     }
-    */
     
     public boolean quitFile()
     {
@@ -3774,6 +3770,12 @@ public class Spoon
     public TransMeta findTransformation(String name)
     {
         return (TransMeta)transformationMap.get(name);
+    }
+    
+    public TransMeta[] getLoadedTransformations()
+    {
+        List list = new ArrayList(transformationMap.values());
+        return (TransMeta[]) list.toArray(new TransMeta[list.size()]);
     }
 
     public SpoonGraph getSpoonGraph(TransMeta transMeta)

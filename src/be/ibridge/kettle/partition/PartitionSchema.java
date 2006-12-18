@@ -128,19 +128,22 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     
     public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
     {
-        long id_partition_schema = rep.insertPartitionSchema(id_transformation, name);
+        long id_partition_schema = rep.insertPartitionSchema(this);
         
         for (int i=0;i<partitionIDs.length;i++)
         {
-            rep.insertPartition(id_transformation, id_partition_schema, partitionIDs[i]);
+            rep.insertPartition(id_partition_schema, partitionIDs[i]);
         }
+        
+        // Save a link to the transformation to keep track of the use of this partition schema
+        rep.insertTransformationPartitionSchema(id_transformation, id_partition_schema);
     }
     
     public PartitionSchema(Repository rep, long id_partition_schema) throws KettleDatabaseException
     {
         Row row = rep.getPartitionSchema(id_partition_schema);
         
-        name = row.getString("SCHEMA_NAME", null);
+        name = row.getString("NAME", null);
         
         long[] pids = rep.getPartitionIDs(id_partition_schema);
         partitionIDs = new String[pids.length];

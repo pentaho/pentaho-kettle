@@ -48,6 +48,7 @@ import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.job.JobEntryLoader;
 import be.ibridge.kettle.job.JobMeta;
 import be.ibridge.kettle.job.JobPlugin;
+import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.trans.StepLoader;
 import be.ibridge.kettle.trans.StepPlugin;
 import be.ibridge.kettle.trans.TransMeta;
@@ -72,7 +73,8 @@ public class Repository
             "R_JOB", "R_LOGLEVEL", "R_LOG", "R_JOBENTRY", "R_JOBENTRY_COPY", "R_JOBENTRY_TYPE",
             "R_JOBENTRY_ATTRIBUTE", "R_JOB_HOP", "R_JOB_NOTE", "R_PROFILE", "R_USER",
             "R_PERMISSION", "R_PROFILE_PERMISSION", "R_STEP_DATABASE",
-            "R_PARTITION_SCHEMA", "R_PARTITION", "R_CLUSTER", "R_SLAVE", "R_CLUSTER_SLAVE"
+            "R_PARTITION_SCHEMA", "R_PARTITION", "R_TRANS_PARTITION_SCHEMA", 
+            "R_CLUSTER", "R_SLAVE", "R_CLUSTER_SLAVE", "R_TRANS_CLUSTER", "R_TRANS_SLAVE",
          };
     
     public static final int REQUIRED_MAJOR_VERSION = 2;
@@ -596,23 +598,7 @@ public class Repository
 
 	public synchronized long[] getSubDirectoryIDs(long id_directory) throws KettleDatabaseException
 	{
-		int nr = getNrSubDirectories(id_directory);
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_DIRECTORY FROM R_DIRECTORY WHERE ID_DIRECTORY_PARENT = " + id_directory+" ORDER BY DIRECTORY_NAME";
-
-		ResultSet rs = database.openQuery(sql);
-		Row r = database.getRow(rs);
-		int i = 0;
-		while (r != null)
-		{
-			retval[i] = r.getValue(0).getInteger();
-			r = database.getRow(rs);
-			i++;
-		}
-		database.closeQuery(rs);
-
-		return retval;
+		return getIDs("SELECT ID_DIRECTORY FROM R_DIRECTORY WHERE ID_DIRECTORY_PARENT = " + id_directory+" ORDER BY DIRECTORY_NAME");
 	}
 
 	private synchronized long getIDWithValue(String tablename, String idfield, String lookupfield, String value) throws KettleDatabaseException
@@ -712,7 +698,8 @@ public class Repository
 
 	public synchronized void moveTransformation(String transname, long id_directory_from, long id_directory_to) throws KettleDatabaseException
 	{
-		String sql = "UPDATE R_TRANSFORMATION SET ID_DIRECTORY = ? WHERE NAME = ? AND ID_DIRECTORY = ?";
+        String nameField = databaseMeta.quoteField("NAME");
+		String sql = "UPDATE R_TRANSFORMATION SET ID_DIRECTORY = ? WHERE "+nameField+" = ? AND ID_DIRECTORY = ?";
 
 		Row par = new Row();
 		par.addValue(new Value("ID_DIRECTORY", id_directory_to));
@@ -724,7 +711,8 @@ public class Repository
 
 	public synchronized void moveJob(String jobname, long id_directory_from, long id_directory_to) throws KettleDatabaseException
 	{
-		String sql = "UPDATE R_JOB SET ID_DIRECTORY = ? WHERE NAME = ? AND ID_DIRECTORY = ?";
+        String nameField = databaseMeta.quoteField("NAME");
+		String sql = "UPDATE R_JOB SET ID_DIRECTORY = ? WHERE "+nameField+" = ? AND ID_DIRECTORY = ?";
 
 		Row par = new Row();
 		par.addValue(new Value("ID_DIRECTORY", id_directory_to));
@@ -832,12 +820,17 @@ public class Repository
     {
         return getNextID("R_PARTITION_SCHEMA", "ID_PARTITION_SCHEMA");
     }
-    
+
     public synchronized long getNextPartitionID() throws KettleDatabaseException
     {
         return getNextID("R_PARTITION", "ID_PARTITION");
     }
 
+    public synchronized long getNextTransformationPartitionSchemaID() throws KettleDatabaseException
+    {
+        return getNextID("R_TRANS_PARTITION_SCHEMA", "ID_TRANS_PARTITION_SCHEMA");
+    }
+    
     public synchronized long getNextClusterSchemaID() throws KettleDatabaseException
     {
         return getNextID("R_CLUSTER", "ID_CLUSTER");
@@ -855,7 +848,12 @@ public class Repository
     
     public synchronized long getNextTransformationSlaveID() throws KettleDatabaseException
     {
-        return getNextID("R_TRANSFORMATION_SLAVE", "ID_TRANSFORMATION_SLAVE");
+        return getNextID("R_TRANS_SLAVE", "ID_TRANS_SLAVE");
+    }
+    
+    public synchronized long getNextTransformationClusterID() throws KettleDatabaseException
+    {
+        return getNextID("R_TRANS_CLUSTER", "ID_TRANS_CLUSTER");
     }
     
 	public synchronized long getNextConditionID() throws KettleDatabaseException
@@ -1343,15 +1341,14 @@ public class Repository
 		return id;
 	}
 
-    public synchronized long insertPartitionSchema(long id_transformation, String schemaName) throws KettleDatabaseException
+    public synchronized long insertPartitionSchema(PartitionSchema partitionSchema) throws KettleDatabaseException
     {
         long id = getNextPartitionSchemaID();
 
         Row table = new Row();
 
         table.addValue(new Value("ID_PARTITION_SCHEMA", id));
-        table.addValue(new Value("ID_TRANSFORMATION", id_transformation));
-        table.addValue(new Value("SCHEMA_NAME", schemaName));
+        table.addValue(new Value("NAME", partitionSchema.getName()));
 
         database.prepareInsert(table, "R_PARTITION_SCHEMA");
         database.setValuesInsert(table);
@@ -1360,8 +1357,8 @@ public class Repository
 
         return id;
     }
-    
-    public synchronized long insertPartition(long id_transformation, long id_partition_schema, String partitionId) throws KettleDatabaseException
+
+    public synchronized long insertPartition(long id_partition_schema, String partition_id) throws KettleDatabaseException
     {
         long id = getNextPartitionID();
 
@@ -1369,8 +1366,7 @@ public class Repository
 
         table.addValue(new Value("ID_PARTITION", id));
         table.addValue(new Value("ID_PARTITION_SCHEMA", id_partition_schema));
-        table.addValue(new Value("ID_TRANSFORMATION", id_transformation));
-        table.addValue(new Value("PARTITION_ID", partitionId));
+        table.addValue(new Value("PARTITION_ID", partition_id));
 
         database.prepareInsert(table, "R_PARTITION");
         database.setValuesInsert(table);
@@ -1379,8 +1375,26 @@ public class Repository
 
         return id;
     }
+
+    public synchronized long insertTransformationPartitionSchema(long id_transformation, long id_partition_schema) throws KettleDatabaseException
+    {
+        long id = getNextPartitionSchemaID();
+
+        Row table = new Row();
+
+        table.addValue(new Value("ID_TRANS_PARTITION_SCHEMA", id));
+        table.addValue(new Value("ID_TRANSFORMATION", id_transformation));
+        table.addValue(new Value("ID_PARTITION_SCHEMA", id_partition_schema));
+
+        database.prepareInsert(table, "R_TRANS_PARTITION_SCHEMA");
+        database.setValuesInsert(table);
+        database.insertRow();
+        database.closeInsert();
+
+        return id;
+    }
     
-    public synchronized long insertClusterSchema(ClusterSchema clusterSchema) throws KettleDatabaseException
+    public synchronized long insertCluster(ClusterSchema clusterSchema) throws KettleDatabaseException
     {
         long id = getNextClusterSchemaID();
 
@@ -1443,18 +1457,36 @@ public class Repository
 
         return id;
     }
-    
+
+    public synchronized long insertTransformationCluster(long id_transformation, long id_cluster) throws KettleDatabaseException
+    {
+        long id = getNextTransformationClusterID();
+
+        Row table = new Row();
+
+        table.addValue(new Value("ID_TRANS_SLAVE", id));
+        table.addValue(new Value("ID_TRANSFORMATION", id_transformation));
+        table.addValue(new Value("ID_SLAVE", id_cluster));
+
+        database.prepareInsert(table, "R_TRANS_SLAVE");
+        database.setValuesInsert(table);
+        database.insertRow();
+        database.closeInsert();
+
+        return id;
+    }
+
     public synchronized long insertTransformationSlave(long id_transformation, long id_slave_server) throws KettleDatabaseException
     {
         long id = getNextTransformationSlaveID();
 
         Row table = new Row();
 
-        table.addValue(new Value("ID_TRANSFORMATION_SLAVE", id));
+        table.addValue(new Value("ID_TRANS_SLAVE", id));
         table.addValue(new Value("ID_TRANSFORMATION", id_transformation));
         table.addValue(new Value("ID_SLAVE", id_slave_server));
 
-        database.prepareInsert(table, "R_TRANSFORMATION_SLAVE");
+        database.prepareInsert(table, "R_TRANS_SLAVE");
         database.setValuesInsert(table);
         database.insertRow();
         database.closeInsert();
@@ -2048,27 +2080,8 @@ public class Repository
 
 	public synchronized String[] getTransformationNames(long id_directory) throws KettleDatabaseException
 	{
-		int nr = getNrTransformations(id_directory);
-
-		String retval[] = new String[nr];
-        String nameField = databaseMeta.quoteField("NAME");
-		String sql = "SELECT "+nameField+" FROM R_TRANSFORMATION WHERE ID_DIRECTORY = " + id_directory + " ORDER BY "+nameField;
-
-		ResultSet rs = database.openQuery(sql);
-		if (rs != null)
-		{
-			Row r = database.getRow(rs);
-			int i = 0;
-			while (r != null)
-			{
-				retval[i] = r.getValue(0).getString();
-				r = database.getRow(rs);
-				i++;
-			}
-			database.closeQuery(rs);
-		}
-
-		return Const.sortStrings(retval);
+		String nameField = databaseMeta.quoteField("NAME");
+		return getStrings("SELECT "+nameField+" FROM R_TRANSFORMATION WHERE ID_DIRECTORY = " + id_directory + " ORDER BY "+nameField);
 	}
     
     public List getJobObjects(long id_directory, int sortPosition, boolean ascending) throws KettleDatabaseException
@@ -2123,295 +2136,93 @@ public class Repository
 
 	public synchronized String[] getJobNames(long id_directory) throws KettleDatabaseException
 	{
-		int nr = getNrJobs(id_directory);
-		String retval[] = new String[nr];
-        String nameField = databaseMeta.quoteField("NAME");
-		String sql = "SELECT "+nameField+" FROM R_JOB WHERE ID_DIRECTORY = " + id_directory + " ORDER BY "+nameField;
-
-		ResultSet rs = database.openQuery(sql);
-		if (rs != null)
-		{
-			Row r = database.getRow(rs);
-			int i = 0;
-			while (r != null)
-			{
-				retval[i] = r.getValue(0).getString();
-				r = database.getRow(rs);
-				i++;
-			}
-			database.closeQuery(rs);
-		}
-
-		return Const.sortStrings(retval);
+		String nameField = databaseMeta.quoteField("NAME");
+        return getStrings("SELECT "+nameField+" FROM R_JOB WHERE ID_DIRECTORY = " + id_directory + " ORDER BY "+nameField);
 	}
 
 	public synchronized String[] getDirectoryNames(long id_directory) throws KettleDatabaseException
 	{
-		int nr = getNrDirectories(id_directory);
-		String retval[] = new String[nr];
-		String sql = "SELECT   DIRECTORY_NAME " + "FROM     R_DIRECTORY " + "WHERE    ID_DIRECTORY_PARENT = "
-						+ id_directory + " " + "ORDER BY DIRECTORY_NAME";
-
-		ResultSet rs = database.openQuery(sql);
-		if (rs != null)
-		{
-			Row r = database.getRow(rs);
-			int i = 0;
-			while (r != null)
-			{
-				retval[i] = r.getValue(0).getString();
-				r = database.getRow(rs);
-				i++;
-			}
-			database.closeQuery(rs);
-		}
-
-		return Const.sortStrings(retval);
+        return getStrings("SELECT DIRECTORY_NAME FROM R_DIRECTORY WHERE ID_DIRECTORY_PARENT = " + id_directory + " ORDER BY DIRECTORY_NAME");
 	}
 
 	public synchronized String[] getJobNames() throws KettleDatabaseException
 	{
-		int nr = getNrJobs();
-		String retval[] = new String[nr];
         String nameField = databaseMeta.quoteField("NAME");
-		String sql = "SELECT "+nameField+" FROM R_JOB ORDER BY "+nameField;
-
-		ResultSet rs = database.openQuery(sql);
-		if (rs != null)
-		{
-			Row r = database.getRow(rs);
-			int i = 0;
-			while (r != null)
-			{
-				retval[i] = r.getValue(0).getString();
-				r = database.getRow(rs);
-				i++;
-			}
-			database.closeQuery(rs);
-		}
-
-		return retval;
+        return getStrings("SELECT "+nameField+" FROM R_JOB ORDER BY "+nameField);
 	}
 
 	public long[] getSubConditionIDs(long id_condition) throws KettleDatabaseException
 	{
-		int nr = getNrSubConditions(id_condition);
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_CONDITION FROM R_CONDITION WHERE ID_CONDITION_PARENT = " + id_condition;
-
-		ResultSet rs = database.openQuery(sql);
-		Row r = database.getRow(rs);
-		int i = 0;
-		while (r != null)
-		{
-			retval[i] = r.getValue(0).getInteger();
-			r = database.getRow(rs);
-			i++;
-		}
-		database.closeQuery(rs);
-
-		return retval;
+        return getIDs("SELECT ID_CONDITION FROM R_CONDITION WHERE ID_CONDITION_PARENT = " + id_condition);
 	}
 
 	public long[] getTransNoteIDs(long id_transformation) throws KettleDatabaseException
 	{
-		int nr = getNrTransNotes(id_transformation);
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_NOTE FROM R_TRANS_NOTE WHERE ID_TRANSFORMATION = " + id_transformation;
-
-		ResultSet rs = database.openQuery(sql);
-		Row r = database.getRow(rs);
-		int i = 0;
-		while (r != null)
-		{
-			retval[i] = r.getValue(0).getInteger();
-			r = database.getRow(rs);
-			i++;
-		}
-		database.closeQuery(rs);
-
-		return retval;
+        return getIDs("SELECT ID_NOTE FROM R_TRANS_NOTE WHERE ID_TRANSFORMATION = " + id_transformation);
 	}
 
 	public long[] getConditionIDs(long id_transformation) throws KettleDatabaseException
 	{
-		int nr = getNrConditions(id_transformation);
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_CONDITION FROM R_TRANS_STEP_CONDITION WHERE ID_TRANSFORMATION = " + id_transformation;
-
-		ResultSet rs = database.openQuery(sql);
-		Row r = database.getRow(rs);
-		int i = 0;
-		while (r != null)
-		{
-			retval[i] = r.getValue(0).getInteger();
-			r = database.getRow(rs);
-			i++;
-		}
-		database.closeQuery(rs);
-
-		return retval;
+        return getIDs("SELECT ID_CONDITION FROM R_TRANS_STEP_CONDITION WHERE ID_TRANSFORMATION = " + id_transformation);
 	}
 
 	public long[] getDatabaseIDs(long id_transformation) throws KettleDatabaseException
 	{
-		int nr = getNrDatabases(id_transformation);
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_DATABASE FROM R_STEP_DATABASE WHERE ID_TRANSFORMATION = " + id_transformation;
-
-		ResultSet rs = database.openQuery(sql);
-		Row r = database.getRow(rs);
-		int i = 0;
-		while (r != null)
-		{
-			retval[i] = r.getValue(0).getInteger();
-			r = database.getRow(rs);
-			i++;
-		}
-		database.closeQuery(rs);
-
-		return retval;
+        return getIDs("SELECT ID_DATABASE FROM R_STEP_DATABASE WHERE ID_TRANSFORMATION = " + id_transformation);
 	}
 
 	public long[] getJobNoteIDs(long id_job) throws KettleDatabaseException
 	{
-		int nr = getNrJobNotes(id_job);
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_NOTE FROM R_JOB_NOTE WHERE ID_JOB = " + id_job;
-
-		ResultSet rs = database.openQuery(sql);
-		Row r = database.getRow(rs);
-		int i = 0;
-		while (r != null)
-		{
-			retval[i] = r.getValue(0).getInteger();
-			r = database.getRow(rs);
-			i++;
-		}
-		database.closeQuery(rs);
-
-		return retval;
+        return getIDs("SELECT ID_NOTE FROM R_JOB_NOTE WHERE ID_JOB = " + id_job);
 	}
 
 	public long[] getDatabaseIDs() throws KettleDatabaseException
 	{
-		int nr = getNrDatabases();
-		long retval[] = new long[nr];
-
-        String sql = "SELECT ID_DATABASE FROM R_DATABASE";
-
-		ResultSet rs = database.openQuery(sql);
-		if (rs != null)
-		{
-			Row r = database.getRow(rs);
-			int i = 0;
-			while (r != null)
-			{
-				retval[i] = r.getValue(0).getInteger();
-				r = database.getRow(rs);
-				i++;
-			}
-			database.closeQuery(rs);
-		}
-
-		return retval;
+        String nameField = databaseMeta.quoteField("NAME");
+        return getIDs("SELECT ID_DATABASE FROM R_DATABASE ORDER BY "+nameField);
 	}
     
     public long[] getDatabaseAttributeIDs(long id_database) throws KettleDatabaseException
     {
-        int nr = getNrDatabaseAttributes(id_database);
-        long retval[] = new long[nr];
-
-        String sql = "SELECT ID_DATABASE_ATTRIBUTE FROM R_DATABASE_ATTRIBUTE WHERE ID_DATABASE = "+id_database;
-
-        ResultSet rs = database.openQuery(sql);
-        if (rs != null)
-        {
-            Row r = database.getRow(rs);
-            int i = 0;
-            while (r != null)
-            {
-                retval[i] = r.getValue(0).getInteger();
-                r = database.getRow(rs);
-                i++;
-            }
-            database.closeQuery(rs);
-        }
-
-        return retval;
+        return getIDs("SELECT ID_DATABASE_ATTRIBUTE FROM R_DATABASE_ATTRIBUTE WHERE ID_DATABASE = "+id_database);
     }
     
-    public long[] getPartitionSchemaIDs(long id_transformation) throws KettleDatabaseException
+    public long[] getPartitionSchemaIDs() throws KettleDatabaseException
     {
-        List ids = new ArrayList();
-        
-        String sql = "SELECT ID_PARTITION_SCHEMA FROM R_PARTITION_SCHEMA WHERE ID_TRANSFORMATION = " + id_transformation;
-
-        ResultSet rs = database.openQuery(sql);
-        Row r = database.getRow(rs);
-        int i = 0;
-        while (r != null)
-        {
-            ids.add(new Long(r.getValue(0).getInteger()));
-            r = database.getRow(rs);
-            i++;
-        }
-        database.closeQuery(rs);
-
-        return convertLongList(ids);
+        String nameField = databaseMeta.quoteField("NAME");
+        return getIDs("SELECT ID_PARTITION_SCHEMA FROM R_PARTITION_SCHEMA ORDER BY "+nameField);
     }
     
     public long[] getPartitionIDs(long id_partition_schema) throws KettleDatabaseException
     {
-        List ids = new ArrayList();
-        
-        String sql = "SELECT ID_PARTITION FROM R_PARTITION WHERE ID_PARTITION_SCHEMA = " + id_partition_schema;
-
-        ResultSet rs = database.openQuery(sql);
-        Row r = database.getRow(rs);
-        int i = 0;
-        while (r != null)
-        {
-            ids.add(new Long(r.getValue(0).getInteger()));
-            r = database.getRow(rs);
-            i++;
-        }
-        database.closeQuery(rs);
-
-        return convertLongList(ids);
+        return getIDs("SELECT ID_PARTITION FROM R_PARTITION WHERE ID_PARTITION_SCHEMA = " + id_partition_schema);
     }
 
-    public long[] getClusterSchemaIDs(long id_transformation) throws KettleDatabaseException
+    public long[] getTransformationPartitionSchemaIDs(long id_transformation) throws KettleDatabaseException
     {
-        List ids = new ArrayList();
-        
-        String sql = "SELECT ID_TRANSFORMATION_CLUSTER FROM R_TRANSFORMATION_CLUSTER WHERE ID_TRANSFORMATION = " + id_transformation;
-
-        ResultSet rs = database.openQuery(sql);
-        Row r = database.getRow(rs);
-        int i = 0;
-        while (r != null)
-        {
-            ids.add(new Long(r.getValue(0).getInteger()));
-            r = database.getRow(rs);
-            i++;
-        }
-        database.closeQuery(rs);
-
-        return convertLongList(ids);
+        return getIDs("SELECT ID_TRANS_PARTITION_SCHEMA FROM R_TRANS_PARTITION_SCHEMA WHERE ID_TRANSFORMATION = "+id_transformation);
+    }
+    
+    public long[] getTransformationClusterSchemaIDs(long id_transformation) throws KettleDatabaseException
+    {
+        return getIDs("SELECT ID_TRANS_CLUSTER FROM R_TRANS_CLUSTER WHERE ID_TRANSFORMATION = " + id_transformation);
+    }
+    
+    public long[] getClusterSchemaIDs() throws KettleDatabaseException
+    {
+        String nameField = databaseMeta.quoteField("NAME");
+        return getIDs("SELECT ID_CLUSTER FROM R_CLUSTER ORDER BY "+nameField); 
     }
 
     public long[] getSlaveServerIDs(long id_cluster_schema) throws KettleDatabaseException
     {
+        return getIDs("SELECT ID_SLAVE FROM R_CLUSTER_SLAVE WHERE ID_CLUSTER = " + id_cluster_schema);
+    }
+    
+    private long[] getIDs(String sql) throws KettleDatabaseException
+    {
         List ids = new ArrayList();
         
-        String sql = "SELECT ID_SLAVE FROM R_CLUSTER_SLAVE WHERE ID_CLUSTER = " + id_cluster_schema;
-
         ResultSet rs = database.openQuery(sql);
         Row r = database.getRow(rs);
         int i = 0;
@@ -2424,6 +2235,25 @@ public class Repository
         database.closeQuery(rs);
 
         return convertLongList(ids);
+    }
+    
+    private String[] getStrings(String sql) throws KettleDatabaseException
+    {
+        List ids = new ArrayList();
+        
+        ResultSet rs = database.openQuery(sql);
+        Row r = database.getRow(rs);
+        int i = 0;
+        while (r != null)
+        {
+            ids.add( r.getValue(0).getString() );
+            r = database.getRow(rs);
+            i++;
+        }
+        database.closeQuery(rs);
+
+        return (String[]) ids.toArray(new String[ids.size()]);
+
     }
     
     private long[] convertLongList(List list)
@@ -2436,48 +2266,13 @@ public class Repository
 
 	public synchronized String[] getDatabaseNames() throws KettleDatabaseException
 	{
-		int nr = getNrDatabases();
-		String retval[] = new String[nr];
-
-        String nameField = databaseMeta.quoteField("NAME");
-		String sql = "SELECT "+nameField+" FROM R_DATABASE ORDER BY "+nameField;
-
-		ResultSet rs = database.openQuery(sql);
-		if (rs != null)
-		{
-			Row r = database.getRow(rs);
-			int i = 0;
-			while (r != null)
-			{
-				retval[i] = r.getValue(0).getString();
-				r = database.getRow(rs);
-				i++;
-			}
-			database.closeQuery(rs);
-		}
-
-		return retval;
+		String nameField = databaseMeta.quoteField("NAME");
+		return getStrings("SELECT "+nameField+" FROM R_DATABASE ORDER BY "+nameField);
 	}
 
 	public long[] getStepIDs(long id_transformation) throws KettleDatabaseException
 	{
-		int nr = getNrSteps(id_transformation);
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_STEP FROM R_STEP WHERE ID_TRANSFORMATION = " + id_transformation;
-
-		ResultSet rs = database.openQuery(sql);
-		Row r = database.getRow(rs);
-		int i = 0;
-		while (r != null)
-		{
-			retval[i] = r.getValue(0).getInteger();
-			r = database.getRow(rs);
-			i++;
-		}
-		database.closeQuery(rs);
-
-		return retval;
+		return getIDs("SELECT ID_STEP FROM R_STEP WHERE ID_TRANSFORMATION = " + id_transformation);
 	}
 
 	public synchronized String[] getTransformationsUsingDatabase(long id_database) throws KettleDatabaseException
@@ -2509,227 +2304,54 @@ public class Repository
 
 	public long[] getTransHopIDs(long id_transformation) throws KettleDatabaseException
 	{
-		int nr = getNrTransHops(id_transformation);
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_TRANS_HOP FROM R_TRANS_HOP WHERE ID_TRANSFORMATION = " + id_transformation;
-
-		ResultSet rs = database.openQuery(sql);
-		Row r = database.getRow(rs);
-		int i = 0;
-		while (r != null)
-		{
-			retval[i] = r.getValue(0).getInteger();
-			r = database.getRow(rs);
-			i++;
-		}
-		database.closeQuery(rs);
-
-		return retval;
+		return getIDs("SELECT ID_TRANS_HOP FROM R_TRANS_HOP WHERE ID_TRANSFORMATION = " + id_transformation);
 	}
 
 	public long[] getJobHopIDs(long id_job) throws KettleDatabaseException
 	{
-		int nr = getNrJobHops(id_job);
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_JOB_HOP FROM R_JOB_HOP WHERE ID_JOB = " + id_job;
-
-		ResultSet rs = database.openQuery(sql);
-		Row r = database.getRow(rs);
-		int i = 0;
-		while (r != null)
-		{
-			retval[i] = r.getValue(0).getInteger();
-			r = database.getRow(rs);
-			i++;
-		}
-		database.closeQuery(rs);
-
-		return retval;
+		return getIDs("SELECT ID_JOB_HOP FROM R_JOB_HOP WHERE ID_JOB = " + id_job);
 	}
 
 	public long[] getTransDependencyIDs(long id_transformation) throws KettleDatabaseException
 	{
-		int nr = getNrTransDependencies(id_transformation);
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_DEPENDENCY FROM R_DEPENDENCY WHERE ID_TRANSFORMATION = " + id_transformation;
-
-		ResultSet rs = database.openQuery(sql);
-		Row r = database.getRow(rs);
-		int i = 0;
-		while (r != null)
-		{
-			retval[i] = r.getValue(0).getInteger();
-			r = database.getRow(rs);
-			i++;
-		}
-		database.closeQuery(rs);
-
-		return retval;
+		return getIDs("SELECT ID_DEPENDENCY FROM R_DEPENDENCY WHERE ID_TRANSFORMATION = " + id_transformation);
 	}
 
 	public long[] getUserIDs() throws KettleDatabaseException
 	{
-		int nr = getNrUsers();
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_USER FROM R_USER";
-
-		ResultSet rs = database.openQuery(sql);
-		if (rs != null)
-		{
-			Row r = database.getRow(rs);
-			int i = 0;
-			while (r != null)
-			{
-				retval[i] = r.getValue(0).getInteger();
-				r = database.getRow(rs);
-				i++;
-			}
-			database.closeQuery(rs);
-		}
-
-		return retval;
+		return getIDs("SELECT ID_USER FROM R_USER");
 	}
 
 	public synchronized String[] getUserLogins() throws KettleDatabaseException
 	{
-		int nr = getNrUsers();
-		String retval[] = new String[nr];
-
-        String loginField = databaseMeta.quoteField("LOGIN");
-		String sql = "SELECT "+loginField+" FROM R_USER ORDER BY "+loginField;
-
-		ResultSet rs = database.openQuery(sql);
-		if (rs != null)
-		{
-			Row r = database.getRow(rs);
-			int i = 0;
-			while (r != null)
-			{
-				retval[i] = r.getValue(0).getString();
-				r = database.getRow(rs);
-				i++;
-			}
-			database.closeQuery(rs);
-		}
-
-		return retval;
+		String loginField = databaseMeta.quoteField("LOGIN");
+		return getStrings("SELECT "+loginField+" FROM R_USER ORDER BY "+loginField);
 	}
 
 	public long[] getPermissionIDs(long id_profile) throws KettleDatabaseException
 	{
-		int nr = getNrPermissions(id_profile);
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_PERMISSION FROM R_PROFILE_PERMISSION WHERE ID_PROFILE = " + id_profile;
-
-		ResultSet rs = database.openQuery(sql);
-		if (rs != null)
-		{
-			Row r = database.getRow(rs);
-			int i = 0;
-			while (r != null)
-			{
-				retval[i] = r.getValue(0).getInteger();
-				r = database.getRow(rs);
-				i++;
-			}
-			database.closeQuery(rs);
-		}
-
-		return retval;
+		return getIDs("SELECT ID_PERMISSION FROM R_PROFILE_PERMISSION WHERE ID_PROFILE = " + id_profile);
 	}
 
 	public long[] getJobEntryIDs(long id_job) throws KettleDatabaseException
 	{
-		int nr = getNrJobEntries(id_job);
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_JOBENTRY FROM R_JOBENTRY WHERE ID_JOB = " + id_job;
-
-		ResultSet rs = database.openQuery(sql);
-		Row r = database.getRow(rs);
-		int i = 0;
-		while (r != null)
-		{
-			retval[i] = r.getValue(0).getInteger();
-			r = database.getRow(rs);
-			i++;
-		}
-		database.closeQuery(rs);
-
-		return retval;
+		return getIDs("SELECT ID_JOBENTRY FROM R_JOBENTRY WHERE ID_JOB = " + id_job);
 	}
 
 	public long[] getJobEntryCopyIDs(long id_job) throws KettleDatabaseException
 	{
-		int nr = getNrJobEntryCopies(id_job);
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_JOBENTRY_COPY FROM R_JOBENTRY_COPY WHERE ID_JOB = " + id_job;
-
-		ResultSet rs = database.openQuery(sql);
-		Row r = database.getRow(rs);
-		int i = 0;
-		while (r != null)
-		{
-			retval[i] = r.getValue(0).getInteger();
-			r = database.getRow(rs);
-			i++;
-		}
-		database.closeQuery(rs);
-
-		return retval;
+		return getIDs("SELECT ID_JOBENTRY_COPY FROM R_JOBENTRY_COPY WHERE ID_JOB = " + id_job);
 	}
 
 	public long[] getJobEntryCopyIDs(long id_job, long id_jobentry) throws KettleDatabaseException
 	{
-		int nr = getNrJobEntryCopies(id_job, id_jobentry);
-		long retval[] = new long[nr];
-
-		String sql = "SELECT ID_JOBENTRY_COPY FROM R_JOBENTRY_COPY WHERE ID_JOB = " + id_job + " AND ID_JOBENTRY = "
-						+ id_jobentry;
-
-		ResultSet rs = database.openQuery(sql);
-		Row r = database.getRow(rs);
-		int i = 0;
-		while (r != null)
-		{
-			retval[i] = r.getValue(0).getInteger();
-			r = database.getRow(rs);
-			i++;
-		}
-		database.closeQuery(rs);
-
-		return retval;
+		return getIDs("SELECT ID_JOBENTRY_COPY FROM R_JOBENTRY_COPY WHERE ID_JOB = " + id_job + " AND ID_JOBENTRY = " + id_jobentry);
 	}
 
 	public synchronized String[] getProfiles() throws KettleDatabaseException
 	{
-		int nr = getNrProfiles();
-		String retval[] = new String[nr];
-
-        String nameField = databaseMeta.quoteField("NAME");
-		String sql = "SELECT "+nameField+" FROM R_PROFILE ORDER BY "+nameField;
-
-		ResultSet rs = database.openQuery(sql);
-		if (rs != null)
-		{
-			Row r = database.getRow(rs);
-			int i = 0;
-			while (r != null)
-			{
-				retval[i] = r.getValue(0).getString();
-				r = database.getRow(rs);
-				i++;
-			}
-			database.closeQuery(rs);
-		}
-
-		return retval;
+		String nameField = databaseMeta.quoteField("NAME");
+		return getStrings("SELECT "+nameField+" FROM R_PROFILE ORDER BY "+nameField);
 	}
 
 	public Row getNote(long id_note) throws KettleDatabaseException
@@ -3365,19 +2987,19 @@ public class Repository
     
     public synchronized void delPartitionSchemas(long id_transformation) throws KettleDatabaseException
     {
-        String sql = "DELETE FROM R_PARTITION_SCHEMA WHERE ID_TRANSFORMATION = " + id_transformation;
+        String sql = "DELETE FROM R_TRANS_PARTITION_SCHEMA WHERE ID_TRANSFORMATION = " + id_transformation;
         database.execStatement(sql);
     }
 
-    public synchronized void delPartitions(long id_transformation) throws KettleDatabaseException
+    public synchronized void delPartitions(long id_partition_schema) throws KettleDatabaseException
     {
-        String sql = "DELETE FROM R_PARTITION WHERE ID_TRANSFORMATION = " + id_transformation;
+        String sql = "DELETE FROM R_PARTITION WHERE ID_PARTITION_SCHEMA = " + id_partition_schema;
         database.execStatement(sql);
     }
     
     public synchronized void delClusterSchemas(long id_transformation) throws KettleDatabaseException
     {
-        String sql = "DELETE FROM R_TRANSFORMATION_CLUSTER WHERE ID_TRANSFORMATION = " + id_transformation;
+        String sql = "DELETE FROM R_TRANS_CLUSTER WHERE ID_TRANSFORMATION = " + id_transformation;
         database.execStatement(sql);
     }
 
@@ -3520,7 +3142,6 @@ public class Repository
 		delDependencies(id_transformation);
         delTransAttributes(id_transformation);
         delPartitionSchemas(id_transformation);
-        delPartitions(id_transformation);
         delClusterSchemas(id_transformation);
         delSlaveServers(id_transformation);
 		delTrans(id_transformation);
@@ -4089,8 +3710,7 @@ public class Repository
         tablename = "R_PARTITION_SCHEMA";
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValue(new Value("ID_PARTITION_SCHEMA", Value.VALUE_TYPE_INTEGER, KEY, 0));
-        table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
-        table.addValue(new Value("SCHEMA_NAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         sql = database.getDDL(tablename, table, null, false, "ID_PARTITION_SCHEMA", false);
 
         if (sql != null && sql.length() > 0)
@@ -4115,9 +3735,33 @@ public class Repository
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValue(new Value("ID_PARTITION", Value.VALUE_TYPE_INTEGER, KEY, 0));
         table.addValue(new Value("ID_PARTITION_SCHEMA", Value.VALUE_TYPE_INTEGER, KEY, 0));
-        table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
         table.addValue(new Value("PARTITION_ID", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         sql = database.getDDL(tablename, table, null, false, "ID_PARTITION", false);
+
+        if (sql != null && sql.length() > 0)
+        {
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            database.execStatements(sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+        }
+        else
+        {
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+        }
+        if (monitor!=null) monitor.worked(1);
+
+        //////////////////////////////////////////////////////////////////////////////////
+        //
+        // R_TRANS_PARTITION_SCHEMA
+        //
+        // Create table...
+        table = new Row();
+        tablename = "R_TRANS_PARTITION_SCHEMA";
+        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        table.addValue(new Value("ID_TRANS_PARTITION_SCHEMA", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("ID_PARTITION_SCHEMA", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        sql = database.getDDL(tablename, table, null, false, "ID_TRANS_PARTITION_SCHEMA", false);
 
         if (sql != null && sql.length() > 0)
         {
@@ -4141,7 +3785,7 @@ public class Repository
         tablename = "R_CLUSTER";
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
         table.addValue(new Value("ID_CLUSTER", Value.VALUE_TYPE_INTEGER, KEY, 0));
-        table.addValue(new Value("SCHEMA_NAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
+        table.addValue(new Value("NAME", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("BASE_PORT", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("SOCKETS_BUFFER_SIZE", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
         table.addValue(new Value("SOCKETS_FLUSH_INTERVAL", Value.VALUE_TYPE_STRING, REP_STRING_CODE_LENGTH, 0));
@@ -4194,31 +3838,6 @@ public class Repository
 
         //////////////////////////////////////////////////////////////////////////////////
         //
-        // R_TRANSFORMATION_SLAVE
-        //
-        // Create table...
-        table = new Row();
-        tablename = "R_TRANSFORMATION_SLAVE";
-        if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValue(new Value("ID_TRANSFORMATION_SLAVE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-        table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
-        table.addValue(new Value("ID_SLAVE", Value.VALUE_TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_TRANSFORMATION_SLAVE", false);
-
-        if (sql != null && sql.length() > 0)
-        {
-            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
-            database.execStatements(sql);
-            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
-        }
-        else
-        {
-            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
-        }
-        if (monitor!=null) monitor.worked(1);
-
-        //////////////////////////////////////////////////////////////////////////////////
-        //
         // R_CLUSTER_SLAVE
         //
         // Create table...
@@ -4244,16 +3863,67 @@ public class Repository
 
         //////////////////////////////////////////////////////////////////////////////////
         //
-        // R_TRANSFORMATION_CLUSTER
+        // R_TRANS_SLAVE
         //
         // Create table...
         table = new Row();
-        tablename = "R_TRANSFORMATION_CLUSTER";
+        tablename = "R_TRANS_SLAVE";
         if (monitor!=null) monitor.subTask("Checking table "+tablename);
-        table.addValue(new Value("ID_TRANSFORMATION_CLUSTER", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_TRANS_SLAVE", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_SLAVE", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        sql = database.getDDL(tablename, table, null, false, "ID_TRANS_SLAVE", false);
+
+        if (sql != null && sql.length() > 0)
+        {
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            database.execStatements(sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+        }
+        else
+        {
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+        }
+        if (monitor!=null) monitor.worked(1);
+
+
+        //////////////////////////////////////////////////////////////////////////////////
+        //
+        // R_TRANS_CLUSTER
+        //
+        // Create table...
+        table = new Row();
+        tablename = "R_TRANS_CLUSTER";
+        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        table.addValue(new Value("ID_TRANS_CLUSTER", Value.VALUE_TYPE_INTEGER, KEY, 0));
         table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
         table.addValue(new Value("ID_CLUSTER", Value.VALUE_TYPE_INTEGER, KEY, 0));
-        sql = database.getDDL(tablename, table, null, false, "ID_TRANSFORMATION_CLUSTER", false);
+        sql = database.getDDL(tablename, table, null, false, "ID_TRANS_CLUSTER", false);
+
+        if (sql != null && sql.length() > 0)
+        {
+            if (log.isDetailed()) log.logDetailed(toString(), "executing SQL statements: "+Const.CR+sql);
+            database.execStatements(sql);
+            if (log.isDetailed()) log.logDetailed(toString(), "Created or altered table " + tablename);
+        }
+        else
+        {
+            if (log.isDetailed()) log.logDetailed(toString(), "Table " + tablename + " is OK.");
+        }
+        if (monitor!=null) monitor.worked(1);
+        
+        //////////////////////////////////////////////////////////////////////////////////
+        //
+        // R_TRANS_SLAVE
+        //
+        // Create table...
+        table = new Row();
+        tablename = "R_TRANS_SLAVE";
+        if (monitor!=null) monitor.subTask("Checking table "+tablename);
+        table.addValue(new Value("ID_TRANS_SLAVE", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_TRANSFORMATION", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        table.addValue(new Value("ID_SLAVE", Value.VALUE_TYPE_INTEGER, KEY, 0));
+        sql = database.getDDL(tablename, table, null, false, "ID_TRANS_SLAVE", false);
 
         if (sql != null && sql.length() > 0)
         {
