@@ -981,7 +981,7 @@ public class TextFileInput extends BaseStep implements StepInterface
 				}
 			}
 
-			if (log.isRowLevel()) logRowlevel("Putting row: " + r.toString());
+			if (log.isRowLevel()) logRowlevel("Putting row: " + r.toString());			
 			putRow(r);
 
 			if ( linesInput > meta.getRowLimit() && meta.getRowLimit() >0 )
@@ -1240,10 +1240,12 @@ public class TextFileInput extends BaseStep implements StepInterface
 							bufferSize++; // grab another line, this one got filtered
 						}
 					}
-					else //there is a header, so don�t checkFilterRow
+					else //there is a header, so don't checkFilterRow
 					{
-						data.lineBuffer.add(new TextFileLine(line, lineNumberInFile, data.file)); // Store it in the
-						// line buffer...
+						if (!meta.noEmptyLines() || line.length() != 0)
+						{
+						    data.lineBuffer.add(new TextFileLine(line, lineNumberInFile, data.file)); // Store it in the line buffer...
+						}						
 					}
 				}
 				else
