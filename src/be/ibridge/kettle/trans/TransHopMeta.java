@@ -115,8 +115,7 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable
 		return null;
 	}
 	
-	public TransHopMeta(Repository rep, long id_trans_hop, ArrayList steps)
-		throws KettleException
+	public TransHopMeta(Repository rep, long id_trans_hop, ArrayList steps) throws KettleException
 	{
 		try
 		{
@@ -135,6 +134,7 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable
                 StepMeta stepMeta = new StepMeta(rep, id_step_from, new ArrayList(), new Hashtable(), new ArrayList()); 
                 from_step = TransMeta.findStep(steps, stepMeta.getName());
             }
+            from_step.setDraw(true);
             
 			to_step   = TransMeta.findStep(steps, id_step_to);
             if (to_step==null  && id_step_to>0) // Links to a shared objects, try again by looking up the name...
@@ -142,8 +142,8 @@ public class TransHopMeta implements Cloneable, XMLInterface, Comparable
                 // Simply load this, we only want the name, we don't care about the rest...
                 StepMeta stepMeta = new StepMeta(rep, id_step_to, new ArrayList(), new Hashtable(), new ArrayList()); 
                 to_step = TransMeta.findStep(steps, stepMeta.getName());
-
             }
+            to_step.setDraw(true);
 		}
 		catch(KettleDatabaseException dbe)
 		{

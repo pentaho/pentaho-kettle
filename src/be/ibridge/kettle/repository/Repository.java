@@ -502,6 +502,21 @@ public class Repository
 	{
 		return getIDWithValue("R_DATABASE", "ID_DATABASE", "NAME", name);
 	}
+    
+    public synchronized long getPartitionSchemaID(String name) throws KettleDatabaseException
+    {
+        return getIDWithValue("R_PARTITION_SCHEMA", "ID_PARTITION_SCHEMA", "NAME", name);
+    }
+
+    public synchronized long getSlaveID(String name) throws KettleDatabaseException
+    {
+        return getIDWithValue("R_SLAVE", "ID_SLAVE", "NAME", name);
+    }
+
+    public synchronized long getClusterID(String name) throws KettleDatabaseException
+    {
+        return getIDWithValue("R_CLUSTER", "ID_CLUSTER", "NAME", name);
+    }
 
 	public synchronized long getDatabaseTypeID(String code) throws KettleDatabaseException
 	{
@@ -831,7 +846,7 @@ public class Repository
         return getNextID("R_TRANS_PARTITION_SCHEMA", "ID_TRANS_PARTITION_SCHEMA");
     }
     
-    public synchronized long getNextClusterSchemaID() throws KettleDatabaseException
+    public synchronized long getNextClusterID() throws KettleDatabaseException
     {
         return getNextID("R_CLUSTER", "ID_CLUSTER");
     }
@@ -1357,6 +1372,13 @@ public class Repository
 
         return id;
     }
+    
+    public synchronized void updatePartitionSchema(PartitionSchema partitionSchema) throws KettleDatabaseException
+    {
+        Row table = new Row();
+        table.addValue(new Value("NAME", partitionSchema.getName()));
+        updateTableRow("R_PARTITION_SCHEMA", "ID_PARTITION_SCHEMA", table, partitionSchema.getId());
+    }
 
     public synchronized long insertPartition(long id_partition_schema, String partition_id) throws KettleDatabaseException
     {
@@ -1378,7 +1400,7 @@ public class Repository
 
     public synchronized long insertTransformationPartitionSchema(long id_transformation, long id_partition_schema) throws KettleDatabaseException
     {
-        long id = getNextPartitionSchemaID();
+        long id = getNextTransformationPartitionSchemaID();
 
         Row table = new Row();
 
@@ -1396,7 +1418,7 @@ public class Repository
     
     public synchronized long insertCluster(ClusterSchema clusterSchema) throws KettleDatabaseException
     {
-        long id = getNextClusterSchemaID();
+        long id = getNextClusterID();
 
         Row table = new Row();
 
@@ -1415,7 +1437,7 @@ public class Repository
         return id;
     }
 
-    public synchronized long insertSlaveServer(SlaveServer slaveServer) throws KettleDatabaseException
+    public synchronized long insertSlave(SlaveServer slaveServer) throws KettleDatabaseException
     {
         long id = getNextSlaveServerID();
 
@@ -1440,9 +1462,25 @@ public class Repository
         return id;
     }
     
+    public synchronized void updateSlave(SlaveServer slaveServer) throws KettleDatabaseException
+    {
+        Row table = new Row();
+        table.addValue(new Value("NAME", slaveServer.getName()));
+        table.addValue(new Value("HOST_NAME", slaveServer.getHostname()));
+        table.addValue(new Value("PORT", slaveServer.getPort()));
+        table.addValue(new Value("USERNAME", slaveServer.getUsername()));
+        table.addValue(new Value("PASSWORD", slaveServer.getPassword()));
+        table.addValue(new Value("PROXY_HOST_NAME", slaveServer.getProxyHostname()));
+        table.addValue(new Value("PROXY_PORT", slaveServer.getProxyPort()));
+        table.addValue(new Value("NON_PROXY_HOSTS", slaveServer.getNonProxyHosts()));
+        table.addValue(new Value("MASTER", slaveServer.isMaster()));
+
+        updateTableRow("R_SLAVE", "ID_SLAVE", table, slaveServer.getId());
+    }
+    
     public synchronized long insertClusterSlave(ClusterSchema clusterSchema, SlaveServer slaveServer) throws KettleDatabaseException
     {
-        long id = getNextClusterSchemaID();
+        long id = getNextClusterID();
 
         Row table = new Row();
 
@@ -1464,11 +1502,11 @@ public class Repository
 
         Row table = new Row();
 
-        table.addValue(new Value("ID_TRANS_SLAVE", id));
+        table.addValue(new Value("ID_TRANS_CLUSTER", id));
         table.addValue(new Value("ID_TRANSFORMATION", id_transformation));
-        table.addValue(new Value("ID_SLAVE", id_cluster));
+        table.addValue(new Value("ID_CLUSTER", id_cluster));
 
-        database.prepareInsert(table, "R_TRANS_SLAVE");
+        database.prepareInsert(table, "R_TRANS_CLUSTER");
         database.setValuesInsert(table);
         database.insertRow();
         database.closeInsert();
@@ -1476,7 +1514,7 @@ public class Repository
         return id;
     }
 
-    public synchronized long insertTransformationSlave(long id_transformation, long id_slave_server) throws KettleDatabaseException
+    public synchronized long insertTransformationSlave(long id_transformation, long id_slave) throws KettleDatabaseException
     {
         long id = getNextTransformationSlaveID();
 
@@ -1484,7 +1522,7 @@ public class Repository
 
         table.addValue(new Value("ID_TRANS_SLAVE", id));
         table.addValue(new Value("ID_TRANSFORMATION", id_transformation));
-        table.addValue(new Value("ID_SLAVE", id_slave_server));
+        table.addValue(new Value("ID_SLAVE", id_slave));
 
         database.prepareInsert(table, "R_TRANS_SLAVE");
         database.setValuesInsert(table);
@@ -2208,13 +2246,18 @@ public class Repository
         return getIDs("SELECT ID_TRANS_CLUSTER FROM R_TRANS_CLUSTER WHERE ID_TRANSFORMATION = " + id_transformation);
     }
     
-    public long[] getClusterSchemaIDs() throws KettleDatabaseException
+    public long[] getClusterIDs() throws KettleDatabaseException
     {
         String nameField = databaseMeta.quoteField("NAME");
         return getIDs("SELECT ID_CLUSTER FROM R_CLUSTER ORDER BY "+nameField); 
     }
 
-    public long[] getSlaveServerIDs(long id_cluster_schema) throws KettleDatabaseException
+    public long[] getSlaveIDs() throws KettleDatabaseException
+    {
+        return getIDs("SELECT ID_SLAVE FROM R_SLAVE");
+    }
+
+    public long[] getSlaveIDs(long id_cluster_schema) throws KettleDatabaseException
     {
         return getIDs("SELECT ID_SLAVE FROM R_CLUSTER_SLAVE WHERE ID_CLUSTER = " + id_cluster_schema);
     }
@@ -2269,6 +2312,24 @@ public class Repository
 		String nameField = databaseMeta.quoteField("NAME");
 		return getStrings("SELECT "+nameField+" FROM R_DATABASE ORDER BY "+nameField);
 	}
+    
+    public synchronized String[] getPartitionSchemaNames() throws KettleDatabaseException
+    {
+        String nameField = databaseMeta.quoteField("NAME");
+        return getStrings("SELECT "+nameField+" FROM R_PARTITION_SCHEMA ORDER BY "+nameField);
+    }
+    
+    public synchronized String[] getSlaveNames() throws KettleDatabaseException
+    {
+        String nameField = databaseMeta.quoteField("NAME");
+        return getStrings("SELECT "+nameField+" FROM R_SLAVE ORDER BY "+nameField);
+    }
+    
+    public synchronized String[] getClusterNames() throws KettleDatabaseException
+    {
+        String nameField = databaseMeta.quoteField("NAME");
+        return getStrings("SELECT "+nameField+" FROM R_CLUSTER ORDER BY "+nameField);
+    }
 
 	public long[] getStepIDs(long id_transformation) throws KettleDatabaseException
 	{
@@ -2474,9 +2535,9 @@ public class Repository
         return getOneRow("R_CLUSTER", "ID_CLUSTER", id_cluster_schema);
     }
 
-    public Row getSlaveServer(long id_slave_server) throws KettleDatabaseException
+    public Row getSlaveServer(long id_slave) throws KettleDatabaseException
     {
-        return getOneRow("R_SLAVE", "ID_SLAVE", id_slave_server);
+        return getOneRow("R_SLAVE", "ID_SLAVE", id_slave);
     }
 
 	private Row getOneRow(String tablename, String keyfield, long id) throws KettleDatabaseException
@@ -2997,13 +3058,19 @@ public class Repository
         database.execStatement(sql);
     }
     
-    public synchronized void delClusterSchemas(long id_transformation) throws KettleDatabaseException
+    public synchronized void delClusterSlaves(long id_cluster) throws KettleDatabaseException
+    {
+        String sql = "DELETE FROM R_CLUSTER_SLAVE WHERE ID_CLUSTER = " + id_cluster;
+        database.execStatement(sql);
+    }
+    
+    public synchronized void delTransformationClusters(long id_transformation) throws KettleDatabaseException
     {
         String sql = "DELETE FROM R_TRANS_CLUSTER WHERE ID_TRANSFORMATION = " + id_transformation;
         database.execStatement(sql);
     }
 
-    public synchronized void delSlaveServers(long id_transformation) throws KettleDatabaseException
+    public synchronized void delTransformationSlaves(long id_transformation) throws KettleDatabaseException
     {
         String sql = "DELETE FROM R_TRANS_SLAVE WHERE ID_TRANSFORMATION = " + id_transformation;
         database.execStatement(sql);
@@ -3142,8 +3209,8 @@ public class Repository
 		delDependencies(id_transformation);
         delTransAttributes(id_transformation);
         delPartitionSchemas(id_transformation);
-        delClusterSchemas(id_transformation);
-        delSlaveServers(id_transformation);
+        delTransformationClusters(id_transformation);
+        delTransformationSlaves(id_transformation);
 		delTrans(id_transformation);
 	}
 

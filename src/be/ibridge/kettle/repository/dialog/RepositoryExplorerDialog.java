@@ -96,8 +96,10 @@ import be.ibridge.kettle.trans.step.BaseStepDialog;
 
 public class RepositoryExplorerDialog extends Dialog 
 {
-	private static final String STRING_OBJECTS         = Messages.getString("RepositoryExplorerDialog.Tree.String.Objects"); //$NON-NLS-1$
 	private static final String STRING_DATABASES       = Messages.getString("RepositoryExplorerDialog.Tree.String.Connections"); //$NON-NLS-1$
+    private static final String STRING_PARTITIONS      = Messages.getString("RepositoryExplorerDialog.Tree.String.Partitions"); //$NON-NLS-1$
+    private static final String STRING_SLAVES          = Messages.getString("RepositoryExplorerDialog.Tree.String.Slaves"); //$NON-NLS-1$
+    private static final String STRING_CLUSTERS        = Messages.getString("RepositoryExplorerDialog.Tree.String.Clusters"); //$NON-NLS-1$
 	public  static final String STRING_TRANSFORMATIONS = Messages.getString("RepositoryExplorerDialog.Tree.String.Transformations"); //$NON-NLS-1$
 	public  static final String STRING_JOBS            = Messages.getString("RepositoryExplorerDialog.Tree.String.Jobs"); //$NON-NLS-1$
 	public  static final String STRING_SCHEMAS         = Messages.getString("RepositoryExplorerDialog.Tree.String.Schemas"); //$NON-NLS-1$
@@ -122,6 +124,12 @@ public class RepositoryExplorerDialog extends Dialog
 	private static final int    ITEM_CATEGORY_USER                        = 15;
 	private static final int    ITEM_CATEGORY_PROFILES_ROOT               = 16;
 	private static final int    ITEM_CATEGORY_PROFILE                     = 17;
+    private static final int    ITEM_CATEGORY_PARTITIONS_ROOT             = 18;
+    private static final int    ITEM_CATEGORY_PARTITION                   = 19;
+    private static final int    ITEM_CATEGORY_SLAVES_ROOT                 = 20;
+    private static final int    ITEM_CATEGORY_SLAVE                       = 21;
+    private static final int    ITEM_CATEGORY_CLUSTERS_ROOT               = 22;
+    private static final int    ITEM_CATEGORY_CLUSTER                     = 23;
 	
 	private Shell     shell;
 	private Tree      wTree;
@@ -1013,25 +1021,54 @@ public class RepositoryExplorerDialog extends Dialog
 			TreeItem tiTree = new TreeItem(wTree, SWT.NONE); 
 			tiTree.setText(rep.getName()==null?"-":rep.getName()); //$NON-NLS-1$
 			
-			TreeItem tiObj = new TreeItem(tiTree, SWT.NONE);
-			tiObj.setText(STRING_OBJECTS);
-	
 			// The Databases...				
-			TreeItem tiDB = new TreeItem(tiObj, SWT.NONE); 
-			tiDB.setText(STRING_DATABASES);
+			TreeItem tiParent = new TreeItem(tiTree, SWT.NONE); 
+			tiParent.setText(STRING_DATABASES);
 	
-			String dbs[] = rep.getDatabaseNames();			
-	
-			for (int i=0;i<dbs.length;i++)
+			String names[] = rep.getDatabaseNames();			
+			for (int i=0;i<names.length;i++)
 			{
-				TreeItem newDB = new TreeItem(tiDB, SWT.NONE);
-				newDB.setText(Const.NVL(dbs[i], ""));
+				TreeItem newDB = new TreeItem(tiParent, SWT.NONE);
+				newDB.setText(Const.NVL(names[i], ""));
 			}
-			
+	
+            // The partition schemas...             
+            tiParent = new TreeItem(tiTree, SWT.NONE); 
+            tiParent.setText(STRING_PARTITIONS);
+    
+            names = rep.getPartitionSchemaNames();          
+            for (int i=0;i<names.length;i++)
+            {
+                TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
+                newItem.setText(Const.NVL(names[i], ""));
+            }
+            
+            // The slaves...         
+            tiParent = new TreeItem(tiTree, SWT.NONE); 
+            tiParent.setText(STRING_SLAVES);
+    
+            names = rep.getSlaveNames();          
+            for (int i=0;i<names.length;i++)
+            {
+                TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
+                newItem.setText(Const.NVL(names[i], ""));
+            }
+            
+            // The clusters ...
+            tiParent = new TreeItem(tiTree, SWT.NONE); 
+            tiParent.setText(STRING_CLUSTERS);
+    
+            names = rep.getClusterNames();          
+            for (int i=0;i<names.length;i++)
+            {
+                TreeItem newItem = new TreeItem(tiParent, SWT.NONE);
+                newItem.setText(Const.NVL(names[i], ""));
+            }
+    
 			// The transformations...				
 			if (userinfo.useTransformations())
 			{
-				TreeItem tiCat = new TreeItem(tiObj, SWT.NONE); 
+				TreeItem tiCat = new TreeItem(tiTree, SWT.NONE); 
 				tiCat.setText(STRING_TRANSFORMATIONS);
 				
 				TreeItem newCat = new TreeItem(tiCat, SWT.NONE);
@@ -1042,7 +1079,7 @@ public class RepositoryExplorerDialog extends Dialog
 			// The Jobs...				
 			if (userinfo.useJobs())
 			{
-				TreeItem tiJob = new TreeItem(tiObj, SWT.NONE); 
+				TreeItem tiJob = new TreeItem(tiTree, SWT.NONE); 
 				tiJob.setText(STRING_JOBS);
 	
 				TreeItem newJob = new TreeItem(tiJob, SWT.NONE);
@@ -2141,16 +2178,7 @@ public class RepositoryExplorerDialog extends Dialog
 			
 			int level = Const.getTreeLevel(ti);
 			
-			// System.out.print("Level="+level+", Tree: ");
-			// for (int i=0;i<text.length;i++) System.out.print("/"+text[i]);		
-			// System.out.println();
-			
 			if (level==0)
-			{
-				Const.flipExpanded(ti);
-			}
-			else
-			if (level==1 && ti.getText().equalsIgnoreCase(STRING_OBJECTS))
 			{
 				Const.flipExpanded(ti);
 			}
@@ -2165,22 +2193,22 @@ public class RepositoryExplorerDialog extends Dialog
 				if (!userinfo.isReadonly()) newProfile();
 			}
 			else
-			if (level==2 && ti.getText().equalsIgnoreCase(STRING_DATABASES))
+			if (level==1 && ti.getText().equalsIgnoreCase(STRING_DATABASES))
 			{
 				if (!userinfo.isReadonly()) newDatabase();
 			}
 			else
-			if (level==2 && parent.getText().equalsIgnoreCase(STRING_USERS))
+			if (level==1 && parent.getText().equalsIgnoreCase(STRING_USERS))
 			{
 				editUser(ti.getText());
 			}
 			else
-			if (level==2 && parent.getText().equalsIgnoreCase(STRING_PROFILES))
+			if (level==1 && parent.getText().equalsIgnoreCase(STRING_PROFILES))
 			{
 				editProfile(ti.getText());
 			}
 			else
-			if (level==3 && parent.getText().equalsIgnoreCase(STRING_DATABASES))
+			if (level==2 && parent.getText().equalsIgnoreCase(STRING_DATABASES))
 			{
 				editDatabase(ti.getText());
 			}
@@ -2491,50 +2519,45 @@ public class RepositoryExplorerDialog extends Dialog
 		else
 		if (level==1)
 		{
-			     if (item.equals(STRING_OBJECTS))  cat = ITEM_CATEGORY_OBJECTS;
-			else if (item.equals(STRING_USERS))    cat = ITEM_CATEGORY_USERS_ROOT;
-			else if (item.equals(STRING_PROFILES)) cat = ITEM_CATEGORY_PROFILES_ROOT;
+			     if (item.equals(STRING_USERS))           cat = ITEM_CATEGORY_USERS_ROOT;
+			else if (item.equals(STRING_PROFILES))        cat = ITEM_CATEGORY_PROFILES_ROOT;
+            else if (item.equals(STRING_DATABASES))       cat = ITEM_CATEGORY_DATABASES_ROOT;
+            else if (item.equals(STRING_PARTITIONS))      cat = ITEM_CATEGORY_PARTITIONS_ROOT;
+            else if (item.equals(STRING_SLAVES))          cat = ITEM_CATEGORY_SLAVES_ROOT;
+            else if (item.equals(STRING_CLUSTERS))        cat = ITEM_CATEGORY_CLUSTERS_ROOT;
+            else if (item.equals(STRING_TRANSFORMATIONS)) cat = ITEM_CATEGORY_TRANSFORMATIONS_ROOT;
+            else if (item.equals(STRING_JOBS))            cat = ITEM_CATEGORY_JOBS_ROOT;
+            else if (item.equals(STRING_SCHEMAS))         cat = ITEM_CATEGORY_SCHEMAS_ROOT;
 		}
 		else
 		if (level==2)
 		{
-			if (parent.equals(STRING_OBJECTS))
-			{
-				     if (item.equals(STRING_DATABASES))       cat = ITEM_CATEGORY_DATABASES_ROOT;
-				else if (item.equals(STRING_TRANSFORMATIONS)) cat = ITEM_CATEGORY_TRANSFORMATIONS_ROOT;
-				else if (item.equals(STRING_JOBS))            cat = ITEM_CATEGORY_JOBS_ROOT;
-				else if (item.equals(STRING_SCHEMAS))         cat = ITEM_CATEGORY_SCHEMAS_ROOT;
-			}
-			else 
 			if (parent.equals(STRING_USERS)) cat = ITEM_CATEGORY_USER;
-			else
-			if (parent.equals(STRING_PROFILES)) cat = ITEM_CATEGORY_PROFILE;
-		}
-		else
-		if (level>2)
-		{
-			if (parent.equals(STRING_DATABASES)) cat = ITEM_CATEGORY_DATABASE;
-			else 
-			if (path[2].equals(STRING_TRANSFORMATIONS))
-			{
-				if (ti.getForeground().equals(dircolor)) 
-					 cat = ITEM_CATEGORY_TRANSFORMATION_DIRECTORY;
-				else cat = ITEM_CATEGORY_TRANSFORMATION;
-			}
-			else
-			if (path[2].equals(STRING_JOBS))
-			{
-				if (ti.getForeground().equals(dircolor)) 
-					 cat = ITEM_CATEGORY_JOB_DIRECTORY;
-				else cat = ITEM_CATEGORY_JOB;
-			}
-			else
-			if (path[2].equals(STRING_SCHEMAS))
-			{
-				if (ti.getForeground().equals(dircolor)) 
-					 cat = ITEM_CATEGORY_SCHEMA_DIRECTORY;
-				else cat = ITEM_CATEGORY_SCHEMA;
-			}
+			else if (parent.equals(STRING_PROFILES)) cat = ITEM_CATEGORY_PROFILE;
+            else if (parent.equals(STRING_DATABASES)) cat = ITEM_CATEGORY_DATABASE;
+            else if (parent.equals(STRING_PARTITIONS)) cat = ITEM_CATEGORY_PARTITION;
+            else if (parent.equals(STRING_SLAVES)) cat = ITEM_CATEGORY_SLAVE;
+            else if (parent.equals(STRING_CLUSTERS)) cat = ITEM_CATEGORY_CLUSTER;
+            if (path[1].equals(STRING_TRANSFORMATIONS))
+            {
+                if (ti.getForeground().equals(dircolor)) 
+                     cat = ITEM_CATEGORY_TRANSFORMATION_DIRECTORY;
+                else cat = ITEM_CATEGORY_TRANSFORMATION;
+            }
+            else
+            if (path[1].equals(STRING_JOBS))
+            {
+                if (ti.getForeground().equals(dircolor)) 
+                     cat = ITEM_CATEGORY_JOB_DIRECTORY;
+                else cat = ITEM_CATEGORY_JOB;
+            }
+            else
+            if (path[1].equals(STRING_SCHEMAS))
+            {
+                if (ti.getForeground().equals(dircolor)) 
+                     cat = ITEM_CATEGORY_SCHEMA_DIRECTORY;
+                else cat = ITEM_CATEGORY_SCHEMA;
+            }
 		}
 		
 		return cat;

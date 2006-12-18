@@ -12,7 +12,7 @@ import be.ibridge.kettle.core.value.Value;
 import be.ibridge.kettle.partition.PartitionSchema;
 import be.ibridge.kettle.repository.Repository;
 
-public class StepPartitioningMeta implements XMLInterface
+public class StepPartitioningMeta implements XMLInterface, Cloneable
 {
     public static final int PARTITIONING_METHOD_NONE = 0;
     public static final int PARTITIONING_METHOD_MOD  = 1;
@@ -41,6 +41,11 @@ public class StepPartitioningMeta implements XMLInterface
         this.method = method;
         this.fieldName = fieldName;
         this.partitionSchema = partitionSchema;
+    }
+    
+    public Object clone()
+    {
+       return new StepPartitioningMeta(method, fieldName, partitionSchema!=null ? (PartitionSchema) partitionSchema.clone() : null);
     }
 
     /**

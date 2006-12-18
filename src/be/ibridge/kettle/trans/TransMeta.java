@@ -390,7 +390,15 @@ public class TransMeta implements XMLInterface, Comparator
     public void addOrReplaceDatabase(DatabaseMeta databaseMeta)
     {
         int index = databases.indexOf(databaseMeta);
-        if (index<0) databases.add(databaseMeta); else databases.set(index, databaseMeta);
+        if (index<0)
+        {
+            databases.add(databaseMeta); 
+        }
+        else
+        {
+            DatabaseMeta previous = getDatabase(index);
+            previous.replaceMeta(databaseMeta);
+        }
         changed_databases = true;
     }
 
@@ -414,7 +422,15 @@ public class TransMeta implements XMLInterface, Comparator
     public void addOrReplaceStep(StepMeta stepMeta)
     {
         int index = steps.indexOf(stepMeta);
-        if (index<0) steps.add(stepMeta); else steps.set(index, stepMeta);
+        if (index<0)
+        {
+            steps.add(stepMeta); 
+        }
+        else
+        {
+            StepMeta previous = getStep(index);
+            previous.replaceMeta(stepMeta);
+        }
         changed_steps = true;
     }
 
@@ -1683,6 +1699,13 @@ public class TransMeta implements XMLInterface, Comparator
                 schema.saveRep(rep, getID());
             }
 
+            // Save the slaves
+            for (int i=0;i<slaveServers.size();i++)
+            {
+                SlaveServer slaveServer = (SlaveServer) slaveServers.get(i);
+                slaveServer.saveRep(rep, getID());
+            }
+            
             // Save the clustering schemas
             for (int i=0;i<clusterSchemas.size();i++)
             {
@@ -1733,8 +1756,9 @@ public class TransMeta implements XMLInterface, Comparator
      * Read the database connections in the repository and add them to this transformation if they are not yet present.
      *
      * @param rep The repository to load the database connections from.
+     * @param overWriteShared if an object with the same name exists, overwrite
      */
-    public void readDatabases(Repository rep, boolean overWriteShared)
+    public void readDatabases(Repository rep, boolean overWriteShared) throws KettleException
     {
         try
         {
@@ -1756,20 +1780,21 @@ public class TransMeta implements XMLInterface, Comparator
         }
         catch (KettleDatabaseException dbe)
         {
-            log.logError(toString(), Messages.getString("TransMeta.Log.UnableToReadDatabaseIDSFromRepository") + dbe.getMessage()); //$NON-NLS-1$
+            throw new KettleException(Messages.getString("TransMeta.Log.UnableToReadDatabaseIDSFromRepository"), dbe); //$NON-NLS-1$
         }
         catch (KettleException ke)
         {
-            log.logError(toString(), Messages.getString("TransMeta.Log.UnableToReadDatabasesFromRepository") + ke.getMessage()); //$NON-NLS-1$
+            throw new KettleException(Messages.getString("TransMeta.Log.UnableToReadDatabasesFromRepository"), ke); //$NON-NLS-1$
         }
     }
 
     /**
-     * Read the database connections in the repository and add them to this transformation if they are not yet present.
-     *
-     * @param rep The repository to load the database connections from.
+     * Read the database partitions in the repository and add them to this transformation if they are not yet present.
+     * @param rep The repository to load from.
+     * @param overWriteShared if an object with the same name exists, overwrite
+     * @throws KettleException 
      */
-    public void readPartitionSchemas(Repository rep, boolean overWriteShared)
+    public void readPartitionSchemas(Repository rep, boolean overWriteShared) throws KettleException
     {
         try
         {
@@ -1788,12 +1813,74 @@ public class TransMeta implements XMLInterface, Comparator
                 }
             }
         }
-        catch (KettleDatabaseException dbe)
+        catch (KettleException dbe)
         {
-            log.logError(toString(), Messages.getString("TransMeta.Log.UnableToReadPartitionSchemaIDSFromRepository") + dbe.getMessage()); //$NON-NLS-1$
+            throw new KettleException(Messages.getString("TransMeta.Log.UnableToReadPartitionSchemaFromRepository"), dbe); //$NON-NLS-1$
         }
     }
 
+    /**
+     * Read the slave servers in the repository and add them to this transformation if they are not yet present.
+     * @param rep The repository to load from.
+     * @param overWriteShared if an object with the same name exists, overwrite
+     * @throws KettleException 
+     */
+    public void readSlaves(Repository rep, boolean overWriteShared) throws KettleException
+    {
+        try
+        {
+            long dbids[] = rep.getSlaveIDs();
+            for (int i = 0; i < dbids.length; i++)
+            {
+                SlaveServer slaveServer = new SlaveServer(rep, dbids[i]);
+                SlaveServer check = findSlaveServer(slaveServer.getName()); // Check if there already is one in the transformation
+                if (check==null || overWriteShared) 
+                {
+                    if (!Const.isEmpty(slaveServer.getName()))
+                    {
+                        addOrReplaceSlaveServer(slaveServer);
+                        if (!overWriteShared) slaveServer.setChanged(false);
+                    }
+                }
+            }
+        }
+        catch (KettleDatabaseException dbe)
+        {
+            throw new KettleException(Messages.getString("TransMeta.Log.UnableToReadSlaveServersFromRepository"), dbe); //$NON-NLS-1$
+        }
+    }
+    
+    /**
+     * Read the clusters in the repository and add them to this transformation if they are not yet present.
+     * @param rep The repository to load from.
+     * @param overWriteShared if an object with the same name exists, overwrite
+     * @throws KettleException 
+     */
+    public void readClusters(Repository rep, boolean overWriteShared) throws KettleException
+    {
+        try
+        {
+            long dbids[] = rep.getClusterIDs();
+            for (int i = 0; i < dbids.length; i++)
+            {
+                ClusterSchema cluster = new ClusterSchema(rep, dbids[i]);
+                ClusterSchema check = findClusterSchema(cluster.getName()); // Check if there already is one in the transformation
+                if (check==null || overWriteShared) 
+                {
+                    if (!Const.isEmpty(cluster.getName()))
+                    {
+                        addOrReplaceClusterSchema(cluster);
+                        if (!overWriteShared) cluster.setChanged(false);
+                    }
+                }
+            }
+        }
+        catch (KettleDatabaseException dbe)
+        {
+            throw new KettleException(Messages.getString("TransMeta.Log.UnableToReadClustersFromRepository"), dbe); //$NON-NLS-1$
+        }
+    }
+        
     /**
      * Load the transformation name & other details from a repository.
      *
@@ -1917,7 +2004,7 @@ public class TransMeta implements XMLInterface, Comparator
             clear();
             
             // Also read objects from the shared XML file
-            readSharedObjects();
+            readSharedObjects(rep);
             
             setName(transname);
             directory = repdir;
@@ -1945,8 +2032,8 @@ public class TransMeta implements XMLInterface, Comparator
 
                 // Load the common database connections
 
-                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTheAvailableDatabaseTask.Title")); //$NON-NLS-1$
-                readDatabases(rep, true);
+                if (monitor != null) monitor.subTask(Messages.getString("TransMeta.Monitor.ReadingTheAvailableSharedObjectsTask.Title")); //$NON-NLS-1$
+                readSharedObjects(rep);
                 if (monitor != null) monitor.worked(1);
 
                 // Load the notes...
@@ -1989,15 +2076,6 @@ public class TransMeta implements XMLInterface, Comparator
                     if (monitor != null) monitor.worked(1);
                 }
                 
-                long[] partitionSchemaIDs = rep.getTransformationPartitionSchemaIDs(getID());
-                for (int i = 0; i < partitionSchemaIDs.length; i++)
-                {
-                    PartitionSchema partitionSchema = new PartitionSchema(rep, partitionSchemaIDs[i]);
-                    // In this case, we just add or replace the shared schemas.
-                    // The repository is considered "more central"
-                    addOrReplacePartitionSchema(partitionSchema);
-                }
-                
                 // Have all step partitioning meta-data reference the correct schemas that we just loaded
                 // 
                 for (int i = 0; i < nrSteps(); i++)
@@ -2007,15 +2085,6 @@ public class TransMeta implements XMLInterface, Comparator
                     {
                         stepPartitioningMeta.setPartitionSchemaAfterLoading(partitionSchemas);
                     }
-                }
-                
-                long[] clusterSchemaIDs = rep.getClusterSchemaIDs();
-                for (int i = 0; i < clusterSchemaIDs.length; i++)
-                {
-                    ClusterSchema clusterSchema = new ClusterSchema(rep, clusterSchemaIDs[i]);
-                    // In this case, we just add or replace the shared schemas.
-                    // The repository is considered "more central"
-                    addOrReplaceClusterSchema(clusterSchema);
                 }
                 
                 // Have all step clustering schema meta-data reference the correct cluster schemas that we just loaded
@@ -2364,12 +2433,16 @@ public class TransMeta implements XMLInterface, Comparator
             // Read all the database connections from the repository to make sure that we don't overwrite any there by loading from XML.
             if (rep!=null)
             {
-                readDatabases(rep, true);
-                clearChanged();
+                try
+                {
+                    readSharedObjects(rep);
+                    clearChanged();
+                }
+                catch(KettleException e)
+                {
+                    throw new KettleXMLException(Messages.getString("TransMeta.Exception.UnableToReadSharedObjectsFromRepository.Message"), e);
+                }
             }
-            
-            // Now, also read objects from the shared XML file
-            readSharedObjects();
 
             // Handle connections
             int n = XMLHandler.countNodes(transnode, "connection"); //$NON-NLS-1$
@@ -2674,7 +2747,7 @@ public class TransMeta implements XMLInterface, Comparator
 
     }
 
-    public void readSharedObjects() throws KettleXMLException
+    public void readSharedObjects(Repository rep) throws KettleException
     {
         // Extract the shared steps, connections, etc. using the SharedObjects class
         //
@@ -2706,6 +2779,15 @@ public class TransMeta implements XMLInterface, Comparator
                 ClusterSchema clusterSchema = (ClusterSchema) object;
                 addOrReplaceClusterSchema(clusterSchema);
             }
+        }
+        
+        if (rep!=null)
+        {
+            readDatabases(rep, true);
+            readPartitionSchemas(rep, true);
+            readSlaves(rep, true);
+            readClusters(rep, true);
+
         }
     }
 
@@ -4945,7 +5027,15 @@ public class TransMeta implements XMLInterface, Comparator
     public void addOrReplacePartitionSchema(PartitionSchema partitionSchema)
     {
         int index = partitionSchemas.indexOf(partitionSchema);
-        if (index<0) partitionSchemas.add(partitionSchema); else partitionSchemas.set(index, partitionSchema);
+        if (index<0)
+        {
+            partitionSchemas.add(partitionSchema);
+        }
+        else
+        {
+            PartitionSchema previous = (PartitionSchema) partitionSchemas.get(index);
+            previous.replaceMeta(partitionSchema);
+        }
         setChanged();
     }
     
@@ -4958,7 +5048,15 @@ public class TransMeta implements XMLInterface, Comparator
     public void addOrReplaceSlaveServer(SlaveServer slaveServer)
     {
         int index = slaveServers.indexOf(slaveServer);
-        if (index<0) slaveServers.add(slaveServer); else slaveServers.set(index, slaveServer);
+        if (index<0)
+        {
+            slaveServers.add(slaveServer); 
+        }
+        else
+        {
+            SlaveServer previous = (SlaveServer) slaveServers.get(index);
+            previous.replaceMeta(slaveServer);
+        }
         setChanged();
     }
     
@@ -4971,10 +5069,17 @@ public class TransMeta implements XMLInterface, Comparator
     public void addOrReplaceClusterSchema(ClusterSchema clusterSchema)
     {
         int index = clusterSchemas.indexOf(clusterSchema);
-        if (index<0) clusterSchemas.add(clusterSchema); else clusterSchemas.set(index, clusterSchema);
+        if (index<0)
+        {
+            clusterSchemas.add(clusterSchema); 
+        }
+        else 
+        {
+            ClusterSchema previous = (ClusterSchema) clusterSchemas.get(index);
+            previous.replaceMeta(clusterSchema);
+        }
         setChanged();
     }
-
 
     public String getSharedObjectsFile()
     {

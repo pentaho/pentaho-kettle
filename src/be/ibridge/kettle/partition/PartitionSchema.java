@@ -25,6 +25,8 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
 
     private String[] partitionIDs;
     private boolean shared;
+    
+    private long id;
 
     public PartitionSchema()
     {
@@ -43,10 +45,20 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
 
     public Object clone()
     {
-        String[] ids = new String[partitionIDs.length];
-        for (int i=0;i<ids.length;i++) ids[i] = partitionIDs[i];
+        PartitionSchema partitionSchema = new PartitionSchema();
+        partitionSchema.replaceMeta(this);
+        partitionSchema.setId(-1L);
+        return partitionSchema;
+    }
+
+    public void replaceMeta(PartitionSchema partitionSchema)
+    {
+        this.name = partitionSchema.name;
+        this.partitionIDs = partitionSchema.partitionIDs;
         
-        return new PartitionSchema(name, ids);
+        // this.shared = partitionSchema.shared;
+        this.setId(partitionSchema.getId());
+        this.setChanged(true);
     }
     
     public String toString()
@@ -128,15 +140,28 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     
     public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
     {
-        long id_partition_schema = rep.insertPartitionSchema(this);
+        // see if this partitioning schema is already in the repository...
+        setId( rep.getPartitionSchemaID(name) );
+        if (getId()<0)
+        {
+            setId(rep.insertPartitionSchema(this));
+        }
+        else
+        {
+            rep.updatePartitionSchema(this);
+            rep.delPartitions(getId());
+        }
         
+        // Save the cluster-partition relationships
+        //
         for (int i=0;i<partitionIDs.length;i++)
         {
-            rep.insertPartition(id_partition_schema, partitionIDs[i]);
+            rep.insertPartition(getId(), partitionIDs[i]);
         }
         
         // Save a link to the transformation to keep track of the use of this partition schema
-        rep.insertTransformationPartitionSchema(id_transformation, id_partition_schema);
+        rep.insertTransformationPartitionSchema(id_transformation, getId());
+
     }
     
     public PartitionSchema(Repository rep, long id_partition_schema) throws KettleDatabaseException
@@ -168,5 +193,22 @@ public class PartitionSchema extends ChangedFlag implements Cloneable, SharedObj
     {
         this.shared = shared;
     }
+
+    /**
+     * @return the id
+     */
+    public long getId()
+    {
+        return id;
+    }
+
+    /**
+     * @param id the id to set
+     */
+    public void setId(long id)
+    {
+        this.id = id;
+    }
+
 
 }

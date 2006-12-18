@@ -502,32 +502,29 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
 
 	public Object clone()
 	{
-        DatabaseMeta di = new DatabaseMeta
-			(
-			getName(),
-			getDatabaseTypeDesc(),
-			getAccessTypeDesc(),
-			getHostname(),
-			getDatabaseName(),
-			getDatabasePortNumberString(),
-			getUsername(),
-			getPassword()
-			);
-		
-		di.setServername(getServername());
-		di.setDataTablespace( getDataTablespace() );
-		di.setIndexTablespace( getIndexTablespace() );
-
-        di.databaseInterface = (DatabaseInterface) databaseInterface.clone();
-        
-        // di.databaseInterface.getURL();
-        
-        di.setID(-1L);
-        di.setChanged();
-        
-		return di; 
+        DatabaseMeta databaseMeta = new DatabaseMeta();
+        databaseMeta.replaceMeta(this);
+        databaseMeta.setID(-1L);
+		return databaseMeta; 
 	}
 
+
+    public void replaceMeta(DatabaseMeta databaseMeta)
+    {
+        this.setValues(databaseMeta.getName(), databaseMeta.getDatabaseTypeDesc(), databaseMeta.getAccessTypeDesc(), 
+                databaseMeta.getHostname(), databaseMeta.getDatabaseName(), databaseMeta.getDatabasePortNumberString(), 
+                databaseMeta.getUsername(), databaseMeta.getPassword()
+                );
+        this.setServername(databaseMeta.getServername());
+        this.setDataTablespace( databaseMeta.getDataTablespace() );
+        this.setIndexTablespace( databaseMeta.getIndexTablespace() );
+    
+        this.databaseInterface = (DatabaseInterface) databaseMeta.databaseInterface.clone();
+        
+        this.setID(databaseMeta.getID());
+        this.setChanged();
+    }
+    
 	public void setValues(String name, String type, String access, String host, String db, String port, String user, String pass)
 	{
 		try
@@ -2141,4 +2138,5 @@ public class DatabaseMeta extends SharedObjectBase implements Cloneable, XMLInte
         }
         return null;
     }
+
 }

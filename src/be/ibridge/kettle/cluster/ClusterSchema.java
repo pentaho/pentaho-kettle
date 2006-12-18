@@ -72,15 +72,27 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     public Object clone() 
     {
         ClusterSchema clusterSchema = new ClusterSchema();
-        clusterSchema.setName(name);
-        clusterSchema.setBasePort(basePort);
-        clusterSchema.setSocketsBufferSize(socketsBufferSize);
-        clusterSchema.setSocketsCompressed(socketsCompressed);
-        clusterSchema.setSocketsFlushInterval(socketsFlushInterval);
-        clusterSchema.getSlaveServers().addAll(slaveServers); // no clone() of the slave server please!
-        
+        clusterSchema.replaceMeta(this);
         return clusterSchema;
     }
+    
+
+    public void replaceMeta(ClusterSchema clusterSchema)
+    {
+        this.name = clusterSchema.name;
+        this.basePort = clusterSchema.basePort;
+        this.socketsBufferSize = clusterSchema.socketsBufferSize;
+        this.socketsCompressed = clusterSchema.socketsCompressed;
+        this.socketsFlushInterval = clusterSchema.socketsFlushInterval;
+        
+        this.slaveServers.clear();
+        this.slaveServers.addAll(clusterSchema.slaveServers); // no clone() of the slave server please!
+        
+        this.shared = clusterSchema.shared;
+        this.id = clusterSchema.id;
+        this.setChanged(true);
+    }
+
     
     public String toString()
     {
@@ -149,8 +161,16 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
     
     public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
     {
-        // Save the cluster
-        setId(rep.insertCluster(this));
+        setId(rep.getClusterID(name));
+        if (getId()<0)
+        {
+            // Save the cluster
+            setId(rep.insertCluster(this));
+        }
+        else
+        {
+            rep.delClusterSlaves(getId());
+        }
         
         // Also save the used slave server references.
         for (int i=0;i<slaveServers.size();i++)
@@ -175,7 +195,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         socketsFlushInterval = row.getString("SOCKETS_FLUSH_INTERVAL", null);
         socketsCompressed = row.getBoolean("SOCKETS_COMPRESSED", true);
         
-        long[] pids = rep.getSlaveServerIDs(id_cluster_schema);
+        long[] pids = rep.getSlaveIDs(id_cluster_schema);
         for (int i=0;i<pids.length;i++)
         {
             SlaveServer slaveServer = new SlaveServer(rep, pids[i]);

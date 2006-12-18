@@ -121,7 +121,16 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     
     public void saveRep(Repository rep, long id_transformation) throws KettleDatabaseException
     {
-        setId(rep.insertSlaveServer(this));
+        if (rep.getSlaveID(name)<0)
+        {
+            setId(rep.insertSlave(this));
+        }
+        else
+        {
+            rep.updateSlave(this);
+        }
+        
+        // Save the trans-slave relationship too.
         rep.insertTransformationSlave(id_transformation, getId());
     }
     
@@ -144,14 +153,25 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     
     public Object clone()
     {
-        try
-        {
-            return super.clone();
-        }
-        catch(Exception e)
-        {
-            return null;
-        }
+        SlaveServer slaveServer = new SlaveServer();
+        slaveServer.replaceMeta(this);
+        return slaveServer;
+    }
+
+    public void replaceMeta(SlaveServer slaveServer)
+    {
+        this.name = slaveServer.name;
+        this.hostname = slaveServer.name;
+        this.port = slaveServer.port;
+        this.username = slaveServer.username;
+        this.password = slaveServer.password;
+        this.proxyHostname = slaveServer.proxyHostname;
+        this.proxyPort = slaveServer.proxyPort;
+        this.nonProxyHosts = slaveServer.nonProxyHosts;
+        
+        this.id = slaveServer.id;
+        this.shared = slaveServer.shared;
+        this.setChanged(true);
     }
     
     public String toString()
@@ -602,6 +622,7 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
     {
         this.id = id;
     }
+
     
 }
 

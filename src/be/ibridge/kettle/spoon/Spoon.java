@@ -2546,11 +2546,21 @@ public class Spoon
                 // In order to re-match the databases on name (not content), we need to load the databases from the new repository.
                 // NOTE: for purposes such as DEVELOP - TEST - PRODUCTION sycles.
                 
-                // first clear the list of databases.
+                // first clear the list of databases, partition schemas, slave servers, clusters
                 transMeta.setDatabases(new ArrayList());
+                transMeta.setPartitionSchemas(new ArrayList());
+                transMeta.setSlaveServers(new ArrayList());
+                transMeta.setClusterSchemas(new ArrayList());
     
                 // Read them from the new repository.
-                readDatabases(transMeta, true); 
+                try
+                {
+                    transMeta.readSharedObjects(rep);
+                }
+                catch(KettleException e)
+                {
+                    new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", makeGraphTabName(transMeta)), e);
+                }
             
                 // Then we need to re-match the databases at save time...
                 for (int i=0;i<oldDatabases.size();i++)
@@ -2672,11 +2682,6 @@ public class Spoon
         }
     }
     
-    public void readDatabases(TransMeta transMeta, boolean overWriteShared)
-    {
-        transMeta.readDatabases(rep, overWriteShared);
-    }
-
     public void closeRepository()
     {
         if (rep!=null) rep.disconnect();
@@ -2761,14 +2766,13 @@ public class Spoon
         {
             try
             {
-                transMeta.readSharedObjects();
+                transMeta.readSharedObjects(rep);
             }
             catch(Exception e)
             {
                 new ErrorDialog(shell, Messages.getString("Spoon.Error.UnableToLoadSharedObjects.Title"), Messages.getString("Spoon.Error.UnableToLoadSharedObjects.Message"), e);
             }
-            transMeta.readDatabases(rep, true);
-            transMeta.readPartitionSchemas(rep, true);
+
         }
     }
     
@@ -3061,11 +3065,11 @@ public class Spoon
     {
         try
         {
-            transMeta.readSharedObjects();
+            transMeta.readSharedObjects(rep);
         }
         catch(Exception e)
         {
-            log.logError(toString(), "Unable to load shared ojects: "+e.toString());
+            new ErrorDialog(shell, Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Title"), Messages.getString("Spoon.Dialog.ErrorReadingSharedObjects.Message", makeGraphTabName(transMeta)), e);
         }
     }
     

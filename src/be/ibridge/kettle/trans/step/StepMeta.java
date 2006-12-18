@@ -377,25 +377,62 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
 	
 	public Object clone()
 	{
-		try
-		{
- 			StepMeta retval   = (StepMeta)super.clone();
-			boolean changed = hasChanged();
-            
-			retval.setLocation(getLocation().x, getLocation().y);
-			if (stepMetaInterface!=null) retval.stepMetaInterface = (StepMetaInterface)stepMetaInterface.clone();
-			else retval.stepMetaInterface=null;
-
-            retval.setChanged( changed );
-            setChanged(changed );
-
-			return retval;
-		}
-		catch(CloneNotSupportedException e)
-		{
-			return null;
-		}
+        StepMeta stepMeta = new StepMeta();
+        stepMeta.replaceMeta(this);
+        stepMeta.setID(-1L);
+        return stepMeta;
 	}
+    
+
+    public void replaceMeta(StepMeta stepMeta)
+    {
+        this.stepid = stepMeta.stepid;   // --> StepPlugin.id
+        this.stepname = stepMeta.stepname;
+        if (stepMeta.stepMetaInterface!=null)
+        {
+            this.stepMetaInterface = (StepMetaInterface) stepMeta.stepMetaInterface.clone();
+        }
+        else
+        {
+            this.stepMetaInterface = null;
+        }
+        this.selected = stepMeta.selected;
+        this.distributes = stepMeta.distributes;
+        this.copies = stepMeta.copies;
+        if (stepMeta.location!=null)
+        {
+            this.location = new Point(stepMeta.location.x, stepMeta.location.y);
+        }
+        else
+        {
+            this.location = null;
+        }
+        this.drawstep = stepMeta.drawstep;
+        this.description = stepMeta.description;
+        this.terminator = stepMeta.terminator;
+        
+        if (stepMeta.stepPartitioningMeta!=null)
+        {
+            this.stepPartitioningMeta = (StepPartitioningMeta) stepMeta.stepPartitioningMeta.clone();
+        }
+        else
+        {
+            this.stepPartitioningMeta = null;
+        }
+        if (stepMeta.clusterSchema!=null)
+        {
+            this.clusterSchema = (ClusterSchema) stepMeta.clusterSchema.clone();
+        }
+        else
+        {
+            this.clusterSchema = null;
+        }
+        this.clusterSchemaName = stepMeta.clusterSchemaName; // temporary to resolve later.
+        
+        // this.setShared(stepMeta.isShared());
+        this.id = stepMeta.getID();
+        this.setChanged(true);
+    }
 	
 	public StepMetaInterface getStepMetaInterface()
 	{
@@ -697,4 +734,5 @@ public class StepMeta extends SharedObjectBase implements Cloneable, Comparable,
     {
         this.distributes = distributes;
     }
+
 }
