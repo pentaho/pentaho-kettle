@@ -139,7 +139,8 @@ public class SlaveServer extends ChangedFlag implements Cloneable, SharedObjectI
         this();
         
         Row row = rep.getSlaveServer(id_slave_server);
-
+        if (row==null) return;
+        
         name          = row.getString("NAME", null);
         hostname      = row.getString("HOST_NAME", null);
         port          = row.getString("PORT", null);

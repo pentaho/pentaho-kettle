@@ -1485,8 +1485,8 @@ public class Repository
         Row table = new Row();
 
         table.addValue(new Value("ID_CLUSTER_SLAVE", id));
-        table.addValue(new Value("ID_CLUSTER", id));
-        table.addValue(new Value("ID_SLAVE", id));
+        table.addValue(new Value("ID_CLUSTER", clusterSchema.getId()));
+        table.addValue(new Value("ID_SLAVE", slaveServer.getId()));
 
         database.prepareInsert(table, "R_CLUSTER_SLAVE");
         database.setValuesInsert(table);
