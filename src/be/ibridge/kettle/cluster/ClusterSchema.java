@@ -183,7 +183,7 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         rep.insertTransformationCluster(id_transformation, getId());
     }
     
-    public ClusterSchema(Repository rep, long id_cluster_schema) throws KettleDatabaseException
+    public ClusterSchema(Repository rep, long id_cluster_schema, List slaveServers) throws KettleDatabaseException
     {
         this();
         
@@ -199,7 +199,11 @@ public class ClusterSchema extends ChangedFlag implements Cloneable, SharedObjec
         for (int i=0;i<pids.length;i++)
         {
             SlaveServer slaveServer = new SlaveServer(rep, pids[i]);
-            slaveServers.add(slaveServer);
+            SlaveServer reference = SlaveServer.findSlaveServer(slaveServers, slaveServer.getName());
+            if (reference!=null) 
+                slaveServers.add(reference);
+            else 
+                slaveServers.add(slaveServer);
         }
     }
     
