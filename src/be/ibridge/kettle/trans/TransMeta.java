@@ -1864,7 +1864,7 @@ public class TransMeta implements XMLInterface, Comparator
             long dbids[] = rep.getClusterIDs();
             for (int i = 0; i < dbids.length; i++)
             {
-                ClusterSchema cluster = new ClusterSchema(rep, dbids[i]);
+                ClusterSchema cluster = new ClusterSchema(rep, dbids[i], slaveServers);
                 ClusterSchema check = findClusterSchema(cluster.getName()); // Check if there already is one in the transformation
                 if (check==null || overWriteShared) 
                 {
