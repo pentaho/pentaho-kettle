@@ -2757,6 +2757,9 @@ public class TransMeta implements XMLInterface, Comparator
         Map objectsMap = sharedObjects.getObjectsMap();
         Collection objects = objectsMap.values();
         
+        // First read the databases...
+        // We read databases & slaves first because there might be dependencies that need to be resolved.
+        //
         for (Iterator iter = objects.iterator(); iter.hasNext();)
         {
             Object object = iter.next();
@@ -2765,7 +2768,26 @@ public class TransMeta implements XMLInterface, Comparator
                 DatabaseMeta databaseMeta = (DatabaseMeta) object;
                 addOrReplaceDatabase(databaseMeta);
             }
-            else if (object instanceof StepMeta)
+        }
+
+        // Then read the slave servers
+        //
+        for (Iterator iter = objects.iterator(); iter.hasNext();)
+        {
+            Object object = iter.next();
+            if (object instanceof SlaveServer)
+            {
+                SlaveServer slaveServer = (SlaveServer) object;
+                addOrReplaceSlaveServer(slaveServer);
+            }
+        }
+
+        // Then the rest...
+        ///
+        for (Iterator iter = objects.iterator(); iter.hasNext();)
+        {
+            Object object = iter.next();
+            if (object instanceof StepMeta)
             {
                 StepMeta stepMeta = (StepMeta) object;
                 addOrReplaceStep(stepMeta);
@@ -2781,7 +2803,7 @@ public class TransMeta implements XMLInterface, Comparator
                 addOrReplaceClusterSchema(clusterSchema);
             }
         }
-        
+
         if (rep!=null)
         {
             readDatabases(rep, true);
