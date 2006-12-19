@@ -4,8 +4,9 @@
 # ** Libraries used by Kettle:                    **
 # **************************************************
 
-CLASSPATH=.
-CLASSPATH=$CLASSPATH:lib/kettle.jar
+BASEDIR=$(dirname $0)
+CLASSPATH=$BASEDIR
+CLASSPATH=$CLASSPATH:$BASEDIR/lib/kettle.jar
 
 # **************************************************
 # ** JDBC & other libraries used by Kettle:       **
