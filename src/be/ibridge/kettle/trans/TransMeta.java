@@ -4612,7 +4612,7 @@ public class TransMeta implements XMLInterface, Comparator
     {
         if (name != null) return name;
         if (filename != null) return filename;
-        return Spoon.STRING_TRANS_NO_NAME;
+        return TransMeta.class.getName();
     }
 
     /**
